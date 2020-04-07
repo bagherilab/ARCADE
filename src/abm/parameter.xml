@@ -1,6 +1,8 @@
 <parameters>
     <!-- default model size -->
     <default id="RADIUS" value="34" />
+    <default id="WIDTH" value="1" />
+    <default id="LENGTH" value="1" />
     <default id="HEIGHT" value="1" />
     <default id="MARGIN" value="6" />
 
@@ -64,6 +66,11 @@
 
     <!-- cancer specific parameters -->
     <variable id="DIVISION_PROB" value="0.05" description="cancer stem cell symmetric division" />
+
+    <!-- potts -->
+    <specification.helper id="TEMPERATURE" value="10" type="potts" description="simulation temperature" />
+    <specification.helper id="ADHESION_POTTS" value="10" type="potts" description="default adhesion" />
+    <specification.helper id="VOLUME_POTTS" value="2" type="potts" description="default lambda value for volume" />
     
     <!-- source sites -->
     <specification.component id="X_SPACING" value="*" type="sites" class="source" description="source spacing in x direction" />

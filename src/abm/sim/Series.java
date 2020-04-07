@@ -89,6 +89,10 @@ public class Series {
 	private final int steps;
 	
 	/** Radius of the simulation (even number) */
+	public int _length;
+	
+	public int _width;
+	
 	public int _radius;
 	
 	/** Height of the simulation (odd number) */
@@ -285,24 +289,27 @@ public class Series {
 	 * @param defaults  the default parameters dictionary
 	 */
 	private void updateSizing(MiniBox simulation, MiniBox defaults) {
-		// Get sizes based on default for selected dimension.
-		int radius = defaults.getInt("RADIUS");
-		int height = defaults.getInt("HEIGHT");
-		int margin = defaults.getInt("MARGIN");
+//		// Get sizes based on default for selected dimension.
+//		int radius = defaults.getInt("RADIUS");
+//		int height = defaults.getInt("HEIGHT");
+//		int margin = defaults.getInt("MARGIN");
+//		
+//		// Override sizes from specific flags.
+//		if (simulation.contains("radius")) { radius = simulation.getInt("radius"); }
+//		if (simulation.contains("height")) { height = simulation.getInt("height"); }
 		
-		// Override sizes from specific flags.
-		if (simulation.contains("radius")) { radius = simulation.getInt("radius"); }
-		if (simulation.contains("height")) { height = simulation.getInt("height"); }
-		if (simulation.contains("margin")) { margin = simulation.getInt("margin"); }
+		_length = 50;
+		_width = 50;
+		_height = 1;
 		
-		// Enforce that RADIUS and MARGIN are even, and HEIGHT is odd.
-		_radius = ((radius & 1) == 0 ? radius : radius + 1);
-		_height = ((height & 1) == 1 ? height : height + 1);
-		_margin = ((margin & 1) == 0 ? margin : margin + 1);
-		
+//		// Enforce that RADIUS and MARGIN are even, and HEIGHT is odd.
+//		_length = ((radius & 1) == 0 ? radius : radius + 1);
+//		_height = ((height & 1) == 1 ? height : height + 1);
+//		_margin = ((margin & 1) == 0 ? margin : margin + 1);
+//		
 		// Calculate additional size configurations.
-		_radiusBounds = radius + margin;
-		_heightBounds = (height == 1 ? 1 : height + margin);
+//		_radiusBounds = radius + margin;
+//		_heightBounds = (height == 1 ? 1 : height + margin);
 	}
 	
 	/**
@@ -311,16 +318,16 @@ public class Series {
 	 * @param agents  the agent setup dictionary
 	 */
 	private void updateAgents(MiniBox agents) {
-		_init = _radius;
+		_init = 0;
 		String init = agents.get("initialization");
 		
 		// Check if init is an integer less than radius. If init is given as
 		// "FULL", then all locations are initialized.
-		if (init.matches("[0-9]+") && Integer.parseInt(init) <= _radius) { _init = Integer.parseInt(init); }
+		if (init.matches("[0-9]+")) { _init = Integer.parseInt(init); }
 		else if (init.toUpperCase().equals("FULL")) { _init = FULL_INIT; }
 		else {
 			LOGGER.warning("initialization [ " + init
-				+ " ] must be FULL or less than or equal to " + _radius);
+				+ " ] must be FULL or less than or equal to " + 0);
 			skip = true;
 		}
 	}
@@ -400,7 +407,11 @@ public class Series {
 			
 			// Create constructor by compiling class name.
 			try {
-				Class<?> c = Class.forName("abm.agent.cell.Tissue" + type + "Cell");
+				Class<?> c;
+				
+				if (type.equals("P")) { c = Class.forName("abm.agent.cell.PottsCell"); }
+				else { c = Class.forName("abm.agent.cell.Tissue" + type + "Cell"); }
+				
 				_popCons[i] = c.getConstructors()[0];
 				_popFrac[i] = ratio;
 			} catch (Exception e) {
@@ -505,6 +516,10 @@ public class Series {
 				case "wound":
 					_helpers.add(new WoundHelper(h, _radius));
 					LOGGER.info(String.format(helperFormat, "WOUND", name));
+					break;
+				case "potts":
+					_helpers.add(new PottsHelper(h, _pops, _length, _width, _height));
+					LOGGER.info(String.format(helperFormat, "POTTS", name));
 					break;
 				default:
 					LOGGER.warning(String.format(DNEFormat, "helper", h.get("type")));
@@ -688,6 +703,10 @@ public class Series {
 			case "growth":
 				simClass = "abm.sim.GrowthSimulation$" + COORD_NAMES[_coord];
 				visClass = "abm.vis.GrowthVisualization" + view + "$" + COORD_NAMES[_coord];
+				break;
+			case "colony":
+				simClass = "abm.sim.PottsSimulation";
+				visClass = "abm.vis.PottsVisualization";
 				break;
 			default:
 				LOGGER.warning("simulation type [ " + type + " ] not supported");
