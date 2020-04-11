@@ -1,18 +1,6 @@
 package abm.env.grid;
 
 import sim.util.Bag;
-import abm.env.loc.Location;
-
-/** 
- * A {@code Grid} represents the environment for agents.
- * <p>
- * Calculations for geometry, bounds, size, etc. can be handled either by the
- * {@link abm.env.loc.Location} object that is passed in with the agent (using
- * the {@code Grid} as a container class) or vice versa.
- * 
- * @version 2.3.0
- * @since   2.2
- */
 
 public interface Grid {
 	/**
@@ -23,57 +11,25 @@ public interface Grid {
 	Bag getAllObjects();
 	
 	/**
-	 * Adds an object to the location defined by the {@link abm.env.loc.Location}.
+	 * Adds an object for the given id.
 	 * 
+	 * @param id  the object ID
 	 * @param obj  the object to add to the grid
-	 * @param loc  the location to add the object
 	 */
-	void addObject(Object obj, Location loc);
-	
-	/**
-	 * Moves an object to the location defined by the {@link abm.env.loc.Location}.
-	 * 
-	 * @param obj  the object to move in the grid
-	 * @param newLoc  the location to move the object
-	 */
-	void moveObject(Object obj, Location newLoc);
+	void addObject(int id, Object obj);
 	
 	/**
 	 * Removes an object from the grid.
 	 * 
-	 * @param obj  the object to remove from the grid
+	 * @param id  the object ID
 	 */
-	void removeObject(Object obj);
+	void removeObject(int id);
 	
 	/**
-	 * Gets the number of objects at a given location.
+	 * Gets the object at the given id.
 	 * 
-	 * @param loc  the location
-	 * @return  the number of objects
+	 * @param id  the object ID
+	 * @return  the object
 	 */
-	int getNumObjectsAtLocation(Location loc);
-	
-	/**
-	 * Gets all objects at a location.
-	 * 
-	 * @param loc  the location
-	 * @return  a bag of objects at the given location
-	 */
-	Bag getObjectsAtLocation(Location loc);
-	
-	/**
-	 * Gets all objects at all the given locations.
-	 * 
-	 * @param locs  the locations
-	 * @return  a bag of objects at the given locations
-	 */
-	Bag getObjectsAtLocations(Bag locs);
-	
-	/**
-	 * Gets the objects neighboring the given location.
-	 * 
-	 * @param loc  the location
-	 * @return  a bag of neighbors of the location
-	 */
-	Bag getNeighbors(Location loc);
+	Object getObjectAt(int id);
 }

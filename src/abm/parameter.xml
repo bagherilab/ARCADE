@@ -70,7 +70,8 @@
     <!-- potts -->
     <specification.helper id="TEMPERATURE" value="10" type="potts" description="simulation temperature" />
     <specification.helper id="ADHESION_POTTS" value="10" type="potts" description="default adhesion" />
-    <specification.helper id="VOLUME_POTTS" value="2" type="potts" description="default lambda value for volume" />
+    <specification.helper id="VOLUME_POTTS" value="25" type="potts" description="default lambda value for volume" />
+    <specification.helper id="PERIMETER_POTTS" value="0" type="potts" description="default lambda value for volume" />
     
     <!-- source sites -->
     <specification.component id="X_SPACING" value="*" type="sites" class="source" description="source spacing in x direction" />

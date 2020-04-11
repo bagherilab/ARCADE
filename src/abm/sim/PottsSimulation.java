@@ -18,6 +18,7 @@ public class PottsSimulation extends SimState implements Simulation {
 	private final int seed;
 	
 	public PottsGrid agents;
+	public int nextID;
 	
 	public PottsSimulation(long seed, Series series) {
 		super(seed);
@@ -50,7 +51,7 @@ public class PottsSimulation extends SimState implements Simulation {
 			}
 		}
 		
-		int n = 6;
+		int n = 8;
 		int id = 1;
 		
 		for (int i = 1; i < (series._length - 1)/n; i++) {
@@ -58,36 +59,40 @@ public class PottsSimulation extends SimState implements Simulation {
 				ArrayList<PottsLocation.PottsCoordinate> coordinates = new ArrayList<>();
 				
 				double rand = random.nextDouble();
-				if (rand < 0.5) { continue; }
+				if (rand < 0.8) { continue; }
 				
 				for (int ii = 0; ii < n ; ii++) {
 					for (int jj = 0; jj < n  ; jj++) {
-						coordinates.add(new PottsLocation.PottsCoordinate(i*n + ii, j*n + jj));
+						coordinates.add(new PottsLocation.PottsCoordinate(i*n + ii, j*n + jj, 0));
 					}
 				}
 				
-				int pop = rand < 0.7 ? 0 :  rand < 0.8 ? 1 : 2;
+				int pop = rand < 0.9 ? 0 :  1;
 				PottsLocation loc = new PottsLocation(coordinates);
-				PottsCell c = new PottsCell(id, pop, loc);
+				PottsCell c = new PottsCell(potts, id, pop, loc);
 				agents.addObject(id, c);
 				
 				id++;
+//				break;
 			}
+//			break;
 		}
 		
 		for (Object obj : agents.getAllObjects()) {
 			PottsCell c = (PottsCell)obj;
-			for (PottsLocation.PottsCoordinate coord : c.getLocation().coordinates) {
-				potts[0][coord.x][coord.y] = c.id;
-			}
+			c.location.update(potts, c.id);
+//			schedule.scheduleRepeating(0, ORDERING_CELLS, c);
+
 		}
+		
+		nextID = id;
 	}
 	
 	public void finish() { super.finish(); }
 	
 	@Override
 	public Grid getAgents() {
-		return null;
+		return agents;
 	}
 	
 	@Override
@@ -112,7 +117,7 @@ public class PottsSimulation extends SimState implements Simulation {
 	
 	@Override
 	public double getRandom() {
-		return 0;
+		return random.nextDouble();
 	}
 	
 	@Override

@@ -2,6 +2,8 @@ package abm.vis;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+
+import abm.agent.cell.PottsCell;
 import sim.engine.*;
 import sim.field.continuous.Continuous2D;
 import sim.field.grid.DoubleGrid2D;
@@ -18,6 +20,8 @@ import sim.util.Double2D;
 import sim.util.gui.ColorMap;
 import abm.sim.Simulation;
 import abm.sim.PottsSimulation;
+import abm.agent.cell.Cell;
+import static abm.agent.cell.Cell.*;
 
 public abstract class PottsDrawer extends Drawer {
 	private static final long serialVersionUID = 0;
@@ -37,7 +41,7 @@ public abstract class PottsDrawer extends Drawer {
 	}
 	
 	public Portrayal makePort() {
-		switch(name) {
+		switch(name.split(":")[0]) {
 			case "grid":
 				graph = new Network(true);
 				field = new Continuous2D(1.0,1,1);
@@ -85,8 +89,11 @@ public abstract class PottsDrawer extends Drawer {
 	
 	public static class PottsCells extends PottsDrawer {
 		private static final long serialVersionUID = 0;
+		private static final int DRAW_POPULATION = 0;
+		private static final int DRAW_STATE = 1;
 		private final int LENGTH;
 		private final int WIDTH;
+		private final int CODE;
 		
 		public PottsCells(Panel panel, String name,
 						 int length, int width, int depth,
@@ -94,16 +101,37 @@ public abstract class PottsDrawer extends Drawer {
 			super(panel, name, length, width, depth, map, bounds);
 			LENGTH = length;
 			WIDTH = width;
+			CODE = name.split(":")[1].equals("pop") ? DRAW_POPULATION : DRAW_STATE;
 		}
 		
 		public void step(SimState state) {
+			Cell c;
 			PottsSimulation cs = (PottsSimulation)state;
 			double[][] _to = array.field;
 			int[][] potts = cs.potts[0];
 			
 			for (int i = 0; i < LENGTH; i++) {
 				for (int j = 0; j < WIDTH; j++) {
-					_to[i][j] = potts[i][j] == 0 ? 0 : cs.agents.getCellAt(potts[i][j]).getPop() + 1;
+					if (potts[i][j] == 0) { c = null; }
+					else { c = (Cell)cs.agents.getObjectAt(potts[i][j]); }
+					
+					switch(CODE) {
+						case DRAW_POPULATION:
+							_to[i][j] = c == null ? 0 : c.getPop() + 1;
+//							if (c != null) {
+//								_to[i][j] = c.getID()/10.0 + 1;
+//							}
+//							else { _to[i][j] = 0; }
+							break;
+						case DRAW_STATE:
+							int add = 1;
+							if (c != null && c.getState() == PROLIFERATIVE) {
+								add += c.getPhase() + 2;
+							}
+							_to[i][j] = c == null ? 0 : c.getState() + add;
+							break;
+					}
+					
 				}
 			}
 		}

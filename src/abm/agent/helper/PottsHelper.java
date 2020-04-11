@@ -1,21 +1,28 @@
 package abm.agent.helper;
 
 import java.util.HashSet;
+
+import abm.agent.cell.PottsCell;
+import abm.env.loc.PottsLocation;
 import sim.engine.SimState;
 import abm.sim.Simulation;
 import abm.sim.PottsSimulation;
+import abm.agent.cell.Cell;
 import abm.env.grid.PottsGrid;
 import abm.util.MiniBox;
 
 public class PottsHelper implements Helper {
 	final int LENGTH, WIDTH, HEIGHT;
 	final int STEPS, TEMPERATURE;
+
+	public static final String TARGET_VOLUME = "TARGET_VOLUME";
 	
 	public int[][][] potts;
 	PottsGrid grid;
 	
 	final private double[][] ADHESIONS;
 	final private double[] VOLUMES;
+	final private double[] PERIMETERS;
 	
 	final private int[] MOVES_X = { 0, 1, 0, -1 }; // N, E, S, W
 	final private int[] MOVES_Y = { -1, 0, 1, 0 }; // N, E, S, W
@@ -23,6 +30,8 @@ public class PottsHelper implements Helper {
 	final private int[] MOVES_CORNER_Y = { -1, 1, 1, -1 }; // NE, SE, SW, NW
 	
 	private double begin, end;
+	
+	private int sourcePerimeterChange, targetPerimeterChange;
 	
 	public PottsHelper(MiniBox helper, int pops, int length, int width, int height) {
 		potts = new int[height][length][width];
@@ -74,6 +83,23 @@ public class PottsHelper implements Helper {
 		// Set volume target of medium to NaN.
 		VOLUMES[0] = Double.NaN;
 		
+		// Set perimeter vector to default value.
+		PERIMETERS = new double[pops + 1];
+		for (int i = 0; i < pops + 1; i++) {
+			PERIMETERS[i] = helper.getDouble("PERIMETER_POTTS");
+		}
+		
+		// Update perimeter vector by parsing input.
+		MiniBox perimeter = helper.filter("PERIMETER");
+		for (String key : perimeter.getKeys()) {
+			String[] p = key.split("_");
+			int p1 = p[0].equals("*") ? 0 : Integer.parseInt(p[0]) + 1;
+			PERIMETERS[p1] = perimeter.getDouble(key);
+		}
+		
+		// Set perimeter target of medium to NaN.
+		PERIMETERS[0] = Double.NaN;
+		
 		// Get temperature.
 		TEMPERATURE = helper.getInt("TEMPERATURE");
 	}
@@ -81,15 +107,15 @@ public class PottsHelper implements Helper {
 	public double getBegin() { return begin; }
 	public double getEnd() { return end; }
 	
-	double getAdhesion(PottsGrid grid, int id, int x, int y, int z) {
+	double getAdhesion(int id, int x, int y, int z) {
 		double H = 0;
 		
 		for (int i = x - 1; i <= x + 1; i++) {
 			for (int j = y - 1; j <= y + 1; j++) {
 				if (!(i == x && j == y)) {
 					if (potts[z][i][j] != id) {
-						int a = (id == 0 ? 0 : grid.getCellAt(id).getPop() + 1);
-						int b = (potts[z][i][j] == 0 ? 0 : grid.getCellAt(potts[z][i][j]).getPop() + 1);
+						int a = (id == 0 ? 0 : ((Cell)grid.getObjectAt(id)).getPop() + 1);
+						int b = (potts[z][i][j] == 0 ? 0 : ((Cell)grid.getObjectAt(potts[z][i][j])).getPop() + 1);
 						H += ADHESIONS[a][b];
 					}
 				}
@@ -99,18 +125,20 @@ public class PottsHelper implements Helper {
 		return H;
 	}
 	
-	double getDeltaAdhesion(PottsGrid grid, int sourceID, int targetID, int x, int y, int z) {
-		double source = getAdhesion(grid, sourceID, x, y, z);
-		double target = getAdhesion(grid, targetID, x, y, z);
+	double getDeltaAdhesion(int sourceID, int targetID, int x, int y, int z) {
+		double source = getAdhesion(sourceID, x, y, z);
+		double target = getAdhesion(targetID, x, y, z);
 		return target - source;
 	}
 	
 	double getVolume(int id, int change) {
 		if (id == 0) { return 0; }
 		else {
-			double size = grid.getCellAt(id).getNumVoxels();
-			double critSize = grid.getCellAt(id).getCritVoxels();
-			return VOLUMES[grid.getCellAt(id).getPop() + 1]*Math.pow((size - critSize + change), 2);
+			Cell c = (Cell)grid.getObjectAt(id);
+			double volume = c.getVolume();
+			double targetVolume = c.getTargetVolume();
+			double lambda = VOLUMES[c.getPop() + 1];
+			return lambda * Math.pow((volume - targetVolume + change), 2);
 		}
 	}
 	
@@ -119,6 +147,49 @@ public class PottsHelper implements Helper {
 		double target = getVolume(targetID, 1) - getVolume(targetID, 0);
 		return target + source;
 	}
+	
+	double getPerimeter(int id, int change) {
+		if (id == 0) { return 0; }
+		else {
+			Cell c = (Cell)grid.getObjectAt(id);
+			double perimeter = c.getPerimeter();
+			double targetPerimeter = c.getTargetPerimeter();
+			double lambda = PERIMETERS[c.getPop() + 1];
+			return lambda * Math.pow(perimeter - targetPerimeter + change, 2) - lambda * Math.pow(perimeter - targetPerimeter, 2);
+		}
+	}
+	
+	double getDeltaPerimeter(int sourceID, int targetID, int x, int y, int z) {
+		int beforeSource = 0;
+		int afterSource = 0;
+		int beforeTarget = 0;
+		int afterTarget = 0;
+		
+		// Iterate through each neighbor.
+		for (int i = 0; i < 4; i++) {
+			int neighbor = potts[z][x + MOVES_X[i]][y + MOVES_Y[i]];
+			if (neighbor != sourceID) {
+				beforeSource++;
+				if (neighbor == targetID) { beforeTarget++; }
+			}
+			
+			if (neighbor != targetID) {
+				afterTarget++;
+				if (neighbor == sourceID) { afterSource++; }
+			}
+		}
+		
+		// Save changes to perimeter.
+		sourcePerimeterChange = afterSource - beforeSource;
+		targetPerimeterChange = afterTarget - beforeTarget;
+		
+		double source = getPerimeter(sourceID, sourcePerimeterChange);
+		double target = getPerimeter(targetID, targetPerimeterChange);
+		
+		return target + source;
+	}
+	
+	
 	
 	public void step(SimState state) {
 		int x, y, sourceID, targetID;
@@ -159,8 +230,9 @@ public class PottsHelper implements Helper {
 			
 			// Calculate energy change.
 			double dH = 0;
-			dH += getDeltaAdhesion(grid, sourceID, targetID, x, y, z);
+			dH += getDeltaAdhesion(sourceID, targetID, x, y, z);
 			dH += getDeltaVolume(sourceID, targetID);
+			dH += getDeltaPerimeter(sourceID, targetID, x, y, z);
 			
 			double p;
 			if (dH < 0) { p = 1; }
@@ -168,8 +240,12 @@ public class PottsHelper implements Helper {
 			
 			if (state.random.nextDouble() < p) {
 				potts[z][x][y] = targetID;
-				if (sourceID > 0) { grid.getCellAt(sourceID).removeVoxel(x, y, z); }
-				if (targetID > 0) { grid.getCellAt(targetID).addVoxel(x, y, z); }
+				if (sourceID > 0) {
+					((Cell)grid.getObjectAt(sourceID)).removeVoxel(x, y, z, sourcePerimeterChange);
+				}
+				if (targetID > 0) {
+					((Cell)grid.getObjectAt(targetID)).addVoxel(x, y, z, targetPerimeterChange);
+				}
 			}
 		}
 	}

@@ -26,7 +26,7 @@ import abm.util.*;
  * {@link abm.sim.Simulation} objects are passed their parent {@code Series}
  * object and have access to fields with the "_" prefix.
  *
- * @version 2.3.30
+ * @version 3.0
  * @since   2.2
  */
 
@@ -298,8 +298,8 @@ public class Series {
 //		if (simulation.contains("radius")) { radius = simulation.getInt("radius"); }
 //		if (simulation.contains("height")) { height = simulation.getInt("height"); }
 		
-		_length = 50;
-		_width = 50;
+		_length =100;
+		_width = 100;
 		_height = 1;
 		
 //		// Enforce that RADIUS and MARGIN are even, and HEIGHT is odd.
