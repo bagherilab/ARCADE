@@ -504,19 +504,6 @@ public class Series {
 			for (MiniBox box : specifications.get(i)) { h.put(box.get("id"), box.get("value")); }
 			
 			switch (h.get("type").toLowerCase()) {
-				case "convert":
-					int p = h.getInt("population");
-					_helpers.add(new ConvertHelper(h, _popCons[p], _popBoxes[p]));
-					LOGGER.info(String.format(helperFormat, "CONVERT", name));
-					break;
-				case "insert":
-					_helpers.add(new InsertHelper(h, _popCons, _popBoxes, _radius));
-					LOGGER.info(String.format(helperFormat, "INSERT", name));
-					break;
-				case "wound":
-					_helpers.add(new WoundHelper(h, _radius));
-					LOGGER.info(String.format(helperFormat, "WOUND", name));
-					break;
 				case "potts":
 					_helpers.add(new PottsHelper(h, _pops, _length, _width, _height));
 					LOGGER.info(String.format(helperFormat, "POTTS", name));
@@ -558,45 +545,6 @@ public class Series {
 			for (MiniBox box : specifications.get(i)) { c.put(box.get("id"), box.get("value")); }
 			
 			switch (c.get("type").toLowerCase()) {
-				case "sites":
-					String site = c.get("class");
-					switch (site) {
-						case "source":
-							_components.add(new SourceSites(c));
-							LOGGER.info(String.format(componentFormat, "SITE [ source ]", name));
-							break;
-						case "pattern":
-							if (_coord == COORD_HEX) { _components.add(new TriPatternSites(c)); }
-							else if (_coord == COORD_RECT) { _components.add(new RectPatternSites(c)); }
-							LOGGER.info(String.format(componentFormat, "SITE [ pattern ]", name));
-							break;
-						case "graph":
-							String complexity = c.get("complexity");
-							
-							if (complexity == null || !complexity.equals("simple")) {
-								if (_coord == COORD_HEX) { _components.add(new TriGraphSites.Complex(c)); }
-								else if (_coord == COORD_RECT) {  _components.add(new RectGraphSites.Complex(c)); }
-							} else {
-								if (_coord == COORD_HEX) { _components.add(new TriGraphSites.Simple(c)); }
-								else if (_coord == COORD_RECT) {  _components.add(new RectGraphSites.Simple(c)); }
-							}
-							hasGraph = true;
-							LOGGER.info(String.format(componentFormat, "SITE [ graph ]", name));
-							break;
-						default:
-							LOGGER.info("component class for [ " + c.get("type") + " ] must be SOURCE, PATTERN, or GRAPH");
-							skip = true;
-							break;
-					}
-					break;
-				case "degrade":
-					_components.add(new DegradeComponent(c));
-					LOGGER.info(String.format(componentFormat, "DEGRADE", name));
-					break;
-				case "remodel":
-					_components.add(new RemodelComponent(c));
-					LOGGER.info(String.format(componentFormat, "REMODEL", name));
-					break;
 				default:
 					LOGGER.warning(String.format(DNEFormat, "component", c.get("type")));
 					skip = true;
@@ -622,23 +570,6 @@ public class Series {
 			String suffix = (p.contains("suffix") ? p.get("suffix") : "");
 			
 			switch (p.get("type").toLowerCase()) {
-				case "growth":
-					_profilers.add(new GrowthProfiler(i, suffix));
-					LOGGER.info(String.format(profilerFormat, "GROWTH", name));
-					break;
-				case "parameter":
-					_profilers.add(new ParameterProfiler(i, suffix));
-					LOGGER.info(String.format(profilerFormat, "PARAMETER", name));
-					break;
-				case "graph":
-					if (!hasGraph) {
-						LOGGER.warning("GRAPH profiler can only be used with graph sites component");
-						break;
-					}
-					
-					_profilers.add(new GraphProfiler(i, suffix));
-					LOGGER.info(String.format(profilerFormat, "GRAPH", name));
-					break;
 				default:
 					LOGGER.warning(String.format(DNEFormat, "profiler", p.get("type")));
 					skip = true;
@@ -658,25 +589,6 @@ public class Series {
 			int tick = (c.contains("day") ? c.getInt("day")*60*24 : 0);
 			
 			switch (c.get("type").toLowerCase()) {
-				case "cells":
-					switch (c.get("class").toLowerCase()) {
-						case "save": _checkpoints.add(new CellCheckpoint.Save(prefix, tick)); break;
-						case "load": _checkpoints.add(new CellCheckpoint.Load(prefix, tick)); break;
-						default: LOGGER.info(String.format(checkpointFormat, c.get("type")));
-					}
-					break;
-				case "graph":
-					if (!hasGraph) {
-						LOGGER.warning("GRAPH checkpoint can only be used with graph sites component");
-						break;
-					}
-					
-					switch (c.get("class").toLowerCase()) {
-						case "save": _checkpoints.add(new GraphCheckpoint.Save(prefix, tick)); break;
-						case "load": _checkpoints.add(new GraphCheckpoint.Load(prefix)); break;
-						default: LOGGER.info(String.format(checkpointFormat, c.get("type")));
-					}
-					break;
 				default:
 					LOGGER.warning(String.format(DNEFormat, "checkpoint", c.get("type")));
 					skip = true;
