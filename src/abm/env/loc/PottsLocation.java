@@ -1,206 +1,497 @@
 package abm.env.loc;
 
-import abm.sim.PottsSimulation;
-import abm.sim.Simulation;
-import ec.util.MersenneTwisterFast;
-
-import javax.sql.PooledConnection;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.LinkedHashSet;
+import ec.util.MersenneTwisterFast;
+import abm.sim.Simulation;
 
 public class PottsLocation {
-	final static private int[] MOVES_X = { 0, 1, 0, -1 }; // N, E, S, W
-	final static private int[] MOVES_Y = { -1, 0, 1, 0 }; // N, E, S, W
+	/** Difference between split voxel numbers */
+	final static private int BALANCE_DIFFERENCE = 2;
 	
-	public ArrayList<PottsCoordinate> coordinates;
+	/** List of x direction movements (N, E, S, W) */
+	final static private int[] MOVES_X = { 0, 1, 0, -1 };
 	
-	public PottsLocation(ArrayList<PottsCoordinate> coordinates) {
-		this.coordinates = coordinates;
+	/** List of y direction movements (N, E, S, W) */
+	final static private int[] MOVES_Y = { -1, 0, 1, 0 };
+	
+	/** List of voxels for the location */
+	ArrayList<Voxel> voxels;
+	
+	/** Location split directions */
+	enum Direction {
+		/** Direction along the x axis (y = 0) */
+		X_DIRECTION,
+		
+		/** Direction along the y axis (x = 0) */
+		Y_DIRECTION,
+		
+		/** Direction along the positive xy axis (x = y) */
+		POSITIVE_XY,
+		
+		/** Direction along the negative xy axis (x  = -y) */
+		NEGATIVE_XY
 	}
 	
-	public void removeCoord(int x, int y, int z) {
-		coordinates.remove(new PottsCoordinate(x, y, z));
+	/**
+	 * Creates a {@code PottsLocation} for a list of voxels.
+	 *
+	 * @param voxels  the list of voxels
+	 */
+	public PottsLocation(ArrayList<Voxel> voxels) {
+		this.voxels = voxels;
 	}
 	
-	public void addCoord(int x, int  y, int z) {
-		coordinates.add(new PottsCoordinate(x, y, z));
-	}
+	/**
+	 * Removes the voxel at the given coordinates.
+	 * 
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
+	 */
+	public void remove(int x, int y, int z) { voxels.remove(new Voxel(x, y, z)); }
 	
-	public void addCoords(ArrayList<PottsCoordinate> coords) { coordinates.addAll(coords); }
+	/**
+	 * Adds a voxel at the given coordinates.
+	 *
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
+	 */
+	public void add(int x, int y, int z) { voxels.add(new Voxel(x, y, z)); }
 	
-	
+	/**
+	 * Updates the array for the location.
+	 * 
+	 * @param array  the potts array
+	 * @param id  the location id
+	 */
 	public void update(int[][][] array, int id) {
-		for (PottsCoordinate coord : coordinates) {
-			array[coord.z][coord.x][coord.y] = id;
+		for (Voxel voxel : voxels) { array[voxel.z][voxel.x][voxel.y] = id; }
+	}
+	
+	/**
+	 * Gets the x coordinate of the voxel at the center of the location.
+	 * 
+	 * @return  the x coordinate
+	 */
+	int getCenterX() {
+		double x = 0;
+		for (Voxel voxel : voxels) { x += voxel.x; }
+		return (int)Math.round(x/voxels.size());
+	}
+	
+	/**
+	 * Gets the y coordinate of the voxel at the center of the location.
+	 *
+	 * @return  the y coordinate
+	 */
+	int getCenterY() {
+		double y = 0;
+		for (Voxel voxel : voxels) { y += voxel.y; }
+		return (int)Math.round(y/voxels.size());
+	}
+	
+	/**
+	 * Gets the z coordinate of the voxel at the center of the location.
+	 *
+	 * @return  the z coordinate
+	 */
+	int getCenterZ() {
+		double z = 0;
+		for (Voxel voxel : voxels) { z += voxel.z; }
+		return (int)Math.round(z/voxels.size());
+	}
+	
+	/**
+	 * Gets the voxel at the center of the location.
+	 * 
+	 * @return  the center voxel
+	 */
+	Voxel getCenter() { return new Voxel(getCenterX(), getCenterY(), getCenterZ()); }
+	
+	/**
+	 * Splits the location voxels into two lists.
+	 * <p>
+	 * The location are split along the direction with the shortest diameter.
+	 * The lists of locations are guaranteed to be connected, and generally will
+	 * be balanced in size.
+	 * One of the splits is assigned to the current location and the other is
+	 * returned.
+	 * 
+	 * @param random  the seeded random number generator
+	 * @return  a list of voxels
+	 */
+	public PottsLocation splitLocation(MersenneTwisterFast random) {
+		// Get center voxel.
+		Voxel center = getCenter();
+		
+		// Initialize lists of split voxels.
+		ArrayList<Voxel> voxelsA = new ArrayList<>();
+		ArrayList<Voxel> voxelsB = new ArrayList<>();
+		
+		// Get split direction.
+		Direction direction = getDirection(random);
+		splitVoxels(direction, voxelsA, voxelsB, center, random);
+		
+		// Ensure that voxel split are connected and balanced.
+		connectVoxels(voxelsA, voxelsB, random);
+		balanceVoxels(voxelsA, voxelsB, random);
+		
+		// Select one split to keep for this location and return the other.
+		if (random.nextDouble() < 0.5) {
+			voxels = voxelsA;
+			return new PottsLocation(voxelsB);
+		} else {
+			voxels = voxelsB;
+			return new PottsLocation(voxelsA);
 		}
 	}
 	
-	private int getXCenter() {
-		double x = 0;
-		for (PottsCoordinate coord : coordinates) { x += coord.x; }
-		return (int)Math.round(x/coordinates.size());
-	}
-	
-	private int getYCenter() {
-		double y = 0;
-		for (PottsCoordinate coord : coordinates) { y += coord.y; }
-		return (int)Math.round(y/coordinates.size());
-	}
-	
-	private int getZCenter() {
-		double z = 0;
-		for (PottsCoordinate coord : coordinates) { z += coord.z; }
-		return (int)Math.round(z/coordinates.size());
-	}
-	
-	private PottsCoordinate getCenter() {
-		return new PottsCoordinate(getXCenter(), getYCenter(), getZCenter());
-	}
-	
-	private int getDiameter(Direction dir) {
-		PottsCoordinate center = getCenter();
-		int min = Integer.MAX_VALUE;
-		int max = Integer.MIN_VALUE;
+	/**
+	 * Gets the direction of the shortest diameter in the location.
+	 * 
+	 * @param random  the seeded random number generator
+	 * @return  the direction of the shortest diameter
+	 */
+	Direction getDirection(MersenneTwisterFast random) {
+		Voxel center = getCenter();
 		
-		for (PottsCoordinate coord : coordinates) {
-			int x = coord.x - center.x;
-			int y = coord.y - center.y;
+		EnumMap<Direction, Integer> minValueMap = new EnumMap<>(Direction.class);
+		EnumMap<Direction, Integer> maxValueMap = new EnumMap<>(Direction.class);
+		EnumMap<Direction, Integer> diameterMap = new EnumMap<>(Direction.class);
+		
+		// Initialized entries into direction maps.
+		for (Direction direction : Direction.values()) {
+			minValueMap.put(direction, Integer.MAX_VALUE);
+			maxValueMap.put(direction, Integer.MIN_VALUE);
+		}
+		
+		Direction dir;
+		int v;
+		
+		// Iterate through all the voxels for the location to update minimum and
+		// maximum values in each direction.
+		for (Voxel voxel : voxels) {
+			int i = voxel.x - center.x;
+			int j = voxel.y - center.y;
 			
-			switch (dir) {
+			if (j == 0) { dir = Direction.X_DIRECTION; v = i; }
+			else if (i == 0) { dir = Direction.Y_DIRECTION; v = j; }
+			else if (i == j) { dir = Direction.POSITIVE_XY; v = i; }
+			else if (i == -j) { dir = Direction.NEGATIVE_XY; v = i; }
+			else { continue; }
+			
+			if (v > maxValueMap.get(dir)) { maxValueMap.put(dir, v); }
+			if (v < minValueMap.get(dir)) { minValueMap.put(dir, v); }
+		}
+		
+		ArrayList<Direction> directions = new ArrayList<>();
+		
+		// Calculate diameter in each direction and get minimum diameter.
+		int diameter;
+		int minimumDiameter = Integer.MAX_VALUE;
+		for (Direction direction : Direction.values()) {
+			diameter = maxValueMap.get(direction) - minValueMap.get(direction);
+			diameterMap.put(direction, diameter);
+			if (diameter < minimumDiameter) { minimumDiameter = diameter; }
+		}
+		
+		// Find all directions with the minimum diameter.
+		for (Direction direction : Direction.values()) {
+			if (diameterMap.get(direction) == minimumDiameter) { directions.add(direction); }
+		}
+		
+		// Randomly select one direction.
+		return directions.get(random.nextInt(directions.size()));
+	}
+	
+	/**
+	 * Splits the voxels in the location along a given direction.
+	 * 
+	 * @param direction  the direction of the shortest diameter
+	 * @param voxelsA  the container list for the first half of the split
+	 * @param voxelsB  the container list for the second half of the split
+	 * @param center  the center voxel
+	 * @param random  the seeded random number generator
+	 */
+	void splitVoxels(Direction direction, ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
+					 Voxel center, MersenneTwisterFast random) {
+		for (Voxel voxel : voxels) {
+			switch (direction) {
 				case X_DIRECTION:
-					if (x < min) { min = x; }
-					if (x > max) { max = x; }
+					if (voxel.x < center.x) { voxelsA.add(voxel); }
+					else if (voxel.x > center.x) { voxelsB.add(voxel); }
+					else {
+						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
+						else { voxelsB.add(voxel); }
+					}
 					break;
 				case Y_DIRECTION:
-					if (y < min) { min = y; }
-					if (y > max) { max = y; }
+					if (voxel.y < center.y) { voxelsA.add(voxel); }
+					else if (voxel.y > center.y) { voxelsB.add(voxel); }
+					else {
+						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
+						else { voxelsB.add(voxel); }
+					}
 					break;
 				case POSITIVE_XY:
-					if (x == y) {
-						if (x < min) { min = x; }
-						if (x > max) { max = x; }
+					if (voxel.x - center.x > voxel.y - center.y) { voxelsA.add(voxel); }
+					else if (voxel.x - center.x < voxel.y - center.y) { voxelsB.add(voxel); }
+					else {
+						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
+						else { voxelsB.add(voxel); }
 					}
 					break;
 				case NEGATIVE_XY:
-					if (x == -y) {
-						if (x < min) { min = x; }
-						if (x > max) { max = x; }
+					if (voxel.x - center.x > center.y - voxel.y) { voxelsA.add(voxel); }
+					else if (voxel.x - center.x < center.y - voxel.y) { voxelsB.add(voxel); }
+					else {
+						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
+						else { voxelsB.add(voxel); }
 					}
 					break;
 			}
-			
 		}
-		
-		return max - min;
 	}
 	
-	enum Direction { X_DIRECTION, Y_DIRECTION, POSITIVE_XY, NEGATIVE_XY }
+	/**
+	 * Connects voxels in the splits.
+	 * <p>
+	 * Checks that the voxels in each split are connected.
+	 * If not, then move the unconnected voxels into the other split.
+	 * 
+	 * @param voxelsA  the list for the first half of the split
+	 * @param voxelsB  the list for the second half of the split
+	 * @param random  the seeded random number generator
+	 */
+	static void connectVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
+							  MersenneTwisterFast random) {
+		// Check that both coordinate lists are simply connected.
+		ArrayList<Voxel> unconnectedA = checkVoxels(voxelsA, random, true);
+		ArrayList<Voxel> unconnectedB = checkVoxels(voxelsB, random, true);
+		
+		// If either coordinate list is not connected, attempt to connect them
+		// by adding in the unconnected coordinates of the other list.
+		while (unconnectedA != null || unconnectedB != null) {
+			ArrayList<Voxel> unconnectedAB = null;
+			ArrayList<Voxel> unconnectedBA = null;
+			
+			if (unconnectedA != null) { voxelsB.addAll(unconnectedA); }
+			unconnectedBA = checkVoxels(voxelsB, random, true);
+			
+			if (unconnectedB != null) { voxelsA.addAll(unconnectedB); }
+			unconnectedAB = checkVoxels(voxelsA, random,true);
+
+			unconnectedA = unconnectedAB;
+			unconnectedB = unconnectedBA;
+		}
+	}
 	
-	public PottsLocation splitCoord(Simulation sim) {
-		// Get center voxel.
-		PottsCoordinate center = getCenter();
+	/**
+	 * Balances voxels in the splits.
+	 * <p>
+	 * Checks that the number of voxels in each split are within a certain
+	 * difference.
+	 * If not, then add voxels from the larger split into the smaller split
+	 * such that both splits are still connected.
+	 * For small split sizes, there may not be a valid split that is both
+	 * connected and within the difference; in these cases, connectedness is
+	 * prioritized and the splits are returned not balanced.
+	 *
+	 * @param voxelsA  the list for the first half of the split
+	 * @param voxelsB  the list for the second half of the split
+	 * @param random  the seeded random number generator
+	 */
+	static void balanceVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
+							  MersenneTwisterFast random) {
+		int nA = voxelsA.size();
+		int nB = voxelsB.size();
 		
-		// Get diameters.
-		Direction shortestDirection = Direction.X_DIRECTION;
-//		int shortestDiameter = Integer.MAX_VALUE;
-//		
-//		for (Direction direction : Direction.values()) {
-//			int diameter = getDiameter(direction);
-//			if (diameter < shortestDiameter) {
-//				shortestDiameter = diameter;
-//				shortestDirection = direction;
-//			}
-//		}
-		
-		ArrayList<PottsCoordinate> coordinatesA = new ArrayList<>();
-		ArrayList<PottsCoordinate> coordinatesB = new ArrayList<>();
-				
-		for (PottsCoordinate coordinate : coordinates) {
-			if (coordinate.x < center.x) {
-				coordinatesA.add(coordinate);
-			}
-			else if (coordinate.x > center.x) {
-				coordinatesB.add(coordinate);
+		while (Math.abs(nA - nB) > BALANCE_DIFFERENCE) {
+			ArrayList<Voxel> fromVoxels, toVoxels;
+			
+			if (nA  > nB) {
+				fromVoxels = voxelsA;
+				toVoxels = voxelsB;
 			}
 			else {
-				coordinatesA.add(coordinate);
-				
+				fromVoxels = voxelsB;
+				toVoxels = voxelsA;
 			}
+			
+			// Get all valid neighbor voxels.
+			LinkedHashSet<Voxel> neighborSet = new LinkedHashSet<>();
+			for (Voxel voxel : toVoxels) {
+				for (int i = 0; i < 4; i++) {
+					Voxel neighbor = new Voxel( voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z);
+					if (!toVoxels.contains(neighbor)) { neighborSet.add(neighbor); }
+				}
+			}
+			
+			ArrayList<Voxel> neighborList = new ArrayList<>(neighborSet);
+			Simulation.shuffle(neighborList, random);
+			
+			// Select a neighbor to move from one list to the other.
+			boolean added = false;
+			ArrayList<Voxel> invalidCoords = new ArrayList<>();
+			for (Voxel voxel : neighborList) {
+				if (fromVoxels.contains(voxel)) {
+					toVoxels.add(voxel);
+					fromVoxels.remove(voxel);
+					
+					// Check that removal of coordinate does not cause the list
+					// to become unconnected.
+					ArrayList<Voxel> unconnected = checkVoxels(fromVoxels, random,false);
+					if (unconnected == null) {
+						added = true;
+						break;
+					}
+					else {
+						fromVoxels.add(voxel);
+						toVoxels.remove(voxel);
+						invalidCoords.add(voxel);
+					}
+				}
+			}
+			
+			if (!added) {
+				toVoxels.addAll(invalidCoords);
+				fromVoxels.removeAll(invalidCoords);
+				connectVoxels(voxelsA, voxelsB, random);
+				break;
+			}
+			
+			nA = voxelsA.size();
+			nB = voxelsB.size();
 		}
-		
-		// Check that both coordinate sets are simply connected.
-		
-		
-		
-		
-		if (sim.getRandom() < 0.5) {
-			coordinates = coordinatesA;
-
-			return new PottsLocation(coordinatesB);
-		} else {
-			coordinates = coordinatesB;
-			return new PottsLocation(coordinatesA);
-		}
-		// 
-		// 
-
-		
-		
-		
-		
-//		return null;
 	}
 	
+	/**
+	 * Checks voxels in the list for connectedness.
+	 * <p>
+	 * All the connected voxels from a random starting voxel are found and
+	 * marked as visited.
+	 * If there are no remaining unvisited voxels, then the list is fully
+	 * connected.
+	 * If there are, then the smaller of the visited or unvisited lists is
+	 * returned.
+	 * <p>
+	 * Some voxel lists may have more than one unconnected section.
+	 * 
+	 * @param voxels  the list of voxels
+	 * @param random  the seeded random number generator 
+	 * @param update  {@code true} if the voxel list should be updated, {@code false} otherwise
+	 * @return  a list of unconnected voxels, {@code null} if the list is connected
+	 */
+	static ArrayList<Voxel> checkVoxels(ArrayList<Voxel> voxels,
+												MersenneTwisterFast random, boolean update) {
+		ArrayList<Voxel> unvisited = new ArrayList<>(voxels);
+		ArrayList<Voxel> visited = new ArrayList<>();
+		ArrayList<Voxel> nextList;
+		LinkedHashSet<Voxel> nextSet;
+		LinkedHashSet<Voxel> currSet = new LinkedHashSet<>();
+		
+		currSet.add(unvisited.get(random.nextInt(unvisited.size())));
+		int currSize = currSet.size();
+		
+		while (currSize > 0) {
+			nextSet = new LinkedHashSet<>();
+			
+			// Iterate through each coordinate in current coordinate set.
+			for (Voxel voxel : currSet) {
+				nextList = new ArrayList<>();
+				
+				// Iterate through each connected direction from current voxel
+				// and add to neighbor list if it exists.
+				for (int i = 0; i < 4; i++) {
+					Voxel neighbor = new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z);
+					if (unvisited.contains(neighbor)) { nextList.add(neighbor); }
+				}
+				
+				// Updated next voxel set with list of neighbors.
+				nextSet.addAll(nextList);
+				visited.add(voxel);
+				unvisited.remove(voxel);
+			}
+			
+			currSet = nextSet;
+			currSize = currSet.size();
+		}
+		
+		// If not all coordinates have been visited, then the list of
+		// coordinates is not connected. 
+		if (unvisited.size() != 0) {
+			if (unvisited.size() > visited.size()) {
+				if (update) { voxels.removeAll(visited); }
+				return visited;
+			} else {
+				if (update) { voxels.removeAll(unvisited); }
+				return unvisited;
+			}
+		}
+		else { return null; }
+	}
+	
+	/**
+	 * Calculates perimeter of location.
+	 * 
+	 * @param id  the location id
+	 * @param array  the potts array
+	 * @return  the perimeter
+	 */
 	public int calculatePerimeter(int id, int[][][] array) {
 		int perimeter = 0;
 		
-		for (PottsCoordinate coordinate : coordinates) {
+		for (Voxel voxel : voxels) {
 			for (int i = 0; i < 4; i++) {
-				if (array[coordinate.z][coordinate.x+ MOVES_X[i]][coordinate.y + MOVES_Y[i]] != id) { perimeter++; }
+				if (array[voxel.z][voxel.x + MOVES_X[i]][voxel.y + MOVES_Y[i]] != id) { perimeter++; }
 			}
 		}
 		
 		return perimeter;
 	}
 	
-//	// Count number of sites in adjacency neighborhood.
-//	int sites = 0;
-//				for (int i = 0; i < 4; i++) {
-//		if (voxels[z][x + MOVES_X[i]][y + MOVES_Y[i]] == id) { sites++; }
-//	}
-//	
-				
-	public static ArrayList<PottsCoordinate> removeUnconnected(PottsLocation location, int[][][] array, int id) {
-		ArrayList<PottsCoordinate> connected = new ArrayList<>();
-		ArrayList<PottsCoordinate> unconnected = new ArrayList<>();
+	public static class Voxel {
+		/** Voxel x coordinate */
+		int x;
 		
-		for (PottsCoordinate coordinate : location.coordinates) {
-			int sites = 0;
-			for (int i = 0; i < 4; i++) {
-				if (array[coordinate.z][coordinate.x+ MOVES_X[i]][coordinate.y + MOVES_Y[i]] == id) { sites++; }
-			}
-			
-			if (sites == 0) { unconnected.add(coordinate); }
-			else { connected.add(coordinate); }
-		}
+		/** Voxel y coordinate */
+		int y;
 		
-		location.coordinates.removeAll(unconnected);
+		/** Voxel z coordinate */
+		int z;
 		
-		return unconnected;
-	}
-	
-	
-	public static class PottsCoordinate {
-		public int x, y, z;
-		public PottsCoordinate(int x, int y, int z) {
+		/**
+		 * Creates a {@code Voxel} at the given coordinates.
+		 * 
+		 * @param x  the x coordinate
+		 * @param y  the y coordinate
+		 * @param z  the z coordinate
+		 */
+		public Voxel(int x, int y, int z) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
 		}
 		
+		/**
+		 * Gets hash based on (x, y, z) coordinates.
+		 *
+		 * @return  the hash
+		 */
+		public final int hashCode() { return x + (y << 8) + (z << 16); }
+		
+		/**
+		 * Checks if two locations have the same (x, y, z) coordinates.
+		 *
+		 * @param obj  the voxel to compare
+		 * @return  {@code true} if voxels have the same coordinates, {@code false} otherwise
+		 */
 		public final boolean equals(Object obj) {
-			PottsCoordinate coord = (PottsCoordinate)obj;
-			return coord.x == x && coord.y == y && coord.z == z;
+			Voxel voxel = (Voxel)obj;
+			return voxel.x == x && voxel.y == y && voxel.z == z;
 		}
 	}
 }
