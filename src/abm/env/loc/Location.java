@@ -1,204 +1,88 @@
 package abm.env.loc;
 
-import sim.util.Bag;
+import ec.util.MersenneTwisterFast;
 
-import java.io.Serializable;
-
-/** 
- * A {@code Location} object defines agent coordinates within the environment.
- * <p>
- * Each agent has a {@code Location} that identifies where they are within the
- * {@link abm.env.grid.Grid} (relative to other agents) and the
- * {@link abm.env.lat.Lattice} (local molecule concentrations).
- * The term <em>location</em> is used for {@link abm.env.grid.Grid} while the
- * term <em>position</em> is used for {@link abm.env.lat.Lattice}.
- * <p>
- * There may be multiple <em>positions</em> within the same <em>location</em>
- * (therefore there may be more than one agent per location, but there should
- * only be one agent per location/position pair).
- * For example, in the hexagonal grid, each hexagon is a <em>location</em>.
- * Within each hexagon there are six corresponding triangular lattice
- * <em>positions</em>.
- * There may be multiple agents in a given hexagon, but each cell within that
- * hexagon is associated with a specific unique triangular position.
- * Therefore, there can be no more than six agents per hexagonal location.
- * <p>
- * Regardless of geometry, the center of the model (both in the XY and Z
- * directions) should have {@link abm.env.grid.Grid} location coordinate
- * (0,0,0) or (0,0,0,0).
- * {@link abm.env.lat.Lattice} arrays cannot have negative indices, so (0,0,0)
- * is located at the top left of the 2D array and the bottom layer of the 3D
- * stack.
- * 
- * @version 2.3.1
- * @since   2.2
- */
-
-public interface Location extends Serializable {
+public interface Location {
 	/**
-	 * Sets the position of an object within the location.
-	 * 
-	 * @param position  the object position
-	 */
-	void setPosition(byte position);
-	
-	/**
-	 * Gets the position of an object.
-	 * 
-	 * @return  the object position
-	 */
-	byte getPosition();
-	
-	/**
-	 * Updates the location of an object to match the given location
-	 * 
-	 * @param newLoc  the new location
-	 */
-	void updateLocation(Location newLoc);
-	
-	/**
-	 * Gets the location of the neighbors to the current location
-	 * 
-	 * @return  the list of neighbor locations
-	 */
-	Bag getNeighborLocations();
-	
-	/**
-	 * Gets the coordinates in the {@link abm.env.grid.Grid}.
-	 * <p>
-	 * These are not necessarily the same as the {@link abm.env.lat.Lattice}
-	 * coordinates.
-	 * 
-	 * @return  the grid coordinates
-	 */
-	int[] getGridLocation();
-	
-	/**
-	 * Gets the z axis coordinate in the {@link abm.env.grid.Grid}.
-	 * 
-	 * @return  the z coordinate
-	 */
-	int getGridZ();
-	
-	/**
-	 * Gets the main coordinates in the {@link abm.env.lat.Lattice}.
-	 * <p>
-	 * These are not necessarily the same as the {@link abm.env.grid.Grid}
-	 * coordinates.
+	 * Adds a voxel at the given coordinates.
 	 *
-	 * @return  the lattice coordinates
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
 	 */
-	int[] getLatLocation();
-	
-	/** Gets all coordinates in the {@link abm.env.lat.Lattice} that correspond
-	 * to the {@link abm.env.grid.Grid} location.
-	 * 
-	 * @return  the array of lattice coordinates
-	 */
-	int[][] getLatLocations();
+	void add(int x, int y, int z);
 	
 	/**
-	 * Gets the z axis coordinate in the {@link abm.env.lat.Lattice}.
-	 * 
-	 * @return  the z coordinate
-	 */
-	int getLatZ();
-	
-	/**
-	 * Gets a new instance of the {@code Location} object.
-	 * <p>
-	 * The {@code Location} object is used for hashing.
-	 * 
-	 * @return  a copy of the {@code Location}
-	 */
-	Location getCopy();
-	
-	/**
-	 * Gets the {@link abm.env.grid.Grid} size in the xy plane.
-	 * 
-	 * @return  the grid size
-	 */
-	double getGridSize();
-	
-	/**
-	 * Gets the {@link abm.env.lat.Lattice} size in the xy plane.
+	 * Removes the voxel at the given coordinates.
 	 *
-	 * @return  the lattice size
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
 	 */
-	double getLatSize();
+	void remove(int x, int y, int z);
 	
 	/**
-	 * Gets the {@link abm.env.grid.Grid}/{@link abm.env.lat.Lattice} size in
-	 * the z plane.
-	 * 
-	 * @return  the grid/lattice height
-	 */
-	double getHeight();
-	
-	/**
-	 * Gets the area of the location.
-	 * 
-	 * @return  the location area
-	 */
-	double getArea();
-	
-	/**
-	 * Gets the volume of the location.
-	 * 
-	 * @return  the location volume
-	 */
-	double getVolume();
-	
-	/**
-	 * Gets the {@link abm.env.grid.Grid} offset relative to the
-	 * {@link abm.env.lat.Lattice}.
-	 * 
-	 * @return  the offset
-	 */
-	byte getOffset();
-	
-	/**
-	 * Calculates the perimeter of a cell occupying the location.
-	 * 
-	 * @param f  the fraction of total volume 
-	 * @return  the perimeter of the cell
-	 */
-	double calcPerimeter(double f);
-	
-	/**
-	 * Gets the ratio of the {@link abm.env.grid.Grid} z to xy sizes.
-	 * 
-	 * @return  the size ratio
-	 */
-	double getRatio();
-	
-	/**
-	 * Gets the maximum occupancy of a location.
-	 * 
-	 * @return  the maximum occupancy
-	 */
-	int getMax();
-	
-	/**
-	 * Gets the distance of the location from the center.
-	 * 
-	 * @return  the distance
-	 */
-	int getRadius();
-	
-	/**
-	 * Converts {@link abm.env.lat.Lattice} coordinates into a
-	 * {@link abm.env.grid.Grid} location.
-	 * 
-	 * @param coords  the lattice coordinates
-	 * @return  the corresponding grid location
-	 */
-	Location toLocation(int[] coords);
-	
-	/**
-	 * Represents object as a JSON entry.
+	 * Updates the array for the location.
 	 *
-	 * @return  the JSON string
+	 * @param array  the potts array
+	 * @param id  the location id
 	 */
-	String toJSON();
+	void update(int[][][] array, int id);
+	
+	/**
+	 * Splits the location voxels into two lists.
+	 *
+	 * @param random  the seeded random number generator
+	 * @return  a list of voxels
+	 */
+	PottsLocation split(MersenneTwisterFast random);
+	
+	/**
+	 * Gets the voxel at the center of the location.
+	 *
+	 * @return  the center voxel
+	 */
+	Voxel getCenter();
+	
+	class Voxel {
+		/** Voxel x coordinate */
+		int x;
+		
+		/** Voxel y coordinate */
+		int y;
+		
+		/** Voxel z coordinate */
+		int z;
+		
+		/**
+		 * Creates a {@code Voxel} at the given coordinates.
+		 *
+		 * @param x  the x coordinate
+		 * @param y  the y coordinate
+		 * @param z  the z coordinate
+		 */
+		public Voxel(int x, int y, int z) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+		}
+		
+		/**
+		 * Gets hash based on (x, y, z) coordinates.
+		 *
+		 * @return  the hash
+		 */
+		public final int hashCode() { return x + (y << 8) + (z << 16); }
+		
+		/**
+		 * Checks if two locations have the same (x, y, z) coordinates.
+		 *
+		 * @param obj  the voxel to compare
+		 * @return  {@code true} if voxels have the same coordinates, {@code false} otherwise
+		 */
+		public final boolean equals(Object obj) {
+			Voxel voxel = (Voxel)obj;
+			return voxel.x == x && voxel.y == y && voxel.z == z;
+		}
+	}
 }
