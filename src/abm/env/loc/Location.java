@@ -40,7 +40,7 @@ public interface Location {
 	/**
 	 * Gets the voxel at the center of the location.
 	 *
-	 * @return  the center voxel
+	 * @return  the center voxel, returns {@code null} if there are no voxels
 	 */
 	Voxel getCenter();
 	
@@ -83,6 +83,10 @@ public interface Location {
 		public final boolean equals(Object obj) {
 			Voxel voxel = (Voxel)obj;
 			return voxel.x == x && voxel.y == y && voxel.z == z;
+		}
+		
+		public String toString() {
+			return String.format("[%d, %d, %d]", x, y, z);
 		}
 	}
 }

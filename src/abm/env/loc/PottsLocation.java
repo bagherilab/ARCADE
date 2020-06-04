@@ -25,7 +25,7 @@ public class PottsLocation implements Location {
 		/** Direction along the positive xy axis (x = y) */
 		POSITIVE_XY,
 		
-		/** Direction along the negative xy axis (x  = -y) */
+		/** Direction along the negative xy axis (x = -y) */
 		NEGATIVE_XY
 	}
 	
@@ -91,7 +91,10 @@ public class PottsLocation implements Location {
 		}
 	}
 	
-	public Voxel getCenter() { return new Voxel(getCenterX(), getCenterY(), getCenterZ()); }
+	public Voxel getCenter() {
+		if (voxels.size() == 0) { return null; }
+		return new Voxel(getCenterX(), getCenterY(), getCenterZ());
+	}
 	
 	/**
 	 * Gets the x coordinate of the voxel at the center of the location.
@@ -127,17 +130,15 @@ public class PottsLocation implements Location {
 	}
 	
 	/**
-	 * Gets the direction of the shortest diameter in the location.
+	 * Calculates diameters in each direction.
 	 * 
-	 * @param random  the seeded random number generator
-	 * @return  the direction of the shortest diameter
+	 * @return  the map of direction to diameter
 	 */
-	Direction getDirection(MersenneTwisterFast random) {
+	EnumMap<Direction, Integer> getDiameters() {
 		Voxel center = getCenter();
 		
 		EnumMap<Direction, Integer> minValueMap = new EnumMap<>(Direction.class);
 		EnumMap<Direction, Integer> maxValueMap = new EnumMap<>(Direction.class);
-		EnumMap<Direction, Integer> diameterMap = new EnumMap<>(Direction.class);
 		
 		// Initialized entries into direction maps.
 		for (Direction direction : Direction.values()) {
@@ -154,7 +155,18 @@ public class PottsLocation implements Location {
 			int i = voxel.x - center.x;
 			int j = voxel.y - center.y;
 			
-			if (j == 0) { dir = Direction.X_DIRECTION; v = i; }
+			// Need to update all directions if at the center.
+			if (i == 0 && j == 0) {
+				v = 0;
+				
+				for (Direction direction : Direction.values()) {
+					if (v > maxValueMap.get(direction)) { maxValueMap.put(direction, v); }
+					if (v < minValueMap.get(direction)) { minValueMap.put(direction, v); }
+				}
+				
+				continue;
+			}
+			else if (j == 0) { dir = Direction.X_DIRECTION; v = i; }
 			else if (i == 0) { dir = Direction.Y_DIRECTION; v = j; }
 			else if (i == j) { dir = Direction.POSITIVE_XY; v = i; }
 			else if (i == -j) { dir = Direction.NEGATIVE_XY; v = i; }
@@ -164,23 +176,41 @@ public class PottsLocation implements Location {
 			if (v < minValueMap.get(dir)) { minValueMap.put(dir, v); }
 		}
 		
+		EnumMap<Direction, Integer> diameterMap = new EnumMap<>(Direction.class);
+		
+		// Calculate diameter in each direction.
+		for (Direction direction : Direction.values()) {
+			int diameter = maxValueMap.get(direction) - minValueMap.get(direction) + 1;
+			diameterMap.put(direction, diameter);
+		}
+		
+		return diameterMap;
+	}
+	
+	/**
+	 * Gets the direction of the shortest diameter in the location.
+	 * 
+	 * @param random  the seeded random number generator
+	 * @return  the direction of the shortest diameter
+	 */
+	Direction getDirection(MersenneTwisterFast random) {
+		EnumMap<Direction, Integer> diameters = getDiameters();
 		ArrayList<Direction> directions = new ArrayList<>();
 		
-		// Calculate diameter in each direction and get minimum diameter.
+		// Determine minimum diameter.
 		int diameter;
 		int minimumDiameter = Integer.MAX_VALUE;
 		for (Direction direction : Direction.values()) {
-			diameter = maxValueMap.get(direction) - minValueMap.get(direction);
-			diameterMap.put(direction, diameter);
+			diameter = diameters.get(direction);
 			if (diameter < minimumDiameter) { minimumDiameter = diameter; }
 		}
 		
 		// Find all directions with the minimum diameter.
 		for (Direction direction : Direction.values()) {
-			if (diameterMap.get(direction) == minimumDiameter) { directions.add(direction); }
+			if (diameters.get(direction) == minimumDiameter) { directions.add(direction); }
 		}
 		
-		// Randomly select one direction.
+		// Randomly select one direction with the minimum diameter.
 		return directions.get(random.nextInt(directions.size()));
 	}
 	
@@ -198,14 +228,6 @@ public class PottsLocation implements Location {
 		for (Voxel voxel : voxels) {
 			switch (direction) {
 				case X_DIRECTION:
-					if (voxel.x < center.x) { voxelsA.add(voxel); }
-					else if (voxel.x > center.x) { voxelsB.add(voxel); }
-					else {
-						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
-						else { voxelsB.add(voxel); }
-					}
-					break;
-				case Y_DIRECTION:
 					if (voxel.y < center.y) { voxelsA.add(voxel); }
 					else if (voxel.y > center.y) { voxelsB.add(voxel); }
 					else {
@@ -213,17 +235,25 @@ public class PottsLocation implements Location {
 						else { voxelsB.add(voxel); }
 					}
 					break;
+				case Y_DIRECTION:
+					if (voxel.x < center.x) { voxelsA.add(voxel); }
+					else if (voxel.x > center.x) { voxelsB.add(voxel); }
+					else {
+						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
+						else { voxelsB.add(voxel); }
+					}
+					break;
 				case POSITIVE_XY:
-					if (voxel.x - center.x > voxel.y - center.y) { voxelsA.add(voxel); }
-					else if (voxel.x - center.x < voxel.y - center.y) { voxelsB.add(voxel); }
+					if (voxel.x - center.x > center.y - voxel.y) { voxelsA.add(voxel); }
+					else if (voxel.x - center.x < center.y - voxel.y) { voxelsB.add(voxel); }
 					else {
 						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
 						else { voxelsB.add(voxel); }
 					}
 					break;
 				case NEGATIVE_XY:
-					if (voxel.x - center.x > center.y - voxel.y) { voxelsA.add(voxel); }
-					else if (voxel.x - center.x < center.y - voxel.y) { voxelsB.add(voxel); }
+					if (voxel.x - center.x > voxel.y - center.y) { voxelsA.add(voxel); }
+					else if (voxel.x - center.x < voxel.y - center.y) { voxelsB.add(voxel); }
 					else {
 						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
 						else { voxelsB.add(voxel); }
@@ -260,7 +290,7 @@ public class PottsLocation implements Location {
 			
 			if (unconnectedB != null) { voxelsA.addAll(unconnectedB); }
 			unconnectedAB = checkVoxels(voxelsA, random,true);
-
+			
 			unconnectedA = unconnectedAB;
 			unconnectedB = unconnectedBA;
 		}
@@ -289,7 +319,7 @@ public class PottsLocation implements Location {
 		while (Math.abs(nA - nB) > BALANCE_DIFFERENCE) {
 			ArrayList<Voxel> fromVoxels, toVoxels;
 			
-			if (nA  > nB) {
+			if (nA > nB) {
 				fromVoxels = voxelsA;
 				toVoxels = voxelsB;
 			}
