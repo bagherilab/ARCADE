@@ -9,6 +9,9 @@ import abm.env.grid.Grid;
 
 public class PottsTest {
 	private static final double EPSILON = 1E-4;
+	Series seriesMock = mock(Series.class);
+	Grid gridMock = mock(Grid.class);
+	Potts pottsMock = new Potts(seriesMock, gridMock);
 	Potts potts;
 	
 	@Before
@@ -43,7 +46,7 @@ public class PottsTest {
 			for (int j = 0; j < n; j++) {
 				when(c.getAdhesion(j)).thenReturn(adhesions[pops[i] - 1][j]);
 			}
-
+			
 			when(grid.getObjectAt(i + 1)).thenReturn(c);
 		}
 		
@@ -64,47 +67,55 @@ public class PottsTest {
 	}
 	
 	@Test
-	public void testAdhesion() {
-		// Individual adhesion energies.
+	public void getAdhesion_validIDs_calculatesValue() {
 		assertEquals(96, potts.getAdhesion(0, 2, 2, 0), EPSILON);
 		assertEquals(56, potts.getAdhesion(1, 2, 2, 0), EPSILON);
 		assertEquals(76, potts.getAdhesion(2, 2, 2, 0), EPSILON);
 		assertEquals(60, potts.getAdhesion(3, 2, 2, 0), EPSILON);
-		
-		// Changes in adhesion energy.
+	}
+	
+	@Test
+	public void getDeltaAdhesion_validIDs_calculatesValue() {
 		assertEquals(20, potts.getDeltaAdhesion(1, 2, 2, 2, 0), EPSILON);
 		assertEquals(40, potts.getDeltaAdhesion(1, 0, 2, 2, 0), EPSILON);
 	}
 	
 	@Test
-	public void testVolume() {
-		// Individual volume energies.
+	public void getVolume_validIDsNotMedia_calculatesValue() {
 		assertEquals(40, potts.getVolume(1, 0), EPSILON);
 		assertEquals(90, potts.getVolume(1, 1), EPSILON);
 		assertEquals(10, potts.getVolume(1, -1), EPSILON);
-		
-		// Media volume energies should all be zero.
-		assertEquals(0, potts.getVolume(0, 1), EPSILON);
-		assertEquals(0, potts.getVolume(0, 0), EPSILON);
-		assertEquals(0, potts.getVolume(0, -1), EPSILON);
-		
-		// Changes in volume energy.
-		assertEquals(-40, potts.getDeltaVolume(1, 2), EPSILON);
 	}
 	
 	@Test
-	public void testPerimeter() {
-		// Individual perimeter energies.
+	public void getVolume_mediaID_returnsZero() {
+		assertEquals(0, potts.getVolume(0, 1), EPSILON);
+		assertEquals(0, potts.getVolume(0, 0), EPSILON);
+		assertEquals(0, potts.getVolume(0, -1), EPSILON);
+	}
+	
+	@Test
+	public void getDeltaVolume_validIDs_calculatesValue() {
+		assertEquals(-40, potts.getDeltaVolume(1, 2), EPSILON);
+		assertEquals(80, potts.getDeltaVolume(2, 1), EPSILON);
+	}
+	
+	@Test
+	public void getPerimeter_validIDsNotMedia_calculatesValue() {
 		assertEquals(0, potts.getPerimeter(1, 0), EPSILON);
 		assertEquals(-6, potts.getPerimeter(1, 1), EPSILON);
 		assertEquals(10, potts.getPerimeter(1, -1), EPSILON);
-		
-		// Media perimeter energies should all be zero.
+	}
+	
+	@Test
+	public void getPerimeter_mediaID_returnsZero() {
 		assertEquals(0, potts.getPerimeter(0, 1), EPSILON);
 		assertEquals(0, potts.getPerimeter(0, 0), EPSILON);
 		assertEquals(0, potts.getPerimeter(0, -1), EPSILON);
-		
-		// Changes in perimeter energy.
+	}
+	
+	@Test
+	public void getDeltaPerimeter_validIDs_calculatesValue() {
 		assertEquals(-24, potts.getDeltaPerimeter(1, 2, 2, 2, 0), EPSILON);
 		assertEquals(0, potts.getDeltaPerimeter(1, 0, 2, 2, 0), EPSILON);
 	}
@@ -115,157 +126,172 @@ public class PottsTest {
 	}
 	
 	@Test
-	public void testConnectivity() {
-		Series series = mock(Series.class);
-		Grid grid = mock(Grid.class);
-		Potts potts = new Potts(series, grid);
-		
-		// 0 neighbors = never connected
-		assertFalse(checkConnectivity(potts, new int[][] {
+	public void getConnectivity_zeroNeighbors_returnsFalse() {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 0, 2, 0 },
 				{ 0, 0, 0 } }));
-		
-		// 1 neighbor = always connected
-		assertTrue(checkConnectivity(potts, new int[][] {
+	}
+	
+	@Test
+	public void getConnectivity_oneNeighbor_returnsTrue() {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 0 },
 				{ 0, 2, 0 },
 				{ 0, 0, 0 } }));
-		assertTrue(checkConnectivity(potts, new int[][] {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 0, 2, 0 },
 				{ 0, 1, 0 } }));
-		assertTrue(checkConnectivity(potts, new int[][] {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 1, 2, 0 },
 				{ 0, 0, 0 } }));
-		assertTrue(checkConnectivity(potts, new int[][] {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 0, 2, 1 },
 				{ 0, 0, 0 } }));
-		
-		// 2 neighbors = not connected if opposite
-		assertFalse(checkConnectivity(potts, new int[][] {
+	}
+	
+	@Test
+	public void getConnectivity_twoNeighborsOpposite_returnsFalse() {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 1, 2, 1 },
 				{ 0, 0, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 0 },
 				{ 0, 2, 0 },
 				{ 0, 1, 0 } }));
-		
-		// 2 neighbors = not connected if corner-adjacent, but not corner
-		assertFalse(checkConnectivity(potts, new int[][] {
+	}
+	
+	@Test
+	public void getConnectivity_twoNeighborsCornerAdjacentNoCorner_returnsFalse() {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 0 },
 				{ 1, 2, 0 },
 				{ 0, 0, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 0 },
 				{ 0, 2, 1 },
 				{ 0, 0, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 0, 2, 1 },
 				{ 0, 1, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 1, 2, 0 },
 				{ 0, 1, 0 } }));
-		
-		// 2 neighbors = connected if corner-adjacent and corner
-		assertTrue(checkConnectivity(potts, new int[][] {
+	}
+	
+	@Test
+	public void getConnectivity_twoNeighborsCornerAdjacentWithCorner_returnsTrue() {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 1, 1, 0 },
 				{ 1, 2, 0 },
 				{ 0, 0, 0 } }));
-		assertTrue(checkConnectivity(potts, new int[][] {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 1 },
 				{ 0, 2, 1 },
 				{ 0, 0, 0 } }));
-		assertTrue(checkConnectivity(potts, new int[][] {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 0, 2, 1 },
 				{ 0, 1, 1 } }));
-		assertTrue(checkConnectivity(potts, new int[][] {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 1, 2, 0 },
 				{ 1, 1, 0 } }));
-		
-		// 3 neighbors = not connected if neither corner
-		assertFalse(checkConnectivity(potts, new int[][] {
+	}
+	
+	@Test
+	public void getConnectivity_threeNeighborsNeitherCorner_returnsFalse() {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 0 },
 				{ 1, 2, 0 },
 				{ 0, 1, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 0 },
 				{ 1, 2, 1 },
 				{ 0, 0, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 0 },
 				{ 0, 2, 1 },
 				{ 0, 1, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 1, 2, 1 },
 				{ 0, 1, 0 } }));
-		
-		// 3 neighbors = not connected if only one corner
-		assertFalse(checkConnectivity(potts, new int[][] {
+	}
+	
+	@Test
+	public void getConnectivity_threeNeighborsOnlyOneCorner_returnsFalse() {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 1, 1, 0 },
 				{ 1, 2, 0 },
 				{ 0, 1, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 0 },
 				{ 1, 2, 0 },
 				{ 1, 1, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 1 },
 				{ 1, 2, 1 },
 				{ 0, 0, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 1, 1, 0 },
 				{ 1, 2, 1 },
 				{ 0, 0, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 0 },
 				{ 0, 2, 1 },
 				{ 0, 1, 1 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 1 },
 				{ 0, 2, 1 },
 				{ 0, 1, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 1, 2, 1 },
 				{ 1, 1, 0 } }));
-		assertFalse(checkConnectivity(potts, new int[][] {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 1, 2, 1 },
 				{ 0, 1, 1 } }));
-		
-		// 3 neighbors = connected if both corners
-		assertTrue(checkConnectivity(potts, new int[][] {
+	}
+	
+	@Test
+	public void getConnectivity_threeNeighborsBothCorners_returnsTrue() {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 1, 1, 0 },
 				{ 1, 2, 0 },
 				{ 1, 1, 0 } }));
-		assertTrue(checkConnectivity(potts, new int[][] {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 1, 1, 1 },
 				{ 1, 2, 1 },
 				{ 0, 0, 0 } }));
-		assertTrue(checkConnectivity(potts, new int[][] {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 1 },
 				{ 0, 2, 1 },
 				{ 0, 1, 1 } }));
-		assertTrue(checkConnectivity(potts, new int[][] {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 0, 0 },
 				{ 1, 2, 1 },
 				{ 1, 1, 1 } }));
-		
-		// 4 neighbors = cannot modify (unless id is 0)
-		assertFalse(checkConnectivity(potts, new int[][] {
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsNonMedia_returnsFalse() {
+		assertFalse(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 0 },
 				{ 1, 2, 1 },
 				{ 0, 1, 0 } }));
-		assertTrue(checkConnectivity(potts, new int[][] {
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsMedia_returnsTrue() {
+		assertTrue(checkConnectivity(pottsMock, new int[][] {
 				{ 0, 1, 0 },
 				{ 1, 0, 1 },
 				{ 0, 1, 0 } }));
