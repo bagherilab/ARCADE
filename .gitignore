@@ -1,0 +1,7 @@
+*.iml
+*.jar
+*.idea
+bin/
+lib/
+.DS_Store
+MANIFEST.MF
