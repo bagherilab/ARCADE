@@ -1,0 +1,3422 @@
+<set prefix="POPULATION_HETEROGENEITY_" path="/path/for/output/">
+    <series name="colony_X_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="X" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_X_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="X" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_X_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="X" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_X_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="X" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_X_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="X" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_X_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="X" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_A_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="A" populations="1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_A_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="A" populations="1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_A_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="A" populations="1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_A_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="A" populations="1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_A_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="A" populations="1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_A_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="A" populations="1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_B_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="B" populations="2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_B_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="B" populations="2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_B_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="B" populations="2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_B_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="B" populations="2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_B_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="B" populations="2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_B_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="B" populations="2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_C_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="C" populations="3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_C_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="C" populations="3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_C_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="C" populations="3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_C_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="C" populations="3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_C_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="C" populations="3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_C_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="C" populations="3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XA_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XA" populations="0,1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XA_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XA" populations="0,1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XA_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XA" populations="0,1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XA_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XA" populations="0,1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XA_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XA" populations="0,1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XA_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XA" populations="0,1" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XB_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XB" populations="0,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XB_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XB" populations="0,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XB_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XB" populations="0,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XB_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XB" populations="0,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XB_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XB" populations="0,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XB_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XB" populations="0,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XC_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XC" populations="0,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XC_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XC" populations="0,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XC_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XC" populations="0,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XC_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XC" populations="0,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XC_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XC" populations="0,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XC_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XC" populations="0,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AB_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AB" populations="1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AB_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AB" populations="1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AB_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AB" populations="1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AB_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AB" populations="1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AB_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AB" populations="1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AB_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AB" populations="1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AC_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AC" populations="1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AC_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AC" populations="1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AC_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AC" populations="1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AC_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AC" populations="1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AC_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AC" populations="1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_AC_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="AC" populations="1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_BC_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="BC" populations="2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_BC_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="BC" populations="2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_BC_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="BC" populations="2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_BC_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="BC" populations="2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_BC_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="BC" populations="2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_BC_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="BC" populations="2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAB_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAB" populations="0,1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAB_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAB" populations="0,1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAB_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAB" populations="0,1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAB_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAB" populations="0,1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAB_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAB" populations="0,1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAB_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAB" populations="0,1,2" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAC_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAC" populations="0,1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAC_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAC" populations="0,1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAC_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAC" populations="0,1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAC_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAC" populations="0,1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAC_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAC" populations="0,1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XAC_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XAC" populations="0,1,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_ABC_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="ABC" populations="1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_ABC_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="ABC" populations="1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_ABC_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="ABC" populations="1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_ABC_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="ABC" populations="1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_ABC_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="ABC" populations="1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_ABC_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="ABC" populations="1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XBC_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XBC" populations="0,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XBC_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XBC" populations="0,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XBC_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XBC" populations="0,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XBC_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XBC" populations="0,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XBC_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XBC" populations="0,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XBC_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XBC" populations="0,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XABC_00" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.0" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XABC" populations="0,1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XABC_10" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.1" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XABC" populations="0,1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XABC_20" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.2" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XABC" populations="0,1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XABC_30" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.3" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XABC" populations="0,1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XABC_40" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.4" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XABC" populations="0,1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="colony_XABC_50" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="XABC" populations="0,1,2,3" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+</set>

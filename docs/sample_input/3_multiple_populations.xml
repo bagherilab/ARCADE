@@ -1,0 +1,24 @@
+<set prefix="3_" path="/path/to/output/">
+    <series name="multiple_populations" days="2">
+        <simulation type="growth" radius="4" margin="2">
+        	<profilers>
+			    <profiler type="growth" interval="720" suffix="" />
+			</profilers>
+        </simulation>
+        <agents initialization="3">
+        	<populations>
+        		<population type="H" fraction="0.8">
+                    <modules>
+                        <module type="metabolism" version="simple" />
+                        <module type="signaling" version="random" />
+                    </modules>
+                </population>
+                <population type="H" fraction="0.2">
+                    <variables>
+                        <variable id="MAX_HEIGHT" scale="2" />
+                    </variables>
+                </population>
+        	</populations>
+        </agents>
+    </series>
+</set>

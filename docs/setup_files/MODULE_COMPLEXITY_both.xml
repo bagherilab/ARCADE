@@ -1,0 +1,322 @@
+<set prefix="MODULE_COMPLEXITY_" path="/path/for/output/">
+    <series name="both_C_C" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="C" />
+                        <module type="signaling" version="C" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_M_C" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="M" />
+                        <module type="signaling" version="C" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_S_C" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="S" />
+                        <module type="signaling" version="C" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_R_C" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="R" />
+                        <module type="signaling" version="C" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_C_M" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="C" />
+                        <module type="signaling" version="M" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_M_M" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="M" />
+                        <module type="signaling" version="M" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_S_M" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="S" />
+                        <module type="signaling" version="M" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_R_M" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="R" />
+                        <module type="signaling" version="M" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_C_S" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="C" />
+                        <module type="signaling" version="S" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_M_S" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="M" />
+                        <module type="signaling" version="S" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_S_S" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="S" />
+                        <module type="signaling" version="S" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_R_S" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="R" />
+                        <module type="signaling" version="S" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_C_R" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="C" />
+                        <module type="signaling" version="R" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_M_R" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="M" />
+                        <module type="signaling" version="R" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_S_R" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="S" />
+                        <module type="signaling" version="R" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="both_R_R" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="R" />
+                        <module type="signaling" version="R" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+</set>

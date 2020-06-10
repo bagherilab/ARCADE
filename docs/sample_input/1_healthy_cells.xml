@@ -1,0 +1,14 @@
+<set prefix="1_" path="/path/to/output/">
+    <series name="healthy_cells" days="2">
+        <simulation type="growth" radius="4" margin="2">
+        	<profilers>
+			    <profiler type="growth" interval="720" suffix="" />
+			</profilers>
+        </simulation>
+        <agents initialization="4">
+        	<populations>
+        		<population type="H" fraction="1.0" />
+        	</populations>
+        </agents>
+    </series>
+</set>

@@ -1,0 +1,82 @@
+<set prefix="MODULE_COMPLEXITY_" path="/path/for/output/">
+    <series name="signaling_C" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="C" />
+                        <module type="signaling" version="C" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="signaling_M" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="C" />
+                        <module type="signaling" version="M" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="signaling_S" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="C" />
+                        <module type="signaling" version="S" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+    <series name="signaling_R" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="C" />
+                        <module type="signaling" version="R" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+</set>
