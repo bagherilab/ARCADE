@@ -5,10 +5,10 @@ import sim.util.Bag;
 
 public class PottsGrid implements Grid {
 	/** Map of ID to object */
-	private HashMap<Integer, Object> objects;
+	final HashMap<Integer, Object> objects;
 	
 	/** Collection of all objects in the grid */
-	private Bag allObjects;
+	final Bag allObjects;
 	
 	/**
 	 * Creates a {@link arcade.env.grid.Grid} for potts.
@@ -22,6 +22,7 @@ public class PottsGrid implements Grid {
 	public Bag getAllObjects() { return allObjects; }
 	
 	public void addObject(int id, Object obj) {
+		if (objects.containsKey(id)) { return; }
 		allObjects.add(obj);
 		objects.put(id, obj);
 	}
