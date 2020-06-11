@@ -41,6 +41,13 @@ public class PottsGridTest {
 	}
 	
 	@Test
+	public void addObject_nullObject_doesNothing() {
+		PottsGrid grid = new PottsGrid();
+		grid.addObject(1, null);
+		assertEquals(1, grid.allObjects.size());
+	}
+	
+	@Test
 	public void removeObject_existingID_updatesObject() {
 		PottsGrid grid = new PottsGrid();
 		grid.addObject(1, objectA);

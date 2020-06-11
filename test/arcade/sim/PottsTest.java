@@ -25,8 +25,8 @@ public class PottsTest {
 		};
 		double[] volumes = new double[] { 4, 2, 3 };
 		double[] targetVolumes = new double[] { 2, 3, 3 };
-		double[] perimeters = new double[] { 8, 6, 7 };
-		double[] targetPerimeters = new double[] { 10, 10, 7 };
+		double[] surfaces = new double[] { 8, 6, 7 };
+		double[] targetSurfaces = new double[] { 10, 10, 7 };
 		
 		int n = 3;
 		
@@ -37,11 +37,11 @@ public class PottsTest {
 			when(c.getVolume()).thenReturn(volumes[i]);
 			when(c.getTargetVolume()).thenReturn(targetVolumes[i]);
 			
-			when(c.getPerimeter()).thenReturn(perimeters[i]);
-			when(c.getTargetPerimeter()).thenReturn(targetPerimeters[i]);
+			when(c.getSurface()).thenReturn(surfaces[i]);
+			when(c.getTargetSurface()).thenReturn(targetSurfaces[i]);
 			
 			when(c.getLambda(LAMBDA_VOLUME)).thenReturn(10.0);
-			when(c.getLambda(LAMBDA_PERIMETER)).thenReturn(2.0);
+			when(c.getLambda(LAMBDA_SURFACE)).thenReturn(2.0);
 			
 			for (int j = 0; j < n; j++) {
 				when(c.getAdhesion(j)).thenReturn(adhesions[pops[i] - 1][j]);
@@ -101,23 +101,23 @@ public class PottsTest {
 	}
 	
 	@Test
-	public void getPerimeter_validIDsNotMedia_calculatesValue() {
-		assertEquals(0, potts.getPerimeter(1, 0), EPSILON);
-		assertEquals(-6, potts.getPerimeter(1, 1), EPSILON);
-		assertEquals(10, potts.getPerimeter(1, -1), EPSILON);
+	public void getSurface_validIDsNotMedia_calculatesValue() {
+		assertEquals(0, potts.getSurface(1, 0), EPSILON);
+		assertEquals(-6, potts.getSurface(1, 1), EPSILON);
+		assertEquals(10, potts.getSurface(1, -1), EPSILON);
 	}
 	
 	@Test
-	public void getPerimeter_mediaID_returnsZero() {
-		assertEquals(0, potts.getPerimeter(0, 1), EPSILON);
-		assertEquals(0, potts.getPerimeter(0, 0), EPSILON);
-		assertEquals(0, potts.getPerimeter(0, -1), EPSILON);
+	public void getSurface_mediaID_returnsZero() {
+		assertEquals(0, potts.getSurface(0, 1), EPSILON);
+		assertEquals(0, potts.getSurface(0, 0), EPSILON);
+		assertEquals(0, potts.getSurface(0, -1), EPSILON);
 	}
 	
 	@Test
-	public void getDeltaPerimeter_validIDs_calculatesValue() {
-		assertEquals(-24, potts.getDeltaPerimeter(1, 2, 2, 2, 0), EPSILON);
-		assertEquals(0, potts.getDeltaPerimeter(1, 0, 2, 2, 0), EPSILON);
+	public void getDeltaSurface_validIDs_calculatesValue() {
+		assertEquals(-24, potts.getDeltaSurface(1, 2, 2, 2, 0), EPSILON);
+		assertEquals(0, potts.getDeltaSurface(1, 0, 2, 2, 0), EPSILON);
 	}
 	
 	private boolean checkConnectivity(Potts potts, int[][] update) {

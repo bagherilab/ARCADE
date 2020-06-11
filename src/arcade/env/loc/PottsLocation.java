@@ -442,21 +442,21 @@ public class PottsLocation implements Location {
 	}
 	
 	/**
-	 * Calculates perimeter of location.
+	 * Calculates surface of location.
 	 * 
 	 * @param id  the location id
 	 * @param array  the potts array
-	 * @return  the perimeter
+	 * @return  the surface
 	 */
-	public int calculatePerimeter(int id, int[][][] array) {
-		int perimeter = 0;
+	public int calculateSurface(int id, int[][][] array) {
+		int surface = 0;
 		
 		for (Voxel voxel : voxels) {
 			for (int i = 0; i < 4; i++) {
-				if (array[voxel.z][voxel.x + MOVES_X[i]][voxel.y + MOVES_Y[i]] != id) { perimeter++; }
+				if (array[voxel.z][voxel.x + MOVES_X[i]][voxel.y + MOVES_Y[i]] != id) { surface++; }
 			}
 		}
 		
-		return perimeter;
+		return surface;
 	}
 }

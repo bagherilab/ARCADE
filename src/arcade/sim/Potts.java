@@ -9,8 +9,8 @@ public class Potts implements Steppable {
 	/** Code for volume lambda */
 	public static final int LAMBDA_VOLUME = 0;
 	
-	/** Code for perimeter lambda */
-	public static final int LAMBDA_PERIMETER = 1;
+	/** Code for surface lambda */
+	public static final int LAMBDA_SURFACE = 1;
 	
 	/** List of x direction movements (N, E, S, W) */
 	public static final int[] MOVES_X = { 0, 1, 0, -1 };
@@ -45,11 +45,11 @@ public class Potts implements Steppable {
 	/** Grid holding cells */
 	Grid grid;
 	
-	/** Change in perimeter for source */
-	private int sourcePerimeterChange;
+	/** Change in surface for source */
+	private int sourceSurfaceChange;
 	
-	/** Change in perimeter for target */
-	private int targetPerimeterChange;
+	/** Change in surface for target */
+	private int targetSurfaceChange;
 	
 	/**
 	 * Creates a cellular {@code Potts} model.
@@ -153,25 +153,25 @@ public class Potts implements Steppable {
 	}
 	
 	/**
-	 * Gets the perimeter energy for a given change in perimeter.
+	 * Gets the surface energy for a given change in surface.
 	 * 
 	 * @param id  the voxel id
-	 * @param change  the change in perimeter
+	 * @param change  the change in surface
 	 * @return  the energy
 	 */
-	double getPerimeter(int id, int change) {
+	double getSurface(int id, int change) {
 		if (id == 0) { return 0; }
 		else {
 			Cell c = (Cell)grid.getObjectAt(id);
-			double perimeter = c.getPerimeter();
-			double targetPerimeter = c.getTargetPerimeter();
-			double lambda = c.getLambda(LAMBDA_PERIMETER);
-			return lambda * Math.pow(perimeter - targetPerimeter + change, 2) - lambda * Math.pow(perimeter - targetPerimeter, 2);
+			double surface = c.getSurface();
+			double targetSurface = c.getTargetSurface();
+			double lambda = c.getLambda(LAMBDA_SURFACE);
+			return lambda * Math.pow(surface - targetSurface + change, 2) - lambda * Math.pow(surface - targetSurface, 2);
 		}
 	}
 	
 	/**
-	 * Gets change in perimeter energy.
+	 * Gets change in surface energy.
 	 *
 	 * @param sourceID  the id of the source voxel
 	 * @param targetID  the id of the target voxel
@@ -180,7 +180,7 @@ public class Potts implements Steppable {
 	 * @param z  the z coordinate
 	 * @return  the change in energy
 	 */
-	double getDeltaPerimeter(int sourceID, int targetID, int x, int y, int z) {
+	double getDeltaSurface(int sourceID, int targetID, int x, int y, int z) {
 		int beforeSource = 0;
 		int afterSource = 0;
 		int beforeTarget = 0;
@@ -200,12 +200,12 @@ public class Potts implements Steppable {
 			}
 		}
 		
-		// Save changes to perimeter.
-		sourcePerimeterChange = afterSource - beforeSource;
-		targetPerimeterChange = afterTarget - beforeTarget;
+		// Save changes to surface.
+		sourceSurfaceChange = afterSource - beforeSource;
+		targetSurfaceChange = afterTarget - beforeTarget;
 		
-		double source = getPerimeter(sourceID, sourcePerimeterChange);
-		double target = getPerimeter(targetID, targetPerimeterChange);
+		double source = getSurface(sourceID, sourceSurfaceChange);
+		double target = getSurface(targetID, targetSurfaceChange);
 		
 		return target + source;
 	}
@@ -256,7 +256,7 @@ public class Potts implements Steppable {
 			double dH = 0;
 			dH += getDeltaAdhesion(sourceID, targetID, x, y, z);
 			dH += getDeltaVolume(sourceID, targetID);
-			dH += getDeltaPerimeter(sourceID, targetID, x, y, z);
+			dH += getDeltaSurface(sourceID, targetID, x, y, z);
 			
 			double p;
 			if (dH < 0) { p = 1; }
@@ -265,10 +265,10 @@ public class Potts implements Steppable {
 			if (simstate.random.nextDouble() < p) {
 				potts[z][x][y] = targetID;
 				if (sourceID > 0) {
-					((Cell)grid.getObjectAt(sourceID)).removeVoxel(x, y, z, sourcePerimeterChange);
+					((Cell)grid.getObjectAt(sourceID)).removeVoxel(x, y, z, sourceSurfaceChange);
 				}
 				if (targetID > 0) {
-					((Cell)grid.getObjectAt(targetID)).addVoxel(x, y, z, targetPerimeterChange);
+					((Cell)grid.getObjectAt(targetID)).addVoxel(x, y, z, targetSurfaceChange);
 				}
 			}
 		}

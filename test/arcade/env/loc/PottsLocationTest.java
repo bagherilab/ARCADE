@@ -192,7 +192,7 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void calculatePerimeter_validID_calculatesValue() {
+	public void calculateSurface_validID_calculatesValue() {
 		int[][][] array = new int[][][] { {
 				{ 0, 0, 0, 0 },
 				{ 0, 0, 0, 0 },
@@ -206,22 +206,22 @@ public class PottsLocationTest {
 		// 1 voxel
 		loc.add(1, 1, 0);
 		loc.update(array, 1);
-		assertEquals(4, loc.calculatePerimeter(1, array));
+		assertEquals(4, loc.calculateSurface(1, array));
 		
 		// 2 voxels
 		loc.add(2, 1, 0);
 		loc.update(array, 1);
-		assertEquals(6, loc.calculatePerimeter(1, array));
+		assertEquals(6, loc.calculateSurface(1, array));
 		
 		// 3 voxels
 		loc.add(1, 2, 0);
 		loc.update(array, 1);
-		assertEquals(8, loc.calculatePerimeter(1, array));
+		assertEquals(8, loc.calculateSurface(1, array));
 		
 		// 4 voxels
 		loc.add(2, 2, 0);
 		loc.update(array, 1);
-		assertEquals(8, loc.calculatePerimeter(1, array));
+		assertEquals(8, loc.calculateSurface(1, array));
 	}
 	
 	@Test
