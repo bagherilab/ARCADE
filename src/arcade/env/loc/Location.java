@@ -44,6 +44,20 @@ public interface Location {
 	 */
 	Voxel getCenter();
 	
+	/**
+	 * Gets the volume of the location.
+	 *
+	 * @return  the location volume (in voxels)
+	 */
+	int getVolume();
+	
+	/**
+	 * Gets the surface area of the location.
+	 *
+	 * @return  the location surface area (in voxels)
+	 */
+	int getSurface();
+	
 	class Voxel {
 		/** Voxel x coordinate */
 		int x;

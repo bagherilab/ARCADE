@@ -14,6 +14,12 @@ public class PottsLocation implements Location {
 	/** List of voxels for the location */
 	ArrayList<Voxel> voxels;
 	
+	/** Location volume */
+	int volume;
+	
+	/** Location surface */
+	int surface;
+	
 	/** Location split directions */
 	enum Direction {
 		/** Direction along the x axis (y = 0) */
@@ -36,21 +42,31 @@ public class PottsLocation implements Location {
 	 */
 	public PottsLocation(ArrayList<Voxel> voxels) {
 		this.voxels = voxels;
+		this.volume = voxels.size();
+		this.surface = calculateSurface();
 	}
 	
-	/**
-	 * Gets the size of the location.
-	 * 
-	 * @return  the location size (in voxels)
-	 */
-	public int getSize() { return voxels.size(); }
+	public int getVolume() { return volume; }
+	
+	public int getSurface() { return surface; }
 	
 	public void add(int x, int y, int z) {
 		Voxel voxel = new Voxel(x, y, z);
-		if (!voxels.contains(voxel)) { voxels.add(voxel); }
+		if (!voxels.contains(voxel)) {
+			voxels.add(voxel);
+			volume++;
+			surface += updateSurface(voxel);
+		}
 	}
 	
-	public void remove(int x, int y, int z) { voxels.remove(new Voxel(x, y, z)); }
+	public void remove(int x, int y, int z) {
+		Voxel voxel = new Voxel(x, y, z);
+		if (voxels.contains(voxel)) {
+			voxels.remove(new Voxel(x, y, z));
+			volume--;
+			surface -= updateSurface(voxel);
+		}
+	}
 	
 	public void update(int[][][] array, int id) {
 		for (Voxel voxel : voxels) { array[voxel.z][voxel.x][voxel.y] = id; }
@@ -444,19 +460,37 @@ public class PottsLocation implements Location {
 	/**
 	 * Calculates surface of location.
 	 * 
-	 * @param id  the location id
-	 * @param array  the potts array
 	 * @return  the surface
 	 */
-	public int calculateSurface(int id, int[][][] array) {
+	int calculateSurface() {
 		int surface = 0;
 		
 		for (Voxel voxel : voxels) {
 			for (int i = 0; i < 4; i++) {
-				if (array[voxel.z][voxel.x + MOVES_X[i]][voxel.y + MOVES_Y[i]] != id) { surface++; }
+				if (!voxels.contains(new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z))) {
+					surface++;
+				}
 			}
 		}
 		
 		return surface;
+	}
+	
+	/**
+	 * Calculates the local change in surface of the location.
+	 * 
+	 * @param voxel  the voxel the update is centered in
+	 * @return  the change in surface
+	 */
+	int updateSurface(Voxel voxel) {
+		int change = 0;
+		
+		for (int i = 0; i < 4; i++) {
+			if (!voxels.contains(new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z))) {
+				change++;
+			} else { change--; }
+		}
+		
+		return change;
 	}
 }

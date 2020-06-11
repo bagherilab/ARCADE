@@ -90,11 +90,51 @@ public class PottsLocationTest {
 	}
 	
 	@Test
+	public void getVolume_hasVoxels_returnsValue() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		loc.add(0, 0, 0);
+		assertEquals(1, loc.getVolume());
+	}
+
+	@Test
+	public void getVolume_noVoxels_returnsValue() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		assertEquals(0, loc.getVolume());
+	}
+	
+	@Test
+	public void getSurface_hasVoxels_returnsValue() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		loc.add(0, 0, 0);
+		assertEquals(4, loc.getSurface());
+	}
+	
+	@Test
+	public void getSurface_noVoxels_returnsValue() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		assertEquals(0, loc.getSurface());
+	}
+	
+	@Test
 	public void add_newLocation_updatesList() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		loc.add(0, 0, 0);
 		loc.add(1, 0, 0);
 		assertEquals(voxelListForAddRemove, loc.voxels);
+	}
+	
+	@Test
+	public void add_newLocation_updatesVolume() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		loc.add(0, 0, 0);
+		assertEquals(1, loc.volume);
+	}
+	
+	@Test
+	public void add_newLocation_updatesSurface() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		loc.add(0, 0, 0);
+		assertEquals(4, loc.surface);
 	}
 	
 	@Test
@@ -113,6 +153,20 @@ public class PottsLocationTest {
 		voxelsRemoved.add(new Voxel(1, 0, 0));
 		loc.remove(0, 0, 0);
 		assertEquals(voxelsRemoved, loc.voxels);
+	}
+	
+	@Test
+	public void remove_existingLocation_updatesVolume() {
+		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
+		loc.remove(0, 0, 0);
+		assertEquals(1, loc.volume);
+	}
+	
+	@Test
+	public void remove_existingLocation_updatesSurface() {
+		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
+		loc.remove(0, 0, 0);
+		assertEquals(4, loc.surface);
 	}
 	
 	@Test
@@ -193,35 +247,70 @@ public class PottsLocationTest {
 	
 	@Test
 	public void calculateSurface_validID_calculatesValue() {
-		int[][][] array = new int[][][] { {
-				{ 0, 0, 0, 0 },
-				{ 0, 0, 0, 0 },
-				{ 0, 0, 0, 0 },
-				{ 0, 0, 0, 0 }
-		} };
-		
 		ArrayList<Location.Voxel> voxels = new ArrayList<>();
 		PottsLocation loc = new PottsLocation(voxels);
 		
 		// 1 voxel
 		loc.add(1, 1, 0);
-		loc.update(array, 1);
-		assertEquals(4, loc.calculateSurface(1, array));
+		assertEquals(4, loc.calculateSurface());
 		
 		// 2 voxels
 		loc.add(2, 1, 0);
-		loc.update(array, 1);
-		assertEquals(6, loc.calculateSurface(1, array));
+		assertEquals(6, loc.calculateSurface());
 		
 		// 3 voxels
 		loc.add(1, 2, 0);
-		loc.update(array, 1);
-		assertEquals(8, loc.calculateSurface(1, array));
+		assertEquals(8, loc.calculateSurface());
 		
 		// 4 voxels
 		loc.add(2, 2, 0);
-		loc.update(array, 1);
-		assertEquals(8, loc.calculateSurface(1, array));
+		assertEquals(8, loc.calculateSurface());
+	}
+	
+	@Test
+	public void updateSurface_validVoxels_calculatesValue() {
+		ArrayList<Location.Voxel> voxels = new ArrayList<>();
+		PottsLocation loc = new PottsLocation(voxels);
+		Voxel voxel = new Voxel(1, 1, 0);
+		
+		// 0 voxels
+		voxels.clear();
+		loc.add(1, 1, 0);
+		assertEquals(4, loc.updateSurface(voxel));
+		
+		// 1 voxel
+		voxels.clear();
+		voxels.add(new Voxel(0, 1, 0));
+		loc = new PottsLocation(voxels);
+		loc.add(1, 1, 0);
+		assertEquals(2, loc.updateSurface(voxel));
+		
+		// 2 voxels
+		voxels.clear();
+		voxels.add(new Voxel(0, 1, 0));
+		voxels.add(new Voxel(1, 0, 0));
+		loc = new PottsLocation(voxels);
+		loc.add(1, 1, 0);
+		assertEquals(0, loc.updateSurface(voxel));
+		
+		// 3 voxels
+		voxels.clear();
+		voxels.add(new Voxel(0, 1, 0));
+		voxels.add(new Voxel(1, 0, 0));
+		voxels.add(new Voxel(2, 1, 0));
+		loc = new PottsLocation(voxels);
+		loc.add(1, 1, 0);
+		assertEquals(-2, loc.updateSurface(voxel));
+		
+		// 4 voxels
+		voxels.clear();
+		voxels.add(new Voxel(0, 1, 0));
+		voxels.add(new Voxel(1, 0, 0));
+		voxels.add(new Voxel(2, 1, 0));
+		voxels.add(new Voxel(1, 2, 0));
+		loc = new PottsLocation(voxels);
+		loc.add(1, 1, 0);
+		assertEquals(-4, loc.updateSurface(voxel));
 	}
 	
 	@Test

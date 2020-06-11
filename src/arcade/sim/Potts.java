@@ -45,12 +45,6 @@ public class Potts implements Steppable {
 	/** Grid holding cells */
 	Grid grid;
 	
-	/** Change in surface for source */
-	private int sourceSurfaceChange;
-	
-	/** Change in surface for target */
-	private int targetSurfaceChange;
-	
 	/**
 	 * Creates a cellular {@code Potts} model.
 	 * 
@@ -201,8 +195,8 @@ public class Potts implements Steppable {
 		}
 		
 		// Save changes to surface.
-		sourceSurfaceChange = afterSource - beforeSource;
-		targetSurfaceChange = afterTarget - beforeTarget;
+		int sourceSurfaceChange = afterSource - beforeSource;
+		int targetSurfaceChange = afterTarget - beforeTarget;
 		
 		double source = getSurface(sourceID, sourceSurfaceChange);
 		double target = getSurface(targetID, targetSurfaceChange);
@@ -265,10 +259,10 @@ public class Potts implements Steppable {
 			if (simstate.random.nextDouble() < p) {
 				potts[z][x][y] = targetID;
 				if (sourceID > 0) {
-					((Cell)grid.getObjectAt(sourceID)).removeVoxel(x, y, z, sourceSurfaceChange);
+					((Cell)grid.getObjectAt(sourceID)).getLocation().remove(x, y, z);
 				}
 				if (targetID > 0) {
-					((Cell)grid.getObjectAt(targetID)).addVoxel(x, y, z, targetSurfaceChange);
+					((Cell)grid.getObjectAt(targetID)).getLocation().add(x, y, z);
 				}
 			}
 		}

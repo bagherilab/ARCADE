@@ -23,9 +23,9 @@ public class PottsTest {
 				{ 16,  2, 11 },
 				{ 16, 11, 14 }
 		};
-		double[] volumes = new double[] { 4, 2, 3 };
+		int[] volumes = new int[] { 4, 2, 3 };
 		double[] targetVolumes = new double[] { 2, 3, 3 };
-		double[] surfaces = new double[] { 8, 6, 7 };
+		int[] surfaces = new int[] { 8, 6, 7 };
 		double[] targetSurfaces = new double[] { 10, 10, 7 };
 		
 		int n = 3;
