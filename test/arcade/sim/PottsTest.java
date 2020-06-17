@@ -9,6 +9,8 @@ import arcade.env.grid.Grid;
 
 public class PottsTest {
 	private static final double EPSILON = 1E-4;
+	private static final double LV = 10.0;
+	private static final double LS = 2.0;
 	Series seriesMock = mock(Series.class);
 	Grid gridMock = mock(Grid.class);
 	Potts pottsMock = new Potts(seriesMock, gridMock);
@@ -25,8 +27,8 @@ public class PottsTest {
 		};
 		int[] volumes = new int[] { 4, 2, 3 };
 		double[] targetVolumes = new double[] { 2, 3, 3 };
-		int[] surfaces = new int[] { 8, 6, 7 };
-		double[] targetSurfaces = new double[] { 10, 10, 7 };
+		int[] surfaces = new int[] { 8, 6, 8 };
+		double[] targetSurfaces = new double[] { 10, 10, 8 };
 		
 		int n = 3;
 		
@@ -40,8 +42,8 @@ public class PottsTest {
 			when(c.getSurface()).thenReturn(surfaces[i]);
 			when(c.getTargetSurface()).thenReturn(targetSurfaces[i]);
 			
-			when(c.getLambda(LAMBDA_VOLUME)).thenReturn(10.0);
-			when(c.getLambda(LAMBDA_SURFACE)).thenReturn(2.0);
+			when(c.getLambda(LAMBDA_VOLUME)).thenReturn(LV);
+			when(c.getLambda(LAMBDA_SURFACE)).thenReturn(LS);
 			
 			for (int j = 0; j < n; j++) {
 				when(c.getAdhesion(j)).thenReturn(adhesions[pops[i] - 1][j]);
@@ -82,9 +84,9 @@ public class PottsTest {
 	
 	@Test
 	public void getVolume_validIDsNotMedia_calculatesValue() {
-		assertEquals(40, potts.getVolume(1, 0), EPSILON);
-		assertEquals(90, potts.getVolume(1, 1), EPSILON);
-		assertEquals(10, potts.getVolume(1, -1), EPSILON);
+		assertEquals(LV*Math.pow(4 - 2, 2), potts.getVolume(1, 0), EPSILON);
+		assertEquals(LV*Math.pow(4 - 2 + 1, 2), potts.getVolume(1, 1), EPSILON);
+		assertEquals(LV*Math.pow(4 - 2 - 1, 2), potts.getVolume(1, -1), EPSILON);
 	}
 	
 	@Test
@@ -96,15 +98,21 @@ public class PottsTest {
 	
 	@Test
 	public void getDeltaVolume_validIDs_calculatesValue() {
-		assertEquals(-40, potts.getDeltaVolume(1, 2), EPSILON);
-		assertEquals(80, potts.getDeltaVolume(2, 1), EPSILON);
+		double cell1 = Math.pow(4 - 2, 2);
+		double cell1plus1 = Math.pow(4 - 2 + 1, 2);
+		double cell1minus1 = Math.pow(4 - 2 - 1, 2);
+		double cell2 = Math.pow(2 - 3, 2);
+		double cell2plus1 = Math.pow(2 - 3 + 1, 2);
+		double cell2minus1 = Math.pow(2 - 3 - 1, 2);
+		assertEquals(LV*(cell1minus1 - cell1 + cell2plus1 - cell2), potts.getDeltaVolume(1, 2), EPSILON);
+		assertEquals(LV*(cell2minus1 - cell2 + cell1plus1 - cell1), potts.getDeltaVolume(2, 1), EPSILON);
 	}
 	
 	@Test
 	public void getSurface_validIDsNotMedia_calculatesValue() {
-		assertEquals(0, potts.getSurface(1, 0), EPSILON);
-		assertEquals(-6, potts.getSurface(1, 1), EPSILON);
-		assertEquals(10, potts.getSurface(1, -1), EPSILON);
+		assertEquals(LS*Math.pow(8 - 10, 2), potts.getSurface(1, 0), EPSILON);
+		assertEquals(LS*Math.pow(8 - 10 + 1, 2), potts.getSurface(1, 1), EPSILON);
+		assertEquals(LS*Math.pow(8 - 10 - 1, 2), potts.getSurface(1, -1), EPSILON);
 	}
 	
 	@Test
@@ -116,7 +124,10 @@ public class PottsTest {
 	
 	@Test
 	public void getDeltaSurface_validIDs_calculatesValue() {
-		assertEquals(-24, potts.getDeltaSurface(1, 2, 2, 2, 0), EPSILON);
+		double cell1 = Math.pow(8 - 10, 2);
+		double cell2 = Math.pow(6 - 10, 2);
+		double cell2plus2 = Math.pow(6 - 10 + 2, 2);
+		assertEquals(LS*(cell1 - cell1 + cell2plus2 - cell2), potts.getDeltaSurface(1, 2, 2, 2, 0), EPSILON);
 		assertEquals(0, potts.getDeltaSurface(1, 0, 2, 2, 0), EPSILON);
 	}
 	

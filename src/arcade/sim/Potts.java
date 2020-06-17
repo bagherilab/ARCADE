@@ -160,7 +160,7 @@ public class Potts implements Steppable {
 			double surface = c.getSurface();
 			double targetSurface = c.getTargetSurface();
 			double lambda = c.getLambda(LAMBDA_SURFACE);
-			return lambda * Math.pow(surface - targetSurface + change, 2) - lambda * Math.pow(surface - targetSurface, 2);
+			return lambda * Math.pow((surface - targetSurface + change), 2);
 		}
 	}
 	
@@ -198,8 +198,8 @@ public class Potts implements Steppable {
 		int sourceSurfaceChange = afterSource - beforeSource;
 		int targetSurfaceChange = afterTarget - beforeTarget;
 		
-		double source = getSurface(sourceID, sourceSurfaceChange);
-		double target = getSurface(targetID, targetSurfaceChange);
+		double source = getSurface(sourceID, sourceSurfaceChange) - getSurface(sourceID, 0);
+		double target = getSurface(targetID, targetSurfaceChange) - getSurface(targetID, 0);
 		
 		return target + source;
 	}
