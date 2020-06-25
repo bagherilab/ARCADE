@@ -13,6 +13,16 @@ public interface Location {
 	void add(int x, int y, int z);
 	
 	/**
+	 * Adds a voxel at the given coordinates for given tag.
+	 *
+	 * @param tag  the voxel tag
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
+	 */
+	void add(int tag, int x, int y, int z);
+	
+	/**
 	 * Removes the voxel at the given coordinates.
 	 *
 	 * @param x  the x coordinate
@@ -22,12 +32,23 @@ public interface Location {
 	void remove(int x, int y, int z);
 	
 	/**
-	 * Updates the array for the location.
-	 *
-	 * @param array  the potts array
-	 * @param id  the location id
+	 * Removes the voxel at the given coordinates for given tag.
+	 * 
+	 * @param tag  the voxel tag
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
 	 */
-	void update(int[][][] array, int id);
+	void remove(int tag, int x, int y, int z);
+	
+	/**
+	 * Updates the array for the location.
+	 * 
+	 * @param id  the location id
+	 * @param ids  the potts array for ids
+	 * @param tags  the potts array for tags
+	 */
+	void update(int id, int[][][] ids, int[][][] tags);
 	
 	/**
 	 * Splits the location voxels into two lists.
@@ -52,11 +73,27 @@ public interface Location {
 	int getVolume();
 	
 	/**
+	 * Gets the volume of the location for a given tag.
+	 * 
+	 * @param tag  the voxel tag
+	 * @return  the location volume (in voxels)
+	 */
+	int getVolume(int tag);
+	
+	/**
 	 * Gets the surface area of the location.
 	 *
 	 * @return  the location surface area (in voxels)
 	 */
 	int getSurface();
+	
+	/**
+	 * Gets the surface area of the location for a given tag.
+	 * 
+	 * @param tag  the voxel tag
+	 * @return  the location surface area (in voxels)
+	 */
+	int getSurface(int tag);
 	
 	class Voxel {
 		/** Voxel x coordinate */

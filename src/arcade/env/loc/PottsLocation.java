@@ -48,7 +48,11 @@ public class PottsLocation implements Location {
 	
 	public int getVolume() { return volume; }
 	
+	public int getVolume(int tag) { return getVolume(); }
+	
 	public int getSurface() { return surface; }
+	
+	public int getSurface(int tag) { return getSurface(); }
 	
 	public void add(int x, int y, int z) {
 		Voxel voxel = new Voxel(x, y, z);
@@ -59,17 +63,21 @@ public class PottsLocation implements Location {
 		}
 	}
 	
+	public void add(int tag, int x, int y, int z) { add(x, y, z); }
+	
 	public void remove(int x, int y, int z) {
 		Voxel voxel = new Voxel(x, y, z);
 		if (voxels.contains(voxel)) {
-			voxels.remove(new Voxel(x, y, z));
+			voxels.remove(voxel);
 			volume--;
 			surface -= updateSurface(voxel);
 		}
 	}
 	
-	public void update(int[][][] array, int id) {
-		for (Voxel voxel : voxels) { array[voxel.z][voxel.x][voxel.y] = id; }
+	public void remove(int tag, int x, int y, int z) { remove(x, y, z); }
+	
+	public void update(int id, int[][][] ids, int[][][] tags) {
+		for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = id; }
 	}
 	
 	/**
@@ -93,16 +101,20 @@ public class PottsLocation implements Location {
 		Direction direction = getDirection(random);
 		splitVoxels(direction, voxelsA, voxelsB, center, random);
 		
-		// Ensure that voxel split are connected and balanced.
+		// Ensure that voxel split is connected and balanced.
 		connectVoxels(voxelsA, voxelsB, random);
 		balanceVoxels(voxelsA, voxelsB, random);
 		
 		// Select one split to keep for this location and return the other.
 		if (random.nextDouble() < 0.5) {
 			voxels = voxelsA;
+			volume = voxels.size();
+			surface = calculateSurface();
 			return new PottsLocation(voxelsB);
 		} else {
 			voxels = voxelsB;
+			volume = voxels.size();
+			surface = calculateSurface();
 			return new PottsLocation(voxelsA);
 		}
 	}
@@ -409,7 +421,7 @@ public class PottsLocation implements Location {
 	 * @return  a list of unconnected voxels, {@code null} if the list is connected
 	 */
 	static ArrayList<Voxel> checkVoxels(ArrayList<Voxel> voxels,
-												MersenneTwisterFast random, boolean update) {
+										MersenneTwisterFast random, boolean update) {
 		ArrayList<Voxel> unvisited = new ArrayList<>(voxels);
 		ArrayList<Voxel> visited = new ArrayList<>();
 		ArrayList<Voxel> nextList;

@@ -10,6 +10,7 @@ import arcade.env.loc.PottsLocation.Direction;
 
 public class PottsLocationTest {
 	MersenneTwisterFast randomDoubleZero;
+	final int cellTag = -3;
 	ArrayList<Location.Voxel> voxelListForAddRemove;
 	ArrayList<Location.Voxel> voxelListForDiameters;
 	ArrayList<Location.Voxel> voxelListA, voxelListB, voxelListC;
@@ -95,11 +96,18 @@ public class PottsLocationTest {
 		loc.add(0, 0, 0);
 		assertEquals(1, loc.getVolume());
 	}
-
+	
 	@Test
 	public void getVolume_noVoxels_returnsValue() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		assertEquals(0, loc.getVolume());
+	}
+	
+	@Test
+	public void getVolume_givenTag_returnsValue() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		loc.add(0, 0, 0);
+		assertEquals(1, loc.getVolume(cellTag));
 	}
 	
 	@Test
@@ -113,6 +121,13 @@ public class PottsLocationTest {
 	public void getSurface_noVoxels_returnsValue() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		assertEquals(0, loc.getSurface());
+	}
+	
+	@Test
+	public void getSurface_givenTag_returnsValue() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		loc.add(0, 0, 0);
+		assertEquals(4, loc.getSurface(cellTag));
 	}
 	
 	@Test
@@ -143,6 +158,37 @@ public class PottsLocationTest {
 		loc.add(0, 0, 0);
 		loc.add(1, 0, 0);
 		loc.add(0, 0, 0);
+		assertEquals(voxelListForAddRemove, loc.voxels);
+	}
+	
+	@Test
+	public void add_newLocationWithTag_updatesList() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		loc.add(cellTag, 0, 0, 0);
+		loc.add(cellTag - 1, 1, 0, 0);
+		assertEquals(voxelListForAddRemove, loc.voxels);
+	}
+	
+	@Test
+	public void add_newLocationWithTag_updatesVolume() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		loc.add(cellTag, 0, 0, 0);
+		assertEquals(1, loc.volume);
+	}
+	
+	@Test
+	public void add_newLocationWithTag_updatesSurface() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		loc.add(cellTag, 0, 0, 0);
+		assertEquals(4, loc.surface);
+	}
+	
+	@Test
+	public void add_existingLocationWithTag_doesNothing() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		loc.add(cellTag, 0, 0, 0);
+		loc.add(cellTag - 1, 1, 0, 0);
+		loc.add(cellTag - 2, 0, 0, 0);
 		assertEquals(voxelListForAddRemove, loc.voxels);
 	}
 	
@@ -185,13 +231,51 @@ public class PottsLocationTest {
 	}
 	
 	@Test
+	public void remove_existingLocationWithTag_updatesList() {
+		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
+		ArrayList<Location.Voxel> voxelsRemoved = new ArrayList<>();
+		voxelsRemoved.add(new Voxel(1, 0, 0));
+		loc.remove(cellTag, 0, 0, 0);
+		assertEquals(voxelsRemoved, loc.voxels);
+	}
+	
+	@Test
+	public void remove_existingLocationWithTag_updatesVolume() {
+		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
+		loc.remove(cellTag, 0, 0, 0);
+		assertEquals(1, loc.volume);
+	}
+	
+	@Test
+	public void remove_existingLocationWithTag_updatesSurface() {
+		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
+		loc.remove(cellTag, 0, 0, 0);
+		assertEquals(4, loc.surface);
+	}
+	
+	@Test
+	public void remove_allLocationsWithTag_returnsEmptyList() {
+		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
+		loc.remove(cellTag, 0, 0, 0);
+		loc.remove(cellTag - 1, 1, 0, 0);
+		assertEquals(new ArrayList<>(), loc.voxels);
+	}
+	
+	@Test
+	public void remove_missingLocationWithTag_doesNothing() {
+		PottsLocation loc = new PottsLocation(new ArrayList<>());
+		loc.remove(cellTag, 0, 0, 0);
+		assertEquals(new ArrayList<>(), loc.voxels);
+	}
+	
+	@Test
 	public void update_validID_updatesArray() {
 		int[][][] array = new int[][][] { { { 0, 1, 2 } } };
 		ArrayList<Location.Voxel> voxels = new ArrayList<>();
 		voxels.add(new Voxel(0, 1, 0));
 		PottsLocation loc = new PottsLocation(voxels);
 		
-		loc.update(array, 3);
+		loc.update(3, array, null);
 		assertArrayEquals(new int[] { 0, 3, 2 }, array[0][0]);
 	}
 	
@@ -461,5 +545,22 @@ public class PottsLocationTest {
 		
 		assertEquals(locVoxels, loc.voxels);
 		assertEquals(splitVoxels, split.voxels);
+	}
+	
+	@Test
+	public void split_balanceableLocation_updatesValues() {
+		PottsLocation loc = new PottsLocation(voxelListAB);
+		PottsLocation split = loc.split(randomDoubleZero);
+		
+		ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListA);
+		locVoxels.remove(new Voxel(1, 0, 0));
+		
+		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListB);
+		splitVoxels.add(new Voxel(1, 0, 0));
+		
+		assertEquals(3, loc.volume);
+		assertEquals(4, split.volume);
+		assertEquals(8, loc.surface);
+		assertEquals(10, split.surface);
 	}
 }
