@@ -234,4 +234,20 @@ public class PottsLocationsTest {
 		assertEquals(voxelListForTagAddRemove, loc.locations.get(TAG_DEFAULT).voxels);
 		assertNull(loc.locations.get(-2));
 	}
+	
+	@Test
+	public void update_validTag_updatesArrays() {
+		int[][][] ids = new int[][][] { { { 0, 1, 2 } } };
+		int[][][] tags = new int[][][] { { { 0, 0, 0 } } };
+		
+		ArrayList<Location.Voxel> voxels = new ArrayList<>();
+		voxels.add(new Voxel(0, 1, 0));
+		PottsLocations loc = new PottsLocations(voxels);
+		loc.add(-2, 0, 0, 0);
+		
+		loc.update(3, ids, tags);
+		assertArrayEquals(new int[] { 3, 3, 2 }, ids[0][0]);
+		assertArrayEquals(new int[] { -2, -1, 0 }, tags[0][0]);
+		
+	}
 }
