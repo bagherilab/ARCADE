@@ -1,7 +1,9 @@
 *.iml
 *.jar
 *.idea
+.gradle
 bin/
 lib/
+build/
 .DS_Store
 MANIFEST.MF
