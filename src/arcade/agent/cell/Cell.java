@@ -1,10 +1,54 @@
 package arcade.agent.cell;
 
 import sim.engine.*;
-import arcade.sim.Potts;
 import arcade.env.loc.Location;
 
 public interface Cell extends Steppable {
+	/** Code for quiescent cells */
+	int STATE_QUIESCENT = 0;
+	
+	/** Code for proliferative cells */
+	int STATE_PROLIFERATIVE = 1;
+	
+	/** Code for apoptotic cells */
+	int STATE_APOPTOTIC = 2;
+	
+	/** Code for necrotic cells */
+	int STATE_NECROTIC = 3;
+	
+	/** Code for G1 phase */
+	int PHASE_G1 = 0;
+	
+	/** Code for S phase */
+	int PHASE_S = 1;
+	
+	/** Code for G2 phase */
+	int PHASE_G2 = 2;
+	
+	/** Code for prophase */
+	int PHASE_PROPHASE = 3;
+	
+	/** Code for prometaphase */
+	int PHASE_PROMETAPHASE = 4;
+	
+	/** Code for metaphase */
+	int PHASE_METAPHASE = 5;
+	
+	/** Code for anaphase */
+	int PHASE_ANAPHASE = 6;
+	
+	/** Code for telophase */
+	int PHASE_TELOPHASE = 7;
+	
+	/** Code for cytokinesis */
+	int PHASE_CYTOKINESIS = 8;
+	
+	/** Tag for cytoplasm */
+	int TAG_CYTOPLASM = -1;
+	
+	/** Tag for nucleus */
+	int TAG_NUCLEUS = -2;
+	
 	/**
 	 * Gets the unique cell ID.
 	 * 
@@ -18,6 +62,27 @@ public interface Cell extends Steppable {
 	 * @return  the cell population
 	 */
 	int getPop();
+	
+	/**
+	 * Gets the cell state.
+	 *
+	 * @return  the cell state
+	 */
+	int getState();
+	
+	/**
+	 * Gets the cell phase.
+	 *
+	 * @return  the cell phase
+	 */
+	int getPhase();
+	
+	/**
+	 * Gets the cell age (in minutes)
+	 *
+	 * @return  the cell age
+	 */
+	int getAge();
 	
 	/**
 	 * Gets the cell location object.
@@ -85,6 +150,36 @@ public interface Cell extends Steppable {
 	 * @return  the target surface
 	 */
 	double getTargetSurface(int tag);
+	
+	/**
+	 * Gets the critical volume (in voxels)
+	 *
+	 * @return  the target volume
+	 */
+	double getCriticalVolume();
+	
+	/**
+	 * Gets the critical volume (in voxels) for a tagged region.
+	 *
+	 * @param tag  the tag
+	 * @return  the target volume
+	 */
+	double getCriticalVolume(int tag);
+	
+	/**
+	 * Gets the critical surface (in voxels)
+	 *
+	 * @return  the target surface
+	 */
+	double getCriticalSurface();
+	
+	/**
+	 * Gets the critical surface (in voxels) for a tagged region.
+	 *
+	 * @param tag  the tag
+	 * @return  the target surface
+	 */
+	double getCriticalSurface(int tag);
 	
 	/**
 	 * Gets the lambda for the given term.

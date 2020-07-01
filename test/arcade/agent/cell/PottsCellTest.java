@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import arcade.env.loc.Location;
 import arcade.env.loc.PottsLocation;
+import static arcade.agent.cell.Cell.*;
 import static arcade.sim.Potts.*;
 
 public class PottsCellTest {
@@ -100,6 +101,42 @@ public class PottsCellTest {
 		int cellPop = (int)(Math.random() * 100);
 		PottsCell cell = new PottsCell(cellID, cellPop, location, lambdas, adhesion, 0, null, null);
 		assertEquals(cellPop, cell.getPop());
+	}
+	
+	@Test
+	public void getState_defaultConstructor_returnsValue() {
+		assertEquals(STATE_PROLIFERATIVE, cellDefault.getState());
+	}
+	
+	@Test
+	public void getState_valueAssigned_returnsValue() {
+		int cellState = (int)(Math.random() * 100);
+		PottsCell cell = new PottsCell(cellID, 0, cellState, 0, 0, location, lambdas, adhesion, 0, null, null);
+		assertEquals(cellState, cell.getState());
+	}
+	
+	@Test
+	public void getPhase_defaultConstructor_returnsValue() {
+		assertEquals(PHASE_G1, cellDefault.getPhase());
+	}
+	
+	@Test
+	public void getPhase_valueAssigned_returnsValue() {
+		int cellPhase = (int)(Math.random() * 100);
+		PottsCell cell = new PottsCell(cellID, 0, 0, cellPhase, 0, location, lambdas, adhesion, 0, null, null);
+		assertEquals(cellPhase, cell.getPhase());
+	}
+	
+	@Test
+	public void getAge_defaultConstructor_returnsValue() {
+		assertEquals(0, cellDefault.getAge());
+	}
+	
+	@Test
+	public void getAge_valueAssigned_returnsValue() {
+		int cellAge = (int)(Math.random() * 100);
+		PottsCell cell = new PottsCell(cellID, 0, 0, 0, cellAge, location, lambdas, adhesion, 0, null, null);
+		assertEquals(cellAge, cell.getAge());
 	}
 	
 	@Test
@@ -271,6 +308,122 @@ public class PottsCellTest {
 		assertEquals(0, cell.getTargetSurface(-1), EPSILON);
 		assertEquals(0, cell.getTargetSurface(-2), EPSILON);
 		assertEquals(0, cell.getTargetSurface(-3), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalVolume_beforeInitialize_returnsZero() {
+		assertEquals(0, cellDefault.getCriticalVolume(), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalVolume_beforeInitializeValidTag_returnsZero() {
+		assertEquals(0, cellWithTags.getCriticalVolume(-1), EPSILON);
+		assertEquals(0, cellWithTags.getCriticalVolume(-2), EPSILON);
+		assertEquals(0, cellWithTags.getCriticalVolume(-3), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalVolume_beforeInitializeInvalidTag_returnsZero() {
+		assertEquals(0, cellWithTags.getCriticalVolume(0), EPSILON);
+		assertEquals(0, cellWithTags.getCriticalVolume(-4), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalVolume_beforeInitializeNoTags_returnsZero() {
+		assertEquals(0, cellWithoutTags.getCriticalVolume(-1), EPSILON);
+		assertEquals(0, cellWithoutTags.getCriticalVolume(-2), EPSILON);
+		assertEquals(0, cellWithoutTags.getCriticalVolume(-3), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalVolume_afterInitialize_returnsValue() {
+		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
+		cell.initialize(null, null);
+		assertEquals(locationVolume, cell.getCriticalVolume(), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalVolume_afterInitializeValidTag_returnsValue() {
+		PottsCell cell = new PottsCell(cellID, 1, location, lambdas, adhesion, tags, lambdasTag, adhesionTag);
+		cell.initialize(null, null);
+		assertEquals(locationTagVolumes[0], cell.getCriticalVolume(-1), EPSILON);
+		assertEquals(locationTagVolumes[1], cell.getCriticalVolume(-2), EPSILON);
+		assertEquals(locationTagVolumes[2], cell.getCriticalVolume(-3), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalVolume_afterInitializeInvalidTag_returnsZero() {
+		PottsCell cell = new PottsCell(cellID, 1, location, lambdas, adhesion, tags, lambdasTag, adhesionTag);
+		cell.initialize(null, null);
+		assertEquals(0, cell.getCriticalVolume(0), EPSILON);
+		assertEquals(0, cell.getCriticalVolume(-4), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalVolume_afterInitializeNoTag_returnsZero() {
+		PottsCell cell = new PottsCell(cellID, 1, location, lambdas, adhesion, 0, null, null);
+		cell.initialize(null, null);
+		assertEquals(0, cell.getCriticalVolume(-1), EPSILON);
+		assertEquals(0, cell.getCriticalVolume(-2), EPSILON);
+		assertEquals(0, cell.getCriticalVolume(-3), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalSurface_beforeInitialize_returnsZero() {
+		assertEquals(0, cellDefault.getCriticalSurface(), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalSurface_beforeInitializeValidTag_returnsZero() {
+		assertEquals(0, cellWithTags.getCriticalSurface(-1), EPSILON);
+		assertEquals(0, cellWithTags.getCriticalSurface(-2), EPSILON);
+		assertEquals(0, cellWithTags.getCriticalSurface(-3), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalSurface_beforeInitializeInvalidTag_returnsZero() {
+		assertEquals(0, cellWithTags.getCriticalSurface(0), EPSILON);
+		assertEquals(0, cellWithTags.getCriticalSurface(-4), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalSurface_beforeInitializeNoTags_returnsZero() {
+		assertEquals(0, cellWithoutTags.getCriticalSurface(-1), EPSILON);
+		assertEquals(0, cellWithoutTags.getCriticalSurface(-2), EPSILON);
+		assertEquals(0, cellWithoutTags.getCriticalSurface(-3), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalSurface_afterInitialize_returnsValue() {
+		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
+		cell.initialize(null, null);
+		assertEquals(locationSurface, cell.getCriticalSurface(), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalSurface_afterInitializeValidTag_returnsValue() {
+		PottsCell cell = new PottsCell(cellID, 1, location, lambdas, adhesion, tags, lambdasTag, adhesionTag);
+		cell.initialize(null, null);
+		assertEquals(locationTagSurfaces[0], cell.getCriticalSurface(-1), EPSILON);
+		assertEquals(locationTagSurfaces[1], cell.getCriticalSurface(-2), EPSILON);
+		assertEquals(locationTagSurfaces[2], cell.getCriticalSurface(-3), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalSurface_afterInitializeInvalidTag_returnsZero() {
+		PottsCell cell = new PottsCell(cellID, 1, location, lambdas, adhesion, tags, lambdasTag, adhesionTag);
+		cell.initialize(null, null);
+		assertEquals(0, cell.getCriticalSurface(0), EPSILON);
+		assertEquals(0, cell.getCriticalSurface(-4), EPSILON);
+	}
+	
+	@Test
+	public void getCriticalSurface_afterInitializeNoTag_returnsZero() {
+		PottsCell cell = new PottsCell(cellID, 1, location, lambdas, adhesion, 0, null, null);
+		cell.initialize(null, null);
+		assertEquals(0, cell.getCriticalSurface(-1), EPSILON);
+		assertEquals(0, cell.getCriticalSurface(-2), EPSILON);
+		assertEquals(0, cell.getCriticalSurface(-3), EPSILON);
 	}
 	
 	@Test
