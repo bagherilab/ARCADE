@@ -198,4 +198,21 @@ public interface Cell extends Steppable {
 	 * @param tags  the {@link arcade.sim.Potts} array for tags   
 	 */
 	void initialize(int[][][] ids, int[][][] tags);
+	
+	/**
+	 * Updates target volume and surface area.
+	 * 
+	 * @param rate  the rate of change
+	 * @param scale  the relative final size scaling
+	 */
+	void updateTarget(double rate, double scale);
+	
+	/**
+	 * Updates target volume and surface area for a tagged region.
+	 * 
+	 * @param tag  the tag
+	 * @param rate  the rate of change
+	 * @param scale  the relative final size scaling
+	 */
+	void updateTarget(int tag, double rate, double scale);
 }

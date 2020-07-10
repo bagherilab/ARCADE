@@ -8,8 +8,10 @@ import arcade.sim.PottsSimulation;
 import arcade.env.loc.Location;
 import arcade.env.loc.PottsLocation;
 import arcade.agent.module.*;
+import arcade.agent.module.Module;
 import static arcade.agent.cell.Cell.*;
 import static arcade.sim.Potts.*;
+import static arcade.sim.Simulation.*;
 
 public class PottsCellTest {
 	private static final double EPSILON = 0;
@@ -554,7 +556,65 @@ public class PottsCellTest {
 	public void step_singleStep_updatesAge() {
 		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
 		PottsSimulation sim = mock(PottsSimulation.class);
+		cell.module = mock(Module.class);
+		
 		cell.step(sim);
 		assertEquals(1, cell.getAge(), EPSILON);
+	}
+	
+	@Test
+	public void updateTarget_scaleTwoNoTag_updatesValues() {
+		double rate = Math.random();
+		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
+		cell.initialize(null, null);
+		cell.updateTarget(rate, 2);
+		
+		double targetVolume = locationVolume + rate*(locationVolume)*DT;
+		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
+		
+		double targetSurface = 2*Math.sqrt(Math.PI)*Math.sqrt(targetVolume);
+		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
+	}
+	
+	@Test
+	public void updateTarget_scaleZeroNoTag_updatesValues() {
+		double rate = Math.random();
+		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
+		cell.initialize(null, null);
+		cell.updateTarget(rate, 0);
+		
+		double targetVolume = locationVolume + rate*(-locationVolume)*DT;
+		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
+		
+		double targetSurface = 2*Math.sqrt(Math.PI)*Math.sqrt(targetVolume);
+		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
+	}
+	
+	@Test
+	public void updateTarget_scaleTwoWithTag_updatesValues() {
+		double rate = Math.random();
+		PottsCell cell = new PottsCell(cellID, 0, location, lambdas, adhesion, tags, lambdasTag, adhesionTag);
+		cell.initialize(null, null);
+		cell.updateTarget(TAG_DEFAULT, rate, 2);
+		
+		double targetTagVolume = locationTagVolumes[0] + rate*(locationTagVolumes[0])*DT;
+		assertEquals(targetTagVolume, cell.getTargetVolume(TAG_DEFAULT), EPSILON);
+		
+		double targetTagSurface = 2*Math.sqrt(Math.PI)*Math.sqrt(targetTagVolume);
+		assertEquals(targetTagSurface, cell.getTargetSurface(TAG_DEFAULT), EPSILON);
+	}
+	
+	@Test
+	public void updateTarget_scaleZeroWithTag_updatesValues() {
+		double rate = Math.random();
+		PottsCell cell = new PottsCell(cellID, 0, location, lambdas, adhesion, tags, lambdasTag, adhesionTag);
+		cell.initialize(null, null);
+		cell.updateTarget(TAG_DEFAULT, rate, 0);
+		
+		double targetTagVolume = locationTagVolumes[0] + rate*(-locationTagVolumes[0])*DT;
+		assertEquals(targetTagVolume, cell.getTargetVolume(TAG_DEFAULT), EPSILON);
+		
+		double targetTagSurface = 2*Math.sqrt(Math.PI)*Math.sqrt(targetTagVolume);
+		assertEquals(targetTagSurface, cell.getTargetSurface(TAG_DEFAULT), EPSILON);
 	}
 }

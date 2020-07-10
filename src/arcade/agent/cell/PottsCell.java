@@ -155,10 +155,10 @@ public class PottsCell implements Cell {
 				module = new ApoptosisModule(this);
 				break;
 			case STATE_NECROTIC:
-				module = new NecrosisModule(this);;
+				module = new NecrosisModule(this);
 				break;
 			case STATE_AUTOTIC:
-				module = new AutosisModule(this);;
+				module = new AutosisModule(this);
 				break;
 		}
 	}
@@ -202,5 +202,17 @@ public class PottsCell implements Cell {
 		
 		// Step the module for the cell state.
 		module.step(simstate.random, sim);
+	}
+	
+	public void updateTarget(double rate, double scale) {
+		double volume = getVolume();
+		targetVolume = volume + rate*(scale*criticalVolume - volume)*Simulation.DT;
+		targetSurface = 2*Math.sqrt(Math.PI)*Math.sqrt(targetVolume);
+	}
+	
+	public void updateTarget(int tag, double rate, double scale) {
+		double tagVolume = getVolume(tag);
+		targetTagVolumes[-tag - 1] = tagVolume + rate*(scale*criticalTagVolumes[-tag - 1] - tagVolume)*Simulation.DT;
+		targetTagSurfaces[-tag - 1] = 2*Math.sqrt(Math.PI)*Math.sqrt(targetTagVolumes[-tag - 1]);
 	}
 }
