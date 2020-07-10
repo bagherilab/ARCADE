@@ -4,8 +4,10 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.ArrayList;
+import arcade.sim.PottsSimulation;
 import arcade.env.loc.Location;
 import arcade.env.loc.PottsLocation;
+import arcade.agent.module.*;
 import static arcade.agent.cell.Cell.*;
 import static arcade.sim.Potts.*;
 
@@ -111,20 +113,8 @@ public class PottsCellTest {
 	@Test
 	public void getState_valueAssigned_returnsValue() {
 		int cellState = (int)(Math.random() * 100);
-		PottsCell cell = new PottsCell(cellID, 0, cellState, 0, 0, location, lambdas, adhesion, 0, null, null);
+		PottsCell cell = new PottsCell(cellID, 0, cellState, 0, location, lambdas, adhesion, 0, null, null);
 		assertEquals(cellState, cell.getState());
-	}
-	
-	@Test
-	public void getPhase_defaultConstructor_returnsValue() {
-		assertEquals(PHASE_G1, cellDefault.getPhase());
-	}
-	
-	@Test
-	public void getPhase_valueAssigned_returnsValue() {
-		int cellPhase = (int)(Math.random() * 100);
-		PottsCell cell = new PottsCell(cellID, 0, 0, cellPhase, 0, location, lambdas, adhesion, 0, null, null);
-		assertEquals(cellPhase, cell.getPhase());
 	}
 	
 	@Test
@@ -135,7 +125,7 @@ public class PottsCellTest {
 	@Test
 	public void getAge_valueAssigned_returnsValue() {
 		int cellAge = (int)(Math.random() * 100);
-		PottsCell cell = new PottsCell(cellID, 0, 0, 0, cellAge, location, lambdas, adhesion, 0, null, null);
+		PottsCell cell = new PottsCell(cellID, 0, 0, cellAge, location, lambdas, adhesion, 0, null, null);
 		assertEquals(cellAge, cell.getAge());
 	}
 	
@@ -504,6 +494,46 @@ public class PottsCellTest {
 	}
 	
 	@Test
+	public void setState_givenState_assignsValue() {
+		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
+		
+		cell.setState(STATE_QUIESCENT);
+		assertEquals(STATE_QUIESCENT, cell.getState());
+		
+		cell.setState(STATE_PROLIFERATIVE);
+		assertEquals(STATE_PROLIFERATIVE, cell.getState());
+		
+		cell.setState(STATE_APOPTOTIC);
+		assertEquals(STATE_APOPTOTIC, cell.getState());
+		
+		cell.setState(STATE_NECROTIC);
+		assertEquals(STATE_NECROTIC, cell.getState());
+		
+		cell.setState(STATE_AUTOTIC);
+		assertEquals(STATE_AUTOTIC, cell.getState());
+	}
+	
+	@Test
+	public void setState_givenState_updatesModule() {
+		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
+		
+		cell.setState(STATE_QUIESCENT);
+		assertTrue(cell.module instanceof QuiescenceModule);
+		
+		cell.setState(STATE_PROLIFERATIVE);
+		assertTrue(cell.module instanceof ProliferationModule);
+		
+		cell.setState(STATE_APOPTOTIC);
+		assertTrue(cell.module instanceof ApoptosisModule);
+		
+		cell.setState(STATE_NECROTIC);
+		assertTrue(cell.module instanceof NecrosisModule);
+		
+		cell.setState(STATE_AUTOTIC);
+		assertTrue(cell.module instanceof AutosisModule);
+	}
+	
+	@Test
 	public void initialize_givenArray_updatesIDs() {
 		ArrayList<Location.Voxel> voxels = new ArrayList<>();
 		voxels.add(new Location.Voxel(1, 0, 0));
@@ -518,5 +548,13 @@ public class PottsCellTest {
 		assertArrayEquals(new int[] { 0, 0, 0 }, array[0][0]);
 		assertArrayEquals(new int[] { 1, 0, 0 }, array[0][1]);
 		assertArrayEquals(new int[] { 1, 1, 0 }, array[0][2]);
+	}
+	
+	@Test
+	public void step_singleStep_updatesAge() {
+		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
+		PottsSimulation sim = mock(PottsSimulation.class);
+		cell.step(sim);
+		assertEquals(1, cell.getAge(), EPSILON);
 	}
 }

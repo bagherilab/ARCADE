@@ -16,32 +16,8 @@ public interface Cell extends Steppable {
 	/** Code for necrotic cells */
 	int STATE_NECROTIC = 3;
 	
-	/** Code for G1 phase */
-	int PHASE_G1 = 0;
-	
-	/** Code for S phase */
-	int PHASE_S = 1;
-	
-	/** Code for G2 phase */
-	int PHASE_G2 = 2;
-	
-	/** Code for prophase */
-	int PHASE_PROPHASE = 3;
-	
-	/** Code for prometaphase */
-	int PHASE_PROMETAPHASE = 4;
-	
-	/** Code for metaphase */
-	int PHASE_METAPHASE = 5;
-	
-	/** Code for anaphase */
-	int PHASE_ANAPHASE = 6;
-	
-	/** Code for telophase */
-	int PHASE_TELOPHASE = 7;
-	
-	/** Code for cytokinesis */
-	int PHASE_CYTOKINESIS = 8;
+	/** Code for autotic cells */
+	int STATE_AUTOTIC = 4;
 	
 	/** Tag for cytoplasm */
 	int TAG_CYTOPLASM = -1;
@@ -69,13 +45,6 @@ public interface Cell extends Steppable {
 	 * @return  the cell state
 	 */
 	int getState();
-	
-	/**
-	 * Gets the cell phase.
-	 *
-	 * @return  the cell phase
-	 */
-	int getPhase();
 	
 	/**
 	 * Gets the cell age (in minutes)
@@ -214,6 +183,13 @@ public interface Cell extends Steppable {
 	 * @return  the adhesion value
 	 */
 	double getAdhesion(int tag1, int tag2);
+	
+	/**
+	 * Sets the cell state.
+	 *
+	 * @param state  the cell state
+	 */
+	void setState(int state);
 	
 	/**
 	 * Initializes the potts arrays with the cell.

@@ -1,6 +1,9 @@
 package arcade.agent.cell;
 
 import sim.engine.*;
+import arcade.sim.Simulation;
+import arcade.agent.module.Module;
+import arcade.agent.module.*;
 import arcade.env.loc.Location;
 
 public class PottsCell implements Cell {
@@ -18,9 +21,6 @@ public class PottsCell implements Cell {
 	
 	/** Cell state */
 	private int state;
-	
-	/** Cell phase */
-	private int phase;
 	
 	/** Cell age (in minutes) */
 	private int age;
@@ -64,26 +64,27 @@ public class PottsCell implements Cell {
 	/** Adhesion values for cell by tag*/
 	private final double[][] adhesionTag;
 	
+	/** Cell state module */
+	protected Module module;
+	
 	public PottsCell(int id, Location location,
 					 double[] lambdas, double[] adhesion) {
-		this(id, 1, STATE_PROLIFERATIVE, PHASE_G1, 0, location,
+		this(id, 1, STATE_PROLIFERATIVE, 0, location,
 				lambdas, adhesion, 0, null, null);
 	}
 	
 	public PottsCell(int id, int pop, Location location,
 					 double[] lambdas, double[] adhesion, int tags,
 					 double[][] lambdasTag, double[][] adhesionsTag) {
-		this(id, pop, STATE_PROLIFERATIVE, PHASE_G1, 0, location,
+		this(id, pop, STATE_PROLIFERATIVE, 0, location,
 				lambdas, adhesion, tags, lambdasTag, adhesionsTag);
 	}
 	
-	public PottsCell(int id, int pop, int state, int phase, int age, Location location,
+	public PottsCell(int id, int pop, int state, int age, Location location,
 					 double[] lambdas, double[] adhesion, int tags,
 					 double[][] lambdasTag, double[][] adhesionsTag) {
 		this.id = id;
 		this.pop = pop;
-		this.state = state;
-		this.phase = phase;
 		this.age = age;
 		this.tags = tags;
 		this.location = location;
@@ -95,6 +96,7 @@ public class PottsCell implements Cell {
 		this.targetTagSurfaces = (tags == 0 ? null : new double[tags]);
 		this.criticalTagVolumes = (tags == 0 ? null : new double[tags]);
 		this.criticalTagSurfaces = (tags == 0 ? null : new double[tags]);
+		setState(state);
 	}
 	
 	public int getID() { return id; }
@@ -102,8 +104,6 @@ public class PottsCell implements Cell {
 	public int getPop() { return pop; }
 	
 	public int getState() { return state; }
-	
-	public int getPhase() { return phase; }
 	
 	public int getAge() { return age; }
 	
@@ -141,6 +141,28 @@ public class PottsCell implements Cell {
 	
 	public double getAdhesion(int tag1, int tag2) { return (isValid(tag1) && isValid(tag2) ? adhesionTag[-tag1 - 1][-tag2 - 1] : Double.NaN); }
 	
+	public void setState(int state) {
+		this.state = state;
+		
+		switch (state) {
+			case STATE_QUIESCENT:
+				module = new QuiescenceModule(this);
+				break;
+			case STATE_PROLIFERATIVE:
+				module = new ProliferationModule(this);
+				break;
+			case STATE_APOPTOTIC:
+				module = new ApoptosisModule(this);
+				break;
+			case STATE_NECROTIC:
+				module = new NecrosisModule(this);;
+				break;
+			case STATE_AUTOTIC:
+				module = new AutosisModule(this);;
+				break;
+		}
+	}
+	
 	public void initialize(int[][][] ids, int[][][] tags) {
 		location.update(id, ids, tags);
 		
@@ -167,5 +189,18 @@ public class PottsCell implements Cell {
 	 */
 	boolean isValid(int tag) { return -tag > 0 && -tag <= tags; }
 	
-	public void step(SimState simstate) { }
+	/**
+	 * Steps through cell rules.
+	 * 
+	 * @param simstate  the MASON simulation state
+	 */
+	public void step(SimState simstate) {
+		Simulation sim = (Simulation)simstate;
+		
+		// Increase age of cell (in ticks).
+		age++;
+		
+		// Step the module for the cell state.
+		module.stepModule(simstate.random, sim);
+	}
 }
