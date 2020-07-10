@@ -12,7 +12,7 @@ public class PottsLocation implements Location {
 	final static private int BALANCE_DIFFERENCE = 2;
 	
 	/** List of voxels for the location */
-	ArrayList<Voxel> voxels;
+	final ArrayList<Voxel> voxels;
 	
 	/** Location volume */
 	int volume;
@@ -41,7 +41,7 @@ public class PottsLocation implements Location {
 	 * @param voxels  the list of voxels
 	 */
 	public PottsLocation(ArrayList<Voxel> voxels) {
-		this.voxels = voxels;
+		this.voxels = new ArrayList<>(voxels);
 		this.volume = voxels.size();
 		this.surface = calculateSurface();
 	}
@@ -107,12 +107,14 @@ public class PottsLocation implements Location {
 		
 		// Select one split to keep for this location and return the other.
 		if (random.nextDouble() < 0.5) {
-			voxels = voxelsA;
+			voxels.clear();
+			voxels.addAll(voxelsA);
 			volume = voxels.size();
 			surface = calculateSurface();
 			return new PottsLocation(voxelsB);
 		} else {
-			voxels = voxelsB;
+			voxels.clear();
+			voxels.addAll(voxelsB);
 			volume = voxels.size();
 			surface = calculateSurface();
 			return new PottsLocation(voxelsA);
@@ -310,8 +312,8 @@ public class PottsLocation implements Location {
 		// If either coordinate list is not connected, attempt to connect them
 		// by adding in the unconnected coordinates of the other list.
 		while (unconnectedA != null || unconnectedB != null) {
-			ArrayList<Voxel> unconnectedAB = null;
-			ArrayList<Voxel> unconnectedBA = null;
+			ArrayList<Voxel> unconnectedAB;
+			ArrayList<Voxel> unconnectedBA;
 			
 			if (unconnectedA != null) { voxelsB.addAll(unconnectedA); }
 			unconnectedBA = checkVoxels(voxelsB, random, true);

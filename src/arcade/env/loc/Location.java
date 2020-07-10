@@ -54,7 +54,7 @@ public interface Location {
 	 * Splits the location voxels into two lists.
 	 *
 	 * @param random  the seeded random number generator
-	 * @return  a list of voxels
+	 * @return  a location with the split voxels
 	 */
 	PottsLocation split(MersenneTwisterFast random);
 	
@@ -97,13 +97,13 @@ public interface Location {
 	
 	class Voxel {
 		/** Voxel x coordinate */
-		int x;
+		final int x;
 		
 		/** Voxel y coordinate */
-		int y;
+		final int y;
 		
 		/** Voxel z coordinate */
-		int z;
+		final int z;
 		
 		/**
 		 * Creates a {@code Voxel} at the given coordinates.
@@ -132,6 +132,7 @@ public interface Location {
 		 * @return  {@code true} if voxels have the same coordinates, {@code false} otherwise
 		 */
 		public final boolean equals(Object obj) {
+			if (!(obj instanceof Voxel)) { return false; }
 			Voxel voxel = (Voxel)obj;
 			return voxel.x == x && voxel.y == y && voxel.z == z;
 		}

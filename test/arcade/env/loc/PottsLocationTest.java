@@ -552,12 +552,6 @@ public class PottsLocationTest {
 		PottsLocation loc = new PottsLocation(voxelListAB);
 		PottsLocation split = loc.split(randomDoubleZero);
 		
-		ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListA);
-		locVoxels.remove(new Voxel(1, 0, 0));
-		
-		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListB);
-		splitVoxels.add(new Voxel(1, 0, 0));
-		
 		assertEquals(3, loc.volume);
 		assertEquals(4, split.volume);
 		assertEquals(8, loc.surface);
