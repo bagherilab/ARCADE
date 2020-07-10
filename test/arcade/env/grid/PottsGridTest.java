@@ -9,6 +9,22 @@ public class PottsGridTest {
 	final String objectB = "B";
 	
 	@Test
+	public void getAllObjects_withoutContents_returnsEmpty() {
+		PottsGrid grid = new PottsGrid();
+		assertEquals(0, grid.getAllObjects().size());
+	}
+	
+	@Test
+	public void getAllObjects_withContents_returnsContents() {
+		PottsGrid grid = new PottsGrid();
+		grid.addObject(1, objectA);
+		grid.addObject(2, objectB);
+		assertEquals(2, grid.getAllObjects().size());
+		assertTrue(grid.getAllObjects().contains(objectA));
+		assertTrue(grid.getAllObjects().contains(objectB));
+	}
+	
+	@Test
 	public void addObject_validID_updatesObject() {
 		PottsGrid grid = new PottsGrid();
 		grid.addObject(1, objectA);
