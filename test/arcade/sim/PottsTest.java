@@ -3,7 +3,6 @@ package arcade.sim;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import java.util.Arrays;
 import java.util.HashSet;
 import static arcade.sim.Potts.*;
 import arcade.agent.cell.Cell;
@@ -434,27 +433,27 @@ public class PottsTest {
 	@Test
 	public void getNeighborhood_givenID_createsArray() {
 		boolean[][][] array1 = potts.getNeighborhood(1, 2, 2, 0);
-		assertTrue(Arrays.equals(new boolean[] { true, true, false }, array1[0][0]));
-		assertTrue(Arrays.equals(new boolean[] { true, true, false }, array1[0][1]));
-		assertTrue(Arrays.equals(new boolean[] { false, false, false }, array1[0][2]));
+		assertArrayEquals(new boolean[]{true, true, false}, array1[0][0]);
+		assertArrayEquals(new boolean[]{true, true, false}, array1[0][1]);
+		assertArrayEquals(new boolean[]{false, false, false}, array1[0][2]);
 		
 		boolean[][][] array2 = potts.getNeighborhood(3, 2, 2, 0);
-		assertTrue(Arrays.equals(new boolean[] { false, false, true }, array2[0][0]));
-		assertTrue(Arrays.equals(new boolean[] { false, false, true }, array2[0][1]));
-		assertTrue(Arrays.equals(new boolean[] { false, false, false }, array2[0][2]));
+		assertArrayEquals(new boolean[]{false, false, true}, array2[0][0]);
+		assertArrayEquals(new boolean[]{false, false, true}, array2[0][1]);
+		assertArrayEquals(new boolean[]{false, false, false}, array2[0][2]);
 	}
 	
 	@Test
 	public void getNeighborhood_givenTag_createsArray() {
 		boolean[][][] array1 = potts.getNeighborhood(1, -1,2, 2, 0);
-		assertTrue(Arrays.equals(new boolean[] { true, true, false }, array1[0][0]));
-		assertTrue(Arrays.equals(new boolean[] { false, false, false }, array1[0][1]));
-		assertTrue(Arrays.equals(new boolean[] { false, false, false }, array1[0][2]));
+		assertArrayEquals(new boolean[]{true, true, false}, array1[0][0]);
+		assertArrayEquals(new boolean[]{false, false, false}, array1[0][1]);
+		assertArrayEquals(new boolean[]{false, false, false}, array1[0][2]);
 		
 		boolean[][][] array2 = potts.getNeighborhood(1, -3,2, 2, 0);
-		assertTrue(Arrays.equals(new boolean[] { false, false, false }, array2[0][0]));
-		assertTrue(Arrays.equals(new boolean[] { true, false, false }, array2[0][1]));
-		assertTrue(Arrays.equals(new boolean[] { false, false, false }, array2[0][2]));
+		assertArrayEquals(new boolean[]{false, false, false}, array2[0][0]);
+		assertArrayEquals(new boolean[]{true, false, false}, array2[0][1]);
+		assertArrayEquals(new boolean[]{false, false, false}, array2[0][2]);
 	}
 	
 	@Test
