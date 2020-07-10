@@ -201,6 +201,6 @@ public class PottsCell implements Cell {
 		age++;
 		
 		// Step the module for the cell state.
-		module.stepModule(simstate.random, sim);
+		module.step(simstate.random, sim);
 	}
 }
