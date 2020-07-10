@@ -32,6 +32,12 @@ public class PottsLocations extends PottsLocation {
 	
 	public void add(int tag, int x, int y, int z) {
 		super.add(x, y, z);
+		
+		Voxel voxel = new Voxel(x, y, z);
+		for (PottsLocation loc : locations.values()) {
+			if (loc.voxels.contains(voxel)) { return; }
+		}
+		
 		if (!locations.containsKey(tag)) { locations.put(tag, new PottsLocation(new ArrayList<>())); }
 		locations.get(tag).add(x, y, z);
 	}
@@ -42,6 +48,8 @@ public class PottsLocations extends PottsLocation {
 	}
 	
 	public void remove(int tag, int x, int y, int z) {
+		Voxel voxel = new Voxel(x, y, z);
+		if (locations.containsKey(tag) && !locations.get(tag).voxels.contains(voxel)) { return; }
 		super.remove(x, y, z);
 		if (locations.containsKey(tag)) { locations.get(tag).remove(x, y, z); }
 	}

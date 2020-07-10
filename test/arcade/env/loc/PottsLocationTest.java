@@ -11,10 +11,10 @@ import arcade.env.loc.PottsLocation.Direction;
 public class PottsLocationTest {
 	MersenneTwisterFast randomDoubleZero;
 	final int cellTag = -3;
-	ArrayList<Location.Voxel> voxelListForAddRemove;
-	ArrayList<Location.Voxel> voxelListForDiameters;
-	ArrayList<Location.Voxel> voxelListA, voxelListB, voxelListC;
-	ArrayList<Location.Voxel> voxelListAC, voxelListBC, voxelListAB, voxelListABC;
+	ArrayList<Voxel> voxelListForAddRemove;
+	ArrayList<Voxel> voxelListForDiameters;
+	ArrayList<Voxel> voxelListA, voxelListB, voxelListC;
+	ArrayList<Voxel> voxelListAC, voxelListBC, voxelListAB, voxelListABC;
 	
 	Comparator<Voxel> comparator = (v1, v2) ->
 			v1.z != v2.z ? Integer.compare(v1.z, v2.z) :
@@ -131,7 +131,7 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void add_newLocation_updatesList() {
+	public void add_newVoxel_updatesList() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		loc.add(0, 0, 0);
 		loc.add(1, 0, 0);
@@ -139,21 +139,21 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void add_newLocation_updatesVolume() {
+	public void add_newVoxel_updatesVolume() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		loc.add(0, 0, 0);
 		assertEquals(1, loc.volume);
 	}
 	
 	@Test
-	public void add_newLocation_updatesSurface() {
+	public void add_newVoxel_updatesSurface() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		loc.add(0, 0, 0);
 		assertEquals(4, loc.surface);
 	}
 	
 	@Test
-	public void add_existingLocation_doesNothing() {
+	public void add_existingVoxel_doesNothing() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		loc.add(0, 0, 0);
 		loc.add(1, 0, 0);
@@ -162,7 +162,7 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void add_newLocationWithTag_updatesList() {
+	public void add_newVoxelWithTag_updatesList() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		loc.add(cellTag, 0, 0, 0);
 		loc.add(cellTag - 1, 1, 0, 0);
@@ -170,21 +170,21 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void add_newLocationWithTag_updatesVolume() {
+	public void add_newVoxelWithTag_updatesVolume() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		loc.add(cellTag, 0, 0, 0);
 		assertEquals(1, loc.volume);
 	}
 	
 	@Test
-	public void add_newLocationWithTag_updatesSurface() {
+	public void add_newVoxelWithTag_updatesSurface() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		loc.add(cellTag, 0, 0, 0);
 		assertEquals(4, loc.surface);
 	}
 	
 	@Test
-	public void add_existingLocationWithTag_doesNothing() {
+	public void add_existingVoxelWithTag_doesNothing() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		loc.add(cellTag, 0, 0, 0);
 		loc.add(cellTag - 1, 1, 0, 0);
@@ -193,30 +193,30 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void remove_existingLocation_updatesList() {
+	public void remove_existingVoxel_updatesList() {
 		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
-		ArrayList<Location.Voxel> voxelsRemoved = new ArrayList<>();
+		ArrayList<Voxel> voxelsRemoved = new ArrayList<>();
 		voxelsRemoved.add(new Voxel(1, 0, 0));
 		loc.remove(0, 0, 0);
 		assertEquals(voxelsRemoved, loc.voxels);
 	}
 	
 	@Test
-	public void remove_existingLocation_updatesVolume() {
+	public void remove_existingVoxel_updatesVolume() {
 		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
 		loc.remove(0, 0, 0);
 		assertEquals(1, loc.volume);
 	}
 	
 	@Test
-	public void remove_existingLocation_updatesSurface() {
+	public void remove_existingVoxel_updatesSurface() {
 		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
 		loc.remove(0, 0, 0);
 		assertEquals(4, loc.surface);
 	}
 	
 	@Test
-	public void remove_allLocations_returnsEmptyList() {
+	public void remove_allVoxels_returnsEmptyList() {
 		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
 		loc.remove(0, 0, 0);
 		loc.remove(1, 0, 0);
@@ -224,37 +224,37 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void remove_missingLocation_doesNothing() {
+	public void remove_missingVoxel_doesNothing() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		loc.remove(0, 0, 0);
 		assertEquals(new ArrayList<>(), loc.voxels);
 	}
 	
 	@Test
-	public void remove_existingLocationWithTag_updatesList() {
+	public void remove_existingVoxelWithTag_updatesList() {
 		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
-		ArrayList<Location.Voxel> voxelsRemoved = new ArrayList<>();
+		ArrayList<Voxel> voxelsRemoved = new ArrayList<>();
 		voxelsRemoved.add(new Voxel(1, 0, 0));
 		loc.remove(cellTag, 0, 0, 0);
 		assertEquals(voxelsRemoved, loc.voxels);
 	}
 	
 	@Test
-	public void remove_existingLocationWithTag_updatesVolume() {
+	public void remove_existingVoxelWithTag_updatesVolume() {
 		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
 		loc.remove(cellTag, 0, 0, 0);
 		assertEquals(1, loc.volume);
 	}
 	
 	@Test
-	public void remove_existingLocationWithTag_updatesSurface() {
+	public void remove_existingVoxelWithTag_updatesSurface() {
 		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
 		loc.remove(cellTag, 0, 0, 0);
 		assertEquals(4, loc.surface);
 	}
 	
 	@Test
-	public void remove_allLocationsWithTag_returnsEmptyList() {
+	public void remove_allVoxelsWithTag_returnsEmptyList() {
 		PottsLocation loc = new PottsLocation(voxelListForAddRemove);
 		loc.remove(cellTag, 0, 0, 0);
 		loc.remove(cellTag - 1, 1, 0, 0);
@@ -262,7 +262,7 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void remove_missingLocationWithTag_doesNothing() {
+	public void remove_missingVoxelWithTag_doesNothing() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		loc.remove(cellTag, 0, 0, 0);
 		assertEquals(new ArrayList<>(), loc.voxels);
@@ -271,7 +271,7 @@ public class PottsLocationTest {
 	@Test
 	public void update_validID_updatesArray() {
 		int[][][] array = new int[][][] { { { 0, 1, 2 } } };
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
+		ArrayList<Voxel> voxels = new ArrayList<>();
 		voxels.add(new Voxel(0, 1, 0));
 		PottsLocation loc = new PottsLocation(voxels);
 		
@@ -280,8 +280,8 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void getCenter_hasLocation_calculatesValue() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
+	public void getCenter_hasVoxels_calculatesValue() {
+		ArrayList<Voxel> voxels = new ArrayList<>();
 		voxels.add(new Voxel(0, 1, 1));
 		voxels.add(new Voxel(1, 1, 2));
 		voxels.add(new Voxel(2, 2, 2));
@@ -296,7 +296,7 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void getCenter_noLocations_returnsNull() {
+	public void getCenter_noVoxels_returnsNull() {
 		PottsLocation loc = new PottsLocation(new ArrayList<>());
 		assertNull(loc.getCenter());
 	}
@@ -304,11 +304,11 @@ public class PottsLocationTest {
 	@Test
 	public void getDiameters_validLocation_calculatesValues() {
 		PottsLocation loc = new PottsLocation(voxelListForDiameters);
-		EnumMap<PottsLocation.Direction, Integer> diameters = loc.getDiameters();
-		assertEquals(3, (int)diameters.get(PottsLocation.Direction.X_DIRECTION));
-		assertEquals(2, (int)diameters.get(PottsLocation.Direction.Y_DIRECTION));
-		assertEquals(4, (int)diameters.get(PottsLocation.Direction.POSITIVE_XY));
-		assertEquals(3, (int)diameters.get(PottsLocation.Direction.NEGATIVE_XY));
+		EnumMap<Direction, Integer> diameters = loc.getDiameters();
+		assertEquals(3, (int)diameters.get(Direction.X_DIRECTION));
+		assertEquals(2, (int)diameters.get(Direction.Y_DIRECTION));
+		assertEquals(4, (int)diameters.get(Direction.POSITIVE_XY));
+		assertEquals(3, (int)diameters.get(Direction.NEGATIVE_XY));
 	}
 	
 	@Test
@@ -331,7 +331,7 @@ public class PottsLocationTest {
 	
 	@Test
 	public void calculateSurface_validID_calculatesValue() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
+		ArrayList<Voxel> voxels = new ArrayList<>();
 		PottsLocation loc = new PottsLocation(voxels);
 		
 		// 1 voxel
@@ -353,7 +353,7 @@ public class PottsLocationTest {
 	
 	@Test
 	public void updateSurface_validVoxels_calculatesValue() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
+		ArrayList<Voxel> voxels = new ArrayList<>();
 		PottsLocation loc = new PottsLocation(voxels);
 		Voxel voxel = new Voxel(1, 1, 0);
 		
@@ -399,7 +399,7 @@ public class PottsLocationTest {
 	
 	@Test
 	public void splitVoxels_validDirection_updatesLists() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
+		ArrayList<Voxel> voxels = new ArrayList<>();
 		voxels.add(new Voxel(0, 0, 0));
 		voxels.add(new Voxel(0, 1, 0));
 		voxels.add(new Voxel(1, 0, 0));
