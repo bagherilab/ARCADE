@@ -114,7 +114,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void getState_valueAssigned_returnsValue() {
-		int cellState = (int)(Math.random() * 100);
+		int cellState = STATE_QUIESCENT;
 		PottsCell cell = new PottsCell(cellID, 0, cellState, 0, location, lambdas, adhesion, 0, null, null);
 		assertEquals(cellState, cell.getState());
 	}
@@ -533,6 +533,12 @@ public class PottsCellTest {
 		
 		cell.setState(STATE_AUTOTIC);
 		assertTrue(cell.module instanceof AutosisModule);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void setState_invalidState_throwsException() {
+		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
+		cell.setState(-1);
 	}
 	
 	@Test

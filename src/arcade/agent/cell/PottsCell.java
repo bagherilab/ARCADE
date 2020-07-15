@@ -160,6 +160,9 @@ public class PottsCell implements Cell {
 			case STATE_AUTOTIC:
 				module = new AutosisModule(this);
 				break;
+			default:
+				// State must be one of the above cases.
+				throw new IllegalArgumentException();
 		}
 	}
 	

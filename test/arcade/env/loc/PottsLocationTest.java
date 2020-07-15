@@ -9,12 +9,12 @@ import arcade.env.loc.Location.Voxel;
 import arcade.env.loc.PottsLocation.Direction;
 
 public class PottsLocationTest {
-	MersenneTwisterFast randomDoubleZero;
+	MersenneTwisterFast randomDoubleZero, randomDoubleOne;
 	final int cellTag = -3;
 	ArrayList<Voxel> voxelListForAddRemove;
 	ArrayList<Voxel> voxelListForDiameters;
 	ArrayList<Voxel> voxelListA, voxelListB, voxelListC;
-	ArrayList<Voxel> voxelListAC, voxelListBC, voxelListAB, voxelListABC;
+	ArrayList<Voxel> voxelListAC, voxelListCA, voxelListBC, voxelListAB, voxelListABC;
 	
 	Comparator<Voxel> comparator = (v1, v2) ->
 			v1.z != v2.z ? Integer.compare(v1.z, v2.z) :
@@ -25,6 +25,9 @@ public class PottsLocationTest {
 	public void setupMocks() {
 		randomDoubleZero = mock(MersenneTwisterFast.class);
 		when(randomDoubleZero.nextDouble()).thenReturn(0.0);
+		
+		randomDoubleOne = mock(MersenneTwisterFast.class);
+		when(randomDoubleOne.nextDouble()).thenReturn(1.0);
 	}
 	
 	@Before
@@ -78,6 +81,9 @@ public class PottsLocationTest {
 		
 		voxelListAC = new ArrayList<>(voxelListA);
 		voxelListAC.addAll(voxelListC);
+		
+		voxelListCA = new ArrayList<>(voxelListC);
+		voxelListCA.addAll(voxelListA);
 		
 		voxelListBC = new ArrayList<>(voxelListB);
 		voxelListBC.addAll(voxelListC);
@@ -398,12 +404,13 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void splitVoxels_validDirection_updatesLists() {
+	public void splitVoxels_validDirectionRandomZero_updatesLists() {
 		ArrayList<Voxel> voxels = new ArrayList<>();
 		voxels.add(new Voxel(0, 0, 0));
 		voxels.add(new Voxel(0, 1, 0));
 		voxels.add(new Voxel(1, 0, 0));
 		voxels.add(new Voxel(1, 1, 0));
+		voxels.add(new Voxel(2, 2, 0));
 		PottsLocation loc = new PottsLocation(voxels);
 		
 		ArrayList<Voxel> voxelsA = new ArrayList<>();
@@ -416,6 +423,7 @@ public class PottsLocationTest {
 		voxelsASplit.add(new Voxel(1, 0, 0));
 		voxelsBSplit.add(new Voxel(0, 1, 0));
 		voxelsBSplit.add(new Voxel(1, 1, 0));
+		voxelsBSplit.add(new Voxel(2, 2, 0));
 		
 		loc.splitVoxels(Direction.X_DIRECTION, voxelsA, voxelsB, loc.getCenter(), randomDoubleZero);
 		assertEquals(voxelsASplit, voxelsA);
@@ -429,6 +437,7 @@ public class PottsLocationTest {
 		voxelsASplit.add(new Voxel(0, 1, 0));
 		voxelsBSplit.add(new Voxel(1, 0, 0));
 		voxelsBSplit.add(new Voxel(1, 1, 0));
+		voxelsBSplit.add(new Voxel(2, 2, 0));
 		
 		loc.splitVoxels(Direction.Y_DIRECTION, voxelsA, voxelsB, loc.getCenter(), randomDoubleZero);
 		assertEquals(voxelsASplit, voxelsA);
@@ -442,6 +451,7 @@ public class PottsLocationTest {
 		voxelsBSplit.add(new Voxel(0, 1, 0));
 		voxelsBSplit.add(new Voxel(1, 0, 0));
 		voxelsBSplit.add(new Voxel(1, 1, 0));
+		voxelsASplit.add(new Voxel(2, 2, 0));
 		
 		loc.splitVoxels(Direction.POSITIVE_XY, voxelsA, voxelsB, loc.getCenter(), randomDoubleZero);
 		assertEquals(voxelsASplit, voxelsA);
@@ -451,12 +461,82 @@ public class PottsLocationTest {
 		voxelsASplit.clear(); voxelsBSplit.clear();
 		
 		// Split for NEGATIVE_XY
-		voxelsASplit.add(new Voxel(1, 0, 0));
 		voxelsBSplit.add(new Voxel(0, 0, 0));
 		voxelsBSplit.add(new Voxel(0, 1, 0));
+		voxelsASplit.add(new Voxel(1, 0, 0));
 		voxelsBSplit.add(new Voxel(1, 1, 0));
+		voxelsBSplit.add(new Voxel(2, 2, 0));
 		
 		loc.splitVoxels(Direction.NEGATIVE_XY, voxelsA, voxelsB, loc.getCenter(), randomDoubleZero);
+		assertEquals(voxelsASplit, voxelsA);
+		assertEquals(voxelsBSplit, voxelsB);
+	}
+	
+	@Test
+	public void splitVoxels_validDirectionRandomOne_updatesLists() {
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		voxels.add(new Voxel(0, 0, 0));
+		voxels.add(new Voxel(0, 1, 0));
+		voxels.add(new Voxel(1, 0, 0));
+		voxels.add(new Voxel(1, 1, 0));
+		voxels.add(new Voxel(2, 2, 0));
+		PottsLocation loc = new PottsLocation(voxels);
+		
+		ArrayList<Voxel> voxelsA = new ArrayList<>();
+		ArrayList<Voxel> voxelsB = new ArrayList<>();
+		ArrayList<Voxel> voxelsASplit = new ArrayList<>();
+		ArrayList<Voxel> voxelsBSplit = new ArrayList<>();
+		
+		// Split for X_DIRECTION
+		voxelsASplit.add(new Voxel(0, 0, 0));
+		voxelsASplit.add(new Voxel(0, 1, 0));
+		voxelsASplit.add(new Voxel(1, 0, 0));
+		voxelsASplit.add(new Voxel(1, 1, 0));
+		voxelsBSplit.add(new Voxel(2, 2, 0));
+		
+		loc.splitVoxels(Direction.X_DIRECTION, voxelsA, voxelsB, loc.getCenter(), randomDoubleOne);
+		assertEquals(voxelsASplit, voxelsA);
+		assertEquals(voxelsBSplit, voxelsB);
+		
+		voxelsA.clear(); voxelsB.clear();
+		voxelsASplit.clear(); voxelsBSplit.clear();
+		
+		// Split for Y_DIRECTION
+		voxelsASplit.add(new Voxel(0, 0, 0));
+		voxelsASplit.add(new Voxel(0, 1, 0));
+		voxelsASplit.add(new Voxel(1, 0, 0));
+		voxelsASplit.add(new Voxel(1, 1, 0));
+		voxelsBSplit.add(new Voxel(2, 2, 0));
+		
+		loc.splitVoxels(Direction.Y_DIRECTION, voxelsA, voxelsB, loc.getCenter(), randomDoubleOne);
+		assertEquals(voxelsASplit, voxelsA);
+		assertEquals(voxelsBSplit, voxelsB);
+		
+		voxelsA.clear(); voxelsB.clear();
+		voxelsASplit.clear(); voxelsBSplit.clear();
+		
+		// Split for POSITIVE_XY
+		voxelsBSplit.add(new Voxel(0, 0, 0));
+		voxelsBSplit.add(new Voxel(0, 1, 0));
+		voxelsBSplit.add(new Voxel(1, 0, 0));
+		voxelsASplit.add(new Voxel(1, 1, 0));
+		voxelsASplit.add(new Voxel(2, 2, 0));
+		
+		loc.splitVoxels(Direction.POSITIVE_XY, voxelsA, voxelsB, loc.getCenter(), randomDoubleOne);
+		assertEquals(voxelsASplit, voxelsA);
+		assertEquals(voxelsBSplit, voxelsB);
+		
+		voxelsA.clear(); voxelsB.clear();
+		voxelsASplit.clear(); voxelsBSplit.clear();
+		
+		// Split for NEGATIVE_XY
+		voxelsASplit.add(new Voxel(0, 0, 0));
+		voxelsBSplit.add(new Voxel(0, 1, 0));
+		voxelsASplit.add(new Voxel(1, 0, 0));
+		voxelsASplit.add(new Voxel(1, 1, 0));
+		voxelsASplit.add(new Voxel(2, 2, 0));
+		
+		loc.splitVoxels(Direction.NEGATIVE_XY, voxelsA, voxelsB, loc.getCenter(), randomDoubleOne);
 		assertEquals(voxelsASplit, voxelsA);
 		assertEquals(voxelsBSplit, voxelsB);
 	}
@@ -469,16 +549,38 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void checkVoxels_unconnectedVoxelsWithoutUpdate_returnsList() {
+	public void checkVoxels_unconnectedVoxelsWithoutUpdateLargerVisited_returnsList() {
 		ArrayList<Voxel> voxels = new ArrayList<>(voxelListAC);
 		assertEquals(voxelListC, PottsLocation.checkVoxels(voxels, randomDoubleZero, false));
 	}
 	
 	@Test
-	public void checkVoxels_unconnectedVoxelsWithUpdate_updatesList() {
+	public void checkVoxels_unconnectedVoxelsWithoutUpdateLargerUnvisited_returnsList() {
+		ArrayList<Voxel> voxels = new ArrayList<>(voxelListCA);
+		ArrayList<Voxel> unvisited = new ArrayList<>();
+		unvisited.add(voxelListC.get(0));
+		assertEquals(unvisited, PottsLocation.checkVoxels(voxels, randomDoubleZero, false));
+	}
+	
+	@Test
+	public void checkVoxels_unconnectedVoxelsWithUpdateLargerVisited_updatesList() {
 		ArrayList<Voxel> voxels = new ArrayList<>(voxelListAC);
 		assertEquals(voxelListC, PottsLocation.checkVoxels(voxels, randomDoubleZero, true));
 		assertEquals(voxelListA, voxels);
+	}
+
+	@Test
+	public void checkVoxels_unconnectedVoxelsWithUpdateLargerUnvisited_updatesList() {
+		ArrayList<Voxel> voxels = new ArrayList<>(voxelListCA);
+		ArrayList<Voxel> unvisited = new ArrayList<>();
+		unvisited.add(voxelListC.get(0));
+		
+		ArrayList<Voxel> visited = new ArrayList<>();
+		for (int i = 1; i < voxelListC.size(); i++) { visited.add(voxelListC.get(i)); }
+		visited.addAll(voxelListA);
+		
+		assertEquals(unvisited, PottsLocation.checkVoxels(voxels, randomDoubleZero, true));
+		assertEquals(visited, voxels);
 	}
 	
 	@Test
@@ -492,11 +594,17 @@ public class PottsLocationTest {
 	
 	@Test
 	public void connectVoxels_oneListUnconnected_updatesLists() {
-		ArrayList<Voxel> voxelsA = new ArrayList<>(voxelListAC);
-		ArrayList<Voxel> voxelsB = new ArrayList<>(voxelListB);
-		PottsLocation.connectVoxels(voxelsA, voxelsB, randomDoubleZero);
-		assertEquals(voxelListA, voxelsA);
-		assertEquals(voxelListBC, voxelsB);
+		ArrayList<Voxel> voxelsA1 = new ArrayList<>(voxelListAC);
+		ArrayList<Voxel> voxelsB1 = new ArrayList<>(voxelListB);
+		PottsLocation.connectVoxels(voxelsA1, voxelsB1, randomDoubleZero);
+		assertEquals(voxelListA, voxelsA1);
+		assertEquals(voxelListBC, voxelsB1);
+		
+		ArrayList<Voxel> voxelsA2 = new ArrayList<>(voxelListAC);
+		ArrayList<Voxel> voxelsB2 = new ArrayList<>(voxelListB);
+		PottsLocation.connectVoxels(voxelsB2, voxelsA2, randomDoubleZero);
+		assertEquals(voxelListA, voxelsA2);
+		assertEquals(voxelListBC, voxelsB2);
 	}
 	
 	@Test
@@ -528,7 +636,33 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void split_balanceableLocation_returnsList() {
+	public void balanceVoxels_unconnectedLists_updatesLists() {
+		ArrayList<Voxel> voxelsA = new ArrayList<>();
+		ArrayList<Voxel> voxelsB = new ArrayList<>(voxelListAC);
+		
+		voxelsB.add(new Voxel(1, 1, 0));
+		voxelsB.add(new Voxel(3, 1, 0));
+		voxelsB.remove(new Voxel(1, 0, 0));
+		voxelsA.add(new Voxel(1, 0, 0));
+		
+		PottsLocation.balanceVoxels(voxelsA, voxelsB, randomDoubleZero);
+		
+		ArrayList<Voxel> voxelListAX = new ArrayList<>(voxelListA);
+		ArrayList<Voxel> voxelListCX = new ArrayList<>(voxelListC);
+		voxelListAX.add(new Voxel(1, 1, 0));
+		voxelListCX.add(new Voxel(3, 1, 0));
+		
+		voxelListAX.sort(comparator);
+		voxelListCX.sort(comparator);
+		voxelsA.sort(comparator);
+		voxelsB.sort(comparator);
+		
+		assertEquals(voxelListAX, voxelsA);
+		assertEquals(voxelListCX, voxelsB);
+	}
+	
+	@Test
+	public void split_balanceableLocationRandomZero_returnsList() {
 		PottsLocation loc = new PottsLocation(voxelListAB);
 		PottsLocation split = loc.split(randomDoubleZero);
 		
@@ -548,9 +682,38 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void split_balanceableLocation_updatesValues() {
+	public void split_balanceableLocationRandomOne_returnsList() {
+		PottsLocation loc = new PottsLocation(voxelListAB);
+		PottsLocation split = loc.split(randomDoubleOne);
+		
+		ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListB);
+		
+		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListA);
+		
+		locVoxels.sort(comparator);
+		loc.voxels.sort(comparator);
+		splitVoxels.sort(comparator);
+		split.voxels.sort(comparator);
+		
+		assertEquals(locVoxels, loc.voxels);
+		assertEquals(splitVoxels, split.voxels);
+	}
+	
+	@Test
+	public void split_balanceableLocationRandomZero_updatesValues() {
 		PottsLocation loc = new PottsLocation(voxelListAB);
 		PottsLocation split = loc.split(randomDoubleZero);
+		
+		assertEquals(3, loc.volume);
+		assertEquals(4, split.volume);
+		assertEquals(8, loc.surface);
+		assertEquals(10, split.surface);
+	}
+	
+	@Test
+	public void split_balanceableLocationRandomOne_updatesValues() {
+		PottsLocation loc = new PottsLocation(voxelListAB);
+		PottsLocation split = loc.split(randomDoubleOne);
 		
 		assertEquals(3, loc.volume);
 		assertEquals(4, split.volume);
