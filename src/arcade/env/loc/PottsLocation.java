@@ -108,8 +108,8 @@ public class PottsLocation implements Location {
 		balanceVoxels(voxelsA, voxelsB, random);
 		
 		// Select one split to keep for this location and return the other.
-		if (random.nextDouble() < 0.5) { return separateVoxels(random, voxelsA, voxelsB); }
-		else { return separateVoxels(random, voxelsB, voxelsA); }
+		if (random.nextDouble() < 0.5) { return separateVoxels(voxelsA, voxelsB, random); }
+		else { return separateVoxels(voxelsB, voxelsA, random); }
 	}
 	
 	public Voxel getCenter() {
@@ -468,9 +468,10 @@ public class PottsLocation implements Location {
 	 * 
 	 * @param voxelsA  the list of voxels for this location
 	 * @param voxelsB  the list of voxels for the split location
+	 * @param random  the seeded random number generator    
 	 * @return  a {@link arcade.env.loc.Location} object with the split voxels
 	 */
-	Location separateVoxels(MersenneTwisterFast random, ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB) {
+	Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB, MersenneTwisterFast random) {
 		voxels.clear();
 		voxels.addAll(voxelsA);
 		volume = voxels.size();
