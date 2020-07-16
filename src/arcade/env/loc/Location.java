@@ -40,6 +40,16 @@ public interface Location {
 	 * @param z  the z coordinate
 	 */
 	void remove(int tag, int x, int y, int z);
+
+	/**
+	 * Assigns the voxel at the given coordinates to the given tag.
+	 * 
+	 * @param tag  the voxel tag
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
+	 */
+	void assign(int tag, int x, int y, int z);
 	
 	/**
 	 * Updates the array for the location.
@@ -56,7 +66,7 @@ public interface Location {
 	 * @param random  the seeded random number generator
 	 * @return  a location with the split voxels
 	 */
-	PottsLocation split(MersenneTwisterFast random);
+	Location split(MersenneTwisterFast random);
 	
 	/**
 	 * Gets the voxel at the center of the location.

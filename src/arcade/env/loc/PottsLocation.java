@@ -76,6 +76,8 @@ public class PottsLocation implements Location {
 	
 	public void remove(int tag, int x, int y, int z) { remove(x, y, z); }
 	
+	public void assign(int tag, int x, int y, int z) { }
+	
 	public void update(int id, int[][][] ids, int[][][] tags) {
 		for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = id; }
 	}
@@ -89,7 +91,7 @@ public class PottsLocation implements Location {
 	 * One of the splits is assigned to the current location and the other is
 	 * returned.
 	 */
-	public PottsLocation split(MersenneTwisterFast random) {
+	public Location split(MersenneTwisterFast random) {
 		// Get center voxel.
 		Voxel center = getCenter();
 		
@@ -99,26 +101,15 @@ public class PottsLocation implements Location {
 		
 		// Get split direction.
 		Direction direction = getDirection(random);
-		splitVoxels(direction, voxelsA, voxelsB, center, random);
+		splitVoxels(direction, voxels, voxelsA, voxelsB, center, random);
 		
 		// Ensure that voxel split is connected and balanced.
 		connectVoxels(voxelsA, voxelsB, random);
 		balanceVoxels(voxelsA, voxelsB, random);
 		
 		// Select one split to keep for this location and return the other.
-		if (random.nextDouble() < 0.5) {
-			voxels.clear();
-			voxels.addAll(voxelsA);
-			volume = voxels.size();
-			surface = calculateSurface();
-			return new PottsLocation(voxelsB);
-		} else {
-			voxels.clear();
-			voxels.addAll(voxelsB);
-			volume = voxels.size();
-			surface = calculateSurface();
-			return new PottsLocation(voxelsA);
-		}
+		if (random.nextDouble() < 0.5) { return separateVoxels(random, voxelsA, voxelsB); }
+		else { return separateVoxels(random, voxelsB, voxelsA); }
 	}
 	
 	public Voxel getCenter() {
@@ -253,8 +244,9 @@ public class PottsLocation implements Location {
 	 * @param center  the center voxel
 	 * @param random  the seeded random number generator
 	 */
-	void splitVoxels(Direction direction, ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
-					 Voxel center, MersenneTwisterFast random) {
+	static void splitVoxels(Direction direction, ArrayList<Voxel> voxels,
+							ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
+							Voxel center, MersenneTwisterFast random) {
 		for (Voxel voxel : voxels) {
 			switch (direction) {
 				case X_DIRECTION:
@@ -273,7 +265,7 @@ public class PottsLocation implements Location {
 						else { voxelsB.add(voxel); }
 					}
 					break;
-				case POSITIVE_XY:
+				case NEGATIVE_XY:
 					if (voxel.x - center.x > center.y - voxel.y) { voxelsA.add(voxel); }
 					else if (voxel.x - center.x < center.y - voxel.y) { voxelsB.add(voxel); }
 					else {
@@ -281,7 +273,7 @@ public class PottsLocation implements Location {
 						else { voxelsB.add(voxel); }
 					}
 					break;
-				case NEGATIVE_XY:
+				case POSITIVE_XY:
 					if (voxel.x - center.x > voxel.y - center.y) { voxelsA.add(voxel); }
 					else if (voxel.x - center.x < voxel.y - center.y) { voxelsB.add(voxel); }
 					else {
@@ -469,6 +461,21 @@ public class PottsLocation implements Location {
 			}
 		}
 		else { return null; }
+	}
+	
+	/**
+	 * Separates the voxels in the list between this location and a new location.
+	 * 
+	 * @param voxelsA  the list of voxels for this location
+	 * @param voxelsB  the list of voxels for the split location
+	 * @return  a {@link arcade.env.loc.Location} object with the split voxels
+	 */
+	Location separateVoxels(MersenneTwisterFast random, ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB) {
+		voxels.clear();
+		voxels.addAll(voxelsA);
+		volume = voxels.size();
+		surface = calculateSurface();
+		return new PottsLocation(voxelsB);
 	}
 	
 	/**

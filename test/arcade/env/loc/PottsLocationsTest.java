@@ -298,6 +298,83 @@ public class PottsLocationsTest {
 	}
 	
 	@Test
+	public void assign_existingVoxelSameTag_doesNothing() {
+		PottsLocations location = new PottsLocations(new ArrayList<>());
+		ArrayList<Voxel> voxelDefault = new ArrayList<>();
+		ArrayList<Voxel> voxelAdditional = new ArrayList<>();
+		
+		voxelDefault.add(new Voxel(0, 0, 0));
+		voxelAdditional.add(new Voxel(1, 0, 0));
+		
+		location.add(TAG_DEFAULT, 0, 0, 0);
+		location.add(TAG_ADDITIONAL, 1, 0, 0);
+		
+		location.assign(TAG_DEFAULT, 0, 0, 0);
+		assertEquals(voxelDefault, location.locations.get(TAG_DEFAULT).voxels);
+		assertEquals(voxelAdditional, location.locations.get(TAG_ADDITIONAL).voxels);
+	}
+	
+	@Test
+	public void assign_existingVoxelDifferentTag_updatesTags() {
+		PottsLocations location = new PottsLocations(new ArrayList<>());
+		ArrayList<Voxel> voxelDefault = new ArrayList<>();
+		ArrayList<Voxel> voxelAdditional = new ArrayList<>();
+		ArrayList<Voxel> voxelUpdated = new ArrayList<>();
+		
+		voxelDefault.add(new Voxel(0, 0, 0));
+		voxelAdditional.add(new Voxel(1, 0, 0));
+		
+		voxelUpdated.addAll(voxelAdditional);
+		voxelUpdated.addAll(voxelDefault);
+		
+		location.add(TAG_DEFAULT, 0, 0, 0);
+		location.add(TAG_ADDITIONAL, 1, 0, 0);
+		location.assign(TAG_ADDITIONAL, 0, 0, 0);
+		
+		assertEquals(new ArrayList<>(), location.locations.get(TAG_DEFAULT).voxels);
+		assertEquals(voxelUpdated, location.locations.get(TAG_ADDITIONAL).voxels);
+	}
+	
+	@Test
+	public void assign_existingVoxelDifferentTag_updatesVolumes() {
+		PottsLocations location = new PottsLocations(new ArrayList<>());
+		location.add(TAG_DEFAULT, 0, 0, 0);
+		location.add(TAG_ADDITIONAL, 1, 0, 0);
+		location.assign(TAG_ADDITIONAL, 0, 0, 0);
+		
+		assertEquals(0, location.locations.get(TAG_DEFAULT).volume);
+		assertEquals(2, location.locations.get(TAG_ADDITIONAL).volume);
+	}
+	
+	@Test
+	public void assign_existingVoxelDifferentTag_updatesSurfaces() {
+		PottsLocations location = new PottsLocations(new ArrayList<>());
+		location.add(TAG_DEFAULT, 0, 0, 0);
+		location.add(TAG_ADDITIONAL, 1, 0, 0);
+		location.assign(TAG_ADDITIONAL, 0, 0, 0);
+		
+		assertEquals(0, location.locations.get(TAG_DEFAULT).surface);
+		assertEquals(6, location.locations.get(TAG_ADDITIONAL).surface);
+	}
+	
+	@Test
+	public void assign_missingVoxel_doesNothing() {
+		PottsLocations location = new PottsLocations(new ArrayList<>());
+		ArrayList<Voxel> voxelDefault = new ArrayList<>();
+		ArrayList<Voxel> voxelAdditional = new ArrayList<>();
+		
+		voxelDefault.add(new Voxel(0, 0, 0));
+		voxelAdditional.add(new Voxel(1, 0, 0));
+		
+		location.add(TAG_DEFAULT, 0, 0, 0);
+		location.add(TAG_ADDITIONAL, 1, 0, 0);
+		
+		location.assign(TAG_DEFAULT, 2, 0, 0);
+		assertEquals(voxelDefault, location.locations.get(TAG_DEFAULT).voxels);
+		assertEquals(voxelAdditional, location.locations.get(TAG_ADDITIONAL).voxels);
+	}
+	
+	@Test
 	public void update_validTag_updatesArrays() {
 		int[][][] ids = new int[][][] { { { 0, 1, 2 } } };
 		int[][][] tags = new int[][][] { { { 0, 0, 0 } } };
@@ -310,6 +387,5 @@ public class PottsLocationsTest {
 		loc.update(3, ids, tags);
 		assertArrayEquals(new int[] { 3, 3, 2 }, ids[0][0]);
 		assertArrayEquals(new int[] { TAG_ADDITIONAL, TAG_DEFAULT, 0 }, tags[0][0]);
-		
 	}
 }

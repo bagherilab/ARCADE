@@ -54,6 +54,27 @@ public class PottsLocations extends PottsLocation {
 		if (locations.containsKey(tag)) { locations.get(tag).remove(x, y, z); }
 	}
 	
+	public void assign(int tag, int x, int y, int z) {
+		Voxel voxel = new Voxel(x, y, z);
+		int oldTag = 0;
+		
+		// Check all tags for the voxel. 
+		for (int key : locations.keySet()) {
+			if (key != tag && locations.get(key).voxels.contains(voxel)) { oldTag = key; }
+		}
+		
+		// Only assign if voxel exists and is assigned to a different tag.
+		if (oldTag == 0) { return; }
+		
+		locations.get(tag).voxels.add(voxel);
+		locations.get(tag).volume++;
+		locations.get(tag).surface += locations.get(tag).updateSurface(voxel);
+		
+		locations.get(oldTag).voxels.remove(voxel);
+		locations.get(oldTag).volume--;
+		locations.get(oldTag).surface -= locations.get(oldTag).updateSurface(voxel);
+	}
+	
 	public void update(int id, int[][][] ids, int[][][] tags) {
 		super.update(id, ids, tags);
 		
