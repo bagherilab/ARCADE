@@ -390,12 +390,24 @@ public class Potts implements Steppable {
 		if (sourceID > 0) {
 			boolean candidateConnected = getConnectivity(getNeighborhood(sourceID, x, y, z), IDS[z][x][y] == 0);
 			if (!candidateConnected) { return; }
+			
+			// Check connectivity of tags.
+			if (TAGS[z][x][y] < TAG_DEFAULT) {
+				boolean candidateTagConnected = getConnectivity(getNeighborhood(sourceID, TAGS[z][x][y], x, y, z), TAGS[z][x][y] == -1);
+				if (!candidateTagConnected) { return; }
+			}
 		}
 		
 		// Check connectivity of target.
 		if (targetID > 0) {
 			boolean targetConnected = getConnectivity(getNeighborhood(targetID, x, y, z), IDS[z][x][y] == 0);
 			if (!targetConnected) { return; }
+			
+			// Check connectivity of tags.
+			if (TAGS[z][x][y] < TAG_DEFAULT) {
+				boolean candidateTagConnected = getConnectivity(getNeighborhood(targetID, TAGS[z][x][y], x, y, z), TAGS[z][x][y] == -1);
+				if (!candidateTagConnected) { return; }
+			}
 		}
 		
 		// Calculate energy change.
@@ -434,12 +446,16 @@ public class Potts implements Steppable {
 	 */
 	void flip(int id, int sourceTag, int targetTag, int x, int y, int z, MersenneTwisterFast random) {
 		// Check connectivity of source.
-		boolean candidateConnected = getConnectivity(getNeighborhood(id, sourceTag, x, y, z), IDS[z][x][y] == 0);
-		if (!candidateConnected) { return; }
+		if (sourceTag < TAG_DEFAULT) {
+			boolean candidateConnected = getConnectivity(getNeighborhood(id, sourceTag, x, y, z), TAGS[z][x][y] == -1);
+			if (!candidateConnected) { return; }
+		}
 		
 		// Check connectivity of target.
-		boolean targetConnected = getConnectivity(getNeighborhood(id, targetTag, x, y, z), IDS[z][x][y] == 0);
-		if (!targetConnected) { return; }
+		if (targetTag < TAG_DEFAULT) {
+			boolean targetConnected = getConnectivity(getNeighborhood(id, targetTag, x, y, z), TAGS[z][x][y] == -1);
+			if (!targetConnected) { return; }
+		}
 		
 		// Calculate energy change.
 		double dH = 0;
