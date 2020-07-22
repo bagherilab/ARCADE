@@ -1,6 +1,7 @@
 package arcade.agent.cell;
 
 import sim.engine.*;
+import arcade.agent.module.Module;
 import arcade.env.loc.Location;
 
 public interface Cell extends Steppable {
@@ -59,6 +60,13 @@ public interface Cell extends Steppable {
 	 * @return  the cell location
 	 */
 	Location getLocation();
+	
+	/**
+	 * Gets the cell module object.
+	 *
+	 * @return  the cell module
+	 */
+	Module getModule();
 	
 	/**
 	 * Gets the cell volume (in voxels).
@@ -198,6 +206,14 @@ public interface Cell extends Steppable {
 	 * @param tags  the {@link arcade.sim.Potts} array for tags   
 	 */
 	void initialize(int[][][] ids, int[][][] tags);
+	
+	/**
+	 * Resets the potts arrays with the cell.
+	 *
+	 * @param ids  the {@link arcade.sim.Potts} array for ids
+	 * @param tags  the {@link arcade.sim.Potts} array for tags   
+	 */
+	void reset(int[][][] ids, int[][][] tags);
 	
 	/**
 	 * Updates target volume and surface area.
