@@ -215,7 +215,7 @@ public class PottsLocations extends PottsLocation {
 			
 			// Update iteration and current selected size.
 			iter++;
-			currentSize = selected.size();System.out.println(iter + " " + currentSize);
+			currentSize = selected.size();
 		}
 		
 		// Reassign selected voxels.

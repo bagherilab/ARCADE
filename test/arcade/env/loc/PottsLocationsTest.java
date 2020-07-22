@@ -518,6 +518,27 @@ public class PottsLocationsTest {
 	}
 	
 	@Test
+	public void assignVoxels_noCenterVoxel_updatesTags() {
+		PottsLocations loc = new PottsLocations(new ArrayList<>());
+		loc.locations.put(TAG_ADDITIONAL, new PottsLocation(new ArrayList<>()));
+		
+		loc.add(TAG_DEFAULT, 0, 0, 0);
+		loc.add(TAG_DEFAULT, 1, 0, 0);
+		loc.add(TAG_DEFAULT, 2, 0, 0);
+		loc.add(TAG_DEFAULT, 0, 1, 0);
+		loc.add(TAG_DEFAULT, 0, 2, 0);
+		
+		MersenneTwisterFast randomMock = mock(MersenneTwisterFast.class);
+		when(randomMock.nextInt(5)).thenReturn(0);
+		
+		PottsLocations.assignVoxels(loc, new double[] { 0.8, 0.2 }, randomMock);
+		
+		assertEquals(4, loc.locations.get(TAG_DEFAULT).voxels.size());
+		assertEquals(1, loc.locations.get(TAG_ADDITIONAL).voxels.size());
+		assertEquals(new Voxel(0, 0, 0), loc.locations.get(TAG_ADDITIONAL).voxels.get(0));
+	}
+	
+	@Test
 	public void selectVoxels_maxNumber_updatesTags() {
 		ArrayList<Voxel> voxels = new ArrayList<>();
 		
