@@ -2,7 +2,9 @@ package arcade.agent.module;
 
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
+import arcade.sim.Potts;
 import arcade.agent.cell.PottsCell;
+import arcade.env.loc.Location;
 import static arcade.agent.cell.Cell.*;
 
 public abstract class ProliferationModule implements Module {
@@ -86,7 +88,7 @@ public abstract class ProliferationModule implements Module {
 				stepG2(r);
 				break;
 			case PHASE_M:
-				stepM(r);
+				stepM(r, random, sim);
 				break;
 		}
 	}
@@ -194,14 +196,35 @@ public abstract class ProliferationModule implements Module {
 	
 	/**
 	 * Performs actions for M phase.
+	 * <p>
+	 * Cell will complete cell division after an average time of {@code DURATION_M}.
+	 * The cell location is split, along with any tagged regions.
+	 * The new cell is created, initialized, and added to the schedule.
+	 * Both cells are reset remain in the proliferative state.
 	 * 
 	 * @param r  a random number
+	 * @param random  the random number generator
+	 * @param sim  the simulation instance
 	 */
-	void stepM(double r) {
-		// TODO: add cell division
-		
-		// Check for transition to M phase.
+	void stepM(double r, MersenneTwisterFast random, Simulation sim) {
+		// Check for completion of M phase.
 		double p = Simulation.DT/DURATION_M;
-		if (r < p) { phase = PHASE_G1; }
+		if (r < p) {
+			Potts potts = sim.getPotts();
+			
+			// Split current location.
+			Location newLocation = cell.getLocation().split(random);
+			
+			// Reset arrays, targets, and state for current cell.
+			cell.reset(potts.IDS, potts.TAGS);
+			phase = PHASE_G1;
+			
+			// Create and schedule new cell.
+			int newID = sim.getID();
+			PottsCell newCell = new PottsCell(cell, newID, STATE_PROLIFERATIVE, newLocation);
+			sim.getAgents().addObject(newID, newCell);
+			newCell.reset(potts.IDS, potts.TAGS);
+			sim.scheduleCell(newCell);
+		}
 	}
 }

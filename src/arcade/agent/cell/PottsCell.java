@@ -219,7 +219,7 @@ public class PottsCell implements Cell {
 				module = new QuiescenceModule(this);
 				break;
 			case STATE_PROLIFERATIVE:
-				module = new ProliferationModule(this);
+				module = new ProliferationModule.Simple(this);
 				break;
 			case STATE_APOPTOTIC:
 				module = new ApoptosisModule(this);
