@@ -62,18 +62,38 @@ public abstract class ProliferationModule implements Module {
 	/** {@code true} if cell is arrested in a phase, {@code false} otherwise */
 	boolean isArrested;
 	
+	/**
+	 * Creates a {@code ProliferationModule} for the given {@link PottsCell}.
+	 * 
+	 * @param cell  the {@link PottsCell} the module is associated with
+	 */
 	public ProliferationModule(PottsCell cell) {
 		this.cell = cell;
 		this.phase = PHASE_G1;
 	}
 	
+	/**
+	 * Extension of {@link ProliferationModule} using simple phases.
+	 */
 	public static class Simple extends ProliferationModule {
+		/**
+		 * Creates a {@link ProliferationModule} using simple phases.
+		 * 
+		 * @param cell  the {@link PottsCell} the module is associated with
+		 */
 		public Simple(PottsCell cell) { super(cell); }
+		
 		public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
 	}
 	
 	public int getPhase() { return phase; }
 	
+	/**
+	 * Calls the step method for the current simple phase.
+	 * 
+	 * @param random  the random number generator
+	 * @param sim  the simulation instance
+	 */
 	public void simpleStep(MersenneTwisterFast random, Simulation sim) {
 		double r = random.nextDouble();
 		

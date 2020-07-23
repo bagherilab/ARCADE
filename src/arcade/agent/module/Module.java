@@ -15,7 +15,7 @@ public interface Module {
 	/**
 	 * Gets the module phase.
 	 * 
-	 * @return  the module phase.
+	 * @return  the module phase
 	 */
 	int getPhase();
 }
