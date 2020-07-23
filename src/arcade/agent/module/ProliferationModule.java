@@ -5,7 +5,7 @@ import arcade.sim.Simulation;
 import arcade.agent.cell.PottsCell;
 import static arcade.agent.cell.Cell.*;
 
-public class ProliferationModule implements Module  {
+public abstract class ProliferationModule implements Module {
 	/** Code for G1 phase */
 	public static final int PHASE_G1 = 0;
 	
@@ -65,9 +65,14 @@ public class ProliferationModule implements Module  {
 		this.phase = PHASE_G1;
 	}
 	
+	public static class Simple extends ProliferationModule {
+		public Simple(PottsCell cell) { super(cell); }
+		public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
+	}
+	
 	public int getPhase() { return phase; }
 	
-	public void step(MersenneTwisterFast random, Simulation sim) {
+	public void simpleStep(MersenneTwisterFast random, Simulation sim) {
 		double r = random.nextDouble();
 		
 		switch (phase) {
