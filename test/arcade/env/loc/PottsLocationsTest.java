@@ -414,6 +414,26 @@ public class PottsLocationsTest {
 	}
 	
 	@Test
+	public void clear_hasVoxels_updatesArray() {
+		PottsLocations location = new PottsLocations(voxelListForAddRemove);
+		int[][][] ids = new int[][][] { { { 1, 0, 0 }, { 1, 0, 0 } } };
+		int[][][] tags = new int[][][] { { { -1, 0, 0 }, { -2, 0, 0 } } };
+		location.clear(ids, tags);
+		
+		assertArrayEquals(new int[] { 0, 0, 0 }, ids[0][0]);
+		assertArrayEquals(new int[] { 0, 0, 0 }, ids[0][1]);
+		assertArrayEquals(new int[] { 0, 0, 0 }, tags[0][0]);
+		assertArrayEquals(new int[] { 0, 0, 0 }, tags[0][1]);
+	}
+	
+	@Test
+	public void clear_hasVoxels_updatesLists() {
+		PottsLocations location = new PottsLocations(voxelListForAddRemove);
+		location.clear(new int[1][3][3], new int[1][3][3]);
+		assertEquals(0, location.locations.size());
+	}
+	
+	@Test
 	public void update_validTag_updatesArrays() {
 		int[][][] ids = new int[][][] { { { 0, 1, 2 } } };
 		int[][][] tags = new int[][][] { { { 0, 0, 0 } } };

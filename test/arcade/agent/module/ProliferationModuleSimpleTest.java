@@ -3,6 +3,7 @@ package arcade.agent.module;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import sim.engine.Schedule;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
 import arcade.sim.Potts;
@@ -19,6 +20,7 @@ public class ProliferationModuleSimpleTest {
 	MersenneTwisterFast random;
 	Location location, newLocation;
 	Potts potts;
+	Schedule schedule;
 	Simulation sim;
 	Grid grid;
 	double[] lambdas = new double[] { Math.random()*100, Math.random()*100 };
@@ -46,9 +48,11 @@ public class ProliferationModuleSimpleTest {
 		potts = mock(Potts.class);
 		grid = spy(mock(Grid.class));
 		sim = mock(Simulation.class);
+		schedule = spy(mock(Schedule.class));
 		when(sim.getPotts()).thenReturn(potts);
 		when(sim.getID()).thenReturn(2);
 		when(sim.getAgents()).thenReturn(grid);
+		when(sim.getSchedule()).thenReturn(schedule);
 	}
 	
 	@Test
@@ -127,10 +131,23 @@ public class ProliferationModuleSimpleTest {
 		ProliferationModule spy = spy(module);
 		spy.phase = PHASE_G1;
 		
-		spy.stepG1(0);
+		spy.stepG1(BASAL_APOPTOSIS_RATE*Simulation.DT + EPSILON);
 		verify(cell).updateTarget(RATE_G1, 2);
 		verify(spy).checkpointG1();
 		assertEquals(PHASE_S, spy.phase);
+	}
+	
+	@Test
+	public void stepG1_withStateChange_callsMethods() {
+		ProliferationModule module = new ProliferationModule.Simple(cell);
+		ProliferationModule spy = spy(module);
+		spy.phase = PHASE_G1;
+		
+		spy.stepG1(0);
+		verify(cell, never()).updateTarget(RATE_G1, 2);
+		verify(spy, never()).checkpointG1();
+		assertEquals(STATE_APOPTOTIC, cell.getState());
+		assertTrue(spy.cell.getModule() instanceof ApoptosisModule);
 	}
 	
 	@Test
@@ -356,7 +373,7 @@ public class ProliferationModuleSimpleTest {
 		verify(cell, never()).reset(null, null);
 		verify(sim, never()).getAgents();
 		verify(sim, never()).getID();
-		verify(sim, never()).scheduleCell(isA(PottsCell.class));
+		verify(sim, never()).getSchedule();
 		verify(grid, never()).addObject(eq(2), isA(PottsCell.class));
 		assertEquals(PHASE_M, spy.phase);
 	}
@@ -372,7 +389,7 @@ public class ProliferationModuleSimpleTest {
 		verify(cell).reset(null, null);
 		verify(sim).getAgents();
 		verify(sim).getID();
-		verify(sim).scheduleCell(isA(PottsCell.class));
+		verify(sim).getSchedule();
 		verify(grid).addObject(eq(2), isA(PottsCell.class));
 		assertEquals(PHASE_G1, spy.phase);
 	}

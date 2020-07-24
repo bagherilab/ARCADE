@@ -282,6 +282,23 @@ public class PottsLocationTest {
 	}
 	
 	@Test
+	public void clear_hasVoxels_updatesArray() {
+		PottsLocation location = new PottsLocation(voxelListForAddRemove);
+		int[][][] array = new int[][][] { { { 1, 0, 0 }, { 1, 0, 0 } } };
+		location.clear(array, null);
+		
+		assertArrayEquals(new int[] { 0, 0, 0 }, array[0][0]);
+		assertArrayEquals(new int[] { 0, 0, 0 }, array[0][1]);
+	}
+	
+	@Test
+	public void clear_hasVoxels_updatesLists() {
+		PottsLocation location = new PottsLocation(voxelListForAddRemove);
+		location.clear(new int[1][3][3], new int[1][3][3]);
+		assertEquals(0, location.voxels.size());
+	}
+	
+	@Test
 	public void update_validID_updatesArray() {
 		int[][][] array = new int[][][] { { { 0, 1, 2 } } };
 		ArrayList<Voxel> voxels = new ArrayList<>();

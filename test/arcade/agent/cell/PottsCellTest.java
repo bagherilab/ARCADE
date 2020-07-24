@@ -4,6 +4,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.ArrayList;
+import sim.engine.*;
 import arcade.sim.PottsSimulation;
 import arcade.env.loc.*;
 import arcade.agent.module.*;
@@ -14,7 +15,7 @@ import static arcade.sim.Potts.*;
 import static arcade.sim.Simulation.*;
 
 public class PottsCellTest {
-	private static final double EPSILON = 0;
+	private static final double EPSILON = 1E-5;
 	private static final int TAG_ADDITIONAL = TAG_DEFAULT - 1;
 	double lambdaVolume;
 	double lambdaSurface;
@@ -642,6 +643,24 @@ public class PottsCellTest {
 	public void setState_invalidState_throwsException() {
 		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
 		cell.setState(-1);
+	}
+	
+	@Test
+	public void schedule_validInput_callsMethod() {
+		Schedule schedule = spy(mock(Schedule.class));
+		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
+		cell.schedule(schedule);
+		
+		verify(schedule).scheduleRepeating(cell, ORDERING_CELLS, 1);
+	}
+	
+	@Test
+	public void schedule_validInput_assignStopper() {
+		Schedule schedule = spy(mock(Schedule.class));
+		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
+		when(schedule.scheduleRepeating(cell, ORDERING_CELLS, 1)).thenReturn(mock(Stoppable.class));
+		cell.schedule(schedule);
+		assertNotNull(cell.stopper);
 	}
 	
 	@Test
