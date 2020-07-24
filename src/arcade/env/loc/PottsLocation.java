@@ -78,6 +78,11 @@ public class PottsLocation implements Location {
 	
 	public void assign(int tag, int x, int y, int z) { }
 	
+	public void clear(int[][][] ids, int[][][] tags) {
+		for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = 0; }
+		voxels.clear();
+	}
+	
 	public void update(int id, int[][][] ids, int[][][] tags) {
 		for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = id; }
 	}

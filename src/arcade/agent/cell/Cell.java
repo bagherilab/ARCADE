@@ -200,6 +200,13 @@ public interface Cell extends Steppable {
 	void setState(int state);
 	
 	/**
+	 * Schedules the cell in the simulation.
+	 *
+	 * @param schedule  the simulation schedule
+	 */
+	void schedule(Schedule schedule);
+	
+	/**
 	 * Initializes the potts arrays with the cell.
 	 * 
 	 * @param ids  the {@link arcade.sim.Potts} array for ids

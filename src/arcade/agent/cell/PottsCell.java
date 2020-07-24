@@ -222,7 +222,7 @@ public class PottsCell implements Cell {
 				module = new ProliferationModule.Simple(this);
 				break;
 			case STATE_APOPTOTIC:
-				module = new ApoptosisModule(this);
+				module = new ApoptosisModule.Simple(this);
 				break;
 			case STATE_NECROTIC:
 				module = new NecrosisModule(this);
@@ -234,6 +234,10 @@ public class PottsCell implements Cell {
 				// State must be one of the above cases.
 				throw new IllegalArgumentException();
 		}
+	}
+	
+	public void schedule(Schedule schedule) {
+		stopper = schedule.scheduleRepeating(this, Simulation.ORDERING_CELLS, 1);
 	}
 	
 	public void initialize(int[][][] ids, int[][][] tags) {

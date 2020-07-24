@@ -40,7 +40,7 @@ public interface Location {
 	 * @param z  the z coordinate
 	 */
 	void remove(int tag, int x, int y, int z);
-
+	
 	/**
 	 * Assigns the voxel at the given coordinates to the given tag.
 	 * 
@@ -50,6 +50,14 @@ public interface Location {
 	 * @param z  the z coordinate
 	 */
 	void assign(int tag, int x, int y, int z);
+	
+	/**
+	 * Clears all voxel lists and arrays.
+	 * 
+	 * @param ids  the potts array for ids
+	 * @param tags  the potts array for tags
+	 */
+	void clear(int[][][] ids, int[][][] tags);
 	
 	/**
 	 * Updates the array for the location.

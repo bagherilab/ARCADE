@@ -81,6 +81,16 @@ public class PottsLocations extends PottsLocation {
 		locations.get(oldTag).surface -= locations.get(oldTag).updateSurface(voxel);
 	}
 	
+	public void clear(int[][][] ids, int[][][] tags) {
+		for (Voxel voxel : voxels) {
+			ids[voxel.z][voxel.x][voxel.y] = 0;
+			tags[voxel.z][voxel.x][voxel.y] = 0;
+		}
+		
+		voxels.clear();
+		locations.clear();
+	}
+	
 	public void update(int id, int[][][] ids, int[][][] tags) {
 		super.update(id, ids, tags);
 		

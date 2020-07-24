@@ -46,12 +46,15 @@ public abstract class ProliferationModule implements Module {
 	
 	/** Ratio of critical volume for G1 growth checkpoint */
 	public static final double GROWTH_CHECKPOINT_G1 = 2*0.95;
-
+	
 	/** Ratio of critical volume for S nucleus checkpoint */
 	public static final double GROWTH_CHECKPOINT_S = 2*0.99;
 	
 	/** Ratio of critical volume for G2 growth checkpoint */
 	public static final double GROWTH_CHECKPOINT_G2 = 2*0.99;
+	
+	/** Basal rate of apoptosis (hours^-1) */
+	public static final double BASAL_APOPTOSIS_RATE = 0.00127128;
 	
 	/** Code for phase */
 	int phase;
@@ -126,6 +129,12 @@ public abstract class ProliferationModule implements Module {
 	 * @param r  a random number
 	 */
 	void stepG1(double r) {
+		// Random chance of apoptosis.
+		if (r < BASAL_APOPTOSIS_RATE*Simulation.DT) {
+			cell.setState(STATE_APOPTOTIC);
+			return;
+		}
+		
 		// Increase size of cell.
 		cell.updateTarget(RATE_G1, 2);
 		
@@ -244,7 +253,7 @@ public abstract class ProliferationModule implements Module {
 			PottsCell newCell = new PottsCell(cell, newID, STATE_PROLIFERATIVE, newLocation);
 			sim.getAgents().addObject(newID, newCell);
 			newCell.reset(potts.IDS, potts.TAGS);
-			sim.scheduleCell(newCell);
+			newCell.schedule(sim.getSchedule());
 		}
 	}
 }
