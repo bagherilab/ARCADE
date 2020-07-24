@@ -291,13 +291,23 @@ public class PottsCell implements Cell {
 	
 	public void updateTarget(double rate, double scale) {
 		double volume = getVolume();
+		if (tags > 0) { targetTagVolumes[0] -= targetVolume; }
 		targetVolume = volume + rate*(scale*criticalVolume - volume)*Simulation.DT;
 		targetSurface = SURFACE_VOLUME_MULTIPLIER*Math.sqrt(targetVolume);
+		
+		if (tags > 0) {
+			targetTagVolumes[0] += targetVolume;
+			targetTagSurfaces[0] = SURFACE_VOLUME_MULTIPLIER*Math.sqrt(targetTagVolumes[0]);
+		}
 	}
 	
 	public void updateTarget(int tag, double rate, double scale) {
 		double tagVolume = getVolume(tag);
+		targetVolume -= targetTagVolumes[-tag - 1];
 		targetTagVolumes[-tag - 1] = tagVolume + rate*(scale*criticalTagVolumes[-tag - 1] - tagVolume)*Simulation.DT;
 		targetTagSurfaces[-tag - 1] = SURFACE_VOLUME_MULTIPLIER*Math.sqrt(targetTagVolumes[-tag - 1]);
+		
+		targetVolume += targetTagVolumes[-tag - 1];
+		targetSurface = SURFACE_VOLUME_MULTIPLIER*Math.sqrt(targetVolume);
 	}
 }
