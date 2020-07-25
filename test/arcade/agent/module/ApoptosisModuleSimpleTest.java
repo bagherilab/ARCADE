@@ -147,4 +147,31 @@ public class ApoptosisModuleSimpleTest {
 		verify(stopper).stop();
 		assertEquals(PHASE_LATE_APOPTOSIS, spy.phase);
 	}
+	
+	@Test
+	public void stepLate_withTransitionSize_callsMethods() {
+		Location location = mock(Location.class);
+		Stoppable stopper = mock(Stoppable.class);
+		PottsCell cell = spy(new PottsCell(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		cell.stopper = stopper;
+		when(cell.getVolume()).thenReturn((int)(APOPTOSIS_CHECKPOINT*100.) - 1);
+		when(cell.getCriticalVolume()).thenReturn(100.);
+		Potts potts = mock(Potts.class);
+		Grid grid = mock(Grid.class);
+		Simulation sim = mock(Simulation.class);
+		when(sim.getPotts()).thenReturn(potts);
+		when(sim.getAgents()).thenReturn(grid);
+		ApoptosisModule module = new ApoptosisModule.Simple(cell);
+		ApoptosisModule spy = spy(module);
+		spy.phase = PHASE_LATE_APOPTOSIS;
+		
+		spy.stepLate(1, sim);
+		verify(cell).updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_BLEBBING, 0);
+		verify(cell).updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
+		verify(sim).getAgents();
+		verify(sim).getPotts();
+		verify(location).clear(null, null);
+		verify(stopper).stop();
+		assertEquals(PHASE_LATE_APOPTOSIS, spy.phase);
+	}
 }
