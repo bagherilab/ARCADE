@@ -8,23 +8,23 @@ import arcade.sim.Potts;
 import arcade.sim.Simulation;
 import static arcade.sim.Potts.*;
 
-public class PottsLocations extends PottsLocation {
+public class PottsLocations2D extends PottsLocation2D {
 	private static final int MAX_ITERATIONS = 100;
 	
 	/** Map of tag to location */
-	public HashMap<Integer, PottsLocation> locations;
+	public HashMap<Integer, PottsLocation2D> locations;
 	
 	/**
-	 * Creates a {@code PottsLocations} for a list of voxels.
+	 * Creates a {@code PottsLocations2D} for a list of voxels.
 	 *
 	 * @param voxels  the list of voxels
 	 */
-	public PottsLocations(ArrayList<Voxel> voxels) {
+	public PottsLocations2D(ArrayList<Voxel> voxels) {
 		super(voxels);
 		this.locations = new HashMap<>();
 		
 		ArrayList<Voxel> voxelCopy = new ArrayList<>(voxels);
-		locations.put(Potts.TAG_DEFAULT, new PottsLocation(voxelCopy));
+		locations.put(Potts.TAG_DEFAULT, new PottsLocation2D(voxelCopy));
 	}
 	
 	public int getVolume(int tag) { return (locations.containsKey(tag) ? locations.get(tag).volume : 0); }
@@ -40,17 +40,17 @@ public class PottsLocations extends PottsLocation {
 		super.add(x, y, z);
 		
 		Voxel voxel = new Voxel(x, y, z);
-		for (PottsLocation loc : locations.values()) {
+		for (PottsLocation2D loc : locations.values()) {
 			if (loc.voxels.contains(voxel)) { return; }
 		}
 		
-		if (!locations.containsKey(tag)) { locations.put(tag, new PottsLocation(new ArrayList<>())); }
+		if (!locations.containsKey(tag)) { locations.put(tag, new PottsLocation2D(new ArrayList<>())); }
 		locations.get(tag).add(x, y, z);
 	}
 	
 	public void remove(int x, int y, int z) {
 		super.remove(x, y, z);
-		for (PottsLocation location : locations.values()) { location.remove(x, y, z); }
+		for (PottsLocation2D location : locations.values()) { location.remove(x, y, z); }
 	}
 	
 	public void remove(int tag, int x, int y, int z) {
@@ -111,7 +111,7 @@ public class PottsLocations extends PottsLocation {
 	 */
 	Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
 							MersenneTwisterFast random) {
-		PottsLocations splitLocation = new PottsLocations(voxelsB);
+		PottsLocations2D splitLocation = new PottsLocations2D(voxelsB);
 		int n = locations.keySet().size();
 		double[] fractions = new double[n];
 		
@@ -130,7 +130,7 @@ public class PottsLocations extends PottsLocation {
 			
 			// Create empty tags in split location.
 			if (!splitLocation.locations.containsKey(tag)) {
-				splitLocation.locations.put(tag, new PottsLocation(new ArrayList<>()));
+				splitLocation.locations.put(tag, new PottsLocation2D(new ArrayList<>()));
 			}
 		}
 		
@@ -148,7 +148,7 @@ public class PottsLocations extends PottsLocation {
 	 * @param fractions  the tag fractions
 	 * @param random  the seeded random number generator 
 	 */
-	static void assignVoxels(PottsLocations location, double[] fractions,
+	static void assignVoxels(PottsLocations2D location, double[] fractions,
 							 MersenneTwisterFast random) {
 		ArrayList<Voxel> defaultVoxels = location.locations.get(TAG_DEFAULT).voxels;
 		

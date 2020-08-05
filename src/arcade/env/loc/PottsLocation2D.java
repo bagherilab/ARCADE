@@ -7,7 +7,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
 import static arcade.sim.Potts.*;
 
-public class PottsLocation implements Location {
+public class PottsLocation2D implements Location {
 	/** Difference between split voxel numbers */
 	final static private int BALANCE_DIFFERENCE = 2;
 	
@@ -36,11 +36,11 @@ public class PottsLocation implements Location {
 	}
 	
 	/**
-	 * Creates a {@code PottsLocation} for a list of voxels.
+	 * Creates a {@code PottsLocation2D} for a list of voxels.
 	 *
 	 * @param voxels  the list of voxels
 	 */
-	public PottsLocation(ArrayList<Voxel> voxels) {
+	public PottsLocation2D(ArrayList<Voxel> voxels) {
 		this.voxels = new ArrayList<>(voxels);
 		this.volume = voxels.size();
 		this.surface = calculateSurface();
@@ -481,7 +481,7 @@ public class PottsLocation implements Location {
 		voxels.addAll(voxelsA);
 		volume = voxels.size();
 		surface = calculateSurface();
-		return new PottsLocation(voxelsB);
+		return new PottsLocation2D(voxelsB);
 	}
 	
 	/**
