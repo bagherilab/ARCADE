@@ -10,10 +10,10 @@ import arcade.env.grid.Grid;
 
 public class Potts2DTest {
 	private static final double EPSILON = 1E-4;
-	private static final double LV = 10.0;
-	private static final double LS = 2.0;
-	private static final double[] subLV = new double[] { 2.0, 3.0, 4.0, 5.0 };
-	private static final double[] subLS = new double[] { 6.0, 7.0, 8.0, 9.0 };
+	private static final double LV = random();
+	private static final double LS = random();
+	private static final double[] subLV = new double[] { random(), random(), random(), random() };
+	private static final double[] subLS = new double[] { random(), random(), random(), random() };
 	private static final double[][] ADHESIONS = new double[][] {
 			{ Double.NaN, Double.NaN, Double.NaN },
 			{ 1, 2, 3 },
@@ -30,6 +30,8 @@ public class Potts2DTest {
 	Grid gridMock = mock(Grid.class);
 	Potts2D pottsMock = new Potts2D(seriesMock, gridMock);
 	Potts2D potts;
+	
+	public static double random() { return Math.random()*100; }
 	
 	@Before
 	public void setupGrid() {
@@ -154,108 +156,6 @@ public class Potts2DTest {
 		assertEquals(subadhesion(-1, -2)*2 + subadhesion(-2, -3), potts.getAdhesion(1, -2, 2, 2, 0), EPSILON);
 		assertEquals(subadhesion(-1, -3)*2, potts.getAdhesion(1, -3, 2, 2, 0), EPSILON);
 		assertEquals(subadhesion(-1, -4)*2 + subadhesion(-3, -4), potts.getAdhesion(1, -4, 2, 2, 0), EPSILON);
-	}
-	
-	@Test
-	public void getDeltaAdhesion_validIDs_calculatesValue() {
-		assertEquals(ADHESIONS[2][0]*1 + adhesion(1, 2)*5 - ADHESIONS[1][0] - adhesion(1,2)*2 - ADHESIONS[1][1]*2, potts.getDeltaAdhesion(1, 2, 2, 2, 0), EPSILON);
-		assertEquals(ADHESIONS[1][0]*4 + ADHESIONS[2][0]*2 - ADHESIONS[1][0]*2 - adhesion(1,2)*2 - ADHESIONS[1][1], potts.getDeltaAdhesion(1, 0, 2, 2, 0), EPSILON);
-	}
-	
-	@Test
-	public void getDeltaAdhesion_validTags_calculatesValue() {
-		assertEquals(subadhesion(-1, -3)*2 - subadhesion(-1, -2)*2 - subadhesion(-2, -3), potts.getDeltaAdhesion(1, -2, -3, 2, 2, 0), EPSILON);
-	}
-	
-	@Test
-	public void getVolume_validIDsNotZero_calculatesValue() {
-		assertEquals(LV*Math.pow(4 - 2, 2), potts.getVolume(1, 0), EPSILON);
-		assertEquals(LV*Math.pow(4 - 2 + 1, 2), potts.getVolume(1, 1), EPSILON);
-		assertEquals(LV*Math.pow(4 - 2 - 1, 2), potts.getVolume(1, -1), EPSILON);
-	}
-	
-	@Test
-	public void getVolume_validTagsNotZero_calculatesValue() {
-		assertEquals(subLV[0]*Math.pow(2 - 3, 2), potts.getVolume(1, -1, 0), EPSILON);
-		assertEquals(subLV[1]*Math.pow(1 - 2 + 1, 2), potts.getVolume(1, -2, 1), EPSILON);
-		assertEquals(subLV[2]*Math.pow(0 - 1 + 2, 2), potts.getVolume(2, -3, 2), EPSILON);
-		assertEquals(subLV[3]*Math.pow(2 - 2 + 1, 2), potts.getVolume(3, -4, 1), EPSILON);
-	}
-	
-	@Test
-	public void getVolume_zeroID_returnsZero() {
-		assertEquals(0, potts.getVolume(0, 1), EPSILON);
-		assertEquals(0, potts.getVolume(0, 0), EPSILON);
-		assertEquals(0, potts.getVolume(0, -1), EPSILON);
-	}
-	
-	@Test
-	public void getDeltaVolume_validIDs_calculatesValue() {
-		double cell1 = Math.pow(4 - 2, 2);
-		double cell1plus1 = Math.pow(4 - 2 + 1, 2);
-		double cell1minus1 = Math.pow(4 - 2 - 1, 2);
-		double cell2 = Math.pow(2 - 3, 2);
-		double cell2plus1 = Math.pow(2 - 3 + 1, 2);
-		double cell2minus1 = Math.pow(2 - 3 - 1, 2);
-		assertEquals(LV*(cell1minus1 - cell1 + cell2plus1 - cell2), potts.getDeltaVolume(1, 2), EPSILON);
-		assertEquals(LV*(cell2minus1 - cell2 + cell1plus1 - cell1), potts.getDeltaVolume(2, 1), EPSILON);
-	}
-	
-	@Test
-	public void getDeltaVolume_validTags_calculatesValue() {
-		double subcell1 = Math.pow(2 - 3, 2);
-		double subcell1plus1 = Math.pow(2 - 3 + 1, 2);
-		double subcell1minus1 = Math.pow(2 - 3 - 1, 2);
-		double subcell2 = Math.pow(1 - 2, 2);
-		double subcell2plus1 = Math.pow(1 - 2 + 1, 2);
-		double subcell2minus1 = Math.pow(1 - 2 - 1, 2);
-		assertEquals(subLV[0]*(subcell1minus1 - subcell1) + subLV[1]*(subcell2plus1 - subcell2), potts.getDeltaVolume(1, -1, -2), EPSILON);
-		assertEquals(subLV[1]*(subcell2minus1 - subcell2) + subLV[0]*(subcell1plus1 - subcell1), potts.getDeltaVolume(1, -2, -1), EPSILON);
-	}
-	
-	@Test
-	public void getSurface_validIDsNotZero_calculatesValue() {
-		assertEquals(LS*Math.pow(8 - 10, 2), potts.getSurface(1, 0), EPSILON);
-		assertEquals(LS*Math.pow(8 - 10 + 1, 2), potts.getSurface(1, 1), EPSILON);
-		assertEquals(LS*Math.pow(8 - 10 - 1, 2), potts.getSurface(1, -1), EPSILON);
-	}
-	
-	@Test
-	public void getSurface_validTagsNotZero_calculatesValue() {
-		assertEquals(subLS[0]*Math.pow(6 - 8, 2), potts.getSurface(1, -1, 0), EPSILON);
-		assertEquals(subLS[1]*Math.pow(4 - 5 + 1, 2), potts.getSurface(1, -2, 1), EPSILON);
-		assertEquals(subLS[2]*Math.pow(0 - 7 + 2, 2), potts.getSurface(2, -3, 2), EPSILON);
-		assertEquals(subLS[3]*Math.pow(6 - 3 + 1, 2), potts.getSurface(3, -4, 1), EPSILON);
-	}
-	
-	@Test
-	public void getSurface_zeroID_returnsZero() {
-		assertEquals(0, potts.getSurface(0, 1), EPSILON);
-		assertEquals(0, potts.getSurface(0, 0), EPSILON);
-		assertEquals(0, potts.getSurface(0, -1), EPSILON);
-	}
-	
-	@Test
-	public void getDeltaSurface_validIDs_calculatesValue() {
-		double cell1 = Math.pow(8 - 10, 2);
-		double cell2 = Math.pow(6 - 10, 2);
-		double cell2plus2 = Math.pow(6 - 10 + 2, 2);
-		assertEquals(LS*(cell1 - cell1 + cell2plus2 - cell2), potts.getDeltaSurface(1, 2, 2, 2, 0), EPSILON);
-		assertEquals(0, potts.getDeltaSurface(1, 0, 2, 2, 0), EPSILON);
-	}
-	
-	@Test
-	public void getDeltaSurface_validTags_calculatesValue() {
-		double subcell1 = Math.pow(6 - 8, 2);
-		double subcell1plus2 = Math.pow(6 - 8 + 2, 2);
-		double subcell2 = Math.pow(4 - 5, 2);
-		double subcell2minus4 = Math.pow(4 - 5 - 4, 2);
-		
-		double subcell3 = Math.pow(4 - 7, 2);
-		double subcell3plus2 = Math.pow(4 - 7 + 2, 2);
-		
-		assertEquals(subLS[1]*(subcell2minus4 - subcell2) + subLS[0]*(subcell1plus2 - subcell1), potts.getDeltaSurface(1, -2, -1, 2, 2, 0), EPSILON);
-		assertEquals(subLS[2]*(subcell3plus2 - subcell3) + subLS[1]*(subcell2minus4 - subcell2), potts.getDeltaSurface(1, -2, -3, 2, 2, 0), EPSILON);
 	}
 	
 	@Test
@@ -454,19 +354,6 @@ public class Potts2DTest {
 		assertArrayEquals(new boolean[]{false, false, false}, array2[0][0]);
 		assertArrayEquals(new boolean[]{true, false, false}, array2[0][1]);
 		assertArrayEquals(new boolean[]{false, false, false}, array2[0][2]);
-	}
-	
-	@Test
-	public void getCell_validID_returnsObject() {
-		assertEquals(cells[1], potts.getCell(1));
-		assertEquals(cells[2], potts.getCell(2));
-		assertEquals(cells[3], potts.getCell(3));
-	}
-	
-	@Test
-	public void getCell_invalidID_returnsNull() {
-		assertNull(potts.getCell(0));
-		assertNull(potts.getCell(-1));
 	}
 	
 	private HashSet<Integer> checkUniqueID(Potts2D potts, int[][] ids) {
