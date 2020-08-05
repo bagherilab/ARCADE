@@ -48,7 +48,7 @@ public class PottsCellTest {
 		adhesionTo1 = Math.random();
 		adhesionTo2 = Math.random();
 		
-		location = mock(PottsLocation.class);
+		location = mock(Location.class);
 		
 		locationTagVolumes = new int[tags];
 		locationTagSurfaces = new int[tags];
@@ -340,11 +340,9 @@ public class PottsCellTest {
 	
 	@Test
 	public void getCriticalVolume_parentConstructorWithoutTags_returnsValues() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocation location = new PottsLocation(voxels);
+		int volume = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(volume);
 		
 		PottsCell cell1 = new PottsCell(cellID, 1, location, lambdas, adhesion, 0, null, null);
 		cell1.initialize(new int[1][3][3], new int[1][3][3]);
@@ -355,13 +353,12 @@ public class PottsCellTest {
 	
 	@Test
 	public void getCriticalVolume_parentConstructorWithTags_returnsValues() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocations location = new PottsLocations(voxels);
-		location.add(TAG_ADDITIONAL, 1, 2, 0);
-		location.add(TAG_ADDITIONAL, 2, 2, 0);
+		int volume1 = (int)(Math.random()*100);
+		int volume2 = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(volume1 + volume2);
+		when(location.getVolume(TAG_DEFAULT)).thenReturn(volume1);
+		when(location.getVolume(TAG_ADDITIONAL)).thenReturn(volume2);
 		
 		PottsCell cell1 = new PottsCell(cellID, 1, location, lambdas, adhesion,
 				2, new double[][] { { 0, 0 }, { 0, 0 } }, new double[][] { { 0, 0 }, {0, 0} });
@@ -432,11 +429,9 @@ public class PottsCellTest {
 	
 	@Test
 	public void getCriticalSurface_parentConstructorWithoutTags_returnsValues() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocation location = new PottsLocation(voxels);
+		int surface = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getSurface()).thenReturn(surface);
 		
 		PottsCell cell1 = new PottsCell(cellID, 1, location, lambdas, adhesion, 0, null, null);
 		cell1.initialize(new int[1][3][3], new int[1][3][3]);
@@ -447,13 +442,12 @@ public class PottsCellTest {
 	
 	@Test
 	public void getCriticalSurface_parentConstructorWithTags_returnsValues() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocations location = new PottsLocations(voxels);
-		location.add(TAG_ADDITIONAL, 1, 2, 0);
-		location.add(TAG_ADDITIONAL, 2, 2, 0);
+		int surface1 = (int)(Math.random()*100);
+		int surface2 = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(surface1 + surface2);
+		when(location.getVolume(TAG_DEFAULT)).thenReturn(surface1);
+		when(location.getVolume(TAG_ADDITIONAL)).thenReturn(surface2);
 		
 		PottsCell cell1 = new PottsCell(cellID, 1, location, lambdas, adhesion,
 				2, new double[][] { { 0, 0 }, { 0, 0 } }, new double[][] { { 0, 0 }, {0, 0} });
@@ -664,213 +658,183 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void initialize_withoutTags_updatesArray() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocation location = new PottsLocation(voxels);
-		
+	public void initialize_withoutTags_callsMethod() {
+		Location location = spy(mock(Location.class));
 		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
 		int[][][] array = new int[1][3][3];
 		cell.initialize(array, null);
 		
-		assertArrayEquals(new int[] { 0, 0, 0 }, array[0][0]);
-		assertArrayEquals(new int[] { 1, 0, 0 }, array[0][1]);
-		assertArrayEquals(new int[] { 1, 1, 0 }, array[0][2]);
+		verify(location).update(1, array, null);
 	}
 	
 	@Test
-	public void initialize_withTags_updatesArray() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocations location = new PottsLocations(voxels);
-		
-		location.add(TAG_ADDITIONAL, 1, 2, 0);
-		location.add(TAG_ADDITIONAL, 2, 2, 0);
-		
+	public void initialize_withTags_callsMethod() {
+		Location location = spy(mock(Location.class));
 		PottsCell cell = new PottsCell(cellID, 1, location, lambdas, adhesion,
 				2, new double[][] { { 0, 0 }, { 0, 0 } }, new double[][] { { 0, 0 }, {0, 0} });
-		int[][][] array = new int[1][3][3];
-		cell.initialize(new int[1][3][3], array);
+		int[][][] array1 = new int[1][3][3];
+		int[][][] array2 = new int[1][3][3];
+		cell.initialize(array1, array2);
 		
-		assertArrayEquals(new int[] { 0, 0, 0 }, array[0][0]);
-		assertArrayEquals(new int[] { TAG_DEFAULT, 0, TAG_ADDITIONAL }, array[0][1]);
-		assertArrayEquals(new int[] { TAG_DEFAULT, TAG_DEFAULT, TAG_ADDITIONAL }, array[0][2]);
+		verify(location).update(1, array1, array2);
 	}
 	
 	@Test
 	public void initialize_withoutTags_updatesTargets() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocation location = new PottsLocation(voxels);
+		int volume = (int)(Math.random()*100);
+		int surface = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(volume);
+		when(location.getSurface()).thenReturn(surface);
 		
 		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
 		cell.initialize(new int[1][3][3], null);
 		
-		assertEquals(3, cell.getTargetVolume(), EPSILON);
-		assertEquals(8, cell.getTargetSurface(), EPSILON);
+		assertEquals(volume, cell.getTargetVolume(), EPSILON);
+		assertEquals(surface, cell.getTargetSurface(), EPSILON);
 		assertEquals(0, cell.getTargetVolume(TAG_DEFAULT), EPSILON);
 		assertEquals(0, cell.getTargetSurface(TAG_DEFAULT), EPSILON);
 	}
 	
 	@Test
 	public void initialize_withTags_updatesTargets() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocations location = new PottsLocations(voxels);
-		
-		location.add(TAG_ADDITIONAL, 1, 2, 0);
-		location.add(TAG_ADDITIONAL, 2, 2, 0);
+		int volume1 = (int)(Math.random()*100);
+		int volume2 = (int)(Math.random()*100);
+		int surface1 = (int)(Math.random()*100);
+		int surface2 = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(volume1 + volume2);
+		when(location.getSurface()).thenReturn(surface1 + surface2);
+		when(location.getVolume(TAG_DEFAULT)).thenReturn(volume1);
+		when(location.getSurface(TAG_DEFAULT)).thenReturn(surface1);
+		when(location.getVolume(TAG_ADDITIONAL)).thenReturn(volume2);
+		when(location.getSurface(TAG_ADDITIONAL)).thenReturn(surface2);
 		
 		PottsCell cell = new PottsCell(cellID, 1, location, lambdas, adhesion,
 				2, new double[][] { { 0, 0 }, { 0, 0 } }, new double[][] { { 0, 0 }, {0, 0} });
 		cell.initialize(new int[1][3][3], new int[1][3][3]);
 		
-		assertEquals(5, cell.getTargetVolume(), EPSILON);
-		assertEquals(12, cell.getTargetSurface(), EPSILON);
-		assertEquals(3, cell.getTargetVolume(TAG_DEFAULT), EPSILON);
-		assertEquals(8, cell.getTargetSurface(TAG_DEFAULT), EPSILON);
-		assertEquals(2, cell.getTargetVolume(TAG_ADDITIONAL), EPSILON);
-		assertEquals(6, cell.getTargetSurface(TAG_ADDITIONAL), EPSILON);
+		assertEquals(volume1 + volume2, cell.getTargetVolume(), EPSILON);
+		assertEquals(surface1 + surface2, cell.getTargetSurface(), EPSILON);
+		assertEquals(volume1, cell.getTargetVolume(TAG_DEFAULT), EPSILON);
+		assertEquals(surface1, cell.getTargetSurface(TAG_DEFAULT), EPSILON);
+		assertEquals(volume2, cell.getTargetVolume(TAG_ADDITIONAL), EPSILON);
+		assertEquals(surface2, cell.getTargetSurface(TAG_ADDITIONAL), EPSILON);
 	}
 	
 	@Test
 	public void initialize_withoutTags_updatesCriticals() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocation location = new PottsLocation(voxels);
+		int volume = (int)(Math.random()*100);
+		int surface = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(volume);
+		when(location.getSurface()).thenReturn(surface);
 		
 		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
 		cell.initialize(new int[1][3][3], null);
 		
-		assertEquals(3, cell.getCriticalVolume(), EPSILON);
-		assertEquals(8, cell.getCriticalSurface(), EPSILON);
+		assertEquals(volume, cell.getCriticalVolume(), EPSILON);
+		assertEquals(surface, cell.getCriticalSurface(), EPSILON);
 		assertEquals(0, cell.getCriticalVolume(TAG_DEFAULT), EPSILON);
 		assertEquals(0, cell.getCriticalSurface(TAG_DEFAULT), EPSILON);
 	}
 	
 	@Test
 	public void initialize_withTags_updatesCriticals() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocations location = new PottsLocations(voxels);
-		
-		location.add(TAG_ADDITIONAL, 1, 2, 0);
-		location.add(TAG_ADDITIONAL, 2, 2, 0);
+		int volume1 = (int)(Math.random()*100);
+		int volume2 = (int)(Math.random()*100);
+		int surface1 = (int)(Math.random()*100);
+		int surface2 = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(volume1 + volume2);
+		when(location.getSurface()).thenReturn(surface1 + surface2);
+		when(location.getVolume(TAG_DEFAULT)).thenReturn(volume1);
+		when(location.getSurface(TAG_DEFAULT)).thenReturn(surface1);
+		when(location.getVolume(TAG_ADDITIONAL)).thenReturn(volume2);
+		when(location.getSurface(TAG_ADDITIONAL)).thenReturn(surface2);
 		
 		PottsCell cell = new PottsCell(cellID, 1, location, lambdas, adhesion,
 				2, new double[][] { { 0, 0 }, { 0, 0 } }, new double[][] { { 0, 0 }, {0, 0} });
 		cell.initialize(new int[1][3][3], new int[1][3][3]);
 		
-		assertEquals(5, cell.getCriticalVolume(), EPSILON);
-		assertEquals(12, cell.getCriticalSurface(), EPSILON);
-		assertEquals(3, cell.getCriticalVolume(TAG_DEFAULT), EPSILON);
-		assertEquals(8, cell.getCriticalSurface(TAG_DEFAULT), EPSILON);
-		assertEquals(2, cell.getCriticalVolume(TAG_ADDITIONAL), EPSILON);
-		assertEquals(6, cell.getCriticalSurface(TAG_ADDITIONAL), EPSILON);
+		assertEquals(volume1 + volume2, cell.getCriticalVolume(), EPSILON);
+		assertEquals(surface1 + surface2, cell.getCriticalSurface(), EPSILON);
+		assertEquals(volume1, cell.getCriticalVolume(TAG_DEFAULT), EPSILON);
+		assertEquals(surface1, cell.getCriticalSurface(TAG_DEFAULT), EPSILON);
+		assertEquals(volume2, cell.getCriticalVolume(TAG_ADDITIONAL), EPSILON);
+		assertEquals(surface2, cell.getCriticalSurface(TAG_ADDITIONAL), EPSILON);
 	}
 	
 	@Test
-	public void reset_withoutTags_updatesArray() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocation location = new PottsLocation(voxels);
-		
+	public void reset_withoutTags_callsMethod() {
+		Location location = spy(mock(Location.class));
 		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
 		int[][][] array = new int[1][3][3];
 		cell.initialize(array, null);
-		
-		cell.getLocation().add(1, 1, 0);
 		cell.reset(array, null);
 		
-		assertArrayEquals(new int[] { 0, 0, 0 }, array[0][0]);
-		assertArrayEquals(new int[] { 1, 1, 0 }, array[0][1]);
-		assertArrayEquals(new int[] { 1, 1, 0 }, array[0][2]);
+		verify(location, times(2)).update(1, array, null);
 	}
 	
 	@Test
-	public void reset_withTags_updatesArray() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocations location = new PottsLocations(voxels);
-		
-		location.add(TAG_ADDITIONAL, 1, 2, 0);
-		location.add(TAG_ADDITIONAL, 2, 2, 0);
-		
+	public void reset_withTags_callsMethod() {
+		Location location = spy(mock(Location.class));
 		PottsCell cell = new PottsCell(cellID, 1, location, lambdas, adhesion,
 				2, new double[][] { { 0, 0 }, { 0, 0 } }, new double[][] { { 0, 0 }, {0, 0} });
-		int[][][] array = new int[1][3][3];
-		cell.initialize(new int[1][3][3], array);
+		int[][][] array1 = new int[1][3][3];
+		int[][][] array2 = new int[1][3][3];
+		cell.initialize(array1, array2);
+		cell.reset(array1, array2);
 		
-		cell.getLocation().add(1, 1, 0);
-		cell.getLocation().add(TAG_ADDITIONAL, 0, 0, 0);
-		cell.reset(new int[1][3][3], array);
-		
-		assertArrayEquals(new int[] { TAG_ADDITIONAL, 0, 0 }, array[0][0]);
-		assertArrayEquals(new int[] { TAG_DEFAULT, TAG_DEFAULT, TAG_ADDITIONAL }, array[0][1]);
-		assertArrayEquals(new int[] { TAG_DEFAULT, TAG_DEFAULT, TAG_ADDITIONAL }, array[0][2]);
+		verify(location, times(2)).update(1, array1, array2);
 	}
 	
 	@Test
 	public void reset_withoutTags_updatesTargets() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocation location = new PottsLocation(voxels);
+		int volume = (int)(Math.random()*100);
+		int surface = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(volume);
+		when(location.getSurface()).thenReturn(surface);
 		
 		PottsCell cell = new PottsCell(cellID, location, lambdas, adhesion);
 		cell.initialize(new int[1][3][3], null);
 		cell.updateTarget(Math.random(), Math.random());
-		
 		cell.reset(new int[1][3][3], null);
 		
-		assertEquals(3, cell.getTargetVolume(), EPSILON);
-		assertEquals(8, cell.getTargetSurface(), EPSILON);
+		assertEquals(volume, cell.getTargetVolume(), EPSILON);
+		assertEquals(surface, cell.getTargetSurface(), EPSILON);
 		assertEquals(0, cell.getTargetVolume(TAG_DEFAULT), EPSILON);
 		assertEquals(0, cell.getTargetSurface(TAG_DEFAULT), EPSILON);
 	}
 	
 	@Test
 	public void reset_withTags_updatesTargets() {
-		ArrayList<Location.Voxel> voxels = new ArrayList<>();
-		voxels.add(new Location.Voxel(1, 0, 0));
-		voxels.add(new Location.Voxel(2, 0, 0));
-		voxels.add(new Location.Voxel(2, 1, 0));
-		PottsLocations location = new PottsLocations(voxels);
-		
-		location.add(TAG_ADDITIONAL, 1, 2, 0);
-		location.add(TAG_ADDITIONAL, 2, 2, 0);
+		int volume1 = (int)(Math.random()*100);
+		int volume2 = (int)(Math.random()*100);
+		int surface1 = (int)(Math.random()*100);
+		int surface2 = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(volume1 + volume2);
+		when(location.getSurface()).thenReturn(surface1 + surface2);
+		when(location.getVolume(TAG_DEFAULT)).thenReturn(volume1);
+		when(location.getSurface(TAG_DEFAULT)).thenReturn(surface1);
+		when(location.getVolume(TAG_ADDITIONAL)).thenReturn(volume2);
+		when(location.getSurface(TAG_ADDITIONAL)).thenReturn(surface2);
 		
 		PottsCell cell = new PottsCell(cellID, 1, location, lambdas, adhesion,
 				2, new double[][] { { 0, 0 }, { 0, 0 } }, new double[][] { { 0, 0 }, {0, 0} });
 		cell.initialize(new int[1][3][3], new int[1][3][3]);
 		cell.updateTarget(TAG_DEFAULT, Math.random(), Math.random());
 		cell.updateTarget(TAG_ADDITIONAL, Math.random(), Math.random());
-		
 		cell.reset(new int[1][3][3], new int[1][3][3]);
 		
-		assertEquals(5, cell.getTargetVolume(), EPSILON);
-		assertEquals(12, cell.getTargetSurface(), EPSILON);
-		assertEquals(3, cell.getTargetVolume(TAG_DEFAULT), EPSILON);
-		assertEquals(8, cell.getTargetSurface(TAG_DEFAULT), EPSILON);
-		assertEquals(2, cell.getTargetVolume(TAG_ADDITIONAL), EPSILON);
-		assertEquals(6, cell.getTargetSurface(TAG_ADDITIONAL), EPSILON);
+		assertEquals(volume1 + volume2, cell.getTargetVolume(), EPSILON);
+		assertEquals(surface1 + surface2, cell.getTargetSurface(), EPSILON);
+		assertEquals(volume1, cell.getTargetVolume(TAG_DEFAULT), EPSILON);
+		assertEquals(surface1, cell.getTargetSurface(TAG_DEFAULT), EPSILON);
+		assertEquals(volume2, cell.getTargetVolume(TAG_ADDITIONAL), EPSILON);
+		assertEquals(surface2, cell.getTargetSurface(TAG_ADDITIONAL), EPSILON);
 	}
 	
 	@Test
