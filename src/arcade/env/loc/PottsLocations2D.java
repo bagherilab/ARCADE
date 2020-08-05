@@ -204,7 +204,7 @@ public class PottsLocations2D extends PottsLocation2D {
 			
 			// Get all valid connected neighbor voxels.
 			for (Voxel voxel : selected) {
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 					Voxel neighbor = new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z);
 					if (voxels.contains(neighbor) && !selected.contains(neighbor)) { neighbors.add(neighbor); }
 				}

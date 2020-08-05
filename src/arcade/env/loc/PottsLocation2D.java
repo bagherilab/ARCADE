@@ -358,7 +358,7 @@ public class PottsLocation2D implements Location {
 			// Get all valid neighbor voxels.
 			LinkedHashSet<Voxel> neighborSet = new LinkedHashSet<>();
 			for (Voxel voxel : toVoxels) {
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 					Voxel neighbor = new Voxel( voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z);
 					if (!toVoxels.contains(neighbor)) { neighborSet.add(neighbor); }
 				}
@@ -439,7 +439,7 @@ public class PottsLocation2D implements Location {
 				
 				// Iterate through each connected direction from current voxel
 				// and add to neighbor list if it exists.
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 					Voxel neighbor = new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z);
 					if (unvisited.contains(neighbor)) { nextList.add(neighbor); }
 				}
@@ -493,7 +493,7 @@ public class PottsLocation2D implements Location {
 		int surface = 0;
 		
 		for (Voxel voxel : voxels) {
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 				if (!voxels.contains(new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z))) {
 					surface++;
 				}
@@ -512,7 +512,7 @@ public class PottsLocation2D implements Location {
 	int updateSurface(Voxel voxel) {
 		int change = 0;
 		
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 			if (!voxels.contains(new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z))) {
 				change++;
 			} else { change--; }

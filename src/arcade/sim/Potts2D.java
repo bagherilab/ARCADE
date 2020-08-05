@@ -7,6 +7,9 @@ import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
 
 public class Potts2D extends Potts {
+	/** Number of neighbors */
+	public static final int NUMBER_NEIGHBORS = 4;
+	
 	/** List of x direction movements (N, E, S, W) */
 	public static final int[] MOVES_X = { 0, 1, 0, -1 };
 	
@@ -254,7 +257,7 @@ public class Potts2D extends Potts {
 		int afterTarget = 0;
 		
 		// Iterate through each neighbor.
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 			int neighbor = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
 			
 			if (neighbor != sourceID) {
@@ -296,7 +299,7 @@ public class Potts2D extends Potts {
 		int afterTarget = 0;
 		
 		// Iterate through each neighbor.
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 			int neighborID = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
 			int neighborTag = TAGS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
 			
@@ -501,7 +504,7 @@ public class Potts2D extends Potts {
 	 */
 	boolean getConnectivity(boolean[][][] array, boolean zero) {
 		int sites = 0;
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 			if (array[0][1 + MOVES_X[i]][1 + MOVES_Y[i]]) { sites++; }
 		}
 		
@@ -515,9 +518,9 @@ public class Potts2D extends Potts {
 				else if (array[0][1][2] && array[0][1][0]) { return false; }
 				// Check for corners
 				else {
-					for (int i = 0; i < 4; i++) {
+					for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 						if (array[0][1 + MOVES_X[i]][1 + MOVES_Y[i]]
-								&& array[0][1 + MOVES_X[(i + 1)%4] ][1 + MOVES_Y[(i + 1)%4]]
+								&& array[0][1 + MOVES_X[(i + 1)%NUMBER_NEIGHBORS] ][1 + MOVES_Y[(i + 1)%NUMBER_NEIGHBORS]]
 								&& array[0][1 + MOVES_CORNER_X[i]][1 + MOVES_CORNER_Y[i]]) {
 							return true;
 						}
@@ -525,10 +528,10 @@ public class Potts2D extends Potts {
 					return false;
 				}
 			case 3:
-				for (int i = 0; i < 4; i++) {
+				for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 					if (!array[0][1 + MOVES_X[i]][1 + MOVES_Y[i]]) {
-						if (array[0][1 + MOVES_CORNER_X[(i + 1)%4]][1 + MOVES_CORNER_Y[(i + 1)%4]]
-								&& array[0][1 + MOVES_CORNER_X[(i + 2)%4]][1 + MOVES_CORNER_Y[(i + 2)%4]]) {
+						if (array[0][1 + MOVES_CORNER_X[(i + 1)%NUMBER_NEIGHBORS]][1 + MOVES_CORNER_Y[(i + 1)%NUMBER_NEIGHBORS]]
+								&& array[0][1 + MOVES_CORNER_X[(i + 2)%NUMBER_NEIGHBORS]][1 + MOVES_CORNER_Y[(i + 2)%NUMBER_NEIGHBORS]]) {
 							return true;
 						}
 					}
@@ -564,7 +567,7 @@ public class Potts2D extends Potts {
 		int id = IDS[z][x][y];
 		HashSet<Integer> unique = new HashSet<>();
 		
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 			int neighbor = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
 			if (id != neighbor) { unique.add(neighbor); }
 		}
@@ -584,7 +587,7 @@ public class Potts2D extends Potts {
 		int tag = TAGS[z][x][y];
 		HashSet<Integer> unique = new HashSet<>();
 		
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 			int neighborID = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]]; 
 			int neighborTag = TAGS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
 			
