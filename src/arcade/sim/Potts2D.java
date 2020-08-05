@@ -6,16 +6,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
 
-public class Potts implements Steppable {
-	/** Default tag value */
-	public static final int TAG_DEFAULT = -1;
-	
-	/** Code for volume lambda */
-	public static final int LAMBDA_VOLUME = 0;
-	
-	/** Code for surface lambda */
-	public static final int LAMBDA_SURFACE = 1;
-	
+public class Potts2D extends Potts {
 	/** List of x direction movements (N, E, S, W) */
 	public static final int[] MOVES_X = { 0, 1, 0, -1 };
 	
@@ -43,27 +34,14 @@ public class Potts implements Steppable {
 	/** Effective cell temperature */
 	final int TEMPERATURE;
 	
-	/** Potts array for ids */
-	public int[][][] IDS;
-	
-	/** Potts array for tags */
-	public int[][][] TAGS;
-	
-	/** Grid holding cells */
-	Grid grid;
-	
 	/**
-	 * Creates a cellular {@code Potts} model.
+	 * Creates a cellular {@code Potts2D} model.
 	 * 
 	 * @param series  the simulation series
 	 * @param grid  the cell grid
 	 */
-	public Potts(Series series, Grid grid) {
-		this.grid = grid;
-		
-		// Creates potts arrays.
-		IDS = new int[series._height][series._length][series._width];
-		TAGS = new int[series._height][series._length][series._width];
+	public Potts2D(Series series, Grid grid) {
+		super(series, grid);
 		
 		// Ensure a 1 voxel border around to avoid boundary checks.
 		LENGTH = series._length - 2;

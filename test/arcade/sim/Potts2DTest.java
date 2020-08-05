@@ -4,11 +4,11 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.HashSet;
-import static arcade.sim.Potts.*;
+import static arcade.sim.Potts2D.*;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
 
-public class PottsTest {
+public class Potts2DTest {
 	private static final double EPSILON = 1E-4;
 	private static final double LV = 10.0;
 	private static final double LS = 2.0;
@@ -28,8 +28,8 @@ public class PottsTest {
 	Cell[] cells;
 	Series seriesMock = mock(Series.class);
 	Grid gridMock = mock(Grid.class);
-	Potts pottsMock = new Potts(seriesMock, gridMock);
-	Potts potts;
+	Potts2D pottsMock = new Potts2D(seriesMock, gridMock);
+	Potts2D potts;
 	
 	@Before
 	public void setupGrid() {
@@ -107,7 +107,7 @@ public class PottsTest {
 		cells[0] = null;
 		
 		Series series = mock(Series.class);
-		potts = new Potts(series, grid);
+		potts = new Potts2D(series, grid);
 		
 		potts.IDS = new int[][][] {
 				{
@@ -469,7 +469,7 @@ public class PottsTest {
 		assertNull(potts.getCell(-1));
 	}
 	
-	private HashSet<Integer> checkUniqueID(Potts potts, int[][] ids) {
+	private HashSet<Integer> checkUniqueID(Potts2D potts, int[][] ids) {
 		potts.IDS = new int[][][] { ids };
 		return potts.getUniqueIDs(1, 1, 0);
 	}
@@ -498,7 +498,7 @@ public class PottsTest {
 				{ 1, 0, 1 } }));
 	}
 	
-	private HashSet<Integer> checkUniqueTag(Potts potts, int[][] ids, int[][] tags) {
+	private HashSet<Integer> checkUniqueTag(Potts2D potts, int[][] ids, int[][] tags) {
 		potts.IDS = new int[][][] { ids };
 		potts.TAGS = new int[][][] { tags }; 
 		return potts.getUniqueTags(1, 1, 0);

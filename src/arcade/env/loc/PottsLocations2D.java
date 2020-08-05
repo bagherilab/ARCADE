@@ -6,7 +6,7 @@ import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Potts;
 import arcade.sim.Simulation;
-import static arcade.sim.Potts.*;
+import static arcade.sim.Potts2D.*;
 
 public class PottsLocations2D extends PottsLocation2D {
 	private static final int MAX_ITERATIONS = 100;

@@ -5,7 +5,7 @@ import java.util.EnumMap;
 import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
-import static arcade.sim.Potts.*;
+import static arcade.sim.Potts2D.*;
 
 public class PottsLocation2D implements Location {
 	/** Difference between split voxel numbers */
