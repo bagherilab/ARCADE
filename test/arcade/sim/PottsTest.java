@@ -4,12 +4,15 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.HashSet;
+import ec.util.MersenneTwisterFast;
 import static arcade.sim.Potts2D.*;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
+import arcade.env.loc.Location;
 
 public class PottsTest {
 	private static final double EPSILON = 1E-4;
+	private static final double TEMPERATURE = 10;
 	private static final double LV = random();
 	private static final double LS = random();
 	private static final double[] subLV = new double[] { random(), random(), random(), random() };
@@ -28,6 +31,7 @@ public class PottsTest {
 	private static final double[] ADHESION_ID = { 0, Math.random()*100, Math.random()*100 };
 	private static final double[] ADHESION_TAG = { 0, Math.random()*100, Math.random()*100 };
 	Cell[] cells;
+	Location[] locations;
 	PottsMock potts;
 	
 	public static double random() { return Math.random()*100; }
@@ -55,10 +59,14 @@ public class PottsTest {
 		int nSubcells = 4;
 		
 		cells = new Cell[nCells + 1];
+		locations = new Location[nCells + 1];
 		
 		for (int i = 0; i < nCells; i++) {
 			Cell c = mock(Cell.class);
+			Location loc = mock(Location.class);
+			
 			when(c.getPop()).thenReturn(pops[i]);
+			when(c.getLocation()).thenReturn(loc);
 			
 			// Assign volumes for the cell domain.
 			when(c.getVolume()).thenReturn(volumes[i]);
@@ -102,12 +110,14 @@ public class PottsTest {
 			
 			when(grid.getObjectAt(i + 1)).thenReturn(c);
 			cells[i + 1] = c;
+			locations[i + 1] = loc;
 		}
 		
 		when(grid.getObjectAt(0)).thenReturn(null);
 		cells[0] = null;
 		
 		Series series = mock(Series.class);
+		when(series.getParam("TEMPERATURE")).thenReturn(TEMPERATURE);
 		potts = new PottsMock(series, grid);
 		
 		potts.IDS = new int[][][] {
@@ -146,11 +156,17 @@ public class PottsTest {
 			return new int[] { (sourceTag == -1 ? 2 : -3), (targetTag == -1 ? 2 : -3) };
 		}
 		
-		boolean[][][] getNeighborhood(int id, int x, int y, int z) { return null; }
+		boolean[][][] getNeighborhood(int id, int x, int y, int z) {
+			return new boolean[][][] { { { x != 0 } } };
+		}
 		
-		boolean[][][] getNeighborhood(int id, int tag, int x, int y, int z) { return null; }
+		boolean[][][] getNeighborhood(int id, int tag, int x, int y, int z) {
+			return new boolean[][][] { { { x != 1 } } };
+		}
 		
-		boolean getConnectivity(boolean[][][] array, boolean zero) { return false; }
+		boolean getConnectivity(boolean[][][] array, boolean zero) {
+			return array[0][0][0];
+		}
 		
 		HashSet<Integer> getUniqueIDs(int x, int y, int z) { return null; }
 		
@@ -173,6 +189,310 @@ public class PottsTest {
 		series._height = 4;
 		potts = new PottsMock(series, grid);
 		assertEquals(2, potts.HEIGHT);
+	}
+	
+	@Test
+	public void flip_unconnectedSourceID_returns() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(1, 0, 0, 0, 0, random);
+		verify(spy).getNeighborhood(1, 0, 0, 0);
+		verify(random, never()).nextDouble();
+	}
+	
+	@Test
+	public void flip_connectedSourceUnconnectedSourceTag_returns() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(1, 0, 1, 4, 0, random);
+		verify(spy).getNeighborhood(1, 1, 4, 0);
+		verify(spy).getNeighborhood(1, -4, 1, 4, 0);
+		verify(random, never()).nextDouble();
+	}
+	
+	@Test
+	public void flip_connectedSourceConnectedSourceTag_completes() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(1, 0, 2, 4, 0, random);
+		verify(spy).getNeighborhood(1, 2, 4, 0);
+		verify(spy).getNeighborhood(1, -4, 2, 4, 0);
+		verify(random).nextDouble();
+	}
+	
+	@Test
+	public void flip_connectedSourceDefaultTag_completes() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(1, 0, 1, 1, 0, random);
+		verify(spy).getNeighborhood(1, 1, 1, 0);
+		verify(spy, never()).getNeighborhood(1, -1, 1, 1, 0);
+		verify(random).nextDouble();
+	}
+	
+	@Test
+	public void flip_unconnectedTargetID_returns() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(0, 2, 0, 0, 0, random);
+		verify(spy).getNeighborhood(2, 0, 0, 0);
+		verify(random, never()).nextDouble();
+	}
+	
+	@Test
+	public void flip_connectedTargetUnconnectedTargetTag_returns() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(0, 2, 1, 4, 0, random);
+		verify(spy).getNeighborhood(2, 1, 4, 0);
+		verify(spy).getNeighborhood(2, -4, 1, 4, 0);
+		verify(random, never()).nextDouble();
+	}
+	
+	@Test
+	public void flip_connectedTargetConnectedTargetTag_completes() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(0, 2, 2, 4, 0, random);
+		verify(spy).getNeighborhood(2, 2, 4, 0);
+		verify(spy).getNeighborhood(2, -4, 2, 4, 0);
+		verify(random).nextDouble();
+	}
+	
+	@Test
+	public void flip_connectedTargetDefaultTag_completes() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(0, 2, 1, 1, 0, random);
+		verify(spy).getNeighborhood(2, 1, 1, 0);
+		verify(spy, never()).getNeighborhood(2, -1, 1, 1, 0);
+		verify(random).nextDouble();
+	}
+	
+	@Test
+	public void flip_connectedIDs_callsMethods() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(0, 0, 0, 0, 0, random);
+		verify(spy).getDeltaAdhesion(0, 0, 0, 0, 0);
+		verify(spy).getDeltaVolume(0, 0);
+		verify(spy).getDeltaSurface(0, 0, 0, 0, 0);
+	}
+	
+	@Test
+	public void flip_negativeEnergyZeroSourceNonzeroTarget_updatesFields() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		when(random.nextDouble()).thenReturn(0.0);
+		PottsMock spy = spy(potts);
+		
+		when(spy.getDeltaAdhesion(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(-1.0);
+		when(spy.getDeltaVolume(anyInt(), anyInt())).thenReturn(-1.0);
+		when(spy.getDeltaSurface(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(-1.0);
+		
+		spy.IDS = new int[1][2][1];
+		spy.TAGS = new int[1][2][1];
+		spy.flip(0, 1, 1, 0, 0, random);
+		
+		assertEquals(1, spy.IDS[0][1][0]);
+		assertEquals(-1, spy.TAGS[0][1][0]);
+		verify(locations[1]).add(1, 0, 0);
+	}
+	
+	@Test
+	public void flip_negativeEnergyNonzeroSourceZeroTarget_updatesFields() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		when(random.nextDouble()).thenReturn(0.0);
+		PottsMock spy = spy(potts);
+		
+		when(spy.getDeltaAdhesion(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(-1.0);
+		when(spy.getDeltaVolume(anyInt(), anyInt())).thenReturn(-1.0);
+		when(spy.getDeltaSurface(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(-1.0);
+		
+		spy.IDS = new int[][][] { { { 1 }, { 1 } } };
+		spy.TAGS = new int[][][] { { { 1 }, { 1 } } };
+		spy.flip(1, 0, 1, 0, 0, random);
+		
+		assertEquals(0, spy.IDS[0][1][0]);
+		assertEquals(0, spy.TAGS[0][1][0]);
+		verify(locations[1]).remove(1, 0, 0);
+	}
+	
+	@Test
+	public void flip_negativeEnergyNonzeroSourceNonzeroTarget_updatesFields() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		when(random.nextDouble()).thenReturn(0.0);
+		PottsMock spy = spy(potts);
+		
+		when(spy.getDeltaAdhesion(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(-1.0);
+		when(spy.getDeltaVolume(anyInt(), anyInt())).thenReturn(-1.0);
+		when(spy.getDeltaSurface(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(-1.0);
+		
+		spy.IDS = new int[][][] { { { 1 }, { 1 } } };
+		spy.TAGS = new int[][][] { { { 1 }, { 1 } } };
+		spy.flip(1, 2, 1, 0, 0, random);
+		
+		assertEquals(2, spy.IDS[0][1][0]);
+		assertEquals(-1, spy.TAGS[0][1][0]);
+		verify(locations[1]).remove(1, 0, 0);
+		verify(locations[2]).add(1, 0, 0);
+	}
+	
+	@Test
+	public void flip_positiveEnergyZeroSourceNonzeroTarget_updatesFields() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		PottsMock spy = spy(potts);
+		
+		when(spy.getDeltaAdhesion(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(1.0);
+		when(spy.getDeltaVolume(anyInt(), anyInt())).thenReturn(1.0);
+		when(spy.getDeltaSurface(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(1.0);
+		
+		spy.IDS = new int[1][2][1];
+		spy.TAGS = new int[1][2][1];
+		when(random.nextDouble()).thenReturn(Math.exp(-3/TEMPERATURE) + EPSILON).thenReturn(Math.exp(-3/TEMPERATURE) - EPSILON);
+		
+		spy.flip(0, 1, 1, 0, 0, random);
+		assertEquals(0, spy.IDS[0][1][0]);
+		assertEquals(0, spy.TAGS[0][1][0]);
+		verify(locations[1], never()).add(1, 0, 0);
+		
+		spy.flip(0, 1, 1, 0, 0, random);
+		assertEquals(1, spy.IDS[0][1][0]);
+		assertEquals(-1, spy.TAGS[0][1][0]);
+		verify(locations[1]).add(1, 0, 0);
+	}
+	
+	@Test
+	public void flip_positiveEnergyNonzeroSourceZeroTarget_updatesFields() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		PottsMock spy = spy(potts);
+		
+		when(spy.getDeltaAdhesion(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(1.0);
+		when(spy.getDeltaVolume(anyInt(), anyInt())).thenReturn(1.0);
+		when(spy.getDeltaSurface(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(1.0);
+		
+		spy.IDS = new int[][][] { { { 1 }, { 1 } } };
+		spy.TAGS = new int[][][] { { { 1 }, { 1 } } };
+		when(random.nextDouble()).thenReturn(Math.exp(-3/TEMPERATURE) + EPSILON).thenReturn(Math.exp(-3/TEMPERATURE) - EPSILON);
+		
+		spy.flip(1, 0, 1, 0, 0, random);
+		assertEquals(1, spy.IDS[0][1][0]);
+		assertEquals(1, spy.TAGS[0][1][0]);
+		verify(locations[1], never()).remove(1, 0, 0);
+		
+		spy.flip(1, 0, 1, 0, 0, random);
+		assertEquals(0, spy.IDS[0][1][0]);
+		assertEquals(0, spy.TAGS[0][1][0]);
+		verify(locations[1]).remove(1, 0, 0);
+	}
+	
+	@Test
+	public void flip_positiveEnergyNonzeroSourceNonzeroTarget_updatesFields() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		PottsMock spy = spy(potts);
+		
+		when(spy.getDeltaAdhesion(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(1.0);
+		when(spy.getDeltaVolume(anyInt(), anyInt())).thenReturn(1.0);
+		when(spy.getDeltaSurface(anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(1.0);
+		
+		spy.IDS = new int[][][] { { { 1 }, { 1 } } };
+		spy.TAGS = new int[][][] { { { 1 }, { 1 } } };
+		when(random.nextDouble()).thenReturn(Math.exp(-3/TEMPERATURE) + EPSILON).thenReturn(Math.exp(-3/TEMPERATURE) - EPSILON);
+		
+		spy.flip(1, 2, 1, 0, 0, random);
+		assertEquals(1, spy.IDS[0][1][0]);
+		assertEquals(1, spy.TAGS[0][1][0]);
+		verify(locations[1], never()).remove(1, 0, 0);
+		verify(locations[2], never()).add(1, 0, 0);
+		
+		spy.flip(1, 2, 1, 0, 0, random);
+		assertEquals(2, spy.IDS[0][1][0]);
+		assertEquals(-1, spy.TAGS[0][1][0]);
+		verify(locations[1]).remove(1, 0, 0);
+		verify(locations[2]).add(1, 0, 0);
+	}
+	
+	@Test
+	public void flip_unconnectedSourceTag_returns() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(1,-2, 0, 1, 0, 0, random);
+		verify(spy).getNeighborhood(1, -2, 1, 0, 0);
+		verify(random, never()).nextDouble();
+	}
+	
+	@Test
+	public void flip_unconnectedTargetTag_returns() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(1, 0, -2, 1, 0, 0, random);
+		verify(spy).getNeighborhood(1, -2, 1, 0, 0);
+		verify(random, never()).nextDouble();
+	}
+	
+	@Test
+	public void flip_connectedTags_callsMethods() {
+		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
+		when(random.nextDouble()).thenReturn(1.0);
+		PottsMock spy = spy(potts);
+		spy.flip(1, 0, 0, 0, 0, 0, random);
+		verify(spy).getDeltaAdhesion(1, 0, 0, 0, 0, 0);
+		verify(spy).getDeltaVolume(1, 0, 0);
+		verify(spy).getDeltaSurface(1, 0, 0, 0, 0, 0);
+	}
+	
+	@Test
+	public void flip_negativeEnergyTags_updatesFields() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		when(random.nextDouble()).thenReturn(0.0);
+		PottsMock spy = spy(potts);
+		
+		when(spy.getDeltaAdhesion(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(-1.0);
+		when(spy.getDeltaVolume(anyInt(), anyInt(), anyInt())).thenReturn(-1.0);
+		when(spy.getDeltaSurface(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(-1.0);
+		
+		spy.IDS = new int[1][3][1];
+		spy.TAGS = new int[1][3][1];
+		spy.flip(1, -1, -2, 2, 0, 0, random);
+		
+		assertEquals(-2, spy.TAGS[0][2][0]);
+		verify(locations[1]).remove(-1,2, 0, 0);
+		verify(locations[1]).add(-2,2, 0, 0);
+	}
+	
+	@Test
+	public void flip_positiveEnergyTags_updatesFields() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		when(random.nextDouble()).thenReturn(0.0);
+		PottsMock spy = spy(potts);
+		
+		when(spy.getDeltaAdhesion(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(1.0);
+		when(spy.getDeltaVolume(anyInt(), anyInt(), anyInt())).thenReturn(1.0);
+		when(spy.getDeltaSurface(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt())).thenReturn(1.0);
+		
+		spy.IDS = new int[1][3][1];
+		spy.TAGS = new int[1][3][1];
+		when(random.nextDouble()).thenReturn(Math.exp(-3/TEMPERATURE) + EPSILON).thenReturn(Math.exp(-3/TEMPERATURE) - EPSILON);
+		
+		spy.flip(1, -1, -2, 2, 0, 0, random);
+		assertEquals(0, spy.TAGS[0][2][0]);
+		verify(locations[1], never()).remove(-1,2, 0, 0);
+		verify(locations[1], never()).add(-2,2, 0, 0);
+		
+		spy.flip(1, -1, -2, 2, 0, 0, random);
+		assertEquals(-2, spy.TAGS[0][2][0]);
+		verify(locations[1]).remove(-1,2, 0, 0);
+		verify(locations[1]).add(-2,2, 0, 0);
 	}
 	
 	@Test
