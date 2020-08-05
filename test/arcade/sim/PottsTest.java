@@ -9,6 +9,7 @@ import static arcade.sim.Potts2D.*;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
 import arcade.env.loc.Location;
+import sim.engine.SimState;
 
 public class PottsTest {
 	private static final double EPSILON = 1E-4;
@@ -189,6 +190,44 @@ public class PottsTest {
 		series._height = 4;
 		potts = new PottsMock(series, grid);
 		assertEquals(2, potts.HEIGHT);
+	}
+	
+	@Test
+	public void step_2D_callsMethods() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		SimState simstate = mock(SimState.class);
+		simstate.random = random;
+		
+		Series series = mock(Series.class);
+		series._width = (int)(Math.random()*10) + 3;
+		series._length = (int)(Math.random()*10) + 3;
+		series._height = 1;
+		
+		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
+		int steps = spy.LENGTH*spy.WIDTH*spy.HEIGHT;
+		
+		spy.step(simstate);
+		verify(spy, times(steps)).getUniqueIDs(intThat(i -> i < spy.LENGTH), intThat(i -> i < spy.WIDTH),  eq(0));
+		verify(spy, times(steps)).getUniqueTags(intThat(i -> i < spy.LENGTH), intThat(i -> i < spy.WIDTH), eq(0));
+	}
+	
+	@Test
+	public void step_3D_callsMethods() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		SimState simstate = mock(SimState.class);
+		simstate.random = random;
+		
+		Series series = mock(Series.class);
+		series._width = (int)(Math.random()*10) + 3;
+		series._length = (int)(Math.random()*10) + 3;
+		series._height = (int)(Math.random()*10) + 3;
+		
+		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
+		int steps = spy.LENGTH*spy.WIDTH*spy.HEIGHT;
+		
+		spy.step(simstate);
+		verify(spy, times(steps)).getUniqueIDs(intThat(i -> i < spy.LENGTH), intThat(i -> i < spy.WIDTH), intThat(i -> i < spy.HEIGHT));
+		verify(spy, times(steps)).getUniqueTags(intThat(i -> i < spy.LENGTH), intThat(i -> i < spy.WIDTH), intThat(i -> i < spy.HEIGHT));
 	}
 	
 	@Test
