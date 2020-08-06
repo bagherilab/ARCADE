@@ -169,9 +169,17 @@ public class PottsTest {
 			return array[0][0][0];
 		}
 		
-		HashSet<Integer> getUniqueIDs(int x, int y, int z) { return null; }
+		HashSet<Integer> getUniqueIDs(int x, int y, int z) {
+			HashSet<Integer> set = new HashSet<>();
+			if (x == 0 && y == 0) { set.add(1); set.add(2); }
+			return set;
+		}
 		
-		HashSet<Integer> getUniqueTags(int x, int y, int z) { return null; }
+		HashSet<Integer> getUniqueTags(int x, int y, int z) {
+			HashSet<Integer> set = new HashSet<>();
+			if ((x == 0 && y == 0) || (x == 1 && y == 0)) { set.add(-1); set.add(-2); set.add(-3); }
+			return set;
+		}
 	}
 	
 	@Test
@@ -194,40 +202,101 @@ public class PottsTest {
 	
 	@Test
 	public void step_2D_callsMethods() {
-		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		MersenneTwisterFast random = new MersenneTwisterFast(1);
 		SimState simstate = mock(SimState.class);
 		simstate.random = random;
 		
+		int length = (int)(Math.random()*10) + 3;
+		int width = (int)(Math.random()*10) + 3;
+		
 		Series series = mock(Series.class);
-		series._width = (int)(Math.random()*10) + 3;
-		series._length = (int)(Math.random()*10) + 3;
+		series._length = length;
+		series._width = width;
 		series._height = 1;
 		
 		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
 		int steps = spy.LENGTH*spy.WIDTH*spy.HEIGHT;
 		
 		spy.step(simstate);
-		verify(spy, times(steps)).getUniqueIDs(intThat(i -> i < spy.LENGTH), intThat(i -> i < spy.WIDTH),  eq(0));
-		verify(spy, times(steps)).getUniqueTags(intThat(i -> i < spy.LENGTH), intThat(i -> i < spy.WIDTH), eq(0));
+		verify(spy, times(steps)).getUniqueIDs(
+				intThat(i -> i < length - 1 && i > 0),
+				intThat(i -> i < width - 1 && i > 0),
+				eq(0));
+		verify(spy, times(steps)).getUniqueTags(
+				intThat(i -> i < length - 1 && i > 0),
+				intThat(i -> i < width - 1 && i > 0),
+				eq(0));
 	}
 	
 	@Test
 	public void step_3D_callsMethods() {
-		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		MersenneTwisterFast random = new MersenneTwisterFast(1);
 		SimState simstate = mock(SimState.class);
 		simstate.random = random;
 		
+		int length = (int)(Math.random()*10) + 3;
+		int width = (int)(Math.random()*10) + 3;
+		int height = (int)(Math.random()*10) + 3;
+		
 		Series series = mock(Series.class);
-		series._width = (int)(Math.random()*10) + 3;
-		series._length = (int)(Math.random()*10) + 3;
-		series._height = (int)(Math.random()*10) + 3;
+		series._length = length;
+		series._width = width;
+		series._height = height;
 		
 		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
 		int steps = spy.LENGTH*spy.WIDTH*spy.HEIGHT;
 		
 		spy.step(simstate);
-		verify(spy, times(steps)).getUniqueIDs(intThat(i -> i < spy.LENGTH), intThat(i -> i < spy.WIDTH), intThat(i -> i < spy.HEIGHT));
-		verify(spy, times(steps)).getUniqueTags(intThat(i -> i < spy.LENGTH), intThat(i -> i < spy.WIDTH), intThat(i -> i < spy.HEIGHT));
+		verify(spy, times(steps)).getUniqueIDs(
+				intThat(i -> i < length - 1 && i > 0), 
+				intThat(i -> i < width - 1 && i > 0),
+				intThat(i -> i < height - 1 && i > 0));
+		verify(spy, times(steps)).getUniqueTags(
+				intThat(i -> i < length - 1 && i > 0),
+				intThat(i -> i < width - 1 && i > 0),
+				intThat(i -> i < height - 1 && i > 0));
+	}
+	
+	@Test
+	public void step_uniqueIDs_callsMethods() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		when(random.nextInt(1)).thenReturn(-1);
+		when(random.nextInt(2)).thenReturn(0);
+		SimState simstate = mock(SimState.class);
+		simstate.random = random;
+		
+		Series series = mock(Series.class);
+		series._width = 3;
+		series._length = 3;
+		series._height = 1;
+		
+		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
+		
+		spy.step(simstate);
+		verify(spy).flip(0, 1, 0, 0, 0, random);
+		verify(spy, never()).flip(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), eq(random));
+	}
+	
+	@Test
+	public void step_uniqueTags_callsMethods() {
+		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+		when(random.nextInt(1)).thenReturn(0).thenReturn(-1);
+		when(random.nextInt(3)).thenReturn(1);
+		SimState simstate = mock(SimState.class);
+		simstate.random = random;
+		
+		Series series = mock(Series.class);
+		series._width = 3;
+		series._length = 3;
+		series._height = 1;
+		
+		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
+		spy.IDS[0][1][0] = 1;
+		spy.TAGS[0][1][0] = -1;
+		
+		spy.step(simstate);
+		verify(spy, never()).flip(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), eq(random));
+		verify(spy).flip(1, -1, -2, 1, 0, 0, random);
 	}
 	
 	@Test

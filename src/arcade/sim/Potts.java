@@ -273,13 +273,11 @@ public abstract class Potts implements Steppable {
 	 */
 	double getVolume(int id, int change) {
 		if (id == 0) { return 0; }
-		else {
-			Cell c = getCell(id);
-			double volume = c.getVolume();
-			double targetVolume = c.getTargetVolume();
-			double lambda = c.getLambda(LAMBDA_VOLUME);
-			return lambda * Math.pow((volume - targetVolume + change), 2);
-		}
+		Cell c = getCell(id);
+		double volume = c.getVolume();
+		double targetVolume = c.getTargetVolume();
+		double lambda = c.getLambda(LAMBDA_VOLUME);
+		return lambda * Math.pow((volume - targetVolume + change), 2);
 	}
 	
 	/**
@@ -291,6 +289,7 @@ public abstract class Potts implements Steppable {
 	 * @return  the energy
 	 */
 	double getVolume(int id, int tag, int change) {
+		if (id == 0) { return 0; }
 		Cell c = getCell(id);
 		double volume = c.getVolume(tag);
 		double targetVolume = c.getTargetVolume(tag);
@@ -334,13 +333,11 @@ public abstract class Potts implements Steppable {
 	 */
 	double getSurface(int id, int change) {
 		if (id == 0) { return 0; }
-		else {
-			Cell c = getCell(id);
-			double surface = c.getSurface();
-			double targetSurface = c.getTargetSurface();
-			double lambda = c.getLambda(LAMBDA_SURFACE);
-			return lambda * Math.pow((surface - targetSurface + change), 2);
-		}
+		Cell c = getCell(id);
+		double surface = c.getSurface();
+		double targetSurface = c.getTargetSurface();
+		double lambda = c.getLambda(LAMBDA_SURFACE);
+		return lambda * Math.pow((surface - targetSurface + change), 2);
 	}
 	
 	/**
@@ -352,6 +349,7 @@ public abstract class Potts implements Steppable {
 	 * @return  the energy
 	 */
 	double getSurface(int id, int tag, int change) {
+		if (id == 0) { return 0; }
 		Cell c = getCell(id);
 		double surface = c.getSurface(tag);
 		double targetSurface = c.getTargetSurface(tag);

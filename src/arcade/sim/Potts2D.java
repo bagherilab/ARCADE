@@ -36,8 +36,7 @@ public class Potts2D extends Potts {
 			for (int j = y - 1; j <= y + 1; j++) {
 				if (!(i == x && j == y) && IDS[z][i][j] != id) {
 					Cell b = getCell(IDS[z][i][j]);
-					if (a == null && b == null) { System.exit(-1); }
-					else if (a == null) { H += b.getAdhesion(0); }
+					if (a == null) { H += b.getAdhesion(0); }
 					else if (b == null) { H += a.getAdhesion(0); }
 					else { H += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop()))/2.0; }
 				}
