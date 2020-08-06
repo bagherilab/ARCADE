@@ -157,6 +157,85 @@ public class Potts3D extends Potts {
 					}
 				}
 				return false;
+			case 4:
+				// Check for XY plane
+				if (!array[0][1][1] && !array[2][1][1]) {
+					int n = 0;
+					for (int i = 0; i < NUMBER_PLANE; i++) {
+						n += (array[1][1 + CORNER_A[i]][1 + CORNER_B[i]] ? 1 : 0);
+					}
+					return n > 2;
+				}
+				// Check for YZ plane
+				else if (!array[1][0][1] && !array[1][2][1]) {
+					int n = 0;
+					for (int i = 0; i < NUMBER_PLANE; i++) {
+						n += (array[1 + CORNER_B[i]][1][1 + CORNER_A[i]] ? 1 : 0);
+					}
+					return n > 2;
+				}
+				// Check for ZX plane
+				else if (!array[1][1][0] && !array[1][1][2]) {
+					int n = 0;
+					for (int i = 0; i < NUMBER_PLANE; i++) {
+						n += (array[1 + CORNER_A[i]][1 + CORNER_B[i]][1] ? 1 : 0);
+					}
+					return n > 2;
+				}
+				else {
+					boolean[] planeA = new boolean[2];
+					boolean[] planeB = new boolean[2];
+					boolean corner = false;
+					
+					for (int i = 0; i < NUMBER_PLANE; i++) {
+						// Check for X
+						if (array[1][0][1] && array[1][2][1]
+								&& array[1 + PLANE_B[i]][1][1 + PLANE_A[i]]
+								&& array[1 + PLANE_B[(i + 1)%NUMBER_PLANE]][1][1 + PLANE_A[(i + 1)%NUMBER_PLANE]]) {
+							planeA = new boolean[] {
+									array[1 + PLANE_B[i]][0][1 + PLANE_A[i]],
+									array[1 + PLANE_B[i]][2][1 + PLANE_A[i]]
+							};
+							planeB = new boolean[] {
+									array[1 + PLANE_B[(i + 1)%NUMBER_PLANE]][0][1 + PLANE_A[(i + 1)%NUMBER_PLANE]],
+									array[1 + PLANE_B[(i + 1)%NUMBER_PLANE]][2][1 + PLANE_A[(i + 1)%NUMBER_PLANE]]
+							};
+							corner = array[1 + CORNER_B[i]][1][1 + CORNER_A[i]];
+							break;
+						}
+						// Check for Y
+						else if (array[1][1][0] && array[1][1][2]
+								&& array[1 + PLANE_A[i]][1 + PLANE_B[i]][1]
+								&& array[1 + PLANE_A[(i + 1)%NUMBER_PLANE]][1 + PLANE_B[(i + 1)%NUMBER_PLANE]][1]) {
+							planeA = new boolean[] {
+									array[1 + PLANE_A[i]][1 + PLANE_B[i]][0],
+									array[1 + PLANE_A[i]][1 + PLANE_B[i]][2]
+							};
+							planeB = new boolean[] {
+									array[1 + PLANE_A[(i + 1)%NUMBER_PLANE]][1 + PLANE_B[(i + 1)%NUMBER_PLANE]][0],
+									array[1 + PLANE_A[(i + 1)%NUMBER_PLANE]][1 + PLANE_B[(i + 1)%NUMBER_PLANE]][2]
+							};
+							corner = array[1 + CORNER_A[i]][1 + CORNER_B[i]][1];
+						}
+						// Check for Z
+						else if (array[0][1][1] && array[2][1][1]
+								&& array[1][1 + PLANE_A[i]][1 + PLANE_B[i]]
+								&& array[1][1 + PLANE_A[(i + 1)%NUMBER_PLANE]][1 + PLANE_B[(i + 1)%NUMBER_PLANE]]) {
+							planeA = new boolean[] {
+									array[0][1 + PLANE_A[i]][1 + PLANE_B[i]],
+									array[2][1 + PLANE_A[i]][1 + PLANE_B[i]]
+							};
+							planeB = new boolean[] {
+									array[0][1 + PLANE_A[(i + 1)%NUMBER_PLANE]][1 + PLANE_B[(i + 1)%NUMBER_PLANE]],
+									array[2][1 + PLANE_A[(i + 1)%NUMBER_PLANE]][1 + PLANE_B[(i + 1)%NUMBER_PLANE]]
+							};
+							corner = array[1][1 + CORNER_A[i]][1 + CORNER_B[i]];
+						}
+					}
+					if (planeA[0] && planeA[1] && (planeB[0] || planeB[1] || corner)) { return true; }
+					else if (planeB[0] && planeB[1] && (planeA[0] || planeA[1] || corner)) { return true; }
+					else if (corner && ((planeA[0] && planeB[1]) || (planeA[1] && planeB[0]))) { return true; }
+				}
 		}
 		
 		return false;

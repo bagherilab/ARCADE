@@ -213,7 +213,7 @@ public class Potts2DTest {
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentNoCorner_returnsFalse() {
+	public void getConnectivity_twoNeighborsCornerAdjacentNoLink_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {{
 				{ false,  true, false },
 				{  true,  true, false },
@@ -233,7 +233,7 @@ public class Potts2DTest {
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentWithCorner_returnsTrue() {
+	public void getConnectivity_twoNeighborsCornerAdjacentWithLink_returnsTrue() {
 		assertTrue(potts.getConnectivity(new boolean[][][] {{
 				{  true,  true, false },
 				{  true,  true, false },
@@ -253,7 +253,7 @@ public class Potts2DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsNeitherCorner_returnsFalse() {
+	public void getConnectivity_threeNeighborsNeitherLink_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {{
 				{ false,  true, false },
 				{  true,  true, false },
@@ -273,7 +273,7 @@ public class Potts2DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsOnlyOneCorner_returnsFalse() {
+	public void getConnectivity_threeNeighborsOnlyOneLink_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {{
 				{  true,  true, false },
 				{  true,  true, false },
@@ -309,7 +309,7 @@ public class Potts2DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsBothCorners_returnsTrue() {
+	public void getConnectivity_threeNeighborsBothLinks_returnsTrue() {
 		assertTrue(potts.getConnectivity(new boolean[][][] {{
 				{  true,  true, false },
 				{  true,  true, false },

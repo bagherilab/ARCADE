@@ -208,7 +208,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentNoCornerXY_returnsFalse() {
+	public void getConnectivity_twoNeighborsCornerAdjacentNoLinkXY_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -283,7 +283,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentNoCornerYZ_returnsFalse() {
+	public void getConnectivity_twoNeighborsCornerAdjacentNoLinkYZ_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -358,7 +358,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentNoCornerZX_returnsFalse() {
+	public void getConnectivity_twoNeighborsCornerAdjacentNoLinkX_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -433,7 +433,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentWithCornerXY_returnsTrue() {
+	public void getConnectivity_twoNeighborsCornerAdjacentWithLinkXY_returnsTrue() {
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -508,7 +508,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentWithCornerYZ_returnsTrue() {
+	public void getConnectivity_twoNeighborsCornerAdjacentWithLinkYZ_returnsTrue() {
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -583,7 +583,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentWithCornerZX_returnsTrue() {
+	public void getConnectivity_twoNeighborsCornerAdjacentWithLinkZX_returnsTrue() {
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -658,7 +658,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsNeitherCornerXY_returnsFalse() {
+	public void getConnectivity_threeNeighborsNeitherLinkXY_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -733,7 +733,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsOnlyOneCornerXY_returnsFalse() {
+	public void getConnectivity_threeNeighborsOnlyOneLinkXY_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -769,6 +769,8 @@ public class Potts3DTest {
 				{ false, false, false }
 			}
 		}, false));
+		
+		// --------------------------------------------------
 		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
@@ -806,6 +808,8 @@ public class Potts3DTest {
 			}
 		}, false));
 		
+		// --------------------------------------------------
+		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -841,6 +845,8 @@ public class Potts3DTest {
 				{ false, false, false }
 			}
 		}, false));
+		
+		// --------------------------------------------------
 		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
@@ -880,7 +886,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsBothCornersXY_returnsTrue() {
+	public void getConnectivity_threeNeighborsBothLinksXY_returnsTrue() {
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -955,7 +961,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsNeitherCornerYZ_returnsFalse() {
+	public void getConnectivity_threeNeighborsNeitherLinkYZ_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -1030,7 +1036,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsOnlyOneCornerYZ_returnsFalse() {
+	public void getConnectivity_threeNeighborsOnlyOneLinkYZ_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -1066,6 +1072,8 @@ public class Potts3DTest {
 				{ false, false, false }
 			}
 		}, false));
+		
+		// --------------------------------------------------
 		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
@@ -1103,6 +1111,8 @@ public class Potts3DTest {
 			}
 		}, false));
 		
+		// --------------------------------------------------
+		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -1138,6 +1148,8 @@ public class Potts3DTest {
 				{ false, false, false }
 			}
 		}, false));
+		
+		// --------------------------------------------------
 		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
@@ -1177,7 +1189,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsBothCornersYZ_returnsTrue() {
+	public void getConnectivity_threeNeighborsBothLinksYZ_returnsTrue() {
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -1252,7 +1264,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsNeitherCornerZX_returnsFalse() {
+	public void getConnectivity_threeNeighborsNeitherLinkZX_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -1327,7 +1339,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsOnlyOneCornerZX_returnsFalse() {
+	public void getConnectivity_threeNeighborsOnlyOneLinkZX_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -1364,6 +1376,8 @@ public class Potts3DTest {
 			}
 		}, false));
 		
+		// --------------------------------------------------
+		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -1400,6 +1414,8 @@ public class Potts3DTest {
 			}
 		}, false));
 		
+		// --------------------------------------------------
+		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false,  true, false },
@@ -1435,6 +1451,8 @@ public class Potts3DTest {
 				{ false, false, false }
 			}
 		}, false));
+		
+		// --------------------------------------------------
 		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
@@ -1474,7 +1492,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsBothCornersZX_returnsTrue() {
+	public void getConnectivity_threeNeighborsBothLinksZX_returnsTrue() {
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -1549,7 +1567,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsNoCornersXYZ_returnsFalse() {
+	public void getConnectivity_threeNeighborsNoLinksXYZ_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -1696,7 +1714,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsOneCornerXYZ_returnsFalse() {
+	public void getConnectivity_threeNeighborsOneLinkXYZ_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -1719,6 +1737,44 @@ public class Potts3DTest {
 			{
 				{ false, false, false },
 				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
 				{ false, false, false }
 			},
 			{
@@ -1732,6 +1788,44 @@ public class Potts3DTest {
 				{ false, false, false }
 			}
 		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
 		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
@@ -1750,6 +1844,44 @@ public class Potts3DTest {
 				{ false, false, false }
 			}
 		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
 		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
@@ -1768,6 +1900,44 @@ public class Potts3DTest {
 				{ false, false, false }
 			}
 		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
 		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
@@ -1794,6 +1964,44 @@ public class Potts3DTest {
 				{ false, false, false }
 			},
 			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
 				{  true,  true, false },
 				{  true,  true, false },
 				{ false, false, false }
@@ -1812,6 +2020,44 @@ public class Potts3DTest {
 				{ false, false, false }
 			},
 			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
 				{ false,  true,  true },
 				{ false,  true,  true },
 				{ false, false, false }
@@ -1822,6 +2068,44 @@ public class Potts3DTest {
 				{ false, false, false }
 			}
 		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
 		
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
@@ -1837,258 +2121,6 @@ public class Potts3DTest {
 			{
 				{ false, false, false },
 				{ false,  true, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false,  true, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true,  true },
 				{ false, false, false }
 			}
 		}, false));
@@ -2131,7 +2163,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsTwoCornersXYZ_returnsTrue() {
+	public void getConnectivity_threeNeighborsTwoLinksXYZ_returnsTrue() {
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -2186,6 +2218,8 @@ public class Potts3DTest {
 			}
 		}, false));
 		
+		// --------------------------------------------------
+		
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false,  true, false },
@@ -2240,6 +2274,8 @@ public class Potts3DTest {
 			}
 		}, false));
 		
+		// --------------------------------------------------
+		
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false,  true, false },
@@ -2293,6 +2329,8 @@ public class Potts3DTest {
 				{ false, false, false }
 			}
 		}, false));
+		
+		// --------------------------------------------------
 		
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
@@ -2348,6 +2386,8 @@ public class Potts3DTest {
 			}
 		}, false));
 		
+		// --------------------------------------------------
+		
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -2402,6 +2442,8 @@ public class Potts3DTest {
 			}
 		}, false));
 		
+		// --------------------------------------------------
+		
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -2456,6 +2498,8 @@ public class Potts3DTest {
 			}
 		}, false));
 		
+		// --------------------------------------------------
+		
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -2509,6 +2553,8 @@ public class Potts3DTest {
 				{ false, false, false }
 			}
 		}, false));
+		
+		// --------------------------------------------------
 		
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
@@ -2566,7 +2612,7 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsAllCornersXYZ_returnsTrue() {
+	public void getConnectivity_threeNeighborsAllLinksXYZ_returnsTrue() {
 		assertTrue(potts.getConnectivity(new boolean[][][] {
 			{
 				{ false, false, false },
@@ -2707,6 +2753,6738 @@ public class Potts3DTest {
 			{
 				{ false, false, false },
 				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsPlaneNoLinks_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsPlaneOneLink_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsPlaneTwoLinks_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsPlaneThreeLinks_returnsTrue() {
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsPlaneAllLinks_returnsTrue() {
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraXNoLinks_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraYNoLinks_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraZNoLinks_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraXOneLink_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraYOneLink_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraZOneLink_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+		
+	@Test
+	public void getConnectivity_fourNeighborsTetraXTwoLinksPlane_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraYTwoLinksPlane_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraZTwoLinksPlane_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraXTwoLinksOpposite_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraYTwoLinksOpposite_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraZTwoLinksOpposite_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraXTwoLinksAdjacent_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraYTwLinksAdjacent_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraZTwoLinksAdjacent_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraXTwoLinksCorner_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraYTwoLinksCorner_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraZTwoLinksCorner_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraXFourLinksPlane_returnsTrue() {
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraYFourLinksPlane_returnsTrue() {
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraZFourLinksPlane_returnsTrue() {
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraXFourLinksCornerValid_returnsTrue() {
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraYFourLinksCornerValid_returnsTrue() {
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraZFourLinksCornerValid_returnsTrue() {
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraXFourLinksCornerInvalid_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{  true,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraYFourLinksCornerInvalid_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false, false, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_fourNeighborsTetraZFourLinksCornerInvalid_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{  true,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{  true,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false,  true,  true },
+				{ false,  true,  true },
+				{ false, false, false }
+			},
+			{
+				{ false,  true, false },
+				{ false,  true,  true },
+				{ false, false, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true,  true }
+			},
+			{
+				{ false, false, false },
+				{ false,  true,  true },
+				{ false,  true, false }
+			}
+		}, false));
+		
+		// --------------------------------------------------
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{ false,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			}
+		}, false));
+		
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+			{
+				{ false, false, false },
+				{ false,  true, false },
+				{ false, false, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
+				{  true,  true, false }
+			},
+			{
+				{ false, false, false },
+				{  true,  true, false },
 				{ false,  true, false }
 			}
 		}, false));
