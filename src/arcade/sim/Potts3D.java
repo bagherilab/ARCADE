@@ -71,12 +71,12 @@ public class Potts3D extends Potts {
 	}
 	
 	boolean getConnectivity(boolean[][][] array, boolean zero) {
-		int sites = 0;
+		int links = 0;
 		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-			if (array[1 + MOVES_Z[i]][1 + MOVES_X[i]][1 + MOVES_Y[i]]) { sites++; }
+			if (array[1 + MOVES_Z[i]][1 + MOVES_X[i]][1 + MOVES_Y[i]]) { links++; }
 		}
 		
-		switch (sites) {
+		switch (links) {
 			case 0: return false;
 			case 1: return true;
 			case 2:

@@ -15,10 +15,10 @@ public class Potts2D extends Potts {
 	public static final int[] MOVES_Y = { -1, 0, 1, 0 };
 	
 	/** List of x direction corner movements (NE, SE, SW, NW) */
-	public static final int[] MOVES_CORNER_X = { 1, 1, -1, -1 };
+	private static final int[] CORNER_X = { 1, 1, -1, -1 };
 	
 	/** List of y direction corner movements (NE, SE, SW, NW) */
-	public static final int[] MOVES_CORNER_Y = { -1, 1, 1, -1 };
+	private static final int[] CORNER_Y = { -1, 1, 1, -1 };
 	
 	/**
 	 * Creates a cellular {@code Potts} model in 2D.
@@ -140,25 +140,26 @@ public class Potts2D extends Potts {
 	}
 	
 	boolean getConnectivity(boolean[][][] array, boolean zero) {
-		int sites = 0;
+		boolean[][] _array = array[0];
+		int links = 0;
 		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-			if (array[0][1 + MOVES_X[i]][1 + MOVES_Y[i]]) { sites++; }
+			if (_array[1 + MOVES_X[i]][1 + MOVES_Y[i]]) { links++; }
 		}
 		
-		switch (sites) {
+		switch (links) {
 			case 0: return false;
 			case 1: return true;
 			case 2:
 				// Check for opposites N/S
-				if (array[0][2][1] && array[0][0][1]) { return false; }
+				if (_array[1][2] && _array[1][0]) { return false; }
 				// Check for opposites E/W
-				else if (array[0][1][2] && array[0][1][0]) { return false; }
+				else if (_array[2][1] && _array[0][1]) { return false; }
 				// Check for corners
 				else {
 					for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-						if (array[0][1 + MOVES_X[i]][1 + MOVES_Y[i]]
-								&& array[0][1 + MOVES_X[(i + 1)%NUMBER_NEIGHBORS] ][1 + MOVES_Y[(i + 1)%NUMBER_NEIGHBORS]]
-								&& array[0][1 + MOVES_CORNER_X[i]][1 + MOVES_CORNER_Y[i]]) {
+						if (_array[1 + MOVES_X[i]][1 + MOVES_Y[i]]
+								&& _array[1 + MOVES_X[(i + 1)%NUMBER_NEIGHBORS] ][1 + MOVES_Y[(i + 1)%NUMBER_NEIGHBORS]]
+								&& _array[1 + CORNER_X[i]][1 + CORNER_Y[i]]) {
 							return true;
 						}
 					}
@@ -166,9 +167,9 @@ public class Potts2D extends Potts {
 				}
 			case 3:
 				for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-					if (!array[0][1 + MOVES_X[i]][1 + MOVES_Y[i]]) {
-						if (array[0][1 + MOVES_CORNER_X[(i + 1)%NUMBER_NEIGHBORS]][1 + MOVES_CORNER_Y[(i + 1)%NUMBER_NEIGHBORS]]
-								&& array[0][1 + MOVES_CORNER_X[(i + 2)%NUMBER_NEIGHBORS]][1 + MOVES_CORNER_Y[(i + 2)%NUMBER_NEIGHBORS]]) {
+					if (!_array[1 + MOVES_X[i]][1 + MOVES_Y[i]]) {
+						if (_array[1 + CORNER_X[(i + 1)%NUMBER_NEIGHBORS]][1 + CORNER_Y[(i + 1)%NUMBER_NEIGHBORS]]
+								&& _array[1 + CORNER_X[(i + 2)%NUMBER_NEIGHBORS]][1 + CORNER_Y[(i + 2)%NUMBER_NEIGHBORS]]) {
 							return true;
 						}
 					}
