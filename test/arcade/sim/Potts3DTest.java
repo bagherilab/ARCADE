@@ -56,12 +56,36 @@ public class Potts3DTest {
 		return rotated;
 	}
 	
+	private static boolean[][][] rotate(boolean[][][] array, int rotations) {
+		boolean[][][] rotated = duplicate(array);
+		
+		for (int rotation = 0; rotation < rotations; rotation++) {
+			for (int k = 0; k < 3; k++) {
+				for (int i = 0; i < 3; i++) {
+					for (int j = 0; j < 3; j++) {
+						rotated[k][i][j] = array[i][j][2 - k];
+					}
+				}
+			}
+			
+			array = duplicate(rotated);
+		}
+		
+		return rotated;
+	}
+	
 	@Before
 	public void setupGrid() {
 		Grid grid = mock(Grid.class);
 		Series series = mock(Series.class);
 		potts = new Potts3D(series, grid);
 	}
+	
+	/* -------------------------------------------------------------------------
+	 * CONNECTIVITY FOR ZERO (0) NEIGHBORS 
+	 * 
+	 * If there are zero neighbors, then the voxel is never connected.
+	------------------------------------------------------------------------- */
 	
 	@Test
 	public void getConnectivity_zeroNeighbors_returnsFalse() {
@@ -84,622 +108,212 @@ public class Potts3DTest {
 		}, false));
 	}
 	
+	/* -------------------------------------------------------------------------
+	 * CONNECTIVITY FOR ONE (1) NEIGHBOR
+	 * 
+	 * The neighbor can be located on each face of the cube (6 options).
+	 * 
+	 * If there is only one neighbor, the voxel is always connected.
+	------------------------------------------------------------------------- */
+	
+	private static final boolean[][][] BASE_ONE_NEIGHBOR = new boolean[][][] {
+			{
+					{ false, false, false },
+					{ false, false, false },
+					{ false, false, false }
+			},
+			{
+					{ false,  true, false },
+					{ false,  true, false },
+					{ false, false, false }
+			},
+			{
+					{ false, false, false },
+					{ false, false, false },
+					{ false, false, false }
+			}
+	};
+	
 	@Test
 	public void getConnectivity_oneNeighbor_returnsTrue() {
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			}
-		}, false));
+		for (int rotation = 0; rotation < 6; rotation++) {
+			boolean[][][] array = rotate(BASE_ONE_NEIGHBOR, rotation);
+			assertTrue(potts.getConnectivity(array, false));
+		}
 	}
+	
+	/* -------------------------------------------------------------------------
+	 * CONNECTIVITY FOR TWO (2) NEIGHBORS 
+	 * 
+	 * The two neighbors can be either adjacent in the same plane (3 planes x 4
+	 * rotations = 12 options) or opposite in the same plane (3 options).
+	 * 
+	 * If there are two opposite neighbors, the voxel is never connected.
+	 * 
+	 * If there are two adjacent neighbors, the voxel is connected if there is
+	 * a link in the shared corner.
+	------------------------------------------------------------------------- */
+	
+	private static final boolean[][][] BASE_TWO_NEIGHBORS_OPPOSITE = new boolean[][][] {
+			{
+					{ false, false, false },
+					{ false, false, false },
+					{ false, false, false }
+			},
+			{
+					{ false,  true, false },
+					{ false,  true, false },
+					{ false,  true, false }
+			},
+			{
+					{ false, false, false },
+					{ false, false, false },
+					{ false, false, false }
+			}
+	};
+	
+	private static final boolean[][][] BASE_TWO_NEIGHBORS_ADJACENT_XY = new boolean[][][] {
+			{
+					{ false, false, false },
+					{ false, false, false },
+					{ false, false, false }
+			},
+			{
+					{ false,  true, false },
+					{  true,  true, false },
+					{ false, false, false }
+			},
+			{
+					{ false, false, false },
+					{ false, false, false },
+					{ false, false, false }
+			}
+	};
+	
+	private static final boolean[][][] BASE_TWO_NEIGHBORS_ADJACENT_YZ = new boolean[][][] {
+			{
+					{ false, false, false },
+					{ false,  true, false },
+					{ false, false, false }
+			},
+			{
+					{ false, false, false },
+					{  true,  true, false },
+					{ false, false, false }
+			},
+			{
+					{ false, false, false },
+					{ false, false, false },
+					{ false, false, false }
+			}
+	};
+	
+	private static final boolean[][][] BASE_TWO_NEIGHBORS_ADJACENT_ZX = new boolean[][][] {
+			{
+					{ false, false, false },
+					{ false,  true, false },
+					{ false, false, false }
+			},
+			{
+					{ false,  true, false },
+					{ false,  true, false },
+					{ false, false, false }
+			},
+			{
+					{ false, false, false },
+					{ false, false, false },
+					{ false, false, false }
+			}
+	};
+	
+	private static final int[][] LINKS_TWO_NEIGHBORS_ADJACENT_XY = new int[][] {
+			{ 1 }, // Z
+			{ 0 }, // X
+			{ 0 }, // Y
+	};
+	
+	private static final int[][] LINKS_TWO_NEIGHBORS_ADJACENT_YZ = new int[][] {
+			{ 0 }, // Z
+			{ 1 }, // X
+			{ 0 }, // Y
+	};
+	
+	private static final int[][] LINKS_TWO_NEIGHBORS_ADJACENT_ZX = new int[][] {
+			{ 0 }, // Z
+			{ 0 }, // X
+			{ 1 }, // Y
+	};
+	
+	private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS = new int [][] { {} };
+	
+	private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK = new int [][] { { 0 } };
 	
 	@Test
 	public void getConnectivity_twoNeighborsOpposite_returnsFalse() {
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			}
-		}, false));
+		for (int rotation = 0; rotation < 3; rotation++) {
+			boolean[][][] array = rotate(BASE_TWO_NEIGHBORS_OPPOSITE, rotation);
+			assertFalse(potts.getConnectivity(array, false));
+		}
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentNoLinkXY_returnsFalse() {
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
+	public void getConnectivity_twoNeighborsAdjacentXYZeroLinks_returnsFalse() {
+		for (int rotation = 0; rotation < 4; rotation++) {
+			for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS) {
+				boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_XY, combo, LINKS_TWO_NEIGHBORS_ADJACENT_XY), Axis.Z_AXIS, rotation);
+				assertFalse(potts.getConnectivity(array, false));
 			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
+		}
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentNoLinkYZ_returnsFalse() {
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
+	public void getConnectivity_twoNeighborsAdjacentYZZeroLinks_returnsFalse() {
+		for (int rotation = 0; rotation < 4; rotation++) {
+			for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS) {
+				boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_YZ, combo, LINKS_TWO_NEIGHBORS_ADJACENT_YZ), Axis.X_AXIS, rotation);
+				assertFalse(potts.getConnectivity(array, false));
 			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			}
-		}, false));
+		}
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentNoLinkX_returnsFalse() {
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
+	public void getConnectivity_twoNeighborsAdjacentZXZeroLinks_returnsFalse() {
+		for (int rotation = 0; rotation < 4; rotation++) {
+			for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS) {
+				boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_ZX, combo, LINKS_TWO_NEIGHBORS_ADJACENT_ZX), Axis.Y_AXIS, rotation);
+				assertFalse(potts.getConnectivity(array, false));
 			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertFalse(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
-			}
-		}, false));
+		}
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentWithLinkXY_returnsTrue() {
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{  true,  true, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
+	public void getConnectivity_twoNeighborsAdjacentXYOneLink_returnsTrue() {
+		for (int rotation = 0; rotation < 4; rotation++) {
+			for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK) {
+				boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_XY, combo, LINKS_TWO_NEIGHBORS_ADJACENT_XY), Axis.Z_AXIS, rotation);
+				assertTrue(potts.getConnectivity(array, false));
 			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true,  true },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false,  true,  true }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{  true,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
+		}
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentWithLinkYZ_returnsTrue() {
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
+	public void getConnectivity_twoNeighborsAdjacentYZOneLink_returnsTrue() {
+		for (int rotation = 0; rotation < 4; rotation++) {
+			for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK) {
+				boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_YZ, combo, LINKS_TWO_NEIGHBORS_ADJACENT_YZ), Axis.X_AXIS, rotation);
+				assertTrue(potts.getConnectivity(array, false));
 			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false }
-			}
-		}, false));
+		}
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentWithLinkZX_returnsTrue() {
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
+	public void getConnectivity_twoNeighborsAdjacentZXOneLink_returnsTrue() {
+		for (int rotation = 0; rotation < 4; rotation++) {
+			for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK) {
+				boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_ZX, combo, LINKS_TWO_NEIGHBORS_ADJACENT_ZX), Axis.Y_AXIS, rotation);
+				assertTrue(potts.getConnectivity(array, false));
 			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false }
-			},
-			{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false }
-			}
-		}, false));
-		
-		assertTrue(potts.getConnectivity(new boolean[][][] {
-			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false,  true, false }
-			},
-			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false,  true, false }
-			}
-		}, false));
+		}
 	}
 	
 	/* -------------------------------------------------------------------------
