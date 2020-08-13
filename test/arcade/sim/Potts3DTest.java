@@ -643,7 +643,7 @@ public class Potts3DTest {
 	 *      0 links | 1 combo   | unconnected
 	 *      1 link  | 5 combos  | unconnected
 	 *      2 links | 10 combos | unconnected
-	 *      3 links | 10 combos | 8 connected / 2 unconnected
+	 *      3 links | 10 combos | unconnected / connected
 	 *      4 links | 5 combos  | connected
 	 *      5 links | 1 combo   | connected
 	------------------------------------------------------------------------- */
@@ -665,7 +665,7 @@ public class Potts3DTest {
 					{ false, false, false }
 			}
 	};
-
+	
 	private static final boolean[][][] BASE_FOUR_NEIGHBORS_PLANE_YZ = new boolean[][][] {
 			{
 					{ false, false, false },
@@ -1148,6 +1148,193 @@ public class Potts3DTest {
 			for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_FIVE_LINKS) {
 				boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z, combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
 				assertTrue(potts.getConnectivity(array, false));
+			}
+		}
+	}
+	
+	/* -------------------------------------------------------------------------
+	 * CONNECTIVITY FOR FIVE (5) NEIGHBORS 
+	 * 
+	 * The five neighbors are positioned such that only one face is missing a
+	 * neighbor (6 options).
+	 * 
+	 * There can be up to 8 links:
+	 *       0 links | 1 combo   | unconnected
+	 *       1 link  | 8 combos  | unconnected
+	 *       2 links | 28 combos | unconnected
+	 *       3 links | 56 combos | unconnected
+	 **      4 links | 70 combos | unconnected / connected
+	 **      5 links | 56 combos | unconnected / connected
+	 **      6 links | 28 combos | connected
+	 **      7 links | 8 combos  | connected
+	 **      8 links | 1 combo   | connected
+	------------------------------------------------------------------------- */
+	
+	private static final boolean[][][] BASE_FIVE_NEIGHBORS = new boolean[][][] {
+			{
+					{ false, false, false },
+					{ false,  true, false },
+					{ false, false, false }
+			},
+			{
+					{ false,  true, false },
+					{  true,  true,  true },
+					{ false,  true, false }
+			},
+			{
+					{ false, false, false },
+					{ false, false, false },
+					{ false, false, false }
+			}
+	};
+	
+	private static final int[][] LINKS_FIVE_NEIGHBORS = new int[][] {
+			{ 0, 0, 0, 0, 1, 1, 1, 1 }, // Z
+			{ 0, 1, 1, 2, 0, 0, 2, 2 }, // X
+			{ 1, 0, 2, 1, 0, 2, 0, 2 }, // Y
+	};
+	
+	private static final int[][] COMBOS_FIVE_NEIGHBORS_ZERO_LINKS = new int [][] { {} };
+	
+	private static final int[][] COMBOS_FIVE_NEIGHBORS_ONE_LINK = new int[8][1];
+	
+	private static final int[][] COMBOS_FIVE_NEIGHBORS_TWO_LINKS = new int[28][2];
+	
+	private static final int[][] COMBOS_FIVE_NEIGHBORS_THREE_LINKS = new int[56][3];
+	
+	private static final int[][] COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_VALID = new int[][] {
+			{ 0, 1, 2, 3 }
+	};
+	
+	private static final int[][] COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_INVALID = new int[][] {
+			{ 4, 5, 6, 7 }
+	};
+	
+	private static final int[][] COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_VALID_SYMMETRY = new int[][] {
+			// 3 corners, 1 plane
+			{ 4, 5, 6, 0 },
+			{ 4, 5, 6, 1 },
+			{ 4, 5, 6, 2 },
+			{ 4, 5, 6, 3 },
+			
+			// 3 plane, 1 corner
+			{ 0, 1, 2, 6 },
+			{ 0, 1, 2, 7 },
+	};
+	
+	private static final int[][] COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_INVALID_SYMMETRY = new int[][] {
+			// 3 plane, 1 corner
+			{ 0, 1, 2, 4 },
+			{ 0, 1, 2, 5 },
+	};
+	
+	@Before
+	public void createFiveNeighborCombos() {
+		int oneLinkCount = 0;
+		for (int i = 0; i < 8; i++) {
+			COMBOS_FIVE_NEIGHBORS_ONE_LINK[oneLinkCount] = new int[] { i };
+			oneLinkCount++;
+		}
+		
+		int twoLinkCount = 0;
+		for (int i = 0; i < 8; i++) {
+			for (int j = i + 1; j < 8; j++) {
+				COMBOS_FIVE_NEIGHBORS_TWO_LINKS[twoLinkCount] = new int[] { i, j };
+				twoLinkCount++;
+			}
+		}
+		
+		int threeLinkCount = 0;
+		for (int i = 0; i < 8; i++) {
+			for (int j = i + 1; j < 8; j++) {
+				for (int k = j + 1; k < 8; k++) {
+					COMBOS_FIVE_NEIGHBORS_THREE_LINKS[threeLinkCount] = new int[] { i, j, k };
+					threeLinkCount++;
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void getConnectivity_fiveNeighborsZeroLinks_returnsFalse() {
+		for (int rotation = 0; rotation < 6; rotation++) {
+			for (int[] combo : COMBOS_FIVE_NEIGHBORS_ZERO_LINKS) {
+				boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+				assertFalse(potts.getConnectivity(array, false));
+			}
+		}
+	}
+	
+	@Test
+	public void getConnectivity_fiveNeighborsOneLink_returnsFalse() {
+		for (int rotation = 0; rotation < 6; rotation++) {
+			for (int[] combo : COMBOS_FIVE_NEIGHBORS_ONE_LINK) {
+				boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+				assertFalse(potts.getConnectivity(array, false));
+			}
+		}
+	}
+	
+	@Test
+	public void getConnectivity_fiveNeighborsTwoLinks_returnsFalse() {
+		for (int rotation = 0; rotation < 6; rotation++) {
+			for (int[] combo : COMBOS_FIVE_NEIGHBORS_TWO_LINKS) {
+				boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+				assertFalse(potts.getConnectivity(array, false));
+			}
+		}
+	}
+	
+	@Test
+	public void getConnectivity_fiveNeighborsThreeLinks_returnsFalse() {
+		for (int rotation = 0; rotation < 6; rotation++) {
+			for (int[] combo : COMBOS_FIVE_NEIGHBORS_THREE_LINKS) {
+				boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+				assertFalse(potts.getConnectivity(array, false));
+			}
+		}
+	}
+	
+	@Test
+	public void getConnectivity_fiveNeighborsFourLinksValid_returnsTrue() {
+		for (int rotation = 0; rotation < 6; rotation++) {
+			for (int[] combo : COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_VALID) {
+				boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+				assertTrue(potts.getConnectivity(array, false));
+			}
+		}
+	}
+	
+	@Test
+	public void getConnectivity_fiveNeighborsFourLinksInvalid_returnsFalse() {
+		for (int rotation = 0; rotation < 6; rotation++) {
+			for (int[] combo : COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_INVALID) {
+				boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+				assertFalse(potts.getConnectivity(array, false));
+			}
+		}
+	}
+	
+	@Test
+	public void getConnectivity_fiveNeighborsFourLinksValidSymmetry_returnsTrue() {
+		for (int rotation = 0; rotation < 6; rotation++) {
+			for (int symmetry = 0; symmetry < 4; symmetry++) {
+				for (int[] combo : COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_VALID_SYMMETRY) {
+					boolean[][][] array = rotate(rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), Axis.Z_AXIS, symmetry), rotation);
+					assertTrue(potts.getConnectivity(array, false));
+				}
+			}
+		}
+	}
+	
+	@Test
+	public void getConnectivity_fiveNeighborsFourLinksInalidSymmetry_returnsFalse() {
+		for (int rotation = 0; rotation < 6; rotation++) {
+			for (int symmetry = 0; symmetry < 4; symmetry++) {
+				for (int[] combo : COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_INVALID_SYMMETRY) {
+					boolean[][][] array = rotate(rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), Axis.Z_AXIS, symmetry), rotation);
+					assertFalse(potts.getConnectivity(array, false));
+				}
 			}
 		}
 	}
