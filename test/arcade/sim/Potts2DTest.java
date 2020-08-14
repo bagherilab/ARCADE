@@ -172,6 +172,42 @@ public class Potts2DTest {
 		assertArrayEquals(new int[] { -2, 4 }, potts.calculateChange(1, -3, -2, 2, 2, 0));
 	}
 	
+	private static boolean[][][] duplicate(boolean[][][] array) {
+		boolean[][][] duplicated = new boolean[1][3][3];
+		for (int i = 0; i < 3; i++) {
+			System.arraycopy(array[0][i], 0, duplicated[0][i], 0, 3);
+		}
+		return duplicated;
+	}
+	
+	private static boolean[][][] combine(boolean[][][] base, int[] combo, int[][] links) {
+		boolean[][][] array = duplicate(base);
+		for (int i : combo) { array[0][links[0][i]][links[1][i]] = true; }
+		return array;
+	}
+	
+	private static boolean[][][] rotate(boolean[][][] array, int rotations) {
+		boolean[][][] rotated = duplicate(array);
+		
+		for (int rotation = 0; rotation < rotations; rotation++) {
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					rotated[0][i][j] = array[0][j][2 - i];
+				}
+			}
+			
+			array = duplicate(rotated);
+		}
+		
+		return rotated;
+	}
+	
+	/* -------------------------------------------------------------------------
+	 * CONNECTIVITY FOR ZERO (0) NEIGHBORS 
+	 * 
+	 * If there are zero neighbors, then the voxel is never connected.
+	------------------------------------------------------------------------- */
+	
 	@Test
 	public void getConnectivity_zeroNeighbors_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {{
@@ -180,156 +216,162 @@ public class Potts2DTest {
 				{ false, false, false } }}, false));
 	}
 	
+	/* -------------------------------------------------------------------------
+	 * CONNECTIVITY FOR ONE (1) NEIGHBOR
+	 * 
+	 * The neighbor can be located on each sides of the square (4 options).
+	 * 
+	 * If there is only one neighbor, the voxel is always connected.
+	------------------------------------------------------------------------- */
+	
+	private static final boolean[][][] BASE_ONE_NEIGHBOR = new boolean[][][] {{
+			{ false,  true, false },
+			{ false,  true, false },
+			{ false, false, false }
+	}};
+	
 	@Test
 	public void getConnectivity_oneNeighbor_returnsTrue() {
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false, false, false } }}, false));
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false,  true, false } }}, false));
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false, false, false } }}, false));
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false, false, false } }}, false));
+		for (int rotation = 0; rotation < 4; rotation++) {
+			boolean[][][] array = rotate(BASE_ONE_NEIGHBOR, rotation);
+			assertTrue(potts.getConnectivity(array, false));
+		}
 	}
+	
+	/* -------------------------------------------------------------------------
+	 * CONNECTIVITY FOR TWO (2) NEIGHBORS 
+	 * 
+	 * The two neighbors can be either adjacent (4 options) or opposite (2 options).
+	 * 
+	 * If there are two opposite neighbors, the voxel is never connected.
+	 * 
+	 * If there are two adjacent neighbors, the voxel is connected if there is
+	 * a link in the shared corner.
+	------------------------------------------------------------------------- */
+	
+	private static final boolean[][][] BASE_TWO_NEIGHBORS_OPPOSITE = new boolean[][][] {{
+			{ false,  true, false },
+			{ false,  true, false },
+			{ false,  true, false }
+	}};
+	
+	private static final boolean[][][] BASE_TWO_NEIGHBORS_ADJACENT = new boolean[][][] {{
+			{ false,  true, false },
+			{  true,  true, false },
+			{ false, false, false }
+	}};
+	
+	private static final int[][] LINKS_TWO_NEIGHBORS_ADJACENT = new int[][] {
+			{ 0 }, // X
+			{ 0 }, // Y
+	};
+	
+	private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS = new int [][] { {} };
+	
+	private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK = new int [][] { { 0 } };
 	
 	@Test
 	public void getConnectivity_twoNeighborsOpposite_returnsFalse() {
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{  true,  true,  true },
-				{ false, false, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true, false },
-				{ false,  true, false },
-				{ false,  true, false } }}, false));
+		for (int rotation = 0; rotation < 2; rotation++) {
+			boolean[][][] array = rotate(BASE_TWO_NEIGHBORS_OPPOSITE, rotation);
+			assertFalse(potts.getConnectivity(array, false));
+		}
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentNoLink_returnsFalse() {
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true, false },
-				{  true,  true, false },
-				{ false, false, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true, false },
-				{ false,  true,  true },
-				{ false, false, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false,  true, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{  true,  true, false },
-				{ false,  true, false } }}, false));
+	public void getConnectivity_twoNeighborsAdjacentZeroLink_returnsFalse() {
+		for (int rotation = 0; rotation < 4; rotation++) {
+			for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS) {
+				boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT, combo, LINKS_TWO_NEIGHBORS_ADJACENT), rotation);
+				assertFalse(potts.getConnectivity(array, false));
+			}
+		}
 	}
 	
 	@Test
-	public void getConnectivity_twoNeighborsCornerAdjacentWithLink_returnsTrue() {
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{  true,  true, false },
-				{  true,  true, false },
-				{ false, false, false } }}, false));
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true,  true },
-				{ false,  true,  true },
-				{ false, false, false } }}, false));
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{ false,  true,  true },
-				{ false,  true,  true } }}, false));
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{  true,  true, false },
-				{  true,  true, false } }}, false));
+	public void getConnectivity_twoNeighborsAdjacentOneLink_returnsTrue() {
+		for (int rotation = 0; rotation < 4; rotation++) {
+			for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK) {
+				boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT, combo, LINKS_TWO_NEIGHBORS_ADJACENT), rotation);
+				assertTrue(potts.getConnectivity(array, false));
+			}
+		}
+	}
+	
+	/* -------------------------------------------------------------------------
+	 * CONNECTIVITY FOR THREE (3) NEIGHBORS 
+	 * 
+	 * The three neighbors are positioned such that only one side is missing a
+	 * neighbor (4 options).
+	 * 
+	 * There can be up to 2 links:
+	 *       0 links | 1 combo   | unconnected
+	 *       1 link  | 2 combos  | unconnected
+	 *       2 links | 1 combo   | connected
+	------------------------------------------------------------------------- */
+	
+	private static final boolean[][][] BASE_THREE_NEIGHBORS = new boolean[][][] {{
+			{ false,  true, false },
+			{  true,  true, false },
+			{ false,  true, false }
+	}};
+	
+	private static final int[][] LINKS_THREE_NEIGHBORS = new int[][] {
+			{ 0, 2 }, // X
+			{ 0, 0 }, // Y
+	};
+	
+	private static final int[][] COMBOS_THREE_NEIGHBORS_ZERO_LINKS = new int [][] { {} };
+	
+	private static final int[][] COMBOS_THREE_NEIGHBORS_ONE_LINK = new int[][] {
+			{ 0 },
+			{ 1 },
+	};
+	
+	private static final int[][] COMBOS_THREE_NEIGHBORS_TWO_LINKS = new int[][] {
+			{ 0, 1 },
+	};
+	
+	@Test
+	public void getConnectivity_threeNeighborsZeroLinks_returnsFalse() {
+		for (int rotation = 0; rotation < 4; rotation++) {
+			for (int[] combo : COMBOS_THREE_NEIGHBORS_ZERO_LINKS) {
+				boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS, combo, LINKS_THREE_NEIGHBORS), rotation);
+				assertFalse(potts.getConnectivity(array, false));
+			}
+		}
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsNeitherLink_returnsFalse() {
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true, false },
-				{  true,  true, false },
-				{ false,  true, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true, false },
-				{  true,  true,  true },
-				{ false, false, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true, false },
-				{ false,  true,  true },
-				{ false,  true, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{  true,  true,  true },
-				{ false,  true, false } }}, false));
+	public void getConnectivity_threeNeighborsOneLink_returnsFalse() {
+		for (int rotation = 0; rotation < 4; rotation++) {
+			for (int[] combo : COMBOS_THREE_NEIGHBORS_ONE_LINK) {
+				boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS, combo, LINKS_THREE_NEIGHBORS), rotation);
+				assertFalse(potts.getConnectivity(array, false));
+			}
+		}
 	}
 	
 	@Test
-	public void getConnectivity_threeNeighborsOnlyOneLink_returnsFalse() {
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{  true,  true, false },
-				{  true,  true, false },
-				{ false,  true, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true, false },
-				{  true,  true, false },
-				{  true,  true, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true,  true },
-				{  true,  true,  true },
-				{ false, false, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{  true,  true, false },
-				{  true,  true,  true },
-				{ false, false, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true, false },
-				{ false,  true,  true },
-				{ false,  true,  true } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true,  true },
-				{ false,  true,  true },
-				{ false,  true, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{  true,  true,  true },
-				{  true,  true, false } }}, false));
-		assertFalse(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{  true,  true,  true },
-				{ false,  true,  true } }}, false));
+	public void getConnectivity_threeNeighborsPlaneXYTwoLinks_returnsTrue() {
+		for (int rotation = 0; rotation < 4; rotation++) {
+			for (int[] combo : COMBOS_THREE_NEIGHBORS_TWO_LINKS) {
+				boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS, combo, LINKS_THREE_NEIGHBORS), rotation);
+				assertTrue(potts.getConnectivity(array, false));
+			}
+		}
 	}
 	
-	@Test
-	public void getConnectivity_threeNeighborsBothLinks_returnsTrue() {
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{  true,  true, false },
-				{  true,  true, false },
-				{  true,  true, false } }}, false));
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{  true,  true,  true },
-				{  true,  true,  true },
-				{ false, false, false } }}, false));
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{ false,  true,  true },
-				{ false,  true,  true },
-				{ false,  true,  true} }}, false));
-		assertTrue(potts.getConnectivity(new boolean[][][] {{
-				{ false, false, false },
-				{  true,  true,  true },
-				{  true,  true,  true } }}, false));
-	}
+	/* -------------------------------------------------------------------------
+	 * CONNECTIVITY FOR FOUR (4) NEIGHBORS 
+	 * 
+	 * All four possible neighbor positions are occupied. The connectivity
+	 * depends on the ID of the voxel. Only ID = 0 is considered connected;
+	 * all other ID values are unconnected.
+	------------------------------------------------------------------------- */
 	
 	@Test
-	public void getConnectivity_fourNeighborsNonMedia_returnsFalse() {
+	public void getConnectivity_fourNeighborsNonZeroID_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {{
 				{ false,  true, false },
 				{  true,  true,  true },
@@ -337,7 +379,7 @@ public class Potts2DTest {
 	}
 	
 	@Test
-	public void getConnectivity_fourNeighborsMediaID_returnsTrue() {
+	public void getConnectivity_fourNeighborsZeroID_returnsTrue() {
 		assertTrue(potts.getConnectivity(new boolean[][][] {{
 				{ false,  true, false },
 				{  true,  true,  true },
