@@ -108,19 +108,19 @@ public class Potts3DTest {
 	public void getConnectivity_zeroNeighbors_returnsFalse() {
 		assertFalse(potts.getConnectivity(new boolean[][][] {
 			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
+					{ false, false, false },
+					{ false, false, false },
+					{ false, false, false }
 			},
 			{
-				{ false, false, false },
-				{ false,  true, false },
-				{ false, false, false }
+					{ false, false, false },
+					{ false,  true, false },
+					{ false, false, false }
 			},
 			{
-				{ false, false, false },
-				{ false, false, false },
-				{ false, false, false }
+					{ false, false, false },
+					{ false, false, false },
+					{ false, false, false }
 			}
 		}, false));
 	}
@@ -1455,5 +1455,55 @@ public class Potts3DTest {
 				assertTrue(potts.getConnectivity(array, false));
 			}
 		}
+	}
+	
+	/* -------------------------------------------------------------------------
+	 * CONNECTIVITY FOR SIX (6) NEIGHBORS 
+	 * 
+	 * All six possible neighbor positions are occupied. The connectivity
+	 * depends on the ID of the voxel. Only ID = 0 is considered connected;
+	 * all other ID values are unconnected.
+	------------------------------------------------------------------------- */
+	
+	@Test
+	public void getConnectivity_sixNeighborsNonZeroID_returnsFalse() {
+		assertFalse(potts.getConnectivity(new boolean[][][] {
+				{
+						{ false, false, false },
+						{ false,  true, false },
+						{ false, false, false }
+				},
+				{
+						{ false,  true, false },
+						{  true,  true,  true },
+						{ false,  true, false }
+				},
+				{
+						{ false, false, false },
+						{ false,  true, false },
+						{ false, false, false }
+				}
+		}, false));
+	}
+	
+	@Test
+	public void getConnectivity_sixNeighborsZeroID_returnsTrue() {
+		assertTrue(potts.getConnectivity(new boolean[][][] {
+				{
+						{ false, false, false },
+						{ false,  true, false },
+						{ false, false, false }
+				},
+				{
+						{ false,  true, false },
+						{  true,  true,  true },
+						{ false,  true, false }
+				},
+				{
+						{ false, false, false },
+						{ false,  true, false },
+						{ false, false, false }
+				}
+		}, true));
 	}
 }

@@ -274,7 +274,7 @@ public class Potts3D extends Potts {
 				}
 				
 				if (nCorner + nPlane < 4) { return false; }
-				if (nPlane == 4) { return true; }
+				if (nPlane == 4 || nCorner + nPlane > 5) { return true; }
 				if (nCorner > 2) { return nPlane > 0; }
 				if (nCorner == 1 && nPlane == 3) {
 					for (int i = 0; i < NUMBER_PLANE; i++) {
@@ -296,6 +296,8 @@ public class Potts3D extends Potts {
 						if (!plane[i]) { return corner[i] || corner[(i + 3) % NUMBER_PLANE]; }
 					}
 				}
+			case 6:
+				return zero;
 		}
 		
 		return false;
