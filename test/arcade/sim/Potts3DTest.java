@@ -4,11 +4,13 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.HashSet;
-import static arcade.sim.Potts2D.*;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
+import static arcade.sim.PottsTest.*;
 
 public class Potts3DTest {
+	private static final double EPSILON = 1E-4;
+	Cell[] cells;
 	Series seriesMock = mock(Series.class);
 	Grid gridMock = mock(Grid.class);
 	Potts3D pottsMock = new Potts3D(seriesMock, gridMock);
@@ -20,6 +22,38 @@ public class Potts3DTest {
 	public void setupGrid() {
 		Series series = mock(Series.class);
 		Grid grid = mock(Grid.class);
+		
+		// Population for each cell domain.
+		int[] pops = new int[] { 1, 2, 1 };
+		
+		int nCells = 3;
+		int nSubcells = 4;
+		cells = new Cell[nCells + 1];
+		
+		for (int i = 0; i < nCells; i++) {
+			Cell c = mock(Cell.class);
+			when(c.getPop()).thenReturn(pops[i]);
+			
+			// Assign adhesion values for cells.
+			for (int j = 0; j < nCells; j++) {
+				when(c.getAdhesion(j)).thenReturn(ADHESIONS[pops[i]][j]);
+			}
+			
+			// Assign adhesion values for subcellular domain.
+			for (int j = 0; j < nSubcells; j++) {
+				for (int k = 0; k < nSubcells; k++) {
+					int tag1 = -j - 1;
+					int tag2 = -k - 1;
+					when(c.getAdhesion(tag1, tag2)).thenReturn(SUBADHESIONS[k][j]);
+				}
+			}
+			
+			when(grid.getObjectAt(i + 1)).thenReturn(c);
+			cells[i + 1] = c;
+		}
+		
+		when(grid.getObjectAt(0)).thenReturn(null);
+		cells[0] = null;
 		
 		potts = new Potts3D(series, grid);
 		
@@ -100,6 +134,16 @@ public class Potts3DTest {
 		};
 	}
 	
+	private static double adhesion(int a, int b) {
+		return (ADHESIONS[a][b] + ADHESIONS[b][a])/2;
+	}
+	
+	private static double subadhesion(int a, int b) {
+		int aa = -a - 1;
+		int bb = -b - 1;
+		return (SUBADHESIONS[aa][bb] + SUBADHESIONS[bb][aa])/2;
+	}
+	
 	private static boolean[][][] duplicate(boolean[][][] array) {
 		boolean[][][] duplicated = new boolean[3][3][3];
 		for (int k = 0; k < 3; k++) {
@@ -176,6 +220,22 @@ public class Potts3DTest {
 			for (++i; i < k; i++) { s[i] = s[i - 1] + 1; }
 			array[index++] = s.clone();
 		}
+	}
+	
+	@Test
+	public void getAdhesion_validIDs_calculatesValue() {
+		assertEquals(ADHESIONS[1][0]*12 + ADHESIONS[2][0]*6, potts.getAdhesion(0, 2, 2, 2), EPSILON);
+		assertEquals(ADHESIONS[1][0]*8 + adhesion(1, 2)*6 + ADHESIONS[1][1]*3, potts.getAdhesion(1, 2, 2, 2), EPSILON);
+		assertEquals(ADHESIONS[2][0]*8 + adhesion(1, 2)*12, potts.getAdhesion(2, 2, 2, 2), EPSILON);
+		assertEquals(ADHESIONS[1][0]*8 + adhesion(1, 2)*6 + ADHESIONS[1][1]*9, potts.getAdhesion(3, 2, 2, 2), EPSILON);
+	}
+	
+	@Test
+	public void getAdhesion_validTags_calculateValue() {
+		assertEquals(subadhesion(-1, -3)*3, potts.getAdhesion(1, -1, 2, 2, 2), EPSILON);
+		assertEquals(subadhesion(-1, -2)*6 + subadhesion(-2, -3)*3, potts.getAdhesion(1, -2, 2, 2, 2), EPSILON);
+		assertEquals(subadhesion(-1, -3)*6, potts.getAdhesion(1, -3, 2, 2, 2), EPSILON);
+		assertEquals(subadhesion(-1, -4)*6 + subadhesion(-3, -4)*3, potts.getAdhesion(1, -4, 2, 2, 2), EPSILON);
 	}
 	
 	@Test

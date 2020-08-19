@@ -18,12 +18,12 @@ public class PottsTest {
 	private static final double LS = random();
 	private static final double[] subLV = new double[] { random(), random(), random(), random() };
 	private static final double[] subLS = new double[] { random(), random(), random(), random() };
-	private static final double[][] ADHESIONS = new double[][] {
+	static final double[][] ADHESIONS = new double[][] {
 			{ Double.NaN, Double.NaN, Double.NaN },
 			{ 1, 2, 3 },
 			{ 4, 5, 6 }
 	};
-	private static final double[][] SUBADHESIONS = new double[][] {
+	static final double[][] SUBADHESIONS = new double[][] {
 			{ Double.NaN, 1, 2, 3 },
 			{ 4, Double.NaN, 5, 6 },
 			{ 7, 8, Double.NaN, 9 },
@@ -36,6 +36,16 @@ public class PottsTest {
 	PottsMock potts;
 	
 	public static double random() { return Math.random()*100; }
+	
+	public static double adhesion(int a, int b) {
+		return (ADHESIONS[a][b] + ADHESIONS[b][a])/2;
+	}
+	
+	public static double subadhesion(int a, int b) {
+		int aa = -a - 1;
+		int bb = -b - 1;
+		return (SUBADHESIONS[aa][bb] + SUBADHESIONS[bb][aa])/2;
+	}
 	
 	@Before
 	public void setupGrid() {

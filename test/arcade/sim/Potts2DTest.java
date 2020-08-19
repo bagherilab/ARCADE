@@ -4,28 +4,12 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.HashSet;
-import static arcade.sim.Potts2D.*;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
 import static arcade.sim.PottsTest.*;
 
 public class Potts2DTest {
 	private static final double EPSILON = 1E-4;
-	private static final double LV = random();
-	private static final double LS = random();
-	private static final double[] subLV = new double[] { random(), random(), random(), random() };
-	private static final double[] subLS = new double[] { random(), random(), random(), random() };
-	private static final double[][] ADHESIONS = new double[][] {
-			{ Double.NaN, Double.NaN, Double.NaN },
-			{ 1, 2, 3 },
-			{ 4, 5, 6 }
-	};
-	private static final double[][] SUBADHESIONS = new double[][] {
-			{ Double.NaN, 1, 2, 3 },
-			{ 4, Double.NaN, 5, 6 },
-			{ 7, 8, Double.NaN, 9 },
-			{ 10, 11, 12, Double.NaN },
-	};
 	Cell[] cells;
 	Series seriesMock = mock(Series.class);
 	Grid gridMock = mock(Grid.class);
@@ -40,52 +24,13 @@ public class Potts2DTest {
 		// Population for each cell domain.
 		int[] pops = new int[] { 1, 2, 1 };
 		
-		// Volumes and surfaces for each cell domain.
-		int[] volumes = new int[] { 4, 2, 4 };
-		double[] targetVolumes = new double[] { 2, 3, 3 };
-		int[] surfaces = new int[] { 8, 6, 8 };
-		double[] targetSurfaces = new double[] { 10, 10, 8 };
-		
-		// Volumes and surfaces for each subcellular domain.
-		int[][] subvolumes = new int[][] { { 2, 1, 1, 0 }, { 2, 0, 0, 0 }, { 1, 1, 0, 2 } };
-		double[] targetSubvolumes = new double[] { 3, 2, 1, 2 };
-		int[][] subsurfaces = new int[][] { { 6, 4, 4, 0 }, { 6, 0, 0, 0 }, { 4, 0, 0, 6 } };
-		double[] targetSubsurfaces = new double[] { 8, 5, 7, 3 };
-		
 		int nCells = 3;
 		int nSubcells = 4;
-		
 		cells = new Cell[nCells + 1];
 		
 		for (int i = 0; i < nCells; i++) {
 			Cell c = mock(Cell.class);
 			when(c.getPop()).thenReturn(pops[i]);
-			
-			// Assign volumes for the cell domain.
-			when(c.getVolume()).thenReturn(volumes[i]);
-			when(c.getTargetVolume()).thenReturn(targetVolumes[i]);
-			
-			// Assign surfaces for the cell domain.
-			when(c.getSurface()).thenReturn(surfaces[i]);
-			when(c.getTargetSurface()).thenReturn(targetSurfaces[i]);
-			
-			// Assign lambda values for cell domain.
-			when(c.getLambda(LAMBDA_VOLUME)).thenReturn(LV);
-			when(c.getLambda(LAMBDA_SURFACE)).thenReturn(LS);
-			
-			// Assign volumes, surfaces, and lambdas for subcellular domain.
-			for (int j = 0; j < nSubcells; j++) {
-				int tag = -j - 1;
-				
-				when(c.getVolume(tag)).thenReturn(subvolumes[i][j]);
-				when(c.getTargetVolume(tag)).thenReturn(targetSubvolumes[j]);
-				
-				when(c.getSurface(tag)).thenReturn(subsurfaces[i][j]);
-				when(c.getTargetSurface(tag)).thenReturn(targetSubsurfaces[j]);
-				
-				when(c.getLambda(LAMBDA_VOLUME, tag)).thenReturn(subLV[j]);
-				when(c.getLambda(LAMBDA_SURFACE, tag)).thenReturn(subLS[j]);
-			}
 			
 			// Assign adhesion values for cells.
 			for (int j = 0; j < nCells; j++) {
@@ -131,16 +76,6 @@ public class Potts2DTest {
 		};
 	}
 	
-	private static double adhesion(int a, int b) {
-		return (ADHESIONS[a][b] + ADHESIONS[b][a])/2;
-	}
-	
-	private static double subadhesion(int a, int b) {
-		int aa = -a - 1;
-		int bb = -b - 1;
-		return (SUBADHESIONS[aa][bb] + SUBADHESIONS[bb][aa])/2;
-	}
-	
 	private static boolean[][][] duplicate(boolean[][][] array) {
 		boolean[][][] duplicated = new boolean[1][3][3];
 		for (int i = 0; i < 3; i++) {
@@ -174,7 +109,7 @@ public class Potts2DTest {
 	@Test
 	public void getAdhesion_validIDs_calculatesValue() {
 		assertEquals(ADHESIONS[1][0]*5 + ADHESIONS[2][0]*2, potts.getAdhesion(0, 2, 2, 0), EPSILON);
-		assertEquals(ADHESIONS[1][0] + adhesion(1,2)*2 + ADHESIONS[1][1]*2, potts.getAdhesion(1, 2, 2, 0), EPSILON);
+		assertEquals(ADHESIONS[1][0] + adhesion(1, 2)*2 + ADHESIONS[1][1]*2, potts.getAdhesion(1, 2, 2, 0), EPSILON);
 		assertEquals(ADHESIONS[2][0]*1 + adhesion(1, 2)*5, potts.getAdhesion(2, 2, 2, 0), EPSILON);
 		assertEquals(ADHESIONS[1][0] + adhesion(1, 2)*2 + ADHESIONS[1][1]*3, potts.getAdhesion(3, 2, 2, 0), EPSILON);
 	}

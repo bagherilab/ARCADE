@@ -41,13 +41,41 @@ public class Potts3D extends Potts {
 	public Potts3D(Series series, Grid grid) { super(series, grid); }
 	
 	double getAdhesion(int id, int x, int y, int z) {
-		// TODO
-		return 0;
+		double H = 0;
+		Cell a = getCell(id);
+		
+		for (int k = z - 1; k <= z + 1; k++) {
+			for (int i = x - 1; i <= x + 1; i++) {
+				for (int j = y - 1; j <= y + 1; j++) {
+					if (!(k == z && i == x && j == y) && IDS[k][i][j] != id) {
+						Cell b = getCell(IDS[k][i][j]);
+						if (a == null) { H += b.getAdhesion(0); }
+						else if (b == null) { H += a.getAdhesion(0); }
+						else { H += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop()))/2.0; }
+					}
+				}
+			}
+		}
+		
+		return H;
 	}
 	
 	double getAdhesion(int id, int tag, int x, int y, int z) {
-		// TODO
-		return 0;
+		double H = 0;
+		Cell c = getCell(id);
+		
+		for (int k = z - 1; k <= z + 1; k++) {
+			for (int i = x - 1; i <= x + 1; i++) {
+				for (int j = y - 1; j <= y + 1; j++) {
+					if (!(k == z && i == x && j == y) && IDS[k][i][j] == id
+							&& TAGS[k][i][j] != tag && TAGS[k][i][j] != 0) {
+						H += (c.getAdhesion(tag, TAGS[k][i][j]) + c.getAdhesion(TAGS[k][i][j], tag))/2;
+					}
+				}
+			}
+		}
+		
+		return H;
 	}
 	
 	int[] calculateChange(int sourceID, int targetID, int x, int y, int z) {
