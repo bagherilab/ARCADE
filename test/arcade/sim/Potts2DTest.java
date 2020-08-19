@@ -7,6 +7,7 @@ import java.util.HashSet;
 import static arcade.sim.Potts2D.*;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
+import static arcade.sim.PottsTest.*;
 
 public class Potts2DTest {
 	private static final double EPSILON = 1E-4;
@@ -31,10 +32,9 @@ public class Potts2DTest {
 	Potts2D pottsMock = new Potts2D(seriesMock, gridMock);
 	Potts2D potts;
 	
-	public static double random() { return Math.random()*100; }
-	
 	@Before
 	public void setupGrid() {
+		Series series = mock(Series.class);
 		Grid grid = mock(Grid.class);
 		
 		// Population for each cell domain.
@@ -108,7 +108,6 @@ public class Potts2DTest {
 		when(grid.getObjectAt(0)).thenReturn(null);
 		cells[0] = null;
 		
-		Series series = mock(Series.class);
 		potts = new Potts2D(series, grid);
 		
 		potts.IDS = new int[][][] {
@@ -132,14 +131,44 @@ public class Potts2DTest {
 		};
 	}
 	
-	private double adhesion(int a, int b) {
+	private static double adhesion(int a, int b) {
 		return (ADHESIONS[a][b] + ADHESIONS[b][a])/2;
 	}
 	
-	private double subadhesion(int a, int b) {
+	private static double subadhesion(int a, int b) {
 		int aa = -a - 1;
 		int bb = -b - 1;
 		return (SUBADHESIONS[aa][bb] + SUBADHESIONS[bb][aa])/2;
+	}
+	
+	private static boolean[][][] duplicate(boolean[][][] array) {
+		boolean[][][] duplicated = new boolean[1][3][3];
+		for (int i = 0; i < 3; i++) {
+			System.arraycopy(array[0][i], 0, duplicated[0][i], 0, 3);
+		}
+		return duplicated;
+	}
+	
+	private static boolean[][][] combine(boolean[][][] base, int[] combo, int[][] links) {
+		boolean[][][] array = duplicate(base);
+		for (int i : combo) { array[0][links[0][i]][links[1][i]] = true; }
+		return array;
+	}
+	
+	private static boolean[][][] rotate(boolean[][][] array, int rotations) {
+		boolean[][][] rotated = duplicate(array);
+		
+		for (int rotation = 0; rotation < rotations; rotation++) {
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					rotated[0][i][j] = array[0][j][2 - i];
+				}
+			}
+			
+			array = duplicate(rotated);
+		}
+		
+		return rotated;
 	}
 	
 	@Test
@@ -172,34 +201,111 @@ public class Potts2DTest {
 		assertArrayEquals(new int[] { -2, 4 }, potts.calculateChange(1, -3, -2, 2, 2, 0));
 	}
 	
-	private static boolean[][][] duplicate(boolean[][][] array) {
-		boolean[][][] duplicated = new boolean[1][3][3];
-		for (int i = 0; i < 3; i++) {
-			System.arraycopy(array[0][i], 0, duplicated[0][i], 0, 3);
-		}
-		return duplicated;
+	@Test
+	public void getNeighborhood_givenID_createsArray() {
+		boolean[][][] array1 = potts.getNeighborhood(1, 2, 2, 0);
+		assertArrayEquals(new boolean[] {  true,  true, false }, array1[0][0]);
+		assertArrayEquals(new boolean[] {  true,  true, false }, array1[0][1]);
+		assertArrayEquals(new boolean[] { false, false, false }, array1[0][2]);
+		
+		boolean[][][] array2 = potts.getNeighborhood(2, 2, 2, 0);
+		assertArrayEquals(new boolean[] { false, false, false }, array2[0][0]);
+		assertArrayEquals(new boolean[] { false, false, false }, array2[0][1]);
+		assertArrayEquals(new boolean[] {  true,  true, false }, array2[0][2]);
+		
+		boolean[][][] array3 = potts.getNeighborhood(3, 2, 2, 0);
+		assertArrayEquals(new boolean[] { false, false,  true }, array3[0][0]);
+		assertArrayEquals(new boolean[] { false, false,  true }, array3[0][1]);
+		assertArrayEquals(new boolean[] { false, false, false }, array3[0][2]);
 	}
 	
-	private static boolean[][][] combine(boolean[][][] base, int[] combo, int[][] links) {
-		boolean[][][] array = duplicate(base);
-		for (int i : combo) { array[0][links[0][i]][links[1][i]] = true; }
-		return array;
+	@Test
+	public void getNeighborhood_givenTag_createsArray() {
+		boolean[][][] array1 = potts.getNeighborhood(1, -1,2, 2, 0);
+		assertArrayEquals(new boolean[] {  true,  true, false }, array1[0][0]);
+		assertArrayEquals(new boolean[] { false, false, false }, array1[0][1]);
+		assertArrayEquals(new boolean[] { false, false, false }, array1[0][2]);
+		
+		boolean[][][] array2 = potts.getNeighborhood(1, -2,2, 2, 0);
+		assertArrayEquals(new boolean[] { false, false, false }, array2[0][0]);
+		assertArrayEquals(new boolean[] { false,  true, false }, array2[0][1]);
+		assertArrayEquals(new boolean[] { false, false, false }, array2[0][2]);
+		
+		boolean[][][] array3 = potts.getNeighborhood(1, -3,2, 2, 0);
+		assertArrayEquals(new boolean[] { false, false, false }, array3[0][0]);
+		assertArrayEquals(new boolean[] {  true, false, false }, array3[0][1]);
+		assertArrayEquals(new boolean[] { false, false, false }, array3[0][2]);
 	}
 	
-	private static boolean[][][] rotate(boolean[][][] array, int rotations) {
-		boolean[][][] rotated = duplicate(array);
+	private HashSet<Integer> checkUniqueID(Potts2D potts, int[][] ids) {
+		potts.IDS = new int[][][] { ids };
+		return potts.getUniqueIDs(1, 1, 0);
+	}
+	
+	@Test
+	public void getUniqueIDs_validVoxel_returnsList() {
+		HashSet<Integer> unique = new HashSet<>();
 		
-		for (int rotation = 0; rotation < rotations; rotation++) {
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
-					rotated[0][i][j] = array[0][j][2 - i];
-				}
-			}
-			
-			array = duplicate(rotated);
-		}
+		unique.add(1);
+		assertEquals(unique, checkUniqueID(pottsMock, new int[][] {
+				{ 0, 1, 0 },
+				{ 0, 0, 0 },
+				{ 0, 0, 0 } }));
 		
-		return rotated;
+		unique.clear();
+		unique.add(0);
+		assertEquals(unique, checkUniqueID(pottsMock, new int[][] {
+				{ 0, 1, 0 },
+				{ 0, 1, 0 },
+				{ 0, 0, 0 } }));
+		
+		unique.clear();
+		assertEquals(unique, checkUniqueID(pottsMock, new int[][] {
+				{ 1, 0, 1 },
+				{ 0, 0, 0 },
+				{ 1, 0, 1 } }));
+	}
+	
+	private HashSet<Integer> checkUniqueTag(Potts2D potts, int[][] ids, int[][] tags) {
+		potts.IDS = new int[][][] { ids };
+		potts.TAGS = new int[][][] { tags };
+		return potts.getUniqueTags(1, 1, 0);
+	}
+	
+	@Test
+	public void getUniqueTags_validVoxel_returnsList() {
+		HashSet<Integer> unique = new HashSet<>();
+		
+		assertEquals(unique, checkUniqueTag(pottsMock,
+				new int[][] {
+						{ 0, 0, 0 },
+						{ 0, 1, 0 },
+						{ 0, 0, 0 } },
+				new int[][] {
+						{ 0,  0, 0 },
+						{ 0, -1, 0 },
+						{ 0,  0, 0 } }));
+		
+		assertEquals(unique, checkUniqueTag(pottsMock,
+				new int[][] {
+						{ 1, 1, 1 },
+						{ 1, 1, 1 },
+						{ 1, 1, 1 } },
+				new int[][] {
+						{ -2, -1, -2 },
+						{ -1, -1, -1 },
+						{ -2, -1, -2 } }));
+		
+		unique.add(-2);
+		assertEquals(unique, checkUniqueTag(pottsMock,
+				new int[][] {
+						{ 0, 1, 0 },
+						{ 1, 1, 2 },
+						{ 0, 2, 0 } },
+				new int[][] {
+						{  0, -1,  0 },
+						{ -2, -1, -4 },
+						{  0, -3,  0 } }));
 	}
 	
 	/* -------------------------------------------------------------------------
@@ -384,102 +490,5 @@ public class Potts2DTest {
 				{ false,  true, false },
 				{  true,  true,  true },
 				{ false,  true, false } }}, true));
-	}
-	
-	@Test
-	public void getNeighborhood_givenID_createsArray() {
-		boolean[][][] array1 = potts.getNeighborhood(1, 2, 2, 0);
-		assertArrayEquals(new boolean[]{true, true, false}, array1[0][0]);
-		assertArrayEquals(new boolean[]{true, true, false}, array1[0][1]);
-		assertArrayEquals(new boolean[]{false, false, false}, array1[0][2]);
-		
-		boolean[][][] array2 = potts.getNeighborhood(3, 2, 2, 0);
-		assertArrayEquals(new boolean[]{false, false, true}, array2[0][0]);
-		assertArrayEquals(new boolean[]{false, false, true}, array2[0][1]);
-		assertArrayEquals(new boolean[]{false, false, false}, array2[0][2]);
-	}
-	
-	@Test
-	public void getNeighborhood_givenTag_createsArray() {
-		boolean[][][] array1 = potts.getNeighborhood(1, -1,2, 2, 0);
-		assertArrayEquals(new boolean[]{true, true, false}, array1[0][0]);
-		assertArrayEquals(new boolean[]{false, false, false}, array1[0][1]);
-		assertArrayEquals(new boolean[]{false, false, false}, array1[0][2]);
-		
-		boolean[][][] array2 = potts.getNeighborhood(1, -3,2, 2, 0);
-		assertArrayEquals(new boolean[]{false, false, false}, array2[0][0]);
-		assertArrayEquals(new boolean[]{true, false, false}, array2[0][1]);
-		assertArrayEquals(new boolean[]{false, false, false}, array2[0][2]);
-	}
-	
-	private HashSet<Integer> checkUniqueID(Potts2D potts, int[][] ids) {
-		potts.IDS = new int[][][] { ids };
-		return potts.getUniqueIDs(1, 1, 0);
-	}
-	
-	@Test
-	public void getUniqueIDs_validVoxel_returnsList() {
-		HashSet<Integer> unique = new HashSet<>();
-		
-		unique.add(1);
-		assertEquals(unique, checkUniqueID(pottsMock, new int[][] {
-				{ 0, 1, 0 },
-				{ 0, 0, 0 },
-				{ 0, 0, 0 } }));
-		
-		unique.clear();
-		unique.add(0);
-		assertEquals(unique, checkUniqueID(pottsMock, new int[][] {
-				{ 0, 1, 0 },
-				{ 0, 1, 0 },
-				{ 0, 0, 0 } }));
-		
-		unique.clear();
-		assertEquals(unique, checkUniqueID(pottsMock, new int[][] {
-				{ 1, 0, 1 },
-				{ 0, 0, 0 },
-				{ 1, 0, 1 } }));
-	}
-	
-	private HashSet<Integer> checkUniqueTag(Potts2D potts, int[][] ids, int[][] tags) {
-		potts.IDS = new int[][][] { ids };
-		potts.TAGS = new int[][][] { tags }; 
-		return potts.getUniqueTags(1, 1, 0);
-	}
-	
-	@Test
-	public void getUniqueTags_validVoxel_returnsList() {
-		HashSet<Integer> unique = new HashSet<>();
-		
-		assertEquals(unique, checkUniqueTag(pottsMock,
-				new int[][] {
-					{ 0, 0, 0 },
-					{ 0, 1, 0 },
-					{ 0, 0, 0 } }, 
-				new int[][] {
-					{ 0,  0, 0 },
-					{ 0, -1, 0 },
-					{ 0,  0, 0 } }));
-		
-		assertEquals(unique, checkUniqueTag(pottsMock,
-				new int[][] {
-						{ 1, 1, 1 },
-						{ 1, 1, 1 },
-						{ 1, 1, 1 } },
-				new int[][] {
-						{ -2, -1, -2 },
-						{ -1, -1, -1 },
-						{ -2, -1, -2 } }));
-		
-		unique.add(-2);
-		assertEquals(unique, checkUniqueTag(pottsMock,
-				new int[][] {
-						{ 0, 1, 0 },
-						{ 1, 1, 2 },
-						{ 0, 2, 0 } },
-				new int[][] {
-						{  0, -1,  0 },
-						{ -2, -1, -4 },
-						{  0, -3,  0 } }));
 	}
 }

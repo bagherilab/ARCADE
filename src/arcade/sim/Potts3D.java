@@ -61,13 +61,27 @@ public class Potts3D extends Potts {
 	}
 	
 	boolean[][][] getNeighborhood(int id, int x, int y, int z) {
-		// TODO
-		return null;
+		boolean[][][] array = new boolean[3][3][3];
+		for (int k = 0; k < 3; k++) {
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					array[k][i][j] = IDS[k + z - 1][i + x - 1][j + y - 1] == id;
+				}
+			}
+		}
+		return array;
 	}
 	
 	boolean[][][] getNeighborhood(int id, int tag, int x, int y, int z) {
-		// TODO
-		return null;
+		boolean[][][] array = new boolean[3][3][3];
+		for (int k = 0; k < 3; k++) {
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
+					array[k][i][j] = IDS[k + z - 1][i + x - 1][j + y - 1] == id && TAGS[k + z - 1][i + x - 1][j + y - 1] == tag;
+				}
+			}
+		}
+		return array;
 	}
 	
 	boolean getConnectivity(boolean[][][] array, boolean zero) {
@@ -304,12 +318,29 @@ public class Potts3D extends Potts {
 	}
 	
 	HashSet<Integer> getUniqueIDs(int x, int y, int z) {
-		// TODO
-		return null;
+		int id = IDS[z][x][y];
+		HashSet<Integer> unique = new HashSet<>();
+		
+		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
+			int neighbor = IDS[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
+			if (id != neighbor) { unique.add(neighbor); }
+		}
+		return unique;
 	}
 	
 	HashSet<Integer> getUniqueTags(int x, int y, int z) {
-		// TODO
-		return null;
+		int id = IDS[z][x][y];
+		int tag = TAGS[z][x][y];
+		HashSet<Integer> unique = new HashSet<>();
+		
+		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
+			int neighborID = IDS[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
+			int neighborTag = TAGS[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
+			
+			if (neighborID != id) { continue; }
+			if (tag != neighborTag) { unique.add(neighborTag); }
+		}
+		
+		return unique;
 	}
 }
