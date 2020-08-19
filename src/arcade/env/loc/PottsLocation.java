@@ -5,9 +5,8 @@ import java.util.EnumMap;
 import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
-import static arcade.sim.Potts2D.*;
 
-public class PottsLocation2D implements Location {
+abstract class PottsLocation implements Location {
 	/** Difference between split voxel numbers */
 	final static private int BALANCE_DIFFERENCE = 2;
 	
@@ -36,11 +35,11 @@ public class PottsLocation2D implements Location {
 	}
 	
 	/**
-	 * Creates a {@code PottsLocation2D} for a list of voxels.
+	 * Creates a {@code PottsLocation} for a list of voxels.
 	 *
 	 * @param voxels  the list of voxels
 	 */
-	public PottsLocation2D(ArrayList<Voxel> voxels) {
+	public PottsLocation(ArrayList<Voxel> voxels) {
 		this.voxels = new ArrayList<>(voxels);
 		this.volume = voxels.size();
 		this.surface = calculateSurface();
@@ -156,6 +155,21 @@ public class PottsLocation2D implements Location {
 	}
 	
 	/**
+	 * Calculates surface of location.
+	 *
+	 * @return  the surface
+	 */
+	abstract int calculateSurface();
+	
+	/**
+	 * Calculates the local change in surface of the location.
+	 *
+	 * @param voxel  the voxel the update is centered in
+	 * @return  the change in surface
+	 */
+	abstract int updateSurface(Voxel voxel);
+	
+	/**
 	 * Calculates diameters in each direction.
 	 * 
 	 * @return  the map of direction to diameter
@@ -241,6 +255,24 @@ public class PottsLocation2D implements Location {
 	}
 	
 	/**
+	 * Gets list of neighbors of a given voxel.
+	 * 
+	 * @param voxel  the voxel
+	 * @return  the list of neighbor voxels
+	 */
+	abstract ArrayList<Voxel> getNeighbors(Voxel voxel);
+	
+	/**
+	 * Separates the voxels in the list between this location and a new location.
+	 *
+	 * @param voxelsA  the list of voxels for this location
+	 * @param voxelsB  the list of voxels for the split location
+	 * @param random  the seeded random number generator    
+	 * @return  a {@link arcade.env.loc.Location} object with the split voxels
+	 */
+	abstract Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB, MersenneTwisterFast random);
+	
+	/**
 	 * Splits the voxels in the location along a given direction.
 	 * 
 	 * @param direction  the direction of the shortest diameter
@@ -249,9 +281,9 @@ public class PottsLocation2D implements Location {
 	 * @param center  the center voxel
 	 * @param random  the seeded random number generator
 	 */
-	static void splitVoxels(Direction direction, ArrayList<Voxel> voxels,
-							ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
-							Voxel center, MersenneTwisterFast random) {
+	void splitVoxels(Direction direction, ArrayList<Voxel> voxels,
+					 ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
+					 Voxel center, MersenneTwisterFast random) {
 		for (Voxel voxel : voxels) {
 			switch (direction) {
 				case X_DIRECTION:
@@ -300,8 +332,8 @@ public class PottsLocation2D implements Location {
 	 * @param voxelsB  the list for the second half of the split
 	 * @param random  the seeded random number generator
 	 */
-	static void connectVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
-							  MersenneTwisterFast random) {
+	void connectVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
+					   MersenneTwisterFast random) {
 		// Check that both coordinate lists are simply connected.
 		ArrayList<Voxel> unconnectedA = checkVoxels(voxelsA, random, true);
 		ArrayList<Voxel> unconnectedB = checkVoxels(voxelsB, random, true);
@@ -338,8 +370,8 @@ public class PottsLocation2D implements Location {
 	 * @param voxelsB  the list for the second half of the split
 	 * @param random  the seeded random number generator
 	 */
-	static void balanceVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
-							  MersenneTwisterFast random) {
+	void balanceVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
+					   MersenneTwisterFast random) {
 		int nA = voxelsA.size();
 		int nB = voxelsB.size();
 		
@@ -358,8 +390,8 @@ public class PottsLocation2D implements Location {
 			// Get all valid neighbor voxels.
 			LinkedHashSet<Voxel> neighborSet = new LinkedHashSet<>();
 			for (Voxel voxel : toVoxels) {
-				for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-					Voxel neighbor = new Voxel( voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z);
+				ArrayList<Voxel> neighbors = getNeighbors(voxel);
+				for (Voxel neighbor : neighbors) {
 					if (!toVoxels.contains(neighbor)) { neighborSet.add(neighbor); }
 				}
 			}
@@ -419,8 +451,8 @@ public class PottsLocation2D implements Location {
 	 * @param update  {@code true} if the voxel list should be updated, {@code false} otherwise
 	 * @return  a list of unconnected voxels, {@code null} if the list is connected
 	 */
-	static ArrayList<Voxel> checkVoxels(ArrayList<Voxel> voxels,
-										MersenneTwisterFast random, boolean update) {
+	ArrayList<Voxel> checkVoxels(ArrayList<Voxel> voxels,
+								 MersenneTwisterFast random, boolean update) {
 		ArrayList<Voxel> unvisited = new ArrayList<>(voxels);
 		ArrayList<Voxel> visited = new ArrayList<>();
 		ArrayList<Voxel> nextList;
@@ -439,8 +471,8 @@ public class PottsLocation2D implements Location {
 				
 				// Iterate through each connected direction from current voxel
 				// and add to neighbor list if it exists.
-				for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-					Voxel neighbor = new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z);
+				ArrayList<Voxel> neighbors = getNeighbors(voxel);
+				for (Voxel neighbor : neighbors) {
 					if (unvisited.contains(neighbor)) { nextList.add(neighbor); }
 				}
 				
@@ -466,58 +498,5 @@ public class PottsLocation2D implements Location {
 			}
 		}
 		else { return null; }
-	}
-	
-	/**
-	 * Separates the voxels in the list between this location and a new location.
-	 * 
-	 * @param voxelsA  the list of voxels for this location
-	 * @param voxelsB  the list of voxels for the split location
-	 * @param random  the seeded random number generator    
-	 * @return  a {@link arcade.env.loc.Location} object with the split voxels
-	 */
-	Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB, MersenneTwisterFast random) {
-		voxels.clear();
-		voxels.addAll(voxelsA);
-		volume = voxels.size();
-		surface = calculateSurface();
-		return new PottsLocation2D(voxelsB);
-	}
-	
-	/**
-	 * Calculates surface of location.
-	 * 
-	 * @return  the surface
-	 */
-	int calculateSurface() {
-		int surface = 0;
-		
-		for (Voxel voxel : voxels) {
-			for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-				if (!voxels.contains(new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z))) {
-					surface++;
-				}
-			}
-		}
-		
-		return surface;
-	}
-	
-	/**
-	 * Calculates the local change in surface of the location.
-	 * 
-	 * @param voxel  the voxel the update is centered in
-	 * @return  the change in surface
-	 */
-	int updateSurface(Voxel voxel) {
-		int change = 0;
-		
-		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-			if (!voxels.contains(new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z))) {
-				change++;
-			} else { change--; }
-		}
-		
-		return change;
 	}
 }
