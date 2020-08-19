@@ -179,6 +179,18 @@ public class Potts3DTest {
 	}
 	
 	@Test
+	public void calculateChange_validIDs_calculatesValue() {
+		assertArrayEquals(new int[] { 0, 2 }, potts.calculateChange(1, 2, 2, 2, 2));
+		assertArrayEquals(new int[] { 0, 4 }, potts.calculateChange(1, 3, 2, 2, 2));
+	}
+	
+	@Test
+	public void calculateChange_validTags_calculatesValue() {
+		assertArrayEquals(new int[] { -6, 2 }, potts.calculateChange(1, -2, -1, 2, 2, 2));
+		assertArrayEquals(new int[] { -6, 4 }, potts.calculateChange(1, -2, -3, 2, 2, 2));
+	}
+	
+	@Test
 	public void getNeighborhood_givenID_createsArray() {
 		boolean[][][] array1 = potts.getNeighborhood(1, 2, 2, 2);
 		assertArrayEquals(new boolean[] { false,  true, false }, array1[0][0]);

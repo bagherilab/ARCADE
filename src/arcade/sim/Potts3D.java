@@ -51,13 +51,60 @@ public class Potts3D extends Potts {
 	}
 	
 	int[] calculateChange(int sourceID, int targetID, int x, int y, int z) {
-		// TODO
-		return null;
+		int beforeSource = 0;
+		int afterSource = 0;
+		int beforeTarget = 0;
+		int afterTarget = 0;
+		
+		// Iterate through each neighbor.
+		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
+			int neighbor = IDS[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
+			
+			if (neighbor != sourceID) {
+				beforeSource++;
+				if (neighbor == targetID) { beforeTarget++; }
+			}
+			
+			if (neighbor != targetID) {
+				afterTarget++;
+				if (neighbor == sourceID) { afterSource++; }
+			}
+		}
+		
+		// Save changes to surface.
+		int sourceSurfaceChange = afterSource - beforeSource;
+		int targetSurfaceChange = afterTarget - beforeTarget;
+		
+		return new int[] { sourceSurfaceChange, targetSurfaceChange };
 	}
 	
 	int[] calculateChange(int id, int sourceTag, int targetTag, int x, int y, int z) {
-		// TODO
-		return null;
+		int beforeSource = 0;
+		int afterSource = 0;
+		int beforeTarget = 0;
+		int afterTarget = 0;
+		
+		// Iterate through each neighbor.
+		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
+			int neighborID = IDS[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
+			int neighborTag = TAGS[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
+			
+			if (neighborTag != sourceTag || neighborID != id) {
+				beforeSource++;
+				if (neighborTag == targetTag && neighborID == id) { beforeTarget++; }
+			}
+			
+			if (neighborTag != targetTag || neighborID != id) {
+				afterTarget++;
+				if (neighborTag == sourceTag && neighborID == id) { afterSource++; }
+			}
+		}
+		
+		// Save changes to surface.
+		int sourceSurfaceChange = afterSource - beforeSource;
+		int targetSurfaceChange = afterTarget - beforeTarget;
+		
+		return new int[] { sourceSurfaceChange, targetSurfaceChange };
 	}
 	
 	boolean[][][] getNeighborhood(int id, int x, int y, int z) {

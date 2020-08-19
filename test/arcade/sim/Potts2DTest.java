@@ -190,15 +190,13 @@ public class Potts2DTest {
 	@Test
 	public void calculateChange_validIDs_calculatesValue() {
 		assertArrayEquals(new int[] { 0, 2 }, potts.calculateChange(1, 2, 2, 2, 0));
-		assertArrayEquals(new int[] { -2, 0 }, potts.calculateChange(2, 1, 2, 2, 0));
+		assertArrayEquals(new int[] { 0, 2 }, potts.calculateChange(1, 3, 2, 2, 0));
 	}
 	
 	@Test
 	public void calculateChange_validTags_calculatesValue() {
 		assertArrayEquals(new int[] { -4, 2 }, potts.calculateChange(1, -2, -1, 2, 2, 0));
-		assertArrayEquals(new int[] { -2, 4 }, potts.calculateChange(1, -1, -2, 2, 2, 0));
 		assertArrayEquals(new int[] { -4, 2 }, potts.calculateChange(1, -2, -3, 2, 2, 0));
-		assertArrayEquals(new int[] { -2, 4 }, potts.calculateChange(1, -3, -2, 2, 2, 0));
 	}
 	
 	@Test
