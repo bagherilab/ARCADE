@@ -18,7 +18,7 @@ public class Potts3D extends Potts {
 	public static final int[] MOVES_Z = { 0, 0, 0, 0, 1, -1 };
 	
 	/** Number of neighbors in plane */
-	public static final int NUMBER_PLANE = 4;
+	private static final int NUMBER_PLANE = 4;
 	
 	/** List of plane movements for first coordinate */
 	private static final int[] PLANE_A = { 0, 1, 0, -1 };
@@ -26,10 +26,10 @@ public class Potts3D extends Potts {
 	/** List of plane movements for second coordinate */
 	private static final int[] PLANE_B = { -1, 0, 1, 0 };
 	
-	/** List of x direction corner movements */
+	/** List of a direction corner movements */
 	private static final int[] CORNER_A = { 1, 1, -1, -1 };
 	
-	/** List of y direction corner movements */
+	/** List of b direction corner movements */
 	private static final int[] CORNER_B = { -1, 1, 1, -1 };
 	
 	/**

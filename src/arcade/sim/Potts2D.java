@@ -120,23 +120,23 @@ public class Potts2D extends Potts {
 	}
 	
 	boolean[][][] getNeighborhood(int id, int x, int y, int z) {
-		boolean[][][] array = new boolean[1][3][3];
+		boolean[][] array = new boolean[3][3];
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				array[0][i][j] = IDS[z][i + x - 1][j + y - 1] == id;
+				array[i][j] = IDS[0][i + x - 1][j + y - 1] == id;
 			}
 		}
-		return array;
+		return new boolean[][][] { array };
 	}
 	
 	boolean[][][] getNeighborhood(int id, int tag, int x, int y, int z) {
-		boolean[][][] array = new boolean[1][3][3];
+		boolean[][] array = new boolean[3][3];
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				array[0][i][j] = IDS[z][i + x - 1][j + y - 1] == id && TAGS[z][i + x - 1][j + y - 1] == tag;
+				array[i][j] = IDS[0][i + x - 1][j + y - 1] == id && TAGS[0][i + x - 1][j + y - 1] == tag;
 			}
 		}
-		return array;
+		return new boolean[][][] { array };
 	}
 	
 	boolean getConnectivity(boolean[][][] array, boolean zero) {
