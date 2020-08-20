@@ -5,14 +5,10 @@ import static org.junit.Assert.*;
 import java.util.*;
 import arcade.env.loc.Location.Voxel;
 import static arcade.env.loc.PottsLocation.*;
+import static arcade.env.loc.LocationTest.*;
 
 public class Location2DTest {
 	ArrayList<Voxel> voxelListForDiameters;
-	
-	Comparator<Voxel> comparator = (v1, v2) ->
-			v1.z != v2.z ? Integer.compare(v1.z, v2.z) :
-			v1.x != v2.x ? Integer.compare(v1.x, v2.x) :
-				Integer.compare(v1.y, v2.y);
 	
 	@Before
 	public void setupLists() {
@@ -40,8 +36,8 @@ public class Location2DTest {
 		PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
 		ArrayList<Voxel> neighbors = loc.getNeighbors(new Voxel(0, 0, 0));
 		
-		voxels.sort(comparator);
-		neighbors.sort(comparator);
+		voxels.sort(COMPARATOR);
+		neighbors.sort(COMPARATOR);
 		
 		assertEquals(voxels, neighbors);
 	}

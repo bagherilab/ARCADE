@@ -6,16 +6,12 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import ec.util.MersenneTwisterFast;
 import arcade.env.loc.Location.Voxel;
+import static arcade.env.loc.LocationTest.*;
 
 public class PottsLocation2DTest {
 	MersenneTwisterFast randomDoubleZero, randomDoubleOne;
 	ArrayList<Voxel> voxelListA, voxelListB, voxelListC;
 	ArrayList<Voxel> voxelListAC, voxelListCA, voxelListBC, voxelListAB;
-	
-	Comparator<Voxel> comparator = (v1, v2) ->
-			v1.z != v2.z ? Integer.compare(v1.z, v2.z) :
-			v1.x != v2.x ? Integer.compare(v1.x, v2.x) :
-				Integer.compare(v1.y, v2.y);
 	
 	@Before
 	public void setupMocks() {
@@ -178,10 +174,10 @@ public class PottsLocation2DTest {
 		
 		PottsLocation.balanceVoxels(voxelsA, voxelsB, loc, randomDoubleZero);
 		
-		voxelListA.sort(comparator);
-		voxelListB.sort(comparator);
-		voxelsA.sort(comparator);
-		voxelsB.sort(comparator);
+		voxelListA.sort(COMPARATOR);
+		voxelListB.sort(COMPARATOR);
+		voxelsA.sort(COMPARATOR);
+		voxelsB.sort(COMPARATOR);
 		
 		assertEquals(voxelListA, voxelsA);
 		assertEquals(voxelListB, voxelsB);
@@ -205,10 +201,10 @@ public class PottsLocation2DTest {
 		voxelListAX.add(new Voxel(1, 1, 0));
 		voxelListCX.add(new Voxel(3, 1, 0));
 		
-		voxelListAX.sort(comparator);
-		voxelListCX.sort(comparator);
-		voxelsA.sort(comparator);
-		voxelsB.sort(comparator);
+		voxelListAX.sort(COMPARATOR);
+		voxelListCX.sort(COMPARATOR);
+		voxelsA.sort(COMPARATOR);
+		voxelsB.sort(COMPARATOR);
 		
 		assertEquals(voxelListAX, voxelsA);
 		assertEquals(voxelListCX, voxelsB);
@@ -225,10 +221,10 @@ public class PottsLocation2DTest {
 		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListB);
 		splitVoxels.add(new Voxel(1, 0, 0));
 		
-		locVoxels.sort(comparator);
-		loc.voxels.sort(comparator);
-		splitVoxels.sort(comparator);
-		split.voxels.sort(comparator);
+		locVoxels.sort(COMPARATOR);
+		loc.voxels.sort(COMPARATOR);
+		splitVoxels.sort(COMPARATOR);
+		split.voxels.sort(COMPARATOR);
 		
 		assertEquals(locVoxels, loc.voxels);
 		assertEquals(splitVoxels, split.voxels);
@@ -242,10 +238,10 @@ public class PottsLocation2DTest {
 		ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListB);
 		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListA);
 		
-		locVoxels.sort(comparator);
-		loc.voxels.sort(comparator);
-		splitVoxels.sort(comparator);
-		split.voxels.sort(comparator);
+		locVoxels.sort(COMPARATOR);
+		loc.voxels.sort(COMPARATOR);
+		splitVoxels.sort(COMPARATOR);
+		split.voxels.sort(COMPARATOR);
 		
 		assertEquals(locVoxels, loc.voxels);
 		assertEquals(splitVoxels, split.voxels);
