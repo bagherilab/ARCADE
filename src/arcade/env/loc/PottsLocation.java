@@ -1,7 +1,7 @@
 package arcade.env.loc;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
@@ -21,17 +21,32 @@ abstract class PottsLocation implements Location {
 	
 	/** Location split directions */
 	enum Direction {
-		/** Direction along the x axis (y = 0) */
+		/** Direction along the x axis (y = 0, z = 0) */
 		X_DIRECTION,
 		
-		/** Direction along the y axis (x = 0) */
+		/** Direction along the y axis (x = 0, z = 0) */
 		Y_DIRECTION,
 		
-		/** Direction along the positive xy axis (x = y) */
+		/** Direction along the z axis (x = 0, y = 0) */
+		Z_DIRECTION,
+		
+		/** Direction along the positive xy axis (x = y, z = 0) */
 		POSITIVE_XY,
 		
-		/** Direction along the negative xy axis (x = -y) */
-		NEGATIVE_XY
+		/** Direction along the negative xy axis (x = -y, z = 0) */
+		NEGATIVE_XY,
+		
+		/** Direction along the positive yz axis (y = z, x = 0) */
+		POSITIVE_YZ,
+		
+		/** Direction along the negative yz axis (y = -z, x = 0) */
+		NEGATIVE_YZ,
+		
+		/** Direction along the positive zx axis (z = x, y = 0) */
+		POSITIVE_ZX,
+		
+		/** Direction along the negative zx axis (z = -x, y = 0) */
+		NEGATIVE_ZX
 	}
 	
 	/**
@@ -108,8 +123,8 @@ abstract class PottsLocation implements Location {
 		splitVoxels(direction, voxels, voxelsA, voxelsB, center, random);
 		
 		// Ensure that voxel split is connected and balanced.
-		connectVoxels(voxelsA, voxelsB, random);
-		balanceVoxels(voxelsA, voxelsB, random);
+		connectVoxels(voxelsA, voxelsB, this, random);
+		balanceVoxels(voxelsA, voxelsB, this, random);
 		
 		// Select one split to keep for this location and return the other.
 		if (random.nextDouble() < 0.5) { return separateVoxels(voxelsA, voxelsB, random); }
@@ -155,6 +170,14 @@ abstract class PottsLocation implements Location {
 	}
 	
 	/**
+	 * Makes a new {@code PottsLocation} with the given voxels.
+	 *
+	 * @param voxels  the list of voxels
+	 * @return  a new {@code PottsLocation}
+	 */
+	abstract PottsLocation makeLocation(ArrayList<Voxel> voxels);
+	
+	/**
 	 * Calculates surface of location.
 	 *
 	 * @return  the surface
@@ -170,62 +193,19 @@ abstract class PottsLocation implements Location {
 	abstract int updateSurface(Voxel voxel);
 	
 	/**
+	 * Gets list of neighbors of a given voxel.
+	 *
+	 * @param voxel  the voxel
+	 * @return  the list of neighbor voxels
+	 */
+	abstract ArrayList<Voxel> getNeighbors(Voxel voxel);
+	
+	/**
 	 * Calculates diameters in each direction.
 	 * 
 	 * @return  the map of direction to diameter
 	 */
-	EnumMap<Direction, Integer> getDiameters() {
-		Voxel center = getCenter();
-		
-		EnumMap<Direction, Integer> minValueMap = new EnumMap<>(Direction.class);
-		EnumMap<Direction, Integer> maxValueMap = new EnumMap<>(Direction.class);
-		
-		// Initialized entries into direction maps.
-		for (Direction direction : Direction.values()) {
-			minValueMap.put(direction, Integer.MAX_VALUE);
-			maxValueMap.put(direction, Integer.MIN_VALUE);
-		}
-		
-		Direction dir;
-		int v;
-		
-		// Iterate through all the voxels for the location to update minimum and
-		// maximum values in each direction.
-		for (Voxel voxel : voxels) {
-			int i = voxel.x - center.x;
-			int j = voxel.y - center.y;
-			
-			// Need to update all directions if at the center.
-			if (i == 0 && j == 0) {
-				v = 0;
-				
-				for (Direction direction : Direction.values()) {
-					if (v > maxValueMap.get(direction)) { maxValueMap.put(direction, v); }
-					if (v < minValueMap.get(direction)) { minValueMap.put(direction, v); }
-				}
-				
-				continue;
-			}
-			else if (j == 0) { dir = Direction.X_DIRECTION; v = i; }
-			else if (i == 0) { dir = Direction.Y_DIRECTION; v = j; }
-			else if (i == j) { dir = Direction.POSITIVE_XY; v = i; }
-			else if (i == -j) { dir = Direction.NEGATIVE_XY; v = i; }
-			else { continue; }
-			
-			if (v > maxValueMap.get(dir)) { maxValueMap.put(dir, v); }
-			if (v < minValueMap.get(dir)) { minValueMap.put(dir, v); }
-		}
-		
-		EnumMap<Direction, Integer> diameterMap = new EnumMap<>(Direction.class);
-		
-		// Calculate diameter in each direction.
-		for (Direction direction : Direction.values()) {
-			int diameter = maxValueMap.get(direction) - minValueMap.get(direction) + 1;
-			diameterMap.put(direction, diameter);
-		}
-		
-		return diameterMap;
-	}
+	abstract HashMap<Direction, Integer> getDiameters();
 	
 	/**
 	 * Gets the direction of the shortest diameter in the location.
@@ -234,7 +214,7 @@ abstract class PottsLocation implements Location {
 	 * @return  the direction of the shortest diameter
 	 */
 	Direction getDirection(MersenneTwisterFast random) {
-		EnumMap<Direction, Integer> diameters = getDiameters();
+		HashMap<Direction, Integer> diameters = getDiameters();
 		ArrayList<Direction> directions = new ArrayList<>();
 		
 		// Determine minimum diameter.
@@ -255,22 +235,21 @@ abstract class PottsLocation implements Location {
 	}
 	
 	/**
-	 * Gets list of neighbors of a given voxel.
-	 * 
-	 * @param voxel  the voxel
-	 * @return  the list of neighbor voxels
-	 */
-	abstract ArrayList<Voxel> getNeighbors(Voxel voxel);
-	
-	/**
 	 * Separates the voxels in the list between this location and a new location.
 	 *
 	 * @param voxelsA  the list of voxels for this location
 	 * @param voxelsB  the list of voxels for the split location
-	 * @param random  the seeded random number generator    
+	 * @param random  the seeded random number generator
 	 * @return  a {@link arcade.env.loc.Location} object with the split voxels
 	 */
-	abstract Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB, MersenneTwisterFast random);
+	Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
+							MersenneTwisterFast random) {
+		voxels.clear();
+		voxels.addAll(voxelsA);
+		volume = voxels.size();
+		surface = calculateSurface();
+		return makeLocation(voxelsB);
+	}
 	
 	/**
 	 * Splits the voxels in the location along a given direction.
@@ -278,12 +257,11 @@ abstract class PottsLocation implements Location {
 	 * @param direction  the direction of the shortest diameter
 	 * @param voxelsA  the container list for the first half of the split
 	 * @param voxelsB  the container list for the second half of the split
-	 * @param center  the center voxel
 	 * @param random  the seeded random number generator
 	 */
-	void splitVoxels(Direction direction, ArrayList<Voxel> voxels,
-					 ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
-					 Voxel center, MersenneTwisterFast random) {
+	static void splitVoxels(Direction direction, ArrayList<Voxel> voxels,
+							ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
+							Voxel center, MersenneTwisterFast random) {
 		for (Voxel voxel : voxels) {
 			switch (direction) {
 				case X_DIRECTION:
@@ -332,11 +310,11 @@ abstract class PottsLocation implements Location {
 	 * @param voxelsB  the list for the second half of the split
 	 * @param random  the seeded random number generator
 	 */
-	void connectVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
-					   MersenneTwisterFast random) {
+	static void connectVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
+							  PottsLocation location, MersenneTwisterFast random) {
 		// Check that both coordinate lists are simply connected.
-		ArrayList<Voxel> unconnectedA = checkVoxels(voxelsA, random, true);
-		ArrayList<Voxel> unconnectedB = checkVoxels(voxelsB, random, true);
+		ArrayList<Voxel> unconnectedA = checkVoxels(voxelsA, location, random, true);
+		ArrayList<Voxel> unconnectedB = checkVoxels(voxelsB, location, random, true);
 		
 		// If either coordinate list is not connected, attempt to connect them
 		// by adding in the unconnected coordinates of the other list.
@@ -345,10 +323,10 @@ abstract class PottsLocation implements Location {
 			ArrayList<Voxel> unconnectedBA;
 			
 			if (unconnectedA != null) { voxelsB.addAll(unconnectedA); }
-			unconnectedBA = checkVoxels(voxelsB, random, true);
+			unconnectedBA = checkVoxels(voxelsB, location, random, true);
 			
 			if (unconnectedB != null) { voxelsA.addAll(unconnectedB); }
-			unconnectedAB = checkVoxels(voxelsA, random,true);
+			unconnectedAB = checkVoxels(voxelsA, location, random,true);
 			
 			unconnectedA = unconnectedAB;
 			unconnectedB = unconnectedBA;
@@ -370,8 +348,8 @@ abstract class PottsLocation implements Location {
 	 * @param voxelsB  the list for the second half of the split
 	 * @param random  the seeded random number generator
 	 */
-	void balanceVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
-					   MersenneTwisterFast random) {
+	static void balanceVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
+							  PottsLocation location, MersenneTwisterFast random) {
 		int nA = voxelsA.size();
 		int nB = voxelsB.size();
 		
@@ -390,7 +368,7 @@ abstract class PottsLocation implements Location {
 			// Get all valid neighbor voxels.
 			LinkedHashSet<Voxel> neighborSet = new LinkedHashSet<>();
 			for (Voxel voxel : toVoxels) {
-				ArrayList<Voxel> neighbors = getNeighbors(voxel);
+				ArrayList<Voxel> neighbors = location.getNeighbors(voxel);
 				for (Voxel neighbor : neighbors) {
 					if (!toVoxels.contains(neighbor)) { neighborSet.add(neighbor); }
 				}
@@ -409,7 +387,7 @@ abstract class PottsLocation implements Location {
 					
 					// Check that removal of coordinate does not cause the list
 					// to become unconnected.
-					ArrayList<Voxel> unconnected = checkVoxels(fromVoxels, random,false);
+					ArrayList<Voxel> unconnected = checkVoxels(fromVoxels, location, random,false);
 					if (unconnected == null) {
 						added = true;
 						break;
@@ -425,7 +403,7 @@ abstract class PottsLocation implements Location {
 			if (!added) {
 				toVoxels.addAll(invalidCoords);
 				fromVoxels.removeAll(invalidCoords);
-				connectVoxels(voxelsA, voxelsB, random);
+				connectVoxels(voxelsA, voxelsB, location, random);
 				break;
 			}
 			
@@ -451,8 +429,8 @@ abstract class PottsLocation implements Location {
 	 * @param update  {@code true} if the voxel list should be updated, {@code false} otherwise
 	 * @return  a list of unconnected voxels, {@code null} if the list is connected
 	 */
-	ArrayList<Voxel> checkVoxels(ArrayList<Voxel> voxels,
-								 MersenneTwisterFast random, boolean update) {
+	static ArrayList<Voxel> checkVoxels(ArrayList<Voxel> voxels, PottsLocation location,
+										MersenneTwisterFast random, boolean update) {
 		ArrayList<Voxel> unvisited = new ArrayList<>(voxels);
 		ArrayList<Voxel> visited = new ArrayList<>();
 		ArrayList<Voxel> nextList;
@@ -471,7 +449,7 @@ abstract class PottsLocation implements Location {
 				
 				// Iterate through each connected direction from current voxel
 				// and add to neighbor list if it exists.
-				ArrayList<Voxel> neighbors = getNeighbors(voxel);
+				ArrayList<Voxel> neighbors = location.getNeighbors(voxel);
 				for (Voxel neighbor : neighbors) {
 					if (unvisited.contains(neighbor)) { nextList.add(neighbor); }
 				}
