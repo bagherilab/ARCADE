@@ -11,7 +11,7 @@ import arcade.env.loc.Location.Direction;
 public class PottsLocationTest {
 	MersenneTwisterFast randomDoubleZero, randomDoubleOne;
 	final int cellTag = -3;
-	final static int SURFACE = (int)(Math.random()*100);
+	final static int LOCATION_SURFACE = (int)(Math.random()*100);
 	ArrayList<Voxel> voxelListForAddRemove;
 	ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
 	
@@ -70,7 +70,7 @@ public class PottsLocationTest {
 		
 		PottsLocation makeLocation(ArrayList<Voxel> voxels) { return new PottsLocationMock(voxels); }
 		
-		int calculateSurface() { return SURFACE; }
+		int calculateSurface() { return LOCATION_SURFACE; }
 		
 		int updateSurface(Voxel voxel) { return 1; }
 		
@@ -132,20 +132,20 @@ public class PottsLocationTest {
 	public void getSurface_hasVoxels_returnsValue() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
 		loc.add(0, 0, 0);
-		assertEquals(SURFACE + 1, loc.getSurface());
+		assertEquals(LOCATION_SURFACE + 1, loc.getSurface());
 	}
 	
 	@Test
 	public void getSurface_noVoxels_returnsValue() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
-		assertEquals(SURFACE, loc.getSurface());
+		assertEquals(LOCATION_SURFACE, loc.getSurface());
 	}
 	
 	@Test
 	public void getSurface_givenTag_returnsValue() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
 		loc.add(0, 0, 0);
-		assertEquals(SURFACE + 1, loc.getSurface(cellTag));
+		assertEquals(LOCATION_SURFACE + 1, loc.getSurface(cellTag));
 	}
 	
 	@Test
@@ -167,7 +167,7 @@ public class PottsLocationTest {
 	public void add_newVoxel_updatesSurface() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
 		loc.add(0, 0, 0);
-		assertEquals(SURFACE + 1, loc.surface);
+		assertEquals(LOCATION_SURFACE + 1, loc.surface);
 	}
 	
 	@Test
@@ -198,7 +198,7 @@ public class PottsLocationTest {
 	public void add_newVoxelWithTag_updatesSurface() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
 		loc.add(cellTag, 0, 0, 0);
-		assertEquals(SURFACE + 1, loc.surface);
+		assertEquals(LOCATION_SURFACE + 1, loc.surface);
 	}
 	
 	@Test
@@ -230,7 +230,7 @@ public class PottsLocationTest {
 	public void remove_existingVoxel_updatesSurface() {
 		PottsLocationMock loc = new PottsLocationMock(voxelListForAddRemove);
 		loc.remove(0, 0, 0);
-		assertEquals(SURFACE - 1, loc.surface);
+		assertEquals(LOCATION_SURFACE - 1, loc.surface);
 	}
 	
 	@Test
@@ -268,7 +268,7 @@ public class PottsLocationTest {
 	public void remove_existingVoxelWithTag_updatesSurface() {
 		PottsLocationMock loc = new PottsLocationMock(voxelListForAddRemove);
 		loc.remove(cellTag, 0, 0, 0);
-		assertEquals(SURFACE - 1, loc.surface);
+		assertEquals(LOCATION_SURFACE - 1, loc.surface);
 	}
 	
 	@Test
@@ -534,8 +534,8 @@ public class PottsLocationTest {
 	public void separateVoxels_validLists_updatesSurfaces() {
 		PottsLocationMock loc = new PottsLocationMock(voxelListAB);
 		PottsLocation split = (PottsLocation)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
-		assertEquals(SURFACE, loc.surface);
-		assertEquals(SURFACE, split.surface);
+		assertEquals(LOCATION_SURFACE, loc.surface);
+		assertEquals(LOCATION_SURFACE, split.surface);
 	}
 	
 	@Test

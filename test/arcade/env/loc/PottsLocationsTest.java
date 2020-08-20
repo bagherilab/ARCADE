@@ -1,15 +1,16 @@
 package arcade.env.loc;
 
-import ec.util.MersenneTwisterFast;
 import org.junit.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import java.util.*;
+import ec.util.MersenneTwisterFast;
 import arcade.env.loc.Location.Voxel;
+import arcade.env.loc.PottsLocationTest.PottsLocationMock;
 import static arcade.sim.Potts.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static arcade.env.loc.PottsLocationTest.*;
 
-public class PottsLocations2DTest {
+public class PottsLocationsTest {
 	MersenneTwisterFast randomDoubleZero, randomDoubleOne;
 	ArrayList<Voxel> voxelListForVolumeSurface;
 	ArrayList<Voxel> voxelListForMultipleTagsA, voxelListForMultipleTagsB, voxelListForMultipleTags;
@@ -18,6 +19,7 @@ public class PottsLocations2DTest {
 	ArrayList<Voxel> voxelListSingle;
 	ArrayList<Voxel> voxelListDouble;
 	ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
+	final static int LOCATIONS_SURFACE = (int)(Math.random()*100);
 	private static final int TAG_ADDITIONAL = TAG_DEFAULT - 1;
 	private static final int TAG_INVALID = 0;
 	
@@ -85,22 +87,67 @@ public class PottsLocations2DTest {
 		voxelListAB.addAll(voxelListB);
 	}
 	
+	static class PottsLocationsMock extends PottsLocations {
+		public PottsLocationsMock(ArrayList<Voxel> voxels) { super(voxels); }
+		
+		PottsLocation makeLocation(ArrayList<Voxel> voxels) { return new PottsLocationMock(voxels); }
+		
+		PottsLocations makeLocations(ArrayList<Voxel> voxels) { return new PottsLocationsMock(voxels); }
+		
+		int calculateSurface() { return LOCATIONS_SURFACE; }
+		
+		int updateSurface(Voxel voxel) { return 1; }
+		
+		ArrayList<Voxel> getNeighbors(Voxel voxel) {
+			int num = 6;
+			int[] x = { 0, 1, 0, -1, 0, 0 };
+			int[] y = { -1, 0, 1, 0, 0, 0 };
+			int[] z = { 0, 0, 0, 0, 1, -1 };
+			
+			ArrayList<Voxel> neighbors = new ArrayList<>();
+			for (int i = 0; i < num; i++) {
+				neighbors.add(new Voxel(voxel.x + x[i], voxel.y + y[i], voxel.z + z[i]));
+			}
+			return neighbors;
+		}
+		
+		HashMap<Direction, Integer> getDiameters() {
+			HashMap<Direction, Integer> diameters = new HashMap<>();
+			
+			if (voxels.size() == 0) {
+				diameters.put(Direction.Z_DIRECTION, 1);
+				diameters.put(Direction.POSITIVE_XY, 2);
+				diameters.put(Direction.NEGATIVE_ZX, 3);
+			}
+			else if (voxels.size() == 7) {
+				diameters.put(Direction.X_DIRECTION, 1);
+			}
+			else {
+				diameters.put(Direction.Z_DIRECTION, 1);
+				diameters.put(Direction.POSITIVE_XY, 1);
+				diameters.put(Direction.NEGATIVE_ZX, 1);
+			}
+			
+			return diameters;
+		}
+	}
+	
 	@Test
 	public void getVolume_validTag_returnsValue() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForVolumeSurface);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurface);
 		assertEquals(1, loc.getVolume());
 		assertEquals(1, loc.getVolume(TAG_DEFAULT));
 	}
 	
 	@Test
 	public void getVolume_invalidTag_returnsZero() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForVolumeSurface);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurface);
 		assertEquals(0, loc.getVolume(TAG_INVALID));
 	}
 	
 	@Test
 	public void getVolume_multipleTags_returnsValue() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForMultipleTags);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForMultipleTags);
 		loc.add(TAG_ADDITIONAL, 1, 1, 0);
 		assertEquals(9, loc.getVolume());
 		assertEquals(8, loc.getVolume(TAG_DEFAULT));
@@ -109,29 +156,29 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void getSurface_validTag_returnsValue() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForVolumeSurface);
-		assertEquals(4, loc.getSurface());
-		assertEquals(4, loc.getSurface(TAG_DEFAULT));
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurface);
+		assertEquals(LOCATIONS_SURFACE, loc.getSurface());
+		assertEquals(LOCATION_SURFACE, loc.getSurface(TAG_DEFAULT));
 	}
 	
 	@Test
 	public void getSurface_invalidTag_returnsZero() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForVolumeSurface);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurface);
 		assertEquals(0, loc.getSurface(TAG_INVALID));
 	}
 	
 	@Test
 	public void getSurface_multipleTags_returnsValue() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForMultipleTags);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForMultipleTags);
 		loc.add(TAG_ADDITIONAL, 1, 1, 0);
-		assertEquals(12, loc.getSurface());
-		assertEquals(16, loc.getSurface(TAG_DEFAULT));
-		assertEquals(4, loc.getSurface(TAG_ADDITIONAL));
+		assertEquals(LOCATIONS_SURFACE + 1, loc.getSurface());
+		assertEquals(LOCATION_SURFACE, loc.getSurface(TAG_DEFAULT));
+		assertEquals(LOCATION_SURFACE + 1, loc.getSurface(TAG_ADDITIONAL));
 	}
 	
 	@Test
 	public void add_newVoxelNoTag_updatesLists() {
-		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
+		PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
 		loc.add(0, 0, 0);
 		loc.add(1, 0, 0);
 		assertEquals(voxelListForAddRemove, loc.voxels);
@@ -140,7 +187,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void add_newVoxelNoTag_updatesVolumes() {
-		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
+		PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
 		loc.add(0, 0, 0);
 		loc.add(1, 0, 0);
 		assertEquals(2, loc.volume);
@@ -149,16 +196,16 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void add_newVoxelNoTag_updatesSurfaces() {
-		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
+		PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
 		loc.add(0, 0, 0);
 		loc.add(1, 0, 0);
-		assertEquals(6, loc.surface);
-		assertEquals(6, loc.locations.get(TAG_DEFAULT).surface);
+		assertEquals(LOCATIONS_SURFACE + 2, loc.surface);
+		assertEquals(LOCATION_SURFACE + 2, loc.locations.get(TAG_DEFAULT).surface);
 	}
 	
 	@Test
 	public void add_existingVoxelNoTag_doesNothing() {
-		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
+		PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
 		loc.add(0, 0, 0);
 		loc.add(1, 0, 0);
 		loc.add(0, 0, 0);
@@ -168,7 +215,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void add_newVoxelWithTag_createsLists() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListSingle);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListSingle);
 		loc.add(TAG_ADDITIONAL, 1, 1, 0);
 		assertEquals(voxelListDouble, loc.voxels);
 		assertEquals(voxelListSingle, loc.locations.get(TAG_DEFAULT).voxels);
@@ -177,7 +224,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void add_newVoxelWithTag_updatesVolumes() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListSingle);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListSingle);
 		loc.add(TAG_ADDITIONAL, 1, 1, 0);
 		assertEquals(2, loc.volume);
 		assertEquals(1, loc.locations.get(TAG_DEFAULT).volume);
@@ -186,16 +233,16 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void add_newVoxelWithTag_updatesSurfaces() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListSingle);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListSingle);
 		loc.add(TAG_ADDITIONAL, 1, 1, 0);
-		assertEquals(8, loc.surface);
-		assertEquals(4, loc.locations.get(TAG_DEFAULT).surface);
-		assertEquals(4, loc.locations.get(TAG_ADDITIONAL).surface);
+		assertEquals(LOCATIONS_SURFACE + 1, loc.surface);
+		assertEquals(LOCATION_SURFACE, loc.locations.get(TAG_DEFAULT).surface);
+		assertEquals(LOCATION_SURFACE + 1, loc.locations.get(TAG_ADDITIONAL).surface);
 	}
 	
 	@Test
 	public void add_existingVoxelWithTag_doesNothing() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListSingle);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListSingle);
 		loc.add(TAG_ADDITIONAL,0, 0, 0);
 		assertEquals(voxelListSingle, loc.voxels);
 		assertEquals(voxelListSingle, loc.locations.get(TAG_DEFAULT).voxels);
@@ -204,7 +251,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void remove_existingVoxelNoTag_updatesList() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForAddRemove);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForAddRemove);
 		ArrayList<Voxel> voxelsRemoved = new ArrayList<>();
 		voxelsRemoved.add(new Voxel(1, 0, 0));
 		loc.remove(0, 0, 0);
@@ -214,7 +261,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void remove_existingVoxelNoTag_updatesVolume() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForAddRemove);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForAddRemove);
 		loc.remove(0, 0, 0);
 		assertEquals(1, loc.volume);
 		assertEquals(1, loc.locations.get(TAG_DEFAULT).volume);
@@ -222,15 +269,15 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void remove_existingVoxelNoTag_updatesSurface() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForAddRemove);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForAddRemove);
 		loc.remove(0, 0, 0);
-		assertEquals(4, loc.surface);
-		assertEquals(4, loc.locations.get(TAG_DEFAULT).surface);
+		assertEquals(LOCATIONS_SURFACE - 1, loc.surface);
+		assertEquals(LOCATION_SURFACE - 1, loc.locations.get(TAG_DEFAULT).surface);
 	}
 	
 	@Test
 	public void remove_allVoxelsNoTag_returnsEmptyList() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForAddRemove);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForAddRemove);
 		loc.remove(0, 0, 0);
 		loc.remove(1, 0, 0);
 		assertEquals(new ArrayList<>(), loc.voxels);
@@ -239,7 +286,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void remove_missingVoxelNoTag_doesNothing() {
-		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
+		PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
 		loc.remove(0, 0, 0);
 		assertEquals(new ArrayList<>(), loc.voxels);
 		assertEquals(new ArrayList<>(), loc.locations.get(TAG_DEFAULT).voxels);
@@ -247,7 +294,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void remove_existingVoxelWithTag_updatesList() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForTagAddRemove);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForTagAddRemove);
 		loc.add(TAG_ADDITIONAL,0, 0, 0);
 		loc.add(TAG_ADDITIONAL, 1, 0, 0);
 		
@@ -270,7 +317,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void remove_existingVoxelWithTag_updatesVolume() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForTagAddRemove);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForTagAddRemove);
 		loc.add(TAG_ADDITIONAL,0, 0, 0);
 		loc.add(TAG_ADDITIONAL, 1, 0, 0);
 		loc.remove(TAG_ADDITIONAL, 0, 0, 0);
@@ -281,18 +328,18 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void remove_existingVoxelWithTag_updatesSurface() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForTagAddRemove);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForTagAddRemove);
 		loc.add(TAG_ADDITIONAL,0, 0, 0);
 		loc.add(TAG_ADDITIONAL, 1, 0, 0);
 		loc.remove(TAG_ADDITIONAL, 0, 0, 0);
-		assertEquals(6, loc.surface);
-		assertEquals(4, loc.locations.get(TAG_DEFAULT).surface);
-		assertEquals(4, loc.locations.get(TAG_ADDITIONAL).surface);
+		assertEquals(LOCATIONS_SURFACE + 2 - 1, loc.surface);
+		assertEquals(LOCATION_SURFACE, loc.locations.get(TAG_DEFAULT).surface);
+		assertEquals(LOCATION_SURFACE + 2 - 1, loc.locations.get(TAG_ADDITIONAL).surface);
 	}
 	
 	@Test
 	public void remove_alternateVoxelWithTag_doesNothing() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForTagAddRemove);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForTagAddRemove);
 		loc.add(TAG_ADDITIONAL,0, 0, 0);
 		loc.add(TAG_ADDITIONAL, 1, 0, 0);
 		
@@ -317,7 +364,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void remove_allVoxelsWithTag_returnsEmptyList() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForTagAddRemove);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForTagAddRemove);
 		loc.add(TAG_ADDITIONAL,0, 0, 0);
 		loc.add(TAG_ADDITIONAL, 1, 0, 0);
 		loc.remove(0, 0, 0);
@@ -329,7 +376,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void remove_missingVoxelWithTag_doesNothing() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForTagAddRemove);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForTagAddRemove);
 		loc.remove(TAG_ADDITIONAL, 0, 0, 0);
 		assertEquals(voxelListForTagAddRemove, loc.voxels);
 		assertEquals(voxelListForTagAddRemove, loc.locations.get(TAG_DEFAULT).voxels);
@@ -338,7 +385,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void assign_existingVoxelSameTag_doesNothing() {
-		PottsLocations2D location = new PottsLocations2D(new ArrayList<>());
+		PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
 		ArrayList<Voxel> voxelDefault = new ArrayList<>();
 		ArrayList<Voxel> voxelAdditional = new ArrayList<>();
 		
@@ -355,7 +402,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void assign_existingVoxelDifferentTag_updatesTags() {
-		PottsLocations2D location = new PottsLocations2D(new ArrayList<>());
+		PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
 		ArrayList<Voxel> voxelDefault = new ArrayList<>();
 		ArrayList<Voxel> voxelAdditional = new ArrayList<>();
 		ArrayList<Voxel> voxelUpdated = new ArrayList<>();
@@ -376,7 +423,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void assign_existingVoxelDifferentTag_updatesVolumes() {
-		PottsLocations2D location = new PottsLocations2D(new ArrayList<>());
+		PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
 		location.add(TAG_DEFAULT, 0, 0, 0);
 		location.add(TAG_ADDITIONAL, 1, 0, 0);
 		location.assign(TAG_ADDITIONAL, 0, 0, 0);
@@ -387,18 +434,18 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void assign_existingVoxelDifferentTag_updatesSurfaces() {
-		PottsLocations2D location = new PottsLocations2D(new ArrayList<>());
+		PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
 		location.add(TAG_DEFAULT, 0, 0, 0);
 		location.add(TAG_ADDITIONAL, 1, 0, 0);
 		location.assign(TAG_ADDITIONAL, 0, 0, 0);
 		
-		assertEquals(0, location.locations.get(TAG_DEFAULT).surface);
-		assertEquals(6, location.locations.get(TAG_ADDITIONAL).surface);
+		assertEquals(LOCATION_SURFACE, location.locations.get(TAG_DEFAULT).surface);
+		assertEquals(LOCATION_SURFACE + 2, location.locations.get(TAG_ADDITIONAL).surface);
 	}
 	
 	@Test
 	public void assign_missingVoxel_doesNothing() {
-		PottsLocations2D location = new PottsLocations2D(new ArrayList<>());
+		PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
 		ArrayList<Voxel> voxelDefault = new ArrayList<>();
 		ArrayList<Voxel> voxelAdditional = new ArrayList<>();
 		
@@ -415,7 +462,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void clear_hasVoxels_updatesArray() {
-		PottsLocations2D location = new PottsLocations2D(voxelListForAddRemove);
+		PottsLocationsMock location = new PottsLocationsMock(voxelListForAddRemove);
 		int[][][] ids = new int[][][] { { { 1, 0, 0 }, { 1, 0, 0 } } };
 		int[][][] tags = new int[][][] { { { -1, 0, 0 }, { -2, 0, 0 } } };
 		location.clear(ids, tags);
@@ -428,7 +475,7 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void clear_hasVoxels_updatesLists() {
-		PottsLocations2D location = new PottsLocations2D(voxelListForAddRemove);
+		PottsLocationsMock location = new PottsLocationsMock(voxelListForAddRemove);
 		location.clear(new int[1][3][3], new int[1][3][3]);
 		assertEquals(0, location.locations.size());
 	}
@@ -440,7 +487,7 @@ public class PottsLocations2DTest {
 		
 		ArrayList<Voxel> voxels = new ArrayList<>();
 		voxels.add(new Voxel(0, 1, 0));
-		PottsLocations2D loc = new PottsLocations2D(voxels);
+		PottsLocationsMock loc = new PottsLocationsMock(voxels);
 		loc.add(TAG_ADDITIONAL, 0, 0, 0);
 		
 		loc.update(3, ids, tags);
@@ -450,8 +497,8 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void separateVoxels_validListsNoTags_updatesLists() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListAB);
-		PottsLocations2D split = (PottsLocations2D)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListAB);
+		PottsLocations split = (PottsLocations)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
 		
 		ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListA);
 		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListB);
@@ -467,8 +514,8 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void separateVoxels_validListsNoTags_updatesVolumes() {
-		PottsLocation2D loc = new PottsLocation2D(voxelListAB);
-		PottsLocation2D split = (PottsLocation2D)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListAB);
+		PottsLocations split = (PottsLocations)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
 		assertEquals(4, loc.volume);
 		assertEquals(3, split.volume);
 		
@@ -476,22 +523,22 @@ public class PottsLocations2DTest {
 	
 	@Test
 	public void separateVoxels_validListsNoTags_updatesSurfaces() {
-		PottsLocation2D loc = new PottsLocation2D(voxelListAB);
-		PottsLocation2D split = (PottsLocation2D)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
-		assertEquals(10, loc.surface);
-		assertEquals(8, split.surface);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListAB);
+		PottsLocations split = (PottsLocations)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
+		assertEquals(LOCATIONS_SURFACE - 3, loc.surface);
+		assertEquals(LOCATIONS_SURFACE, split.surface);
 	}
 	
 	@Test
 	public void separateVoxels_validListsWithTags_updatesLists() {
-		PottsLocations2D loc = new PottsLocations2D(voxelListForMultipleTagsA);
+		PottsLocationsMock loc = new PottsLocationsMock(voxelListForMultipleTagsA);
 		
 		loc.add(TAG_ADDITIONAL, 1, 2, 0);
 		loc.add(TAG_ADDITIONAL, 2, 0, 0);
 		loc.add(TAG_ADDITIONAL, 2, 1, 0);
 		loc.add(TAG_ADDITIONAL, 2, 2, 0);
 		
-		PottsLocations2D split = (PottsLocations2D)loc.separateVoxels(voxelListForMultipleTagsA, voxelListForMultipleTagsB, randomDoubleZero);
+		PottsLocations split = (PottsLocations)loc.separateVoxels(voxelListForMultipleTagsA, voxelListForMultipleTagsB, randomDoubleZero);
 		
 		ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListForMultipleTagsA);
 		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListForMultipleTagsB);
@@ -513,88 +560,5 @@ public class PottsLocations2DTest {
 		assertEquals(splitVoxels, split.voxels);
 		assertEquals(locVoxels, locTagVoxels);
 		assertEquals(splitVoxels, splitTagVoxels);
-	}
-	
-	@Test
-	public void assignVoxels_randomFraction_updatesTags() {
-		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
-		loc.locations.put(TAG_ADDITIONAL, new PottsLocation2D(new ArrayList<>()));
-		double f = Math.random();
-		
-		int N = 10;
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				loc.add(i, j, 0);
-			}
-		}
-		
-		double[] fractions = new double[] { f, 1 - f };
-		PottsLocations2D.assignVoxels(loc, fractions, randomDoubleZero);
-		
-		assertEquals(N*N, loc.voxels.size());
-		assertEquals(N*N, loc.locations.get(TAG_DEFAULT).voxels.size() + loc.locations.get(TAG_ADDITIONAL).voxels.size());
-		assertTrue(loc.locations.get(TAG_DEFAULT).voxels.size() < N*N);
-		assertTrue(loc.locations.get(TAG_ADDITIONAL).voxels.size() < N*N);
-	}
-	
-	@Test
-	public void assignVoxels_noCenterVoxel_updatesTags() {
-		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
-		loc.locations.put(TAG_ADDITIONAL, new PottsLocation2D(new ArrayList<>()));
-		
-		loc.add(TAG_DEFAULT, 0, 0, 0);
-		loc.add(TAG_DEFAULT, 1, 0, 0);
-		loc.add(TAG_DEFAULT, 2, 0, 0);
-		loc.add(TAG_DEFAULT, 0, 1, 0);
-		loc.add(TAG_DEFAULT, 0, 2, 0);
-		
-		MersenneTwisterFast randomMock = mock(MersenneTwisterFast.class);
-		when(randomMock.nextInt(5)).thenReturn(0);
-		
-		PottsLocations2D.assignVoxels(loc, new double[] { 0.8, 0.2 }, randomMock);
-		
-		assertEquals(4, loc.locations.get(TAG_DEFAULT).voxels.size());
-		assertEquals(1, loc.locations.get(TAG_ADDITIONAL).voxels.size());
-		assertEquals(new Voxel(0, 0, 0), loc.locations.get(TAG_ADDITIONAL).voxels.get(0));
-	}
-	
-	@Test
-	public void selectVoxels_maxNumber_updatesTags() {
-		ArrayList<Voxel> voxels = new ArrayList<>();
-		
-		int N = 10;
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				voxels.add(new Voxel(i, j, 0));
-			}
-		}
-		
-		PottsLocations2D loc = new PottsLocations2D(voxels);
-		loc.locations.put(TAG_ADDITIONAL, new PottsLocation2D(new ArrayList<>()));
-		Voxel center = new Voxel(N/2, N/2, 0);
-		
-		int n = N*N;
-		PottsLocations2D.selectVoxels(loc, center, TAG_ADDITIONAL, loc.locations.get(TAG_DEFAULT).voxels, n, randomDoubleZero);
-		assertEquals(n, loc.locations.get(TAG_ADDITIONAL).voxels.size());
-	}
-	
-	@Test
-	public void selectVoxels_minNumber_updatesTags() {
-		ArrayList<Voxel> voxels = new ArrayList<>();
-		
-		int N = 10;
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				voxels.add(new Voxel(i, j, 0));
-			}
-		}
-		
-		PottsLocations2D loc = new PottsLocations2D(voxels);
-		loc.locations.put(TAG_ADDITIONAL, new PottsLocation2D(new ArrayList<>()));
-		Voxel center = new Voxel(N/2, N/2, 0);
-		
-		int n = 1;
-		PottsLocations2D.selectVoxels(loc, center, TAG_ADDITIONAL, loc.locations.get(TAG_DEFAULT).voxels, n, randomDoubleZero);
-		assertEquals(n, loc.locations.get(TAG_ADDITIONAL).voxels.size());
 	}
 }

@@ -6,7 +6,6 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import ec.util.MersenneTwisterFast;
 import arcade.env.loc.Location.Voxel;
-import static arcade.env.loc.PottsLocation.*;
 
 public class PottsLocation2DTest {
 	MersenneTwisterFast randomDoubleZero, randomDoubleOne;
