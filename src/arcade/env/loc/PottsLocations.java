@@ -6,25 +6,25 @@ import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Potts;
 import arcade.sim.Simulation;
-import static arcade.sim.Potts2D.*;
+import static arcade.sim.Potts.*;
 
-public class PottsLocations2D extends PottsLocation2D {
+abstract class PottsLocations extends PottsLocation {
 	private static final int MAX_ITERATIONS = 100;
 	
 	/** Map of tag to location */
-	public HashMap<Integer, PottsLocation2D> locations;
+	public HashMap<Integer, PottsLocation> locations;
 	
 	/**
-	 * Creates a {@code PottsLocations2D} for a list of voxels.
+	 * Creates a {@code PottsLocations} for a list of voxels.
 	 *
 	 * @param voxels  the list of voxels
 	 */
-	public PottsLocations2D(ArrayList<Voxel> voxels) {
+	public PottsLocations(ArrayList<Voxel> voxels) {
 		super(voxels);
 		this.locations = new HashMap<>();
 		
 		ArrayList<Voxel> voxelCopy = new ArrayList<>(voxels);
-		locations.put(Potts.TAG_DEFAULT, new PottsLocation2D(voxelCopy));
+		locations.put(Potts.TAG_DEFAULT, makeLocation(voxelCopy));
 	}
 	
 	public int getVolume(int tag) { return (locations.containsKey(tag) ? locations.get(tag).volume : 0); }
@@ -40,17 +40,17 @@ public class PottsLocations2D extends PottsLocation2D {
 		super.add(x, y, z);
 		
 		Voxel voxel = new Voxel(x, y, z);
-		for (PottsLocation2D loc : locations.values()) {
+		for (PottsLocation loc : locations.values()) {
 			if (loc.voxels.contains(voxel)) { return; }
 		}
 		
-		if (!locations.containsKey(tag)) { locations.put(tag, new PottsLocation2D(new ArrayList<>())); }
+		if (!locations.containsKey(tag)) { locations.put(tag, makeLocation(new ArrayList<>())); }
 		locations.get(tag).add(x, y, z);
 	}
 	
 	public void remove(int x, int y, int z) {
 		super.remove(x, y, z);
-		for (PottsLocation2D location : locations.values()) { location.remove(x, y, z); }
+		for (PottsLocation location : locations.values()) { location.remove(x, y, z); }
 	}
 	
 	public void remove(int tag, int x, int y, int z) {
@@ -100,6 +100,14 @@ public class PottsLocations2D extends PottsLocation2D {
 	}
 	
 	/**
+	 * Makes a new {@code PottsLocations} with the given voxels.
+	 *
+	 * @param voxels  the list of voxels
+	 * @return  a new {@code PottsLocations}
+	 */
+	abstract PottsLocations makeLocations(ArrayList<Voxel> voxels);
+	
+	/**
 	 * Separates the voxels in the list between this location and a new location.
 	 * <p>
 	 * Tagged regions are re-assigned between the two splits.
@@ -111,7 +119,7 @@ public class PottsLocations2D extends PottsLocation2D {
 	 */
 	Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
 							MersenneTwisterFast random) {
-		PottsLocations2D splitLocation = new PottsLocations2D(voxelsB);
+		PottsLocations splitLocation = makeLocations(voxelsB);
 		int n = locations.keySet().size();
 		double[] fractions = new double[n];
 		
@@ -130,7 +138,7 @@ public class PottsLocations2D extends PottsLocation2D {
 			
 			// Create empty tags in split location.
 			if (!splitLocation.locations.containsKey(tag)) {
-				splitLocation.locations.put(tag, new PottsLocation2D(new ArrayList<>()));
+				splitLocation.locations.put(tag, makeLocation(new ArrayList<>()));
 			}
 		}
 		
@@ -148,7 +156,7 @@ public class PottsLocations2D extends PottsLocation2D {
 	 * @param fractions  the tag fractions
 	 * @param random  the seeded random number generator 
 	 */
-	static void assignVoxels(PottsLocations2D location, double[] fractions,
+	static void assignVoxels(PottsLocations location, double[] fractions,
 							 MersenneTwisterFast random) {
 		ArrayList<Voxel> defaultVoxels = location.locations.get(TAG_DEFAULT).voxels;
 		
@@ -181,7 +189,7 @@ public class PottsLocations2D extends PottsLocation2D {
 	 * @param n  the target number of voxels to assign
 	 * @param random  the seeded random number generator 
 	 */
-	static void selectVoxels(Location location, Voxel center, int tag, ArrayList<Voxel> voxels,
+	static void selectVoxels(PottsLocation location, Voxel center, int tag, ArrayList<Voxel> voxels,
 							 double n, MersenneTwisterFast random) {
 		ArrayList<Voxel> selected = new ArrayList<>();
 		double r = Math.sqrt(n/Math.PI);
@@ -193,7 +201,7 @@ public class PottsLocations2D extends PottsLocation2D {
 		}
 		
 		// Check that selected voxels are connected (remove any that are not).
-		checkVoxels(selected, random, true);
+		checkVoxels(selected, location, random, true);
 		
 		int currentSize = selected.size();
 		int iter = 0;
@@ -204,8 +212,8 @@ public class PottsLocations2D extends PottsLocation2D {
 			
 			// Get all valid connected neighbor voxels.
 			for (Voxel voxel : selected) {
-				for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-					Voxel neighbor = new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z);
+				ArrayList<Voxel> allNeighbors = location.getNeighbors(voxel);
+				for (Voxel neighbor : allNeighbors) {
 					if (voxels.contains(neighbor) && !selected.contains(neighbor)) { neighbors.add(neighbor); }
 				}
 			}
