@@ -15,26 +15,6 @@ public class PottsLocation3DTest {
 	}
 	
 	@Test
-	public void getNeighbors_givenVoxel_returnsList() {
-		// TODO
-	}
-	
-	@Test
-	public void getDiameters_validLocation_calculatesValues() {
-		// TODO
-	}
-	
-	@Test
-	public void calculateSurface_validID_calculatesValue() {
-		// TODO
-	}
-	
-	@Test
-	public void updateSurface_validVoxels_calculatesValue() {
-		// TODO
-	}
-	
-	@Test
 	public void checkVoxels_connectedVoxels_returnsNull() {
 		// TODO
 	}

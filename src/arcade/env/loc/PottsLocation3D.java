@@ -2,21 +2,8 @@ package arcade.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import static arcade.sim.Potts3D.*;
 
-public class PottsLocation3D extends PottsLocation {
-	static final Direction[] DIRECTIONS = new Direction[] {
-			Direction.X_DIRECTION,
-			Direction.Y_DIRECTION,
-			Direction.Z_DIRECTION,
-			Direction.POSITIVE_XY,
-			Direction.NEGATIVE_XY,
-			Direction.POSITIVE_YZ,
-			Direction.NEGATIVE_YZ,
-			Direction.POSITIVE_ZX,
-			Direction.NEGATIVE_ZX
-	};
-	
+public class PottsLocation3D extends PottsLocation implements Location3D {
 	/**
 	 * Creates a 3D {@link PottsLocation} for a list of voxels.
 	 *
@@ -26,23 +13,11 @@ public class PottsLocation3D extends PottsLocation {
 	
 	PottsLocation makeLocation(ArrayList<Voxel> voxels) { return new PottsLocation3D(voxels); }
 	
-	ArrayList<Voxel> getNeighbors(Voxel voxel) {
-		// TODO
-		return null;
-	}
+	ArrayList<Voxel> getNeighbors(Voxel voxel) { return Location3D.getNeighbors(voxel); }
 	
-	int calculateSurface() {
-		// TODO
-		return 0;
-	}
+	int calculateSurface() { return Location3D.calculateSurface(voxels); }
 	
-	int updateSurface(Voxel voxel) {
-		// TODO
-		return 0;
-	}
+	int updateSurface(Voxel voxel) { return Location3D.updateSurface(voxels, voxel); }
 	
-	HashMap<Direction, Integer> getDiameters() {
-		// TODO
-		return null;
-	}
+	HashMap<Direction, Integer> getDiameters() { return Location3D.getDiameters(voxels, getCenter()); }
 }

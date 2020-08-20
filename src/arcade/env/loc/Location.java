@@ -3,6 +3,36 @@ package arcade.env.loc;
 import ec.util.MersenneTwisterFast;
 
 public interface Location {
+	/** Location split directions */
+	enum Direction {
+		/** Direction along the x axis (y = 0, z = 0) */
+		X_DIRECTION,
+		
+		/** Direction along the y axis (x = 0, z = 0) */
+		Y_DIRECTION,
+		
+		/** Direction along the z axis (x = 0, y = 0) */
+		Z_DIRECTION,
+		
+		/** Direction along the positive xy axis (x = y, z = 0) */
+		POSITIVE_XY,
+		
+		/** Direction along the negative xy axis (x = -y, z = 0) */
+		NEGATIVE_XY,
+		
+		/** Direction along the positive yz axis (y = z, x = 0) */
+		POSITIVE_YZ,
+		
+		/** Direction along the negative yz axis (y = -z, x = 0) */
+		NEGATIVE_YZ,
+		
+		/** Direction along the positive zx axis (z = x, y = 0) */
+		POSITIVE_ZX,
+		
+		/** Direction along the negative zx axis (z = -x, y = 0) */
+		NEGATIVE_ZX
+	}
+	
 	/**
 	 * Adds a voxel at the given coordinates.
 	 *
