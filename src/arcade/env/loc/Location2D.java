@@ -13,7 +13,7 @@ interface Location2D {
 			Direction.NEGATIVE_XY
 	};
 		
-	static ArrayList<Location.Voxel> getNeighbors(Voxel voxel) {
+	static ArrayList<Voxel> getNeighbors(Voxel voxel) {
 		ArrayList<Voxel> neighbors = new ArrayList<>();
 		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 			neighbors.add(new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z));
