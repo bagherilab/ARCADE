@@ -100,7 +100,7 @@ public class PottsLocation2D extends PottsLocation {
 		HashMap<Direction, Integer> diameterMap = new HashMap<>();
 		
 		// Calculate diameter in each direction.
-		for (Direction direction : Direction.values()) {
+		for (Direction direction : DIRECTIONS) {
 			int diameter = maxValueMap.get(direction) - minValueMap.get(direction) + 1;
 			diameterMap.put(direction, diameter);
 		}

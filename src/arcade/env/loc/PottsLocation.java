@@ -221,13 +221,14 @@ abstract class PottsLocation implements Location {
 		int diameter;
 		int minimumDiameter = Integer.MAX_VALUE;
 		for (Direction direction : Direction.values()) {
-			diameter = diameters.get(direction);
+			diameter = diameters.getOrDefault(direction, Integer.MAX_VALUE);
 			if (diameter < minimumDiameter) { minimumDiameter = diameter; }
 		}
 		
 		// Find all directions with the minimum diameter.
 		for (Direction direction : Direction.values()) {
-			if (diameters.get(direction) == minimumDiameter) { directions.add(direction); }
+			diameter = diameters.getOrDefault(direction, Integer.MAX_VALUE);
+			if (diameter == minimumDiameter) { directions.add(direction); }
 		}
 		
 		// Randomly select one direction with the minimum diameter.
