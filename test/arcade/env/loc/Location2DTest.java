@@ -119,4 +119,13 @@ public class Location2DTest {
 		loc.add(1, 1, 0);
 		assertEquals(-4, loc.updateSurface(voxel));
 	}
+	
+	@Test
+	public void getSlice_givenDirection_returnsValue() {
+		PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+		assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.ZX_PLANE, null));
+		assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.YZ_PLANE, null));
+		assertEquals(Direction.POSITIVE_XY, loc.getSlice(Direction.NEGATIVE_XY, null));
+		assertEquals(Direction.NEGATIVE_XY, loc.getSlice(Direction.POSITIVE_XY, null));
+	}
 }

@@ -109,13 +109,37 @@ interface Location3D {
 		return diameterMap;
 	}
 	
-	static Direction getSlice(Direction direction) {
+	static Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) {
 		switch (direction) {
-			case YZ_PLANE: return Direction.ZX_PLANE;
-			case ZX_PLANE: return Direction.YZ_PLANE;
-			case POSITIVE_XY: return Direction.NEGATIVE_XY;
-			case NEGATIVE_XY: return Direction.POSITIVE_XY;
+			case YZ_PLANE:
+				return diameters.get(Direction.ZX_PLANE) > diameters.get(Direction.XY_PLANE) ?
+					Direction.ZX_PLANE : Direction.XY_PLANE;
+			case ZX_PLANE:
+				return diameters.get(Direction.XY_PLANE) > diameters.get(Direction.YZ_PLANE) ?
+					Direction.XY_PLANE : Direction.YZ_PLANE;
+			case XY_PLANE:
+				return diameters.get(Direction.YZ_PLANE) > diameters.get(Direction.ZX_PLANE) ?
+					Direction.YZ_PLANE : Direction.ZX_PLANE;
+			case POSITIVE_XY:
+				return diameters.get(Direction.NEGATIVE_XY) > diameters.get(Direction.XY_PLANE) ?
+					Direction.NEGATIVE_XY : Direction.XY_PLANE;
+			case NEGATIVE_XY:
+				return diameters.get(Direction.POSITIVE_XY) > diameters.get(Direction.XY_PLANE) ?
+					Direction.POSITIVE_XY : Direction.XY_PLANE;
+			case POSITIVE_YZ:
+				return diameters.get(Direction.NEGATIVE_YZ) > diameters.get(Direction.YZ_PLANE) ?
+					Direction.NEGATIVE_YZ : Direction.YZ_PLANE;
+			case NEGATIVE_YZ:
+				return diameters.get(Direction.POSITIVE_YZ) > diameters.get(Direction.YZ_PLANE) ?
+					Direction.POSITIVE_YZ : Direction.YZ_PLANE;
+			case POSITIVE_ZX:
+				return diameters.get(Direction.NEGATIVE_ZX) > diameters.get(Direction.ZX_PLANE) ?
+					Direction.NEGATIVE_ZX : Direction.ZX_PLANE;
+			case NEGATIVE_ZX:
+				return diameters.get(Direction.POSITIVE_ZX) > diameters.get(Direction.ZX_PLANE) ?
+					Direction.POSITIVE_ZX : Direction.ZX_PLANE;
+			default:
+				return null;
 		}
-		return null;
 	}
 }

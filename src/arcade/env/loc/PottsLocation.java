@@ -180,9 +180,11 @@ abstract class PottsLocation implements Location {
 	/**
 	 * Selects the slice direction for a given minimum diameter direction.
 	 * 
+	 * @param direction  the direction of the minimum diameter
+	 * @param diameters  the list of diameters
 	 * @return  the slice direction
 	 */
-	abstract Direction getSlice(Direction direction);
+	abstract Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters);
 	
 	/**
 	 * Gets the direction of the slice
@@ -212,7 +214,7 @@ abstract class PottsLocation implements Location {
 		Direction d = directions.get(random.nextInt(directions.size()));
 		
 		// Convert diameter direction to slice direction.
-		return getSlice(d);
+		return getSlice(d, diameters);
 	}
 	
 	/**

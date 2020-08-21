@@ -21,5 +21,5 @@ public class PottsLocation3D extends PottsLocation implements Location3D {
 	
 	HashMap<Direction, Integer> getDiameters() { return Location3D.getDiameters(voxels, getCenter()); }
 	
-	Direction getSlice(Direction direction) { return Location3D.getSlice(direction); }
+	Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) { return Location3D.getSlice(direction, diameters); }
 }

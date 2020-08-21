@@ -127,7 +127,7 @@ public class PottsLocationsTest {
 			return diameters;
 		}
 		
-		Direction getSlice(Direction direction) {
+		Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) {
 			switch (direction) {
 				case XY_PLANE: return Direction.NEGATIVE_YZ;
 				case POSITIVE_XY: return Direction.YZ_PLANE;
