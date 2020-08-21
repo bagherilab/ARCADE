@@ -33,7 +33,7 @@ public class PottsLocation2DTest {
 		 * 
 		 * Each list is a subset of the shape:
 		 *
-		 *  (A)         (B)         (C)        (A) + (C)   (B) + (C)    (A) + (B) 
+		 *  (A)         (B)         (C)        (A) + (C)   (B) + (C)   (A) + (B) 
 		 *  x x . .     . . x x     . . . .     x x . .     . . x x     x x x x
 		 *  x   . .     .   . x     .   x .     x   x .     .   x x     x   . x
 		 *  x     . .   .     . .   .     x x   x     x x   .     x x   x     .
@@ -118,9 +118,8 @@ public class PottsLocation2DTest {
 		ArrayList<Voxel> unvisited = new ArrayList<>();
 		unvisited.add(voxelListC.get(0));
 		
-		ArrayList<Voxel> visited = new ArrayList<>();
-		for (int i = 1; i < voxelListC.size(); i++) { visited.add(voxelListC.get(i)); }
-		visited.addAll(voxelListA);
+		ArrayList<Voxel> visited = new ArrayList<>(voxelListCA);
+		visited.remove(voxelListC.get(0));
 		
 		assertEquals(unvisited, PottsLocation.checkVoxels(voxels, loc, randomDoubleZero, true));
 		assertEquals(visited, voxels);
