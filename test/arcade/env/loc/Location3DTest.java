@@ -10,14 +10,14 @@ import static arcade.env.loc.LocationTest.*;
 public class Location3DTest {
 	ArrayList<Voxel> voxelListForDiametersXY, voxelListForDiametersYZ, voxelListForDiametersZX;
 	
-	int[][] diameter = new int[][] {
-			{ 5, 6, 7, 5, 6, 7, 5, 7, 8, 8, 5, 6, 7, 5, 6, 7 },
-			{ 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 6, 2, 2, 2 },
-			{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 2, 2 }
-	};
-	
 	@Before
 	public void setupLists() {
+		int[][] diameter = new int[][] {
+				{ 5, 6, 7, 5, 6, 7, 5, 7, 8, 8, 5, 6, 7, 5, 6, 7 },
+				{ 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 6, 2, 2, 2 },
+				{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 2, 2, 2 }
+		};
+		
 		voxelListForDiametersXY = new ArrayList<>();
 		voxelListForDiametersYZ = new ArrayList<>();
 		voxelListForDiametersZX = new ArrayList<>();
@@ -52,8 +52,8 @@ public class Location3DTest {
 	public void getDiameters_validLocationXY_calculatesValues() {
 		PottsLocation3D loc = new PottsLocation3D(voxelListForDiametersXY);
 		HashMap<Direction, Integer> diameters = loc.getDiameters();
-		assertEquals(3, (int)diameters.get(Direction.X_DIRECTION));
-		assertEquals(2, (int)diameters.get(Direction.Y_DIRECTION));
+		assertEquals(3, (int)diameters.get(Direction.YZ_PLANE));
+		assertEquals(2, (int)diameters.get(Direction.ZX_PLANE));
 		assertEquals(4, (int)diameters.get(Direction.POSITIVE_XY));
 		assertEquals(3, (int)diameters.get(Direction.NEGATIVE_XY));
 	}
@@ -62,8 +62,8 @@ public class Location3DTest {
 	public void getDiameters_validLocationYZ_calculatesValues() {
 		PottsLocation3D loc = new PottsLocation3D(voxelListForDiametersYZ);
 		HashMap<Direction, Integer> diameters = loc.getDiameters();
-		assertEquals(3, (int)diameters.get(Direction.Y_DIRECTION));
-		assertEquals(2, (int)diameters.get(Direction.Z_DIRECTION));
+		assertEquals(3, (int)diameters.get(Direction.ZX_PLANE));
+		assertEquals(2, (int)diameters.get(Direction.XY_PLANE));
 		assertEquals(4, (int)diameters.get(Direction.POSITIVE_YZ));
 		assertEquals(3, (int)diameters.get(Direction.NEGATIVE_YZ));
 	}
@@ -72,8 +72,8 @@ public class Location3DTest {
 	public void getDiameters_validLocationZX_calculatesValues() {
 		PottsLocation3D loc = new PottsLocation3D(voxelListForDiametersZX);
 		HashMap<Direction, Integer> diameters = loc.getDiameters();
-		assertEquals(3, (int)diameters.get(Direction.Z_DIRECTION));
-		assertEquals(2, (int)diameters.get(Direction.X_DIRECTION));
+		assertEquals(3, (int)diameters.get(Direction.XY_PLANE));
+		assertEquals(2, (int)diameters.get(Direction.YZ_PLANE));
 		assertEquals(4, (int)diameters.get(Direction.POSITIVE_ZX));
 		assertEquals(3, (int)diameters.get(Direction.NEGATIVE_ZX));
 	}

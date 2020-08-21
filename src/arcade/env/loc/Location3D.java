@@ -7,9 +7,9 @@ import static arcade.env.loc.Location.*;
 
 interface Location3D {
 	Direction[] DIRECTIONS = new Direction[] {
-			Direction.X_DIRECTION,
-			Direction.Y_DIRECTION,
-			Direction.Z_DIRECTION,
+			Direction.YZ_PLANE,
+			Direction.ZX_PLANE,
+			Direction.XY_PLANE,
 			Direction.POSITIVE_XY,
 			Direction.NEGATIVE_XY,
 			Direction.POSITIVE_YZ,
@@ -83,9 +83,9 @@ interface Location3D {
 				
 				continue;
 			}
-			else if (j == 0 && k == 0) { dir = Direction.X_DIRECTION; v = i; }
-			else if (i == 0 && k == 0) { dir = Direction.Y_DIRECTION; v = j; }
-			else if (i == 0 && j == 0) { dir = Direction.Z_DIRECTION; v = k; }
+			else if (j == 0 && k == 0) { dir = Direction.YZ_PLANE; v = i; }
+			else if (k == 0 && i == 0) { dir = Direction.ZX_PLANE; v = j; }
+			else if (i == 0 && j == 0) { dir = Direction.XY_PLANE; v = k; }
 			else if (i == j && k == 0) { dir = Direction.POSITIVE_XY; v = i; }
 			else if (i == -j && k == 0) { dir = Direction.NEGATIVE_XY; v = i; }
 			else if (j == k && i == 0) { dir = Direction.POSITIVE_YZ; v = j; }

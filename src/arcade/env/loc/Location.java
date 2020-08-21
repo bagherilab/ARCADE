@@ -6,13 +6,13 @@ public interface Location {
 	/** Location split directions */
 	enum Direction {
 		/** Direction along the x axis (y = 0, z = 0) */
-		X_DIRECTION,
+		YZ_PLANE,
 		
 		/** Direction along the y axis (x = 0, z = 0) */
-		Y_DIRECTION,
+		ZX_PLANE,
 		
 		/** Direction along the z axis (x = 0, y = 0) */
-		Z_DIRECTION,
+		XY_PLANE,
 		
 		/** Direction along the positive xy axis (x = y, z = 0) */
 		POSITIVE_XY,

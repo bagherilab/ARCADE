@@ -46,8 +46,8 @@ public class Location2DTest {
 	public void getDiameters_validLocation_calculatesValues() {
 		PottsLocation2D loc = new PottsLocation2D(voxelListForDiameters);
 		HashMap<Direction, Integer> diameters = loc.getDiameters();
-		assertEquals(3, (int)diameters.get(Direction.X_DIRECTION));
-		assertEquals(2, (int)diameters.get(Direction.Y_DIRECTION));
+		assertEquals(3, (int)diameters.get(Direction.YZ_PLANE));
+		assertEquals(2, (int)diameters.get(Direction.ZX_PLANE));
 		assertEquals(4, (int)diameters.get(Direction.POSITIVE_XY));
 		assertEquals(3, (int)diameters.get(Direction.NEGATIVE_XY));
 	}

@@ -7,8 +7,8 @@ import static arcade.env.loc.Location.*;
 
 interface Location2D {
 	Direction[] DIRECTIONS = new Direction[] {
-			Direction.X_DIRECTION,
-			Direction.Y_DIRECTION,
+			Direction.YZ_PLANE,
+			Direction.ZX_PLANE,
 			Direction.POSITIVE_XY,
 			Direction.NEGATIVE_XY
 	};
@@ -77,8 +77,8 @@ interface Location2D {
 				
 				continue;
 			}
-			else if (j == 0) { dir = Direction.X_DIRECTION; v = i; }
-			else if (i == 0) { dir = Direction.Y_DIRECTION; v = j; }
+			else if (j == 0) { dir = Direction.YZ_PLANE; v = i; }
+			else if (i == 0) { dir = Direction.ZX_PLANE; v = j; }
 			else if (i == j) { dir = Direction.POSITIVE_XY; v = i; }
 			else if (i == -j) { dir = Direction.NEGATIVE_XY; v = i; }
 			else { continue; }
