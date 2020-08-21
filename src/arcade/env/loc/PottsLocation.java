@@ -261,6 +261,14 @@ abstract class PottsLocation implements Location {
 						else { voxelsB.add(voxel); }
 					}
 					break;
+				case XY_PLANE:
+					if (voxel.z < center.z) { voxelsA.add(voxel); }
+					else if (voxel.z > center.z) { voxelsB.add(voxel); }
+					else {
+						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
+						else { voxelsB.add(voxel); }
+					}
+					break;
 				case POSITIVE_XY:
 					if (voxel.x - center.x > center.y - voxel.y) { voxelsA.add(voxel); }
 					else if (voxel.x - center.x < center.y - voxel.y) { voxelsB.add(voxel); }
@@ -272,6 +280,38 @@ abstract class PottsLocation implements Location {
 				case NEGATIVE_XY:
 					if (voxel.x - center.x > voxel.y - center.y) { voxelsA.add(voxel); }
 					else if (voxel.x - center.x < voxel.y - center.y) { voxelsB.add(voxel); }
+					else {
+						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
+						else { voxelsB.add(voxel); }
+					}
+					break;
+				case POSITIVE_YZ:
+					if (voxel.y - center.y > center.z - voxel.z) { voxelsA.add(voxel); }
+					else if (voxel.y - center.y < center.z - voxel.z) { voxelsB.add(voxel); }
+					else {
+						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
+						else { voxelsB.add(voxel); }
+					}
+					break;
+				case NEGATIVE_YZ:
+					if (voxel.y - center.y > voxel.z - center.z) { voxelsA.add(voxel); }
+					else if (voxel.y - center.y < voxel.z - center.z) { voxelsB.add(voxel); }
+					else {
+						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
+						else { voxelsB.add(voxel); }
+					}
+					break;
+				case POSITIVE_ZX:
+					if (voxel.z - center.z > center.x - voxel.x) { voxelsA.add(voxel); }
+					else if (voxel.z - center.z < center.x - voxel.x) { voxelsB.add(voxel); }
+					else {
+						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
+						else { voxelsB.add(voxel); }
+					}
+					break;
+				case NEGATIVE_ZX:
+					if (voxel.z - center.z > voxel.x - center.x) { voxelsA.add(voxel); }
+					else if (voxel.z - center.z < voxel.x - center.x) { voxelsB.add(voxel); }
 					else {
 						if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
 						else { voxelsB.add(voxel); }
