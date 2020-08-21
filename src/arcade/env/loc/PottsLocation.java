@@ -178,10 +178,17 @@ abstract class PottsLocation implements Location {
 	abstract HashMap<Direction, Integer> getDiameters();
 	
 	/**
-	 * Gets the direction of the shortest diameter in the location.
+	 * Selects the slice direction for a given minimum diameter direction.
+	 * 
+	 * @return  the slice direction
+	 */
+	abstract Direction getSlice(Direction direction);
+	
+	/**
+	 * Gets the direction of the slice
 	 * 
 	 * @param random  the seeded random number generator
-	 * @return  the direction of the shortest diameter
+	 * @return  the direction of the slice
 	 */
 	Direction getDirection(MersenneTwisterFast random) {
 		HashMap<Direction, Integer> diameters = getDiameters();
@@ -202,7 +209,10 @@ abstract class PottsLocation implements Location {
 		}
 		
 		// Randomly select one direction with the minimum diameter.
-		return directions.get(random.nextInt(directions.size()));
+		Direction d = directions.get(random.nextInt(directions.size()));
+		
+		// Convert diameter direction to slice direction.
+		return getSlice(d);
 	}
 	
 	/**
@@ -225,7 +235,7 @@ abstract class PottsLocation implements Location {
 	/**
 	 * Splits the voxels in the location along a given direction.
 	 * 
-	 * @param direction  the direction of the shortest diameter
+	 * @param direction  the direction of the slice
 	 * @param voxelsA  the container list for the first half of the split
 	 * @param voxelsB  the container list for the second half of the split
 	 * @param random  the seeded random number generator
@@ -235,7 +245,7 @@ abstract class PottsLocation implements Location {
 							Voxel center, MersenneTwisterFast random) {
 		for (Voxel voxel : voxels) {
 			switch (direction) {
-				case X_DIRECTION:
+				case ZX_PLANE:
 					if (voxel.y < center.y) { voxelsA.add(voxel); }
 					else if (voxel.y > center.y) { voxelsB.add(voxel); }
 					else {
@@ -243,7 +253,7 @@ abstract class PottsLocation implements Location {
 						else { voxelsB.add(voxel); }
 					}
 					break;
-				case Y_DIRECTION:
+				case YZ_PLANE:
 					if (voxel.x < center.x) { voxelsA.add(voxel); }
 					else if (voxel.x > center.x) { voxelsB.add(voxel); }
 					else {
@@ -251,7 +261,7 @@ abstract class PottsLocation implements Location {
 						else { voxelsB.add(voxel); }
 					}
 					break;
-				case NEGATIVE_XY:
+				case POSITIVE_XY:
 					if (voxel.x - center.x > center.y - voxel.y) { voxelsA.add(voxel); }
 					else if (voxel.x - center.x < center.y - voxel.y) { voxelsB.add(voxel); }
 					else {
@@ -259,7 +269,7 @@ abstract class PottsLocation implements Location {
 						else { voxelsB.add(voxel); }
 					}
 					break;
-				case POSITIVE_XY:
+				case NEGATIVE_XY:
 					if (voxel.x - center.x > voxel.y - center.y) { voxelsA.add(voxel); }
 					else if (voxel.x - center.x < voxel.y - center.y) { voxelsB.add(voxel); }
 					else {

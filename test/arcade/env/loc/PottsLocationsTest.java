@@ -111,20 +111,30 @@ public class PottsLocationsTest {
 			HashMap<Direction, Integer> diameters = new HashMap<>();
 			
 			if (voxels.size() == 0) {
-				diameters.put(Direction.Z_DIRECTION, 1);
+				diameters.put(Direction.XY_PLANE, 1);
 				diameters.put(Direction.POSITIVE_XY, 2);
 				diameters.put(Direction.NEGATIVE_ZX, 3);
 			}
 			else if (voxels.size() == 7) {
-				diameters.put(Direction.X_DIRECTION, 1);
+				diameters.put(Direction.YZ_PLANE, 1);
 			}
 			else {
-				diameters.put(Direction.Z_DIRECTION, 1);
+				diameters.put(Direction.XY_PLANE, 1);
 				diameters.put(Direction.POSITIVE_XY, 1);
 				diameters.put(Direction.NEGATIVE_ZX, 1);
 			}
 			
 			return diameters;
+		}
+		
+		Direction getSlice(Direction direction) {
+			switch (direction) {
+				case XY_PLANE: return Direction.NEGATIVE_YZ;
+				case POSITIVE_XY: return Direction.YZ_PLANE;
+				case NEGATIVE_ZX: return Direction.POSITIVE_YZ;
+				case YZ_PLANE: return Direction.ZX_PLANE;
+			}
+			return null;
 		}
 	}
 	

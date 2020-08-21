@@ -5,13 +5,13 @@ import ec.util.MersenneTwisterFast;
 public interface Location {
 	/** Location split directions */
 	enum Direction {
-		/** Direction along the x axis (y = 0, z = 0) */
+		/** Direction along the yz plane (y = 0, z = 0) */
 		YZ_PLANE,
 		
-		/** Direction along the y axis (x = 0, z = 0) */
+		/** Direction along the zx plane (z = 0, x = 0) */
 		ZX_PLANE,
 		
-		/** Direction along the z axis (x = 0, y = 0) */
+		/** Direction along the xy plane (x = 0, y = 0) */
 		XY_PLANE,
 		
 		/** Direction along the positive xy axis (x = y, z = 0) */
