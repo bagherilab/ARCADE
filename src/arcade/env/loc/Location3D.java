@@ -55,11 +55,13 @@ interface Location3D {
 	static HashMap<Direction, Integer> getDiameters(ArrayList<Voxel> voxels, Voxel center) {
 		HashMap<Direction, Integer> minValueMap = new HashMap<>();
 		HashMap<Direction, Integer> maxValueMap = new HashMap<>();
+		HashMap<Direction, Boolean> existsMap = new HashMap<>();
 		
 		// Initialized entries into direction maps.
 		for (Direction direction : DIRECTIONS) {
 			minValueMap.put(direction, Integer.MAX_VALUE);
 			maxValueMap.put(direction, Integer.MIN_VALUE);
+			existsMap.put(direction, false);
 		}
 		
 		Direction dir;
@@ -77,6 +79,7 @@ interface Location3D {
 				v = 0;
 				
 				for (Direction direction : DIRECTIONS) {
+					existsMap.put(direction, true);
 					if (v > maxValueMap.get(direction)) { maxValueMap.put(direction, v); }
 					if (v < minValueMap.get(direction)) { minValueMap.put(direction, v); }
 				}
@@ -94,6 +97,7 @@ interface Location3D {
 			else if (k == -i && j == 0) { dir = Direction.NEGATIVE_ZX; v = k; }
 			else { continue; }
 			
+			existsMap.put(dir, true);
 			if (v > maxValueMap.get(dir)) { maxValueMap.put(dir, v); }
 			if (v < minValueMap.get(dir)) { minValueMap.put(dir, v); }
 		}
@@ -103,7 +107,7 @@ interface Location3D {
 		// Calculate diameter in each direction.
 		for (Direction direction : DIRECTIONS) {
 			int diameter = maxValueMap.get(direction) - minValueMap.get(direction) + 1;
-			diameterMap.put(direction, diameter);
+			diameterMap.put(direction, existsMap.get(direction) ? diameter : 0);
 		}
 		
 		return diameterMap;

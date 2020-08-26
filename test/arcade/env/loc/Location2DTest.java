@@ -43,13 +43,23 @@ public class Location2DTest {
 	}
 	
 	@Test
-	public void getDiameters_validLocation_calculatesValues() {
+	public void getDiameters_validVoxels_calculatesValues() {
 		PottsLocation2D loc = new PottsLocation2D(voxelListForDiameters);
 		HashMap<Direction, Integer> diameters = loc.getDiameters();
 		assertEquals(3, (int)diameters.get(Direction.YZ_PLANE));
 		assertEquals(2, (int)diameters.get(Direction.ZX_PLANE));
 		assertEquals(4, (int)diameters.get(Direction.POSITIVE_XY));
 		assertEquals(3, (int)diameters.get(Direction.NEGATIVE_XY));
+	}
+	
+	@Test
+	public void getDiameters_invalidVoxels_returnsZero() {
+		PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+		HashMap<Direction, Integer> diameters = loc.getDiameters();
+		assertEquals(0, (int)diameters.get(Direction.YZ_PLANE));
+		assertEquals(0, (int)diameters.get(Direction.ZX_PLANE));
+		assertEquals(0, (int)diameters.get(Direction.POSITIVE_XY));
+		assertEquals(0, (int)diameters.get(Direction.NEGATIVE_XY));
 	}
 	
 	@Test

@@ -50,11 +50,13 @@ interface Location2D {
 	static HashMap<Direction, Integer> getDiameters(ArrayList<Voxel> voxels, Voxel center) {
 		HashMap<Direction, Integer> minValueMap = new HashMap<>();
 		HashMap<Direction, Integer> maxValueMap = new HashMap<>();
+		HashMap<Direction, Boolean> existsMap = new HashMap<>();
 		
 		// Initialized entries into direction maps.
 		for (Direction direction : DIRECTIONS) {
 			minValueMap.put(direction, Integer.MAX_VALUE);
 			maxValueMap.put(direction, Integer.MIN_VALUE);
+			existsMap.put(direction, false);
 		}
 		
 		Direction dir;
@@ -71,6 +73,7 @@ interface Location2D {
 				v = 0;
 				
 				for (Direction direction : DIRECTIONS) {
+					existsMap.put(direction, true);
 					if (v > maxValueMap.get(direction)) { maxValueMap.put(direction, v); }
 					if (v < minValueMap.get(direction)) { minValueMap.put(direction, v); }
 				}
@@ -83,6 +86,7 @@ interface Location2D {
 			else if (i == -j) { dir = Direction.NEGATIVE_XY; v = i; }
 			else { continue; }
 			
+			existsMap.put(dir, true);
 			if (v > maxValueMap.get(dir)) { maxValueMap.put(dir, v); }
 			if (v < minValueMap.get(dir)) { minValueMap.put(dir, v); }
 		}
@@ -92,7 +96,7 @@ interface Location2D {
 		// Calculate diameter in each direction.
 		for (Direction direction : DIRECTIONS) {
 			int diameter = maxValueMap.get(direction) - minValueMap.get(direction) + 1;
-			diameterMap.put(direction, diameter);
+			diameterMap.put(direction, existsMap.get(direction) ? diameter : 0);
 		}
 		
 		return diameterMap;

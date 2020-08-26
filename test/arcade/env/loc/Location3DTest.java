@@ -49,7 +49,7 @@ public class Location3DTest {
 	}
 	
 	@Test
-	public void getDiameters_validLocationXY_calculatesValues() {
+	public void getDiameters_validVoxelsXY_calculatesValues() {
 		PottsLocation3D loc = new PottsLocation3D(voxelListForDiametersXY);
 		HashMap<Direction, Integer> diameters = loc.getDiameters();
 		assertEquals(3, (int)diameters.get(Direction.YZ_PLANE));
@@ -59,7 +59,17 @@ public class Location3DTest {
 	}
 	
 	@Test
-	public void getDiameters_validLocationYZ_calculatesValues() {
+	public void getDiameters_invalidVoxelsXY_returnsZero() {
+		PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+		HashMap<Direction, Integer> diameters = loc.getDiameters();
+		assertEquals(0, (int)diameters.get(Direction.YZ_PLANE));
+		assertEquals(0, (int)diameters.get(Direction.ZX_PLANE));
+		assertEquals(0, (int)diameters.get(Direction.POSITIVE_XY));
+		assertEquals(0, (int)diameters.get(Direction.NEGATIVE_XY));
+	}
+	
+	@Test
+	public void getDiameters_validVoxelsYZ_calculatesValues() {
 		PottsLocation3D loc = new PottsLocation3D(voxelListForDiametersYZ);
 		HashMap<Direction, Integer> diameters = loc.getDiameters();
 		assertEquals(3, (int)diameters.get(Direction.ZX_PLANE));
@@ -69,13 +79,33 @@ public class Location3DTest {
 	}
 	
 	@Test
-	public void getDiameters_validLocationZX_calculatesValues() {
+	public void getDiameters_invalidVoxelsYZ_returnsZero() {
+		PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+		HashMap<Direction, Integer> diameters = loc.getDiameters();
+		assertEquals(0, (int)diameters.get(Direction.ZX_PLANE));
+		assertEquals(0, (int)diameters.get(Direction.XY_PLANE));
+		assertEquals(0, (int)diameters.get(Direction.POSITIVE_YZ));
+		assertEquals(0, (int)diameters.get(Direction.NEGATIVE_YZ));
+	}
+	
+	@Test
+	public void getDiameters_validVoxelsZX_calculatesValues() {
 		PottsLocation3D loc = new PottsLocation3D(voxelListForDiametersZX);
 		HashMap<Direction, Integer> diameters = loc.getDiameters();
 		assertEquals(3, (int)diameters.get(Direction.XY_PLANE));
 		assertEquals(2, (int)diameters.get(Direction.YZ_PLANE));
 		assertEquals(4, (int)diameters.get(Direction.POSITIVE_ZX));
 		assertEquals(3, (int)diameters.get(Direction.NEGATIVE_ZX));
+	}
+	
+	@Test
+	public void getDiameters_invalidVoxelsZX_returnsZero() {
+		PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+		HashMap<Direction, Integer> diameters = loc.getDiameters();
+		assertEquals(0, (int)diameters.get(Direction.XY_PLANE));
+		assertEquals(0, (int)diameters.get(Direction.YZ_PLANE));
+		assertEquals(0, (int)diameters.get(Direction.POSITIVE_ZX));
+		assertEquals(0, (int)diameters.get(Direction.NEGATIVE_ZX));
 	}
 	
 	@Test
