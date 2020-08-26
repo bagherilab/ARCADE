@@ -6,8 +6,10 @@ import java.util.*;
 import arcade.env.loc.Location.Voxel;
 import static arcade.env.loc.PottsLocation.*;
 import static arcade.env.loc.LocationTest.*;
+import static arcade.sim.Potts.*;
 
 public class Location3DTest {
+	private static final int TAG_ADDITIONAL = TAG_DEFAULT - 1;
 	ArrayList<Voxel> voxelListForDiametersXY, voxelListForDiametersYZ, voxelListForDiametersZX;
 	
 	@Before
@@ -318,5 +320,141 @@ public class Location3DTest {
 		
 		assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.NEGATIVE_ZX, diametersA));
 		assertEquals(Direction.POSITIVE_ZX, loc.getSlice(Direction.NEGATIVE_ZX, diametersB));
+	}
+	
+	@Test
+	public void getSelected_midSizeLocation_returnsList() {
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		
+		int r = 4;
+		int N = 10;
+		for (int k = 0; k < N; k++) {
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					voxels.add(new Voxel(i - N/2, j - N/2, k - N/2));
+				}
+			}
+		}
+		
+		PottsLocation3D loc = new PottsLocation3D(voxels);
+		ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), 4./3*Math.PI*r*r*r);
+		
+		assertTrue(selected.size() < N*N*N);
+		for (Voxel voxel : selected) {
+			assertTrue(Math.sqrt(Math.pow(voxel.x, 2) + Math.pow(voxel.y, 2) + Math.pow(voxel.z, 2)) <= r);
+		}
+	}
+	
+	@Test
+	public void getSelected_maxSizeLocation_returnsList() {
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		
+		int N = 10;
+		for (int k = 0; k < N; k++) {
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					voxels.add(new Voxel(i - N/2, j - N/2, k - N/2));
+				}
+			}
+		}
+		
+		PottsLocation3D loc = new PottsLocation3D(voxels);
+		ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), Integer.MAX_VALUE);
+		
+		assertEquals(selected.size(), N*N*N);
+	}
+	
+	@Test
+	public void getSelected_minSizeLocation_returnsList() {
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		
+		int N = 10;
+		for (int k = 0; k < N; k++) {
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					voxels.add(new Voxel(i - N/2, j - N/2, k - N/2));
+				}
+			}
+		}
+		
+		PottsLocation3D loc = new PottsLocation3D(voxels);
+		ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), 0);
+		
+		assertEquals(selected.size(), 0);
+	}
+	
+	@Test
+	public void getSelected_midSizeLocations_returnsList() {
+		ArrayList<Voxel> voxelsA = new ArrayList<>();
+		ArrayList<Voxel> voxelsB = new ArrayList<>();
+		
+		int r = 4;
+		int N = 10;
+		for (int k = 0; k < N; k++) {
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					if (i == N/2 && j == N/2 && k == N/2) { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
+					else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - N/2, j - N/2, k - N/2)); }
+					else { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
+				}
+			}
+		}
+		
+		PottsLocations3D loc = new PottsLocations3D(voxelsA);
+		for (Voxel voxel : voxelsB) { loc.add(TAG_ADDITIONAL, voxel.x, voxel.y, voxel.z); }
+		ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), 4./3*Math.PI*r*r*r);
+		
+		assertTrue(selected.size() < voxelsB.size());
+		for (Voxel voxel : selected) {
+			assertTrue(Math.sqrt(Math.pow(voxel.x, 2) + Math.pow(voxel.y, 2) + Math.pow(voxel.z, 2)) <= r);
+			assertTrue(voxelsA.contains(voxel));
+			assertFalse(voxelsB.contains(voxel));
+		}
+	}
+	
+	@Test
+	public void getSelected_maxSizeLocations_returnsList() {
+		ArrayList<Voxel> voxelsA = new ArrayList<>();
+		ArrayList<Voxel> voxelsB = new ArrayList<>();
+		
+		int N = 10;
+		for (int k = 0; k < N; k++) {
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					if (i == N/2 && j == N/2 && k == N/2) { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
+					else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - N/2, j - N/2, k - N/2)); }
+					else { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
+				}
+			}
+		}
+		
+		PottsLocations3D loc = new PottsLocations3D(voxelsA);
+		for (Voxel voxel : voxelsB) { loc.add(TAG_ADDITIONAL, voxel.x, voxel.y, voxel.z); }
+		ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), Integer.MAX_VALUE);
+		
+		assertEquals(selected.size(), voxelsA.size());
+	}
+	
+	@Test
+	public void getSelected_minSizeLocations_returnsList() {
+		ArrayList<Voxel> voxelsA = new ArrayList<>();
+		ArrayList<Voxel> voxelsB = new ArrayList<>();
+		
+		int N = 10;
+		for (int k = 0; k < N; k++) {
+			for (int i = 0; i < N; i++) {
+				for (int j = 0; j < N; j++) {
+					if (i == N/2 && j == N/2 && k == N/2) { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
+					else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - N/2, j - N/2, k - N/2)); }
+					else { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
+				}
+			}
+		}
+		
+		PottsLocations3D loc = new PottsLocations3D(voxelsA);
+		for (Voxel voxel : voxelsB) { loc.add(TAG_ADDITIONAL, voxel.x, voxel.y, voxel.z); }
+		ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), 0);
+		
+		assertEquals(selected.size(), 0);
 	}
 }
