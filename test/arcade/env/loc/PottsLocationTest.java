@@ -112,6 +112,8 @@ public class PottsLocationTest {
 			}
 			return null;
 		}
+		
+		ArrayList<Voxel> getSelected(Voxel center, double n) { return null; }
 	}
 	
 	@Test

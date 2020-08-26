@@ -22,4 +22,6 @@ public class PottsLocation2D extends PottsLocation implements Location2D {
 	HashMap<Direction, Integer> getDiameters() { return Location2D.getDiameters(voxels, getCenter()); }
 	
 	Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) { return Location2D.getSlice(direction, diameters); }
+	
+	ArrayList<Voxel> getSelected(Voxel focus, double n) { return Location2D.getSelected(voxels, focus, n); }
 }

@@ -187,6 +187,15 @@ abstract class PottsLocation implements Location {
 	abstract Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters);
 	
 	/**
+	 * Selects specified number of voxels from a focus voxel.
+	 * 
+	 * @param focus  the focus voxel
+	 * @param n  the number of voxels to select
+	 * @return  the list of selected voxels
+	 */
+	abstract ArrayList<Voxel> getSelected(Voxel focus, double n);
+	
+	/**
 	 * Gets the direction of the slice
 	 * 
 	 * @param random  the seeded random number generator

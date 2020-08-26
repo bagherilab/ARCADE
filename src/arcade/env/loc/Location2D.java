@@ -111,4 +111,17 @@ interface Location2D {
 			default: return null;
 		}
 	}
+	
+	static ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) {
+		ArrayList<Voxel> selected = new ArrayList<>();
+		double r = Math.sqrt(n/Math.PI);
+		
+		// Select voxels within given radius.
+		for (Voxel voxel : voxels) {
+			double d = Math.sqrt(Math.pow(focus.x - voxel.x, 2) + Math.pow(focus.y - voxel.y, 2));
+			if (d < r) { selected.add(voxel); }
+		}
+		
+		return selected;
+	}
 }

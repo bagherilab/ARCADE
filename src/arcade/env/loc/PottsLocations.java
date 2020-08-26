@@ -189,16 +189,9 @@ abstract class PottsLocations extends PottsLocation {
 	 * @param n  the target number of voxels to assign
 	 * @param random  the seeded random number generator 
 	 */
-	static void selectVoxels(PottsLocation location, Voxel center, int tag, ArrayList<Voxel> voxels,
+	static void selectVoxels(PottsLocations location, Voxel center, int tag, ArrayList<Voxel> voxels,
 							 double n, MersenneTwisterFast random) {
-		ArrayList<Voxel> selected = new ArrayList<>();
-		double r = Math.sqrt(n/Math.PI);
-		
-		// Select voxels within given radius.
-		for (Voxel voxel : voxels) {
-			double d = Math.sqrt(Math.pow(center.x - voxel.x, 2) + Math.pow(center.y - voxel.y, 2));
-			if (d < r) { selected.add(voxel); }
-		}
+		ArrayList<Voxel> selected = location.getSelected(center, n);
 		
 		// Check that selected voxels are connected (remove any that are not).
 		checkVoxels(selected, location, random, true);

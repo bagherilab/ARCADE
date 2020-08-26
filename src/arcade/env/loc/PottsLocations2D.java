@@ -2,6 +2,7 @@ package arcade.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import static arcade.sim.Potts.*;
 
 public class PottsLocations2D extends PottsLocations implements Location2D {
 	/**
@@ -24,4 +25,6 @@ public class PottsLocations2D extends PottsLocations implements Location2D {
 	HashMap<Direction, Integer> getDiameters() { return Location2D.getDiameters(voxels, getCenter()); }
 	
 	Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) { return Location2D.getSlice(direction, diameters); }
+	
+	ArrayList<Voxel> getSelected(Voxel focus, double n) { return Location2D.getSelected(locations.get(TAG_DEFAULT).voxels, focus, n); }
 }
