@@ -246,7 +246,7 @@ public class PottsTest {
 		
 		int length = (int)(Math.random()*10) + 3;
 		int width = (int)(Math.random()*10) + 3;
-		int height = (int)(Math.random()*10) + 3;
+		int height = (int)(Math.random()*10) + 4;
 		
 		Series series = mock(Series.class);
 		series._length = length;
