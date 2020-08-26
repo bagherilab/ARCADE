@@ -47,22 +47,26 @@ public class PottsLocations2DTest {
 	public void assignVoxels_randomFraction_updatesTags() {
 		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
 		loc.locations.put(TAG_ADDITIONAL, new PottsLocation2D(new ArrayList<>()));
-		double f = Math.random();
 		
 		int N = 10;
+		int f = (int)(Math.random()*10*0.9) + 1; // between 1 and 9, inclusive
+		
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				loc.add(i, j, 0);
 			}
 		}
 		
-		double[] fractions = new double[] { f, 1 - f };
+		double[] fractions = new double[] { f/10.0, 1 - f/10.0 };
 		PottsLocations.assignVoxels(loc, fractions, randomDoubleZero);
 		
 		assertEquals(N*N, loc.voxels.size());
 		assertEquals(N*N, loc.locations.get(TAG_DEFAULT).voxels.size() + loc.locations.get(TAG_ADDITIONAL).voxels.size());
-		assertTrue(loc.locations.get(TAG_DEFAULT).voxels.size() < N*N);
-		assertTrue(loc.locations.get(TAG_ADDITIONAL).voxels.size() < N*N);
+		
+		int sizeDefault = loc.locations.get(TAG_DEFAULT).voxels.size();
+		int sizeAdditional = loc.locations.get(TAG_ADDITIONAL).voxels.size();
+		assertTrue((sizeDefault < f*N + 1) && (sizeDefault >= f*N - 1));
+		assertTrue((sizeAdditional <= (10 - f)*N + 1) && (sizeAdditional > (10 - f)*N - 1));
 	}
 	
 	@Test
@@ -84,45 +88,5 @@ public class PottsLocations2DTest {
 		assertEquals(4, loc.locations.get(TAG_DEFAULT).voxels.size());
 		assertEquals(1, loc.locations.get(TAG_ADDITIONAL).voxels.size());
 		assertEquals(new Voxel(0, 0, 0), loc.locations.get(TAG_ADDITIONAL).voxels.get(0));
-	}
-
-	@Test
-	public void selectVoxels_maxNumber_updatesTags() {
-		ArrayList<Voxel> voxels = new ArrayList<>();
-		
-		int N = 10;
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				voxels.add(new Voxel(i, j, 0));
-			}
-		}
-		
-		PottsLocations2D loc = new PottsLocations2D(voxels);
-		loc.locations.put(TAG_ADDITIONAL, new PottsLocation2D(new ArrayList<>()));
-		Voxel center = new Voxel(N/2, N/2, 0);
-		
-		int n = N*N;
-		PottsLocations.selectVoxels(loc, center, TAG_ADDITIONAL, loc.locations.get(TAG_DEFAULT).voxels, n, randomDoubleZero);
-		assertEquals(n, loc.locations.get(TAG_ADDITIONAL).voxels.size());
-	}
-	
-	@Test
-	public void selectVoxels_minNumber_updatesTags() {
-		ArrayList<Voxel> voxels = new ArrayList<>();
-		
-		int N = 10;
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				voxels.add(new Voxel(i, j, 0));
-			}
-		}
-		
-		PottsLocations2D loc = new PottsLocations2D(voxels);
-		loc.locations.put(TAG_ADDITIONAL, new PottsLocation2D(new ArrayList<>()));
-		Voxel center = new Voxel(N/2, N/2, 0);
-		
-		int n = 1;
-		PottsLocations.selectVoxels(loc, center, TAG_ADDITIONAL, loc.locations.get(TAG_DEFAULT).voxels, n, randomDoubleZero);
-		assertEquals(n, loc.locations.get(TAG_ADDITIONAL).voxels.size());
 	}
 }
