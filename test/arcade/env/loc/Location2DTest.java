@@ -28,7 +28,7 @@ public class Location2DTest {
 	}
 	
 	@Test
-	public void getNeighbors_givenVoxel_returnsList() {
+	public void getNeighbors_givenLocation_returnsList() {
 		ArrayList<Voxel> voxels = new ArrayList<>();
 		voxels.add(new Voxel(-1, 0, 0));
 		voxels.add(new Voxel(1, 0, 0));
@@ -45,7 +45,24 @@ public class Location2DTest {
 	}
 	
 	@Test
-	public void getDiameters_validVoxels_calculatesValues() {
+	public void getNeighbors_givenLocations_returnsList() {
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		voxels.add(new Voxel(-1, 0, 0));
+		voxels.add(new Voxel(1, 0, 0));
+		voxels.add(new Voxel(0, -1, 0));
+		voxels.add(new Voxel(0, 1, 0));
+		
+		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
+		ArrayList<Voxel> neighbors = loc.getNeighbors(new Voxel(0, 0, 0));
+		
+		voxels.sort(COMPARATOR);
+		neighbors.sort(COMPARATOR);
+		
+		assertEquals(voxels, neighbors);
+	}
+	
+	@Test
+	public void getDiameters_validLocation_calculatesValues() {
 		PottsLocation2D loc = new PottsLocation2D(voxelListForDiameters);
 		HashMap<Direction, Integer> diameters = loc.getDiameters();
 		assertEquals(3, (int)diameters.get(Direction.YZ_PLANE));
@@ -55,8 +72,28 @@ public class Location2DTest {
 	}
 	
 	@Test
-	public void getDiameters_invalidVoxels_returnsZero() {
+	public void getDiameters_invalidLocation_returnsZero() {
 		PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+		HashMap<Direction, Integer> diameters = loc.getDiameters();
+		assertEquals(0, (int)diameters.get(Direction.YZ_PLANE));
+		assertEquals(0, (int)diameters.get(Direction.ZX_PLANE));
+		assertEquals(0, (int)diameters.get(Direction.POSITIVE_XY));
+		assertEquals(0, (int)diameters.get(Direction.NEGATIVE_XY));
+	}
+	
+	@Test
+	public void getDiameters_validLocations_calculatesValues() {
+		PottsLocations2D loc = new PottsLocations2D(voxelListForDiameters);
+		HashMap<Direction, Integer> diameters = loc.getDiameters();
+		assertEquals(3, (int)diameters.get(Direction.YZ_PLANE));
+		assertEquals(2, (int)diameters.get(Direction.ZX_PLANE));
+		assertEquals(4, (int)diameters.get(Direction.POSITIVE_XY));
+		assertEquals(3, (int)diameters.get(Direction.NEGATIVE_XY));
+	}
+	
+	@Test
+	public void getDiameters_invalidLocations_returnsZero() {
+		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
 		HashMap<Direction, Integer> diameters = loc.getDiameters();
 		assertEquals(0, (int)diameters.get(Direction.YZ_PLANE));
 		assertEquals(0, (int)diameters.get(Direction.ZX_PLANE));
@@ -133,8 +170,17 @@ public class Location2DTest {
 	}
 	
 	@Test
-	public void getSlice_givenDirection_returnsValue() {
+	public void getSlice_givenLocation_returnsValue() {
 		PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+		assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.ZX_PLANE, null));
+		assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.YZ_PLANE, null));
+		assertEquals(Direction.POSITIVE_XY, loc.getSlice(Direction.NEGATIVE_XY, null));
+		assertEquals(Direction.NEGATIVE_XY, loc.getSlice(Direction.POSITIVE_XY, null));
+	}
+	
+	@Test
+	public void getSlice_givenLocations_returnsValue() {
+		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
 		assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.ZX_PLANE, null));
 		assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.YZ_PLANE, null));
 		assertEquals(Direction.POSITIVE_XY, loc.getSlice(Direction.NEGATIVE_XY, null));

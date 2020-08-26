@@ -463,6 +463,8 @@ abstract class PottsLocation implements Location {
 	 */
 	static ArrayList<Voxel> checkVoxels(ArrayList<Voxel> voxels, PottsLocation location,
 										MersenneTwisterFast random, boolean update) {
+		if (voxels.size() == 0) { return null; }
+		
 		ArrayList<Voxel> unvisited = new ArrayList<>(voxels);
 		ArrayList<Voxel> visited = new ArrayList<>();
 		ArrayList<Voxel> nextList;

@@ -80,6 +80,14 @@ public class PottsLocation2DTest {
 	}
 	
 	@Test
+	public void checkVoxels_noVoxels_returnsNull() {
+		PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		assertNull(PottsLocation.checkVoxels(voxels, loc, randomDoubleZero, false));
+		assertNull(PottsLocation.checkVoxels(voxels, loc, randomDoubleZero, true));
+	}
+	
+	@Test
 	public void checkVoxels_connectedVoxels_returnsNull() {
 		PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
 		ArrayList<Voxel> voxels = new ArrayList<>(voxelListA);
