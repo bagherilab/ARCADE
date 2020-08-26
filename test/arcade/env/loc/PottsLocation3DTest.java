@@ -229,11 +229,40 @@ public class PottsLocation3DTest {
 	
 	@Test
 	public void split_balanceableLocationRandomZero_returnsList() {
-		// TODO
+		PottsLocation3D loc = new PottsLocation3D(voxelListAB);
+		PottsLocation3D split = (PottsLocation3D)loc.split(randomDoubleZero);
+		
+		ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListA);
+		locVoxels.remove(new Voxel(1, 0, 0));
+		locVoxels.remove(new Voxel(1, 0, 1));
+		
+		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListB);
+		splitVoxels.add(new Voxel(1, 0, 0));
+		splitVoxels.add(new Voxel(1, 0, 1));
+		
+		locVoxels.sort(COMPARATOR);
+		loc.voxels.sort(COMPARATOR);
+		splitVoxels.sort(COMPARATOR);
+		split.voxels.sort(COMPARATOR);
+		
+		assertEquals(locVoxels, loc.voxels);
+		assertEquals(splitVoxels, split.voxels);
 	}
 	
 	@Test
 	public void split_balanceableLocationRandomOne_returnsList() {
-		// TODO
+		PottsLocation3D loc = new PottsLocation3D(voxelListAB);
+		PottsLocation3D split = (PottsLocation3D)loc.split(randomDoubleOne);
+		
+		ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListB);
+		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListA);
+		
+		locVoxels.sort(COMPARATOR);
+		loc.voxels.sort(COMPARATOR);
+		splitVoxels.sort(COMPARATOR);
+		split.voxels.sort(COMPARATOR);
+		
+		assertEquals(locVoxels, loc.voxels);
+		assertEquals(splitVoxels, split.voxels);
 	}
 }
