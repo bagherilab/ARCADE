@@ -204,7 +204,7 @@ public class Potts3D extends Potts {
 			case 3:
 				for (int i = 0; i < NUMBER_PLANE; i++) {
 					// XY plane
-					if (!array[1][1 + PLANE_A[i]][1 + PLANE_B[i]]) {
+					if (!array[1][1 + PLANE_A[i]][1 + PLANE_B[i]] && !array[0][1][1] && !array[2][1][1]) {
 						if (array[1][1 + CORNER_A[(i + 1) % NUMBER_PLANE]][1 + CORNER_B[(i + 1) % NUMBER_PLANE]]
 								&& array[1][1 + CORNER_A[(i + 2) % NUMBER_PLANE]][1 + CORNER_B[(i + 2) % NUMBER_PLANE]]) {
 							return true;
@@ -212,7 +212,7 @@ public class Potts3D extends Potts {
 					}
 					
 					// YZ plane
-					if (!array[1 + PLANE_B[i]][1][1 + PLANE_A[i]]) {
+					if (!array[1 + PLANE_B[i]][1][1 + PLANE_A[i]] && !array[1][0][1] && !array[1][2][1]) {
 						if (array[1 + CORNER_B[(i + 1) % NUMBER_PLANE]][1][1 + CORNER_A[(i + 1) % NUMBER_PLANE]]
 								&& array[1 + CORNER_B[(i + 2) % NUMBER_PLANE]][1][1 + CORNER_A[(i + 2) % NUMBER_PLANE]]) {
 							return true;
@@ -220,7 +220,7 @@ public class Potts3D extends Potts {
 					}
 					
 					// ZX plane
-					if (!array[1 + PLANE_A[i]][1 + PLANE_B[i]][1]) {
+					if (!array[1 + PLANE_A[i]][1 + PLANE_B[i]][1] && !array[1][1][0] && !array[1][1][2]) {
 						if (array[1 + CORNER_A[(i + 1) % NUMBER_PLANE]][1 + CORNER_B[(i + 1) % NUMBER_PLANE]][1]
 								&& array[1 + CORNER_A[(i + 2) % NUMBER_PLANE]][1 + CORNER_B[(i + 2) % NUMBER_PLANE]][1]) {
 							return true;

@@ -760,9 +760,9 @@ public class Potts3DTest {
 	
 	private static final boolean[][][] BASE_THREE_NEIGHBORS_PLANE_XY = new boolean[][][] {
 			{
-					{ false, false, false },
-					{ false, false, false },
-					{ false, false, false }
+					{ false,  true, false },
+					{  true, false, false },
+					{ false,  true, false }
 			},
 			{
 					{ false,  true, false },
@@ -770,44 +770,44 @@ public class Potts3DTest {
 					{ false,  true, false }
 			},
 			{
-					{ false, false, false },
-					{ false, false, false },
-					{ false, false, false }
+					{ false,  true, false },
+					{  true, false, false },
+					{ false,  true, false }
 			}
 	};
 	
 	private static final boolean[][][] BASE_THREE_NEIGHBORS_PLANE_YZ = new boolean[][][] {
 			{
-					{ false, false, false },
 					{ false,  true, false },
-					{ false, false, false }
+					{ false,  true, false },
+					{ false,  true, false }
 			},
 			{
-					{ false, false, false },
+					{  true, false, false },
 					{  true,  true, false },
-					{ false, false, false }
+					{  true, false, false }
 			},
 			{
-					{ false, false, false },
 					{ false,  true, false },
-					{ false, false, false }
+					{ false,  true, false },
+					{ false,  true, false }
 			}
 	};
 	
 	private static final boolean[][][] BASE_THREE_NEIGHBORS_PLANE_ZX = new boolean[][][] {
 			{
 					{ false, false, false },
-					{ false,  true, false },
+					{  true,  true,  true },
 					{ false, false, false }
 			},
 			{
-					{ false,  true, false },
+					{  true,  true,  true },
 					{ false,  true, false },
 					{ false, false, false }
 			},
 			{
 					{ false, false, false },
-					{ false,  true, false },
+					{  true,  true,  true },
 					{ false, false, false }
 			}
 	};
