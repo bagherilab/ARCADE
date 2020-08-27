@@ -325,6 +325,7 @@ public class Potts3D extends Potts {
 					else if (planeB[0] && planeB[1] && (planeA[0] || planeA[1] || corner)) { return true; }
 					else if (corner && ((planeA[0] && planeB[1]) || (planeA[1] && planeB[0]))) { return true; }
 				}
+				return false;
 			case 5:
 				boolean[] plane = new boolean[4];
 				boolean[] corner = new boolean[4];
