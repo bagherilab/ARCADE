@@ -4,9 +4,9 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import arcade.env.loc.*;
-import static arcade.agent.cell.PottsCell2D.*;
+import static arcade.agent.cell.PottsCell3D.*;
 
-public class PottsCell2DTest {
+public class PottsCell3DTest {
 	private static final double EPSILON = 1E-5;
 	double[] lambdas;
 	double[] adhesion;
@@ -28,7 +28,7 @@ public class PottsCell2DTest {
 	@Test
 	public void defaultConstructor_setsFields() {
 		Location location = mock(Location.class);
-		PottsCell2D cell = new PottsCell2D(cellID, location, lambdas, adhesion);
+		PottsCell3D cell = new PottsCell3D(cellID, location, lambdas, adhesion);
 		
 		assertEquals(cellID, cell.id);
 		assertEquals(1, cell.pop);
@@ -45,7 +45,7 @@ public class PottsCell2DTest {
 	public void makeCell_givenCell_setsFields() {
 		Location location1 = mock(Location.class);
 		Location location2 = mock(Location.class);
-		PottsCell2D cell1 = new PottsCell2D(cellID, cellPop, location1, lambdas, adhesion, 0, null, null);
+		PottsCell3D cell1 = new PottsCell3D(cellID, cellPop, location1, lambdas, adhesion, 0, null, null);
 		PottsCell cell2 = cell1.makeCell(cellID + 1, STATE_AUTOTIC, location2);
 		
 		assertEquals(cellID + 1, cell2.id);
@@ -57,14 +57,14 @@ public class PottsCell2DTest {
 		assertArrayEquals(adhesion, cell2.adhesion, EPSILON);
 		assertNull(cell2.lambdasTag);
 		assertNull(cell2.adhesionTag);
-		assertTrue(cell2 instanceof PottsCell2D);
+		assertTrue(cell2 instanceof PottsCell3D);
 	}
 	
 	@Test
 	public void convert_givenValue_calculatesValue() {
 		double volume = Math.random()*100;
 		Location location = mock(Location.class);
-		PottsCell2D cell = new PottsCell2D(cellID, location, lambdas, adhesion);
-		assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume), cell.convert(volume), EPSILON);
+		PottsCell3D cell = new PottsCell3D(cellID, location, lambdas, adhesion);
+		assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.pow(volume, 2./3), cell.convert(volume), EPSILON);
 	}
 }
