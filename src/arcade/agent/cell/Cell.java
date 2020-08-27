@@ -200,6 +200,16 @@ public interface Cell extends Steppable {
 	void setState(int state);
 	
 	/**
+	 * Creates a new cell.
+	 *
+	 * @param id  the new cell ID
+	 * @param state  the new cell state
+	 * @param location  the new cell location
+	 * @return  the new {@code Cell} object
+	 */
+	Cell make(int id, int state, Location location);
+	
+	/**
 	 * Schedules the cell in the simulation.
 	 *
 	 * @param schedule  the simulation schedule

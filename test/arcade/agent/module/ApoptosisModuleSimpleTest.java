@@ -7,15 +7,15 @@ import sim.engine.Stoppable;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
 import arcade.sim.Potts;
-import arcade.agent.cell.PottsCell;
 import arcade.env.grid.Grid;
 import arcade.env.loc.Location;
 import static arcade.agent.cell.Cell.*;
 import static arcade.agent.module.ApoptosisModule.*;
+import static arcade.agent.cell.PottsCellTest.PottsCellMock;
 
 public class ApoptosisModuleSimpleTest {
 	private static final double r = 1.0;
-	PottsCell cell;
+	PottsCellMock cell;
 	MersenneTwisterFast random;
 	Location location, newLocation;
 	Simulation sim;
@@ -39,7 +39,7 @@ public class ApoptosisModuleSimpleTest {
 		newLocation = mock(Location.class);
 		when(location.split(random)).thenReturn(newLocation);
 		
-		cell = new PottsCell(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag);
+		cell = new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag);
 		
 		sim = mock(Simulation.class);
 	}
@@ -74,7 +74,7 @@ public class ApoptosisModuleSimpleTest {
 	
 	@Test
 	public void stepEarly_noTransition_callsMethods() {
-		PottsCell cell = spy(new PottsCell(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
 		ApoptosisModule module = new ApoptosisModule.Simple(cell);
 		ApoptosisModule spy = spy(module);
 		spy.phase = PHASE_EARLY_APOPTOSIS;
@@ -87,7 +87,7 @@ public class ApoptosisModuleSimpleTest {
 	
 	@Test
 	public void stepEarly_withTransition_callsMethods() {
-		PottsCell cell = spy(new PottsCell(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
 		ApoptosisModule module = new ApoptosisModule.Simple(cell);
 		ApoptosisModule spy = spy(module);
 		spy.phase = PHASE_EARLY_APOPTOSIS;
@@ -102,7 +102,7 @@ public class ApoptosisModuleSimpleTest {
 	public void stepLate_noTransition_callsMethods() {
 		Location location = mock(Location.class);
 		Stoppable stopper = mock(Stoppable.class);
-		PottsCell cell = spy(new PottsCell(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
 		cell.stopper = stopper;
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
@@ -127,7 +127,7 @@ public class ApoptosisModuleSimpleTest {
 	public void stepLate_withTransitionProbability_callsMethods() {
 		Location location = mock(Location.class);
 		Stoppable stopper = mock(Stoppable.class);
-		PottsCell cell = spy(new PottsCell(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
 		cell.stopper = stopper;
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
@@ -152,7 +152,7 @@ public class ApoptosisModuleSimpleTest {
 	public void stepLate_withTransitionSize_callsMethods() {
 		Location location = mock(Location.class);
 		Stoppable stopper = mock(Stoppable.class);
-		PottsCell cell = spy(new PottsCell(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
 		cell.stopper = stopper;
 		when(cell.getVolume()).thenReturn((int)(APOPTOSIS_CHECKPOINT*100.) - 1);
 		when(cell.getCriticalVolume()).thenReturn(100.);

@@ -6,10 +6,7 @@ import arcade.agent.module.Module;
 import arcade.agent.module.*;
 import arcade.env.loc.Location;
 
-public class PottsCell implements Cell {
-	/** Multiplier for calculating surface area from volume */
-	public static final double SURFACE_VOLUME_MULTIPLIER = 2*Math.sqrt(Math.PI)*1.5;
-	
+public abstract class PottsCell implements Cell {
 	/** Stopper used to stop this agent from being stepped in the schedule */
 	public Stoppable stopper;
 	
@@ -17,10 +14,10 @@ public class PottsCell implements Cell {
 	private final Location location;
 	
 	/** Unique cell ID */
-	private final int id;
+	final int id;
 	
 	/** Cell population index */
-	private final int pop;
+	final int pop;
 	
 	/** Cell state */
 	private int state;
@@ -29,7 +26,7 @@ public class PottsCell implements Cell {
 	private int age;
 	
 	/** Number of tagged regions */
-	private final int tags;
+	final int tags;
 	
 	/** Target cell volume (in voxels) */
 	private double targetVolume;
@@ -56,16 +53,16 @@ public class PottsCell implements Cell {
 	private final double[] criticalTagSurfaces;
 	
 	/** Lambda parameters for cell */
-	private final double[] lambdas;
+	final double[] lambdas;
 	
 	/** Lambda parameters for cell by tag */
-	private final double[][] lambdasTag;
+	final double[][] lambdasTag;
 	
 	/** Adhesion values for cell */
-	private final double[] adhesion;
+	final double[] adhesion;
 	
 	/** Adhesion values for cell by tag*/
-	private final double[][] adhesionTag;
+	final double[][] adhesionTag;
 	
 	/** Cell state module */
 	protected Module module;
@@ -141,32 +138,6 @@ public class PottsCell implements Cell {
 		setState(state);
 	}
 	
-	/**
-	 * Creates a {@code PottsCell} agent based on another agent.
-	 * <p>
-	 * The cell will have the same population, number of tagged regions,
-	 * lambdas (overall and tagged), adhesion (overall and tagged), and critical
-	 * volume/surface as the parent cell.
-	 * The cell age is set to 0.
-	 * 
-	 * @param c  the parent {@code PottsCell} agent
-	 * @param id  the daughter cell ID
-	 * @param state  the daughter cell state
-	 * @param location  the daughter cell location
-	 */
-	public PottsCell(PottsCell c, int id, int state, Location location) {
-		this(id, c.pop, state, 0, location,
-				c.lambdas, c.adhesion, c.tags, c.lambdasTag, c.adhesionTag);
-		
-		criticalVolume = c.criticalVolume;
-		criticalSurface = c.criticalSurface;
-		
-		for (int i = 0; i < this.tags; i++) {
-			criticalTagVolumes[i] = c.criticalTagVolumes[i];
-			criticalTagSurfaces[i] = c.criticalTagSurfaces[i];
-		}
-	}
-	
 	public int getID() { return id; }
 	
 	public int getPop() { return pop; }
@@ -236,6 +207,39 @@ public class PottsCell implements Cell {
 		}
 	}
 	
+	
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * The cell will have the same population, number of tagged regions,
+	 * lambdas (overall and tagged), adhesion (overall and tagged), and critical
+	 * volume/surface as the parent cell.
+	 * The cell age is set to 0.
+	 */
+	public Cell make(int id, int state, Location location) {
+		PottsCell cell = makeCell(id, state, location);
+		
+		criticalVolume = cell.criticalVolume;
+		criticalSurface = cell.criticalSurface;
+		
+		for (int i = 0; i < this.tags; i++) {
+			criticalTagVolumes[i] = cell.criticalTagVolumes[i];
+			criticalTagSurfaces[i] = cell.criticalTagSurfaces[i];
+		}
+		
+		return cell;
+	}
+	
+	/**
+	 * Creates a new {@code PottsCell}.
+	 * 
+	 * @param id  the new cell ID
+	 * @param state  the new cell state
+	 * @param location  the new cell location
+	 * @return  the new {@code PottsCell} object
+	 */
+	abstract PottsCell makeCell(int id, int state, Location location);
+	
 	public void schedule(Schedule schedule) {
 		stopper = schedule.scheduleRepeating(this, Simulation.ORDERING_CELLS, 1);
 	}
@@ -297,11 +301,11 @@ public class PottsCell implements Cell {
 		double volume = getVolume();
 		if (tags > 0) { targetTagVolumes[0] -= targetVolume; }
 		targetVolume = volume + rate*(scale*criticalVolume - volume)*Simulation.DT;
-		targetSurface = SURFACE_VOLUME_MULTIPLIER*Math.sqrt(targetVolume);
+		targetSurface = convert(targetVolume);
 		
 		if (tags > 0) {
 			targetTagVolumes[0] += targetVolume;
-			targetTagSurfaces[0] = SURFACE_VOLUME_MULTIPLIER*Math.sqrt(targetTagVolumes[0]);
+			targetTagSurfaces[0] = convert(targetTagVolumes[0]);
 		}
 	}
 	
@@ -309,9 +313,17 @@ public class PottsCell implements Cell {
 		double tagVolume = getVolume(tag);
 		targetVolume -= targetTagVolumes[-tag - 1];
 		targetTagVolumes[-tag - 1] = tagVolume + rate*(scale*criticalTagVolumes[-tag - 1] - tagVolume)*Simulation.DT;
-		targetTagSurfaces[-tag - 1] = SURFACE_VOLUME_MULTIPLIER*Math.sqrt(targetTagVolumes[-tag - 1]);
+		targetTagSurfaces[-tag - 1] = convert(targetTagVolumes[-tag - 1]);
 		
 		targetVolume += targetTagVolumes[-tag - 1];
-		targetSurface = SURFACE_VOLUME_MULTIPLIER*Math.sqrt(targetVolume);
+		targetSurface = convert(targetVolume);
 	}
+	
+	/**
+	 * Calculates volume to surface area.
+	 * 
+	 * @param volume  the volume (in voxels)
+	 * @return  the surface area (in voxels)
+	 */
+	abstract double convert(double volume);
 }

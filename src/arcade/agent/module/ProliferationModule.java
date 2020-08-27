@@ -3,6 +3,7 @@ package arcade.agent.module;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
 import arcade.sim.Potts;
+import arcade.agent.cell.*;
 import arcade.agent.cell.PottsCell;
 import arcade.env.loc.Location;
 import static arcade.agent.cell.Cell.*;
@@ -250,7 +251,7 @@ public abstract class ProliferationModule implements Module {
 			
 			// Create and schedule new cell.
 			int newID = sim.getID();
-			PottsCell newCell = new PottsCell(cell, newID, STATE_PROLIFERATIVE, newLocation);
+			Cell newCell = cell.make(newID, STATE_PROLIFERATIVE, newLocation);
 			sim.getAgents().addObject(newID, newCell);
 			newCell.reset(potts.IDS, potts.TAGS);
 			newCell.schedule(sim.getSchedule());
