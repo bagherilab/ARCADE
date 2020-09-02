@@ -4,7 +4,7 @@ import arcade.env.loc.Location;
 
 public class PottsCell3D extends PottsCell {
 	/** Multiplier for calculating surface area from volume */
-	public static final double SURFACE_VOLUME_MULTIPLIER = Math.cbrt(36*Math.PI)*1.5;
+	public static final double SURFACE_VOLUME_MULTIPLIER = Math.cbrt(36*Math.PI)*2;
 	
 	/**
 	 * {@inheritDoc}

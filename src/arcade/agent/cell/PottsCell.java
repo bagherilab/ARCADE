@@ -219,12 +219,12 @@ public abstract class PottsCell implements Cell {
 	public Cell make(int id, int state, Location location) {
 		PottsCell cell = makeCell(id, state, location);
 		
-		criticalVolume = cell.criticalVolume;
-		criticalSurface = cell.criticalSurface;
+		cell.criticalVolume = criticalVolume;
+		cell.criticalSurface = criticalSurface;
 		
 		for (int i = 0; i < this.tags; i++) {
-			criticalTagVolumes[i] = cell.criticalTagVolumes[i];
-			criticalTagSurfaces[i] = cell.criticalTagSurfaces[i];
+			cell.criticalTagVolumes[i] = criticalTagVolumes[i];
+			cell.criticalTagSurfaces[i] = criticalTagSurfaces[i];
 		}
 		
 		return cell;
@@ -300,7 +300,18 @@ public abstract class PottsCell implements Cell {
 	public void updateTarget(double rate, double scale) {
 		double volume = getVolume();
 		if (tags > 0) { targetTagVolumes[0] -= targetVolume; }
-		targetVolume = volume + rate*(scale*criticalVolume - volume)*Simulation.DT;
+		
+		double oldTargetVolume = targetVolume;
+		double delta = rate*(scale*criticalVolume - volume)*Simulation.DT;
+		
+		targetVolume = volume + delta;
+		
+		// Ensure that target volume increases or decreases monotonically.
+		if ((scale > 1 && targetVolume < oldTargetVolume) ||
+				(scale < 1 && targetVolume > oldTargetVolume)) {
+			targetVolume = oldTargetVolume + delta;
+		}
+		
 		targetSurface = convert(targetVolume);
 		
 		if (tags > 0) {
@@ -312,7 +323,18 @@ public abstract class PottsCell implements Cell {
 	public void updateTarget(int tag, double rate, double scale) {
 		double tagVolume = getVolume(tag);
 		targetVolume -= targetTagVolumes[-tag - 1];
-		targetTagVolumes[-tag - 1] = tagVolume + rate*(scale*criticalTagVolumes[-tag - 1] - tagVolume)*Simulation.DT;
+		
+		double oldTargetTagVolume = targetTagVolumes[-tag - 1];
+		double delta = rate*(scale*criticalTagVolumes[-tag - 1] - tagVolume)*Simulation.DT;
+		
+		targetTagVolumes[-tag - 1] = tagVolume + delta;
+		
+		// Ensure that target volume increases or decreases monotonically.
+		if ((scale > 1 && targetTagVolumes[-tag - 1] < oldTargetTagVolume) ||
+				(scale < 1 && targetTagVolumes[-tag - 1] > oldTargetTagVolume)) {
+			targetTagVolumes[-tag - 1] = oldTargetTagVolume + delta;
+		}
+		
 		targetTagSurfaces[-tag - 1] = convert(targetTagVolumes[-tag - 1]);
 		
 		targetVolume += targetTagVolumes[-tag - 1];
