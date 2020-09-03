@@ -86,13 +86,13 @@ public abstract class Potts implements Steppable {
 			
 			// Select unique ID (if there is one), otherwise select unique
 			// tag (if there is one). If there are neither, then skip.
-			if (uniqueIDTargets.size() > 0) {
-				int targetID = (int)uniqueIDTargets.toArray()[simstate.random.nextInt(uniqueIDTargets.size())];
-				flip(IDS[z][x][y], targetID, x, y, z, random);
-			}
-			else if (uniqueTagTargets.size() > 0) {
+			if (uniqueTagTargets.size() > 0) {
 				int targetTag = (int)uniqueTagTargets.toArray()[simstate.random.nextInt(uniqueTagTargets.size())];
 				flip(IDS[z][x][y], TAGS[z][x][y], targetTag, x, y, z, random);
+			}
+			else if (uniqueIDTargets.size() > 0) {
+				int targetID = (int)uniqueIDTargets.toArray()[simstate.random.nextInt(uniqueIDTargets.size())];
+				flip(IDS[z][x][y], targetID, x, y, z, random);
 			}
 		}
 	}
@@ -289,7 +289,7 @@ public abstract class Potts implements Steppable {
 	 * @return  the energy
 	 */
 	double getVolume(int id, int tag, int change) {
-		if (id == 0) { return 0; }
+		if (id == 0 || tag == TAG_DEFAULT) { return 0; }
 		Cell c = getCell(id);
 		double volume = c.getVolume(tag);
 		double targetVolume = c.getTargetVolume(tag);
@@ -349,7 +349,7 @@ public abstract class Potts implements Steppable {
 	 * @return  the energy
 	 */
 	double getSurface(int id, int tag, int change) {
-		if (id == 0) { return 0; }
+		if (id == 0 || tag == TAG_DEFAULT) { return 0; }
 		Cell c = getCell(id);
 		double surface = c.getSurface(tag);
 		double targetSurface = c.getTargetSurface(tag);

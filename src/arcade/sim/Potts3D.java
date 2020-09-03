@@ -68,7 +68,7 @@ public class Potts3D extends Potts {
 			for (int i = x - 1; i <= x + 1; i++) {
 				for (int j = y - 1; j <= y + 1; j++) {
 					if (!(k == z && i == x && j == y) && IDS[k][i][j] == id
-							&& TAGS[k][i][j] != tag && TAGS[k][i][j] != 0) {
+							&& TAGS[k][i][j] != tag && TAGS[k][i][j] != 0 && TAGS[k][i][j] != TAG_DEFAULT) {
 						H += (c.getAdhesion(tag, TAGS[k][i][j]) + c.getAdhesion(TAGS[k][i][j], tag))/2;
 					}
 				}

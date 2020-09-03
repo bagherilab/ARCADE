@@ -232,10 +232,10 @@ public class Potts3DTest {
 	
 	@Test
 	public void getAdhesion_validTags_calculateValue() {
-		assertEquals(subadhesion(-1, -3)*3, potts.getAdhesion(1, -1, 2, 2, 2), EPSILON);
-		assertEquals(subadhesion(-1, -2)*6 + subadhesion(-2, -3)*3, potts.getAdhesion(1, -2, 2, 2, 2), EPSILON);
-		assertEquals(subadhesion(-1, -3)*6, potts.getAdhesion(1, -3, 2, 2, 2), EPSILON);
-		assertEquals(subadhesion(-1, -4)*6 + subadhesion(-3, -4)*3, potts.getAdhesion(1, -4, 2, 2, 2), EPSILON);
+		assertEquals(subadhesion(-1, -3)*3 + subadhesion(-1, -2)*1, potts.getAdhesion(1, -1, 1, 2, 2), EPSILON);
+		assertEquals(subadhesion(-2, -3)*3, potts.getAdhesion(1, -2, 1, 2, 2), EPSILON);
+		assertEquals(subadhesion(-2, -3), potts.getAdhesion(1, -3, 1, 2, 2), EPSILON);
+		assertEquals(subadhesion(-3, -4)*3 + subadhesion(-4, -2), potts.getAdhesion(1, -4, 1, 2, 2), EPSILON);
 	}
 	
 	@Test

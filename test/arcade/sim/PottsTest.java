@@ -164,7 +164,7 @@ public class PottsTest {
 		}
 		
 		int[] calculateChange(int id, int sourceTag, int targetTag, int x, int y, int z) {
-			return new int[] { (sourceTag == -1 ? 2 : -3), (targetTag == -1 ? 2 : -3) };
+			return new int[] { (sourceTag == -3 ? 2 : -3), (targetTag == -3 ? 2 : -3) };
 		}
 		
 		boolean[][][] getNeighborhood(int id, int x, int y, int z) {
@@ -187,7 +187,7 @@ public class PottsTest {
 		
 		HashSet<Integer> getUniqueTags(int x, int y, int z) {
 			HashSet<Integer> set = new HashSet<>();
-			if ((x == 0 && y == 0) || (x == 1 && y == 0)) { set.add(-1); set.add(-2); set.add(-3); }
+			if (x == 1 && y == 0) { set.add(-1); set.add(-2); set.add(-3); }
 			return set;
 		}
 	}
@@ -634,7 +634,6 @@ public class PottsTest {
 	
 	@Test
 	public void getVolume_validTagsNotZero_calculatesValue() {
-		assertEquals(subLV[0]*Math.pow(2 - 3, 2), potts.getVolume(1, -1, 0), EPSILON);
 		assertEquals(subLV[1]*Math.pow(1 - 2 + 1, 2), potts.getVolume(1, -2, 1), EPSILON);
 		assertEquals(subLV[2]*Math.pow(0 - 1 + 2, 2), potts.getVolume(2, -3, 2), EPSILON);
 		assertEquals(subLV[3]*Math.pow(2 - 2 + 1, 2), potts.getVolume(3, -4, 1), EPSILON);
@@ -645,6 +644,13 @@ public class PottsTest {
 		assertEquals(0, potts.getVolume(0, 1), EPSILON);
 		assertEquals(0, potts.getVolume(0, 0), EPSILON);
 		assertEquals(0, potts.getVolume(0, -1), EPSILON);
+	}
+	
+	@Test
+	public void getVolume_defaultTag_returnsZero() {
+		assertEquals(0, potts.getVolume(1, -1, 1), EPSILON);
+		assertEquals(0, potts.getVolume(1, -1, 0), EPSILON);
+		assertEquals(0, potts.getVolume(1, -1, -1), EPSILON);
 	}
 	
 	@Test
@@ -661,14 +667,14 @@ public class PottsTest {
 	
 	@Test
 	public void getDeltaVolume_validTags_calculatesValue() {
-		double subcell1 = Math.pow(2 - 3, 2);
-		double subcell1plus1 = Math.pow(2 - 3 + 1, 2);
-		double subcell1minus1 = Math.pow(2 - 3 - 1, 2);
+		double subcell3 = Math.pow(1 - 1, 2);
+		double subcell3plus1 = Math.pow(1 - 1 + 1, 2);
+		double subcell3minus1 = Math.pow(1 - 1 - 1, 2);
 		double subcell2 = Math.pow(1 - 2, 2);
 		double subcell2plus1 = Math.pow(1 - 2 + 1, 2);
 		double subcell2minus1 = Math.pow(1 - 2 - 1, 2);
-		assertEquals(subLV[0]*(subcell1minus1 - subcell1) + subLV[1]*(subcell2plus1 - subcell2), potts.getDeltaVolume(1, -1, -2), EPSILON);
-		assertEquals(subLV[1]*(subcell2minus1 - subcell2) + subLV[0]*(subcell1plus1 - subcell1), potts.getDeltaVolume(1, -2, -1), EPSILON);
+		assertEquals(subLV[2]*(subcell3minus1 - subcell3) + subLV[1]*(subcell2plus1 - subcell2), potts.getDeltaVolume(1, -3, -2), EPSILON);
+		assertEquals(subLV[1]*(subcell2minus1 - subcell2) + subLV[2]*(subcell3plus1 - subcell3), potts.getDeltaVolume(1, -2, -3), EPSILON);
 	}
 	
 	@Test
@@ -680,7 +686,6 @@ public class PottsTest {
 	
 	@Test
 	public void getSurface_validTagsNotZero_calculatesValue() {
-		assertEquals(subLS[0]*Math.pow(6 - 8, 2), potts.getSurface(1, -1, 0), EPSILON);
 		assertEquals(subLS[1]*Math.pow(4 - 5 + 1, 2), potts.getSurface(1, -2, 1), EPSILON);
 		assertEquals(subLS[2]*Math.pow(0 - 7 + 2, 2), potts.getSurface(2, -3, 2), EPSILON);
 		assertEquals(subLS[3]*Math.pow(6 - 3 + 1, 2), potts.getSurface(3, -4, 1), EPSILON);
@@ -691,6 +696,13 @@ public class PottsTest {
 		assertEquals(0, potts.getSurface(0, 1), EPSILON);
 		assertEquals(0, potts.getSurface(0, 0), EPSILON);
 		assertEquals(0, potts.getSurface(0, -1), EPSILON);
+	}
+	
+	@Test
+	public void getSurface_defaultTag_returnsZero() {
+		assertEquals(0, potts.getSurface(0, -1, 1), EPSILON);
+		assertEquals(0, potts.getSurface(0, -1, 0), EPSILON);
+		assertEquals(0, potts.getSurface(0, -1, -1), EPSILON);
 	}
 	
 	@Test
@@ -705,12 +717,12 @@ public class PottsTest {
 	
 	@Test
 	public void getDeltaSurface_validTags_calculatesValue() {
-		double subcell1 = Math.pow(6 - 8, 2);
-		double subcell1plus2 = Math.pow(6 - 8 + 2, 2);
+		double subcell3 = Math.pow(4 - 7, 2);
+		double subcell3plus2 = Math.pow(4 - 7 + 2, 2);
 		double subcell2 = Math.pow(4 - 5, 2);
 		double subcell2minus3 = Math.pow(4 - 5 - 3, 2);
-		assertEquals(subLS[1]*(subcell2minus3 - subcell2) + subLS[0]*(subcell1plus2 - subcell1), potts.getDeltaSurface(1, -2, -1, 0, 0, 0), EPSILON);
-		assertEquals(subLS[0]*(subcell1plus2 - subcell1) + subLS[1]*(subcell2minus3 - subcell2), potts.getDeltaSurface(1, -1, -2, 0, 0, 0), EPSILON);
+		assertEquals(subLS[1]*(subcell2minus3 - subcell2) + subLS[2]*(subcell3plus2 - subcell3), potts.getDeltaSurface(1, -2, -3, 0, 0, 0), EPSILON);
+		assertEquals(subLS[2]*(subcell3plus2 - subcell3) + subLS[1]*(subcell2minus3 - subcell2), potts.getDeltaSurface(1, -3, -2, 0, 0, 0), EPSILON);
 	}
 	
 	@Test

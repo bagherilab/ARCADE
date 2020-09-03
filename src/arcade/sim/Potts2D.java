@@ -53,7 +53,7 @@ public class Potts2D extends Potts {
 		for (int i = x - 1; i <= x + 1; i++) {
 			for (int j = y - 1; j <= y + 1; j++) {
 				if (!(i == x && j == y) && IDS[z][i][j] == id
-						&& TAGS[z][i][j] != tag && TAGS[z][i][j] != 0) {
+						&& TAGS[z][i][j] != tag && TAGS[z][i][j] != 0 && TAGS[z][i][j] != TAG_DEFAULT) {
 					H += (c.getAdhesion(tag, TAGS[z][i][j]) + c.getAdhesion(TAGS[z][i][j], tag))/2;
 				}
 			}
