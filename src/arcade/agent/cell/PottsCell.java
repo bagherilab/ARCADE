@@ -302,14 +302,12 @@ public abstract class PottsCell implements Cell {
 		if (tags > 0) { targetTagVolumes[0] -= targetVolume; }
 		
 		double oldTargetVolume = targetVolume;
-		double delta = rate*(scale*criticalVolume - volume)*Simulation.DT;
-		
-		targetVolume = volume + delta;
+		targetVolume = volume + rate*(scale*criticalVolume - volume)*Simulation.DT;
 		
 		// Ensure that target volume increases or decreases monotonically.
 		if ((scale > 1 && targetVolume < oldTargetVolume) ||
 				(scale < 1 && targetVolume > oldTargetVolume)) {
-			targetVolume = oldTargetVolume + delta;
+			targetVolume = oldTargetVolume ;
 		}
 		
 		targetSurface = convert(targetVolume);
@@ -325,14 +323,12 @@ public abstract class PottsCell implements Cell {
 		targetVolume -= targetTagVolumes[-tag - 1];
 		
 		double oldTargetTagVolume = targetTagVolumes[-tag - 1];
-		double delta = rate*(scale*criticalTagVolumes[-tag - 1] - tagVolume)*Simulation.DT;
-		
-		targetTagVolumes[-tag - 1] = tagVolume + delta;
+		targetTagVolumes[-tag - 1] = tagVolume + rate*(scale*criticalTagVolumes[-tag - 1] - tagVolume)*Simulation.DT;
 		
 		// Ensure that target volume increases or decreases monotonically.
 		if ((scale > 1 && targetTagVolumes[-tag - 1] < oldTargetTagVolume) ||
 				(scale < 1 && targetTagVolumes[-tag - 1] > oldTargetTagVolume)) {
-			targetTagVolumes[-tag - 1] = oldTargetTagVolume + delta;
+			targetTagVolumes[-tag - 1] = oldTargetTagVolume;
 		}
 		
 		targetTagSurfaces[-tag - 1] = convert(targetTagVolumes[-tag - 1]);
