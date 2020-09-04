@@ -28,10 +28,10 @@ public class PottsCell2DTest {
 	@Test
 	public void defaultConstructor_setsFields() {
 		Location location = mock(Location.class);
-		PottsCell2D cell = new PottsCell2D(cellID, location, lambdas, adhesion);
+		PottsCell2D cell = new PottsCell2D(cellID, cellPop, location, lambdas, adhesion);
 		
 		assertEquals(cellID, cell.id);
-		assertEquals(1, cell.pop);
+		assertEquals(cellPop, cell.pop);
 		assertEquals(0, cell.getAge());
 		assertEquals(0, cell.tags);
 		assertEquals(location, cell.getLocation());
@@ -64,7 +64,7 @@ public class PottsCell2DTest {
 	public void convert_givenValue_calculatesValue() {
 		double volume = Math.random()*100;
 		Location location = mock(Location.class);
-		PottsCell2D cell = new PottsCell2D(cellID, location, lambdas, adhesion);
+		PottsCell2D cell = new PottsCell2D(cellID, cellPop, location, lambdas, adhesion);
 		assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume), cell.convert(volume), EPSILON);
 	}
 }

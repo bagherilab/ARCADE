@@ -74,13 +74,14 @@ public abstract class PottsCell implements Cell {
 	 * The cell is created with no tags.
 	 *
 	 * @param id  the cell ID
+	 * @param pop  the cell population index   
 	 * @param location  the {@link arcade.env.loc.Location} of the cell
 	 * @param lambdas  the list of lambda multipliers
 	 * @param adhesion  the list of adhesion values
 	 */
-	public PottsCell(int id, Location location,
+	public PottsCell(int id, int pop, Location location,
 					 double[] lambdas, double[] adhesion) {
-		this(id, 1, STATE_PROLIFERATIVE, 0, location,
+		this(id, pop, STATE_PROLIFERATIVE, 0, location,
 				lambdas, adhesion, 0, null, null);
 	}
 	

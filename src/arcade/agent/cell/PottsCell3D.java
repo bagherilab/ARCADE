@@ -11,9 +11,9 @@ public class PottsCell3D extends PottsCell {
 	 * <p>
 	 * Cell agent used for 3D simulations.
 	 */
-	public PottsCell3D(int id, Location location,
+	public PottsCell3D(int id, int pop, Location location,
 					   double[] lambdas, double[] adhesion) {
-		super(id, location, lambdas, adhesion);
+		super(id, pop, location, lambdas, adhesion);
 	}
 	
 	/**

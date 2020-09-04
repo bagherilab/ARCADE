@@ -11,9 +11,9 @@ public class PottsCell2D extends PottsCell {
 	 * <p>
 	 * Cell agent used for 2D simulations.
 	 */
-	public PottsCell2D(int id, Location location,
+	public PottsCell2D(int id, int pop, Location location,
 					   double[] lambdas, double[] adhesion) {
-		super(id, location, lambdas, adhesion);
+		super(id, pop, location, lambdas, adhesion);
 	}
 	
 	/**

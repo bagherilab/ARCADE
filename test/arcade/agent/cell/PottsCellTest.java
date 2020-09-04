@@ -92,9 +92,9 @@ public class PottsCellTest {
 	}
 	
 	public static class PottsCellMock extends PottsCell {
-		public PottsCellMock(int id, Location location,
+		public PottsCellMock(int id, int pop, Location location,
 							 double[] lambdas, double[] adhesion) {
-			super(id, location, lambdas, adhesion);
+			super(id, pop, location, lambdas, adhesion);
 		}
 		
 		public PottsCellMock(int id, int pop, Location location,
@@ -246,7 +246,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void getTargetVolume_afterInitialize_returnsValue() {
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop,location, lambdas, adhesion);
 		cell.initialize(null, null);
 		assertEquals(locationVolume, cell.getTargetVolume(), EPSILON);
 	}
@@ -304,7 +304,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void getTargetSurface_afterInitialize_returnsValue() {
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.initialize(null, null);
 		assertEquals(locationSurface, cell.getTargetSurface(), EPSILON);
 	}
@@ -362,7 +362,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void getCriticalVolume_afterInitialize_returnsValue() {
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.initialize(null, null);
 		assertEquals(locationVolume, cell.getCriticalVolume(), EPSILON);
 	}
@@ -420,7 +420,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void getCriticalSurface_afterInitialize_returnsValue() {
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.initialize(null, null);
 		assertEquals(locationSurface, cell.getCriticalSurface(), EPSILON);
 	}
@@ -530,7 +530,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void setState_givenState_assignsValue() {
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		
 		cell.setState(STATE_QUIESCENT);
 		assertEquals(STATE_QUIESCENT, cell.getState());
@@ -550,7 +550,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void setState_givenState_updatesModule() {
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		
 		cell.setState(STATE_QUIESCENT);
 		assertTrue(cell.module instanceof QuiescenceModule);
@@ -570,7 +570,7 @@ public class PottsCellTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void setState_invalidState_throwsException() {
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.setState(-1);
 	}
 	
@@ -631,7 +631,7 @@ public class PottsCellTest {
 	@Test
 	public void schedule_validInput_callsMethod() {
 		Schedule schedule = spy(mock(Schedule.class));
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.schedule(schedule);
 		
 		verify(schedule).scheduleRepeating(cell, ORDERING_CELLS, 1);
@@ -640,7 +640,7 @@ public class PottsCellTest {
 	@Test
 	public void schedule_validInput_assignStopper() {
 		Schedule schedule = spy(mock(Schedule.class));
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		when(schedule.scheduleRepeating(cell, ORDERING_CELLS, 1)).thenReturn(mock(Stoppable.class));
 		cell.schedule(schedule);
 		assertNotNull(cell.stopper);
@@ -649,7 +649,7 @@ public class PottsCellTest {
 	@Test
 	public void initialize_withoutTags_callsMethod() {
 		Location location = spy(mock(Location.class));
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		int[][][] array = new int[1][3][3];
 		cell.initialize(array, null);
 		
@@ -676,7 +676,7 @@ public class PottsCellTest {
 		when(location.getVolume()).thenReturn(volume);
 		when(location.getSurface()).thenReturn(surface);
 		
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.initialize(new int[1][3][3], null);
 		
 		assertEquals(volume, cell.getTargetVolume(), EPSILON);
@@ -719,7 +719,7 @@ public class PottsCellTest {
 		when(location.getVolume()).thenReturn(volume);
 		when(location.getSurface()).thenReturn(surface);
 		
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.initialize(new int[1][3][3], null);
 		
 		assertEquals(volume, cell.getCriticalVolume(), EPSILON);
@@ -757,7 +757,7 @@ public class PottsCellTest {
 	@Test
 	public void reset_withoutTags_callsMethod() {
 		Location location = spy(mock(Location.class));
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		int[][][] array = new int[1][3][3];
 		cell.initialize(array, null);
 		cell.reset(array, null);
@@ -786,7 +786,7 @@ public class PottsCellTest {
 		when(location.getVolume()).thenReturn(volume);
 		when(location.getSurface()).thenReturn(surface);
 		
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.initialize(new int[1][3][3], null);
 		cell.updateTarget(Math.random(), Math.random());
 		cell.reset(new int[1][3][3], null);
@@ -828,7 +828,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void step_singleStep_updatesAge() {
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		PottsSimulation sim = mock(PottsSimulation.class);
 		cell.module = mock(Module.class);
 		
@@ -839,7 +839,7 @@ public class PottsCellTest {
 	@Test
 	public void updateTarget_untaggedScaleTwoNoTag_updatesValues() {
 		double rate = Math.random();
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.initialize(null, null);
 		cell.updateTarget(rate, 2);
 		
@@ -873,7 +873,7 @@ public class PottsCellTest {
 	@Test
 	public void updateTarget_untaggedScaleZeroNoTag_updatesValues() {
 		double rate = Math.random();
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.initialize(null, null);
 		cell.updateTarget(rate, 0);
 		
@@ -908,7 +908,7 @@ public class PottsCellTest {
 	public void updateTarget_untaggedScaleTwoNoTagModified_updatesValues() {
 		double rate = Math.random();
 		double delta = Math.random();
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.initialize(null, null);
 		cell.updateTarget(rate + delta, 2);
 		cell.updateTarget(rate, 2);
@@ -946,7 +946,7 @@ public class PottsCellTest {
 	public void updateTarget_untaggedScaleZeroNoTagModified_updatesValues() {
 		double rate = Math.random();
 		double delta = Math.random();
-		PottsCellMock cell = new PottsCellMock(cellID, location, lambdas, adhesion);
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, lambdas, adhesion);
 		cell.initialize(null, null);
 		cell.updateTarget(rate + delta, 0);
 		cell.updateTarget(rate, 0);
