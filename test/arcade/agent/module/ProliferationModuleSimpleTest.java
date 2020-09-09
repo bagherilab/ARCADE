@@ -20,8 +20,13 @@ public class ProliferationModuleSimpleTest {
 	MersenneTwisterFast random;
 	Location location, newLocation;
 	Simulation sim;
+	double[] criticals = new double[] { 0, 0 };
 	double[] lambdas = new double[] { Math.random()*100, Math.random()*100 };
 	double[] adhesion = new double[] { Math.random()*100, Math.random()*100, Math.random()*100 };
+	double[][] criticalsTag = new double[][] {
+			{ 0, 0 },
+			{ 0, 0 }
+	};
 	double[][] lambdasTag = new double[][] {
 			{ Math.random()*100, Math.random()*100 },
 			{ Math.random()*100, Math.random()*100 }
@@ -40,7 +45,7 @@ public class ProliferationModuleSimpleTest {
 		newLocation = mock(Location.class);
 		when(location.split(random)).thenReturn(newLocation);
 		
-		cell = new PottsCellMock(1, 1, 0, 0, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag);
+		cell = new PottsCellMock(1, 1, 0, 0, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag);
 		
 		sim = mock(Simulation.class);
 	}
@@ -105,7 +110,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepG1_noTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		ProliferationModule spy = spy(module);
 		spy.phase = PHASE_G1;
@@ -118,7 +123,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepG1_withTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		ProliferationModule spy = spy(module);
 		spy.phase = PHASE_G1;
@@ -131,7 +136,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepG1_withStateChange_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		ProliferationModule spy = spy(module);
 		spy.phase = PHASE_G1;
@@ -145,7 +150,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepG1_phaseNotArrested_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		ProliferationModule spy = spy(module);
 		
@@ -171,7 +176,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepG1_phaseArrested_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		ProliferationModule spy = spy(module);
 		
@@ -257,7 +262,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepG2_noTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		ProliferationModule spy = spy(module);
 		spy.phase = PHASE_G2;
@@ -270,7 +275,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepG2_withTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		ProliferationModule spy = spy(module);
 		spy.phase = PHASE_G2;
@@ -283,7 +288,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepG2_phaseNotArrested_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		ProliferationModule spy = spy(module);
 		
@@ -309,7 +314,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepG2_phaseArrested_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		ProliferationModule spy = spy(module);
 		
@@ -363,7 +368,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepM_noTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
 		Simulation sim = mock(Simulation.class);
@@ -389,7 +394,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepM_withTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
 		Simulation sim = mock(Simulation.class);

@@ -5,6 +5,7 @@ import arcade.sim.Simulation;
 import arcade.agent.module.Module;
 import arcade.agent.module.*;
 import arcade.env.loc.Location;
+import static arcade.sim.Potts.*;
 
 public abstract class PottsCell implements Cell {
 	/** Stopper used to stop this agent from being stepped in the schedule */
@@ -31,26 +32,20 @@ public abstract class PottsCell implements Cell {
 	/** Target cell volume (in voxels) */
 	private double targetVolume;
 	
-	/** Critical cell volume (in voxels) */
-	private double criticalVolume;
-	
 	/** Target tagged cell volumes (in voxels) */
 	private final double[] targetTagVolumes;
-	
-	/** Critical tagged cell volumes (in voxels) */
-	private final double[] criticalTagVolumes;
 	
 	/** Target cell surface (in voxels) */
 	private double targetSurface;
 	
-	/** Critical cell surface (in voxels) */
-	private double criticalSurface;
-	
 	/** Target tagged cell surfaces (in voxels) */
 	private final double[] targetTagSurfaces;
 	
-	/** Critical tagged cell surfaces (in voxels) */
-	private final double[] criticalTagSurfaces;
+	/** Critical values for cell (in voxels) */
+	final double[] criticals;
+	
+	/** Critical values for cell (in voxels) by tag */
+	final double[][] criticalsTag;
 	
 	/** Lambda parameters for cell */
 	final double[] lambdas;
@@ -76,13 +71,14 @@ public abstract class PottsCell implements Cell {
 	 * @param id  the cell ID
 	 * @param pop  the cell population index   
 	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param criticals  the list of critical values
 	 * @param lambdas  the list of lambda multipliers
 	 * @param adhesion  the list of adhesion values
 	 */
 	public PottsCell(int id, int pop, Location location,
-					 double[] lambdas, double[] adhesion) {
+					 double[] criticals, double[] lambdas, double[] adhesion) {
 		this(id, pop, STATE_PROLIFERATIVE, 0, location,
-				lambdas, adhesion, 0, null, null);
+				criticals, lambdas, adhesion, 0, null, null, null);
 	}
 	
 	/**
@@ -93,17 +89,19 @@ public abstract class PottsCell implements Cell {
 	 * @param id  the cell ID
 	 * @param pop  the cell population index
 	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param criticals  the list of critical values
 	 * @param lambdas  the list of lambda multipliers
 	 * @param adhesion  the list of adhesion values
 	 * @param tags  the number of tags
+	 * @param criticalsTag  the list of tagged critical values
 	 * @param lambdasTag  the list of tagged lambda multipliers
 	 * @param adhesionsTag  the list of tagged adhesion values
 	 */
 	public PottsCell(int id, int pop, Location location,
-					 double[] lambdas, double[] adhesion, int tags,
-					 double[][] lambdasTag, double[][] adhesionsTag) {
+					 double[] criticals, double[] lambdas, double[] adhesion, int tags,
+					 double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
 		this(id, pop, STATE_PROLIFERATIVE, 0, location,
-				lambdas, adhesion, tags, lambdasTag, adhesionsTag);
+				criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionsTag);
 	}
 	
 	/**
@@ -114,29 +112,43 @@ public abstract class PottsCell implements Cell {
 	 * @param state  the cell state
 	 * @param age  the cell age (in ticks)
 	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param criticals  the list of critical values
 	 * @param lambdas  the list of lambda multipliers
 	 * @param adhesion  the list of adhesion values
 	 * @param tags  the number of tags
+	 * @param criticalsTag  the list of tagged critical values
 	 * @param lambdasTag  the list of tagged lambda multipliers
 	 * @param adhesionsTag  the list of tagged adhesion values
 	 */
 	public PottsCell(int id, int pop, int state, int age, Location location,
-					 double[] lambdas, double[] adhesion, int tags,
-					 double[][] lambdasTag, double[][] adhesionsTag) {
+					 double[] criticals, double[] lambdas, double[] adhesion, int tags,
+					 double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
 		this.id = id;
 		this.pop = pop;
 		this.age = age;
 		this.tags = tags;
 		this.location = location;
+		this.criticals = criticals.clone();
 		this.lambdas = lambdas.clone();
 		this.adhesion = adhesion.clone();
-		this.lambdasTag = lambdasTag;
-		this.adhesionTag = adhesionsTag;
+		this.criticalsTag = (tags == 0 ? null : new double[NUMBER_TERMS][tags]);
+		this.lambdasTag = (tags == 0 ? null : new double[NUMBER_TERMS][tags]);
+		this.adhesionTag = (tags == 0 ? null : new double[tags][tags]);
 		this.targetTagVolumes = (tags == 0 ? null : new double[tags]);
 		this.targetTagSurfaces = (tags == 0 ? null : new double[tags]);
-		this.criticalTagVolumes = (tags == 0 ? null : new double[tags]);
-		this.criticalTagSurfaces = (tags == 0 ? null : new double[tags]);
+		
 		setState(state);
+		
+		if (tags != 0) {
+			for (int i = 0; i < NUMBER_TERMS; i++) {
+				this.criticalsTag[i] = criticalsTag[i].clone();
+				this.lambdasTag[i] = lambdasTag[i].clone();
+			}
+			
+			for (int i = 0; i < tags; i++) {
+				this.adhesionTag[i] = adhesionsTag[i].clone();
+			}
+		}
 	}
 	
 	public int getID() { return id; }
@@ -167,13 +179,13 @@ public abstract class PottsCell implements Cell {
 	
 	public double getTargetSurface(int tag) { return (isValid(tag) ? targetTagSurfaces[-tag - 1] : 0); }
 	
-	public double getCriticalVolume() { return criticalVolume; }
+	public double getCriticalVolume() { return criticals[TERM_VOLUME]; }
 	
-	public double getCriticalVolume(int tag) { return (isValid(tag) ? criticalTagVolumes[-tag - 1] : 0); }
+	public double getCriticalVolume(int tag) { return (isValid(tag) ? criticalsTag[TERM_VOLUME][-tag - 1] : 0); }
 	
-	public double getCriticalSurface() { return criticalSurface; }
+	public double getCriticalSurface() { return criticals[TERM_SURFACE]; }
 	
-	public double getCriticalSurface(int tag) { return (isValid(tag) ? criticalTagSurfaces[-tag - 1] : 0); }
+	public double getCriticalSurface(int tag) { return (isValid(tag) ? criticalsTag[TERM_SURFACE][-tag - 1] : 0); }
 	
 	public double getLambda(int term) { return lambdas[term]; }
 	
@@ -208,39 +220,6 @@ public abstract class PottsCell implements Cell {
 		}
 	}
 	
-	
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * The cell will have the same population, number of tagged regions,
-	 * lambdas (overall and tagged), adhesion (overall and tagged), and critical
-	 * volume/surface as the parent cell.
-	 * The cell age is set to 0.
-	 */
-	public Cell make(int id, int state, Location location) {
-		PottsCell cell = makeCell(id, state, location);
-		
-		cell.criticalVolume = criticalVolume;
-		cell.criticalSurface = criticalSurface;
-		
-		for (int i = 0; i < this.tags; i++) {
-			cell.criticalTagVolumes[i] = criticalTagVolumes[i];
-			cell.criticalTagSurfaces[i] = criticalTagSurfaces[i];
-		}
-		
-		return cell;
-	}
-	
-	/**
-	 * Creates a new {@code PottsCell}.
-	 * 
-	 * @param id  the new cell ID
-	 * @param state  the new cell state
-	 * @param location  the new cell location
-	 * @return  the new {@code PottsCell} object
-	 */
-	abstract PottsCell makeCell(int id, int state, Location location);
-	
 	public void schedule(Schedule schedule) {
 		stopper = schedule.scheduleRepeating(this, Simulation.ORDERING_CELLS, 1);
 	}
@@ -251,27 +230,21 @@ public abstract class PottsCell implements Cell {
 		targetVolume = location.getVolume();
 		targetSurface = location.getSurface();
 		
-		criticalVolume = targetVolume;
-		criticalSurface = targetSurface;
-		
 		for (int i = 0; i < this.tags; i++) {
 			targetTagVolumes[i] = location.getVolume(-i - 1);
 			targetTagSurfaces[i] = location.getSurface(-i - 1);
-			
-			criticalTagVolumes[i] = targetTagVolumes[i];
-			criticalTagSurfaces[i] = targetTagSurfaces[i];
 		}
 	}
 	
 	public void reset(int[][][] ids, int[][][] tags) {
 		location.update(id, ids, tags);
 		
-		targetVolume = criticalVolume;
-		targetSurface = criticalSurface;
+		targetVolume = criticals[TERM_VOLUME];
+		targetSurface = criticals[TERM_SURFACE];
 		
 		for (int i = 0; i < this.tags; i++) {
-			targetTagVolumes[i] = criticalTagVolumes[i];
-			targetTagSurfaces[i] = criticalTagSurfaces[i];
+			targetTagVolumes[i] = criticalsTag[TERM_VOLUME][i];
+			targetTagSurfaces[i] = criticalsTag[TERM_SURFACE][i];
 		}
 	}
 	
@@ -303,7 +276,7 @@ public abstract class PottsCell implements Cell {
 		if (tags > 0) { targetTagVolumes[0] -= targetVolume; }
 		
 		double oldTargetVolume = targetVolume;
-		targetVolume = volume + rate*(scale*criticalVolume - volume)*Simulation.DT;
+		targetVolume = volume + rate*(scale*criticals[TERM_VOLUME] - volume)*Simulation.DT;
 		
 		// Ensure that target volume increases or decreases monotonically.
 		if ((scale > 1 && targetVolume < oldTargetVolume) ||
@@ -324,7 +297,7 @@ public abstract class PottsCell implements Cell {
 		targetVolume -= targetTagVolumes[-tag - 1];
 		
 		double oldTargetTagVolume = targetTagVolumes[-tag - 1];
-		targetTagVolumes[-tag - 1] = tagVolume + rate*(scale*criticalTagVolumes[-tag - 1] - tagVolume)*Simulation.DT;
+		targetTagVolumes[-tag - 1] = tagVolume + rate*(scale*criticalsTag[TERM_VOLUME][-tag - 1] - tagVolume)*Simulation.DT;
 		
 		// Ensure that target volume increases or decreases monotonically.
 		if ((scale > 1 && targetTagVolumes[-tag - 1] < oldTargetTagVolume) ||

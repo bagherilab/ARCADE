@@ -19,8 +19,13 @@ public class ApoptosisModuleSimpleTest {
 	MersenneTwisterFast random;
 	Location location, newLocation;
 	Simulation sim;
+	double[] criticals = new double[] { 0, 0 };
 	double[] lambdas = new double[] { Math.random()*100, Math.random()*100 };
 	double[] adhesion = new double[] { Math.random()*100, Math.random()*100, Math.random()*100 };
+	double[][] criticalsTag = new double[][] {
+			{ 0, 0 },
+			{ 0, 0 }
+	};
 	double[][] lambdasTag = new double[][] {
 			{ Math.random()*100, Math.random()*100 },
 			{ Math.random()*100, Math.random()*100 }
@@ -39,7 +44,7 @@ public class ApoptosisModuleSimpleTest {
 		newLocation = mock(Location.class);
 		when(location.split(random)).thenReturn(newLocation);
 		
-		cell = new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag);
+		cell = new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag);
 		
 		sim = mock(Simulation.class);
 	}
@@ -74,7 +79,7 @@ public class ApoptosisModuleSimpleTest {
 	
 	@Test
 	public void stepEarly_noTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		ApoptosisModule module = new ApoptosisModule.Simple(cell);
 		ApoptosisModule spy = spy(module);
 		spy.phase = PHASE_EARLY_APOPTOSIS;
@@ -87,7 +92,7 @@ public class ApoptosisModuleSimpleTest {
 	
 	@Test
 	public void stepEarly_withTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		ApoptosisModule module = new ApoptosisModule.Simple(cell);
 		ApoptosisModule spy = spy(module);
 		spy.phase = PHASE_EARLY_APOPTOSIS;
@@ -102,7 +107,7 @@ public class ApoptosisModuleSimpleTest {
 	public void stepLate_noTransition_callsMethods() {
 		Location location = mock(Location.class);
 		Stoppable stopper = mock(Stoppable.class);
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		cell.stopper = stopper;
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
@@ -127,7 +132,7 @@ public class ApoptosisModuleSimpleTest {
 	public void stepLate_withTransitionProbability_callsMethods() {
 		Location location = mock(Location.class);
 		Stoppable stopper = mock(Stoppable.class);
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		cell.stopper = stopper;
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
@@ -152,7 +157,7 @@ public class ApoptosisModuleSimpleTest {
 	public void stepLate_withTransitionSize_callsMethods() {
 		Location location = mock(Location.class);
 		Stoppable stopper = mock(Stoppable.class);
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, lambdas, adhesion, 2, lambdasTag, adhesionsTag));
+		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		cell.stopper = stopper;
 		when(cell.getVolume()).thenReturn((int)(APOPTOSIS_CHECKPOINT*100.) - 1);
 		when(cell.getCriticalVolume()).thenReturn(100.);

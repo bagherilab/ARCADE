@@ -88,8 +88,8 @@ public class PottsTest {
 			when(c.getTargetSurface()).thenReturn(targetSurfaces[i]);
 			
 			// Assign lambda values for cell domain.
-			when(c.getLambda(LAMBDA_VOLUME)).thenReturn(LV);
-			when(c.getLambda(LAMBDA_SURFACE)).thenReturn(LS);
+			when(c.getLambda(TERM_VOLUME)).thenReturn(LV);
+			when(c.getLambda(TERM_SURFACE)).thenReturn(LS);
 			
 			// Assign volumes, surfaces, and lambdas for subcellular domain.
 			for (int j = 0; j < nSubcells; j++) {
@@ -101,8 +101,8 @@ public class PottsTest {
 				when(c.getSurface(tag)).thenReturn(subsurfaces[i][j]);
 				when(c.getTargetSurface(tag)).thenReturn(targetSubsurfaces[j]);
 				
-				when(c.getLambda(LAMBDA_VOLUME, tag)).thenReturn(subLV[j]);
-				when(c.getLambda(LAMBDA_SURFACE, tag)).thenReturn(subLS[j]);
+				when(c.getLambda(TERM_VOLUME, tag)).thenReturn(subLV[j]);
+				when(c.getLambda(TERM_SURFACE, tag)).thenReturn(subLS[j]);
 			}
 			
 			// Assign adhesion values for cells.

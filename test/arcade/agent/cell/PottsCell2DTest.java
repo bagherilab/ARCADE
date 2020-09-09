@@ -8,6 +8,7 @@ import static arcade.agent.cell.PottsCell2D.*;
 
 public class PottsCell2DTest {
 	private static final double EPSILON = 1E-5;
+	double[] criticals;
 	double[] lambdas;
 	double[] adhesion;
 	int cellID = (int)(Math.random()*10) + 1;
@@ -16,10 +17,12 @@ public class PottsCell2DTest {
 	@Before
 	public void setupArrays() {
 		int n = (int)(Math.random()*10) + 2;
+		criticals = new double[n];
 		lambdas = new double[n];
 		adhesion = new double[n];
 		
 		for (int i = 0; i < n; i++) {
+			criticals[i] = Math.random();
 			lambdas[i] = Math.random();
 			adhesion[i] = Math.random();
 		}
@@ -28,7 +31,7 @@ public class PottsCell2DTest {
 	@Test
 	public void defaultConstructor_setsFields() {
 		Location location = mock(Location.class);
-		PottsCell2D cell = new PottsCell2D(cellID, cellPop, location, lambdas, adhesion);
+		PottsCell2D cell = new PottsCell2D(cellID, cellPop, location, criticals, lambdas, adhesion);
 		
 		assertEquals(cellID, cell.id);
 		assertEquals(cellPop, cell.pop);
@@ -42,11 +45,11 @@ public class PottsCell2DTest {
 	}
 	
 	@Test
-	public void makeCell_givenCell_setsFields() {
+	public void make_givenCell_setsFields() {
 		Location location1 = mock(Location.class);
 		Location location2 = mock(Location.class);
-		PottsCell2D cell1 = new PottsCell2D(cellID, cellPop, location1, lambdas, adhesion, 0, null, null);
-		PottsCell cell2 = cell1.makeCell(cellID + 1, STATE_AUTOTIC, location2);
+		PottsCell2D cell1 = new PottsCell2D(cellID, cellPop, location1, criticals, lambdas, adhesion, 0, null, null, null);
+		PottsCell cell2 = cell1.make(cellID + 1, STATE_AUTOTIC, location2);
 		
 		assertEquals(cellID + 1, cell2.id);
 		assertEquals(cellPop, cell2.pop);
@@ -64,7 +67,7 @@ public class PottsCell2DTest {
 	public void convert_givenValue_calculatesValue() {
 		double volume = Math.random()*100;
 		Location location = mock(Location.class);
-		PottsCell2D cell = new PottsCell2D(cellID, cellPop, location, lambdas, adhesion);
+		PottsCell2D cell = new PottsCell2D(cellID, cellPop, location, criticals, lambdas, adhesion);
 		assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume), cell.convert(volume), EPSILON);
 	}
 }

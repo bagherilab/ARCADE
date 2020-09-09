@@ -12,8 +12,8 @@ public class PottsCell2D extends PottsCell {
 	 * Cell agent used for 2D simulations.
 	 */
 	public PottsCell2D(int id, int pop, Location location,
-					   double[] lambdas, double[] adhesion) {
-		super(id, pop, location, lambdas, adhesion);
+					   double[] criticals, double[] lambdas, double[] adhesion) {
+		super(id, pop, location, criticals, lambdas, adhesion);
 	}
 	
 	/**
@@ -22,9 +22,9 @@ public class PottsCell2D extends PottsCell {
 	 * Cell agent used for 2D simulations.
 	 */
 	public PottsCell2D(int id, int pop, Location location,
-					   double[] lambdas, double[] adhesion, int tags,
-					   double[][] lambdasTag, double[][] adhesionsTag) {
-		super(id, pop, location, lambdas, adhesion, tags, lambdasTag, adhesionsTag);
+					   double[] criticals, double[] lambdas, double[] adhesion, int tags,
+					   double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
+		super(id, pop, location, criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionsTag);
 	}
 	
 	/**
@@ -33,14 +33,14 @@ public class PottsCell2D extends PottsCell {
 	 * Cell agent used for 2D simulations.
 	 */
 	public PottsCell2D(int id, int pop, int state, int age, Location location,
-					   double[] lambdas, double[] adhesion, int tags,
-					   double[][] lambdasTag, double[][] adhesionsTag) {
-		super(id, pop, state, age, location, lambdas, adhesion, tags, lambdasTag, adhesionsTag);
+					   double[] criticals, double[] lambdas, double[] adhesion, int tags,
+					   double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
+		super(id, pop, state, age, location, criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionsTag);
 	}
 	
-	public PottsCell makeCell(int id, int state, Location location) {
+	public PottsCell make(int id, int state, Location location) {
 		return new PottsCell2D(id, pop, state, 0, location,
-				lambdas, adhesion, tags, lambdasTag, adhesionTag);
+				criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionTag);
 	}
 	
 	public double convert(double volume) {

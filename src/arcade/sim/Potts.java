@@ -10,11 +10,14 @@ public abstract class Potts implements Steppable {
 	/** Default tag value */
 	public static final int TAG_DEFAULT = -1;
 	
+	/** Number of terms */
+	public static final int NUMBER_TERMS = 2;
+	
 	/** Code for volume lambda */
-	public static final int LAMBDA_VOLUME = 0;
+	public static final int TERM_VOLUME = 0;
 	
 	/** Code for surface lambda */
-	public static final int LAMBDA_SURFACE = 1;
+	public static final int TERM_SURFACE = 1;
 	
 	/** Length (x direction) of potts array */
 	final int LENGTH;
@@ -276,7 +279,7 @@ public abstract class Potts implements Steppable {
 		Cell c = getCell(id);
 		double volume = c.getVolume();
 		double targetVolume = c.getTargetVolume();
-		double lambda = c.getLambda(LAMBDA_VOLUME);
+		double lambda = c.getLambda(TERM_VOLUME);
 		return lambda * Math.pow((volume - targetVolume + change), 2);
 	}
 	
@@ -293,7 +296,7 @@ public abstract class Potts implements Steppable {
 		Cell c = getCell(id);
 		double volume = c.getVolume(tag);
 		double targetVolume = c.getTargetVolume(tag);
-		double lambda = c.getLambda(LAMBDA_VOLUME, tag);
+		double lambda = c.getLambda(TERM_VOLUME, tag);
 		return lambda * Math.pow((volume - targetVolume + change), 2);
 	}
 	
@@ -336,7 +339,7 @@ public abstract class Potts implements Steppable {
 		Cell c = getCell(id);
 		double surface = c.getSurface();
 		double targetSurface = c.getTargetSurface();
-		double lambda = c.getLambda(LAMBDA_SURFACE);
+		double lambda = c.getLambda(TERM_SURFACE);
 		return lambda * Math.pow((surface - targetSurface + change), 2);
 	}
 	
@@ -353,7 +356,7 @@ public abstract class Potts implements Steppable {
 		Cell c = getCell(id);
 		double surface = c.getSurface(tag);
 		double targetSurface = c.getTargetSurface(tag);
-		double lambda = c.getLambda(LAMBDA_SURFACE, tag);
+		double lambda = c.getLambda(TERM_SURFACE, tag);
 		return lambda * Math.pow((surface - targetSurface + change), 2);
 	}
 	
