@@ -62,10 +62,21 @@ public class PottsSimulationTest {
 	}
 	
 	@Test
-	public void getID_initialized_returnsZero() {
+	public void getID_initialized_incrementsValue() {
 		Series series = mock(Series.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
-		assertEquals(0, sim.getID());
+		assertEquals(1, sim.getID());
+		assertEquals(2, sim.getID());
+		assertEquals(3, sim.getID());
+	}
+	
+	@Test
+	public void getID_started_resetsValues() {
+		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesZeroPop);
+		sim.start();
+		assertEquals(1, sim.getID());
+		sim.start();
+		assertEquals(1, sim.getID());
 	}
 	
 	@Test

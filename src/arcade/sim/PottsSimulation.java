@@ -21,6 +21,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	/** {@link arcade.env.grid.Grid} containing agents in the simulation */
 	Grid agents;
 	
+	/** Cell ID tracker */
+	int id;
+	
 	/**
 	 * Simulation instance for a {@link arcade.sim.Series} for given random seed.
 	 * 
@@ -36,7 +39,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	public Series getSeries() { return series; }
 	public Schedule getSchedule() { return schedule; }
 	public int getSeed() { return seed; }
-	public int getID() { return 0; }
+	public int getID() { return ++id; }
 	public Potts getPotts() { return potts; }
 	public Grid getAgents() { return agents; }
 	public Lattice getEnvironment(String key) { return null; }
@@ -47,6 +50,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	 */
 	public void start() {
 		super.start();
+		
+		// Reset id.
+		id = 0;
 		
 		setupPotts();
 		setupAgents();
