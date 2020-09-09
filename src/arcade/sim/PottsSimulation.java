@@ -5,7 +5,7 @@ import sim.engine.*;
 import arcade.agent.cell.*;
 import arcade.env.grid.*;
 import arcade.env.lat.*;
-import arcade.env.loc.*;
+import arcade.util.MiniBox;
 import static arcade.env.loc.Location.*;
 
 public abstract class PottsSimulation extends SimState implements Simulation {
@@ -73,14 +73,67 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		// TODO add methods to resetting simulation
 	}
 	
-	abstract ArrayList<ArrayList<Voxel>> makeAllLocations();
+	/**
+	 * Creates the {@link arcade.sim.Potts} object for the simulation.
+	 * 
+	 * @return  a {@link arcade.sim.Potts} object
+	 */
+	abstract Potts makePotts();
 	
-	abstract Location makeLocation(ArrayList<Voxel> voxels);
+	public void setupPotts() {
+		potts = makePotts();
+		schedule.scheduleRepeating(1, ORDERING_POTTS, potts);
+	}
 	
-	abstract Cell makeCell(int id, int pop, Location location);
+	/**
+	 * Creates a list of all available center voxels for the simulation.
+	 *
+	 * @return  the list of centers
+	 */
+	abstract ArrayList<Voxel> makeCenters();
+	
+	/**
+	 * Create a {@link arcade.agent.cell.Cell} object for the given population.
+	 *
+	 * @param id  the cell id
+	 * @param population  the population settings
+	 * @param center  the center voxel
+	 * @return  a {@link arcade.agent.cell.Cell} object
+	 */
+	abstract Cell makeCell(int id, MiniBox population, Voxel center);
 	
 	public void setupAgents() {
-		/// TODO add agent setup
+		// Initialize grid for agents.
+		agents = new PottsGrid();
+		
+		// Get list of available centers.
+		ArrayList<Voxel> availableCenters = makeCenters();
+		int totalAvailable = availableCenters.size();
+		
+		// Iterate through each population to create the constituent cells.
+		for (String key : series._keys) {
+			MiniBox population = series._populations.get(key);
+			
+			int n = (int)Math.round(totalAvailable*population.getDouble("fraction"));
+			ArrayList<Voxel> assignedCenters = new ArrayList<>();
+			
+			for (int i = 0; i < n; i++) {
+				// Make the cell.
+				Voxel center = availableCenters.get(i);
+				Cell cell = makeCell(++id, population, center);
+				
+				// Add, initialize, and schedule the cell.
+				agents.addObject(id, cell);
+				cell.initialize(potts.IDS, potts.TAGS);
+				cell.schedule(schedule);
+				
+				// Keep track of voxel lists that are assigned.
+				assignedCenters.add(center);
+			}
+			
+			// Remove the assigned voxel lists from the available centers.
+			availableCenters.removeAll(assignedCenters);
+		}
 	}
 	
 	public void setupEnvironment() {
