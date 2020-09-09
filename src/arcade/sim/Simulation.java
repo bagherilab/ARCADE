@@ -1,61 +1,62 @@
 package arcade.sim;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ListIterator;
-import java.util.Map;
 import ec.util.MersenneTwisterFast;
 import arcade.env.lat.Lattice;
-import arcade.env.loc.Location;
-import arcade.util.Parameter;
 import arcade.env.grid.Grid;
-import arcade.util.MiniBox;
-
-/** 
- * A {@code Simulation} object sets up the agents and environments for a simulation.
- * <p>
- * A {@code Simulation} consists of stepping the model for a given random seed.
- * At the start, agents and environments are added the instance and scheduled.
- * Any additional steppables, such as profilers, are also scheduled.
- * <p>
- * A {@code Simulation} should also extend {@code SimState} from the
- * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
- * {@code SimState} manages the actual "stepping" of the model, while the
- * {@code Simulation} interface ensures the model can interact with other
- * interfaces and classes in the package.
- * 
- * @version 2.3.7
- * @since   2.2
- */
+import sim.engine.Schedule;
 
 public interface Simulation {
-	/** ID for glucose */
-	int MOL_GLUCOSE = 0;
-	
-	/** ID for oxygen */
-	int MOL_OXYGEN = 1;
-	
-	/** ID for TGFa molecule */
-	int MOL_TGFA = 2;
-	
-	/** Stepping order for checkpoints */
-	int ORDERING_CHECKPOINT = -20;
-	
-	/** Stepping order for profilers */
-	int ORDERING_PROFILER = -10;
+	/** Stepping order for potts */
+	int ORDERING_POTTS = 0;
 	
 	/** Stepping order for cells */
-	int ORDERING_CELLS = 0;
+	int ORDERING_CELLS = 1;
 	
-	/** Stepping order for helpers */
-	int ORDERING_HELPER = 10;
+	double DT = 30./60; // hours
 	
-	/** Stepping order for components */
-	int ORDERING_COMPONENT = 20;
+	/**
+	 * Gets the {@link arcade.sim.Series} object for the current simulation.
+	 * <p>
+	 * The {@link arcade.sim.Series} object can be further queried for information
+	 * on configuration and parameters.
+	 * 
+	 * @return  the {@link arcade.sim.Series} instance
+	 */
+	Series getSeries();
+	
+	/**
+	 * Gets the current schedule for the simulation.
+	 * 
+	 * @return  the schedule instance
+	 */
+	Schedule getSchedule();
+	
+	/**
+	 * Gets the random number generator seed.
+	 * 
+	 * @return  the random seed
+	 */
+	int getSeed();
+	
+	/**
+	 * Gets the next available ID in the simulation.
+	 *
+	 * @return  the id
+	 */
+	int getID();
+	
+	/**
+	 * Gets the {@link arcade.sim.Potts} object for the current simulation.
+	 * 
+	 * @return  the {@link arcade.sim.Potts} instance
+	 */
+	Potts getPotts();
 	
 	/**
 	 * Gets the {@link arcade.env.grid.Grid} object holding the agents
-	 * 
+	 *
 	 * @return  the {@link arcade.env.grid.Grid} object
 	 */
 	Grid getAgents();
@@ -69,128 +70,67 @@ public interface Simulation {
 	Lattice getEnvironment(String key);
 	
 	/**
-	 * Gets the map of molecule names and parameters.
-	 * 
-	 * @return  the map of molecule name to parameters
+	 * Sets up the potts object.
+	 * <p>
+	 * The concrete implementing class calls this and other {@code setup}
+	 * methods from the MASON library {@code start()} method, which is called
+	 * before the schedule starts stepping the simulation.
 	 */
-	HashMap<String, MiniBox> getMolecules();
+	void setupPotts();
 	
 	/**
-	 * Sets up the environment using lattices for the simulation.
+	 * Sets up the agents in the grid for the simulation.
 	 * <p>
-	 * The concrete implementing class calls this and {@code setupAgents()}
-	 * methods from the library {@code start()} method, which is called before
-	 * the schedule starts stepping the simulation.
-	 */
-	void setupEnvironment();
-	
-	/**
-	 * Sets up the agent in the grid for the simulation.
-	 * <p>
-	 * The concrete implementing class calls this method {@code setupEnvironment()}
-	 * methods from the library {@code start()} method, which is called before
-	 * the schedule starts stepping the simulation.
+	 * The concrete implementing class calls this and other {@code setup}
+	 * methods from the MASON library {@code start()} method, which is called
+	 * before the schedule starts stepping the simulation.
 	 */
 	void setupAgents();
 	
 	/**
-	 * Gets a random number from a seeded random number generator.
+	 * Sets up the environment using lattices for the simulation.
 	 * <p>
-	 * Random number is between 0.0 and 1.0.
-	 * Using this instead of {@code Math.random()} to ensure simulations can
-	 * be replicated for the same seed.
-	 * 
-	 * @return  a random number
+	 * The concrete implementing class calls this and other {@code setup}
+	 * methods from the MASON library {@code start()} method, which is called
+	 * before the schedule starts stepping the simulation.
 	 */
-	double getRandom();
+	void setupEnvironment();
 	
 	/**
-	 * Gets the simulation time (in minutes) from the underlying schedule.
-	 * 
-	 * @return  the simulation time
-	 */
-	double getTime();
-	
-	/**
-	 * Gets the probability of death drawn from a distribution.
-	 *
-	 * @param pop  the population index
-	 * @param age  the age of the cell
-	 * @return  the death probability   
-	 */
-	double getDeathProb(int pop, int age);
-	
-	/**
-	 * Gets a cell volume drawn from a distribution.
-	 * 
-	 * @param pop  the population index
-	 * @return  a cell volume
-	 */
-	double getNextVolume(int pop);
-	
-	/**
-	 * Gets a cell age (in minutes) drawn from a distribution.
-	 * 
-	 * @param pop  the population index
-	 * @return  a cell age   
-	 */
-	int getNextAge(int pop);
-	
-	/**
-	 * Gets the parameter set for a given cell population.
-	 * 
-	 * @param pop  the population index
-	 * @return  a map of parameter name to {@link arcade.util.Parameter} objects
-	 */
-	Map<String, Parameter> getParams(int pop);
-	
-	/**
-	 * Gets the {@link arcade.sim.Series} object for the current simulation.
+	 * Schedules any {@link arcade.sim.profiler.Profiler} instances.
 	 * <p>
-	 * The {@link arcade.sim.Series} object can be further queried for information
-	 * on configuration and parameters.
-	 * 
-	 * @return  the {@link arcade.sim.Series} instance
+	 * The concrete implementing class calls this and all other {@code schedule}
+	 * methods from the MASON library {@code start()} method, which is called
+	 * before the schedule starts stepping the simulation.
 	 */
-	Series getSeries();
+	void scheduleProfilers();
 	
 	/**
-	 * Gets the random number generator seed.
-	 * 
-	 * @return  the random seed
+	 * Schedules any {@link arcade.sim.checkpoint.Checkpoint} instances.
+	 * <p>
+	 * The concrete implementing class calls this and all other {@code schedule}
+	 * methods from the MASON library {@code start()} method, which is called
+	 * before the schedule starts stepping the simulation.
 	 */
-	int getSeed();
+	void scheduleCheckpoints();
 	
 	/**
-	 * Gets a list of all locations in the simulation within the given bounds.
-	 * 
-	 * @param radius  the bound on the radius
-	 * @param height  the bound on the height
-	 * @return  a list of locations   
+	 * Schedules any {@link arcade.agent.helper.Helper} instances.
+	 * <p>
+	 * The concrete implementing class calls this and all other {@code schedule}
+	 * methods from the MASON library {@code start()} method, which is called
+	 * before the schedule starts stepping the simulation.
 	 */
-	ArrayList<Location> getLocations(int radius, int height);
+	void scheduleHelpers();
 	
 	/**
-	 * Gets a list of initialization locations for the given bounds.
-	 * 
-	 * @param radius the bound on the initialization radius
-	 * @return  a list of locations
+	 * Schedules any {@link arcade.env.comp.Component} instances.
+	 * <p>
+	 * The concrete implementing class calls this and all other {@code schedule}
+	 * methods from the MASON library {@code start()} method, which is called
+	 * before the schedule starts stepping the simulation.
 	 */
-	ArrayList<Location> getInitLocations(int radius);
-	
-	/**
-	 * Gets the lattice coordinates that span the environment.
-	 * 
-	 * @return  an array of coordinates
-	 */
-	Location[][][] getSpanLocations();
-	
-	/**
-	 * Gets the center location of the simulation.
-	 * 
-	 * @return  the center locations
-	 */
-	Location getCenterLocation();
+	void scheduleComponents();
 	
 	/**
 	 * Shuffles the given list using a seeded random number generator.

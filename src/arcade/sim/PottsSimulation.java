@@ -2,174 +2,98 @@ package arcade.sim;
 
 import java.util.*;
 import sim.engine.*;
-import arcade.agent.cell.PottsCell;
-import arcade.agent.helper.*;
+import arcade.agent.cell.*;
 import arcade.env.grid.*;
 import arcade.env.lat.*;
 import arcade.env.loc.*;
-import arcade.util.Parameter;
-import arcade.util.MiniBox;
+import static arcade.env.loc.Location.*;
 
-public class PottsSimulation extends SimState implements Simulation {
-	private static final long serialVersionUID = 0;
-	
+public abstract class PottsSimulation extends SimState implements Simulation {
+	/** {@link arcade.sim.Series} object containing this simulation */
 	final Series series;
 	
-	private final int seed;
+	/** Random number generator seed for this simulation */
+	final int seed;
 	
-	public PottsGrid agents;
-	public int nextID;
+	/** {@link arcade.sim.Potts} object for the simulation */
+	Potts potts;
 	
+	/** {@link arcade.env.grid.Grid} containing agents in the simulation */
+	Grid agents;
+	
+	/**
+	 * Simulation instance for a {@link arcade.sim.Series} for given random seed.
+	 * 
+	 * @param seed  the random seed for random number generator
+	 * @param series  the simulation series
+	 */
 	public PottsSimulation(long seed, Series series) {
 		super(seed);
 		this.series = series;
 		this.seed = (int)seed - Series.SEED_OFFSET;
 	}
 	
-	public int[][][] potts;
-
-	public void start() { 
+	public Series getSeries() { return series; }
+	public Schedule getSchedule() { return schedule; }
+	public int getSeed() { return seed; }
+	public int getID() { return 0; }
+	public Potts getPotts() { return potts; }
+	public Grid getAgents() { return agents; }
+	public Lattice getEnvironment(String key) { return null; }
+	
+	/**
+	 * Called at the start of the simulation to set up agents, environment, and
+	 * schedule profilers, checkpoints, components, and helpers as needed.
+	 */
+	public void start() {
 		super.start();
 		
-		agents = new PottsGrid();
+		setupPotts();
+		setupAgents();
+		setupEnvironment();
 		
-		// Schedule all helpers.
-		for (Helper h : series._helpers) {
-			h.scheduleHelper(this);
-			
-			if (h instanceof PottsHelper) {
-				this.potts = ((PottsHelper)h).potts;
-			}
-		}
-		
-		// Clear potts array.
-		for (int k = 0; k < series._height; k++) {
-			for (int i = 0; i < series._length; i++) {
-				for (int j = 0; j < series._width; j++) {
-					potts[k][i][j] = 0;
-				}
-			}
-		}
-		
-		int n = 8;
-		int id = 1;
-		
-		for (int i = 1; i < (series._length - 1)/n; i++) {
-			for (int j = 1; j < (series._width - 1)/n; j++) {
-				ArrayList<PottsLocation.PottsCoordinate> coordinates = new ArrayList<>();
-				
-				double rand = random.nextDouble();
-				if (rand < 0.8) { continue; }
-				
-				for (int ii = 0; ii < n ; ii++) {
-					for (int jj = 0; jj < n  ; jj++) {
-						coordinates.add(new PottsLocation.PottsCoordinate(i*n + ii, j*n + jj, 0));
-					}
-				}
-				
-				int pop = rand < 0.9 ? 0 :  1;
-				PottsLocation loc = new PottsLocation(coordinates);
-				PottsCell c = new PottsCell(potts, id, pop, loc);
-				agents.addObject(id, c);
-				
-				id++;
-//				break;
-			}
-//			break;
-		}
-		
-		for (Object obj : agents.getAllObjects()) {
-			PottsCell c = (PottsCell)obj;
-			c.location.update(potts, c.id);
-//			schedule.scheduleRepeating(0, ORDERING_CELLS, c);
-
-		}
-		
-		nextID = id;
+		scheduleProfilers();
+		scheduleCheckpoints();
+		scheduleHelpers();
+		scheduleComponents();
 	}
 	
-	public void finish() { super.finish(); }
-	
-	@Override
-	public Grid getAgents() {
-		return agents;
-	}
-	
-	@Override
-	public Lattice getEnvironment(String key) {
-		return null;
-	}
-	
-	@Override
-	public HashMap<String, MiniBox> getMolecules() {
-		return null;
-	}
-	
-	@Override
-	public void setupEnvironment() {
+	/**
+	 * Called at the end of the simulation.
+	 */
+	public void finish() {
+		super.finish();
 		
+		// TODO add methods to resetting simulation
 	}
 	
-	@Override
+	abstract ArrayList<ArrayList<Voxel>> makeAllLocations();
+	
+	abstract Location makeLocation(ArrayList<Voxel> voxels);
+	
+	abstract Cell makeCell(int id, int pop, Location location);
+	
 	public void setupAgents() {
-		
+		/// TODO add agent setup
 	}
 	
-	@Override
-	public double getRandom() {
-		return random.nextDouble();
+	public void setupEnvironment() {
+		// TODO add environment setup (currently not needed)
 	}
 	
-	@Override
-	public double getTime() {
-		return 0;
+	public void scheduleProfilers() {
+		// TODO add profiler scheduling
 	}
 	
-	@Override
-	public double getDeathProb(int pop, int age) {
-		return 0;
+	public void scheduleCheckpoints() {
+		// TODO add checkpoint scheduling
 	}
 	
-	@Override
-	public double getNextVolume(int pop) {
-		return 0;
+	public void scheduleHelpers() {
+		// TODO add helper scheduling
 	}
 	
-	@Override
-	public int getNextAge(int pop) {
-		return 0;
-	}
-	
-	@Override
-	public Map<String, Parameter> getParams(int pop) {
-		return null;
-	}
-	
-	@Override
-	public Series getSeries() { return series; }
-	
-	@Override
-	public int getSeed() {
-		return 0;
-	}
-	
-	@Override
-	public ArrayList<Location> getLocations(int radius, int height) {
-		return null;
-	}
-	
-	@Override
-	public ArrayList<Location> getInitLocations(int radius) {
-		return null;
-	}
-	
-	@Override
-	public Location[][][] getSpanLocations() {
-		return new Location[0][][];
-	}
-	
-	@Override
-	public Location getCenterLocation() {
-		return null;
+	public void scheduleComponents() {
+		// TODO add component scheduling
 	}
 }

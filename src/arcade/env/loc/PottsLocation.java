@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
 
-abstract class PottsLocation implements Location {
+public abstract class PottsLocation implements Location {
 	/** Difference between split voxel numbers */
 	final static private int BALANCE_DIFFERENCE = 2;
 	

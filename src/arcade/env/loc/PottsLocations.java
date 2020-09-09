@@ -8,7 +8,7 @@ import arcade.sim.Potts;
 import arcade.sim.Simulation;
 import static arcade.sim.Potts.*;
 
-abstract class PottsLocations extends PottsLocation {
+public abstract class PottsLocations extends PottsLocation {
 	private static final int MAX_ITERATIONS = 100;
 	
 	/** Map of tag to location */

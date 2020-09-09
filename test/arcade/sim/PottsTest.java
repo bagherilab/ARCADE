@@ -197,7 +197,7 @@ public class PottsTest {
 		Grid grid = mock(Grid.class);
 		Series series = mock(Series.class);
 		series._height = 1;
-		potts = new PottsMock(series, grid);
+		PottsMock potts = new PottsMock(series, grid);
 		assertEquals(1, potts.HEIGHT);
 	}
 	
@@ -206,7 +206,7 @@ public class PottsTest {
 		Grid grid = mock(Grid.class);
 		Series series = mock(Series.class);
 		series._height = 4;
-		potts = new PottsMock(series, grid);
+		PottsMock potts = new PottsMock(series, grid);
 		assertEquals(2, potts.HEIGHT);
 	}
 	
