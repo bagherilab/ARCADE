@@ -75,11 +75,9 @@ public interface Location {
 	 * Assigns the voxel at the given coordinates to the given tag.
 	 * 
 	 * @param tag  the voxel tag
-	 * @param x  the x coordinate
-	 * @param y  the y coordinate
-	 * @param z  the z coordinate
+	 * @param voxel  the voxel to assign
 	 */
-	void assign(int tag, int x, int y, int z);
+	void assign(int tag, Voxel voxel);
 	
 	/**
 	 * Clears all voxel lists and arrays.

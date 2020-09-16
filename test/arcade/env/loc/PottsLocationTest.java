@@ -297,7 +297,7 @@ public class PottsLocationTest {
 	@Test
 	public void assign_anyVoxel_doesNothing() {
 		PottsLocationMock loc = new PottsLocationMock(voxelListForAddRemove);
-		loc.assign(cellTag, 0, 0, 0);
+		loc.assign(cellTag, new Voxel(0, 0, 0));
 		assertEquals(voxelListForAddRemove, loc.voxels);
 	}
 	

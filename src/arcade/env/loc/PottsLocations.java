@@ -60,8 +60,7 @@ public abstract class PottsLocations extends PottsLocation {
 		if (locations.containsKey(tag)) { locations.get(tag).remove(x, y, z); }
 	}
 	
-	public void assign(int tag, int x, int y, int z) {
-		Voxel voxel = new Voxel(x, y, z);
+	public void assign(int tag, Voxel voxel) {
 		int oldTag = 0;
 		
 		// Check all tags for the voxel. 
@@ -71,6 +70,11 @@ public abstract class PottsLocations extends PottsLocation {
 		
 		// Only assign if voxel exists and is assigned to a different tag.
 		if (oldTag == 0) { return; }
+		
+		// Create new tag location if it does not exist.
+		if (!locations.containsKey(tag)) {
+			locations.put(tag, makeLocation(new ArrayList<>()));
+		}
 		
 		locations.get(tag).voxels.add(voxel);
 		locations.get(tag).volume++;
@@ -132,7 +136,7 @@ public abstract class PottsLocations extends PottsLocation {
 			// because it is in the new split (B).
 			ArrayList<Voxel> tagVoxels = new ArrayList<>(locations.get(tag).voxels);
 			for (Voxel voxel : tagVoxels) {
-				if (voxelsA.contains(voxel)) { assign(TAG_DEFAULT, voxel.x, voxel.y, voxel.z); }
+				if (voxelsA.contains(voxel)) { assign(TAG_DEFAULT, voxel); }
 				else { remove(voxel.x, voxel.y, voxel.z); }
 			}
 			
@@ -230,6 +234,6 @@ public abstract class PottsLocations extends PottsLocation {
 		}
 		
 		// Reassign selected voxels.
-		for (Voxel voxel : selected) { location.assign(tag, voxel.x, voxel.y, voxel.z); }
+		for (Voxel voxel : selected) { location.assign(tag, voxel); }
 	}
 }

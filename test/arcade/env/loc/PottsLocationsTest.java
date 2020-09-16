@@ -403,7 +403,7 @@ public class PottsLocationsTest {
 		location.add(TAG_DEFAULT, 0, 0, 0);
 		location.add(TAG_ADDITIONAL, 1, 0, 0);
 		
-		location.assign(TAG_DEFAULT, 0, 0, 0);
+		location.assign(TAG_DEFAULT, new Voxel(0, 0, 0));
 		assertEquals(voxelDefault, location.locations.get(TAG_DEFAULT).voxels);
 		assertEquals(voxelAdditional, location.locations.get(TAG_ADDITIONAL).voxels);
 	}
@@ -423,7 +423,7 @@ public class PottsLocationsTest {
 		
 		location.add(TAG_DEFAULT, 0, 0, 0);
 		location.add(TAG_ADDITIONAL, 1, 0, 0);
-		location.assign(TAG_ADDITIONAL, 0, 0, 0);
+		location.assign(TAG_ADDITIONAL, new Voxel(0, 0, 0));
 		
 		assertEquals(new ArrayList<>(), location.locations.get(TAG_DEFAULT).voxels);
 		assertEquals(voxelUpdated, location.locations.get(TAG_ADDITIONAL).voxels);
@@ -434,7 +434,7 @@ public class PottsLocationsTest {
 		PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
 		location.add(TAG_DEFAULT, 0, 0, 0);
 		location.add(TAG_ADDITIONAL, 1, 0, 0);
-		location.assign(TAG_ADDITIONAL, 0, 0, 0);
+		location.assign(TAG_ADDITIONAL, new Voxel(0, 0, 0));
 		
 		assertEquals(0, location.locations.get(TAG_DEFAULT).volume);
 		assertEquals(2, location.locations.get(TAG_ADDITIONAL).volume);
@@ -445,10 +445,44 @@ public class PottsLocationsTest {
 		PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
 		location.add(TAG_DEFAULT, 0, 0, 0);
 		location.add(TAG_ADDITIONAL, 1, 0, 0);
-		location.assign(TAG_ADDITIONAL, 0, 0, 0);
+		location.assign(TAG_ADDITIONAL, new Voxel(0, 0, 0));
 		
 		assertEquals(LOCATION_SURFACE, location.locations.get(TAG_DEFAULT).surface);
 		assertEquals(LOCATION_SURFACE + 2, location.locations.get(TAG_ADDITIONAL).surface);
+	}
+	
+	@Test
+	public void assign_existingVoxelNewTag_updatesTags() {
+		PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
+		ArrayList<Voxel> voxelDefault = new ArrayList<>();
+		
+		voxelDefault.add(new Voxel(0, 0, 0));
+		
+		location.add(TAG_DEFAULT, 0, 0, 0);
+		location.assign(TAG_ADDITIONAL, new Voxel(0, 0, 0));
+		
+		assertEquals(new ArrayList<>(), location.locations.get(TAG_DEFAULT).voxels);
+		assertEquals(voxelDefault, location.locations.get(TAG_ADDITIONAL).voxels);
+	}
+	
+	@Test
+	public void assign_existingVoxelNewTag_updatesVolumes() {
+		PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
+		location.add(TAG_DEFAULT, 0, 0, 0);
+		location.assign(TAG_ADDITIONAL, new Voxel(0, 0, 0));
+		
+		assertEquals(0, location.locations.get(TAG_DEFAULT).volume);
+		assertEquals(1, location.locations.get(TAG_ADDITIONAL).volume);
+	}
+	
+	@Test
+	public void assign_existingVoxelNewTag_updatesSurfaces() {
+		PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
+		location.add(TAG_DEFAULT, 0, 0, 0);
+		location.assign(TAG_ADDITIONAL, new Voxel(0, 0, 0));
+		
+		assertEquals(LOCATION_SURFACE, location.locations.get(TAG_DEFAULT).surface);
+		assertEquals(LOCATION_SURFACE + 1, location.locations.get(TAG_ADDITIONAL).surface);
 	}
 	
 	@Test
@@ -463,7 +497,7 @@ public class PottsLocationsTest {
 		location.add(TAG_DEFAULT, 0, 0, 0);
 		location.add(TAG_ADDITIONAL, 1, 0, 0);
 		
-		location.assign(TAG_DEFAULT, 2, 0, 0);
+		location.assign(TAG_DEFAULT, new Voxel(2, 0, 0));
 		assertEquals(voxelDefault, location.locations.get(TAG_DEFAULT).voxels);
 		assertEquals(voxelAdditional, location.locations.get(TAG_ADDITIONAL).voxels);
 	}

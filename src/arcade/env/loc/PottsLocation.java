@@ -60,7 +60,7 @@ public abstract class PottsLocation implements Location {
 	
 	public void remove(int tag, int x, int y, int z) { remove(x, y, z); }
 	
-	public void assign(int tag, int x, int y, int z) { }
+	public void assign(int tag, Voxel voxel) { }
 	
 	public void clear(int[][][] ids, int[][][] tags) {
 		for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = 0; }
