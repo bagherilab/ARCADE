@@ -6,7 +6,6 @@ import arcade.agent.cell.*;
 import arcade.env.grid.*;
 import arcade.env.lat.*;
 import arcade.util.MiniBox;
-import static arcade.env.loc.Location.*;
 
 public abstract class PottsSimulation extends SimState implements Simulation {
 	/** {@link arcade.sim.Series} object containing this simulation */
@@ -86,11 +85,11 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	}
 	
 	/**
-	 * Creates a list of all available center voxels for the simulation.
+	 * Creates a list of all available center coordinates for the simulation.
 	 *
 	 * @return  the list of centers
 	 */
-	abstract ArrayList<Voxel> makeCenters();
+	abstract ArrayList<int[]> makeCenters();
 	
 	/**
 	 * Create a {@link arcade.agent.cell.Cell} object for the given population.
@@ -100,14 +99,14 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	 * @param center  the center voxel
 	 * @return  a {@link arcade.agent.cell.Cell} object
 	 */
-	abstract Cell makeCell(int id, MiniBox population, Voxel center);
+	abstract Cell makeCell(int id, MiniBox population, int[] center);
 	
 	public void setupAgents() {
 		// Initialize grid for agents.
 		agents = new PottsGrid();
 		
 		// Get list of available centers.
-		ArrayList<Voxel> availableCenters = makeCenters();
+		ArrayList<int[]> availableCenters = makeCenters();
 		int totalAvailable = availableCenters.size();
 		
 		// Iterate through each population to create the constituent cells.
@@ -115,11 +114,11 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 			MiniBox population = series._populations.get(key);
 			
 			int n = (int)Math.round(totalAvailable*population.getDouble("fraction"));
-			ArrayList<Voxel> assignedCenters = new ArrayList<>();
+			ArrayList<int[]> assignedCenters = new ArrayList<>();
 			
 			for (int i = 0; i < n; i++) {
 				// Make the cell.
-				Voxel center = availableCenters.get(i);
+				int[] center = availableCenters.get(i);
 				Cell cell = makeCell(++id, population, center);
 				
 				// Add, initialize, and schedule the cell.

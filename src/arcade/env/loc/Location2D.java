@@ -5,7 +5,7 @@ import java.util.HashMap;
 import static arcade.sim.Potts2D.*;
 import static arcade.env.loc.Location.*;
 
-interface Location2D {
+public interface Location2D {
 	Direction[] DIRECTIONS = new Direction[] {
 			Direction.YZ_PLANE,
 			Direction.ZX_PLANE,

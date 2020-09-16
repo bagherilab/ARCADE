@@ -18,6 +18,8 @@ public class PottsSimulationTest {
 	private static final int TOTAL_LOCATIONS = 6;
 	Series seriesZeroPop, seriesOnePop, seriesMultiPop;
 	
+	static double random() { return Math.random()*100; }
+	
 	static Series createSeries(int[] pops, String[] keys) {
 		Series series = mock(Series.class);
 		HashMap<String, MiniBox> populations = new HashMap<>();
@@ -55,25 +57,25 @@ public class PottsSimulationTest {
 		
 		public Potts makePotts() { return mock(Potts.class); }
 		
-		ArrayList<Voxel> makeCenters() {
-			ArrayList<Voxel> centers = new ArrayList<>();
-			centers.add(new Voxel(0, 0, 0));
-			centers.add(new Voxel(1, 0, 0));
-			centers.add(new Voxel(2, 0, 0));
-			centers.add(new Voxel(3, 0, 0));
-			centers.add(new Voxel(4, 0, 0));
-			centers.add(new Voxel(5, 0, 0));
+		ArrayList<int[]> makeCenters() {
+			ArrayList<int[]> centers = new ArrayList<>();
+			centers.add(new int[] { 0, 0, 0 });
+			centers.add(new int[] { 1, 0, 0 });
+			centers.add(new int[] { 2, 0, 0 });
+			centers.add(new int[] { 3, 0, 0 });
+			centers.add(new int[] { 4, 0, 0 });
+			centers.add(new int[] { 5, 0, 0 });
 			return centers;
 		}
 		
-		Cell makeCell(int id, MiniBox population, Voxel center) {
+		Cell makeCell(int id, MiniBox population, int[] center) {
 			Cell cell = spy(mock(PottsCell.class));
 			
 			when(cell.getID()).thenReturn(id);
 			when(cell.getPop()).thenReturn(population.getInt("pop"));
 			
 			Location location = mock(Location.class);
-			when(location.getCenter()).thenReturn(center);
+			when(location.getCenter()).thenReturn(new Voxel(center[0], center[1], center[2]));
 			when(cell.getLocation()).thenReturn(location);
 			
 			return cell;
