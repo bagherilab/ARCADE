@@ -29,11 +29,33 @@ public class PottsSimulationTest {
 		for (int i = 0; i < pops.length; i++) {
 			MiniBox population = new MiniBox();
 			population.put("pop", pops[i]);
-			population.put("adhesion:*", 0);
+			population.put("ADHESION:*", 0);
 			populations.put(keys[i], population);
 			
 			for (String key : keys) {
-				population.put("adhesion:" + key, 0);
+				population.put("ADHESION:" + key, 0);
+			}
+		}
+		
+		series._populations = populations;
+		series._keys = keys;
+		
+		return series;
+	}
+	
+	static Series createSeries(int[] pops, String[] keys, double[] volumes) {
+		Series series = mock(Series.class);
+		HashMap<String, MiniBox> populations = new HashMap<>();
+		
+		for (int i = 0; i < pops.length; i++) {
+			MiniBox population = new MiniBox();
+			population.put("pop", pops[i]);
+			population.put("ADHESION:*", 0);
+			population.put("CRITICAL_VOLUME", volumes[i]);
+			populations.put(keys[i], population);
+			
+			for (String key : keys) {
+				population.put("ADHESION:" + key, 0);
 			}
 		}
 		
@@ -50,13 +72,13 @@ public class PottsSimulationTest {
 		
 		// One population.
 		seriesOnePop = createSeries(new int[] { 1 }, new String[] { "A" });
-		seriesOnePop._populations.get("A").put("fraction", 5./TOTAL_LOCATIONS);
+		seriesOnePop._populations.get("A").put("FRACTION", 5./TOTAL_LOCATIONS);
 		
 		// Multiple populations.
 		seriesMultiPop = createSeries(new int[] { 2, 3, 4 }, new String[] { "B", "C", "D" });
-		seriesMultiPop._populations.get("B").put("fraction", 3./TOTAL_LOCATIONS);
-		seriesMultiPop._populations.get("C").put("fraction", 1./TOTAL_LOCATIONS);
-		seriesMultiPop._populations.get("D").put("fraction", 2./TOTAL_LOCATIONS);
+		seriesMultiPop._populations.get("B").put("FRACTION", 3./TOTAL_LOCATIONS);
+		seriesMultiPop._populations.get("C").put("FRACTION", 1./TOTAL_LOCATIONS);
+		seriesMultiPop._populations.get("D").put("FRACTION", 2./TOTAL_LOCATIONS);
 	}
 	
 	static class PottsSimulationMock extends PottsSimulation {
@@ -317,13 +339,12 @@ public class PottsSimulationTest {
 		
 		MiniBox population = new MiniBox();
 		population.put("pop", cellPop);
-		population.put("adhesion:*", adhesion[0]);
-		population.put("adhesion:A", adhesion[1]);
-		
-		when(series.getParam(cellPop, "LAMBDA_VOLUME")).thenReturn(lambdas[0]);
-		when(series.getParam(cellPop, "LAMBDA_SURFACE")).thenReturn(lambdas[1]);
-		when(series.getParam(cellPop, "CRITICAL_VOLUME")).thenReturn(criticals[0]);
-		when(series.getParam(cellPop, "CRITICAL_SURFACE")).thenReturn(criticals[1]);
+		population.put("ADHESION:*", adhesion[0]);
+		population.put("ADHESION:A", adhesion[1]);
+		population.put("LAMBDA_VOLUME", lambdas[0]);
+		population.put("LAMBDA_SURFACE", lambdas[1]);
+		population.put("CRITICAL_VOLUME", criticals[0]);
+		population.put("CRITICAL_SURFACE", criticals[1]);
 		
 		series._keys = new String[] { "A" };
 		Cell cell = sim.makeCell(cellID, population, new int[] { 0, 0, 0 });
@@ -352,15 +373,14 @@ public class PottsSimulationTest {
 		
 		MiniBox population = new MiniBox();
 		population.put("pop", cellPop);
-		population.put("adhesion:*", adhesion[0]);
-		population.put("adhesion:B", adhesion[1]);
-		population.put("adhesion:C", adhesion[2]);
-		population.put("adhesion:D", adhesion[3]);
-		
-		when(series.getParam(cellPop, "LAMBDA_VOLUME")).thenReturn(lambdas[0]);
-		when(series.getParam(cellPop, "LAMBDA_SURFACE")).thenReturn(lambdas[1]);
-		when(series.getParam(cellPop, "CRITICAL_VOLUME")).thenReturn(criticals[0]);
-		when(series.getParam(cellPop, "CRITICAL_SURFACE")).thenReturn(criticals[1]);
+		population.put("ADHESION:*", adhesion[0]);
+		population.put("ADHESION:B", adhesion[1]);
+		population.put("ADHESION:C", adhesion[2]);
+		population.put("ADHESION:D", adhesion[3]);
+		population.put("LAMBDA_VOLUME", lambdas[0]);
+		population.put("LAMBDA_SURFACE", lambdas[1]);
+		population.put("CRITICAL_VOLUME", criticals[0]);
+		population.put("CRITICAL_SURFACE", criticals[1]);
 		
 		series._keys = new String[] { "B", "C", "D" };
 		Cell cell = sim.makeCell(cellID, population, new int[] { 0, 0, 0 });
@@ -405,28 +425,27 @@ public class PottsSimulationTest {
 		
 		MiniBox population = new MiniBox();
 		population.put("pop", cellPop);
-		population.put("adhesion:*", adhesion[0]);
-		population.put("adhesion:A", adhesion[1]);
+		population.put("ADHESION:*", adhesion[0]);
+		population.put("ADHESION:A", adhesion[1]);
 		population.put("a_TAG", 0);
 		population.put("b_TAG", 0);
 		population.put("c_TAG", 0);
-		
-		when(series.getParam(cellPop, "LAMBDA_VOLUME")).thenReturn(lambdas[0]);
-		when(series.getParam(cellPop, "LAMBDA_SURFACE")).thenReturn(lambdas[1]);
-		when(series.getParam(cellPop, "CRITICAL_VOLUME")).thenReturn(criticals[0]);
-		when(series.getParam(cellPop, "CRITICAL_SURFACE")).thenReturn(criticals[1]);
+		population.put("LAMBDA_VOLUME", lambdas[0]);
+		population.put("LAMBDA_SURFACE", lambdas[1]);
+		population.put("CRITICAL_VOLUME", criticals[0]);
+		population.put("CRITICAL_SURFACE", criticals[1]);
 		
 		int tags = 3;
 		String[] _tags = new String[] { "a", "b", "c" };
 		for (int i = 0; i < tags; i++) {
 			String tag = _tags[i];
-			when(series.getParam(cellPop, "LAMBDA_VOLUME_" + tag)).thenReturn(lambdasTag[0][i]);
-			when(series.getParam(cellPop, "LAMBDA_SURFACE_" + tag)).thenReturn(lambdasTag[1][i]);
-			when(series.getParam(cellPop, "CRITICAL_VOLUME_" + tag)).thenReturn(criticalsTag[0][i]);
-			when(series.getParam(cellPop, "CRITICAL_SURFACE_" + tag)).thenReturn(criticalsTag[1][i]);
+			population.put("LAMBDA_VOLUME_" + tag, lambdasTag[0][i]);
+			population.put("LAMBDA_SURFACE_" + tag, lambdasTag[1][i]);
+			population.put("CRITICAL_VOLUME_" + tag, criticalsTag[0][i]);
+			population.put("CRITICAL_SURFACE_" + tag, criticalsTag[1][i]);
 			
 			for (int j = 0; j < tags; j++) {
-				population.put("adhesion:" + tag + "-" + _tags[j], adhesionTag[i][j]);
+				population.put("ADHESION:" + tag + "-" + _tags[j], adhesionTag[i][j]);
 			}
 		}
 		
@@ -482,30 +501,29 @@ public class PottsSimulationTest {
 		
 		MiniBox population = new MiniBox();
 		population.put("pop", cellPop);
-		population.put("adhesion:*", adhesion[0]);
-		population.put("adhesion:B", adhesion[1]);
-		population.put("adhesion:C", adhesion[2]);
-		population.put("adhesion:D", adhesion[3]);
+		population.put("ADHESION:*", adhesion[0]);
+		population.put("ADHESION:B", adhesion[1]);
+		population.put("ADHESION:C", adhesion[2]);
+		population.put("ADHESION:D", adhesion[3]);
 		population.put("a_TAG", 0);
 		population.put("b_TAG", 0);
 		population.put("c_TAG", 0);
-		
-		when(series.getParam(cellPop, "LAMBDA_VOLUME")).thenReturn(lambdas[0]);
-		when(series.getParam(cellPop, "LAMBDA_SURFACE")).thenReturn(lambdas[1]);
-		when(series.getParam(cellPop, "CRITICAL_VOLUME")).thenReturn(criticals[0]);
-		when(series.getParam(cellPop, "CRITICAL_SURFACE")).thenReturn(criticals[1]);
+		population.put("LAMBDA_VOLUME", lambdas[0]);
+		population.put("LAMBDA_SURFACE", lambdas[1]);
+		population.put("CRITICAL_VOLUME", criticals[0]);
+		population.put("CRITICAL_SURFACE", criticals[1]);
 		
 		int tags = 3;
 		String[] _tags = new String[] { "a", "b", "c" };
 		for (int i = 0; i < tags; i++) {
 			String tag = _tags[i];
-			when(series.getParam(cellPop, "LAMBDA_VOLUME_" + tag)).thenReturn(lambdasTag[0][i]);
-			when(series.getParam(cellPop, "LAMBDA_SURFACE_" + tag)).thenReturn(lambdasTag[1][i]);
-			when(series.getParam(cellPop, "CRITICAL_VOLUME_" + tag)).thenReturn(criticalsTag[0][i]);
-			when(series.getParam(cellPop, "CRITICAL_SURFACE_" + tag)).thenReturn(criticalsTag[1][i]);
+			population.put("LAMBDA_VOLUME_" + tag, lambdasTag[0][i]);
+			population.put("LAMBDA_SURFACE_" + tag, lambdasTag[1][i]);
+			population.put("CRITICAL_VOLUME_" + tag, criticalsTag[0][i]);
+			population.put("CRITICAL_SURFACE_" + tag, criticalsTag[1][i]);
 			
 			for (int j = 0; j < tags; j++) {
-				population.put("adhesion:" + tag + "-" + _tags[j], adhesionTag[i][j]);
+				population.put("ADHESION:" + tag + "-" + _tags[j], adhesionTag[i][j]);
 			}
 		}
 		

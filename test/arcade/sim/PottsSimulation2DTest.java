@@ -164,10 +164,10 @@ public class PottsSimulation2DTest {
 	
 	@Test
 	public void makeCenters_onePopulationOneSideExactEqualSize_createsCenters() {
-		Series series = createSeries(new int[] { 1 }, new String[] { "A" });
+		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
+				new double[] { 1.*Simulation.DS });
 		series._length = 8;
 		series._width = 8;
-		when(series.getParam(1, "CRITICAL_VOLUME")).thenReturn(1.*Simulation.DS);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -189,10 +189,10 @@ public class PottsSimulation2DTest {
 	
 	@Test
 	public void makeCenters_onePopulationOneSideExactUnequalSize_createsCenters() {
-		Series series = createSeries(new int[] { 1 }, new String[] { "A" });
+		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
+				new double[] { 1.*Simulation.DS });
 		series._length = 11;
 		series._width = 8;
-		when(series.getParam(1, "CRITICAL_VOLUME")).thenReturn(1.*Simulation.DS);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -216,10 +216,10 @@ public class PottsSimulation2DTest {
 	
 	@Test
 	public void makeCenters_onePopulationOneSideInexactEqualSize_createsCenters() {
-		Series series = createSeries(new int[] { 1 }, new String[] { "A" });
+		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
+				new double[] { 1.*Simulation.DS });
 		series._length = 7;
 		series._width = 7;
-		when(series.getParam(1, "CRITICAL_VOLUME")).thenReturn(1.*Simulation.DS);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -238,10 +238,10 @@ public class PottsSimulation2DTest {
 	
 	@Test
 	public void makeCenters_onePopulationOneSideInexactUnequalSize_createsCenters() {
-		Series series = createSeries(new int[] { 1 }, new String[] { "A" });
+		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
+				new double[] { 1.*Simulation.DS });
 		series._length = 10;
 		series._width = 7;
-		when(series.getParam(1, "CRITICAL_VOLUME")).thenReturn(1.*Simulation.DS);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -261,10 +261,10 @@ public class PottsSimulation2DTest {
 	
 	@Test
 	public void makeCenters_onePopulationThreeSideExactEqualSize_createsCenters() {
-		Series series = createSeries(new int[] { 1 }, new String[] { "A" });
+		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
+				new double[] { 9.*Simulation.DS });
 		series._length = 12;
 		series._width = 12;
-		when(series.getParam(1, "CRITICAL_VOLUME")).thenReturn(9.*Simulation.DS);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -286,10 +286,10 @@ public class PottsSimulation2DTest {
 	
 	@Test
 	public void makeCenters_onePopulationThreeSideExactUnequalSize_createsCenters() {
-		Series series = createSeries(new int[] { 1 }, new String[] { "A" });
+		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
+				new double[] { 9.*Simulation.DS });
 		series._length = 17;
 		series._width = 12;
-		when(series.getParam(1, "CRITICAL_VOLUME")).thenReturn(9.*Simulation.DS);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -313,10 +313,10 @@ public class PottsSimulation2DTest {
 	
 	@Test
 	public void makeCenters_onePopulationThreeSideInexactEqualSize_createsCenters() {
-		Series series = createSeries(new int[] { 1 }, new String[] { "A" });
+		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
+				new double[] { 9.*Simulation.DS });
 		series._length = 11;
 		series._width = 11;
-		when(series.getParam(1, "CRITICAL_VOLUME")).thenReturn(9.*Simulation.DS);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -335,10 +335,10 @@ public class PottsSimulation2DTest {
 	
 	@Test
 	public void makeCenters_onePopulationThreeSideInexactUnequalSize_createsCenters() {
-		Series series = createSeries(new int[] { 1 }, new String[] { "A" });
+		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
+				new double[] { 9.*Simulation.DS });
 		series._length = 16;
 		series._width = 11;
-		when(series.getParam(1, "CRITICAL_VOLUME")).thenReturn(9.*Simulation.DS);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -358,12 +358,10 @@ public class PottsSimulation2DTest {
 	
 	@Test
 	public void makeCenters_multiplePopulations_createsCenters() {
-		Series series = createSeries(new int[] { 2, 3, 4 }, new String[] { "B", "C", "D" });
+		Series series = createSeries(new int[] { 2, 3, 4 }, new String[] { "B", "C", "D" },
+				new double[] { 1.*Simulation.DS, 25.*Simulation.DS, 9.*Simulation.DS });
 		series._length = 16;
 		series._width = 16;
-		when(series.getParam(2, "CRITICAL_VOLUME")).thenReturn(1.*Simulation.DS);
-		when(series.getParam(3, "CRITICAL_VOLUME")).thenReturn(25.*Simulation.DS);
-		when(series.getParam(4, "CRITICAL_VOLUME")).thenReturn(9.*Simulation.DS);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -393,7 +391,7 @@ public class PottsSimulation2DTest {
 		
 		int N = 100;
 		for (int i = 1; i < N; i++) {
-			when(series.getParam(0, "CRITICAL_VOLUME")).thenReturn(i*Simulation.DS);
+			population.put("CRITICAL_VOLUME", i*Simulation.DS);
 			Location location = sim.makeLocation(population, new int[] { 0, 0 });
 			
 			assertEquals(i, location.getVolume());
@@ -414,7 +412,7 @@ public class PottsSimulation2DTest {
 			population.put("CYTOPLASM_TAG", i/(double)N);
 			population.put("NUCLEUS_TAG", (N - i)/(double)N);
 			population.put("OTHER_TAG", 0);
-			when(series.getParam(0, "CRITICAL_VOLUME")).thenReturn(N*Simulation.DS);
+			population.put("CRITICAL_VOLUME", N*Simulation.DS);
 			Location location = sim.makeLocation(population, new int[] { 0, 0 });
 			
 			assertEquals(N, location.getVolume());
@@ -477,15 +475,6 @@ public class PottsSimulation2DTest {
 		};
 		
 		int tags = 3;
-		String[] _tags = new String[] { "a", "b", "c" };
-		for (int i = 0; i < tags; i++) {
-			String tag = _tags[i];
-			when(series.getParam(cellPop, "LAMBDA_VOLUME_" + tag)).thenReturn(lambdasTag[0][i]);
-			when(series.getParam(cellPop, "LAMBDA_SURFACE_" + tag)).thenReturn(lambdasTag[1][i]);
-			when(series.getParam(cellPop, "CRITICAL_VOLUME_" + tag)).thenReturn(criticalsTag[0][i]);
-			when(series.getParam(cellPop, "CRITICAL_SURFACE_" + tag)).thenReturn(criticalsTag[1][i]);
-		}
-		
 		Cell cell = sim.makeCell(cellID, cellPop, location, criticals, lambdas, adhesion,
 				tags, criticalsTag, lambdasTag, adhesionTag);
 		

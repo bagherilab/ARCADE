@@ -88,11 +88,8 @@ public class PottsSimulation2D extends PottsSimulation {
 		
 		for (String key : series._keys) {
 			MiniBox population = series._populations.get(key);
-			int pop = population.getInt("pop");
-			
-			double criticalVolume = series.getParam(pop, "CRITICAL_VOLUME");
+			double criticalVolume = population.getDouble("CRITICAL_VOLUME");
 			int voxelsPerSide = convert(criticalVolume) + 2;
-			
 			if (voxelsPerSide > n) { n = voxelsPerSide; }
 		}
 		
@@ -111,12 +108,11 @@ public class PottsSimulation2D extends PottsSimulation {
 		// All voxel options.
 		ArrayList<Voxel> allVoxels = new ArrayList<>();
 		
-		// Get population code and any tags.
-		int pop = population.getInt("pop");
+		// Get tags, if they exist.
 		MiniBox tags = population.filter("TAG");
 		
 		// Parse sizing.
-		double criticalVolume = series.getParam(pop, "CRITICAL_VOLUME");
+		double criticalVolume = population.getDouble("CRITICAL_VOLUME");
 		int target = (int)Math.round(criticalVolume/DS);
 		
 		// Select all possible voxels.

@@ -148,21 +148,21 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		
 		// Get critical values.
 		double[] criticals = new double[] {
-				series.getParam(pop, "CRITICAL_VOLUME"),
-				series.getParam(pop, "CRITICAL_SURFACE")
+				population.getDouble("CRITICAL_VOLUME"),
+				population.getDouble("CRITICAL_SURFACE")
 		};
 		
 		// Get lambda values.
 		double[] lambdas = new double[] {
-				series.getParam(pop, "LAMBDA_VOLUME"),
-				series.getParam(pop, "LAMBDA_SURFACE")
+				population.getDouble("LAMBDA_VOLUME"),
+				population.getDouble("LAMBDA_SURFACE")
 		};
 		
 		// Get adhesion values.
 		double[] adhesion = new double[series._keys.length + 1];
-		adhesion[0] = population.getDouble("adhesion:*");
+		adhesion[0] = population.getDouble("ADHESION:*");
 		for (int i = 0; i < series._keys.length; i++) {
-			adhesion[i + 1] = population.getDouble("adhesion:" + series._keys[i]);
+			adhesion[i + 1] = population.getDouble("ADHESION:" + series._keys[i]);
 		}
 		
 		// Create location.
@@ -181,16 +181,16 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 				String key = tag.getKeys().get(i);
 				
 				// Load ta critical values.
-				criticalsTag[TERM_VOLUME][i] = series.getParam(pop, "CRITICAL_VOLUME_" + key);
-				criticalsTag[TERM_SURFACE][i] = series.getParam(pop, "CRITICAL_SURFACE_" + key);
+				criticalsTag[TERM_VOLUME][i] = population.getDouble("CRITICAL_VOLUME_" + key);
+				criticalsTag[TERM_SURFACE][i] = population.getDouble("CRITICAL_SURFACE_" + key);
 				
 				// Load tag lambda values.
-				lambdasTag[TERM_VOLUME][i] = series.getParam(pop, "LAMBDA_VOLUME_" + key);
-				lambdasTag[TERM_SURFACE][i] = series.getParam(pop, "LAMBDA_SURFACE_" + key);
+				lambdasTag[TERM_VOLUME][i] = population.getDouble("LAMBDA_VOLUME_" + key);
+				lambdasTag[TERM_SURFACE][i] = population.getDouble("LAMBDA_SURFACE_" + key);
 				
 				// Load tag adhesion values.
 				for (int j = 0; j < tags; j++) {
-					adhesionsTag[i][j] = population.getDouble("adhesion:" + key + "-" + tag.getKeys().get(j));
+					adhesionsTag[i][j] = population.getDouble("ADHESION:" + key + "-" + tag.getKeys().get(j));
 				}
 			}
 			
@@ -213,7 +213,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		for (String key : series._keys) {
 			MiniBox population = series._populations.get(key);
 			
-			int n = (int)Math.round(totalAvailable*population.getDouble("fraction"));
+			int n = (int)Math.round(totalAvailable*population.getDouble("FRACTION"));
 			ArrayList<int[]> assignedCenters = new ArrayList<>();
 			
 			for (int i = 0; i < n; i++) {
