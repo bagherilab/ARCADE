@@ -19,8 +19,8 @@ public class PottsSimulation2DTest {
 	private static final double EPSILON = 1E-4;
 	
 	private static final Comparator<int[]> COMPARATOR = (v1, v2) ->
-		v1[0] != v2[0] ? Integer.compare(v1[0], v2[0]) :
-			Integer.compare(v1[1], v2[1]);
+			v1[0] != v2[0] ? Integer.compare(v1[0], v2[0]) :
+					Integer.compare(v1[1], v2[1]);
 	
 	@Test
 	public void makePotts_mockSeries_initializesPotts() {
@@ -32,34 +32,34 @@ public class PottsSimulation2DTest {
 	
 	@Test
 	public void convert_exactOddSquares_calculateValue() {
-		assertEquals(1, PottsSimulation2D.convert(1*Simulation.DS));
-		assertEquals(3, PottsSimulation2D.convert(9*Simulation.DS));
-		assertEquals(5, PottsSimulation2D.convert(25*Simulation.DS));
-		assertEquals(7, PottsSimulation2D.convert(49*Simulation.DS));
+		assertEquals(1, PottsSimulation2D.convert(1*1*Simulation.DS));
+		assertEquals(3, PottsSimulation2D.convert(3*3*Simulation.DS));
+		assertEquals(5, PottsSimulation2D.convert(5*5*Simulation.DS));
+		assertEquals(7, PottsSimulation2D.convert(7*7*Simulation.DS));
 	}
 	
 	@Test
 	public void convert_exactEvenSquares_calculateValue() {
-		assertEquals(3, PottsSimulation2D.convert(4*Simulation.DS));
-		assertEquals(5, PottsSimulation2D.convert(16*Simulation.DS));
-		assertEquals(7, PottsSimulation2D.convert(36*Simulation.DS));
-		assertEquals(9, PottsSimulation2D.convert(64*Simulation.DS));
+		assertEquals(3, PottsSimulation2D.convert(2*2*Simulation.DS));
+		assertEquals(5, PottsSimulation2D.convert(4*4*Simulation.DS));
+		assertEquals(7, PottsSimulation2D.convert(6*6*Simulation.DS));
+		assertEquals(9, PottsSimulation2D.convert(8*8*Simulation.DS));
 	}
 	
 	@Test
 	public void convert_inexactOddSquares_calculateValue() {
-		assertEquals(1, PottsSimulation2D.convert(2*Simulation.DS));
-		assertEquals(3, PottsSimulation2D.convert(10*Simulation.DS));
-		assertEquals(5, PottsSimulation2D.convert(26*Simulation.DS));
-		assertEquals(7, PottsSimulation2D.convert(50*Simulation.DS));
+		assertEquals(3, PottsSimulation2D.convert((1*1 + 1)*Simulation.DS));
+		assertEquals(5, PottsSimulation2D.convert((3*3 + 1)*Simulation.DS));
+		assertEquals(7, PottsSimulation2D.convert((5*5 + 1)*Simulation.DS));
+		assertEquals(9, PottsSimulation2D.convert((7*7 + 1)*Simulation.DS));
 	}
 	
 	@Test
 	public void convert_inexactEvenSquares_calculateValue() {
-		assertEquals(1, PottsSimulation2D.convert(3*Simulation.DS));
-		assertEquals(3, PottsSimulation2D.convert(15*Simulation.DS));
-		assertEquals(5, PottsSimulation2D.convert(25*Simulation.DS));
-		assertEquals(7, PottsSimulation2D.convert(63*Simulation.DS));
+		assertEquals(3, PottsSimulation2D.convert((2*2 - 1)*Simulation.DS));
+		assertEquals(5, PottsSimulation2D.convert((4*4 - 1)*Simulation.DS));
+		assertEquals(7, PottsSimulation2D.convert((6*6 - 1)*Simulation.DS));
+		assertEquals(9, PottsSimulation2D.convert((8*8 - 1)*Simulation.DS));
 	}
 	
 	@Test

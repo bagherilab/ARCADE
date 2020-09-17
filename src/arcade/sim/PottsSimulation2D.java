@@ -19,7 +19,7 @@ public class PottsSimulation2D extends PottsSimulation {
 	 * @return  the voxels per side
 	 */
 	static int convert(double volume) {
-		int sqrt = (int)(Math.sqrt(volume/DS));
+		int sqrt = (int)Math.ceil(Math.sqrt(volume/DS));
 		return sqrt + (sqrt%2 == 0 ? 1 : 0);
 	}
 	
@@ -123,7 +123,10 @@ public class PottsSimulation2D extends PottsSimulation {
 		int n = convert(criticalVolume) + 2;
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++) {
-				allVoxels.add(new Voxel(center[0] + i - (n - 1)/2, center[1] + j - (n - 1)/2, 0));
+				allVoxels.add(new Voxel(
+						center[0] + i - (n - 1)/2,
+						center[1] + j - (n - 1)/2,
+						0));
 			}
 		}
 		
