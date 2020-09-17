@@ -4,12 +4,13 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.HashSet;
+import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
-import static arcade.sim.Potts2D.*;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
 import arcade.env.loc.Location;
-import sim.engine.SimState;
+import arcade.util.MiniBox;
+import static arcade.sim.Potts.*;
 
 public class PottsTest {
 	private static final double EPSILON = 1E-4;
@@ -128,7 +129,8 @@ public class PottsTest {
 		cells[0] = null;
 		
 		Series series = mock(Series.class);
-		when(series.getParam("TEMPERATURE")).thenReturn(TEMPERATURE);
+		series._potts = mock(MiniBox.class);
+		when(series._potts.getDouble("TEMPERATURE")).thenReturn(TEMPERATURE);
 		potts = new PottsMock(series, grid);
 		
 		potts.IDS = new int[][][] {
@@ -192,10 +194,16 @@ public class PottsTest {
 		}
 	}
 	
+	static Series makeSeries() {
+		Series series = mock(Series.class);
+		series._potts = mock(MiniBox.class);
+		return series;
+	}
+	
 	@Test
 	public void Potts_2D_assignsValues() {
 		Grid grid = mock(Grid.class);
-		Series series = mock(Series.class);
+		Series series = makeSeries();
 		series._height = 1;
 		PottsMock potts = new PottsMock(series, grid);
 		assertEquals(1, potts.HEIGHT);
@@ -204,7 +212,7 @@ public class PottsTest {
 	@Test
 	public void Potts_3D_assignsValues() {
 		Grid grid = mock(Grid.class);
-		Series series = mock(Series.class);
+		Series series = makeSeries();
 		series._height = 4;
 		PottsMock potts = new PottsMock(series, grid);
 		assertEquals(2, potts.HEIGHT);
@@ -219,7 +227,7 @@ public class PottsTest {
 		int length = (int)(Math.random()*10) + 3;
 		int width = (int)(Math.random()*10) + 3;
 		
-		Series series = mock(Series.class);
+		Series series = makeSeries();
 		series._length = length;
 		series._width = width;
 		series._height = 1;
@@ -248,7 +256,7 @@ public class PottsTest {
 		int width = (int)(Math.random()*10) + 3;
 		int height = (int)(Math.random()*10) + 4;
 		
-		Series series = mock(Series.class);
+		Series series = makeSeries();
 		series._length = length;
 		series._width = width;
 		series._height = height;
@@ -275,7 +283,7 @@ public class PottsTest {
 		SimState simstate = mock(SimState.class);
 		simstate.random = random;
 		
-		Series series = mock(Series.class);
+		Series series = makeSeries();
 		series._width = 3;
 		series._length = 3;
 		series._height = 1;
@@ -295,7 +303,7 @@ public class PottsTest {
 		SimState simstate = mock(SimState.class);
 		simstate.random = random;
 		
-		Series series = mock(Series.class);
+		Series series = makeSeries();
 		series._width = 3;
 		series._length = 3;
 		series._height = 1;

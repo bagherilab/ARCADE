@@ -26,6 +26,7 @@ public class PottsSimulation3DTest {
 	@Test
 	public void makePotts_mockSeries_initializesPotts() {
 		Series series = mock(Series.class);
+		series._potts = mock(MiniBox.class);
 		PottsSimulation3D sim = new PottsSimulation3D(RANDOM_SEED, series);
 		Potts potts = sim.makePotts();
 		assertTrue(potts instanceof Potts3D);

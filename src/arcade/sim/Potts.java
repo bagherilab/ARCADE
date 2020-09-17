@@ -32,7 +32,7 @@ public abstract class Potts implements Steppable {
 	final int STEPS;
 	
 	/** Effective cell temperature */
-	final int TEMPERATURE;
+	final double TEMPERATURE;
 	
 	/** Potts array for ids */
 	public int[][][] IDS;
@@ -65,7 +65,7 @@ public abstract class Potts implements Steppable {
 		STEPS = LENGTH*WIDTH*HEIGHT;
 		
 		// Get temperature.
-		TEMPERATURE = (int)series.getParam("TEMPERATURE");
+		TEMPERATURE = series._potts.getDouble("TEMPERATURE");
 	}
 	
 	/**

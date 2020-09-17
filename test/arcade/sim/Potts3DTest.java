@@ -11,7 +11,7 @@ import static arcade.sim.PottsTest.*;
 public class Potts3DTest {
 	private static final double EPSILON = 1E-4;
 	Cell[] cells;
-	Series seriesMock = mock(Series.class);
+	Series seriesMock = makeSeries();
 	Grid gridMock = mock(Grid.class);
 	Potts3D pottsMock = new Potts3D(seriesMock, gridMock);
 	Potts3D potts;
@@ -20,7 +20,7 @@ public class Potts3DTest {
 	
 	@Before
 	public void setupGrid() {
-		Series series = mock(Series.class);
+		Series series = makeSeries();
 		Grid grid = mock(Grid.class);
 		
 		// Population for each cell domain.

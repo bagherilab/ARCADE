@@ -25,6 +25,7 @@ public class PottsSimulation2DTest {
 	@Test
 	public void makePotts_mockSeries_initializesPotts() {
 		Series series = mock(Series.class);
+		series._potts = mock(MiniBox.class);
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		Potts potts = sim.makePotts();
 		assertTrue(potts instanceof Potts2D);
