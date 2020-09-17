@@ -6,7 +6,6 @@ import ec.util.MersenneTwisterFast;
 import arcade.agent.cell.*;
 import arcade.env.loc.*;
 import arcade.util.MiniBox;
-import static arcade.sim.Potts.*;
 import static arcade.agent.cell.Cell.*;
 import static arcade.env.loc.Location.*;
 
@@ -166,62 +165,16 @@ public class PottsSimulation2D extends PottsSimulation {
 		return location;
 	}
 	
-	public Cell makeCell(int id, MiniBox population, int[] center) {
-		int pop = population.getInt("pop");
-		
-		// Get critical values.
-		double[] criticals = new double[] {
-				series.getParam(pop, "CRITICAL_VOLUME"),
-				series.getParam(pop, "CRITICAL_SURFACE")
-		};
-		
-		// Get lambda values.
-		double[] lambdas = new double[] {
-				series.getParam(pop, "LAMBDA_VOLUME"),
-				series.getParam(pop, "LAMBDA_SURFACE")
-		};
-		
-		// Get adhesion values.
-		double[] adhesion = new double[series._keys.length + 1];
-		adhesion[0] = population.getDouble("adhesion:*");
-		for (int i = 0; i < series._keys.length; i++) {
-			adhesion[i + 1] = population.getDouble("adhesion:" + series._keys[i]);
-		}
-		
-		// Create location.
-		Location location = makeLocation(population, center);
-		
-		// Get tags if there are any.
-		MiniBox tag = population.filter("TAG");
-		if (tag.getKeys().size() > 0) {
-			int tags = tag.getKeys().size();
-			
-			double[][] criticalsTag = new double[NUMBER_TERMS][tags];
-			double[][] lambdasTag = new double[NUMBER_TERMS][tags];
-			double[][] adhesionsTag = new double[tags][tags];
-			
-			for (int i = 0; i < tags; i++) {
-				String key = tag.getKeys().get(i);
-				
-				// Load ta critical values.
-				criticalsTag[TERM_VOLUME][i] = series.getParam(pop, "CRITICAL_VOLUME_" + key);
-				criticalsTag[TERM_SURFACE][i] = series.getParam(pop, "CRITICAL_SURFACE_" + key);
-				
-				// Load tag lambda values.
-				lambdasTag[TERM_VOLUME][i] = series.getParam(pop, "LAMBDA_VOLUME_" + key);
-				lambdasTag[TERM_SURFACE][i] = series.getParam(pop, "LAMBDA_SURFACE_" + key);
-				
-				// Load tag adhesion values.
-				for (int j = 0; j < tags; j++) {
-					adhesionsTag[i][j] = population.getDouble("adhesion:" + key + "-" + tag.getKeys().get(j));
-				}
-			}
-			
-			return new PottsCell2D(id, pop, STATE_PROLIFERATIVE, 0, location,
+	Cell makeCell(int id, int pop, Location location,
+				  double[] criticals, double[] lambdas, double[] adhesion) {
+		return new PottsCell2D(id, pop, location, criticals, lambdas, adhesion);
+	}
+	
+	Cell makeCell(int id, int pop, Location location,
+				  double[] criticals, double[] lambdas, double[] adhesion, int tags,
+				  double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
+		return new PottsCell2D(id, pop, STATE_PROLIFERATIVE, 0, location,
 				criticals, lambdas, adhesion, tags,
 				criticalsTag, lambdasTag, adhesionsTag);
-		} else {
-			return new PottsCell2D(id, pop, location, criticals, lambdas, adhesion);
-		}
 	}
 }

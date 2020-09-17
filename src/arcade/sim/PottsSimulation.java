@@ -2,10 +2,12 @@ package arcade.sim;
 
 import java.util.*;
 import sim.engine.*;
-import arcade.agent.cell.*;
+import arcade.agent.cell.Cell;
 import arcade.env.grid.*;
-import arcade.env.lat.*;
+import arcade.env.lat.Lattice;
+import arcade.env.loc.Location;
 import arcade.util.MiniBox;
+import static arcade.sim.Potts.*;
 
 public abstract class PottsSimulation extends SimState implements Simulation {
 	/** {@link arcade.sim.Series} object containing this simulation */
@@ -92,14 +94,112 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	abstract ArrayList<int[]> makeCenters();
 	
 	/**
-	 * Create a {@link arcade.agent.cell.Cell} object for the given population.
+	 * Creates a location around given center points.
+	 *
+	 * @param population  the population settings
+	 * @param center  the center coordinates
+	 * @return  a {@link arcade.env.loc.Location} object
+	 */
+	abstract Location makeLocation(MiniBox population, int[] center);
+	
+	/**
+	 * Creates a {@link arcade.agent.cell.Cell} object.
+	 *
+	 * @param id  the cell ID
+	 * @param pop  the cell population index   
+	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param criticals  the list of critical values
+	 * @param lambdas  the list of lambda multipliers
+	 * @param adhesion  the list of adhesion values
+	 * @return  a {@link arcade.agent.cell.Cell} object
+	 */
+	abstract Cell makeCell(int id, int pop, Location location,
+						   double[] criticals, double[] lambdas, double[] adhesion);
+	
+	/**
+	 * Creates a {@link arcade.agent.cell.Cell} object with tags.
+	 *
+	 * @param id  the cell ID
+	 * @param pop  the cell population index
+	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param criticals  the list of critical values
+	 * @param lambdas  the list of lambda multipliers
+	 * @param adhesion  the list of adhesion values
+	 * @param tags  the number of tags
+	 * @param criticalsTag  the list of tagged critical values
+	 * @param lambdasTag  the list of tagged lambda multipliers
+	 * @param adhesionsTag  the list of tagged adhesion values
+	 * @return  a {@link arcade.agent.cell.Cell} object
+	 */
+	abstract Cell makeCell(int id, int pop, Location location,
+						   double[] criticals, double[] lambdas, double[] adhesion, int tags,
+						   double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag);
+	
+	/**
+	 * Create a {@link arcade.agent.cell.Cell} object in the given population.
 	 *
 	 * @param id  the cell id
 	 * @param population  the population settings
-	 * @param center  the center voxel
+	 * @param center  the center coordinates
 	 * @return  a {@link arcade.agent.cell.Cell} object
 	 */
-	abstract Cell makeCell(int id, MiniBox population, int[] center);
+	Cell makeCell(int id, MiniBox population, int[] center) {
+		int pop = population.getInt("pop");
+		
+		// Get critical values.
+		double[] criticals = new double[] {
+				series.getParam(pop, "CRITICAL_VOLUME"),
+				series.getParam(pop, "CRITICAL_SURFACE")
+		};
+		
+		// Get lambda values.
+		double[] lambdas = new double[] {
+				series.getParam(pop, "LAMBDA_VOLUME"),
+				series.getParam(pop, "LAMBDA_SURFACE")
+		};
+		
+		// Get adhesion values.
+		double[] adhesion = new double[series._keys.length + 1];
+		adhesion[0] = population.getDouble("adhesion:*");
+		for (int i = 0; i < series._keys.length; i++) {
+			adhesion[i + 1] = population.getDouble("adhesion:" + series._keys[i]);
+		}
+		
+		// Create location.
+		Location location = makeLocation(population, center);
+		
+		// Get tags if there are any.
+		MiniBox tag = population.filter("TAG");
+		if (tag.getKeys().size() > 0) {
+			int tags = tag.getKeys().size();
+			
+			double[][] criticalsTag = new double[NUMBER_TERMS][tags];
+			double[][] lambdasTag = new double[NUMBER_TERMS][tags];
+			double[][] adhesionsTag = new double[tags][tags];
+			
+			for (int i = 0; i < tags; i++) {
+				String key = tag.getKeys().get(i);
+				
+				// Load ta critical values.
+				criticalsTag[TERM_VOLUME][i] = series.getParam(pop, "CRITICAL_VOLUME_" + key);
+				criticalsTag[TERM_SURFACE][i] = series.getParam(pop, "CRITICAL_SURFACE_" + key);
+				
+				// Load tag lambda values.
+				lambdasTag[TERM_VOLUME][i] = series.getParam(pop, "LAMBDA_VOLUME_" + key);
+				lambdasTag[TERM_SURFACE][i] = series.getParam(pop, "LAMBDA_SURFACE_" + key);
+				
+				// Load tag adhesion values.
+				for (int j = 0; j < tags; j++) {
+					adhesionsTag[i][j] = population.getDouble("adhesion:" + key + "-" + tag.getKeys().get(j));
+				}
+			}
+			
+			return makeCell(id, pop, location, criticals, lambdas, adhesion, tags,
+					criticalsTag, lambdasTag, adhesionsTag);
+		} else {
+			return makeCell(id, pop, location, criticals, lambdas, adhesion);
+		}
+	}
 	
 	public void setupAgents() {
 		// Initialize grid for agents.

@@ -7,13 +7,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import sim.engine.Schedule;
 import arcade.agent.cell.*;
-import arcade.env.loc.Location;
+import arcade.env.loc.*;
 import arcade.util.MiniBox;
 import static arcade.sim.Series.*;
 import static arcade.sim.Simulation.*;
+import static arcade.sim.Potts.*;
 import static arcade.env.loc.Location.Voxel;
 
 public class PottsSimulationTest {
+	private static final double EPSILON = 1E-4;
 	static final long RANDOM_SEED = (long)(Math.random()*1000);
 	private static final int TOTAL_LOCATIONS = 6;
 	Series seriesZeroPop, seriesOnePop, seriesMultiPop;
@@ -27,7 +29,12 @@ public class PottsSimulationTest {
 		for (int i = 0; i < pops.length; i++) {
 			MiniBox population = new MiniBox();
 			population.put("pop", pops[i]);
+			population.put("adhesion:*", 0);
 			populations.put(keys[i], population);
+			
+			for (String key : keys) {
+				population.put("adhesion:" + key, 0);
+			}
 		}
 		
 		series._populations = populations;
@@ -68,15 +75,63 @@ public class PottsSimulationTest {
 			return centers;
 		}
 		
-		Cell makeCell(int id, MiniBox population, int[] center) {
-			Cell cell = spy(mock(PottsCell.class));
+		Location makeLocation(MiniBox population, int[] center) {
+			PottsLocation loc = mock(PottsLocation.class);
+			when(loc.getCenter()).thenReturn(new Voxel(center[0], center[1], center[2]));
+			return loc;
+		}
+		
+		Cell makeCell(int id, int pop, Location location,
+					  double[] criticals, double[] lambdas, double[] adhesion) {
+			PottsCell cell = mock(PottsCell.class);
 			
 			when(cell.getID()).thenReturn(id);
-			when(cell.getPop()).thenReturn(population.getInt("pop"));
-			
-			Location location = mock(Location.class);
-			when(location.getCenter()).thenReturn(new Voxel(center[0], center[1], center[2]));
+			when(cell.getPop()).thenReturn(pop);
 			when(cell.getLocation()).thenReturn(location);
+			
+			when(cell.getCriticalVolume()).thenReturn(criticals[0]);
+			when(cell.getCriticalSurface()).thenReturn(criticals[1]);
+			
+			when(cell.getLambda(TERM_VOLUME)).thenReturn(lambdas[0]);
+			when(cell.getLambda(TERM_SURFACE)).thenReturn(lambdas[1]);
+			
+			for (int i = 0; i < adhesion.length; i++) {
+				when(cell.getAdhesion(i)).thenReturn(adhesion[i]);
+			}
+			
+			return cell;
+		}
+		
+		Cell makeCell(int id, int pop, Location location,
+					  double[] criticals, double[] lambdas, double[] adhesion, int tags,
+					  double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
+			PottsCell cell = mock(PottsCell.class);
+			
+			when(cell.getID()).thenReturn(id);
+			when(cell.getPop()).thenReturn(pop);
+			when(cell.getLocation()).thenReturn(location);
+			
+			when(cell.getCriticalVolume()).thenReturn(criticals[0]);
+			when(cell.getCriticalSurface()).thenReturn(criticals[1]);
+			
+			when(cell.getLambda(TERM_VOLUME)).thenReturn(lambdas[0]);
+			when(cell.getLambda(TERM_SURFACE)).thenReturn(lambdas[1]);
+			
+			for (int i = 0; i < adhesion.length; i++) {
+				when(cell.getAdhesion(i)).thenReturn(adhesion[i]);
+			}
+			
+			for (int i = 0; i < tags; i++) {
+				when(cell.getCriticalVolume(-i - 1)).thenReturn(criticalsTag[0][i]);
+				when(cell.getCriticalSurface(-i - 1)).thenReturn(criticalsTag[1][i]);
+				
+				when(cell.getLambda(TERM_VOLUME, -i - 1)).thenReturn(lambdasTag[0][i]);
+				when(cell.getLambda(TERM_SURFACE, -i - 1)).thenReturn(lambdasTag[1][i]);
+				
+				for (int j = 0; j < tags; j++) {
+					when(cell.getAdhesion(-i - 1, -j - 1)).thenReturn(adhesionsTag[i][j]);
+				}
+			}
 			
 			return cell;
 		}
@@ -246,6 +301,238 @@ public class PottsSimulationTest {
 		for (Object obj : sim.agents.getAllObjects()) {
 			verify((Cell)obj).initialize(sim.potts.IDS, sim.potts.TAGS);
 			verify((Cell)obj).schedule(sim.schedule);
+		}
+	}
+	
+	@Test
+	public void makeCell_onePopulationNoTags_createsObject() {
+		Series series = mock(Series.class);
+		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+		
+		int cellID = (int)random() + 1;
+		int cellPop = (int)random() + 1;
+		double[] criticals = new double[] { random(), random() };
+		double[] lambdas = new double[] { random(), random() };
+		double[] adhesion = new double[] { random(), random() };
+		
+		MiniBox population = new MiniBox();
+		population.put("pop", cellPop);
+		population.put("adhesion:*", adhesion[0]);
+		population.put("adhesion:A", adhesion[1]);
+		
+		when(series.getParam(cellPop, "LAMBDA_VOLUME")).thenReturn(lambdas[0]);
+		when(series.getParam(cellPop, "LAMBDA_SURFACE")).thenReturn(lambdas[1]);
+		when(series.getParam(cellPop, "CRITICAL_VOLUME")).thenReturn(criticals[0]);
+		when(series.getParam(cellPop, "CRITICAL_SURFACE")).thenReturn(criticals[1]);
+		
+		series._keys = new String[] { "A" };
+		Cell cell = sim.makeCell(cellID, population, new int[] { 0, 0, 0 });
+		
+		assertTrue(cell instanceof PottsCell);
+		assertEquals(cellID, cell.getID());
+		assertEquals(cellPop, cell.getPop());
+		assertEquals(criticals[0], cell.getCriticalVolume(), EPSILON);
+		assertEquals(criticals[1], cell.getCriticalSurface(), EPSILON);
+		assertEquals(lambdas[0], cell.getLambda(TERM_VOLUME), EPSILON);
+		assertEquals(lambdas[1], cell.getLambda(TERM_SURFACE), EPSILON);
+		assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
+		assertEquals(adhesion[1], cell.getAdhesion(1), EPSILON);
+	}
+	
+	@Test
+	public void makeCell_multiplePopulationsNoTags_createsObject() {
+		Series series = mock(Series.class);
+		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+		
+		int cellID = (int)random() + 1;
+		int cellPop = (int)random() + 1;
+		double[] criticals = new double[] { random(), random() };
+		double[] lambdas = new double[] { random(), random() };
+		double[] adhesion = new double[] { random(), random(), random(), random() };
+		
+		MiniBox population = new MiniBox();
+		population.put("pop", cellPop);
+		population.put("adhesion:*", adhesion[0]);
+		population.put("adhesion:B", adhesion[1]);
+		population.put("adhesion:C", adhesion[2]);
+		population.put("adhesion:D", adhesion[3]);
+		
+		when(series.getParam(cellPop, "LAMBDA_VOLUME")).thenReturn(lambdas[0]);
+		when(series.getParam(cellPop, "LAMBDA_SURFACE")).thenReturn(lambdas[1]);
+		when(series.getParam(cellPop, "CRITICAL_VOLUME")).thenReturn(criticals[0]);
+		when(series.getParam(cellPop, "CRITICAL_SURFACE")).thenReturn(criticals[1]);
+		
+		series._keys = new String[] { "B", "C", "D" };
+		Cell cell = sim.makeCell(cellID, population, new int[] { 0, 0, 0 });
+		
+		assertTrue(cell instanceof PottsCell);
+		assertEquals(cellID, cell.getID());
+		assertEquals(cellPop, cell.getPop());
+		assertEquals(criticals[0], cell.getCriticalVolume(), EPSILON);
+		assertEquals(criticals[1], cell.getCriticalSurface(), EPSILON);
+		assertEquals(lambdas[0], cell.getLambda(TERM_VOLUME), EPSILON);
+		assertEquals(lambdas[1], cell.getLambda(TERM_SURFACE), EPSILON);
+		assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
+		assertEquals(adhesion[1], cell.getAdhesion(1), EPSILON);
+		assertEquals(adhesion[2], cell.getAdhesion(2), EPSILON);
+		assertEquals(adhesion[3], cell.getAdhesion(3), EPSILON);
+	}
+	
+	@Test
+	public void makeCell_onePopulationWithTags_createsObject() {
+		Series series = mock(Series.class);
+		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+		
+		int cellID = (int)random() + 1;
+		int cellPop = (int)random() + 1;
+		double[] criticals = new double[] { random(), random() };
+		double[] lambdas = new double[] { random(), random() };
+		double[] adhesion = new double[] { random(), random() };
+		
+		double[][] criticalsTag = new double[][] {
+				{ random(), random(), random() },
+				{ random(), random(), random() }
+		};
+		double[][] lambdasTag = new double[][] {
+				{ random(), random(), random() },
+				{ random(), random(), random() }
+		};
+		double[][] adhesionTag = new double[][] {
+				{ random(), random(), random() },
+				{ random(), random(), random() },
+				{ random(), random(), random() }
+		};
+		
+		MiniBox population = new MiniBox();
+		population.put("pop", cellPop);
+		population.put("adhesion:*", adhesion[0]);
+		population.put("adhesion:A", adhesion[1]);
+		population.put("a_TAG", 0);
+		population.put("b_TAG", 0);
+		population.put("c_TAG", 0);
+		
+		when(series.getParam(cellPop, "LAMBDA_VOLUME")).thenReturn(lambdas[0]);
+		when(series.getParam(cellPop, "LAMBDA_SURFACE")).thenReturn(lambdas[1]);
+		when(series.getParam(cellPop, "CRITICAL_VOLUME")).thenReturn(criticals[0]);
+		when(series.getParam(cellPop, "CRITICAL_SURFACE")).thenReturn(criticals[1]);
+		
+		int tags = 3;
+		String[] _tags = new String[] { "a", "b", "c" };
+		for (int i = 0; i < tags; i++) {
+			String tag = _tags[i];
+			when(series.getParam(cellPop, "LAMBDA_VOLUME_" + tag)).thenReturn(lambdasTag[0][i]);
+			when(series.getParam(cellPop, "LAMBDA_SURFACE_" + tag)).thenReturn(lambdasTag[1][i]);
+			when(series.getParam(cellPop, "CRITICAL_VOLUME_" + tag)).thenReturn(criticalsTag[0][i]);
+			when(series.getParam(cellPop, "CRITICAL_SURFACE_" + tag)).thenReturn(criticalsTag[1][i]);
+			
+			for (int j = 0; j < tags; j++) {
+				population.put("adhesion:" + tag + "-" + _tags[j], adhesionTag[i][j]);
+			}
+		}
+		
+		series._keys = new String[] { "A" };
+		Cell cell = sim.makeCell(cellID, population, new int[] { 0, 0, 0 });
+		
+		assertTrue(cell instanceof PottsCell);
+		assertEquals(cellID, cell.getID());
+		assertEquals(cellPop, cell.getPop());
+		assertEquals(criticals[0], cell.getCriticalVolume(), EPSILON);
+		assertEquals(criticals[1], cell.getCriticalSurface(), EPSILON);
+		assertEquals(lambdas[0], cell.getLambda(TERM_VOLUME), EPSILON);
+		assertEquals(lambdas[1], cell.getLambda(TERM_SURFACE), EPSILON);
+		assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
+		assertEquals(adhesion[1], cell.getAdhesion(1), EPSILON);
+		
+		for (int i = 0; i < tags; i++) {
+			assertEquals(criticalsTag[0][i], cell.getCriticalVolume(-i - 1), EPSILON);
+			assertEquals(criticalsTag[1][i], cell.getCriticalSurface(-i - 1), EPSILON);
+			assertEquals(lambdasTag[0][i], cell.getLambda(TERM_VOLUME, -i - 1), EPSILON);
+			assertEquals(lambdasTag[1][i], cell.getLambda(TERM_SURFACE, -i - 1), EPSILON);
+			
+			for (int j = 0; j < tags; j++) {
+				assertEquals(adhesionTag[i][j], cell.getAdhesion(-i - 1, -j - 1), EPSILON);
+			}
+		}
+	}
+	
+	@Test
+	public void makeCell_multiplePopulationsWithTags_createsObject() {
+		Series series = mock(Series.class);
+		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+		
+		int cellID = (int)random() + 1;
+		int cellPop = (int)random() + 1;
+		double[] criticals = new double[] { random(), random() };
+		double[] lambdas = new double[] { random(), random() };
+		double[] adhesion = new double[] { random(), random(), random(), random() };
+		
+		double[][] criticalsTag = new double[][] {
+				{ random(), random(), random() },
+				{ random(), random(), random() }
+		};
+		double[][] lambdasTag = new double[][] {
+				{ random(), random(), random() },
+				{ random(), random(), random() }
+		};
+		double[][] adhesionTag = new double[][] {
+				{ random(), random(), random() },
+				{ random(), random(), random() },
+				{ random(), random(), random() }
+		};
+		
+		MiniBox population = new MiniBox();
+		population.put("pop", cellPop);
+		population.put("adhesion:*", adhesion[0]);
+		population.put("adhesion:B", adhesion[1]);
+		population.put("adhesion:C", adhesion[2]);
+		population.put("adhesion:D", adhesion[3]);
+		population.put("a_TAG", 0);
+		population.put("b_TAG", 0);
+		population.put("c_TAG", 0);
+		
+		when(series.getParam(cellPop, "LAMBDA_VOLUME")).thenReturn(lambdas[0]);
+		when(series.getParam(cellPop, "LAMBDA_SURFACE")).thenReturn(lambdas[1]);
+		when(series.getParam(cellPop, "CRITICAL_VOLUME")).thenReturn(criticals[0]);
+		when(series.getParam(cellPop, "CRITICAL_SURFACE")).thenReturn(criticals[1]);
+		
+		int tags = 3;
+		String[] _tags = new String[] { "a", "b", "c" };
+		for (int i = 0; i < tags; i++) {
+			String tag = _tags[i];
+			when(series.getParam(cellPop, "LAMBDA_VOLUME_" + tag)).thenReturn(lambdasTag[0][i]);
+			when(series.getParam(cellPop, "LAMBDA_SURFACE_" + tag)).thenReturn(lambdasTag[1][i]);
+			when(series.getParam(cellPop, "CRITICAL_VOLUME_" + tag)).thenReturn(criticalsTag[0][i]);
+			when(series.getParam(cellPop, "CRITICAL_SURFACE_" + tag)).thenReturn(criticalsTag[1][i]);
+			
+			for (int j = 0; j < tags; j++) {
+				population.put("adhesion:" + tag + "-" + _tags[j], adhesionTag[i][j]);
+			}
+		}
+		
+		series._keys = new String[] { "B", "C", "D" };
+		Cell cell = sim.makeCell(cellID, population, new int[] { 0, 0, 0 });
+		
+		assertTrue(cell instanceof PottsCell);
+		assertEquals(cellID, cell.getID());
+		assertEquals(cellPop, cell.getPop());
+		assertEquals(criticals[0], cell.getCriticalVolume(), EPSILON);
+		assertEquals(criticals[1], cell.getCriticalSurface(), EPSILON);
+		assertEquals(lambdas[0], cell.getLambda(TERM_VOLUME), EPSILON);
+		assertEquals(lambdas[1], cell.getLambda(TERM_SURFACE), EPSILON);
+		assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
+		assertEquals(adhesion[1], cell.getAdhesion(1), EPSILON);
+		assertEquals(adhesion[2], cell.getAdhesion(2), EPSILON);
+		assertEquals(adhesion[3], cell.getAdhesion(3), EPSILON);
+		
+		for (int i = 0; i < tags; i++) {
+			assertEquals(criticalsTag[0][i], cell.getCriticalVolume(-i - 1), EPSILON);
+			assertEquals(criticalsTag[1][i], cell.getCriticalSurface(-i - 1), EPSILON);
+			assertEquals(lambdasTag[0][i], cell.getLambda(TERM_VOLUME, -i - 1), EPSILON);
+			assertEquals(lambdasTag[1][i], cell.getLambda(TERM_SURFACE, -i - 1), EPSILON);
+			
+			for (int j = 0; j < tags; j++) {
+				assertEquals(adhesionTag[i][j], cell.getAdhesion(-i - 1, -j - 1), EPSILON);
+			}
 		}
 	}
 }
