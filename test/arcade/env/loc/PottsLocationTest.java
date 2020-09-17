@@ -10,14 +10,14 @@ import arcade.env.loc.Location.Direction;
 import static arcade.env.loc.LocationTest.*;
 
 public class PottsLocationTest {
-	MersenneTwisterFast randomDoubleZero, randomDoubleOne;
+	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
 	final int cellTag = -3;
 	final static int LOCATION_SURFACE = (int)(Math.random()*100);
-	ArrayList<Voxel> voxelListForAddRemove;
-	ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
+	static ArrayList<Voxel> voxelListForAddRemove;
+	static ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
 	
-	@Before
-	public void setupMocks() {
+	@BeforeClass
+	public static void setupMocks() {
 		randomDoubleZero = mock(MersenneTwisterFast.class);
 		when(randomDoubleZero.nextDouble()).thenReturn(0.0);
 		
@@ -25,8 +25,8 @@ public class PottsLocationTest {
 		when(randomDoubleOne.nextDouble()).thenReturn(1.0);
 	}
 	
-	@Before
-	public void setupLists() {
+	@BeforeClass
+	public static void setupLists() {
 		voxelListForAddRemove = new ArrayList<>();
 		voxelListForAddRemove.add(new Voxel(0, 0, 0));
 		voxelListForAddRemove.add(new Voxel(1, 0, 0));

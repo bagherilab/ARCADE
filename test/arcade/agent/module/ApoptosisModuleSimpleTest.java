@@ -15,28 +15,28 @@ import static arcade.agent.cell.PottsCellTest.PottsCellMock;
 
 public class ApoptosisModuleSimpleTest {
 	private static final double r = 1.0;
-	PottsCellMock cell;
-	MersenneTwisterFast random;
-	Location location, newLocation;
-	Simulation sim;
-	double[] criticals = new double[] { 0, 0 };
-	double[] lambdas = new double[] { Math.random()*100, Math.random()*100 };
-	double[] adhesion = new double[] { Math.random()*100, Math.random()*100, Math.random()*100 };
-	double[][] criticalsTag = new double[][] {
+	static PottsCellMock cell;
+	static MersenneTwisterFast random;
+	static Location location, newLocation;
+	static Simulation sim;
+	static double[] criticals = new double[] { 0, 0 };
+	static double[] lambdas = new double[] { Math.random()*100, Math.random()*100 };
+	static double[] adhesion = new double[] { Math.random()*100, Math.random()*100, Math.random()*100 };
+	static double[][] criticalsTag = new double[][] {
 			{ 0, 0 },
 			{ 0, 0 }
 	};
-	double[][] lambdasTag = new double[][] {
+	static double[][] lambdasTag = new double[][] {
 			{ Math.random()*100, Math.random()*100 },
 			{ Math.random()*100, Math.random()*100 }
 	};
-	double[][] adhesionsTag = new double[][] {
+	static double[][] adhesionsTag = new double[][] {
 			{ Math.random()*100, Math.random()*100 },
 			{ Math.random()*100, Math.random()*100 }
 	};
 	
-	@Before
-	public void setupMocks() {
+	@BeforeClass
+	public static void setupMocks() {
 		random = mock(MersenneTwisterFast.class);
 		when(random.nextDouble()).thenReturn(r);
 		

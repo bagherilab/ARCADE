@@ -18,7 +18,7 @@ public class PottsSimulationTest {
 	private static final double EPSILON = 1E-4;
 	static final long RANDOM_SEED = (long)(Math.random()*1000);
 	private static final int TOTAL_LOCATIONS = 6;
-	Series seriesZeroPop, seriesOnePop, seriesMultiPop;
+	static Series seriesZeroPop, seriesOnePop, seriesMultiPop;
 	
 	static double random() { return Math.random()*100; }
 	
@@ -65,8 +65,8 @@ public class PottsSimulationTest {
 		return series;
 	}
 	
-	@Before
-	public void setupSeries() {
+	@BeforeClass
+	public static void setupSeries() {
 		// Zero populations.
 		seriesZeroPop = createSeries(new int[0], new String[0]);
 		

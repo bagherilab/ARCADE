@@ -9,12 +9,12 @@ import arcade.env.loc.Location.Voxel;
 import static arcade.env.loc.LocationTest.*;
 
 public class PottsLocation2DTest {
-	MersenneTwisterFast randomDoubleZero, randomDoubleOne;
-	ArrayList<Voxel> voxelListA, voxelListB, voxelListC;
-	ArrayList<Voxel> voxelListAC, voxelListCA, voxelListBC, voxelListAB;
+	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
+	static ArrayList<Voxel> voxelListA, voxelListB, voxelListC;
+	static ArrayList<Voxel> voxelListAC, voxelListCA, voxelListBC, voxelListAB;
 	
-	@Before
-	public void setupMocks() {
+	@BeforeClass
+	public static void setupMocks() {
 		randomDoubleZero = mock(MersenneTwisterFast.class);
 		when(randomDoubleZero.nextDouble()).thenReturn(0.0);
 		
@@ -22,8 +22,8 @@ public class PottsLocation2DTest {
 		when(randomDoubleOne.nextDouble()).thenReturn(1.0);
 	}
 	
-	@Before
-	public void setupLists() {
+	@BeforeClass
+	public static void setupLists() {
 		/*
 		 * Lattice site shape:
 		 * 

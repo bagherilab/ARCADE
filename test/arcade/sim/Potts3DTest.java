@@ -10,16 +10,16 @@ import static arcade.sim.PottsTest.*;
 
 public class Potts3DTest {
 	private static final double EPSILON = 1E-4;
-	Cell[] cells;
+	static Cell[] cells;
 	Series seriesMock = makeSeries();
 	Grid gridMock = mock(Grid.class);
 	Potts3D pottsMock = new Potts3D(seriesMock, gridMock);
-	Potts3D potts;
+	static Potts3D potts;
 	
 	enum Axis { X_AXIS, Y_AXIS, Z_AXIS }
 	
-	@Before
-	public void setupGrid() {
+	@BeforeClass
+	public static void setupGrid() {
 		Series series = makeSeries();
 		Grid grid = mock(Grid.class);
 		
@@ -1716,8 +1716,8 @@ public class Potts3DTest {
 	
 	private static final int[][] COMBOS_FIVE_NEIGHBORS_EIGHT_LINKS = new int[1][6];
 	
-	@Before
-	public void createFiveNeighborCombos() {
+	@BeforeClass
+	public static void createFiveNeighborCombos() {
 		populate(COMBOS_FIVE_NEIGHBORS_ONE_LINK, 8, 1);
 		populate(COMBOS_FIVE_NEIGHBORS_TWO_LINKS, 8, 2);
 		populate(COMBOS_FIVE_NEIGHBORS_THREE_LINKS, 8, 3);

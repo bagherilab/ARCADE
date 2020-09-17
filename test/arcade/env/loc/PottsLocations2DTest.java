@@ -9,11 +9,11 @@ import arcade.env.loc.Location.Voxel;
 import static arcade.sim.Potts.*;
 
 public class PottsLocations2DTest {
-	MersenneTwisterFast randomDoubleZero, randomDoubleOne;
+	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
 	private static final int TAG_ADDITIONAL = TAG_DEFAULT - 1;
 	
-	@Before
-	public void setupMocks() {
+	@BeforeClass
+	public static void setupMocks() {
 		randomDoubleZero = mock(MersenneTwisterFast.class);
 		when(randomDoubleZero.nextDouble()).thenReturn(0.0);
 		

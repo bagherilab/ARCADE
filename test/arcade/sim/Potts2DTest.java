@@ -10,14 +10,14 @@ import static arcade.sim.PottsTest.*;
 
 public class Potts2DTest {
 	private static final double EPSILON = 1E-4;
-	Cell[] cells;
+	static Cell[] cells;
 	Series seriesMock = makeSeries();
 	Grid gridMock = mock(Grid.class);
 	Potts2D pottsMock = new Potts2D(seriesMock, gridMock);
-	Potts2D potts;
+	static Potts2D potts;
 	
-	@Before
-	public void setupGrid() {
+	@BeforeClass
+	public static void setupGrid() {
 		Series series = makeSeries();
 		Grid grid = mock(Grid.class);
 		

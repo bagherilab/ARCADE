@@ -8,14 +8,14 @@ import static arcade.agent.cell.PottsCell3D.*;
 
 public class PottsCell3DTest {
 	private static final double EPSILON = 1E-5;
-	double[] criticals;
-	double[] lambdas;
-	double[] adhesion;
-	int cellID = (int)(Math.random()*10) + 1;
-	int cellPop = (int)(Math.random()*10) + 1;
+	static double[] criticals;
+	static double[] lambdas;
+	static double[] adhesion;
+	static int cellID = (int)(Math.random()*10) + 1;
+	static int cellPop = (int)(Math.random()*10) + 1;
 	
-	@Before
-	public void setupArrays() {
+	@BeforeClass
+	public static void setupArrays() {
 		int n = (int)(Math.random()*10) + 2;
 		criticals = new double[n];
 		lambdas = new double[n];

@@ -16,28 +16,28 @@ import static arcade.agent.cell.PottsCellTest.PottsCellMock;
 public class ProliferationModuleSimpleTest {
 	private static final double EPSILON = 1E-5;
 	private static final double r = 1.0;
-	PottsCellMock cell;
-	MersenneTwisterFast random;
-	Location location, newLocation;
-	Simulation sim;
-	double[] criticals = new double[] { 0, 0 };
-	double[] lambdas = new double[] { Math.random()*100, Math.random()*100 };
-	double[] adhesion = new double[] { Math.random()*100, Math.random()*100, Math.random()*100 };
-	double[][] criticalsTag = new double[][] {
+	static PottsCellMock cell;
+	static MersenneTwisterFast random;
+	static Location location, newLocation;
+	static Simulation sim;
+	static double[] criticals = new double[] { 0, 0 };
+	static double[] lambdas = new double[] { Math.random()*100, Math.random()*100 };
+	static double[] adhesion = new double[] { Math.random()*100, Math.random()*100, Math.random()*100 };
+	static double[][] criticalsTag = new double[][] {
 			{ 0, 0 },
 			{ 0, 0 }
 	};
-	double[][] lambdasTag = new double[][] {
+	static double[][] lambdasTag = new double[][] {
 			{ Math.random()*100, Math.random()*100 },
 			{ Math.random()*100, Math.random()*100 }
 	};
-	double[][] adhesionsTag = new double[][] {
+	static double[][] adhesionsTag = new double[][] {
 			{ Math.random()*100, Math.random()*100 },
 			{ Math.random()*100, Math.random()*100 }
 	};
 	
-	@Before
-	public void setupMocks() {
+	@BeforeClass
+	public static void setupMocks() {
 		random = mock(MersenneTwisterFast.class);
 		when(random.nextDouble()).thenReturn(r);
 		
@@ -368,6 +368,7 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepM_noTransition_callsMethods() {
+		Location location = mock(Location.class);
 		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
@@ -394,6 +395,10 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepM_withTransition_callsMethods() {
+		Location location = mock(Location.class);
+		Location newLocation = mock(Location.class);
+		when(location.split(random)).thenReturn(newLocation);
+		
 		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);

@@ -12,20 +12,20 @@ import static arcade.env.loc.PottsLocationTest.*;
 import static arcade.env.loc.LocationTest.*;
 
 public class PottsLocationsTest {
-	MersenneTwisterFast randomDoubleZero, randomDoubleOne;
-	ArrayList<Voxel> voxelListForVolumeSurface;
-	ArrayList<Voxel> voxelListForMultipleTagsA, voxelListForMultipleTagsB, voxelListForMultipleTags;
-	ArrayList<Voxel> voxelListForAddRemove;
-	ArrayList<Voxel> voxelListForTagAddRemove;
-	ArrayList<Voxel> voxelListSingle;
-	ArrayList<Voxel> voxelListDouble;
-	ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
+	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
+	static ArrayList<Voxel> voxelListForVolumeSurface;
+	static ArrayList<Voxel> voxelListForMultipleTagsA, voxelListForMultipleTagsB, voxelListForMultipleTags;
+	static ArrayList<Voxel> voxelListForAddRemove;
+	static ArrayList<Voxel> voxelListForTagAddRemove;
+	static ArrayList<Voxel> voxelListSingle;
+	static ArrayList<Voxel> voxelListDouble;
+	static ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
 	final static int LOCATIONS_SURFACE = (int)(Math.random()*100);
 	private static final int TAG_ADDITIONAL = TAG_DEFAULT - 1;
 	private static final int TAG_INVALID = 0;
 	
-	@Before
-	public void setupMocks() {
+	@BeforeClass
+	public static void setupMocks() {
 		randomDoubleZero = mock(MersenneTwisterFast.class);
 		when(randomDoubleZero.nextDouble()).thenReturn(0.0);
 		
@@ -33,8 +33,8 @@ public class PottsLocationsTest {
 		when(randomDoubleOne.nextDouble()).thenReturn(1.0);
 	}
 	
-	@Before
-	public void setupLists() {
+	@BeforeClass
+	public static void setupLists() {
 		voxelListForVolumeSurface = new ArrayList<>();
 		voxelListForVolumeSurface.add(new Voxel(0, 0, 0));
 		

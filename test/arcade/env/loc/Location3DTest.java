@@ -10,10 +10,10 @@ import static arcade.sim.Potts.*;
 
 public class Location3DTest {
 	private static final int TAG_ADDITIONAL = TAG_DEFAULT - 1;
-	ArrayList<Voxel> voxelListForDiametersXY, voxelListForDiametersYZ, voxelListForDiametersZX;
+	static ArrayList<Voxel> voxelListForDiametersXY, voxelListForDiametersYZ, voxelListForDiametersZX;
 	
-	@Before
-	public void setupLists() {
+	@BeforeClass
+	public static void setupLists() {
 		int[][] diameter = new int[][] {
 				{ 5, 6, 7, 5, 6, 7, 5, 7, 8, 8, 5, 6, 7, 5, 6, 7 },
 				{ 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 6, 2, 2, 2 },

@@ -15,29 +15,29 @@ public class PottsCellTest {
 	private static final double EPSILON = 1E-5;
 	private static final int TAG_ADDITIONAL = TAG_DEFAULT - 1;
 	private static final double VOLUME_SURFACE_RATIO = Math.random();
-	double lambdaVolume;
-	double lambdaSurface;
-	double adhesionTo0, adhesionTo1, adhesionTo2;
-	double[] criticals;
-	double[] lambdas;
-	double[] adhesion;
-	double[][] criticalsTag;
-	double[][] lambdasTag;
-	double[][] adhesionTag;
-	Location location;
-	int locationVolume;
-	int locationSurface;
-	int[] locationTagVolumes;
-	int[] locationTagSurfaces;
-	int cellID = (int)(Math.random()*10) + 1;
-	int cellPop = (int)(Math.random()*10) + 1;
-	int tags = 3;
-	PottsCellMock cellDefault;
-	PottsCellMock cellWithTags;
-	PottsCellMock cellWithoutTags;
+	static double lambdaVolume;
+	static double lambdaSurface;
+	static double adhesionTo0, adhesionTo1, adhesionTo2;
+	static double[] criticals;
+	static double[] lambdas;
+	static double[] adhesion;
+	static double[][] criticalsTag;
+	static double[][] lambdasTag;
+	static double[][] adhesionTag;
+	static Location location;
+	static int locationVolume;
+	static int locationSurface;
+	static int[] locationTagVolumes;
+	static int[] locationTagSurfaces;
+	static int cellID = (int)(Math.random()*10) + 1;
+	static int cellPop = (int)(Math.random()*10) + 1;
+	static int tags = 3;
+	static PottsCellMock cellDefault;
+	static PottsCellMock cellWithTags;
+	static PottsCellMock cellWithoutTags;
 	
-	@Before
-	public void setupMocks() {
+	@BeforeClass
+	public static void setupMocks() {
 		// Random lambda values.
 		lambdaVolume = Math.random();
 		lambdaSurface = Math.random();
