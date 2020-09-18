@@ -239,7 +239,7 @@ public class Series {
 		_populations = new HashMap<>();
 		if (populations == null) { return; }
 		
-		// Get population IDs.
+		// Get list of all populations (plus * indicating media).
 		String[] pops = new String[populations.size() + 1];
 		pops[0] = "*";
 		for (int i = 0; i < populations.size(); i++) { pops[i + 1] = populations.get(i).get("ID"); }
@@ -292,6 +292,30 @@ public class Series {
 				
 				if (parameterScales.get(adhesion) != null) {
 					population.put(adhesion, population.getDouble(adhesion)*parameterScales.getDouble(adhesion));
+				}
+			}
+			
+			// Get tags.
+			Box tags = p.filterBoxByTag("TAG");
+			MiniBox tagFractions = tags.getIdValForTagAtt("TAG", "fraction");
+			
+			// Add tag fractions and parameters (default value is the same as
+			// the population value).
+			for (String tag : tags.getKeys()) {
+				double tagFraction = (isValidFraction(tags, tag + "~fraction") ? tagFractions.getDouble(tag) : 0);
+				population.put("TAG/" + tag, tagFraction);
+				
+				for (String parameter : populationDefaults.getKeys()) {
+					String tagParameter = tag + "/" + parameter;
+					population.put(tagParameter, population.get(parameter));
+					
+					if (parameterValues.get(parameter + ":" + tag) != null) {
+						population.put(tagParameter, parameterValues.get(parameter + ":" + tag));
+					}
+					
+					if (parameterScales.get(parameter + ":" + tag) != null) {
+						population.put(tagParameter, population.getDouble(tagParameter)*parameterScales.getDouble(parameter + ":" + tag));
+					}
 				}
 			}
 		}
