@@ -1,73 +1,37 @@
 package arcade.sim;
 
+import java.lang.reflect.Constructor;
+import java.text.DecimalFormat;
+import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Logger;
-import java.text.DecimalFormat;
-import java.lang.reflect.Constructor;
-import sim.engine.SimState;
 import sim.display.GUIState;
-import arcade.agent.helper.*;
-import arcade.env.comp.*;
-import arcade.sim.profiler.*;
-import arcade.sim.checkpoint.*;
+import sim.engine.SimState;
 import arcade.util.*;
-
-/** 
- * Container for a series of {@link arcade.sim.Simulation} objects, differing only
- * in random seed.
- * <p>
- * The class is instantiated by parsing an XML document specifying model setup.
- * Constructors for the {@link arcade.sim.Simulation} objects are built, but not
- * called until the series is run.
- * {@code Series} objects that are not valid are marked as {@code skip} and are
- * not run.
- * <p>
- * {@link arcade.sim.Simulation} objects are passed their parent {@code Series}
- * object and have access to fields with the "_" prefix.
- *
- * @version 3.0
- * @since   2.2
- */
 
 public class Series {
 	/** Logger for {@code Series} */
 	private final static Logger LOGGER = Logger.getLogger(Series.class.getName());
 	
-	private static final int COORD_HEX = 0;
-	private static final int COORD_RECT = 1;
-	private static final String[] COORD_NAMES = new String[] { "Hexagonal", "Rectangular" };
-	
-	/** Placeholder integer for initialization of agents at all locations */
-	public static final int FULL_INIT = -1;
+	/** Regular expression for fractions */
+	private static final String FRACTION_REGEX = "^(([0]*(\\.\\d*|))|(1[\\.0]*))$";
 	
 	/** Offset of random seed to avoid using seed of 0 */
 	public static final int SEED_OFFSET = 1000;
 	
-	/** Default metabolism module version */
-	private static final String MODULE_DEFAULT_METABOLISM = "COMPLEX";
-	
-	/** Default signaling module version */
-	private static final String MODULE_DEFAULT_SIGNALING = "COMPLEX";
-	
 	/** Format for console output of simulation time */
-	private final static DecimalFormat f = new DecimalFormat("#.0000");
+	private final static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.0000");
 	
-	/** Format for does not exist logging */
-	private final String DNEFormat = "%s [ %s ] does not exist";
+	/** {@code true} if the {@code Series} is not valid, {@code false} otherwise */
+	public boolean isSkipped;
 	
-	/** {@code true} if the {@code Series} is not value, {@code false} otherwise */
-	public boolean skip;
+	/** {@code true} if {@code Series} is run with visualization, {@code false} otherwise */
+	public boolean isVis;
 	
-	/** {@code true} if simulation is run with visualization, {@code false} otherwise */
-	private boolean single;
-	
-	private boolean hasGraph;
-	
-	/** Name of the simulation */
+	/** Name of the series */
 	private final String name;
 	
-	/** Path and prefix for the simulation set */ 
+	/** Path and prefix for the series */ 
 	private final String prefix;
 	
 	/** Constructor for the simulation */
@@ -82,76 +46,22 @@ public class Series {
 	/** Random seed of the last simulation in the series */
 	private final int endSeed;
 	
-	/** Simulation length in days */
-	private final int days;
+	/** Simulation length in ticks */
+	private final int ticks;
 	
-	/** Simulation length in ticks (minutes) */
-	private final int steps;
-	
-	/** Radius of the simulation (even number) */
+	/** Length of the simulation */
 	public int _length;
 	
+	/** Width of the simulation */
 	public int _width;
 	
-	public int _radius;
-	
-	/** Height of the simulation (odd number) */
+	/** Height of the simulation */
 	public int _height;
 	
-	/** Margin between agents and environment (even number) */
-	public int _margin;
+	public MiniBox _potts;
 	
-	/** Overall radius of the simulation (equal to RADIUS + MARGIN) */
-	public int _radiusBounds;
-	
-	/**
-	 * Overall height of the simulation (equal to 1 if HEIGHT = 1, or 
-	 * HEIGHT + MARGIN otherwise)
-	 */
-	public int _heightBounds;
-	
-	/** Radius to which cells are initialized, may be {@code FULL_INIT} */
-	int _init;
-	
-	int _coord;
-	
-	/** Number of cell populations */
-	int _pops;
-	
-	/** Specification offset */
-	int specOffset;
-	
-	/** List of constructors for each population */
-	Constructor<?>[] _popCons;
-	
-	/** List of modules for each population */
-	MiniBox[] _popBoxes;
-	
-	/** List of population fractions */
-	double[] _popFrac;
-	
-	/** List of number of initial cells in each population */
-	int[] _popCounts;
-	
-	/** Dictionary of global parameter values */
-	private MiniBox globalParams;
-	
-	/** List of dictionaries of parameter values for each population */
-	private MiniBox[] variableParams;
-	
-	/** List of changes to population parameter values */
-	private ArrayList<String[]> adjustments;
-	
-	/** List of series {@link arcade.agent.helper.Helper} objects */
-	ArrayList<Helper> _helpers;
-	
-	/** List of series {@link arcade.env.comp.Component} objects */
-	ArrayList<Component> _components;
-	
-	/** List of series {@link arcade.sim.profiler.Profiler} objects */
-	public ArrayList<Profiler> _profilers;
-	
-	public ArrayList<Checkpoint> _checkpoints;
+	/** Map of population settings */
+	public HashMap<String, MiniBox> _populations;
 	
 	/**
 	 * Creates a {@code Series} object given setup information parsed from XML.
@@ -159,68 +69,24 @@ public class Series {
 	 * @param setupDicts  the map of attribute to value for single instance tags
 	 * @param setupLists  the map of attribute to value for multiple instance tags
 	 * @param parameters  the default parameter values loaded from {@code parameter.xml}
-	 * @param view
-	 * @param vis  indicates if simulations are to be run with visualization
+	 * @param isVis  {@code true} if run with visualization, {@code false} otherwise
 	 */
 	public Series(HashMap<String, MiniBox> setupDicts,
-				  HashMap<String, ArrayList<MiniBox>> setupLists,
-				  Box parameters, String view, boolean vis) {
-		// Overall setup.
+				  HashMap<String, ArrayList<Box>> setupLists,
+				  Box parameters, boolean isVis) {
 		MiniBox set = setupDicts.get("set");
 		MiniBox series = setupDicts.get("series");
+		MiniBox defaults = parameters.getIdValForTag("DEFAULT");
 		
 		this.name = series.get("name");
 		this.prefix = set.get("path") + (set.contains("prefix") ? set.get("prefix") : "") + name + "_";
-		this.startSeed = (series.contains("start") ? series.getInt("start") : 0);
-		this.endSeed = (series.contains("end") ? series.getInt("end") : 1);
-		this.days = series.getInt("days");
-		this.steps = days*60*24 + 1;
-		this.single = vis;
+		this.startSeed = (series.contains("start") ? series.getInt("start") : defaults.getInt("START_SEED"));
+		this.endSeed = (series.contains("end") ? series.getInt("end") : defaults.getInt("END_SEED"));
+		this.ticks = (series.contains("ticks") ? series.getInt("ticks") : defaults.getInt("TICKS"));
+		this.isVis = isVis;
 		
-		// Update simulation size.
-		MiniBox simulation = setupDicts.get("simulation");
-		MiniBox defaults = parameters.getIdValForTag("DEFAULT");
-		updateSizing(simulation, defaults);
-		
-		// Update agents and environment.
-		MiniBox agents = setupDicts.get("agents");
-		MiniBox environment = setupDicts.get("environment");
-		updateAgents(agents);
-		updateEnvironment(environment);
-		
-		// Update populations.
-		ArrayList<MiniBox> populations = setupLists.get("populations");
-		_pops = (populations == null ? 0 : populations.size());
-		ArrayList<ArrayList<MiniBox>> modules = extractList(setupLists, "modules", _pops);
-		updatePopulations(populations, modules);
-		
-		// Update parameters.
-		adjustments = new ArrayList<>();
-		ArrayList<MiniBox> globals = setupLists.get("globals");
-		updateGlobals(globals, parameters);
-		ArrayList<ArrayList<MiniBox>> variables = extractList(setupLists, "variables", _pops);
-		updateVariables(variables, parameters);
-		
-		// Add helpers and components.
-		ArrayList<MiniBox> helpers = setupLists.get("helpers");
-		ArrayList<MiniBox> components = setupLists.get("components");
-		int _helps = (helpers == null ? 0 : helpers.size());
-		int _comps = (components == null ? 0 : components.size());
-		specOffset = _helps;
-		ArrayList<ArrayList<MiniBox>> specifications = extractList(setupLists, "specifications", _helps + _comps);
-		updateHelpers(helpers, parameters, specifications);
-		updateComponents(components, parameters, specifications);
-		
-		// Add profilers.
-		ArrayList<MiniBox> profilers = setupLists.get("profilers");
-		updateProfilers(profilers);
-		
-		// Add checkpoints.
-		ArrayList<MiniBox> checkpoints = setupLists.get("checkpoints");
-		updateCheckpoints(checkpoints);
-		
-		// Make constructors for simulation and visualization.
-		makeConstructor(simulation, view);
+		// Initialize simulation series.
+		initialize(setupDicts, setupLists, parameters);
 	}
 	
 	/**
@@ -238,48 +104,89 @@ public class Series {
 	public String getPrefix() { return prefix; }
 	
 	/**
-	 * Gets the parameter value.
+	 * Gets the start random seed.
 	 * 
-	 * @param key  the name of the parameter
-	 * @return  the parameter value
+	 * @return  the random seed
 	 */
-	public double getParam(String key) { return globalParams.getDouble(key); }
+	public int getStartSeed() { return startSeed; }
 	
 	/**
-	 * Gets the parameter value for a population.
+	 * Gets the end random seed.
 	 * 
-	 * @param pop  the population index
-	 * @param key  the name of the parameter
-	 * @return  the parameter value for the population
+	 * @return  the random seed
 	 */
-	public double getParam(int pop, String key) {
-		if (pop >= _pops) { return Double.NaN; }
-		return variableParams[pop].getDouble(key);
+	public int getEndSeed() { return endSeed; }
+	
+	/**
+	 * Gets the number of ticks per simulation
+	 *
+	 * @return  the ticks
+	 */
+	public int getTicks() { return ticks; }
+	
+	/**
+	 * Checks if string contains valid fraction between 0 and 1, inclusive.
+	 * 
+	 * @param box  the box containing the fraction
+	 * @param key  the fraction key
+	 * @return  {@code true if valid}, {@code false} otherwise
+	 */
+	static boolean isValidFraction(Box box, String key) {
+		if (box.get(key) == null) { return false; }
+		return box.get(key).matches(FRACTION_REGEX);
 	}
 	
 	/**
-	 * Gets the parameters filtered by the given code.
+	 * Initializes series simulation, agents, and environment.
 	 * 
-	 * @param code  the code to filter parameters by.
-	 * @return  the filtered parameter dictionary
-	 */
-	public MiniBox getParams(String code) { return globalParams.filter(code); }
-
-	/**
-	 * Extracts dictionaries for given key.
-	 * 
+	 * @param setupDicts  the map of attribute to value for single instance tags
 	 * @param setupLists  the map of attribute to value for multiple instance tags
-	 * @param key  the name of the dictionary to extract
-	 * @param n  the number of indices
-	 * @return  a list of lists of dictionaries 
+	 * @param parameters  the default parameter values loaded from {@code parameter.xml}
 	 */
-	private ArrayList<ArrayList<MiniBox>> extractList(HashMap<String, ArrayList<MiniBox>> setupLists, String key, int n) {
-		ArrayList<ArrayList<MiniBox>> list = new ArrayList<>();
-		for (int i = 0; i < n; i++) {
-			if (setupLists.containsKey(key + i)) { list.add(setupLists.get(key + i)); }
-			else { list.add(new ArrayList<>()); }
-		}
-		return list;
+	final void initialize(HashMap<String, MiniBox> setupDicts,
+						  HashMap<String, ArrayList<Box>> setupLists,
+						  Box parameters) {
+		MiniBox defaults = parameters.getIdValForTag("DEFAULT");
+		
+		// Initialize simulation.
+		MiniBox simulation = setupDicts.get("simulation");
+		updateSizing(simulation, defaults);
+		
+		// Initialize agents.
+		MiniBox agents = setupDicts.get("agents");
+		updateAgents(agents);
+		
+		// Initialize environment.
+		MiniBox environment = setupDicts.get("environment");
+		updateEnvironment(environment);
+		
+		// Initialize populations.
+		MiniBox populationDefaults = parameters.getIdValForTag("POPULATION");
+		ArrayList<Box> populations = setupLists.get("populations");
+		updatePopulations(populations, populationDefaults);
+		
+		// Add helpers.
+		MiniBox helperDefaults = parameters.getIdValForTag("HELPER");
+		ArrayList<Box> helpers = setupLists.get("helpers");
+		updateHelpers(helpers, helperDefaults);
+		
+		// Add components.
+		MiniBox componentDefaults = parameters.getIdValForTag("COMPONENT");
+		ArrayList<Box> components = setupLists.get("components");
+		updateComponents(components, componentDefaults);
+		
+		// Add profilers.
+		MiniBox profilerDefaults = parameters.getIdValForTag("PROFILER");
+		ArrayList<Box> profilers = setupLists.get("profilers");
+		updateProfilers(profilers, profilerDefaults);
+		
+		// Add checkpoints.
+		MiniBox checkpointDefaults = parameters.getIdValForTag("CHECKPOINT");
+		ArrayList<Box> checkpoints = setupLists.get("checkpoints");
+		updateCheckpoints(checkpoints, checkpointDefaults);
+		
+		// Create constructors for simulation and visualization.
+		makeConstructors();
 	}
 	
 	/**
@@ -288,28 +195,21 @@ public class Series {
 	 * @param simulation  the simulation setup dictionary
 	 * @param defaults  the default parameters dictionary
 	 */
-	private void updateSizing(MiniBox simulation, MiniBox defaults) {
-//		// Get sizes based on default for selected dimension.
-//		int radius = defaults.getInt("RADIUS");
-//		int height = defaults.getInt("HEIGHT");
-//		int margin = defaults.getInt("MARGIN");
-//		
-//		// Override sizes from specific flags.
-//		if (simulation.contains("radius")) { radius = simulation.getInt("radius"); }
-//		if (simulation.contains("height")) { height = simulation.getInt("height"); }
+	void updateSizing(MiniBox simulation, MiniBox defaults) {
+		// Get default sizing
+		int length = defaults.getInt("LENGTH");
+		int width = defaults.getInt("WIDTH");
+		int height = defaults.getInt("HEIGHT");
 		
-		_length =100;
-		_width = 100;
-		_height = 1;
+		// Override sizes from specific flags.
+		if (simulation.contains("length")) { length = simulation.getInt("length"); }
+		if (simulation.contains("width")) { width = simulation.getInt("width"); }
+		if (simulation.contains("height")) { height = simulation.getInt("height"); }
 		
-//		// Enforce that RADIUS and MARGIN are even, and HEIGHT is odd.
-//		_length = ((radius & 1) == 0 ? radius : radius + 1);
-//		_height = ((height & 1) == 1 ? height : height + 1);
-//		_margin = ((margin & 1) == 0 ? margin : margin + 1);
-//		
-		// Calculate additional size configurations.
-//		_radiusBounds = radius + margin;
-//		_heightBounds = (height == 1 ? 1 : height + margin);
+		// Enforce that HEIGHT is odd.
+		_length = length;
+		_width = width;
+		_height = ((height & 1) == 1 ? height : height + 1);
 	}
 	
 	/**
@@ -317,314 +217,132 @@ public class Series {
 	 * 
 	 * @param agents  the agent setup dictionary
 	 */
-	private void updateAgents(MiniBox agents) {
-		_init = 0;
-		String init = agents.get("initialization");
-		
-		// Check if init is an integer less than radius. If init is given as
-		// "FULL", then all locations are initialized.
-		if (init.matches("[0-9]+")) { _init = Integer.parseInt(init); }
-		else if (init.toUpperCase().equals("FULL")) { _init = FULL_INIT; }
-		else {
-			LOGGER.warning("initialization [ " + init
-				+ " ] must be FULL or less than or equal to " + 0);
-			skip = true;
-		}
-	}
-	
-	// METHOD: updateEnvironment. Determines environment coordinate type.
-	private void updateEnvironment(MiniBox environment) {
-		_coord = COORD_HEX;
-		String coord = environment.get("coordinate");
-		
-		// Select appropriate simulation class.
-		switch (coord.toUpperCase()) {
-			case "HEX": _coord = COORD_HEX; break;
-			case "RECT": _coord = COORD_RECT; break;
-			default:
-				LOGGER.warning("coordinate [ " + coord + " ] must be HEX or RECT");
-				skip = true;
-		}
+	void updateAgents(MiniBox agents) {
+		// TODO
 	}
 	
 	/**
-	 * Creates agent population constructors.
+	 * Updates environment initialization.
+	 * 
+	 * @param environment  the environment setup dictionary
+	 */
+	void updateEnvironment(MiniBox environment) {
+		// TODO
+	}
+	
+	/**
+	 * Creates agent populations.
 	 * 
 	 * @param populations  the list of population setup dictionaries
-	 * @param modules  the list of population module dictionaries
 	 */
-	private void updatePopulations(ArrayList<MiniBox> populations, ArrayList<ArrayList<MiniBox>> modules) {
-		_popFrac = new double[_pops];
-		_popCounts = new int[_pops];
-		_popCons = new Constructor<?>[_pops];
-		_popBoxes = new MiniBox[_pops];
+	void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults) {
+		_populations = new HashMap<>();
+		if (populations == null) { return; }
 		
-		String undefinedFormat = "%s module version undefined, default %s for [ %s ] population [ %d ]";
+		// Get population IDs.
+		String[] pops = new String[populations.size() + 1];
+		pops[0] = "*";
+		for (int i = 0; i < populations.size(); i++) { pops[i + 1] = populations.get(i).get("ID"); }
 		
-		for (int i = 0; i < _pops; i++) {
-			MiniBox box = new MiniBox();
-			MiniBox p = populations.get(i);
-			ArrayList<MiniBox> mm = modules.get(i);
-			String type = p.get("type");
-			double ratio = p.getDouble("fraction");
+		int iPop = 1;
+		
+		// Iterate through each setup dictionary to build population settings.
+		for (Box p : populations) {
+			String id = p.get("ID");
 			
-			// Add in placeholders for metabolism and signaling modules.
-			box.put("metabolism", null);
-			box.put("signaling", null);
+			// Create new population and update code.
+			MiniBox population = new MiniBox();
+			population.put("CODE", iPop++);
+			_populations.put(id, population);
 			
-			for (MiniBox m : mm) {
-				switch (m.get("type")) {
-					case "metabolism": case "signaling":
-						String version = m.get("version");
-						if (version != null) {
-							switch (version.toUpperCase().substring(0,1)) {
-								case "R": version = "RANDOM"; break;
-								case "S": version = "SIMPLE"; break;
-								case "M": version = "MEDIUM"; break;
-								case "C": version = "COMPLEX"; break;
-							}
-						}
-						box.put(m.get("type"), version);
-						break;
-					default:
-						LOGGER.warning(String.format(DNEFormat, "module", m.get("type")));
-						skip = true;
+			// Add population fraction if given. If not given or invalid, set
+			// fraction to zero.
+			double fraction = (isValidFraction(p, "FRACTION") ? Double.parseDouble(p.get("FRACTION")) : 0);
+			population.put("FRACTION", fraction);
+			
+			// Get default parameters and any parameter tags.
+			Box parameters = p.filterBoxByTag("PARAMETER");
+			MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
+			MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
+			
+			// Add in parameters. Start with value (if given) or default (if not
+			// given. Then apply any scaling.
+			for (String parameter : populationDefaults.getKeys()) {
+				population.put(parameter, populationDefaults.get(parameter));
+				
+				if (parameterValues.get(parameter) != null) {
+					population.put(parameter, parameterValues.get(parameter));
+				}
+				
+				if (parameterScales.get(parameter) != null) {
+					population.put(parameter, population.getDouble(parameter)*parameterScales.getDouble(parameter));
 				}
 			}
 			
-			if (box.get("metabolism") == null) {
-				LOGGER.warning(String.format(undefinedFormat, "metabolism", MODULE_DEFAULT_METABOLISM, name, i));
-				box.put("metabolism", MODULE_DEFAULT_METABOLISM);
-			}
-			
-			if (box.get("signaling") == null) {
-				LOGGER.warning(String.format(undefinedFormat, "signaling", MODULE_DEFAULT_SIGNALING, name, i));
-				box.put("signaling", MODULE_DEFAULT_SIGNALING);
-			}
-			
-			// Add modules list for population.
-			_popBoxes[i] = box;
-			
-			// Create constructor by compiling class name.
-			try {
-				Class<?> c;
+			// Add adhesion values for each population and media (*). Values
+			// are set as equal to the default (or adjusted) value, before
+			// any specific values or scaling is applied.
+			for (String pop : pops) {
+				String adhesion = "ADHESION:" + pop;
+				population.put(adhesion, population.get("ADHESION"));
 				
-				if (type.equals("P")) { c = Class.forName("arcade.agent.cell.PottsCell"); }
-				else { c = Class.forName("arcade.agent.cell.Tissue" + type + "Cell"); }
+				if (parameterValues.get(adhesion) != null) {
+					population.put(adhesion, parameterValues.get(adhesion));
+				}
 				
-				_popCons[i] = c.getConstructors()[0];
-				_popFrac[i] = ratio;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	/**
-	 * Updates values of non-population-specific parameters.
-	 * 
-	 * @param globals  the list of parameter dictionaries
-	 * @param parameters  the dictionary of default parameter values
-	 */
-	private void updateGlobals(ArrayList<MiniBox> globals, Box parameters) {
-		// Copy over loaded baseline parameters.
-		globalParams = parameters.getIdValForTag("GLOBAL");
-		if (globals == null) { return; }
-		
-		// Iterate through parameter adjustments.
-		for (MiniBox g : globals) {
-			String name = g.get("id").toUpperCase();
-			double value = globalParams.getDouble(name);
-			if (g.contains("value")) { value = g.getDouble("value"); }
-			if (g.contains("scale")) { value *= g.getDouble("scale"); }
-			globalParams.put(name, value);
-			adjustments.add(new String[] { name, "" + value });
-			LOGGER.info("setting [ " + name + " ] to " + value + " for [ " + this.name + " ]");
-		}
-	}
-	
-	/**
-	 * Updates values of population-specific parameters.
-	 * 
-	 * @param variables  the list of parameter dictionaries for each population
-	 * @param parameters  the dictionary of default parameter values 
-	 */
-	private void updateVariables(ArrayList<ArrayList<MiniBox>> variables, Box parameters) {
-		// Copy over loaded baseline population parameters.
-		variableParams = new MiniBox[_pops];
-		for (int i = 0; i < _pops; i++) {
-			variableParams[i] = parameters.getIdValForTag("VARIABLE");
-		}
-		
-		// Iterate through each population to update parameters.
-		for (int i = 0; i < _pops; i++) {
-			ArrayList<MiniBox> vv = variables.get(i);
-			if (vv == null) { continue; }
-			for (MiniBox v : vv) {
-				String name = v.get("id").toUpperCase();
-				if (variableParams[i].contains(name)) {
-					double value = variableParams[i].getDouble(name);
-					if (v.contains("value")) { value = v.getDouble("value"); }
-					if (v.contains("scale")) { value *= v.getDouble("scale"); }
-					variableParams[i].put(name, value);
-					LOGGER.info("setting [ " + name + " ] to " + value + " for population [ " + i + " ] in [ " + this.name + " ]");
-					adjustments.add(new String[] { name, "" + value, "" + i });
-				} else {
-					LOGGER.warning(String.format(DNEFormat, "parameter", name));
+				if (parameterScales.get(adhesion) != null) {
+					population.put(adhesion, population.getDouble(adhesion)*parameterScales.getDouble(adhesion));
 				}
 			}
 		}
 	}
 	
 	/**
-	 * Creates instances of selected helpers.
+	 * Creates selected helpers.
 	 * 
 	 * @param helpers  the list of helper dictionaries
-	 * @param parameters  the dictionary of default parameter values
-	 * @param specifications   the list of specification dictionaries for each helper
+	 * @param helperDefaults  the dictionary of default helper parameters
 	 */
-	private void updateHelpers(ArrayList<MiniBox> helpers, Box parameters, ArrayList<ArrayList<MiniBox>> specifications) {
-		_helpers = new ArrayList<>();
-		if (helpers == null) { return; }
-		
-		Box defaults = parameters.filterBoxByTag("SPECIFICATION.HELPER");
-		int i = 0;
-		
-		String helperFormat = "adding %s helper to [ %s ]";
-		
-		for (MiniBox h : helpers) {
-			// Get default helper specifications.
-			Box specs = defaults.filterBoxByAtt("type", h.get("type"));
-			if (h.contains("class")) { specs = specs.filterBoxByAtt("class", h.get("class")); }
-			
-			// Add default specifications to helper.
-			for (String key : specs.getKeys()) { h.put(key, specs.getValue(key));  }
-			
-			// Update specifications.
-			for (MiniBox box : specifications.get(i)) { h.put(box.get("id"), box.get("value")); }
-			
-			switch (h.get("type").toLowerCase()) {
-				case "potts":
-					_helpers.add(new PottsHelper(h, _pops, _length, _width, _height));
-					LOGGER.info(String.format(helperFormat, "POTTS", name));
-					break;
-				default:
-					LOGGER.warning(String.format(DNEFormat, "helper", h.get("type")));
-					skip = true;
-			}
-			
-			i++;
-		}
+	void updateHelpers(ArrayList<Box> helpers, MiniBox helperDefaults) {
+		// TODO
 	}
 	
 	/**
-	 * Creates instances of selected components.
+	 * Creates selected components.
 	 *
-	 * @param components  the list of components dictionaries
-	 * @param parameters  the dictionary of default parameter values
-	 * @param specifications   the list of specification dictionaries for each components
+	 * @param components  the list of component dictionaries
+	 * @param componentDefaults  the dictionary of default component parameters
 	 */
-	private void updateComponents(ArrayList<MiniBox> components, Box parameters, ArrayList<ArrayList<MiniBox>> specifications) {
-		_components = new ArrayList<>();
-		if (components == null) { return; }
-		
-		Box defaults = parameters.filterBoxByTag("SPECIFICATION.COMPONENT");
-		int i = specOffset;
-		
-		String componentFormat = "adding %s component to [ %s ]";
-		
-		for (MiniBox c : components) {
-			// Get default component specifications.
-			Box specs = defaults.filterBoxByAtt("type", c.get("type"));
-			if (c.contains("class")) { specs = specs.filterBoxByAtt("class", c.get("class")); }
-			
-			// Add default specifications to component.
-			for (String key : specs.getKeys()) { c.put(key, specs.getValue(key));  }
-			
-			// Update specifications.
-			for (MiniBox box : specifications.get(i)) { c.put(box.get("id"), box.get("value")); }
-			
-			switch (c.get("type").toLowerCase()) {
-				default:
-					LOGGER.warning(String.format(DNEFormat, "component", c.get("type")));
-					skip = true;
-			}
-			
-			i++;
-		}
+	void updateComponents(ArrayList<Box> components, MiniBox componentDefaults) {
+		// TODO
 	}
 	
 	/**
-	 * Creates instances of selected profilers.
-	 * 
+	 * Creates selected profilers.
+	 *
 	 * @param profilers  the list of profiler dictionaries
+	 * @param profilerDefaults  the dictionary of default component parameters
 	 */
-	private void updateProfilers(ArrayList<MiniBox> profilers) {
-		_profilers = new ArrayList<>();
-		if (profilers == null) { return; }
-		
-		String profilerFormat = "adding %s profiler to [ %s ]";
-		
-		for (MiniBox p : profilers) {
-			int i = p.getInt("interval");
-			String suffix = (p.contains("suffix") ? p.get("suffix") : "");
-			
-			switch (p.get("type").toLowerCase()) {
-				default:
-					LOGGER.warning(String.format(DNEFormat, "profiler", p.get("type")));
-					skip = true;
-			}
-		}
-	}
-	
-	// METHOD: updateCheckpoints. Creates instances of selected checkpoints.
-	private void updateCheckpoints(ArrayList<MiniBox> checkpoints) {
-		_checkpoints = new ArrayList<>();
-		if (checkpoints == null) { return; }
-		
-		String checkpointFormat = "checkpoint class for [ %s ] must be SAVE or LOAD";
-		
-		for (MiniBox c : checkpoints) {
-			String prefix = c.get("path") + c.get("name");
-			int tick = (c.contains("day") ? c.getInt("day")*60*24 : 0);
-			
-			switch (c.get("type").toLowerCase()) {
-				default:
-					LOGGER.warning(String.format(DNEFormat, "checkpoint", c.get("type")));
-					skip = true;
-			}
-		}
+	void updateProfilers(ArrayList<Box> profilers, MiniBox profilerDefaults) {
+		// TODO
 	}
 	
 	/**
-	 * Uses reflections to build constructors for simulation (and visualization).
-	 * 
-	 * @param simulation  the simulation setup dictionary
+	 * Creates selected checkpoints.
+	 *
+	 * @param checkpoints  the list of checkpoint dictionaries
+	 * @param checkpointDefaults  the dictionary of default checkpoint parameters
 	 */
-	private void makeConstructor(MiniBox simulation, String view) {
-		if (!view.equals("2D") && !view.equals("3D")) {
-			LOGGER.warning("view [ " + view + " ] must be 2D or 3D");
-			skip = true;
-			return;
-		}
-		
-		String type = simulation.get("type").toLowerCase();
-		String simClass, visClass;
-		
-		switch (type) {
-			case "growth":
-				simClass = "arcade.sim.GrowthSimulation$" + COORD_NAMES[_coord];
-				visClass = "arcade.vis.GrowthVisualization" + view + "$" + COORD_NAMES[_coord];
-				break;
-			case "colony":
-				simClass = "arcade.sim.PottsSimulation";
-				visClass = "arcade.vis.PottsVisualization";
-				break;
-			default:
-				LOGGER.warning("simulation type [ " + type + " ] not supported");
-				skip = true;
-				return;
-		}
+	void updateCheckpoints(ArrayList<Box> checkpoints, MiniBox checkpointDefaults) {
+		// TODO
+	}
+	
+	/**
+	 * Uses reflections to build constructors for simulation and visualization.
+	 */
+	void makeConstructors() {
+		String simClass = "arcade.sim.PottsSimulation" + (_height > 1 ? "3D" : "2D");
+		String visClass = "arcade.vis.PottsVisualization";
 		
 		// Create constructor for simulation class.
 		try {
@@ -647,10 +365,10 @@ public class Series {
 		long simStart, simEnd;
 		
 		// Iterate through each seed.
-		for (int iSeed = startSeed; iSeed < endSeed; iSeed++) {
+		for (int iSeed = startSeed; iSeed <= endSeed; iSeed++) {
 			// Pre-simulation output.
 			String seed = (iSeed < 10 ? "0" : "") + iSeed;
-			LOGGER.info("starting simulation [ " + name + " | " + seed + " ]");
+			LOGGER.info("simulation [ " + name + " | " + seed + " ] started");
 			simStart = System.currentTimeMillis();
 			
 			// Run simulation.
@@ -659,12 +377,13 @@ public class Series {
 			
 			// Post-simulation output.
 			simEnd = System.currentTimeMillis();
-			LOGGER.info("simulation [ " + name + " | " + seed + " ] completed in " + f.format((double)(simEnd - simStart)/1000/60) + " minutes");
+			LOGGER.info("simulation [ " + name + " | " + seed + " ] completed in " 
+					+ DECIMAL_FORMAT.format((double)(simEnd - simStart)/1000/60) + " minutes");
 		}
 	}
 	
 	/**
-	 * Iterates through each step (tick) of the simulation.
+	 * Iterates through each tick of the simulation.
 	 * 
 	 * @param state  the simulation state instance
 	 * @param seed  the random seed
@@ -674,16 +393,17 @@ public class Series {
 		state.start();
 		
 		// Run simulation loop.
-		double step;
+		double tick;
 		int percent = 0;
 		do {
-			step = state.schedule.getTime();
+			tick = state.schedule.getTime();
+			
 			if (!state.schedule.step(state)) { break; }
-			if (step%((steps - 1)/10.0) == 0) {
+			if (tick%((ticks - 1)/10.0) == 0) {
 				if (percent > 0 && percent < 100) { LOGGER.info("simulation [ " + name + " | " + seed + " ] " + percent + " % complete"); }
 				percent += 10;
 			}
-		} while (step < steps);
+		} while (tick < ticks);
 		
 		// Finish simulation.
 		state.finish();
@@ -699,140 +419,22 @@ public class Series {
 		((GUIState)visCons.newInstance(sim)).createController();
 	}
 	
-	/**
-	 * Generates a JSON string summarizing the {@code Series} configuration.
-	 * 
-	 * @return  the {@code Series} configuration as a JSON string
-	 */
-	public String configToJSON() {
-		String f = "\t\t\"%s\": %s,\n";
-		
-		// Format size.
-		String size = "{ \"radius\": " + _radius
-			+ ", \"height\": " + _height + ", \"margin\": " + _margin + " }";
-		
-		// Format populations.
-		String pops =  "";
-		String cf = "\t\t\t[%d, \"%s$%s%s\", %.2f, %d],\n";
-		for (int i = 0; i < _pops; i++) {
-			pops += String.format(cf, i, _popCons[i].getName(), _popBoxes[i].get("metabolism").charAt(0),
-					_popBoxes[i].get("signaling").charAt(0), _popFrac[i], _popCounts[i]);
-		}
-		pops = "[\n" + pops.replaceFirst(",$","") + "\t\t]";
-		
-		return String.format(f, "class", "\"" + simCons.getName() + "\"")
-			+ String.format(f, "days", days)
-			+ String.format(f, "size", size)
-			+ String.format(f, "init", _init)
-			+ String.format(f, "pops", pops).replaceFirst(",$","");
-	}
-	
-	/**
-	 * Generates a JSON string summarizing the helpers in the {@code Series}.
-	 * 
-	 * @return  the helpers as a JSON string
-	 */
-	public String helpersToJSON() {
-		String help = "";
-		for (Helper helper : _helpers) { help += "\t\t" + helper.toJSON() + ",\n"; }
-		help = help.replace("\n\t\"", "\n\t\t\t\t\"");
-		help = help.replace("\"specs\"", "\n\t\t\t\"specs\"");
-		help = help.replace("} },", "\t\t\t}\n\t\t},");
-		return help.replaceFirst(",$","");
-	}
-	
-	/**
-	 * Generates a JSON string summarizing the components in the {@code Series}.
-	 *
-	 * @return  the components as a JSON string
-	 */
-	public String componentsToJSON() {
-		String comp = "";
-		for (Component component : _components) { comp += "\t\t" + component.toJSON() + ",\n"; }
-		comp = comp.replace("\n\t\"", "\n\t\t\t\t\"");
-		comp = comp.replace("\"specs\"", "\n\t\t\t\"specs\"");
-		comp = comp.replace("} },", "\t\t\t}\n\t\t},");
-		return comp.replaceFirst(",$","");
-	}
-	
-	/**
-	 * Generates a JSON string summarizing the {@code Series} parameters.
-	 * 
-	 * @return  the {@code Series} parameters as a JSON string
-	 */
-	public String paramsToJSON() {
-		String globals = "";
-		for (String key : globalParams.getKeys()) {
-			globals += "\t\t\t\"" + key + "\": " + getParam(key) + ",\n";
-		}
-		
-		String pops = "";
-		for (String key : variableParams[0].getKeys()) {
-			String pop = "";
-			for (int i = 0; i < _pops; i++) { pop += getParam(i, key) + ","; }
-			pops += "\t\t\t\"" + key + "\": [" + pop.replaceFirst(",$","") + "],\n";
-		}
-		return "\t\t\"globals\": {\n" + globals.replaceFirst(",$","") + "\t\t},\n"
-			+ "\t\t\"pops\": {\n" + pops.replaceFirst(",$","") + "\t\t}\n";
-	}
-	
-	/**
-	 * Displays information on the populations, helpers, and components for the
-	 * {@code Series}.
-	 * 
-	 * @return  the {@code Series} as a string
-	 */
 	public String toString() {
-		// Convert cell populations to string.
-		String cells = "";
-		String title = "cells";
-		for (int i = 0; i < _pops; i++) {
-			MiniBox box = _popBoxes[i];
-			cells += String.format("\t%10s : %s (meta = %s, sig = %s) (%.2f", title,
-					_popCons[i].getName(), box.get("metabolism"), box.get("signaling"),
-					100*_popFrac[i]) + "%)\n";
-			if (i == 0) { title = ""; }
-		}
-		
-		// Convert adjusted parameters to string.
-		String params = "";
-		title = "params";
-		if (adjustments != null) {
-			for (int i = 0; i < adjustments.size(); i++) {
-				String[] a = adjustments.get(i);
-				if (a.length == 2) { params += String.format("\t%10s : %-20s = %-5s", title, a[0], a[1]) + "\n"; }
-				else { params += String.format("\t%10s : %-20s = %-5s [%s]", title, a[0], a[1], a[2]) + "\n"; }
-				if (i == 0) { title = ""; }
-			}
-		}
-		
-		// Convert helpers to string.
-		String helpers = "";
-		title = "helpers";
-		for (int i = 0; i < _helpers.size(); i++) {
-			helpers += String.format("\t%10s : %s\n", title, _helpers.get(i));
-			if (i == 0) { title = ""; }
-		}
-		
-		// Convert components to string.
-		String components = "";
-		title = "components";
-		for (int i = 0; i < _components.size(); i++) {
-			components += String.format("\t%10s : %s\n", title, _components.get(i));
-			if (i == 0) { title = ""; }
+		// Convert populations to string.
+		StringBuilder pop = new StringBuilder();
+		for (String p : _populations.keySet()) {
+			pop.append(String.format("\t\tPOPULATION [ %s ]\n", p));
 		}
 		
 		String format = "\t%10s : %s\n";
 		return "\t======================================================================\n"
-			+ (single ? "" : String.format(format, "output", prefix))
-			+ String.format(format, "class", (single ? visCons.getName() : simCons.getName()))
-			+ (single ? "" : String.format(format, "seeds", startSeed + " - " + endSeed))
-			+ (single ? "" : String.format(format, "days", days + " (" + steps + ")"))
-			+ String.format(format, "size", "RADIUS = " + _radius)
-			+ String.format(format, "", "HEIGHT = " + _height)
-			+ String.format(format, "", "MARGIN = " + _margin)
-			+ String.format(format, "seeding", _init)
-			+ cells + params + helpers + components
-			+ "\t======================================================================\n" ;
+			+ (isVis ? "" : String.format(format, "output", prefix))
+			+ String.format(format, "class", (isVis ? visCons.getName() : simCons.getName()))
+			+ (isVis ? "" : String.format(format, "seeds", startSeed + " - " + endSeed))
+			+ (isVis ? "" : String.format(format, "ticks", ticks))
+			+ String.format(format, "size", _length + " x " + _width + " x " + _height)
+			+ "\t----------------------------------------------------------------------\n"
+			+ pop
+			+ "\t======================================================================\n";
 	}
 }

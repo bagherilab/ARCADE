@@ -30,11 +30,11 @@ public class PottsSimulationTest {
 		for (int i = 0; i < pops.length; i++) {
 			MiniBox population = new MiniBox();
 			population.put("CODE", pops[i]);
-			population.put("ADHESION:*", 0);
+			population.put("ADHESION:*", random());
 			populations.put(keys[i], population);
 			
 			for (String key : keys) {
-				population.put("ADHESION:" + key, 0);
+				population.put("ADHESION:" + key, random());
 			}
 		}
 		
