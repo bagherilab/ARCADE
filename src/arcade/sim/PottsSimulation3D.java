@@ -86,8 +86,7 @@ public class PottsSimulation3D extends PottsSimulation {
 		ArrayList<int[]> centers = new ArrayList<>();
 		int n = 0;
 		
-		for (String key : series._keys) {
-			MiniBox population = series._populations.get(key);
+		for (MiniBox population : series._populations.values()) {
 			double criticalVolume = population.getDouble("CRITICAL_VOLUME");
 			int voxelsPerSide = convert(criticalVolume) + 2;
 			if (voxelsPerSide > n) { n = voxelsPerSide; }

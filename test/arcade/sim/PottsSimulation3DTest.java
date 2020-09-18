@@ -428,7 +428,7 @@ public class PottsSimulation3DTest {
 		PottsSimulation3D sim = new PottsSimulation3D(RANDOM_SEED, series);
 		
 		MiniBox population = new MiniBox();
-		population.put("pop", 0);
+		population.put("CODE", 0);
 		
 		int N = 100;
 		for (int i = 1; i < N; i++) {
@@ -446,7 +446,7 @@ public class PottsSimulation3DTest {
 		PottsSimulation3D sim = new PottsSimulation3D(RANDOM_SEED, series);
 		
 		MiniBox population = new MiniBox();
-		population.put("pop", 0);
+		population.put("CODE", 0);
 		
 		int N = 100;
 		for (int i = 0; i < N; i++) {

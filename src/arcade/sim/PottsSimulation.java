@@ -144,7 +144,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	 * @return  a {@link arcade.agent.cell.Cell} object
 	 */
 	Cell makeCell(int id, MiniBox population, int[] center) {
-		int pop = population.getInt("pop");
+		int pop = population.getInt("CODE");
 		
 		// Get critical values.
 		double[] criticals = new double[] {
@@ -159,10 +159,11 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		};
 		
 		// Get adhesion values.
-		double[] adhesion = new double[series._keys.length + 1];
+		Set<String> pops = series._populations.keySet();
+		double[] adhesion = new double[pops.size() + 1];
 		adhesion[0] = population.getDouble("ADHESION:*");
-		for (int i = 0; i < series._keys.length; i++) {
-			adhesion[i + 1] = population.getDouble("ADHESION:" + series._keys[i]);
+		for (String p : pops) {
+			adhesion[series._populations.get(p).getInt("CODE")] = population.getDouble("ADHESION:" + p);
 		}
 		
 		// Create location.
@@ -210,9 +211,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		int totalAvailable = availableCenters.size();
 		
 		// Iterate through each population to create the constituent cells.
-		for (String key : series._keys) {
-			MiniBox population = series._populations.get(key);
-			
+		for (MiniBox population : series._populations.values()) {
 			int n = (int)Math.round(totalAvailable*population.getDouble("FRACTION"));
 			ArrayList<int[]> assignedCenters = new ArrayList<>();
 			

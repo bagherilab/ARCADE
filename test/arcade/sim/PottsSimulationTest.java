@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import sim.engine.Schedule;
 import arcade.agent.cell.*;
 import arcade.env.loc.*;
@@ -28,7 +29,7 @@ public class PottsSimulationTest {
 		
 		for (int i = 0; i < pops.length; i++) {
 			MiniBox population = new MiniBox();
-			population.put("pop", pops[i]);
+			population.put("CODE", pops[i]);
 			population.put("ADHESION:*", 0);
 			populations.put(keys[i], population);
 			
@@ -38,7 +39,6 @@ public class PottsSimulationTest {
 		}
 		
 		series._populations = populations;
-		series._keys = keys;
 		
 		return series;
 	}
@@ -49,7 +49,7 @@ public class PottsSimulationTest {
 		
 		for (int i = 0; i < pops.length; i++) {
 			MiniBox population = new MiniBox();
-			population.put("pop", pops[i]);
+			population.put("CODE", pops[i]);
 			population.put("ADHESION:*", 0);
 			population.put("CRITICAL_VOLUME", volumes[i]);
 			populations.put(keys[i], population);
@@ -60,7 +60,6 @@ public class PottsSimulationTest {
 		}
 		
 		series._populations = populations;
-		series._keys = keys;
 		
 		return series;
 	}
@@ -75,7 +74,7 @@ public class PottsSimulationTest {
 		seriesOnePop._populations.get("A").put("FRACTION", 5./TOTAL_LOCATIONS);
 		
 		// Multiple populations.
-		seriesMultiPop = createSeries(new int[] { 2, 3, 4 }, new String[] { "B", "C", "D" });
+		seriesMultiPop = createSeries(new int[] { 1, 2, 3 }, new String[] { "B", "C", "D" });
 		seriesMultiPop._populations.get("B").put("FRACTION", 3./TOTAL_LOCATIONS);
 		seriesMultiPop._populations.get("C").put("FRACTION", 1./TOTAL_LOCATIONS);
 		seriesMultiPop._populations.get("D").put("FRACTION", 2./TOTAL_LOCATIONS);
@@ -303,7 +302,7 @@ public class PottsSimulationTest {
 		sim.setupAgents();
 		assertEquals(TOTAL_LOCATIONS, sim.agents.getAllObjects().numObjs);
 		
-		int[] pops = new int[] { 2, 2, 2, 3, 4, 4 };
+		int[] pops = new int[] { 1, 1, 1, 2, 3, 3 };
 		for (int i = 0; i < TOTAL_LOCATIONS; i++) {
 			Cell cell = (Cell)sim.agents.getAllObjects().get(i);
 			assertEquals(i + 1, cell.getID());
@@ -338,7 +337,7 @@ public class PottsSimulationTest {
 		double[] adhesion = new double[] { random(), random() };
 		
 		MiniBox population = new MiniBox();
-		population.put("pop", cellPop);
+		population.put("CODE", cellPop);
 		population.put("ADHESION:*", adhesion[0]);
 		population.put("ADHESION:A", adhesion[1]);
 		population.put("LAMBDA_VOLUME", lambdas[0]);
@@ -346,7 +345,12 @@ public class PottsSimulationTest {
 		population.put("CRITICAL_VOLUME", criticals[0]);
 		population.put("CRITICAL_SURFACE", criticals[1]);
 		
-		series._keys = new String[] { "A" };
+		HashSet<String> keys = new HashSet<>();
+		keys.add("A");
+		series._populations = mock(HashMap.class);
+		when(series._populations.keySet()).thenReturn(keys);
+		when(series._populations.get("A")).thenReturn(mock(MiniBox.class));
+		when(series._populations.get("A").getInt("CODE")).thenReturn(1);
 		Cell cell = sim.makeCell(cellID, population, new int[] { 0, 0, 0 });
 		
 		assertTrue(cell instanceof PottsCell);
@@ -372,7 +376,7 @@ public class PottsSimulationTest {
 		double[] adhesion = new double[] { random(), random(), random(), random() };
 		
 		MiniBox population = new MiniBox();
-		population.put("pop", cellPop);
+		population.put("CODE", cellPop);
 		population.put("ADHESION:*", adhesion[0]);
 		population.put("ADHESION:B", adhesion[1]);
 		population.put("ADHESION:C", adhesion[2]);
@@ -382,7 +386,16 @@ public class PottsSimulationTest {
 		population.put("CRITICAL_VOLUME", criticals[0]);
 		population.put("CRITICAL_SURFACE", criticals[1]);
 		
-		series._keys = new String[] { "B", "C", "D" };
+		HashSet<String> keys = new HashSet<>();
+		keys.add("B"); keys.add("C"); keys.add("D");
+		series._populations = mock(HashMap.class);
+		when(series._populations.keySet()).thenReturn(keys);
+		when(series._populations.get("B")).thenReturn(mock(MiniBox.class));
+		when(series._populations.get("B").getInt("CODE")).thenReturn(1);
+		when(series._populations.get("C")).thenReturn(mock(MiniBox.class));
+		when(series._populations.get("C").getInt("CODE")).thenReturn(2);
+		when(series._populations.get("D")).thenReturn(mock(MiniBox.class));
+		when(series._populations.get("D").getInt("CODE")).thenReturn(3);
 		Cell cell = sim.makeCell(cellID, population, new int[] { 0, 0, 0 });
 		
 		assertTrue(cell instanceof PottsCell);
@@ -424,7 +437,7 @@ public class PottsSimulationTest {
 		};
 		
 		MiniBox population = new MiniBox();
-		population.put("pop", cellPop);
+		population.put("CODE", cellPop);
 		population.put("ADHESION:*", adhesion[0]);
 		population.put("ADHESION:A", adhesion[1]);
 		population.put("a_TAG", 0);
@@ -449,7 +462,12 @@ public class PottsSimulationTest {
 			}
 		}
 		
-		series._keys = new String[] { "A" };
+		HashSet<String> keys = new HashSet<>();
+		keys.add("A");
+		series._populations = mock(HashMap.class);
+		when(series._populations.keySet()).thenReturn(keys);
+		when(series._populations.get("A")).thenReturn(mock(MiniBox.class));
+		when(series._populations.get("A").getInt("CODE")).thenReturn(1);
 		Cell cell = sim.makeCell(cellID, population, new int[] { 0, 0, 0 });
 		
 		assertTrue(cell instanceof PottsCell);
@@ -500,7 +518,7 @@ public class PottsSimulationTest {
 		};
 		
 		MiniBox population = new MiniBox();
-		population.put("pop", cellPop);
+		population.put("CODE", cellPop);
 		population.put("ADHESION:*", adhesion[0]);
 		population.put("ADHESION:B", adhesion[1]);
 		population.put("ADHESION:C", adhesion[2]);
@@ -527,7 +545,16 @@ public class PottsSimulationTest {
 			}
 		}
 		
-		series._keys = new String[] { "B", "C", "D" };
+		HashSet<String> keys = new HashSet<>();
+		keys.add("B"); keys.add("C"); keys.add("D");
+		series._populations = mock(HashMap.class);
+		when(series._populations.keySet()).thenReturn(keys);
+		when(series._populations.get("B")).thenReturn(mock(MiniBox.class));
+		when(series._populations.get("B").getInt("CODE")).thenReturn(1);
+		when(series._populations.get("C")).thenReturn(mock(MiniBox.class));
+		when(series._populations.get("C").getInt("CODE")).thenReturn(2);
+		when(series._populations.get("D")).thenReturn(mock(MiniBox.class));
+		when(series._populations.get("D").getInt("CODE")).thenReturn(3);
 		Cell cell = sim.makeCell(cellID, population, new int[] { 0, 0, 0 });
 		
 		assertTrue(cell instanceof PottsCell);

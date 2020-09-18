@@ -388,7 +388,7 @@ public class PottsSimulation2DTest {
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		
 		MiniBox population = new MiniBox();
-		population.put("pop", 0);
+		population.put("CODE", 0);
 		
 		int N = 100;
 		for (int i = 1; i < N; i++) {
@@ -406,7 +406,7 @@ public class PottsSimulation2DTest {
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		
 		MiniBox population = new MiniBox();
-		population.put("pop", 0);
+		population.put("CODE", 0);
 		
 		int N = 100;
 		for (int i = 0; i < N; i++) {
