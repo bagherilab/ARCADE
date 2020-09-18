@@ -410,9 +410,9 @@ public class PottsSimulation2DTest {
 		
 		int N = 100;
 		for (int i = 0; i < N; i++) {
-			population.put("CYTOPLASM_TAG", i/(double)N);
-			population.put("NUCLEUS_TAG", (N - i)/(double)N);
-			population.put("OTHER_TAG", 0);
+			population.put("TAG/CYTOPLASM", i/(double)N);
+			population.put("TAG/NUCLEUS", (N - i)/(double)N);
+			population.put("TAG/OTHER", 0);
 			population.put("CRITICAL_VOLUME", N*Simulation.DS);
 			Location location = sim.makeLocation(population, new int[] { 0, 0 });
 			

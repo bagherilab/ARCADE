@@ -179,19 +179,19 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 			double[][] adhesionsTag = new double[tags][tags];
 			
 			for (int i = 0; i < tags; i++) {
-				String key = tag.getKeys().get(i);
+				MiniBox populationTag = population.filter(tag.getKeys().get(i));
 				
-				// Load ta critical values.
-				criticalsTag[TERM_VOLUME][i] = population.getDouble("CRITICAL_VOLUME_" + key);
-				criticalsTag[TERM_SURFACE][i] = population.getDouble("CRITICAL_SURFACE_" + key);
+				// Load tag critical values.
+				criticalsTag[TERM_VOLUME][i] = populationTag.getDouble("CRITICAL_VOLUME");
+				criticalsTag[TERM_SURFACE][i] = populationTag.getDouble("CRITICAL_SURFACE");
 				
 				// Load tag lambda values.
-				lambdasTag[TERM_VOLUME][i] = population.getDouble("LAMBDA_VOLUME_" + key);
-				lambdasTag[TERM_SURFACE][i] = population.getDouble("LAMBDA_SURFACE_" + key);
+				lambdasTag[TERM_VOLUME][i] = populationTag.getDouble("LAMBDA_VOLUME");
+				lambdasTag[TERM_SURFACE][i] = populationTag.getDouble("LAMBDA_SURFACE");
 				
 				// Load tag adhesion values.
 				for (int j = 0; j < tags; j++) {
-					adhesionsTag[i][j] = population.getDouble("ADHESION:" + key + "-" + tag.getKeys().get(j));
+					adhesionsTag[i][j] = populationTag.getDouble("ADHESION:" + tag.getKeys().get(j));
 				}
 			}
 			
@@ -253,4 +253,254 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	public void scheduleComponents() {
 		// TODO add component scheduling
 	}
+
+
+
+
+//		double voxels = series._populations
+
+//		1. Calculate the number of voxels per cell as V = VC/v where VC is the critical volume and v is the number of voxels per cell
+//		2. Divide the environment into equal squares of size S x S where S = ceil(sqrt(4*V/pi)) + 2 and V is the largest number of voxels per cell across populations
+//		3. Select the center point of each square
+
+//		int r = 2;
+//		ArrayList<ArrayList<Voxel>> locations = new ArrayList<>();
+//		int n = 2*r + 2;
+//		
+//		for (int i = 0; i < (series._length - 2)/n; i++) {
+//			for (int j = 0; j < (series._width - 2)/n; j++) {
+//				ArrayList<Voxel> voxels = new ArrayList<>();
+//				double cx = i*n + 1 - 0.5 + n/2.;
+//				double cy = j*n + 1 - 0.5 + n/2.;
+//				
+//				for (int ii = 1; ii < n - 1; ii++) {
+//					for (int jj = 1; jj < n - 1; jj++) {
+//						int x = i*n + ii;
+//						int y = j*n + jj;
+//						
+//						double d = Math.sqrt(Math.pow(x - cx, 2) + Math.pow(y - cy, 2));
+//						if (d <= r) { voxels.add(new Voxel(x, y, 0)); }
+//					}
+//				}
+//				
+//				locations.add(voxels);
+//			}
+//		}
+//		
+
+
+//	
+////	private List<String> getRecordFromLine(String line) {
+////		List<String> values = new ArrayList<>();
+////		try (Scanner rowScanner = new Scanner(line)) {
+////			rowScanner.useDelimiter(COMMA_DELIMITER);
+////		}
+////		return values;
+////	}
+//	
+//	Pattern pattern = Pattern.compile("([0-9]+),(\\-[0-9]+),([0-9]+),([0-9]+),([0-9]+)");
+//	
+//	Map<Integer, Location> parseVoxels(String file) {
+//		List<String> records = new ArrayList<>();
+//		
+//		try {
+//			FileInputStream stream = new FileInputStream(file);
+//			Scanner scanner = new Scanner(stream);
+//			while (scanner.hasNextLine()) { records.add(scanner.nextLine()); }
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		Map<Integer, Location> map = new HashMap<>();
+//		
+//		
+//		for (String record : records) {
+//			if (pattern.matcher(record).matches()) {
+//				Matcher matcher = pattern.matcher(record);
+//				
+//				while (matcher.find()) {
+//					Location loc;
+//					int id = Integer.parseInt(matcher.group(1));
+//					
+//					if (map.containsKey(id)) {
+//						loc = map.get(id);
+//					} else {
+//						loc = new PottsLocations3D(new ArrayList<>());
+//						map.put(id, loc);
+//						
+//					}
+//					
+////					System.out.println(record);
+////					System.out.println(matcher.group(1));
+//					
+//					loc.add(Integer.parseInt(matcher.group(2)),
+//							Integer.parseInt(matcher.group(3)),
+//							Integer.parseInt(matcher.group(4)),
+//							Integer.parseInt(matcher.group(5)));
+//				}
+//				
+//			}
+//		}
+//		return map;
+//	}
+
+
+
+
+
+//		
+//		Map<Integer, Location> locationws = parseVoxels("positions.csv");
+//	
+//
+//		// Get locations.
+//		ArrayList<PottsLocations3D> locations = getSquareLocations();
+//
+////		Simulation.shuffle(locations, this.random);
+//
+//		int id = 1;
+//		int pop = 1;
+//		
+//		int n = 10;
+//		
+//		double[]lambdas = new double[] { 1, 1 };
+//		
+////		locations.clear();
+//		
+////		PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
+////		loc.add(TAG_CYTOPLASM, 5, 5, 2);
+////		loc.add(TAG_CYTOPLASM, 5, 4, 2);
+////		locations.add(loc);
+////		
+////		PottsLocations3D loc2 = new PottsLocations3D(new ArrayList<>());
+////		loc2.add(TAG_CYTOPLASM, 1, 20, 4);
+////		locations.add(loc2);
+////		
+////		PottsLocations3D loc3 = new PottsLocations3D(new ArrayList<>());
+////		loc3.add(TAG_CYTOPLASM, 20, 1, 3);
+////		locations.add(loc3);
+////		
+//		
+//
+//		locations.add((PottsLocations3D)locationws.get(1));
+//		
+//		
+//		
+//		int popin = 1;
+//		
+//		for (Location location : locations) {
+////			double rand = random.nextDouble();
+////			if (rand < 0.55) { continue; }
+//
+////			rand = random.nextDouble();
+//			
+////			Location location = new PottsLocations3D(new ArrayList<>());
+////			for (int i = 5; i < 15; i++) {
+////				for (int j = 5; j < 15; j++) {
+////					for (int k = 1; k < 4; k++) {
+////						location.add(TAG_CYTOPLASM, i, j, k);
+////					}
+////				}
+////			}
+////			location.add(TAG_CYTOPLASM, 10, 10, 2);
+////			location.add(TAG_CYTOPLASM, 5, 5, 2);
+////			location.add(TAG_CYTOPLASM, 4, 5, 2);
+////			location.add(TAG_CYTOPLASM, 5, 20, 2);
+//			
+//		
+////			location.add(TAG_CYTOPLASM, 10, 10, 3);
+//			
+//			
+//			
+//			PottsCell3D c;C
+//			c = new PottsCell3D(id, popin, location, lambdas ,new double[] { 5, 1, 1, 1}, 4,
+//					new double[][] {{ 0, 1, 1, 1}, { 0, 1, 1, 1}}, 
+//					new double[][] {
+//							{  1, 5, 5, 5 }, 
+//							{  5, 1, 1, 1 }, 
+//							{  5, 1, 1, 1 }, 
+//							{  5, 1, 1, 1 }
+//			});
+//			popin++;
+//			
+//			agents.addObject(id, c);
+//			c.initialize(potts.IDS, potts.TAGS);
+////			c.update(potts.potts);
+////			c.location.update(potts.potts, c.id);
+////			c.stopper = 
+////			schedule.scheduleRepeating(0, ORDERING_CELLS, c);
+////			scheduleCell(c);
+//			c.schedule(schedule);
+//
+//
+//			id++;
+//			
+//			break;
+//			
+////			if (id > 8) {break;}
+//					
+//
+//		}
+//
+//		nextID = id;
+//
+//		schedule.scheduleRepeating(1, ORDERING_POTTS, potts);
+
+
+//	public ArrayList<PottsLocations3D> getSquareLocations() {
+//		ArrayList<PottsLocations3D> locations = new ArrayList<>();
+////		int n = 11;
+////		int nn = (n - 1)/4 ;
+//////		int id = 1;
+////		
+////		int offset = 10;
+////		
+////		int z = 2;
+////
+////		for (int i = 1; i < (series._length  - 1)/n; i++) {
+////			for (int j = 1; j < (series._width  - 1)/n; j++) {
+////				ArrayList<PottsLocation3D.Voxel> voxels = new ArrayList<>();
+////				ArrayList<PottsLocation3D.Voxel> membrane = new ArrayList<>();
+////				ArrayList<PottsLocation3D.Voxel> nucleus = new ArrayList<>();
+////				ArrayList<PottsLocation3D.Voxel> other = new ArrayList<>();
+////
+////				double rand = random.nextDouble();
+//////				if (rand < 0.6) { continue; }
+////
+////				for (int ii = 0; ii < n  - 1; ii++) {
+////					for (int jj = 0; jj < n - 1 ; jj++) {
+////						voxels.add(new PottsLocation3D.Voxel(i*n + ii, j*n + jj, z));
+////						voxels.add(new PottsLocation3D.Voxel(i*n + ii, j*n + jj, z - 1));
+////						voxels.add(new PottsLocation3D.Voxel(i*n + ii, j*n + jj, z + 1));
+////					}
+////				}
+////				
+////				PottsLocations3D loc = new PottsLocations3D(new ArrayList<>() );
+////				
+////				
+////				for (int ii = 0; ii < n - 1; ii++) {
+////					for (int jj = 0; jj < n - 1 ; jj++) {
+////						if (ii >= nn && ii < n - nn - 1 && jj >= nn && jj < n -nn - 1) {
+////
+////							loc.add(TAG_NUCLEUS ,i*n + ii, j*n + jj, z);
+////							loc.add(TAG_CYTOPLASM,i*n + ii, j*n + jj, z + 1);
+////							loc.add(TAG_CYTOPLASM,i*n + ii, j*n + jj, z - 1);
+////
+////							
+////						}
+////						
+////						else {
+////							loc.add(TAG_CYTOPLASM,i*n + ii, j*n + jj, z);
+////							loc.add(TAG_CYTOPLASM,i*n + ii, j*n + jj, z + 1);
+////							loc.add(TAG_CYTOPLASM,i*n + ii, j*n + jj, z - 1);
+////						}
+////					}
+////				}
+////				
+////				locations.add(loc);
+////			}
+////		}
+//
+//		return locations;
+//	}
+//
 }

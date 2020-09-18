@@ -112,8 +112,8 @@ public class MiniBox {
 	public MiniBox filter(String code) {
 		MiniBox results = new MiniBox();
 		for (String key : keys) {
-			String[] split = key.split("_");
-			if (split.length == 2 && split[1].equals(code)) { results.put(split[0], contents.get(key)); }
+			String[] split = key.split("/");
+			if (split.length == 2 && split[0].equals(code)) { results.put(split[1], contents.get(key)); }
 		}
 		return results;
 	}

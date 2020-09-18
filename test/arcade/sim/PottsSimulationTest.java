@@ -440,9 +440,9 @@ public class PottsSimulationTest {
 		population.put("CODE", cellPop);
 		population.put("ADHESION:*", adhesion[0]);
 		population.put("ADHESION:A", adhesion[1]);
-		population.put("a_TAG", 0);
-		population.put("b_TAG", 0);
-		population.put("c_TAG", 0);
+		population.put("TAG/a", 0);
+		population.put("TAG/b", 0);
+		population.put("TAG/c", 0);
 		population.put("LAMBDA_VOLUME", lambdas[0]);
 		population.put("LAMBDA_SURFACE", lambdas[1]);
 		population.put("CRITICAL_VOLUME", criticals[0]);
@@ -452,13 +452,13 @@ public class PottsSimulationTest {
 		String[] _tags = new String[] { "a", "b", "c" };
 		for (int i = 0; i < tags; i++) {
 			String tag = _tags[i];
-			population.put("LAMBDA_VOLUME_" + tag, lambdasTag[0][i]);
-			population.put("LAMBDA_SURFACE_" + tag, lambdasTag[1][i]);
-			population.put("CRITICAL_VOLUME_" + tag, criticalsTag[0][i]);
-			population.put("CRITICAL_SURFACE_" + tag, criticalsTag[1][i]);
+			population.put(tag + "/LAMBDA_VOLUME", lambdasTag[0][i]);
+			population.put(tag + "/LAMBDA_SURFACE", lambdasTag[1][i]);
+			population.put(tag + "/CRITICAL_VOLUME", criticalsTag[0][i]);
+			population.put(tag + "/CRITICAL_SURFACE", criticalsTag[1][i]);
 			
 			for (int j = 0; j < tags; j++) {
-				population.put("ADHESION:" + tag + "-" + _tags[j], adhesionTag[i][j]);
+				population.put(tag + "/ADHESION:" + _tags[j], adhesionTag[i][j]);
 			}
 		}
 		
@@ -523,9 +523,9 @@ public class PottsSimulationTest {
 		population.put("ADHESION:B", adhesion[1]);
 		population.put("ADHESION:C", adhesion[2]);
 		population.put("ADHESION:D", adhesion[3]);
-		population.put("a_TAG", 0);
-		population.put("b_TAG", 0);
-		population.put("c_TAG", 0);
+		population.put("TAG/a", 0);
+		population.put("TAG/b", 0);
+		population.put("TAG/c", 0);
 		population.put("LAMBDA_VOLUME", lambdas[0]);
 		population.put("LAMBDA_SURFACE", lambdas[1]);
 		population.put("CRITICAL_VOLUME", criticals[0]);
@@ -535,13 +535,13 @@ public class PottsSimulationTest {
 		String[] _tags = new String[] { "a", "b", "c" };
 		for (int i = 0; i < tags; i++) {
 			String tag = _tags[i];
-			population.put("LAMBDA_VOLUME_" + tag, lambdasTag[0][i]);
-			population.put("LAMBDA_SURFACE_" + tag, lambdasTag[1][i]);
-			population.put("CRITICAL_VOLUME_" + tag, criticalsTag[0][i]);
-			population.put("CRITICAL_SURFACE_" + tag, criticalsTag[1][i]);
+			population.put(tag + "/LAMBDA_VOLUME", lambdasTag[0][i]);
+			population.put(tag + "/LAMBDA_SURFACE", lambdasTag[1][i]);
+			population.put(tag + "/CRITICAL_VOLUME", criticalsTag[0][i]);
+			population.put(tag + "/CRITICAL_SURFACE", criticalsTag[1][i]);
 			
 			for (int j = 0; j < tags; j++) {
-				population.put("ADHESION:" + tag + "-" + _tags[j], adhesionTag[i][j]);
+				population.put(tag + "/ADHESION:" + _tags[j], adhesionTag[i][j]);
 			}
 		}
 		
