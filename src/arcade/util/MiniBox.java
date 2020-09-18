@@ -50,7 +50,10 @@ public class MiniBox {
 	 * @param id  the key
 	 * @return  the value
 	 */
-	public int getInt(String id) { return Integer.parseInt(contents.get(id)); }
+	public int getInt(String id) {
+		String s = contents.get(id);
+		return (s == null ? 0 : Integer.parseInt(s));
+	}
 	
 	/**
 	 * Gets the value for given key converted to a double.
@@ -58,7 +61,10 @@ public class MiniBox {
 	 * @param id  the key
 	 * @return  the value
 	 */
-	public double getDouble(String id) { return Double.parseDouble(contents.get(id)); }
+	public double getDouble(String id) {
+		String s = contents.get(id);
+		return (s == null ? Double.NaN : Double.parseDouble(s));
+	}
 	
 	/**
 	 * Gets the value for given key converted to a boolean.

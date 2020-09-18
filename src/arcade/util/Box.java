@@ -41,6 +41,14 @@ public class Box {
 	public ArrayList<String> getKeys() { return keys; }
 	
 	/**
+	 * Gets the entry for the given key.
+	 * 
+	 * @param key  the key
+	 * @return  the entry
+	 */
+	public String get(String key) { return idToVal.get(key); }
+	
+	/**
 	 * Gets the tag for a given key.
 	 * 
 	 * @param key  the key
@@ -78,6 +86,16 @@ public class Box {
 	 */
 	public void addAtt(String id, String att, String val) {
 		idToVal.put(id + "~" + att, val);
+	}
+	
+	/**
+	 * Adds a value for a given id.
+	 * 
+	 * @param id  the id
+	 * @param val  the value
+	 */
+	public void add(String id, String val) {
+		idToVal.put(id, val);
 	}
 	
 	/**
@@ -122,6 +140,20 @@ public class Box {
 	}
 	
 	/**
+	 * Gets a mapping from id to value for untagged entries.
+	 * 
+	 * @return  a map of id to value
+	 */
+	public MiniBox getIdValForUntagged() {
+		MiniBox result = new MiniBox();
+		for (String key : idToVal.getKeys()) {
+			String[] split = key.split("~");
+			if (split.length == 1) { result.put(key, idToVal.get(key)); }
+		}
+		return result;
+	}
+	
+	/**
 	 * Filters box by entries matching the given tag.
 	 * 
 	 * @param tag  the tag
@@ -134,7 +166,7 @@ public class Box {
 		for (String key : idToVal.getKeys()) {
 			String[] split = key.split("~");
 			String id = split[0];
-			if (idToTag.get(id).equals(tag)) {
+			if (idToTag.contains(id) && idToTag.get(id).equals(tag)) {
 				result.addTag(id, tag);
 				result.addAtt(id, split[1], idToVal.get(key));
 			}
@@ -175,6 +207,7 @@ public class Box {
 	public String toString() {
 		String format = "\t[%s] %s\n";
 		String s = "";
+		s += getIdValForUntagged().toString();
 		for (String id : idToTag.getKeys()) {
 			s += String.format(format, idToTag.get(id), id);
 			s += getAttValForId(id).toString();
