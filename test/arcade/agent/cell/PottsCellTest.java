@@ -590,8 +590,8 @@ public class PottsCellTest {
 	public void schedule_validInput_callsMethod() {
 		Schedule schedule = spy(mock(Schedule.class));
 		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, criticals, lambdas, adhesion);
+		doReturn(mock(Stoppable.class)).when(schedule).scheduleRepeating(cell, ORDERING_CELLS, 1);
 		cell.schedule(schedule);
-		
 		verify(schedule).scheduleRepeating(cell, ORDERING_CELLS, 1);
 	}
 	
@@ -599,7 +599,7 @@ public class PottsCellTest {
 	public void schedule_validInput_assignStopper() {
 		Schedule schedule = spy(mock(Schedule.class));
 		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, criticals, lambdas, adhesion);
-		when(schedule.scheduleRepeating(cell, ORDERING_CELLS, 1)).thenReturn(mock(Stoppable.class));
+		doReturn(mock(Stoppable.class)).when(schedule).scheduleRepeating(cell, ORDERING_CELLS, 1);
 		cell.schedule(schedule);
 		assertNotNull(cell.stopper);
 	}

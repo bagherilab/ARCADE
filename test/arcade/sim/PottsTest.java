@@ -320,7 +320,7 @@ public class PottsTest {
 	@Test
 	public void flip_unconnectedSourceID_returns() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(1, 0, 0, 0, 0, random);
 		verify(spy).getNeighborhood(1, 0, 0, 0);
@@ -330,7 +330,7 @@ public class PottsTest {
 	@Test
 	public void flip_connectedSourceUnconnectedSourceTag_returns() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(1, 0, 1, 4, 0, random);
 		verify(spy).getNeighborhood(1, 1, 4, 0);
@@ -341,7 +341,7 @@ public class PottsTest {
 	@Test
 	public void flip_connectedSourceConnectedSourceTag_completes() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(1, 0, 2, 4, 0, random);
 		verify(spy).getNeighborhood(1, 2, 4, 0);
@@ -352,7 +352,7 @@ public class PottsTest {
 	@Test
 	public void flip_connectedSourceDefaultTag_completes() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(1, 0, 1, 1, 0, random);
 		verify(spy).getNeighborhood(1, 1, 1, 0);
@@ -363,7 +363,7 @@ public class PottsTest {
 	@Test
 	public void flip_unconnectedTargetID_returns() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(0, 2, 0, 0, 0, random);
 		verify(spy).getNeighborhood(2, 0, 0, 0);
@@ -373,7 +373,7 @@ public class PottsTest {
 	@Test
 	public void flip_connectedTargetUnconnectedTargetTag_returns() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(0, 2, 1, 4, 0, random);
 		verify(spy).getNeighborhood(2, 1, 4, 0);
@@ -384,7 +384,7 @@ public class PottsTest {
 	@Test
 	public void flip_connectedTargetConnectedTargetTag_completes() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(0, 2, 2, 4, 0, random);
 		verify(spy).getNeighborhood(2, 2, 4, 0);
@@ -395,7 +395,7 @@ public class PottsTest {
 	@Test
 	public void flip_connectedTargetDefaultTag_completes() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(0, 2, 1, 1, 0, random);
 		verify(spy).getNeighborhood(2, 1, 1, 0);
@@ -406,7 +406,7 @@ public class PottsTest {
 	@Test
 	public void flip_connectedIDs_callsMethods() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(0, 0, 0, 0, 0, random);
 		verify(spy).getDeltaAdhesion(0, 0, 0, 0, 0);
@@ -549,7 +549,7 @@ public class PottsTest {
 	@Test
 	public void flip_unconnectedSourceTag_returns() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(1,-2, 0, 1, 0, 0, random);
 		verify(spy).getNeighborhood(1, -2, 1, 0, 0);
@@ -559,7 +559,7 @@ public class PottsTest {
 	@Test
 	public void flip_unconnectedTargetTag_returns() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(1, 0, -2, 1, 0, 0, random);
 		verify(spy).getNeighborhood(1, -2, 1, 0, 0);
@@ -569,7 +569,7 @@ public class PottsTest {
 	@Test
 	public void flip_connectedTags_callsMethods() {
 		MersenneTwisterFast random = spy(mock(MersenneTwisterFast.class));
-		when(random.nextDouble()).thenReturn(1.0);
+		doReturn(1.0).when(random).nextDouble();
 		PottsMock spy = spy(potts);
 		spy.flip(1, 0, 0, 0, 0, 0, random);
 		verify(spy).getDeltaAdhesion(1, 0, 0, 0, 0, 0);

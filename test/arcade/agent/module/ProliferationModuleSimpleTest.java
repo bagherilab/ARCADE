@@ -373,24 +373,23 @@ public class ProliferationModuleSimpleTest {
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
 		Simulation sim = mock(Simulation.class);
-		Schedule schedule = spy(mock(Schedule.class));
+		Schedule schedule = mock(Schedule.class);
 		when(sim.getPotts()).thenReturn(potts);
 		when(sim.getID()).thenReturn(2);
 		when(sim.getAgents()).thenReturn(grid);
 		when(sim.getSchedule()).thenReturn(schedule);
 		
 		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_M;
+		module.phase = PHASE_M;
 		
-		spy.stepM(1, random, sim);
+		module.stepM(1, random, sim);
 		verify(location, never()).split(random);
 		verify(cell, never()).reset(null, null);
 		verify(sim, never()).getAgents();
 		verify(sim, never()).getID();
 		verify(sim, never()).getSchedule();
 		verify(grid, never()).addObject(eq(2), isA(PottsCellMock.class));
-		assertEquals(PHASE_M, spy.phase);
+		assertEquals(PHASE_M, module.phase);
 	}
 	
 	@Test
@@ -403,23 +402,22 @@ public class ProliferationModuleSimpleTest {
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
 		Simulation sim = mock(Simulation.class);
-		Schedule schedule = spy(mock(Schedule.class));
+		Schedule schedule = mock(Schedule.class);
 		when(sim.getPotts()).thenReturn(potts);
 		when(sim.getID()).thenReturn(2);
 		when(sim.getAgents()).thenReturn(grid);
 		when(sim.getSchedule()).thenReturn(schedule);
 		
 		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_M;
+		module.phase = PHASE_M;
 		
-		spy.stepM(0, random, sim);
+		module.stepM(0, random, sim);
 		verify(location).split(random);
 		verify(cell).reset(null, null);
 		verify(sim).getAgents();
 		verify(sim).getID();
 		verify(sim).getSchedule();
 		verify(grid).addObject(eq(2), isA(PottsCellMock.class));
-		assertEquals(PHASE_G1, spy.phase);
+		assertEquals(PHASE_G1, module.phase);
 	}
 }
