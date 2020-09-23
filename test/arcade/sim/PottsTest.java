@@ -3,6 +3,7 @@ package arcade.sim;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import java.lang.reflect.Field;
 import java.util.HashSet;
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
@@ -200,11 +201,30 @@ public class PottsTest {
 		return series;
 	}
 	
+	static Series makeSeries(int length, int width, int height) {
+		Series series = makeSeries();
+		
+		try {
+			Field lengthField = Series.class.getDeclaredField("_length");
+			lengthField.setAccessible(true);
+			lengthField.setInt(series, length);
+			
+			Field widthField = Series.class.getDeclaredField("_width");
+			widthField.setAccessible(true);
+			widthField.setInt(series, width);
+			
+			Field heightField = Series.class.getDeclaredField("_height");
+			heightField.setAccessible(true);
+			heightField.setInt(series, height);
+		} catch (Exception ignored) { }
+		
+		return series;
+	}
+	
 	@Test
 	public void Potts_2D_assignsValues() {
 		Grid grid = mock(Grid.class);
-		Series series = makeSeries();
-		series._height = 1;
+		Series series = makeSeries(1, 1, 1);
 		PottsMock potts = new PottsMock(series, grid);
 		assertEquals(1, potts.HEIGHT);
 	}
@@ -212,8 +232,7 @@ public class PottsTest {
 	@Test
 	public void Potts_3D_assignsValues() {
 		Grid grid = mock(Grid.class);
-		Series series = makeSeries();
-		series._height = 4;
+		Series series = makeSeries(1, 1, 4);
 		PottsMock potts = new PottsMock(series, grid);
 		assertEquals(2, potts.HEIGHT);
 	}
@@ -227,11 +246,7 @@ public class PottsTest {
 		int length = (int)(Math.random()*10) + 3;
 		int width = (int)(Math.random()*10) + 3;
 		
-		Series series = makeSeries();
-		series._length = length;
-		series._width = width;
-		series._height = 1;
-		
+		Series series = makeSeries(length, width, 1);
 		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
 		int steps = spy.LENGTH*spy.WIDTH*spy.HEIGHT;
 		
@@ -256,10 +271,7 @@ public class PottsTest {
 		int width = (int)(Math.random()*10) + 3;
 		int height = (int)(Math.random()*10) + 4;
 		
-		Series series = makeSeries();
-		series._length = length;
-		series._width = width;
-		series._height = height;
+		Series series = makeSeries(length, width, height);
 		
 		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
 		int steps = spy.LENGTH*spy.WIDTH*spy.HEIGHT;
@@ -283,10 +295,7 @@ public class PottsTest {
 		SimState simstate = mock(SimState.class);
 		simstate.random = random;
 		
-		Series series = makeSeries();
-		series._width = 3;
-		series._length = 3;
-		series._height = 1;
+		Series series = makeSeries(3, 3, 1);
 		
 		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
 		
@@ -303,10 +312,7 @@ public class PottsTest {
 		SimState simstate = mock(SimState.class);
 		simstate.random = random;
 		
-		Series series = makeSeries();
-		series._width = 3;
-		series._length = 3;
-		series._height = 1;
+		Series series = makeSeries(3, 3, 1);
 		
 		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
 		spy.IDS[0][1][0] = 1;

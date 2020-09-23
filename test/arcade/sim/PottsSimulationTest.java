@@ -3,6 +3,7 @@ package arcade.sim;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +61,27 @@ public class PottsSimulationTest {
 		}
 		
 		series._populations = populations;
+		
+		return series;
+	}
+	
+	static Series createSeries(int[] pops, String[] keys, double[] volumes,
+							   int length, int width, int height) {
+		Series series = createSeries(pops, keys, volumes);
+		
+		try {
+			Field lengthField = Series.class.getDeclaredField("_length");
+			lengthField.setAccessible(true);
+			lengthField.setInt(series, length);
+			
+			Field widthField = Series.class.getDeclaredField("_width");
+			widthField.setAccessible(true);
+			widthField.setInt(series, width);
+			
+			Field heightField = Series.class.getDeclaredField("_height");
+			heightField.setAccessible(true);
+			heightField.setInt(series, height);
+		} catch (Exception ignored) { }
 		
 		return series;
 	}

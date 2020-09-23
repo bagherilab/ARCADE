@@ -50,14 +50,15 @@ public class Series {
 	private final int ticks;
 	
 	/** Length of the simulation */
-	public int _length;
+	public final int _length;
 	
 	/** Width of the simulation */
-	public int _width;
+	public final int _width;
 	
 	/** Height of the simulation */
-	public int _height;
+	public final int _height;
 	
+	/** Map of potts settings */
 	public MiniBox _potts;
 	
 	/** Map of population settings */
@@ -78,12 +79,24 @@ public class Series {
 		MiniBox series = setupDicts.get("series");
 		MiniBox defaults = parameters.getIdValForTag("DEFAULT");
 		
+		this.isVis = isVis;
+		
+		// Set name and prefix.
 		this.name = series.get("name");
 		this.prefix = set.get("path") + (set.contains("prefix") ? set.get("prefix") : "") + name + "_";
+		
+		// Set random seeds.
 		this.startSeed = (series.contains("start") ? series.getInt("start") : defaults.getInt("START_SEED"));
 		this.endSeed = (series.contains("end") ? series.getInt("end") : defaults.getInt("END_SEED"));
+		
+		// Set number of ticks.
 		this.ticks = (series.contains("ticks") ? series.getInt("ticks") : defaults.getInt("TICKS"));
-		this.isVis = isVis;
+		
+		// Set sizing.
+		this._length = (series.contains("length") ? series.getInt("length") : defaults.getInt("LENGTH"));
+		this._width = (series.contains("width") ? series.getInt("width") : defaults.getInt("WIDTH"));
+		int height = (series.contains("height") ? series.getInt("height") : defaults.getInt("HEIGHT"));
+		this._height = ((height & 1) == 1 ? height : height + 1); // enforce odd
 		
 		// Initialize simulation series.
 		initialize(setupDicts, setupLists, parameters);
@@ -146,19 +159,10 @@ public class Series {
 	final void initialize(HashMap<String, MiniBox> setupDicts,
 						  HashMap<String, ArrayList<Box>> setupLists,
 						  Box parameters) {
-		MiniBox defaults = parameters.getIdValForTag("DEFAULT");
-		
-		// Initialize simulation.
-		MiniBox simulation = setupDicts.get("simulation");
-		updateSizing(simulation, defaults);
-		
-		// Initialize agents.
-		MiniBox agents = setupDicts.get("agents");
-		updateAgents(agents);
-		
-		// Initialize environment.
-		MiniBox environment = setupDicts.get("environment");
-		updateEnvironment(environment);
+		// Initialize potts.
+		MiniBox pottsDefaults = parameters.getIdValForTag("POTTS");
+		MiniBox potts = setupDicts.get("potts");
+		updatePotts(potts, pottsDefaults);
 		
 		// Initialize populations.
 		MiniBox populationDefaults = parameters.getIdValForTag("POPULATION");
@@ -192,41 +196,10 @@ public class Series {
 	/**
 	 * Calculates model sizing parameters.
 	 * 
-	 * @param simulation  the simulation setup dictionary
-	 * @param defaults  the default parameters dictionary
+	 * @param potts  the potts setup dictionary
+	 * @param pottsDefaults  the dictionary of default potts parameters
 	 */
-	void updateSizing(MiniBox simulation, MiniBox defaults) {
-		// Get default sizing
-		int length = defaults.getInt("LENGTH");
-		int width = defaults.getInt("WIDTH");
-		int height = defaults.getInt("HEIGHT");
-		
-		// Override sizes from specific flags.
-		if (simulation.contains("length")) { length = simulation.getInt("length"); }
-		if (simulation.contains("width")) { width = simulation.getInt("width"); }
-		if (simulation.contains("height")) { height = simulation.getInt("height"); }
-		
-		// Enforce that HEIGHT is odd.
-		_length = length;
-		_width = width;
-		_height = ((height & 1) == 1 ? height : height + 1);
-	}
-	
-	/**
-	 * Updates agent initialization.
-	 * 
-	 * @param agents  the agent setup dictionary
-	 */
-	void updateAgents(MiniBox agents) {
-		// TODO
-	}
-	
-	/**
-	 * Updates environment initialization.
-	 * 
-	 * @param environment  the environment setup dictionary
-	 */
-	void updateEnvironment(MiniBox environment) {
+	void updatePotts(MiniBox potts, MiniBox pottsDefaults) {
 		// TODO
 	}
 	
@@ -234,6 +207,7 @@ public class Series {
 	 * Creates agent populations.
 	 * 
 	 * @param populations  the list of population setup dictionaries
+	 * @param populationDefaults  the dictionary of default population parameters
 	 */
 	void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults) {
 		_populations = new HashMap<>();

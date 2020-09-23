@@ -18,15 +18,24 @@ import static arcade.sim.Series.*;
 public class SeriesTest {
 	private static final double EPSILON = 1E-4;
 	private static Box PARAMETERS;
-	private static final String DEFAULT_NAME = "DEFAULT_NAME";
-	private static final String DEFAULT_PATH = "/default/path/";
+	private static final String TEST_NAME = "DEFAULT_NAME";
+	private static final String TEST_PATH = "/default/path/";
 	private static final int DEFAULT_START_SEED = randomInt();
 	private static final int DEFAULT_END_SEED = randomInt();
 	private static final int DEFAULT_TICKS = randomInt();
 	private static final int DEFAULT_LENGTH = randomInt();
 	private static final int DEFAULT_WIDTH = randomInt();
 	private static final int DEFAULT_HEIGHT = randomOdd();
-	private static final double ADHESION = randomDouble();
+	
+	private static final String[] POTTS_PARAMETER_NAMES = new String[] {
+			"TEMPERATURE"
+	};
+	
+	private static final double[] POTTS_PARAMETER_VALUES = new double[] {
+			randomInt()
+	};
+	
+	private static final int POTTS_PARAMETER_COUNT = POTTS_PARAMETER_NAMES.length;
 	
 	private static final String[] POPULATION_PARAMETER_NAMES = new String[] {
 			"LAMBDA_VOLUME",
@@ -37,7 +46,11 @@ public class SeriesTest {
 	};
 	
 	private static final double[] POPULATION_PARAMETER_VALUES = new double[] {
-			randomDouble(), randomDouble(), randomDouble(), randomDouble(), randomDouble()
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
+			randomDouble()
 	};
 	
 	private static final int POPULATION_PARAMETER_COUNT = POPULATION_PARAMETER_NAMES.length;
@@ -49,7 +62,7 @@ public class SeriesTest {
 	private static final String TAG_ID_1 = randomString();
 	private static final String TAG_ID_2 = randomString();
 	
-	private static MiniBox DEFAULTS, POPULATION;
+	private static MiniBox DEFAULTS, POTTS, POPULATION;
 	
 	private static final HashMap<String, ArrayList<Box>> setupListsMock = mock(HashMap.class);
 	
@@ -72,33 +85,33 @@ public class SeriesTest {
 	public static void setupParameters() {
 		PARAMETERS = new Box();
 		
-		// DEFAULTS 
-		
+		// DEFAULTS
 		PARAMETERS.addTag("START_SEED", "DEFAULT");
 		PARAMETERS.addTag("END_SEED", "DEFAULT");
 		PARAMETERS.addTag("TICKS", "DEFAULT");
 		PARAMETERS.addTag("LENGTH", "DEFAULT");
 		PARAMETERS.addTag("WIDTH", "DEFAULT");
 		PARAMETERS.addTag("HEIGHT", "DEFAULT");
-		
 		PARAMETERS.addAtt("START_SEED", "value", "" + DEFAULT_START_SEED);
 		PARAMETERS.addAtt("END_SEED", "value", "" + DEFAULT_END_SEED);
 		PARAMETERS.addAtt("TICKS", "value", "" + DEFAULT_TICKS);
 		PARAMETERS.addAtt("LENGTH", "value", "" + DEFAULT_LENGTH);
 		PARAMETERS.addAtt("WIDTH", "value", "" + DEFAULT_WIDTH);
 		PARAMETERS.addAtt("HEIGHT", "value", "" + DEFAULT_HEIGHT);
-		
 		DEFAULTS = PARAMETERS.getIdValForTag("DEFAULT");
+		
+		// POTTS
+		for (int i = 0; i < POTTS_PARAMETER_COUNT; i++) {
+			PARAMETERS.addTag(POTTS_PARAMETER_NAMES[i], "POTTS");
+			PARAMETERS.addAtt(POTTS_PARAMETER_NAMES[i], "value", "" + POTTS_PARAMETER_VALUES[i]);
+		}
+		POTTS = PARAMETERS.getIdValForTag("POTTS");
 		
 		// POPULATION
 		for (int i = 0; i < POPULATION_PARAMETER_COUNT; i++) {
 			PARAMETERS.addTag(POPULATION_PARAMETER_NAMES[i], "POPULATION");
 			PARAMETERS.addAtt(POPULATION_PARAMETER_NAMES[i], "value", "" + POPULATION_PARAMETER_VALUES[i]);
 		}
-		
-		PARAMETERS.addTag("ADHESION", "POPULATION");
-		PARAMETERS.addAtt("ADHESION", "value", "" + ADHESION);
-		
 		POPULATION = PARAMETERS.getIdValForTag("POPULATION");
 	}
 	
@@ -106,16 +119,14 @@ public class SeriesTest {
 		HashMap<String, MiniBox> setupDicts = new HashMap<>();
 		
 		MiniBox set = new MiniBox();
-		set.put("path", DEFAULT_PATH);
+		set.put("path", TEST_PATH);
 		setupDicts.put("set", set);
 		
 		MiniBox series = new MiniBox();
-		series.put("name", DEFAULT_NAME);
+		series.put("name", TEST_NAME);
 		setupDicts.put("series", series);
 		
-		setupDicts.put("simulation", new MiniBox());
-		setupDicts.put("agents", new MiniBox());
-		setupDicts.put("environment", new MiniBox());
+		setupDicts.put("potts", new MiniBox());
 		
 		return setupDicts;
 	}
@@ -134,8 +145,8 @@ public class SeriesTest {
 		HashMap<String, MiniBox> setupDicts = makeDicts();
 		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
 		
-		assertEquals(DEFAULT_NAME, series.getName());
-		assertEquals(DEFAULT_PATH + DEFAULT_NAME + "_", series.getPrefix());
+		assertEquals(TEST_NAME, series.getName());
+		assertEquals(TEST_PATH + TEST_NAME + "_", series.getPrefix());
 	}
 	
 	@Test
@@ -144,8 +155,8 @@ public class SeriesTest {
 		setupDicts.get("set").put("prefix", "PREFIX_");
 		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
 		
-		assertEquals(DEFAULT_NAME, series.getName());
-		assertEquals(DEFAULT_PATH + "PREFIX_" + DEFAULT_NAME + "_", series.getPrefix());
+		assertEquals(TEST_NAME, series.getName());
+		assertEquals(TEST_PATH + "PREFIX_" + TEST_NAME + "_", series.getPrefix());
 	}
 	
 	@Test
@@ -203,19 +214,188 @@ public class SeriesTest {
 	}
 	
 	@Test
+	public void constructor_sizesNotGiven_usesDefaults() {
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
+		
+		assertEquals(DEFAULT_LENGTH, series._length);
+		assertEquals(DEFAULT_WIDTH, series._width);
+		assertEquals(DEFAULT_HEIGHT, series._height);
+	}
+	
+	@Test
+	public void constructor_oneSizeGivenOdd_updatesSizes() {
+		int length = randomOdd();
+		int width = randomOdd();
+		int height = randomOdd();
+		
+		HashMap<String, MiniBox> setupDicts;
+		Series series;
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("length", length);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(length, series._length);
+		assertEquals(DEFAULT_WIDTH, series._width);
+		assertEquals(DEFAULT_HEIGHT, series._height);
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("width", width);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(DEFAULT_LENGTH, series._length);
+		assertEquals(width, series._width);
+		assertEquals(DEFAULT_HEIGHT, series._height);
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("height", height);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(DEFAULT_LENGTH, series._length);
+		assertEquals(DEFAULT_WIDTH, series._width);
+		assertEquals(height, series._height);
+	}
+	
+	@Test
+	public void constructor_twoSizesGivenOdd_updatesSizes() {
+		int length = randomOdd();
+		int width = randomOdd();
+		int height = randomOdd();
+		
+		HashMap<String, MiniBox> setupDicts;
+		Series series;
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("length", length);
+		setupDicts.get("series").put("width", width);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(length, series._length);
+		assertEquals(width, series._width);
+		assertEquals(DEFAULT_HEIGHT, series._height);
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("width", width);
+		setupDicts.get("series").put("height", height);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(DEFAULT_LENGTH, series._length);
+		assertEquals(width, series._width);
+		assertEquals(height, series._height);
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("length", length);
+		setupDicts.get("series").put("height", height);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(length, series._length);
+		assertEquals(DEFAULT_WIDTH, series._width);
+		assertEquals(height, series._height);
+	}
+	
+	@Test
+	public void constructor_allSizesGivenOdd_updatesSizes() {
+		int length = randomOdd();
+		int width = randomOdd();
+		int height = randomOdd();
+		
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		setupDicts.get("series").put("length", length);
+		setupDicts.get("series").put("width", width);
+		setupDicts.get("series").put("height", height);
+		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		
+		assertEquals(length, series._length);
+		assertEquals(width, series._width);
+		assertEquals(height, series._height);
+	}
+	
+	@Test
+	public void constructor_oneSizeGivenEven_updatesSizes() {
+		int length = randomEven();
+		int width = randomEven();
+		int height = randomEven();
+		
+		HashMap<String, MiniBox> setupDicts;
+		Series series;
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("length", length);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(length, series._length);
+		assertEquals(DEFAULT_WIDTH, series._width);
+		assertEquals(DEFAULT_HEIGHT, series._height);
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("width", width);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(DEFAULT_LENGTH, series._length);
+		assertEquals(width, series._width);
+		assertEquals(DEFAULT_HEIGHT, series._height);
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("height", height);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(DEFAULT_LENGTH, series._length);
+		assertEquals(DEFAULT_WIDTH, series._width);
+		assertEquals(height + 1, series._height);
+	}
+	
+	@Test
+	public void constructor_twoSizesGivenEven_updatesSizes() {
+		int length = randomEven();
+		int width = randomEven();
+		int height = randomEven();
+		
+		HashMap<String, MiniBox> setupDicts;
+		Series series;
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("length", length);
+		setupDicts.get("series").put("width", width);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(length, series._length);
+		assertEquals(width, series._width);
+		assertEquals(DEFAULT_HEIGHT, series._height);
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("width", width);
+		setupDicts.get("series").put("height", height);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(DEFAULT_LENGTH, series._length);
+		assertEquals(width, series._width);
+		assertEquals(height + 1, series._height);
+		
+		setupDicts = makeDicts();
+		setupDicts.get("series").put("length", length);
+		setupDicts.get("series").put("height", height);
+		series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		assertEquals(length, series._length);
+		assertEquals(DEFAULT_WIDTH, series._width);
+		assertEquals(height + 1, series._height);
+	}
+	
+	@Test
+	public void constructor_allSizesGivenEven_updatesSizes() {
+		int length = randomEven();
+		int width = randomEven();
+		int height = randomEven();
+		
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		setupDicts.get("series").put("length", length);
+		setupDicts.get("series").put("width", width);
+		setupDicts.get("series").put("height", height);
+		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		
+		assertEquals(length, series._length);
+		assertEquals(width, series._width);
+		assertEquals(height + 1, series._height);
+	}
+	
+	@Test
 	public void initialize_default_callsMethods() {
 		HashMap<String, MiniBox> setupDicts = makeDicts();
 		HashMap<String, ArrayList<Box>> setupLists = makeLists();
 		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
 		series.initialize(setupDicts, setupLists, PARAMETERS);
 		
-		MiniBox simulation = setupDicts.get("simulation");
-		MiniBox agents = setupDicts.get("agents");
-		MiniBox environment = setupDicts.get("environment");
-		
-		verify(series).updateSizing(eq(simulation), any(MiniBox.class));
-		verify(series).updateAgents(agents);
-		verify(series).updateEnvironment(environment);
+		MiniBox potts = setupDicts.get("potts");
+		verify(series).updatePotts(eq(potts), any(MiniBox.class));
 		
 		ArrayList<Box> populations = setupLists.get("populations");
 		verify(series).updatePopulations(eq(populations), any(MiniBox.class));
@@ -231,191 +411,6 @@ public class SeriesTest {
 		
 		ArrayList<Box> checkpoints = setupLists.get("checkpoints");
 		verify(series).updateCheckpoints(eq(checkpoints), any(MiniBox.class));
-	}
-	
-	@Test
-	public void updateSizing_sizesNotGiven_usesDefaults() {
-		HashMap<String, MiniBox> setupDicts = makeDicts();
-		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
-		
-		MiniBox simulation = setupDicts.get("simulation");
-		series.updateSizing(simulation, DEFAULTS);
-		
-		assertEquals(DEFAULT_LENGTH, series._length);
-		assertEquals(DEFAULT_WIDTH, series._width);
-		assertEquals(DEFAULT_HEIGHT, series._height);
-	}
-	
-	@Test
-	public void updateSizing_oneSizeGivenOdd_useGiven() {
-		int length = randomOdd();
-		int width = randomOdd();
-		int height = randomOdd();
-		
-		HashMap<String, MiniBox> setupDicts = makeDicts();
-		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
-		MiniBox simulation;
-		
-		simulation = new MiniBox();
-		simulation.put("length", length);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(length, series._length);
-		assertEquals(DEFAULT_WIDTH, series._width);
-		assertEquals(DEFAULT_HEIGHT, series._height);
-		
-		simulation = new MiniBox();
-		simulation.put("width", width);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(DEFAULT_LENGTH, series._length);
-		assertEquals(width, series._width);
-		assertEquals(DEFAULT_HEIGHT, series._height);
-		
-		simulation = new MiniBox();
-		simulation.put("height", height);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(DEFAULT_LENGTH, series._length);
-		assertEquals(DEFAULT_WIDTH, series._width);
-		assertEquals(height, series._height);
-	}
-	
-	@Test
-	public void updateSizing_twoSizesGivenOdd_useGiven() {
-		int length = randomOdd();
-		int width = randomOdd();
-		int height = randomOdd();
-		
-		HashMap<String, MiniBox> setupDicts = makeDicts();
-		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
-		MiniBox simulation;
-		
-		simulation = new MiniBox();
-		simulation.put("length", length);
-		simulation.put("width", width);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(length, series._length);
-		assertEquals(width, series._width);
-		assertEquals(DEFAULT_HEIGHT, series._height);
-		
-		simulation = new MiniBox();
-		simulation.put("width", width);
-		simulation.put("height", height);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(DEFAULT_LENGTH, series._length);
-		assertEquals(width, series._width);
-		assertEquals(height, series._height);
-		
-		simulation = new MiniBox();
-		simulation.put("length", length);
-		simulation.put("height", height);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(length, series._length);
-		assertEquals(DEFAULT_WIDTH, series._width);
-		assertEquals(height, series._height);
-	}
-	
-	@Test
-	public void updateSizing_allSizesGivenOdd_useGiven() {
-		int length = randomOdd();
-		int width = randomOdd();
-		int height = randomOdd();
-		
-		HashMap<String, MiniBox> setupDicts = makeDicts();
-		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
-		
-		MiniBox simulation = new MiniBox();
-		simulation.put("length", length);
-		simulation.put("width", width);
-		simulation.put("height", height);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(length, series._length);
-		assertEquals(width, series._width);
-		assertEquals(height, series._height);
-	}
-	
-	@Test
-	public void updateSizing_oneSizeGivenEven_useGiven() {
-		int length = randomEven();
-		int width = randomEven();
-		int height = randomEven();
-		
-		HashMap<String, MiniBox> setupDicts = makeDicts();
-		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
-		MiniBox simulation;
-		
-		simulation = new MiniBox();
-		simulation.put("length", length);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(length, series._length);
-		assertEquals(DEFAULT_WIDTH, series._width);
-		assertEquals(DEFAULT_HEIGHT, series._height);
-		
-		simulation = new MiniBox();
-		simulation.put("width", width);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(DEFAULT_LENGTH, series._length);
-		assertEquals(width, series._width);
-		assertEquals(DEFAULT_HEIGHT, series._height);
-		
-		simulation = new MiniBox();
-		simulation.put("height", height);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(DEFAULT_LENGTH, series._length);
-		assertEquals(DEFAULT_WIDTH, series._width);
-		assertEquals(height + 1, series._height);
-	}
-	
-	@Test
-	public void updateSizing_twoSizesGivenEven_useGiven() {
-		int length = randomEven();
-		int width = randomEven();
-		int height = randomEven();
-		
-		HashMap<String, MiniBox> setupDicts = makeDicts();
-		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
-		MiniBox simulation;
-		
-		simulation = new MiniBox();
-		simulation.put("length", length);
-		simulation.put("width", width);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(length, series._length);
-		assertEquals(width, series._width);
-		assertEquals(DEFAULT_HEIGHT, series._height);
-		
-		simulation = new MiniBox();
-		simulation.put("width", width);
-		simulation.put("height", height);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(DEFAULT_LENGTH, series._length);
-		assertEquals(width, series._width);
-		assertEquals(height + 1, series._height);
-		
-		simulation = new MiniBox();
-		simulation.put("length", length);
-		simulation.put("height", height);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(length, series._length);
-		assertEquals(DEFAULT_WIDTH, series._width);
-		assertEquals(height + 1, series._height);
-	}
-	
-	@Test
-	public void updateSizing_allSizesGivenEven_useGiven() {
-		int length = randomEven();
-		int width = randomEven();
-		int height = randomEven();
-		
-		HashMap<String, MiniBox> setupDicts = makeDicts();
-		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
-		
-		MiniBox simulation = new MiniBox();
-		simulation.put("length", length);
-		simulation.put("width", width);
-		simulation.put("height", height);
-		series.updateSizing(simulation, DEFAULTS);
-		assertEquals(length, series._length);
-		assertEquals(width, series._width);
-		assertEquals(height + 1, series._height);
 	}
 	
 	@Test
@@ -1054,8 +1049,8 @@ public class SeriesTest {
 	@Test
 	public void makeConstructors_given2D_createsConstructors() {
 		HashMap<String, MiniBox> setupDicts = makeDicts();
+		setupDicts.get("series").put("height", 1);
 		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
-		series._height = 1;
 		series.makeConstructors();
 		
 		assertEquals("arcade.sim.PottsSimulation2D", series.simCons.getName());
@@ -1065,8 +1060,8 @@ public class SeriesTest {
 	@Test
 	public void makeConstructors_given3D_createsConstructors() {
 		HashMap<String, MiniBox> setupDicts = makeDicts();
+		setupDicts.get("series").put("height", 3);
 		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
-		series._height = 3;
 		series.makeConstructors();
 		
 		assertEquals("arcade.sim.PottsSimulation3D", series.simCons.getName());

@@ -166,9 +166,7 @@ public class PottsSimulation2DTest {
 	@Test
 	public void makeCenters_onePopulationOneSideExactEqualSize_createsCenters() {
 		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
-				new double[] { 1.*Simulation.DS });
-		series._length = 8;
-		series._width = 8;
+				new double[] { 1.*Simulation.DS }, 8, 8, 1);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -191,9 +189,7 @@ public class PottsSimulation2DTest {
 	@Test
 	public void makeCenters_onePopulationOneSideExactUnequalSize_createsCenters() {
 		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
-				new double[] { 1.*Simulation.DS });
-		series._length = 11;
-		series._width = 8;
+				new double[] { 1.*Simulation.DS }, 11, 8, 1);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -218,9 +214,7 @@ public class PottsSimulation2DTest {
 	@Test
 	public void makeCenters_onePopulationOneSideInexactEqualSize_createsCenters() {
 		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
-				new double[] { 1.*Simulation.DS });
-		series._length = 7;
-		series._width = 7;
+				new double[] { 1.*Simulation.DS }, 7, 7, 1);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -240,9 +234,7 @@ public class PottsSimulation2DTest {
 	@Test
 	public void makeCenters_onePopulationOneSideInexactUnequalSize_createsCenters() {
 		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
-				new double[] { 1.*Simulation.DS });
-		series._length = 10;
-		series._width = 7;
+				new double[] { 1.*Simulation.DS }, 10, 7, 1);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -263,9 +255,7 @@ public class PottsSimulation2DTest {
 	@Test
 	public void makeCenters_onePopulationThreeSideExactEqualSize_createsCenters() {
 		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
-				new double[] { 9.*Simulation.DS });
-		series._length = 12;
-		series._width = 12;
+				new double[] { 9.*Simulation.DS }, 12, 12, 1);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -288,9 +278,7 @@ public class PottsSimulation2DTest {
 	@Test
 	public void makeCenters_onePopulationThreeSideExactUnequalSize_createsCenters() {
 		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
-				new double[] { 9.*Simulation.DS });
-		series._length = 17;
-		series._width = 12;
+				new double[] { 9.*Simulation.DS }, 17, 12, 1);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -315,9 +303,7 @@ public class PottsSimulation2DTest {
 	@Test
 	public void makeCenters_onePopulationThreeSideInexactEqualSize_createsCenters() {
 		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
-				new double[] { 9.*Simulation.DS });
-		series._length = 11;
-		series._width = 11;
+				new double[] { 9.*Simulation.DS }, 11, 11, 1);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -337,9 +323,7 @@ public class PottsSimulation2DTest {
 	@Test
 	public void makeCenters_onePopulationThreeSideInexactUnequalSize_createsCenters() {
 		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
-				new double[] { 9.*Simulation.DS });
-		series._length = 16;
-		series._width = 11;
+				new double[] { 9.*Simulation.DS }, 16, 11, 1);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
@@ -360,9 +344,7 @@ public class PottsSimulation2DTest {
 	@Test
 	public void makeCenters_multiplePopulations_createsCenters() {
 		Series series = createSeries(new int[] { 2, 3, 4 }, new String[] { "B", "C", "D" },
-				new double[] { 1.*Simulation.DS, 25.*Simulation.DS, 9.*Simulation.DS });
-		series._length = 16;
-		series._width = 16;
+				new double[] { 1.*Simulation.DS, 25.*Simulation.DS, 9.*Simulation.DS }, 16, 16, 1);
 		
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		ArrayList<int[]> centers = sim.makeCenters();
