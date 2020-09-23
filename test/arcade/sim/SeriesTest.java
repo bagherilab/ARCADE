@@ -7,8 +7,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.engine.Steppable;
+import sim.display.GUIState;
 import arcade.util.Box;
 import arcade.util.MiniBox;
+import static arcade.sim.Series.*;
 
 public class SeriesTest {
 	private static final double EPSILON = 1E-4;
@@ -1044,5 +1049,116 @@ public class SeriesTest {
 				}
 			}
 		}
+	}
+	
+	@Test
+	public void makeConstructors_given2D_createsConstructors() {
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		series._height = 1;
+		series.makeConstructors();
+		
+		assertEquals("arcade.sim.PottsSimulation2D", series.simCons.getName());
+		assertEquals("arcade.vis.PottsVisualization", series.visCons.getName());
+	}
+	
+	@Test
+	public void makeConstructors_given3D_createsConstructors() {
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		series._height = 3;
+		series.makeConstructors();
+		
+		assertEquals("arcade.sim.PottsSimulation3D", series.simCons.getName());
+		assertEquals("arcade.vis.PottsVisualization", series.visCons.getName());
+	}
+	
+	@Test
+	public void runSims_fromConstructors_callsMethods() throws Exception {
+		int[] start = new int[] { 0, 0, 10, 1 };
+		int[] end = new int[] { 0, 1, 12, 0 };
+		int[] n = new int[] { 1, 2, 3, 0 };
+		String[][] seeds = new String[][] {
+				{ "00" },
+				{ "00", "01" },
+				{ "10", "11", "12" },
+				{ }
+		};
+		
+		for (int i = 0; i < n.length; i++) {
+			HashMap<String, MiniBox> setupDicts = makeDicts();
+			setupDicts.get("series").put("start", start[i]);
+			setupDicts.get("series").put("end", end[i]);
+			Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
+			doNothing().when(series).runSim(any(SimState.class), any(String.class));
+			
+			series.simCons = spy(series.simCons);
+			series.runSims();
+			
+			verify(series, times(n[i])).runSim(any(SimState.class), any(String.class));
+			for (String seed : seeds[i]) {
+				verify(series.simCons).newInstance(start[i] + i + SEED_OFFSET, series);
+				verify(series).runSim(any(SimState.class), eq(seed));
+			}
+		}
+	}
+	
+	@Test
+	public void runSim_repeatingStep_callsMethods() {
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		int ticks = randomInt();
+		setupDicts.get("series").put("ticks", ticks);
+		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
+		
+		SimState state = mock(SimState.class);
+		state.schedule = spy(new Schedule());
+		state.schedule.scheduleRepeating((Steppable) simState -> { }, 1);
+		
+		series.runSim(state, randomString());
+		
+		verify(state).start();
+		verify(state).finish();
+		verify(state.schedule, times(ticks)).step(state);
+		verify(state.schedule, times(ticks)).getTime();
+	}
+	
+	@Test
+	public void runSim_singleStep_callsMethodsOnce() {
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		int ticks = randomInt();
+		setupDicts.get("series").put("ticks", ticks + 1);
+		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
+		
+		SimState state = mock(SimState.class);
+		state.schedule = spy(new Schedule());
+		state.schedule.scheduleOnce(ticks - 1, (Steppable) simState -> { });
+		
+		series.runSim(state, randomString());
+		
+		verify(state).start();
+		verify(state).finish();
+		verify(state.schedule, times(2)).step(state);
+		verify(state.schedule).getTime();
+	}
+	
+	@Test
+	public void runVis_fromConstructors_callsMethods() throws Exception {
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
+		
+		series.simCons = spy(series.simCons);
+		series.visCons = spy(series.visCons);
+		
+		Simulation simstate = mock(Simulation.class);
+		GUIState guistate = spy(mock(GUIState.class));
+		
+		doReturn(null).when(guistate).createController();
+		doReturn(simstate).when(series.simCons).newInstance(any(int.class), eq(series));
+		doReturn(guistate).when(series.visCons).newInstance(any(Simulation.class));
+		
+		series.runVis();
+		verify(series.simCons).newInstance(series.getStartSeed() + SEED_OFFSET, series);
+		verify(series.visCons).newInstance(simstate);
+		verify(guistate).createController();
 	}
 }

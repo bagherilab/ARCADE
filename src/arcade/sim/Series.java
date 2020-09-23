@@ -35,10 +35,10 @@ public class Series {
 	private final String prefix;
 	
 	/** Constructor for the simulation */
-	private Constructor<?> simCons;
+	Constructor<?> simCons;
 	
 	/** Constructor for the visualization */
-	private Constructor<?> visCons;
+	Constructor<?> visCons;
 	
 	/** Random seed of the first simulation in the series */
 	private final int startSeed;
@@ -407,7 +407,7 @@ public class Series {
 			
 			// Post-simulation output.
 			simEnd = System.currentTimeMillis();
-			LOGGER.info("simulation [ " + name + " | " + seed + " ] completed in " 
+			LOGGER.info("simulation [ " + name + " | " + seed + " ] finished in " 
 					+ DECIMAL_FORMAT.format((double)(simEnd - simStart)/1000/60) + " minutes");
 		}
 	}
@@ -418,7 +418,7 @@ public class Series {
 	 * @param state  the simulation state instance
 	 * @param seed  the random seed
 	 */
-	private void runSim(SimState state, String seed) {
+	void runSim(SimState state, String seed) {
 		// Start simulation.
 		state.start();
 		
@@ -426,14 +426,14 @@ public class Series {
 		double tick;
 		int percent = 0;
 		do {
+			if (!state.schedule.step(state)) { break; }
 			tick = state.schedule.getTime();
 			
-			if (!state.schedule.step(state)) { break; }
-			if (tick%((ticks - 1)/10.0) == 0) {
+			if (tick%(ticks/10.0) == 0) {
 				if (percent > 0 && percent < 100) { LOGGER.info("simulation [ " + name + " | " + seed + " ] " + percent + " % complete"); }
 				percent += 10;
 			}
-		} while (tick < ticks);
+		} while (tick < ticks - 1);
 		
 		// Finish simulation.
 		state.finish();
