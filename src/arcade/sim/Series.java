@@ -266,56 +266,40 @@ public class Series {
 			MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
 			
 			// Add in parameters. Start with value (if given) or default (if not
-			// given. Then apply any scaling.
+			// given). Then apply any scaling.
 			for (String parameter : populationDefaults.getKeys()) {
-				population.put(parameter, populationDefaults.get(parameter));
-				
-				if (parameterValues.get(parameter) != null) {
-					population.put(parameter, parameterValues.get(parameter));
-				}
-				
-				if (parameterScales.get(parameter) != null) {
-					population.put(parameter, population.getDouble(parameter)*parameterScales.getDouble(parameter));
-				}
+				updateParameter(population, parameter,
+						populationDefaults.get(parameter), parameterValues, parameterScales);
 			}
 			
 			// Add adhesion values for each population and media (*). Values
 			// are set as equal to the default (or adjusted) value, before
 			// any specific values or scaling is applied.
-			for (String pop : pops) {
-				String adhesion = "ADHESION:" + pop;
-				population.put(adhesion, population.get("ADHESION"));
-				
-				if (parameterValues.get(adhesion) != null) {
-					population.put(adhesion, parameterValues.get(adhesion));
-				}
-				
-				if (parameterScales.get(adhesion) != null) {
-					population.put(adhesion, population.getDouble(adhesion)*parameterScales.getDouble(adhesion));
-				}
+			for (String target : pops) {
+				updateParameter(population, "ADHESION:" + target,
+						population.get("ADHESION"), parameterValues, parameterScales);
 			}
 			
 			// Get tags.
 			Box tags = p.filterBoxByTag("TAG");
 			MiniBox tagFractions = tags.getIdValForTagAtt("TAG", "fraction");
 			
-			// Add tag fractions and parameters (default value is the same as
-			// the population value).
+			// Add tag fractions and parameters.
 			for (String tag : tags.getKeys()) {
 				double tagFraction = (isValidFraction(tags, tag + "~fraction") ? tagFractions.getDouble(tag) : 0);
 				population.put("TAG/" + tag, tagFraction);
 				
+				// Add tag parameters.
 				for (String parameter : populationDefaults.getKeys()) {
 					String tagParameter = tag + "/" + parameter;
-					population.put(tagParameter, population.get(parameter));
-					
-					if (parameterValues.get(parameter + ":" + tag) != null) {
-						population.put(tagParameter, parameterValues.get(parameter + ":" + tag));
-					}
-					
-					if (parameterScales.get(parameter + ":" + tag) != null) {
-						population.put(tagParameter, population.getDouble(tagParameter)*parameterScales.getDouble(parameter + ":" + tag));
-					}
+					updateParameter(population, tagParameter,
+							population.get(parameter), parameterValues, parameterScales);
+				}
+				
+				// Add tag adhesion values.
+				for (String target : tags.getKeys()) {
+					updateParameter(population, tag + "/ADHESION:" + target,
+							population.get("ADHESION"), parameterValues, parameterScales);
 				}
 			}
 		}
@@ -359,6 +343,28 @@ public class Series {
 	 */
 	void updateCheckpoints(ArrayList<Box> checkpoints, MiniBox checkpointDefaults) {
 		// TODO
+	}
+	
+	/**
+	 * Updates parameter values from default.
+	 *
+	 * @param box  the parameter map
+	 * @param parameter  the parameter name
+	 * @param defaultParameter  the default parameter value
+	 * @param values  the map of parameter values
+	 * @param scales  the map of parameter scaling
+	 */
+	static void updateParameter(MiniBox box, String parameter,
+								String defaultParameter, MiniBox values, MiniBox scales) {
+		box.put(parameter, defaultParameter);
+		
+		if (values.get(parameter) != null) {
+			box.put(parameter, values.get(parameter));
+		}
+		
+		if (scales.get(parameter) != null) {
+			box.put(parameter, box.getDouble(parameter)*scales.getDouble(parameter));
+		}
 	}
 	
 	/**
