@@ -99,7 +99,7 @@ public class Series {
 		this._height = ((height & 1) == 1 ? height : height + 1); // enforce odd
 		
 		// Initialize simulation series.
-		initialize(setupDicts, setupLists, parameters);
+		initialize(setupLists, parameters);
 	}
 	
 	/**
@@ -152,16 +152,13 @@ public class Series {
 	/**
 	 * Initializes series simulation, agents, and environment.
 	 * 
-	 * @param setupDicts  the map of attribute to value for single instance tags
 	 * @param setupLists  the map of attribute to value for multiple instance tags
 	 * @param parameters  the default parameter values loaded from {@code parameter.xml}
 	 */
-	final void initialize(HashMap<String, MiniBox> setupDicts,
-						  HashMap<String, ArrayList<Box>> setupLists,
-						  Box parameters) {
+	final void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters) {
 		// Initialize potts.
 		MiniBox pottsDefaults = parameters.getIdValForTag("POTTS");
-		MiniBox potts = setupDicts.get("potts");
+		ArrayList<Box> potts = setupLists.get("potts");
 		updatePotts(potts, pottsDefaults);
 		
 		// Initialize populations.
@@ -199,8 +196,23 @@ public class Series {
 	 * @param potts  the potts setup dictionary
 	 * @param pottsDefaults  the dictionary of default potts parameters
 	 */
-	void updatePotts(MiniBox potts, MiniBox pottsDefaults) {
-		// TODO
+	void updatePotts(ArrayList<Box> potts, MiniBox pottsDefaults) {
+		_potts = new MiniBox();
+		
+		Box box = new Box();
+		if (potts != null && potts.size() == 1 && potts.get(0) != null) { box = potts.get(0); }
+		
+		// Get default parameters and any parameter tags.
+		Box parameters = box.filterBoxByTag("PARAMETER");
+		MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
+		MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
+		
+		// Add in parameters. Start with value (if given) or default (if not
+		// given). Then apply any scaling.
+		for (String parameter : pottsDefaults.getKeys()) {
+			updateParameter(_potts, parameter,
+					pottsDefaults.get(parameter), parameterValues, parameterScales);
+		}
 	}
 	
 	/**

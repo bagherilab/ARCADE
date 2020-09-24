@@ -3,6 +3,7 @@ package arcade.sim;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,25 +29,27 @@ public class SeriesTest {
 	private static final int DEFAULT_HEIGHT = randomOdd();
 	
 	private static final String[] POTTS_PARAMETER_NAMES = new String[] {
-			"TEMPERATURE"
+			"POTTS_PARAMETER_1",
+			"POTTS_PARAMETER_2",
+			"POTTS_PARAMETER_3"
 	};
 	
 	private static final double[] POTTS_PARAMETER_VALUES = new double[] {
+			randomInt(),
+			randomInt(),
 			randomInt()
 	};
 	
 	private static final int POTTS_PARAMETER_COUNT = POTTS_PARAMETER_NAMES.length;
 	
 	private static final String[] POPULATION_PARAMETER_NAMES = new String[] {
-			"LAMBDA_VOLUME",
-			"LAMBDA_SURFACE",
-			"CRITICAL_VOLUME",
-			"CRITICAL_SURFACE",
+			"POPULATION_PARAMETER_1",
+			"POPULATION_PARAMETER_2",
+			"POPULATION_PARAMETER_3",
 			"ADHESION"
 	};
 	
 	private static final double[] POPULATION_PARAMETER_VALUES = new double[] {
-			randomDouble(),
 			randomDouble(),
 			randomDouble(),
 			randomDouble(),
@@ -62,7 +65,7 @@ public class SeriesTest {
 	private static final String TAG_ID_1 = randomString();
 	private static final String TAG_ID_2 = randomString();
 	
-	private static MiniBox DEFAULTS, POTTS, POPULATION;
+	private static MiniBox POTTS, POPULATION;
 	
 	private static final HashMap<String, ArrayList<Box>> setupListsMock = mock(HashMap.class);
 	
@@ -98,7 +101,6 @@ public class SeriesTest {
 		PARAMETERS.addAtt("LENGTH", "value", "" + DEFAULT_LENGTH);
 		PARAMETERS.addAtt("WIDTH", "value", "" + DEFAULT_WIDTH);
 		PARAMETERS.addAtt("HEIGHT", "value", "" + DEFAULT_HEIGHT);
-		DEFAULTS = PARAMETERS.getIdValForTag("DEFAULT");
 		
 		// POTTS
 		for (int i = 0; i < POTTS_PARAMETER_COUNT; i++) {
@@ -126,13 +128,14 @@ public class SeriesTest {
 		series.put("name", TEST_NAME);
 		setupDicts.put("series", series);
 		
-		setupDicts.put("potts", new MiniBox());
-		
 		return setupDicts;
 	}
 	
 	private HashMap<String, ArrayList<Box>> makeLists() {
 		HashMap<String, ArrayList<Box>> setupLists = new HashMap<>();
+		
+		ArrayList<Box> potts = new ArrayList<>();
+		setupLists.put("potts", potts);
 		
 		ArrayList<Box> populations = new ArrayList<>();
 		setupLists.put("populations", populations);
@@ -389,12 +392,11 @@ public class SeriesTest {
 	
 	@Test
 	public void initialize_default_callsMethods() {
-		HashMap<String, MiniBox> setupDicts = makeDicts();
 		HashMap<String, ArrayList<Box>> setupLists = makeLists();
-		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
-		series.initialize(setupDicts, setupLists, PARAMETERS);
+		Series series = mock(Series.class, CALLS_REAL_METHODS);
+		series.initialize(setupLists, PARAMETERS);
 		
-		MiniBox potts = setupDicts.get("potts");
+		ArrayList<Box> potts = setupLists.get("potts");
 		verify(series).updatePotts(eq(potts), any(MiniBox.class));
 		
 		ArrayList<Box> populations = setupLists.get("populations");
@@ -472,10 +474,61 @@ public class SeriesTest {
 		assertEquals(parameterValue*parameterScale, box.getDouble(parameter), EPSILON);
 	}
 	
-	private Series makeSeriesForPopulation(Box[] boxes) {
-		HashMap<String, MiniBox> setupDicts = makeDicts();
+	private Series makeSeriesForPotts(Box box) {
 		HashMap<String, ArrayList<Box>> setupLists = makeLists();
-		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
+		Series series = mock(Series.class, CALLS_REAL_METHODS);
+		ArrayList<Box> potts = setupLists.get("potts");
+		potts.add(box);
+		series.updatePotts(potts, POTTS);
+		return series;
+	}
+	
+	@Test
+	public void updatePotts_noSetting_createsBox() {
+		Series series = mock(Series.class, CALLS_REAL_METHODS);
+		series.updatePotts(null, POTTS);
+		assertNotNull(series._potts);
+	}
+	
+	@Test
+	public void updatePotts_noParameters_usesDefaults() {
+		Series series = makeSeriesForPotts(null);
+		MiniBox box = series._potts;
+		
+		for (String parameter : POTTS_PARAMETER_NAMES) {
+			assertEquals(POTTS.get(parameter), box.get(parameter));
+		}
+	}
+	
+	@Test
+	public void updatePotts_givenParameters_updatesValues() {
+		for (String pottsParameter1 : POTTS_PARAMETER_NAMES) {
+			for (String pottsParameter2 : POTTS_PARAMETER_NAMES) {
+				Box potts = new Box();
+				
+				double value = randomDouble();
+				double scale = randomDouble();
+				potts.addAtt(pottsParameter1, "value", "" + value);
+				potts.addTag(pottsParameter1, "PARAMETER");
+				potts.addAtt(pottsParameter2, "scale", "" + scale);
+				potts.addTag(pottsParameter2, "PARAMETER");
+				
+				Series series = makeSeriesForPotts(potts);
+				MiniBox box = series._potts;
+				
+				for (String parameter : POTTS_PARAMETER_NAMES) {
+					double expected = POTTS.getDouble(parameter);
+					if (parameter.equals(pottsParameter1)) { expected = value; }
+					if (parameter.equals(pottsParameter2)) { expected *= scale; }
+					assertEquals(expected, box.getDouble(parameter), EPSILON);
+				}
+			}
+		}
+	}
+	
+	private Series makeSeriesForPopulation(Box[] boxes) {
+		HashMap<String, ArrayList<Box>> setupLists = makeLists();
+		Series series = mock(Series.class, CALLS_REAL_METHODS);
 		ArrayList<Box> populations = setupLists.get("populations");
 		populations.addAll(Arrays.asList(boxes));
 		series.updatePopulations(populations, POPULATION);
@@ -484,8 +537,7 @@ public class SeriesTest {
 	
 	@Test
 	public void updatePopulation_noPopulations_createsMap() {
-		HashMap<String, MiniBox> setupDicts = makeDicts();
-		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
+		Series series = mock(Series.class, CALLS_REAL_METHODS);
 		series.updatePopulations(null, POPULATION);
 		assertEquals(0, series._populations.size());
 	}
@@ -1048,9 +1100,14 @@ public class SeriesTest {
 	
 	@Test
 	public void makeConstructors_given2D_createsConstructors() {
-		HashMap<String, MiniBox> setupDicts = makeDicts();
-		setupDicts.get("series").put("height", 1);
-		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		Series series = mock(Series.class, CALLS_REAL_METHODS);
+		
+		try {
+			Field field = Series.class.getDeclaredField("_height");
+			field.setAccessible(true);
+			field.setInt(series, 1);
+		} catch (Exception ignored) { }
+		
 		series.makeConstructors();
 		
 		assertEquals("arcade.sim.PottsSimulation2D", series.simCons.getName());
@@ -1059,9 +1116,14 @@ public class SeriesTest {
 	
 	@Test
 	public void makeConstructors_given3D_createsConstructors() {
-		HashMap<String, MiniBox> setupDicts = makeDicts();
-		setupDicts.get("series").put("height", 3);
-		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		Series series = mock(Series.class, CALLS_REAL_METHODS);
+		
+		try {
+			Field field = Series.class.getDeclaredField("_height");
+			field.setAccessible(true);
+			field.setInt(series, 3);
+		} catch (Exception ignored) { }
+		
 		series.makeConstructors();
 		
 		assertEquals("arcade.sim.PottsSimulation3D", series.simCons.getName());
