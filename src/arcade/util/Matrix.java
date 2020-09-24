@@ -4,23 +4,44 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Static utility class for matrix operations.
- *
- * @author  Jessica S. Yu <jessicayu@u.northwestern.edu>
- * @version 2.3.3
- * @since   2.3
+ * Container class for dense and sparse matrix representations.
+ * <p>
+ * Class provides a subset of matrix operations needed for solving a system
+ * of linear equations using the successive over-relaxation method in
+ * {@link arcade.util.Solver}.
  */
 
 public class Matrix {
-	// CLASS: Value. Container class for sparse matrix representation.
+	/** Container class for sparse matrix representation. */
 	public static class Value {
-		public int i, j;
+		/** Row index of value */
+		public int i;
+		
+		/** Column index of value */
+		public int j;
+		
+		/** Value in matrix */
 		double v;
 		
+		/**
+		 * Creates a value in a sparse matrix.
+		 * 
+		 * @param i  the row index of the value
+		 * @param j  the column index of the value
+		 * @param v  the value
+		 */
 		Value(int i, int j, double v) {
 			this.i = i;
 			this.j = j;
 			this.v = v;
+		}
+		
+		public final int hashCode() { return i + (j << 8); }
+		
+		public final boolean equals(Object obj) {
+			if (!(obj instanceof Value)) { return false; }
+			Value value = (Value)obj;
+			return value.i == i && value.j == j && value.v == v;
 		}
 		
 		public String toString() {
@@ -28,7 +49,12 @@ public class Matrix {
 		}
 	}
 	
-	// METHOD: toSparse. Converts dense matrix to sparse matrix representation.
+	/**
+	 * Converts a dense matrix representation to a sparse matrix representation.
+	 * 
+	 * @param A  the dense matrix representation
+	 * @return  the sparse matrix representation
+	 */
 	public static ArrayList<Value> toSparse(double[][] A) {
 		ArrayList<Value> a = new ArrayList<>();
 		int n = A.length;
@@ -40,7 +66,11 @@ public class Matrix {
 		return a;
 	}
 	
-	// METHOD: toDense. Converts sparse matrix to dense matrix representation.
+	/**
+	 * Converts a sparse matrix representation to a dense matrix representation.
+	 * @param A  the sparse matrix representation
+	 * @return  the dense matrix representation
+	 */
 	public static double[][] toDense(ArrayList<Value> A) {
 		int n = 0;
 		for (Value v : A) {
@@ -52,7 +82,12 @@ public class Matrix {
 		return a;
 	}
 	
-	// METHOD: invertUpper. Inverts the upper triangular matrix U.
+	/**
+	 * Inverts a upper triangular matrix.
+	 * 
+	 * @param U  the upper triangular matrix to invert
+	 * @return  the inverted matrix
+	 */
 	public static double[][] invertUpper(double[][] U) {
 		int n = U.length;
 		double[][] inv = new double[n][n];
@@ -73,7 +108,12 @@ public class Matrix {
 		return inv;
 	}
 	
-	// METHOD: invertLower. Inverts the lower triangular matrix L.
+	/**
+	 * Inverts a lower triangular matrix.
+	 * 
+	 * @param L  the lower triangular matrix to invert
+	 * @return  the inverted matrix
+	 */
 	public static double[][] invertLower(double[][] L) {
 		int n = L.length;
 		double[][] inv = new double[n][n];
@@ -94,8 +134,16 @@ public class Matrix {
 		return inv;
 	}
 	
-	// METHOD: forwardSubstitution. Solves the equation Lx = b where L is a
-	// square lower triangular matrix.
+	/**
+	 * Solves the equation {@code Lx = b} using forward substitution for a
+	 * dense matrix.
+	 * <p>
+	 * Matrix L must be a square lower triangular matrix.
+	 * 
+	 * @param L  the matrix of coefficients
+	 * @param b  the right-hand side vector
+	 * @return  the left-hand side vector
+	 */
 	public static double[] forwardSubstitution(double[][] L, double[] b) {
 		int n = b.length;
 		double[] subbed = new double[n];
@@ -108,8 +156,16 @@ public class Matrix {
 		return subbed;
 	}
 	
-	// METHOD: forwardSubstitution. Solves the equation Lx = U where L and U are
-	// square lower and upper triangular matrices, respectively, of matrix A.
+	/**
+	 * Solves the equation {@code Lx = U} using forward substitution for a
+	 * dense matrix.
+	 * <p>
+	 * The matrices {@code L} and {@code U} are the square lower and upper
+	 * triangular matrices of the given matrix.
+	 * 
+	 * @param A  the matrix of coefficients
+	 * @return  the left-hand side matrix
+	 */
 	public static double[][] forwardSubstitution(double[][] A) {
 		double[][] L = getLower(A, false);
 		double[][] U = getUpper(A, true);
@@ -126,8 +182,14 @@ public class Matrix {
 		return subbed;
 	}
 	
-	// METHOD: forwardSubstitution. Solves the equation Lx = b where L is a
-	// sparse square lower triangular matrix.
+	/**
+	 * Solves the equation {@code Lx = b} using forward substitution for a
+	 * sparse matrix.
+	 * 
+	 * @param L  the matrix of coefficients
+	 * @param b  the right-hand side vector
+	 * @return  the left-hand side vector
+	 */
 	public static double[] forwardSubstitution(ArrayList<Value> L, double[] b) {
 		Collections.sort(L, (v1, v2) ->
 			(v1.i == v2.i ? Integer.compare(v1.j, v2.j) : (v1.i > v2.i ? 1 : -1))
@@ -157,8 +219,16 @@ public class Matrix {
 		return subbed;
 	}
 	
-	// METHOD: forwardSubstitution. Solves the equation Lx = U where L and U are
-	// square lower and upper triangular matrices, respectively, of sparse matrix A.
+	/**
+	 * Solves the equation {@code Lx = U} using forward substitution for a
+	 * sparse matrix.
+	 * <p>
+	 * The matrices {@code L} and {@code U} are the square lower and upper
+	 * triangular matrices of the given matrix.
+	 *
+	 * @param A  the matrix of coefficients
+	 * @return  the left-hand side matrix
+	 */
 	public static ArrayList<Value> forwardSubstitution(ArrayList<Value> A) {
 		Collections.sort(A, (v1, v2) ->
 			(v1.i == v2.i ? Integer.compare(v1.j, v2.j) : (v1.i > v2.i ? 1 : -1))
@@ -192,7 +262,13 @@ public class Matrix {
 		return toSparse(subbed);
 	}
 	
-	// METHOD: getUpper. Gets the upper triangular matrix of dense matrix A.
+	/**
+	 * Gets the upper triangular of a dense matrix.
+	 * 
+	 * @param A  the matrix
+	 * @param strict  {@code true} if triangular is strict, {@code false} otherwise
+	 * @return  the upper triangular matrix
+	 */
 	public static double[][] getUpper(double[][] A, boolean strict) {
 		int n = A.length;
 		int off = (strict ? 1 : 0);
@@ -205,7 +281,13 @@ public class Matrix {
 		return U;
 	}
 	
-	// METHOD: getLower. Gets the lower triangular matrix of dense matrix A.
+	/**
+	 * Gets the lower triangular of a dense matrix.
+	 * 
+	 * @param A  the matrix
+	 * @param strict  {@code true} if triangular is strict, {@code false} otherwise
+	 * @return  the lower triangular matrix
+	 */
 	public static double[][] getLower(double[][] A, boolean strict) {
 		int n = A.length;
 		int off = (strict ? 0 : 1);
@@ -218,7 +300,13 @@ public class Matrix {
 		return U;
 	}
 	
-	// METHOD: getUpper. Gets the upper triangular matrix of sparse matrix A.
+	/**
+	 * Gets the upper triangular of a sparse matrix.
+	 *
+	 * @param A  the matrix
+	 * @param strict  {@code true} if triangular is strict, {@code false} otherwise
+	 * @return  the upper triangular matrix
+	 */
 	public static ArrayList<Value> getUpper(ArrayList<Value> A, boolean strict) {
 		ArrayList<Value> U = new ArrayList<>();
 		int off = (strict ? 0 : 1);
@@ -226,7 +314,13 @@ public class Matrix {
 		return U;
 	}
 	
-	// METHOD: getLower. Gets the lower triangular matrix of sparse matrix A.
+	/**
+	 * Gets the lower triangular of a sparse matrix.
+	 *
+	 * @param A  the matrix
+	 * @param strict  {@code true} if triangular is strict, {@code false} otherwise
+	 * @return  the lower triangular matrix
+	 */
 	public static ArrayList<Value> getLower(ArrayList<Value> A, boolean strict) {
 		ArrayList<Value> L = new ArrayList<>();
 		int off = (strict ? 0 : 1);
@@ -234,7 +328,13 @@ public class Matrix {
 		return L;
 	}
 	
-	// METHOD: multiply. Multiplies two square matrices A and B.
+	/**
+	 * Multiplies two dense square matrices.
+	 * 
+	 * @param A  the first matrix
+	 * @param B  the second matrix
+	 * @return  the product of the two matrices
+	 */
 	public static double[][] multiply(double[][] A, double[][] B) {
 		int n = A.length;
 		double[][] multiplied = new double[n][n];
@@ -248,7 +348,13 @@ public class Matrix {
 		return multiplied;
 	}
 	
-	// METHOD: multiply. Multiplies square matrix A and vector b.
+	/**
+	 * Multiplies a dense square matrix and a vector.
+	 * 
+	 * @param A  the matrix
+	 * @param b  the vector
+	 * @return  the product of the matrix and vector
+	 */
 	public static double[] multiply(double[][] A, double[] b) {
 		int n = A.length;
 		double[] multiplied = new double[n];
@@ -260,7 +366,13 @@ public class Matrix {
 		return multiplied;
 	}
 	
-	// METHOD: multiply. Multiplies sparse square matrix A and vector b.
+	/**
+	 * Multiplies a sparse square matrix and a vector.
+	 *
+	 * @param A  the matrix
+	 * @param b  the vector
+	 * @return  the product of the matrix and vector
+	 */
 	public static double[] multiply(ArrayList<Value> A, double[] b) {
 		int n = b.length;
 		double[] multiplied = new double[n];
@@ -271,7 +383,13 @@ public class Matrix {
 		return multiplied;
 	}
 	
-	// METHOD: multiply. Multiplies two sparse square matrices A and B.
+	/**
+	 * Multiplies two sparse square matrices.
+	 *
+	 * @param A  the first matrix
+	 * @param B  the second matrix
+	 * @return  the product of the two matrices
+	 */
 	public static ArrayList<Value> multiply(ArrayList<Value> A, ArrayList<Value> B) {
 		ArrayList<Value> multiplied = new ArrayList<>();
 		ArrayList<Value> products = new ArrayList<>();
@@ -310,7 +428,13 @@ public class Matrix {
 		return multiplied;
 	}
 	
-	// METHOD: add. Adds vector a to vector b.
+	/**
+	 * Adds two vectors.
+	 * 
+	 * @param a  the first vector
+	 * @param b  the second vector
+	 * @return  the sum of the two vectors
+	 */
 	public static double[] add(double[] a, double[] b) {
 		int n = a.length;
 		double[] added = new double[n];
@@ -318,7 +442,13 @@ public class Matrix {
 		return added;
 	}
 	
-	// METHOD: subtract. Subtracts vector b from vector a.
+	/**
+	 * Subtracts two vectors.
+	 *
+	 * @param a  the first vector
+	 * @param b  the second vector
+	 * @return  the difference of the two vectors
+	 */
 	public static double[] subtract(double[] a, double[] b) {
 		int n = a.length;
 		double[] subtracted = new double[n];
@@ -326,7 +456,13 @@ public class Matrix {
 		return subtracted;
 	}
 	
-	// METHOD: scale. Scales values in matrix A.
+	/**
+	 * Scales the values in a dense matrix.
+	 * 
+	 * @param A  the matrix
+	 * @param scale  the value to scale by
+	 * @return  the scaled matrix
+	 */
 	public static double[][] scale(double[][] A, double scale) {
 		int n = A.length;
 		double[][] scaled = new double[n][n];
@@ -334,7 +470,13 @@ public class Matrix {
 		return scaled;
 	}
 	
-	// METHOD: scale. Scales values in vector a.
+	/**
+	 * Scales the values in a dense vector.
+	 *
+	 * @param a  the vector
+	 * @param scale  the value to scale by
+	 * @return  the scaled vector
+	 */
 	public static double[] scale(double[] a, double scale) {
 		int n = a.length;
 		double[] scaled = new double[n];
@@ -342,14 +484,25 @@ public class Matrix {
 		return scaled;
 	}
 	
-	// METHOD: scale. Scales values in sparse matrix A.
+	/**
+	 * Scales the values in a sparse matrix.
+	 *
+	 * @param A  the matrix
+	 * @param scale  the value to scale by
+	 * @return  the scaled matrix
+	 */
 	public static ArrayList<Value> scale(ArrayList<Value> A, double scale) {
 		ArrayList<Value> scaled = new ArrayList<>();
 		for (Value a : A) { scaled.add(new Value(a.i, a.j, a.v*scale)); }
 		return scaled;
 	}
 	
-	// METHOD: normalize. Normalizes vector a.
+	/**
+	 * Normalizes the vector.
+	 * 
+	 * @param a  the vector
+	 * @return  the normalized vector
+	 */
 	public static double normalize(double[] a) {
 		double sum = 0;
 		for (double v : a) { sum += v*v; }
