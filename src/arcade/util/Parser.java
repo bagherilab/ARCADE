@@ -31,41 +31,38 @@ import java.util.HashMap;
  *         ...
  *     &#60;/commands&#62;
  * </pre>
- * 
- * @version 2.3.0
- * @since   2.0
  */
 
 public class Parser {
+	/** Logger for class */
+	private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
+	
 	/** ID for position commands */
-	private static final int POSITION = 0;
+	static final int POSITION = 0;
 	
 	/** ID for option commands */
-	private static final int OPTION = 1;
+	static final int OPTION = 1;
 	
 	/** ID for switch commands */
-	private static final int SWITCH = 2;
-	
-	/** Logger for class */
-	private static Logger LOGGER = Logger.getLogger(Parser.class.getName());
+	static final int SWITCH = 2;
 	
 	/** Dictionary of parsed commands */
-	private MiniBox parsed;
+	MiniBox parsed;
 	
 	/** List of all commands */
-	private final ArrayList<Command> allCommands;
+	final ArrayList<Command> allCommands;
 	
 	/** Map of short flags to command */
-	private final HashMap<String, Command> shortToCommand;
+	final HashMap<String, Command> shortToCommand;
 	
 	/** Map of long flags to command */
-	private final HashMap<String, Command> longToCommand;
+	final HashMap<String, Command> longToCommand;
 	
 	/** List of position commands */
-	private final ArrayList<Command> positionCommands;
+	final ArrayList<Command> positionCommands;
 	
-	/** Current parsing index */
-	private int currentPosition;
+	/** Current index for position arguments */
+	int positionIndex;
 	
 	/**
 	 * Creates a command line {@code Parser} object.
@@ -78,6 +75,8 @@ public class Parser {
 		shortToCommand = new HashMap<>();
 		longToCommand = new HashMap<>();
 		positionCommands = new ArrayList<>();
+		
+		LOGGER.config("configuring parser");
 		
 		// Create a Command object for each entry.
 		for (String id : options.getKeys()) {
@@ -97,9 +96,15 @@ public class Parser {
 				
 				switch (att) {
 					case "help": cmd.help = val; break;
-					case "default": cmd.defaults = val; break;
-					case "short": cmd.shortFlag = val; break;
-					case "long": cmd.longFlag = val; break;
+					case "default":
+						if (type != POSITION && type != SWITCH) { cmd.defaults = val; }
+						break;
+					case "short":
+						if (type != POSITION) { cmd.shortFlag = val; }
+						break;
+					case "long":
+						if (type != POSITION) { cmd.longFlag = val; }
+						break;
 				}
 			}
 			
@@ -119,7 +124,7 @@ public class Parser {
 	 * A {@code Command} object is created for each command defined from
 	 * parsing {@code command.xml}.
 	 */
-	private static class Command {
+	static class Command {
 		/** Format string */
 		String format = "\t%20s %s\n";
 		
@@ -168,17 +173,16 @@ public class Parser {
 	 * @return  a dictionary of parsed commands
 	 */
 	public MiniBox parse(String[] args) {
+		LOGGER.config("parsing command line arguments");
+		
 		parsed = new MiniBox();
-		currentPosition = 0;
-		int n = args.length;
-		int i = 0;
 		
 		addDefaults();
-		while (i < n) { i = parseArg(args, i); }
+		parseArguments(args);
 		
-		if (currentPosition != positionCommands.size()) {
+		if (positionIndex != positionCommands.size()) {
 			LOGGER.severe("missing position arguments");
-			System.exit(1);
+			throw new IllegalArgumentException();
 		} else { LOGGER.config("successfully parsed commands\n\n" + parsed.toString()); }
 		
 		return parsed;
@@ -189,30 +193,37 @@ public class Parser {
 	 * <p>
 	 * Switches are assumed to be {@code false} if not present.
 	 */
-	private void addDefaults() {
+	void addDefaults() {
 		for (Command cmd : allCommands) {
 			if (cmd.defaults != null) { parsed.put(cmd.id, cmd.defaults); }
 		}
 	}
 	
 	/**
-	 * Parses an individual argument.
+	 * Parses an the list of arguments.
 	 * 
-	 * @param args  the argument contents
-	 * @param index  the argument index
-	 * @return  the next argument index
+	 * @param args  the list of arguments
 	 */
-	private int parseArg(String[] args, int index) {
-		String arg = args[index];
-		if (arg.startsWith("--")) {
-			Command cmd = longToCommand.get(args[index].substring(2));
-			return parseFlaggedArg(args, index, cmd);
+	void parseArguments(String[] args) {
+		positionIndex = 0;
+		int currentIndex = 0;
+		int argCount = args.length;
+		
+		while (currentIndex < argCount) {
+			String arg = args[currentIndex];
+			
+			if (arg.startsWith("--")) {
+				Command cmd = longToCommand.get(args[currentIndex].substring(2));
+				currentIndex = parseFlaggedArgument(args, currentIndex, cmd);
+			}
+			else if (arg.startsWith("-")) {
+				Command cmd = shortToCommand.get(args[currentIndex].substring(1));
+				currentIndex = parseFlaggedArgument(args, currentIndex, cmd);
+			}
+			else {
+				currentIndex = parsePositionArgument(args, currentIndex);
+			}
 		}
-		else if (arg.startsWith("-")) {
-			Command cmd = shortToCommand.get(args[index].substring(1));
-			return parseFlaggedArg(args, index, cmd);
-		}
-		else { return parsePositionArg(args, index); }
 	}
 	
 	/**
@@ -221,12 +232,11 @@ public class Parser {
 	 * @param args  the argument contents
 	 * @param index  the argument index
 	 * @param cmd  the command object
-	 * @return  the next argument index
 	 */
-	private int parseFlaggedArg(String[] args, int index, Command cmd) {
-		if (cmd.type == SWITCH) { parsed.put(cmd.id, null); }
+	int parseFlaggedArgument(String[] args, int index, Command cmd) {
+		if (cmd.type == SWITCH) { parsed.put(cmd.id, ""); }
 		else { parsed.put(cmd.id, args[++index]); }
-		return index + 1;
+		return ++index;
 	}
 	
 	/**
@@ -234,19 +244,16 @@ public class Parser {
 	 * 
 	 * @param args  the argument contents
 	 * @param index  the argument index
-	 * @return  the next argument index
 	 */
-	private int parsePositionArg(String[] args, int index) {
-		if (currentPosition < positionCommands.size()) {
-			parsed.put(positionCommands.get(currentPosition).id, args[index]);
-			currentPosition++;
-		}
-		return index + 1;
+	int parsePositionArgument(String[] args, int index) {
+		parsed.put(positionCommands.get(positionIndex).id, args[index]);
+		positionIndex++;
+		return ++index;
 	}
 	
 	public String toString() {
-		String s = "";
-		for (Command cmd : allCommands) { s += cmd.toString(); }
-		return s;
+		StringBuilder s = new StringBuilder();
+		for (Command cmd : allCommands) { s.append(cmd.toString()); }
+		return s.toString();
 	}
 }
