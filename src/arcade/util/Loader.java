@@ -1,32 +1,30 @@
 package arcade.util;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import arcade.Main;
 
 /**
  * Custom XML file loader that uses SAX parsing to iterate through the XML file.
  * <p>
  * XML files should only be one level deep, with all values as attributes.
  * Results are stored in a {@link arcade.util.Box} object.
- * 
- * @version 2.3.0
- * @since   2.0
  */
 
 public class Loader extends DefaultHandler {
 	/** Logger for class */
-	private static Logger LOGGER = Logger.getLogger(Loader.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(Loader.class.getName());
 	
 	/** Box holding parsed XML */
-	private Box box;
+	Box box;
 	
 	/** XML reader */
-	private XMLReader xmlReader;
+	XMLReader xmlReader;
 	
 	/**
 	 * Creates a {@code Loader} using {@code SAXParserFactory}.
@@ -45,12 +43,11 @@ public class Loader extends DefaultHandler {
 	 * 
 	 * @param xml  the XML file
 	 * @return  the box containing the parsed XML
-	 * @throws Exception  if the XML could not be parsed
 	 */
-	public Box load(String xml) throws Exception {
+	public Box load(String xml) throws IOException, SAXException {
 		box = new Box();
-		LOGGER.info("loading XML file [ " + xml + " ]");
-		xmlReader.parse(Main.class.getResource(xml).toString());
+		LOGGER.config("loading XML file [ " + xml + " ]");
+		xmlReader.parse(xml);
 		LOGGER.config("successfully loaded XML file [ " + xml + " ]\n\n" + box.toString());
 		return box;
 	}
