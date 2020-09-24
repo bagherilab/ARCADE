@@ -7,9 +7,17 @@ public class PottsCell3D extends PottsCell {
 	public static final double SURFACE_VOLUME_MULTIPLIER = Math.cbrt(36*Math.PI)*2;
 	
 	/**
-	 * {@inheritDoc}
+	 * Creates a {@code PottsCell} agent for 3D simulations.
 	 * <p>
-	 * Cell agent used for 3D simulations.
+	 * The default population is 1, state is proliferative, and age is 0.
+	 * The cell is created with no tags.
+	 *
+	 * @param id  the cell ID
+	 * @param pop  the cell population index   
+	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param criticals  the list of critical values
+	 * @param lambdas  the list of lambda multipliers
+	 * @param adhesion  the list of adhesion values
 	 */
 	public PottsCell3D(int id, int pop, Location location,
 					   double[] criticals, double[] lambdas, double[] adhesion) {
@@ -17,9 +25,20 @@ public class PottsCell3D extends PottsCell {
 	}
 	
 	/**
-	 * {@inheritDoc}
+	 * Creates a {@code PottsCell} agent for 3D simulations.
 	 * <p>
-	 * Cell agent used for 3D simulations.
+	 * The default state is proliferative and age is 0. 
+	 *
+	 * @param id  the cell ID
+	 * @param pop  the cell population index
+	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param criticals  the list of critical values
+	 * @param lambdas  the list of lambda multipliers
+	 * @param adhesion  the list of adhesion values
+	 * @param tags  the number of tags
+	 * @param criticalsTag  the list of tagged critical values
+	 * @param lambdasTag  the list of tagged lambda multipliers
+	 * @param adhesionsTag  the list of tagged adhesion values
 	 */
 	public PottsCell3D(int id, int pop, Location location,
 					   double[] criticals, double[] lambdas, double[] adhesion, int tags,
@@ -28,9 +47,20 @@ public class PottsCell3D extends PottsCell {
 	}
 	
 	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * Cell agent used for 3D simulations.
+	 * Creates a {@code PottsCell} agent for 3D simulations.
+	 *
+	 * @param id  the cell ID
+	 * @param pop  the cell population index
+	 * @param state  the cell state
+	 * @param age  the cell age (in ticks)
+	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param criticals  the list of critical values
+	 * @param lambdas  the list of lambda multipliers
+	 * @param adhesion  the list of adhesion values
+	 * @param tags  the number of tags
+	 * @param criticalsTag  the list of tagged critical values
+	 * @param lambdasTag  the list of tagged lambda multipliers
+	 * @param adhesionsTag  the list of tagged adhesion values
 	 */
 	public PottsCell3D(int id, int pop, int state, int age, Location location,
 					   double[] criticals, double[] lambdas, double[] adhesion, int tags,
