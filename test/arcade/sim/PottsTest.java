@@ -132,7 +132,8 @@ public class PottsTest {
 		Series series = mock(Series.class);
 		series._potts = mock(MiniBox.class);
 		when(series._potts.getDouble("TEMPERATURE")).thenReturn(TEMPERATURE);
-		potts = new PottsMock(series, grid);
+		potts = new PottsMock(series);
+		potts.grid = grid;
 		
 		potts.IDS = new int[][][] {
 				{
@@ -156,7 +157,7 @@ public class PottsTest {
 	}
 	
 	static class PottsMock extends Potts {
-		PottsMock(Series series, Grid grid) { super(series, grid); }
+		PottsMock(Series series) { super(series); }
 		
 		double getAdhesion(int id, int x, int y, int z) { return ADHESION_ID[id]; }
 		
@@ -223,17 +224,15 @@ public class PottsTest {
 	
 	@Test
 	public void Potts_2D_assignsValues() {
-		Grid grid = mock(Grid.class);
 		Series series = makeSeries(1, 1, 1);
-		PottsMock potts = new PottsMock(series, grid);
+		PottsMock potts = new PottsMock(series);
 		assertEquals(1, potts.HEIGHT);
 	}
 	
 	@Test
 	public void Potts_3D_assignsValues() {
-		Grid grid = mock(Grid.class);
 		Series series = makeSeries(1, 1, 4);
-		PottsMock potts = new PottsMock(series, grid);
+		PottsMock potts = new PottsMock(series);
 		assertEquals(2, potts.HEIGHT);
 	}
 	
@@ -247,7 +246,7 @@ public class PottsTest {
 		int width = (int)(Math.random()*10) + 3;
 		
 		Series series = makeSeries(length, width, 1);
-		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
+		PottsMock spy = spy(new PottsMock(series));
 		int steps = spy.LENGTH*spy.WIDTH*spy.HEIGHT;
 		
 		spy.step(simstate);
@@ -273,7 +272,7 @@ public class PottsTest {
 		
 		Series series = makeSeries(length, width, height);
 		
-		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
+		PottsMock spy = spy(new PottsMock(series));
 		int steps = spy.LENGTH*spy.WIDTH*spy.HEIGHT;
 		
 		spy.step(simstate);
@@ -297,7 +296,7 @@ public class PottsTest {
 		
 		Series series = makeSeries(3, 3, 1);
 		
-		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
+		PottsMock spy = spy(new PottsMock(series));
 		
 		spy.step(simstate);
 		verify(spy).flip(0, 1, 0, 0, 0, random);
@@ -314,7 +313,7 @@ public class PottsTest {
 		
 		Series series = makeSeries(3, 3, 1);
 		
-		PottsMock spy = spy(new PottsMock(series, mock(Grid.class)));
+		PottsMock spy = spy(new PottsMock(series));
 		spy.IDS[0][1][0] = 1;
 		spy.TAGS[0][1][0] = -1;
 		

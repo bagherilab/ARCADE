@@ -80,7 +80,7 @@ public class PottsSimulation3D extends PottsSimulation {
 		}
 	}
 	
-	Potts makePotts() { return new Potts3D(series, agents); }
+	Potts makePotts() { return new Potts3D(series); }
 	
 	ArrayList<int[]> makeCenters() {
 		ArrayList<int[]> centers = new ArrayList<>();

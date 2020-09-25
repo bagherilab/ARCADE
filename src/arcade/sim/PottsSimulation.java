@@ -205,6 +205,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	public void setupAgents() {
 		// Initialize grid for agents.
 		agents = new PottsGrid();
+		potts.grid = agents;
 		
 		// Get list of available centers.
 		ArrayList<int[]> availableCenters = makeCenters();

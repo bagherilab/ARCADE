@@ -12,8 +12,7 @@ public class Potts3DTest {
 	private static final double EPSILON = 1E-4;
 	static Cell[] cells;
 	Series seriesMock = makeSeries();
-	Grid gridMock = mock(Grid.class);
-	Potts3D pottsMock = new Potts3D(seriesMock, gridMock);
+	Potts3D pottsMock = new Potts3D(seriesMock);
 	static Potts3D potts;
 	
 	enum Axis { X_AXIS, Y_AXIS, Z_AXIS }
@@ -55,7 +54,8 @@ public class Potts3DTest {
 		when(grid.getObjectAt(0)).thenReturn(null);
 		cells[0] = null;
 		
-		potts = new Potts3D(series, grid);
+		potts = new Potts3D(series);
+		potts.grid = grid;
 		
 		potts.IDS = new int[][][] {
 				{

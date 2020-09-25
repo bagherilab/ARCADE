@@ -12,8 +12,7 @@ public class Potts2DTest {
 	private static final double EPSILON = 1E-4;
 	static Cell[] cells;
 	Series seriesMock = makeSeries();
-	Grid gridMock = mock(Grid.class);
-	Potts2D pottsMock = new Potts2D(seriesMock, gridMock);
+	Potts2D pottsMock = new Potts2D(seriesMock);
 	static Potts2D potts;
 	
 	@BeforeClass
@@ -53,7 +52,8 @@ public class Potts2DTest {
 		when(grid.getObjectAt(0)).thenReturn(null);
 		cells[0] = null;
 		
-		potts = new Potts2D(series, grid);
+		potts = new Potts2D(series);
+		potts.grid = grid;
 		
 		potts.IDS = new int[][][] {
 				{

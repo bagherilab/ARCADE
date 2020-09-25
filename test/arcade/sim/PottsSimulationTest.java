@@ -273,8 +273,17 @@ public class PottsSimulationTest {
 	}
 	
 	@Test
+	public void setupAgents_anyPopulation_setsPotts() {
+		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesZeroPop);
+		sim.potts = mock(Potts.class);
+		sim.setupAgents();
+		assertEquals(sim.agents, sim.potts.grid);
+	}
+	
+	@Test
 	public void setupAgents_zeroPopulations_initializesGrid() {
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesZeroPop);
+		sim.potts = mock(Potts.class);
 		sim.setupAgents();
 		assertNotNull(sim.agents);
 	}
@@ -282,6 +291,7 @@ public class PottsSimulationTest {
 	@Test
 	public void setupAgents_zeroPopulations_createsNoAgents() {
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesZeroPop);
+		sim.potts = mock(Potts.class);
 		sim.setupAgents();
 		assertEquals(0, sim.agents.getAllObjects().numObjs);
 	}

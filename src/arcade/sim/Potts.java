@@ -47,11 +47,8 @@ public abstract class Potts implements Steppable {
 	 * Creates a cellular {@code Potts} model.
 	 *
 	 * @param series  the simulation series
-	 * @param grid  the cell grid
 	 */
-	public Potts(Series series, Grid grid) {
-		this.grid = grid;
-		
+	public Potts(Series series) {
 		// Creates potts arrays.
 		IDS = new int[series._height][series._length][series._width];
 		TAGS = new int[series._height][series._length][series._width];

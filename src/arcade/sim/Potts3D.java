@@ -36,9 +36,8 @@ public class Potts3D extends Potts {
 	 * Creates a cellular {@code Potts} model in 3D.
 	 *
 	 * @param series  the simulation series
-	 * @param grid  the cell grid
 	 */
-	public Potts3D(Series series, Grid grid) { super(series, grid); }
+	public Potts3D(Series series) { super(series); }
 	
 	double getAdhesion(int id, int x, int y, int z) {
 		double H = 0;
