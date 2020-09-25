@@ -174,7 +174,6 @@ public class Parser {
 	 */
 	public MiniBox parse(String[] args) {
 		LOGGER.config("parsing command line arguments");
-		
 		parsed = new MiniBox();
 		
 		addDefaults();

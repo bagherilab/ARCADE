@@ -20,11 +20,11 @@ public class Loader extends DefaultHandler {
 	/** Logger for class */
 	private static final Logger LOGGER = Logger.getLogger(Loader.class.getName());
 	
-	/** Box holding parsed XML */
-	Box box;
-	
 	/** XML reader */
 	XMLReader xmlReader;
+	
+	/** Box holding parsed XML */
+	Box box;
 	
 	/**
 	 * Creates a {@code Loader} using {@code SAXParserFactory}.

@@ -2,28 +2,13 @@ package arcade.util;
 
 import org.junit.*;
 import static org.junit.Assert.*;
-import java.util.Random;
 import static arcade.util.Parser.*;
+import static arcade.MainTest.*;
 
 public class ParserTest {
 	private static final String COMMAND_ID_1 = randomString();
 	private static final String COMMAND_ID_2 = randomString();
 	private static final String COMMAND_ID_3 = randomString();
-	
-	static String randomString() {
-		return new Random().ints(65, 91)
-				.limit(10)
-				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-				.toString();
-	}
-	
-	static int randomInt() { return (int)(Math.random()*10) + 2; }
-	
-	static String[] randomValues(int n) {
-		String[] strings = new String[n];
-		for (int i = 0; i < n; i++) { strings[i] = randomString(); }
-		return strings;
-	}
 	
 	@Test
 	public void constructor_called_setsObjects() {

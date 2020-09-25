@@ -7,30 +7,11 @@ import java.io.*;
 import org.junit.rules.TemporaryFolder;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import static arcade.MainTest.*;
 
 public class LoaderTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	
-	static void write(File file, String contents) {
-		FileWriter fw = null;
-		BufferedWriter bw = null;
-		PrintWriter pw = null;
-		
-		try {
-			fw = new FileWriter(file, true);
-			bw = new BufferedWriter(fw);
-			pw = new PrintWriter(bw);
-			pw.print(contents);
-		} catch (IOException e) { e.printStackTrace(); }
-		finally {
-			try {
-				if (pw != null) { pw.close(); }
-				else if (bw != null) { bw.close(); }
-				else if (fw != null) {fw.close(); }
-			} catch (IOException e) { e.printStackTrace(); }
-		}
-	}
 	
 	@Test
 	public void constructor_called_setsReader() {
