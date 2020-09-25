@@ -211,6 +211,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		ArrayList<int[]> availableCenters = makeCenters();
 		int totalAvailable = availableCenters.size();
 		
+		Simulation.shuffle(availableCenters, random);
+		
 		// Iterate through each population to create the constituent cells.
 		for (MiniBox population : series._populations.values()) {
 			int n = (int)Math.round(totalAvailable*population.getDouble("FRACTION"));

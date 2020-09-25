@@ -303,14 +303,22 @@ public class PottsSimulationTest {
 		sim.setupAgents();
 		assertEquals(TOTAL_LOCATIONS - 1, sim.agents.getAllObjects().numObjs);
 		
+		HashSet<Voxel> assignedLocations = new HashSet<>();
+		HashSet<Voxel> possibleLocations = new HashSet<>();
+		
+		for (int i = 0; i < TOTAL_LOCATIONS; i++) {
+			possibleLocations.add(new Voxel(i, 0, 0));
+		}
+		
 		int[] pops = new int[] { 1, 1, 1, 1, 1 };
 		for (int i = 0; i < TOTAL_LOCATIONS - 1; i++) {
 			Cell cell = (Cell)sim.agents.getAllObjects().get(i);
 			assertEquals(i + 1, cell.getID());
 			assertEquals(pops[i], cell.getPop());
-			assertEquals(new Voxel(i, 0, 0), cell.getLocation().getCenter());
+			assignedLocations.add(cell.getLocation().getCenter());
 		}
 		
+		assertTrue(possibleLocations.containsAll(assignedLocations));
 		assertNull(sim.agents.getObjectAt(6));
 		assertEquals(TOTAL_LOCATIONS, sim.getID());
 	}
@@ -334,14 +342,22 @@ public class PottsSimulationTest {
 		sim.setupAgents();
 		assertEquals(TOTAL_LOCATIONS, sim.agents.getAllObjects().numObjs);
 		
+		HashSet<Voxel> assignedLocations = new HashSet<>();
+		HashSet<Voxel> possibleLocations = new HashSet<>();
+		
+		for (int i = 0; i < TOTAL_LOCATIONS; i++) {
+			possibleLocations.add(new Voxel(i, 0, 0));
+		}
+		
 		int[] pops = new int[] { 1, 1, 1, 2, 3, 3 };
 		for (int i = 0; i < TOTAL_LOCATIONS; i++) {
 			Cell cell = (Cell)sim.agents.getAllObjects().get(i);
 			assertEquals(i + 1, cell.getID());
 			assertEquals(pops[i], cell.getPop());
-			assertEquals(new Voxel(i, 0, 0), cell.getLocation().getCenter());
+			assignedLocations.add(cell.getLocation().getCenter());
 		}
 		
+		assertTrue(possibleLocations.containsAll(assignedLocations));
 		assertEquals(TOTAL_LOCATIONS + 1, sim.getID());
 	}
 	
