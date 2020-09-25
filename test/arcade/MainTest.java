@@ -25,7 +25,7 @@ public class MainTest {
 	}
 	
 	public static String randomString() {
-		return new Random().ints(65, 91)
+		return new Random().ints(97, 123)
 				.limit(10)
 				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
 				.toString();

@@ -44,7 +44,7 @@ public class BuilderTest {
 	
 	private Box makeExpected(String id, int n) {
 		Box expected = new Box();
-		expected.addTag(id, TAG_NAME);
+		expected.addTag(id, TAG_NAME.toUpperCase());
 		for (int i = 0; i < n; i++) { expected.addAtt(id, ATT_QNAME + i, ATT_VALUE + i); }
 		return expected;
 	}
@@ -312,7 +312,7 @@ public class BuilderTest {
 		builder.startElement("", "", "potts." + tag, attributes);
 		
 		Box expected = new Box();
-		expected.addTag(id, tag);
+		expected.addTag(id, tag.toUpperCase());
 		for (int i = 0; i < n; i++) { expected.addAtt(id, ATT_QNAME + i, ATT_VALUE + i); }
 		
 		assertTrue(expected.compare(builder.setupLists.get("potts").get(0)));
@@ -335,7 +335,7 @@ public class BuilderTest {
 		builder.startElement("", "", LIST_NAME + "." + tag, attributes);
 		
 		Box expected = new Box();
-		expected.addTag(id, tag);
+		expected.addTag(id, tag.toUpperCase());
 		for (int i = 0; i < n; i++) { expected.addAtt(id, ATT_QNAME + i, ATT_VALUE + i); }
 		
 		assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(0)));

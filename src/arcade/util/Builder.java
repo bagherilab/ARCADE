@@ -150,7 +150,7 @@ public class Builder implements ContentHandler {
 			id = (atts.getValue("tag") == null ? "" : atts.getValue("tag") + "/")
 					+ atts.getValue("id")
 					+ (atts.getValue("target") == null ? "" : ":" + atts.getValue("target"));
-			box.addTag(id, tag);
+			box.addTag(id, tag.toUpperCase());
 			
 			for (int i = 0; i < numAtts; i++) {
 				String name = atts.getQName(i);
