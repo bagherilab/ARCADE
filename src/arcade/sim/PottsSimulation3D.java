@@ -92,6 +92,8 @@ public class PottsSimulation3D extends PottsSimulation {
 			if (voxelsPerSide > n) { n = voxelsPerSide; }
 		}
 		
+		if (n == 0) { return centers; }
+		
 		for (int i = 0; i < (series._length - 2)/n; i++) {
 			for (int j = 0; j < (series._width - 2)/n; j++) {
 				for (int k = 0; k < (series._height - 2)/n; k++) {

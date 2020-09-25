@@ -179,6 +179,15 @@ public class PottsSimulation3DTest {
 	}
 	
 	@Test
+	public void makeCenters_noPopulation_createsEmpty() {
+		Series series = createSeries(new int[] { }, new String[] { },
+				new double[] { 0 }, 1, 1, 1);
+		PottsSimulation3D sim = new PottsSimulation3D(RANDOM_SEED, series);
+		ArrayList<int[]> centers = sim.makeCenters();
+		assertEquals(0, centers.size());
+	}
+	
+	@Test
 	public void makeCenters_onePopulationOneSideExactEqualSize_createsCenters() {
 		Series series = createSeries(new int[] { 1 }, new String[] { "A" },
 				new double[] { 1.*Simulation.DS }, 8, 8, 8);
