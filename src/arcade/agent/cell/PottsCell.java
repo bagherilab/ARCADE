@@ -27,7 +27,7 @@ public abstract class PottsCell implements Cell {
 	private int age;
 	
 	/** Number of tagged regions */
-	final int tags;
+	public int tags;
 	
 	/** Target cell volume (in voxels) */
 	private double targetVolume;

@@ -13,6 +13,9 @@ public abstract class ApoptosisModule implements Module  {
 	/** Code for late apoptosis phase */
 	public static final int PHASE_LATE_APOPTOSIS = 1;
 	
+	/** Code for apoptosed cell */
+	public static final int PHASE_APOPTOSED = -1;
+	
 	/** Average duration of early apoptosis (hours) */
 	static final double DURATION_EARLY = 3;
 	
@@ -95,11 +98,15 @@ public abstract class ApoptosisModule implements Module  {
 	 * @param r  a random number
 	 */
 	void stepEarly(double r) {
-		// Cytoplasmic water loss.
-		cell.updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_LOSS, 0.5);
-		
-		// Pyknosis of nucleus.
-		cell.updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
+		if (cell.tags > 0) {
+			// Cytoplasmic water loss.
+			cell.updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_LOSS, 0.5);
+			
+			// Pyknosis of nucleus.
+			cell.updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
+		} else {
+			cell.updateTarget(RATE_CYTOPLASM_LOSS, 0.5);
+		}
 		
 		// Check for transition to late phase.
 		double p = Simulation.DT/DURATION_EARLY;
@@ -123,19 +130,43 @@ public abstract class ApoptosisModule implements Module  {
 	 * @param sim  the simulation instance
 	 */
 	void stepLate(double r, Simulation sim) {
-		// Cytoplasm blebbing.
-		cell.updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_BLEBBING, 0);
-		
-		// Nuclear fragmentation.
-		cell.updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
+		if (cell.tags > 0) {
+			// Cytoplasm blebbing.
+			cell.updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_BLEBBING, 0);
+			
+			// Nuclear fragmentation.
+			cell.updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
+		}
+		else {
+			cell.updateTarget(RATE_CYTOPLASM_BLEBBING, 0);
+		}
 		
 		// Check for completion of late phase.
-		double p = Simulation.DT/DURATION_EARLY;
+		double p = Simulation.DT/DURATION_LATE;
 		if (r < p || cell.getVolume() < APOPTOSIS_CHECKPOINT*cell.getCriticalVolume()) {
-			Potts potts = sim.getPotts();
-			cell.getLocation().clear(potts.IDS, potts.TAGS);
-			sim.getAgents().removeObject(cell.getID());
-			cell.stopper.stop();
+			removeCell(sim);
+			phase = PHASE_APOPTOSED;
 		}
+	}
+	
+	/**
+	 * Removes a cell from the simulation.
+	 * <p>
+	 * The location is cleared, along with any tagged regions.
+	 * The cell is then removed from the grid and simulation schedule.
+	 * 
+	 * @param sim  the simulation instance
+	 */
+	void removeCell(Simulation sim) {
+		Potts potts = sim.getPotts();
+		
+		// Clear the location.
+		cell.getLocation().clear(potts.IDS, potts.TAGS);
+		
+		// Remove the cell from the grid.
+		sim.getAgents().removeObject(cell.getID());
+		
+		// Stop stepping the cell.
+		cell.stopper.stop();
 	}
 }

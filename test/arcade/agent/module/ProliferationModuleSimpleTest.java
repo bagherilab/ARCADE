@@ -1,11 +1,11 @@
 package arcade.agent.module;
 
-import arcade.agent.cell.PottsCell;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import sim.engine.Schedule;
 import ec.util.MersenneTwisterFast;
+import arcade.agent.cell.PottsCell;
 import arcade.sim.Simulation;
 import arcade.sim.Potts;
 import arcade.env.grid.Grid;
