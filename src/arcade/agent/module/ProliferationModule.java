@@ -237,9 +237,6 @@ public abstract class ProliferationModule implements Module {
 	 * Performs actions for M phase.
 	 * <p>
 	 * Cell will complete cell division after an average time of {@code DURATION_M}.
-	 * The cell location is split, along with any tagged regions.
-	 * The new cell is created, initialized, and added to the schedule.
-	 * Both cells are reset remain in the proliferative state.
 	 * 
 	 * @param r  a random number
 	 * @param random  the random number generator
@@ -249,21 +246,35 @@ public abstract class ProliferationModule implements Module {
 		// Check for completion of M phase.
 		double p = Simulation.DT/DURATION_M;
 		if (r < p) {
-			Potts potts = sim.getPotts();
-			
-			// Split current location.
-			Location newLocation = cell.getLocation().split(random);
-			
-			// Reset arrays, targets, and state for current cell.
-			cell.reset(potts.IDS, potts.TAGS);
+			addCell(random, sim);
 			phase = PHASE_G1;
-			
-			// Create and schedule new cell.
-			int newID = sim.getID();
-			Cell newCell = cell.make(newID, STATE_PROLIFERATIVE, newLocation);
-			sim.getAgents().addObject(newID, newCell);
-			newCell.reset(potts.IDS, potts.TAGS);
-			newCell.schedule(sim.getSchedule());
 		}
+	}
+	
+	/**
+	 * Adds a cell to the simulation.
+	 * <p>
+	 * The cell location is split, along with any tagged regions.
+	 * The new cell is created, initialized, and added to the schedule.
+	 * Both cells are reset remain in the proliferative state.
+	 * 
+	 * @param random  the random number generator
+	 * @param sim  the simulation instance
+	 */
+	void addCell(MersenneTwisterFast random, Simulation sim) {
+		Potts potts = sim.getPotts();
+		
+		// Split current location.
+		Location newLocation = cell.getLocation().split(random);
+		
+		// Reset current cell.
+		cell.reset(potts.IDS, potts.TAGS);
+		
+		// Create and schedule new cell.
+		int newID = sim.getID();
+		Cell newCell = cell.make(newID, STATE_PROLIFERATIVE, newLocation);
+		sim.getAgents().addObject(newID, newCell);
+		newCell.reset(potts.IDS, potts.TAGS);
+		newCell.schedule(sim.getSchedule());
 	}
 }

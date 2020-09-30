@@ -95,7 +95,7 @@ public class ProliferationModuleSimpleTest {
 	}
 	
 	@Test
-	public void stepG1_anyTransition_updatesCell() {
+	public void stepG1_withoutStateChange_updatesCell() {
 		for (int i = 0; i < 10; i++) {
 			PottsCell cell = mock(PottsCell.class);
 			ProliferationModule module = spy(new ProliferationModule.Simple(cell));
@@ -323,44 +323,28 @@ public class ProliferationModuleSimpleTest {
 	
 	@Test
 	public void stepM_noTransition_doesNothing() {
-		Location location = mock(Location.class);
-		PottsCell cell = spy(mock(PottsCell.class));
-		Potts potts = mock(Potts.class);
-		Grid grid = mock(Grid.class);
-		Simulation sim = mock(Simulation.class);
-		Schedule schedule = mock(Schedule.class);
-		
-		int id = (int)(Math.random()*100) + 1;
-		doReturn(potts).when(sim).getPotts();
-		doReturn(id).when(sim).getID();
-		doReturn(grid).when(sim).getAgents();
-		doReturn(schedule).when(sim).getSchedule();
-		
-		potts.IDS = new int[][][] { { { } } };
-		potts.TAGS = new int[][][] { { { } } };
-		
-		Location newLocation = mock(Location.class);
-		PottsCell newCell = spy(mock(PottsCell.class));
-		
-		doReturn(newCell).when(cell).make(eq(id), anyInt(), eq(newLocation));
-		doReturn(location).when(cell).getLocation();
-		doReturn(newLocation).when(location).split(random);
-		doNothing().when(cell).reset(any(), any());
-		doNothing().when(newCell).reset(any(), any());
-		
-		ProliferationModule module = new ProliferationModule.Simple(cell);
+		PottsCell cell = mock(PottsCell.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		doNothing().when(module).addCell(random, sim);
 		module.phase = PHASE_M;
-		
 		module.stepM(Simulation.DT/DURATION_M + EPSILON, random, sim);
-		verify(cell, never()).reset(potts.IDS, potts.TAGS);
-		verify(newCell, never()).reset(potts.IDS, potts.TAGS);
-		verify(grid, never()).addObject(id, newCell);
-		verify(newCell, never()).schedule(schedule);
+		verify(module, never()).addCell(random, sim);
 		assertEquals(PHASE_M, module.phase);
 	}
 	
 	@Test
-	public void stepM_withTransition_callsMethods() {
+	public void stepM_withTransition_updatesPhase() {
+		PottsCell cell = mock(PottsCell.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		doNothing().when(module).addCell(random, sim);
+		module.phase = PHASE_M;
+		module.stepM(Simulation.DT/DURATION_M - EPSILON, random, sim);
+		verify(module).addCell(random, sim);
+		assertEquals(PHASE_G1, module.phase);
+	}
+	
+	@Test
+	public void addCell_called_addsObject() {
 		Location location = mock(Location.class);
 		PottsCell cell = spy(mock(PottsCell.class));
 		Potts potts = mock(Potts.class);
@@ -387,13 +371,11 @@ public class ProliferationModuleSimpleTest {
 		doNothing().when(newCell).reset(any(), any());
 		
 		ProliferationModule module = new ProliferationModule.Simple(cell);
-		module.phase = PHASE_M;
 		
-		module.stepM(Simulation.DT/DURATION_M - EPSILON, random, sim);
+		module.addCell(random, sim);
 		verify(cell).reset(potts.IDS, potts.TAGS);
 		verify(newCell).reset(potts.IDS, potts.TAGS);
 		verify(grid).addObject(id, newCell);
 		verify(newCell).schedule(schedule);
-		assertEquals(PHASE_G1, module.phase);
 	}
 }
