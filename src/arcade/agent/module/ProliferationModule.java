@@ -106,7 +106,7 @@ public abstract class ProliferationModule implements Module {
 				stepG1(r);
 				break;
 			case PHASE_S:
-				stepS();
+				stepS(r);
 				break;
 			case PHASE_G2:
 				stepG2(r);
@@ -168,17 +168,26 @@ public abstract class ProliferationModule implements Module {
 	/**
 	 * Performs actions for S phase.
 	 * <p>
-	 * Cell increases its nuclear size toward a target of twice its critical nuclear size.
-	 * Cell will transition to G1 phase once nucleus is at least {@code GROWTH_CHECKPOINT_S}
-	 * times the critical nucleus size.
+	 * Cell increases its nuclear size toward a target of twice its critical
+	 * nuclear size.
+	 * Cell will transition to G1 phase once nucleus is at least
+	 * {@code GROWTH_CHECKPOINT_S} times the critical nucleus size.
+	 * <p>
+	 * If cell does not have tags, then cell will transition to G2 phase after
+	 * an average time of {@code DURATION_S}.
 	 */
-	void stepS() {
-		// Increase size of nucleus.
-		cell.updateTarget(TAG_NUCLEUS, RATE_S, 2);
-		
-		// Check for transition to G2 phase.
-		if (cell.getVolume(TAG_NUCLEUS) > GROWTH_CHECKPOINT_S*cell.getCriticalVolume(TAG_NUCLEUS)) {
-			phase = PHASE_G2;
+	void stepS(double r) {
+		if (cell.tags > 0) {
+			// Increase size of nucleus.
+			cell.updateTarget(TAG_NUCLEUS, RATE_S, 2);
+			
+			// Check for transition to G2 phase.
+			if (cell.getVolume(TAG_NUCLEUS) > GROWTH_CHECKPOINT_S*cell.getCriticalVolume(TAG_NUCLEUS)) {
+				phase = PHASE_G2;
+			}
+		} else {
+			double p = Simulation.DT/DURATION_S;
+			if (r < p) { phase = PHASE_G2; }
 		}
 	}
 	

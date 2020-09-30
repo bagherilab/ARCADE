@@ -1,5 +1,6 @@
 package arcade.agent.module;
 
+import arcade.agent.cell.PottsCell;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -16,188 +17,137 @@ import static arcade.agent.cell.PottsCellTest.PottsCellMock;
 public class ProliferationModuleSimpleTest {
 	private static final double EPSILON = 1E-5;
 	private static final double r = 1.0;
-	static PottsCellMock cell;
 	static MersenneTwisterFast random;
-	static Location location, newLocation;
 	static Simulation sim;
-	static double[] criticals = new double[] { 0, 0 };
-	static double[] lambdas = new double[] { Math.random()*100, Math.random()*100 };
-	static double[] adhesion = new double[] { Math.random()*100, Math.random()*100, Math.random()*100 };
-	static double[][] criticalsTag = new double[][] {
-			{ 0, 0 },
-			{ 0, 0 }
-	};
-	static double[][] lambdasTag = new double[][] {
-			{ Math.random()*100, Math.random()*100 },
-			{ Math.random()*100, Math.random()*100 }
-	};
-	static double[][] adhesionsTag = new double[][] {
-			{ Math.random()*100, Math.random()*100 },
-			{ Math.random()*100, Math.random()*100 }
-	};
 	
 	@BeforeClass
 	public static void setupMocks() {
 		random = mock(MersenneTwisterFast.class);
 		when(random.nextDouble()).thenReturn(r);
-		
-		location = mock(Location.class);
-		newLocation = mock(Location.class);
-		when(location.split(random)).thenReturn(newLocation);
-		
-		cell = new PottsCellMock(1, 1, 0, 0, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag);
-		
 		sim = mock(Simulation.class);
 	}
 	
 	@Test
 	public void getPhase_defaultConstructor_returnsValue() {
-		ProliferationModule module = new ProliferationModule.Simple(cell);
+		ProliferationModule module = new ProliferationModule.Simple(mock(PottsCell.class));
 		assertEquals(PHASE_G1, module.getPhase());
 	}
 	
 	@Test
 	public void step_givenPhaseG1_callsMethod() {
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_G1;
+		ProliferationModule module = spy(new ProliferationModule.Simple(mock(PottsCell.class)));
+		module.phase = PHASE_G1;
 		
-		spy.step(random, sim);
-		verify(spy).stepG1(r);
-		verify(spy, never()).stepS();
-		verify(spy, never()).stepG2(r);
-		verify(spy, never()).stepM(r, random, sim);
+		module.step(random, sim);
+		verify(module).stepG1(r);
+		verify(module, never()).stepS(r);
+		verify(module, never()).stepG2(r);
+		verify(module, never()).stepM(r, random, sim);
 	}
 	
 	@Test
 	public void step_givenPhaseS_callsMethod() {
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_S;
+		ProliferationModule module = spy(new ProliferationModule.Simple(mock(PottsCell.class)));
+		module.phase = PHASE_S;
 		
-		spy.step(random, sim);
-		verify(spy).stepS();
-		verify(spy, never()).stepG1(r);
-		verify(spy, never()).stepG2(r);
-		verify(spy, never()).stepM(r, random, sim);
+		module.step(random, sim);
+		verify(module).stepS(r);
+		verify(module, never()).stepG1(r);
+		verify(module, never()).stepG2(r);
+		verify(module, never()).stepM(r, random, sim);
 	}
 	
 	@Test
 	public void step_givenPhaseG2_callsMethod() {
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_G2;
+		ProliferationModule module = spy(new ProliferationModule.Simple(mock(PottsCell.class)));
+		module.phase = PHASE_G2;
 		
-		spy.step(random, sim);
-		verify(spy).stepG2(r);
-		verify(spy, never()).stepG1(r);
-		verify(spy, never()).stepS();
-		verify(spy, never()).stepM(r, random, sim);
+		module.step(random, sim);
+		verify(module).stepG2(r);
+		verify(module, never()).stepG1(r);
+		verify(module, never()).stepS(r);
+		verify(module, never()).stepM(r, random, sim);
 	}
 	
 	@Test
 	public void step_givenPhaseM_callsMethod() {
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_M;
+		ProliferationModule module = spy(new ProliferationModule.Simple(mock(PottsCell.class)));
+		module.phase = PHASE_M;
 		
-		spy.step(random, sim);
-		verify(spy).stepM(r, random, sim);
-		verify(spy, never()).stepG1(r);
-		verify(spy, never()).stepS();
-		verify(spy, never()).stepG2(r);
-	}
-	
-	@Test
-	public void stepG1_noTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_G1;
-		
-		spy.stepG1(1);
-		verify(cell).updateTarget(RATE_G1, 2);
-		verify(spy, never()).checkpointG1();
-		assertEquals(PHASE_G1, spy.phase);
-	}
-	
-	@Test
-	public void stepG1_withTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_G1;
-		
-		spy.stepG1(BASAL_APOPTOSIS_RATE*Simulation.DT + EPSILON);
-		verify(cell).updateTarget(RATE_G1, 2);
-		verify(spy).checkpointG1();
-		assertEquals(PHASE_S, spy.phase);
+		module.step(random, sim);
+		verify(module).stepM(r, random, sim);
+		verify(module, never()).stepG1(r);
+		verify(module, never()).stepS(r);
+		verify(module, never()).stepG2(r);
 	}
 	
 	@Test
 	public void stepG1_withStateChange_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_G1;
+		PottsCell cell = spy(mock(PottsCell.class));
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
 		
-		spy.stepG1(0);
+		module.phase = PHASE_G1;
+		module.stepG1(BASAL_APOPTOSIS_RATE*Simulation.DT - EPSILON);
+		
 		verify(cell, never()).updateTarget(RATE_G1, 2);
-		verify(spy, never()).checkpointG1();
-		assertEquals(STATE_APOPTOTIC, cell.getState());
-		assertTrue(spy.cell.getModule() instanceof ApoptosisModule);
+		verify(module, never()).checkpointG1();
+		verify(cell).setState(STATE_APOPTOTIC);
 	}
 	
 	@Test
-	public void stepG1_phaseNotArrested_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		
-		spy.phase = PHASE_G1;
-		spy.isArrested = false;
-		double transition = Simulation.DT*DURATION_CHECKPOINT;
-		
-		spy.stepG1(transition);
-		verify(cell).updateTarget(RATE_G1, 2);
-		verify(spy, never()).checkpointG1();
-		assertEquals(PHASE_G1, spy.phase);
-		
-		spy.stepG1(transition + EPSILON);
-		verify(cell, times(2)).updateTarget(RATE_G1, 2);
-		verify(spy, never()).checkpointG1();
-		assertEquals(PHASE_G1, spy.phase);
-		
-		spy.stepG1(transition - EPSILON);
-		verify(cell, times(3)).updateTarget(RATE_G1, 2);
-		verify(spy, never()).checkpointG1();
-		assertEquals(PHASE_G1, spy.phase);
+	public void stepG1_anyTransition_updatesCell() {
+		for (int i = 0; i < 10; i++) {
+			PottsCell cell = mock(PottsCell.class);
+			ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+			
+			module.phase = PHASE_G1;
+			module.stepG1(i/10. + BASAL_APOPTOSIS_RATE*Simulation.DT);
+			verify(cell).updateTarget(RATE_G1, 2);
+		}
 	}
 	
 	@Test
-	public void stepG1_phaseArrested_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		
-		spy.phase = PHASE_G1;
-		spy.isArrested = true;
-		double transition = Simulation.DT*DURATION_CHECKPOINT;
-		
-		spy.stepG1(transition);
-		verify(cell).updateTarget(RATE_G1, 2);
-		verify(spy, never()).checkpointG1();
-		assertEquals(PHASE_G1, spy.phase);
-		
-		spy.stepG1(transition + EPSILON);
-		verify(cell, times(2)).updateTarget(RATE_G1, 2);
-		verify(spy, never()).checkpointG1();
-		assertEquals(PHASE_G1, spy.phase);
-		
-		spy.stepG1(transition - EPSILON);
-		verify(cell, times(3)).updateTarget(RATE_G1, 2);
-		verify(spy).checkpointG1();
-		assertEquals(PHASE_S, spy.phase);
+	public void stepG1_noTransitionPhaseNotArrested_maintainsPhase() {
+		PottsCell cell = mock(PottsCell.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_G1;
+		module.isArrested = false;
+		module.stepG1(Simulation.DT/DURATION_G1 + EPSILON);
+		verify(module, never()).checkpointG1();
+		assertEquals(PHASE_G1, module.phase);
+	}
+	
+	@Test
+	public void stepG1_withTransitionPhaseNotArrested_updatesPhase() {
+		PottsCell cell = mock(PottsCell.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_G1;
+		module.isArrested = false;
+		module.stepG1(Simulation.DT/DURATION_G1 - EPSILON);
+		verify(module).checkpointG1();
+		assertEquals(PHASE_S, module.phase);
+	}
+	
+	@Test
+	public void stepG1_noTransitionPhaseArrested_maintainsPhase() {
+		PottsCell cell = mock(PottsCell.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_G1;
+		module.isArrested = true;
+		module.stepG1(Simulation.DT/DURATION_CHECKPOINT + EPSILON);
+		verify(module, never()).checkpointG1();
+		assertEquals(PHASE_G1, module.phase);
+	}
+	
+	@Test
+	public void stepG1_withTransitionPhaseArrested_updatesPhase() {
+		PottsCell cell = mock(PottsCell.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_G1;
+		module.isArrested = true;
+		module.stepG1(Simulation.DT/DURATION_CHECKPOINT - EPSILON);
+		verify(module).checkpointG1();
+		assertEquals(PHASE_S, module.phase);
 	}
 	
 	@Test
@@ -229,113 +179,118 @@ public class ProliferationModuleSimpleTest {
 	}
 	
 	@Test
-	public void stepS_noTransition_callsMethods() {
+	public void stepS_anyTransitionTagged_updatesCell() {
+		for (int i = 0; i < 10; i++) {
+			PottsCell cell = mock(PottsCell.class);
+			ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+			
+			cell.tags = 2;
+			module.phase = PHASE_S;
+			module.stepS(i/10.);
+			verify(cell).updateTarget(TAG_NUCLEUS, RATE_S, 2);
+		}
+	}
+	
+	@Test
+	public void stepS_noTransitionTagged_maintainsPhase() {
 		PottsCellMock cell = mock(PottsCellMock.class);
 		double volume = Math.random()*100;
 		when(cell.getVolume(TAG_NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) - 1);
 		when(cell.getCriticalVolume(TAG_NUCLEUS)).thenReturn(volume);
+		cell.tags = 2;
 		
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_S;
-		
-		spy.stepS();
-		verify(cell).updateTarget(TAG_NUCLEUS, RATE_S, 2);
-		assertEquals(PHASE_S, spy.getPhase());
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_S;
+		module.stepS(Math.random());
+		assertEquals(PHASE_S, module.getPhase());
 	}
 	
 	@Test
-	public void stepS_withTransition_callsMethods() {
+	public void stepS_withTransitionTagged_updatesPhase() {
 		PottsCellMock cell = mock(PottsCellMock.class);
 		double volume = Math.random()*100;
 		when(cell.getVolume(TAG_NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) + 1);
 		when(cell.getCriticalVolume(TAG_NUCLEUS)).thenReturn(volume);
+		cell.tags = 2;
 		
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_S;
-		
-		spy.stepS();
-		verify(cell).updateTarget(TAG_NUCLEUS, RATE_S, 2);
-		assertEquals(PHASE_G2, spy.getPhase());
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_S;
+		module.stepS(Math.random());
+		assertEquals(PHASE_G2, module.getPhase());
 	}
 	
 	@Test
-	public void stepG2_noTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_G2;
-		
-		spy.stepG2(1);
-		verify(cell).updateTarget(RATE_G2, 2);
-		verify(spy, never()).checkpointG2();
-		assertEquals(PHASE_G2, spy.phase);
+	public void stepS_noTransitionUntagged_maintainsPhase() {
+		PottsCellMock cell = mock(PottsCellMock.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_S;
+		module.stepS(Simulation.DT/DURATION_S + EPSILON);
+		assertEquals(PHASE_S, module.phase);
 	}
 	
 	@Test
-	public void stepG2_withTransition_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		spy.phase = PHASE_G2;
-		
-		spy.stepG2(0);
-		verify(cell).updateTarget(RATE_G2, 2);
-		verify(spy).checkpointG2();
-		assertEquals(PHASE_M, spy.phase);
+	public void stepS_withTransitionUntagged_updatesPhase() {
+		PottsCellMock cell = mock(PottsCellMock.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_S;
+		module.stepS(Simulation.DT/DURATION_S - EPSILON);
+		assertEquals(PHASE_G2, module.phase);
 	}
 	
 	@Test
-	public void stepG2_phaseNotArrested_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		
-		spy.phase = PHASE_G2;
-		spy.isArrested = false;
-		double transition = Simulation.DT*DURATION_CHECKPOINT;
-		
-		spy.stepG2(transition);
-		verify(cell).updateTarget(RATE_G2, 2);
-		verify(spy, never()).checkpointG1();
-		assertEquals(PHASE_G2, spy.phase);
-		
-		spy.stepG2(transition + EPSILON);
-		verify(cell, times(2)).updateTarget(RATE_G2, 2);
-		verify(spy, never()).checkpointG2();
-		assertEquals(PHASE_G2, spy.phase);
-		
-		spy.stepG2(transition - EPSILON);
-		verify(cell, times(3)).updateTarget(RATE_G2, 2);
-		verify(spy, never()).checkpointG2();
-		assertEquals(PHASE_G2, spy.phase);
+	public void stepG2_anyTransition_updatesCell() {
+		for (int i = 0; i < 10; i++) {
+			PottsCell cell = mock(PottsCell.class);
+			ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+			
+			module.phase = PHASE_G2;
+			module.stepG2(i/10.);
+			verify(cell).updateTarget(RATE_G2, 2);
+		}
 	}
 	
 	@Test
-	public void stepG2_phaseArrested_callsMethods() {
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
-		ProliferationModule module = new ProliferationModule.Simple(cell);
-		ProliferationModule spy = spy(module);
-		
-		spy.phase = PHASE_G2;
-		spy.isArrested = true;
-		double transition = Simulation.DT*DURATION_CHECKPOINT;
-		
-		spy.stepG2(transition);
-		verify(cell).updateTarget(RATE_G2, 2);
-		verify(spy, never()).checkpointG2();
-		assertEquals(PHASE_G2, spy.phase);
-		
-		spy.stepG2(transition + EPSILON);
-		verify(cell, times(2)).updateTarget(RATE_G2, 2);
-		verify(spy, never()).checkpointG2();
-		assertEquals(PHASE_G2, spy.phase);
-		
-		spy.stepG2(transition - EPSILON);
-		verify(cell, times(3)).updateTarget(RATE_G2, 2);
-		verify(spy).checkpointG2();
-		assertEquals(PHASE_M, spy.phase);
+	public void stepG2_noTransitionPhaseNotArrested_maintainsPhase() {
+		PottsCell cell = mock(PottsCell.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_G2;
+		module.isArrested = false;
+		module.stepG2(Simulation.DT/DURATION_G2 + EPSILON);
+		verify(module, never()).checkpointG2();
+		assertEquals(PHASE_G2, module.phase);
+	}
+	
+	@Test
+	public void stepG2_withTransitionPhaseNotArrested_updatesPhase() {
+		PottsCell cell = mock(PottsCell.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_G2;
+		module.isArrested = false;
+		module.stepG2( Simulation.DT/DURATION_G2 - EPSILON);
+		verify(module).checkpointG2();
+		assertEquals(PHASE_M, module.phase);
+	}
+	
+	@Test
+	public void stepG2_noTransitionPhaseArrested_maintainsPhase() {
+		PottsCell cell = mock(PottsCell.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_G2;
+		module.isArrested = true;
+		module.stepG2(Simulation.DT/DURATION_CHECKPOINT + EPSILON);
+		verify(module, never()).checkpointG2();
+		assertEquals(PHASE_G2, module.phase);
+	}
+	
+	@Test
+	public void stepG2_withTransitionPhaseArrested_updatesPhase() {
+		PottsCell cell = mock(PottsCell.class);
+		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
+		module.phase = PHASE_G2;
+		module.isArrested = true;
+		module.stepG2(Simulation.DT/DURATION_CHECKPOINT - EPSILON);
+		verify(module).checkpointG2();
+		assertEquals(PHASE_M, module.phase);
 	}
 	
 	@Test
@@ -367,57 +322,78 @@ public class ProliferationModuleSimpleTest {
 	}
 	
 	@Test
-	public void stepM_noTransition_callsMethods() {
+	public void stepM_noTransition_doesNothing() {
 		Location location = mock(Location.class);
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
+		PottsCell cell = spy(mock(PottsCell.class));
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
 		Simulation sim = mock(Simulation.class);
 		Schedule schedule = mock(Schedule.class);
-		when(sim.getPotts()).thenReturn(potts);
-		when(sim.getID()).thenReturn(2);
-		when(sim.getAgents()).thenReturn(grid);
-		when(sim.getSchedule()).thenReturn(schedule);
+		
+		int id = (int)(Math.random()*100) + 1;
+		doReturn(potts).when(sim).getPotts();
+		doReturn(id).when(sim).getID();
+		doReturn(grid).when(sim).getAgents();
+		doReturn(schedule).when(sim).getSchedule();
+		
+		potts.IDS = new int[][][] { { { } } };
+		potts.TAGS = new int[][][] { { { } } };
+		
+		Location newLocation = mock(Location.class);
+		PottsCell newCell = spy(mock(PottsCell.class));
+		
+		doReturn(newCell).when(cell).make(eq(id), anyInt(), eq(newLocation));
+		doReturn(location).when(cell).getLocation();
+		doReturn(newLocation).when(location).split(random);
+		doNothing().when(cell).reset(any(), any());
+		doNothing().when(newCell).reset(any(), any());
 		
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		module.phase = PHASE_M;
 		
-		module.stepM(1, random, sim);
-		verify(location, never()).split(random);
-		verify(cell, never()).reset(null, null);
-		verify(sim, never()).getAgents();
-		verify(sim, never()).getID();
-		verify(sim, never()).getSchedule();
-		verify(grid, never()).addObject(eq(2), isA(PottsCellMock.class));
+		module.stepM(Simulation.DT/DURATION_M + EPSILON, random, sim);
+		verify(cell, never()).reset(potts.IDS, potts.TAGS);
+		verify(newCell, never()).reset(potts.IDS, potts.TAGS);
+		verify(grid, never()).addObject(id, newCell);
+		verify(newCell, never()).schedule(schedule);
 		assertEquals(PHASE_M, module.phase);
 	}
 	
 	@Test
 	public void stepM_withTransition_callsMethods() {
 		Location location = mock(Location.class);
-		Location newLocation = mock(Location.class);
-		when(location.split(random)).thenReturn(newLocation);
-		
-		PottsCellMock cell = spy(new PottsCellMock(1, 1, location, criticals, lambdas, adhesion, 2, criticalsTag, lambdasTag, adhesionsTag));
+		PottsCell cell = spy(mock(PottsCell.class));
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
 		Simulation sim = mock(Simulation.class);
 		Schedule schedule = mock(Schedule.class);
-		when(sim.getPotts()).thenReturn(potts);
-		when(sim.getID()).thenReturn(2);
-		when(sim.getAgents()).thenReturn(grid);
-		when(sim.getSchedule()).thenReturn(schedule);
+		
+		int id = (int)(Math.random()*100) + 1;
+		doReturn(potts).when(sim).getPotts();
+		doReturn(id).when(sim).getID();
+		doReturn(grid).when(sim).getAgents();
+		doReturn(schedule).when(sim).getSchedule();
+		
+		potts.IDS = new int[][][] { { { } } };
+		potts.TAGS = new int[][][] { { { } } };
+		
+		Location newLocation = mock(Location.class);
+		PottsCell newCell = spy(mock(PottsCell.class));
+		
+		doReturn(newCell).when(cell).make(eq(id), anyInt(), eq(newLocation));
+		doReturn(location).when(cell).getLocation();
+		doReturn(newLocation).when(location).split(random);
+		doNothing().when(cell).reset(any(), any());
+		doNothing().when(newCell).reset(any(), any());
 		
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		module.phase = PHASE_M;
 		
-		module.stepM(0, random, sim);
-		verify(location).split(random);
-		verify(cell).reset(null, null);
-		verify(sim).getAgents();
-		verify(sim).getID();
-		verify(sim).getSchedule();
-		verify(grid).addObject(eq(2), isA(PottsCellMock.class));
+		module.stepM(Simulation.DT/DURATION_M - EPSILON, random, sim);
+		verify(cell).reset(potts.IDS, potts.TAGS);
+		verify(newCell).reset(potts.IDS, potts.TAGS);
+		verify(grid).addObject(id, newCell);
+		verify(newCell).schedule(schedule);
 		assertEquals(PHASE_G1, module.phase);
 	}
 }
