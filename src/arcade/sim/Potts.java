@@ -34,6 +34,9 @@ public abstract class Potts implements Steppable {
 	/** Effective cell temperature */
 	final double TEMPERATURE;
 	
+	/** {@code true} if cells have tags, {@code false} otherwise */
+	final boolean TAGGED;
+	
 	/** Potts array for ids */
 	public int[][][] IDS;
 	
@@ -63,6 +66,11 @@ public abstract class Potts implements Steppable {
 		
 		// Get temperature.
 		TEMPERATURE = series._potts.getDouble("TEMPERATURE");
+		
+		// Check if there are tags.
+		TAGGED = series._populations.values().stream()
+				.map(e -> e.filter("TAG").getKeys().size())
+				.anyMatch(e -> e > 0);
 	}
 	
 	/**
@@ -86,7 +94,7 @@ public abstract class Potts implements Steppable {
 			
 			// Select unique ID (if there is one), otherwise select unique
 			// tag (if there is one). If there are neither, then skip.
-			if (uniqueTagTargets.size() > 0) {
+			if (TAGGED && uniqueTagTargets.size() > 0) {
 				int targetTag = (int)uniqueTagTargets.toArray()[simstate.random.nextInt(uniqueTagTargets.size())];
 				flip(IDS[z][x][y], TAGS[z][x][y], targetTag, x, y, z, random);
 			}
@@ -115,7 +123,7 @@ public abstract class Potts implements Steppable {
 			
 			// Check connectivity of tags.
 			if (TAGS[z][x][y] < TAG_DEFAULT) {
-				boolean candidateTagConnected = getConnectivity(getNeighborhood(sourceID, TAGS[z][x][y], x, y, z), TAGS[z][x][y] == -1);
+				boolean candidateTagConnected = getConnectivity(getNeighborhood(sourceID, TAGS[z][x][y], x, y, z), false);
 				if (!candidateTagConnected) { return; }
 			}
 		}
@@ -127,7 +135,7 @@ public abstract class Potts implements Steppable {
 			
 			// Check connectivity of tags.
 			if (TAGS[z][x][y] < TAG_DEFAULT) {
-				boolean candidateTagConnected = getConnectivity(getNeighborhood(targetID, TAGS[z][x][y], x, y, z), TAGS[z][x][y] == -1);
+				boolean candidateTagConnected = getConnectivity(getNeighborhood(targetID, TAGS[z][x][y], x, y, z), false);
 				if (!candidateTagConnected) { return; }
 			}
 		}
@@ -144,7 +152,7 @@ public abstract class Potts implements Steppable {
 		
 		if (random.nextDouble() < p) {
 			IDS[z][x][y] = targetID;
-			TAGS[z][x][y] = (targetID == 0 ? 0 : TAG_DEFAULT);
+			if (TAGGED) { TAGS[z][x][y] = (targetID == 0 ? 0 : TAG_DEFAULT); }
 			
 			if (sourceID > 0) {
 				getCell(sourceID).getLocation().remove(x, y, z);
@@ -169,13 +177,13 @@ public abstract class Potts implements Steppable {
 	void flip(int id, int sourceTag, int targetTag, int x, int y, int z, MersenneTwisterFast random) {
 		// Check connectivity of source.
 		if (sourceTag < TAG_DEFAULT) {
-			boolean candidateConnected = getConnectivity(getNeighborhood(id, sourceTag, x, y, z), TAGS[z][x][y] == -1);
+			boolean candidateConnected = getConnectivity(getNeighborhood(id, sourceTag, x, y, z), false);
 			if (!candidateConnected) { return; }
 		}
 		
 		// Check connectivity of target.
 		if (targetTag < TAG_DEFAULT) {
-			boolean targetConnected = getConnectivity(getNeighborhood(id, targetTag, x, y, z), TAGS[z][x][y] == -1);
+			boolean targetConnected = getConnectivity(getNeighborhood(id, targetTag, x, y, z), false);
 			if (!targetConnected) { return; }
 		}
 		

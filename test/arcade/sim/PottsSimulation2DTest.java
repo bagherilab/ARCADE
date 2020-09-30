@@ -3,6 +3,7 @@ package arcade.sim;
 import org.junit.*;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.agent.cell.*;
@@ -26,6 +27,7 @@ public class PottsSimulation2DTest {
 	public void makePotts_mockSeries_initializesPotts() {
 		Series series = mock(Series.class);
 		series._potts = mock(MiniBox.class);
+		series._populations = mock(HashMap.class);
 		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
 		Potts potts = sim.makePotts();
 		assertTrue(potts instanceof Potts2D);
