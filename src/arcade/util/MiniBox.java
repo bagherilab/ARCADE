@@ -2,24 +2,24 @@ package arcade.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.Pattern;
+import java.util.HashSet;
 
 /**
  * Container that maps a key to a value.
  * <p>
  * {@code MiniBox} objects are dictionaries that use a String to String hashmap.
  * Utility methods are provided to return the contents as specific types.
- *
- * @version 2.3.2
- * @since   2.0
  */
 
 public class MiniBox {
-	/** List of dictionary keys */
-	private final ArrayList<String> keys;
+	/** Regular expression for fractions */
+	private static final String NUMBER_REGEX = "^(-?\\d*\\.\\d*)$|^(-?\\d+)$|^(-?\\d+E\\d+)$|^(-?\\d*\\.\\d*E\\d+)$";
+	
+	/** List of keys */
+	final ArrayList<String> keys;
 	
 	/** Map of keys to values */
-	private final HashMap<String, String> contents;
+	final HashMap<String, String> contents;
 	
 	/**
 	 * Creates a {@code MiniBox} object.
@@ -30,7 +30,7 @@ public class MiniBox {
 	}
 	
 	/**
-	 * Gets all keys in the dictionary.
+	 * Gets list of keys in the box.
 	 * 
 	 * @return  the list of keys
 	 */
@@ -52,7 +52,7 @@ public class MiniBox {
 	 */
 	public int getInt(String id) {
 		String s = contents.get(id);
-		return (s == null ? 0 : Integer.parseInt(s));
+		return (s == null || !s.matches(NUMBER_REGEX) ? 0 : Double.valueOf(s).intValue());
 	}
 	
 	/**
@@ -63,16 +63,8 @@ public class MiniBox {
 	 */
 	public double getDouble(String id) {
 		String s = contents.get(id);
-		return (s == null ? Double.NaN : Double.parseDouble(s));
+		return (s == null || !s.matches(NUMBER_REGEX) ? Double.NaN : Double.parseDouble(s));
 	}
-	
-	/**
-	 * Gets the value for given key converted to a boolean.
-	 *
-	 * @param id  the key
-	 * @return  the value
-	 */
-	public boolean getBoolean(String id) { return contents.containsKey(id); }
 	
 	/**
 	 * Checks if the given key exists.
@@ -109,32 +101,71 @@ public class MiniBox {
 		contents.put(id, val);
 	}
 	
+	/**
+	 * Filters keys by the given code.
+	 * <p>
+	 * Entries in the form "key = value" where key = code/subkey can be filtered.
+	 * The returned box contains all entries in the form "subkey = value"
+	 * for all entries where the code matches the given code.
+	 * 
+	 * @param code  the code to filter by
+	 * @return  the filtered box
+	 */
 	public MiniBox filter(String code) {
 		MiniBox results = new MiniBox();
 		for (String key : keys) {
 			String[] split = key.split("/");
-			if (split.length == 2 && split[0].equals(code)) { results.put(split[1], contents.get(key)); }
+			if (split.length == 2 && split[0].equals(code)) {
+				results.put(split[1], contents.get(key));
+			}
 		}
 		return results;
 	}
 	
-	public String toJSON() {
-		Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+	/**
+	 * Compares two {@code MiniBox} instances.
+	 * 
+	 * @param box  the {@code MiniBox} to compare to
+	 * @return  {@code true} if both boxes have the same entries, {@code false} otherwise
+	 */
+	public boolean compare(MiniBox box) {
+		HashSet<String> allKeys = new HashSet<>();
+		allKeys.addAll(keys);
+		allKeys.addAll(box.keys);
 		
-		String s = "";
-		for (String key : keys) {
-			String value = contents.get(key);
-			boolean isNumber = pattern.matcher(value).matches();
-			if (isNumber) { s += String.format("\t\"%s\" : %s, \n", key, value); }
-			else { s += String.format("\t\"%s\" : \"%s\", \n", key, value); }
+		for (String key : allKeys) {
+			if (!contents.containsKey(key)) { return false; }
+			if (!box.contents.containsKey(key)) { return false; }
+			else if (!contents.get(key).equals(box.get(key))) { return false; }
 		}
-		return "{ \n" + s.replaceFirst(", $","") + "}";
+		
+		return true;
 	}
 	
+	/**
+	 * Formats the {@code MiniBox} as a JSON.
+	 * 
+	 * @return  the JSON
+	 */
+	public String toJSON() {
+		StringBuilder s = new StringBuilder();
+		for (String key : keys) {
+			String value = contents.get(key);
+			if (!value.matches(NUMBER_REGEX)) { value = "\"" + value + "\""; }
+			s.append(String.format("\t\"%s\" : %s, \n", key, value));
+		}
+		return "{\n" + s.toString().replaceFirst(", $","") + "}";
+	}
+	
+	/**
+	 * Formats the {@code MiniBox} as a string.
+	 * 
+	 * @return  the string
+	 */
 	public String toString() {
 		String format = "%20s : %s\n";
-		String s = "";
-		for (String id : keys) { s += String.format(format, id, contents.get(id)); }
-		return s;
+		StringBuilder s = new StringBuilder();
+		for (String id : keys) { s.append(String.format(format, id, contents.get(id))); }
+		return s.toString();
 	}
 }
