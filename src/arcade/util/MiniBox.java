@@ -12,6 +12,9 @@ import java.util.HashSet;
  */
 
 public class MiniBox {
+	/** Separator character for tags */
+	public static final String TAG_SEPARATOR = "/";
+	
 	/** Regular expression for fractions */
 	private static final String NUMBER_REGEX = "^(-?\\d*\\.\\d*)$|^(-?\\d+)$|^(-?\\d+E\\d+)$|^(-?\\d*\\.\\d*E\\d+)$";
 	
@@ -114,7 +117,7 @@ public class MiniBox {
 	public MiniBox filter(String code) {
 		MiniBox results = new MiniBox();
 		for (String key : keys) {
-			String[] split = key.split("/");
+			String[] split = key.split(TAG_SEPARATOR);
 			if (split.length == 2 && split[0].equals(code)) {
 				results.put(split[1], contents.get(key));
 			}

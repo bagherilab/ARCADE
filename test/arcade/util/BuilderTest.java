@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import arcade.sim.Series;
 import static arcade.MainTest.*;
+import static arcade.sim.Series.TARGET_SEPARATOR;
+import static arcade.util.MiniBox.TAG_SEPARATOR;
 
 public class BuilderTest {
 	private static final String ATT_QNAME = randomString();
@@ -166,7 +168,7 @@ public class BuilderTest {
 		
 		builder.updateBox(LIST_NAME, TAG_NAME, attributes);
 		
-		Box expected = makeExpected(tag + "/" + id, nAtts);
+		Box expected = makeExpected(tag + TAG_SEPARATOR + id, nAtts);
 		assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(nLists - 1)));
 	}
 	
@@ -190,7 +192,7 @@ public class BuilderTest {
 		
 		builder.updateBox(LIST_NAME, TAG_NAME, attributes);
 		
-		Box expected = makeExpected(id + ":" + target, nAtts);
+		Box expected = makeExpected(id + TARGET_SEPARATOR + target, nAtts);
 		assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(nLists - 1)));
 	}
 	
@@ -218,7 +220,7 @@ public class BuilderTest {
 		
 		builder.updateBox(LIST_NAME, TAG_NAME, attributes);
 		
-		Box expected = makeExpected(tag + "/" + id + ":" + target, nAtts);
+		Box expected = makeExpected(tag + TAG_SEPARATOR + id + TARGET_SEPARATOR + target, nAtts);
 		assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(nLists - 1)));
 	}
 	

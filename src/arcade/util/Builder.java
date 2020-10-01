@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import arcade.sim.Series;
+import static arcade.sim.Series.TARGET_SEPARATOR;
+import static arcade.util.MiniBox.TAG_SEPARATOR;
 
 /**
  * Custom builder for simulation setup XMLs.
@@ -147,9 +149,9 @@ public class Builder implements ContentHandler {
 		int numAtts = atts.getLength();
 		String id;
 		if (numAtts > 0) {
-			id = (atts.getValue("tag") == null ? "" : atts.getValue("tag") + "/")
+			id = (atts.getValue("tag") == null ? "" : atts.getValue("tag") + TAG_SEPARATOR)
 					+ atts.getValue("id")
-					+ (atts.getValue("target") == null ? "" : ":" + atts.getValue("target"));
+					+ (atts.getValue("target") == null ? "" : TARGET_SEPARATOR + atts.getValue("target"));
 			box.addTag(id, tag.toUpperCase());
 			
 			for (int i = 0; i < numAtts; i++) {

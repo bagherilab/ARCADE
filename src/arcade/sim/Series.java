@@ -8,6 +8,8 @@ import java.util.HashMap;
 import sim.display.GUIState;
 import sim.engine.SimState;
 import arcade.util.*;
+import static arcade.util.Box.KEY_SEPARATOR;
+import static arcade.util.MiniBox.TAG_SEPARATOR;
 
 public class Series {
 	/** Logger for {@code Series} */
@@ -18,6 +20,9 @@ public class Series {
 	
 	/** Offset of random seed to avoid using seed of 0 */
 	public static final int SEED_OFFSET = 1000;
+	
+	/** Separator character for targets */
+	public static final String TARGET_SEPARATOR = ":";
 	
 	/** Format for console output of simulation time */
 	private final static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.0000");
@@ -262,7 +267,7 @@ public class Series {
 			// are set as equal to the default (or adjusted) value, before
 			// any specific values or scaling is applied.
 			for (String target : pops) {
-				updateParameter(population, "ADHESION:" + target,
+				updateParameter(population, "ADHESION" + TARGET_SEPARATOR + target,
 						population.get("ADHESION"), parameterValues, parameterScales);
 			}
 			
@@ -272,19 +277,19 @@ public class Series {
 			
 			// Add tag fractions and parameters.
 			for (String tag : tags.getKeys()) {
-				double tagFraction = (isValidFraction(tags, tag + "~fraction") ? tagFractions.getDouble(tag) : 0);
-				population.put("TAG/" + tag, tagFraction);
+				double tagFraction = (isValidFraction(tags, tag + KEY_SEPARATOR + "fraction") ? tagFractions.getDouble(tag) : 0);
+				population.put("TAG" + TAG_SEPARATOR + tag, tagFraction);
 				
 				// Add tag parameters.
 				for (String parameter : populationDefaults.getKeys()) {
-					String tagParameter = tag + "/" + parameter;
+					String tagParameter = tag + TAG_SEPARATOR + parameter;
 					updateParameter(population, tagParameter,
 							population.get(parameter), parameterValues, parameterScales);
 				}
 				
 				// Add tag adhesion values.
 				for (String target : tags.getKeys()) {
-					updateParameter(population, tag + "/ADHESION:" + target,
+					updateParameter(population, tag + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target,
 							population.get("ADHESION"), parameterValues, parameterScales);
 				}
 			}

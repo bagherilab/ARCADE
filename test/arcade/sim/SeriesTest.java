@@ -14,7 +14,9 @@ import sim.engine.Steppable;
 import sim.display.GUIState;
 import arcade.util.Box;
 import arcade.util.MiniBox;
-import static arcade.sim.Series.*;
+import static arcade.sim.Series.SEED_OFFSET;
+import static arcade.sim.Series.TARGET_SEPARATOR;
+import static arcade.util.MiniBox.TAG_SEPARATOR;
 
 public class SeriesTest {
 	private static final double EPSILON = 1E-4;
@@ -624,7 +626,7 @@ public class SeriesTest {
 			Series series = makeSeriesForPopulation(boxes);
 			
 			MiniBox box = series._populations.get(POPULATION_ID_1);
-			assertEquals(values[i], box.getDouble("TAG/" + TAG_ID_1), EPSILON);
+			assertEquals(values[i], box.getDouble("TAG" + TAG_SEPARATOR + TAG_ID_1), EPSILON);
 		}
 	}
 	
@@ -640,7 +642,7 @@ public class SeriesTest {
 			Series series = makeSeriesForPopulation(boxes);
 			
 			MiniBox box = series._populations.get(POPULATION_ID_1);
-			assertEquals(0, box.getDouble("TAG/" + TAG_ID_1), EPSILON);
+			assertEquals(0, box.getDouble("TAG" + TAG_SEPARATOR + TAG_ID_1), EPSILON);
 		}
 	}
 	
@@ -748,7 +750,7 @@ public class SeriesTest {
 		MiniBox box = series._populations.get(POPULATION_ID_1);
 		
 		assertEquals(adhesion, box.get("ADHESION:*"));
-		assertEquals(adhesion, box.get("ADHESION:" + POPULATION_ID_1));
+		assertEquals(adhesion, box.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_1));
 	}
 	
 	@Test
@@ -765,10 +767,10 @@ public class SeriesTest {
 				
 				double value = randomDouble();
 				double scale = randomDouble();
-				boxes[0].addAtt("ADHESION:" + modifiedPop1, "value", "" + value);
-				boxes[0].addTag("ADHESION:" + modifiedPop1, "PARAMETER");
-				boxes[0].addAtt("ADHESION:" + modifiedPop2, "scale", "" + scale);
-				boxes[0].addTag("ADHESION:" + modifiedPop2, "PARAMETER");
+				boxes[0].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "value", "" + value);
+				boxes[0].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "PARAMETER");
+				boxes[0].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "scale", "" + scale);
+				boxes[0].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "PARAMETER");
 				
 				Series series = makeSeriesForPopulation(boxes);
 				MiniBox box = series._populations.get(POPULATION_ID_1);
@@ -777,7 +779,7 @@ public class SeriesTest {
 					double expected = adhesion;
 					if (pop.equals(modifiedPop1)) { expected = value; }
 					if (pop.equals(modifiedPop2)) { expected *= scale; }
-					assertEquals(expected, box.getDouble("ADHESION:" + pop), EPSILON);
+					assertEquals(expected, box.getDouble("ADHESION" + TARGET_SEPARATOR + pop), EPSILON);
 				}
 			}
 		}
@@ -800,17 +802,17 @@ public class SeriesTest {
 		MiniBox box3 = series._populations.get(POPULATION_ID_3);
 		
 		assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION:*"));
-		assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION:" + POPULATION_ID_1));
-		assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION:" + POPULATION_ID_2));
-		assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION:" + POPULATION_ID_3));
+		assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_1));
+		assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_2));
+		assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_3));
 		assertEquals(adhesion, box2.get("ADHESION:*"));
-		assertEquals(adhesion, box2.get("ADHESION:" + POPULATION_ID_1));
-		assertEquals(adhesion, box2.get("ADHESION:" + POPULATION_ID_2));
-		assertEquals(adhesion, box2.get("ADHESION:" + POPULATION_ID_3));
+		assertEquals(adhesion, box2.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_1));
+		assertEquals(adhesion, box2.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_2));
+		assertEquals(adhesion, box2.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_3));
 		assertEquals(POPULATION.get("ADHESION"), box3.get("ADHESION:*"));
-		assertEquals(POPULATION.get("ADHESION"), box3.get("ADHESION:" + POPULATION_ID_1));
-		assertEquals(POPULATION.get("ADHESION"), box3.get("ADHESION:" + POPULATION_ID_2));
-		assertEquals(POPULATION.get("ADHESION"), box3.get("ADHESION:" + POPULATION_ID_3));
+		assertEquals(POPULATION.get("ADHESION"), box3.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_1));
+		assertEquals(POPULATION.get("ADHESION"), box3.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_2));
+		assertEquals(POPULATION.get("ADHESION"), box3.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_3));
 	}
 	
 	@Test
@@ -828,22 +830,22 @@ public class SeriesTest {
 				
 				double value = randomDouble();
 				double scale = randomDouble();
-				boxes[1].addAtt("ADHESION:" + modifiedPop1, "value", "" + value);
-				boxes[1].addTag("ADHESION:" + modifiedPop1, "PARAMETER");
-				boxes[1].addAtt("ADHESION:" + modifiedPop2, "scale", "" + scale);
-				boxes[1].addTag("ADHESION:" + modifiedPop2, "PARAMETER");
+				boxes[1].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "value", "" + value);
+				boxes[1].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "PARAMETER");
+				boxes[1].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "scale", "" + scale);
+				boxes[1].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "PARAMETER");
 				
 				Series series = makeSeriesForPopulation(boxes);
 				MiniBox box1 = series._populations.get(POPULATION_ID_1);
 				MiniBox box2 = series._populations.get(POPULATION_ID_2);
 				
 				for (String pop : pops) {
-					assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION:" + pop));
+					assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION" + TARGET_SEPARATOR + pop));
 					
 					double expected = adhesion;
 					if (pop.equals(modifiedPop1)) { expected = value; }
 					if (pop.equals(modifiedPop2)) { expected *= scale; }
-					assertEquals(expected, box2.getDouble("ADHESION:" + pop), EPSILON);
+					assertEquals(expected, box2.getDouble("ADHESION" + TARGET_SEPARATOR + pop), EPSILON);
 				}
 			}
 		}
@@ -861,8 +863,8 @@ public class SeriesTest {
 		MiniBox box = series._populations.get(POPULATION_ID_1);
 		
 		for (String parameter : POPULATION_PARAMETER_NAMES) {
-			assertEquals(POPULATION.get(parameter), box.get(TAG_ID_1 + "/" + parameter));
-			assertEquals(POPULATION.get(parameter), box.get(TAG_ID_2 + "/" + parameter));
+			assertEquals(POPULATION.get(parameter), box.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
+			assertEquals(POPULATION.get(parameter), box.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
 		}
 	}
 	
@@ -891,8 +893,8 @@ public class SeriesTest {
 					double expected = POPULATION.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
-					assertEquals(expected, box.getDouble(TAG_ID_1 + "/" + parameter), EPSILON);
-					assertEquals(expected, box.getDouble(TAG_ID_2 + "/" + parameter), EPSILON);
+					assertEquals(expected, box.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
+					assertEquals(expected, box.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
 				}
 			}
 		}
@@ -914,12 +916,12 @@ public class SeriesTest {
 		MiniBox box3 = series._populations.get(POPULATION_ID_3);
 		
 		for (String parameter : POPULATION_PARAMETER_NAMES) {
-			assertNull(box1.get(TAG_ID_1 + "/" + parameter));
-			assertNull(box1.get(TAG_ID_2 + "/" + parameter));
-			assertEquals(POPULATION.get(parameter), box2.get(TAG_ID_1 + "/" + parameter));
-			assertEquals(POPULATION.get(parameter), box2.get(TAG_ID_2 + "/" + parameter));
-			assertNull(box3.get(TAG_ID_1 + "/" + parameter));
-			assertNull(box3.get(TAG_ID_2 + "/" + parameter));
+			assertNull(box1.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
+			assertNull(box1.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
+			assertEquals(POPULATION.get(parameter), box2.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
+			assertEquals(POPULATION.get(parameter), box2.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
+			assertNull(box3.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
+			assertNull(box3.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
 		}
 	}
 	
@@ -949,16 +951,16 @@ public class SeriesTest {
 				MiniBox box3 = series._populations.get(POPULATION_ID_3);
 				
 				for (String parameter : POPULATION_PARAMETER_NAMES) {
-					assertNull(box1.get(TAG_ID_1 + "/" + parameter));
-					assertNull(box1.get(TAG_ID_2 + "/" + parameter));
-					assertNull(box3.get(TAG_ID_1 + "/" + parameter));
-					assertNull(box3.get(TAG_ID_2 + "/" + parameter));
+					assertNull(box1.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
+					assertNull(box1.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
+					assertNull(box3.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
+					assertNull(box3.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
 					
 					double expected = POPULATION.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
-					assertEquals(expected, box2.getDouble(TAG_ID_1 + "/" + parameter), EPSILON);
-					assertEquals(expected, box2.getDouble(TAG_ID_2 + "/" + parameter), EPSILON);
+					assertEquals(expected, box2.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
+					assertEquals(expected, box2.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
 				}
 			}
 		}
@@ -977,10 +979,10 @@ public class SeriesTest {
 				
 				double value = randomDouble();
 				double scale = randomDouble();
-				boxes[0].addAtt(TAG_ID_2 + "/" + populationParameter1, "value", "" + value);
-				boxes[0].addTag(TAG_ID_2 + "/" + populationParameter1, "PARAMETER");
-				boxes[0].addAtt(TAG_ID_2 + "/" + populationParameter2, "scale", "" + scale);
-				boxes[0].addTag(TAG_ID_2 + "/" + populationParameter2, "PARAMETER");
+				boxes[0].addAtt(TAG_ID_2 + TAG_SEPARATOR + populationParameter1, "value", "" + value);
+				boxes[0].addTag(TAG_ID_2 + TAG_SEPARATOR + populationParameter1, "PARAMETER");
+				boxes[0].addAtt(TAG_ID_2 + TAG_SEPARATOR + populationParameter2, "scale", "" + scale);
+				boxes[0].addTag(TAG_ID_2 + TAG_SEPARATOR + populationParameter2, "PARAMETER");
 				
 				Series series = makeSeriesForPopulation(boxes);
 				MiniBox box = series._populations.get(POPULATION_ID_1);
@@ -989,8 +991,8 @@ public class SeriesTest {
 					double expected = POPULATION.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
-					assertEquals(POPULATION.getDouble(parameter), box.getDouble(TAG_ID_1 + "/" + parameter), EPSILON);
-					assertEquals(expected, box.getDouble(TAG_ID_2 + "/" + parameter), EPSILON);
+					assertEquals(POPULATION.getDouble(parameter), box.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
+					assertEquals(expected, box.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
 				}
 			}
 		}
@@ -1011,10 +1013,10 @@ public class SeriesTest {
 				
 				double value = randomDouble();
 				double scale = randomDouble();
-				boxes[1].addAtt(TAG_ID_2 + "/" + populationParameter1, "value", "" + value);
-				boxes[1].addTag(TAG_ID_2 + "/" + populationParameter1, "PARAMETER");
-				boxes[1].addAtt(TAG_ID_2 + "/" + populationParameter2, "scale", "" + scale);
-				boxes[1].addTag(TAG_ID_2 + "/" + populationParameter2, "PARAMETER");
+				boxes[1].addAtt(TAG_ID_2 + TAG_SEPARATOR + populationParameter1, "value", "" + value);
+				boxes[1].addTag(TAG_ID_2 + TAG_SEPARATOR + populationParameter1, "PARAMETER");
+				boxes[1].addAtt(TAG_ID_2 + TAG_SEPARATOR + populationParameter2, "scale", "" + scale);
+				boxes[1].addTag(TAG_ID_2 + TAG_SEPARATOR + populationParameter2, "PARAMETER");
 				
 				Series series = makeSeriesForPopulation(boxes);
 				MiniBox box1 = series._populations.get(POPULATION_ID_1);
@@ -1022,16 +1024,16 @@ public class SeriesTest {
 				MiniBox box3 = series._populations.get(POPULATION_ID_3);
 				
 				for (String parameter : POPULATION_PARAMETER_NAMES) {
-					assertNull(box1.get(TAG_ID_1 + "/" + parameter));
-					assertNull(box1.get(TAG_ID_2 + "/" + parameter));
-					assertNull(box3.get(TAG_ID_1 + "/" + parameter));
-					assertNull(box3.get(TAG_ID_2 + "/" + parameter));
+					assertNull(box1.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
+					assertNull(box1.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
+					assertNull(box3.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
+					assertNull(box3.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
 					
 					double expected = POPULATION.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
-					assertEquals(POPULATION.getDouble(parameter), box2.getDouble(TAG_ID_1 + "/" + parameter), EPSILON);
-					assertEquals(expected, box2.getDouble(TAG_ID_2 + "/" + parameter), EPSILON);
+					assertEquals(POPULATION.getDouble(parameter), box2.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
+					assertEquals(expected, box2.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
 				}
 			}
 		}
@@ -1056,7 +1058,7 @@ public class SeriesTest {
 		
 		for (String tagA : tags) {
 			for (String tagB : tags) {
-				assertEquals(adhesion, box.get(tagA + "/ADHESION:" + tagB));
+				assertEquals(adhesion, box.get(tagA + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + tagB));
 			}
 		}
 	}
@@ -1079,20 +1081,20 @@ public class SeriesTest {
 				
 				double value = randomDouble();
 				double scale = randomDouble();
-				boxes[0].addAtt(TAG_ID_2 + "/ADHESION:" + modifiedTag1, "value", "" + value);
-				boxes[0].addTag(TAG_ID_2 + "/ADHESION:" + modifiedTag1, "PARAMETER");
-				boxes[0].addAtt(TAG_ID_2 + "/ADHESION:" + modifiedTag2, "scale", "" + scale);
-				boxes[0].addTag(TAG_ID_2 + "/ADHESION:" + modifiedTag2, "PARAMETER");
+				boxes[0].addAtt(TAG_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedTag1, "value", "" + value);
+				boxes[0].addTag(TAG_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedTag1, "PARAMETER");
+				boxes[0].addAtt(TAG_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedTag2, "scale", "" + scale);
+				boxes[0].addTag(TAG_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedTag2, "PARAMETER");
 				
 				Series series = makeSeriesForPopulation(boxes);
 				MiniBox box = series._populations.get(POPULATION_ID_1);
 				
 				for (String tag : tags) {
-					assertEquals(adhesion, box.getDouble(TAG_ID_1 + "/ADHESION:" + tag), EPSILON);
+					assertEquals(adhesion, box.getDouble(TAG_ID_1 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + tag), EPSILON);
 					double expected = adhesion;
 					if (tag.equals(modifiedTag1)) { expected = value; }
 					if (tag.equals(modifiedTag2)) { expected *= scale; }
-					assertEquals(expected, box.getDouble(TAG_ID_2 + "/ADHESION:" + tag), EPSILON);
+					assertEquals(expected, box.getDouble(TAG_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + tag), EPSILON);
 				}
 			}
 		}

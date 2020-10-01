@@ -8,6 +8,7 @@ import arcade.env.lat.Lattice;
 import arcade.env.loc.Location;
 import arcade.util.MiniBox;
 import static arcade.sim.Potts.*;
+import static arcade.sim.Series.TARGET_SEPARATOR;
 
 public abstract class PottsSimulation extends SimState implements Simulation {
 	/** {@link arcade.sim.Series} object containing this simulation */
@@ -161,9 +162,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		// Get adhesion values.
 		Set<String> pops = series._populations.keySet();
 		double[] adhesion = new double[pops.size() + 1];
-		adhesion[0] = population.getDouble("ADHESION:*");
+		adhesion[0] = population.getDouble("ADHESION" + TARGET_SEPARATOR + "*");
 		for (String p : pops) {
-			adhesion[series._populations.get(p).getInt("CODE")] = population.getDouble("ADHESION:" + p);
+			adhesion[series._populations.get(p).getInt("CODE")] = population.getDouble("ADHESION" + TARGET_SEPARATOR + p);
 		}
 		
 		// Create location.
@@ -191,7 +192,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 				
 				// Load tag adhesion values.
 				for (int j = 0; j < tags; j++) {
-					adhesionsTag[i][j] = populationTag.getDouble("ADHESION:" + tag.getKeys().get(j));
+					adhesionsTag[i][j] = populationTag.getDouble("ADHESION" + TARGET_SEPARATOR + tag.getKeys().get(j));
 				}
 			}
 			
@@ -354,76 +355,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 //		
 //		Map<Integer, Location> locationws = parseVoxels("positions.csv");
 //	
-//
-//		// Get locations.
-//		ArrayList<PottsLocations3D> locations = getSquareLocations();
-//
-////		Simulation.shuffle(locations, this.random);
-//
-//		int id = 1;
-//		int pop = 1;
 //		
-//		int n = 10;
-//		
-//		double[]lambdas = new double[] { 1, 1 };
-//		
-////		locations.clear();
-//		
-////		PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-////		loc.add(TAG_CYTOPLASM, 5, 5, 2);
-////		loc.add(TAG_CYTOPLASM, 5, 4, 2);
-////		locations.add(loc);
-////		
-////		PottsLocations3D loc2 = new PottsLocations3D(new ArrayList<>());
-////		loc2.add(TAG_CYTOPLASM, 1, 20, 4);
-////		locations.add(loc2);
-////		
-////		PottsLocations3D loc3 = new PottsLocations3D(new ArrayList<>());
-////		loc3.add(TAG_CYTOPLASM, 20, 1, 3);
-////		locations.add(loc3);
-////		
-//		
-//
-//		locations.add((PottsLocations3D)locationws.get(1));
-//		
-//		
-//		
-//		int popin = 1;
-//		
-//		for (Location location : locations) {
-////			double rand = random.nextDouble();
-////			if (rand < 0.55) { continue; }
-//
-////			rand = random.nextDouble();
-//			
-////			Location location = new PottsLocations3D(new ArrayList<>());
-////			for (int i = 5; i < 15; i++) {
-////				for (int j = 5; j < 15; j++) {
-////					for (int k = 1; k < 4; k++) {
-////						location.add(TAG_CYTOPLASM, i, j, k);
-////					}
-////				}
-////			}
-////			location.add(TAG_CYTOPLASM, 10, 10, 2);
-////			location.add(TAG_CYTOPLASM, 5, 5, 2);
-////			location.add(TAG_CYTOPLASM, 4, 5, 2);
-////			location.add(TAG_CYTOPLASM, 5, 20, 2);
-//			
-//		
-////			location.add(TAG_CYTOPLASM, 10, 10, 3);
-//			
-//			
-//			
-//			PottsCell3D c;C
-//			c = new PottsCell3D(id, popin, location, lambdas ,new double[] { 5, 1, 1, 1}, 4,
-//					new double[][] {{ 0, 1, 1, 1}, { 0, 1, 1, 1}}, 
-//					new double[][] {
-//							{  1, 5, 5, 5 }, 
-//							{  5, 1, 1, 1 }, 
-//							{  5, 1, 1, 1 }, 
-//							{  5, 1, 1, 1 }
-//			});
-//			popin++;
 //			
 //			agents.addObject(id, c);
 //			c.initialize(potts.IDS, potts.TAGS);

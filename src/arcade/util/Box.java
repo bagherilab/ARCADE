@@ -15,6 +15,9 @@ import java.util.ArrayList;
  */
 
 public class Box {
+	/** Separator character for keys */
+	public static final String KEY_SEPARATOR = "~";
+	
 	/** List of keys */
 	private final ArrayList<String> keys;
 	
@@ -85,7 +88,7 @@ public class Box {
 	 * @param val  the attribute value
 	 */
 	public void addAtt(String id, String att, String val) {
-		idToVal.put(id + "~" + att, val);
+		idToVal.put(id + KEY_SEPARATOR + att, val);
 	}
 	
 	/**
@@ -107,7 +110,7 @@ public class Box {
 	public MiniBox getAttValForId(String id) {
 		MiniBox result = new MiniBox();
 		for (String key : idToVal.getKeys()) {
-			String[] split = key.split("~");
+			String[] split = key.split(KEY_SEPARATOR);
 			if (split[0].equals(id)) { result.put(split[1], idToVal.get(key)); }
 		}
 		return result;
@@ -131,7 +134,7 @@ public class Box {
 	public MiniBox getIdValForTagAtt(String tag, String att) {
 		MiniBox result = new MiniBox();
 		for (String key : idToVal.getKeys()) {
-			String[] split = key.split("~");
+			String[] split = key.split(KEY_SEPARATOR);
 			if (split[1].equals(att) && idToTag.get(split[0]).equals(tag)) {
 				result.put(split[0], idToVal.get(key));
 			}
@@ -147,7 +150,7 @@ public class Box {
 	public MiniBox getIdValForUntagged() {
 		MiniBox result = new MiniBox();
 		for (String key : idToVal.getKeys()) {
-			String[] split = key.split("~");
+			String[] split = key.split(KEY_SEPARATOR);
 			if (split.length == 1) { result.put(key, idToVal.get(key)); }
 		}
 		return result;
@@ -164,7 +167,7 @@ public class Box {
 		
 		// Check each key to see if tag matches given tag.
 		for (String key : idToVal.getKeys()) {
-			String[] split = key.split("~");
+			String[] split = key.split(KEY_SEPARATOR);
 			String id = split[0];
 			if (idToTag.contains(id) && idToTag.get(id).equals(tag)) {
 				result.addTag(id, tag);
@@ -188,12 +191,12 @@ public class Box {
 		
 		// Get list of ids matching given attribute value.
 		for (String key : keys) {
-			if (idToVal.get(key + "~" + att).equals(val)) { ids.add(key); }
+			if (idToVal.get(key + KEY_SEPARATOR + att).equals(val)) { ids.add(key); }
 		}
 		
 		// Add all entries for the key to the new box.
 		for (String key : idToVal.getKeys()) {
-			String[] split = key.split("~");
+			String[] split = key.split(KEY_SEPARATOR);
 			String id = split[0];
 			if (ids.contains(split[0])) {
 				result.addTag(id, idToTag.get(id));

@@ -11,10 +11,12 @@ import sim.engine.Schedule;
 import arcade.agent.cell.*;
 import arcade.env.loc.*;
 import arcade.util.MiniBox;
-import static arcade.sim.Series.*;
 import static arcade.sim.Simulation.*;
 import static arcade.sim.Potts.*;
 import static arcade.env.loc.Location.Voxel;
+import static arcade.sim.Series.SEED_OFFSET;
+import static arcade.sim.Series.TARGET_SEPARATOR;
+import static arcade.util.MiniBox.TAG_SEPARATOR;
 
 public class PottsSimulationTest {
 	private static final double EPSILON = 1E-4;
@@ -35,7 +37,7 @@ public class PottsSimulationTest {
 			populations.put(keys[i], population);
 			
 			for (String key : keys) {
-				population.put("ADHESION:" + key, random());
+				population.put("ADHESION" + TARGET_SEPARATOR + key, random());
 			}
 		}
 		
@@ -56,7 +58,7 @@ public class PottsSimulationTest {
 			populations.put(keys[i], population);
 			
 			for (String key : keys) {
-				population.put("ADHESION:" + key, 0);
+				population.put("ADHESION" + TARGET_SEPARATOR + key, 0);
 			}
 		}
 		
@@ -500,13 +502,13 @@ public class PottsSimulationTest {
 		String[] _tags = new String[] { "a", "b", "c" };
 		for (int i = 0; i < tags; i++) {
 			String tag = _tags[i];
-			population.put(tag + "/LAMBDA_VOLUME", lambdasTag[0][i]);
-			population.put(tag + "/LAMBDA_SURFACE", lambdasTag[1][i]);
-			population.put(tag + "/CRITICAL_VOLUME", criticalsTag[0][i]);
-			population.put(tag + "/CRITICAL_SURFACE", criticalsTag[1][i]);
+			population.put(tag + TAG_SEPARATOR + "LAMBDA_VOLUME", lambdasTag[0][i]);
+			population.put(tag + TAG_SEPARATOR + "LAMBDA_SURFACE", lambdasTag[1][i]);
+			population.put(tag + TAG_SEPARATOR + "CRITICAL_VOLUME", criticalsTag[0][i]);
+			population.put(tag + TAG_SEPARATOR + "CRITICAL_SURFACE", criticalsTag[1][i]);
 			
 			for (int j = 0; j < tags; j++) {
-				population.put(tag + "/ADHESION:" + _tags[j], adhesionTag[i][j]);
+				population.put(tag + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + _tags[j], adhesionTag[i][j]);
 			}
 		}
 		
@@ -583,13 +585,13 @@ public class PottsSimulationTest {
 		String[] _tags = new String[] { "a", "b", "c" };
 		for (int i = 0; i < tags; i++) {
 			String tag = _tags[i];
-			population.put(tag + "/LAMBDA_VOLUME", lambdasTag[0][i]);
-			population.put(tag + "/LAMBDA_SURFACE", lambdasTag[1][i]);
-			population.put(tag + "/CRITICAL_VOLUME", criticalsTag[0][i]);
-			population.put(tag + "/CRITICAL_SURFACE", criticalsTag[1][i]);
+			population.put(tag + TAG_SEPARATOR + "LAMBDA_VOLUME", lambdasTag[0][i]);
+			population.put(tag + TAG_SEPARATOR + "LAMBDA_SURFACE", lambdasTag[1][i]);
+			population.put(tag + TAG_SEPARATOR + "CRITICAL_VOLUME", criticalsTag[0][i]);
+			population.put(tag + TAG_SEPARATOR + "CRITICAL_SURFACE", criticalsTag[1][i]);
 			
 			for (int j = 0; j < tags; j++) {
-				population.put(tag + "/ADHESION:" + _tags[j], adhesionTag[i][j]);
+				population.put(tag + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + _tags[j], adhesionTag[i][j]);
 			}
 		}
 		

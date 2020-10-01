@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import static arcade.MainTest.*;
+import static arcade.util.MiniBox.TAG_SEPARATOR;
 
 public class MiniBoxTest {
 	private static final double EPSILON = 1E-10;
@@ -211,8 +212,8 @@ public class MiniBoxTest {
 		String value3 = randomString();
 		
 		box.put(key1, value1);
-		box.put(code + "/" + key2, value2);
-		box.put(code + "/" + key3, value3);
+		box.put(code + TAG_SEPARATOR + key2, value2);
+		box.put(code + TAG_SEPARATOR + key3, value3);
 		
 		ArrayList<String> filteredKeys = new ArrayList<>();
 		filteredKeys.add(key2);
@@ -240,8 +241,8 @@ public class MiniBoxTest {
 		String value3 = randomString();
 		
 		box.put(key1, value1);
-		box.put(code1 + "/" + key2, value2);
-		box.put(code2 + "/" + key3, value3);
+		box.put(code1 + TAG_SEPARATOR + key2, value2);
+		box.put(code2 + TAG_SEPARATOR + key3, value3);
 		
 		ArrayList<String> filteredKeys = new ArrayList<>();
 		filteredKeys.add(key3);
