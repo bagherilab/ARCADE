@@ -33,6 +33,8 @@ public class MainTest {
 	
 	public static int randomInt() { return (int)(Math.random()*10) + 2; }
 	
+	public static double randomDouble() { return Math.random() + 1; }
+	
 	public static String[] randomValues(int n) {
 		String[] strings = new String[n];
 		for (int i = 0; i < n; i++) { strings[i] = randomString(); }

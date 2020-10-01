@@ -144,9 +144,9 @@ public class PottsSimulation2D extends PottsSimulation {
 			location = new PottsLocations2D(voxels);
 			
 			for (String key : tags.getKeys()) {
-				if (key.equals("CYTOPLASM")) { continue; }
-				
-				int tag = (key.equals("NUCLEUS") ? TAG_NUCLEUS : TAG_CYTOPLASM);
+				// TODO add handling of other tags
+				if (!key.equals("NUCLEUS")) { continue; }
+				int tag = TAG_NUCLEUS;
 				
 				// Select tag voxels.
 				int tagTarget = (int)Math.round(criticalVolume*tags.getDouble(key)/DS);
