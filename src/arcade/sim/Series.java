@@ -150,8 +150,8 @@ public class Series {
 	 * @return  {@code true if valid}, {@code false} otherwise
 	 */
 	static boolean isValidFraction(Box box, String key) {
-		if (box.get(key) == null) { return false; }
-		return box.get(key).matches(FRACTION_REGEX);
+		if (box.getValue(key) == null) { return false; }
+		return box.getValue(key).matches(FRACTION_REGEX);
 	}
 	
 	/**
@@ -233,13 +233,13 @@ public class Series {
 		// Get list of all populations (plus * indicating media).
 		String[] pops = new String[populations.size() + 1];
 		pops[0] = "*";
-		for (int i = 0; i < populations.size(); i++) { pops[i + 1] = populations.get(i).get("id"); }
+		for (int i = 0; i < populations.size(); i++) { pops[i + 1] = populations.get(i).getValue("id"); }
 		
 		int iPop = 1;
 		
 		// Iterate through each setup dictionary to build population settings.
 		for (Box p : populations) {
-			String id = p.get("id");
+			String id = p.getValue("id");
 			
 			// Create new population and update code.
 			MiniBox population = new MiniBox();
@@ -248,7 +248,7 @@ public class Series {
 			
 			// Add population fraction if given. If not given or invalid, set
 			// fraction to zero.
-			double fraction = (isValidFraction(p, "fraction") ? Double.parseDouble(p.get("fraction")) : 0);
+			double fraction = (isValidFraction(p, "fraction") ? Double.parseDouble(p.getValue("fraction")) : 0);
 			population.put("FRACTION", fraction);
 			
 			// Get default parameters and any parameter tags.
