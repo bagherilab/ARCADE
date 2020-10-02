@@ -220,6 +220,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 			ArrayList<int[]> assignedCenters = new ArrayList<>();
 			
 			for (int i = 0; i < n; i++) {
+				if (i >= availableCenters.size()) { continue; }
+				
 				// Make the cell.
 				int[] center = availableCenters.get(i);
 				Cell cell = makeCell(++id, population, center);

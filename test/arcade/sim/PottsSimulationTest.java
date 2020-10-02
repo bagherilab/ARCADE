@@ -283,6 +283,16 @@ public class PottsSimulationTest {
 	}
 	
 	@Test
+	public void setupAgents_exceedsLocations_setsPotts() {
+		Series series = createSeries(new int[] { 1 }, new String[] { "A" });
+		series._populations.get("A").put("FRACTION", 2);
+		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
+		sim.potts = mock(Potts.class);
+		sim.setupAgents();
+		assertEquals(TOTAL_LOCATIONS, sim.agents.getAllObjects().numObjs);
+	}
+	
+	@Test
 	public void setupAgents_zeroPopulations_initializesGrid() {
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesZeroPop);
 		sim.potts = mock(Potts.class);
