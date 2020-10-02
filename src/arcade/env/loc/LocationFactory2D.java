@@ -1,0 +1,161 @@
+package arcade.env.loc;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import ec.util.MersenneTwisterFast;
+import arcade.sim.Simulation;
+import arcade.util.MiniBox;
+import static arcade.sim.Simulation.*;
+import static arcade.agent.cell.Cell.*;
+import static arcade.env.loc.Location.*;
+
+public class LocationFactory2D extends LocationFactory {
+	public LocationFactory2D(int length, int width, int height) { super(length, width, height); }
+	
+	/**
+	 * Converts volume to voxels per square side.
+	 *
+	 * @param volume  the target volume
+	 * @return  the voxels per side
+	 */
+	static int convert(double volume) {
+		int sqrt = (int)Math.ceil(Math.sqrt(volume/DS));
+		return sqrt + (sqrt%2 == 0 ? 1 : 0);
+	}
+	
+	/**
+	 * Increases the number of voxels by adding from a given list of voxels.
+	 *
+	 * @param random  the seeded random number generator
+	 * @param allVoxels  the list of all possible voxels
+	 * @param voxels  the list of selected voxels
+	 * @param target  the target number of voxels
+	 */
+	static void increase(MersenneTwisterFast random, ArrayList<Voxel> allVoxels, ArrayList<Voxel> voxels, int target) {
+		int size = voxels.size();
+		HashSet<Voxel> neighbors = new HashSet<>();
+		
+		// Get neighbors.
+		for (Voxel voxel : voxels) {
+			ArrayList<Voxel> allNeighbors = Location2D.getNeighbors(voxel);
+			for (Voxel neighbor : allNeighbors) {
+				if (allVoxels.contains(neighbor) && !voxels.contains(neighbor)) { neighbors.add(neighbor); }
+			}
+		}
+		
+		// Add in random neighbors until target size is reached.
+		ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
+		Simulation.shuffle(neighborsShuffled, random);
+		for (int i = 0; i < target - size; i++) {
+			voxels.add(neighborsShuffled.get(i));
+		}
+	}
+	
+	/**
+	 * Decreases the number of voxels by removing.
+	 *
+	 * @param random  the seeded random number generator
+	 * @param voxels  the list of selected voxels
+	 * @param target  the target number of voxels
+	 */
+	static void decrease(MersenneTwisterFast random, ArrayList<Voxel> voxels, int target) {
+		int size = voxels.size();
+		ArrayList<Voxel> neighbors = new ArrayList<>();
+		
+		// Get neighbors.
+		for (Voxel voxel : voxels) {
+			ArrayList<Voxel> allNeighbors = Location2D.getNeighbors(voxel);
+			for (Voxel neighbor : allNeighbors) {
+				if (voxels.contains(neighbor)) { continue; }
+				neighbors.add(voxel);
+				break;
+			}
+		}
+		
+		// Remove random neighbors until target size is reached.
+		ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
+		Simulation.shuffle(neighborsShuffled, random);
+		for (int i = 0; i < size - target; i++) {
+			voxels.remove(neighborsShuffled.get(i));
+		}
+	}
+	
+	public void makeCenters(ArrayList<MiniBox> populations) {
+		int n = 0;
+		
+		for (MiniBox population : populations) {
+			double criticalVolume = population.getDouble("CRITICAL_VOLUME");
+			int voxelsPerSide = convert(criticalVolume) + 2;
+			if (voxelsPerSide > n) { n = voxelsPerSide; }
+		}
+		
+		if (n == 0) { return; }
+		
+		for (int i = 0; i < (LENGTH - 2)/n; i++) {
+			for (int j = 0; j < (WIDTH - 2)/n; j++) {
+				int cx = i*n + (n + 1)/2;
+				int cy = j*n + (n + 1)/2;
+				availableLocations.add(new Voxel(cx, cy, 0));
+			}
+		}
+	}
+	
+	Location makeLocation(MiniBox population, Voxel center, MersenneTwisterFast random) {
+		// All voxel options.
+		ArrayList<Voxel> allVoxels = new ArrayList<>();
+		
+		// Get tags, if they exist.
+		MiniBox tags = population.filter("TAG");
+		
+		// Parse sizing.
+		double criticalVolume = population.getDouble("CRITICAL_VOLUME");
+		int target = (int)Math.round(criticalVolume/DS);
+		
+		// Select all possible voxels.
+		int n = convert(criticalVolume) + 2;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				allVoxels.add(new Voxel(
+						center.x + i - (n - 1)/2,
+						center.y + j - (n - 1)/2,
+						0));
+			}
+		}
+		
+		// Select voxels.
+		ArrayList<Voxel> voxels = Location2D.getSelected(allVoxels, center, target);
+		
+		// Add or remove voxels to reach target number.
+		int size = voxels.size();
+		if (size < target) { increase(random, allVoxels, voxels, target); }
+		else if (size > target) { decrease(random, voxels, target); }
+		
+		// Make location.
+		Location location;
+		
+		// Add tags.
+		if (tags.getKeys().size() > 0) {
+			location = new PottsLocations2D(voxels);
+			
+			for (String key : tags.getKeys()) {
+				// TODO add handling of other tags
+				if (!key.equals("NUCLEUS")) { continue; }
+				int tag = TAG_NUCLEUS;
+				
+				// Select tag voxels.
+				int tagTarget = (int)Math.round(criticalVolume*tags.getDouble(key)/DS);
+				ArrayList<Voxel> tagVoxels = Location2D.getSelected(allVoxels, center, tagTarget);
+				
+				// Add or remove tag voxels to reach target number.
+				int tagSize = tagVoxels.size();
+				if (tagSize < tagTarget) { increase(random, voxels, tagVoxels, tagTarget); }
+				else if (tagSize > tagTarget) { decrease(random, tagVoxels, tagTarget); }
+				
+				// Assign tags.
+				for (Voxel voxel : tagVoxels) { location.assign(tag, voxel); }
+			}
+		} else { location = new PottsLocation2D(voxels); }
+		
+		return location;
+	}
+}
