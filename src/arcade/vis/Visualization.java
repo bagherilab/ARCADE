@@ -4,7 +4,6 @@ import java.awt.geom.Rectangle2D;
 import sim.engine.SimState;
 import sim.portrayal.Inspector;
 import sim.display.*;
-import arcade.sim.Simulation;
 
 /** 
  * Extension of {@code GUIState} wrapper of simulations for visualization.
@@ -13,9 +12,6 @@ import arcade.sim.Simulation;
  * objects, on which visualizations are drawn, and {@link arcade.vis.Drawer} 
  * objects, which draw the visualization through methods provided by the
  * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
- * 
- * @version 2.3.1
- * @since   2.2
  */
 
 public abstract class Visualization extends GUIState {
@@ -40,14 +36,11 @@ public abstract class Visualization extends GUIState {
 	public Object getSimulationInspectedObject() { return state; }
 	
 	/**
-	 * Gets the inspector and sets it to volatile.
-	 * @return  the inspector
+	 * Remove the model inspector.
+	 *
+	 * @return  a {@code null} inspector
 	 */
-	public Inspector getInspector() {
-		Inspector i = super.getInspector();
-		i.setVolatile(true);
-		return i;
-	}
+	public Inspector getInspector() { return null; }
 	
 	/**
 	 * Creates panels for the visualization.
@@ -68,19 +61,18 @@ public abstract class Visualization extends GUIState {
 	 * 
 	 * @param x  the x position of the bounding box
 	 * @param y  the y position of the bounding box
-	 * @param s  the size of the bounding box
+	 * @param h  the horizontal size of the bounding box
+	 * @param v  the vertical size of the bounding box
 	 * @return  the bounding box
 	 */
-	static Rectangle2D.Double getBox(int x, int y, int s) {
-		return new Rectangle2D.Double(x, y, s, s);
+	static Rectangle2D.Double getBox(int x, int y, int h, int v) {
+		return new Rectangle2D.Double(x, y, h, v);
 	}
 	
 	/**
 	 * Starts a visualization.
 	 */
 	public void start() {
-		// Remove any profilers from being scheduled.
-		((Simulation)state).getSeries()._profilers.clear();
 		super.start();
 		setup();
 	}
