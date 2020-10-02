@@ -2,8 +2,6 @@ package arcade.vis;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-
-import arcade.agent.cell.PottsCell;
 import sim.engine.*;
 import sim.field.continuous.Continuous2D;
 import sim.field.grid.DoubleGrid2D;
@@ -18,9 +16,10 @@ import sim.portrayal.network.SimpleEdgePortrayal2D;
 import sim.portrayal.network.SpatialNetwork2D;
 import sim.util.Double2D;
 import sim.util.gui.ColorMap;
+import arcade.sim.Potts;
 import arcade.sim.Simulation;
-import arcade.sim.PottsSimulation;
 import arcade.agent.cell.Cell;
+import arcade.env.grid.Grid;
 import static arcade.agent.cell.Cell.*;
 
 public abstract class PottsDrawer extends Drawer {
@@ -41,7 +40,9 @@ public abstract class PottsDrawer extends Drawer {
 	}
 	
 	public Portrayal makePort() {
-		switch(name.split(":")[0]) {
+		String[] split = name.split(":");
+		
+		switch(split[0]) {
 			case "grid":
 				graph = new Network(true);
 				field = new Continuous2D(1.0,1,1);
@@ -51,7 +52,21 @@ public abstract class PottsDrawer extends Drawer {
 				gridPort.setPortrayalForAll(sep);
 				return gridPort;
 			case "agents":
-				array = new DoubleGrid2D(length, width, map.defaultValue());
+				String plane = "";
+				if (split.length == 3) { plane = split[2]; }
+				
+				switch (plane) {
+					case "x":
+						array = new DoubleGrid2D(height, width, map.defaultValue());
+						break;
+					case "y":
+						array = new DoubleGrid2D(length, height, map.defaultValue());
+						break;
+					case "z": default:
+						array = new DoubleGrid2D(length, width, map.defaultValue());
+						break;
+				}
+				
 				ValueGridPortrayal2D valuePort = new FastValueGridPortrayal2D();
 				valuePort.setField(array);
 				valuePort.setMap(map);
@@ -62,7 +77,7 @@ public abstract class PottsDrawer extends Drawer {
 	}
 	
 	private static class SimpleEdgePortrayal2DGridWrapper extends SimpleEdgePortrayal2D {
-		private Color color = new Color(255,255,255,100);
+		private final Color color = new Color(0, 0, 0);
 		
 		SimpleEdgePortrayal2DGridWrapper() { setScaling(NEVER_SCALE); }
 		
@@ -87,13 +102,49 @@ public abstract class PottsDrawer extends Drawer {
 		graph.addEdge(a, b, weight);
 	}
 	
+	static final int PLANE_Z = 0;
+	static final int PLANE_X = 1;
+	static final int PLANE_Y = 2;
+	
+	static int[][] getSlice(int[][][] array, int plane, int length, int width, int height) {
+		switch(plane) {
+			case PLANE_X:
+				int[][] planex = new int[height][width];
+				for (int k = 0; k < height; k++) {
+					for (int j = 0; j < width; j++) {
+						planex[k][j] = array[k][(length - 1)/2][j];
+					}
+				}
+				return planex;
+			case PLANE_Y:
+				int[][] planey = new int[length][height];
+				for (int k = 0; k < height; k++) {
+					for (int i = 0; i < length; i++) {
+						planey[i][k] = array[k][i][(width - 1)/2];
+					}
+				}
+				return planey;
+			default: case PLANE_Z:
+				return array[(height - 1)/2];
+		}
+	}
+	
 	public static class PottsCells extends PottsDrawer {
 		private static final long serialVersionUID = 0;
-		private static final int DRAW_POPULATION = 0;
-		private static final int DRAW_STATE = 1;
+		
+		private static final int DRAW_CYTOPLASM = -1;
+		private static final int DRAW_NUCLEUS = -2;
+		private static final int DRAW_OVERLAY = 1;
+		private static final int DRAW_POPULATION = 2;
+		private static final int DRAW_STATE = 3;
+		private static final int DRAW_VOLUME = 4;
+		private static final int DRAW_SURFACE = 5;
+		
 		private final int LENGTH;
 		private final int WIDTH;
+		private final int HEIGHT;
 		private final int CODE;
+		private final int PLANE;
 		
 		public PottsCells(Panel panel, String name,
 						 int length, int width, int depth,
@@ -101,37 +152,178 @@ public abstract class PottsDrawer extends Drawer {
 			super(panel, name, length, width, depth, map, bounds);
 			LENGTH = length;
 			WIDTH = width;
-			CODE = name.split(":")[1].equals("pop") ? DRAW_POPULATION : DRAW_STATE;
+			HEIGHT = depth;
+			
+			String[] split = name.split(":");
+			
+			switch (split[1]) {
+				case "cytoplasm": CODE = DRAW_CYTOPLASM; break;
+				case "nucleus": CODE = DRAW_NUCLEUS; break;
+				case "overlay": CODE = DRAW_OVERLAY; break;
+				case "state": CODE = DRAW_STATE; break;
+				case "population": CODE = DRAW_POPULATION; break;
+				case "volume": CODE = DRAW_VOLUME; break;
+				case "surface": CODE = DRAW_SURFACE; break;
+				default: CODE = 0;
+			}
+			
+			if (split.length == 3) {
+				switch (split[2]) {
+					case "x": PLANE = PLANE_X; break;
+					case "y": PLANE = PLANE_Y; break;
+					case "z":  default: PLANE = PLANE_Z;
+				}
+			} else { PLANE = PLANE_Z; }
 		}
 		
 		public void step(SimState state) {
-			Cell c;
-			PottsSimulation cs = (PottsSimulation)state;
-			double[][] _to = array.field;
-			int[][] potts = cs.potts[0];
+			Simulation sim = (Simulation)state;
+			Grid agents = sim.getAgents();
+			Potts potts = sim.getPotts();
+			Cell cell;
 			
-			for (int i = 0; i < LENGTH; i++) {
-				for (int j = 0; j < WIDTH; j++) {
-					if (potts[i][j] == 0) { c = null; }
-					else { c = (Cell)cs.agents.getObjectAt(potts[i][j]); }
+			double[][] _to = array.field;
+			int[][] ids = getSlice(potts.IDS, PLANE, LENGTH, WIDTH, HEIGHT);
+			int[][] tags = getSlice(potts.TAGS, PLANE, LENGTH, WIDTH, HEIGHT);
+			
+			int A, B, C;
+			switch(PLANE) {
+				case PLANE_X:
+					A = HEIGHT;
+					B = WIDTH;
+					C = LENGTH;
+					break;
+				case PLANE_Y:
+					A = LENGTH;
+					B = HEIGHT;
+					C = WIDTH;
+					break;
+				default: case PLANE_Z:
+					A = LENGTH;
+					B = WIDTH;
+					C = HEIGHT;
+			}
+			
+			for (int a = 0; a < A; a++) {
+				for (int b = 0; b < B; b++) {
+					if (ids[a][b] == 0) { cell = null; }
+					else { cell = (Cell)agents.getObjectAt(ids[a][b]); }
 					
 					switch(CODE) {
+						case DRAW_OVERLAY:
+							_to[a][b] = (tags[a][b] < -1 ? -tags[a][b] - 1 : 0);
+							break;
 						case DRAW_POPULATION:
-							_to[i][j] = c == null ? 0 : c.getPop() + 1;
-//							if (c != null) {
-//								_to[i][j] = c.getID()/10.0 + 1;
-//							}
-//							else { _to[i][j] = 0; }
+							_to[a][b] = cell == null ? 0 : cell.getPop();
 							break;
 						case DRAW_STATE:
-							int add = 1;
-							if (c != null && c.getState() == PROLIFERATIVE) {
-								add += c.getPhase() + 2;
-							}
-							_to[i][j] = c == null ? 0 : c.getState() + add;
+							_to[a][b] = cell == null ? 0 :
+									cell.getState() + 1 + cell.getModule().getPhase()/10.0;
+							break;
+						case DRAW_VOLUME:
+							_to[a][b] = cell == null ? 0 : cell.getVolume();
+							break;
+						case DRAW_SURFACE:
+							_to[a][b] = cell == null ? 0 : cell.getSurface();
 							break;
 					}
-					
+				}
+			}
+			
+			if (CODE == DRAW_CYTOPLASM) {
+				for (int a = 0; a < A; a++) {
+					for (int b = 0; b < B; b++) {
+						if (HEIGHT == 1) { _to[a][b] = ids[a][b] > 0 ? 0.75 : 0; }
+						else {
+							_to[a][b] = 0;
+							for (int c = 0; c < C; c++) {
+								int id;
+								
+								switch (PLANE) {
+									case PLANE_X:
+										id = potts.IDS[a][c][b];
+										break;
+									case PLANE_Y:
+										id = potts.IDS[b][a][c];
+										break;
+									default: case PLANE_Z:
+										id = potts.IDS[c][a][b];
+								}
+								
+								_to[a][b] += (id > 0 ? 1./C : 0);
+								
+								switch (PLANE) {
+									case PLANE_X:
+										if (id != 0 && c > 0 && c < C - 1
+												&& potts.IDS[a][c + 1][b] == id
+												&& potts.IDS[a][c - 1][b] == id
+										) { _to[a][b] -= 1./C; }
+										break;
+									case PLANE_Y:
+										if (id != 0 && c > 0 && c < C - 1
+												&& potts.IDS[b][a][c + 1] == id
+												&& potts.IDS[b][a][c - 1] == id
+										) { _to[a][b] -= 1./C; }
+										break;
+									default: case PLANE_Z:
+										if (id != 0 && c > 0 && c < C - 1
+												&& potts.IDS[c + 1][a][b] == id
+												&& potts.IDS[c - 1][a][b] == id
+										) { _to[a][b] -= 1./C; }
+								}
+							}
+						}
+					}
+				}
+			}
+			else if (CODE == DRAW_NUCLEUS) {
+				for (int a = 0; a < A; a++) {
+					for (int b = 0; b < B; b++) {
+						if (HEIGHT == 1) { _to[a][b] = (tags[a][b] == TAG_NUCLEUS ? 0.75 : 0); }
+						else {
+							_to[a][b] = 0;
+							for (int c = 0; c < C; c++) {
+								int id;
+								int tag;
+								
+								switch (PLANE) {
+									case PLANE_X:
+										id = potts.IDS[a][c][b];
+										tag = potts.TAGS[a][c][b];
+										break;
+									case PLANE_Y:
+										id = potts.IDS[b][a][c];
+										tag = potts.TAGS[b][a][c];
+										break;
+									default: case PLANE_Z:
+										id = potts.IDS[c][a][b];
+										tag = potts.TAGS[c][a][b];
+								}
+								
+								_to[a][b] += (tag == TAG_NUCLEUS ? 1./C : 0);
+								
+								switch (PLANE) {
+									case PLANE_X:
+										if (id != 0 && c > 0 && c < C - 1
+												&& potts.TAGS[a][c + 1][b] == TAG_NUCLEUS
+												&& potts.TAGS[a][c - 1][b] == TAG_NUCLEUS
+										) { _to[a][b] -= 1./C; }
+										break;
+									case PLANE_Y:
+										if (id != 0 && c > 0 && c < C - 1
+												&& potts.TAGS[b][a][c + 1] == TAG_NUCLEUS
+												&& potts.TAGS[b][a][c - 1] == TAG_NUCLEUS
+										) { _to[a][b] -= 1./C; }
+										break;
+									default: case PLANE_Z:
+										if (id != 0 && c > 0 && c < C - 1
+												&& potts.TAGS[c + 1][a][b] == TAG_NUCLEUS
+												&& potts.TAGS[c - 1][a][b] == TAG_NUCLEUS
+										) { _to[a][b] -= 1./C; }
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -139,15 +331,42 @@ public abstract class PottsDrawer extends Drawer {
 	
 	public static class PottsGrid extends PottsDrawer {
 		private static final long serialVersionUID = 0;
-		private final int LENGTH, WIDTH;
+		
+		private final int LENGTH;
+		private final int WIDTH;
+		private final int HEIGHT;
+		private final int PLANE;
 		
 		PottsGrid(Panel panel, String name,
 				  int length, int width, int depth, Rectangle2D.Double bounds) {
 			super(panel, name, length, width, depth, bounds);
 			LENGTH = length;
 			WIDTH = width;
-			field.width = LENGTH;
-			field.height = WIDTH;
+			HEIGHT = height;
+			
+			String[] split = name.split(":");
+			
+			if (split.length == 2) {
+				switch (split[1]) {
+					case "x": PLANE = PLANE_X; break;
+					case "y": PLANE = PLANE_Y; break;
+					case "z":  default: PLANE = PLANE_Z;
+				}
+			} else { PLANE = PLANE_Z; }
+			
+			switch(PLANE) {
+				case PLANE_X:
+					field.width = HEIGHT;
+					field.height = WIDTH;
+					break;
+				case PLANE_Y:
+					field.width = LENGTH;
+					field.height = HEIGHT;
+					break;
+				default: case PLANE_Z:
+					field.width = LENGTH;
+					field.height = WIDTH;
+			}
 		}
 		
 		public void step(SimState state) {
@@ -155,12 +374,27 @@ public abstract class PottsDrawer extends Drawer {
 			field.clear();
 			graph.clear();
 			
-			int[][] potts = ((PottsSimulation)sim).potts[0];
+			int[][] ids = getSlice(sim.getPotts().IDS, PLANE, LENGTH, WIDTH, HEIGHT);
 			
-			for (int i = 0; i < width - 1 ; i++) {
-				for (int j = 0; j < width - 1; j++) {
-					if (potts[i][j] != potts[i][j + 1]) { add(field, graph, 1, i, j + 1, i + 1, j + 1); }
-					if (potts[i][j] != potts[i + 1][j]) { add(field, graph, 1, i + 1, j, i + 1, j + 1); }
+			int A, B;
+			switch(PLANE) {
+				case PLANE_X:
+					A = HEIGHT;
+					B = WIDTH;
+					break;
+				case PLANE_Y:
+					A = LENGTH;
+					B = HEIGHT;
+					break;
+				default: case PLANE_Z:
+					A = LENGTH;
+					B = WIDTH;
+			}
+			
+			for (int a = 0; a < A - 1; a++) {
+				for (int b = 0; b < B - 1; b++) {
+					if (ids[a][b] != ids[a][b + 1]) { add(field, graph, 1, a, b + 1, a + 1, b + 1); }
+					if (ids[a][b] != ids[a + 1][b]) { add(field, graph, 1, a + 1, b, a + 1, b + 1); }
 				}
 			}
 		}
