@@ -3,9 +3,23 @@ package arcade.sim;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import ec.util.MersenneTwisterFast;
+import sim.engine.Schedule;
 import arcade.env.lat.Lattice;
 import arcade.env.grid.Grid;
-import sim.engine.Schedule;
+
+/** 
+ * A {@code Simulation} object sets up the agents and environments for a simulation.
+ * <p>
+ * A {@code Simulation} consists of stepping the model for a given random seed.
+ * At the start, agents and environments are added the instance and scheduled.
+ * Any additional steppables, including helpers and components, are also scheduled.
+ * <p>
+ * A {@code Simulation} should also extend {@code SimState} from the
+ * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
+ * {@code SimState} manages the actual "stepping" of the model, while the
+ * {@code Simulation} interface ensures the model can interact with other
+ * interfaces and classes in the package.
+ */
 
 public interface Simulation {
 	/** Stepping order for potts */
@@ -15,6 +29,8 @@ public interface Simulation {
 	int ORDERING_CELLS = 1;
 	
 	double DT = 30./60; // hours
+	
+	double DS = 2; // um^3/voxel
 	
 	/**
 	 * Gets the {@link arcade.sim.Series} object for the current simulation.
@@ -95,24 +111,6 @@ public interface Simulation {
 	 * before the schedule starts stepping the simulation.
 	 */
 	void setupEnvironment();
-	
-	/**
-	 * Schedules any {@link arcade.sim.profiler.Profiler} instances.
-	 * <p>
-	 * The concrete implementing class calls this and all other {@code schedule}
-	 * methods from the MASON library {@code start()} method, which is called
-	 * before the schedule starts stepping the simulation.
-	 */
-	void scheduleProfilers();
-	
-	/**
-	 * Schedules any {@link arcade.sim.checkpoint.Checkpoint} instances.
-	 * <p>
-	 * The concrete implementing class calls this and all other {@code schedule}
-	 * methods from the MASON library {@code start()} method, which is called
-	 * before the schedule starts stepping the simulation.
-	 */
-	void scheduleCheckpoints();
 	
 	/**
 	 * Schedules any {@link arcade.agent.helper.Helper} instances.

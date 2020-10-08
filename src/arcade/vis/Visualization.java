@@ -111,7 +111,7 @@ public abstract class Visualization extends GUIState {
 	 * Sets up and schedules portrayals.
 	 */
 	public void setup() {
-		for (Drawer drawer : drawers) { this.scheduleRepeatingImmediatelyAfter(drawer); }
+		for (Drawer drawer : drawers) { this.scheduleRepeatingImmediatelyBefore(drawer); }
 		for (Panel panel : panels) { panel.reset(); }
 	}
 }

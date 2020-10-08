@@ -54,6 +54,9 @@ public class Series {
 	/** Simulation length in ticks */
 	private final int ticks;
 	
+	/** Snapshot interval in ticks */
+	private final int interval;
+	
 	/** Length of the simulation */
 	public final int _length;
 	
@@ -88,14 +91,15 @@ public class Series {
 		
 		// Set name and prefix.
 		this.name = series.get("name");
-		this.prefix = set.get("path") + (set.contains("prefix") ? set.get("prefix") : "") + name + "_";
+		this.prefix = set.get("path") + (set.contains("prefix") ? set.get("prefix") : "") + name;
 		
 		// Set random seeds.
 		this.startSeed = (series.contains("start") ? series.getInt("start") : defaults.getInt("START_SEED"));
 		this.endSeed = (series.contains("end") ? series.getInt("end") : defaults.getInt("END_SEED"));
 		
-		// Set number of ticks.
+		// Set number of ticks and interval
 		this.ticks = (series.contains("ticks") ? series.getInt("ticks") : defaults.getInt("TICKS"));
+		this.interval = (series.contains("interval") ? series.getInt("interval") : defaults.getInt("INTERVAL"));
 		
 		// Set sizing.
 		this._length = (series.contains("length") ? series.getInt("length") : defaults.getInt("LENGTH"));
@@ -141,6 +145,13 @@ public class Series {
 	 * @return  the ticks
 	 */
 	public int getTicks() { return ticks; }
+	
+	/**
+	 * Gets the number of ticks between snapshots
+	 *
+	 * @return  the interval
+	 */
+	public int getInterval() { return interval; }
 	
 	/**
 	 * Checks if string contains valid fraction between 0 and 1, inclusive.
@@ -438,6 +449,37 @@ public class Series {
 	public void runVis() throws Exception {
 		Simulation sim = (Simulation)(simCons.newInstance(startSeed + SEED_OFFSET, this));
 		((GUIState)visCons.newInstance(sim)).createController();
+	}
+	
+	public String toJSON() {
+		String formatNumber = "\"%s\": %s";
+		StringBuilder s = new StringBuilder();
+		
+		s.append("{\n\t");
+		
+		s.append(String.format(formatNumber, "ticks", ticks));
+		
+		s.append(",\n\t\"size\": {");
+		s.append("\n\t\t").append(String.format(formatNumber, "length", _length));
+		s.append(",\n\t\t").append(String.format(formatNumber, "width", _width));
+		s.append(",\n\t\t").append(String.format(formatNumber, "height", _height));
+		s.append("\n\t}");
+		
+		// Add potts settings.
+		s.append(",\n\t\"potts\": ")
+				.append(_potts.toJSON().replaceAll("\n", "\n\t"));
+		
+		// Add population settings.
+		s.append(",\n\t\"populations\": {");
+		for (String pop : _populations.keySet()) {
+			s.append("\n\t\t\"").append(pop).append("\": ")
+					.append(_populations.get(pop).toJSON().replaceAll("\n", "\n\t\t"))
+					.append(",");
+		}
+		s.append("\n\t}");
+		
+		s.append("\n}");
+		return s.toString().replace(",\n\t}", "\n\t}");
 	}
 	
 	public String toString() {

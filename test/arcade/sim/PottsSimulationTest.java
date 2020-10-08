@@ -197,6 +197,7 @@ public class PottsSimulationTest {
 	@Test
 	public void getID_started_resetsValues() {
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesZeroPop);
+		sim.getSeries().isVis = true;
 		sim.start();
 		assertEquals(1, sim.getID());
 		sim.start();
@@ -227,13 +228,12 @@ public class PottsSimulationTest {
 	@Test
 	public void start_callsMethods() {
 		PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, seriesZeroPop));
+		sim.getSeries().isVis = true;
 		sim.start();
 		
 		verify(sim).setupPotts();
 		verify(sim).setupAgents();
 		verify(sim).setupEnvironment();
-		verify(sim).scheduleProfilers();
-		verify(sim).scheduleCheckpoints();
 		verify(sim).scheduleHelpers();
 		verify(sim).scheduleComponents();
 	}

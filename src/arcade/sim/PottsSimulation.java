@@ -2,6 +2,7 @@ package arcade.sim;
 
 import java.util.*;
 import sim.engine.*;
+import arcade.sim.output.*;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.*;
 import arcade.env.lat.Lattice;
@@ -48,8 +49,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	public Lattice getEnvironment(String key) { return null; }
 	
 	/**
-	 * Called at the start of the simulation to set up agents, environment, and
-	 * schedule profilers, checkpoints, components, and helpers as needed.
+	 * Called at the start of the simulation to set up agents and environment
+	 * and schedule components and helpers as needed.
 	 */
 	public void start() {
 		super.start();
@@ -61,10 +62,16 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		setupAgents();
 		setupEnvironment();
 		
-		scheduleProfilers();
-		scheduleCheckpoints();
 		scheduleHelpers();
 		scheduleComponents();
+		
+		// Initialize outputs.
+		if (!series.isVis) {
+			OutputSaver saver = new OutputSaver(this);
+			schedule.scheduleRepeating(Schedule.EPOCH, -1,
+					(Steppable) simstate -> saver.save(simstate.schedule.getTime()),
+					series.getInterval());
+		}
 	}
 	
 	/**
@@ -72,6 +79,11 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	 */
 	public void finish() {
 		super.finish();
+		
+		if (!series.isVis) {
+			OutputSaver saver = new OutputSaver(this);
+			saver.save(schedule.getTime() + 1);
+		}
 		
 		// TODO add methods to resetting simulation
 	}
@@ -218,14 +230,6 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	
 	public void setupEnvironment() {
 		// TODO add environment setup (currently not needed)
-	}
-	
-	public void scheduleProfilers() {
-		// TODO add profiler scheduling
-	}
-	
-	public void scheduleCheckpoints() {
-		// TODO add checkpoint scheduling
 	}
 	
 	public void scheduleHelpers() {

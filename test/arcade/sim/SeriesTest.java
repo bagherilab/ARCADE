@@ -151,7 +151,7 @@ public class SeriesTest {
 		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
 		
 		assertEquals(TEST_NAME, series.getName());
-		assertEquals(TEST_PATH + TEST_NAME + "_", series.getPrefix());
+		assertEquals(TEST_PATH + TEST_NAME, series.getPrefix());
 	}
 	
 	@Test
@@ -161,7 +161,7 @@ public class SeriesTest {
 		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
 		
 		assertEquals(TEST_NAME, series.getName());
-		assertEquals(TEST_PATH + "PREFIX_" + TEST_NAME + "_", series.getPrefix());
+		assertEquals(TEST_PATH + "PREFIX_" + TEST_NAME, series.getPrefix());
 	}
 	
 	@Test

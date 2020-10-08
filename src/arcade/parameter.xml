@@ -3,6 +3,7 @@
     <default id="START_SEED" value="0" description="random seed for first simulation in series" />
     <default id="END_SEED" value="0" description="random seed for last simulation in series" />
     <default id="TICKS" value="100" />
+    <default id="INTERVAL" value="50" />
     <default id="LENGTH" value="100" />
     <default id="WIDTH" value="100" />
     <default id="HEIGHT" value="1" />
