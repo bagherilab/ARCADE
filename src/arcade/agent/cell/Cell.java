@@ -248,4 +248,11 @@ public interface Cell extends Steppable {
 	 * @param scale  the relative final size scaling
 	 */
 	void updateTarget(int tag, double rate, double scale);
+	
+	/**
+	 * Converts object to JSON.
+	 *
+	 * @return  a JSON string
+	 */
+	String toJSON();
 }

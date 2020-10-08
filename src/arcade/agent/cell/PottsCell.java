@@ -318,4 +318,49 @@ public abstract class PottsCell implements Cell {
 	 * @return  the surface area (in voxels)
 	 */
 	abstract double convert(double volume);
+	
+	public String toJSON() {
+		String formatNumber = "\"%s\": %s";
+		String formatSet = "[%d, %.2f]";
+		StringBuilder s = new StringBuilder();
+		
+		s.append("{\n")
+				.append("\t").append(String.format(formatNumber, "id", id))
+				.append(",\n\t").append(String.format(formatNumber, "pop", pop))
+				.append(",\n\t").append(String.format(formatNumber, "age", age));
+		
+		// List overall volumes and surfaces.
+		s.append(",\n\t\"volumes\": ").append(String.format(formatSet,
+				location.getVolume(), targetVolume));
+		s.append(",\n\t\"surfaces\": ").append(String.format(formatSet,
+				location.getSurface(), targetSurface));
+		
+		// List module information.
+		s.append(",\n\t\"module\": ")
+				.append(module.toJSON().replaceAll("\n", "\n\t"));
+		
+		// List volumes and surfaces.
+		if (tags > 0) {
+			s.append(",\n\t\"tags\": [\n");
+			for (int i = 0; i < tags; i++) {
+				s.append("\t\t{\n\t\t\t\"tag\": ")
+						.append(-i - 1)
+						.append(",\n\t\t\t\"volumes\": ")
+						.append(String.format(formatSet,
+								location.getVolume(-i - 1), targetTagVolumes[i]))
+						.append(",\n\t\t\t\"surfaces\": ")
+						.append(String.format(formatSet,
+								location.getSurface(-i - 1), targetTagSurfaces[i]))
+						.append("\n\t\t}");
+				
+				if (i < tags - 1) { s.append(",\n"); }
+				else { s.append("\n"); }
+			}
+			s.append("\t]");
+		}
+		
+		s.append("\n}");
+		
+		return s.toString();
+	}
 }
