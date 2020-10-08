@@ -4,6 +4,7 @@ import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.Date;
 import arcade.sim.Series;
+import arcade.sim.input.*;
 import arcade.util.*;
 
 /**
@@ -29,14 +30,14 @@ public class Main {
 		updateLogger();
 		
 		// Load XML files specifying command line parser and default parameters.
-		Loader loader = new Loader();
+		InputLoader loader = new InputLoader();
 		LOGGER.info("loading command line parser from [ command.xml ]");
 		Box commands = loader.load(Main.class.getResource("command.xml").toString());
 		LOGGER.info("loading default parameters from [ parameter.xml ]");
 		Box parameters = loader.load(Main.class.getResource("parameter.xml").toString());
 		
 		// Parse command line arguments.
-		Parser parser = new Parser(commands);
+		InputParser parser = new InputParser(commands);
 		MiniBox settings = parser.parse(args);
 		
 		// Extract command line arguments.
@@ -44,7 +45,7 @@ public class Main {
 		String xml = settings.get("XML");
 		
 		// Build series.
-		Builder builder = new Builder();
+		InputBuilder builder = new InputBuilder();
 		ArrayList<Series> series = builder.build(xml, parameters, isVis);
 		
 		// Run with visualization if requested, otherwise run command line.

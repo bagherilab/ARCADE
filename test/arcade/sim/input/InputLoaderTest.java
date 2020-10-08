@@ -1,4 +1,4 @@
-package arcade.util;
+package arcade.sim.input;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -7,22 +7,23 @@ import java.io.*;
 import org.junit.rules.TemporaryFolder;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import arcade.util.Box;
 import static arcade.MainTest.*;
 
-public class LoaderTest {
+public class InputLoaderTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
 	
 	@Test
 	public void constructor_called_setsReader() {
-		Loader loader = new Loader();
+		InputLoader loader = new InputLoader();
 		assertNotNull(loader.xmlReader);
 	}
 	
 	@Test
 	public void constructor_called_assignsContentHandler() {
-		Loader loader = new Loader();
-		assertTrue(loader.xmlReader.getContentHandler() instanceof Loader);
+		InputLoader loader = new InputLoader();
+		assertTrue(loader.xmlReader.getContentHandler() instanceof InputLoader);
 	}
 	
 	@Test
@@ -30,7 +31,7 @@ public class LoaderTest {
 		File file = folder.newFile("load_validInput_createsBox.xml");
 		write(file, "<tag></tag>");
 		
-		Loader loader = new Loader();
+		InputLoader loader = new InputLoader();
 		loader.load(file.getAbsolutePath());
 		assertNotNull(loader.box);
 	}
@@ -40,7 +41,7 @@ public class LoaderTest {
 		File file = folder.newFile("load_validInputNoContents_loadsBox.xml");
 		write(file, "<tag></tag>");
 		
-		Loader loader = new Loader();
+		InputLoader loader = new InputLoader();
 		Box box = loader.load(file.getAbsolutePath());
 		
 		Box expected = new Box();
@@ -55,7 +56,7 @@ public class LoaderTest {
 				"<tag2 id=\"id2\" att1=\"value21\" att2=\"value22\" />" +
 				"</tag>");
 		
-		Loader loader = new Loader();
+		InputLoader loader = new InputLoader();
 		Box box = loader.load(file.getAbsolutePath());
 		
 		Box expected = new Box();
@@ -72,13 +73,13 @@ public class LoaderTest {
 	@Test(expected = SAXException.class)
 	public void load_invalid_throwsException() throws IOException, SAXException {
 		File file = folder.newFile("load_invalid_throwsException.xml");
-		Loader loader = new Loader();
+		InputLoader loader = new InputLoader();
 		loader.load(file.getAbsolutePath());
 	}
 	
 	@Test
 	public void startElement_noAttributes_doesNothing() {
-		Loader loader = mock(Loader.class, CALLS_REAL_METHODS);
+		InputLoader loader = mock(InputLoader.class, CALLS_REAL_METHODS);
 		loader.box = new Box();
 		
 		Attributes attributes = mock(Attributes.class);
@@ -90,7 +91,7 @@ public class LoaderTest {
 	
 	@Test
 	public void startElement_hasAttributes_doesNothing() {
-		Loader loader = mock(Loader.class, CALLS_REAL_METHODS);
+		InputLoader loader = mock(InputLoader.class, CALLS_REAL_METHODS);
 		loader.box = new Box();
 		
 		Attributes attributes = mock(Attributes.class);

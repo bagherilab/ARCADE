@@ -1,4 +1,4 @@
-package arcade.util;
+package arcade.sim.input;
 
 import org.xml.sax.*;
 import javax.xml.parsers.SAXParser;
@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 import arcade.sim.Series;
+import arcade.util.Box;
+import arcade.util.MiniBox;
 import static arcade.sim.Series.TARGET_SEPARATOR;
 import static arcade.util.MiniBox.TAG_SEPARATOR;
 
@@ -37,9 +39,9 @@ import static arcade.util.MiniBox.TAG_SEPARATOR;
  *     &#60;/set&#62;
  * </pre>
  */
-public class Builder implements ContentHandler {
+public class InputBuilder implements ContentHandler {
 	/** Logger for class */
-	private static final Logger LOGGER = Logger.getLogger(Builder.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(InputBuilder.class.getName());
 	
 	/** XML reader */
 	XMLReader xmlReader;
@@ -68,7 +70,7 @@ public class Builder implements ContentHandler {
 	/**
 	 * Creates a {@code Handler} using {@code SAXParserFactory}.
 	 */
-	public Builder() {
+	public InputBuilder() {
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXParser saxParser = spf.newSAXParser();

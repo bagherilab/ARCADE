@@ -1,4 +1,4 @@
-package arcade.util;
+package arcade.sim.input;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -10,11 +10,13 @@ import org.xml.sax.SAXException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import arcade.sim.Series;
+import arcade.util.Box;
+import arcade.util.MiniBox;
 import static arcade.MainTest.*;
 import static arcade.sim.Series.TARGET_SEPARATOR;
 import static arcade.util.MiniBox.TAG_SEPARATOR;
 
-public class BuilderTest {
+public class InputBuilderTest {
 	private static final String ATT_QNAME = randomString();
 	
 	private static final String ATT_VALUE = randomString();
@@ -53,14 +55,14 @@ public class BuilderTest {
 	
 	@Test
 	public void constructor_called_setsReader() {
-		Builder builder = new Builder();
+		InputBuilder builder = new InputBuilder();
 		assertNotNull(builder.xmlReader);
 	}
 	
 	@Test
 	public void constructor_called_assignsContentHandler() {
-		Builder builder = new Builder();
-		assertTrue(builder.xmlReader.getContentHandler() instanceof Builder);
+		InputBuilder builder = new InputBuilder();
+		assertTrue(builder.xmlReader.getContentHandler() instanceof InputBuilder);
 	}
 	
 	@Test
@@ -68,7 +70,7 @@ public class BuilderTest {
 		File file = folder.newFile("build_validInput_createsEmpty.xml");
 		write(file, "<set />");
 		
-		Builder builder = new Builder();
+		InputBuilder builder = new InputBuilder();
 		ArrayList<Series> series = builder.build(file.getAbsolutePath(), null, false);
 		
 		assertEquals(0, series.size());
@@ -79,7 +81,7 @@ public class BuilderTest {
 		File file = folder.newFile("build_validInput_createsList.xml");
 		write(file, "<set />");
 		
-		Builder builder = new Builder();
+		InputBuilder builder = new InputBuilder();
 		builder.build(file.getAbsolutePath(), new Box(), false);
 		
 		assertNotNull(builder.series);
@@ -90,7 +92,7 @@ public class BuilderTest {
 		File file = folder.newFile("build_validInput_setsParameters.xml");
 		write(file, "<set />");
 		
-		Builder builder = new Builder();
+		InputBuilder builder = new InputBuilder();
 		builder.build(file.getAbsolutePath(), new Box(), true);
 		
 		assertNotNull(builder.parameters);
@@ -100,13 +102,13 @@ public class BuilderTest {
 	@Test(expected = SAXException.class)
 	public void build_invalid_throwsException() throws IOException, SAXException {
 		File file = folder.newFile("build_invalid_throwsException.xml");
-		Builder builder = new Builder();
+		InputBuilder builder = new InputBuilder();
 		builder.build(file.getAbsolutePath(), null, false);
 	}
 	
 	@Test
 	public void makeMiniBox_validInput_createsContainer() {
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		Attributes attributes = makeAttributesMock(3);
 		MiniBox box = builder.makeMiniBox(attributes);
 		
@@ -118,7 +120,7 @@ public class BuilderTest {
 	
 	@Test
 	public void makeBox_validInput_createsContainer() {
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		Attributes attributes = makeAttributesMock(3);
 		Box box = builder.makeBox(attributes);
 		
@@ -134,7 +136,7 @@ public class BuilderTest {
 		int nAtts = randomInt();
 		String id = randomString();
 		
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.setupLists = makeSetupLists(nLists);
 		
 		Attributes attributes = makeAttributesMock(nAtts + 1);
@@ -155,7 +157,7 @@ public class BuilderTest {
 		String id = randomString();
 		String tag = randomString();
 		
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.setupLists = makeSetupLists(nLists);
 		
 		Attributes attributes = makeAttributesMock(nAtts + 2);
@@ -179,7 +181,7 @@ public class BuilderTest {
 		String id = randomString();
 		String target = randomString();
 		
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.setupLists = makeSetupLists(nLists);
 		
 		Attributes attributes = makeAttributesMock(nAtts + 2);
@@ -204,7 +206,7 @@ public class BuilderTest {
 		String tag = randomString();
 		String target = randomString();
 		
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.setupLists = makeSetupLists(nLists);
 		
 		Attributes attributes = makeAttributesMock(nAtts + 3);
@@ -226,7 +228,7 @@ public class BuilderTest {
 	
 	@Test
 	public void startElement_givenSet_addsDict() {
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.setupDicts = new HashMap<>();
 		
 		int n = randomInt();
@@ -242,7 +244,7 @@ public class BuilderTest {
 	
 	@Test
 	public void startElement_givenSeries_addsDict() {
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.setupDicts = new HashMap<>();
 		
 		int n = randomInt();
@@ -258,7 +260,7 @@ public class BuilderTest {
 	
 	@Test
 	public void startElement_givenPopulations_addsList() {
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.setupLists = new HashMap<>();
 		
 		Attributes attributes = makeAttributesMock(randomInt());
@@ -270,7 +272,7 @@ public class BuilderTest {
 	
 	@Test
 	public void startElement_givenPotts_addsList() {
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.setupLists = new HashMap<>();
 		
 		Attributes attributes = makeAttributesMock(randomInt());
@@ -282,7 +284,7 @@ public class BuilderTest {
 	
 	@Test
 	public void startElement_givenPopulation_addsListEntry() {
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.setupLists = new HashMap<>();
 		builder.setupLists.put("populations", new ArrayList<>());
 		
@@ -299,7 +301,7 @@ public class BuilderTest {
 	
 	@Test
 	public void startElement_givenPottsColon_updatesBox() {
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.setupLists = new HashMap<>();
 		builder.setupLists.put("potts", new ArrayList<>());
 		builder.setupLists.get("potts").add(new Box());
@@ -322,7 +324,7 @@ public class BuilderTest {
 	
 	@Test
 	public void startElement_givenColon_updatesBox() {
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.setupLists = new HashMap<>();
 		builder.setupLists.put(LIST_NAME + "s", new ArrayList<>());
 		builder.setupLists.get(LIST_NAME + "s").add(new Box());
@@ -345,7 +347,7 @@ public class BuilderTest {
 	
 	@Test
 	public void endElement_givenSeries_createsSeries() {
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.series = new ArrayList<>();
 		builder.setupDicts = new HashMap<>();
 		builder.setupLists = new HashMap<>();
@@ -360,7 +362,7 @@ public class BuilderTest {
 	
 	@Test
 	public void endElement_givenSeries_resetsDicts() {
-		Builder builder = mock(Builder.class, CALLS_REAL_METHODS);
+		InputBuilder builder = mock(InputBuilder.class, CALLS_REAL_METHODS);
 		builder.series = new ArrayList<>();
 		builder.setupDicts = new HashMap<>();
 		builder.setupLists = new HashMap<>();

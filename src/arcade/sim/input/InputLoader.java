@@ -1,4 +1,4 @@
-package arcade.util;
+package arcade.sim.input;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -8,6 +8,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+import arcade.util.Box;
 
 /**
  * Custom XML file loader that uses SAX parsing to iterate through the XML file.
@@ -16,9 +17,9 @@ import org.xml.sax.helpers.DefaultHandler;
  * Results are stored in a {@link arcade.util.Box} object.
  */
 
-public class Loader extends DefaultHandler {
+public class InputLoader extends DefaultHandler {
 	/** Logger for class */
-	private static final Logger LOGGER = Logger.getLogger(Loader.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(InputLoader.class.getName());
 	
 	/** XML reader */
 	XMLReader xmlReader;
@@ -27,9 +28,9 @@ public class Loader extends DefaultHandler {
 	Box box;
 	
 	/**
-	 * Creates a {@code Loader} using {@code SAXParserFactory}.
+	 * Creates a {@code InputLoader} using {@code SAXParserFactory}.
 	 */
-	public Loader() {
+	public InputLoader() {
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXParser saxParser = spf.newSAXParser();

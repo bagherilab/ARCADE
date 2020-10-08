@@ -1,14 +1,16 @@
-package arcade.util;
+package arcade.sim.input;
 
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import arcade.util.Box;
+import arcade.util.MiniBox;
 
 /**
  * Command line parser built from XML defining the possible commands.
  * <p>
- * {@code} Parser is built using the {@link arcade.util.Box} created by
- * {@link arcade.util.Loader} when parsing {@code command.xml}.
+ * {@code InputParser} is built using the {@link arcade.util.Box} created by
+ * {@link arcade.sim.input.InputLoader} when parsing {@code command.xml}.
  * There are three command argument types:
  * <ul>
  *     <li><em>position</em> arguments are ordered by their location in the 
@@ -33,9 +35,9 @@ import java.util.HashMap;
  * </pre>
  */
 
-public class Parser {
+public class InputParser {
 	/** Logger for class */
-	private static final Logger LOGGER = Logger.getLogger(Parser.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(InputParser.class.getName());
 	
 	/** ID for position commands */
 	static final int POSITION = 0;
@@ -65,11 +67,11 @@ public class Parser {
 	int positionIndex;
 	
 	/**
-	 * Creates a command line {@code Parser} object.
+	 * Creates a command line {@code InputParser} object.
 	 * 
  	 * @param options  the map of command line options
 	 */
-	public Parser(Box options) {
+	public InputParser(Box options) {
 		// Initialize maps to commands.
 		allCommands = new ArrayList<>();
 		shortToCommand = new HashMap<>();
