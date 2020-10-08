@@ -32,4 +32,11 @@ public interface Grid {
 	 * @return  the object
 	 */
 	Object getObjectAt(int id);
+	
+	/**
+	 * Converts object to JSON.
+	 * 
+	 * @return  a JSON string
+	 */
+	String toJSON();
 }

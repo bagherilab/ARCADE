@@ -2,6 +2,7 @@ package arcade.env.grid;
 
 import java.util.HashMap;
 import sim.util.Bag;
+import arcade.agent.cell.Cell;
 
 public class PottsGrid implements Grid {
 	/** Map of ID to object */
@@ -35,5 +36,19 @@ public class PottsGrid implements Grid {
 	
 	public Object getObjectAt(int id) {
 		return objects.get(id);
+	}
+	
+	public String toJSON() {
+		StringBuilder s = new StringBuilder();
+		s.append("[\n");
+		
+		for (Object obj :allObjects) {
+			if (obj instanceof Cell) {
+				Cell cell = (Cell)obj;
+				s.append("\t").append(cell.toJSON().replaceAll("\n", "\n\t")).append(",\n");
+			}
+		}
+		
+		return s.append("]").toString().replaceFirst(",\\n]", "\n]");
 	}
 }
