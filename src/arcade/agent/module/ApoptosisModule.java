@@ -7,6 +7,9 @@ import arcade.agent.cell.PottsCell;
 import static arcade.agent.cell.Cell.*;
 
 public abstract class ApoptosisModule implements Module  {
+	/** Phase names */
+	public static final String[] PHASE_NAMES = { "EARLY", "LATE" };
+	
 	/** Code for early apoptosis phase */
 	public static final int PHASE_EARLY_APOPTOSIS = 0;
 	
@@ -168,5 +171,9 @@ public abstract class ApoptosisModule implements Module  {
 		
 		// Stop stepping the cell.
 		cell.stopper.stop();
+	}
+	
+	public String toJSON() {
+		return "{\n\t\"state\": \"apoptotic\",\n\t\"phase\": \"" + PHASE_NAMES[phase] + "\"\n}";
 	}
 }

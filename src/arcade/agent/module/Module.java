@@ -18,4 +18,11 @@ public interface Module {
 	 * @return  the module phase
 	 */
 	int getPhase();
+	
+	/**
+	 * Converts object to JSON.
+	 *
+	 * @return  a JSON string
+	 */
+	String toJSON();
 }

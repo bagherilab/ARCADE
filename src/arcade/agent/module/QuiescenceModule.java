@@ -12,4 +12,6 @@ public class QuiescenceModule implements Module  {
 	public int getPhase() { return 0; }
 	
 	public void step(MersenneTwisterFast random, Simulation sim) { }
+	
+	public String toJSON() { return ""; }
 }

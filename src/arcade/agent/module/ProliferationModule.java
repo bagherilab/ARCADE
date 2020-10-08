@@ -9,6 +9,9 @@ import arcade.env.loc.Location;
 import static arcade.agent.cell.Cell.*;
 
 public abstract class ProliferationModule implements Module {
+	/** Phase names */
+	public static final String[] PHASE_NAMES = { "G1", "S", "G2", "M" };
+	
 	/** Code for G1 phase */
 	public static final int PHASE_G1 = 0;
 	
@@ -276,5 +279,9 @@ public abstract class ProliferationModule implements Module {
 		sim.getAgents().addObject(newID, newCell);
 		newCell.reset(potts.IDS, potts.TAGS);
 		newCell.schedule(sim.getSchedule());
+	}
+	
+	public String toJSON() {
+		return "{\n\t\"state\": \"proliferative\",\n\t\"phase\": \"" + PHASE_NAMES[phase] + "\"\n}";
 	}
 }
