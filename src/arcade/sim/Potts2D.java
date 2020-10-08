@@ -207,4 +207,19 @@ public class Potts2D extends Potts {
 		
 		return unique;
 	}
+	
+	public String toCSV() {
+		StringBuilder s = new StringBuilder();
+		s.append("X,Y,Z,ID,TAG\n");
+		
+		for (int i = 1; i <= LENGTH; i++) {
+			for (int j = 1; j <= WIDTH; j++) {
+				if (IDS[0][i][j] != 0) {
+					s.append(String.format("%d,%d,%d,%d,%d\n", i, j, 0, IDS[0][i][j], TAGS[0][i][j]));
+				}
+			}
+		}
+		
+		return s.toString();
+	}
 }
