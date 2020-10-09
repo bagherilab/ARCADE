@@ -44,7 +44,7 @@ public abstract class Potts implements Steppable {
 	public int[][][] TAGS;
 	
 	/** Grid holding cells */
-	Grid grid;
+	public Grid grid;
 	
 	/**
 	 * Creates a cellular {@code Potts} model.
@@ -476,11 +476,4 @@ public abstract class Potts implements Steppable {
 	 * @return  the list of unique tags
 	 */
 	abstract HashSet<Integer> getUniqueTags(int x, int y, int z);
-	
-	/**
-	 * Converts object to CSV.
-	 *
-	 * @return  a CSV string
-	 */
-	public abstract String toCSV();
 }

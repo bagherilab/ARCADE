@@ -1,5 +1,6 @@
 package arcade.env.loc;
 
+import java.util.ArrayList;
 import ec.util.MersenneTwisterFast;
 
 public interface Location {
@@ -105,6 +106,13 @@ public interface Location {
 	Location split(MersenneTwisterFast random);
 	
 	/**
+	 * Gets all voxels.
+	 * 
+	 * @return  the list of voxels.
+	 */
+	ArrayList<Voxel> getVoxels();
+	
+	/**
 	 * Gets the voxel at the center of the location.
 	 *
 	 * @return  the center voxel, returns {@code null} if there are no voxels
@@ -143,13 +151,13 @@ public interface Location {
 	
 	class Voxel {
 		/** Voxel x coordinate */
-		final int x;
+		public final int x;
 		
 		/** Voxel y coordinate */
-		final int y;
+		public final int y;
 		
 		/** Voxel z coordinate */
-		final int z;
+		public final int z;
 		
 		/**
 		 * Creates a {@code Voxel} at the given coordinates.

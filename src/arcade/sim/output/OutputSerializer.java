@@ -1,13 +1,16 @@
 package arcade.sim.output;
 
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import com.google.gson.*;
 import arcade.sim.Series;
+import arcade.sim.Potts;
 import arcade.agent.cell.Cell;
 import arcade.agent.module.Module;
 import arcade.env.grid.Grid;
+import arcade.env.loc.*;
 import arcade.util.MiniBox;
+import static arcade.env.loc.Location.Voxel;
 
 public abstract class OutputSerializer {
 	/** Regular expression for fractions */
@@ -15,6 +18,19 @@ public abstract class OutputSerializer {
 	
 	/** Regular expression for integers */
 	public static final String INTEGER_REGEX = "^(-?\\d+)$|^(-?\\d+E\\d+)$";
+	
+	static Gson makeGSON() {
+		GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
+		gsonBuilder.registerTypeAdapter(Series.class, new SeriesSerializer());
+		gsonBuilder.registerTypeAdapter(MiniBox.class, new MiniBoxSerializer());
+		gsonBuilder.registerTypeHierarchyAdapter(Potts.class, new PottsSerializer());
+		gsonBuilder.registerTypeHierarchyAdapter(Grid.class, new GridSerializer());
+		gsonBuilder.registerTypeHierarchyAdapter(Cell.class, new CellSerializer());
+		gsonBuilder.registerTypeHierarchyAdapter(Module.class, new ModuleSerializer());
+		gsonBuilder.registerTypeHierarchyAdapter(Location.class, new LocationSerializer());
+		gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelSerializer());
+		return gsonBuilder.create();
+	}
 	
 	static class MiniBoxSerializer implements JsonSerializer<MiniBox> {
 		public JsonElement serialize(MiniBox src, Type typeOfSrc, JsonSerializationContext context) {
@@ -43,19 +59,34 @@ public abstract class OutputSerializer {
 			size.addProperty("height", src._width);
 			json.add("size", size);
 			
-			TypeToken<MiniBox> miniBoxToken = new TypeToken<MiniBox>() { };
-			
 			// Add potts parameters.
-			JsonElement potts = context.serialize(src._potts, miniBoxToken.getType());
+			JsonElement potts = context.serialize(src._potts);
 			json.add("potts", potts);
 			
 			// Add population parameters.
 			JsonObject populations = new JsonObject();
 			for (String pop : src._populations.keySet()) {
-				JsonElement population = context.serialize(src._populations.get(pop), miniBoxToken.getType());
+				JsonElement population = context.serialize(src._populations.get(pop));
 				populations.add(pop, population);
 			}
 			json.add("populations", populations);
+			
+			return json;
+		}
+	}
+	
+	static class PottsSerializer implements JsonSerializer<Potts> {
+		public JsonElement serialize(Potts src, Type typeOfSrc, JsonSerializationContext context) {
+			JsonArray json = new JsonArray();
+			
+			for (Object obj : src.grid.getAllObjects()) {
+				Cell cell = (Cell)obj;
+				JsonElement voxels = context.serialize(cell.getLocation());
+				JsonObject location = new JsonObject();
+				location.addProperty("id", cell.getID());
+				location.add("voxels", voxels);
+				json.add(location);
+			}
 			
 			return json;
 		}
@@ -79,8 +110,7 @@ public abstract class OutputSerializer {
 			surfaces.add(Math.round(src.getTargetSurface() * 100) / 100.0);
 			json.add("surfaces", surfaces);
 			
-			TypeToken<Module> moduleToken = new TypeToken<Module>() { };
-			JsonElement module = context.serialize(src.getModule(), moduleToken.getType());
+			JsonElement module = context.serialize(src.getModule());
 			json.add("module", module);
 			
 			if (src.getTags() > 0) {
@@ -122,11 +152,48 @@ public abstract class OutputSerializer {
 	static class GridSerializer implements JsonSerializer<Grid> {
 		public JsonElement serialize(Grid src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonArray json = new JsonArray();
-			TypeToken<Cell> cellToken = new TypeToken<Cell>() { };
 			
 			for (Object obj : src.getAllObjects()) {
-				JsonElement cell = context.serialize(obj, cellToken.getType());
+				JsonElement cell = context.serialize(obj);
 				json.add(cell);
+			}
+			
+			return json;
+		}
+	}
+	
+	static class VoxelSerializer implements JsonSerializer<Voxel> {
+		public JsonElement serialize(Voxel src, Type typeOfSrc, JsonSerializationContext context) {
+			JsonArray json = new JsonArray();
+			json.add(src.x);
+			json.add(src.y);
+			json.add(src.z);
+			return json;
+		}
+	}
+	
+	static class LocationSerializer implements JsonSerializer<Location> {
+		public JsonElement serialize(Location src, Type typeOfSrc, JsonSerializationContext context) {
+			JsonArray json = new JsonArray();
+			
+			HashMap<Integer, PottsLocation> locations;
+			
+			if (src instanceof PottsLocations) { locations = ((PottsLocations) src).locations; }
+			else {
+				locations = new HashMap<>();
+				locations.put(0, (PottsLocation)src);
+			}
+			
+			for (int tag : locations.keySet()) {
+				JsonObject obj = new JsonObject();
+				
+				JsonArray voxels = new JsonArray();
+				for (Voxel voxel : src.getVoxels()) { voxels.add(context.serialize(voxel)); }
+				
+				obj.addProperty("tag", tag);
+				obj.add("voxels", voxels);
+				
+				json.add(obj);
 			}
 			
 			return json;

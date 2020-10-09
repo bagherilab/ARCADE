@@ -2,12 +2,15 @@ package arcade.sim.output;
 
 import java.io.*;
 import java.util.logging.Logger;
+import com.google.gson.*;
 import arcade.sim.Potts;
 import arcade.sim.Simulation;
 import arcade.env.grid.Grid;
 
 public class OutputSaver {
 	private final static Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
+	
+	final Gson gson;
 	
 	final String prefix;
 	
@@ -20,16 +23,17 @@ public class OutputSaver {
 		potts = sim.getPotts();
 		agents = sim.getAgents();
 		
+		gson = OutputSerializer.makeGSON();
 		String path = prefix + ".json";
-		write(path, sim.getSeries().toJSON());
+		write(path, format(gson.toJson(sim.getSeries())));
 	}
 	
 	public void save(double tick) {
 		String agentsPath = prefix + String.format("_%06d.%s.%s",(int)tick, "AGENTS", "json");
-		write(agentsPath, agents.toJSON());
+		write(agentsPath, format(gson.toJson(agents)));
 		
-		String pottsPath = prefix + String.format("_%06d.%s.%s", (int)tick, "POTTS", "csv");
-		write(pottsPath, potts.toCSV());
+		String pottsPath = prefix + String.format("_%06d.%s.%s", (int)tick, "POTTS", "json");
+		write(pottsPath, format(gson.toJson(potts)));
 	}
 	
 	void write(String filepath, String contents) {
@@ -51,5 +55,14 @@ public class OutputSaver {
 			LOGGER.severe("error writing [ " + filepath + " ] due to " + ex.getClass().getName());
 			System.exit(-1);
 		}
+	}
+	
+	static String format(String string){
+		String formatted = string;
+		formatted = formatted.replaceAll("\\[\\n[\\s\\t]+([\\d\\.]+),\\n[\\s\\t]+([\\d\\.]+)\\n\\s+\\]",
+				"[$1, $2]");
+		formatted = formatted.replaceAll("\\[\\n[\\s\\t]+([\\d\\.]+),\\n[\\s\\t]+([\\d\\.]+),\\n[\\s\\t]+([\\d\\.]+)\\n\\s+\\]",
+				"[$1, $2, $3]");
+		return formatted;
 	}
 }
