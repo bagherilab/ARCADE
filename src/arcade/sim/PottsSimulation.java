@@ -19,6 +19,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	/** Random number generator seed for this simulation */
 	final int seed;
 	
+	/** Output saver for the simulation */
+	OutputSaver saver;
+	
 	/** {@link arcade.sim.Potts} object for the simulation */
 	Potts potts;
 	
@@ -65,13 +68,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		scheduleHelpers();
 		scheduleComponents();
 		
-		// Initialize outputs.
-		if (!series.isVis) {
-			OutputSaver saver = new OutputSaver(this);
-			schedule.scheduleRepeating(Schedule.EPOCH, -1,
-					(Steppable) simstate -> saver.save(simstate.schedule.getTime()),
-					series.getInterval());
-		}
+		// Initialize and schedule saver.
+		saver = new OutputSaver(series.getPrefix(), this);
+		doOutput(true);
 	}
 	
 	/**
@@ -80,12 +79,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	public void finish() {
 		super.finish();
 		
-		if (!series.isVis) {
-			OutputSaver saver = new OutputSaver(this);
-			saver.save(schedule.getTime() + 1);
-		}
-		
-		// TODO add methods to resetting simulation
+		// Finalize saver.
+		doOutput(false);
 	}
 	
 	/**
@@ -238,5 +233,19 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	
 	public void scheduleComponents() {
 		// TODO add component scheduling
+	}
+	
+	/**
+	 * Runs output methods.
+	 * 
+	 * @param isScheduled  {@code true} if the output should be scheduled, {@code false} otherwise
+	 */
+	public void doOutput(boolean isScheduled) {
+		if (!series.isVis) {
+			if (isScheduled) {
+				saver.save();
+				saver.schedule(schedule, series.getInterval());
+			} else { saver.save(schedule.getTime() + 1); }
+		}
 	}
 }

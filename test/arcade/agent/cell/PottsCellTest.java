@@ -172,6 +172,20 @@ public class PottsCellTest {
 	}
 	
 	@Test
+	public void getTags_defaultConstructor_returnsZero() {
+		assertEquals(0, cellDefault.getTags());
+	}
+	
+	@Test
+	public void getTags_hasTags_returnsNumber() {
+		int tags = (int)(Math.random()*10) + 2;
+		PottsCellMock cell = new PottsCellMock(cellID, 0, 0, 0,
+				location, criticals, lambdas, adhesion, tags, 
+				new double[2][tags], new double[2][tags], new double[tags][tags]);
+		assertEquals(tags, cell.getTags());
+	}
+	
+	@Test
 	public void getLocation_defaultConstructor_returnsObject() {
 		assertSame(location, cellDefault.getLocation());
 	}

@@ -26,6 +26,7 @@ public class SeriesTest {
 	private static final int DEFAULT_START_SEED = randomInt();
 	private static final int DEFAULT_END_SEED = randomInt();
 	private static final int DEFAULT_TICKS = randomInt();
+	private static final int DEFAULT_INTERVAL = randomInt();
 	private static final int DEFAULT_LENGTH = randomInt();
 	private static final int DEFAULT_WIDTH = randomInt();
 	private static final int DEFAULT_HEIGHT = randomOdd();
@@ -94,12 +95,14 @@ public class SeriesTest {
 		PARAMETERS.addTag("START_SEED", "DEFAULT");
 		PARAMETERS.addTag("END_SEED", "DEFAULT");
 		PARAMETERS.addTag("TICKS", "DEFAULT");
+		PARAMETERS.addTag("INTERVAL", "DEFAULT");
 		PARAMETERS.addTag("LENGTH", "DEFAULT");
 		PARAMETERS.addTag("WIDTH", "DEFAULT");
 		PARAMETERS.addTag("HEIGHT", "DEFAULT");
 		PARAMETERS.addAtt("START_SEED", "value", "" + DEFAULT_START_SEED);
 		PARAMETERS.addAtt("END_SEED", "value", "" + DEFAULT_END_SEED);
 		PARAMETERS.addAtt("TICKS", "value", "" + DEFAULT_TICKS);
+		PARAMETERS.addAtt("INTERVAL", "value", "" + DEFAULT_INTERVAL);
 		PARAMETERS.addAtt("LENGTH", "value", "" + DEFAULT_LENGTH);
 		PARAMETERS.addAtt("WIDTH", "value", "" + DEFAULT_WIDTH);
 		PARAMETERS.addAtt("HEIGHT", "value", "" + DEFAULT_HEIGHT);
@@ -202,6 +205,24 @@ public class SeriesTest {
 		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
 		
 		assertEquals(ticks, series.getTicks());
+	}
+	
+	@Test
+	public void constructor_intervalNotGiven_usesDefault() {
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		
+		assertEquals(DEFAULT_INTERVAL, series.getInterval());
+	}
+	
+	@Test
+	public void constructor_intervalGiven_usesGiven() {
+		int interval = randomInt();
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		setupDicts.get("series").put("interval", interval);
+		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		
+		assertEquals(interval, series.getInterval());
 	}
 	
 	@Test

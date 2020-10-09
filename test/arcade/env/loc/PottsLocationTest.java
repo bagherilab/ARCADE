@@ -117,6 +117,28 @@ public class PottsLocationTest {
 	}
 	
 	@Test
+	public void getVoxels_noVoxels_returnsEmpty() {
+		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
+		assertEquals(0, loc.getVoxels().size());
+	}
+	
+	@Test
+	public void getVoxels_hasVoxels_returnsList() {
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		
+		int N = (int)(Math.random()*100) + 1;
+		for (int i = 0; i < N; i++) { voxels.add(new Voxel(i, i, i)); }
+		
+		PottsLocationMock loc = new PottsLocationMock(voxels);
+		ArrayList<Voxel> voxelList = loc.getVoxels();
+		
+		assertNotSame(loc.voxels, voxelList);
+		voxelList.sort(COMPARATOR);
+		voxels.sort(COMPARATOR);
+		assertEquals(voxels, voxelList);
+	}
+	
+	@Test
 	public void getVolume_hasVoxels_returnsValue() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
 		loc.add(0, 0, 0);

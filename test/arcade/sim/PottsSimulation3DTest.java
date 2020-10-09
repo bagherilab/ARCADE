@@ -1,7 +1,9 @@
 package arcade.sim;
 
 import org.junit.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import ec.util.MersenneTwisterFast;
 import arcade.agent.cell.*;
 import arcade.env.loc.*;
 import arcade.util.MiniBox;
@@ -9,8 +11,10 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.sim.Potts.*;
 import static arcade.sim.PottsSimulationTest.*;
+import static arcade.MainTest.*;
 
 public class PottsSimulation3DTest {
+	private static final MersenneTwisterFast random = mock(MersenneTwisterFast.class);
 	private static final double EPSILON = 1E-4;
 	
 	@Test
@@ -21,6 +25,39 @@ public class PottsSimulation3DTest {
 		PottsSimulation3D sim = new PottsSimulation3D(RANDOM_SEED, series);
 		Potts potts = sim.makePotts();
 		assertTrue(potts instanceof Potts3D);
+	}
+	
+	@Test
+	public void makeLocations_noPops_setsFields() {
+		int length = randomInt();
+		int width = randomInt();
+		int height = randomInt();
+		Series series = createSeries(length, width, height);
+		
+		PottsSimulation3D sim = new PottsSimulation3D(RANDOM_SEED, series);
+		LocationFactory factory = sim.makeLocations();
+		
+		assertNotNull(factory);
+		assertEquals(length, factory.LENGTH);
+		assertEquals(width, factory.WIDTH);
+		assertEquals(height, factory.HEIGHT);
+	}
+	
+	@Test
+	public void makeLocations_withPops_callsMethods() {
+		Series series = createSeries(7, 7, 7);
+		
+		series._populations = new HashMap<>();
+		MiniBox population = new MiniBox();
+		population.put("FRACTION", 1.0);
+		population.put("CRITICAL_VOLUME", 3*3*3*Simulation.DS);
+		series._populations.put(randomString(), population);
+		
+		PottsSimulation3D sim = new PottsSimulation3D(RANDOM_SEED, series);
+		LocationFactory factory = sim.makeLocations();
+		
+		ArrayList<Location> locations = factory.getLocations(population, random);
+		assertEquals(1, locations.size());
 	}
 	
 	@Test

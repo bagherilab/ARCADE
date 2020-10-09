@@ -30,7 +30,7 @@ public abstract class PottsLocation implements Location {
 		this.surface = calculateSurface();
 	}
 	
-	public ArrayList<Voxel> getVoxels() { return voxels; }
+	public ArrayList<Voxel> getVoxels() { return new ArrayList<>(voxels); }
 	
 	public int getVolume() { return volume; }
 	

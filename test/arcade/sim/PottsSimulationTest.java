@@ -3,6 +3,7 @@ package arcade.sim;
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +11,7 @@ import sim.engine.Schedule;
 import arcade.agent.cell.*;
 import arcade.env.loc.*;
 import arcade.util.MiniBox;
+import arcade.sim.output.OutputSaver;
 import static arcade.sim.Simulation.*;
 import static arcade.sim.Potts.*;
 import static arcade.env.loc.Location.Voxel;
@@ -45,23 +47,25 @@ public class PottsSimulationTest {
 		return series;
 	}
 	
-	static Series createSeries(int[] pops, String[] keys, double[] volumes) {
+	static Series createSeries(int length, int width, int height) {
 		Series series = mock(Series.class);
+		
 		HashMap<String, MiniBox> populations = new HashMap<>();
-		
-		for (int i = 0; i < pops.length; i++) {
-			MiniBox population = new MiniBox();
-			population.put("CODE", pops[i]);
-			population.put("ADHESION:*", 0);
-			population.put("CRITICAL_VOLUME", volumes[i]);
-			populations.put(keys[i], population);
-			
-			for (String key : keys) {
-				population.put("ADHESION" + TARGET_SEPARATOR + key, 0);
-			}
-		}
-		
 		series._populations = populations;
+		
+		try {
+			Field lengthField = Series.class.getDeclaredField("_length");
+			lengthField.setAccessible(true);
+			lengthField.setInt(series, length);
+			
+			Field widthField = Series.class.getDeclaredField("_width");
+			widthField.setAccessible(true);
+			widthField.setInt(series, width);
+			
+			Field heightField = Series.class.getDeclaredField("_height");
+			heightField.setAccessible(true);
+			heightField.setInt(series, height);
+		} catch (Exception ignored) { }
 		
 		return series;
 	}
@@ -227,8 +231,9 @@ public class PottsSimulationTest {
 	
 	@Test
 	public void start_callsMethods() {
-		PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, seriesZeroPop));
-		sim.getSeries().isVis = true;
+		Series series = createSeries(new int[0], new String[0]);
+		PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
+		doNothing().when(sim).doOutput(anyBoolean());
 		sim.start();
 		
 		verify(sim).setupPotts();
@@ -236,6 +241,19 @@ public class PottsSimulationTest {
 		verify(sim).setupEnvironment();
 		verify(sim).scheduleHelpers();
 		verify(sim).scheduleComponents();
+		verify(sim).doOutput(true);
+		
+		assertNotNull(sim.saver);
+	}
+	
+	@Test
+	public void finish_callsMethods() {
+		Series series = createSeries(new int[0], new String[0]);
+		PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
+		doNothing().when(sim).doOutput(anyBoolean());
+		sim.finish();
+		
+		verify(sim).doOutput(false);
 	}
 	
 	@Test
@@ -603,5 +621,70 @@ public class PottsSimulationTest {
 				assertEquals(adhesionTag[i][j], cell.getAdhesion(-i - 1, -j - 1), EPSILON);
 			}
 		}
+	}
+	
+	@Test
+	public void doOutput_isVis_doesNothing() {
+		Series series = mock(Series.class);
+		Schedule schedule = mock(Schedule.class);
+		OutputSaver saver = mock(OutputSaver.class);
+		
+		PottsSimulation sim = new PottsSimulationMock(RANDOM_SEED, series);
+		sim.saver = saver;
+		sim.schedule = schedule;
+		series.isVis = true;
+		
+		doNothing().when(saver).save();
+		
+		sim.doOutput(true);
+		verify(saver, never()).save();
+		verify(saver, never()).schedule(eq(schedule), anyDouble());
+		
+		sim.doOutput(false);
+		verify(saver, never()).save();
+		verify(saver, never()).schedule(eq(schedule), anyDouble());
+		verify(saver, never()).save(anyDouble());
+	}
+	
+	@Test
+	public void doOutput_isScheduled_schedulesOutput() {
+		Series series = mock(Series.class);
+		Schedule schedule = mock(Schedule.class);
+		OutputSaver saver = mock(OutputSaver.class);
+		
+		PottsSimulation sim = new PottsSimulationMock(RANDOM_SEED, series);
+		sim.saver = saver;
+		sim.schedule = schedule;
+		series.isVis = false;
+		
+		int interval = (int)(random()*100);
+		doNothing().when(saver).save();
+		doReturn(interval).when(series).getInterval();
+		
+		sim.doOutput(true);
+		verify(saver).save();
+		verify(saver).schedule(schedule, interval);
+		verify(saver, never()).save(anyDouble());
+	}
+	
+	@Test
+	public void doOutput_isNotScheduled_savesOutput() {
+		Series series = mock(Series.class);
+		Schedule schedule = mock(Schedule.class);
+		OutputSaver saver = mock(OutputSaver.class);
+		
+		PottsSimulation sim = new PottsSimulationMock(RANDOM_SEED, series);
+		sim.saver = saver;
+		sim.schedule = schedule;
+		series.isVis = false;
+		
+		double time = random();
+		doNothing().when(saver).save();
+		doReturn(time).when(sim.schedule).getTime();
+		
+		sim.doOutput(false);
+		verify(saver, never()).save();
+		verify(saver, never()).schedule(eq(schedule), anyDouble());
+		verify(saver).save(time + 1);
 	}
 }

@@ -11,13 +11,13 @@ import static arcade.env.loc.Location.Voxel;
 
 public abstract class LocationFactory {
 	/** Length (x direction) of array */
-	final int LENGTH;
+	final public int LENGTH;
 	
 	/** Width (y direction) of array */
-	final int WIDTH;
+	final public int WIDTH;
 	
 	/** Depth (z direction) of array */
-	final int HEIGHT;
+	final public int HEIGHT;
 	
 	/** List of available locations */
 	final ArrayList<Voxel> availableLocations;

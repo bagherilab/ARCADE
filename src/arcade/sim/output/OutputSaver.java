@@ -3,27 +3,35 @@ package arcade.sim.output;
 import java.io.*;
 import java.util.logging.Logger;
 import com.google.gson.*;
+import sim.engine.*;
 import arcade.sim.Potts;
 import arcade.sim.Simulation;
 import arcade.env.grid.Grid;
 
-public class OutputSaver {
+public class OutputSaver implements Steppable {
 	private final static Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
 	
 	final Gson gson;
 	
 	final String prefix;
 	
+	final Simulation sim;
+	
 	final Grid agents;
 	
 	final Potts potts;
 	
 	public OutputSaver(Simulation sim) {
-		prefix =  String.format("%s_%04d", sim.getSeries().getPrefix(), sim.getSeed());
+		prefix = String.format("%s_%04d", sim.getSeries().getPrefix(), sim.getSeed());
+		
+		this.sim = sim;
 		potts = sim.getPotts();
 		agents = sim.getAgents();
 		
 		gson = OutputSerializer.makeGSON();
+	}
+	
+	public void save() {
 		String path = prefix + ".json";
 		write(path, format(gson.toJson(sim.getSeries())));
 	}
@@ -34,6 +42,19 @@ public class OutputSaver {
 		
 		String pottsPath = prefix + String.format("_%06d.%s.%s", (int)tick, "POTTS", "json");
 		write(pottsPath, format(gson.toJson(potts)));
+	}
+	
+	/**
+	 * Steps through cell rules.
+	 *
+	 * @param simstate  the MASON simulation state
+	 */
+	public void step(SimState simstate) {
+		save(simstate.schedule.getTime());
+	}
+	
+	public void schedule(Schedule schedule, double interval) {
+		schedule.scheduleRepeating(Schedule.EPOCH, -1, this, interval);
 	}
 	
 	void write(String filepath, String contents) {

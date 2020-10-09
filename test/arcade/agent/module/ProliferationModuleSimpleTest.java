@@ -28,6 +28,12 @@ public class ProliferationModuleSimpleTest {
 	}
 	
 	@Test
+	public void getPhase_defaultConstructor_returnsString() {
+		ProliferationModule module = new ProliferationModule.Simple(mock(PottsCell.class));
+		assertEquals("proliferative", module.getName());
+	}
+	
+	@Test
 	public void getPhase_defaultConstructor_returnsValue() {
 		ProliferationModule module = new ProliferationModule.Simple(mock(PottsCell.class));
 		assertEquals(PHASE_G1, module.getPhase());

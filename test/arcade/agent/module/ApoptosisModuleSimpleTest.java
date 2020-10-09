@@ -29,6 +29,12 @@ public class ApoptosisModuleSimpleTest {
 	}
 	
 	@Test
+	public void getPhase_defaultConstructor_returnsString() {
+		ApoptosisModule module = new ApoptosisModule.Simple(mock(PottsCell.class));
+		assertEquals("apoptotic", module.getName());
+	}
+	
+	@Test
 	public void getPhase_defaultConstructor_returnsValue() {
 		ApoptosisModule module = new ApoptosisModule.Simple(mock(PottsCell.class));
 		assertEquals(PHASE_EARLY_APOPTOSIS, module.getPhase());
