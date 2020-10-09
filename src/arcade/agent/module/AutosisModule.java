@@ -9,9 +9,9 @@ public class AutosisModule implements Module  {
 	
 	public AutosisModule(PottsCell cell) { this.cell = cell; }
 	
+	public String getName() { return "autotic"; }
+	
 	public int getPhase() { return 0; }
 	
 	public void step(MersenneTwisterFast random, Simulation sim) { }
-	
-	public String toJSON() { return ""; }
 }

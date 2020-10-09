@@ -451,37 +451,6 @@ public class Series {
 		((GUIState)visCons.newInstance(sim)).createController();
 	}
 	
-	public String toJSON() {
-		String formatNumber = "\"%s\": %s";
-		StringBuilder s = new StringBuilder();
-		
-		s.append("{\n\t");
-		
-		s.append(String.format(formatNumber, "ticks", ticks));
-		
-		s.append(",\n\t\"size\": {");
-		s.append("\n\t\t").append(String.format(formatNumber, "length", _length));
-		s.append(",\n\t\t").append(String.format(formatNumber, "width", _width));
-		s.append(",\n\t\t").append(String.format(formatNumber, "height", _height));
-		s.append("\n\t}");
-		
-		// Add potts settings.
-		s.append(",\n\t\"potts\": ")
-				.append(_potts.toJSON().replaceAll("\n", "\n\t"));
-		
-		// Add population settings.
-		s.append(",\n\t\"populations\": {");
-		for (String pop : _populations.keySet()) {
-			s.append("\n\t\t\"").append(pop).append("\": ")
-					.append(_populations.get(pop).toJSON().replaceAll("\n", "\n\t\t"))
-					.append(",");
-		}
-		s.append("\n\t}");
-		
-		s.append("\n}");
-		return s.toString().replace(",\n\t}", "\n\t}");
-	}
-	
 	public String toString() {
 		// Convert populations to string.
 		StringBuilder pop = new StringBuilder();

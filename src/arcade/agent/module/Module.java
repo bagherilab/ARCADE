@@ -13,16 +13,16 @@ public interface Module {
 	void step(MersenneTwisterFast random, Simulation sim);
 	
 	/**
+	 * Gets the module name.
+	 *
+	 * @return  the module name
+	 */
+	String getName();
+	
+	/**
 	 * Gets the module phase.
 	 * 
 	 * @return  the module phase
 	 */
 	int getPhase();
-	
-	/**
-	 * Converts object to JSON.
-	 *
-	 * @return  a JSON string
-	 */
-	String toJSON();
 }

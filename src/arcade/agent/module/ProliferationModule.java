@@ -93,6 +93,8 @@ public abstract class ProliferationModule implements Module {
 		public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
 	}
 	
+	public String getName() { return "proliferative"; }
+	
 	public int getPhase() { return phase; }
 	
 	/**
@@ -279,9 +281,5 @@ public abstract class ProliferationModule implements Module {
 		sim.getAgents().addObject(newID, newCell);
 		newCell.reset(potts.IDS, potts.TAGS);
 		newCell.schedule(sim.getSchedule());
-	}
-	
-	public String toJSON() {
-		return "{\n\t\"state\": \"proliferative\",\n\t\"phase\": \"" + PHASE_NAMES[phase] + "\"\n}";
 	}
 }

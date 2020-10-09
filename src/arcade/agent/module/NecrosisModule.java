@@ -9,9 +9,9 @@ public class NecrosisModule implements Module  {
 	
 	public NecrosisModule(PottsCell cell) { this.cell = cell; }
 	
+	public String getName() { return "necrotic"; }
+	
 	public int getPhase() { return 0; }
 	
 	public void step(MersenneTwisterFast random, Simulation sim) { }
-	
-	public String toJSON() { return ""; }
 }

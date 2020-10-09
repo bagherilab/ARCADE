@@ -15,7 +15,7 @@ public class MiniBox {
 	/** Separator character for tags */
 	public static final String TAG_SEPARATOR = "/";
 	
-	/** Regular expression for fractions */
+	/** Regular expression for numbers */
 	private static final String NUMBER_REGEX = "^(-?\\d*\\.\\d*)$|^(-?\\d+)$|^(-?\\d+E\\d+)$|^(-?\\d*\\.\\d*E\\d+)$";
 	
 	/** List of keys */
@@ -143,21 +143,6 @@ public class MiniBox {
 		}
 		
 		return true;
-	}
-	
-	/**
-	 * Formats the {@code MiniBox} as a JSON.
-	 * 
-	 * @return  the JSON
-	 */
-	public String toJSON() {
-		StringBuilder s = new StringBuilder();
-		for (String key : keys) {
-			String value = contents.get(key);
-			if (!value.matches(NUMBER_REGEX)) { value = "\"" + value + "\""; }
-			s.append(String.format("\t\"%s\" : %s, \n", key, value));
-		}
-		return "{\n" + s.toString().replaceFirst(", $","") + "}";
 	}
 	
 	/**

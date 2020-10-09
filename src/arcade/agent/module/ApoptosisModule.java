@@ -70,6 +70,8 @@ public abstract class ApoptosisModule implements Module  {
 		public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
 	}
 	
+	public String getName() { return "apoptotic"; }
+	
 	public int getPhase() { return phase; }
 	
 	/**
@@ -171,9 +173,5 @@ public abstract class ApoptosisModule implements Module  {
 		
 		// Stop stepping the cell.
 		cell.stopper.stop();
-	}
-	
-	public String toJSON() {
-		return "{\n\t\"state\": \"apoptotic\",\n\t\"phase\": \"" + PHASE_NAMES[phase] + "\"\n}";
 	}
 }

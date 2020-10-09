@@ -55,6 +55,13 @@ public interface Cell extends Steppable {
 	int getAge();
 	
 	/**
+	 * Gets the number of cell tags
+	 *
+	 * @return  the number of tags
+	 */
+	int getTags();
+	
+	/**
 	 * Gets the cell location object.
 	 * 
 	 * @return  the cell location
@@ -248,11 +255,4 @@ public interface Cell extends Steppable {
 	 * @param scale  the relative final size scaling
 	 */
 	void updateTarget(int tag, double rate, double scale);
-	
-	/**
-	 * Converts object to JSON.
-	 *
-	 * @return  a JSON string
-	 */
-	String toJSON();
 }
