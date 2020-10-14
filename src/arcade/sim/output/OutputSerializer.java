@@ -1,7 +1,10 @@
 package arcade.sim.output;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import com.google.gson.*;
 import arcade.sim.Series;
 import arcade.sim.Potts;
@@ -12,7 +15,7 @@ import arcade.env.loc.*;
 import arcade.util.MiniBox;
 import static arcade.env.loc.Location.Voxel;
 
-public abstract class OutputSerializer {
+public final class OutputSerializer {
 	/** Regular expression for fractions */
 	public static final String DOUBLE_REGEX = "^(-?\\d*\\.\\d*)$|^(-?\\d*\\.\\d*E\\d+)$";
 	
@@ -55,8 +58,8 @@ public abstract class OutputSerializer {
 			
 			JsonObject size = new JsonObject();
 			size.addProperty("length", src._length);
-			size.addProperty("width", src._length);
-			size.addProperty("height", src._width);
+			size.addProperty("width", src._width);
+			size.addProperty("height", src._height);
 			json.add("size", size);
 			
 			// Add potts parameters.
@@ -65,7 +68,9 @@ public abstract class OutputSerializer {
 			
 			// Add population parameters.
 			JsonObject populations = new JsonObject();
-			for (String pop : src._populations.keySet()) {
+			List<String> keys = new ArrayList<>(src._populations.keySet());
+			Collections.sort(keys);
+			for (String pop : keys) {
 				JsonElement population = context.serialize(src._populations.get(pop));
 				populations.add(pop, population);
 			}
@@ -184,11 +189,12 @@ public abstract class OutputSerializer {
 				locations.put(0, (PottsLocation)src);
 			}
 			
-			for (int tag : locations.keySet()) {
+			List<Integer> keys = new ArrayList<>(locations.keySet());
+			Collections.sort(keys);
+			for (int tag : keys) {
 				JsonObject obj = new JsonObject();
-				
 				JsonArray voxels = new JsonArray();
-				for (Voxel voxel : src.getVoxels()) { voxels.add(context.serialize(voxel)); }
+				for (Voxel voxel : locations.get(tag).getVoxels()) { voxels.add(context.serialize(voxel)); }
 				
 				obj.addProperty("tag", tag);
 				obj.add("voxels", voxels);
