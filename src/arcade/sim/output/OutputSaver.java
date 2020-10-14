@@ -103,9 +103,9 @@ public class OutputSaver implements Steppable {
 			fos.close();
 			
 			LOGGER.info("file [ " + filepath + " ] successfully written");
-		} catch(IOException ex) {
+		} catch (IOException ex) {
 			LOGGER.severe("error writing [ " + filepath + " ] due to " + ex.getClass().getName());
-			System.exit(-1);
+			ex.printStackTrace();
 		}
 	}
 	
