@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import sim.display.GUIState;
 import sim.engine.SimState;
+import arcade.sim.output.*;
 import arcade.util.*;
 import static arcade.util.Box.KEY_SEPARATOR;
 import static arcade.util.MiniBox.TAG_SEPARATOR;
@@ -32,6 +33,9 @@ public class Series {
 	
 	/** {@code true} if {@code Series} is run with visualization, {@code false} otherwise */
 	public boolean isVis;
+	
+	/** Output saver for the simulation */
+	public OutputSaver saver;
 	
 	/** Name of the series */
 	private final String name;
@@ -410,7 +414,7 @@ public class Series {
 			// Post-simulation output.
 			simEnd = System.currentTimeMillis();
 			LOGGER.info("simulation [ " + name + " | " + seed + " ] finished in " 
-					+ DECIMAL_FORMAT.format((double)(simEnd - simStart)/1000/60) + " minutes");
+					+ DECIMAL_FORMAT.format((double)(simEnd - simStart)/1000/60) + " minutes\n\n");
 		}
 	}
 	

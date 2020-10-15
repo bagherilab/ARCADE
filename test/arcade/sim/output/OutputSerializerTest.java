@@ -86,6 +86,11 @@ public class OutputSerializerTest {
 		SeriesSerializer serializer = new SeriesSerializer();
 		Series series = mock(Series.class);
 		
+		int start = randomInt();
+		int end = randomInt();
+		doReturn(start).when(series).getStartSeed();
+		doReturn(end).when(series).getEndSeed();
+		
 		int ticks = randomInt();
 		doReturn(ticks).when(series).getTicks();
 		
@@ -145,6 +150,10 @@ public class OutputSerializerTest {
 		};
 		
 		String expected = "{"
+				+ "\"seeds\":{"
+				+ "\"start\":" + start + ","
+				+ "\"end\":" + end
+				+ "},"
 				+ "\"ticks\":" + ticks + ","
 				+ "\"size\":{"
 				+ "\"length\":" + length + ","
@@ -498,7 +507,7 @@ public class OutputSerializerTest {
 		voxels2.add(new Voxel(x2, y2, z2));
 		
 		int tag1 = randomInt();
-		int tag2 = randomInt() + 1;
+		int tag2 = tag1 + 1;
 		
 		location.locations = new HashMap<>();
 		location.locations.put(tag1, location1);

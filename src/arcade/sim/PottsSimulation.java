@@ -2,7 +2,6 @@ package arcade.sim;
 
 import java.util.*;
 import sim.engine.*;
-import arcade.sim.output.*;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.*;
 import arcade.env.lat.Lattice;
@@ -18,9 +17,6 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	
 	/** Random number generator seed for this simulation */
 	final int seed;
-	
-	/** Output saver for the simulation */
-	OutputSaver saver;
 	
 	/** {@link arcade.sim.Potts} object for the simulation */
 	Potts potts;
@@ -68,9 +64,11 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		scheduleHelpers();
 		scheduleComponents();
 		
-		// Initialize and schedule saver.
-		saver = new OutputSaver(series.getPrefix(), this);
-		doOutput(true);
+		// Equip simulation to saver and schedule.
+		if (!series.isVis) {
+			series.saver.equip(this);
+			doOutput(true);
+		}
 	}
 	
 	/**
@@ -80,7 +78,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		super.finish();
 		
 		// Finalize saver.
-		doOutput(false);
+		if (!series.isVis) {
+			doOutput(false);
+		}
 	}
 	
 	/**
@@ -241,11 +241,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	 * @param isScheduled  {@code true} if the output should be scheduled, {@code false} otherwise
 	 */
 	public void doOutput(boolean isScheduled) {
-		if (!series.isVis) {
-			if (isScheduled) {
-				saver.save();
-				saver.schedule(schedule, series.getInterval());
-			} else { saver.save(schedule.getTime() + 1); }
-		}
+		if (isScheduled) { series.saver.schedule(schedule, series.getInterval()); }
+		else { series.saver.save(schedule.getTime() + 1); }
 	}
 }

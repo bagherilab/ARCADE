@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import arcade.sim.Series;
 import arcade.sim.input.*;
+import arcade.sim.output.OutputSaver;
 import arcade.util.*;
 
 /**
@@ -56,6 +57,10 @@ public class Main {
 		}
 		else {
 			for (Series s : series) {
+				// Create saver and save series JSON.
+				s.saver = new OutputSaver(s);
+				s.saver.save();
+				
 				if (!s.isSkipped) {
 					LOGGER.info("running simulation series [ " + s.getName() + " ]\n\n" + s.toString());
 					s.runSims();
@@ -72,7 +77,7 @@ public class Main {
 		// Change logger display format.
 		ConsoleHandler handler = new ConsoleHandler();
 		handler.setFormatter(new SimpleFormatter() {
-			private static final String FORMAT = "%1$tF %1$tT %2$-7s %3$-20s : %4$s %n";
+			private static final String FORMAT = "%1$tF %1$tT %2$-7s %3$-30s : %4$s %n";
 			public synchronized String format(LogRecord lr) {
 				return String.format(FORMAT,
 					new Date(lr.getMillis()),

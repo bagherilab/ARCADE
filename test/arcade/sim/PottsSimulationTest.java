@@ -202,6 +202,7 @@ public class PottsSimulationTest {
 	public void getID_started_resetsValues() {
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesZeroPop);
 		sim.getSeries().isVis = true;
+		sim.getSeries().saver = mock(OutputSaver.class);
 		sim.start();
 		assertEquals(1, sim.getID());
 		sim.start();
@@ -230,8 +231,28 @@ public class PottsSimulationTest {
 	}
 	
 	@Test
-	public void start_callsMethods() {
+	public void start_isVis_callsMethods() {
 		Series series = createSeries(new int[0], new String[0]);
+		series.saver = mock(OutputSaver.class);
+		series.isVis = true;
+		PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
+		doNothing().when(sim).doOutput(anyBoolean());
+		sim.start();
+		
+		verify(sim).setupPotts();
+		verify(sim).setupAgents();
+		verify(sim).setupEnvironment();
+		verify(sim).scheduleHelpers();
+		verify(sim).scheduleComponents();
+		verify(sim, never()).doOutput(true);
+		verify(series.saver, never()).equip(sim);
+	}
+	
+	@Test
+	public void start_isNotVis_callsMethods() {
+		Series series = createSeries(new int[0], new String[0]);
+		series.saver = mock(OutputSaver.class);
+		series.isVis = false;
 		PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
 		doNothing().when(sim).doOutput(anyBoolean());
 		sim.start();
@@ -242,13 +263,24 @@ public class PottsSimulationTest {
 		verify(sim).scheduleHelpers();
 		verify(sim).scheduleComponents();
 		verify(sim).doOutput(true);
-		
-		assertNotNull(sim.saver);
+		verify(series.saver).equip(sim);
 	}
 	
 	@Test
-	public void finish_callsMethods() {
+	public void finish_isVis_callsMethods() {
 		Series series = createSeries(new int[0], new String[0]);
+		series.isVis = true;
+		PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
+		doNothing().when(sim).doOutput(anyBoolean());
+		sim.finish();
+		
+		verify(sim, never()).doOutput(false);
+	}
+	
+	@Test
+	public void finish_isNotVis_callsMethods() {
+		Series series = createSeries(new int[0], new String[0]);
+		series.isVis = false;
 		PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
 		doNothing().when(sim).doOutput(anyBoolean());
 		sim.finish();
@@ -624,45 +656,19 @@ public class PottsSimulationTest {
 	}
 	
 	@Test
-	public void doOutput_isVis_doesNothing() {
-		Series series = mock(Series.class);
-		Schedule schedule = mock(Schedule.class);
-		OutputSaver saver = mock(OutputSaver.class);
-		
-		PottsSimulation sim = new PottsSimulationMock(RANDOM_SEED, series);
-		sim.saver = saver;
-		sim.schedule = schedule;
-		series.isVis = true;
-		
-		doNothing().when(saver).save();
-		
-		sim.doOutput(true);
-		verify(saver, never()).save();
-		verify(saver, never()).schedule(eq(schedule), anyDouble());
-		
-		sim.doOutput(false);
-		verify(saver, never()).save();
-		verify(saver, never()).schedule(eq(schedule), anyDouble());
-		verify(saver, never()).save(anyDouble());
-	}
-	
-	@Test
 	public void doOutput_isScheduled_schedulesOutput() {
 		Series series = mock(Series.class);
 		Schedule schedule = mock(Schedule.class);
 		OutputSaver saver = mock(OutputSaver.class);
 		
 		PottsSimulation sim = new PottsSimulationMock(RANDOM_SEED, series);
-		sim.saver = saver;
+		sim.series.saver = saver;
 		sim.schedule = schedule;
-		series.isVis = false;
 		
 		int interval = (int)(random()*100);
-		doNothing().when(saver).save();
 		doReturn(interval).when(series).getInterval();
 		
 		sim.doOutput(true);
-		verify(saver).save();
 		verify(saver).schedule(schedule, interval);
 		verify(saver, never()).save(anyDouble());
 	}
@@ -674,16 +680,13 @@ public class PottsSimulationTest {
 		OutputSaver saver = mock(OutputSaver.class);
 		
 		PottsSimulation sim = new PottsSimulationMock(RANDOM_SEED, series);
-		sim.saver = saver;
+		sim.series.saver = saver;
 		sim.schedule = schedule;
-		series.isVis = false;
 		
 		double time = random();
-		doNothing().when(saver).save();
 		doReturn(time).when(sim.schedule).getTime();
 		
 		sim.doOutput(false);
-		verify(saver, never()).save();
 		verify(saver, never()).schedule(eq(schedule), anyDouble());
 		verify(saver).save(time + 1);
 	}

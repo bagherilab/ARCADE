@@ -21,6 +21,41 @@ public class OutputSaverTest {
 	
 	@Test
 	public void constructor_setsFields() {
+		Series series = mock(Series.class);
+		OutputSaver saver = new OutputSaver(series);
+		assertSame(series, saver.series);
+	}
+	
+	@Test
+	public void constructor_initializesObjects() {
+		Series series = mock(Series.class);
+		OutputSaver saver = new OutputSaver(series);
+		assertNotNull(saver.gson);
+	}
+	
+	@Test
+	public void equip_givenFirstSimulation_setsPrefix() {
+		Series series = mock(Series.class);
+		OutputSaver saver = new OutputSaver(series);
+		
+		String prefix = randomString();
+		doReturn(prefix).when(series).getPrefix();
+		
+		Simulation sim = mock(Simulation.class);
+		int seed = randomInt();
+		doReturn(seed).when(sim).getSeed();
+		
+		assertNull(saver.prefix);
+		
+		saver.equip(sim);
+		assertEquals(prefix + "_" + String.format("%04d", seed), saver.prefix);
+	}
+	
+	@Test
+	public void equip_givenFirstSimulation_setsFields() {
+		Series series = mock(Series.class);
+		OutputSaver saver = new OutputSaver(series);
+		
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
 		Simulation sim = mock(Simulation.class);
@@ -28,98 +63,151 @@ public class OutputSaverTest {
 		doReturn(potts).when(sim).getPotts();
 		doReturn(grid).when(sim).getAgents();
 		
-		OutputSaver saver = new OutputSaver("", sim);
+		assertNull(saver.sim);
+		assertNull(saver.potts);
+		assertNull(saver.agents);
 		
+		saver.equip(sim);
 		assertSame(sim, saver.sim);
 		assertSame(potts, saver.potts);
 		assertSame(grid, saver.agents);
 	}
 	
 	@Test
-	public void constructor_setsPrefix() {
-		Simulation sim = mock(Simulation.class);
+	public void equip_givenSecondSimulation_updatesPrefix() {
+		Series series = mock(Series.class);
+		OutputSaver saver = new OutputSaver(series);
 		
 		String prefix = randomString();
-		int seed = randomInt();
-		doReturn(seed).when(sim).getSeed();
+		doReturn(prefix).when(series).getPrefix();
 		
-		OutputSaver saver = new OutputSaver(prefix, sim);
-		assertEquals(prefix + "_" + String.format("%04d", seed), saver.prefix);
+		Simulation sim1 = mock(Simulation.class);
+		int seed1 = randomInt();
+		doReturn(seed1).when(sim1).getSeed();
+		
+		saver.equip(sim1);
+		assertEquals(prefix + "_" + String.format("%04d", seed1), saver.prefix);
+		
+		Simulation sim2 = mock(Simulation.class);
+		int seed2 = randomInt();
+		doReturn(seed2).when(sim2).getSeed();
+		
+		saver.equip(sim2);
+		assertEquals(prefix + "_" + String.format("%04d", seed2), saver.prefix);
 	}
 	
 	@Test
-	public void constructor_initializesObjects() {
-		Simulation sim = mock(Simulation.class);
-		OutputSaver saver = new OutputSaver("", sim);
-		assertNotNull(saver.gson);
+	public void equip_givenSecondSimulation_updatesFields() {
+		Series series = mock(Series.class);
+		OutputSaver saver = new OutputSaver(series);
+		
+		Potts potts1 = mock(Potts.class);
+		Grid grid1 = mock(Grid.class);
+		Simulation sim1 = mock(Simulation.class);
+		
+		doReturn(potts1).when(sim1).getPotts();
+		doReturn(grid1).when(sim1).getAgents();
+		
+		saver.equip(sim1);
+		assertSame(sim1, saver.sim);
+		assertSame(potts1, saver.potts);
+		assertSame(grid1, saver.agents);
+		
+		Potts potts2 = mock(Potts.class);
+		Grid grid2 = mock(Grid.class);
+		Simulation sim2 = mock(Simulation.class);
+		
+		doReturn(potts2).when(sim2).getPotts();
+		doReturn(grid2).when(sim2).getAgents();
+		
+		saver.equip(sim2);
+		assertSame(sim2, saver.sim);
+		assertSame(potts2, saver.potts);
+		assertSame(grid2, saver.agents);
 	}
 	
-	OutputSaver makeSaver(Gson gson, Series series, Potts potts, Grid agents,
-						  String prefix, String json) {
-		Simulation sim = mock(Simulation.class);
-		doReturn(series).when(sim).getSeries();
-		
-		OutputSaver saver = spy(mock(OutputSaver.class, CALLS_REAL_METHODS));
+	@Test
+	public void save_noArguments_writeSeries() {
+		Series series = mock(Series.class);
+		OutputSaver saver = spy(new OutputSaver(series));
 		doNothing().when(saver).write(anyString(), anyString());
-		doReturn(json).when(gson).toJson(series);
-		doReturn(json).when(gson).toJson(agents);
-		doReturn(json).when(gson).toJson(potts);
+		
+		Gson gson = spy(mock(Gson.class));
+		String contents = randomString();
+		doReturn(contents).when(gson).toJson(series);
 		
 		try {
-			Field gsonField = OutputSaver.class.getDeclaredField("gson");
-			gsonField.setAccessible(true);
-			gsonField.set(saver, gson);
-			
-			Field prefixField = OutputSaver.class.getDeclaredField("prefix");
-			prefixField.setAccessible(true);
-			prefixField.set(saver, prefix);
-			
-			Field simField = OutputSaver.class.getDeclaredField("sim");
-			simField.setAccessible(true);
-			simField.set(saver, sim);
-			
-			Field agentsField = OutputSaver.class.getDeclaredField("agents");
-			agentsField.setAccessible(true);
-			agentsField.set(saver, agents);
-			
-			Field pottsField = OutputSaver.class.getDeclaredField("potts");
-			pottsField.setAccessible(true);
-			pottsField.set(saver, potts);
+			Field field = OutputSaver.class.getDeclaredField("gson");
+			field.setAccessible(true);
+			field.set(saver, gson);
 		} catch (Exception ignored) { }
 		
-		return saver;
-	}
-	
-	@Test
-	public void save_noArguments_callsMethods() {
-		Series series = mock(Series.class);
-		Gson gson = spy(mock(Gson.class));
-		String json = randomString();
 		String prefix = randomString();
-		OutputSaver saver = makeSaver(gson, series, null, null, prefix, json);
+		doReturn(prefix).when(series).getPrefix();
 		
 		saver.save();
 		verify(gson).toJson(series);
-		verify(saver).write(prefix + ".json", json);
+		verify(saver).write(prefix + ".json", contents);
 	}
 	
 	@Test
-	public void save_withTick_callsMethods() {
-		Gson gson = spy(mock(Gson.class));
-		Potts potts = mock(Potts.class);
+	public void save_withTick_writesAgents() {
+		Series series = mock(Series.class);
+		OutputSaver saver = spy(new OutputSaver(series));
+		doNothing().when(saver).write(anyString(), anyString());
+		
 		Grid agents = mock(Grid.class);
-		String json = randomString();
+		saver.agents = agents;
+		
+		Gson gson = spy(mock(Gson.class));
+		String contents = randomString();
+		doReturn(contents).when(gson).toJson(agents);
+		
+		try {
+			Field field = OutputSaver.class.getDeclaredField("gson");
+			field.setAccessible(true);
+			field.set(saver, gson);
+		} catch (Exception ignored) { }
+		
 		String prefix = randomString();
-		OutputSaver saver = makeSaver(gson, null, potts, agents, prefix, json);
+		saver.prefix = prefix;
 		
 		double tick = randomDouble();
 		saver.save(tick);
 		
 		verify(gson).toJson(agents);
-		verify(saver).write(prefix + String.format("_%06d", (int)tick) + ".AGENTS.json", json);
+		verify(saver).write(prefix + String.format("_%06d", (int)tick) 
+				+ ".AGENTS.json", contents);
+	}
+	
+	@Test
+	public void save_withTick_writesPotts() {
+		Series series = mock(Series.class);
+		OutputSaver saver = spy(new OutputSaver(series));
+		doNothing().when(saver).write(anyString(), anyString());
+		
+		Potts potts = mock(Potts.class);
+		saver.potts = potts;
+		
+		Gson gson = spy(mock(Gson.class));
+		String contents = randomString();
+		doReturn(contents).when(gson).toJson(potts);
+		
+		try {
+			Field field = OutputSaver.class.getDeclaredField("gson");
+			field.setAccessible(true);
+			field.set(saver, gson);
+		} catch (Exception ignored) { }
+		
+		String prefix = randomString();
+		saver.prefix = prefix;
+		
+		double tick = randomDouble();
+		saver.save(tick);
 		
 		verify(gson).toJson(potts);
-		verify(saver).write(prefix + String.format("_%06d", (int)tick) + ".POTTS.json", json);
+		verify(saver).write(prefix + String.format("_%06d", (int)tick)
+				+ ".POTTS.json", contents);
 	}
 	
 	@Test
@@ -152,7 +240,8 @@ public class OutputSaverTest {
 		File file = folder.newFile("write_validPath_savesFile.json");
 		String filepath = file.getAbsolutePath();
 		
-		OutputSaver saver = mock(OutputSaver.class, CALLS_REAL_METHODS);
+		Series series = mock(Series.class);
+		OutputSaver saver = new OutputSaver(series);
 		saver.write(filepath, contents);
 		
 		String string = FileUtils.readFileToString(file, "UTF-8");
@@ -160,13 +249,18 @@ public class OutputSaverTest {
 	}
 	
 	@Test
-	public void write_invalidPath_throwsException() throws IOException {
-		File file = folder.newFile("write_invalidPath_throwsException.json");
-		String filepath = file.getParent();
+	public void write_invalidPath_killsSeries() throws IOException {
 		String contents = randomString();
-		OutputSaver saver = mock(OutputSaver.class, CALLS_REAL_METHODS);
+		File file = folder.newFile("write_invalidPath_killsSeries.json");
+		String filepath = file.getParent();
+		
+		Series series = mock(Series.class);
+		series.isSkipped = false;
+		OutputSaver saver = new OutputSaver(series);
 		saver.write(filepath + "/", contents);
+		
 		String string = FileUtils.readFileToString(file, "UTF-8");
 		assertEquals("", string);
+		assertTrue(saver.series.isSkipped);
 	}
 }

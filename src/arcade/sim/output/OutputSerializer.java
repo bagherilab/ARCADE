@@ -54,6 +54,12 @@ public final class OutputSerializer {
 	static class SeriesSerializer implements JsonSerializer<Series> {
 		public JsonElement serialize(Series src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject json = new JsonObject();
+			
+			JsonObject seeds = new JsonObject();
+			seeds.addProperty("start", src.getStartSeed());
+			seeds.addProperty("end", src.getEndSeed());
+			json.add("seeds", seeds);
+			
 			json.addProperty("ticks", src.getTicks());
 			
 			JsonObject size = new JsonObject();

@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.logging.Logger;
 import com.google.gson.*;
 import sim.engine.*;
+import arcade.sim.Series;
 import arcade.sim.Potts;
 import arcade.sim.Simulation;
 import arcade.env.grid.Grid;
@@ -15,39 +16,49 @@ public class OutputSaver implements Steppable {
 	/** JSON representation */
 	final Gson gson;
 	
+	/** {@link arcade.sim.Series} instance */
+	final Series series;
+	
 	/** Prefix for output files */
-	final String prefix;
+	String prefix;
 	
 	/** {@link arcade.sim.Simulation} instance */
-	final Simulation sim;
+	Simulation sim;
 	
 	/** {@link arcade.env.grid.Grid} instance containing agents */
-	final Grid agents;
+	Grid agents;
 	
 	/** {@link arcade.sim.Potts} instance */
-	final Potts potts;
+	Potts potts;
 	
 	/**
-	 * Creates a {@code Saver} for output files.
+	 * Creates an {@code OutputSaver} for the series.
+	 * 
+	 * @param series  the series instance.
+	 */
+	public OutputSaver(Series series) {
+		this.series = series;
+		gson = OutputSerializer.makeGSON();
+	}
+	
+	/**
+	 * Equips the given {@link arcade.sim.Simulation} instance to the saver.
 	 * 
 	 * @param sim  the simulation instance
 	 */
-	public OutputSaver(String prefix, Simulation sim) {
-		this.prefix = String.format("%s_%04d", prefix, sim.getSeed());
-		
+	public void equip(Simulation sim) {
+		this.prefix = String.format("%s_%04d", series.getPrefix(), sim.getSeed());
 		this.sim = sim;
 		this.potts = sim.getPotts();
 		this.agents = sim.getAgents();
-		
-		gson = OutputSerializer.makeGSON();
 	}
 	
 	/**
 	 * Saves the {@link arcade.sim.Series} as a JSON.
 	 */
 	public void save() {
-		String path = prefix + ".json";
-		write(path, format(gson.toJson(sim.getSeries())));
+		String path = series.getPrefix() + ".json";
+		write(path, format(gson.toJson(series)));
 	}
 	
 	/**
@@ -106,6 +117,7 @@ public class OutputSaver implements Steppable {
 		} catch (IOException ex) {
 			LOGGER.severe("error writing [ " + filepath + " ] due to " + ex.getClass().getName());
 			ex.printStackTrace();
+			series.isSkipped = true;
 		}
 	}
 	
