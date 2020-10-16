@@ -18,7 +18,8 @@ public abstract class CellFactory {
 	public ArrayList<Integer> getIDs(int n, MiniBox population) {
 		ArrayList<Integer> ids = new ArrayList<>();
 		int m = (int)Math.round(population.getDouble("FRACTION")*n);
-		for (int i = 0; i < m; i++) { ids.add(i + offset); }
+		int nm = Math.min(m, n);
+		for (int i = 0; i < nm; i++) { ids.add(i + offset); }
 		offset = offset + m;
 		return ids;
 	}

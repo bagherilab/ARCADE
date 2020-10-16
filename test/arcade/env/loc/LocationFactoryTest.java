@@ -73,6 +73,25 @@ public class LocationFactoryTest {
 	}
 	
 	@Test
+	public void getCount_noLocation_returnsZero() {
+		LocationFactoryMock factory = new LocationFactoryMock();
+		assertEquals(0, factory.getCount());
+	}
+	
+	@Test
+	public void getCount_hasLocations_returnsCount() {
+		LocationFactoryMock factory = new LocationFactoryMock();
+		
+		int available = randomInt();
+		int unavailable = randomInt();
+		
+		for (int i = 0; i < available; i++) { factory.availableLocations.add(new Voxel(i, 0, 0)); }
+		for (int i = 0; i < unavailable; i++) { factory.availableLocations.add(new Voxel(0, 0, i)); }
+				
+		assertEquals(available + unavailable, factory.getCount());
+	}
+	
+	@Test
 	public void makeCenters_noPopulation_createsEmpty() {
 		LocationFactoryMock factory = new LocationFactoryMock();
 		factory.makeCenters(new ArrayList<>());
@@ -91,12 +110,12 @@ public class LocationFactoryTest {
 	@Test
 	public void makeCenters_multiplePopulation_callsMethod() {
 		int volume1 = randomInt();
-		int volume2 = randomInt();
-		int volume3 = randomInt();
+		int volume2 = volume1 + randomInt();
+		int volume3 = volume1 - randomInt();
 		ArrayList<MiniBox> populations = createPopulations(new double[] { volume1, volume2, volume3 });
 		LocationFactory factory = spy(new LocationFactoryMock());
 		factory.makeCenters(populations);
-		verify(factory).getCenters(Math.max(volume3, Math.max(volume1, volume2)) + 3);
+		verify(factory).getCenters(volume2 + 3);
 	}
 	
 	@Test
@@ -205,5 +224,28 @@ public class LocationFactoryTest {
 			verify(location, times(N - i)).assign(eq(TAG_NUCLEUS), any(Voxel.class));
 			assertTrue(location instanceof PottsLocations);
 		}
+	}
+	
+	@Test
+	public void make_hasLocations_returnsLocation() {
+		MiniBox population = new MiniBox();
+		LocationFactory factory = spy(new LocationFactoryMock());
+		
+		int i = randomInt();
+		Location expected = mock(Location.class);
+		Voxel center = new Voxel(i, i, i);
+		factory.availableLocations.add(center);
+		doReturn(expected).when(factory).createLocation(population, center, random);
+		
+		assertEquals(1, factory.availableLocations.size());
+		assertEquals(0, factory.unavailableLocations.size());
+		assertEquals(center, factory.availableLocations.get(0));
+		
+		Location location = factory.make(0, population, random);
+		assertEquals(expected, location);
+		assertEquals(0, factory.availableLocations.size());
+		assertEquals(1, factory.unavailableLocations.size());
+		assertEquals(center, factory.unavailableLocations.get(0));
+		
 	}
 }

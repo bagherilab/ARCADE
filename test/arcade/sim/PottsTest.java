@@ -943,6 +943,9 @@ public class PottsTest {
 		assertEquals(0, potts.getSurface(0, -1, 1), EPSILON);
 		assertEquals(0, potts.getSurface(0, -1, 0), EPSILON);
 		assertEquals(0, potts.getSurface(0, -1, -1), EPSILON);
+		assertEquals(0, potts.getSurface(1, -1, 1), EPSILON);
+		assertEquals(0, potts.getSurface(1, -1, 0), EPSILON);
+		assertEquals(0, potts.getSurface(1, -1, -1), EPSILON);
 	}
 	
 	@Test
