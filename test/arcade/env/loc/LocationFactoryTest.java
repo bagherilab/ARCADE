@@ -206,44 +206,4 @@ public class LocationFactoryTest {
 			assertTrue(location instanceof PottsLocations);
 		}
 	}
-	
-	@Test
-	public void getLocations_validLocations_returnsLocations() {
-		MiniBox population = new MiniBox();
-		population.put("FRACTION", 0.5);
-		LocationFactory factory = spy(new LocationFactoryMock());
-		
-		int n = (int)(Math.random()*100) + 1;
-		for (int i = 0; i < n*2; i++) {
-			Location loc = mock(Location.class);
-			Voxel center = new Voxel(i, i, i);
-			factory.availableLocations.add(center);
-			doReturn(loc).when(factory).createLocation(population, center, random);
-		}
-		
-		ArrayList<Location> locations = factory.getLocations(population, random);
-	
-		assertEquals(n, locations.size());
-		assertEquals(n, factory.availableLocations.size());
-		assertEquals(n, factory.unavailableLocations.size());
-	}
-	
-	@Test
-	public void getLocations_exceedsLocations_skipsExtra() {
-		MiniBox population = new MiniBox();
-		population.put("FRACTION", 2);
-		LocationFactory factory = spy(new LocationFactoryMock());
-		
-		int n = (int)(Math.random()*100) + 1;
-		for (int i = 0; i < n; i++) {
-			Location loc = mock(Location.class);
-			Voxel center = new Voxel(i, i, i);
-			factory.availableLocations.add(center);
-			factory.unavailableLocations.add(center);
-			doReturn(loc).when(factory).createLocation(population, center, random);
-		}
-		
-		ArrayList<Location> locations = factory.getLocations(population, random);
-		assertEquals(n, locations.size());
-	}
 }

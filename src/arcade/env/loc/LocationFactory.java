@@ -100,6 +100,15 @@ public abstract class LocationFactory {
 	abstract void getCenters(int m);
 	
 	/**
+	 * Gets total number of locations.
+	 *
+	 * @return  the number of locations
+	 */
+	public int getCount() {
+		return availableLocations.size() + unavailableLocations.size();
+	}
+	
+	/**
 	 * Increases the number of voxels by adding from a given list of voxels.
 	 *
 	 * @param random  the seeded random number generator
@@ -233,30 +242,19 @@ public abstract class LocationFactory {
 	}
 	
 	/**
-	 * Gets locations for the given population.
+	 * Gets location with the given id for a given population.
 	 * 
+	 * @param id  the location id
 	 * @param population  the population settings
 	 * @param random  the random number generator
-	 * @return  a list of {@link arcade.env.loc.Location} objects
+	 * @return  a {@link arcade.env.loc.Location} object
 	 */
-	public ArrayList<Location> getLocations(MiniBox population, MersenneTwisterFast random) {
-		ArrayList<Voxel> assignedLocations = new ArrayList<>();
-		ArrayList<Location> locations = new ArrayList<>();
-		
-		int n = availableLocations.size() + unavailableLocations.size();
-		int m = (int)Math.round(population.getDouble("FRACTION")*n);
+	public Location make(int id, MiniBox population, MersenneTwisterFast random) {
 		Simulation.shuffle(availableLocations, random);
-		
-		int nm = Math.min(availableLocations.size(), m);
-		for (int i = 0; i < nm; i++) {
-			Voxel center = availableLocations.get(i);
-			locations.add(createLocation(population, center, random));
-			assignedLocations.add(center);
-		}
-		
-		availableLocations.removeAll(assignedLocations);
-		unavailableLocations.addAll(assignedLocations);
-		
-		return locations;
+		Voxel center = availableLocations.get(0);
+		Location location = createLocation(population, center, random);
+		availableLocations.remove(center);
+		unavailableLocations.add(center);
+		return location;
 	}
 }
