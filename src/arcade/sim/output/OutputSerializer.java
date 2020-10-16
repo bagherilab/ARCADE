@@ -95,7 +95,7 @@ public final class OutputSerializer {
 				JsonElement voxels = context.serialize(cell.getLocation());
 				JsonObject location = new JsonObject();
 				location.addProperty("id", cell.getID());
-				location.add("voxels", voxels);
+				location.add("location", voxels);
 				json.add(location);
 			}
 			

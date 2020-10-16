@@ -221,8 +221,8 @@ public class OutputSerializerTest {
 		};
 		
 		String expected = "["
-				+ "{\"id\":" + id1 + ",\"voxels\":[" + x1 + "," + y1 + "," + z1 + "]},"
-				+ "{\"id\":" + id2 + ",\"voxels\":[" + x2 + "," + y2 + "," + z2 + "]}"
+				+ "{\"id\":" + id1 + ",\"location\":[" + x1 + "," + y1 + "," + z1 + "]},"
+				+ "{\"id\":" + id2 + ",\"location\":[" + x2 + "," + y2 + "," + z2 + "]}"
 				+ "]";
 		
 		JsonElement json = serializer.serialize(potts, null, context);
