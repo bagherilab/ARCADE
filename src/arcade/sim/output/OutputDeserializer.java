@@ -5,14 +5,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import com.google.gson.*;
 import arcade.env.loc.*;
+import static arcade.env.loc.LocationFactory.LocationFactoryContainer;
 import static arcade.env.loc.Location.Voxel;
 
 public final class OutputDeserializer {
 	static Gson makeGSON() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(LocationFactoryContainer.class, new LocationFactoryDeserializer());
 		gsonBuilder.registerTypeAdapter(Location.class, new LocationDeserializer());
 		gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelDeserializer());
 		return gsonBuilder.create();
+	}
+	
+	static class LocationFactoryDeserializer implements JsonDeserializer<LocationFactoryContainer> {
+		public LocationFactoryContainer deserialize(JsonElement json, Type typeOfT,
+										   JsonDeserializationContext context) throws JsonParseException {
+			JsonArray jsonArray = json.getAsJsonArray();
+			LocationFactoryContainer container = new LocationFactoryContainer();
+			
+			for (JsonElement element : jsonArray) {
+				JsonObject cell = element.getAsJsonObject();
+				int id = cell.get("id").getAsInt();
+				Location location = context.deserialize(cell.get("location"), Location.class);
+				
+				container.ids.add(id);
+				container.idToLocation.put(id, location);
+			}
+			
+			return container;
+		}
 	}
 	
 	static class VoxelDeserializer implements JsonDeserializer<Voxel> {

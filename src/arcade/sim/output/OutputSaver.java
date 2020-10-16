@@ -34,7 +34,7 @@ public class OutputSaver implements Steppable {
 	/**
 	 * Creates an {@code OutputSaver} for the series.
 	 * 
-	 * @param series  the series instance.
+	 * @param series  the simulation series
 	 */
 	public OutputSaver(Series series) {
 		this.series = series;
