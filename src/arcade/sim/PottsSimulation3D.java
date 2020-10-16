@@ -1,6 +1,5 @@
 package arcade.sim;
 
-import java.util.ArrayList;
 import arcade.agent.cell.*;
 import arcade.env.loc.*;
 
@@ -10,13 +9,10 @@ public class PottsSimulation3D extends PottsSimulation {
 	Potts makePotts() { return new Potts3D(series); }
 	
 	LocationFactory makeLocationFactory() {
-		LocationFactory factory = new LocationFactory3D(series._length, series._width, series._height);
-		factory.makeCenters(new ArrayList<>(series._populations.values()));
-		return factory;
+		return new LocationFactory3D();
 	}
 	
 	CellFactory makeCellFactory() {
-		CellFactory factory = new CellFactory3D();
-		return factory;
+		return new CellFactory3D();
 	}
 }

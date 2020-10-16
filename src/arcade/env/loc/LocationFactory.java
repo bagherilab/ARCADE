@@ -1,8 +1,10 @@
 package arcade.env.loc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
+import arcade.sim.Series;
 import arcade.sim.Simulation;
 import arcade.util.MiniBox;
 import static arcade.sim.Simulation.DS;
@@ -11,13 +13,16 @@ import static arcade.env.loc.Location.Voxel;
 
 public abstract class LocationFactory {
 	/** Length (x direction) of array */
-	final public int LENGTH;
+	int length;
 	
 	/** Width (y direction) of array */
-	final public int WIDTH;
+	int width;
 	
 	/** Depth (z direction) of array */
-	final public int HEIGHT;
+	int height;
+	
+	/** Map of id to location */
+	final HashMap<Integer, Location> idToLocation;
 	
 	/** List of available locations */
 	final ArrayList<Voxel> availableLocations;
@@ -25,20 +30,92 @@ public abstract class LocationFactory {
 	/** List of unavailable locations */
 	final ArrayList<Voxel> unavailableLocations;
 	
+	/** Container for loaded locations */
+	public LocationFactoryContainer container;
+	
+	/** Count of total locations */
+	public int count;
+	
 	/**
 	 * Creates a factory for making {@link arcade.env.loc.Location} instances.
-	 *
-	 * @param length  the length of array (x direction)
-	 * @param width  the width of array (y direction)
-	 * @param height  the height of array (z direction)
 	 */
-	public LocationFactory(int length, int width, int height) {
-		this.LENGTH = length;
-		this.WIDTH = width;
-		this.HEIGHT = height;
-		
+	public LocationFactory() {
+		idToLocation = new HashMap<>();
 		availableLocations = new ArrayList<>();
 		unavailableLocations = new ArrayList<>();
+	}
+	
+	/**
+	 * Container class for loading into {@link arcade.env.loc.LocationFactory}.
+	 */
+	public static class LocationFactoryContainer {
+		final public ArrayList<Integer> ids;
+		final public HashMap<Integer, Location> idToLocation;
+		
+		public LocationFactoryContainer() {
+			ids = new ArrayList<>();
+			idToLocation = new HashMap<>();
+		}
+	}
+	
+	/**
+	 * Initializes the factory for the given series.
+	 * <p>
+	 * For series with no loader, a list of available centers is created based
+	 * on population settings.
+	 * For series with a loader, the specified file is loaded into the factory.
+	 * 
+	 * @param series  the simulation series
+	 */
+	public void initialize(Series series) {
+		if (series.loader != null) {
+			// Load locations.
+			series.loader.load(this);
+			
+			// Map loaded container to factory.
+			for (int id : container.ids) { idToLocation.put(id, container.idToLocation.get(id)); }
+			
+			// Update total count.
+			count = container.ids.size();
+		} else {
+			// Update array sizing.
+			length = series._length;
+			width = series._width;
+			height = series._height;
+			
+			// Create centers.
+			makeCenters(new ArrayList<>(series._populations.values()));
+			
+			// Update total count.
+			count = availableLocations.size();
+		}
+	}
+	
+	/**
+	 * Makes a location for the given id and population.
+	 * <p>
+	 * If a location for the given id exists, then it is returned.
+	 * Otherwise, a random available center is used to create a location based
+	 * on the given population settings.
+	 * 
+	 * @param id  the location id
+	 * @param population  the population settings
+	 * @param random  the random number generator
+	 * @return  a {@link arcade.env.loc.Location} object
+	 */
+	public Location make(int id, MiniBox population, MersenneTwisterFast random) {
+		Location location;
+		
+		if (idToLocation.containsKey(id)) { location = idToLocation.get(id); }
+		else if (availableLocations.size() > 0) {
+			Simulation.shuffle(availableLocations, random);
+			Voxel center = availableLocations.get(0);
+			location = createLocation(population, center, random);
+			availableLocations.remove(center);
+			unavailableLocations.add(center);
+		} else { throw new IllegalArgumentException(); }
+		
+		return location;
 	}
 	
 	/**
@@ -96,17 +173,9 @@ public abstract class LocationFactory {
 	 * Gets all centers for the given range.
 	 *
 	 * @param m  the location range
+	 * @return  the list of center voxels
 	 */
-	abstract void getCenters(int m);
-	
-	/**
-	 * Gets total number of locations.
-	 *
-	 * @return  the number of locations
-	 */
-	public int getCount() {
-		return availableLocations.size() + unavailableLocations.size();
-	}
+	abstract ArrayList<Voxel> getCenters(int m);
 	
 	/**
 	 * Increases the number of voxels by adding from a given list of voxels.
@@ -171,7 +240,7 @@ public abstract class LocationFactory {
 	 * 
 	 * @param populations  the list of populations
 	 */
-	public void makeCenters(ArrayList<MiniBox> populations) {
+	void makeCenters(ArrayList<MiniBox> populations) {
 		int m = 0;
 		
 		for (MiniBox population : populations) {
@@ -181,7 +250,9 @@ public abstract class LocationFactory {
 		}
 		
 		if (m == 0) { return; }
-		getCenters(m);
+		
+		ArrayList<Voxel> centers = getCenters(m);
+		availableLocations.addAll(centers);
 	}
 	
 	/**
@@ -238,23 +309,6 @@ public abstract class LocationFactory {
 			}
 		} else { location = makeLocation(voxels); }
 		
-		return location;
-	}
-	
-	/**
-	 * Gets location with the given id for a given population.
-	 * 
-	 * @param id  the location id
-	 * @param population  the population settings
-	 * @param random  the random number generator
-	 * @return  a {@link arcade.env.loc.Location} object
-	 */
-	public Location make(int id, MiniBox population, MersenneTwisterFast random) {
-		Simulation.shuffle(availableLocations, random);
-		Voxel center = availableLocations.get(0);
-		Location location = createLocation(population, center, random);
-		availableLocations.remove(center);
-		unavailableLocations.add(center);
 		return location;
 	}
 }

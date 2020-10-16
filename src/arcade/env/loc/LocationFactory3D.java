@@ -5,7 +5,7 @@ import static arcade.sim.Simulation.DS;
 import arcade.env.loc.Location.Voxel;
 
 public class LocationFactory3D extends LocationFactory {
-	public LocationFactory3D(int length, int width, int height) { super(length, width, height); }
+	public LocationFactory3D() { super(); }
 	
 	int convert(double volume) {
 		int cbrt = (int)Math.ceil(Math.cbrt(volume/DS));
@@ -37,16 +37,18 @@ public class LocationFactory3D extends LocationFactory {
 		return voxels;
 	}
 	
-	public void getCenters(int m) {
-		for (int i = 0; i < (LENGTH - 2)/m; i++) {
-			for (int j = 0; j < (WIDTH - 2)/m; j++) {
-				for (int k = 0; k < (HEIGHT - 2)/m; k++) {
+	public ArrayList<Voxel> getCenters(int m) {
+		ArrayList<Voxel> centers = new ArrayList<>();
+		for (int i = 0; i < (length - 2)/m; i++) {
+			for (int j = 0; j < (width - 2)/m; j++) {
+				for (int k = 0; k < (height - 2)/m; k++) {
 					int cx = i*m + (m + 1)/2;
 					int cy = j*m + (m + 1)/2;
 					int cz = k*m + (m + 1)/2;
-					availableLocations.add(new Voxel(cx, cy, cz));
+					centers.add(new Voxel(cx, cy, cz));
 				}
 			}
 		}
+		return centers;
 	}
 }
