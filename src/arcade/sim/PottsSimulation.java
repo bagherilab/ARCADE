@@ -9,6 +9,8 @@ import arcade.env.lat.Lattice;
 import arcade.env.loc.Location;
 import arcade.env.loc.LocationFactory;
 import arcade.util.MiniBox;
+import static arcade.agent.cell.CellFactory.CellContainer;
+import static arcade.env.loc.LocationFactory.LocationContainer;
 
 public abstract class PottsSimulation extends SimState implements Simulation {
 	/** {@link arcade.sim.Series} object containing this simulation */
@@ -117,14 +119,23 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		LocationFactory locationFactory = makeLocationFactory();
 		CellFactory cellFactory = makeCellFactory();
 		
+		// Initialize factories.
+		locationFactory.initialize(series, random);
+		cellFactory.initialize(series);
+		
 		// Iterate through each population to create agents.
 		for (MiniBox population : series._populations.values()) {
-			ArrayList<Integer> ids = cellFactory.getIDs(locationFactory.getCount(), population);
+			int pop = population.getInt("CODE");
+			ArrayList<Integer> ids = cellFactory.popToIDs.get(pop);
 			
 			for (int i : ids) {
+				// Get location and cell containers.
+				LocationContainer locationContainer = locationFactory.locations.get(i);
+				CellContainer cellContainer = cellFactory.cells.get(i);
+				
 				// Make the location and cell.
-				Location location = locationFactory.make(i, population, random);
-				Cell cell = cellFactory.make(i, population, location, series._populations);
+				Location location = locationFactory.make(locationContainer, cellContainer, random);
+				Cell cell = cellFactory.make(cellContainer, location);
 				
 				// Add, initialize, and schedule the cell.
 				agents.addObject(i, cell);

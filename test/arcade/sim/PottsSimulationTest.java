@@ -16,6 +16,8 @@ import static arcade.sim.Simulation.*;
 import static arcade.env.loc.Location.Voxel;
 import static arcade.sim.Series.SEED_OFFSET;
 import static arcade.sim.Series.TARGET_SEPARATOR;
+import static arcade.agent.cell.CellFactory.CellContainer;
+import static arcade.env.loc.LocationFactory.LocationContainer;
 
 public class PottsSimulationTest {
 	static final long RANDOM_SEED = (long)(Math.random()*1000);
@@ -44,29 +46,6 @@ public class PottsSimulationTest {
 		return series;
 	}
 	
-	static Series createSeries(int length, int width, int height) {
-		Series series = mock(Series.class);
-		
-		HashMap<String, MiniBox> populations = new HashMap<>();
-		series._populations = populations;
-		
-		try {
-			Field lengthField = Series.class.getDeclaredField("_length");
-			lengthField.setAccessible(true);
-			lengthField.setInt(series, length);
-			
-			Field widthField = Series.class.getDeclaredField("_width");
-			widthField.setAccessible(true);
-			widthField.setInt(series, width);
-			
-			Field heightField = Series.class.getDeclaredField("_height");
-			heightField.setAccessible(true);
-			heightField.setInt(series, height);
-		} catch (Exception ignored) { }
-		
-		return series;
-	}
-	
 	@BeforeClass
 	public static void setupSeries() {
 		// Zero populations.
@@ -84,7 +63,9 @@ public class PottsSimulationTest {
 	}
 	
 	static class PottsSimulationMock extends PottsSimulation {
-		private HashMap<MiniBox, HashMap<Integer, Location>> map = new HashMap<>();
+		private final HashMap<MiniBox, HashMap<Integer, Location>> locationMap = new HashMap<>();
+		private final HashMap<MiniBox, HashMap<Integer, CellContainer>> cellContainerMap = new HashMap<>();
+		private final HashMap<MiniBox, HashMap<Integer, LocationContainer>> locationContainerMap = new HashMap<>();
 		
 		PottsSimulationMock(long seed, Series series) { super(seed, series); }
 		
@@ -93,25 +74,51 @@ public class PottsSimulationTest {
 		private void mockLocations(LocationFactory factory, MiniBox pop,
 										  int n, int m, MersenneTwisterFast random) {
 			HashMap<Integer, Location> idToLocation = new HashMap<>();
-			map.put(pop, idToLocation);
+			locationMap.put(pop, idToLocation);
+			
+			HashMap<Integer, CellContainer> idToCellContainer = new HashMap<>();
+			cellContainerMap.put(pop, idToCellContainer);
+			
+			HashMap<Integer, LocationContainer> idToLocationContainer = new HashMap<>();
+			locationContainerMap.put(pop, idToLocationContainer);
 			
 			for (int i = 0; i < n; i++) {
 				int id = i + m + 1;
 				Location loc = mock(Location.class);
-				doReturn(new Voxel(id, id, id)).when(loc).getCenter();
-				doReturn(loc).when(factory).make(id, pop, random);
+				LocationContainer locationContainer = mock(LocationContainer.class);
+				CellContainer cellContainer = mock(CellContainer.class);
+				
 				idToLocation.put(id, loc);
+				idToCellContainer.put(id, cellContainer);
+				idToLocationContainer.put(id, locationContainer);
+				
+				factory.locations.put(id, locationContainer);
+				doReturn(new Voxel(id, id, id)).when(loc).getCenter();
+				doReturn(loc).when(factory).make(locationContainer, cellContainer, random);
 			}
-			
-			doReturn(0).when(factory).getCount();
 		}
 		
 		LocationFactory makeLocationFactory() {
 			LocationFactory factory = mock(LocationFactory.class);
-			mockLocations(factory, seriesOnePop._populations.get("A"), 5, 0, random);
-			mockLocations(factory, seriesMultiPop._populations.get("B"), 3, 0, random);
-			mockLocations(factory, seriesMultiPop._populations.get("C"), 1, 3, random);
-			mockLocations(factory, seriesMultiPop._populations.get("D"), 2, 4, random);
+			
+			try {
+				Field locationField = LocationFactory.class.getDeclaredField("locations");
+				locationField.setAccessible(true);
+				locationField.set(factory, new HashMap<Integer, LocationContainer>());
+			} catch (Exception ignored) { }
+			
+			doAnswer(invocation -> {
+				mockLocations(factory, seriesOnePop._populations.get("A"), 5, 0, random);
+				return null;
+			}).when(factory).initialize(seriesOnePop, random);
+			
+			doAnswer(invocation -> {
+				mockLocations(factory, seriesMultiPop._populations.get("B"), 3, 0, random);
+				mockLocations(factory, seriesMultiPop._populations.get("C"), 1, 3, random);
+				mockLocations(factory, seriesMultiPop._populations.get("D"), 2, 4, random);
+				return null;
+			}).when(factory).initialize(seriesMultiPop, random);
+			
 			return factory;
 		}
 		
@@ -122,27 +129,47 @@ public class PottsSimulationTest {
 			for (int i = 0; i < n; i++) {
 				int id = i + m + 1;
 				Cell cell = mock(Cell.class);
+				Location loc = locationMap.get(pop).get(id);
+				CellContainer container = cellContainerMap.get(pop).get(id);
 				ids.add(id);
-				Location loc = map.get(pop).get(id);
 				
+				factory.cells.put(id, container);
 				doReturn(id).when(cell).getID();
 				doReturn(pop.getInt("CODE")).when(cell).getPop();
 				doReturn(loc).when(cell).getLocation();
-				doReturn(cell).when(factory).make(id, pop, loc, series._populations);
+				doReturn(cell).when(factory).make(container, loc);
 			}
 			
-			doReturn(ids).when(factory).getIDs(0, pop);
+			factory.popToIDs.put(pop.getInt("CODE"), ids);
 		}
 		
 		CellFactory makeCellFactory() {
 			CellFactory factory = mock(CellFactory.class);
-			mockCells(factory, seriesOnePop, "A", 5, 0);
-			mockCells(factory, seriesMultiPop, "B", 3, 0);
-			mockCells(factory, seriesMultiPop, "C", 1, 3);
-			mockCells(factory, seriesMultiPop, "D", 2, 4);
+			
+			try {
+				Field cellField = CellFactory.class.getDeclaredField("cells");
+				cellField.setAccessible(true);
+				cellField.set(factory, new HashMap<Integer, CellContainer>());
+				
+				Field popField = CellFactory.class.getDeclaredField("popToIDs");
+				popField.setAccessible(true);
+				popField.set(factory, new HashMap<Integer, ArrayList<Integer>>());
+			} catch (Exception ignored) { }
+			
+			doAnswer(invocation -> {
+				mockCells(factory, seriesOnePop, "A", 5, 0);
+				return null;
+			}).when(factory).initialize(seriesOnePop);
+			
+			doAnswer(invocation -> {
+				mockCells(factory, seriesMultiPop, "B", 3, 0);
+				mockCells(factory, seriesMultiPop, "C", 1, 3);
+				mockCells(factory, seriesMultiPop, "D", 2, 4);
+				return null;
+			}).when(factory).initialize(seriesMultiPop);
+			
 			return factory;
 		}
-		
 	}
 	
 	@Test
