@@ -45,6 +45,24 @@ javadoc {
     options.setSplitIndex(true)
 }
 
+jacocoTestReport {
+    afterEvaluate {
+        classDirectories.from = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                'arcade/vis/*',
+                'arcade/gui/*',
+                'arcade/agent/helper/*',
+                'arcade/env/lat/*',
+                'arcade/util/Graph*',
+                'arcade/util/Matrix*',
+                'arcade/util/Solver*',
+                'arcade/util/Parameter*',
+                'arcade/util/Colors*',
+            ])
+        })
+    }
+}
+
 jar {
     from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
