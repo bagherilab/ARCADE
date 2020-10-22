@@ -310,7 +310,7 @@ public class LocationFactoryTest {
 		for (int i = 1; i < N; i++) {
 			Voxel center = new Voxel(0, 0, 0);
 			ArrayList<Voxel> voxels = factory.getPossible(center, N);
-			CellContainer cellContainer = new CellContainer(0, 0, i);
+			CellContainer cellContainer = new CellContainer(0, 0, 0, i);
 			LocationContainer locationContainer = new LocationContainer(0, center, voxels, null);
 			
 			Location location = factory.make(locationContainer, cellContainer, random);
@@ -327,7 +327,7 @@ public class LocationFactoryTest {
 		for (int i = 2; i < N; i++) {
 			Voxel center = new Voxel(-1, 0, 0);
 			ArrayList<Voxel> voxels = factory.getPossible(center, N);
-			CellContainer cellContainer = new CellContainer(0, 0, i);
+			CellContainer cellContainer = new CellContainer(0, 0, 0, i);
 			LocationContainer locationContainer = new LocationContainer(0, center, voxels, null);
 			
 			Location location = factory.make(locationContainer, cellContainer, random);
@@ -344,7 +344,7 @@ public class LocationFactoryTest {
 		for (int i = 2; i < N; i++) {
 			Voxel center = new Voxel(1, 0, 0);
 			ArrayList<Voxel> voxels = factory.getPossible(center, N);
-			CellContainer cellContainer = new CellContainer(0, 0, i);
+			CellContainer cellContainer = new CellContainer(0, 0, 0, i);
 			LocationContainer locationContainer = new LocationContainer(0, center, voxels, null);
 			
 			Location location = factory.make(locationContainer, cellContainer, random);
@@ -370,7 +370,7 @@ public class LocationFactoryTest {
 			tagTargetMap.put("CYTOPLASM", i);
 			tagTargetMap.put("NUCLEUS", N - i);
 			
-			CellContainer cellContainer = new CellContainer(0, 0, N, tagTargetMap);
+			CellContainer cellContainer = new CellContainer(0, 0, 0, N, tagTargetMap);
 			LocationContainer locationContainer = new LocationContainer(0, center, voxels, tagVoxelMap);
 			
 			Location location = factory.make(locationContainer, cellContainer, random);
@@ -397,7 +397,7 @@ public class LocationFactoryTest {
 			tagTargetMap.put("CYTOPLASM", i);
 			tagTargetMap.put("NUCLEUS", N - i);
 			
-			CellContainer cellContainer = new CellContainer(0, 0, N, tagTargetMap);
+			CellContainer cellContainer = new CellContainer(0, 0, 0, N, tagTargetMap);
 			LocationContainer locationContainer = new LocationContainer(0, center, voxels, tagVoxelMap);
 			
 			Location location = factory.make(locationContainer, cellContainer, random);
@@ -424,7 +424,7 @@ public class LocationFactoryTest {
 			tagTargetMap.put("CYTOPLASM", i);
 			tagTargetMap.put("NUCLEUS", N - i);
 			
-			CellContainer cellContainer = new CellContainer(0, 0, N, tagTargetMap);
+			CellContainer cellContainer = new CellContainer(0, 0, 0, N, tagTargetMap);
 			LocationContainer locationContainer = new LocationContainer(0, center, voxels, tagVoxelMap);
 			
 			Location location = factory.make(locationContainer, cellContainer, random);

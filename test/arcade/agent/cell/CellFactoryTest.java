@@ -42,12 +42,13 @@ public class CellFactoryTest {
 	static class CellFactoryMock extends CellFactory {
 		public CellFactoryMock() { super(); }
 		
-		Cell makeCell(int id, int pop, Location location,
+		Cell makeCell(int id, int pop, int age, Location location,
 					  double[] criticals, double[] lambdas, double[] adhesion) {
 			PottsCell cell = mock(PottsCell.class);
 			
 			when(cell.getID()).thenReturn(id);
 			when(cell.getPop()).thenReturn(pop);
+			when(cell.getAge()).thenReturn(age);
 			when(cell.getLocation()).thenReturn(location);
 			
 			when(cell.getCriticalVolume()).thenReturn(criticals[0]);
@@ -63,13 +64,14 @@ public class CellFactoryTest {
 			return cell;
 		}
 		
-		Cell makeCell(int id, int pop, Location location,
+		Cell makeCell(int id, int pop, int age, Location location,
 					  double[] criticals, double[] lambdas, double[] adhesion, int tags,
 					  double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
 			PottsCell cell = mock(PottsCell.class);
 			
 			when(cell.getID()).thenReturn(id);
 			when(cell.getPop()).thenReturn(pop);
+			when(cell.getAge()).thenReturn(age);
 			when(cell.getLocation()).thenReturn(location);
 			
 			when(cell.getCriticalVolume()).thenReturn(criticals[0]);
@@ -265,12 +267,12 @@ public class CellFactoryTest {
 		ArrayList<CellContainer> containers = new ArrayList<>();
 		
 		for (int i = 0; i < N; i++) {
-			CellContainer container = new CellContainer(i, 1, randomInt());
+			CellContainer container = new CellContainer(i, 1, 0, randomInt());
 			containers.add(container);
 		}
 		
 		for (int i = N; i < N + M; i++) {
-			CellContainer container = new CellContainer(i, 2, randomInt());
+			CellContainer container = new CellContainer(i, 2, 0, randomInt());
 			containers.add(container);
 		}
 		
@@ -306,7 +308,7 @@ public class CellFactoryTest {
 		ArrayList<CellContainer> containers = new ArrayList<>();
 		
 		for (int i = 0; i < N; i++) {
-			CellContainer container = new CellContainer(i, 1, randomInt());
+			CellContainer container = new CellContainer(i, 1, 0, randomInt());
 			containers.add(container);
 		}
 		
@@ -502,6 +504,7 @@ public class CellFactoryTest {
 		
 		int cellID = (int)random() + 1;
 		int cellPop = (int)random() + 1;
+		int cellAge = (int)random();
 		double[] criticals = new double[] { random(), random() };
 		double[] lambdas = new double[] { random(), random() };
 		double[] adhesion = new double[] { random(), random() };
@@ -510,13 +513,14 @@ public class CellFactoryTest {
 		factory.popToLambdas.put(cellPop, lambdas);
 		factory.popToAdhesion.put(cellPop, adhesion);
 		
-		CellContainer container = new CellContainer(cellID, cellPop, 0, null);
+		CellContainer container = new CellContainer(cellID, cellPop, cellAge, 0, null);
 		Cell cell = factory.make(container, location);
 		
 		assertTrue(cell instanceof PottsCell);
 		assertEquals(location, cell.getLocation());
 		assertEquals(cellID, cell.getID());
 		assertEquals(cellPop, cell.getPop());
+		assertEquals(cellAge, cell.getAge());
 		assertEquals(criticals[0], cell.getCriticalVolume(), EPSILON);
 		assertEquals(criticals[1], cell.getCriticalSurface(), EPSILON);
 		assertEquals(lambdas[0], cell.getLambda(TERM_VOLUME), EPSILON);
@@ -533,6 +537,7 @@ public class CellFactoryTest {
 		
 		int cellID1 = (int)random() + 1;
 		int cellPop1 = (int)random() + 1;
+		int cellAge1 = (int)random();
 		double[] criticals1 = new double[] { random(), random() };
 		double[] lambdas1 = new double[] { random(), random() };
 		double[] adhesion1 = new double[] { random(), random(), random(), random() };
@@ -543,6 +548,7 @@ public class CellFactoryTest {
 		
 		int cellID2 = cellID1 + 1;
 		int cellPop2 = cellPop1 + 1;
+		int cellAge2 = (int)random();
 		double[] criticals2 = new double[] { random(), random() };
 		double[] lambdas2 = new double[] { random(), random() };
 		double[] adhesion2 = new double[] { random(), random(), random(), random() };
@@ -551,13 +557,14 @@ public class CellFactoryTest {
 		factory.popToLambdas.put(cellPop2, lambdas2);
 		factory.popToAdhesion.put(cellPop2, adhesion2);
 		
-		CellContainer container1 = new CellContainer(cellID1, cellPop1, 0, null);
+		CellContainer container1 = new CellContainer(cellID1, cellPop1, cellAge1, 0, null);
 		Cell cell1 = factory.make(container1, location1);
 		
 		assertTrue(cell1 instanceof PottsCell);
 		assertEquals(location1, cell1.getLocation());
 		assertEquals(cellID1, cell1.getID());
 		assertEquals(cellPop1, cell1.getPop());
+		assertEquals(cellAge1, cell1.getAge());
 		assertEquals(criticals1[0], cell1.getCriticalVolume(), EPSILON);
 		assertEquals(criticals1[1], cell1.getCriticalSurface(), EPSILON);
 		assertEquals(lambdas1[0], cell1.getLambda(TERM_VOLUME), EPSILON);
@@ -567,13 +574,14 @@ public class CellFactoryTest {
 		assertEquals(adhesion1[2], cell1.getAdhesion(2), EPSILON);
 		assertEquals(adhesion1[3], cell1.getAdhesion(3), EPSILON);
 		
-		CellContainer container2 = new CellContainer(cellID2, cellPop2, 0, null);
+		CellContainer container2 = new CellContainer(cellID2, cellPop2, cellAge2, 0, null);
 		Cell cell2 = factory.make(container2, location2);
 		
 		assertTrue(cell2 instanceof PottsCell);
 		assertEquals(location2, cell2.getLocation());
 		assertEquals(cellID2, cell2.getID());
 		assertEquals(cellPop2, cell2.getPop());
+		assertEquals(cellAge2, cell2.getAge());
 		assertEquals(criticals2[0], cell2.getCriticalVolume(), EPSILON);
 		assertEquals(criticals2[1], cell2.getCriticalSurface(), EPSILON);
 		assertEquals(lambdas2[0], cell2.getLambda(TERM_VOLUME), EPSILON);
@@ -591,6 +599,7 @@ public class CellFactoryTest {
 		
 		int cellID = (int)random() + 1;
 		int cellPop = (int)random() + 1;
+		int cellAge = (int)random();
 		double[] criticals = new double[] { random(), random() };
 		double[] lambdas = new double[] { random(), random() };
 		double[] adhesion = new double[] { random(), random() };
@@ -623,13 +632,14 @@ public class CellFactoryTest {
 		tags.add("C");
 		factory.popToTags.put(cellPop, tags);
 		
-		CellContainer container = new CellContainer(cellID, cellPop, 0, null);
+		CellContainer container = new CellContainer(cellID, cellPop, cellAge, 0, null);
 		Cell cell = factory.make(container, location);
 		
 		assertTrue(cell instanceof PottsCell);
 		assertEquals(location, cell.getLocation());
 		assertEquals(cellID, cell.getID());
 		assertEquals(cellPop, cell.getPop());
+		assertEquals(cellAge, cell.getAge());
 		assertEquals(criticals[0], cell.getCriticalVolume(), EPSILON);
 		assertEquals(criticals[1], cell.getCriticalSurface(), EPSILON);
 		assertEquals(lambdas[0], cell.getLambda(TERM_VOLUME), EPSILON);
@@ -657,6 +667,7 @@ public class CellFactoryTest {
 		
 		int cellID1 = (int)random() + 1;
 		int cellPop1 = (int)random() + 1;
+		int cellAge1 = (int)random();
 		double[] criticals1 = new double[] { random(), random() };
 		double[] lambdas1 = new double[] { random(), random() };
 		double[] adhesion1 = new double[] { random(), random(), random(), random() };
@@ -667,6 +678,7 @@ public class CellFactoryTest {
 		
 		int cellID2 = cellID1 + 1;
 		int cellPop2 = cellPop1 + 1;
+		int cellAge2 = (int)random();
 		double[] criticals2 = new double[] { random(), random() };
 		double[] lambdas2 = new double[] { random(), random() };
 		double[] adhesion2 = new double[] { random(), random(), random(), random() };
@@ -699,13 +711,14 @@ public class CellFactoryTest {
 		tags.add("C");
 		factory.popToTags.put(cellPop2, tags);
 		
-		CellContainer container1 = new CellContainer(cellID1, cellPop1, 0, null);
+		CellContainer container1 = new CellContainer(cellID1, cellPop1, cellAge1, 0, null);
 		Cell cell1 = factory.make(container1, location1);
 		
 		assertTrue(cell1 instanceof PottsCell);
 		assertEquals(location1, cell1.getLocation());
 		assertEquals(cellID1, cell1.getID());
 		assertEquals(cellPop1, cell1.getPop());
+		assertEquals(cellAge1, cell1.getAge());
 		assertEquals(criticals1[0], cell1.getCriticalVolume(), EPSILON);
 		assertEquals(criticals1[1], cell1.getCriticalSurface(), EPSILON);
 		assertEquals(lambdas1[0], cell1.getLambda(TERM_VOLUME), EPSILON);
@@ -726,13 +739,14 @@ public class CellFactoryTest {
 			}
 		}
 		
-		CellContainer container2 = new CellContainer(cellID2, cellPop2, 0, null);
+		CellContainer container2 = new CellContainer(cellID2, cellPop2, cellAge2, 0, null);
 		Cell cell2 = factory.make(container2, location2);
 		
 		assertTrue(cell2 instanceof PottsCell);
 		assertEquals(location2, cell2.getLocation());
 		assertEquals(cellID2, cell2.getID());
 		assertEquals(cellPop2, cell2.getPop());
+		assertEquals(cellAge2, cell2.getAge());
 		assertEquals(criticals2[0], cell2.getCriticalVolume(), EPSILON);
 		assertEquals(criticals2[1], cell2.getCriticalSurface(), EPSILON);
 		assertEquals(lambdas2[0], cell2.getLambda(TERM_VOLUME), EPSILON);

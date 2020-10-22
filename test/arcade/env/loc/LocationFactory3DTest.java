@@ -226,7 +226,7 @@ public class LocationFactory3DTest {
 		Voxel center = new Voxel(0, 0, 0);
 		ArrayList<Voxel> voxels = factory.getPossible(center, 1);
 		
-		CellContainer cellContainer = new CellContainer(0, 0, 1);
+		CellContainer cellContainer = new CellContainer(0, 0, 0, 1);
 		LocationContainer locationContainer = new LocationContainer(0, center, voxels, null);
 		
 		Location location = factory.make(locationContainer, cellContainer, random);
@@ -248,7 +248,7 @@ public class LocationFactory3DTest {
 		tagTargetMap.put("CYTOPLASM", 0);
 		tagTargetMap.put("NUCLEUS", 1);
 		
-		CellContainer cellContainer = new CellContainer(0, 0, 1, tagTargetMap);
+		CellContainer cellContainer = new CellContainer(0, 0, 0, 1, tagTargetMap);
 		LocationContainer locationContainer = new LocationContainer(0, center, voxels, tagVoxelMap);
 		
 		Location location = factory.make(locationContainer, cellContainer, random);

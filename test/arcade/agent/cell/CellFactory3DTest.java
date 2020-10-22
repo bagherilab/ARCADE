@@ -14,12 +14,13 @@ public class CellFactory3DTest {
 		
 		int cellID = (int)random() + 1;
 		int cellPop = (int)random() + 1;
+		int cellAge = (int)random();
 		Location location = mock(Location.class);
 		double[] criticals = new double[] { random(), random() };
 		double[] lambdas = new double[] { random(), random() };
 		double[] adhesion = new double[] { random(), random() };
 		
-		Cell cell = factory.makeCell(cellID, cellPop, location, criticals, lambdas, adhesion);
+		Cell cell = factory.makeCell(cellID, cellPop, cellAge, location, criticals, lambdas, adhesion);
 		
 		assertTrue(cell instanceof PottsCell3D);
 		assertEquals(cellID, cell.getID());
@@ -39,6 +40,7 @@ public class CellFactory3DTest {
 		
 		int cellID = (int)random() + 1;
 		int cellPop = (int)random() + 1;
+		int cellAge = (int)random();
 		Location location = mock(Location.class);
 		double[] criticals = new double[] { random(), random() };
 		double[] lambdas = new double[] { random(), random() };
@@ -59,7 +61,7 @@ public class CellFactory3DTest {
 		};
 		
 		int tags = 3;
-		Cell cell = factory.makeCell(cellID, cellPop, location, criticals, lambdas, adhesion,
+		Cell cell = factory.makeCell(cellID, cellPop, cellAge, location, criticals, lambdas, adhesion,
 				tags, criticalsTag, lambdasTag, adhesionTag);
 		
 		assertTrue(cell instanceof PottsCell3D);

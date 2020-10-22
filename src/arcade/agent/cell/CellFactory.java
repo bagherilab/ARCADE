@@ -75,42 +75,30 @@ public abstract class CellFactory {
 		public final int age;
 		public final int voxels;
 		public final HashMap<String, Integer> tagVoxels;
-//		public final int criticalVolume;
-//		public final int criticalSurface;
 //		public final double targetVolume;
 //		public final double targetSurface;
-//		public final int[] criticalTagVolume;
-//		public final int[] criticalTagSurface;
 //		public final double[] tagTargetVolume;
 //		public final double[] tagTargetSurface;
 		
-		public CellContainer(int id, int pop, int voxels) {
-			this(id, pop, 0, voxels, null, 0, 0, 0, 0,
-					null, null, null, null);
+		public CellContainer(int id, int pop, int age, int voxels) {
+			this(id, pop, age, voxels, null, 0, 0, null, null);
 		}
 		
-		public CellContainer(int id, int pop, int voxels, HashMap<String, Integer> tagVoxels) {
-			this(id, pop, 0, voxels, tagVoxels, 0, 0, 0, 0,
-					null, null, null, null);
+		public CellContainer(int id, int pop, int age, int voxels, HashMap<String, Integer> tagVoxels) {
+			this(id, pop, age, voxels, tagVoxels, 0, 0, null, null);
 		}
 		
 		public CellContainer(int id, int pop, int age,
 							 int voxels, HashMap<String, Integer> tagVoxels,
-							 int criticalVolume, int criticalSurface,
 							 double targetVolume, double targetSurface,
-							 int[] criticalTagVolume, int[] criticalTagSurface,
 							 double[] tagTargetVolume, double[] tagTargetSurface) {
 			this.id = id;
 			this.pop = pop;
 			this.age = age;
 			this.voxels = voxels;
 			this.tagVoxels = tagVoxels;
-//			this.criticalVolume = criticalVolume;
-//			this.criticalSurface = criticalSurface;
 //			this.targetVolume = targetVolume;
 //			this.targetSurface = targetSurface;
-//			this.criticalTagVolume = criticalTagVolume;
-//			this.criticalTagSurface = criticalTagSurface;
 //			this.tagTargetVolume = tagTargetVolume;
 //			this.tagTargetSurface = tagTargetSurface;
 		}
@@ -255,7 +243,7 @@ public abstract class CellFactory {
 			}
 			
 			for (int i = 0; i < n; i++) {
-				CellContainer cellContainer = new CellContainer(id, pop, voxels, tagVoxels);
+				CellContainer cellContainer = new CellContainer(id, pop, 0, voxels, tagVoxels);
 				cells.put(id, cellContainer);
 				popToIDs.get(cellContainer.pop).add(cellContainer.id);
 				id++;
@@ -274,7 +262,7 @@ public abstract class CellFactory {
 	 * @param adhesion  the list of adhesion values
 	 * @return  a {@link arcade.agent.cell.Cell} object
 	 */
-	abstract Cell makeCell(int id, int pop, Location location,
+	abstract Cell makeCell(int id, int pop, int age, Location location,
 						   double[] criticals, double[] lambdas, double[] adhesion);
 	
 	/**
@@ -292,7 +280,7 @@ public abstract class CellFactory {
 	 * @param adhesionsTag  the list of tagged adhesion values
 	 * @return  a {@link arcade.agent.cell.Cell} object
 	 */
-	abstract Cell makeCell(int id, int pop, Location location,
+	abstract Cell makeCell(int id, int pop, int age, Location location,
 						   double[] criticals, double[] lambdas, double[] adhesion, int tags,
 						   double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag);
 	
@@ -306,6 +294,7 @@ public abstract class CellFactory {
 	public Cell make(CellContainer cellContainer, Location location) {
 		int id = cellContainer.id;
 		int pop = cellContainer.pop;
+		int age = cellContainer.age;
 		
 		// Get copies of critical, lambda, and adhesion values.
 		double[] criticals = popToCriticals.get(pop).clone();
@@ -334,10 +323,10 @@ public abstract class CellFactory {
 				adhesionsTag[i] = popToTagAdhesion.get(pop)[i].clone();
 			}
 			
-			cell = makeCell(id, pop, location, criticals, lambdas, adhesion, tags,
+			cell = makeCell(id, pop, age, location, criticals, lambdas, adhesion, tags,
 					criticalsTag, lambdasTag, adhesionsTag);
 		} else {
-			cell = makeCell(id, pop, location, criticals, lambdas, adhesion);
+			cell = makeCell(id, pop, age, location, criticals, lambdas, adhesion);
 		}
 		
 		return cell;
