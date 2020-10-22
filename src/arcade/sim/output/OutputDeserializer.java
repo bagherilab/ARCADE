@@ -5,16 +5,66 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import com.google.gson.*;
 import arcade.env.loc.*;
+import static arcade.agent.cell.CellFactory.CellContainer;
+import static arcade.agent.cell.CellFactory.CellFactoryContainer;
+import static arcade.env.loc.LocationFactory.LocationContainer;
 import static arcade.env.loc.LocationFactory.LocationFactoryContainer;
 import static arcade.env.loc.Location.Voxel;
 
 public final class OutputDeserializer {
 	static Gson makeGSON() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
+		gsonBuilder.registerTypeAdapter(CellFactoryContainer.class, new CellFactoryDeserializer());
+		gsonBuilder.registerTypeAdapter(CellContainer.class, new CellDeserializer());
 		gsonBuilder.registerTypeAdapter(LocationFactoryContainer.class, new LocationFactoryDeserializer());
 		gsonBuilder.registerTypeAdapter(Location.class, new LocationDeserializer());
 		gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelDeserializer());
 		return gsonBuilder.create();
+	}
+	
+	static class CellFactoryDeserializer implements JsonDeserializer<CellFactoryContainer> {
+		public CellFactoryContainer deserialize(JsonElement json, Type typeOfT,
+													JsonDeserializationContext context) throws JsonParseException {
+			JsonArray jsonArray = json.getAsJsonArray();
+			CellFactoryContainer container = new CellFactoryContainer();
+			
+			for (JsonElement element : jsonArray) {
+				JsonObject cell = element.getAsJsonObject();
+				CellContainer cellContainer = context.deserialize(cell, CellContainer.class);
+				container.cells.add(cellContainer);
+			}
+			
+			return container;
+		}
+	}
+	
+	static class CellDeserializer implements JsonDeserializer<CellContainer> {
+		public CellContainer deserialize(JsonElement json, Type typeOfT,
+									JsonDeserializationContext context) throws JsonParseException {
+			JsonObject jsonObject = json.getAsJsonObject();
+			
+			int id = jsonObject.get("id").getAsInt();
+			int pop = jsonObject.get("pop").getAsInt();
+			int age = jsonObject.get("age").getAsInt();
+			int voxels = jsonObject.get("voxels").getAsInt();
+			HashMap<String, Integer> tags = new HashMap<>();
+			
+			if (jsonObject.has("tags")) {
+				JsonArray jsonArray = jsonObject.getAsJsonArray("tags");
+				for (JsonElement object : jsonArray) {
+					JsonObject tagObject = object.getAsJsonObject();
+					String tag = tagObject.get("tag").getAsString();
+					int tagVoxels = tagObject.get("voxels").getAsInt();
+					tags.put(tag, tagVoxels);
+				}
+			}
+		
+			CellContainer cell;
+			if (tags.size() == 0) { cell = new CellContainer(id, pop, age, voxels); }
+			else { cell = new CellContainer(id, pop, age, voxels, tags); }
+			
+			return cell;
+		}
 	}
 	
 	static class LocationFactoryDeserializer implements JsonDeserializer<LocationFactoryContainer> {

@@ -9,6 +9,8 @@ import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import arcade.env.loc.*;
+import static arcade.agent.cell.CellFactory.CellContainer;
+import static arcade.agent.cell.CellFactory.CellFactoryContainer;
 import static arcade.env.loc.Location.Voxel;
 import static arcade.env.loc.LocationFactory.LocationContainer;
 import static arcade.env.loc.LocationFactory.LocationFactoryContainer;
@@ -30,10 +32,17 @@ public class OutputDeserializerTest {
 				throws JsonParseException {
 			JsonObject array = json.getAsJsonObject();
 			int id = array.get("id").getAsInt();
-			Voxel center = new Voxel(id, id, id);
-			ArrayList<Voxel> voxels = new ArrayList<>();
-			voxels.add(center);
-			LocationContainer container = new LocationContainer(id, center, voxels, null);
+			LocationContainer container = new LocationContainer(id, null, null, null);
+			return (T)container;
+		}
+	};
+	
+	static final JsonDeserializationContext CELL_CONTEXT = new JsonDeserializationContext() {
+		public <T> T deserialize(JsonElement json, Type typeOfT)
+				throws JsonParseException {
+			JsonObject array = json.getAsJsonObject();
+			int id = array.get("id").getAsInt();
+			CellContainer container = new CellContainer(id, 0, 0, 0);
 			return (T)container;
 		}
 	};
@@ -50,6 +59,93 @@ public class OutputDeserializerTest {
 		
 		TypeToken<LocationFactoryContainer> locationFactory = new TypeToken<LocationFactoryContainer>() {};
 		assertSame(gson.getAdapter(locationFactory).getClass(), TreeTypeAdapter.class);
+	}
+	
+	@Test
+	public void deserializer_forCellNoTag_createObject() {
+		CellDeserializer deserializer = new CellDeserializer();
+		
+		int id = randomInt();
+		int pop = randomInt();
+		int age = randomInt();
+		int voxels = randomInt();
+		
+		String string = "{"
+				+ "\"id\": " + id
+				+ ",\"pop\": " + pop
+				+ ",\"age\": " + age
+				+ ",\"voxels\": " + voxels
+				+ "}";
+		
+		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
+		CellContainer object = deserializer.deserialize(json, CellContainer.class, null);
+		
+		assertEquals(id, object.id);
+		assertEquals(pop, object.pop);
+		assertEquals(age, object.age);
+		assertEquals(voxels, object.voxels);
+		assertNull(object.tagVoxels);
+	}
+	
+	@Test
+	public void deserializer_forCellWithTags_createObject() {
+		CellDeserializer deserializer = new CellDeserializer();
+		
+		int id = randomInt();
+		int pop = randomInt();
+		int age = randomInt();
+		int voxels = randomInt();
+		
+		String tag1 = randomString() + "1";
+		String tag2 = randomString() + "2";
+		int tagVoxels1 = randomInt();
+		int tagVoxels2 = randomInt();
+		
+		String string = "{"
+				+ "\"id\": " + id
+				+ ",\"pop\": " + pop
+				+ ",\"age\": " + age
+				+ ",\"voxels\": " + voxels
+				+ ",\"tags\":["
+				+ "{\"tag\":" + tag1 + ",\"voxels\":" + tagVoxels1 + "},"
+				+ "{\"tag\":" + tag2 + ",\"voxels\":" + tagVoxels2 + "}"
+				+ "]"
+				+ "}";
+		
+		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
+		CellContainer object = deserializer.deserialize(json, CellContainer.class, null);
+		
+		assertEquals(id, object.id);
+		assertEquals(pop, object.pop);
+		assertEquals(age, object.age);
+		assertEquals(voxels, object.voxels);
+		assertEquals(tagVoxels1, (int)object.tagVoxels.get(tag1));
+		assertEquals(tagVoxels2, (int)object.tagVoxels.get(tag2));
+	}
+	
+	@Test
+	public void deserializer_forCellFactory_createsObject() {
+		CellFactoryDeserializer deserializer = new CellFactoryDeserializer();
+		
+		int n = randomInt();
+		int id0 = randomInt();
+		
+		StringBuilder string = new StringBuilder("[");
+		for (int i = 0; i < n; i++) {
+			int id = id0 + i;
+			string.append("{\"id\":").append(id).append("}");
+			if (i < n - 1) { string.append(","); }
+		}
+		string.append("]");
+		
+		JsonArray json = JsonParser.parseString(string.toString()).getAsJsonArray();
+		CellFactoryContainer object = deserializer.deserialize(json, CellFactoryContainer.class, CELL_CONTEXT);
+		
+		assertEquals(n, object.cells.size());
+		for (int i = 0; i < n; i++) {
+			int id = id0 + i;
+			assertEquals(id, object.cells.get(i).id);
+		}
 	}
 	
 	@Test
@@ -205,8 +301,7 @@ public class OutputDeserializerTest {
 		assertEquals(n, object.locations.size());
 		for (int i = 0; i < n; i++) {
 			int id = id0 + i;
-			ArrayList<Voxel> voxels = object.locations.get(i).voxels;
-			assertEquals(new Voxel(id, id, id), voxels.get(0));
+			assertEquals(id, object.locations.get(i).id);
 		}
 	}
 }
