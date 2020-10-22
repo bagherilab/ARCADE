@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import arcade.env.loc.*;
 import static arcade.env.loc.Location.Voxel;
+import static arcade.env.loc.LocationFactory.LocationContainer;
 import static arcade.env.loc.LocationFactory.LocationFactoryContainer;
 import static arcade.env.loc.LocationTest.COMPARATOR;
 import static arcade.sim.output.OutputDeserializer.*;
@@ -27,12 +28,13 @@ public class OutputDeserializerTest {
 	static final JsonDeserializationContext LOCATION_CONTEXT = new JsonDeserializationContext() {
 		public <T> T deserialize(JsonElement json, Type typeOfT)
 				throws JsonParseException {
-			JsonArray array = json.getAsJsonArray();
-			int i = array.get(0).getAsInt();
+			JsonObject array = json.getAsJsonObject();
+			int id = array.get("id").getAsInt();
+			Voxel center = new Voxel(id, id, id);
 			ArrayList<Voxel> voxels = new ArrayList<>();
-			voxels.add(new Voxel(i, i, i));
-			PottsLocation2D location = new PottsLocation2D(voxels);
-			return (T)location;
+			voxels.add(center);
+			LocationContainer container = new LocationContainer(id, center, voxels, null);
+			return (T)container;
 		}
 	};
 	
@@ -67,38 +69,13 @@ public class OutputDeserializerTest {
 	}
 	
 	@Test
-	public void deserializer_forLocationNoTag2D_createObject() {
+	public void deserializer_forLocationNoTag_createObject() {
 		LocationDeserializer deserializer = new LocationDeserializer();
 		
-		int x1 = randomInt();
-		int y1 = randomInt();
+		String tag = "*";
 		
-		int x2 = x1 + randomInt();
-		int y2 = y1 + randomInt();
-		
-		String string = "[{\"tag\":0,\"voxels\":["
-				+ "[" + x1 + "," + y1 + ",0],"
-				+ "[" + x2 + "," + y2 + ",0]"
-				+ "]}]";
-		
-		ArrayList<Voxel> expected = new ArrayList<>();
-		expected.add(new Voxel(x1, y1, 0));
-		expected.add(new Voxel(x2, y2, 0));
-		
-		JsonArray json = JsonParser.parseString(string).getAsJsonArray();
-		Location object = deserializer.deserialize(json, Location.class, VOXEL_CONTEXT);
-		
-		assertTrue(object instanceof PottsLocation2D);
-		
-		ArrayList<Voxel> voxels = object.getVoxels();
-		voxels.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
-		assertEquals(expected, voxels);
-	}
-	
-	@Test
-	public void deserializer_forLocationNoTag3D_createObject() {
-		LocationDeserializer deserializer = new LocationDeserializer();
+		int id = randomInt();
+		Voxel center = new Voxel(randomInt(), randomInt(), randomInt());
 		
 		int x1 = randomInt();
 		int y1 = randomInt();
@@ -108,94 +85,37 @@ public class OutputDeserializerTest {
 		int y2 = y1 + randomInt();
 		int z2 = z1 + randomInt();
 		
-		String string = "[{\"tag\":0,\"voxels\":["
+		String string = "{\"id\": " + id
+				+ ",\"center\":[" + center.x + "," + center.y + "," + center.z + "]"
+				+ ",\"location\":["
+				+ "{\"tag\":" + tag + ",\"voxels\":["
 				+ "[" + x1 + "," + y1 + "," + z1 + "],"
 				+ "[" + x2 + "," + y2 + "," + z2 + "]"
-				+ "]}]";
+				+ "]}]}";
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(x1, y1, z1));
 		expected.add(new Voxel(x2, y2, z2));
 		
-		JsonArray json = JsonParser.parseString(string).getAsJsonArray();
-		Location object = deserializer.deserialize(json, Location.class, VOXEL_CONTEXT);
+		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
+		LocationContainer object = deserializer.deserialize(json, LocationContainer.class, VOXEL_CONTEXT);
 		
-		assertTrue(object instanceof PottsLocation3D);
+		assertEquals(id, object.id);
+		assertEquals(center, object.center);
+		assertNull(object.tags);
 		
-		ArrayList<Voxel> voxels = object.getVoxels();
+		ArrayList<Voxel> voxels = object.voxels;
 		voxels.sort(COMPARATOR);
 		expected.sort(COMPARATOR);
 		assertEquals(expected, voxels);
 	}
 	
 	@Test
-	public void deserializer_forLocationWithTag2D_createObject() {
+	public void deserializer_forLocationWithTag_createObject() {
 		LocationDeserializer deserializer = new LocationDeserializer();
 		
-		int x1 = randomInt();
-		int y1 = randomInt();
-		
-		int x2 = x1 + randomInt();
-		int y2 = y1 + randomInt();
-		
-		int x3 = x2 + randomInt();
-		int y3 = y2 + randomInt();
-		
-		int x4 = x3 + randomInt();
-		int y4 = y3 + randomInt();
-		
-		int tag1 = randomInt();
-		int tag2 = tag1 + 1;
-		
-		String string = "["
-				+ "{\"tag\":" + tag1 + ",\"voxels\":["
-				+ "[" + x1 + "," + y1 + ",0],"
-				+ "[" + x2 + "," + y2 + ",0]"
-				+ "]},"
-				+ "{\"tag\":" + tag2 + ",\"voxels\":["
-				+ "[" + x3 + "," + y3 + ",0],"
-				+ "[" + x4 + "," + y4 + ",0]"
-				+ "]}"
-				+ "]";
-		
-		ArrayList<Voxel> expected = new ArrayList<>();
-		expected.add(new Voxel(x1, y1, 0));
-		expected.add(new Voxel(x2, y2, 0));
-		expected.add(new Voxel(x3, y3, 0));
-		expected.add(new Voxel(x4, y4, 0));
-		
-		ArrayList<Voxel> expected1 = new ArrayList<>();
-		expected1.add(new Voxel(x1, y1, 0));
-		expected1.add(new Voxel(x2, y2, 0));
-		
-		ArrayList<Voxel> expected2 = new ArrayList<>();
-		expected2.add(new Voxel(x3, y3, 0));
-		expected2.add(new Voxel(x4, y4, 0));
-		
-		JsonArray json = JsonParser.parseString(string).getAsJsonArray();
-		Location object = deserializer.deserialize(json, Location.class, VOXEL_CONTEXT);
-		
-		assertTrue(object instanceof PottsLocations2D);
-		
-		ArrayList<Voxel> voxels = object.getVoxels();
-		voxels.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
-		assertEquals(expected, voxels);
-		
-		ArrayList<Voxel> voxels1 = ((PottsLocations)object).locations.get(tag1).getVoxels();
-		voxels1.sort(COMPARATOR);
-		expected1.sort(COMPARATOR);
-		assertEquals(expected1, voxels1);
-		
-		ArrayList<Voxel> voxels2 = ((PottsLocations)object).locations.get(tag2).getVoxels();
-		voxels2.sort(COMPARATOR);
-		expected2.sort(COMPARATOR);
-		assertEquals(expected2, voxels2);
-	}
-	
-	@Test
-	public void deserializer_forLocationWithTag3D_createObject() {
-		LocationDeserializer deserializer = new LocationDeserializer();
+		int id = randomInt();
+		Voxel center = new Voxel(randomInt(), randomInt(), randomInt());
 		
 		int x1 = randomInt();
 		int y1 = randomInt();
@@ -213,10 +133,12 @@ public class OutputDeserializerTest {
 		int y4 = y3 + randomInt();
 		int z4 = z3 + randomInt();
 		
-		int tag1 = randomInt();
-		int tag2 = tag1 + 1;
+		String tag1 = randomString() + "1";
+		String tag2 = randomString() + "2";
 		
-		String string = "["
+		String string = "{\"id\": " + id
+				+ ",\"center\":[" + center.x + "," + center.y + "," + center.z + "]"
+				+ ",\"location\":["
 				+ "{\"tag\":" + tag1 + ",\"voxels\":["
 				+ "[" + x1 + "," + y1 + "," + z1 + "],"
 				+ "[" + x2 + "," + y2 + "," + z2 + "]"
@@ -224,8 +146,7 @@ public class OutputDeserializerTest {
 				+ "{\"tag\":" + tag2 + ",\"voxels\":["
 				+ "[" + x3 + "," + y3 + "," + z3 + "],"
 				+ "[" + x4 + "," + y4 + "," + z4 + "]"
-				+ "]}"
-				+ "]";
+				+ "]}]}";
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(x1, y1, z1));
@@ -241,22 +162,23 @@ public class OutputDeserializerTest {
 		expected2.add(new Voxel(x3, y3, z3));
 		expected2.add(new Voxel(x4, y4, z4));
 		
-		JsonArray json = JsonParser.parseString(string).getAsJsonArray();
-		Location object = deserializer.deserialize(json, Location.class, VOXEL_CONTEXT);
+		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
+		LocationContainer object = deserializer.deserialize(json, LocationContainer.class, VOXEL_CONTEXT);
 		
-		assertTrue(object instanceof PottsLocations3D);
+		assertEquals(id, object.id);
+		assertEquals(center, object.center);
 		
-		ArrayList<Voxel> voxels = object.getVoxels();
+		ArrayList<Voxel> voxels = object.voxels;
 		voxels.sort(COMPARATOR);
 		expected.sort(COMPARATOR);
 		assertEquals(expected, voxels);
 		
-		ArrayList<Voxel> voxels1 = ((PottsLocations)object).locations.get(tag1).getVoxels();
+		ArrayList<Voxel> voxels1 = object.tags.get(tag1);
 		voxels1.sort(COMPARATOR);
 		expected1.sort(COMPARATOR);
 		assertEquals(expected1, voxels1);
 		
-		ArrayList<Voxel> voxels2 = ((PottsLocations)object).locations.get(tag2).getVoxels();
+		ArrayList<Voxel> voxels2 = object.tags.get(tag2);
 		voxels2.sort(COMPARATOR);
 		expected2.sort(COMPARATOR);
 		assertEquals(expected2, voxels2);
@@ -280,12 +202,10 @@ public class OutputDeserializerTest {
 		JsonArray json = JsonParser.parseString(string.toString()).getAsJsonArray();
 		LocationFactoryContainer object = deserializer.deserialize(json, LocationFactoryContainer.class, LOCATION_CONTEXT);
 		
-		assertEquals(n, object.ids.size());
-		
+		assertEquals(n, object.locations.size());
 		for (int i = 0; i < n; i++) {
 			int id = id0 + i;
-			ArrayList<Voxel> voxels = object.idToLocation.get(id).getVoxels();
-			assertEquals(1, voxels.size());
+			ArrayList<Voxel> voxels = object.locations.get(i).voxels;
 			assertEquals(new Voxel(id, id, id), voxels.get(0));
 		}
 	}

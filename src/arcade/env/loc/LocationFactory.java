@@ -272,7 +272,7 @@ public abstract class LocationFactory {
 		Location location;
 		
 		// Add tags.
-		if (locationContainer.tags != null) {
+		if (cellContainer.tagVoxels != null) {
 			HashMap<String, Integer> tagTargetMap = cellContainer.tagVoxels;
 			HashMap<String, ArrayList<Voxel>> tagVoxelMap = locationContainer.tags;
 			location = makeLocations(voxels);
