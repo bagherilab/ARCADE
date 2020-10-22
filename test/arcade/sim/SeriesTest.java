@@ -594,43 +594,43 @@ public class SeriesTest {
 	}
 	
 	@Test
-	public void updatePopulation_noFraction_setsZero() {
+	public void updatePopulation_noInit_setsZero() {
 		Box[] boxes = new Box[] { new Box() };
 		boxes[0].add("id", POPULATION_ID_1);
 		Series series = makeSeriesForPopulation(boxes);
 		
 		MiniBox box = series._populations.get(POPULATION_ID_1);
-		assertEquals(0, box.getDouble("FRACTION"), EPSILON);
+		assertEquals(0, box.getDouble("INIT"), EPSILON);
 	}
 	
 	@Test
-	public void updatePopulation_givenValidFraction_setsValue() {
-		String[] fractions = new String[] { "0", "0.", "0.0", ".0", "0.5", "0.67", "1", "1.", "1.0" };
-		double[] values = new double[] { 0, 0, 0, 0, 0.5, 0.67, 1, 1, 1 };
+	public void updatePopulation_givenValidInit_setsValue() {
+		String[] fractions = new String[] { "0", "10", "1E2" };
+		int[] values = new int[] { 0, 10, 100 };
 		
 		for (int i = 0; i < fractions.length; i++) {
 			Box[] boxes = new Box[] { new Box() };
 			boxes[0].add("id", POPULATION_ID_1);
-			boxes[0].add("fraction", fractions[i]);
+			boxes[0].add("init", fractions[i]);
 			Series series = makeSeriesForPopulation(boxes);
 			
 			MiniBox box = series._populations.get(POPULATION_ID_1);
-			assertEquals(values[i], box.getDouble("FRACTION"), EPSILON);
+			assertEquals(values[i], box.getInt("INIT"));
 		}
 	}
 	
 	@Test
-	public void updatePopulation_givenInvalidFraction_setsZero() {
-		String[] fractions = new String[] { "1.1", "2", "a", "-0.5" };
+	public void updatePopulation_givenInvalidInit_setsZero() {
+		String[] fractions = new String[] { "1.1", "-1" };
 		
 		for (String fraction : fractions) {
 			Box[] boxes = new Box[]{new Box()};
 			boxes[0].add("id", POPULATION_ID_1);
-			boxes[0].add("FRACTION", fraction);
+			boxes[0].add("init", fraction);
 			Series series = makeSeriesForPopulation(boxes);
 			
 			MiniBox box = series._populations.get(POPULATION_ID_1);
-			assertEquals(0, box.getDouble("FRACTION"), EPSILON);
+			assertEquals(0, box.getDouble("INIT"), EPSILON);
 		}
 	}
 	

@@ -16,6 +16,9 @@ public class Series {
 	/** Logger for {@code Series} */
 	private final static Logger LOGGER = Logger.getLogger(Series.class.getName());
 	
+	/** Regular expression for numbers */
+	private static final String NUMBER_REGEX = "^(\\d+)|(\\d+E\\d+)$";
+	
 	/** Regular expression for fractions */
 	private static final String FRACTION_REGEX = "^(([0]*(\\.\\d*|))|(1[\\.0]*))$";
 	
@@ -158,8 +161,20 @@ public class Series {
 	public int getInterval() { return interval; }
 	
 	/**
-	 * Checks if string contains valid fraction between 0 and 1, inclusive.
+	 * Checks if string contains valid number greater than 0.
 	 * 
+	 * @param box  the box containing the fraction
+	 * @param key  the number key
+	 * @return  {@code true if valid}, {@code false} otherwise
+	 */
+	static boolean isValidNumber(Box box, String key) {
+		if (box.getValue(key) == null) { return false; }
+		return box.getValue(key).matches(NUMBER_REGEX);
+	}
+	
+	/**
+	 * Checks if string contains valid fraction between 0 and 1, inclusive.
+	 *
 	 * @param box  the box containing the fraction
 	 * @param key  the fraction key
 	 * @return  {@code true if valid}, {@code false} otherwise
@@ -261,10 +276,10 @@ public class Series {
 			population.put("CODE", iPop++);
 			_populations.put(id, population);
 			
-			// Add population fraction if given. If not given or invalid, set
-			// fraction to zero.
-			double fraction = (isValidFraction(p, "fraction") ? Double.parseDouble(p.getValue("fraction")) : 0);
-			population.put("FRACTION", fraction);
+			// Add population init if given. If not given or invalid, set
+			// to zero.
+			int init = (isValidNumber(p, "init") ? (int)Double.parseDouble(p.getValue("init")) : 0);
+			population.put("INIT", init);
 			
 			// Get default parameters and any parameter tags.
 			Box parameters = p.filterBoxByTag("PARAMETER");
