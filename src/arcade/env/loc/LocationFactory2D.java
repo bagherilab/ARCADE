@@ -35,7 +35,7 @@ public class LocationFactory2D extends LocationFactory {
 		return voxels;
 	}
 	
-	public ArrayList<Voxel> getCenters(int m) {
+	ArrayList<Voxel> getCenters(int length, int width, int height, int m) {
 		ArrayList<Voxel> centers = new ArrayList<>();
 		for (int i = 0; i < (length - 2)/m; i++) {
 			for (int j = 0; j < (width - 2)/m; j++) {

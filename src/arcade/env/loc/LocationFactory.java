@@ -7,54 +7,47 @@ import ec.util.MersenneTwisterFast;
 import arcade.sim.Series;
 import arcade.sim.Simulation;
 import arcade.util.MiniBox;
-import static arcade.sim.Simulation.DS;
 import static arcade.agent.cell.Cell.TAG_NUCLEUS;
 import static arcade.env.loc.Location.Voxel;
+import static arcade.agent.cell.CellFactory.CellContainer;
 
 public abstract class LocationFactory {
-	/** Length (x direction) of array */
-	int length;
-	
-	/** Width (y direction) of array */
-	int width;
-	
-	/** Depth (z direction) of array */
-	int height;
-	
 	/** Map of id to location */
-	final HashMap<Integer, Location> idToLocation;
-	
-	/** List of available locations */
-	final ArrayList<Voxel> availableLocations;
-	
-	/** List of unavailable locations */
-	final ArrayList<Voxel> unavailableLocations;
+	public final HashMap<Integer, LocationContainer> locations;
 	
 	/** Container for loaded locations */
 	public LocationFactoryContainer container;
-	
-	/** Count of total locations */
-	public int count;
 	
 	/**
 	 * Creates a factory for making {@link arcade.env.loc.Location} instances.
 	 */
 	public LocationFactory() {
-		idToLocation = new HashMap<>();
-		availableLocations = new ArrayList<>();
-		unavailableLocations = new ArrayList<>();
+		locations = new HashMap<>();
 	}
 	
 	/**
 	 * Container class for loading into {@link arcade.env.loc.LocationFactory}.
 	 */
 	public static class LocationFactoryContainer {
-		final public ArrayList<Integer> ids;
-		final public HashMap<Integer, Location> idToLocation;
+		final public ArrayList<LocationContainer> locations;
+		public LocationFactoryContainer() { locations = new ArrayList<>(); }
+	}
+	
+	/**
+	 * Container class for loading a {@link arcade.env.loc.Location}.
+	 */
+	public static class LocationContainer {
+		public final int id;
+		public final ArrayList<Voxel> voxels;
+		public final Voxel center;
+		public final HashMap<String, ArrayList<Voxel>> tags;
 		
-		public LocationFactoryContainer() {
-			ids = new ArrayList<>();
-			idToLocation = new HashMap<>();
+		public LocationContainer(int id, Voxel center, ArrayList<Voxel> voxels,
+								 HashMap<String, ArrayList<Voxel>> tags) {
+			this.id = id;
+			this.center = center;
+			this.voxels = voxels;
+			this.tags = tags;
 		}
 	}
 	
@@ -66,56 +59,73 @@ public abstract class LocationFactory {
 	 * For series with a loader, the specified file is loaded into the factory.
 	 * 
 	 * @param series  the simulation series
+	 * @param random  the random number generator
 	 */
-	public void initialize(Series series) {
-		if (series.loader != null) {
-			// Load locations.
-			series.loader.load(this);
-			
-			// Map loaded container to factory.
-			for (int id : container.ids) { idToLocation.put(id, container.idToLocation.get(id)); }
-			
-			// Update total count.
-			count = container.ids.size();
-		} else {
-			// Update array sizing.
-			length = series._length;
-			width = series._width;
-			height = series._height;
-			
-			// Create centers.
-			makeCenters(new ArrayList<>(series._populations.values()));
-			
-			// Update total count.
-			count = availableLocations.size();
+	public void initialize(Series series, MersenneTwisterFast random) {
+		if (series.loader != null) { loadLocations(series); }
+		else { createLocations(series, random); }
+	}
+	
+	/**
+	 * Loads location containers into the factory container.
+	 *
+	 * @param series  the simulation series
+	 */
+	void loadLocations(Series series) {
+		// Load locations.
+		series.loader.load(this);
+		
+		// Map loaded container to factory.
+		for (LocationContainer locationContainer : container.locations) {
+			locations.put(locationContainer.id, locationContainer);
 		}
 	}
 	
 	/**
-	 * Makes a location for the given id and population.
-	 * <p>
-	 * If a location for the given id exists, then it is returned.
-	 * Otherwise, a random available center is used to create a location based
-	 * on the given population settings.
-	 * 
-	 * @param id  the location id
-	 * @param population  the population settings
+	 * Creates location containers from population settings.
+	 *
+	 * @param series  the simulation series
 	 * @param random  the random number generator
-	 * @return  a {@link arcade.env.loc.Location} object
 	 */
-	public Location make(int id, MiniBox population, MersenneTwisterFast random) {
-		Location location;
+	void createLocations(Series series, MersenneTwisterFast random) {
+		int m = 0;
 		
-		if (idToLocation.containsKey(id)) { location = idToLocation.get(id); }
-		else if (availableLocations.size() > 0) {
-			Simulation.shuffle(availableLocations, random);
-			Voxel center = availableLocations.get(0);
-			location = createLocation(population, center, random);
-			availableLocations.remove(center);
-			unavailableLocations.add(center);
-		} else { throw new IllegalArgumentException(); }
+		// Find largest distance between centers.
+		for (MiniBox population : series._populations.values()) {
+			double criticalVolume = population.getDouble("CRITICAL_VOLUME");
+			int voxelsPerSide = convert(criticalVolume) + 2;
+			if (voxelsPerSide > m) { m = voxelsPerSide; }
+		}
 		
-		return location;
+		if (m == 0) { return; }
+		
+		// Get center voxels.
+		ArrayList<Voxel> centers = getCenters(series._length, series._width, series._height, m);
+		Simulation.shuffle(centers, random);
+		
+		// Get tags (if they exist).
+		HashSet<String> tagKeys = new HashSet<>();
+		for (MiniBox population : series._populations.values()) {
+			MiniBox tagBox = population.filter("TAG");
+			if (tagBox.getKeys().size() > 0) { tagKeys.addAll(tagBox.getKeys()); }
+		}
+		
+		// Create containers for each center.
+		int id = 1;
+		for (Voxel center : centers) {
+			ArrayList<Voxel> voxels = getPossible(center, m);
+			
+			// Add tags (if they exist).
+			HashMap<String, ArrayList<Voxel>> tags = null;
+			if (tagKeys.size() > 0) {
+				tags = new HashMap<>();
+				for (String tag : tagKeys) { tags.put(tag, getPossible(center, m - 2)); }
+			}
+			
+			LocationContainer locationContainer = new LocationContainer(id, center, voxels, tags);
+			locations.put(id, locationContainer);
+			id++;
+		}
 	}
 	
 	/**
@@ -175,7 +185,7 @@ public abstract class LocationFactory {
 	 * @param m  the location range
 	 * @return  the list of center voxels
 	 */
-	abstract ArrayList<Voxel> getCenters(int m);
+	abstract ArrayList<Voxel> getCenters(int length, int width, int height, int m);
 	
 	/**
 	 * Increases the number of voxels by adding from a given list of voxels.
@@ -236,44 +246,19 @@ public abstract class LocationFactory {
 	}
 	
 	/**
-	 * Creates a list of available center locations.
+	 * Creates a location from the given containers.
 	 * 
-	 * @param populations  the list of populations
-	 */
-	void makeCenters(ArrayList<MiniBox> populations) {
-		int m = 0;
-		
-		for (MiniBox population : populations) {
-			double criticalVolume = population.getDouble("CRITICAL_VOLUME");
-			int voxelsPerSide = convert(criticalVolume) + 2;
-			if (voxelsPerSide > m) { m = voxelsPerSide; }
-		}
-		
-		if (m == 0) { return; }
-		
-		ArrayList<Voxel> centers = getCenters(m);
-		availableLocations.addAll(centers);
-	}
-	
-	/**
-	 * Creates a location for the given population.
-	 * 
-	 * @param population  the population settings
-	 * @param center  the center voxel
+	 * @param locationContainer  the location container
+	 * @param cellContainer  the cell container
 	 * @param random  the random number generator
 	 * @return  a {@link arcade.env.loc.Location} object
 	 */
-	Location createLocation(MiniBox population, Voxel center, MersenneTwisterFast random) {
-		// Get tags, if they exist.
-		MiniBox tags = population.filter("TAG");
-		
-		// Parse sizing.
-		double criticalVolume = population.getDouble("CRITICAL_VOLUME");
-		int target = (int)Math.round(criticalVolume/DS);
-		
-		// Get possible voxel options.
-		int n = convert(criticalVolume) + 2;
-		ArrayList<Voxel> allVoxels = getPossible(center, n);
+	public Location make(LocationContainer locationContainer, CellContainer cellContainer,
+						 MersenneTwisterFast random) {
+		// Parse location container.
+		int target = cellContainer.voxels;
+		ArrayList<Voxel> allVoxels = locationContainer.voxels;
+		Voxel center = locationContainer.center;
 		
 		// Select voxels.
 		ArrayList<Voxel> voxels = getSelected(allVoxels, center, target);
@@ -287,17 +272,20 @@ public abstract class LocationFactory {
 		Location location;
 		
 		// Add tags.
-		if (tags.getKeys().size() > 0) {
+		if (locationContainer.tags != null) {
+			HashMap<String, Integer> tagTargetMap = cellContainer.tagVoxels;
+			HashMap<String, ArrayList<Voxel>> tagVoxelMap = locationContainer.tags;
 			location = makeLocations(voxels);
 			
-			for (String key : tags.getKeys()) {
+			for (String key : tagTargetMap.keySet()) {
 				// TODO add handling of other tags
 				if (!key.equals("NUCLEUS")) { continue; }
 				int tag = TAG_NUCLEUS;
 				
 				// Select tag voxels.
-				int tagTarget = (int)Math.round(criticalVolume*tags.getDouble(key)/DS);
-				ArrayList<Voxel> tagVoxels = getSelected(allVoxels, center, tagTarget);
+				int tagTarget = tagTargetMap.get(key);
+				ArrayList<Voxel> allTagVoxels = tagVoxelMap.get(key);
+				ArrayList<Voxel> tagVoxels = getSelected(allTagVoxels, center, tagTarget);
 				
 				// Add or remove tag voxels to reach target number.
 				int tagSize = tagVoxels.size();
@@ -307,7 +295,9 @@ public abstract class LocationFactory {
 				// Assign tags.
 				for (Voxel voxel : tagVoxels) { location.assign(tag, voxel); }
 			}
-		} else { location = makeLocation(voxels); }
+		} else {
+			location = makeLocation(voxels);
+		}
 		
 		return location;
 	}

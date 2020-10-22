@@ -2,27 +2,21 @@ package arcade.env.loc;
 
 import org.junit.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
-import arcade.util.MiniBox;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.agent.cell.Cell.*;
 import static arcade.env.loc.LocationFactoryTest.*;
 import static arcade.env.loc.Location.Voxel;
+import static arcade.agent.cell.CellFactory.CellContainer;
+import static arcade.env.loc.LocationFactory.LocationContainer;
 
 public class LocationFactory3DTest {
 	final MersenneTwisterFast random = mock(MersenneTwisterFast.class);
 	final LocationFactory3D factory = mock(LocationFactory3D.class, CALLS_REAL_METHODS);
-	
-	private LocationFactory3D createFactory(int length, int width, int height) {
-		LocationFactory3D factory = new LocationFactory3D();
-		factory.length = length;
-		factory.width = width;
-		factory.height = height;
-		return factory;
-	}
 	
 	@Test
 	public void convert_exactOddCubes_calculateValue() {
@@ -227,27 +221,41 @@ public class LocationFactory3DTest {
 	}
 	
 	@Test
-	public void createLocation_noTag_createsLocation() {
+	public void make_noTag_createsLocation() {
 		LocationFactory3D factory = new LocationFactory3D();
-		MiniBox population = new MiniBox();
-		population.put("CRITICAL_VOLUME", 1*Simulation.DS);
-		Location loc = factory.createLocation(population, new Voxel(0, 0, 0), random);
-		assertTrue(loc instanceof PottsLocation3D);
-		assertEquals(1, loc.getVolume());
+		Voxel center = new Voxel(0, 0, 0);
+		ArrayList<Voxel> voxels = factory.getPossible(center, 1);
+		
+		CellContainer cellContainer = new CellContainer(0, 0, 1);
+		LocationContainer locationContainer = new LocationContainer(0, center, voxels, null);
+		
+		Location location = factory.make(locationContainer, cellContainer, random);
+		assertTrue(location instanceof PottsLocation3D);
+		assertEquals(1, location.getVolume());
 	}
 	
 	@Test
-	public void createLocation_withTag_createsLocation() {
+	public void make_withTag_createsLocation() {
 		LocationFactory3D factory = new LocationFactory3D();
-		MiniBox population = new MiniBox();
-		population.put("CRITICAL_VOLUME", 1*Simulation.DS);
-		population.put("TAG/CYTOPLASM", 0);
-		population.put("TAG/NUCLEUS",1.0);
-		Location loc = factory.createLocation(population, new Voxel(0, 0, 0), random);
-		assertTrue(loc instanceof PottsLocations3D);
-		assertEquals(1, loc.getVolume());
-		assertEquals(0, loc.getVolume(TAG_CYTOPLASM));
-		assertEquals(1, loc.getVolume(TAG_NUCLEUS));
+		Voxel center = new Voxel(0, 0, 0);
+		ArrayList<Voxel> voxels = factory.getPossible(center, 1);
+		
+		HashMap<String, ArrayList<Voxel>> tagVoxelMap = new HashMap<>();
+		tagVoxelMap.put("CYTOPLASM", voxels);
+		tagVoxelMap.put("NUCLEUS", voxels);
+		
+		HashMap<String, Integer> tagTargetMap = new HashMap<>();
+		tagTargetMap.put("CYTOPLASM", 0);
+		tagTargetMap.put("NUCLEUS", 1);
+		
+		CellContainer cellContainer = new CellContainer(0, 0, 1, tagTargetMap);
+		LocationContainer locationContainer = new LocationContainer(0, center, voxels, tagVoxelMap);
+		
+		Location location = factory.make(locationContainer, cellContainer, random);
+		assertTrue(location instanceof PottsLocations3D);
+		assertEquals(1, location.getVolume());
+		assertEquals(0, location.getVolume(TAG_CYTOPLASM));
+		assertEquals(1, location.getVolume(TAG_NUCLEUS));
 	}
 	
 	@Test
@@ -280,9 +288,9 @@ public class LocationFactory3DTest {
 	}
 	
 	@Test
-	public void makeCenters_threeSideExactEqualSize_createsCenters() {
-		LocationFactory3D factory = createFactory(8, 8, 8);
-		ArrayList<Voxel> centers = factory.getCenters(3);
+	public void getCenters_threeSideExactEqualSize_createsCenters() {
+		LocationFactory3D factory = new LocationFactory3D();
+		ArrayList<Voxel> centers = factory.getCenters(8, 8, 8, 3);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(2, 2, 2));
@@ -304,9 +312,9 @@ public class LocationFactory3DTest {
 	}
 	
 	@Test
-	public void makeCenters_threeSideExactUnequalSize_createsCenters() {
-		LocationFactory3D factory = createFactory(11, 8, 5);
-		ArrayList<Voxel> centers = factory.getCenters(3);
+	public void getCenters_threeSideExactUnequalSize_createsCenters() {
+		LocationFactory3D factory = new LocationFactory3D();
+		ArrayList<Voxel> centers = factory.getCenters(11, 8, 5, 3);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(2, 2, 2));
@@ -326,9 +334,9 @@ public class LocationFactory3DTest {
 	}
 	
 	@Test
-	public void makeCenters_threeSideInexactEqualSize_createsCenters() {
-		LocationFactory3D factory = createFactory(7, 7, 7);
-		ArrayList<Voxel> centers = factory.getCenters(3);
+	public void getCenters_threeSideInexactEqualSize_createsCenters() {
+		LocationFactory3D factory = new LocationFactory3D();
+		ArrayList<Voxel> centers = factory.getCenters(7, 7, 7, 3);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(2, 2, 2));
@@ -343,9 +351,9 @@ public class LocationFactory3DTest {
 	}
 	
 	@Test
-	public void makeCenters_threeSideInexactUnequalSize_createsCenters() {
-		LocationFactory3D factory = createFactory(10, 7, 13);
-		ArrayList<Voxel> centers = factory.getCenters(3);
+	public void getCenters_threeSideInexactUnequalSize_createsCenters() {
+		LocationFactory3D factory = new LocationFactory3D();
+		ArrayList<Voxel> centers = factory.getCenters(10, 7, 13, 3);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(2, 2, 2));
@@ -365,9 +373,9 @@ public class LocationFactory3DTest {
 	}
 	
 	@Test
-	public void makeCenters_fiveSideExactEqualSize_createsCenters() {
-		LocationFactory3D factory = createFactory(12, 12, 12);
-		ArrayList<Voxel> centers = factory.getCenters(5);
+	public void getCenters_fiveSideExactEqualSize_createsCenters() {
+		LocationFactory3D factory = new LocationFactory3D();
+		ArrayList<Voxel> centers = factory.getCenters(12, 12, 12, 5);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(3, 3, 3));
@@ -389,9 +397,9 @@ public class LocationFactory3DTest {
 	}
 	
 	@Test
-	public void makeCenters_fiveSideExactUnequalSize_createsCenters() {
-		LocationFactory3D factory = createFactory(17, 12, 7);
-		ArrayList<Voxel> centers = factory.getCenters(5);
+	public void getCenters_fiveSideExactUnequalSize_createsCenters() {
+		LocationFactory3D factory = new LocationFactory3D();
+		ArrayList<Voxel> centers = factory.getCenters(17, 12, 7, 5);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(3, 3, 3));
@@ -411,9 +419,9 @@ public class LocationFactory3DTest {
 	}
 	
 	@Test
-	public void makeCenters_fiveSideInexactEqualSize_createsCenters() {
-		LocationFactory3D factory = createFactory(11, 11, 11);
-		ArrayList<Voxel> centers = factory.getCenters(5);
+	public void getCenters_fiveSideInexactEqualSize_createsCenters() {
+		LocationFactory3D factory = new LocationFactory3D();
+		ArrayList<Voxel> centers = factory.getCenters(11, 11, 11, 5);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(3, 3, 3));
@@ -428,9 +436,9 @@ public class LocationFactory3DTest {
 	}
 	
 	@Test
-	public void makeCenters_fiveSideInexactUnequalSize_createsCenters() {
-		LocationFactory3D factory = createFactory(16, 11, 9);
-		ArrayList<Voxel> centers = factory.getCenters(5);
+	public void getCenters_fiveSideInexactUnequalSize_createsCenters() {
+		LocationFactory3D factory = new LocationFactory3D();
+		ArrayList<Voxel> centers = factory.getCenters(16, 11, 9, 5);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(3, 3, 3));
