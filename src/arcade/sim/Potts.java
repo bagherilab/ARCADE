@@ -88,13 +88,16 @@ public abstract class Potts implements Steppable {
 			y = random.nextInt(WIDTH) + 1;
 			z = (HEIGHT == 1 ? 0 : random.nextInt(HEIGHT) + 1);
 			
+			// Check if cell is tagged.
+			boolean tagged = (IDS[z][x][y] != 0 && getCell(IDS[z][x][y]).getTags() > 0);
+			
 			// Get unique targets.
 			HashSet<Integer> uniqueIDTargets = getUniqueIDs(x, y, z);
 			HashSet<Integer> uniqueTagTargets = getUniqueTags(x, y, z);
 			
 			// Select unique ID (if there is one), otherwise select unique
 			// tag (if there is one). If there are neither, then skip.
-			if (TAGGED && uniqueTagTargets.size() > 0) {
+			if (tagged && uniqueTagTargets.size() > 0) {
 				int targetTag = (int)uniqueTagTargets.toArray()[simstate.random.nextInt(uniqueTagTargets.size())];
 				flip(IDS[z][x][y], TAGS[z][x][y], targetTag, x, y, z, random);
 			}

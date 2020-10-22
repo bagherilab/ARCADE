@@ -320,10 +320,13 @@ public class PottsTest {
 		Series series = makeSeries(3, 3, 1);
 		
 		PottsMock spy = spy(new PottsMock(series));
-		setTagged(spy, false);
+		Cell cell = mock(Cell.class);
+		doReturn(0).when(cell).getTags();
+		doReturn(cell).when(spy).getCell(1);
+		spy.IDS[0][0][0] = 1;
 		
 		spy.step(simstate);
-		verify(spy).flip(0, 1, 0, 0, 0, random);
+		verify(spy).flip(1, 1, 0, 0, 0, random);
 		verify(spy, never()).flip(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), eq(random));
 	}
 	
@@ -338,10 +341,13 @@ public class PottsTest {
 		Series series = makeSeries(3, 3, 1);
 		
 		PottsMock spy = spy(new PottsMock(series));
-		setTagged(spy, true);
+		Cell cell = mock(Cell.class);
+		doReturn(1).when(cell).getTags();
+		doReturn(cell).when(spy).getCell(1);
+		spy.IDS[0][0][0] = 1;
 		
 		spy.step(simstate);
-		verify(spy).flip(0, 1, 0, 0, 0, random);
+		verify(spy).flip(1, 1, 0, 0, 0, random);
 		verify(spy, never()).flip(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), eq(random));
 	}
 	
@@ -358,7 +364,9 @@ public class PottsTest {
 		PottsMock spy = spy(new PottsMock(series));
 		spy.IDS[0][1][0] = 1;
 		spy.TAGS[0][1][0] = -1;
-		setTagged(spy, false);
+		Cell cell = mock(Cell.class);
+		doReturn(0).when(cell).getTags();
+		doReturn(cell).when(spy).getCell(1);
 		
 		spy.step(simstate);
 		verify(spy, never()).flip(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), eq(random));
@@ -378,7 +386,9 @@ public class PottsTest {
 		PottsMock spy = spy(new PottsMock(series));
 		spy.IDS[0][1][0] = 1;
 		spy.TAGS[0][1][0] = -1;
-		setTagged(spy, true);
+		Cell cell = mock(Cell.class);
+		doReturn(1).when(cell).getTags();
+		doReturn(cell).when(spy).getCell(1);
 		
 		spy.step(simstate);
 		verify(spy, never()).flip(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), eq(random));
