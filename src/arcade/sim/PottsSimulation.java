@@ -126,12 +126,15 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		// Iterate through each population to create agents.
 		for (MiniBox population : series._populations.values()) {
 			int pop = population.getInt("CODE");
-			ArrayList<Integer> ids = cellFactory.popToIDs.get(pop);
+			HashSet<Integer> ids = cellFactory.popToIDs.get(pop);
 			
 			for (int i : ids) {
 				// Get location and cell containers.
 				LocationContainer locationContainer = locationFactory.locations.get(i);
 				CellContainer cellContainer = cellFactory.cells.get(i);
+				
+				// Check that we have enough containers.
+				if (locationContainer == null || cellContainer == null) { break; }
 				
 				// Make the location and cell.
 				Location location = locationFactory.make(locationContainer, cellContainer, random);
