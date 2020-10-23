@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import ec.util.MersenneTwisterFast;
 import arcade.env.loc.Location.Voxel;
-import static arcade.env.loc.LocationTest.*;
+import static arcade.env.loc.Location.VOXEL_COMPARATOR;
 
 public class PottsLocation3DTest {
 	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
@@ -199,10 +199,10 @@ public class PottsLocation3DTest {
 		
 		PottsLocation.balanceVoxels(voxelsA, voxelsB, loc, randomDoubleZero);
 		
-		voxelListA.sort(COMPARATOR);
-		voxelListB.sort(COMPARATOR);
-		voxelsA.sort(COMPARATOR);
-		voxelsB.sort(COMPARATOR);
+		voxelListA.sort(VOXEL_COMPARATOR);
+		voxelListB.sort(VOXEL_COMPARATOR);
+		voxelsA.sort(VOXEL_COMPARATOR);
+		voxelsB.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(voxelListA, voxelsA);
 		assertEquals(voxelListB, voxelsB);
@@ -226,10 +226,10 @@ public class PottsLocation3DTest {
 		voxelListAX.add(new Voxel(1, 1, 1));
 		voxelListCX.add(new Voxel(3, 1, 1));
 		
-		voxelListAX.sort(COMPARATOR);
-		voxelListCX.sort(COMPARATOR);
-		voxelsA.sort(COMPARATOR);
-		voxelsB.sort(COMPARATOR);
+		voxelListAX.sort(VOXEL_COMPARATOR);
+		voxelListCX.sort(VOXEL_COMPARATOR);
+		voxelsA.sort(VOXEL_COMPARATOR);
+		voxelsB.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(voxelListAX, voxelsA);
 		assertEquals(voxelListCX, voxelsB);
@@ -248,10 +248,10 @@ public class PottsLocation3DTest {
 		splitVoxels.add(new Voxel(1, 0, 0));
 		splitVoxels.add(new Voxel(1, 0, 1));
 		
-		locVoxels.sort(COMPARATOR);
-		loc.voxels.sort(COMPARATOR);
-		splitVoxels.sort(COMPARATOR);
-		split.voxels.sort(COMPARATOR);
+		locVoxels.sort(VOXEL_COMPARATOR);
+		loc.voxels.sort(VOXEL_COMPARATOR);
+		splitVoxels.sort(VOXEL_COMPARATOR);
+		split.voxels.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(locVoxels, loc.voxels);
 		assertEquals(splitVoxels, split.voxels);
@@ -265,10 +265,10 @@ public class PottsLocation3DTest {
 		ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListB);
 		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListA);
 		
-		locVoxels.sort(COMPARATOR);
-		loc.voxels.sort(COMPARATOR);
-		splitVoxels.sort(COMPARATOR);
-		split.voxels.sort(COMPARATOR);
+		locVoxels.sort(VOXEL_COMPARATOR);
+		loc.voxels.sort(VOXEL_COMPARATOR);
+		splitVoxels.sort(VOXEL_COMPARATOR);
+		split.voxels.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(locVoxels, loc.voxels);
 		assertEquals(splitVoxels, split.voxels);

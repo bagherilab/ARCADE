@@ -40,6 +40,9 @@ public class Series {
 	/** Output saver for the simulation */
 	public OutputSaver saver;
 	
+	/** Output loader for the simulation */
+	public OutputLoader loader;
+	
 	/** Name of the series */
 	private final String name;
 	

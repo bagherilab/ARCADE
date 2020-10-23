@@ -14,7 +14,7 @@ import static arcade.agent.cell.CellFactory.CellFactoryContainer;
 import static arcade.env.loc.Location.Voxel;
 import static arcade.env.loc.LocationFactory.LocationContainer;
 import static arcade.env.loc.LocationFactory.LocationFactoryContainer;
-import static arcade.env.loc.LocationTest.COMPARATOR;
+import static arcade.env.loc.Location.VOXEL_COMPARATOR;
 import static arcade.sim.output.OutputDeserializer.*;
 import static arcade.MainTest.*;
 
@@ -201,8 +201,8 @@ public class OutputDeserializerTest {
 		assertNull(object.tags);
 		
 		ArrayList<Voxel> voxels = object.voxels;
-		voxels.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
+		voxels.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		assertEquals(expected, voxels);
 	}
 	
@@ -265,18 +265,18 @@ public class OutputDeserializerTest {
 		assertEquals(center, object.center);
 		
 		ArrayList<Voxel> voxels = object.voxels;
-		voxels.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
+		voxels.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		assertEquals(expected, voxels);
 		
 		ArrayList<Voxel> voxels1 = object.tags.get(tag1);
-		voxels1.sort(COMPARATOR);
-		expected1.sort(COMPARATOR);
+		voxels1.sort(VOXEL_COMPARATOR);
+		expected1.sort(VOXEL_COMPARATOR);
 		assertEquals(expected1, voxels1);
 		
 		ArrayList<Voxel> voxels2 = object.tags.get(tag2);
-		voxels2.sort(COMPARATOR);
-		expected2.sort(COMPARATOR);
+		voxels2.sort(VOXEL_COMPARATOR);
+		expected2.sort(VOXEL_COMPARATOR);
 		assertEquals(expected2, voxels2);
 	}
 	

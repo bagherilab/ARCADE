@@ -9,7 +9,7 @@ import arcade.env.loc.Location.Voxel;
 import arcade.env.loc.PottsLocationTest.PottsLocationMock;
 import static arcade.sim.Potts.*;
 import static arcade.env.loc.PottsLocationTest.*;
-import static arcade.env.loc.LocationTest.*;
+import static arcade.env.loc.Location.VOXEL_COMPARATOR;
 
 public class PottsLocationsTest {
 	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
@@ -545,10 +545,10 @@ public class PottsLocationsTest {
 		ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListA);
 		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListB);
 		
-		locVoxels.sort(COMPARATOR);
-		loc.voxels.sort(COMPARATOR);
-		splitVoxels.sort(COMPARATOR);
-		split.voxels.sort(COMPARATOR);
+		locVoxels.sort(VOXEL_COMPARATOR);
+		loc.voxels.sort(VOXEL_COMPARATOR);
+		splitVoxels.sort(VOXEL_COMPARATOR);
+		split.voxels.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(locVoxels, loc.voxels);
 		assertEquals(splitVoxels, split.voxels);
@@ -591,12 +591,12 @@ public class PottsLocationsTest {
 		ArrayList<Voxel> splitTagVoxels = new ArrayList<>(split.locations.get(TAG_DEFAULT).voxels);
 		splitTagVoxels.addAll(split.locations.get(TAG_ADDITIONAL).voxels);
 		
-		locVoxels.sort(COMPARATOR);
-		loc.voxels.sort(COMPARATOR);
-		locTagVoxels.sort(COMPARATOR);
-		splitVoxels.sort(COMPARATOR);
-		split.voxels.sort(COMPARATOR);
-		splitTagVoxels.sort(COMPARATOR);
+		locVoxels.sort(VOXEL_COMPARATOR);
+		loc.voxels.sort(VOXEL_COMPARATOR);
+		locTagVoxels.sort(VOXEL_COMPARATOR);
+		splitVoxels.sort(VOXEL_COMPARATOR);
+		split.voxels.sort(VOXEL_COMPARATOR);
+		splitTagVoxels.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(locVoxels, loc.voxels);
 		assertEquals(splitVoxels, split.voxels);

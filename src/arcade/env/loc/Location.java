@@ -1,6 +1,7 @@
 package arcade.env.loc;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import ec.util.MersenneTwisterFast;
 
 public interface Location {
@@ -148,6 +149,12 @@ public interface Location {
 	 * @return  the location surface area (in voxels)
 	 */
 	int getSurface(int tag);
+	
+	/** Comparator for voxels */
+	Comparator<Voxel> VOXEL_COMPARATOR = (v1, v2) ->
+			v1.z != v2.z ? Integer.compare(v1.z, v2.z) :
+					v1.x != v2.x ? Integer.compare(v1.x, v2.x) :
+							Integer.compare(v1.y, v2.y);
 	
 	class Voxel {
 		/** Voxel x coordinate */

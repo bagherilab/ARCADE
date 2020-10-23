@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.util.*;
 import arcade.env.loc.Location.Voxel;
 import static arcade.env.loc.PottsLocation.*;
-import static arcade.env.loc.LocationTest.*;
+import static arcade.env.loc.Location.VOXEL_COMPARATOR;
 import static arcade.sim.Potts.*;
 
 public class Location3DTest {
@@ -44,8 +44,8 @@ public class Location3DTest {
 		PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
 		ArrayList<Voxel> neighbors = loc.getNeighbors(new Voxel(0, 0, 0));
 		
-		voxels.sort(COMPARATOR);
-		neighbors.sort(COMPARATOR);
+		voxels.sort(VOXEL_COMPARATOR);
+		neighbors.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(voxels, neighbors);
 	}
@@ -63,8 +63,8 @@ public class Location3DTest {
 		PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
 		ArrayList<Voxel> neighbors = loc.getNeighbors(new Voxel(0, 0, 0));
 		
-		voxels.sort(COMPARATOR);
-		neighbors.sort(COMPARATOR);
+		voxels.sort(VOXEL_COMPARATOR);
+		neighbors.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(voxels, neighbors);
 	}

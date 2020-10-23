@@ -13,6 +13,7 @@ import static arcade.env.loc.LocationFactoryTest.*;
 import static arcade.env.loc.Location.Voxel;
 import static arcade.agent.cell.CellFactory.CellContainer;
 import static arcade.env.loc.LocationFactory.LocationContainer;
+import static arcade.env.loc.Location.VOXEL_COMPARATOR;
 
 public class LocationFactory2DTest {
 	final MersenneTwisterFast random = mock(MersenneTwisterFast.class);
@@ -74,8 +75,8 @@ public class LocationFactory2DTest {
 		expected.add(new Voxel(0, -1, 0));
 		expected.add(new Voxel(0, 1, 0));
 		
-		voxels.sort(LocationTest.COMPARATOR);
-		expected.sort(LocationTest.COMPARATOR);
+		voxels.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(expected, voxels);
 	}
@@ -128,8 +129,8 @@ public class LocationFactory2DTest {
 		expected.add(new Voxel(1, 0, 0));
 		expected.add(new Voxel(-1, 0, 0));
 		
-		voxels.sort(LocationTest.COMPARATOR);
-		expected.sort(LocationTest.COMPARATOR);
+		voxels.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(expected, voxels);
 	}
@@ -150,8 +151,8 @@ public class LocationFactory2DTest {
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(0, 0, 0));
 		
-		voxels.sort(LocationTest.COMPARATOR);
-		expected.sort(LocationTest.COMPARATOR);
+		voxels.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(expected, voxels);
 	}
@@ -279,8 +280,8 @@ public class LocationFactory2DTest {
 		expected.add(new Voxel(5, 2, 0));
 		expected.add(new Voxel(5, 5, 0));
 		
-		centers.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
+		centers.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(expected.size(), centers.size());
 		for (int i = 0; i < expected.size(); i++) {
@@ -301,8 +302,8 @@ public class LocationFactory2DTest {
 		expected.add(new Voxel(8, 2, 0));
 		expected.add(new Voxel(8, 5, 0));
 		
-		centers.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
+		centers.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(expected.size(), centers.size());
 		for (int i = 0; i < expected.size(); i++) {
@@ -318,8 +319,8 @@ public class LocationFactory2DTest {
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(2, 2, 0));
 		
-		centers.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
+		centers.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(expected.size(), centers.size());
 		for (int i = 0; i < expected.size(); i++) {
@@ -336,8 +337,8 @@ public class LocationFactory2DTest {
 		expected.add(new Voxel(2, 2, 0));
 		expected.add(new Voxel(5, 2, 0));
 		
-		centers.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
+		centers.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(expected.size(), centers.size());
 		for (int i = 0; i < expected.size(); i++) {
@@ -356,8 +357,8 @@ public class LocationFactory2DTest {
 		expected.add(new Voxel(8, 3, 0));
 		expected.add(new Voxel(8, 8, 0));
 		
-		centers.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
+		centers.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(expected.size(), centers.size());
 		for (int i = 0; i < expected.size(); i++) {
@@ -378,8 +379,8 @@ public class LocationFactory2DTest {
 		expected.add(new Voxel(13, 3, 0));
 		expected.add(new Voxel(13, 8, 0));
 		
-		centers.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
+		centers.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(expected.size(), centers.size());
 		for (int i = 0; i < expected.size(); i++) {
@@ -395,8 +396,8 @@ public class LocationFactory2DTest {
 		ArrayList<Voxel> expected = new ArrayList<>();
 		expected.add(new Voxel(3, 3, 0));
 		
-		centers.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
+		centers.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(expected.size(), centers.size());
 		for (int i = 0; i < expected.size(); i++) {
@@ -413,8 +414,8 @@ public class LocationFactory2DTest {
 		expected.add(new Voxel(3, 3, 0));
 		expected.add(new Voxel(8, 3, 0));
 		
-		centers.sort(COMPARATOR);
-		expected.sort(COMPARATOR);
+		centers.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(expected.size(), centers.size());
 		for (int i = 0; i < expected.size(); i++) {

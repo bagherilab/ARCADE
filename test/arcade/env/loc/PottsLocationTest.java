@@ -7,7 +7,7 @@ import java.util.*;
 import ec.util.MersenneTwisterFast;
 import arcade.env.loc.Location.Voxel;
 import arcade.env.loc.Location.Direction;
-import static arcade.env.loc.LocationTest.*;
+import static arcade.env.loc.Location.VOXEL_COMPARATOR;
 
 public class PottsLocationTest {
 	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
@@ -133,8 +133,8 @@ public class PottsLocationTest {
 		ArrayList<Voxel> voxelList = loc.getVoxels();
 		
 		assertNotSame(loc.voxels, voxelList);
-		voxelList.sort(COMPARATOR);
-		voxels.sort(COMPARATOR);
+		voxelList.sort(VOXEL_COMPARATOR);
+		voxels.sort(VOXEL_COMPARATOR);
 		assertEquals(voxels, voxelList);
 	}
 	
@@ -830,10 +830,10 @@ public class PottsLocationTest {
 		ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListA);
 		ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListB);
 		
-		locVoxels.sort(COMPARATOR);
-		loc.voxels.sort(COMPARATOR);
-		splitVoxels.sort(COMPARATOR);
-		split.voxels.sort(COMPARATOR);
+		locVoxels.sort(VOXEL_COMPARATOR);
+		loc.voxels.sort(VOXEL_COMPARATOR);
+		splitVoxels.sort(VOXEL_COMPARATOR);
+		split.voxels.sort(VOXEL_COMPARATOR);
 		
 		assertEquals(locVoxels, loc.voxels);
 		assertEquals(splitVoxels, split.voxels);
