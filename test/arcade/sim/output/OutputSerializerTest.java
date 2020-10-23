@@ -9,8 +9,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import sim.util.Bag;
 import arcade.sim.Series;
 import arcade.sim.Potts;
@@ -22,6 +21,7 @@ import arcade.util.MiniBox;
 import static arcade.env.loc.Location.Voxel;
 import static arcade.sim.output.OutputSerializer.*;
 import static arcade.MainTest.*;
+import static arcade.agent.cell.Cell.*;
 
 public class OutputSerializerTest {
 	@Test
@@ -209,20 +209,33 @@ public class OutputSerializerTest {
 		
 		JsonSerializationContext context = new JsonSerializationContext() {
 			public JsonElement serialize(Object src) {
-				Location location = (Location)src;
-				JsonArray json = new JsonArray();
-				json.add(location.getCenter().x);
-				json.add(location.getCenter().y);
-				json.add(location.getCenter().z);
-				return json;
+				if (src instanceof Voxel) {
+					Voxel voxel = (Voxel)src;
+					JsonArray json = new JsonArray();
+					json.add(voxel.x);
+					json.add(voxel.y);
+					json.add(voxel.z);
+					return json;
+				} else {
+					Location location = (Location)src;
+					JsonArray json = new JsonArray();
+					json.add(location.getCenter().x);
+					json.add(location.getCenter().y);
+					json.add(location.getCenter().z);
+					return json;
+				}
 			}
 			
 			public JsonElement serialize(Object src, Type typeOfSrc) { return null; }
 		};
 		
 		String expected = "["
-				+ "{\"id\":" + id1 + ",\"location\":[" + x1 + "," + y1 + "," + z1 + "]},"
-				+ "{\"id\":" + id2 + ",\"location\":[" + x2 + "," + y2 + "," + z2 + "]}"
+				+ "{\"id\":" + id1
+				+ ",\"center\":[" + x1 + "," + y1 + "," + z1 + "]" 
+				+ ",\"location\":[" + x1 + "," + y1 + "," + z1 + "]},"
+				+ "{\"id\":" + id2
+				+ ",\"center\":[" + x2 + "," + y2 + "," + z2 + "]"
+				+ ",\"location\":[" + x2 + "," + y2 + "," + z2 + "]}"
 				+ "]";
 		
 		JsonElement json = serializer.serialize(potts, null, context);
@@ -244,14 +257,11 @@ public class OutputSerializerTest {
 		Location location = mock(Location.class);
 		doReturn(location).when(cell).getLocation();
 		
-		int volume = randomInt();
+		int voxels = randomInt();
 		int targetVolume = randomInt();
-		doReturn(volume).when(location).getVolume();
-		doReturn((double)targetVolume).when(cell).getTargetVolume();
-		
-		int surface = randomInt();
 		int targetSurface = randomInt();
-		doReturn(surface).when(location).getSurface();
+		doReturn(voxels).when(location).getVolume();
+		doReturn((double)targetVolume).when(cell).getTargetVolume();
 		doReturn((double)targetSurface).when(cell).getTargetSurface();
 		
 		Module module = mock(Module.class);
@@ -274,8 +284,8 @@ public class OutputSerializerTest {
 				+ "\"id\":" + id + ","
 				+ "\"pop\":" + pop + ","
 				+ "\"age\":" + age + ","
-				+ "\"volumes\":[" + volume + "," + targetVolume + ".0],"
-				+ "\"surfaces\":[" + surface + "," + targetSurface + ".0],"
+				+ "\"voxels\":" + voxels + ","
+				+ "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0],"
 				+ "\"module\":[\"MODULE\"]"
 				+ "}";
 		
@@ -298,14 +308,11 @@ public class OutputSerializerTest {
 		Location location = mock(Location.class);
 		doReturn(location).when(cell).getLocation();
 		
-		int volume = randomInt();
+		int voxels = randomInt();
 		int targetVolume = randomInt();
-		doReturn(volume).when(location).getVolume();
-		doReturn((double)targetVolume).when(cell).getTargetVolume();
-		
-		int surface = randomInt();
 		int targetSurface = randomInt();
-		doReturn(surface).when(location).getSurface();
+		doReturn(voxels).when(location).getVolume();
+		doReturn((double)targetVolume).when(cell).getTargetVolume();
 		doReturn((double)targetSurface).when(cell).getTargetSurface();
 		
 		Module module = mock(Module.class);
@@ -313,25 +320,30 @@ public class OutputSerializerTest {
 		
 		doReturn(2).when(cell).getTags();
 		
+		Set<Integer> tags = new HashSet<>();
+		tags.add(TAG_CYTOPLASM);
+		tags.add(TAG_NUCLEUS);
+		doReturn(tags).when(location).getTags();
+		
 		int volume1 = randomInt();
 		int targetVolume1 = randomInt();
-		doReturn(volume1).when(location).getVolume(-1);
-		doReturn((double)targetVolume1).when(cell).getTargetVolume(-1);
+		doReturn(volume1).when(location).getVolume(TAG_CYTOPLASM);
+		doReturn((double)targetVolume1).when(cell).getTargetVolume(TAG_CYTOPLASM);
 		
 		int surface1 = randomInt();
 		int targetSurface1 = randomInt();
-		doReturn(surface1).when(location).getSurface(-1);
-		doReturn((double)targetSurface1).when(cell).getTargetSurface(-1);
+		doReturn(surface1).when(location).getSurface(TAG_CYTOPLASM);
+		doReturn((double)targetSurface1).when(cell).getTargetSurface(TAG_CYTOPLASM);
 		
 		int volume2 = randomInt();
 		int targetVolume2 = randomInt();
-		doReturn(volume2).when(location).getVolume(-2);
-		doReturn((double)targetVolume2).when(cell).getTargetVolume(-2);
+		doReturn(volume2).when(location).getVolume(TAG_NUCLEUS);
+		doReturn((double)targetVolume2).when(cell).getTargetVolume(TAG_NUCLEUS);
 		
 		int surface2 = randomInt();
 		int targetSurface2 = randomInt();
-		doReturn(surface2).when(location).getSurface(-2);
-		doReturn((double)targetSurface2).when(cell).getTargetSurface(-2);
+		doReturn(surface2).when(location).getSurface(TAG_NUCLEUS);
+		doReturn((double)targetSurface2).when(cell).getTargetSurface(TAG_NUCLEUS);
 		
 		JsonSerializationContext context = new JsonSerializationContext() {
 			public JsonElement serialize(Object src) {
@@ -350,19 +362,18 @@ public class OutputSerializerTest {
 				+ "\"id\":" + id + ","
 				+ "\"pop\":" + pop + ","
 				+ "\"age\":" + age + ","
-				+ "\"volumes\":[" + volume + "," + targetVolume + ".0],"
-				+ "\"surfaces\":[" + surface + "," + targetSurface + ".0],"
+				+ "\"voxels\":" + voxels + ","
+				+ "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0],"
 				+ "\"module\":[\"MODULE\"],"
 				+ "\"tags\":["
-				+ "{\"id\":-1,"
-				+ "\"volumes\":[" + volume1 + "," + targetVolume1 + ".0],"
-				+ "\"surfaces\":[" + surface1 + "," + targetSurface1 + ".0]"
+				+ "{\"tag\":\"CYTOPLASM\","
+				+ "\"voxels\":" + volume1 + ","
+				+ "\"targets\":[" + targetVolume1 + ".0," + targetSurface1 + ".0]"
 				+ "},"
-				+ "{\"id\":-2,"
-				+ "\"volumes\":[" + volume2 + "," + targetVolume2 + ".0],"
-				+ "\"surfaces\":[" + surface2 + "," + targetSurface2 + ".0]"
-				+ "}"
-				+ "]"
+				+ "{\"tag\":\"NUCLEUS\","
+				+ "\"voxels\":" + volume2 + ","
+				+ "\"targets\":[" + targetVolume2 + ".0," + targetSurface2 + ".0]"
+				+ "}]"
 				+ "}";
 		
 		JsonElement json = serializer.serialize(cell, null, context);
@@ -455,9 +466,9 @@ public class OutputSerializerTest {
 		int z1 = randomInt();
 		voxels.add(new Voxel(x1, y1, z1));
 		
-		int x2 = randomInt();
-		int y2 = randomInt();
-		int z2 = randomInt();
+		int x2 = x1 + randomInt();
+		int y2 = y1 + randomInt();
+		int z2 = z1 + randomInt();
 		voxels.add(new Voxel(x2, y2, z2));
 		
 		JsonSerializationContext context = new JsonSerializationContext() {
@@ -472,7 +483,7 @@ public class OutputSerializerTest {
 		};
 		
 		String expected = "["
-				+ "{\"tag\":0,\"voxels\":["
+				+ "{\"tag\":\"*\",\"voxels\":["
 				+ "[\"" + x1 + "|" + y1 + "|" + z1 + "\"],"
 				+ "[\"" + x2 + "|" + y2 + "|" + z2 + "\"]"
 				+ "]}"
@@ -501,17 +512,14 @@ public class OutputSerializerTest {
 		int z1 = randomInt();
 		voxels1.add(new Voxel(x1, y1, z1));
 		
-		int x2 = randomInt();
+		int x2 = x1 + randomInt();
 		int y2 = randomInt();
 		int z2 = randomInt();
 		voxels2.add(new Voxel(x2, y2, z2));
 		
-		int tag1 = randomInt();
-		int tag2 = tag1 + 1;
-		
 		location.locations = new HashMap<>();
-		location.locations.put(tag1, location1);
-		location.locations.put(tag2, location2);
+		location.locations.put(TAG_CYTOPLASM, location1);
+		location.locations.put(TAG_NUCLEUS, location2);
 		
 		JsonSerializationContext context = new JsonSerializationContext() {
 			public JsonElement serialize(Object src) {
@@ -525,9 +533,9 @@ public class OutputSerializerTest {
 		};
 		
 		String expected = "["
-				+ "{\"tag\":" + tag1 
+				+ "{\"tag\":\"CYTOPLASM\""
 				+ ",\"voxels\":[[\"" + x1 + "|" + y1 + "|" + z1 + "\"]]},"
-				+ "{\"tag\":" + tag2
+				+ "{\"tag\":\"NUCLEUS\""
 				+ ",\"voxels\":[[\"" + x2 + "|" + y2 + "|" + z2 + "\"]]}"
 				+ "]";
 		

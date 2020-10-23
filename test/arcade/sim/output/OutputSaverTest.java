@@ -151,7 +151,7 @@ public class OutputSaverTest {
 	}
 	
 	@Test
-	public void save_withTick_writesAgents() {
+	public void save_withTick_writesCells() {
 		Series series = mock(Series.class);
 		OutputSaver saver = spy(new OutputSaver(series));
 		doNothing().when(saver).write(anyString(), anyString());
@@ -177,11 +177,11 @@ public class OutputSaverTest {
 		
 		verify(gson).toJson(agents);
 		verify(saver).write(prefix + String.format("_%06d", (int)tick) 
-				+ ".AGENTS.json", contents);
+				+ ".CELLS.json", contents);
 	}
 	
 	@Test
-	public void save_withTick_writesPotts() {
+	public void save_withTick_writesLocations() {
 		Series series = mock(Series.class);
 		OutputSaver saver = spy(new OutputSaver(series));
 		doNothing().when(saver).write(anyString(), anyString());
@@ -207,7 +207,7 @@ public class OutputSaverTest {
 		
 		verify(gson).toJson(potts);
 		verify(saver).write(prefix + String.format("_%06d", (int)tick)
-				+ ".POTTS.json", contents);
+				+ ".LOCATIONS.json", contents);
 	}
 	
 	@Test

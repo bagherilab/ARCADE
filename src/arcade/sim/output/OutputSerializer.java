@@ -1,10 +1,7 @@
 package arcade.sim.output;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import com.google.gson.*;
 import arcade.sim.Series;
 import arcade.sim.Potts;
@@ -13,7 +10,9 @@ import arcade.agent.module.Module;
 import arcade.env.grid.Grid;
 import arcade.env.loc.*;
 import arcade.util.MiniBox;
+import static arcade.env.loc.Location.VOXEL_COMPARATOR;
 import static arcade.env.loc.Location.Voxel;
+import static arcade.agent.cell.Cell.*;
 
 public final class OutputSerializer {
 	/** Regular expression for fractions */
@@ -93,8 +92,10 @@ public final class OutputSerializer {
 			for (Object obj : src.grid.getAllObjects()) {
 				Cell cell = (Cell)obj;
 				JsonElement voxels = context.serialize(cell.getLocation());
+				JsonElement center = context.serialize(cell.getLocation().getCenter());
 				JsonObject location = new JsonObject();
 				location.addProperty("id", cell.getID());
+				location.add("center", center);
 				location.add("location", voxels);
 				json.add(location);
 			}
@@ -110,36 +111,27 @@ public final class OutputSerializer {
 			json.addProperty("id", src.getID());
 			json.addProperty("pop", src.getPop());
 			json.addProperty("age", src.getAge());
+			json.addProperty("voxels", src.getLocation().getVolume());
 			
-			JsonArray volumes = new JsonArray();
-			volumes.add(src.getLocation().getVolume());
-			volumes.add(Math.round(src.getTargetVolume() * 100) / 100.0);
-			json.add("volumes", volumes);
-			
-			JsonArray surfaces = new JsonArray();
-			surfaces.add(src.getLocation().getSurface());
-			surfaces.add(Math.round(src.getTargetSurface() * 100) / 100.0);
-			json.add("surfaces", surfaces);
+			JsonArray targets = new JsonArray();
+			targets.add(src.getTargetVolume());
+			targets.add(src.getTargetSurface());
+			json.add("targets", targets);
 			
 			JsonElement module = context.serialize(src.getModule());
 			json.add("module", module);
 			
 			if (src.getTags() > 0) {
 				JsonArray tags = new JsonArray();
-				
-				for (int i = 0; i < src.getTags(); i++) {
+				for (int tagCode : src.getLocation().getTags()) {
 					JsonObject tag = new JsonObject();
-					tag.addProperty("id", -i - 1);
+					tag.addProperty("tag", tagToName(tagCode));
+					tag.addProperty("voxels", src.getLocation().getVolume(tagCode));
 					
-					JsonArray tagVolumes = new JsonArray();
-					tagVolumes.add(src.getLocation().getVolume(-i - 1));
-					tagVolumes.add(Math.round(src.getTargetVolume(-i - 1) * 100) / 100.0);
-					tag.add("volumes", tagVolumes);
-					
-					JsonArray tagSurfaces = new JsonArray();
-					tagSurfaces.add(src.getLocation().getSurface(-i - 1));
-					tagSurfaces.add(Math.round(src.getTargetSurface(-i - 1) * 100) / 100.0);
-					tag.add("surfaces", tagSurfaces);
+					JsonArray tagTargets = new JsonArray();
+					tagTargets.add(src.getTargetVolume(tagCode));
+					tagTargets.add(src.getTargetSurface(tagCode));
+					tag.add("targets", tagTargets);
 					
 					tags.add(tag);
 				}
@@ -189,21 +181,25 @@ public final class OutputSerializer {
 			
 			HashMap<Integer, PottsLocation> locations;
 			
-			if (src instanceof PottsLocations) { locations = ((PottsLocations) src).locations; }
+			if (src instanceof PottsLocations) { locations = ((PottsLocations)src).locations; }
 			else {
 				locations = new HashMap<>();
 				locations.put(0, (PottsLocation)src);
 			}
 			
-			List<Integer> keys = new ArrayList<>(locations.keySet());
-			Collections.sort(keys);
-			for (int tag : keys) {
+			List<Integer> tagCodes = new ArrayList<>(locations.keySet());
+			
+			for (int tagCode : tagCodes) {
 				JsonObject obj = new JsonObject();
-				JsonArray voxels = new JsonArray();
-				for (Voxel voxel : locations.get(tag).getVoxels()) { voxels.add(context.serialize(voxel)); }
+				JsonArray array = new JsonArray();
 				
-				obj.addProperty("tag", tag);
-				obj.add("voxels", voxels);
+				ArrayList<Voxel> voxels = locations.get(tagCode).getVoxels();
+				voxels.sort(VOXEL_COMPARATOR);
+				for (Voxel voxel : voxels) { array.add(context.serialize(voxel)); }
+				
+				String tagName = Cell.tagToName(tagCode);
+				obj.addProperty("tag", tagName);
+				obj.add("voxels", array);
 				
 				json.add(obj);
 			}

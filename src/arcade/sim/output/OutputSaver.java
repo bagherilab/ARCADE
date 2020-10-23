@@ -67,10 +67,10 @@ public class OutputSaver implements Steppable {
 	 * @param tick  the tick
 	 */
 	public void save(double tick) {
-		String agentsPath = prefix + String.format("_%06d.%s.%s",(int)tick, "AGENTS", "json");
+		String agentsPath = prefix + String.format("_%06d.%s.%s",(int)tick, "CELLS", "json");
 		write(agentsPath, format(gson.toJson(agents)));
 		
-		String pottsPath = prefix + String.format("_%06d.%s.%s", (int)tick, "POTTS", "json");
+		String pottsPath = prefix + String.format("_%06d.%s.%s", (int)tick, "LOCATIONS", "json");
 		write(pottsPath, format(gson.toJson(potts)));
 	}
 	

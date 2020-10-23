@@ -19,6 +19,8 @@ import static arcade.sim.output.OutputDeserializer.*;
 import static arcade.MainTest.*;
 
 public class OutputDeserializerTest {
+	private static final double EPSILON = 1E-10;
+	
 	static final JsonDeserializationContext VOXEL_CONTEXT = new JsonDeserializationContext() {
 		public <T> T deserialize(JsonElement json, Type typeOfT)
 				throws JsonParseException {
@@ -51,10 +53,16 @@ public class OutputDeserializerTest {
 	public void makeGSON_registersAdaptors() {
 		Gson gson = OutputDeserializer.makeGSON();
 		
+		TypeToken<CellContainer> cell = new TypeToken<CellContainer>() {};
+		assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
+		
+		TypeToken<CellFactoryContainer> cellFactory = new TypeToken<CellFactoryContainer>() {};
+		assertSame(gson.getAdapter(cellFactory).getClass(), TreeTypeAdapter.class);
+		
 		TypeToken<Voxel> voxel = new TypeToken<Voxel>() {};
 		assertSame(gson.getAdapter(voxel).getClass(), TreeTypeAdapter.class);
 		
-		TypeToken<Location> location = new TypeToken<Location>() {};
+		TypeToken<LocationContainer> location = new TypeToken<LocationContainer>() {};
 		assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
 		
 		TypeToken<LocationFactoryContainer> locationFactory = new TypeToken<LocationFactoryContainer>() {};
@@ -69,12 +77,15 @@ public class OutputDeserializerTest {
 		int pop = randomInt();
 		int age = randomInt();
 		int voxels = randomInt();
+		int targetVolume = randomInt();
+		int targetSurface = randomInt();
 		
 		String string = "{"
 				+ "\"id\": " + id
 				+ ",\"pop\": " + pop
 				+ ",\"age\": " + age
 				+ ",\"voxels\": " + voxels
+				+ ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
 				+ "}";
 		
 		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
@@ -84,7 +95,11 @@ public class OutputDeserializerTest {
 		assertEquals(pop, object.pop);
 		assertEquals(age, object.age);
 		assertEquals(voxels, object.voxels);
+		assertEquals(targetVolume, object.targetVolume, EPSILON);
+		assertEquals(targetSurface, object.targetSurface, EPSILON);
 		assertNull(object.tagVoxels);
+		assertNull(object.tagTargetVolume);
+		assertNull(object.tagTargetSurface);
 	}
 	
 	@Test
@@ -95,20 +110,33 @@ public class OutputDeserializerTest {
 		int pop = randomInt();
 		int age = randomInt();
 		int voxels = randomInt();
+		int targetVolume = randomInt();
+		int targetSurface = randomInt();
 		
 		String tag1 = randomString() + "1";
 		String tag2 = randomString() + "2";
 		int tagVoxels1 = randomInt();
 		int tagVoxels2 = randomInt();
+		int targetTagVolume1 = randomInt();
+		int targetTagSurface1 = randomInt();
+		int targetTagVolume2 = randomInt();
+		int targetTagSurface2 = randomInt();
 		
 		String string = "{"
 				+ "\"id\": " + id
 				+ ",\"pop\": " + pop
 				+ ",\"age\": " + age
 				+ ",\"voxels\": " + voxels
+				+ ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
 				+ ",\"tags\":["
-				+ "{\"tag\":" + tag1 + ",\"voxels\":" + tagVoxels1 + "},"
-				+ "{\"tag\":" + tag2 + ",\"voxels\":" + tagVoxels2 + "}"
+				+ "{\"tag\":" + tag1 
+				+ ",\"voxels\":" + tagVoxels1 
+				+ ",\"targets\":[" + targetTagVolume1 + "," + targetTagSurface1 + "]"
+				+ "},"
+				+ "{\"tag\":" + tag2 
+				+ ",\"voxels\":" + tagVoxels2
+				+ ",\"targets\":[" + targetTagVolume2 + "," + targetTagSurface2 + "]"
+				+ "}"
 				+ "]"
 				+ "}";
 		
@@ -119,8 +147,14 @@ public class OutputDeserializerTest {
 		assertEquals(pop, object.pop);
 		assertEquals(age, object.age);
 		assertEquals(voxels, object.voxels);
+		assertEquals(targetVolume, object.targetVolume, EPSILON);
+		assertEquals(targetSurface, object.targetSurface, EPSILON);
 		assertEquals(tagVoxels1, (int)object.tagVoxels.get(tag1));
 		assertEquals(tagVoxels2, (int)object.tagVoxels.get(tag2));
+		assertEquals(targetTagVolume1, object.tagTargetVolume.get(tag1), EPSILON);
+		assertEquals(targetTagSurface1, object.tagTargetSurface.get(tag1), EPSILON);
+		assertEquals(targetTagVolume2, object.tagTargetVolume.get(tag2), EPSILON);
+		assertEquals(targetTagSurface2, object.tagTargetSurface.get(tag2), EPSILON);
 	}
 	
 	@Test

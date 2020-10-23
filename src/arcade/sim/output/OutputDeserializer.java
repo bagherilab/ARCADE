@@ -17,7 +17,7 @@ public final class OutputDeserializer {
 		gsonBuilder.registerTypeAdapter(CellFactoryContainer.class, new CellFactoryDeserializer());
 		gsonBuilder.registerTypeAdapter(CellContainer.class, new CellDeserializer());
 		gsonBuilder.registerTypeAdapter(LocationFactoryContainer.class, new LocationFactoryDeserializer());
-		gsonBuilder.registerTypeAdapter(Location.class, new LocationDeserializer());
+		gsonBuilder.registerTypeAdapter(LocationContainer.class, new LocationDeserializer());
 		gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelDeserializer());
 		return gsonBuilder.create();
 	}
@@ -47,7 +47,14 @@ public final class OutputDeserializer {
 			int pop = jsonObject.get("pop").getAsInt();
 			int age = jsonObject.get("age").getAsInt();
 			int voxels = jsonObject.get("voxels").getAsInt();
+			
+			JsonArray targets = jsonObject.get("targets").getAsJsonArray();
+			double targetVolume = targets.get(0).getAsDouble();
+			double targetSurface = targets.get(1).getAsDouble();
+			
 			HashMap<String, Integer> tags = new HashMap<>();
+			HashMap<String, Double> targetTagVolumes = new HashMap<>();
+			HashMap<String, Double> targetTagSurfaces = new HashMap<>();
 			
 			if (jsonObject.has("tags")) {
 				JsonArray jsonArray = jsonObject.getAsJsonArray("tags");
@@ -55,13 +62,20 @@ public final class OutputDeserializer {
 					JsonObject tagObject = object.getAsJsonObject();
 					String tag = tagObject.get("tag").getAsString();
 					int tagVoxels = tagObject.get("voxels").getAsInt();
+					
+					JsonArray tagTargets = tagObject.get("targets").getAsJsonArray();
+					targetTagVolumes.put(tag, tagTargets.get(0).getAsDouble());
+					targetTagSurfaces.put(tag, tagTargets.get(1).getAsDouble());
+					
 					tags.put(tag, tagVoxels);
 				}
 			}
 		
 			CellContainer cell;
-			if (tags.size() == 0) { cell = new CellContainer(id, pop, age, voxels); }
-			else { cell = new CellContainer(id, pop, age, voxels, tags); }
+			if (tags.size() == 0) { cell = new CellContainer(id, pop, age,
+					voxels, targetVolume, targetSurface); }
+			else { cell = new CellContainer(id, pop, age,
+					voxels, tags, targetVolume, targetSurface, targetTagVolumes, targetTagSurfaces); }
 			
 			return cell;
 		}

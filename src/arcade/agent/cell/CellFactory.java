@@ -75,32 +75,38 @@ public abstract class CellFactory {
 		public final int age;
 		public final int voxels;
 		public final HashMap<String, Integer> tagVoxels;
-//		public final double targetVolume;
-//		public final double targetSurface;
-//		public final double[] tagTargetVolume;
-//		public final double[] tagTargetSurface;
+		public final double targetVolume;
+		public final double targetSurface;
+		public final HashMap<String, Double> tagTargetVolume;
+		public final HashMap<String, Double> tagTargetSurface;
 		
 		public CellContainer(int id, int pop, int age, int voxels) {
 			this(id, pop, age, voxels, null, 0, 0, null, null);
 		}
 		
-		public CellContainer(int id, int pop, int age, int voxels, HashMap<String, Integer> tagVoxels) {
+		public CellContainer(int id, int pop, int age, int voxels,
+							 double targetVolume, double targetSurface) {
+			this(id, pop, age, voxels, null, targetVolume, targetSurface, null, null);
+		}
+		
+		public CellContainer(int id, int pop, int age, int voxels,
+							 HashMap<String, Integer> tagVoxels) {
 			this(id, pop, age, voxels, tagVoxels, 0, 0, null, null);
 		}
 		
-		public CellContainer(int id, int pop, int age,
-							 int voxels, HashMap<String, Integer> tagVoxels,
+		public CellContainer(int id, int pop, int age, int voxels,
+							 HashMap<String, Integer> tagVoxels,
 							 double targetVolume, double targetSurface,
-							 double[] tagTargetVolume, double[] tagTargetSurface) {
+							 HashMap<String, Double> tagTargetVolume, HashMap<String, Double> tagTargetSurface) {
 			this.id = id;
 			this.pop = pop;
 			this.age = age;
 			this.voxels = voxels;
 			this.tagVoxels = tagVoxels;
-//			this.targetVolume = targetVolume;
-//			this.targetSurface = targetSurface;
-//			this.tagTargetVolume = tagTargetVolume;
-//			this.tagTargetSurface = tagTargetSurface;
+			this.targetVolume = targetVolume;
+			this.targetSurface = targetSurface;
+			this.tagTargetVolume = tagTargetVolume;
+			this.tagTargetSurface = tagTargetSurface;
 		}
 	}
 	
