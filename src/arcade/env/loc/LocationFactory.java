@@ -261,7 +261,9 @@ public abstract class LocationFactory {
 		Voxel center = locationContainer.center;
 		
 		// Select voxels.
-		ArrayList<Voxel> voxels = getSelected(allVoxels, center, target);
+		ArrayList<Voxel> voxels;
+		if (target == allVoxels.size()) { voxels = new ArrayList<>(allVoxels); }
+		else { voxels = getSelected(allVoxels, center, target); }
 		
 		// Add or remove voxels to reach target number.
 		int size = voxels.size();
@@ -289,7 +291,7 @@ public abstract class LocationFactory {
 				
 				// Add or remove tag voxels to reach target number.
 				int tagSize = tagVoxels.size();
-				if (tagSize < tagTarget) { increase(random, voxels, tagVoxels, tagTarget); }
+				if (tagSize < tagTarget) { increase(random, allTagVoxels, tagVoxels, tagTarget); }
 				else if (tagSize > tagTarget) { decrease(random, tagVoxels, tagTarget); }
 				
 				// Assign tags.

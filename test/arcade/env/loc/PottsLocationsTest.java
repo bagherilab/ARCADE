@@ -150,7 +150,7 @@ public class PottsLocationsTest {
 	@Test
 	public void getTags_tagsAssigned_returnsGiven() {
 		int tag1 = (int)(Math.random()*10);
-		int tag2 = tag1 + (int)(Math.random()*10);
+		int tag2 = tag1 + 1 + (int)(Math.random()*10);
 		PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
 		loc.add(tag1, tag1, 0, 0);
 		loc.add(tag2, tag2, 0, 0);

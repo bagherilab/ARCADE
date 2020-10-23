@@ -746,6 +746,31 @@ public class PottsCellTest {
 	}
 	
 	@Test
+	public void setTargets_noTags_updateValues() {
+		double targetVolume = Math.random();
+		double targetSurface = Math.random();
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, criticals, lambdas, adhesion);
+		cell.setTargets(targetVolume, targetSurface);
+		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
+		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
+	}
+	
+	@Test
+	public void setTargets_withTags_updateValues() {
+		double targetVolume = Math.random();
+		double targetSurface = Math.random();
+		PottsCellMock cell = new PottsCellMock(cellID, 1, location, criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionTag);
+		cell.setTargets(-2, targetVolume, targetSurface);
+		
+		assertEquals(targetVolume, cell.getTargetVolume(-2), EPSILON);
+		assertEquals(targetSurface, cell.getTargetSurface(-2), EPSILON);
+		assertEquals(0, cell.getTargetVolume(-1), EPSILON);
+		assertEquals(0, cell.getTargetSurface(-1), EPSILON);
+		assertEquals(0, cell.getTargetVolume(-3), EPSILON);
+		assertEquals(0, cell.getTargetSurface(-3), EPSILON);
+	}
+	
+	@Test
 	public void updateTarget_untaggedScaleTwoNoTag_updatesValues() {
 		double rate = Math.random();
 		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, criticals, lambdas, adhesion);

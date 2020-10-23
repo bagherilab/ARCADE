@@ -17,6 +17,7 @@ import static arcade.agent.cell.CellFactory.CellFactoryContainer;
 import static arcade.util.MiniBox.TAG_SEPARATOR;
 import static arcade.sim.Series.TARGET_SEPARATOR;
 import static arcade.sim.Simulation.DS;
+import static arcade.agent.cell.Cell.*;
 
 public class CellFactoryTest {
 	static final double EPSILON = 1E-10;
@@ -498,7 +499,7 @@ public class CellFactoryTest {
 	}
 	
 	@Test
-	public void make_onePopulationNoTags_createsObject() {
+	public void make_onePopulationNoTagsNoTarget_createsObject() {
 		Location location = mock(Location.class);
 		CellFactory factory = new CellFactoryMock();
 		
@@ -513,7 +514,7 @@ public class CellFactoryTest {
 		factory.popToLambdas.put(cellPop, lambdas);
 		factory.popToAdhesion.put(cellPop, adhesion);
 		
-		CellContainer container = new CellContainer(cellID, cellPop, cellAge, 0, null);
+		CellContainer container = new CellContainer(cellID, cellPop, cellAge, 0);
 		Cell cell = factory.make(container, location);
 		
 		assertTrue(cell instanceof PottsCell);
@@ -527,10 +528,12 @@ public class CellFactoryTest {
 		assertEquals(lambdas[1], cell.getLambda(TERM_SURFACE), EPSILON);
 		assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
 		assertEquals(adhesion[1], cell.getAdhesion(1), EPSILON);
+		assertEquals(0, cell.getTargetVolume(), EPSILON);
+		assertEquals(0, cell.getTargetSurface(), EPSILON);
 	}
 	
 	@Test
-	public void make_multiplePopulationsNoTags_createsObject() {
+	public void make_multiplePopulationsNoTagsNoTarget_createsObject() {
 		Location location1 = mock(Location.class);
 		Location location2 = mock(Location.class);
 		CellFactory factory = new CellFactoryMock();
@@ -557,7 +560,7 @@ public class CellFactoryTest {
 		factory.popToLambdas.put(cellPop2, lambdas2);
 		factory.popToAdhesion.put(cellPop2, adhesion2);
 		
-		CellContainer container1 = new CellContainer(cellID1, cellPop1, cellAge1, 0, null);
+		CellContainer container1 = new CellContainer(cellID1, cellPop1, cellAge1, 0);
 		Cell cell1 = factory.make(container1, location1);
 		
 		assertTrue(cell1 instanceof PottsCell);
@@ -573,8 +576,10 @@ public class CellFactoryTest {
 		assertEquals(adhesion1[1], cell1.getAdhesion(1), EPSILON);
 		assertEquals(adhesion1[2], cell1.getAdhesion(2), EPSILON);
 		assertEquals(adhesion1[3], cell1.getAdhesion(3), EPSILON);
+		assertEquals(0, cell1.getTargetVolume(), EPSILON);
+		assertEquals(0, cell1.getTargetSurface(), EPSILON);
 		
-		CellContainer container2 = new CellContainer(cellID2, cellPop2, cellAge2, 0, null);
+		CellContainer container2 = new CellContainer(cellID2, cellPop2, cellAge2, 0);
 		Cell cell2 = factory.make(container2, location2);
 		
 		assertTrue(cell2 instanceof PottsCell);
@@ -590,10 +595,12 @@ public class CellFactoryTest {
 		assertEquals(adhesion2[1], cell2.getAdhesion(1), EPSILON);
 		assertEquals(adhesion2[2], cell2.getAdhesion(2), EPSILON);
 		assertEquals(adhesion2[3], cell2.getAdhesion(3), EPSILON);
+		assertEquals(0, cell1.getTargetVolume(), EPSILON);
+		assertEquals(0, cell1.getTargetSurface(), EPSILON);
 	}
 	
 	@Test
-	public void make_onePopulationWithTags_createsObject() {
+	public void make_onePopulationWithTagsNoTarget_createsObject() {
 		Location location = mock(Location.class);
 		CellFactory factory = new CellFactoryMock();
 		
@@ -632,7 +639,7 @@ public class CellFactoryTest {
 		tags.add("C");
 		factory.popToTags.put(cellPop, tags);
 		
-		CellContainer container = new CellContainer(cellID, cellPop, cellAge, 0, null);
+		CellContainer container = new CellContainer(cellID, cellPop, cellAge, 0);
 		Cell cell = factory.make(container, location);
 		
 		assertTrue(cell instanceof PottsCell);
@@ -646,12 +653,16 @@ public class CellFactoryTest {
 		assertEquals(lambdas[1], cell.getLambda(TERM_SURFACE), EPSILON);
 		assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
 		assertEquals(adhesion[1], cell.getAdhesion(1), EPSILON);
+		assertEquals(0, cell.getTargetVolume(), EPSILON);
+		assertEquals(0, cell.getTargetSurface(), EPSILON);
 		
 		for (int i = 0; i < tags.size(); i++) {
 			assertEquals(criticalsTag[0][i], cell.getCriticalVolume(-i - 1), EPSILON);
 			assertEquals(criticalsTag[1][i], cell.getCriticalSurface(-i - 1), EPSILON);
 			assertEquals(lambdasTag[0][i], cell.getLambda(TERM_VOLUME, -i - 1), EPSILON);
 			assertEquals(lambdasTag[1][i], cell.getLambda(TERM_SURFACE, -i - 1), EPSILON);
+			assertEquals(0, cell.getTargetVolume(-i - 1), EPSILON);
+			assertEquals(0, cell.getTargetSurface(-i - 1), EPSILON);
 			
 			for (int j = 0; j < tags.size(); j++) {
 				assertEquals(adhesionTag[i][j], cell.getAdhesion(-i - 1, -j - 1), EPSILON);
@@ -660,7 +671,7 @@ public class CellFactoryTest {
 	}
 	
 	@Test
-	public void make_multiplePopulationsWithTags_createsObject() {
+	public void make_multiplePopulationsWithTagsNoTarget_createsObject() {
 		Location location1 = mock(Location.class);
 		Location location2 = mock(Location.class);
 		CellFactory factory = new CellFactoryMock();
@@ -711,7 +722,7 @@ public class CellFactoryTest {
 		tags.add("C");
 		factory.popToTags.put(cellPop2, tags);
 		
-		CellContainer container1 = new CellContainer(cellID1, cellPop1, cellAge1, 0, null);
+		CellContainer container1 = new CellContainer(cellID1, cellPop1, cellAge1, 0);
 		Cell cell1 = factory.make(container1, location1);
 		
 		assertTrue(cell1 instanceof PottsCell);
@@ -727,19 +738,23 @@ public class CellFactoryTest {
 		assertEquals(adhesion1[1], cell1.getAdhesion(1), EPSILON);
 		assertEquals(adhesion1[2], cell1.getAdhesion(2), EPSILON);
 		assertEquals(adhesion1[3], cell1.getAdhesion(3), EPSILON);
+		assertEquals(0, cell1.getTargetVolume(), EPSILON);
+		assertEquals(0, cell1.getTargetSurface(), EPSILON);
 		
 		for (int i = 0; i < tags.size(); i++) {
 			assertEquals(0, cell1.getCriticalVolume(-i - 1), EPSILON);
 			assertEquals(0, cell1.getCriticalSurface(-i - 1), EPSILON);
 			assertEquals(0, cell1.getLambda(TERM_VOLUME, -i - 1), EPSILON);
 			assertEquals(0, cell1.getLambda(TERM_SURFACE, -i - 1), EPSILON);
+			assertEquals(0, cell1.getTargetVolume(-i - 1), EPSILON);
+			assertEquals(0, cell1.getTargetSurface(-i - 1), EPSILON);
 			
 			for (int j = 0; j < tags.size(); j++) {
 				assertEquals(0, cell1.getAdhesion(-i - 1, -j - 1), EPSILON);
 			}
 		}
 		
-		CellContainer container2 = new CellContainer(cellID2, cellPop2, cellAge2, 0, null);
+		CellContainer container2 = new CellContainer(cellID2, cellPop2, cellAge2, 0);
 		Cell cell2 = factory.make(container2, location2);
 		
 		assertTrue(cell2 instanceof PottsCell);
@@ -755,16 +770,171 @@ public class CellFactoryTest {
 		assertEquals(adhesion2[1], cell2.getAdhesion(1), EPSILON);
 		assertEquals(adhesion2[2], cell2.getAdhesion(2), EPSILON);
 		assertEquals(adhesion2[3], cell2.getAdhesion(3), EPSILON);
+		assertEquals(0, cell2.getTargetVolume(), EPSILON);
+		assertEquals(0, cell2.getTargetSurface(), EPSILON);
 		
 		for (int i = 0; i < tags.size(); i++) {
 			assertEquals(criticalsTag[0][i], cell2.getCriticalVolume(-i - 1), EPSILON);
 			assertEquals(criticalsTag[1][i], cell2.getCriticalSurface(-i - 1), EPSILON);
 			assertEquals(lambdasTag[0][i], cell2.getLambda(TERM_VOLUME, -i - 1), EPSILON);
 			assertEquals(lambdasTag[1][i], cell2.getLambda(TERM_SURFACE, -i - 1), EPSILON);
+			assertEquals(0, cell2.getTargetVolume(-i - 1), EPSILON);
+			assertEquals(0, cell2.getTargetSurface(-i - 1), EPSILON);
 			
 			for (int j = 0; j < tags.size(); j++) {
 				assertEquals(adhesionTag[i][j], cell2.getAdhesion(-i - 1, -j - 1), EPSILON);
 			}
+		}
+	}
+	
+	@Test
+	public void make_onePopulationNoTagsWithTarget_createsObject() {
+		Location location = mock(Location.class);
+		CellFactory factory = new CellFactoryMock();
+		
+		double targetVolume = random();
+		double targetSurface = random();
+		
+		factory.popToCriticals.put(1, new double[2]);
+		factory.popToLambdas.put(1, new double[2]);
+		factory.popToAdhesion.put(1, new double[2]);
+		
+		CellContainer container = new CellContainer(1, 1, 0, 0, targetVolume, targetSurface);
+		Cell cell = factory.make(container, location);
+		
+		verify(cell).setTargets(targetVolume, targetSurface);
+	}
+	
+	@Test
+	public void make_multiplePopulationsNoTagsWithTarget_createsObject() {
+		Location location1 = mock(Location.class);
+		Location location2 = mock(Location.class);
+		CellFactory factory = new CellFactoryMock();
+		
+		double targetVolume1 = random();
+		double targetSurface1 = random();
+		
+		factory.popToCriticals.put(1, new double[2]);
+		factory.popToLambdas.put(1, new double[2]);
+		factory.popToAdhesion.put(1, new double[3]);
+		
+		double targetVolume2 = random();
+		double targetSurface2 = random();
+		
+		factory.popToCriticals.put(2, new double[2]);
+		factory.popToLambdas.put(2, new double[2]);
+		factory.popToAdhesion.put(2, new double[3]);
+		
+		CellContainer container1 = new CellContainer(1, 1, 0, 0, targetVolume1, targetSurface1);
+		Cell cell1 = factory.make(container1, location1);
+		verify(cell1).setTargets(targetVolume1, targetSurface1);
+		
+		CellContainer container2 = new CellContainer(2, 2, 0, 0, targetVolume2, targetSurface2);
+		Cell cell2 = factory.make(container2, location2);
+		verify(cell2).setTargets(targetVolume2, targetSurface2);
+	}
+	
+	@Test
+	public void make_onePopulationWithTagsWithTarget_createsObject() {
+		Location location = mock(Location.class);
+		CellFactory factory = new CellFactoryMock();
+		
+		double targetVolume = random();
+		double targetSurface = random();
+		
+		double[] tagVolumes = new double[] { random(), random(), random() };
+		double[] tagSurfaces = new double[] { random(), random(), random() };
+		
+		HashMap<String, Double> targetTagVolumes = new HashMap<>();
+		HashMap<String, Double> targetTagSurfaces = new HashMap<>();
+		
+		factory.popToCriticals.put(1, new double[2]);
+		factory.popToLambdas.put(1, new double[2]);
+		factory.popToAdhesion.put(1, new double[3]);
+		
+		factory.popToTagCriticals.put(1, new double[2][3]);
+		factory.popToTagLambdas.put(1, new double[2][3]);
+		factory.popToTagAdhesion.put(1, new double[3][3]);
+		
+		ArrayList<String> tags = new ArrayList<>();
+		tags.add("CYTOPLASM");
+		tags.add("NUCLEUS");
+		factory.popToTags.put(1, tags);
+		
+		int[] tagCodes = new int[] { TAG_CYTOPLASM, TAG_NUCLEUS };
+		
+		for (int i = 0; i < tags.size(); i++) {
+			targetTagVolumes.put(tags.get(i), tagVolumes[i]);
+			targetTagSurfaces.put(tags.get(i), tagSurfaces[i]);
+		}
+		
+		CellContainer container = new CellContainer(1, 1, 0, 0, null,
+				targetVolume, targetSurface, targetTagVolumes, targetTagSurfaces);
+		Cell cell = factory.make(container, location);
+		
+		verify(cell).setTargets(targetVolume, targetSurface);
+		for (int i = 0; i < tags.size(); i++) {
+			verify(cell).setTargets(tagCodes[i], tagVolumes[i], tagSurfaces[i]);
+		}
+	}
+	
+	@Test
+	public void make_multiplePopulationsWithTagsWithTarget_createsObject() {
+		Location location1 = mock(Location.class);
+		Location location2 = mock(Location.class);
+		CellFactory factory = new CellFactoryMock();
+		
+		double targetVolume1 = random();
+		double targetSurface1 = random();
+		
+		factory.popToCriticals.put(1, new double[2]);
+		factory.popToLambdas.put(1, new double[2]);
+		factory.popToAdhesion.put(1, new double[3]);
+		
+		double targetVolume2 = random();
+		double targetSurface2 = random();
+		
+		factory.popToCriticals.put(2, new double[2]);
+		factory.popToLambdas.put(2, new double[2]);
+		factory.popToAdhesion.put(2, new double[3]);
+		
+		double[] tagVolumes = new double[] { random(), random(), random() };
+		double[] tagSurfaces = new double[] { random(), random(), random() };
+		
+		HashMap<String, Double> targetTagVolumes = new HashMap<>();
+		HashMap<String, Double> targetTagSurfaces = new HashMap<>();
+		
+		factory.popToTagCriticals.put(2, new double[2][3]);
+		factory.popToTagLambdas.put(2, new double[2][3]);
+		factory.popToTagAdhesion.put(2, new double[3][3]);
+		
+		ArrayList<String> tags = new ArrayList<>();
+		tags.add("CYTOPLASM");
+		tags.add("NUCLEUS");
+		factory.popToTags.put(2, tags);
+		
+		int[] tagCodes = new int[] { TAG_CYTOPLASM, TAG_NUCLEUS };
+		
+		for (int i = 0; i < tags.size(); i++) {
+			targetTagVolumes.put(tags.get(i), tagVolumes[i]);
+			targetTagSurfaces.put(tags.get(i), tagSurfaces[i]);
+		}
+		
+		CellContainer container1 = new CellContainer(1, 1, 0, 0, targetVolume1, targetSurface1);
+		Cell cell1 = factory.make(container1, location1);
+		
+		verify(cell1).setTargets(targetVolume1, targetSurface1);
+		for (int i = 0; i < tags.size(); i++) {
+			verify(cell1, never()).setTargets(tagCodes[i], tagVolumes[i], tagSurfaces[i]);
+		}
+		
+		CellContainer container2 = new CellContainer(2, 2, 0, 0, null,
+				targetVolume2, targetSurface2, targetTagVolumes, targetTagSurfaces);
+		Cell cell2 = factory.make(container2, location2);
+		
+		verify(cell2).setTargets(targetVolume2, targetSurface2);
+		for (int i = 0; i < tags.size(); i++) {
+			verify(cell2).setTargets(tagCodes[i], tagVolumes[i], tagSurfaces[i]);
 		}
 	}
 }

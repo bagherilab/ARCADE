@@ -335,6 +335,15 @@ public abstract class CellFactory {
 			cell = makeCell(id, pop, age, location, criticals, lambdas, adhesion);
 		}
 		
+		// Update cell targets.
+		cell.setTargets(cellContainer.targetVolume, cellContainer.targetSurface);
+		if (cellContainer.tagTargetVolume != null && cellContainer.tagTargetSurface != null) {
+			for (String tagName : popToTags.get(pop)) {
+				int tagCode = Cell.nameToTag(tagName);
+				cell.setTargets(tagCode, cellContainer.tagTargetVolume.get(tagName), cellContainer.tagTargetSurface.get(tagName));
+			}
+		}
+		
 		return cell;
 	}
 }

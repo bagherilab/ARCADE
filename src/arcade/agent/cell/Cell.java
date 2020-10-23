@@ -272,6 +272,23 @@ public interface Cell extends Steppable {
 	void reset(int[][][] ids, int[][][] tags);
 	
 	/**
+	 * Sets the target volume and surface for the cell.
+	 * 
+	 * @param volume  the target volume
+	 * @param surface  the target surface
+	 */
+	void setTargets(double volume, double surface);
+	
+	/**
+	 * Sets the target volume and surface for a tagged region
+	 * 
+	 * @param tag  the tag
+	 * @param volume  the target volume
+	 * @param surface  the target surface
+	 */
+	void setTargets(int tag, double volume, double surface);
+	
+	/**
 	 * Updates target volume and surface area.
 	 * 
 	 * @param rate  the rate of change

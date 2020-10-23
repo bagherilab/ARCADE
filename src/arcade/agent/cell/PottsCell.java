@@ -273,6 +273,16 @@ public abstract class PottsCell implements Cell {
 		module.step(simstate.random, sim);
 	}
 	
+	public void setTargets(double volume, double surface) {
+		targetVolume = volume;
+		targetSurface = surface;
+	}
+	
+	public void setTargets(int tag, double volume, double surface) {
+		targetTagVolumes[-tag - 1] = volume;
+		targetTagSurfaces[-tag - 1] = surface;
+	}
+	
 	public void updateTarget(double rate, double scale) {
 		double volume = getVolume();
 		if (tags > 0) { targetTagVolumes[0] -= targetVolume; }
