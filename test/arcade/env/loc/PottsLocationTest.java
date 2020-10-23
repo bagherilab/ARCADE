@@ -139,6 +139,12 @@ public class PottsLocationTest {
 	}
 	
 	@Test
+	public void getTags_noTags_returnsEmpty() {
+		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
+		assertEquals(0, loc.getTags().size());
+	}
+	
+	@Test
 	public void getVolume_hasVoxels_returnsValue() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
 		loc.add(0, 0, 0);

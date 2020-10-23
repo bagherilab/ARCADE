@@ -141,6 +141,26 @@ public class PottsLocationsTest {
 	}
 	
 	@Test
+	public void getTags_tagsNotAssigned_returnsOne() {
+		PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
+		assertEquals(1, loc.getTags().size());
+		assertTrue(loc.getTags().contains(TAG_DEFAULT));
+	}
+	
+	@Test
+	public void getTags_tagsAssigned_returnsGiven() {
+		int tag1 = (int)(Math.random()*10);
+		int tag2 = tag1 + (int)(Math.random()*10);
+		PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
+		loc.add(tag1, tag1, 0, 0);
+		loc.add(tag2, tag2, 0, 0);
+		assertEquals(3, loc.getTags().size());
+		assertTrue(loc.getTags().contains(TAG_DEFAULT));
+		assertTrue(loc.getTags().contains(tag1));
+		assertTrue(loc.getTags().contains(tag2));
+	}
+	
+	@Test
 	public void getVolume_validTag_returnsValue() {
 		PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurface);
 		assertEquals(1, loc.getVolume());

@@ -2,6 +2,7 @@ package arcade.env.loc;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Set;
 import ec.util.MersenneTwisterFast;
 
 public interface Location {
@@ -112,6 +113,13 @@ public interface Location {
 	 * @return  the list of voxels.
 	 */
 	ArrayList<Voxel> getVoxels();
+	
+	/**
+	 * Gets a set of tags.
+	 * 
+	 * @return  the set of tags.
+	 */
+	Set<Integer> getTags();
 	
 	/**
 	 * Gets the voxel at the center of the location.

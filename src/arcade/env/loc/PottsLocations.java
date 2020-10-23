@@ -3,6 +3,7 @@ package arcade.env.loc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Potts;
 import arcade.sim.Simulation;
@@ -26,6 +27,8 @@ public abstract class PottsLocations extends PottsLocation {
 		ArrayList<Voxel> voxelCopy = new ArrayList<>(voxels);
 		locations.put(Potts.TAG_DEFAULT, makeLocation(voxelCopy));
 	}
+	
+	public Set<Integer> getTags() { return locations.keySet(); }
 	
 	public int getVolume(int tag) { return (locations.containsKey(tag) ? locations.get(tag).volume : 0); }
 	
