@@ -7,7 +7,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.sim.Series;
 import arcade.sim.Simulation;
 import arcade.util.MiniBox;
-import static arcade.agent.cell.Cell.TAG_NUCLEUS;
+import static arcade.agent.cell.Cell.*;
 import static arcade.env.loc.Location.Voxel;
 import static arcade.agent.cell.CellFactory.CellContainer;
 
@@ -277,14 +277,14 @@ public abstract class LocationFactory {
 			HashMap<String, ArrayList<Voxel>> tagVoxelMap = locationContainer.tags;
 			location = makeLocations(voxels);
 			
-			for (String key : tagTargetMap.keySet()) {
+			for (String tagName : tagTargetMap.keySet()) {
 				// TODO add handling of other tags
-				if (!key.equals("NUCLEUS")) { continue; }
-				int tag = TAG_NUCLEUS;
+				if (!tagName.equals("NUCLEUS")) { continue; }
+				int tagCode = nameToTag(tagName);
 				
 				// Select tag voxels.
-				int tagTarget = tagTargetMap.get(key);
-				ArrayList<Voxel> allTagVoxels = tagVoxelMap.get(key);
+				int tagTarget = tagTargetMap.get(tagName);
+				ArrayList<Voxel> allTagVoxels = tagVoxelMap.get(tagName);
 				ArrayList<Voxel> tagVoxels = getSelected(allTagVoxels, center, tagTarget);
 				
 				// Add or remove tag voxels to reach target number.
@@ -293,7 +293,7 @@ public abstract class LocationFactory {
 				else if (tagSize > tagTarget) { decrease(random, tagVoxels, tagTarget); }
 				
 				// Assign tags.
-				for (Voxel voxel : tagVoxels) { location.assign(tag, voxel); }
+				for (Voxel voxel : tagVoxels) { location.assign(tagCode, voxel); }
 			}
 		} else {
 			location = makeLocation(voxels);

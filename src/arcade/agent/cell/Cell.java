@@ -3,6 +3,7 @@ package arcade.agent.cell;
 import sim.engine.*;
 import arcade.agent.module.Module;
 import arcade.env.loc.Location;
+import static arcade.sim.Potts.TAG_DEFAULT;
 
 public interface Cell extends Steppable {
 	/** Code for quiescent cells */
@@ -25,6 +26,37 @@ public interface Cell extends Steppable {
 	
 	/** Tag for nucleus */
 	int TAG_NUCLEUS = -2;
+	
+	/**
+	 * Converts a tag code to the tag name.
+	 * 
+	 * @param tagCode  the tag code
+	 * @return  the tag name
+	 */
+	static String tagToName(int tagCode) {
+		String tagName = "";
+		switch(tagCode) {
+			case 0: tagName = "*"; break;
+			case TAG_CYTOPLASM: tagName = "CYTOPLASM"; break;
+			case TAG_NUCLEUS: tagName = "NUCLEUS"; break;
+		}
+		return tagName;
+	}
+	
+	/**
+	 * Converts a tag name to the tag code.
+	 * 
+	 * @param tagName  the tag name
+	 * @return  the tag code
+	 */
+	static int nameToTag(String tagName) {
+		int tagCode = TAG_DEFAULT;
+		switch(tagName) {
+			case "CYTOPLASM": tagCode = TAG_CYTOPLASM; break;
+			case "NUCLEUS": tagCode = TAG_NUCLEUS; break;
+		}
+		return tagCode;
+	}
 	
 	/**
 	 * Gets the unique cell ID.
