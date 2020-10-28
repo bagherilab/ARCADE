@@ -62,7 +62,7 @@ public abstract class LocationFactory {
 	 * @param random  the random number generator
 	 */
 	public void initialize(Series series, MersenneTwisterFast random) {
-		if (series.loader != null) { loadLocations(series); }
+		if (series.loader != null && series.loader.loadLocations) { loadLocations(series); }
 		else { createLocations(series, random); }
 	}
 	

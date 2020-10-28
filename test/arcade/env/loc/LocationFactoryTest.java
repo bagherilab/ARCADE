@@ -3,7 +3,6 @@ package arcade.env.loc;
 import org.junit.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Series;
@@ -117,10 +116,37 @@ public class LocationFactoryTest {
 	}
 	
 	@Test
-	public void initialize_withLoading_callsMethod() {
+	public void initialize_noLoadingWithLoader_callsMethod() {
 		LocationFactory factory = spy(new LocationFactoryMock());
 		Series series = mock(Series.class);
 		series.loader = mock(OutputLoader.class);
+		
+		try {
+			Field field = OutputLoader.class.getDeclaredField("loadLocations");
+			field.setAccessible(true);
+			field.set(series.loader, false);
+		} catch (Exception ignored) { }
+		
+		doNothing().when(factory).loadLocations(series);
+		doNothing().when(factory).createLocations(series, random);
+		
+		factory.initialize(series, random);
+		
+		verify(factory).createLocations(series, random);
+		verify(factory, never()).loadLocations(series);
+	}
+	
+	@Test
+	public void initialize_withLoadingWithLoader_callsMethod() {
+		LocationFactory factory = spy(new LocationFactoryMock());
+		Series series = mock(Series.class);
+		series.loader = mock(OutputLoader.class);
+		
+		try {
+			Field field = OutputLoader.class.getDeclaredField("loadLocations");
+			field.setAccessible(true);
+			field.set(series.loader, true);
+		} catch (Exception ignored) { }
 		
 		doNothing().when(factory).loadLocations(series);
 		doNothing().when(factory).createLocations(series, random);

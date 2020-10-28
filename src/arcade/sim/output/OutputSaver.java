@@ -19,7 +19,7 @@ public class OutputSaver implements Steppable {
 	/** {@link arcade.sim.Series} instance */
 	final Series series;
 	
-	/** Prefix for output files */
+	/** Prefix for saved files */
 	String prefix;
 	
 	/** {@link arcade.sim.Simulation} instance */

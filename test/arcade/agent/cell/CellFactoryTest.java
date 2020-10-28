@@ -1,6 +1,7 @@
 package arcade.agent.cell;
 
 import org.junit.*;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -128,10 +129,39 @@ public class CellFactoryTest {
 	}
 	
 	@Test
-	public void initialize_withLoading_callsMethod() {
+	public void initialize_noLoadingWithLoader_callsMethod() {
 		CellFactory factory = spy(new CellFactoryMock());
 		Series series = mock(Series.class);
 		series.loader = mock(OutputLoader.class);
+		
+		try {
+			Field field = OutputLoader.class.getDeclaredField("loadCells");
+			field.setAccessible(true);
+			field.set(series.loader, false);
+		} catch (Exception ignored) { }
+		
+		doNothing().when(factory).parseValues(series);
+		doNothing().when(factory).loadCells(series);
+		doNothing().when(factory).createCells(series);
+		
+		factory.initialize(series);
+		
+		verify(factory).parseValues(series);
+		verify(factory, never()).loadCells(series);
+		verify(factory).createCells(series);
+	}
+	
+	@Test
+	public void initialize_withLoadingWithLoader_callsMethod() {
+		CellFactory factory = spy(new CellFactoryMock());
+		Series series = mock(Series.class);
+		series.loader = mock(OutputLoader.class);
+		
+		try {
+			Field field = OutputLoader.class.getDeclaredField("loadCells");
+			field.setAccessible(true);
+			field.set(series.loader, true);
+		} catch (Exception ignored) { }
 		
 		doNothing().when(factory).parseValues(series);
 		doNothing().when(factory).loadCells(series);

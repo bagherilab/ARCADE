@@ -124,7 +124,7 @@ public abstract class CellFactory {
 	 */
 	public void initialize(Series series) {
 		parseValues(series);
-		if (series.loader != null) { loadCells(series); }
+		if (series.loader != null && series.loader.loadCells) { loadCells(series); }
 		else { createCells(series); }
 	}
 	

@@ -206,8 +206,6 @@ public class PottsTest {
 			if (x == 1 && y == 0) { set.add(-1); set.add(-2); set.add(-3); }
 			return set;
 		}
-		
-		public String toCSV() { return ""; }
 	}
 	
 	static Series makeSeries() {

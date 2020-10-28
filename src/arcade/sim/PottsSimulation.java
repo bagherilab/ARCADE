@@ -58,6 +58,11 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		// Reset id.
 		id = 0;
 		
+		// Equip simulation to loader.
+		if (series.loader != null) {
+			series.loader.equip(this);
+		}
+		
 		setupPotts();
 		setupAgents();
 		setupEnvironment();

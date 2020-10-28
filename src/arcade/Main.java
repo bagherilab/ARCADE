@@ -6,6 +6,7 @@ import java.util.Date;
 import arcade.sim.Series;
 import arcade.sim.input.*;
 import arcade.sim.output.OutputSaver;
+import arcade.sim.output.OutputLoader;
 import arcade.util.*;
 
 /**
@@ -44,27 +45,38 @@ public class Main {
 		// Extract command line arguments.
 		boolean isVis = settings.contains("VIS");
 		String xml = settings.get("XML");
+		String loadPath = settings.get("LOADPATH");
+		boolean loadCells = settings.contains("LOADCELLS");
+		boolean loadLocations = settings.contains("LOADLOCATIONS");
 		
 		// Build series.
 		InputBuilder builder = new InputBuilder();
 		ArrayList<Series> series = builder.build(xml, parameters, isVis);
 		
-		// Run with visualization if requested, otherwise run command line.
-		if (isVis) {
-			Series s = series.get(0);
-			LOGGER.info("running simulation with visualization\n\n" + s.toString());
-			s.runVis();
-		}
-		else {
-			for (Series s : series) {
-				// Create saver and save series JSON.
+		// Run series.
+		for (Series s : series) {
+			// Create saver and save series JSON (for non-vis only)
+			if (!isVis) {
 				s.saver = new OutputSaver(s);
 				s.saver.save();
-				
-				if (!s.isSkipped) {
-					LOGGER.info("running simulation series [ " + s.getName() + " ]\n\n" + s.toString());
-					s.runSims();
-				}
+			}
+			
+			// Create loader if flagged.
+			if (loadCells || loadLocations) {
+				s.loader = new OutputLoader(s, loadPath, loadCells, loadLocations);
+			}
+			
+			// Skip simulations if there is an error in the series.
+			if (s.isSkipped) { continue; }
+			
+			// Run with visualization if requested, otherwise run command line.
+			if (isVis) {
+				LOGGER.info("running simulation with visualization\n\n" + s.toString());
+				s.runVis();
+				break;
+			} else {
+				LOGGER.info("running simulation series [ " + s.getName() + " ]\n\n" + s.toString());
+				s.runSims();
 			}
 		}
 	}
