@@ -48,6 +48,9 @@ public final class OutputDeserializer {
 			int age = jsonObject.get("age").getAsInt();
 			int voxels = jsonObject.get("voxels").getAsInt();
 			
+			int state = jsonObject.get("state").getAsInt();
+			int phase = jsonObject.get("phase").getAsInt();
+			
 			JsonArray targets = jsonObject.get("targets").getAsJsonArray();
 			double targetVolume = targets.get(0).getAsDouble();
 			double targetSurface = targets.get(1).getAsDouble();
@@ -70,11 +73,11 @@ public final class OutputDeserializer {
 					tags.put(tag, tagVoxels);
 				}
 			}
-		
+			
 			CellContainer cell;
-			if (tags.size() == 0) { cell = new CellContainer(id, pop, age,
+			if (tags.size() == 0) { cell = new CellContainer(id, pop, age, state, phase,
 					voxels, targetVolume, targetSurface); }
-			else { cell = new CellContainer(id, pop, age,
+			else { cell = new CellContainer(id, pop, age, state, phase,
 					voxels, tags, targetVolume, targetSurface, targetTagVolumes, targetTagSurfaces); }
 			
 			return cell;

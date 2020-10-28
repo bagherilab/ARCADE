@@ -25,4 +25,11 @@ public interface Module {
 	 * @return  the module phase
 	 */
 	int getPhase();
+	
+	/**
+	 * Sets the module phase.
+	 * 
+	 * @param phase  the module phase
+	 */
+	void setPhase(int phase);
 }

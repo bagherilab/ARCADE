@@ -229,6 +229,8 @@ public abstract class PottsCell implements Cell {
 	public void initialize(int[][][] ids, int[][][] tags) {
 		location.update(id, ids, tags);
 		
+		if (targetVolume != 0 && targetSurface != 0) { return; }
+		
 		targetVolume = location.getVolume();
 		targetSurface = location.getSurface();
 		

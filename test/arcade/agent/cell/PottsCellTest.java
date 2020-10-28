@@ -684,6 +684,63 @@ public class PottsCellTest {
 	}
 	
 	@Test
+	public void initialize_targetsSetWithoutTags_doesNothing() {
+		int volume = (int)(Math.random()*100);
+		int surface = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(volume);
+		when(location.getSurface()).thenReturn(surface);
+		
+		int targetVolume = (int)(Math.random()*100);
+		int targetSurface = (int)(Math.random()*100);
+		
+		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, criticals, lambdas, adhesion);
+		cell.setTargets(targetVolume, targetSurface);
+		cell.initialize(new int[1][3][3], null);
+		
+		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
+		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
+		assertEquals(0, cell.getTargetVolume(TAG_DEFAULT), EPSILON);
+		assertEquals(0, cell.getTargetSurface(TAG_DEFAULT), EPSILON);
+	}
+	
+	@Test
+	public void initialize_targetsSetWithTags_updatesTargets() {
+		int volume1 = (int)(Math.random()*100);
+		int volume2 = (int)(Math.random()*100);
+		int surface1 = (int)(Math.random()*100);
+		int surface2 = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(volume1 + volume2);
+		when(location.getSurface()).thenReturn(surface1 + surface2);
+		when(location.getVolume(TAG_DEFAULT)).thenReturn(volume1);
+		when(location.getSurface(TAG_DEFAULT)).thenReturn(surface1);
+		when(location.getVolume(TAG_ADDITIONAL)).thenReturn(volume2);
+		when(location.getSurface(TAG_ADDITIONAL)).thenReturn(surface2);
+		
+		int targetVolume = (int)(Math.random()*100);
+		int targetSurface = (int)(Math.random()*100);
+		int targetTagVolume1 = (int)(Math.random()*100);
+		int targetTagSurface1 = (int)(Math.random()*100);
+		int targetTagVolume2 = (int)(Math.random()*100);
+		int targetTagSurface2 = (int)(Math.random()*100);
+		
+		PottsCellMock cell = new PottsCellMock(cellID, 1, location, criticals, lambdas, adhesion,
+				2, new double[][] { { 0, 0 }, { 0, 0 } }, new double[][] { { 0, 0 }, { 0, 0 } }, new double[][] { { 0, 0 }, {0, 0} });
+		cell.setTargets(targetVolume, targetSurface);
+		cell.setTargets(TAG_DEFAULT, targetTagVolume1, targetTagSurface1);
+		cell.setTargets(TAG_ADDITIONAL, targetTagVolume2, targetTagSurface2);
+		cell.initialize(new int[1][3][3], new int[1][3][3]);
+		
+		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
+		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
+		assertEquals(targetTagVolume1, cell.getTargetVolume(TAG_DEFAULT), EPSILON);
+		assertEquals(targetTagSurface1, cell.getTargetSurface(TAG_DEFAULT), EPSILON);
+		assertEquals(targetTagVolume2, cell.getTargetVolume(TAG_ADDITIONAL), EPSILON);
+		assertEquals(targetTagSurface2, cell.getTargetSurface(TAG_ADDITIONAL), EPSILON);
+	}
+	
+	@Test
 	public void reset_withoutTags_callsMethod() {
 		Location location = spy(mock(Location.class));
 		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, criticals, lambdas, adhesion);

@@ -111,15 +111,14 @@ public final class OutputSerializer {
 			json.addProperty("id", src.getID());
 			json.addProperty("pop", src.getPop());
 			json.addProperty("age", src.getAge());
+			json.addProperty("state", src.getState());
+			json.addProperty("phase", src.getModule().getPhase());
 			json.addProperty("voxels", src.getLocation().getVolume());
 			
 			JsonArray targets = new JsonArray();
-			targets.add(src.getTargetVolume());
-			targets.add(src.getTargetSurface());
+			targets.add((int)(100*src.getTargetVolume())/100.0);
+			targets.add((int)(100*src.getTargetSurface())/100.0);
 			json.add("targets", targets);
-			
-			JsonElement module = context.serialize(src.getModule());
-			json.add("module", module);
 			
 			if (src.getTags() > 0) {
 				JsonArray tags = new JsonArray();
@@ -129,8 +128,8 @@ public final class OutputSerializer {
 					tag.addProperty("voxels", src.getLocation().getVolume(tagCode));
 					
 					JsonArray tagTargets = new JsonArray();
-					tagTargets.add(src.getTargetVolume(tagCode));
-					tagTargets.add(src.getTargetSurface(tagCode));
+					tagTargets.add((int)(100*src.getTargetVolume(tagCode))/100.0);
+					tagTargets.add((int)(100*src.getTargetSurface(tagCode))/100.0);
 					tag.add("targets", tagTargets);
 					
 					tags.add(tag);

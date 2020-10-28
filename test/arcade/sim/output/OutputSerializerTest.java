@@ -267,29 +267,22 @@ public class OutputSerializerTest {
 		Module module = mock(Module.class);
 		doReturn(module).when(cell).getModule();
 		
-		JsonSerializationContext context = new JsonSerializationContext() {
-			public JsonElement serialize(Object src) {
-				if (src instanceof Module) {
-					JsonArray json = new JsonArray();
-					json.add("MODULE");
-					return json;
-				}
-				return null;
-			}
-			
-			public JsonElement serialize(Object src, Type typeOfSrc) { return null; }
-		};
+		int state = randomInt();
+		int phase = randomInt();
+		doReturn(state).when(cell).getState();
+		doReturn(phase).when(module).getPhase();
 		
 		String expected = "{"
 				+ "\"id\":" + id + ","
 				+ "\"pop\":" + pop + ","
 				+ "\"age\":" + age + ","
+				+ "\"state\":" + state + ","
+				+ "\"phase\":" + phase + ","
 				+ "\"voxels\":" + voxels + ","
-				+ "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0],"
-				+ "\"module\":[\"MODULE\"]"
+				+ "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0]"
 				+ "}";
 		
-		JsonElement json = serializer.serialize(cell, null, context);
+		JsonElement json = serializer.serialize(cell, null, null);
 		assertEquals(expected, json.toString());
 	}
 	
@@ -318,6 +311,11 @@ public class OutputSerializerTest {
 		Module module = mock(Module.class);
 		doReturn(module).when(cell).getModule();
 		
+		int state = randomInt();
+		int phase = randomInt();
+		doReturn(state).when(cell).getState();
+		doReturn(phase).when(module).getPhase();
+		
 		doReturn(2).when(cell).getTags();
 		
 		Set<Integer> tags = new HashSet<>();
@@ -345,26 +343,14 @@ public class OutputSerializerTest {
 		doReturn(surface2).when(location).getSurface(TAG_NUCLEUS);
 		doReturn((double)targetSurface2).when(cell).getTargetSurface(TAG_NUCLEUS);
 		
-		JsonSerializationContext context = new JsonSerializationContext() {
-			public JsonElement serialize(Object src) {
-				if (src instanceof Module) {
-					JsonArray json = new JsonArray();
-					json.add("MODULE");
-					return json;
-				}
-				return null;
-			}
-			
-			public JsonElement serialize(Object src, Type typeOfSrc) { return null; }
-		};
-		
 		String expected = "{"
 				+ "\"id\":" + id + ","
 				+ "\"pop\":" + pop + ","
 				+ "\"age\":" + age + ","
+				+ "\"state\":" + state + ","
+				+ "\"phase\":" + phase + ","
 				+ "\"voxels\":" + voxels + ","
 				+ "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0],"
-				+ "\"module\":[\"MODULE\"],"
 				+ "\"tags\":["
 				+ "{\"tag\":\"CYTOPLASM\","
 				+ "\"voxels\":" + volume1 + ","
@@ -376,7 +362,7 @@ public class OutputSerializerTest {
 				+ "}]"
 				+ "}";
 		
-		JsonElement json = serializer.serialize(cell, null, context);
+		JsonElement json = serializer.serialize(cell, null, null);
 		assertEquals(expected, json.toString());
 	}
 	

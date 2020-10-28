@@ -13,5 +13,7 @@ public class QuiescenceModule implements Module  {
 	
 	public int getPhase() { return 0; }
 	
+	public void setPhase(int phase) { }
+	
 	public void step(MersenneTwisterFast random, Simulation sim) { }
 }

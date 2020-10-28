@@ -74,6 +74,8 @@ public abstract class ApoptosisModule implements Module  {
 	
 	public int getPhase() { return phase; }
 	
+	public void setPhase(int phase) { this.phase = phase; }
+	
 	/**
 	 * Calls the step method for the current simple phase.
 	 *

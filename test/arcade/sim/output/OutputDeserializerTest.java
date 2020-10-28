@@ -44,7 +44,7 @@ public class OutputDeserializerTest {
 				throws JsonParseException {
 			JsonObject array = json.getAsJsonObject();
 			int id = array.get("id").getAsInt();
-			CellContainer container = new CellContainer(id, 0, 0, 0);
+			CellContainer container = new CellContainer(id, 0, 0);
 			return (T)container;
 		}
 	};
@@ -76,6 +76,8 @@ public class OutputDeserializerTest {
 		int id = randomInt();
 		int pop = randomInt();
 		int age = randomInt();
+		int state = randomInt();
+		int phase = randomInt();
 		int voxels = randomInt();
 		int targetVolume = randomInt();
 		int targetSurface = randomInt();
@@ -84,6 +86,8 @@ public class OutputDeserializerTest {
 				+ "\"id\": " + id
 				+ ",\"pop\": " + pop
 				+ ",\"age\": " + age
+				+ ",\"state\": " + state
+				+ ",\"phase\": " + phase
 				+ ",\"voxels\": " + voxels
 				+ ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
 				+ "}";
@@ -94,6 +98,8 @@ public class OutputDeserializerTest {
 		assertEquals(id, object.id);
 		assertEquals(pop, object.pop);
 		assertEquals(age, object.age);
+		assertEquals(state, object.state);
+		assertEquals(phase, object.phase);
 		assertEquals(voxels, object.voxels);
 		assertEquals(targetVolume, object.targetVolume, EPSILON);
 		assertEquals(targetSurface, object.targetSurface, EPSILON);
@@ -109,6 +115,8 @@ public class OutputDeserializerTest {
 		int id = randomInt();
 		int pop = randomInt();
 		int age = randomInt();
+		int state = randomInt();
+		int phase = randomInt();
 		int voxels = randomInt();
 		int targetVolume = randomInt();
 		int targetSurface = randomInt();
@@ -126,6 +134,8 @@ public class OutputDeserializerTest {
 				+ "\"id\": " + id
 				+ ",\"pop\": " + pop
 				+ ",\"age\": " + age
+				+ ",\"state\": " + state
+				+ ",\"phase\": " + phase
 				+ ",\"voxels\": " + voxels
 				+ ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
 				+ ",\"tags\":["
@@ -146,6 +156,8 @@ public class OutputDeserializerTest {
 		assertEquals(id, object.id);
 		assertEquals(pop, object.pop);
 		assertEquals(age, object.age);
+		assertEquals(state, object.state);
+		assertEquals(phase, object.phase);
 		assertEquals(voxels, object.voxels);
 		assertEquals(targetVolume, object.targetVolume, EPSILON);
 		assertEquals(targetSurface, object.targetSurface, EPSILON);
