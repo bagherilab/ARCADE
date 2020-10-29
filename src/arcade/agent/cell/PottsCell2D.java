@@ -59,20 +59,20 @@ public class PottsCell2D extends PottsCell {
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
 	 * @param adhesion  the list of adhesion values
-	 * @param tags  {@code true} if the cell has tags, {@code false} otherwise
+	 * @param hasTags  {@code true} if the cell has tags, {@code false} otherwise
 	 * @param criticalsTag  the map of tagged critical values
 	 * @param lambdasTag  the map of tagged lambda multipliers
 	 * @param adhesionTag  the map of tagged adhesion values
 	 */
-	public PottsCell2D(int id, int pop, State state, int age, Location location, boolean tags,
+	public PottsCell2D(int id, int pop, State state, int age, Location location, boolean hasTags,
 					   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
 					   EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
 					   EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag) {
-		super(id, pop, state, age, location, tags, criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
+		super(id, pop, state, age, location, hasTags, criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
 	}
 	
 	public PottsCell make(int id, State state, Location location) {
-		return new PottsCell2D(id, pop, state, 0, location, tags,
+		return new PottsCell2D(id, pop, state, 0, location, hasTags,
 				criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
 	}
 	

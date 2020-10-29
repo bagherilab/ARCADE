@@ -169,7 +169,7 @@ public abstract class ProliferationModule implements Module {
 	 * an average time of {@code DURATION_S}.
 	 */
 	void stepS(double r) {
-		if (cell.tags) {
+		if (cell.hasTags) {
 			// Increase size of nucleus.
 			cell.updateTarget(Tag.NUCLEUS, RATE_S, 2);
 			

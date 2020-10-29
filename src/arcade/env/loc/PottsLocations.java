@@ -1,9 +1,9 @@
 package arcade.env.loc;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
 import static arcade.agent.cell.Cell.Tag;
@@ -27,7 +27,7 @@ public abstract class PottsLocations extends PottsLocation {
 		locations.put(Tag.DEFAULT, makeLocation(voxelCopy));
 	}
 	
-	public Set<Tag> getTags() { return locations.keySet(); }
+	public EnumSet<Tag> getTags() { return EnumSet.copyOf(locations.keySet()); }
 	
 	public int getVolume(Tag tag) { return (locations.containsKey(tag) ? locations.get(tag).volume : 0); }
 	

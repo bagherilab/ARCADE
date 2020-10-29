@@ -93,7 +93,7 @@ public abstract class ApoptosisModule implements Module  {
 	 * @param r  a random number
 	 */
 	void stepEarly(double r) {
-		if (cell.tags) {
+		if (cell.hasTags) {
 			// Cytoplasmic water loss.
 			cell.updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_LOSS, 0.5);
 			
@@ -125,7 +125,7 @@ public abstract class ApoptosisModule implements Module  {
 	 * @param sim  the simulation instance
 	 */
 	void stepLate(double r, Simulation sim) {
-		if (cell.tags) {
+		if (cell.hasTags) {
 			// Cytoplasm blebbing.
 			cell.updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_BLEBBING, 0);
 			

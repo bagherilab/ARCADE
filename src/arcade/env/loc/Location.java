@@ -2,7 +2,7 @@ package arcade.env.loc;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Set;
+import java.util.EnumSet;
 import ec.util.MersenneTwisterFast;
 import static arcade.agent.cell.Cell.Tag;
 
@@ -118,9 +118,9 @@ public interface Location {
 	/**
 	 * Gets a set of tags.
 	 * 
-	 * @return  the set of tags.
+	 * @return  the set of tags
 	 */
-	Set<Tag> getTags();
+	EnumSet<Tag> getTags();
 	
 	/**
 	 * Gets the voxel at the center of the location.

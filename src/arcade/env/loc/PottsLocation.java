@@ -2,8 +2,7 @@ package arcade.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
@@ -35,7 +34,7 @@ public abstract class PottsLocation implements Location {
 	
 	public ArrayList<Voxel> getVoxels() { return new ArrayList<>(voxels); }
 	
-	public Set<Tag> getTags() { return new HashSet<>(); }
+	public EnumSet<Tag> getTags() { return null; }
 	
 	public int getVolume() { return volume; }
 	
