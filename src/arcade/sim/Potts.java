@@ -5,19 +5,16 @@ import sim.engine.*;
 import ec.util.MersenneTwisterFast;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
+import static arcade.agent.cell.Cell.Tag;
 
 public abstract class Potts implements Steppable {
-	/** Default tag value */
-	public static final int TAG_DEFAULT = -1;
+	public enum Term {
+		/** Code for volume term */
+		VOLUME,
 	
-	/** Number of terms */
-	public static final int NUMBER_TERMS = 2;
-	
-	/** Code for volume lambda */
-	public static final int TERM_VOLUME = 0;
-	
-	/** Code for surface lambda */
-	public static final int TERM_SURFACE = 1;
+		/** Code for surface term */
+		SURFACE
+	}
 	
 	/** Length (x direction) of potts array */
 	final int LENGTH;
@@ -89,7 +86,7 @@ public abstract class Potts implements Steppable {
 			z = (HEIGHT == 1 ? 0 : random.nextInt(HEIGHT) + 1);
 			
 			// Check if cell is tagged.
-			boolean tagged = (IDS[z][x][y] != 0 && getCell(IDS[z][x][y]).getTags() > 0);
+			boolean tagged = (IDS[z][x][y] != 0 && getCell(IDS[z][x][y]).hasTags());
 			
 			// Get unique targets.
 			HashSet<Integer> uniqueIDTargets = getUniqueIDs(x, y, z);
@@ -125,7 +122,7 @@ public abstract class Potts implements Steppable {
 			if (!candidateConnected) { return; }
 			
 			// Check connectivity of tags.
-			if (TAGS[z][x][y] < TAG_DEFAULT) {
+			if (TAGS[z][x][y] > Tag.DEFAULT.ordinal()) {
 				boolean candidateTagConnected = getConnectivity(getNeighborhood(sourceID, TAGS[z][x][y], x, y, z), false);
 				if (!candidateTagConnected) { return; }
 			}
@@ -137,7 +134,7 @@ public abstract class Potts implements Steppable {
 			if (!targetConnected) { return; }
 			
 			// Check connectivity of tags.
-			if (TAGS[z][x][y] < TAG_DEFAULT) {
+			if (TAGS[z][x][y] > Tag.DEFAULT.ordinal()) {
 				boolean candidateTagConnected = getConnectivity(getNeighborhood(targetID, TAGS[z][x][y], x, y, z), false);
 				if (!candidateTagConnected) { return; }
 			}
@@ -155,7 +152,7 @@ public abstract class Potts implements Steppable {
 		
 		if (random.nextDouble() < p) {
 			IDS[z][x][y] = targetID;
-			if (TAGGED) { TAGS[z][x][y] = (targetID == 0 ? 0 : TAG_DEFAULT); }
+			if (TAGGED) { TAGS[z][x][y] = (targetID == 0 ? Tag.UNDEFINED.ordinal() : Tag.DEFAULT.ordinal()); }
 			
 			if (sourceID > 0) {
 				getCell(sourceID).getLocation().remove(x, y, z);
@@ -179,13 +176,13 @@ public abstract class Potts implements Steppable {
 	 */
 	void flip(int id, int sourceTag, int targetTag, int x, int y, int z, MersenneTwisterFast random) {
 		// Check connectivity of source.
-		if (sourceTag < TAG_DEFAULT) {
+		if (sourceTag > Tag.DEFAULT.ordinal()) {
 			boolean candidateConnected = getConnectivity(getNeighborhood(id, sourceTag, x, y, z), false);
 			if (!candidateConnected) { return; }
 		}
 		
 		// Check connectivity of target.
-		if (targetTag < TAG_DEFAULT) {
+		if (targetTag > Tag.DEFAULT.ordinal()) {
 			boolean targetConnected = getConnectivity(getNeighborhood(id, targetTag, x, y, z), false);
 			if (!targetConnected) { return; }
 		}
@@ -203,8 +200,8 @@ public abstract class Potts implements Steppable {
 		if (random.nextDouble() < p) {
 			TAGS[z][x][y] = targetTag;
 			Cell c = getCell(id);
-			c.getLocation().remove(sourceTag, x, y, z);
-			c.getLocation().add(targetTag, x, y, z);
+			c.getLocation().remove(Tag.values()[sourceTag], x, y, z);
+			c.getLocation().add(Tag.values()[targetTag], x, y, z);
 		}
 	}
 	
@@ -287,7 +284,7 @@ public abstract class Potts implements Steppable {
 		Cell c = getCell(id);
 		double volume = c.getVolume();
 		double targetVolume = c.getTargetVolume();
-		double lambda = c.getLambda(TERM_VOLUME);
+		double lambda = c.getLambda(Term.VOLUME);
 		return lambda * Math.pow((volume - targetVolume + change), 2);
 	}
 	
@@ -295,16 +292,17 @@ public abstract class Potts implements Steppable {
 	 * Gets volume energy for a given change in volume for tag.
 	 *
 	 * @param id  the voxel id
-	 * @param tag  the voxel tag
+	 * @param t  the voxel tag 
 	 * @param change  the change in volume
 	 * @return  the energy
 	 */
-	double getVolume(int id, int tag, int change) {
-		if (id == 0 || tag == TAG_DEFAULT) { return 0; }
+	double getVolume(int id, int t, int change) {
+		Tag tag = Tag.values()[t];
+		if (id == 0 || tag == Tag.DEFAULT) { return 0; }
 		Cell c = getCell(id);
 		double volume = c.getVolume(tag);
 		double targetVolume = c.getTargetVolume(tag);
-		double lambda = c.getLambda(TERM_VOLUME, tag);
+		double lambda = c.getLambda(Term.VOLUME, tag);
 		return lambda * Math.pow((volume - targetVolume + change), 2);
 	}
 	
@@ -347,7 +345,7 @@ public abstract class Potts implements Steppable {
 		Cell c = getCell(id);
 		double surface = c.getSurface();
 		double targetSurface = c.getTargetSurface();
-		double lambda = c.getLambda(TERM_SURFACE);
+		double lambda = c.getLambda(Term.SURFACE);
 		return lambda * Math.pow((surface - targetSurface + change), 2);
 	}
 	
@@ -355,16 +353,17 @@ public abstract class Potts implements Steppable {
 	 * Gets the surface energy for a given change in surface for tag.
 	 *
 	 * @param id  the voxel id
-	 * @param tag  the voxel tag   
+	 * @param t  the voxel tag   
 	 * @param change  the change in surface
 	 * @return  the energy
 	 */
-	double getSurface(int id, int tag, int change) {
-		if (id == 0 || tag == TAG_DEFAULT) { return 0; }
+	double getSurface(int id, int t, int change) {
+		Tag tag = Tag.values()[t];
+		if (id == 0 || tag == Tag.DEFAULT) { return 0; }
 		Cell c = getCell(id);
 		double surface = c.getSurface(tag);
 		double targetSurface = c.getTargetSurface(tag);
-		double lambda = c.getLambda(TERM_SURFACE, tag);
+		double lambda = c.getLambda(Term.SURFACE, tag);
 		return lambda * Math.pow((surface - targetSurface + change), 2);
 	}
 	

@@ -3,6 +3,7 @@ package arcade.env.loc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.EnumMap;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Series;
 import arcade.sim.Simulation;
@@ -40,10 +41,10 @@ public abstract class LocationFactory {
 		public final int id;
 		public final ArrayList<Voxel> voxels;
 		public final Voxel center;
-		public final HashMap<String, ArrayList<Voxel>> tags;
+		public final EnumMap<Tag, ArrayList<Voxel>> tags;
 		
 		public LocationContainer(int id, Voxel center, ArrayList<Voxel> voxels,
-								 HashMap<String, ArrayList<Voxel>> tags) {
+								 EnumMap<Tag, ArrayList<Voxel>> tags) {
 			this.id = id;
 			this.center = center;
 			this.voxels = voxels;
@@ -116,10 +117,13 @@ public abstract class LocationFactory {
 			ArrayList<Voxel> voxels = getPossible(center, m);
 			
 			// Add tags (if they exist).
-			HashMap<String, ArrayList<Voxel>> tags = null;
+			EnumMap<Tag, ArrayList<Voxel>> tags = null;
 			if (tagKeys.size() > 0) {
-				tags = new HashMap<>();
-				for (String tag : tagKeys) { tags.put(tag, getPossible(center, m - 2)); }
+				tags = new EnumMap<>(Tag.class);
+				for (String tagKey : tagKeys) {
+					Tag tag = Tag.valueOf(tagKey);
+					tags.put(tag, getPossible(center, m - 2));
+				}
 			}
 			
 			LocationContainer locationContainer = new LocationContainer(id, center, voxels, tags);
@@ -275,18 +279,17 @@ public abstract class LocationFactory {
 		
 		// Add tags.
 		if (cellContainer.tagVoxels != null) {
-			HashMap<String, Integer> tagTargetMap = cellContainer.tagVoxels;
-			HashMap<String, ArrayList<Voxel>> tagVoxelMap = locationContainer.tags;
+			EnumMap<Tag, Integer> tagTargetMap = cellContainer.tagVoxels;
+			EnumMap<Tag, ArrayList<Voxel>> tagVoxelMap = locationContainer.tags;
 			location = makeLocations(voxels);
 			
-			for (String tagName : tagTargetMap.keySet()) {
+			for (Tag tag : Tag.values()) {
 				// TODO add handling of other tags
-				if (!tagName.equals("NUCLEUS")) { continue; }
-				int tagCode = nameToTag(tagName);
+				if (tag != Tag.NUCLEUS) { continue; }
 				
 				// Select tag voxels.
-				int tagTarget = tagTargetMap.get(tagName);
-				ArrayList<Voxel> allTagVoxels = tagVoxelMap.get(tagName);
+				int tagTarget = tagTargetMap.get(tag);
+				ArrayList<Voxel> allTagVoxels = tagVoxelMap.get(tag);
 				ArrayList<Voxel> tagVoxels = getSelected(allTagVoxels, center, tagTarget);
 				
 				// Add or remove tag voxels to reach target number.
@@ -295,7 +298,7 @@ public abstract class LocationFactory {
 				else if (tagSize > tagTarget) { decrease(random, tagVoxels, tagTarget); }
 				
 				// Assign tags.
-				for (Voxel voxel : tagVoxels) { location.assign(tagCode, voxel); }
+				for (Voxel voxel : tagVoxels) { location.assign(tag, voxel); }
 			}
 		} else {
 			location = makeLocation(voxels);

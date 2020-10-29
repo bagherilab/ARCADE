@@ -3,7 +3,7 @@ package arcade.agent.cell;
 import sim.engine.*;
 import arcade.agent.module.Module;
 import arcade.env.loc.Location;
-import static arcade.sim.Potts.TAG_DEFAULT;
+import static arcade.sim.Potts.Term;
 
 public interface Cell extends Steppable {
 	/** Cell state codes */
@@ -27,41 +27,16 @@ public interface Cell extends Steppable {
 		AUTOTIC
 	}
 	
-	/** Tag for cytoplasm */
-	int TAG_CYTOPLASM = -1;
-	
-	/** Tag for nucleus */
-	int TAG_NUCLEUS = -2;
-	
-	/**
-	 * Converts a tag code to the tag name.
-	 * 
-	 * @param tagCode  the tag code
-	 * @return  the tag name
-	 */
-	static String tagToName(int tagCode) {
-		String tagName = "";
-		switch(tagCode) {
-			case 0: tagName = "*"; break;
-			case TAG_CYTOPLASM: tagName = "CYTOPLASM"; break;
-			case TAG_NUCLEUS: tagName = "NUCLEUS"; break;
-		}
-		return tagName;
-	}
-	
-	/**
-	 * Converts a tag name to the tag code.
-	 * 
-	 * @param tagName  the tag name
-	 * @return  the tag code
-	 */
-	static int nameToTag(String tagName) {
-		int tagCode = TAG_DEFAULT;
-		switch(tagName) {
-			case "CYTOPLASM": tagCode = TAG_CYTOPLASM; break;
-			case "NUCLEUS": tagCode = TAG_NUCLEUS; break;
-		}
-		return tagCode;
+	/** Cell tag codes */
+	enum Tag {
+		/** Tag for undefined */
+		UNDEFINED,
+		
+		/** Tag for cytoplasm */
+		DEFAULT,
+		
+		/** Tag for nucleus */
+		NUCLEUS
 	}
 	
 	/**
@@ -93,11 +68,11 @@ public interface Cell extends Steppable {
 	int getAge();
 	
 	/**
-	 * Gets the number of cell tags
+	 * Checks if the cell has tags.
 	 *
-	 * @return  the number of tags
+	 * @return  {@code true} if the cell has tags, {@code false} otherwise
 	 */
-	int getTags();
+	boolean hasTags();
 	
 	/**
 	 * Gets the cell location object.
@@ -126,7 +101,7 @@ public interface Cell extends Steppable {
 	 * @param tag  the tag
 	 * @return  the cell volume
 	 */
-	int getVolume(int tag);
+	int getVolume(Tag tag);
 	
 	/**
 	 * Gets the cell surface (in voxels).
@@ -141,7 +116,7 @@ public interface Cell extends Steppable {
 	 * @param tag  the tag
 	 * @return  the cell surface
 	 */
-	int getSurface(int tag);
+	int getSurface(Tag tag);
 	
 	/**
 	 * Gets the target volume (in voxels)
@@ -156,7 +131,7 @@ public interface Cell extends Steppable {
 	 * @param tag  the tag
 	 * @return  the target volume
 	 */
-	double getTargetVolume(int tag);
+	double getTargetVolume(Tag tag);
 	
 	/**
 	 * Gets the target surface (in voxels)
@@ -171,7 +146,7 @@ public interface Cell extends Steppable {
 	 * @param tag  the tag
 	 * @return  the target surface
 	 */
-	double getTargetSurface(int tag);
+	double getTargetSurface(Tag tag);
 	
 	/**
 	 * Gets the critical volume (in voxels)
@@ -186,7 +161,7 @@ public interface Cell extends Steppable {
 	 * @param tag  the tag
 	 * @return  the target volume
 	 */
-	double getCriticalVolume(int tag);
+	double getCriticalVolume(Tag tag);
 	
 	/**
 	 * Gets the critical surface (in voxels)
@@ -201,7 +176,7 @@ public interface Cell extends Steppable {
 	 * @param tag  the tag
 	 * @return  the target surface
 	 */
-	double getCriticalSurface(int tag);
+	double getCriticalSurface(Tag tag);
 	
 	/**
 	 * Gets the lambda for the given term.
@@ -209,7 +184,7 @@ public interface Cell extends Steppable {
 	 * @param term  the term of the Hamiltonian
 	 * @return  the lambda value
 	 */
-	double getLambda(int term);
+	double getLambda(Term term);
 	
 	/**
 	 * Gets the lambda for the given term and tagged region.
@@ -218,7 +193,7 @@ public interface Cell extends Steppable {
 	 * @param tag  the tag
 	 * @return  the lambda value
 	 */
-	double getLambda(int term, int tag);
+	double getLambda(Term term, Tag tag);
 	
 	/**
 	 * Gets the adhesion to a cell of the given population.
@@ -235,7 +210,7 @@ public interface Cell extends Steppable {
 	 * @param tag2  the second tag
 	 * @return  the adhesion value
 	 */
-	double getAdhesion(int tag1, int tag2);
+	double getAdhesion(Tag tag1, Tag tag2);
 	
 	/**
 	 * Sets the cell state.
@@ -292,7 +267,7 @@ public interface Cell extends Steppable {
 	 * @param volume  the target volume
 	 * @param surface  the target surface
 	 */
-	void setTargets(int tag, double volume, double surface);
+	void setTargets(Tag tag, double volume, double surface);
 	
 	/**
 	 * Updates target volume and surface area.
@@ -309,5 +284,5 @@ public interface Cell extends Steppable {
 	 * @param rate  the rate of change
 	 * @param scale  the relative final size scaling
 	 */
-	void updateTarget(int tag, double rate, double scale);
+	void updateTarget(Tag tag, double rate, double scale);
 }

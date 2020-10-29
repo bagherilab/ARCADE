@@ -2,9 +2,10 @@ package arcade.sim.output;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import com.google.gson.*;
 import static arcade.agent.cell.Cell.State;
+import static arcade.agent.cell.Cell.Tag;
 import static arcade.agent.module.Module.Phase;
 import static arcade.agent.cell.CellFactory.CellContainer;
 import static arcade.agent.cell.CellFactory.CellFactoryContainer;
@@ -56,15 +57,15 @@ public final class OutputDeserializer {
 			double targetVolume = targets.get(0).getAsDouble();
 			double targetSurface = targets.get(1).getAsDouble();
 			
-			HashMap<String, Integer> tags = new HashMap<>();
-			HashMap<String, Double> targetTagVolumes = new HashMap<>();
-			HashMap<String, Double> targetTagSurfaces = new HashMap<>();
+			EnumMap<Tag, Integer> tags = new EnumMap<>(Tag.class);
+			EnumMap<Tag, Double> targetTagVolumes = new EnumMap<>(Tag.class);
+			EnumMap<Tag, Double> targetTagSurfaces = new EnumMap<>(Tag.class);
 			
 			if (jsonObject.has("tags")) {
 				JsonArray jsonArray = jsonObject.getAsJsonArray("tags");
 				for (JsonElement object : jsonArray) {
 					JsonObject tagObject = object.getAsJsonObject();
-					String tag = tagObject.get("tag").getAsString();
+					Tag tag = Tag.valueOf(tagObject.get("tag").getAsString());
 					int tagVoxels = tagObject.get("voxels").getAsInt();
 					
 					JsonArray tagTargets = tagObject.get("targets").getAsJsonArray();
@@ -122,13 +123,13 @@ public final class OutputDeserializer {
 			
 			// Set up list of all voxels and map for tag voxels.
 			ArrayList<Voxel> allVoxels = new ArrayList<>();
-			HashMap<String, ArrayList<Voxel>> tags = new HashMap<>();
+			EnumMap<Tag, ArrayList<Voxel>> tags = new EnumMap<>(Tag.class);
 			
 			// Parse lists of voxels.
 			JsonArray jsonArray = jsonObject.getAsJsonArray("location");
 			for (JsonElement object : jsonArray) {
 				JsonObject tagObject = object.getAsJsonObject();
-				String tag = tagObject.get("tag").getAsString();
+				Tag tag = Tag.valueOf(tagObject.get("tag").getAsString());
 				JsonArray voxelArray = tagObject.get("voxels").getAsJsonArray();
 				
 				ArrayList<Voxel> voxels = new ArrayList<>();

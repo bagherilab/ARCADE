@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Set;
 import ec.util.MersenneTwisterFast;
+import static arcade.agent.cell.Cell.Tag;
 
 public interface Location {
 	/** Location split directions */
@@ -53,7 +54,7 @@ public interface Location {
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
 	 */
-	void add(int tag, int x, int y, int z);
+	void add(Tag tag, int x, int y, int z);
 	
 	/**
 	 * Removes the voxel at the given coordinates.
@@ -72,7 +73,7 @@ public interface Location {
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
 	 */
-	void remove(int tag, int x, int y, int z);
+	void remove(Tag tag, int x, int y, int z);
 	
 	/**
 	 * Assigns the voxel at the given coordinates to the given tag.
@@ -80,7 +81,7 @@ public interface Location {
 	 * @param tag  the voxel tag
 	 * @param voxel  the voxel to assign
 	 */
-	void assign(int tag, Voxel voxel);
+	void assign(Tag tag, Voxel voxel);
 	
 	/**
 	 * Clears all voxel lists and arrays.
@@ -119,7 +120,7 @@ public interface Location {
 	 * 
 	 * @return  the set of tags.
 	 */
-	Set<Integer> getTags();
+	Set<Tag> getTags();
 	
 	/**
 	 * Gets the voxel at the center of the location.
@@ -141,7 +142,7 @@ public interface Location {
 	 * @param tag  the voxel tag
 	 * @return  the location volume (in voxels)
 	 */
-	int getVolume(int tag);
+	int getVolume(Tag tag);
 	
 	/**
 	 * Gets the surface area of the location.
@@ -156,7 +157,7 @@ public interface Location {
 	 * @param tag  the voxel tag
 	 * @return  the location surface area (in voxels)
 	 */
-	int getSurface(int tag);
+	int getSurface(Tag tag);
 	
 	/** Comparator for voxels */
 	Comparator<Voxel> VOXEL_COMPARATOR = (v1, v2) ->

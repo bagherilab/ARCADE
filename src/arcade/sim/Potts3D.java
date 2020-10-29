@@ -2,7 +2,7 @@ package arcade.sim;
 
 import java.util.HashSet;
 import arcade.agent.cell.Cell;
-import arcade.env.grid.Grid;
+import static arcade.agent.cell.Cell.Tag;
 
 public class Potts3D extends Potts {
 	/** Number of neighbors */
@@ -59,16 +59,18 @@ public class Potts3D extends Potts {
 		return H;
 	}
 	
-	double getAdhesion(int id, int tag, int x, int y, int z) {
+	double getAdhesion(int id, int t, int x, int y, int z) {
 		double H = 0;
 		Cell c = getCell(id);
+		Tag tag = Tag.values()[t];
 		
 		for (int k = z - 1; k <= z + 1; k++) {
 			for (int i = x - 1; i <= x + 1; i++) {
 				for (int j = y - 1; j <= y + 1; j++) {
+					Tag tagxyz = Tag.values()[TAGS[k][i][j]];
 					if (!(k == z && i == x && j == y) && IDS[k][i][j] == id
-							&& TAGS[k][i][j] != tag && TAGS[k][i][j] != 0 && TAGS[k][i][j] != TAG_DEFAULT) {
-						H += (c.getAdhesion(tag, TAGS[k][i][j]) + c.getAdhesion(TAGS[k][i][j], tag))/2;
+							&& tag != tagxyz && tagxyz != Tag.UNDEFINED && tagxyz != Tag.DEFAULT) {
+						H += (c.getAdhesion(tag, tagxyz) + c.getAdhesion(tag, tagxyz))/2;
 					}
 				}
 			}

@@ -278,7 +278,7 @@ public abstract class PottsDrawer extends Drawer {
 			else if (CODE == DRAW_NUCLEUS) {
 				for (int a = 0; a < A; a++) {
 					for (int b = 0; b < B; b++) {
-						if (HEIGHT == 1) { _to[a][b] = (tags[a][b] == TAG_NUCLEUS ? 0.75 : 0); }
+						if (HEIGHT == 1) { _to[a][b] = (tags[a][b] == Tag.NUCLEUS.ordinal() ? 0.75 : 0); }
 						else {
 							_to[a][b] = 0;
 							for (int c = 0; c < C; c++) {
@@ -299,25 +299,25 @@ public abstract class PottsDrawer extends Drawer {
 										tag = potts.TAGS[c][a][b];
 								}
 								
-								_to[a][b] += (tag == TAG_NUCLEUS ? 1./C : 0);
+								_to[a][b] += (tag == Tag.NUCLEUS.ordinal() ? 1./C : 0);
 								
 								switch (PLANE) {
 									case PLANE_X:
 										if (id != 0 && c > 0 && c < C - 1
-												&& potts.TAGS[a][c + 1][b] == TAG_NUCLEUS
-												&& potts.TAGS[a][c - 1][b] == TAG_NUCLEUS
+												&& potts.TAGS[a][c + 1][b] == Tag.NUCLEUS.ordinal()
+												&& potts.TAGS[a][c - 1][b] == Tag.NUCLEUS.ordinal()
 										) { _to[a][b] -= 1./C; }
 										break;
 									case PLANE_Y:
 										if (id != 0 && c > 0 && c < C - 1
-												&& potts.TAGS[b][a][c + 1] == TAG_NUCLEUS
-												&& potts.TAGS[b][a][c - 1] == TAG_NUCLEUS
+												&& potts.TAGS[b][a][c + 1] == Tag.NUCLEUS.ordinal()
+												&& potts.TAGS[b][a][c - 1] == Tag.NUCLEUS.ordinal()
 										) { _to[a][b] -= 1./C; }
 										break;
 									default: case PLANE_Z:
 										if (id != 0 && c > 0 && c < C - 1
-												&& potts.TAGS[c + 1][a][b] == TAG_NUCLEUS
-												&& potts.TAGS[c - 1][a][b] == TAG_NUCLEUS
+												&& potts.TAGS[c + 1][a][b] == Tag.NUCLEUS.ordinal()
+												&& potts.TAGS[c - 1][a][b] == Tag.NUCLEUS.ordinal()
 										) { _to[a][b] -= 1./C; }
 								}
 							}

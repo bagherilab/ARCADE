@@ -93,12 +93,12 @@ public abstract class ApoptosisModule implements Module  {
 	 * @param r  a random number
 	 */
 	void stepEarly(double r) {
-		if (cell.tags > 0) {
+		if (cell.tags) {
 			// Cytoplasmic water loss.
-			cell.updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_LOSS, 0.5);
+			cell.updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_LOSS, 0.5);
 			
 			// Pyknosis of nucleus.
-			cell.updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
+			cell.updateTarget(Tag.NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
 		} else {
 			cell.updateTarget(RATE_CYTOPLASM_LOSS, 0.5);
 		}
@@ -125,12 +125,12 @@ public abstract class ApoptosisModule implements Module  {
 	 * @param sim  the simulation instance
 	 */
 	void stepLate(double r, Simulation sim) {
-		if (cell.tags > 0) {
+		if (cell.tags) {
 			// Cytoplasm blebbing.
-			cell.updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_BLEBBING, 0);
+			cell.updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_BLEBBING, 0);
 			
 			// Nuclear fragmentation.
-			cell.updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
+			cell.updateTarget(Tag.NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
 		}
 		else {
 			cell.updateTarget(RATE_CYTOPLASM_BLEBBING, 0);

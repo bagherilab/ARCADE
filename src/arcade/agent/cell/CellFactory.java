@@ -1,40 +1,38 @@
 package arcade.agent.cell;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import arcade.sim.Series;
 import arcade.env.loc.Location;
 import arcade.sim.Simulation;
 import arcade.util.MiniBox;
-import static arcade.sim.Potts.*;
+import static arcade.sim.Potts.Term;
 import static arcade.agent.cell.Cell.State;
+import static arcade.agent.cell.Cell.Tag;
 import static arcade.agent.module.Module.Phase;
 import static arcade.sim.Series.TARGET_SEPARATOR;
 import static arcade.util.MiniBox.TAG_SEPARATOR;
 
 public abstract class CellFactory {
 	/** Map of population to critical values */
-	HashMap<Integer, double[]> popToCriticals;
+	HashMap<Integer, EnumMap<Term, Double>> popToCriticals;
 	
 	/** Map of population to lambda values */
-	HashMap<Integer, double[]> popToLambdas;
+	HashMap<Integer, EnumMap<Term, Double>> popToLambdas;
 	
 	/** Map of population to adhesion values */
 	HashMap<Integer, double[]> popToAdhesion;
 	
 	/** Map of population to number of tags */
-	HashMap<Integer, ArrayList<String>> popToTags;
+	HashMap<Integer, Boolean> popToTags;
 	
 	/** Map of population to tag critical values */
-	HashMap<Integer, double[][]> popToTagCriticals;
+	HashMap<Integer, EnumMap<Tag, EnumMap<Term, Double>>> popToTagCriticals;
 	
 	/** Map of population to tag lambda values */
-	HashMap<Integer, double[][]> popToTagLambdas;
+	HashMap<Integer, EnumMap<Tag, EnumMap<Term, Double>>> popToTagLambdas;
 	
 	/** Map of population to tag adhesion values */
-	HashMap<Integer, double[][]> popToTagAdhesion;
+	HashMap<Integer, EnumMap<Tag, EnumMap<Tag, Double>>> popToTagAdhesion;
 	
 	/** Map of population to list of ids */
 	public final HashMap<Integer, HashSet<Integer>> popToIDs;
@@ -78,17 +76,17 @@ public abstract class CellFactory {
 		public final State state;
 		public final Phase phase;
 		public final int voxels;
-		public final HashMap<String, Integer> tagVoxels;
+		public final EnumMap<Tag, Integer> tagVoxels;
 		public final double targetVolume;
 		public final double targetSurface;
-		public final HashMap<String, Double> tagTargetVolume;
-		public final HashMap<String, Double> tagTargetSurface;
+		public final EnumMap<Tag, Double> tagTargetVolume;
+		public final EnumMap<Tag, Double> tagTargetSurface;
 		
 		public CellContainer(int id, int pop, int voxels) {
 			this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels, null, 0, 0, null, null);
 		}
 		
-		public CellContainer(int id, int pop, int voxels, HashMap<String, Integer> tagVoxels) {
+		public CellContainer(int id, int pop, int voxels, EnumMap<Tag, Integer> tagVoxels) {
 			this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels, tagVoxels, 0, 0, null, null);
 		}
 		
@@ -98,9 +96,9 @@ public abstract class CellFactory {
 		}
 		
 		public CellContainer(int id, int pop, int age, State state, Phase phase, int voxels,
-							 HashMap<String, Integer> tagVoxels,
+							 EnumMap<Tag, Integer> tagVoxels,
 							 double targetVolume, double targetSurface,
-							 HashMap<String, Double> tagTargetVolume, HashMap<String, Double> tagTargetSurface) {
+							 EnumMap<Tag, Double> tagTargetVolume, EnumMap<Tag, Double> tagTargetSurface) {
 			this.id = id;
 			this.pop = pop;
 			this.age = age;
@@ -142,20 +140,16 @@ public abstract class CellFactory {
 			int pop = population.getInt("CODE");
 			popToIDs.put(pop, new HashSet<>());
 			
-			// Get lambda values.
-			double[] criticals = new double[] {
-					population.getDouble("CRITICAL_VOLUME"),
-					population.getDouble("CRITICAL_SURFACE")
-			};
+			// Iterate through terms to get critical and lambda values.
+			EnumMap<Term, Double> criticals = new EnumMap<>(Term.class);
+			EnumMap<Term, Double> lambdas = new EnumMap<>(Term.class);
+			
+			for (Term term : Term.values()) {
+				criticals.put(term, population.getDouble("CRITICAL_" + term.name()));
+				lambdas.put(term, population.getDouble("LAMBDA_" + term.name()));
+			}
 			
 			popToCriticals.put(pop, criticals);
-			
-			// Get lambda values.
-			double[] lambdas = new double[] {
-					population.getDouble("LAMBDA_VOLUME"),
-					population.getDouble("LAMBDA_SURFACE")
-			};
-			
 			popToLambdas.put(pop, lambdas);
 			
 			// Get adhesion values.
@@ -170,32 +164,39 @@ public abstract class CellFactory {
 			
 			// Get tags (if they exist).
 			MiniBox tagBox = population.filter("TAG");
-			if (tagBox.getKeys().size() > 0) {
-				ArrayList<String> tagKeys = tagBox.getKeys();
-				int tags = tagKeys.size();
+			ArrayList<String> tagKeys = tagBox.getKeys();
+			if (tagKeys.size() > 0) {
+				EnumMap<Tag, EnumMap<Term, Double>> criticalsTag = new EnumMap<>(Tag.class);
+				EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = new EnumMap<>(Tag.class);
+				EnumMap<Tag, EnumMap<Tag, Double>> adhesionsTag = new EnumMap<>(Tag.class);
 				
-				double[][] criticalsTag = new double[NUMBER_TERMS][tags];
-				double[][] lambdasTag = new double[NUMBER_TERMS][tags];
-				double[][] adhesionsTag = new double[tags][tags];
-				
-				for (int i = 0; i < tags; i++) {
-					MiniBox populationTag = population.filter(tagKeys.get(i));
+				for (String tagKey : tagKeys) {
+					MiniBox populationTag = population.filter(tagKey);
+					Tag tag = Tag.valueOf(tagKey);
 					
-					// Load tag critical values.
-					criticalsTag[TERM_VOLUME][i] = populationTag.getDouble("CRITICAL_VOLUME");
-					criticalsTag[TERM_SURFACE][i] = populationTag.getDouble("CRITICAL_SURFACE");
+					// Iterate through terms to get critical and lambda values for tag.
+					EnumMap<Term, Double> criticalTagTerms = new EnumMap<>(Term.class);
+					EnumMap<Term, Double> lambdaTagTerms = new EnumMap<>(Term.class);
 					
-					// Load tag lambda values.
-					lambdasTag[TERM_VOLUME][i] = populationTag.getDouble("LAMBDA_VOLUME");
-					lambdasTag[TERM_SURFACE][i] = populationTag.getDouble("LAMBDA_SURFACE");
-					
-					// Load tag adhesion values.
-					for (int j = 0; j < tags; j++) {
-						adhesionsTag[i][j] = populationTag.getDouble("ADHESION" + TARGET_SEPARATOR + tagKeys.get(j));
+					for (Term term : Term.values()) {
+						criticalTagTerms.put(term, populationTag.getDouble("CRITICAL_" + term.name()));
+						lambdaTagTerms.put(term, populationTag.getDouble("LAMBDA_" + term.name()));
 					}
+					
+					criticalsTag.put(tag, criticalTagTerms);
+					lambdasTag.put(tag, lambdaTagTerms);
+					
+					// Iterate through tags to get adhesion values.
+					EnumMap<Tag, Double> adhesionTagValues = new EnumMap<>(Tag.class);
+					
+					for (Tag targetKey : Tag.values()) {
+						adhesionTagValues.put(targetKey, populationTag.getDouble("ADHESION" + TARGET_SEPARATOR + targetKey));
+					}
+					
+					adhesionsTag.put(tag, adhesionTagValues);
 				}
 				
-				popToTags.put(pop, tagKeys);
+				popToTags.put(pop, tagKeys.size() > 0);
 				popToTagCriticals.put(pop, criticalsTag);
 				popToTagLambdas.put(pop, lambdasTag);
 				popToTagAdhesion.put(pop, adhesionsTag);
@@ -242,18 +243,18 @@ public abstract class CellFactory {
 		for (MiniBox population : series._populations.values()) {
 			int n = population.getInt("INIT");
 			int pop = population.getInt("CODE");
-			ArrayList<String> tags = popToTags.get(pop);
+			boolean tags = popToTags.get(pop);
 			
 			// Calculate voxels and (if they exist) tag voxels.
 			int voxels = (int)(population.getDouble("CRITICAL_VOLUME")/Simulation.DS);
-			HashMap<String, Integer> tagVoxels;
+			EnumMap<Tag, Integer> tagVoxels;
 			
-			if (tags == null) { tagVoxels = null; }
+			if (!tags) { tagVoxels = null; }
 			else {
-				tagVoxels = new HashMap<>();
+				tagVoxels = new EnumMap<>(Tag.class);
 				int total = 0;
 				
-				for (String tag : tags) {
+				for (Tag tag : Tag.values()) {
 					double fraction = population.getDouble("TAG" + TAG_SEPARATOR + tag);
 					int voxelFraction = (int)Math.round(fraction*voxels);
 					total += voxelFraction;
@@ -276,37 +277,36 @@ public abstract class CellFactory {
 	 *
 	 * @param id  the cell ID
 	 * @param pop  the cell population index
-	 * @param age  the cell age
 	 * @param state  the cell state
+	 * @param age  the cell age (in ticks)
 	 * @param location  the {@link arcade.env.loc.Location} of the cell
-	 * @param criticals  the list of critical values
-	 * @param lambdas  the list of lambda multipliers
+	 * @param criticals  the map of critical values
+	 * @param lambdas  the map of lambda multipliers
 	 * @param adhesion  the list of adhesion values
-	 * @return  a {@link arcade.agent.cell.Cell} object
 	 */
 	abstract Cell makeCell(int id, int pop, int age, State state, Location location,
-						   double[] criticals, double[] lambdas, double[] adhesion);
+						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion);
 	
 	/**
 	 * Creates a {@link arcade.agent.cell.Cell} object with tags.
 	 *
 	 * @param id  the cell ID
 	 * @param pop  the cell population index
-	 * @param age  the cell age
 	 * @param state  the cell state
+	 * @param age  the cell age (in ticks)
 	 * @param location  the {@link arcade.env.loc.Location} of the cell
-	 * @param criticals  the list of critical values
-	 * @param lambdas  the list of lambda multipliers
+	 * @param criticals  the map of critical values
+	 * @param lambdas  the map of lambda multipliers
 	 * @param adhesion  the list of adhesion values
-	 * @param tags  the number of tags
-	 * @param criticalsTag  the list of tagged critical values
-	 * @param lambdasTag  the list of tagged lambda multipliers
-	 * @param adhesionsTag  the list of tagged adhesion values
+	 * @param criticalsTag  the map of tagged critical values
+	 * @param lambdasTag  the map of tagged lambda multipliers
+	 * @param adhesionTag  the map of tagged adhesion values
 	 * @return  a {@link arcade.agent.cell.Cell} object
 	 */
 	abstract Cell makeCell(int id, int pop, int age, State state, Location location,
-						   double[] criticals, double[] lambdas, double[] adhesion, int tags,
-						   double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag);
+						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
+						   EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
+						   EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag);
 	
 	/**
 	 * Create a {@link arcade.agent.cell.Cell} object in the given population.
@@ -323,34 +323,28 @@ public abstract class CellFactory {
 		Phase phase = cellContainer.phase;
 		
 		// Get copies of critical, lambda, and adhesion values.
-		double[] criticals = popToCriticals.get(pop).clone();
-		double[] lambdas = popToLambdas.get(pop).clone();
+		EnumMap<Term, Double> criticals = popToCriticals.get(pop).clone();
+		EnumMap<Term, Double> lambdas = popToLambdas.get(pop).clone();
 		double[] adhesion = popToAdhesion.get(pop).clone();
 		
 		// Make cell.
 		Cell cell;
 		
 		if (popToTags.containsKey(pop)) {
-			int tags = popToTags.get(pop).size();
-			
 			// Initialize tag arrays.
-			double[][] criticalsTag = new double[NUMBER_TERMS][tags];
-			double[][] lambdasTag = new double[NUMBER_TERMS][tags];
-			double[][] adhesionsTag = new double[tags][tags];
+			EnumMap<Tag, EnumMap<Term, Double>> criticalsTag = new EnumMap<>(Tag.class);
+			EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = new EnumMap<>(Tag.class);
+			EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag = new EnumMap<>(Tag.class);
 			
-			// Get copies of critical and lambda values.
-			for (int i = 0; i < NUMBER_TERMS; i++) {
-				criticalsTag[i] = popToTagCriticals.get(pop)[i].clone();
-				lambdasTag[i] = popToTagLambdas.get(pop)[i].clone();
+			// Get copies of critical, lambda, and adhesion values.
+			for (Tag tag : Tag.values()) {
+				criticalsTag.put(tag, popToTagCriticals.get(pop).get(tag).clone());
+				lambdasTag.put(tag, popToTagLambdas.get(pop).get(tag).clone());
+				adhesionTag.put(tag, popToTagAdhesion.get(pop).get(tag).clone());
 			}
 			
-			// Get copies of tag values.
-			for (int i = 0; i < tags; i++) {
-				adhesionsTag[i] = popToTagAdhesion.get(pop)[i].clone();
-			}
-			
-			cell = makeCell(id, pop, age, state, location, criticals, lambdas, adhesion, tags,
-					criticalsTag, lambdasTag, adhesionsTag);
+			cell = makeCell(id, pop, age, state, location, criticals, lambdas, adhesion,
+					criticalsTag, lambdasTag, adhesionTag);
 		} else {
 			cell = makeCell(id, pop, age, state, location, criticals, lambdas, adhesion);
 		}
@@ -358,9 +352,8 @@ public abstract class CellFactory {
 		// Update cell targets.
 		cell.setTargets(cellContainer.targetVolume, cellContainer.targetSurface);
 		if (cellContainer.tagTargetVolume != null && cellContainer.tagTargetSurface != null) {
-			for (String tagName : popToTags.get(pop)) {
-				int tagCode = Cell.nameToTag(tagName);
-				cell.setTargets(tagCode, cellContainer.tagTargetVolume.get(tagName), cellContainer.tagTargetSurface.get(tagName));
+			for (Tag tag : Tag.values()) {
+				cell.setTargets(tag, cellContainer.tagTargetVolume.get(tag), cellContainer.tagTargetSurface.get(tag));
 			}
 		}
 		

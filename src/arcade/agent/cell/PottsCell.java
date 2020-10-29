@@ -1,11 +1,12 @@
 package arcade.agent.cell;
 
 import sim.engine.*;
+import java.util.EnumMap;
 import arcade.sim.Simulation;
 import arcade.agent.module.Module;
 import arcade.agent.module.*;
 import arcade.env.loc.Location;
-import static arcade.sim.Potts.*;
+import static arcade.sim.Potts.Term;
 
 public abstract class PottsCell implements Cell {
 	/** Stopper used to stop this agent from being stepped in the schedule */
@@ -26,38 +27,38 @@ public abstract class PottsCell implements Cell {
 	/** Cell age (in minutes) */
 	private int age;
 	
-	/** Number of tagged regions */
-	public int tags;
+	/** {@code true} if the cell has tags, {@code false} otherwise */
+	public boolean tags;
 	
 	/** Target cell volume (in voxels) */
 	private double targetVolume;
 	
 	/** Target tagged cell volumes (in voxels) */
-	private final double[] targetTagVolumes;
+	private final EnumMap<Tag, Double> targetTagVolumes;
 	
 	/** Target cell surface (in voxels) */
 	private double targetSurface;
 	
 	/** Target tagged cell surfaces (in voxels) */
-	private final double[] targetTagSurfaces;
+	private final EnumMap<Tag, Double> targetTagSurfaces;
 	
 	/** Critical values for cell (in voxels) */
-	final double[] criticals;
+	final EnumMap<Term, Double> criticals;
 	
 	/** Critical values for cell (in voxels) by tag */
-	final double[][] criticalsTag;
+	final EnumMap<Tag, EnumMap<Term, Double>> criticalsTag;
 	
 	/** Lambda parameters for cell */
-	final double[] lambdas;
+	final EnumMap<Term, Double> lambdas;
 	
 	/** Lambda parameters for cell by tag */
-	final double[][] lambdasTag;
+	final EnumMap<Tag, EnumMap<Term, Double>> lambdasTag;
 	
 	/** Adhesion values for cell */
 	final double[] adhesion;
 	
 	/** Adhesion values for cell by tag*/
-	final double[][] adhesionTag;
+	final EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag;
 	
 	/** Cell state module */
 	protected Module module;
@@ -65,43 +66,43 @@ public abstract class PottsCell implements Cell {
 	/**
 	 * Creates a {@code PottsCell} agent.
 	 * <p>
-	 * The default population is 1, state is proliferative, and age is 0.
+	 * The default state is proliferative and age is 0.
 	 * The cell is created with no tags.
 	 *
 	 * @param id  the cell ID
-	 * @param pop  the cell population index   
+	 * @param pop  the cell population index
 	 * @param location  the {@link arcade.env.loc.Location} of the cell
-	 * @param criticals  the list of critical values
-	 * @param lambdas  the list of lambda multipliers
+	 * @param criticals  the map of critical values
+	 * @param lambdas  the map of lambda multipliers
 	 * @param adhesion  the list of adhesion values
 	 */
 	public PottsCell(int id, int pop, Location location,
-					 double[] criticals, double[] lambdas, double[] adhesion) {
-		this(id, pop, State.PROLIFERATIVE, 0, location,
-				criticals, lambdas, adhesion, 0, null, null, null);
+					 EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion) {
+		this(id, pop, State.PROLIFERATIVE, 0, location, false,
+				criticals, lambdas, adhesion, null, null, null);
 	}
 	
 	/**
 	 * Creates a {@code PottsCell} agent.
 	 * <p>
-	 * The default state is proliferative and age is 0. 
+	 * The default state is proliferative and age is 0.
 	 * 
 	 * @param id  the cell ID
 	 * @param pop  the cell population index
 	 * @param location  the {@link arcade.env.loc.Location} of the cell
-	 * @param criticals  the list of critical values
-	 * @param lambdas  the list of lambda multipliers
+	 * @param criticals  the map of critical values
+	 * @param lambdas  the map of lambda multipliers
 	 * @param adhesion  the list of adhesion values
-	 * @param tags  the number of tags
-	 * @param criticalsTag  the list of tagged critical values
-	 * @param lambdasTag  the list of tagged lambda multipliers
-	 * @param adhesionsTag  the list of tagged adhesion values
+	 * @param criticalsTag  the map of tagged critical values
+	 * @param lambdasTag  the map of tagged lambda multipliers
+	 * @param adhesionTag  the map of tagged adhesion values
 	 */
 	public PottsCell(int id, int pop, Location location,
-					 double[] criticals, double[] lambdas, double[] adhesion, int tags,
-					 double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
-		this(id, pop, State.PROLIFERATIVE, 0, location,
-				criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionsTag);
+					 EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
+					 EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
+					 EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag) {
+		this(id, pop, State.PROLIFERATIVE, 0, location, true,
+				criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
 	}
 	
 	/**
@@ -112,17 +113,18 @@ public abstract class PottsCell implements Cell {
 	 * @param state  the cell state
 	 * @param age  the cell age (in ticks)
 	 * @param location  the {@link arcade.env.loc.Location} of the cell
-	 * @param criticals  the list of critical values
-	 * @param lambdas  the list of lambda multipliers
+	 * @param criticals  the map of critical values
+	 * @param lambdas  the map of lambda multipliers
 	 * @param adhesion  the list of adhesion values
-	 * @param tags  the number of tags
-	 * @param criticalsTag  the list of tagged critical values
-	 * @param lambdasTag  the list of tagged lambda multipliers
-	 * @param adhesionsTag  the list of tagged adhesion values
+	 * @param tags  {@code true} if the cell has tags, {@code false} otherwise
+	 * @param criticalsTag  the map of tagged critical values
+	 * @param lambdasTag  the map of tagged lambda multipliers
+	 * @param adhesionTag  the map of tagged adhesion values
 	 */
-	public PottsCell(int id, int pop, State state, int age, Location location,
-					 double[] criticals, double[] lambdas, double[] adhesion, int tags,
-					 double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
+	public PottsCell(int id, int pop, State state, int age, Location location, boolean tags,
+					 EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
+					 EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
+					 EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag) {
 		this.id = id;
 		this.pop = pop;
 		this.age = age;
@@ -131,23 +133,27 @@ public abstract class PottsCell implements Cell {
 		this.criticals = criticals.clone();
 		this.lambdas = lambdas.clone();
 		this.adhesion = adhesion.clone();
-		this.criticalsTag = (tags == 0 ? null : new double[NUMBER_TERMS][tags]);
-		this.lambdasTag = (tags == 0 ? null : new double[NUMBER_TERMS][tags]);
-		this.adhesionTag = (tags == 0 ? null : new double[tags][tags]);
-		this.targetTagVolumes = (tags == 0 ? null : new double[tags]);
-		this.targetTagSurfaces = (tags == 0 ? null : new double[tags]);
 		
 		setState(state);
 		
-		if (tags != 0) {
-			for (int i = 0; i < NUMBER_TERMS; i++) {
-				this.criticalsTag[i] = criticalsTag[i].clone();
-				this.lambdasTag[i] = lambdasTag[i].clone();
-			}
+		if (tags) {
+			this.criticalsTag = new EnumMap<>(Tag.class);
+			this.lambdasTag = new EnumMap<>(Tag.class);
+			this.adhesionTag = new EnumMap<>(Tag.class);
+			this.targetTagVolumes = new EnumMap<>(Tag.class);
+			this.targetTagSurfaces = new EnumMap<>(Tag.class);
 			
-			for (int i = 0; i < tags; i++) {
-				this.adhesionTag[i] = adhesionsTag[i].clone();
+			for (Tag tag : Tag.values()) {
+				this.criticalsTag.put(tag, criticalsTag.get(tag).clone());
+				this.lambdasTag.put(tag, lambdasTag.get(tag).clone());
+				this.adhesionTag.put(tag, adhesionTag.get(tag).clone());
 			}
+		} else {
+			this.criticalsTag = null;
+			this.lambdasTag = null;
+			this.adhesionTag = null;
+			this.targetTagVolumes = null;
+			this.targetTagSurfaces = null;
 		}
 	}
 	
@@ -159,7 +165,7 @@ public abstract class PottsCell implements Cell {
 	
 	public int getAge() { return age; }
 	
-	public int getTags() { return tags; }
+	public boolean hasTags() { return tags; }
 	
 	public Location getLocation() { return location; }
 	
@@ -167,35 +173,35 @@ public abstract class PottsCell implements Cell {
 	
 	public int getVolume() { return location.getVolume(); }
 	
-	public int getVolume(int tag) { return (isValid(tag) ? location.getVolume(tag) : 0); }
+	public int getVolume(Tag tag) { return location.getVolume(tag); }
 	
 	public int getSurface() { return location.getSurface(); }
 	
-	public int getSurface(int tag) { return (isValid(tag) ? location.getSurface(tag) : 0); }
+	public int getSurface(Tag tag) { return location.getSurface(tag); }
 	
 	public double getTargetVolume() { return targetVolume; }
 	
-	public double getTargetVolume(int tag) { return (isValid(tag) ? targetTagVolumes[-tag - 1] : 0); }
+	public double getTargetVolume(Tag tag) { return targetTagVolumes.get(tag); }
 	
 	public double getTargetSurface() { return targetSurface; }
 	
-	public double getTargetSurface(int tag) { return (isValid(tag) ? targetTagSurfaces[-tag - 1] : 0); }
+	public double getTargetSurface(Tag tag) { return targetTagSurfaces.get(tag); }
 	
-	public double getCriticalVolume() { return criticals[TERM_VOLUME]; }
+	public double getCriticalVolume() { return criticals.get(Term.VOLUME); }
 	
-	public double getCriticalVolume(int tag) { return (isValid(tag) ? criticalsTag[TERM_VOLUME][-tag - 1] : 0); }
+	public double getCriticalVolume(Tag tag) { return criticalsTag.get(tag).get(Term.VOLUME); }
 	
-	public double getCriticalSurface() { return criticals[TERM_SURFACE]; }
+	public double getCriticalSurface() { return criticals.get(Term.SURFACE); }
 	
-	public double getCriticalSurface(int tag) { return (isValid(tag) ? criticalsTag[TERM_SURFACE][-tag - 1] : 0); }
+	public double getCriticalSurface(Tag tag) { return criticalsTag.get(tag).get(Term.SURFACE); }
 	
-	public double getLambda(int term) { return lambdas[term]; }
+	public double getLambda(Term term) { return lambdas.get(term); }
 	
-	public double getLambda(int term, int tag) { return (isValid(tag) ? lambdasTag[term][-tag - 1] : Double.NaN); }
+	public double getLambda(Term term, Tag tag) { return lambdasTag.get(tag).get(term); }
 	
 	public double getAdhesion(int pop) { return adhesion[pop]; }
 	
-	public double getAdhesion(int tag1, int tag2) { return (isValid(tag1) && isValid(tag2) ? adhesionTag[-tag1 - 1][-tag2 - 1] : Double.NaN); }
+	public double getAdhesion(Tag tag1, Tag tag2) { return adhesionTag.get(tag1).get(tag2); }
 	
 	public void setState(State state) {
 		this.state = state;
@@ -234,31 +240,23 @@ public abstract class PottsCell implements Cell {
 		targetVolume = location.getVolume();
 		targetSurface = location.getSurface();
 		
-		for (int i = 0; i < this.tags; i++) {
-			targetTagVolumes[i] = location.getVolume(-i - 1);
-			targetTagSurfaces[i] = location.getSurface(-i - 1);
+		for (Tag tag : Tag.values()) {
+			targetTagVolumes.put(tag, (double)location.getVolume(tag));
+			targetTagSurfaces.put(tag, (double)location.getSurface(tag));
 		}
 	}
 	
 	public void reset(int[][][] ids, int[][][] tags) {
 		location.update(id, ids, tags);
 		
-		targetVolume = criticals[TERM_VOLUME];
-		targetSurface = criticals[TERM_SURFACE];
+		targetVolume = criticals.get(Term.VOLUME);
+		targetSurface = criticals.get(Term.SURFACE);
 		
-		for (int i = 0; i < this.tags; i++) {
-			targetTagVolumes[i] = criticalsTag[TERM_VOLUME][i];
-			targetTagSurfaces[i] = criticalsTag[TERM_SURFACE][i];
+		for (Tag tag : Tag.values()) {
+			targetTagVolumes.put(tag, criticalsTag.get(tag).get(Term.VOLUME));
+			targetTagSurfaces.put(tag, criticalsTag.get(tag).get(Term.SURFACE));
 		}
 	}
-	
-	/**
-	 * Checks if the tag is valid.
-	 * 
-	 * @param tag  the tag to check
-	 * @return  {@code true} if the tag is valid, {@code false} otherwise
-	 */
-	boolean isValid(int tag) { return -tag > 0 && -tag <= tags; }
 	
 	/**
 	 * Steps through cell rules.
@@ -280,17 +278,17 @@ public abstract class PottsCell implements Cell {
 		targetSurface = surface;
 	}
 	
-	public void setTargets(int tag, double volume, double surface) {
-		targetTagVolumes[-tag - 1] = volume;
-		targetTagSurfaces[-tag - 1] = surface;
+	public void setTargets(Tag tag, double volume, double surface) {
+		targetTagVolumes.put(tag, volume);
+		targetTagSurfaces.put(tag, surface);
 	}
 	
 	public void updateTarget(double rate, double scale) {
 		double volume = getVolume();
-		if (tags > 0) { targetTagVolumes[0] -= targetVolume; }
+		if (tags) { targetTagVolumes.put(Tag.DEFAULT, targetTagVolumes.get(Tag.DEFAULT) - targetVolume); }
 		
 		double oldTargetVolume = targetVolume;
-		targetVolume = volume + rate*(scale*criticals[TERM_VOLUME] - volume)*Simulation.DT;
+		targetVolume = volume + rate*(scale*criticals.get(Term.VOLUME) - volume)*Simulation.DT;
 		
 		// Ensure that target volume increases or decreases monotonically.
 		if ((scale > 1 && targetVolume < oldTargetVolume) ||
@@ -300,28 +298,28 @@ public abstract class PottsCell implements Cell {
 		
 		targetSurface = convert(targetVolume);
 		
-		if (tags > 0) {
-			targetTagVolumes[0] += targetVolume;
-			targetTagSurfaces[0] = convert(targetTagVolumes[0]);
+		if (tags) {
+			targetTagVolumes.put(Tag.DEFAULT, targetTagVolumes.get(Tag.DEFAULT) + targetVolume);
+			targetTagSurfaces.put(Tag.DEFAULT, convert(targetTagVolumes.get(Tag.DEFAULT)));
 		}
 	}
 	
-	public void updateTarget(int tag, double rate, double scale) {
+	public void updateTarget(Tag tag, double rate, double scale) {
 		double tagVolume = getVolume(tag);
-		targetVolume -= targetTagVolumes[-tag - 1];
+		targetVolume -= targetTagVolumes.get(tag);
 		
-		double oldTargetTagVolume = targetTagVolumes[-tag - 1];
-		targetTagVolumes[-tag - 1] = tagVolume + rate*(scale*criticalsTag[TERM_VOLUME][-tag - 1] - tagVolume)*Simulation.DT;
+		double oldTargetTagVolume = targetTagVolumes.get(tag);
+		targetTagVolumes.put(tag, tagVolume + rate*(scale*criticalsTag.get(tag).get(Term.VOLUME) - tagVolume)*Simulation.DT);
 		
 		// Ensure that target volume increases or decreases monotonically.
-		if ((scale > 1 && targetTagVolumes[-tag - 1] < oldTargetTagVolume) ||
-				(scale < 1 && targetTagVolumes[-tag - 1] > oldTargetTagVolume)) {
-			targetTagVolumes[-tag - 1] = oldTargetTagVolume;
+		if ((scale > 1 && targetTagVolumes.get(tag) < oldTargetTagVolume) ||
+				(scale < 1 && targetTagVolumes.get(tag) > oldTargetTagVolume)) {
+			targetTagVolumes.put(tag, oldTargetTagVolume);
 		}
 		
-		targetTagSurfaces[-tag - 1] = convert(targetTagVolumes[-tag - 1]);
+		targetTagSurfaces.put(tag, convert(targetTagVolumes.get(tag)));
 		
-		targetVolume += targetTagVolumes[-tag - 1];
+		targetVolume += targetTagVolumes.get(tag);
 		targetSurface = convert(targetVolume);
 	}
 	

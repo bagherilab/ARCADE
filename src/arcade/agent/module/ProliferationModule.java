@@ -169,12 +169,12 @@ public abstract class ProliferationModule implements Module {
 	 * an average time of {@code DURATION_S}.
 	 */
 	void stepS(double r) {
-		if (cell.tags > 0) {
+		if (cell.tags) {
 			// Increase size of nucleus.
-			cell.updateTarget(TAG_NUCLEUS, RATE_S, 2);
+			cell.updateTarget(Tag.NUCLEUS, RATE_S, 2);
 			
 			// Check for transition to G2 phase.
-			if (cell.getVolume(TAG_NUCLEUS) > GROWTH_CHECKPOINT_S*cell.getCriticalVolume(TAG_NUCLEUS)) {
+			if (cell.getVolume(Tag.NUCLEUS) > GROWTH_CHECKPOINT_S*cell.getCriticalVolume(Tag.NUCLEUS)) {
 				phase = Phase.PROLIFERATIVE_G2;
 			}
 		} else {

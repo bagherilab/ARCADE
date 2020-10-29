@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
+import static arcade.agent.cell.Cell.Tag;
 
 public abstract class PottsLocation implements Location {
 	/** Difference between split voxel numbers */
@@ -34,15 +35,15 @@ public abstract class PottsLocation implements Location {
 	
 	public ArrayList<Voxel> getVoxels() { return new ArrayList<>(voxels); }
 	
-	public Set<Integer> getTags() { return new HashSet<>(); }
+	public Set<Tag> getTags() { return new HashSet<>(); }
 	
 	public int getVolume() { return volume; }
 	
-	public int getVolume(int tag) { return getVolume(); }
+	public int getVolume(Tag tag) { return getVolume(); }
 	
 	public int getSurface() { return surface; }
 	
-	public int getSurface(int tag) { return getSurface(); }
+	public int getSurface(Tag tag) { return getSurface(); }
 	
 	public void add(int x, int y, int z) {
 		Voxel voxel = new Voxel(x, y, z);
@@ -53,7 +54,7 @@ public abstract class PottsLocation implements Location {
 		}
 	}
 	
-	public void add(int tag, int x, int y, int z) { add(x, y, z); }
+	public void add(Tag tag, int x, int y, int z) { add(x, y, z); }
 	
 	public void remove(int x, int y, int z) {
 		Voxel voxel = new Voxel(x, y, z);
@@ -64,9 +65,9 @@ public abstract class PottsLocation implements Location {
 		}
 	}
 	
-	public void remove(int tag, int x, int y, int z) { remove(x, y, z); }
+	public void remove(Tag tag, int x, int y, int z) { remove(x, y, z); }
 	
-	public void assign(int tag, Voxel voxel) { }
+	public void assign(Tag tag, Voxel voxel) { }
 	
 	public void clear(int[][][] ids, int[][][] tags) {
 		for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = 0; }

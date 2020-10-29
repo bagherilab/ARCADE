@@ -1,19 +1,18 @@
 package arcade.env.loc;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
 import ec.util.MersenneTwisterFast;
-import arcade.sim.Potts;
 import arcade.sim.Simulation;
-import static arcade.sim.Potts.*;
+import static arcade.agent.cell.Cell.Tag;
 
 public abstract class PottsLocations extends PottsLocation {
 	private static final int MAX_ITERATIONS = 100;
 	
 	/** Map of tag to location */
-	public HashMap<Integer, PottsLocation> locations;
+	public EnumMap<Tag, PottsLocation> locations;
 	
 	/**
 	 * Creates a {@code PottsLocations} for a list of voxels.
@@ -22,24 +21,24 @@ public abstract class PottsLocations extends PottsLocation {
 	 */
 	public PottsLocations(ArrayList<Voxel> voxels) {
 		super(voxels);
-		this.locations = new HashMap<>();
+		this.locations = new EnumMap<>(Tag.class);
 		
 		ArrayList<Voxel> voxelCopy = new ArrayList<>(voxels);
-		locations.put(Potts.TAG_DEFAULT, makeLocation(voxelCopy));
+		locations.put(Tag.DEFAULT, makeLocation(voxelCopy));
 	}
 	
-	public Set<Integer> getTags() { return locations.keySet(); }
+	public Set<Tag> getTags() { return locations.keySet(); }
 	
-	public int getVolume(int tag) { return (locations.containsKey(tag) ? locations.get(tag).volume : 0); }
+	public int getVolume(Tag tag) { return (locations.containsKey(tag) ? locations.get(tag).volume : 0); }
 	
-	public int getSurface(int tag) { return (locations.containsKey(tag) ? locations.get(tag).surface : 0); }
+	public int getSurface(Tag tag) { return (locations.containsKey(tag) ? locations.get(tag).surface : 0); }
 	
 	public void add(int x, int y, int z) {
 		super.add(x, y, z);
-		locations.get(Potts.TAG_DEFAULT).add(x, y, z);
+		locations.get(Tag.DEFAULT).add(x, y, z);
 	}
 	
-	public void add(int tag, int x, int y, int z) {
+	public void add(Tag tag, int x, int y, int z) {
 		super.add(x, y, z);
 		
 		Voxel voxel = new Voxel(x, y, z);
@@ -56,23 +55,23 @@ public abstract class PottsLocations extends PottsLocation {
 		for (PottsLocation location : locations.values()) { location.remove(x, y, z); }
 	}
 	
-	public void remove(int tag, int x, int y, int z) {
+	public void remove(Tag tag, int x, int y, int z) {
 		Voxel voxel = new Voxel(x, y, z);
 		if (locations.containsKey(tag) && !locations.get(tag).voxels.contains(voxel)) { return; }
 		super.remove(x, y, z);
 		if (locations.containsKey(tag)) { locations.get(tag).remove(x, y, z); }
 	}
 	
-	public void assign(int tag, Voxel voxel) {
-		int oldTag = 0;
+	public void assign(Tag tag, Voxel voxel) {
+		Tag oldTag = Tag.UNDEFINED;
 		
 		// Check all tags for the voxel. 
-		for (int key : locations.keySet()) {
+		for (Tag key : locations.keySet()) {
 			if (key != tag && locations.get(key).voxels.contains(voxel)) { oldTag = key; }
 		}
 		
 		// Only assign if voxel exists and is assigned to a different tag.
-		if (oldTag == 0) { return; }
+		if (oldTag == Tag.UNDEFINED) { return; }
 		
 		// Create new tag location if it does not exist.
 		if (!locations.containsKey(tag)) {
@@ -101,8 +100,8 @@ public abstract class PottsLocations extends PottsLocation {
 	public void update(int id, int[][][] ids, int[][][] tags) {
 		super.update(id, ids, tags);
 		
-		for (int tag : locations.keySet()) {
-			locations.get(tag).update(tag, tags, null);
+		for (Tag tag : locations.keySet()) {
+			locations.get(tag).update(tag.ordinal(), tags, null);
 		}
 	}
 	
@@ -127,19 +126,18 @@ public abstract class PottsLocations extends PottsLocation {
 	Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
 							MersenneTwisterFast random) {
 		PottsLocations splitLocation = makeLocations(voxelsB);
-		int n = locations.keySet().size();
-		double[] fractions = new double[n];
+		EnumMap<Tag, Double> fractions = new EnumMap<>(Tag.class);
 		
 		// Update voxels in current location.
-		for (int tag : locations.keySet()) {
+		for (Tag tag : locations.keySet()) {
 			// Track fraction of voxels for each tag.
-			fractions[-tag - 1] = (double)locations.get(tag).voxels.size()/voxels.size();
+			fractions.put(tag, (double)locations.get(tag).voxels.size()/voxels.size());
 			
 			// Assign to default tag if in current split (A), otherwise remove
 			// because it is in the new split (B).
 			ArrayList<Voxel> tagVoxels = new ArrayList<>(locations.get(tag).voxels);
 			for (Voxel voxel : tagVoxels) {
-				if (voxelsA.contains(voxel)) { assign(TAG_DEFAULT, voxel); }
+				if (voxelsA.contains(voxel)) { assign(Tag.DEFAULT, voxel); }
 				else { remove(voxel.x, voxel.y, voxel.z); }
 			}
 			
@@ -163,20 +161,20 @@ public abstract class PottsLocations extends PottsLocation {
 	 * @param fractions  the tag fractions
 	 * @param random  the seeded random number generator 
 	 */
-	static void assignVoxels(PottsLocations location, double[] fractions,
+	static void assignVoxels(PottsLocations location, EnumMap<Tag, Double> fractions,
 							 MersenneTwisterFast random) {
-		ArrayList<Voxel> defaultVoxels = location.locations.get(TAG_DEFAULT).voxels;
+		ArrayList<Voxel> defaultVoxels = location.locations.get(Tag.DEFAULT).voxels;
 		
-		for (int tag : location.locations.keySet()) {
+		for (Tag tag : location.locations.keySet()) {
 			// No assignment for default tags.
-			if (tag == TAG_DEFAULT) { continue; }
+			if (tag == Tag.DEFAULT) { continue; }
 			
 			// Get approximate number of voxels to assign.
-			double n = fractions[-tag - 1]*location.volume;
+			double n = fractions.get(tag)*location.volume;
 			
 			// Select assignment center. If the center voxel doesn't exist,
 			// then select random voxel.
-			Voxel center = location.locations.get(TAG_DEFAULT).getCenter();
+			Voxel center = location.locations.get(Tag.DEFAULT).getCenter();
 			if (!defaultVoxels.contains(center)) {
 				center = defaultVoxels.get(random.nextInt(defaultVoxels.size()));
 			}
@@ -196,7 +194,7 @@ public abstract class PottsLocations extends PottsLocation {
 	 * @param n  the target number of voxels to assign
 	 * @param random  the seeded random number generator 
 	 */
-	static void selectVoxels(PottsLocations location, Voxel center, int tag, ArrayList<Voxel> voxels,
+	static void selectVoxels(PottsLocations location, Voxel center, Tag tag, ArrayList<Voxel> voxels,
 							 double n, MersenneTwisterFast random) {
 		ArrayList<Voxel> selected = location.getSelected(center, n);
 		
