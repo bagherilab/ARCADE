@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import arcade.env.loc.*;
 import static arcade.sim.Potts.*;
+import static arcade.agent.cell.Cell.State;
 import static arcade.agent.cell.CellFactoryTest.*;
 
 public class CellFactory3DTest {
@@ -15,7 +16,7 @@ public class CellFactory3DTest {
 		int cellID = (int)random() + 1;
 		int cellPop = (int)random() + 1;
 		int cellAge = (int)random();
-		int cellState = (int)(Math.random()*5);
+		State cellState = Cell.State.values()[(int)(Math.random()* Cell.State.values().length)];
 		Location location = mock(Location.class);
 		double[] criticals = new double[] { random(), random() };
 		double[] lambdas = new double[] { random(), random() };
@@ -43,7 +44,7 @@ public class CellFactory3DTest {
 		int cellID = (int)random() + 1;
 		int cellPop = (int)random() + 1;
 		int cellAge = (int)random();
-		int cellState = (int)(Math.random()*5);
+		State cellState = Cell.State.values()[(int)(Math.random()* Cell.State.values().length)];
 		Location location = mock(Location.class);
 		double[] criticals = new double[] { random(), random() };
 		double[] lambdas = new double[] { random(), random() };

@@ -218,7 +218,7 @@ public abstract class PottsDrawer extends Drawer {
 							break;
 						case DRAW_STATE:
 							_to[a][b] = cell == null ? 0 :
-									cell.getState() + 1 + cell.getModule().getPhase()/10.0;
+									cell.getState().ordinal() + 1 + cell.getModule().getPhase()/10.0;
 							break;
 						case DRAW_VOLUME:
 							_to[a][b] = cell == null ? 0 : cell.getVolume();

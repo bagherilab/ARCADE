@@ -116,13 +116,13 @@ public class PottsCellTest {
 			super(id, pop, location, criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionsTag);
 		}
 		
-		public PottsCellMock(int id, int pop, int state, int age, Location location,
+		public PottsCellMock(int id, int pop, State state, int age, Location location,
 							 double[] criticals, double[] lambdas, double[] adhesion, int tags,
 							 double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
 			super(id, pop, state, age, location, criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionsTag);
 		}
 		
-		public PottsCell make(int id, int state, Location location) {
+		public PottsCell make(int id, State state, Location location) {
 			return new PottsCellMock(id, pop, state, 0, location,
 					criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionTag);
 		}
@@ -149,12 +149,12 @@ public class PottsCellTest {
 	
 	@Test
 	public void getState_defaultConstructor_returnsValue() {
-		assertEquals(STATE_PROLIFERATIVE, cellDefault.getState());
+		assertEquals(State.PROLIFERATIVE, cellDefault.getState());
 	}
 	
 	@Test
 	public void getState_valueAssigned_returnsValue() {
-		int cellState = STATE_QUIESCENT;
+		State cellState = State.QUIESCENT;
 		PottsCellMock cell = new PottsCellMock(cellID, 0, cellState, 0, location, criticals, lambdas, adhesion, 0, null, null, null);
 		assertEquals(cellState, cell.getState());
 	}
@@ -167,7 +167,7 @@ public class PottsCellTest {
 	@Test
 	public void getAge_valueAssigned_returnsValue() {
 		int cellAge = (int)(Math.random() * 100);
-		PottsCellMock cell = new PottsCellMock(cellID, 0, 0, cellAge, location, criticals, lambdas, adhesion, 0, null, null, null);
+		PottsCellMock cell = new PottsCellMock(cellID, 0, State.QUIESCENT, cellAge, location, criticals, lambdas, adhesion, 0, null, null, null);
 		assertEquals(cellAge, cell.getAge());
 	}
 	
@@ -179,7 +179,7 @@ public class PottsCellTest {
 	@Test
 	public void getTags_hasTags_returnsNumber() {
 		int tags = (int)(Math.random()*10) + 2;
-		PottsCellMock cell = new PottsCellMock(cellID, 0, 0, 0,
+		PottsCellMock cell = new PottsCellMock(cellID, 0, State.QUIESCENT, 0,
 				location, criticals, lambdas, adhesion, tags, 
 				new double[2][tags], new double[2][tags], new double[tags][tags]);
 		assertEquals(tags, cell.getTags());
@@ -558,46 +558,46 @@ public class PottsCellTest {
 	public void setState_givenState_assignsValue() {
 		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, criticals, lambdas, adhesion);
 		
-		cell.setState(STATE_QUIESCENT);
-		assertEquals(STATE_QUIESCENT, cell.getState());
+		cell.setState(State.QUIESCENT);
+		assertEquals(State.QUIESCENT, cell.getState());
 		
-		cell.setState(STATE_PROLIFERATIVE);
-		assertEquals(STATE_PROLIFERATIVE, cell.getState());
+		cell.setState(State.PROLIFERATIVE);
+		assertEquals(State.PROLIFERATIVE, cell.getState());
 		
-		cell.setState(STATE_APOPTOTIC);
-		assertEquals(STATE_APOPTOTIC, cell.getState());
+		cell.setState(State.APOPTOTIC);
+		assertEquals(State.APOPTOTIC, cell.getState());
 		
-		cell.setState(STATE_NECROTIC);
-		assertEquals(STATE_NECROTIC, cell.getState());
+		cell.setState(State.NECROTIC);
+		assertEquals(State.NECROTIC, cell.getState());
 		
-		cell.setState(STATE_AUTOTIC);
-		assertEquals(STATE_AUTOTIC, cell.getState());
+		cell.setState(State.AUTOTIC);
+		assertEquals(State.AUTOTIC, cell.getState());
 	}
 	
 	@Test
 	public void setState_givenState_updatesModule() {
 		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, criticals, lambdas, adhesion);
 		
-		cell.setState(STATE_QUIESCENT);
+		cell.setState(State.QUIESCENT);
 		assertTrue(cell.module instanceof QuiescenceModule);
 		
-		cell.setState(STATE_PROLIFERATIVE);
+		cell.setState(State.PROLIFERATIVE);
 		assertTrue(cell.module instanceof ProliferationModule);
 		
-		cell.setState(STATE_APOPTOTIC);
+		cell.setState(State.APOPTOTIC);
 		assertTrue(cell.module instanceof ApoptosisModule);
 		
-		cell.setState(STATE_NECROTIC);
+		cell.setState(State.NECROTIC);
 		assertTrue(cell.module instanceof NecrosisModule);
 		
-		cell.setState(STATE_AUTOTIC);
+		cell.setState(State.AUTOTIC);
 		assertTrue(cell.module instanceof AutosisModule);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void setState_invalidState_throwsException() {
 		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location, criticals, lambdas, adhesion);
-		cell.setState(-1);
+		cell.setState(State.UNDEFINED);
 	}
 	
 	@Test

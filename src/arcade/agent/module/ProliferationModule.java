@@ -139,7 +139,7 @@ public abstract class ProliferationModule implements Module {
 	void stepG1(double r) {
 		// Random chance of apoptosis.
 		if (r < BASAL_APOPTOSIS_RATE*Simulation.DT) {
-			cell.setState(STATE_APOPTOTIC);
+			cell.setState(State.APOPTOTIC);
 			return;
 		}
 		
@@ -279,7 +279,7 @@ public abstract class ProliferationModule implements Module {
 		
 		// Create and schedule new cell.
 		int newID = sim.getID();
-		Cell newCell = cell.make(newID, STATE_PROLIFERATIVE, newLocation);
+		Cell newCell = cell.make(newID, State.PROLIFERATIVE, newLocation);
 		sim.getAgents().addObject(newID, newCell);
 		newCell.reset(potts.IDS, potts.TAGS);
 		newCell.schedule(sim.getSchedule());

@@ -6,20 +6,26 @@ import arcade.env.loc.Location;
 import static arcade.sim.Potts.TAG_DEFAULT;
 
 public interface Cell extends Steppable {
-	/** Code for quiescent cells */
-	int STATE_QUIESCENT = 0;
-	
-	/** Code for proliferative cells */
-	int STATE_PROLIFERATIVE = 1;
-	
-	/** Code for apoptotic cells */
-	int STATE_APOPTOTIC = 2;
-	
-	/** Code for necrotic cells */
-	int STATE_NECROTIC = 3;
-	
-	/** Code for autotic cells */
-	int STATE_AUTOTIC = 4;
+	/** Cell state codes */
+	enum State {
+		/** Code for undefined state */
+		UNDEFINED,
+		
+		/** Code for quiescent cells */
+		QUIESCENT,
+		
+		/** Code for proliferative cells */
+		PROLIFERATIVE,
+		
+		/** Code for apoptotic cells */
+		APOPTOTIC,
+		
+		/** Code for necrotic cells */
+		NECROTIC,
+		
+		/** Code for autotic cells */
+		AUTOTIC
+	}
 	
 	/** Tag for cytoplasm */
 	int TAG_CYTOPLASM = -1;
@@ -77,7 +83,7 @@ public interface Cell extends Steppable {
 	 *
 	 * @return  the cell state
 	 */
-	int getState();
+	State getState();
 	
 	/**
 	 * Gets the cell age (in minutes)
@@ -236,7 +242,7 @@ public interface Cell extends Steppable {
 	 *
 	 * @param state  the cell state
 	 */
-	void setState(int state);
+	void setState(State state);
 	
 	/**
 	 * Creates a new cell.
@@ -246,7 +252,7 @@ public interface Cell extends Steppable {
 	 * @param location  the new cell location
 	 * @return  the new {@code Cell} object
 	 */
-	Cell make(int id, int state, Location location);
+	Cell make(int id, State state, Location location);
 	
 	/**
 	 * Schedules the cell in the simulation.

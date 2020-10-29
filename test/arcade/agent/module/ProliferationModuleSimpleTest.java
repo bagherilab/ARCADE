@@ -105,7 +105,7 @@ public class ProliferationModuleSimpleTest {
 		
 		verify(cell, never()).updateTarget(RATE_G1, 2);
 		verify(module, never()).checkpointG1();
-		verify(cell).setState(STATE_APOPTOTIC);
+		verify(cell).setState(State.APOPTOTIC);
 	}
 	
 	@Test
@@ -378,7 +378,7 @@ public class ProliferationModuleSimpleTest {
 		Location newLocation = mock(Location.class);
 		PottsCell newCell = spy(mock(PottsCell.class));
 		
-		doReturn(newCell).when(cell).make(eq(id), anyInt(), eq(newLocation));
+		doReturn(newCell).when(cell).make(eq(id), any(State.class), eq(newLocation));
 		doReturn(location).when(cell).getLocation();
 		doReturn(newLocation).when(location).split(random);
 		doNothing().when(cell).reset(any(), any());

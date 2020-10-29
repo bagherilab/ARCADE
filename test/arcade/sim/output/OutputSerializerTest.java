@@ -267,7 +267,7 @@ public class OutputSerializerTest {
 		Module module = mock(Module.class);
 		doReturn(module).when(cell).getModule();
 		
-		int state = randomInt();
+		State state = Cell.State.values()[(int)(Math.random()* Cell.State.values().length)];
 		int phase = randomInt();
 		doReturn(state).when(cell).getState();
 		doReturn(phase).when(module).getPhase();
@@ -276,7 +276,7 @@ public class OutputSerializerTest {
 				+ "\"id\":" + id + ","
 				+ "\"pop\":" + pop + ","
 				+ "\"age\":" + age + ","
-				+ "\"state\":" + state + ","
+				+ "\"state\":\"" + state.name() + "\","
 				+ "\"phase\":" + phase + ","
 				+ "\"voxels\":" + voxels + ","
 				+ "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0]"
@@ -311,7 +311,7 @@ public class OutputSerializerTest {
 		Module module = mock(Module.class);
 		doReturn(module).when(cell).getModule();
 		
-		int state = randomInt();
+		State state = Cell.State.values()[(int)(Math.random()* Cell.State.values().length)];
 		int phase = randomInt();
 		doReturn(state).when(cell).getState();
 		doReturn(phase).when(module).getPhase();
@@ -347,7 +347,7 @@ public class OutputSerializerTest {
 				+ "\"id\":" + id + ","
 				+ "\"pop\":" + pop + ","
 				+ "\"age\":" + age + ","
-				+ "\"state\":" + state + ","
+				+ "\"state\":\"" + state.name() + "\","
 				+ "\"phase\":" + phase + ","
 				+ "\"voxels\":" + voxels + ","
 				+ "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0],"

@@ -74,7 +74,7 @@ public abstract class CellFactory {
 		public final int id;
 		public final int pop;
 		public final int age;
-		public final int state;
+		public final State state;
 		public final int phase;
 		public final int voxels;
 		public final HashMap<String, Integer> tagVoxels;
@@ -84,19 +84,19 @@ public abstract class CellFactory {
 		public final HashMap<String, Double> tagTargetSurface;
 		
 		public CellContainer(int id, int pop, int voxels) {
-			this(id, pop, 0, STATE_PROLIFERATIVE, 0, voxels, null, 0, 0, null, null);
+			this(id, pop, 0, State.PROLIFERATIVE, 0, voxels, null, 0, 0, null, null);
 		}
 		
 		public CellContainer(int id, int pop, int voxels, HashMap<String, Integer> tagVoxels) {
-			this(id, pop, 0, STATE_PROLIFERATIVE, 0, voxels, tagVoxels, 0, 0, null, null);
+			this(id, pop, 0, State.PROLIFERATIVE, 0, voxels, tagVoxels, 0, 0, null, null);
 		}
 		
-		public CellContainer(int id, int pop, int age, int state, int phase, int voxels,
+		public CellContainer(int id, int pop, int age, State state, int phase, int voxels,
 							 double targetVolume, double targetSurface) {
 			this(id, pop, age, state, phase, voxels, null, targetVolume, targetSurface, null, null);
 		}
 		
-		public CellContainer(int id, int pop, int age, int state, int phase, int voxels,
+		public CellContainer(int id, int pop, int age, State state, int phase, int voxels,
 							 HashMap<String, Integer> tagVoxels,
 							 double targetVolume, double targetSurface,
 							 HashMap<String, Double> tagTargetVolume, HashMap<String, Double> tagTargetSurface) {
@@ -283,7 +283,7 @@ public abstract class CellFactory {
 	 * @param adhesion  the list of adhesion values
 	 * @return  a {@link arcade.agent.cell.Cell} object
 	 */
-	abstract Cell makeCell(int id, int pop, int age, int state, Location location,
+	abstract Cell makeCell(int id, int pop, int age, State state, Location location,
 						   double[] criticals, double[] lambdas, double[] adhesion);
 	
 	/**
@@ -303,7 +303,7 @@ public abstract class CellFactory {
 	 * @param adhesionsTag  the list of tagged adhesion values
 	 * @return  a {@link arcade.agent.cell.Cell} object
 	 */
-	abstract Cell makeCell(int id, int pop, int age, int state, Location location,
+	abstract Cell makeCell(int id, int pop, int age, State state, Location location,
 						   double[] criticals, double[] lambdas, double[] adhesion, int tags,
 						   double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag);
 	
@@ -318,7 +318,7 @@ public abstract class CellFactory {
 		int id = cellContainer.id;
 		int pop = cellContainer.pop;
 		int age = cellContainer.age;
-		int state = cellContainer.state;
+		State state = cellContainer.state;
 		int phase = cellContainer.phase;
 		
 		// Get copies of critical, lambda, and adhesion values.

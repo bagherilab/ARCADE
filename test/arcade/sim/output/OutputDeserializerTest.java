@@ -8,7 +8,8 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import arcade.env.loc.*;
+import arcade.agent.cell.Cell;
+import static arcade.agent.cell.Cell.State;
 import static arcade.agent.cell.CellFactory.CellContainer;
 import static arcade.agent.cell.CellFactory.CellFactoryContainer;
 import static arcade.env.loc.Location.Voxel;
@@ -76,7 +77,7 @@ public class OutputDeserializerTest {
 		int id = randomInt();
 		int pop = randomInt();
 		int age = randomInt();
-		int state = randomInt();
+		State state = Cell.State.values()[(int)(Math.random()* Cell.State.values().length)];
 		int phase = randomInt();
 		int voxels = randomInt();
 		int targetVolume = randomInt();
@@ -86,7 +87,7 @@ public class OutputDeserializerTest {
 				+ "\"id\": " + id
 				+ ",\"pop\": " + pop
 				+ ",\"age\": " + age
-				+ ",\"state\": " + state
+				+ ",\"state\":\"" + state.name() + "\""
 				+ ",\"phase\": " + phase
 				+ ",\"voxels\": " + voxels
 				+ ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
@@ -115,7 +116,7 @@ public class OutputDeserializerTest {
 		int id = randomInt();
 		int pop = randomInt();
 		int age = randomInt();
-		int state = randomInt();
+		State state = Cell.State.values()[(int)(Math.random()* Cell.State.values().length)];
 		int phase = randomInt();
 		int voxels = randomInt();
 		int targetVolume = randomInt();
@@ -134,7 +135,7 @@ public class OutputDeserializerTest {
 				+ "\"id\": " + id
 				+ ",\"pop\": " + pop
 				+ ",\"age\": " + age
-				+ ",\"state\": " + state
+				+ ",\"state\":\"" + state.name() + "\""
 				+ ",\"phase\": " + phase
 				+ ",\"voxels\": " + voxels
 				+ ",\"targets\":[" + targetVolume + "," + targetSurface + "]"

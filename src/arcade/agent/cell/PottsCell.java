@@ -21,7 +21,7 @@ public abstract class PottsCell implements Cell {
 	final int pop;
 	
 	/** Cell state */
-	private int state;
+	private State state;
 	
 	/** Cell age (in minutes) */
 	private int age;
@@ -77,7 +77,7 @@ public abstract class PottsCell implements Cell {
 	 */
 	public PottsCell(int id, int pop, Location location,
 					 double[] criticals, double[] lambdas, double[] adhesion) {
-		this(id, pop, STATE_PROLIFERATIVE, 0, location,
+		this(id, pop, State.PROLIFERATIVE, 0, location,
 				criticals, lambdas, adhesion, 0, null, null, null);
 	}
 	
@@ -100,7 +100,7 @@ public abstract class PottsCell implements Cell {
 	public PottsCell(int id, int pop, Location location,
 					 double[] criticals, double[] lambdas, double[] adhesion, int tags,
 					 double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
-		this(id, pop, STATE_PROLIFERATIVE, 0, location,
+		this(id, pop, State.PROLIFERATIVE, 0, location,
 				criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionsTag);
 	}
 	
@@ -120,7 +120,7 @@ public abstract class PottsCell implements Cell {
 	 * @param lambdasTag  the list of tagged lambda multipliers
 	 * @param adhesionsTag  the list of tagged adhesion values
 	 */
-	public PottsCell(int id, int pop, int state, int age, Location location,
+	public PottsCell(int id, int pop, State state, int age, Location location,
 					 double[] criticals, double[] lambdas, double[] adhesion, int tags,
 					 double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
 		this.id = id;
@@ -155,7 +155,7 @@ public abstract class PottsCell implements Cell {
 	
 	public int getPop() { return pop; }
 	
-	public int getState() { return state; }
+	public State getState() { return state; }
 	
 	public int getAge() { return age; }
 	
@@ -197,23 +197,23 @@ public abstract class PottsCell implements Cell {
 	
 	public double getAdhesion(int tag1, int tag2) { return (isValid(tag1) && isValid(tag2) ? adhesionTag[-tag1 - 1][-tag2 - 1] : Double.NaN); }
 	
-	public void setState(int state) {
+	public void setState(State state) {
 		this.state = state;
 		
 		switch (state) {
-			case STATE_QUIESCENT:
+			case QUIESCENT:
 				module = new QuiescenceModule(this);
 				break;
-			case STATE_PROLIFERATIVE:
+			case PROLIFERATIVE:
 				module = new ProliferationModule.Simple(this);
 				break;
-			case STATE_APOPTOTIC:
+			case APOPTOTIC:
 				module = new ApoptosisModule.Simple(this);
 				break;
-			case STATE_NECROTIC:
+			case NECROTIC:
 				module = new NecrosisModule(this);
 				break;
-			case STATE_AUTOTIC:
+			case AUTOTIC:
 				module = new AutosisModule(this);
 				break;
 			default:

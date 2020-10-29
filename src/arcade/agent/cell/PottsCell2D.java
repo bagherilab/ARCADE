@@ -62,13 +62,13 @@ public class PottsCell2D extends PottsCell {
 	 * @param lambdasTag  the list of tagged lambda multipliers
 	 * @param adhesionsTag  the list of tagged adhesion values
 	 */
-	public PottsCell2D(int id, int pop, int state, int age, Location location,
+	public PottsCell2D(int id, int pop, State state, int age, Location location,
 					   double[] criticals, double[] lambdas, double[] adhesion, int tags,
 					   double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
 		super(id, pop, state, age, location, criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionsTag);
 	}
 	
-	public PottsCell make(int id, int state, Location location) {
+	public PottsCell make(int id, State state, Location location) {
 		return new PottsCell2D(id, pop, state, 0, location,
 				criticals, lambdas, adhesion, tags, criticalsTag, lambdasTag, adhesionTag);
 	}

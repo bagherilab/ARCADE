@@ -111,7 +111,7 @@ public final class OutputSerializer {
 			json.addProperty("id", src.getID());
 			json.addProperty("pop", src.getPop());
 			json.addProperty("age", src.getAge());
-			json.addProperty("state", src.getState());
+			json.addProperty("state", src.getState().name());
 			json.addProperty("phase", src.getModule().getPhase());
 			json.addProperty("voxels", src.getLocation().getVolume());
 			

@@ -49,7 +49,7 @@ public class PottsCell3DTest {
 		Location location1 = mock(Location.class);
 		Location location2 = mock(Location.class);
 		PottsCell3D cell1 = new PottsCell3D(cellID, cellPop, location1, criticals, lambdas, adhesion, 0, null, null, null);
-		PottsCell cell2 = cell1.make(cellID + 1, STATE_AUTOTIC, location2);
+		PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
 		
 		assertEquals(cellID + 1, cell2.id);
 		assertEquals(cellPop, cell2.pop);
