@@ -322,6 +322,18 @@ public class CellFactoryTest {
 		Series series = mock(Series.class);
 		series.loader = mock(OutputLoader.class);
 		
+		series._populations = new HashMap<>();
+		
+		MiniBox pop1 = new MiniBox();
+		pop1.put("CODE", 1);
+		pop1.put("INIT", N);
+		series._populations.put("A", pop1);
+		
+		MiniBox pop2 = new MiniBox();
+		pop2.put("CODE", 2);
+		pop2.put("INIT", M);
+		series._populations.put("B", pop2);
+		
 		doAnswer(invocation -> {
 			factory.container = new CellFactoryContainer();
 			for (int i = 0; i < N + M; i++) { factory.container.cells.add(containers.get(i)); }
@@ -356,6 +368,13 @@ public class CellFactoryTest {
 		Series series = mock(Series.class);
 		series.loader = mock(OutputLoader.class);
 		
+		series._populations = new HashMap<>();
+		
+		MiniBox pop1 = new MiniBox();
+		pop1.put("CODE", 1);
+		pop1.put("INIT", N);
+		series._populations.put("A", pop1);
+		
 		doAnswer(invocation -> {
 			factory.container = new CellFactoryContainer();
 			for (int i = 0; i < N; i++) { factory.container.cells.add(containers.get(i)); }
@@ -365,6 +384,61 @@ public class CellFactoryTest {
 		factory.loadCells(series);
 		assertEquals(0, factory.cells.size());
 		assertFalse(factory.popToIDs.containsKey(1));
+	}
+	
+	@Test
+	public void loadCells_givenLoadedLimitedInit_updatesLists() {
+		int n = randomInt();
+		int N = n + randomInt();
+		int M = randomInt();
+		ArrayList<CellContainer> containers = new ArrayList<>();
+		
+		for (int i = 0; i < N; i++) {
+			CellContainer container = new CellContainer(i, 1, randomInt());
+			containers.add(container);
+		}
+		
+		for (int i = N; i < N + M; i++) {
+			CellContainer container = new CellContainer(i, 2, randomInt());
+			containers.add(container);
+		}
+		
+		CellFactoryMock factory = new CellFactoryMock();
+		factory.popToIDs.put(1, new HashSet<>());
+		factory.popToIDs.put(2, new HashSet<>());
+		Series series = mock(Series.class);
+		series.loader = mock(OutputLoader.class);
+		
+		series._populations = new HashMap<>();
+		
+		MiniBox pop1 = new MiniBox();
+		pop1.put("CODE", 1);
+		pop1.put("INIT", n);
+		series._populations.put("A", pop1);
+		
+		MiniBox pop2 = new MiniBox();
+		pop2.put("CODE", 2);
+		pop2.put("INIT", M);
+		series._populations.put("B", pop2);
+		
+		doAnswer(invocation -> {
+			factory.container = new CellFactoryContainer();
+			for (int i = 0; i < N + M; i++) { factory.container.cells.add(containers.get(i)); }
+			return null;
+		}).when(series.loader).load(factory);
+		
+		factory.loadCells(series);
+		assertEquals(n + M, factory.cells.size());
+		assertEquals(n, factory.popToIDs.get(1).size());
+		assertEquals(M, factory.popToIDs.get(2).size());
+		for (int i = 0; i < n; i++) {
+			assertEquals(i, factory.container.cells.get(i).id);
+			assertEquals(1, factory.container.cells.get(i).pop);
+		}
+		for (int i = N; i < N + M; i++) {
+			assertEquals(i, factory.container.cells.get(i).id);
+			assertEquals(2, factory.container.cells.get(i).pop);
+		}
 	}
 	
 	@Test

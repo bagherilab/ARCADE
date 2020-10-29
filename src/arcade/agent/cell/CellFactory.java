@@ -211,11 +211,20 @@ public abstract class CellFactory {
 		// Load cells.
 		series.loader.load(this);
 		
+		// Population sizes.
+		HashMap<Integer, Integer> popToSize = new HashMap<>();
+		for (MiniBox population : series._populations.values()) {
+			int n = population.getInt("INIT");
+			int pop = population.getInt("CODE");
+			popToSize.put(pop, n);
+		}
+		
 		// Map loaded container to factory.
 		for (CellContainer cellContainer : container.cells) {
-			if (popToIDs.containsKey(cellContainer.pop)) {
+			int pop = cellContainer.pop;
+			if (popToIDs.containsKey(pop) && popToIDs.get(pop).size() < popToSize.get(pop)) {
 				cells.put(cellContainer.id, cellContainer);
-				popToIDs.get(cellContainer.pop).add(cellContainer.id);
+				popToIDs.get(pop).add(cellContainer.id);
 			}
 		}
 	}
