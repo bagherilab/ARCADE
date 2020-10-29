@@ -37,12 +37,12 @@ public class ApoptosisModuleSimpleTest {
 	@Test
 	public void getPhase_defaultConstructor_returnsValue() {
 		ApoptosisModule module = new ApoptosisModule.Simple(mock(PottsCell.class));
-		assertEquals(PHASE_EARLY_APOPTOSIS, module.getPhase());
+		assertEquals(Phase.APOPTOSIS_EARLY, module.getPhase());
 	}
 	
 	@Test
 	public void setPhase_givenValue_setsValue() {
-		int phase = (int)(Math.random()*100);
+		Phase phase = Phase.values()[(int)(Math.random()*Phase.values().length)];
 		ApoptosisModule module = new ApoptosisModule.Simple(mock(PottsCell.class));
 		module.setPhase(phase);
 		assertEquals(phase, module.phase);
@@ -51,7 +51,7 @@ public class ApoptosisModuleSimpleTest {
 	@Test
 	public void step_givenPhaseEarly_callsMethod() {
 		ApoptosisModule module = spy(new ApoptosisModule.Simple(mock(PottsCell.class)));
-		module.phase = PHASE_EARLY_APOPTOSIS;
+		module.phase = Phase.APOPTOSIS_EARLY;
 		
 		module.step(random, sim);
 		verify(module).stepEarly(r);
@@ -61,7 +61,7 @@ public class ApoptosisModuleSimpleTest {
 	@Test
 	public void step_givenPhaseLate_callsMethod() {
 		ApoptosisModule module = spy(new ApoptosisModule.Simple(mock(PottsCell.class)));
-		module.phase = PHASE_LATE_APOPTOSIS;
+		module.phase = Phase.APOPTOSIS_LATE;
 		
 		module.step(random, sim);
 		verify(module).stepLate(r, sim);
@@ -75,7 +75,7 @@ public class ApoptosisModuleSimpleTest {
 			ApoptosisModule module = spy(new ApoptosisModule.Simple(cell));
 			
 			cell.tags = 2;
-			module.phase = PHASE_EARLY_APOPTOSIS;
+			module.phase = Phase.APOPTOSIS_EARLY;
 			module.stepEarly(i/10.);
 			verify(cell).updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_LOSS, 0.5);
 			verify(cell).updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
@@ -89,7 +89,7 @@ public class ApoptosisModuleSimpleTest {
 			PottsCell cell = mock(PottsCell.class);
 			ApoptosisModule module = spy(new ApoptosisModule.Simple(cell));
 			
-			module.phase = PHASE_EARLY_APOPTOSIS;
+			module.phase = Phase.APOPTOSIS_EARLY;
 			module.stepEarly(i/10.);
 			verify(cell, never()).updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_LOSS, 0.5);
 			verify(cell, never()).updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
@@ -101,18 +101,18 @@ public class ApoptosisModuleSimpleTest {
 	public void stepEarly_noTransition_maintainsPhase() {
 		PottsCell cell = mock(PottsCell.class);
 		ApoptosisModule module = spy(new ApoptosisModule.Simple(cell));
-		module.phase = PHASE_EARLY_APOPTOSIS;
+		module.phase = Phase.APOPTOSIS_EARLY;
 		module.stepEarly(Simulation.DT/DURATION_EARLY + EPSILON);
-		assertEquals(PHASE_EARLY_APOPTOSIS, module.phase);
+		assertEquals(Phase.APOPTOSIS_EARLY, module.phase);
 	}
 	
 	@Test
 	public void stepEarly_withTransition_updatesPhase() {
 		PottsCell cell = mock(PottsCell.class);
 		ApoptosisModule module = spy(new ApoptosisModule.Simple(cell));
-		module.phase = PHASE_EARLY_APOPTOSIS;
+		module.phase = Phase.APOPTOSIS_EARLY;
 		module.stepEarly(Simulation.DT/DURATION_EARLY - EPSILON);
-		assertEquals(PHASE_LATE_APOPTOSIS, module.phase);
+		assertEquals(Phase.APOPTOSIS_LATE, module.phase);
 	}
 	
 	@Test
@@ -127,7 +127,7 @@ public class ApoptosisModuleSimpleTest {
 			cell.stopper = mock(Stoppable.class);
 			
 			cell.tags = 2;
-			module.phase = PHASE_LATE_APOPTOSIS;
+			module.phase = Phase.APOPTOSIS_LATE;
 			module.stepLate(i/10., sim);
 			verify(cell).updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_BLEBBING, 0);
 			verify(cell).updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
@@ -146,7 +146,7 @@ public class ApoptosisModuleSimpleTest {
 			doNothing().when(location).clear(any(), any());
 			cell.stopper = mock(Stoppable.class);
 			
-			module.phase = PHASE_LATE_APOPTOSIS;
+			module.phase = Phase.APOPTOSIS_LATE;
 			module.stepLate(i/10., sim);
 			verify(cell, never()).updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_BLEBBING, 0);
 			verify(cell, never()).updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
@@ -159,10 +159,10 @@ public class ApoptosisModuleSimpleTest {
 		PottsCell cell = mock(PottsCell.class);
 		ApoptosisModule module = spy(new ApoptosisModule.Simple(cell));
 		doNothing().when(module).removeCell(sim);
-		module.phase = PHASE_LATE_APOPTOSIS;
+		module.phase = Phase.APOPTOSIS_LATE;
 		module.stepLate(Simulation.DT/DURATION_LATE + EPSILON, sim);
 		verify(module, never()).removeCell(sim);
-		assertEquals(PHASE_LATE_APOPTOSIS, module.phase);
+		assertEquals(Phase.APOPTOSIS_LATE, module.phase);
 	}
 	
 	@Test
@@ -170,10 +170,10 @@ public class ApoptosisModuleSimpleTest {
 		PottsCell cell = mock(PottsCell.class);
 		ApoptosisModule module = spy(new ApoptosisModule.Simple(cell));
 		doNothing().when(module).removeCell(sim);
-		module.phase = PHASE_LATE_APOPTOSIS;
+		module.phase = Phase.APOPTOSIS_LATE;
 		module.stepLate(Simulation.DT/DURATION_LATE - EPSILON, sim);
 		verify(module).removeCell(sim);
-		assertEquals(PHASE_APOPTOSED, module.phase);
+		assertEquals(Phase.APOPTOSED, module.phase);
 	}
 	
 	@Test
@@ -184,10 +184,10 @@ public class ApoptosisModuleSimpleTest {
 		when(cell.getCriticalVolume()).thenReturn(volume);
 		ApoptosisModule module = spy(new ApoptosisModule.Simple(cell));
 		doNothing().when(module).removeCell(sim);
-		module.phase = PHASE_LATE_APOPTOSIS;
+		module.phase = Phase.APOPTOSIS_LATE;
 		module.stepLate(1, sim);
 		verify(module, never()).removeCell(sim);
-		assertEquals(PHASE_LATE_APOPTOSIS, module.phase);
+		assertEquals(Phase.APOPTOSIS_LATE, module.phase);
 	}
 	
 	@Test
@@ -198,10 +198,10 @@ public class ApoptosisModuleSimpleTest {
 		when(cell.getCriticalVolume()).thenReturn(volume);
 		ApoptosisModule module = spy(new ApoptosisModule.Simple(cell));
 		doNothing().when(module).removeCell(sim);
-		module.phase = PHASE_LATE_APOPTOSIS;
+		module.phase = Phase.APOPTOSIS_LATE;
 		module.stepLate(1, sim);
 		verify(module).removeCell(sim);
-		assertEquals(PHASE_APOPTOSED, module.phase);
+		assertEquals(Phase.APOPTOSED, module.phase);
 	}
 	
 	@Test

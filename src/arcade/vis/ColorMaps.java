@@ -15,17 +15,18 @@ class ColorMaps {
 	static final Colors MAP_STATE = new Colors(
 			new Color[]{
 					new Color(0,0,0),
-					new Color(43,136,158),
+//					new Color(43,136,158),
 					new Color(115,175,72),		// proliferative : G1
 					new Color(82,161,76),		// proliferative : S
 					new Color(48,147,80),		// proliferative : G2
 					new Color(15,133,84),		// proliferative : M
 					new Color(237, 173, 8),	// apoptosis : early
 					new Color(119,87,4),		// apoptosis : late
-					new Color(225, 124, 5),
-					new Color(204, 80, 62)
+					new Color(99,67,4),		// apoptosis : apoptosed
+//					new Color(225, 124, 5),
+//					new Color(204, 80, 62)
 			},
-			new double[] { 0, 1, 2, 2.1, 2.2, 2.3, 3, 3.1, 4, 5 }
+			new double[] { 0, 1, 2, 3, 4, 5, 6, 7 }
 	);
 	
 	static final Colors MAP_POPULATION = new Colors(

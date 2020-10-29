@@ -11,9 +11,9 @@ public class QuiescenceModule implements Module  {
 	
 	public String getName() { return "quiescent"; }
 	
-	public int getPhase() { return 0; }
+	public Phase getPhase() { return Phase.UNDEFINED; }
 	
-	public void setPhase(int phase) { }
+	public void setPhase(Phase phase) { }
 	
 	public void step(MersenneTwisterFast random, Simulation sim) { }
 }

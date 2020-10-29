@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import arcade.agent.cell.Cell;
 import static arcade.agent.cell.Cell.State;
+import static arcade.agent.module.Module.Phase;
 import static arcade.agent.cell.CellFactory.CellContainer;
 import static arcade.agent.cell.CellFactory.CellFactoryContainer;
 import static arcade.env.loc.Location.Voxel;
@@ -77,8 +78,8 @@ public class OutputDeserializerTest {
 		int id = randomInt();
 		int pop = randomInt();
 		int age = randomInt();
-		State state = Cell.State.values()[(int)(Math.random()* Cell.State.values().length)];
-		int phase = randomInt();
+		State state = State.values()[(int)(Math.random()*State.values().length)];
+		Phase phase = Phase.values()[(int)(Math.random()*Phase.values().length)];
 		int voxels = randomInt();
 		int targetVolume = randomInt();
 		int targetSurface = randomInt();
@@ -88,7 +89,7 @@ public class OutputDeserializerTest {
 				+ ",\"pop\": " + pop
 				+ ",\"age\": " + age
 				+ ",\"state\":\"" + state.name() + "\""
-				+ ",\"phase\": " + phase
+				+ ",\"phase\":\"" + phase.name() + "\""
 				+ ",\"voxels\": " + voxels
 				+ ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
 				+ "}";
@@ -116,8 +117,8 @@ public class OutputDeserializerTest {
 		int id = randomInt();
 		int pop = randomInt();
 		int age = randomInt();
-		State state = Cell.State.values()[(int)(Math.random()* Cell.State.values().length)];
-		int phase = randomInt();
+		State state = State.values()[(int)(Math.random()*State.values().length)];
+		Phase phase = Phase.values()[(int)(Math.random()*Phase.values().length)];
 		int voxels = randomInt();
 		int targetVolume = randomInt();
 		int targetSurface = randomInt();
@@ -136,7 +137,7 @@ public class OutputDeserializerTest {
 				+ ",\"pop\": " + pop
 				+ ",\"age\": " + age
 				+ ",\"state\":\"" + state.name() + "\""
-				+ ",\"phase\": " + phase
+				+ ",\"phase\": \"" + phase.name() + "\""
 				+ ",\"voxels\": " + voxels
 				+ ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
 				+ ",\"tags\":["

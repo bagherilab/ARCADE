@@ -21,6 +21,8 @@ import arcade.util.MiniBox;
 import static arcade.env.loc.Location.Voxel;
 import static arcade.sim.output.OutputSerializer.*;
 import static arcade.MainTest.*;
+import static arcade.agent.cell.Cell.State;
+import static arcade.agent.module.Module.Phase;
 import static arcade.agent.cell.Cell.*;
 
 public class OutputSerializerTest {
@@ -42,9 +44,6 @@ public class OutputSerializerTest {
 		
 		TypeToken<Cell> cell = new TypeToken<Cell>() {};
 		assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
-		
-		TypeToken<Module> module = new TypeToken<Module>() {};
-		assertSame(gson.getAdapter(module).getClass(), TreeTypeAdapter.class);
 		
 		TypeToken<Location> location = new TypeToken<Location>() {};
 		assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
@@ -267,8 +266,8 @@ public class OutputSerializerTest {
 		Module module = mock(Module.class);
 		doReturn(module).when(cell).getModule();
 		
-		State state = Cell.State.values()[(int)(Math.random()* Cell.State.values().length)];
-		int phase = randomInt();
+		State state = State.values()[(int)(Math.random()*State.values().length)];
+		Phase phase = Phase.values()[(int)(Math.random()*Phase.values().length)];
 		doReturn(state).when(cell).getState();
 		doReturn(phase).when(module).getPhase();
 		
@@ -277,7 +276,7 @@ public class OutputSerializerTest {
 				+ "\"pop\":" + pop + ","
 				+ "\"age\":" + age + ","
 				+ "\"state\":\"" + state.name() + "\","
-				+ "\"phase\":" + phase + ","
+				+ "\"phase\":\"" + phase.name() + "\","
 				+ "\"voxels\":" + voxels + ","
 				+ "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0]"
 				+ "}";
@@ -311,8 +310,8 @@ public class OutputSerializerTest {
 		Module module = mock(Module.class);
 		doReturn(module).when(cell).getModule();
 		
-		State state = Cell.State.values()[(int)(Math.random()* Cell.State.values().length)];
-		int phase = randomInt();
+		State state = State.values()[(int)(Math.random()*State.values().length)];
+		Phase phase = Phase.values()[(int)(Math.random()*Phase.values().length)];
 		doReturn(state).when(cell).getState();
 		doReturn(phase).when(module).getPhase();
 		
@@ -348,7 +347,7 @@ public class OutputSerializerTest {
 				+ "\"pop\":" + pop + ","
 				+ "\"age\":" + age + ","
 				+ "\"state\":\"" + state.name() + "\","
-				+ "\"phase\":" + phase + ","
+				+ "\"phase\":\"" + phase.name() + "\","
 				+ "\"voxels\":" + voxels + ","
 				+ "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0],"
 				+ "\"tags\":["
@@ -363,26 +362,6 @@ public class OutputSerializerTest {
 				+ "}";
 		
 		JsonElement json = serializer.serialize(cell, null, null);
-		assertEquals(expected, json.toString());
-	}
-	
-	@Test
-	public void serialize_forModule_createsJSON() {
-		ModuleSerializer serializer = new ModuleSerializer();
-		Module module = mock(Module.class);
-		
-		String name = randomString();
-		int phase = randomInt();
-		
-		doReturn(name).when(module).getName();
-		doReturn(phase).when(module).getPhase();
-		
-		String expected = "{"
-				+ "\"name\":\"" + name + "\","
-				+ "\"phase\":" + phase
-				+ "}";
-		
-		JsonElement json = serializer.serialize(module, null, null);
 		assertEquals(expected, json.toString());
 	}
 	

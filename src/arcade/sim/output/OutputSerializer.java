@@ -28,7 +28,6 @@ public final class OutputSerializer {
 		gsonBuilder.registerTypeHierarchyAdapter(Potts.class, new PottsSerializer());
 		gsonBuilder.registerTypeHierarchyAdapter(Grid.class, new GridSerializer());
 		gsonBuilder.registerTypeHierarchyAdapter(Cell.class, new CellSerializer());
-		gsonBuilder.registerTypeHierarchyAdapter(Module.class, new ModuleSerializer());
 		gsonBuilder.registerTypeHierarchyAdapter(Location.class, new LocationSerializer());
 		gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelSerializer());
 		return gsonBuilder.create();
@@ -112,7 +111,7 @@ public final class OutputSerializer {
 			json.addProperty("pop", src.getPop());
 			json.addProperty("age", src.getAge());
 			json.addProperty("state", src.getState().name());
-			json.addProperty("phase", src.getModule().getPhase());
+			json.addProperty("phase", src.getModule().getPhase().name());
 			json.addProperty("voxels", src.getLocation().getVolume());
 			
 			JsonArray targets = new JsonArray();
@@ -138,15 +137,6 @@ public final class OutputSerializer {
 				json.add("tags", tags);
 			}
 			
-			return json;
-		}
-	}
-	
-	static class ModuleSerializer implements JsonSerializer<Module> {
-		public JsonElement serialize(Module src, Type typeOfSrc, JsonSerializationContext context) {
-			JsonObject json = new JsonObject();
-			json.addProperty("name", src.getName());
-			json.addProperty("phase", src.getPhase());
 			return json;
 		}
 	}

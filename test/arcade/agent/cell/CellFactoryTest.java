@@ -20,6 +20,8 @@ import static arcade.util.MiniBox.TAG_SEPARATOR;
 import static arcade.sim.Series.TARGET_SEPARATOR;
 import static arcade.sim.Simulation.DS;
 import static arcade.agent.cell.Cell.*;
+import static arcade.agent.cell.Cell.State;
+import static arcade.agent.module.Module.Phase;
 
 public class CellFactoryTest {
 	static final double EPSILON = 1E-10;
@@ -620,7 +622,7 @@ public class CellFactoryTest {
 		int cellPop = (int)random() + 1;
 		int cellAge = (int)random();
 		State cellState = State.values()[(int)(Math.random()*State.values().length)];
-		int cellPhase = (int)random();
+		Phase cellPhase = Phase.values()[(int)(Math.random()*Phase.values().length)];
 		double[] criticals = new double[] { random(), random() };
 		double[] lambdas = new double[] { random(), random() };
 		double[] adhesion = new double[] { random(), random() };
@@ -660,7 +662,7 @@ public class CellFactoryTest {
 		int cellPop1 = (int)random() + 1;
 		int cellAge1 = (int)random();
 		State cellState1 = State.values()[(int)(Math.random()*State.values().length)];
-		int cellPhase1 = (int)random();
+		Phase cellPhase1 = Phase.values()[(int)(Math.random()*Phase.values().length)];
 		double[] criticals1 = new double[] { random(), random() };
 		double[] lambdas1 = new double[] { random(), random() };
 		double[] adhesion1 = new double[] { random(), random(), random(), random() };
@@ -673,7 +675,7 @@ public class CellFactoryTest {
 		int cellPop2 = cellPop1 + 1;
 		int cellAge2 = (int)random();
 		State cellState2 = State.values()[(int)(Math.random()*State.values().length)];
-		int cellPhase2 = (int)random();
+		Phase cellPhase2 = Phase.values()[(int)(Math.random()*Phase.values().length)];
 		double[] criticals2 = new double[] { random(), random() };
 		double[] lambdas2 = new double[] { random(), random() };
 		double[] adhesion2 = new double[] { random(), random(), random(), random() };
@@ -736,7 +738,7 @@ public class CellFactoryTest {
 		int cellPop = (int)random() + 1;
 		int cellAge = (int)random();
 		State cellState = State.values()[(int)(Math.random()*State.values().length)];
-		int cellPhase = (int)random();
+		Phase cellPhase = Phase.values()[(int)(Math.random()*Phase.values().length)];
 		double[] criticals = new double[] { random(), random() };
 		double[] lambdas = new double[] { random(), random() };
 		double[] adhesion = new double[] { random(), random() };
@@ -813,7 +815,7 @@ public class CellFactoryTest {
 		int cellPop1 = (int)random() + 1;
 		int cellAge1 = (int)random();
 		State cellState1 = State.values()[(int)(Math.random()*State.values().length)];
-		int cellPhase1 = (int)random();
+		Phase cellPhase1 = Phase.values()[(int)(Math.random()*Phase.values().length)];
 		double[] criticals1 = new double[] { random(), random() };
 		double[] lambdas1 = new double[] { random(), random() };
 		double[] adhesion1 = new double[] { random(), random(), random(), random() };
@@ -826,7 +828,7 @@ public class CellFactoryTest {
 		int cellPop2 = cellPop1 + 1;
 		int cellAge2 = (int)random();
 		State cellState2 = State.values()[(int)(Math.random()*State.values().length)];
-		int cellPhase2 = (int)random();
+		Phase cellPhase2 = Phase.values()[(int)(Math.random()*Phase.values().length)];
 		double[] criticals2 = new double[] { random(), random() };
 		double[] lambdas2 = new double[] { random(), random() };
 		double[] adhesion2 = new double[] { random(), random(), random(), random() };
@@ -942,7 +944,7 @@ public class CellFactoryTest {
 		factory.popToLambdas.put(1, new double[2]);
 		factory.popToAdhesion.put(1, new double[2]);
 		
-		CellContainer container = new CellContainer(1, 1, 0, State.UNDEFINED, 0, 0, targetVolume, targetSurface);
+		CellContainer container = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, targetVolume, targetSurface);
 		Cell cell = factory.make(container, location);
 		
 		verify(cell).setTargets(targetVolume, targetSurface);
@@ -968,11 +970,11 @@ public class CellFactoryTest {
 		factory.popToLambdas.put(2, new double[2]);
 		factory.popToAdhesion.put(2, new double[3]);
 		
-		CellContainer container1 = new CellContainer(1, 1, 0, State.UNDEFINED, 0, 0, targetVolume1, targetSurface1);
+		CellContainer container1 = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, targetVolume1, targetSurface1);
 		Cell cell1 = factory.make(container1, location1);
 		verify(cell1).setTargets(targetVolume1, targetSurface1);
 		
-		CellContainer container2 = new CellContainer(2, 2, 0, State.UNDEFINED, 0, 0, targetVolume2, targetSurface2);
+		CellContainer container2 = new CellContainer(2, 2, 0, State.UNDEFINED, Phase.UNDEFINED, 0, targetVolume2, targetSurface2);
 		Cell cell2 = factory.make(container2, location2);
 		verify(cell2).setTargets(targetVolume2, targetSurface2);
 	}
@@ -1011,7 +1013,7 @@ public class CellFactoryTest {
 			targetTagSurfaces.put(tags.get(i), tagSurfaces[i]);
 		}
 		
-		CellContainer container = new CellContainer(1, 1, 0, State.UNDEFINED, 0, 0, null,
+		CellContainer container = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, null,
 				targetVolume, targetSurface, targetTagVolumes, targetTagSurfaces);
 		Cell cell = factory.make(container, location);
 		
@@ -1063,7 +1065,7 @@ public class CellFactoryTest {
 			targetTagSurfaces.put(tags.get(i), tagSurfaces[i]);
 		}
 		
-		CellContainer container1 = new CellContainer(1, 1, 0, State.UNDEFINED, 0, 0, targetVolume1, targetSurface1);
+		CellContainer container1 = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, targetVolume1, targetSurface1);
 		Cell cell1 = factory.make(container1, location1);
 		
 		verify(cell1).setTargets(targetVolume1, targetSurface1);
@@ -1071,7 +1073,7 @@ public class CellFactoryTest {
 			verify(cell1, never()).setTargets(tagCodes[i], tagVolumes[i], tagSurfaces[i]);
 		}
 		
-		CellContainer container2 = new CellContainer(2, 2, 0, State.UNDEFINED, 0, 0, null,
+		CellContainer container2 = new CellContainer(2, 2, 0, State.UNDEFINED, Phase.UNDEFINED, 0, null,
 				targetVolume2, targetSurface2, targetTagVolumes, targetTagSurfaces);
 		Cell cell2 = factory.make(container2, location2);
 		

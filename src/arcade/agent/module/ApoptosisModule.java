@@ -7,18 +7,6 @@ import arcade.agent.cell.PottsCell;
 import static arcade.agent.cell.Cell.*;
 
 public abstract class ApoptosisModule implements Module  {
-	/** Phase names */
-	public static final String[] PHASE_NAMES = { "EARLY", "LATE" };
-	
-	/** Code for early apoptosis phase */
-	public static final int PHASE_EARLY_APOPTOSIS = 0;
-	
-	/** Code for late apoptosis phase */
-	public static final int PHASE_LATE_APOPTOSIS = 1;
-	
-	/** Code for apoptosed cell */
-	public static final int PHASE_APOPTOSED = -1;
-	
 	/** Average duration of early apoptosis (hours) */
 	static final double DURATION_EARLY = 3;
 	
@@ -38,10 +26,10 @@ public abstract class ApoptosisModule implements Module  {
 	static final double RATE_NUCLEUS_FRAGMENTATION = -Math.log(0.01)/DURATION_LATE;
 	
 	/** Ratio of critical volume for apoptosis */
-	public static final double APOPTOSIS_CHECKPOINT = 0.1;
+	static final double APOPTOSIS_CHECKPOINT = 0.1;
 	
 	/** Code for phase */
-	int phase;
+	Phase phase;
 	
 	/** {@link arcade.agent.cell.Cell} object */
 	final PottsCell cell;
@@ -53,7 +41,7 @@ public abstract class ApoptosisModule implements Module  {
 	 */
 	public ApoptosisModule(PottsCell cell) {
 		this.cell = cell;
-		this.phase = PHASE_EARLY_APOPTOSIS;
+		this.phase = Phase.APOPTOSIS_EARLY;
 	}
 	
 	/**
@@ -72,9 +60,9 @@ public abstract class ApoptosisModule implements Module  {
 	
 	public String getName() { return "apoptotic"; }
 	
-	public int getPhase() { return phase; }
+	public Phase getPhase() { return phase; }
 	
-	public void setPhase(int phase) { this.phase = phase; }
+	public void setPhase(Phase phase) { this.phase = phase; }
 	
 	/**
 	 * Calls the step method for the current simple phase.
@@ -86,10 +74,10 @@ public abstract class ApoptosisModule implements Module  {
 		double r = random.nextDouble();
 		
 		switch (phase) {
-			case PHASE_EARLY_APOPTOSIS:
+			case APOPTOSIS_EARLY:
 				stepEarly(r);
 				break;
-			case PHASE_LATE_APOPTOSIS:
+			case APOPTOSIS_LATE:
 				stepLate(r, sim);
 				break;
 		}
@@ -118,7 +106,7 @@ public abstract class ApoptosisModule implements Module  {
 		// Check for transition to late phase.
 		double p = Simulation.DT/DURATION_EARLY;
 		if (r < p) {
-			phase = PHASE_LATE_APOPTOSIS;
+			phase = Phase.APOPTOSIS_LATE;
 		}
 	}
 	
@@ -152,7 +140,7 @@ public abstract class ApoptosisModule implements Module  {
 		double p = Simulation.DT/DURATION_LATE;
 		if (r < p || cell.getVolume() < APOPTOSIS_CHECKPOINT*cell.getCriticalVolume()) {
 			removeCell(sim);
-			phase = PHASE_APOPTOSED;
+			phase = Phase.APOPTOSED;
 		}
 	}
 	

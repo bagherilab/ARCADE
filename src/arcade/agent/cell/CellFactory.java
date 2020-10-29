@@ -9,7 +9,8 @@ import arcade.env.loc.Location;
 import arcade.sim.Simulation;
 import arcade.util.MiniBox;
 import static arcade.sim.Potts.*;
-import static arcade.agent.cell.Cell.*;
+import static arcade.agent.cell.Cell.State;
+import static arcade.agent.module.Module.Phase;
 import static arcade.sim.Series.TARGET_SEPARATOR;
 import static arcade.util.MiniBox.TAG_SEPARATOR;
 
@@ -75,7 +76,7 @@ public abstract class CellFactory {
 		public final int pop;
 		public final int age;
 		public final State state;
-		public final int phase;
+		public final Phase phase;
 		public final int voxels;
 		public final HashMap<String, Integer> tagVoxels;
 		public final double targetVolume;
@@ -84,19 +85,19 @@ public abstract class CellFactory {
 		public final HashMap<String, Double> tagTargetSurface;
 		
 		public CellContainer(int id, int pop, int voxels) {
-			this(id, pop, 0, State.PROLIFERATIVE, 0, voxels, null, 0, 0, null, null);
+			this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels, null, 0, 0, null, null);
 		}
 		
 		public CellContainer(int id, int pop, int voxels, HashMap<String, Integer> tagVoxels) {
-			this(id, pop, 0, State.PROLIFERATIVE, 0, voxels, tagVoxels, 0, 0, null, null);
+			this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels, tagVoxels, 0, 0, null, null);
 		}
 		
-		public CellContainer(int id, int pop, int age, State state, int phase, int voxels,
+		public CellContainer(int id, int pop, int age, State state, Phase phase, int voxels,
 							 double targetVolume, double targetSurface) {
 			this(id, pop, age, state, phase, voxels, null, targetVolume, targetSurface, null, null);
 		}
 		
-		public CellContainer(int id, int pop, int age, State state, int phase, int voxels,
+		public CellContainer(int id, int pop, int age, State state, Phase phase, int voxels,
 							 HashMap<String, Integer> tagVoxels,
 							 double targetVolume, double targetSurface,
 							 HashMap<String, Double> tagTargetVolume, HashMap<String, Double> tagTargetSurface) {
@@ -319,7 +320,7 @@ public abstract class CellFactory {
 		int pop = cellContainer.pop;
 		int age = cellContainer.age;
 		State state = cellContainer.state;
-		int phase = cellContainer.phase;
+		Phase phase = cellContainer.phase;
 		
 		// Get copies of critical, lambda, and adhesion values.
 		double[] criticals = popToCriticals.get(pop).clone();

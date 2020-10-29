@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import com.google.gson.*;
 import static arcade.agent.cell.Cell.State;
+import static arcade.agent.module.Module.Phase;
 import static arcade.agent.cell.CellFactory.CellContainer;
 import static arcade.agent.cell.CellFactory.CellFactoryContainer;
 import static arcade.env.loc.LocationFactory.LocationContainer;
@@ -49,7 +50,7 @@ public final class OutputDeserializer {
 			int voxels = jsonObject.get("voxels").getAsInt();
 			
 			State state = State.valueOf(jsonObject.get("state").getAsString());
-			int phase = jsonObject.get("phase").getAsInt();
+			Phase phase = Phase.valueOf(jsonObject.get("phase").getAsString());
 			
 			JsonArray targets = jsonObject.get("targets").getAsJsonArray();
 			double targetVolume = targets.get(0).getAsDouble();

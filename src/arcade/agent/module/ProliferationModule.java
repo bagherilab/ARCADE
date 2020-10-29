@@ -9,21 +9,6 @@ import arcade.env.loc.Location;
 import static arcade.agent.cell.Cell.*;
 
 public abstract class ProliferationModule implements Module {
-	/** Phase names */
-	public static final String[] PHASE_NAMES = { "G1", "S", "G2", "M" };
-	
-	/** Code for G1 phase */
-	public static final int PHASE_G1 = 0;
-	
-	/** Code for S phase */
-	public static final int PHASE_S = 1;
-	
-	/** Code for G2 phase */
-	public static final int PHASE_G2 = 2;
-	
-	/** Code for M phase */
-	public static final int PHASE_M = 3;
-	
 	/** Average duration of G1 phase (hours) */
 	static final double DURATION_G1 = 11;
 	
@@ -49,19 +34,19 @@ public abstract class ProliferationModule implements Module {
 	static final double RATE_G2 = -Math.log(0.01)/DURATION_G2;
 	
 	/** Ratio of critical volume for G1 growth checkpoint */
-	public static final double GROWTH_CHECKPOINT_G1 = 2*0.95;
+	static final double GROWTH_CHECKPOINT_G1 = 2*0.95;
 	
 	/** Ratio of critical volume for S nucleus checkpoint */
-	public static final double GROWTH_CHECKPOINT_S = 2*0.99;
+	static final double GROWTH_CHECKPOINT_S = 2*0.99;
 	
 	/** Ratio of critical volume for G2 growth checkpoint */
-	public static final double GROWTH_CHECKPOINT_G2 = 2*0.99;
+	static final double GROWTH_CHECKPOINT_G2 = 2*0.99;
 	
 	/** Basal rate of apoptosis (hours^-1) */
-	public static final double BASAL_APOPTOSIS_RATE = 0.00127128;
+	static final double BASAL_APOPTOSIS_RATE = 0.00127128;
 	
 	/** Code for phase */
-	int phase;
+	Phase phase;
 	
 	/** {@link arcade.agent.cell.Cell} object */
 	final PottsCell cell;
@@ -76,7 +61,7 @@ public abstract class ProliferationModule implements Module {
 	 */
 	public ProliferationModule(PottsCell cell) {
 		this.cell = cell;
-		this.phase = PHASE_G1;
+		this.phase = Phase.PROLIFERATIVE_G1;
 	}
 	
 	/**
@@ -95,9 +80,9 @@ public abstract class ProliferationModule implements Module {
 	
 	public String getName() { return "proliferative"; }
 	
-	public int getPhase() { return phase; }
+	public Phase getPhase() { return phase; }
 	
-	public void setPhase(int phase) { this.phase = phase; }
+	public void setPhase(Phase phase) { this.phase = phase; }
 	
 	/**
 	 * Calls the step method for the current simple phase.
@@ -109,16 +94,16 @@ public abstract class ProliferationModule implements Module {
 		double r = random.nextDouble();
 		
 		switch (phase) {
-			case PHASE_G1:
+			case PROLIFERATIVE_G1:
 				stepG1(r);
 				break;
-			case PHASE_S:
+			case PROLIFERATIVE_S:
 				stepS(r);
 				break;
-			case PHASE_G2:
+			case PROLIFERATIVE_G2:
 				stepG2(r);
 				break;
-			case PHASE_M:
+			case PROLIFERATIVE_M:
 				stepM(r, random, sim);
 				break;
 		}
@@ -164,7 +149,7 @@ public abstract class ProliferationModule implements Module {
 	 */
 	void checkpointG1() {
 		if (cell.getVolume() >= GROWTH_CHECKPOINT_G1*cell.getCriticalVolume()) {
-			phase = PHASE_S;
+			phase = Phase.PROLIFERATIVE_S;
 			isArrested = false;
 		}
 		else {
@@ -190,11 +175,11 @@ public abstract class ProliferationModule implements Module {
 			
 			// Check for transition to G2 phase.
 			if (cell.getVolume(TAG_NUCLEUS) > GROWTH_CHECKPOINT_S*cell.getCriticalVolume(TAG_NUCLEUS)) {
-				phase = PHASE_G2;
+				phase = Phase.PROLIFERATIVE_G2;
 			}
 		} else {
 			double p = Simulation.DT/DURATION_S;
-			if (r < p) { phase = PHASE_G2; }
+			if (r < p) { phase = Phase.PROLIFERATIVE_G2; }
 		}
 	}
 	
@@ -232,7 +217,7 @@ public abstract class ProliferationModule implements Module {
 	 */
 	void checkpointG2() {
 		if (cell.getVolume() >= GROWTH_CHECKPOINT_G2*cell.getCriticalVolume()) {
-			phase = PHASE_M;
+			phase = Phase.PROLIFERATIVE_M;
 			isArrested = false;
 		}
 		else {
@@ -254,7 +239,7 @@ public abstract class ProliferationModule implements Module {
 		double p = Simulation.DT/DURATION_M;
 		if (r < p) {
 			addCell(random, sim);
-			phase = PHASE_G1;
+			phase = Phase.PROLIFERATIVE_G1;
 		}
 	}
 	
