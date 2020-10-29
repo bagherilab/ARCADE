@@ -24,7 +24,7 @@ import arcade.util.*;
  * Otherwise, all valid {@code Series} are run.
  */
 
-public class Main {
+public final class Main {
 	/** Logger for {@code Main} */
 	private static Logger LOGGER;
 	
