@@ -40,6 +40,14 @@ public class ProliferationModuleSimpleTest {
 	}
 	
 	@Test
+	public void setPhase_givenValue_setsValue() {
+		int phase = (int)(Math.random()*100);
+		ProliferationModule module = new ProliferationModule.Simple(mock(PottsCell.class));
+		module.setPhase(phase);
+		assertEquals(phase, module.phase);
+	}
+	
+	@Test
 	public void step_givenPhaseG1_callsMethod() {
 		ProliferationModule module = spy(new ProliferationModule.Simple(mock(PottsCell.class)));
 		module.phase = PHASE_G1;

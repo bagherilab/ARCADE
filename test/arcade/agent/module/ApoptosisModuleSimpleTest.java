@@ -41,6 +41,14 @@ public class ApoptosisModuleSimpleTest {
 	}
 	
 	@Test
+	public void setPhase_givenValue_setsValue() {
+		int phase = (int)(Math.random()*100);
+		ApoptosisModule module = new ApoptosisModule.Simple(mock(PottsCell.class));
+		module.setPhase(phase);
+		assertEquals(phase, module.phase);
+	}
+	
+	@Test
 	public void step_givenPhaseEarly_callsMethod() {
 		ApoptosisModule module = spy(new ApoptosisModule.Simple(mock(PottsCell.class)));
 		module.phase = PHASE_EARLY_APOPTOSIS;
