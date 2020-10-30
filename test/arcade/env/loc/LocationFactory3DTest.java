@@ -2,14 +2,13 @@ package arcade.env.loc;
 
 import org.junit.*;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.agent.cell.Cell.*;
-import static arcade.env.loc.LocationFactoryTest.*;
+import static arcade.agent.cell.Cell.Tag;
 import static arcade.env.loc.Location.Voxel;
 import static arcade.agent.cell.CellFactory.CellContainer;
 import static arcade.env.loc.LocationFactory.LocationContainer;
@@ -241,13 +240,13 @@ public class LocationFactory3DTest {
 		Voxel center = new Voxel(0, 0, 0);
 		ArrayList<Voxel> voxels = factory.getPossible(center, 1);
 		
-		HashMap<String, ArrayList<Voxel>> tagVoxelMap = new HashMap<>();
-		tagVoxelMap.put("CYTOPLASM", voxels);
-		tagVoxelMap.put("NUCLEUS", voxels);
+		EnumMap<Tag, ArrayList<Voxel>> tagVoxelMap = new EnumMap<>(Tag.class);
+		tagVoxelMap.put(Tag.DEFAULT, voxels);
+		tagVoxelMap.put(Tag.NUCLEUS, voxels);
 		
-		HashMap<String, Integer> tagTargetMap = new HashMap<>();
-		tagTargetMap.put("CYTOPLASM", 0);
-		tagTargetMap.put("NUCLEUS", 1);
+		EnumMap<Tag, Integer> tagTargetMap = new EnumMap<>(Tag.class);
+		tagTargetMap.put(Tag.DEFAULT, 0);
+		tagTargetMap.put(Tag.NUCLEUS, 1);
 		
 		CellContainer cellContainer = new CellContainer(0, 0, 1, tagTargetMap);
 		LocationContainer locationContainer = new LocationContainer(0, center, voxels, tagVoxelMap);
@@ -255,8 +254,8 @@ public class LocationFactory3DTest {
 		Location location = factory.make(locationContainer, cellContainer, random);
 		assertTrue(location instanceof PottsLocations3D);
 		assertEquals(1, location.getVolume());
-		assertEquals(0, location.getVolume(TAG_CYTOPLASM));
-		assertEquals(1, location.getVolume(TAG_NUCLEUS));
+		assertEquals(0, location.getVolume(Tag.DEFAULT));
+		assertEquals(1, location.getVolume(Tag.NUCLEUS));
 	}
 	
 	@Test
