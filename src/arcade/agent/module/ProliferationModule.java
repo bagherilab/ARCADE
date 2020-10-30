@@ -106,6 +106,8 @@ public abstract class ProliferationModule implements Module {
 			case PROLIFERATIVE_M:
 				stepM(r, random, sim);
 				break;
+			default:
+				break;
 		}
 	}
 	

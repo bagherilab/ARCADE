@@ -80,6 +80,8 @@ public abstract class ApoptosisModule implements Module  {
 			case APOPTOSIS_LATE:
 				stepLate(r, sim);
 				break;
+			default:
+				break;
 		}
 	}
 	

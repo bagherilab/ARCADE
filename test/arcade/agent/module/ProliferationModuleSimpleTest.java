@@ -96,6 +96,18 @@ public class ProliferationModuleSimpleTest {
 	}
 	
 	@Test
+	public void step_invalidPhase_doesNothing() {
+		ProliferationModule module = spy(new ProliferationModule.Simple(mock(PottsCell.class)));
+		module.phase = Phase.UNDEFINED;
+		
+		module.step(random, sim);
+		verify(module, never()).stepM(r, random, sim);
+		verify(module, never()).stepG1(r);
+		verify(module, never()).stepS(r);
+		verify(module, never()).stepG2(r);
+	}
+	
+	@Test
 	public void stepG1_withStateChange_callsMethods() {
 		PottsCell cell = spy(mock(PottsCell.class));
 		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
@@ -198,10 +210,10 @@ public class ProliferationModuleSimpleTest {
 			PottsCell cell = mock(PottsCell.class);
 			ProliferationModule module = spy(new ProliferationModule.Simple(cell));
 			
-			cell.tags = 2;
+			cell.hasTags = true;
 			module.phase = Phase.PROLIFERATIVE_S;
 			module.stepS(i/10.);
-			verify(cell).updateTarget(TAG_NUCLEUS, RATE_S, 2);
+			verify(cell).updateTarget(Tag.NUCLEUS, RATE_S, 2);
 		}
 	}
 	
@@ -209,9 +221,9 @@ public class ProliferationModuleSimpleTest {
 	public void stepS_noTransitionTagged_maintainsPhase() {
 		PottsCellMock cell = mock(PottsCellMock.class);
 		double volume = Math.random()*100;
-		when(cell.getVolume(TAG_NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) - 1);
-		when(cell.getCriticalVolume(TAG_NUCLEUS)).thenReturn(volume);
-		cell.tags = 2;
+		when(cell.getVolume(Tag.NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) - 1);
+		when(cell.getCriticalVolume(Tag.NUCLEUS)).thenReturn(volume);
+		cell.hasTags = true;
 		
 		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
 		module.phase = Phase.PROLIFERATIVE_S;
@@ -223,9 +235,9 @@ public class ProliferationModuleSimpleTest {
 	public void stepS_withTransitionTagged_updatesPhase() {
 		PottsCellMock cell = mock(PottsCellMock.class);
 		double volume = Math.random()*100;
-		when(cell.getVolume(TAG_NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) + 1);
-		when(cell.getCriticalVolume(TAG_NUCLEUS)).thenReturn(volume);
-		cell.tags = 2;
+		when(cell.getVolume(Tag.NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) + 1);
+		when(cell.getCriticalVolume(Tag.NUCLEUS)).thenReturn(volume);
+		cell.hasTags = true;
 		
 		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
 		module.phase = Phase.PROLIFERATIVE_S;

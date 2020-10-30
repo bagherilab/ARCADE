@@ -69,16 +69,26 @@ public class ApoptosisModuleSimpleTest {
 	}
 	
 	@Test
+	public void step_invalidPhase_doesNothing() {
+		ApoptosisModule module = spy(new ApoptosisModule.Simple(mock(PottsCell.class)));
+		module.phase = Phase.UNDEFINED;
+		
+		module.step(random, sim);
+		verify(module, never()).stepLate(r, sim);
+		verify(module, never()).stepEarly(r);
+	}
+	
+	@Test
 	public void stepEarly_anyTransitionTagged_updatesCell() {
 		for (int i = 0; i < 10; i++) {
 			PottsCell cell = mock(PottsCell.class);
 			ApoptosisModule module = spy(new ApoptosisModule.Simple(cell));
 			
-			cell.tags = 2;
+			cell.hasTags = true;
 			module.phase = Phase.APOPTOSIS_EARLY;
 			module.stepEarly(i/10.);
-			verify(cell).updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_LOSS, 0.5);
-			verify(cell).updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
+			verify(cell).updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_LOSS, 0.5);
+			verify(cell).updateTarget(Tag.NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
 			verify(cell, never()).updateTarget(RATE_CYTOPLASM_LOSS, 0.5);
 		}
 	}
@@ -91,8 +101,8 @@ public class ApoptosisModuleSimpleTest {
 			
 			module.phase = Phase.APOPTOSIS_EARLY;
 			module.stepEarly(i/10.);
-			verify(cell, never()).updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_LOSS, 0.5);
-			verify(cell, never()).updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
+			verify(cell, never()).updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_LOSS, 0.5);
+			verify(cell, never()).updateTarget(Tag.NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
 			verify(cell).updateTarget(RATE_CYTOPLASM_LOSS, 0.5);
 		}
 	}
@@ -126,11 +136,11 @@ public class ApoptosisModuleSimpleTest {
 			doNothing().when(location).clear(any(), any());
 			cell.stopper = mock(Stoppable.class);
 			
-			cell.tags = 2;
+			cell.hasTags = true;
 			module.phase = Phase.APOPTOSIS_LATE;
 			module.stepLate(i/10., sim);
-			verify(cell).updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_BLEBBING, 0);
-			verify(cell).updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
+			verify(cell).updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_BLEBBING, 0);
+			verify(cell).updateTarget(Tag.NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
 			verify(cell, never()).updateTarget(RATE_CYTOPLASM_BLEBBING, 0);
 		}
 	}
@@ -148,8 +158,8 @@ public class ApoptosisModuleSimpleTest {
 			
 			module.phase = Phase.APOPTOSIS_LATE;
 			module.stepLate(i/10., sim);
-			verify(cell, never()).updateTarget(TAG_CYTOPLASM, RATE_CYTOPLASM_BLEBBING, 0);
-			verify(cell, never()).updateTarget(TAG_NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
+			verify(cell, never()).updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_BLEBBING, 0);
+			verify(cell, never()).updateTarget(Tag.NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
 			verify(cell).updateTarget(RATE_CYTOPLASM_BLEBBING, 0);
 		}
 	}
