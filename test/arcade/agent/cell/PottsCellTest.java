@@ -11,6 +11,7 @@ import arcade.env.loc.*;
 import arcade.agent.module.*;
 import static arcade.agent.cell.Cell.Tag;
 import static arcade.agent.cell.Cell.State;
+import static arcade.agent.cell.CellFactoryTest.*;
 import static arcade.sim.Potts.Term;
 import static arcade.sim.Simulation.*;
 
@@ -139,7 +140,7 @@ public class PottsCellTest {
 					criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
 		}
 		
-		double convert(double volume) { return volume *= VOLUME_SURFACE_RATIO; }
+		double convert(double volume) { return volume * VOLUME_SURFACE_RATIO; }
 	}
 	
 	@Test
@@ -166,7 +167,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void getState_valueAssigned_returnsValue() {
-		State cellState = State.values()[(int)(Math.random()*(State.values().length - 1)) + 1];
+		State cellState = randomState();
 		PottsCellMock cell = new PottsCellMock(cellID, 0, cellState, 0, location, false, criticals, lambdas, adhesion, null, null, null);
 		assertEquals(cellState, cell.getState());
 	}
@@ -749,6 +750,31 @@ public class PottsCellTest {
 		assertEquals(targetTagSurface2, cell.getTargetSurface(Tag.NUCLEUS), EPSILON);
 		assertEquals(0, cell.getTargetVolume(Tag.UNDEFINED), EPSILON);
 		assertEquals(0, cell.getTargetSurface(Tag.UNDEFINED), EPSILON);
+	}
+	
+	@Test
+	public void initialize_targetsMixed_updatesTargets() {
+		int volume = (int)(Math.random()*100);
+		int surface = (int)(Math.random()*100);
+		Location location = mock(Location.class);
+		when(location.getVolume()).thenReturn(volume);
+		when(location.getSurface()).thenReturn(surface);
+		
+		PottsCellMock cell1 = new PottsCellMock(cellID, cellPop, location,
+				criticals, lambdas, adhesion);
+		cell1.setTargets(0, (int)(Math.random()*100));
+		cell1.initialize(new int[1][3][3], null);
+		
+		assertEquals(volume, cell1.getTargetVolume(), EPSILON);
+		assertEquals(surface, cell1.getTargetSurface(), EPSILON);
+		
+		PottsCellMock cell2 = new PottsCellMock(cellID, cellPop, location,
+				criticals, lambdas, adhesion);
+		cell2.setTargets((int)(Math.random()*100), 0);
+		cell2.initialize(new int[1][3][3], null);
+		
+		assertEquals(volume, cell2.getTargetVolume(), EPSILON);
+		assertEquals(surface, cell2.getTargetSurface(), EPSILON);
 	}
 	
 	@Test

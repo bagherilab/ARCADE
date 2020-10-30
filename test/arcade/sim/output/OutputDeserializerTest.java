@@ -19,6 +19,7 @@ import static arcade.env.loc.LocationFactory.LocationFactoryContainer;
 import static arcade.env.loc.Location.VOXEL_COMPARATOR;
 import static arcade.sim.output.OutputDeserializer.*;
 import static arcade.MainTest.*;
+import static arcade.agent.cell.CellFactoryTest.*;
 
 public class OutputDeserializerTest {
 	private static final double EPSILON = 1E-10;
@@ -78,8 +79,8 @@ public class OutputDeserializerTest {
 		int id = randomInt();
 		int pop = randomInt();
 		int age = randomInt();
-		State state = State.values()[(int)(Math.random()*State.values().length)];
-		Phase phase = Phase.values()[(int)(Math.random()*Phase.values().length)];
+		State state = randomState();
+		Phase phase = randomPhase();
 		int voxels = randomInt();
 		int targetVolume = randomInt();
 		int targetSurface = randomInt();
@@ -117,8 +118,8 @@ public class OutputDeserializerTest {
 		int id = randomInt();
 		int pop = randomInt();
 		int age = randomInt();
-		State state = State.values()[(int)(Math.random()*State.values().length)];
-		Phase phase = Phase.values()[(int)(Math.random()*Phase.values().length)];
+		State state = randomState();
+		Phase phase = randomPhase();
 		int voxels = randomInt();
 		int targetVolume = randomInt();
 		int targetSurface = randomInt();

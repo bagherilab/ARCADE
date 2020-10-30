@@ -3,6 +3,8 @@ package arcade.agent.cell;
 import org.junit.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import arcade.sim.Series;
@@ -19,7 +21,7 @@ import static arcade.agent.cell.CellFactory.CellFactoryContainer;
 import static arcade.util.MiniBox.TAG_SEPARATOR;
 import static arcade.sim.Series.TARGET_SEPARATOR;
 import static arcade.sim.Simulation.DS;
-import static arcade.agent.cell.Cell.*;
+import static arcade.agent.cell.Cell.Tag;
 import static arcade.agent.cell.Cell.State;
 import static arcade.agent.module.Module.Phase;
 
@@ -27,6 +29,10 @@ public class CellFactoryTest {
 	static final double EPSILON = 1E-10;
 	
 	static double random() { return Math.random()*100; }
+	
+	public static Phase randomPhase() { return Phase.values()[(int)(Math.random()*Phase.values().length - 1) + 1]; }
+	
+	public static State randomState() { return State.values()[(int)(Math.random()*State.values().length - 1) + 1]; }
 	
 	static Series createSeries(int[] init, double[] volumes) {
 		Series series = mock(Series.class);
@@ -44,11 +50,36 @@ public class CellFactoryTest {
 		return series;
 	}
 	
+	static EnumMap<Term, Double> makeEnumMap() {
+		EnumMap<Term, Double> map = new EnumMap<>(Term.class);
+		for (Term term : Term.values()) { map.put(term, random()); }
+		return map;
+	}
+	
+	static EnumMap<Tag, EnumMap<Term, Double>> makeEnumMapTag(EnumSet<Tag> tagList) {
+		EnumMap<Tag, EnumMap<Term, Double>> map = new EnumMap<>(Tag.class);
+		for (Tag tag : tagList) {
+			EnumMap<Term, Double> mapValues = makeEnumMap();
+			map.put(tag, mapValues);
+		}
+		return map;
+	}
+	
+	static EnumMap<Tag, EnumMap<Tag, Double>> makeEnumMapTarget(EnumSet<Tag> tagList) {
+		EnumMap<Tag, EnumMap<Tag, Double>> map = new EnumMap<>(Tag.class);
+		for (Tag tag : tagList) {
+			EnumMap<Tag, Double> mapValues = new EnumMap<>(Tag.class);
+			for (Tag target : tagList) { mapValues.put(target, random()); }
+			map.put(tag, mapValues);
+		}
+		return map;
+	}
+	
 	static class CellFactoryMock extends CellFactory {
 		public CellFactoryMock() { super(); }
 		
 		Cell makeCell(int id, int pop, int age, State state, Location location,
-					  double[] criticals, double[] lambdas, double[] adhesion) {
+					  EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion) {
 			PottsCell cell = mock(PottsCell.class);
 			
 			when(cell.getID()).thenReturn(id);
@@ -60,11 +91,11 @@ public class CellFactoryTest {
 			Module module = mock(Module.class);
 			when(cell.getModule()).thenReturn(module);
 			
-			when(cell.getCriticalVolume()).thenReturn(criticals[0]);
-			when(cell.getCriticalSurface()).thenReturn(criticals[1]);
+			when(cell.getCriticalVolume()).thenReturn(criticals.get(Term.VOLUME));
+			when(cell.getCriticalSurface()).thenReturn(criticals.get(Term.SURFACE));
 			
-			when(cell.getLambda(TERM_VOLUME)).thenReturn(lambdas[0]);
-			when(cell.getLambda(TERM_SURFACE)).thenReturn(lambdas[1]);
+			when(cell.getLambda(Term.VOLUME)).thenReturn(lambdas.get(Term.VOLUME));
+			when(cell.getLambda(Term.SURFACE)).thenReturn(lambdas.get(Term.SURFACE));
 			
 			for (int i = 0; i < adhesion.length; i++) {
 				when(cell.getAdhesion(i)).thenReturn(adhesion[i]);
@@ -74,8 +105,9 @@ public class CellFactoryTest {
 		}
 		
 		Cell makeCell(int id, int pop, int age, State state, Location location,
-					  double[] criticals, double[] lambdas, double[] adhesion, int tags,
-					  double[][] criticalsTag, double[][] lambdasTag, double[][] adhesionsTag) {
+					  EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
+					  EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
+					  EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag) {
 			PottsCell cell = mock(PottsCell.class);
 			
 			when(cell.getID()).thenReturn(id);
@@ -87,25 +119,25 @@ public class CellFactoryTest {
 			Module module = mock(Module.class);
 			when(cell.getModule()).thenReturn(module);
 			
-			when(cell.getCriticalVolume()).thenReturn(criticals[0]);
-			when(cell.getCriticalSurface()).thenReturn(criticals[1]);
+			when(cell.getCriticalVolume()).thenReturn(criticals.get(Term.VOLUME));
+			when(cell.getCriticalSurface()).thenReturn(criticals.get(Term.SURFACE));
 			
-			when(cell.getLambda(TERM_VOLUME)).thenReturn(lambdas[0]);
-			when(cell.getLambda(TERM_SURFACE)).thenReturn(lambdas[1]);
+			when(cell.getLambda(Term.VOLUME)).thenReturn(lambdas.get(Term.VOLUME));
+			when(cell.getLambda(Term.SURFACE)).thenReturn(lambdas.get(Term.SURFACE));
 			
 			for (int i = 0; i < adhesion.length; i++) {
 				when(cell.getAdhesion(i)).thenReturn(adhesion[i]);
 			}
 			
-			for (int i = 0; i < tags; i++) {
-				when(cell.getCriticalVolume(-i - 1)).thenReturn(criticalsTag[0][i]);
-				when(cell.getCriticalSurface(-i - 1)).thenReturn(criticalsTag[1][i]);
+			for (Tag tag : location.getTags()) {
+				when(cell.getCriticalVolume(tag)).thenReturn(criticalsTag.get(tag).get(Term.VOLUME));
+				when(cell.getCriticalSurface(tag)).thenReturn(criticalsTag.get(tag).get(Term.SURFACE));
 				
-				when(cell.getLambda(TERM_VOLUME, -i - 1)).thenReturn(lambdasTag[0][i]);
-				when(cell.getLambda(TERM_SURFACE, -i - 1)).thenReturn(lambdasTag[1][i]);
+				when(cell.getLambda(Term.VOLUME, tag)).thenReturn(lambdasTag.get(tag).get(Term.VOLUME));
+				when(cell.getLambda(Term.SURFACE, tag)).thenReturn(lambdasTag.get(tag).get(Term.SURFACE));
 				
-				for (int j = 0; j < tags; j++) {
-					when(cell.getAdhesion(-i - 1, -j - 1)).thenReturn(adhesionsTag[i][j]);
+				for (Tag target : location.getTags()) {
+					when(cell.getAdhesion(tag, target)).thenReturn(adhesionTag.get(tag).get(target));
 				}
 			}
 			
@@ -181,8 +213,8 @@ public class CellFactoryTest {
 		Series series = mock(Series.class);
 		series._populations = new HashMap<>();
 		
-		double[] criticals = new double[] { random(), random() };
-		double[] lambdas = new double[] { random(), random() };
+		EnumMap<Term, Double> criticals = makeEnumMap();
+		EnumMap<Term, Double> lambdas = makeEnumMap();
 		double[] adhesion = new double[] { random(), random(), random(), random() };
 		
 		String[] popKeys = new String[] { "A", "B", "C" };
@@ -196,10 +228,10 @@ public class CellFactoryTest {
 			population.put("ADHESION:A", adhesion[1]);
 			population.put("ADHESION:B", adhesion[2]);
 			population.put("ADHESION:C", adhesion[3]);
-			population.put("LAMBDA_VOLUME", lambdas[0] + pop);
-			population.put("LAMBDA_SURFACE", lambdas[1] + pop);
-			population.put("CRITICAL_VOLUME", criticals[0] + pop);
-			population.put("CRITICAL_SURFACE", criticals[1] + pop);
+			population.put("LAMBDA_VOLUME", lambdas.get(Term.VOLUME) + pop);
+			population.put("LAMBDA_SURFACE", lambdas.get(Term.SURFACE) + pop);
+			population.put("CRITICAL_VOLUME", criticals.get(Term.VOLUME) + pop);
+			population.put("CRITICAL_SURFACE", criticals.get(Term.SURFACE) + pop);
 			
 			series._populations.put(popKeys[i], population);
 		}
@@ -209,12 +241,13 @@ public class CellFactoryTest {
 		
 		for (int i = 0; i < popKeys.length; i++) {
 			int pop = i + 1;
-			assertEquals(criticals[0] + pop, factory.popToCriticals.get(pop)[0], EPSILON);
-			assertEquals(criticals[1] + pop, factory.popToCriticals.get(pop)[1], EPSILON);
-			assertEquals(lambdas[0] + pop, factory.popToLambdas.get(pop)[0], EPSILON);
-			assertEquals(lambdas[1] + pop, factory.popToLambdas.get(pop)[1], EPSILON);
+			assertEquals(criticals.get(Term.VOLUME) + pop, factory.popToCriticals.get(pop).get(Term.VOLUME), EPSILON);
+			assertEquals(criticals.get(Term.SURFACE) + pop, factory.popToCriticals.get(pop).get(Term.SURFACE), EPSILON);
+			assertEquals(lambdas.get(Term.VOLUME) + pop, factory.popToLambdas.get(pop).get(Term.VOLUME), EPSILON);
+			assertEquals(lambdas.get(Term.SURFACE) + pop, factory.popToLambdas.get(pop).get(Term.SURFACE), EPSILON);
 			assertArrayEquals(adhesion, factory.popToAdhesion.get(pop), EPSILON);
 			assertEquals(new HashSet<>(), factory.popToIDs.get(pop));
+			assertFalse(factory.popToTags.get(pop));
 		}
 	}
 	
@@ -223,26 +256,17 @@ public class CellFactoryTest {
 		Series series = mock(Series.class);
 		series._populations = new HashMap<>();
 		
-		double[] criticals = new double[] { random(), random() };
-		double[] lambdas = new double[] { random(), random() };
+		EnumMap<Term, Double> criticals = makeEnumMap();
+		EnumMap<Term, Double> lambdas = makeEnumMap();
 		double[] adhesion = new double[] { random(), random(), random(), random() };
 		
-		double[][] criticalsTag = new double[][] {
-				{ random(), random(), random() },
-				{ random(), random(), random() }
-		};
-		double[][] lambdasTag = new double[][] {
-				{ random(), random(), random() },
-				{ random(), random(), random() }
-		};
-		double[][] adhesionTag = new double[][] {
-				{ random(), random(), random() },
-				{ random(), random(), random() },
-				{ random(), random(), random() }
-		};
+		EnumSet<Tag> tagList = EnumSet.of(Tag.DEFAULT, Tag.NUCLEUS, Tag.UNDEFINED);
+		
+		EnumMap<Tag, EnumMap<Term, Double>> criticalsTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag = makeEnumMapTarget(tagList);
 		
 		String[] popKeys = new String[] { "A", "B", "C" };
-		String[] tagKeys = new String[] { "a", "b", "c" };
 		
 		for (int i = 0; i < popKeys.length; i++) {
 			int pop = i + 1;
@@ -253,22 +277,20 @@ public class CellFactoryTest {
 			population.put("ADHESION:A", adhesion[1]);
 			population.put("ADHESION:B", adhesion[2]);
 			population.put("ADHESION:C", adhesion[3]);
-			population.put("LAMBDA_VOLUME", lambdas[0] + pop);
-			population.put("LAMBDA_SURFACE", lambdas[1] + pop);
-			population.put("CRITICAL_VOLUME", criticals[0] + pop);
-			population.put("CRITICAL_SURFACE", criticals[1] + pop);
+			population.put("LAMBDA_VOLUME", lambdas.get(Term.VOLUME) + pop);
+			population.put("LAMBDA_SURFACE", lambdas.get(Term.SURFACE) + pop);
+			population.put("CRITICAL_VOLUME", criticals.get(Term.VOLUME) + pop);
+			population.put("CRITICAL_SURFACE", criticals.get(Term.SURFACE) + pop);
 			
-			for (int j = 0; j < tagKeys.length; j++) {
-				String tag = tagKeys[j];
-				
+			for (Tag tag : tagList) {
 				population.put("TAG" + TAG_SEPARATOR + tag, 0);
-				population.put(tag + TAG_SEPARATOR + "LAMBDA_VOLUME", lambdasTag[0][j] + pop);
-				population.put(tag + TAG_SEPARATOR + "LAMBDA_SURFACE", lambdasTag[1][j] + pop);
-				population.put(tag + TAG_SEPARATOR + "CRITICAL_VOLUME", criticalsTag[0][j] + pop);
-				population.put(tag + TAG_SEPARATOR + "CRITICAL_SURFACE", criticalsTag[1][j] + pop);
+				population.put(tag + TAG_SEPARATOR + "LAMBDA_VOLUME", lambdasTag.get(tag).get(Term.VOLUME) + pop);
+				population.put(tag + TAG_SEPARATOR + "LAMBDA_SURFACE", lambdasTag.get(tag).get(Term.SURFACE) + pop);
+				population.put(tag + TAG_SEPARATOR + "CRITICAL_VOLUME", criticalsTag.get(tag).get(Term.VOLUME) + pop);
+				population.put(tag + TAG_SEPARATOR + "CRITICAL_SURFACE", criticalsTag.get(tag).get(Term.SURFACE) + pop);
 				
-				for (int k = 0; k < tagKeys.length; k++) {
-					population.put(tag + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + tagKeys[k], adhesionTag[j][k] + pop);
+				for (Tag target : tagList) {
+					population.put(tag + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target, adhesionTag.get(tag).get(target) + pop);
 				}
 			}
 			
@@ -280,23 +302,22 @@ public class CellFactoryTest {
 		
 		for (int i = 0; i < popKeys.length; i++) {
 			int pop = i + 1;
-			assertEquals(criticals[0] + pop, factory.popToCriticals.get(pop)[0], EPSILON);
-			assertEquals(criticals[1] + pop, factory.popToCriticals.get(pop)[1], EPSILON);
-			assertEquals(lambdas[0] + pop, factory.popToLambdas.get(pop)[0], EPSILON);
-			assertEquals(lambdas[1] + pop, factory.popToLambdas.get(pop)[1], EPSILON);
+			assertEquals(criticals.get(Term.VOLUME) + pop, factory.popToCriticals.get(pop).get(Term.VOLUME), EPSILON);
+			assertEquals(criticals.get(Term.SURFACE) + pop, factory.popToCriticals.get(pop).get(Term.SURFACE), EPSILON);
+			assertEquals(lambdas.get(Term.VOLUME) + pop, factory.popToLambdas.get(pop).get(Term.VOLUME), EPSILON);
+			assertEquals(lambdas.get(Term.SURFACE) + pop, factory.popToLambdas.get(pop).get(Term.SURFACE), EPSILON);
 			assertArrayEquals(adhesion, factory.popToAdhesion.get(pop), EPSILON);
 			assertEquals(new HashSet<>(), factory.popToIDs.get(pop));
+			assertTrue(factory.popToTags.get(pop));
 			
-			assertArrayEquals(tagKeys, factory.popToTags.get(pop).toArray());
-			
-			for (int j = 0; j < tagKeys.length; j++) {
-				assertEquals(criticalsTag[TERM_VOLUME][j] + pop, factory.popToTagCriticals.get(pop)[TERM_VOLUME][j], EPSILON);
-				assertEquals(criticalsTag[TERM_SURFACE][j] + pop, factory.popToTagCriticals.get(pop)[TERM_SURFACE][j], EPSILON);
-				assertEquals(lambdasTag[TERM_VOLUME][j] + pop, factory.popToTagLambdas.get(pop)[TERM_VOLUME][j], EPSILON);
-				assertEquals(lambdasTag[TERM_SURFACE][j] + pop, factory.popToTagLambdas.get(pop)[TERM_SURFACE][j], EPSILON);
+			for (Tag tag : tagList) {
+				assertEquals(criticalsTag.get(tag).get(Term.VOLUME) + pop, factory.popToTagCriticals.get(pop).get(tag).get(Term.VOLUME), EPSILON);
+				assertEquals(criticalsTag.get(tag).get(Term.SURFACE) + pop, factory.popToTagCriticals.get(pop).get(tag).get(Term.SURFACE), EPSILON);
+				assertEquals(lambdasTag.get(tag).get(Term.VOLUME) + pop, factory.popToTagLambdas.get(pop).get(tag).get(Term.VOLUME), EPSILON);
+				assertEquals(lambdasTag.get(tag).get(Term.SURFACE) + pop, factory.popToTagLambdas.get(pop).get(tag).get(Term.SURFACE), EPSILON);
 				
-				for (int k = 0; k < tagKeys.length; k++) {
-					assertEquals(adhesionTag[j][k] + pop, factory.popToTagAdhesion.get(pop)[j][k], EPSILON);
+				for (Tag target : tagList) {
+					assertEquals(adhesionTag.get(tag).get(target) + pop, factory.popToTagAdhesion.get(pop).get(tag).get(target), EPSILON);
 				}
 			}
 		}
@@ -462,6 +483,7 @@ public class CellFactoryTest {
 		
 		CellFactoryMock factory = new CellFactoryMock();
 		factory.popToIDs.put(1, new HashSet<>());
+		factory.popToTags.put(1, false);
 		factory.createCells(series);
 		
 		assertEquals(init, factory.cells.size());
@@ -472,27 +494,20 @@ public class CellFactoryTest {
 	
 	@Test
 	public void createCells_onePopulationWithTags_createsList() {
-		int voxelsA = randomInt();
-		int voxelsB = randomInt();
-		int voxelsC = randomInt();
+		int voxelsA = 10*randomInt();
+		int voxelsB = 10*randomInt();
 		
-		int voxels = voxelsA + voxelsB + voxelsC;
+		int voxels = voxelsA + voxelsB;
 		int init = randomInt();
 		
 		Series series = createSeries(new int[] { init }, new double[] { voxels*DS });
 		
-		ArrayList<String> tags = new ArrayList<>();
-		tags.add("A");
-		tags.add("B");
-		tags.add("C");
-		
-		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "A", (double)voxelsA/voxels);
-		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "B", (double)voxelsB/voxels);
-		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "C", (double)voxelsC/voxels);
+		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels);
+		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels);
 		
 		CellFactoryMock factory = new CellFactoryMock();
 		factory.popToIDs.put(1, new HashSet<>());
-		factory.popToTags.put(1, tags);
+		factory.popToTags.put(1, true);
 		factory.createCells(series);
 		
 		assertEquals(init, factory.cells.size());
@@ -500,9 +515,9 @@ public class CellFactoryTest {
 		
 		for (int i : factory.popToIDs.get(1)) {
 			assertEquals(voxels, factory.cells.get(i).voxels);
-			assertEquals(voxelsA, (int)factory.cells.get(i).tagVoxels.get("A"));
-			assertEquals(voxelsB, (int)factory.cells.get(i).tagVoxels.get("B"));
-			assertEquals(voxelsC, (int)factory.cells.get(i).tagVoxels.get("C"));
+			assertEquals(voxelsA, (int)factory.cells.get(i).tagVoxels.get(Tag.UNDEFINED));
+			assertEquals(voxelsB, (int)factory.cells.get(i).tagVoxels.get(Tag.NUCLEUS));
+			assertEquals(0, (int)factory.cells.get(i).tagVoxels.get(Tag.DEFAULT));
 		}
 	}
 	
@@ -523,6 +538,9 @@ public class CellFactoryTest {
 		factory.popToIDs.put(1, new HashSet<>());
 		factory.popToIDs.put(2, new HashSet<>());
 		factory.popToIDs.put(3, new HashSet<>());
+		factory.popToTags.put(1, false);
+		factory.popToTags.put(2, false);
+		factory.popToTags.put(3, false);
 		factory.createCells(series);
 		
 		assertEquals(init1 + init2 + init3, factory.cells.size());
@@ -539,10 +557,9 @@ public class CellFactoryTest {
 	public void createCells_multiplePopulationsWithTags_createsList() {
 		int voxelsA = 10*randomInt();
 		int voxelsB = 10*randomInt();
-		int voxelsC = 10*randomInt();
 		
 		int voxels1 = randomInt();
-		int voxels2 = voxelsA + voxelsB + voxelsC;
+		int voxels2 = voxelsA + voxelsB;
 		int voxels3 = randomInt();
 		
 		int init1 = randomInt();
@@ -552,20 +569,16 @@ public class CellFactoryTest {
 		Series series = createSeries(new int[] { init1, init2, init3 },
 				new double[] { voxels1*DS, voxels2*DS, voxels3*DS });
 		
-		ArrayList<String> tags = new ArrayList<>();
-		tags.add("A");
-		tags.add("B");
-		tags.add("C");
-		
-		series._populations.get("pop2").put("TAG" + TAG_SEPARATOR + "A", (double)voxelsA/voxels2);
-		series._populations.get("pop2").put("TAG" + TAG_SEPARATOR + "B", (double)voxelsB/voxels2);
-		series._populations.get("pop2").put("TAG" + TAG_SEPARATOR + "C", (double)voxelsC/voxels2);
+		series._populations.get("pop2").put("TAG" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels2);
+		series._populations.get("pop2").put("TAG" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels2);
 		
 		CellFactoryMock factory = new CellFactoryMock();
 		factory.popToIDs.put(1, new HashSet<>());
 		factory.popToIDs.put(2, new HashSet<>());
 		factory.popToIDs.put(3, new HashSet<>());
-		factory.popToTags.put(2, tags);
+		factory.popToTags.put(1, false);
+		factory.popToTags.put(2, true);
+		factory.popToTags.put(3, false);
 		factory.createCells(series);
 		
 		assertEquals(init1 + init2 + init3, factory.cells.size());
@@ -576,9 +589,9 @@ public class CellFactoryTest {
 		for (int i : factory.popToIDs.get(1)) { assertEquals(voxels1, factory.cells.get(i).voxels); }
 		for (int i : factory.popToIDs.get(2)) {
 			assertEquals(voxels2, factory.cells.get(i).voxels);
-			assertEquals(voxelsA, (int)factory.cells.get(i).tagVoxels.get("A"));
-			assertEquals(voxelsB, (int)factory.cells.get(i).tagVoxels.get("B"));
-			assertEquals(voxelsC, (int)factory.cells.get(i).tagVoxels.get("C"));
+			assertEquals(voxelsA, (int)factory.cells.get(i).tagVoxels.get(Tag.UNDEFINED));
+			assertEquals(voxelsB, (int)factory.cells.get(i).tagVoxels.get(Tag.NUCLEUS));
+			assertEquals(0, (int)factory.cells.get(i).tagVoxels.get(Tag.DEFAULT));
 		}
 		for (int i : factory.popToIDs.get(3)) { assertEquals(voxels3, factory.cells.get(i).voxels); }
 	}
@@ -591,16 +604,12 @@ public class CellFactoryTest {
 		
 		Series series = createSeries(new int[] { init }, new double[] { voxels*DS });
 		
-		ArrayList<String> tags = new ArrayList<>();
-		tags.add("A");
-		tags.add("B");
-		
-		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "A", 0.75);
-		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "B", 0.75);
+		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "UNDEFINED", 0.75);
+		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "DEFAULT", 0.75);
 		
 		CellFactoryMock factory = new CellFactoryMock();
 		factory.popToIDs.put(1, new HashSet<>());
-		factory.popToTags.put(1, tags);
+		factory.popToTags.put(1, true);
 		factory.createCells(series);
 		
 		assertEquals(init, factory.cells.size());
@@ -608,8 +617,8 @@ public class CellFactoryTest {
 		
 		for (int i : factory.popToIDs.get(1)) {
 			assertEquals(voxels, factory.cells.get(i).voxels);
-			assertEquals(3*voxel, (int)factory.cells.get(i).tagVoxels.get("A"));
-			assertEquals(voxel, (int)factory.cells.get(i).tagVoxels.get("B"));
+			assertEquals(3*voxel, (int)factory.cells.get(i).tagVoxels.get(Tag.UNDEFINED));
+			assertEquals(voxel, (int)factory.cells.get(i).tagVoxels.get(Tag.DEFAULT));
 		}
 	}
 	
@@ -621,10 +630,10 @@ public class CellFactoryTest {
 		int cellID = (int)random() + 1;
 		int cellPop = (int)random() + 1;
 		int cellAge = (int)random();
-		State cellState = State.values()[(int)(Math.random()*State.values().length)];
-		Phase cellPhase = Phase.values()[(int)(Math.random()*Phase.values().length)];
-		double[] criticals = new double[] { random(), random() };
-		double[] lambdas = new double[] { random(), random() };
+		State cellState = randomState();
+		Phase cellPhase = randomPhase();
+		EnumMap<Term, Double> criticals = makeEnumMap();
+		EnumMap<Term, Double> lambdas = makeEnumMap();
 		double[] adhesion = new double[] { random(), random() };
 		
 		factory.popToCriticals.put(cellPop, criticals);
@@ -642,10 +651,10 @@ public class CellFactoryTest {
 		assertEquals(cellAge, cell.getAge());
 		assertEquals(cellState, cell.getState());
 		verify(cell.getModule()).setPhase(cellPhase);
-		assertEquals(criticals[0], cell.getCriticalVolume(), EPSILON);
-		assertEquals(criticals[1], cell.getCriticalSurface(), EPSILON);
-		assertEquals(lambdas[0], cell.getLambda(TERM_VOLUME), EPSILON);
-		assertEquals(lambdas[1], cell.getLambda(TERM_SURFACE), EPSILON);
+		assertEquals(criticals.get(Term.VOLUME), cell.getCriticalVolume(), EPSILON);
+		assertEquals(criticals.get(Term.SURFACE), cell.getCriticalSurface(), EPSILON);
+		assertEquals(lambdas.get(Term.VOLUME), cell.getLambda(Term.VOLUME), EPSILON);
+		assertEquals(lambdas.get(Term.SURFACE), cell.getLambda(Term.SURFACE), EPSILON);
 		assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
 		assertEquals(adhesion[1], cell.getAdhesion(1), EPSILON);
 		assertEquals(0, cell.getTargetVolume(), EPSILON);
@@ -661,10 +670,10 @@ public class CellFactoryTest {
 		int cellID1 = (int)random() + 1;
 		int cellPop1 = (int)random() + 1;
 		int cellAge1 = (int)random();
-		State cellState1 = State.values()[(int)(Math.random()*State.values().length)];
-		Phase cellPhase1 = Phase.values()[(int)(Math.random()*Phase.values().length)];
-		double[] criticals1 = new double[] { random(), random() };
-		double[] lambdas1 = new double[] { random(), random() };
+		State cellState1 = randomState();
+		Phase cellPhase1 = randomPhase();
+		EnumMap<Term, Double> criticals1 = makeEnumMap();
+		EnumMap<Term, Double> lambdas1 = makeEnumMap();
 		double[] adhesion1 = new double[] { random(), random(), random(), random() };
 		
 		factory.popToCriticals.put(cellPop1, criticals1);
@@ -674,10 +683,10 @@ public class CellFactoryTest {
 		int cellID2 = cellID1 + 1;
 		int cellPop2 = cellPop1 + 1;
 		int cellAge2 = (int)random();
-		State cellState2 = State.values()[(int)(Math.random()*State.values().length)];
-		Phase cellPhase2 = Phase.values()[(int)(Math.random()*Phase.values().length)];
-		double[] criticals2 = new double[] { random(), random() };
-		double[] lambdas2 = new double[] { random(), random() };
+		State cellState2 = randomState();
+		Phase cellPhase2 = randomPhase();
+		EnumMap<Term, Double> criticals2 = makeEnumMap();
+		EnumMap<Term, Double> lambdas2 = makeEnumMap();
 		double[] adhesion2 = new double[] { random(), random(), random(), random() };
 		
 		factory.popToCriticals.put(cellPop2, criticals2);
@@ -695,10 +704,10 @@ public class CellFactoryTest {
 		assertEquals(cellAge1, cell1.getAge());
 		assertEquals(cellState1, cell1.getState());
 		verify(cell1.getModule()).setPhase(cellPhase1);
-		assertEquals(criticals1[0], cell1.getCriticalVolume(), EPSILON);
-		assertEquals(criticals1[1], cell1.getCriticalSurface(), EPSILON);
-		assertEquals(lambdas1[0], cell1.getLambda(TERM_VOLUME), EPSILON);
-		assertEquals(lambdas1[1], cell1.getLambda(TERM_SURFACE), EPSILON);
+		assertEquals(criticals1.get(Term.VOLUME), cell1.getCriticalVolume(), EPSILON);
+		assertEquals(criticals1.get(Term.SURFACE), cell1.getCriticalSurface(), EPSILON);
+		assertEquals(lambdas1.get(Term.VOLUME), cell1.getLambda(Term.VOLUME), EPSILON);
+		assertEquals(lambdas1.get(Term.SURFACE), cell1.getLambda(Term.SURFACE), EPSILON);
 		assertEquals(adhesion1[0], cell1.getAdhesion(0), EPSILON);
 		assertEquals(adhesion1[1], cell1.getAdhesion(1), EPSILON);
 		assertEquals(adhesion1[2], cell1.getAdhesion(2), EPSILON);
@@ -717,10 +726,10 @@ public class CellFactoryTest {
 		assertEquals(cellAge2, cell2.getAge());
 		assertEquals(cellState2, cell2.getState());
 		verify(cell2.getModule()).setPhase(cellPhase2);
-		assertEquals(criticals2[0], cell2.getCriticalVolume(), EPSILON);
-		assertEquals(criticals2[1], cell2.getCriticalSurface(), EPSILON);
-		assertEquals(lambdas2[0], cell2.getLambda(TERM_VOLUME), EPSILON);
-		assertEquals(lambdas2[1], cell2.getLambda(TERM_SURFACE), EPSILON);
+		assertEquals(criticals2.get(Term.VOLUME), cell2.getCriticalVolume(), EPSILON);
+		assertEquals(criticals2.get(Term.SURFACE), cell2.getCriticalSurface(), EPSILON);
+		assertEquals(lambdas2.get(Term.VOLUME), cell2.getLambda(Term.VOLUME), EPSILON);
+		assertEquals(lambdas2.get(Term.SURFACE), cell2.getLambda(Term.SURFACE), EPSILON);
 		assertEquals(adhesion2[0], cell2.getAdhesion(0), EPSILON);
 		assertEquals(adhesion2[1], cell2.getAdhesion(1), EPSILON);
 		assertEquals(adhesion2[2], cell2.getAdhesion(2), EPSILON);
@@ -737,25 +746,18 @@ public class CellFactoryTest {
 		int cellID = (int)random() + 1;
 		int cellPop = (int)random() + 1;
 		int cellAge = (int)random();
-		State cellState = State.values()[(int)(Math.random()*State.values().length)];
-		Phase cellPhase = Phase.values()[(int)(Math.random()*Phase.values().length)];
-		double[] criticals = new double[] { random(), random() };
-		double[] lambdas = new double[] { random(), random() };
+		State cellState = randomState();
+		Phase cellPhase = randomPhase();
+		EnumMap<Term, Double> criticals = makeEnumMap();
+		EnumMap<Term, Double> lambdas = makeEnumMap();
 		double[] adhesion = new double[] { random(), random() };
 		
-		double[][] criticalsTag = new double[][] {
-				{ random(), random(), random() },
-				{ random(), random(), random() }
-		};
-		double[][] lambdasTag = new double[][] {
-				{ random(), random(), random() },
-				{ random(), random(), random() }
-		};
-		double[][] adhesionTag = new double[][] {
-				{ random(), random(), random() },
-				{ random(), random(), random() },
-				{ random(), random(), random() }
-		};
+		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
+		doReturn(tagList).when(location).getTags();
+		
+		EnumMap<Tag, EnumMap<Term, Double>> criticalsTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag = makeEnumMapTarget(tagList);
 		
 		factory.popToCriticals.put(cellPop, criticals);
 		factory.popToLambdas.put(cellPop, lambdas);
@@ -765,11 +767,7 @@ public class CellFactoryTest {
 		factory.popToTagLambdas.put(cellPop, lambdasTag);
 		factory.popToTagAdhesion.put(cellPop, adhesionTag);
 		
-		ArrayList<String> tags = new ArrayList<>();
-		tags.add("A");
-		tags.add("B");
-		tags.add("C");
-		factory.popToTags.put(cellPop, tags);
+		factory.popToTags.put(cellPop, true);
 		
 		CellContainer container = new CellContainer(cellID, cellPop, cellAge, cellState, cellPhase,
 				0, null, 0, 0, null, null);
@@ -782,25 +780,25 @@ public class CellFactoryTest {
 		assertEquals(cellAge, cell.getAge());
 		assertEquals(cellState, cell.getState());
 		verify(cell.getModule()).setPhase(cellPhase);
-		assertEquals(criticals[0], cell.getCriticalVolume(), EPSILON);
-		assertEquals(criticals[1], cell.getCriticalSurface(), EPSILON);
-		assertEquals(lambdas[0], cell.getLambda(TERM_VOLUME), EPSILON);
-		assertEquals(lambdas[1], cell.getLambda(TERM_SURFACE), EPSILON);
+		assertEquals(criticals.get(Term.VOLUME), cell.getCriticalVolume(), EPSILON);
+		assertEquals(criticals.get(Term.SURFACE), cell.getCriticalSurface(), EPSILON);
+		assertEquals(lambdas.get(Term.VOLUME), cell.getLambda(Term.VOLUME), EPSILON);
+		assertEquals(lambdas.get(Term.SURFACE), cell.getLambda(Term.SURFACE), EPSILON);
 		assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
 		assertEquals(adhesion[1], cell.getAdhesion(1), EPSILON);
 		assertEquals(0, cell.getTargetVolume(), EPSILON);
 		assertEquals(0, cell.getTargetSurface(), EPSILON);
 		
-		for (int i = 0; i < tags.size(); i++) {
-			assertEquals(criticalsTag[0][i], cell.getCriticalVolume(-i - 1), EPSILON);
-			assertEquals(criticalsTag[1][i], cell.getCriticalSurface(-i - 1), EPSILON);
-			assertEquals(lambdasTag[0][i], cell.getLambda(TERM_VOLUME, -i - 1), EPSILON);
-			assertEquals(lambdasTag[1][i], cell.getLambda(TERM_SURFACE, -i - 1), EPSILON);
-			assertEquals(0, cell.getTargetVolume(-i - 1), EPSILON);
-			assertEquals(0, cell.getTargetSurface(-i - 1), EPSILON);
+		for (Tag tag : tagList) {
+			assertEquals(criticalsTag.get(tag).get(Term.VOLUME), cell.getCriticalVolume(tag), EPSILON);
+			assertEquals(criticalsTag.get(tag).get(Term.SURFACE), cell.getCriticalSurface(tag), EPSILON);
+			assertEquals(lambdasTag.get(tag).get(Term.VOLUME), cell.getLambda(Term.VOLUME, tag), EPSILON);
+			assertEquals(lambdasTag.get(tag).get(Term.SURFACE), cell.getLambda(Term.SURFACE, tag), EPSILON);
+			assertEquals(0, cell.getTargetVolume(tag), EPSILON);
+			assertEquals(0, cell.getTargetSurface(tag), EPSILON);
 			
-			for (int j = 0; j < tags.size(); j++) {
-				assertEquals(adhesionTag[i][j], cell.getAdhesion(-i - 1, -j - 1), EPSILON);
+			for (Tag target : tagList) {
+				assertEquals(adhesionTag.get(tag).get(target), cell.getAdhesion(tag, target), EPSILON);
 			}
 		}
 	}
@@ -814,10 +812,10 @@ public class CellFactoryTest {
 		int cellID1 = (int)random() + 1;
 		int cellPop1 = (int)random() + 1;
 		int cellAge1 = (int)random();
-		State cellState1 = State.values()[(int)(Math.random()*State.values().length)];
-		Phase cellPhase1 = Phase.values()[(int)(Math.random()*Phase.values().length)];
-		double[] criticals1 = new double[] { random(), random() };
-		double[] lambdas1 = new double[] { random(), random() };
+		State cellState1 = randomState();
+		Phase cellPhase1 = randomPhase();
+		EnumMap<Term, Double> criticals1 = makeEnumMap();
+		EnumMap<Term, Double> lambdas1 = makeEnumMap();
 		double[] adhesion1 = new double[] { random(), random(), random(), random() };
 		
 		factory.popToCriticals.put(cellPop1, criticals1);
@@ -827,39 +825,28 @@ public class CellFactoryTest {
 		int cellID2 = cellID1 + 1;
 		int cellPop2 = cellPop1 + 1;
 		int cellAge2 = (int)random();
-		State cellState2 = State.values()[(int)(Math.random()*State.values().length)];
-		Phase cellPhase2 = Phase.values()[(int)(Math.random()*Phase.values().length)];
-		double[] criticals2 = new double[] { random(), random() };
-		double[] lambdas2 = new double[] { random(), random() };
+		State cellState2 = randomState();
+		Phase cellPhase2 = randomPhase();
+		EnumMap<Term, Double> criticals2 = makeEnumMap();
+		EnumMap<Term, Double> lambdas2 = makeEnumMap();
 		double[] adhesion2 = new double[] { random(), random(), random(), random() };
 		
 		factory.popToCriticals.put(cellPop2, criticals2);
 		factory.popToLambdas.put(cellPop2, lambdas2);
 		factory.popToAdhesion.put(cellPop2, adhesion2);
 		
-		double[][] criticalsTag = new double[][] {
-				{ random(), random(), random() },
-				{ random(), random(), random() }
-		};
-		double[][] lambdasTag = new double[][] {
-				{ random(), random(), random() },
-				{ random(), random(), random() }
-		};
-		double[][] adhesionTag = new double[][] {
-				{ random(), random(), random() },
-				{ random(), random(), random() },
-				{ random(), random(), random() }
-		};
+		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
+		doReturn(tagList).when(location2).getTags();
+		
+		EnumMap<Tag, EnumMap<Term, Double>> criticalsTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag = makeEnumMapTarget(tagList);
 		
 		factory.popToTagCriticals.put(cellPop2, criticalsTag);
 		factory.popToTagLambdas.put(cellPop2, lambdasTag);
 		factory.popToTagAdhesion.put(cellPop2, adhesionTag);
 		
-		ArrayList<String> tags = new ArrayList<>();
-		tags.add("A");
-		tags.add("B");
-		tags.add("C");
-		factory.popToTags.put(cellPop2, tags);
+		factory.popToTags.put(cellPop2, true);
 		
 		CellContainer container1 = new CellContainer(cellID1, cellPop1, cellAge1, cellState1, cellPhase1,
 				0, null, 0, 0, null, null);
@@ -872,10 +859,10 @@ public class CellFactoryTest {
 		assertEquals(cellAge1, cell1.getAge());
 		assertEquals(cellState1, cell1.getState());
 		verify(cell1.getModule()).setPhase(cellPhase1);
-		assertEquals(criticals1[0], cell1.getCriticalVolume(), EPSILON);
-		assertEquals(criticals1[1], cell1.getCriticalSurface(), EPSILON);
-		assertEquals(lambdas1[0], cell1.getLambda(TERM_VOLUME), EPSILON);
-		assertEquals(lambdas1[1], cell1.getLambda(TERM_SURFACE), EPSILON);
+		assertEquals(criticals1.get(Term.VOLUME), cell1.getCriticalVolume(), EPSILON);
+		assertEquals(criticals1.get(Term.SURFACE), cell1.getCriticalSurface(), EPSILON);
+		assertEquals(lambdas1.get(Term.VOLUME), cell1.getLambda(Term.VOLUME), EPSILON);
+		assertEquals(lambdas1.get(Term.SURFACE), cell1.getLambda(Term.SURFACE), EPSILON);
 		assertEquals(adhesion1[0], cell1.getAdhesion(0), EPSILON);
 		assertEquals(adhesion1[1], cell1.getAdhesion(1), EPSILON);
 		assertEquals(adhesion1[2], cell1.getAdhesion(2), EPSILON);
@@ -883,16 +870,16 @@ public class CellFactoryTest {
 		assertEquals(0, cell1.getTargetVolume(), EPSILON);
 		assertEquals(0, cell1.getTargetSurface(), EPSILON);
 		
-		for (int i = 0; i < tags.size(); i++) {
-			assertEquals(0, cell1.getCriticalVolume(-i - 1), EPSILON);
-			assertEquals(0, cell1.getCriticalSurface(-i - 1), EPSILON);
-			assertEquals(0, cell1.getLambda(TERM_VOLUME, -i - 1), EPSILON);
-			assertEquals(0, cell1.getLambda(TERM_SURFACE, -i - 1), EPSILON);
-			assertEquals(0, cell1.getTargetVolume(-i - 1), EPSILON);
-			assertEquals(0, cell1.getTargetSurface(-i - 1), EPSILON);
+		for (Tag tag : tagList) {
+			assertEquals(0, cell1.getCriticalVolume(tag), EPSILON);
+			assertEquals(0, cell1.getCriticalSurface(tag), EPSILON);
+			assertEquals(0, cell1.getLambda(Term.VOLUME, tag), EPSILON);
+			assertEquals(0, cell1.getLambda(Term.SURFACE, tag), EPSILON);
+			assertEquals(0, cell1.getTargetVolume(tag), EPSILON);
+			assertEquals(0, cell1.getTargetSurface(tag), EPSILON);
 			
-			for (int j = 0; j < tags.size(); j++) {
-				assertEquals(0, cell1.getAdhesion(-i - 1, -j - 1), EPSILON);
+			for (Tag target : tagList) {
+				assertEquals(0, cell1.getAdhesion(tag, target), EPSILON);
 			}
 		}
 		
@@ -907,10 +894,10 @@ public class CellFactoryTest {
 		assertEquals(cellAge2, cell2.getAge());
 		assertEquals(cellState2, cell2.getState());
 		verify(cell2.getModule()).setPhase(cellPhase2);
-		assertEquals(criticals2[0], cell2.getCriticalVolume(), EPSILON);
-		assertEquals(criticals2[1], cell2.getCriticalSurface(), EPSILON);
-		assertEquals(lambdas2[0], cell2.getLambda(TERM_VOLUME), EPSILON);
-		assertEquals(lambdas2[1], cell2.getLambda(TERM_SURFACE), EPSILON);
+		assertEquals(criticals2.get(Term.VOLUME), cell2.getCriticalVolume(), EPSILON);
+		assertEquals(criticals2.get(Term.SURFACE), cell2.getCriticalSurface(), EPSILON);
+		assertEquals(lambdas2.get(Term.VOLUME), cell2.getLambda(Term.VOLUME), EPSILON);
+		assertEquals(lambdas2.get(Term.SURFACE), cell2.getLambda(Term.SURFACE), EPSILON);
 		assertEquals(adhesion2[0], cell2.getAdhesion(0), EPSILON);
 		assertEquals(adhesion2[1], cell2.getAdhesion(1), EPSILON);
 		assertEquals(adhesion2[2], cell2.getAdhesion(2), EPSILON);
@@ -918,16 +905,16 @@ public class CellFactoryTest {
 		assertEquals(0, cell2.getTargetVolume(), EPSILON);
 		assertEquals(0, cell2.getTargetSurface(), EPSILON);
 		
-		for (int i = 0; i < tags.size(); i++) {
-			assertEquals(criticalsTag[0][i], cell2.getCriticalVolume(-i - 1), EPSILON);
-			assertEquals(criticalsTag[1][i], cell2.getCriticalSurface(-i - 1), EPSILON);
-			assertEquals(lambdasTag[0][i], cell2.getLambda(TERM_VOLUME, -i - 1), EPSILON);
-			assertEquals(lambdasTag[1][i], cell2.getLambda(TERM_SURFACE, -i - 1), EPSILON);
-			assertEquals(0, cell2.getTargetVolume(-i - 1), EPSILON);
-			assertEquals(0, cell2.getTargetSurface(-i - 1), EPSILON);
+		for (Tag tag : tagList) {
+			assertEquals(criticalsTag.get(tag).get(Term.VOLUME), cell2.getCriticalVolume(tag), EPSILON);
+			assertEquals(criticalsTag.get(tag).get(Term.SURFACE), cell2.getCriticalSurface(tag), EPSILON);
+			assertEquals(lambdasTag.get(tag).get(Term.VOLUME), cell2.getLambda(Term.VOLUME, tag), EPSILON);
+			assertEquals(lambdasTag.get(tag).get(Term.SURFACE), cell2.getLambda(Term.SURFACE, tag), EPSILON);
+			assertEquals(0, cell2.getTargetVolume(tag), EPSILON);
+			assertEquals(0, cell2.getTargetSurface(tag), EPSILON);
 			
-			for (int j = 0; j < tags.size(); j++) {
-				assertEquals(adhesionTag[i][j], cell2.getAdhesion(-i - 1, -j - 1), EPSILON);
+			for (Tag target : tagList) {
+				assertEquals(adhesionTag.get(tag).get(target), cell2.getAdhesion(tag, target), EPSILON);
 			}
 		}
 	}
@@ -940,8 +927,8 @@ public class CellFactoryTest {
 		double targetVolume = random();
 		double targetSurface = random();
 		
-		factory.popToCriticals.put(1, new double[2]);
-		factory.popToLambdas.put(1, new double[2]);
+		factory.popToCriticals.put(1, makeEnumMap());
+		factory.popToLambdas.put(1, makeEnumMap());
 		factory.popToAdhesion.put(1, new double[2]);
 		
 		CellContainer container = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, targetVolume, targetSurface);
@@ -959,15 +946,15 @@ public class CellFactoryTest {
 		double targetVolume1 = random();
 		double targetSurface1 = random();
 		
-		factory.popToCriticals.put(1, new double[2]);
-		factory.popToLambdas.put(1, new double[2]);
+		factory.popToCriticals.put(1, makeEnumMap());
+		factory.popToLambdas.put(1, makeEnumMap());
 		factory.popToAdhesion.put(1, new double[3]);
 		
 		double targetVolume2 = random();
 		double targetSurface2 = random();
 		
-		factory.popToCriticals.put(2, new double[2]);
-		factory.popToLambdas.put(2, new double[2]);
+		factory.popToCriticals.put(2, makeEnumMap());
+		factory.popToLambdas.put(2, makeEnumMap());
 		factory.popToAdhesion.put(2, new double[3]);
 		
 		CellContainer container1 = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, targetVolume1, targetSurface1);
@@ -987,30 +974,27 @@ public class CellFactoryTest {
 		double targetVolume = random();
 		double targetSurface = random();
 		
-		double[] tagVolumes = new double[] { random(), random(), random() };
-		double[] tagSurfaces = new double[] { random(), random(), random() };
+		factory.popToCriticals.put(1, makeEnumMap());
+		factory.popToLambdas.put(1, makeEnumMap());
+		factory.popToAdhesion.put(1, new double[2]);
 		
-		HashMap<String, Double> targetTagVolumes = new HashMap<>();
-		HashMap<String, Double> targetTagSurfaces = new HashMap<>();
+		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
+		doReturn(tagList).when(location).getTags();
 		
-		factory.popToCriticals.put(1, new double[2]);
-		factory.popToLambdas.put(1, new double[2]);
-		factory.popToAdhesion.put(1, new double[3]);
+		EnumMap<Tag, EnumMap<Term, Double>> criticalsTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag = makeEnumMapTarget(tagList);
 		
-		factory.popToTagCriticals.put(1, new double[2][3]);
-		factory.popToTagLambdas.put(1, new double[2][3]);
-		factory.popToTagAdhesion.put(1, new double[3][3]);
+		factory.popToTagCriticals.put(1, criticalsTag);
+		factory.popToTagLambdas.put(1, lambdasTag);
+		factory.popToTagAdhesion.put(1, adhesionTag);
 		
-		ArrayList<String> tags = new ArrayList<>();
-		tags.add("CYTOPLASM");
-		tags.add("NUCLEUS");
-		factory.popToTags.put(1, tags);
+		EnumMap<Tag, Double> targetTagVolumes = new EnumMap<>(Tag.class);
+		EnumMap<Tag, Double> targetTagSurfaces = new EnumMap<>(Tag.class);
 		
-		int[] tagCodes = new int[] { TAG_CYTOPLASM, TAG_NUCLEUS };
-		
-		for (int i = 0; i < tags.size(); i++) {
-			targetTagVolumes.put(tags.get(i), tagVolumes[i]);
-			targetTagSurfaces.put(tags.get(i), tagSurfaces[i]);
+		for (Tag tag : tagList) {
+			targetTagVolumes.put(tag, random());
+			targetTagSurfaces.put(tag, random());
 		}
 		
 		CellContainer container = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, null,
@@ -1018,8 +1002,8 @@ public class CellFactoryTest {
 		Cell cell = factory.make(container, location);
 		
 		verify(cell).setTargets(targetVolume, targetSurface);
-		for (int i = 0; i < tags.size(); i++) {
-			verify(cell).setTargets(tagCodes[i], tagVolumes[i], tagSurfaces[i]);
+		for (Tag tag : tagList) {
+			verify(cell).setTargets(tag, targetTagVolumes.get(tag), targetTagSurfaces.get(tag));
 		}
 	}
 	
@@ -1032,45 +1016,42 @@ public class CellFactoryTest {
 		double targetVolume1 = random();
 		double targetSurface1 = random();
 		
-		factory.popToCriticals.put(1, new double[2]);
-		factory.popToLambdas.put(1, new double[2]);
+		factory.popToCriticals.put(1, makeEnumMap());
+		factory.popToLambdas.put(1, makeEnumMap());
 		factory.popToAdhesion.put(1, new double[3]);
 		
 		double targetVolume2 = random();
 		double targetSurface2 = random();
 		
-		factory.popToCriticals.put(2, new double[2]);
-		factory.popToLambdas.put(2, new double[2]);
+		factory.popToCriticals.put(2, makeEnumMap());
+		factory.popToLambdas.put(2, makeEnumMap());
 		factory.popToAdhesion.put(2, new double[3]);
 		
-		double[] tagVolumes = new double[] { random(), random(), random() };
-		double[] tagSurfaces = new double[] { random(), random(), random() };
+		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
+		doReturn(tagList).when(location2).getTags();
 		
-		HashMap<String, Double> targetTagVolumes = new HashMap<>();
-		HashMap<String, Double> targetTagSurfaces = new HashMap<>();
+		EnumMap<Tag, EnumMap<Term, Double>> criticalsTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag = makeEnumMapTarget(tagList);
 		
-		factory.popToTagCriticals.put(2, new double[2][3]);
-		factory.popToTagLambdas.put(2, new double[2][3]);
-		factory.popToTagAdhesion.put(2, new double[3][3]);
+		factory.popToTagCriticals.put(2, criticalsTag);
+		factory.popToTagLambdas.put(2, lambdasTag);
+		factory.popToTagAdhesion.put(2, adhesionTag);
 		
-		ArrayList<String> tags = new ArrayList<>();
-		tags.add("CYTOPLASM");
-		tags.add("NUCLEUS");
-		factory.popToTags.put(2, tags);
+		EnumMap<Tag, Double> targetTagVolumes = new EnumMap<>(Tag.class);
+		EnumMap<Tag, Double> targetTagSurfaces = new EnumMap<>(Tag.class);
 		
-		int[] tagCodes = new int[] { TAG_CYTOPLASM, TAG_NUCLEUS };
-		
-		for (int i = 0; i < tags.size(); i++) {
-			targetTagVolumes.put(tags.get(i), tagVolumes[i]);
-			targetTagSurfaces.put(tags.get(i), tagSurfaces[i]);
+		for (Tag tag : tagList) {
+			targetTagVolumes.put(tag, random());
+			targetTagSurfaces.put(tag, random());
 		}
 		
 		CellContainer container1 = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, targetVolume1, targetSurface1);
 		Cell cell1 = factory.make(container1, location1);
 		
 		verify(cell1).setTargets(targetVolume1, targetSurface1);
-		for (int i = 0; i < tags.size(); i++) {
-			verify(cell1, never()).setTargets(tagCodes[i], tagVolumes[i], tagSurfaces[i]);
+		for (Tag tag : tagList) {
+			verify(cell1, never()).setTargets(tag, targetTagVolumes.get(tag), targetTagSurfaces.get(tag));
 		}
 		
 		CellContainer container2 = new CellContainer(2, 2, 0, State.UNDEFINED, Phase.UNDEFINED, 0, null,
@@ -1078,8 +1059,58 @@ public class CellFactoryTest {
 		Cell cell2 = factory.make(container2, location2);
 		
 		verify(cell2).setTargets(targetVolume2, targetSurface2);
-		for (int i = 0; i < tags.size(); i++) {
-			verify(cell2).setTargets(tagCodes[i], tagVolumes[i], tagSurfaces[i]);
+		for (Tag tag : tagList) {
+			verify(cell2).setTargets(tag, targetTagVolumes.get(tag), targetTagSurfaces.get(tag));
+		}
+	}
+	
+	@Test
+	public void make_onePopulationWithTagsMixedTarget_createsObject() {
+		Location location = mock(Location.class);
+		CellFactory factory = new CellFactoryMock();
+		
+		double targetVolume = random();
+		double targetSurface = random();
+		
+		factory.popToCriticals.put(1, makeEnumMap());
+		factory.popToLambdas.put(1, makeEnumMap());
+		factory.popToAdhesion.put(1, new double[2]);
+		
+		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
+		doReturn(tagList).when(location).getTags();
+		
+		EnumMap<Tag, EnumMap<Term, Double>> criticalsTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = makeEnumMapTag(tagList);
+		EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag = makeEnumMapTarget(tagList);
+		
+		factory.popToTagCriticals.put(1, criticalsTag);
+		factory.popToTagLambdas.put(1, lambdasTag);
+		factory.popToTagAdhesion.put(1, adhesionTag);
+		
+		EnumMap<Tag, Double> targetTagVolumes = new EnumMap<>(Tag.class);
+		EnumMap<Tag, Double> targetTagSurfaces = new EnumMap<>(Tag.class);
+		
+		for (Tag tag : tagList) {
+			targetTagVolumes.put(tag, random());
+			targetTagSurfaces.put(tag, random());
+		}
+		
+		CellContainer container1 = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, null,
+				targetVolume, targetSurface, targetTagVolumes, null);
+		Cell cell1 = factory.make(container1, location);
+		
+		verify(cell1).setTargets(targetVolume, targetSurface);
+		for (Tag tag : tagList) {
+			verify(cell1, never()).setTargets(tag, targetTagVolumes.get(tag), targetTagSurfaces.get(tag));
+		}
+		
+		CellContainer container2 = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, null,
+				targetVolume, targetSurface, null, targetTagSurfaces);
+		Cell cell2 = factory.make(container2, location);
+		
+		verify(cell2).setTargets(targetVolume, targetSurface);
+		for (Tag tag : tagList) {
+			verify(cell2, never()).setTargets(tag, targetTagVolumes.get(tag), targetTagSurfaces.get(tag));
 		}
 	}
 }

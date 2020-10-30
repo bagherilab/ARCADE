@@ -161,11 +161,13 @@ public abstract class CellFactory {
 			}
 			
 			popToAdhesion.put(pop, adhesion);
+			popToTags.put(pop, false);
 			
 			// Get tags (if they exist).
 			MiniBox tagBox = population.filter("TAG");
 			ArrayList<String> tagKeys = tagBox.getKeys();
 			if (tagKeys.size() > 0) {
+				popToTags.put(pop, true);
 				EnumMap<Tag, EnumMap<Term, Double>> criticalsTag = new EnumMap<>(Tag.class);
 				EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = new EnumMap<>(Tag.class);
 				EnumMap<Tag, EnumMap<Tag, Double>> adhesionsTag = new EnumMap<>(Tag.class);
@@ -189,14 +191,13 @@ public abstract class CellFactory {
 					// Iterate through tags to get adhesion values.
 					EnumMap<Tag, Double> adhesionTagValues = new EnumMap<>(Tag.class);
 					
-					for (Tag targetKey : Tag.values()) {
-						adhesionTagValues.put(targetKey, populationTag.getDouble("ADHESION" + TARGET_SEPARATOR + targetKey));
+					for (String targetKey : tagKeys) {
+						adhesionTagValues.put(Tag.valueOf(targetKey), populationTag.getDouble("ADHESION" + TARGET_SEPARATOR + targetKey));
 					}
 					
 					adhesionsTag.put(tag, adhesionTagValues);
 				}
 				
-				popToTags.put(pop, tagKeys.size() > 0);
 				popToTagCriticals.put(pop, criticalsTag);
 				popToTagLambdas.put(pop, lambdasTag);
 				popToTagAdhesion.put(pop, adhesionsTag);
@@ -337,7 +338,7 @@ public abstract class CellFactory {
 			EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag = new EnumMap<>(Tag.class);
 			
 			// Get copies of critical, lambda, and adhesion values.
-			for (Tag tag : Tag.values()) {
+			for (Tag tag : location.getTags()) {
 				criticalsTag.put(tag, popToTagCriticals.get(pop).get(tag).clone());
 				lambdasTag.put(tag, popToTagLambdas.get(pop).get(tag).clone());
 				adhesionTag.put(tag, popToTagAdhesion.get(pop).get(tag).clone());
@@ -352,7 +353,7 @@ public abstract class CellFactory {
 		// Update cell targets.
 		cell.setTargets(cellContainer.targetVolume, cellContainer.targetSurface);
 		if (cellContainer.tagTargetVolume != null && cellContainer.tagTargetSurface != null) {
-			for (Tag tag : Tag.values()) {
+			for (Tag tag : location.getTags()) {
 				cell.setTargets(tag, cellContainer.tagTargetVolume.get(tag), cellContainer.tagTargetSurface.get(tag));
 			}
 		}
