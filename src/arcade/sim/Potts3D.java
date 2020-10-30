@@ -70,7 +70,7 @@ public class Potts3D extends Potts {
 					Tag tagxyz = Tag.values()[TAGS[k][i][j]];
 					if (!(k == z && i == x && j == y) && IDS[k][i][j] == id
 							&& tag != tagxyz && tagxyz != Tag.UNDEFINED && tagxyz != Tag.DEFAULT) {
-						H += (c.getAdhesion(tag, tagxyz) + c.getAdhesion(tag, tagxyz))/2;
+						H += (c.getAdhesion(tag, tagxyz) + c.getAdhesion(tagxyz, tag))/2;
 					}
 				}
 			}

@@ -77,6 +77,7 @@ public abstract class Potts implements Steppable {
 	 */
 	public void step(SimState simstate) {
 		MersenneTwisterFast random = simstate.random;
+		double r;
 		int x, y, z;
 		
 		for (int step = 0; step < STEPS; step++) {
@@ -84,6 +85,7 @@ public abstract class Potts implements Steppable {
 			x = random.nextInt(LENGTH) + 1;
 			y = random.nextInt(WIDTH) + 1;
 			z = (HEIGHT == 1 ? 0 : random.nextInt(HEIGHT) + 1);
+			r = random.nextDouble();
 			
 			// Check if cell is tagged.
 			boolean tagged = (IDS[z][x][y] != 0 && getCell(IDS[z][x][y]).hasTags());
@@ -96,26 +98,26 @@ public abstract class Potts implements Steppable {
 			// tag (if there is one). If there are neither, then skip.
 			if (tagged && uniqueTagTargets.size() > 0) {
 				int targetTag = (int)uniqueTagTargets.toArray()[simstate.random.nextInt(uniqueTagTargets.size())];
-				flip(IDS[z][x][y], TAGS[z][x][y], targetTag, x, y, z, random);
+				flip(IDS[z][x][y], TAGS[z][x][y], targetTag, x, y, z, r);
 			}
 			else if (uniqueIDTargets.size() > 0) {
 				int targetID = (int)uniqueIDTargets.toArray()[simstate.random.nextInt(uniqueIDTargets.size())];
-				flip(IDS[z][x][y], targetID, x, y, z, random);
+				flip(IDS[z][x][y], targetID, x, y, z, r);
 			}
 		}
 	}
 	
 	/**
-	 * Flips the voxel from source to target id based on Boltzmann probability. 
+	 * Flips connected voxel from source to target id based on Boltzmann probability. 
 	 *
 	 * @param sourceID  the id of the source voxel
 	 * @param targetID  the id of the target voxel
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
-	 * @param random  the random number generator
+	 * @param r  a random number
 	 */
-	void flip(int sourceID, int targetID, int x, int y, int z, MersenneTwisterFast random) {
+	void flip(int sourceID, int targetID, int x, int y, int z, double r) {
 		// Check connectivity of source.
 		if (sourceID > 0) {
 			boolean candidateConnected = getConnectivity(getNeighborhood(sourceID, x, y, z), IDS[z][x][y] == 0);
@@ -140,31 +142,43 @@ public abstract class Potts implements Steppable {
 			}
 		}
 		
+		// Change the voxel.
+		change(sourceID, targetID, x, y, z, r);
+	}
+	
+	/**
+	 * Calculates energy change to decide if a voxel is flipped.
+	 * 
+	 * @param sourceID  the id of the source voxel
+	 * @param targetID  the id of the target voxel
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
+	 * @param r  a random number
+	 */
+	void change(int sourceID, int targetID, int x, int y, int z, double r) {
 		// Calculate energy change.
 		double dH = 0;
 		dH += getDeltaAdhesion(sourceID, targetID, x, y, z);
 		dH += getDeltaVolume(sourceID, targetID);
 		dH += getDeltaSurface(sourceID, targetID, x, y, z);
 		
+		// Calculate probability.
 		double p;
 		if (dH < 0) { p = 1; }
 		else { p = Math.exp(-dH/TEMPERATURE); }
 		
-		if (random.nextDouble() < p) {
+		if (r < p) {
 			IDS[z][x][y] = targetID;
 			if (TAGGED) { TAGS[z][x][y] = (targetID == 0 ? Tag.UNDEFINED.ordinal() : Tag.DEFAULT.ordinal()); }
 			
-			if (sourceID > 0) {
-				getCell(sourceID).getLocation().remove(x, y, z);
-			}
-			if (targetID > 0) {
-				getCell(targetID).getLocation().add(x, y, z);
-			}
+			if (sourceID > 0) { getCell(sourceID).getLocation().remove(x, y, z); }
+			if (targetID > 0) { getCell(targetID).getLocation().add(x, y, z); }
 		}
 	}
 	
 	/**
-	 * Flips the voxel from source to target tag based on Boltzmann probability.
+	 * Flips connected voxel from source to target tag based on Boltzmann probability.
 	 *
 	 * @param id  the voxel id
 	 * @param sourceTag  the tag of the source voxel
@@ -172,9 +186,9 @@ public abstract class Potts implements Steppable {
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
-	 * @param random  the random number generator
+	 * @param r  a random number
 	 */
-	void flip(int id, int sourceTag, int targetTag, int x, int y, int z, MersenneTwisterFast random) {
+	void flip(int id, int sourceTag, int targetTag, int x, int y, int z, double r) {
 		// Check connectivity of source.
 		if (sourceTag > Tag.DEFAULT.ordinal()) {
 			boolean candidateConnected = getConnectivity(getNeighborhood(id, sourceTag, x, y, z), false);
@@ -187,17 +201,34 @@ public abstract class Potts implements Steppable {
 			if (!targetConnected) { return; }
 		}
 		
+		// Change the voxel tag.
+		change(id, sourceTag, targetTag, x, y, z, r);
+	}
+	
+	/**
+	 * Calculates energy change to decide if a voxel tag is flipped.
+	 * 
+	 * @param id  the voxel id
+	 * @param sourceTag  the tag of the source voxel
+	 * @param targetTag  the tag of the target voxel
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
+	 * @param r  a random number
+	 */
+	void change(int id, int sourceTag, int targetTag, int x, int y, int z, double r) {
 		// Calculate energy change.
 		double dH = 0;
 		dH += getDeltaAdhesion(id, sourceTag, targetTag, x, y, z);
 		dH += getDeltaVolume(id, sourceTag, targetTag);
 		dH += getDeltaSurface(id, sourceTag, targetTag, x, y, z);
 		
+		// Calculate probability.
 		double p;
 		if (dH < 0) { p = 1; }
 		else { p = Math.exp(-dH/TEMPERATURE); }
 		
-		if (random.nextDouble() < p) {
+		if (r < p) {
 			TAGS[z][x][y] = targetTag;
 			Cell c = getCell(id);
 			c.getLocation().remove(Tag.values()[sourceTag], x, y, z);

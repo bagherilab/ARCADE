@@ -7,6 +7,7 @@ import java.util.HashSet;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
 import static arcade.sim.PottsTest.*;
+import static arcade.agent.cell.Cell.Tag;
 
 public class Potts2DTest {
 	private static final double EPSILON = 1E-4;
@@ -24,7 +25,7 @@ public class Potts2DTest {
 		int[] pops = new int[] { 1, 2, 1 };
 		
 		int nCells = 3;
-		int nSubcells = 4;
+		int nSubcells = 2;
 		cells = new Cell[nCells + 1];
 		
 		for (int i = 0; i < nCells; i++) {
@@ -39,8 +40,8 @@ public class Potts2DTest {
 			// Assign adhesion values for subcellular domain.
 			for (int j = 0; j < nSubcells; j++) {
 				for (int k = 0; k < nSubcells; k++) {
-					int tag1 = -j - 1;
-					int tag2 = -k - 1;
+					Tag tag1 = Tag.values()[j + 1];
+					Tag tag2 = Tag.values()[k + 1];
 					when(c.getAdhesion(tag1, tag2)).thenReturn(SUBADHESIONS[k][j]);
 				}
 			}
@@ -65,13 +66,16 @@ public class Potts2DTest {
 				}
 		};
 		
+		int D = Tag.DEFAULT.ordinal();
+		int N = Tag.NUCLEUS.ordinal();
+		
 		potts.TAGS = new int[][][] {
 				{
-						{ 0,  0,  0,  0,  0, 0 },
-						{ 0, -1, -1, -1, -4, 0 },
-						{ 0, -3, -2, -2, -4, 0 },
-						{ 0, -1, -1,  0,  0, 0 },
-						{ 0,  0,  0,  0,  0, 0 },
+						{ 0, 0, 0, 0, 0, 0 },
+						{ 0, D, D, D, 0, 0 },
+						{ 0, 0, N, N, 0, 0 },
+						{ 0, D, D, 0, 0, 0 },
+						{ 0, 0, 0, 0, 0, 0 },
 				}
 		};
 	}
@@ -116,10 +120,8 @@ public class Potts2DTest {
 	
 	@Test
 	public void getAdhesion_validTags_calculateValue() {
-		assertEquals(subadhesion(-1, -2) + subadhesion(-1, -3), potts.getAdhesion(1, -1, 1, 2, 0), EPSILON);
-		assertEquals(subadhesion(-2, -3), potts.getAdhesion(1, -2, 1, 2, 0), EPSILON);
-		assertEquals(subadhesion(-2, -3), potts.getAdhesion(1, -3, 1, 2, 0), EPSILON);
-		assertEquals(subadhesion(-2, -4) + subadhesion(-3, -4), potts.getAdhesion(1, -4, 1, 2, 0), EPSILON);
+		assertEquals(subadhesion(Tag.DEFAULT, Tag.NUCLEUS), potts.getAdhesion(1, Tag.DEFAULT.ordinal(), 1, 2, 0), EPSILON);
+		assertEquals(0, potts.getAdhesion(1, Tag.NUCLEUS.ordinal(), 2, 2, 0), EPSILON);
 	}
 	
 	@Test
@@ -130,8 +132,8 @@ public class Potts2DTest {
 	
 	@Test
 	public void calculateChange_validTags_calculatesValue() {
-		assertArrayEquals(new int[] { -4, 2 }, potts.calculateChange(1, -2, -1, 2, 2, 0));
-		assertArrayEquals(new int[] { -4, 2 }, potts.calculateChange(1, -2, -3, 2, 2, 0));
+		assertArrayEquals(new int[] { -4, 2 }, potts.calculateChange(1, Tag.NUCLEUS.ordinal(), Tag.DEFAULT.ordinal(), 2, 2, 0));
+		assertArrayEquals(new int[] { -2, 2 }, potts.calculateChange(1, Tag.DEFAULT.ordinal(), Tag.NUCLEUS.ordinal(), 2, 1, 0));
 	}
 	
 	@Test
@@ -154,20 +156,15 @@ public class Potts2DTest {
 	
 	@Test
 	public void getNeighborhood_givenTag_createsArray() {
-		boolean[][][] array1 = potts.getNeighborhood(1, -1,2, 2, 0);
+		boolean[][][] array1 = potts.getNeighborhood(1, Tag.DEFAULT.ordinal(),2, 2, 0);
 		assertArrayEquals(new boolean[] {  true,  true, false }, array1[0][0]);
 		assertArrayEquals(new boolean[] { false, false, false }, array1[0][1]);
 		assertArrayEquals(new boolean[] { false, false, false }, array1[0][2]);
 		
-		boolean[][][] array2 = potts.getNeighborhood(1, -2,2, 2, 0);
+		boolean[][][] array2 = potts.getNeighborhood(1, Tag.NUCLEUS.ordinal(),2, 2, 0);
 		assertArrayEquals(new boolean[] { false, false, false }, array2[0][0]);
 		assertArrayEquals(new boolean[] { false,  true, false }, array2[0][1]);
 		assertArrayEquals(new boolean[] { false, false, false }, array2[0][2]);
-		
-		boolean[][][] array3 = potts.getNeighborhood(1, -3,2, 2, 0);
-		assertArrayEquals(new boolean[] { false, false, false }, array3[0][0]);
-		assertArrayEquals(new boolean[] {  true, false, false }, array3[0][1]);
-		assertArrayEquals(new boolean[] { false, false, false }, array3[0][2]);
 	}
 	
 	private HashSet<Integer> checkUniqueID(Potts2D potts, int[][] ids) {
