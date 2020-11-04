@@ -331,7 +331,7 @@ public abstract class CellFactory {
 		// Make cell.
 		Cell cell;
 		
-		if (popToTags.containsKey(pop)) {
+		if (popToTags.get(pop)) {
 			// Initialize tag arrays.
 			EnumMap<Tag, EnumMap<Term, Double>> criticalsTag = new EnumMap<>(Tag.class);
 			EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = new EnumMap<>(Tag.class);

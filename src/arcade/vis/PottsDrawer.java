@@ -211,7 +211,7 @@ public abstract class PottsDrawer extends Drawer {
 					
 					switch(CODE) {
 						case DRAW_OVERLAY:
-							_to[a][b] = (tags[a][b] < -1 ? -tags[a][b] - 1 : 0);
+							_to[a][b] = (tags[a][b] > 0 ? tags[a][b] - 1 : 0);
 							break;
 						case DRAW_POPULATION:
 							_to[a][b] = cell == null ? 0 : cell.getPop();

@@ -639,6 +639,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(cellPop, criticals);
 		factory.popToLambdas.put(cellPop, lambdas);
 		factory.popToAdhesion.put(cellPop, adhesion);
+		factory.popToTags.put(cellPop, false);
 		
 		CellContainer container = new CellContainer(cellID, cellPop, cellAge, cellState, cellPhase,
 				0, null, 0, 0, null, null);
@@ -679,6 +680,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(cellPop1, criticals1);
 		factory.popToLambdas.put(cellPop1, lambdas1);
 		factory.popToAdhesion.put(cellPop1, adhesion1);
+		factory.popToTags.put(cellPop1, false);
 		
 		int cellID2 = cellID1 + 1;
 		int cellPop2 = cellPop1 + 1;
@@ -692,6 +694,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(cellPop2, criticals2);
 		factory.popToLambdas.put(cellPop2, lambdas2);
 		factory.popToAdhesion.put(cellPop2, adhesion2);
+		factory.popToTags.put(cellPop2, false);
 		
 		CellContainer container1 = new CellContainer(cellID1, cellPop1, cellAge1, cellState1, cellPhase1,
 				0, null, 0, 0, null, null);
@@ -821,6 +824,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(cellPop1, criticals1);
 		factory.popToLambdas.put(cellPop1, lambdas1);
 		factory.popToAdhesion.put(cellPop1, adhesion1);
+		factory.popToTags.put(cellPop1, false);
 		
 		int cellID2 = cellID1 + 1;
 		int cellPop2 = cellPop1 + 1;
@@ -834,6 +838,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(cellPop2, criticals2);
 		factory.popToLambdas.put(cellPop2, lambdas2);
 		factory.popToAdhesion.put(cellPop2, adhesion2);
+		factory.popToTags.put(cellPop2, true);
 		
 		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
 		doReturn(tagList).when(location2).getTags();
@@ -845,8 +850,6 @@ public class CellFactoryTest {
 		factory.popToTagCriticals.put(cellPop2, criticalsTag);
 		factory.popToTagLambdas.put(cellPop2, lambdasTag);
 		factory.popToTagAdhesion.put(cellPop2, adhesionTag);
-		
-		factory.popToTags.put(cellPop2, true);
 		
 		CellContainer container1 = new CellContainer(cellID1, cellPop1, cellAge1, cellState1, cellPhase1,
 				0, null, 0, 0, null, null);
@@ -930,6 +933,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(1, makeEnumMap());
 		factory.popToLambdas.put(1, makeEnumMap());
 		factory.popToAdhesion.put(1, new double[2]);
+		factory.popToTags.put(1, false);
 		
 		CellContainer container = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, targetVolume, targetSurface);
 		Cell cell = factory.make(container, location);
@@ -949,6 +953,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(1, makeEnumMap());
 		factory.popToLambdas.put(1, makeEnumMap());
 		factory.popToAdhesion.put(1, new double[3]);
+		factory.popToTags.put(1, false);
 		
 		double targetVolume2 = random();
 		double targetSurface2 = random();
@@ -956,6 +961,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(2, makeEnumMap());
 		factory.popToLambdas.put(2, makeEnumMap());
 		factory.popToAdhesion.put(2, new double[3]);
+		factory.popToTags.put(2, false);
 		
 		CellContainer container1 = new CellContainer(1, 1, 0, State.UNDEFINED, Phase.UNDEFINED, 0, targetVolume1, targetSurface1);
 		Cell cell1 = factory.make(container1, location1);
@@ -977,6 +983,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(1, makeEnumMap());
 		factory.popToLambdas.put(1, makeEnumMap());
 		factory.popToAdhesion.put(1, new double[2]);
+		factory.popToTags.put(1, true);
 		
 		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
 		doReturn(tagList).when(location).getTags();
@@ -1019,6 +1026,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(1, makeEnumMap());
 		factory.popToLambdas.put(1, makeEnumMap());
 		factory.popToAdhesion.put(1, new double[3]);
+		factory.popToTags.put(1, false);
 		
 		double targetVolume2 = random();
 		double targetSurface2 = random();
@@ -1026,6 +1034,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(2, makeEnumMap());
 		factory.popToLambdas.put(2, makeEnumMap());
 		factory.popToAdhesion.put(2, new double[3]);
+		factory.popToTags.put(2, true);
 		
 		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
 		doReturn(tagList).when(location2).getTags();
@@ -1075,6 +1084,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(1, makeEnumMap());
 		factory.popToLambdas.put(1, makeEnumMap());
 		factory.popToAdhesion.put(1, new double[2]);
+		factory.popToTags.put(1, true);
 		
 		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
 		doReturn(tagList).when(location).getTags();

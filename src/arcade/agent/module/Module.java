@@ -21,10 +21,10 @@ public interface Module {
 		PROLIFERATIVE_M,
 		
 		/** Code for early apoptosis phase */
-		APOPTOSIS_EARLY,
+		APOPTOTIC_EARLY,
 		
 		/** Code for late apoptosis phase */
-		APOPTOSIS_LATE,
+		APOPTOTIC_LATE,
 		
 		/** Code for apoptosed cell */
 		APOPTOSED

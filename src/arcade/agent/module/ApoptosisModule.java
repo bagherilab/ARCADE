@@ -41,7 +41,7 @@ public abstract class ApoptosisModule implements Module  {
 	 */
 	public ApoptosisModule(PottsCell cell) {
 		this.cell = cell;
-		this.phase = Phase.APOPTOSIS_EARLY;
+		this.phase = Phase.APOPTOTIC_EARLY;
 	}
 	
 	/**
@@ -74,10 +74,10 @@ public abstract class ApoptosisModule implements Module  {
 		double r = random.nextDouble();
 		
 		switch (phase) {
-			case APOPTOSIS_EARLY:
+			case APOPTOTIC_EARLY:
 				stepEarly(r);
 				break;
-			case APOPTOSIS_LATE:
+			case APOPTOTIC_LATE:
 				stepLate(r, sim);
 				break;
 			default:
@@ -108,7 +108,7 @@ public abstract class ApoptosisModule implements Module  {
 		// Check for transition to late phase.
 		double p = Simulation.DT/DURATION_EARLY;
 		if (r < p) {
-			phase = Phase.APOPTOSIS_LATE;
+			phase = Phase.APOPTOTIC_LATE;
 		}
 	}
 	

@@ -699,8 +699,8 @@ public class PottsCellTest {
 		when(location.getVolume()).thenReturn(volume);
 		when(location.getSurface()).thenReturn(surface);
 		
-		int targetVolume = (int)(Math.random()*100);
-		int targetSurface = (int)(Math.random()*100);
+		int targetVolume = (int)(Math.random()*100) + 1;
+		int targetSurface = (int)(Math.random()*100) + 1;
 		
 		PottsCellMock cell = new PottsCellMock(cellID, cellPop, location,
 				criticals, lambdas, adhesion);
@@ -728,12 +728,12 @@ public class PottsCellTest {
 		when(location.getSurface(Tag.NUCLEUS)).thenReturn(surface2);
 		when(location.getTags()).thenReturn(tagList);
 		
-		int targetVolume = (int)(Math.random()*100);
-		int targetSurface = (int)(Math.random()*100);
-		int targetTagVolume1 = (int)(Math.random()*100);
-		int targetTagSurface1 = (int)(Math.random()*100);
-		int targetTagVolume2 = (int)(Math.random()*100);
-		int targetTagSurface2 = (int)(Math.random()*100);
+		int targetVolume = (int)(Math.random()*100) + 1;
+		int targetSurface = (int)(Math.random()*100) + 1;
+		int targetTagVolume1 = (int)(Math.random()*100) + 1;
+		int targetTagSurface1 = (int)(Math.random()*100) + 1;
+		int targetTagVolume2 = (int)(Math.random()*100) + 1;
+		int targetTagSurface2 = (int)(Math.random()*100) + 1;
 		
 		PottsCellMock cell = new PottsCellMock(cellID, 1, location,
 				criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
@@ -901,11 +901,7 @@ public class PottsCellTest {
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
 		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
 		
-		double targetTagVolume = targetVolume;
-		for (Tag tag : tagList) {
-			if (tag == Tag.DEFAULT) { continue; }
-			targetTagVolume -= locationTagVolumes.get(tag);
-		}
+		double targetTagVolume = criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) - criticals.get(Term.VOLUME) + targetVolume;
 		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
 		
 		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
@@ -941,11 +937,7 @@ public class PottsCellTest {
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
 		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
 		
-		double targetTagVolume = targetVolume;
-		for (Tag tag : tagList) {
-			if (tag == Tag.DEFAULT) { continue; }
-			targetTagVolume -= locationTagVolumes.get(tag);
-		}
+		double targetTagVolume = criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) - criticals.get(Term.VOLUME) + targetVolume;
 		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
 		
 		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
@@ -985,11 +977,7 @@ public class PottsCellTest {
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
 		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
 		
-		double targetTagVolume = targetVolume;
-		for (Tag tag : tagList) {
-			if (tag == Tag.DEFAULT) { continue; }
-			targetTagVolume -= locationTagVolumes.get(tag);
-		}
+		double targetTagVolume = criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) - criticals.get(Term.VOLUME) + targetVolume;
 		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
 		
 		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
@@ -1015,8 +1003,8 @@ public class PottsCellTest {
 	
 	@Test
 	public void updateTarget_untaggedScaleZeroWithTagModified_updatesValues() {
-		double rate = Math.random();
-		double delta = Math.random();
+		double rate = Math.random() + 1;
+		double delta = Math.random() + 1;
 		PottsCellMock cell = new PottsCellMock(cellID, 1, location,
 				criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
 		cell.initialize(null, null);
@@ -1029,11 +1017,7 @@ public class PottsCellTest {
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
 		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
 		
-		double targetTagVolume = targetVolume;
-		for (Tag tag : tagList) {
-			if (tag == Tag.DEFAULT) { continue; }
-			targetTagVolume -= locationTagVolumes.get(tag);
-		}
+		double targetTagVolume = criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) - criticals.get(Term.VOLUME) + targetVolume;
 		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
 		
 		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
@@ -1054,11 +1038,7 @@ public class PottsCellTest {
 		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
 		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
 		
-		double targetVolume = targetTagVolume;
-		for (Tag tag : tagList) {
-			if (tag == Tag.DEFAULT) { continue; }
-			targetVolume += locationTagVolumes.get(tag);
-		}
+		double targetVolume = criticals.get(Term.VOLUME) - criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) + targetTagVolume;
 		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
 		
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
@@ -1079,11 +1059,7 @@ public class PottsCellTest {
 		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
 		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
 		
-		double targetVolume = targetTagVolume;
-		for (Tag tag : tagList) {
-			if (tag == Tag.DEFAULT) { continue; }
-			targetVolume += locationTagVolumes.get(tag);
-		}
+		double targetVolume = criticals.get(Term.VOLUME) - criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) + targetTagVolume;
 		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
 		
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
@@ -1106,11 +1082,7 @@ public class PottsCellTest {
 		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
 		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
 		
-		double targetVolume = targetTagVolume;
-		for (Tag tag : tagList) {
-			if (tag == Tag.DEFAULT) { continue; }
-			targetVolume += locationTagVolumes.get(tag);
-		}
+		double targetVolume = criticals.get(Term.VOLUME) - criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) + targetTagVolume;
 		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
 		
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
@@ -1133,11 +1105,7 @@ public class PottsCellTest {
 		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
 		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
 		
-		double targetVolume = targetTagVolume;
-		for (Tag tag : tagList) {
-			if (tag == Tag.DEFAULT) { continue; }
-			targetVolume += locationTagVolumes.get(tag);
-		}
+		double targetVolume = criticals.get(Term.VOLUME) - criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) + targetTagVolume;
 		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
 		
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
