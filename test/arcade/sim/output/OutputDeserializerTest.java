@@ -8,7 +8,6 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import arcade.agent.cell.Cell;
 import static arcade.agent.cell.Cell.State;
 import static arcade.agent.module.Module.Phase;
 import static arcade.agent.cell.CellFactory.CellContainer;
@@ -20,6 +19,7 @@ import static arcade.env.loc.Location.VOXEL_COMPARATOR;
 import static arcade.sim.output.OutputDeserializer.*;
 import static arcade.MainTest.*;
 import static arcade.agent.cell.CellFactoryTest.*;
+import static arcade.agent.cell.Cell.Tag;
 
 public class OutputDeserializerTest {
 	private static final double EPSILON = 1E-10;
@@ -124,8 +124,8 @@ public class OutputDeserializerTest {
 		int targetVolume = randomInt();
 		int targetSurface = randomInt();
 		
-		String tag1 = randomString() + "1";
-		String tag2 = randomString() + "2";
+		Tag tag1 = Tag.DEFAULT;
+		Tag tag2 = Tag.NUCLEUS;
 		int tagVoxels1 = randomInt();
 		int tagVoxels2 = randomInt();
 		int targetTagVolume1 = randomInt();
@@ -142,11 +142,11 @@ public class OutputDeserializerTest {
 				+ ",\"voxels\": " + voxels
 				+ ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
 				+ ",\"tags\":["
-				+ "{\"tag\":" + tag1 
+				+ "{\"tag\":" + tag1.name()
 				+ ",\"voxels\":" + tagVoxels1 
 				+ ",\"targets\":[" + targetTagVolume1 + "," + targetTagSurface1 + "]"
 				+ "},"
-				+ "{\"tag\":" + tag2 
+				+ "{\"tag\":" + tag2.name()
 				+ ",\"voxels\":" + tagVoxels2
 				+ ",\"targets\":[" + targetTagVolume2 + "," + targetTagSurface2 + "]"
 				+ "}"
@@ -217,8 +217,7 @@ public class OutputDeserializerTest {
 	public void deserializer_forLocationNoTag_createObject() {
 		LocationDeserializer deserializer = new LocationDeserializer();
 		
-		String tag = "*";
-		
+		Tag tag = Tag.UNDEFINED;
 		int id = randomInt();
 		Voxel center = new Voxel(randomInt(), randomInt(), randomInt());
 		
@@ -233,7 +232,7 @@ public class OutputDeserializerTest {
 		String string = "{\"id\": " + id
 				+ ",\"center\":[" + center.x + "," + center.y + "," + center.z + "]"
 				+ ",\"location\":["
-				+ "{\"tag\":" + tag + ",\"voxels\":["
+				+ "{\"tag\":" + tag.name() + ",\"voxels\":["
 				+ "[" + x1 + "," + y1 + "," + z1 + "],"
 				+ "[" + x2 + "," + y2 + "," + z2 + "]"
 				+ "]}]}";
@@ -278,17 +277,17 @@ public class OutputDeserializerTest {
 		int y4 = y3 + randomInt();
 		int z4 = z3 + randomInt();
 		
-		String tag1 = randomString() + "1";
-		String tag2 = randomString() + "2";
+		Tag tag1 = Tag.DEFAULT;
+		Tag tag2 = Tag.NUCLEUS;
 		
 		String string = "{\"id\": " + id
 				+ ",\"center\":[" + center.x + "," + center.y + "," + center.z + "]"
 				+ ",\"location\":["
-				+ "{\"tag\":" + tag1 + ",\"voxels\":["
+				+ "{\"tag\":" + tag1.name() + ",\"voxels\":["
 				+ "[" + x1 + "," + y1 + "," + z1 + "],"
 				+ "[" + x2 + "," + y2 + "," + z2 + "]"
 				+ "]},"
-				+ "{\"tag\":" + tag2 + ",\"voxels\":["
+				+ "{\"tag\":" + tag2.name() + ",\"voxels\":["
 				+ "[" + x3 + "," + y3 + "," + z3 + "],"
 				+ "[" + x4 + "," + y4 + "," + z4 + "]"
 				+ "]}]}";
@@ -312,6 +311,9 @@ public class OutputDeserializerTest {
 		
 		assertEquals(id, object.id);
 		assertEquals(center, object.center);
+		
+		assertTrue(object.tags.containsKey(tag1));
+		assertTrue(object.tags.containsKey(tag2));
 		
 		ArrayList<Voxel> voxels = object.voxels;
 		voxels.sort(VOXEL_COMPARATOR);

@@ -54,8 +54,10 @@ public class OutputLoader {
 	 * @param sim  the simulation instance
 	 */
 	public void equip(Simulation sim) {
-		if (loadCells) { this.cellJson = read(prefix + ".CELLS.json"); }
-		if (loadLocations) {  this.locationJson = read(prefix + ".LOCATIONS.json"); }
+		String seed = String.format("%04d", sim.getSeed());
+		String path = prefix.replace("(#)", seed);
+		if (loadCells) { this.cellJson = read(path + ".CELLS.json"); }
+		if (loadLocations) {  this.locationJson = read(path + ".LOCATIONS.json"); }
 	}
 	
 	/**

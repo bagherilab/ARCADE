@@ -23,7 +23,7 @@ import static arcade.sim.output.OutputSerializer.*;
 import static arcade.MainTest.*;
 import static arcade.agent.cell.Cell.State;
 import static arcade.agent.module.Module.Phase;
-import static arcade.agent.cell.Cell.*;
+import static arcade.agent.cell.Cell.Tag;
 
 public class OutputSerializerTest {
 	@Test
@@ -271,6 +271,9 @@ public class OutputSerializerTest {
 		doReturn(state).when(cell).getState();
 		doReturn(phase).when(module).getPhase();
 		
+		doReturn(false).when(cell).hasTags();
+		doReturn(null).when(location).getTags();
+		
 		String expected = "{"
 				+ "\"id\":" + id + ","
 				+ "\"pop\":" + pop + ","
@@ -315,32 +318,30 @@ public class OutputSerializerTest {
 		doReturn(state).when(cell).getState();
 		doReturn(phase).when(module).getPhase();
 		
-		doReturn(2).when(cell).getTags();
+		doReturn(true).when(cell).hasTags();
 		
-		Set<Integer> tags = new HashSet<>();
-		tags.add(TAG_CYTOPLASM);
-		tags.add(TAG_NUCLEUS);
+		EnumSet<Tag> tags = EnumSet.of(Tag.NUCLEUS, Tag.DEFAULT);
 		doReturn(tags).when(location).getTags();
 		
 		int volume1 = randomInt();
 		int targetVolume1 = randomInt();
-		doReturn(volume1).when(location).getVolume(TAG_CYTOPLASM);
-		doReturn((double)targetVolume1).when(cell).getTargetVolume(TAG_CYTOPLASM);
+		doReturn(volume1).when(location).getVolume(Tag.DEFAULT);
+		doReturn((double)targetVolume1).when(cell).getTargetVolume(Tag.DEFAULT);
 		
 		int surface1 = randomInt();
 		int targetSurface1 = randomInt();
-		doReturn(surface1).when(location).getSurface(TAG_CYTOPLASM);
-		doReturn((double)targetSurface1).when(cell).getTargetSurface(TAG_CYTOPLASM);
+		doReturn(surface1).when(location).getSurface(Tag.DEFAULT);
+		doReturn((double)targetSurface1).when(cell).getTargetSurface(Tag.DEFAULT);
 		
 		int volume2 = randomInt();
 		int targetVolume2 = randomInt();
-		doReturn(volume2).when(location).getVolume(TAG_NUCLEUS);
-		doReturn((double)targetVolume2).when(cell).getTargetVolume(TAG_NUCLEUS);
+		doReturn(volume2).when(location).getVolume(Tag.NUCLEUS);
+		doReturn((double)targetVolume2).when(cell).getTargetVolume(Tag.NUCLEUS);
 		
 		int surface2 = randomInt();
 		int targetSurface2 = randomInt();
-		doReturn(surface2).when(location).getSurface(TAG_NUCLEUS);
-		doReturn((double)targetSurface2).when(cell).getTargetSurface(TAG_NUCLEUS);
+		doReturn(surface2).when(location).getSurface(Tag.NUCLEUS);
+		doReturn((double)targetSurface2).when(cell).getTargetSurface(Tag.NUCLEUS);
 		
 		String expected = "{"
 				+ "\"id\":" + id + ","
@@ -351,7 +352,7 @@ public class OutputSerializerTest {
 				+ "\"voxels\":" + voxels + ","
 				+ "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0],"
 				+ "\"tags\":["
-				+ "{\"tag\":\"CYTOPLASM\","
+				+ "{\"tag\":\"DEFAULT\","
 				+ "\"voxels\":" + volume1 + ","
 				+ "\"targets\":[" + targetVolume1 + ".0," + targetSurface1 + ".0]"
 				+ "},"
@@ -448,7 +449,7 @@ public class OutputSerializerTest {
 		};
 		
 		String expected = "["
-				+ "{\"tag\":\"*\",\"voxels\":["
+				+ "{\"tag\":\"UNDEFINED\",\"voxels\":["
 				+ "[\"" + x1 + "|" + y1 + "|" + z1 + "\"],"
 				+ "[\"" + x2 + "|" + y2 + "|" + z2 + "\"]"
 				+ "]}"
@@ -482,9 +483,9 @@ public class OutputSerializerTest {
 		int z2 = randomInt();
 		voxels2.add(new Voxel(x2, y2, z2));
 		
-		location.locations = new HashMap<>();
-		location.locations.put(TAG_CYTOPLASM, location1);
-		location.locations.put(TAG_NUCLEUS, location2);
+		location.locations = new EnumMap<>(Tag.class);
+		location.locations.put(Tag.DEFAULT, location1);
+		location.locations.put(Tag.NUCLEUS, location2);
 		
 		JsonSerializationContext context = new JsonSerializationContext() {
 			public JsonElement serialize(Object src) {
@@ -498,7 +499,7 @@ public class OutputSerializerTest {
 		};
 		
 		String expected = "["
-				+ "{\"tag\":\"CYTOPLASM\""
+				+ "{\"tag\":\"DEFAULT\""
 				+ ",\"voxels\":[[\"" + x1 + "|" + y1 + "|" + z1 + "\"]]},"
 				+ "{\"tag\":\"NUCLEUS\""
 				+ ",\"voxels\":[[\"" + x2 + "|" + y2 + "|" + z2 + "\"]]}"

@@ -175,7 +175,7 @@ public final class OutputSerializer {
 				locations.put(Tag.UNDEFINED, (PottsLocation)src);
 			}
 			
-			for (Tag tag : Tag.values()) {
+			for (Tag tag : locations.keySet()) {
 				JsonObject obj = new JsonObject();
 				JsonArray array = new JsonArray();
 				
