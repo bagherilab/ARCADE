@@ -20,34 +20,34 @@ public class LocationFactory2DTest {
 	
 	@Test
 	public void convert_exactOddSquares_calculateValue() {
-		assertEquals(1, factory.convert(1*1*Simulation.DS));
-		assertEquals(3, factory.convert(3*3*Simulation.DS));
-		assertEquals(5, factory.convert(5*5*Simulation.DS));
-		assertEquals(7, factory.convert(7*7*Simulation.DS));
+		assertEquals(1, factory.convert(1*1*1));
+		assertEquals(3, factory.convert(3*3*1));
+		assertEquals(5, factory.convert(5*5*1));
+		assertEquals(7, factory.convert(7*7*1));
 	}
 	
 	@Test
 	public void convert_exactEvenSquares_calculateValue() {
-		assertEquals(3, factory.convert(2*2*Simulation.DS));
-		assertEquals(5, factory.convert(4*4*Simulation.DS));
-		assertEquals(7, factory.convert(6*6*Simulation.DS));
-		assertEquals(9, factory.convert(8*8*Simulation.DS));
+		assertEquals(3, factory.convert(2*2*1));
+		assertEquals(5, factory.convert(4*4*1));
+		assertEquals(7, factory.convert(6*6*1));
+		assertEquals(9, factory.convert(8*8*1));
 	}
 	
 	@Test
 	public void convert_inexactOddSquares_calculateValue() {
-		assertEquals(3, factory.convert((1*1 + 1)*Simulation.DS));
-		assertEquals(5, factory.convert((3*3 + 1)*Simulation.DS));
-		assertEquals(7, factory.convert((5*5 + 1)*Simulation.DS));
-		assertEquals(9, factory.convert((7*7 + 1)*Simulation.DS));
+		assertEquals(3, factory.convert(1*1*1 + 1));
+		assertEquals(5, factory.convert(3*3*1 + 1));
+		assertEquals(7, factory.convert(5*5*1 + 1));
+		assertEquals(9, factory.convert(7*7*1 + 1));
 	}
 	
 	@Test
 	public void convert_inexactEvenSquares_calculateValue() {
-		assertEquals(3, factory.convert((2*2 - 1)*Simulation.DS));
-		assertEquals(5, factory.convert((4*4 - 1)*Simulation.DS));
-		assertEquals(7, factory.convert((6*6 - 1)*Simulation.DS));
-		assertEquals(9, factory.convert((8*8 - 1)*Simulation.DS));
+		assertEquals(3, factory.convert(2*2*1 - 1));
+		assertEquals(5, factory.convert(4*4*1 - 1));
+		assertEquals(7, factory.convert(6*6*1 - 1));
+		assertEquals(9, factory.convert(8*8*1 - 1));
 	}
 	
 	@Test

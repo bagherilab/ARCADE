@@ -247,7 +247,7 @@ public abstract class CellFactory {
 			boolean tags = popToTags.get(pop);
 			
 			// Calculate voxels and (if they exist) tag voxels.
-			int voxels = (int)(population.getDouble("CRITICAL_VOLUME")/Simulation.DS);
+			int voxels = population.getInt("CRITICAL_VOLUME");
 			EnumMap<Tag, Integer> tagVoxels;
 			
 			if (!tags) { tagVoxels = null; }

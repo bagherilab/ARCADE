@@ -20,7 +20,6 @@ import static arcade.agent.cell.CellFactory.CellContainer;
 import static arcade.agent.cell.CellFactory.CellFactoryContainer;
 import static arcade.util.MiniBox.TAG_SEPARATOR;
 import static arcade.sim.Series.TARGET_SEPARATOR;
-import static arcade.sim.Simulation.DS;
 import static arcade.agent.cell.Cell.Tag;
 import static arcade.agent.cell.Cell.State;
 import static arcade.agent.module.Module.Phase;
@@ -34,7 +33,7 @@ public class CellFactoryTest {
 	
 	public static State randomState() { return State.values()[(int)(Math.random()*State.values().length - 1) + 1]; }
 	
-	static Series createSeries(int[] init, double[] volumes) {
+	static Series createSeries(int[] init, int[] volumes) {
 		Series series = mock(Series.class);
 		series._populations = new HashMap<>();
 		
@@ -466,7 +465,7 @@ public class CellFactoryTest {
 	
 	@Test
 	public void createCells_noPopulation_createsEmpty() {
-		Series series = createSeries(new int[] { }, new double[] { });
+		Series series = createSeries(new int[] { }, new int[] { });
 		
 		CellFactoryMock factory = new CellFactoryMock();
 		factory.createCells(series);
@@ -479,7 +478,7 @@ public class CellFactoryTest {
 	public void createCells_onePopulationNoTags_createsList() {
 		int voxels = randomInt();
 		int init = randomInt();
-		Series series = createSeries(new int[] { init }, new double[] { voxels*DS });
+		Series series = createSeries(new int[] { init }, new int[] { voxels });
 		
 		CellFactoryMock factory = new CellFactoryMock();
 		factory.popToIDs.put(1, new HashSet<>());
@@ -500,7 +499,7 @@ public class CellFactoryTest {
 		int voxels = voxelsA + voxelsB;
 		int init = randomInt();
 		
-		Series series = createSeries(new int[] { init }, new double[] { voxels*DS });
+		Series series = createSeries(new int[] { init }, new int[] { voxels });
 		
 		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels);
 		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels);
@@ -532,7 +531,7 @@ public class CellFactoryTest {
 		int init3 = randomInt();
 		
 		Series series = createSeries(new int[] { init1, init2, init3 },
-				new double[] { voxels1*DS, voxels2*DS, voxels3*DS });
+				new int[] { voxels1, voxels2, voxels3 });
 		
 		CellFactoryMock factory = new CellFactoryMock();
 		factory.popToIDs.put(1, new HashSet<>());
@@ -567,7 +566,7 @@ public class CellFactoryTest {
 		int init3 = randomInt();
 		
 		Series series = createSeries(new int[] { init1, init2, init3 },
-				new double[] { voxels1*DS, voxels2*DS, voxels3*DS });
+				new int[] { voxels1, voxels2, voxels3 });
 		
 		series._populations.get("pop2").put("TAG" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels2);
 		series._populations.get("pop2").put("TAG" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels2);
@@ -602,7 +601,7 @@ public class CellFactoryTest {
 		int voxels = 4*voxel;
 		int init = randomInt();
 		
-		Series series = createSeries(new int[] { init }, new double[] { voxels*DS });
+		Series series = createSeries(new int[] { init }, new int[] { voxels });
 		
 		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "UNDEFINED", 0.75);
 		series._populations.get("pop1").put("TAG" + TAG_SEPARATOR + "DEFAULT", 0.75);

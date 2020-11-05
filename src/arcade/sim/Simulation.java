@@ -30,8 +30,6 @@ public interface Simulation {
 	
 	double DT = 30./60; // hours
 	
-	double DS = 2; // um^3/voxel
-	
 	/**
 	 * Gets the {@link arcade.sim.Series} object for the current simulation.
 	 * <p>

@@ -1,14 +1,13 @@
 package arcade.env.loc;
 
 import java.util.ArrayList;
-import static arcade.sim.Simulation.DS;
 import arcade.env.loc.Location.Voxel;
 
 public class LocationFactory3D extends LocationFactory {
 	public LocationFactory3D() { super(); }
 	
 	int convert(double volume) {
-		int cbrt = (int)Math.ceil(Math.cbrt(volume/DS));
+		int cbrt = (int)Math.ceil(Math.cbrt(volume));
 		return cbrt + (cbrt%2 == 0 ? 1 : 0);
 	}
 	

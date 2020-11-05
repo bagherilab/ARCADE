@@ -20,6 +20,7 @@ import static arcade.util.MiniBox.TAG_SEPARATOR;
 
 public class SeriesTest {
 	private static final double EPSILON = 1E-4;
+	private static final double DS = (Math.random()*10) + 1;
 	private static Box PARAMETERS;
 	private static final String TEST_NAME = "DEFAULT_NAME";
 	private static final String TEST_PATH = "/default/path/";
@@ -49,6 +50,8 @@ public class SeriesTest {
 			"POPULATION_PARAMETER_1",
 			"POPULATION_PARAMETER_2",
 			"POPULATION_PARAMETER_3",
+			"CRITICAL_VOLUME",
+			"CRITICAL_SURFACE",
 			"ADHESION"
 	};
 	
@@ -56,6 +59,8 @@ public class SeriesTest {
 			randomDouble(),
 			randomDouble(),
 			randomDouble(),
+			randomInt(),
+			randomInt(),
 			randomDouble()
 	};
 	
@@ -68,7 +73,7 @@ public class SeriesTest {
 	private static final String TAG_ID_1 = randomString();
 	private static final String TAG_ID_2 = randomString();
 	
-	private static MiniBox POTTS, POPULATION;
+	private static MiniBox POTTS, POPULATION, POPULATION_ADJUSTED;
 	
 	private static final HashMap<String, ArrayList<Box>> setupListsMock = mock(HashMap.class);
 	
@@ -99,6 +104,7 @@ public class SeriesTest {
 		PARAMETERS.addTag("LENGTH", "DEFAULT");
 		PARAMETERS.addTag("WIDTH", "DEFAULT");
 		PARAMETERS.addTag("HEIGHT", "DEFAULT");
+		PARAMETERS.addTag("DS", "DEFAULT");
 		PARAMETERS.addAtt("START_SEED", "value", "" + DEFAULT_START_SEED);
 		PARAMETERS.addAtt("END_SEED", "value", "" + DEFAULT_END_SEED);
 		PARAMETERS.addAtt("TICKS", "value", "" + DEFAULT_TICKS);
@@ -106,6 +112,7 @@ public class SeriesTest {
 		PARAMETERS.addAtt("LENGTH", "value", "" + DEFAULT_LENGTH);
 		PARAMETERS.addAtt("WIDTH", "value", "" + DEFAULT_WIDTH);
 		PARAMETERS.addAtt("HEIGHT", "value", "" + DEFAULT_HEIGHT);
+		PARAMETERS.addAtt("DS", "value", "" + DS);
 		
 		// POTTS
 		for (int i = 0; i < POTTS_PARAMETER_COUNT; i++) {
@@ -120,6 +127,11 @@ public class SeriesTest {
 			PARAMETERS.addAtt(POPULATION_PARAMETER_NAMES[i], "value", "" + POPULATION_PARAMETER_VALUES[i]);
 		}
 		POPULATION = PARAMETERS.getIdValForTag("POPULATION");
+		
+		// Adjusted POPULATION
+		POPULATION_ADJUSTED = PARAMETERS.getIdValForTag("POPULATION");
+		POPULATION_ADJUSTED.put("CRITICAL_VOLUME", POPULATION_ADJUSTED.getDouble("CRITICAL_VOLUME")*DS*DS*DS);
+		POPULATION_ADJUSTED.put("CRITICAL_SURFACE", POPULATION_ADJUSTED.getDouble("CRITICAL_SURFACE")*DS*DS);
 	}
 	
 	private HashMap<String, MiniBox> makeDicts() {
@@ -414,6 +426,24 @@ public class SeriesTest {
 	}
 	
 	@Test
+	public void constructor_dsNotGiven_usesDefault() {
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		
+		assertEquals(DS, series.DS, EPSILON);
+	}
+	
+	@Test
+	public void constructor_dsGiven_usesGiven() {
+		double ds = randomDouble();
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		setupDicts.get("series").put("ds", ds);
+		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		
+		assertEquals(ds, series.DS, EPSILON);
+	}
+	
+	@Test
 	public void initialize_default_callsMethods() {
 		HashMap<String, ArrayList<Box>> setupLists = makeLists();
 		Series series = mock(Series.class, CALLS_REAL_METHODS);
@@ -554,7 +584,14 @@ public class SeriesTest {
 		Series series = mock(Series.class, CALLS_REAL_METHODS);
 		ArrayList<Box> populations = setupLists.get("populations");
 		populations.addAll(Arrays.asList(boxes));
-		series.updatePopulations(populations, POPULATION);
+		
+		try {
+			Field field = Series.class.getDeclaredField("DS");
+			field.setAccessible(true);
+			field.setDouble(series, DS);
+		} catch (Exception ignored) { }
+		
+		series.updatePopulations(populations, POPULATION_ADJUSTED);
 		return series;
 	}
 	
@@ -697,9 +734,11 @@ public class SeriesTest {
 				MiniBox box = series._populations.get(POPULATION_ID_1);
 				
 				for (String parameter : POPULATION_PARAMETER_NAMES) {
-					double expected = POPULATION.getDouble(parameter);
+					double expected = POPULATION_ADJUSTED.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
+					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
+					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
 					assertEquals(expected, box.getDouble(parameter), EPSILON);
 				}
 			}
@@ -749,9 +788,11 @@ public class SeriesTest {
 					assertEquals(POPULATION.get(parameter), box1.get(parameter));
 					assertEquals(POPULATION.get(parameter), box3.get(parameter));
 					
-					double expected = POPULATION.getDouble(parameter);
+					double expected = POPULATION_ADJUSTED.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
+					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
+					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
 					assertEquals(expected, box2.getDouble(parameter), EPSILON);
 				}
 			}
@@ -911,9 +952,12 @@ public class SeriesTest {
 				MiniBox box = series._populations.get(POPULATION_ID_1);
 				
 				for (String parameter : POPULATION_PARAMETER_NAMES) {
-					double expected = POPULATION.getDouble(parameter);
+					double expected = POPULATION_ADJUSTED.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
+					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
+					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
+					assertEquals(expected, box.getDouble(parameter), EPSILON);
 					assertEquals(expected, box.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
 					assertEquals(expected, box.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
 				}
@@ -977,9 +1021,15 @@ public class SeriesTest {
 					assertNull(box3.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
 					assertNull(box3.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
 					
-					double expected = POPULATION.getDouble(parameter);
+					assertEquals(POPULATION.getDouble(parameter), box1.getDouble(parameter), EPSILON);
+					assertEquals(POPULATION.getDouble(parameter), box3.getDouble(parameter), EPSILON);
+					
+					double expected = POPULATION_ADJUSTED.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
+					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
+					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
+					assertEquals(expected, box2.getDouble(parameter), EPSILON);
 					assertEquals(expected, box2.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
 					assertEquals(expected, box2.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
 				}
@@ -1009,9 +1059,12 @@ public class SeriesTest {
 				MiniBox box = series._populations.get(POPULATION_ID_1);
 				
 				for (String parameter : POPULATION_PARAMETER_NAMES) {
-					double expected = POPULATION.getDouble(parameter);
+					double expected = POPULATION_ADJUSTED.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
+					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
+					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
+					assertEquals(POPULATION.getDouble(parameter), box.getDouble(parameter), EPSILON);
 					assertEquals(POPULATION.getDouble(parameter), box.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
 					assertEquals(expected, box.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
 				}
@@ -1050,9 +1103,15 @@ public class SeriesTest {
 					assertNull(box3.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
 					assertNull(box3.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
 					
-					double expected = POPULATION.getDouble(parameter);
+					assertEquals(POPULATION.getDouble(parameter), box1.getDouble(parameter), EPSILON);
+					assertEquals(POPULATION.getDouble(parameter), box3.getDouble(parameter), EPSILON);
+					
+					double expected = POPULATION_ADJUSTED.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
+					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
+					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
+					assertEquals(POPULATION.getDouble(parameter), box2.getDouble(parameter), EPSILON);
 					assertEquals(POPULATION.getDouble(parameter), box2.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
 					assertEquals(expected, box2.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
 				}

@@ -49,6 +49,9 @@ public class Series {
 	/** Path and prefix for the series */ 
 	private final String prefix;
 	
+	/** Spatial conversion factor (um/voxel) */
+	final double DS;
+	
 	/** Constructor for the simulation */
 	Constructor<?> simCons;
 	
@@ -116,6 +119,9 @@ public class Series {
 		this._width = (series.contains("width") ? series.getInt("width") : defaults.getInt("WIDTH"));
 		int height = (series.contains("height") ? series.getInt("height") : defaults.getInt("HEIGHT"));
 		this._height = ((height & 1) == 1 ? height : height + 1); // enforce odd
+		
+		// Set conversion factors.
+		this.DS = (series.contains("ds") ? series.getDouble("ds") : defaults.getDouble("DS"));
 		
 		// Initialize simulation series.
 		initialize(setupLists, parameters);
@@ -320,12 +326,24 @@ public class Series {
 							population.get(parameter), parameterValues, parameterScales);
 				}
 				
+				// Scale tag volume and surface parameter units.
+				population.put(tag + TAG_SEPARATOR + "CRITICAL_VOLUME",
+						Math.round(population.getDouble(tag + TAG_SEPARATOR + "CRITICAL_VOLUME")/(DS*DS*DS)));
+				population.put(tag + TAG_SEPARATOR + "CRITICAL_SURFACE",
+						Math.round(population.getDouble(tag + TAG_SEPARATOR + "CRITICAL_SURFACE")/(DS*DS)));
+				
 				// Add tag adhesion values.
 				for (String target : tags.getKeys()) {
 					updateParameter(population, tag + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target,
 							population.get("ADHESION"), parameterValues, parameterScales);
 				}
 			}
+			
+			// Scale volume and surface parameter units.
+			population.put("CRITICAL_VOLUME",
+					Math.round(population.getDouble("CRITICAL_VOLUME")/(DS*DS*DS)));
+			population.put("CRITICAL_SURFACE",
+					Math.round(population.getDouble("CRITICAL_SURFACE")/(DS*DS)));
 		}
 	}
 	
