@@ -13,14 +13,9 @@ import sim.util.Bag;
 /**
  * Utility class for a directed graph using the nodes as hashes. Previously
  * nested within GraphSites.
- *
- * @author  Jessica S. Yu <jessicayu@u.northwestern.edu>
- * @version 2.3.12
- * @since   2.3
  */
 
 public class Graph implements Serializable {
-	private static final long serialVersionUID = 0;
 	public static final int DIR_FROM = -1;
 	public static final int DIR_TO = 1;
 	private static final int ADD = 1;

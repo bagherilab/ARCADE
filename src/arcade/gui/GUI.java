@@ -18,9 +18,6 @@ import sim.display.SimApplet;
  * <p>
  * When the model is called with arguments, then the {@code main} method in
  * {@link arcade.Main} is called directly and the {@code GUI} is not shown.
- * 
- * @version 2.3.0
- * @since   2.3
  */
 
 public class GUI implements ActionListener {

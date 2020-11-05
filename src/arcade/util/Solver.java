@@ -6,10 +6,6 @@ import static arcade.util.Matrix.*;
 
 /**
  * Static utility class implementing various numerical solvers.
- * 
- * @author  Jessica S. Yu <jessicayu@u.northwestern.edu>
- * @version 2.3.8
- * @since   2.0
  */
 
 public class Solver {

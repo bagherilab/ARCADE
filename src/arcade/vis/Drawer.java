@@ -17,9 +17,6 @@ import sim.util.gui.ColorMap;
  */
 
 public abstract class Drawer implements Steppable {
-	/** Serialization version identifier */
-	private static final long serialVersionUID = 0;
-	
 	/** Portrayal */
 	final Portrayal port;
 	

@@ -8,9 +8,6 @@ import sim.util.gui.ColorMap;
  * <p>
  * Custom color map management for use with visualization classes in
  * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
- * 
- * @version 2.2.1
- * @since   2.2
  */
 
 public class Colors implements ColorMap {

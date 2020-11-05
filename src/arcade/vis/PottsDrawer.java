@@ -23,7 +23,6 @@ import arcade.env.grid.Grid;
 import static arcade.agent.cell.Cell.*;
 
 public abstract class PottsDrawer extends Drawer {
-	private static final long serialVersionUID = 0;
 	DoubleGrid2D array;
 	Network graph;
 	Continuous2D field;
@@ -130,8 +129,6 @@ public abstract class PottsDrawer extends Drawer {
 	}
 	
 	public static class PottsCells extends PottsDrawer {
-		private static final long serialVersionUID = 0;
-		
 		private static final int DRAW_CYTOPLASM = -1;
 		private static final int DRAW_NUCLEUS = -2;
 		private static final int DRAW_OVERLAY = 1;
@@ -329,8 +326,6 @@ public abstract class PottsDrawer extends Drawer {
 	}
 	
 	public static class PottsGrid extends PottsDrawer {
-		private static final long serialVersionUID = 0;
-		
 		private final int LENGTH;
 		private final int WIDTH;
 		private final int HEIGHT;

@@ -17,9 +17,6 @@ import arcade.sim.Simulation;
  * Unlike {@link arcade.agent.cell.Cell} objects, {@code Helper} objects do not
  * represent a physical entity in the model.
  * Instead, they are a generic interface for introducing steppables to the model.
- * 
- * @version 2.3.0
- * @since   2.2
  */
 
 public interface Helper extends Steppable {

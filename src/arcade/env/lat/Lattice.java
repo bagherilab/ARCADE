@@ -12,9 +12,6 @@ import arcade.util.MiniBox;
  * molecular concentrations or other continuous quantities.
  * {@code Lattice} objects are associated with {@link arcade.env.comp.Component}
  * objects that control changes in the values in the array (such as diffusion).
- * 
- * @version 2.3.3
- * @since   2.2
  */
 
 public interface Lattice {

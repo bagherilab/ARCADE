@@ -16,9 +16,6 @@ import arcade.env.loc.Location;
  * </ul>
  * {@code Component} objects are the analog to {@link arcade.agent.helper.Helper}
  * for steppables that affect the environment.
- * 
- * @version 2.3.3
- * @since   2.2
  */
 
 public interface Component extends Steppable {

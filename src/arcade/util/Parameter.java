@@ -11,9 +11,6 @@ import ec.util.MersenneTwisterFast;
  * additional parameter values from a normal distribution.
  * For parameters that are fractions (bounded between 0 and 1), the tails of the
  * distribution are truncated.
- * 
- * @version 2.3.3
- * @since   2.2
  */
 
 public class Parameter implements Serializable {
