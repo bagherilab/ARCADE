@@ -22,6 +22,9 @@ public abstract class CellFactory {
 	/** Map of population to adhesion values */
 	HashMap<Integer, double[]> popToAdhesion;
 	
+	/** Map of population to parameters */
+	HashMap<Integer, MiniBox> popToParameters;
+	
 	/** Map of population to number of tags */
 	HashMap<Integer, Boolean> popToTags;
 	
@@ -51,6 +54,7 @@ public abstract class CellFactory {
 		popToCriticals = new HashMap<>();
 		popToLambdas = new HashMap<>();
 		popToAdhesion = new HashMap<>();
+		popToParameters = new HashMap<>();
 		popToTags = new HashMap<>();
 		popToTagCriticals = new HashMap<>();
 		popToTagLambdas = new HashMap<>();
@@ -139,6 +143,7 @@ public abstract class CellFactory {
 			MiniBox population = series._populations.get(key);
 			int pop = population.getInt("CODE");
 			popToIDs.put(pop, new HashSet<>());
+			popToParameters.put(pop, series._populations.get(key));
 			
 			// Iterate through terms to get critical and lambda values.
 			EnumMap<Term, Double> criticals = new EnumMap<>(Term.class);
@@ -281,11 +286,12 @@ public abstract class CellFactory {
 	 * @param state  the cell state
 	 * @param age  the cell age (in ticks)
 	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param parameters  the dictionary of parameters
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
 	 * @param adhesion  the list of adhesion values
 	 */
-	abstract Cell makeCell(int id, int pop, int age, State state, Location location,
+	abstract Cell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
 						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion);
 	
 	/**
@@ -296,6 +302,7 @@ public abstract class CellFactory {
 	 * @param state  the cell state
 	 * @param age  the cell age (in ticks)
 	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param parameters  the dictionary of parameters
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
 	 * @param adhesion  the list of adhesion values
@@ -304,7 +311,7 @@ public abstract class CellFactory {
 	 * @param adhesionTag  the map of tagged adhesion values
 	 * @return  a {@link arcade.agent.cell.Cell} object
 	 */
-	abstract Cell makeCell(int id, int pop, int age, State state, Location location,
+	abstract Cell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
 						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
 						   EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
 						   EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag);
@@ -324,6 +331,7 @@ public abstract class CellFactory {
 		Phase phase = cellContainer.phase;
 		
 		// Get copies of critical, lambda, and adhesion values.
+		MiniBox parameters = popToParameters.get(pop);
 		EnumMap<Term, Double> criticals = popToCriticals.get(pop).clone();
 		EnumMap<Term, Double> lambdas = popToLambdas.get(pop).clone();
 		double[] adhesion = popToAdhesion.get(pop).clone();
@@ -344,10 +352,10 @@ public abstract class CellFactory {
 				adhesionTag.put(tag, popToTagAdhesion.get(pop).get(tag).clone());
 			}
 			
-			cell = makeCell(id, pop, age, state, location, criticals, lambdas, adhesion,
+			cell = makeCell(id, pop, age, state, location, parameters, criticals, lambdas, adhesion,
 					criticalsTag, lambdasTag, adhesionTag);
 		} else {
-			cell = makeCell(id, pop, age, state, location, criticals, lambdas, adhesion);
+			cell = makeCell(id, pop, age, state, location, parameters, criticals, lambdas, adhesion);
 		}
 		
 		// Update cell targets.

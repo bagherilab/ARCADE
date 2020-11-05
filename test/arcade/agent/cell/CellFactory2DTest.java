@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import arcade.env.loc.*;
+import arcade.util.MiniBox;
 import static arcade.sim.Potts.Term;
 import static arcade.agent.cell.Cell.State;
 import static arcade.agent.cell.Cell.Tag;
@@ -21,17 +22,19 @@ public class CellFactory2DTest {
 		int cellAge = (int)random();
 		State cellState = randomState();
 		Location location = mock(Location.class);
+		MiniBox parameters = mock(MiniBox.class);
 		EnumMap<Term, Double> criticals = makeEnumMap();
 		EnumMap<Term, Double> lambdas = makeEnumMap();
 		double[] adhesion = new double[] { random(), random() };
 		
-		Cell cell = factory.makeCell(cellID, cellPop, cellAge, cellState, location, criticals, lambdas, adhesion);
+		Cell cell = factory.makeCell(cellID, cellPop, cellAge, cellState, location, parameters, criticals, lambdas, adhesion);
 		
 		assertTrue(cell instanceof PottsCell2D);
 		assertEquals(cellID, cell.getID());
 		assertEquals(cellPop, cell.getPop());
 		assertEquals(cellState, cell.getState());
 		assertEquals(location, cell.getLocation());
+		assertEquals(parameters, cell.getParameters());
 		assertEquals(criticals.get(Term.VOLUME), cell.getCriticalVolume(), EPSILON);
 		assertEquals(criticals.get(Term.SURFACE), cell.getCriticalSurface(), EPSILON);
 		assertEquals(lambdas.get(Term.VOLUME), cell.getLambda(Term.VOLUME), EPSILON);
@@ -49,6 +52,7 @@ public class CellFactory2DTest {
 		int cellAge = (int)random();
 		State cellState = randomState();
 		Location location = mock(Location.class);
+		MiniBox parameters = mock(MiniBox.class);
 		EnumMap<Term, Double> criticals = makeEnumMap();
 		EnumMap<Term, Double> lambdas = makeEnumMap();
 		double[] adhesion = new double[] { random(), random() };
@@ -60,7 +64,8 @@ public class CellFactory2DTest {
 		EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = makeEnumMapTag(tagList);
 		EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag = makeEnumMapTarget(tagList);
 		
-		Cell cell = factory.makeCell(cellID, cellPop, cellAge, cellState, location, criticals, lambdas, adhesion,
+		Cell cell = factory.makeCell(cellID, cellPop, cellAge, cellState, location, parameters,
+				criticals, lambdas, adhesion,
 				criticalsTag, lambdasTag, adhesionTag);
 		
 		assertTrue(cell instanceof PottsCell2D);
@@ -68,6 +73,7 @@ public class CellFactory2DTest {
 		assertEquals(cellPop, cell.getPop());
 		assertEquals(cellState , cell.getState());
 		assertEquals(location, cell.getLocation());
+		assertEquals(parameters, cell.getParameters());
 		assertEquals(criticals.get(Term.VOLUME), cell.getCriticalVolume(), EPSILON);
 		assertEquals(criticals.get(Term.SURFACE), cell.getCriticalSurface(), EPSILON);
 		assertEquals(lambdas.get(Term.VOLUME), cell.getLambda(Term.VOLUME), EPSILON);

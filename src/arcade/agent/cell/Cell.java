@@ -3,6 +3,7 @@ package arcade.agent.cell;
 import sim.engine.*;
 import arcade.agent.module.Module;
 import arcade.env.loc.Location;
+import arcade.util.MiniBox;
 import static arcade.sim.Potts.Term;
 
 public interface Cell extends Steppable {
@@ -87,6 +88,11 @@ public interface Cell extends Steppable {
 	 * @return  the cell module
 	 */
 	Module getModule();
+	
+	/**
+	 * Gets the cell population parameters.
+	 */
+	MiniBox getParameters();
 	
 	/**
 	 * Gets the cell volume (in voxels).

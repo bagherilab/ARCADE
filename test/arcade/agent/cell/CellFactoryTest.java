@@ -77,7 +77,7 @@ public class CellFactoryTest {
 	static class CellFactoryMock extends CellFactory {
 		public CellFactoryMock() { super(); }
 		
-		Cell makeCell(int id, int pop, int age, State state, Location location,
+		Cell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
 					  EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion) {
 			PottsCell cell = mock(PottsCell.class);
 			
@@ -86,6 +86,7 @@ public class CellFactoryTest {
 			when(cell.getAge()).thenReturn(age);
 			when(cell.getState()).thenReturn(state);
 			when(cell.getLocation()).thenReturn(location);
+			when(cell.getParameters()).thenReturn(parameters);
 			
 			Module module = mock(Module.class);
 			when(cell.getModule()).thenReturn(module);
@@ -103,7 +104,7 @@ public class CellFactoryTest {
 			return cell;
 		}
 		
-		Cell makeCell(int id, int pop, int age, State state, Location location,
+		Cell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
 					  EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
 					  EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
 					  EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag) {
@@ -114,6 +115,7 @@ public class CellFactoryTest {
 			when(cell.getAge()).thenReturn(age);
 			when(cell.getState()).thenReturn(state);
 			when(cell.getLocation()).thenReturn(location);
+			when(cell.getParameters()).thenReturn(parameters);
 			
 			Module module = mock(Module.class);
 			when(cell.getModule()).thenReturn(module);
@@ -217,6 +219,7 @@ public class CellFactoryTest {
 		double[] adhesion = new double[] { random(), random(), random(), random() };
 		
 		String[] popKeys = new String[] { "A", "B", "C" };
+		MiniBox[] popParameters = new MiniBox[3];
 		
 		for (int i = 0; i < popKeys.length; i++) {
 			int pop = i + 1;
@@ -233,6 +236,7 @@ public class CellFactoryTest {
 			population.put("CRITICAL_SURFACE", criticals.get(Term.SURFACE) + pop);
 			
 			series._populations.put(popKeys[i], population);
+			popParameters[i] = population;
 		}
 		
 		CellFactory factory = new CellFactoryMock();
@@ -246,6 +250,7 @@ public class CellFactoryTest {
 			assertEquals(lambdas.get(Term.SURFACE) + pop, factory.popToLambdas.get(pop).get(Term.SURFACE), EPSILON);
 			assertArrayEquals(adhesion, factory.popToAdhesion.get(pop), EPSILON);
 			assertEquals(new HashSet<>(), factory.popToIDs.get(pop));
+			assertEquals(popParameters[i], factory.popToParameters.get(pop));
 			assertFalse(factory.popToTags.get(pop));
 		}
 	}
@@ -266,6 +271,7 @@ public class CellFactoryTest {
 		EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag = makeEnumMapTarget(tagList);
 		
 		String[] popKeys = new String[] { "A", "B", "C" };
+		MiniBox[] popParameters = new MiniBox[3];
 		
 		for (int i = 0; i < popKeys.length; i++) {
 			int pop = i + 1;
@@ -294,6 +300,7 @@ public class CellFactoryTest {
 			}
 			
 			series._populations.put(popKeys[i], population);
+			popParameters[i] = population;
 		}
 		
 		CellFactory factory = new CellFactoryMock();
@@ -307,6 +314,7 @@ public class CellFactoryTest {
 			assertEquals(lambdas.get(Term.SURFACE) + pop, factory.popToLambdas.get(pop).get(Term.SURFACE), EPSILON);
 			assertArrayEquals(adhesion, factory.popToAdhesion.get(pop), EPSILON);
 			assertEquals(new HashSet<>(), factory.popToIDs.get(pop));
+			assertEquals(popParameters[i], factory.popToParameters.get(pop));
 			assertTrue(factory.popToTags.get(pop));
 			
 			for (Tag tag : tagList) {
@@ -634,10 +642,12 @@ public class CellFactoryTest {
 		EnumMap<Term, Double> criticals = makeEnumMap();
 		EnumMap<Term, Double> lambdas = makeEnumMap();
 		double[] adhesion = new double[] { random(), random() };
+		MiniBox parameters = mock(MiniBox.class);
 		
 		factory.popToCriticals.put(cellPop, criticals);
 		factory.popToLambdas.put(cellPop, lambdas);
 		factory.popToAdhesion.put(cellPop, adhesion);
+		factory.popToParameters.put(cellPop, parameters);
 		factory.popToTags.put(cellPop, false);
 		
 		CellContainer container = new CellContainer(cellID, cellPop, cellAge, cellState, cellPhase,
@@ -650,6 +660,7 @@ public class CellFactoryTest {
 		assertEquals(cellPop, cell.getPop());
 		assertEquals(cellAge, cell.getAge());
 		assertEquals(cellState, cell.getState());
+		assertEquals(parameters, cell.getParameters());
 		verify(cell.getModule()).setPhase(cellPhase);
 		assertEquals(criticals.get(Term.VOLUME), cell.getCriticalVolume(), EPSILON);
 		assertEquals(criticals.get(Term.SURFACE), cell.getCriticalSurface(), EPSILON);
@@ -675,10 +686,12 @@ public class CellFactoryTest {
 		EnumMap<Term, Double> criticals1 = makeEnumMap();
 		EnumMap<Term, Double> lambdas1 = makeEnumMap();
 		double[] adhesion1 = new double[] { random(), random(), random(), random() };
+		MiniBox parameters1 = mock(MiniBox.class);
 		
 		factory.popToCriticals.put(cellPop1, criticals1);
 		factory.popToLambdas.put(cellPop1, lambdas1);
 		factory.popToAdhesion.put(cellPop1, adhesion1);
+		factory.popToParameters.put(cellPop1, parameters1);
 		factory.popToTags.put(cellPop1, false);
 		
 		int cellID2 = cellID1 + 1;
@@ -689,10 +702,12 @@ public class CellFactoryTest {
 		EnumMap<Term, Double> criticals2 = makeEnumMap();
 		EnumMap<Term, Double> lambdas2 = makeEnumMap();
 		double[] adhesion2 = new double[] { random(), random(), random(), random() };
+		MiniBox parameters2 = mock(MiniBox.class);
 		
 		factory.popToCriticals.put(cellPop2, criticals2);
 		factory.popToLambdas.put(cellPop2, lambdas2);
 		factory.popToAdhesion.put(cellPop2, adhesion2);
+		factory.popToParameters.put(cellPop2, parameters2);
 		factory.popToTags.put(cellPop2, false);
 		
 		CellContainer container1 = new CellContainer(cellID1, cellPop1, cellAge1, cellState1, cellPhase1,
@@ -705,6 +720,7 @@ public class CellFactoryTest {
 		assertEquals(cellPop1, cell1.getPop());
 		assertEquals(cellAge1, cell1.getAge());
 		assertEquals(cellState1, cell1.getState());
+		assertEquals(parameters1, cell1.getParameters());
 		verify(cell1.getModule()).setPhase(cellPhase1);
 		assertEquals(criticals1.get(Term.VOLUME), cell1.getCriticalVolume(), EPSILON);
 		assertEquals(criticals1.get(Term.SURFACE), cell1.getCriticalSurface(), EPSILON);
@@ -727,6 +743,7 @@ public class CellFactoryTest {
 		assertEquals(cellPop2, cell2.getPop());
 		assertEquals(cellAge2, cell2.getAge());
 		assertEquals(cellState2, cell2.getState());
+		assertEquals(parameters2, cell2.getParameters());
 		verify(cell2.getModule()).setPhase(cellPhase2);
 		assertEquals(criticals2.get(Term.VOLUME), cell2.getCriticalVolume(), EPSILON);
 		assertEquals(criticals2.get(Term.SURFACE), cell2.getCriticalSurface(), EPSILON);
@@ -753,6 +770,7 @@ public class CellFactoryTest {
 		EnumMap<Term, Double> criticals = makeEnumMap();
 		EnumMap<Term, Double> lambdas = makeEnumMap();
 		double[] adhesion = new double[] { random(), random() };
+		MiniBox parameters = mock(MiniBox.class);
 		
 		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
 		doReturn(tagList).when(location).getTags();
@@ -764,6 +782,7 @@ public class CellFactoryTest {
 		factory.popToCriticals.put(cellPop, criticals);
 		factory.popToLambdas.put(cellPop, lambdas);
 		factory.popToAdhesion.put(cellPop, adhesion);
+		factory.popToParameters.put(cellPop, parameters);
 		
 		factory.popToTagCriticals.put(cellPop, criticalsTag);
 		factory.popToTagLambdas.put(cellPop, lambdasTag);
@@ -781,6 +800,7 @@ public class CellFactoryTest {
 		assertEquals(cellPop, cell.getPop());
 		assertEquals(cellAge, cell.getAge());
 		assertEquals(cellState, cell.getState());
+		assertEquals(parameters, cell.getParameters());
 		verify(cell.getModule()).setPhase(cellPhase);
 		assertEquals(criticals.get(Term.VOLUME), cell.getCriticalVolume(), EPSILON);
 		assertEquals(criticals.get(Term.SURFACE), cell.getCriticalSurface(), EPSILON);
@@ -819,10 +839,12 @@ public class CellFactoryTest {
 		EnumMap<Term, Double> criticals1 = makeEnumMap();
 		EnumMap<Term, Double> lambdas1 = makeEnumMap();
 		double[] adhesion1 = new double[] { random(), random(), random(), random() };
+		MiniBox parameters1 = mock(MiniBox.class);
 		
 		factory.popToCriticals.put(cellPop1, criticals1);
 		factory.popToLambdas.put(cellPop1, lambdas1);
 		factory.popToAdhesion.put(cellPop1, adhesion1);
+		factory.popToParameters.put(cellPop1, parameters1);
 		factory.popToTags.put(cellPop1, false);
 		
 		int cellID2 = cellID1 + 1;
@@ -833,10 +855,12 @@ public class CellFactoryTest {
 		EnumMap<Term, Double> criticals2 = makeEnumMap();
 		EnumMap<Term, Double> lambdas2 = makeEnumMap();
 		double[] adhesion2 = new double[] { random(), random(), random(), random() };
+		MiniBox parameters2 = mock(MiniBox.class);
 		
 		factory.popToCriticals.put(cellPop2, criticals2);
 		factory.popToLambdas.put(cellPop2, lambdas2);
 		factory.popToAdhesion.put(cellPop2, adhesion2);
+		factory.popToParameters.put(cellPop2, parameters2);
 		factory.popToTags.put(cellPop2, true);
 		
 		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
@@ -860,6 +884,7 @@ public class CellFactoryTest {
 		assertEquals(cellPop1, cell1.getPop());
 		assertEquals(cellAge1, cell1.getAge());
 		assertEquals(cellState1, cell1.getState());
+		assertEquals(parameters1, cell1.getParameters());
 		verify(cell1.getModule()).setPhase(cellPhase1);
 		assertEquals(criticals1.get(Term.VOLUME), cell1.getCriticalVolume(), EPSILON);
 		assertEquals(criticals1.get(Term.SURFACE), cell1.getCriticalSurface(), EPSILON);
@@ -895,6 +920,7 @@ public class CellFactoryTest {
 		assertEquals(cellPop2, cell2.getPop());
 		assertEquals(cellAge2, cell2.getAge());
 		assertEquals(cellState2, cell2.getState());
+		assertEquals(parameters2, cell2.getParameters());
 		verify(cell2.getModule()).setPhase(cellPhase2);
 		assertEquals(criticals2.get(Term.VOLUME), cell2.getCriticalVolume(), EPSILON);
 		assertEquals(criticals2.get(Term.SURFACE), cell2.getCriticalSurface(), EPSILON);
