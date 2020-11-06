@@ -3,7 +3,7 @@ package arcade.agent.module;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
 import arcade.sim.Potts;
-import arcade.agent.cell.PottsCell;
+import arcade.agent.cell.Cell;
 import arcade.util.MiniBox;
 import static arcade.agent.cell.Cell.*;
 
@@ -33,14 +33,14 @@ public abstract class ApoptosisModule implements Module  {
 	Phase phase;
 	
 	/** {@link arcade.agent.cell.Cell} object */
-	final PottsCell cell;
+	final Cell cell;
 	
 	/**
-	 * Creates a {@code ApoptosisModule} for the given {@link PottsCell}.
+	 * Creates a {@code ApoptosisModule} for the given {@link Cell}.
 	 *
-	 * @param cell  the {@link PottsCell} the module is associated with
+	 * @param cell  the {@link Cell} the module is associated with
 	 */
-	public ApoptosisModule(PottsCell cell) {
+	public ApoptosisModule(Cell cell) {
 		this.cell = cell;
 		this.phase = Phase.APOPTOTIC_EARLY;
 		
@@ -62,9 +62,9 @@ public abstract class ApoptosisModule implements Module  {
 		/**
 		 * Creates a {@link ApoptosisModule} using simple phases.
 		 *
-		 * @param cell  the {@link PottsCell} the module is associated with
+		 * @param cell  the {@link Cell} the module is associated with
 		 */
-		public Simple(PottsCell cell) { super(cell); }
+		public Simple(Cell cell) { super(cell); }
 		
 		public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
 	}
@@ -104,7 +104,7 @@ public abstract class ApoptosisModule implements Module  {
 	 * @param r  a random number
 	 */
 	void stepEarly(double r) {
-		if (cell.hasTags) {
+		if (cell.hasTags()) {
 			// Cytoplasmic water loss.
 			cell.updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_LOSS, 0.5);
 			
@@ -136,7 +136,7 @@ public abstract class ApoptosisModule implements Module  {
 	 * @param sim  the simulation instance
 	 */
 	void stepLate(double r, Simulation sim) {
-		if (cell.hasTags) {
+		if (cell.hasTags()) {
 			// Cytoplasm blebbing.
 			cell.updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_BLEBBING, 0);
 			
@@ -173,6 +173,6 @@ public abstract class ApoptosisModule implements Module  {
 		sim.getAgents().removeObject(cell.getID());
 		
 		// Stop stepping the cell.
-		cell.stopper.stop();
+		cell.stop();
 	}
 }

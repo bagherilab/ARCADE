@@ -3,8 +3,7 @@ package arcade.agent.module;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
 import arcade.sim.Potts;
-import arcade.agent.cell.*;
-import arcade.agent.cell.PottsCell;
+import arcade.agent.cell.Cell;
 import arcade.env.loc.Location;
 import arcade.util.MiniBox;
 import static arcade.agent.cell.Cell.*;
@@ -50,17 +49,17 @@ public abstract class ProliferationModule implements Module {
 	Phase phase;
 	
 	/** {@link arcade.agent.cell.Cell} object */
-	final PottsCell cell;
+	final Cell cell;
 	
 	/** {@code true} if cell is arrested in a phase, {@code false} otherwise */
 	boolean isArrested;
 	
 	/**
-	 * Creates a {@code ProliferationModule} for the given {@link PottsCell}.
+	 * Creates a {@code ProliferationModule} for the given {@link Cell}.
 	 * 
-	 * @param cell  the {@link PottsCell} the module is associated with
+	 * @param cell  the {@link Cell} the module is associated with
 	 */
-	public ProliferationModule(PottsCell cell) {
+	public ProliferationModule(Cell cell) {
 		this.cell = cell;
 		this.phase = Phase.PROLIFERATIVE_G1;
 		
@@ -85,9 +84,9 @@ public abstract class ProliferationModule implements Module {
 		/**
 		 * Creates a {@link ProliferationModule} using simple phases.
 		 * 
-		 * @param cell  the {@link PottsCell} the module is associated with
+		 * @param cell  the {@link Cell} the module is associated with
 		 */
-		public Simple(PottsCell cell) { super(cell); }
+		public Simple(Cell cell) { super(cell); }
 		
 		public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
 	}
@@ -183,7 +182,7 @@ public abstract class ProliferationModule implements Module {
 	 * an average time of {@code DURATION_S}.
 	 */
 	void stepS(double r) {
-		if (cell.hasTags) {
+		if (cell.hasTags()) {
 			// Increase size of nucleus.
 			cell.updateTarget(Tag.NUCLEUS, RATE_S, 2);
 			

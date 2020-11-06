@@ -226,6 +226,11 @@ public interface Cell extends Steppable {
 	void setState(State state);
 	
 	/**
+	 * Stop the cell from stepping.
+	 */
+	void stop();
+	
+	/**
 	 * Creates a new cell.
 	 *
 	 * @param id  the new cell ID

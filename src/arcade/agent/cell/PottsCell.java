@@ -11,7 +11,7 @@ import static arcade.sim.Potts.Term;
 
 public abstract class PottsCell implements Cell {
 	/** Stopper used to stop this agent from being stepped in the schedule */
-	public Stoppable stopper;
+	Stoppable stopper;
 	
 	/** Cell {@link arcade.env.loc.Location} object */
 	private final Location location;
@@ -212,6 +212,8 @@ public abstract class PottsCell implements Cell {
 	public double getAdhesion(int pop) { return adhesion[pop]; }
 	
 	public double getAdhesion(Tag tag1, Tag tag2) { return (hasTags && adhesionTag.containsKey(tag1) && adhesionTag.containsKey(tag2) ? adhesionTag.get(tag1).get(tag2) : Double.NaN); }
+	
+	public void stop() { stopper.stop(); }
 	
 	public void setState(State state) {
 		this.state = state;

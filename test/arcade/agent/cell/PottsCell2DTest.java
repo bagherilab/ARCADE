@@ -93,7 +93,7 @@ public class PottsCell2DTest {
 	public void convert_givenValue_calculatesValue() {
 		double volume = Math.random()*100;
 		Location location = mock(Location.class);
-		PottsCell2D cell = new PottsCell2D(cellID, cellPop, location, null, criticals, lambdas, adhesion);
+		PottsCell2D cell = new PottsCell2D(cellID, cellPop, location, parameters, criticals, lambdas, adhesion);
 		assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume), cell.convert(volume), EPSILON);
 	}
 }
