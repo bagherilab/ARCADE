@@ -6,32 +6,33 @@ import arcade.sim.Potts;
 import arcade.agent.cell.*;
 import arcade.agent.cell.PottsCell;
 import arcade.env.loc.Location;
+import arcade.util.MiniBox;
 import static arcade.agent.cell.Cell.*;
 
 public abstract class ProliferationModule implements Module {
-	/** Average duration of G1 phase (hours) */
-	static final double DURATION_G1 = 11;
+	/** Average duration of G1 phase (ticks) */
+	final double DURATION_G1;
 	
-	/** Average duration of S phase (hours) */
-	static final double DURATION_S = 8;
+	/** Average duration of S phase (ticks) */
+	final double DURATION_S;
 	
-	/** Average duration of G2 phase (hours) */
-	static final double DURATION_G2 = 4;
+	/** Average duration of G2 phase (ticks) */
+	final double DURATION_G2;
 	
-	/** Average duration of M phase (hours) */
-	static final double DURATION_M = 1;
+	/** Average duration of M phase (ticks) */
+	final double DURATION_M;
 	
-	/** Average duration for checkpoint recovery (hours) */
-	static final double DURATION_CHECKPOINT = 1;
+	/** Average duration for checkpoint recovery (ticks) */
+	final double DURATION_CHECKPOINT;
 	
-	/** Cell growth rate for phase G1 (hours^-1) */
-	static final double RATE_G1 = -Math.log(0.05)/DURATION_G1;
+	/** Cell growth rate for phase G1 (ticks^-1) */
+	final double RATE_G1;
 	
-	/** Nucleus growth rate for phase S (hours^-1) */
-	static final double RATE_S = -Math.log(0.01)/DURATION_S;
+	/** Nucleus growth rate for phase S (ticks^-1) */
+	final double RATE_S;
 	
-	/** Cell growth rate for phase G2 (hours^-1) */
-	static final double RATE_G2 = -Math.log(0.01)/DURATION_G2;
+	/** Cell growth rate for phase G2 (ticks^-1) */
+	final double RATE_G2;
 	
 	/** Ratio of critical volume for G1 growth checkpoint */
 	static final double GROWTH_CHECKPOINT_G1 = 2*0.95;
@@ -42,8 +43,8 @@ public abstract class ProliferationModule implements Module {
 	/** Ratio of critical volume for G2 growth checkpoint */
 	static final double GROWTH_CHECKPOINT_G2 = 2*0.99;
 	
-	/** Basal rate of apoptosis (hours^-1) */
-	static final double BASAL_APOPTOSIS_RATE = 0.00127128;
+	/** Basal rate of apoptosis (ticks^-1) */
+	final double BASAL_APOPTOSIS_RATE;
 	
 	/** Code for phase */
 	Phase phase;
@@ -62,6 +63,19 @@ public abstract class ProliferationModule implements Module {
 	public ProliferationModule(PottsCell cell) {
 		this.cell = cell;
 		this.phase = Phase.PROLIFERATIVE_G1;
+		
+		MiniBox parameters = cell.getParameters();
+		
+		DURATION_G1 = parameters.getDouble("DURATION_PROLIFERATION_G1");
+		DURATION_S = parameters.getDouble("DURATION_PROLIFERATION_S");
+		DURATION_G2 = parameters.getDouble("DURATION_PROLIFERATION_G2");
+		DURATION_M = parameters.getDouble("DURATION_PROLIFERATION_M");
+		DURATION_CHECKPOINT = parameters.getDouble("DURATION_PROLIFERATION_CHECKPOINT");
+		BASAL_APOPTOSIS_RATE = parameters.getDouble("BASAL_APOPTOSIS_RATE");
+		
+		RATE_G1 = -Math.log(0.05)/DURATION_G1;
+		RATE_S = -Math.log(0.01)/DURATION_S;
+		RATE_G2 = -Math.log(0.01)/DURATION_G2;
 	}
 	
 	/**
@@ -77,8 +91,6 @@ public abstract class ProliferationModule implements Module {
 		
 		public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
 	}
-	
-	public String getName() { return "proliferative"; }
 	
 	public Phase getPhase() { return phase; }
 	
@@ -125,7 +137,7 @@ public abstract class ProliferationModule implements Module {
 	 */
 	void stepG1(double r) {
 		// Random chance of apoptosis.
-		if (r < BASAL_APOPTOSIS_RATE*Simulation.DT) {
+		if (r < BASAL_APOPTOSIS_RATE) {
 			cell.setState(State.APOPTOTIC);
 			return;
 		}
@@ -134,7 +146,7 @@ public abstract class ProliferationModule implements Module {
 		cell.updateTarget(RATE_G1, 2);
 		
 		// Check for transition to S phase.
-		double p = Simulation.DT/(isArrested ? DURATION_CHECKPOINT : DURATION_G1);
+		double p = 1.0/(isArrested ? DURATION_CHECKPOINT : DURATION_G1);
 		if (r < p) { checkpointG1(); }
 	}
 	
@@ -180,7 +192,7 @@ public abstract class ProliferationModule implements Module {
 				phase = Phase.PROLIFERATIVE_G2;
 			}
 		} else {
-			double p = Simulation.DT/DURATION_S;
+			double p = 1.0/DURATION_S;
 			if (r < p) { phase = Phase.PROLIFERATIVE_G2; }
 		}
 	}
@@ -202,7 +214,7 @@ public abstract class ProliferationModule implements Module {
 		cell.updateTarget(RATE_G2, 2);
 		
 		// Check for transition to M phase.
-		double p = Simulation.DT/(isArrested ? DURATION_CHECKPOINT : DURATION_G2);
+		double p = 1.0/(isArrested ? DURATION_CHECKPOINT : DURATION_G2);
 		if (r < p) { checkpointG2(); }
 	}
 	
@@ -238,7 +250,7 @@ public abstract class ProliferationModule implements Module {
 	 */
 	void stepM(double r, MersenneTwisterFast random, Simulation sim) {
 		// Check for completion of M phase.
-		double p = Simulation.DT/DURATION_M;
+		double p = 1.0/DURATION_M;
 		if (r < p) {
 			addCell(random, sim);
 			phase = Phase.PROLIFERATIVE_G1;

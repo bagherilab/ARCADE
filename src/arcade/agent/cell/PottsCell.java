@@ -302,7 +302,7 @@ public abstract class PottsCell implements Cell {
 		if (hasTags) { targetTagVolumes.put(Tag.DEFAULT, targetTagVolumes.get(Tag.DEFAULT) - targetVolume); }
 		
 		double oldTargetVolume = targetVolume;
-		targetVolume = volume + rate*(scale*criticals.get(Term.VOLUME) - volume)*Simulation.DT;
+		targetVolume = volume + rate*(scale*criticals.get(Term.VOLUME) - volume);
 		
 		// Ensure that target volume increases or decreases monotonically.
 		if ((scale > 1 && targetVolume < oldTargetVolume) ||
@@ -323,7 +323,7 @@ public abstract class PottsCell implements Cell {
 		targetVolume -= targetTagVolumes.get(tag);
 		
 		double oldTargetTagVolume = targetTagVolumes.get(tag);
-		targetTagVolumes.put(tag, tagVolume + rate*(scale*criticalsTag.get(tag).get(Term.VOLUME) - tagVolume)*Simulation.DT);
+		targetTagVolumes.put(tag, tagVolume + rate*(scale*criticalsTag.get(tag).get(Term.VOLUME) - tagVolume));
 		
 		// Ensure that target volume increases or decreases monotonically.
 		if ((scale > 1 && targetTagVolumes.get(tag) < oldTargetTagVolume) ||

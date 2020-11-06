@@ -3,7 +3,6 @@ package arcade.agent.cell;
 import java.util.*;
 import arcade.sim.Series;
 import arcade.env.loc.Location;
-import arcade.sim.Simulation;
 import arcade.util.MiniBox;
 import static arcade.sim.Potts.Term;
 import static arcade.agent.cell.Cell.State;

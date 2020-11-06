@@ -9,8 +9,6 @@ public class QuiescenceModule implements Module  {
 	
 	public QuiescenceModule(PottsCell cell) { this.cell = cell; }
 	
-	public String getName() { return "quiescent"; }
-	
 	public Phase getPhase() { return Phase.UNDEFINED; }
 	
 	public void setPhase(Phase phase) { }

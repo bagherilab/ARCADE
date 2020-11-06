@@ -4,26 +4,27 @@ import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
 import arcade.sim.Potts;
 import arcade.agent.cell.PottsCell;
+import arcade.util.MiniBox;
 import static arcade.agent.cell.Cell.*;
 
 public abstract class ApoptosisModule implements Module  {
-	/** Average duration of early apoptosis (hours) */
-	static final double DURATION_EARLY = 3;
+	/** Average duration of early apoptosis (ticks) */
+	final double DURATION_EARLY;
 	
-	/** Average duration of late apoptosis (hours) */
-	static final double DURATION_LATE = 5.6;
+	/** Average duration of late apoptosis (ticks) */
+	final double DURATION_LATE;
 	
-	/** Cytoplasm water loss rate for early apoptosis (hours^-1) */
-	static final double RATE_CYTOPLASM_LOSS = -Math.log(0.05)/DURATION_EARLY;
+	/** Cytoplasm water loss rate for early apoptosis (ticks^-1) */
+	final double RATE_CYTOPLASM_LOSS;
 	
-	/** Nucleus pyknosis rate for early apoptosis (hours^-1) */
-	static final double RATE_NUCLEUS_PYKNOSIS = -Math.log(0.01)/DURATION_EARLY;
+	/** Nucleus pyknosis rate for early apoptosis (ticks^-1) */
+	final double RATE_NUCLEUS_PYKNOSIS;
 	
-	/** Cytoplasm blebbing rate for late apoptosis (hours^-1) */
-	static final double RATE_CYTOPLASM_BLEBBING = -Math.log(0.01)/DURATION_LATE;
+	/** Cytoplasm blebbing rate for late apoptosis (ticks^-1) */
+	final double RATE_CYTOPLASM_BLEBBING;
 	
-	/** Nucleus fragmentation rate for late apoptosis (hours^-1) */
-	static final double RATE_NUCLEUS_FRAGMENTATION = -Math.log(0.01)/DURATION_LATE;
+	/** Nucleus fragmentation rate for late apoptosis (ticks^-1) */
+	final double RATE_NUCLEUS_FRAGMENTATION;
 	
 	/** Ratio of critical volume for apoptosis */
 	static final double APOPTOSIS_CHECKPOINT = 0.1;
@@ -42,6 +43,16 @@ public abstract class ApoptosisModule implements Module  {
 	public ApoptosisModule(PottsCell cell) {
 		this.cell = cell;
 		this.phase = Phase.APOPTOTIC_EARLY;
+		
+		MiniBox parameters = cell.getParameters();
+		
+		DURATION_EARLY = parameters.getDouble("DURATION_APOPTOSIS_EARLY");
+		DURATION_LATE = parameters.getDouble("DURATION_APOPTOSIS_LATE");
+		
+		RATE_CYTOPLASM_LOSS = -Math.log(0.05)/DURATION_EARLY;
+		RATE_NUCLEUS_PYKNOSIS = -Math.log(0.01)/DURATION_EARLY;
+		RATE_CYTOPLASM_BLEBBING = -Math.log(0.01)/DURATION_LATE;
+		RATE_NUCLEUS_FRAGMENTATION = -Math.log(0.01)/DURATION_LATE;
 	}
 	
 	/**
@@ -57,8 +68,6 @@ public abstract class ApoptosisModule implements Module  {
 		
 		public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
 	}
-	
-	public String getName() { return "apoptotic"; }
 	
 	public Phase getPhase() { return phase; }
 	
@@ -106,7 +115,7 @@ public abstract class ApoptosisModule implements Module  {
 		}
 		
 		// Check for transition to late phase.
-		double p = Simulation.DT/DURATION_EARLY;
+		double p = 1.0/DURATION_EARLY;
 		if (r < p) {
 			phase = Phase.APOPTOTIC_LATE;
 		}
@@ -139,7 +148,7 @@ public abstract class ApoptosisModule implements Module  {
 		}
 		
 		// Check for completion of late phase.
-		double p = Simulation.DT/DURATION_LATE;
+		double p = 1.0/DURATION_LATE;
 		if (r < p || cell.getVolume() < APOPTOSIS_CHECKPOINT*cell.getCriticalVolume()) {
 			removeCell(sim);
 			phase = Phase.APOPTOSED;

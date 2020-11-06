@@ -9,8 +9,6 @@ public class NecrosisModule implements Module  {
 	
 	public NecrosisModule(PottsCell cell) { this.cell = cell; }
 	
-	public String getName() { return "necrotic"; }
-	
 	public Phase getPhase() { return Phase.UNDEFINED; }
 	
 	public void setPhase(Phase phase) { }

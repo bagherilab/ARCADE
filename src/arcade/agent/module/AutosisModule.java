@@ -9,8 +9,6 @@ public class AutosisModule implements Module  {
 	
 	public AutosisModule(PottsCell cell) { this.cell = cell; }
 	
-	public String getName() { return "autotic"; }
-	
 	public Phase getPhase() { return Phase.UNDEFINED; }
 	
 	public void setPhase(Phase phase) { }
