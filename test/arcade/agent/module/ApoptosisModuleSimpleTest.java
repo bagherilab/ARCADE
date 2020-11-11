@@ -10,7 +10,7 @@ import arcade.sim.Potts;
 import arcade.env.grid.Grid;
 import arcade.env.loc.Location;
 import arcade.util.MiniBox;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 import static arcade.agent.module.Module.Phase;
 import static arcade.agent.module.ApoptosisModule.*;
 import static arcade.MainTest.*;
@@ -112,24 +112,24 @@ public class ApoptosisModuleSimpleTest {
 	}
 	
 	@Test
-	public void stepEarly_anyTransitionTagged_updatesCell() {
+	public void stepEarly_anyTransitionRegionged_updatesCell() {
 		for (int i = 0; i < 10; i++) {
 			Cell cell = mock(Cell.class);
 			doReturn(parameters).when(cell).getParameters();
-			doReturn(true).when(cell).hasTags();
+			doReturn(true).when(cell).hasRegions();
 			
 			ApoptosisModule module = spy(new ApoptosisModule.Simple(cell));
 			module.phase = Phase.APOPTOTIC_EARLY;
 			module.stepEarly(i/10.);
 			
-			verify(cell).updateTarget(Tag.DEFAULT, module.RATE_CYTOPLASM_LOSS, 0.5);
-			verify(cell).updateTarget(Tag.NUCLEUS, module.RATE_NUCLEUS_PYKNOSIS, 0.5);
+			verify(cell).updateTarget(Region.DEFAULT, module.RATE_CYTOPLASM_LOSS, 0.5);
+			verify(cell).updateTarget(Region.NUCLEUS, module.RATE_NUCLEUS_PYKNOSIS, 0.5);
 			verify(cell, never()).updateTarget(module.RATE_CYTOPLASM_LOSS, 0.5);
 		}
 	}
 	
 	@Test
-	public void stepEarly_anyTransitionUntagged_updatesCell() {
+	public void stepEarly_anyTransitionNoRegions_updatesCell() {
 		for (int i = 0; i < 10; i++) {
 			Cell cell = mock(Cell.class);
 			doReturn(parameters).when(cell).getParameters();
@@ -138,8 +138,8 @@ public class ApoptosisModuleSimpleTest {
 			module.phase = Phase.APOPTOTIC_EARLY;
 			module.stepEarly(i/10.);
 			
-			verify(cell, never()).updateTarget(Tag.DEFAULT, module.RATE_CYTOPLASM_LOSS, 0.5);
-			verify(cell, never()).updateTarget(Tag.NUCLEUS, module.RATE_NUCLEUS_PYKNOSIS, 0.5);
+			verify(cell, never()).updateTarget(Region.DEFAULT, module.RATE_CYTOPLASM_LOSS, 0.5);
+			verify(cell, never()).updateTarget(Region.NUCLEUS, module.RATE_NUCLEUS_PYKNOSIS, 0.5);
 			verify(cell).updateTarget(module.RATE_CYTOPLASM_LOSS, 0.5);
 		}
 	}
@@ -169,11 +169,11 @@ public class ApoptosisModuleSimpleTest {
 	}
 	
 	@Test
-	public void stepLate_anyTransitionTagged_updatesCell() {
+	public void stepLate_anyTransitionRegionged_updatesCell() {
 		for (int i = 0; i < 10; i++) {
 			Cell cell = mock(Cell.class);
 			doReturn(parameters).when(cell).getParameters();
-			doReturn(true).when(cell).hasTags();
+			doReturn(true).when(cell).hasRegions();
 			
 			Location location = mock(Location.class);
 			doReturn(location).when(cell).getLocation();
@@ -184,14 +184,14 @@ public class ApoptosisModuleSimpleTest {
 			module.phase = Phase.APOPTOTIC_LATE;
 			module.stepLate(i/10., sim);
 			
-			verify(cell).updateTarget(Tag.DEFAULT, module.RATE_CYTOPLASM_BLEBBING, 0);
-			verify(cell).updateTarget(Tag.NUCLEUS, module.RATE_NUCLEUS_FRAGMENTATION, 0);
+			verify(cell).updateTarget(Region.DEFAULT, module.RATE_CYTOPLASM_BLEBBING, 0);
+			verify(cell).updateTarget(Region.NUCLEUS, module.RATE_NUCLEUS_FRAGMENTATION, 0);
 			verify(cell, never()).updateTarget(module.RATE_CYTOPLASM_BLEBBING, 0);
 		}
 	}
 	
 	@Test
-	public void stepLate_anyTransitionUntagged_updatesCell() {
+	public void stepLate_anyTransitionNoRegions_updatesCell() {
 		for (int i = 0; i < 10; i++) {
 			Cell cell = mock(Cell.class);
 			doReturn(parameters).when(cell).getParameters();
@@ -205,8 +205,8 @@ public class ApoptosisModuleSimpleTest {
 			module.phase = Phase.APOPTOTIC_LATE;
 			module.stepLate(i/10., sim);
 			
-			verify(cell, never()).updateTarget(Tag.DEFAULT, module.RATE_CYTOPLASM_BLEBBING, 0);
-			verify(cell, never()).updateTarget(Tag.NUCLEUS, module.RATE_NUCLEUS_FRAGMENTATION, 0);
+			verify(cell, never()).updateTarget(Region.DEFAULT, module.RATE_CYTOPLASM_BLEBBING, 0);
+			verify(cell, never()).updateTarget(Region.NUCLEUS, module.RATE_NUCLEUS_FRAGMENTATION, 0);
 			verify(cell).updateTarget(module.RATE_CYTOPLASM_BLEBBING, 0);
 		}
 	}
@@ -289,12 +289,12 @@ public class ApoptosisModuleSimpleTest {
 		doReturn(location).when(cell).getLocation();
 		
 		potts.IDS = new int[][][] { { { } } };
-		potts.TAGS = new int[][][] { { { } } };
+		potts.REGIONS = new int[][][] { { { } } };
 		
 		ApoptosisModule module = new ApoptosisModule.Simple(cell);
 		module.removeCell(sim);
 		
-		verify(location).clear(potts.IDS, potts.TAGS);
+		verify(location).clear(potts.IDS, potts.REGIONS);
 		verify(grid).removeObject(id);
 		verify(cell).stop();
 	}

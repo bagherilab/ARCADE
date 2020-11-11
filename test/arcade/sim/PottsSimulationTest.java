@@ -407,7 +407,7 @@ public class PottsSimulationTest {
 		sim.setupAgents();
 		
 		for (Object obj : sim.agents.getAllObjects()) {
-			verify((Cell)obj).initialize(sim.potts.IDS, sim.potts.TAGS);
+			verify((Cell)obj).initialize(sim.potts.IDS, sim.potts.REGIONS);
 			verify((Cell)obj).schedule(sim.schedule);
 		}
 	}
@@ -438,7 +438,7 @@ public class PottsSimulationTest {
 		sim.setupAgents();
 		
 		for (Object obj : sim.agents.getAllObjects()) {
-			verify((Cell)obj).initialize(sim.potts.IDS, sim.potts.TAGS);
+			verify((Cell)obj).initialize(sim.potts.IDS, sim.potts.REGIONS);
 			verify((Cell)obj).schedule(sim.schedule);
 		}
 	}

@@ -19,7 +19,7 @@ import static arcade.env.loc.Location.VOXEL_COMPARATOR;
 import static arcade.sim.output.OutputDeserializer.*;
 import static arcade.MainTest.*;
 import static arcade.agent.cell.CellFactoryTest.*;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 
 public class OutputDeserializerTest {
 	private static final double EPSILON = 1E-10;
@@ -73,7 +73,7 @@ public class OutputDeserializerTest {
 	}
 	
 	@Test
-	public void deserializer_forCellNoTag_createObject() {
+	public void deserializer_forCellNoRegion_createObject() {
 		CellDeserializer deserializer = new CellDeserializer();
 		
 		int id = randomInt();
@@ -106,13 +106,13 @@ public class OutputDeserializerTest {
 		assertEquals(voxels, object.voxels);
 		assertEquals(targetVolume, object.targetVolume, EPSILON);
 		assertEquals(targetSurface, object.targetSurface, EPSILON);
-		assertNull(object.tagVoxels);
-		assertNull(object.tagTargetVolume);
-		assertNull(object.tagTargetSurface);
+		assertNull(object.regionVoxels);
+		assertNull(object.regionTargetVolume);
+		assertNull(object.regionTargetSurface);
 	}
 	
 	@Test
-	public void deserializer_forCellWithTags_createObject() {
+	public void deserializer_forCellWithRegions_createObject() {
 		CellDeserializer deserializer = new CellDeserializer();
 		
 		int id = randomInt();
@@ -124,14 +124,14 @@ public class OutputDeserializerTest {
 		int targetVolume = randomInt();
 		int targetSurface = randomInt();
 		
-		Tag tag1 = Tag.DEFAULT;
-		Tag tag2 = Tag.NUCLEUS;
-		int tagVoxels1 = randomInt();
-		int tagVoxels2 = randomInt();
-		int targetTagVolume1 = randomInt();
-		int targetTagSurface1 = randomInt();
-		int targetTagVolume2 = randomInt();
-		int targetTagSurface2 = randomInt();
+		Region region1 = Region.DEFAULT;
+		Region region2 = Region.NUCLEUS;
+		int regionVoxels1 = randomInt();
+		int regionVoxels2 = randomInt();
+		int targetRegionVolume1 = randomInt();
+		int targetRegionSurface1 = randomInt();
+		int targetRegionVolume2 = randomInt();
+		int targetRegionSurface2 = randomInt();
 		
 		String string = "{"
 				+ "\"id\": " + id
@@ -141,14 +141,14 @@ public class OutputDeserializerTest {
 				+ ",\"phase\": \"" + phase.name() + "\""
 				+ ",\"voxels\": " + voxels
 				+ ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
-				+ ",\"tags\":["
-				+ "{\"tag\":" + tag1.name()
-				+ ",\"voxels\":" + tagVoxels1 
-				+ ",\"targets\":[" + targetTagVolume1 + "," + targetTagSurface1 + "]"
+				+ ",\"regions\":["
+				+ "{\"region\":" + region1.name()
+				+ ",\"voxels\":" + regionVoxels1 
+				+ ",\"targets\":[" + targetRegionVolume1 + "," + targetRegionSurface1 + "]"
 				+ "},"
-				+ "{\"tag\":" + tag2.name()
-				+ ",\"voxels\":" + tagVoxels2
-				+ ",\"targets\":[" + targetTagVolume2 + "," + targetTagSurface2 + "]"
+				+ "{\"region\":" + region2.name()
+				+ ",\"voxels\":" + regionVoxels2
+				+ ",\"targets\":[" + targetRegionVolume2 + "," + targetRegionSurface2 + "]"
 				+ "}"
 				+ "]"
 				+ "}";
@@ -164,12 +164,12 @@ public class OutputDeserializerTest {
 		assertEquals(voxels, object.voxels);
 		assertEquals(targetVolume, object.targetVolume, EPSILON);
 		assertEquals(targetSurface, object.targetSurface, EPSILON);
-		assertEquals(tagVoxels1, (int)object.tagVoxels.get(tag1));
-		assertEquals(tagVoxels2, (int)object.tagVoxels.get(tag2));
-		assertEquals(targetTagVolume1, object.tagTargetVolume.get(tag1), EPSILON);
-		assertEquals(targetTagSurface1, object.tagTargetSurface.get(tag1), EPSILON);
-		assertEquals(targetTagVolume2, object.tagTargetVolume.get(tag2), EPSILON);
-		assertEquals(targetTagSurface2, object.tagTargetSurface.get(tag2), EPSILON);
+		assertEquals(regionVoxels1, (int)object.regionVoxels.get(region1));
+		assertEquals(regionVoxels2, (int)object.regionVoxels.get(region2));
+		assertEquals(targetRegionVolume1, object.regionTargetVolume.get(region1), EPSILON);
+		assertEquals(targetRegionSurface1, object.regionTargetSurface.get(region1), EPSILON);
+		assertEquals(targetRegionVolume2, object.regionTargetVolume.get(region2), EPSILON);
+		assertEquals(targetRegionSurface2, object.regionTargetSurface.get(region2), EPSILON);
 	}
 	
 	@Test
@@ -214,10 +214,10 @@ public class OutputDeserializerTest {
 	}
 	
 	@Test
-	public void deserializer_forLocationNoTag_createObject() {
+	public void deserializer_forLocationNoRegion_createObject() {
 		LocationDeserializer deserializer = new LocationDeserializer();
 		
-		Tag tag = Tag.UNDEFINED;
+		Region region = Region.UNDEFINED;
 		int id = randomInt();
 		Voxel center = new Voxel(randomInt(), randomInt(), randomInt());
 		
@@ -232,7 +232,7 @@ public class OutputDeserializerTest {
 		String string = "{\"id\": " + id
 				+ ",\"center\":[" + center.x + "," + center.y + "," + center.z + "]"
 				+ ",\"location\":["
-				+ "{\"tag\":" + tag.name() + ",\"voxels\":["
+				+ "{\"region\":" + region.name() + ",\"voxels\":["
 				+ "[" + x1 + "," + y1 + "," + z1 + "],"
 				+ "[" + x2 + "," + y2 + "," + z2 + "]"
 				+ "]}]}";
@@ -246,7 +246,7 @@ public class OutputDeserializerTest {
 		
 		assertEquals(id, object.id);
 		assertEquals(center, object.center);
-		assertNull(object.tags);
+		assertNull(object.regions);
 		
 		ArrayList<Voxel> voxels = object.voxels;
 		voxels.sort(VOXEL_COMPARATOR);
@@ -255,7 +255,7 @@ public class OutputDeserializerTest {
 	}
 	
 	@Test
-	public void deserializer_forLocationWithTag_createObject() {
+	public void deserializer_forLocationWithRegion_createObject() {
 		LocationDeserializer deserializer = new LocationDeserializer();
 		
 		int id = randomInt();
@@ -277,17 +277,17 @@ public class OutputDeserializerTest {
 		int y4 = y3 + randomInt();
 		int z4 = z3 + randomInt();
 		
-		Tag tag1 = Tag.DEFAULT;
-		Tag tag2 = Tag.NUCLEUS;
+		Region region1 = Region.DEFAULT;
+		Region region2 = Region.NUCLEUS;
 		
 		String string = "{\"id\": " + id
 				+ ",\"center\":[" + center.x + "," + center.y + "," + center.z + "]"
 				+ ",\"location\":["
-				+ "{\"tag\":" + tag1.name() + ",\"voxels\":["
+				+ "{\"region\":" + region1.name() + ",\"voxels\":["
 				+ "[" + x1 + "," + y1 + "," + z1 + "],"
 				+ "[" + x2 + "," + y2 + "," + z2 + "]"
 				+ "]},"
-				+ "{\"tag\":" + tag2.name() + ",\"voxels\":["
+				+ "{\"region\":" + region2.name() + ",\"voxels\":["
 				+ "[" + x3 + "," + y3 + "," + z3 + "],"
 				+ "[" + x4 + "," + y4 + "," + z4 + "]"
 				+ "]}]}";
@@ -312,20 +312,20 @@ public class OutputDeserializerTest {
 		assertEquals(id, object.id);
 		assertEquals(center, object.center);
 		
-		assertTrue(object.tags.containsKey(tag1));
-		assertTrue(object.tags.containsKey(tag2));
+		assertTrue(object.regions.containsKey(region1));
+		assertTrue(object.regions.containsKey(region2));
 		
 		ArrayList<Voxel> voxels = object.voxels;
 		voxels.sort(VOXEL_COMPARATOR);
 		expected.sort(VOXEL_COMPARATOR);
 		assertEquals(expected, voxels);
 		
-		ArrayList<Voxel> voxels1 = object.tags.get(tag1);
+		ArrayList<Voxel> voxels1 = object.regions.get(region1);
 		voxels1.sort(VOXEL_COMPARATOR);
 		expected1.sort(VOXEL_COMPARATOR);
 		assertEquals(expected1, voxels1);
 		
-		ArrayList<Voxel> voxels2 = object.tags.get(tag2);
+		ArrayList<Voxel> voxels2 = object.regions.get(region2);
 		voxels2.sort(VOXEL_COMPARATOR);
 		expected2.sort(VOXEL_COMPARATOR);
 		assertEquals(expected2, voxels2);

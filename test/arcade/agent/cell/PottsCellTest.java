@@ -10,7 +10,7 @@ import arcade.sim.PottsSimulation;
 import arcade.env.loc.*;
 import arcade.agent.module.*;
 import arcade.util.MiniBox;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 import static arcade.agent.cell.Cell.State;
 import static arcade.agent.cell.CellFactoryTest.*;
 import static arcade.sim.Potts.Term;
@@ -25,20 +25,20 @@ public class PottsCellTest {
 	static EnumMap<Term, Double> _criticals;
 	static EnumMap<Term, Double> _lambdas;
 	static double[] _adhesion;
-	static EnumMap<Tag, EnumMap<Term, Double>> _criticalsTag;
-	static EnumMap<Tag, EnumMap<Term, Double>> _lambdasTag;
-	static EnumMap<Tag, EnumMap<Tag, Double>> _adhesionTag;
+	static EnumMap<Region, EnumMap<Term, Double>> _criticalsRegion;
+	static EnumMap<Region, EnumMap<Term, Double>> _lambdasRegion;
+	static EnumMap<Region, EnumMap<Region, Double>> _adhesionRegion;
 	static Location _location;
 	static int locationVolume;
 	static int locationSurface;
-	static EnumMap<Tag, Integer> locationTagVolumes;
-	static EnumMap<Tag, Integer> locationTagSurfaces;
+	static EnumMap<Region, Integer> locationRegionVolumes;
+	static EnumMap<Region, Integer> locationRegionSurfaces;
 	static int cellID = (int)(Math.random()*10) + 1;
 	static int cellPop = (int)(Math.random()*10) + 1;
 	static PottsCellMock cellDefault;
-	static PottsCellMock cellWithTags;
-	static PottsCellMock cellWithoutTags;
-	static EnumSet<Tag> tagList;
+	static PottsCellMock cellWithRegions;
+	static PottsCellMock cellWithoutRegions;
+	static EnumSet<Region> regionList;
 	static MiniBox _parameters;
 	
 	@BeforeClass
@@ -56,22 +56,22 @@ public class PottsCellTest {
 		adhesionTo2 = Math.random();
 		
 		_location = mock(Location.class);
-		tagList = EnumSet.of(Tag.DEFAULT, Tag.NUCLEUS);
-		when(_location.getTags()).thenReturn(tagList);
+		regionList = EnumSet.of(Region.DEFAULT, Region.NUCLEUS);
+		when(_location.getRegions()).thenReturn(regionList);
 		
-		locationTagVolumes = new EnumMap<>(Tag.class);
-		locationTagSurfaces = new EnumMap<>(Tag.class);
+		locationRegionVolumes = new EnumMap<>(Region.class);
+		locationRegionSurfaces = new EnumMap<>(Region.class);
 		
-		// Random volumes and surfaces for tagged regions.
-		for (Tag tag : tagList) {
-			locationTagVolumes.put(tag, (int)(Math.random() * 100));
-			locationTagSurfaces.put(tag, (int)(Math.random() * 100));
+		// Random volumes and surfaces for regions.
+		for (Region region : regionList) {
+			locationRegionVolumes.put(region, (int)(Math.random() * 100));
+			locationRegionSurfaces.put(region, (int)(Math.random() * 100));
 			
-			when(_location.getVolume(tag)).thenReturn(locationTagVolumes.get(tag));
-			when(_location.getSurface(tag)).thenReturn(locationTagSurfaces.get(tag));
+			when(_location.getVolume(region)).thenReturn(locationRegionVolumes.get(region));
+			when(_location.getSurface(region)).thenReturn(locationRegionSurfaces.get(region));
 			
-			locationVolume += locationTagVolumes.get(tag);
-			locationSurface += locationTagSurfaces.get(tag);
+			locationVolume += locationRegionVolumes.get(region);
+			locationSurface += locationRegionSurfaces.get(region);
 		}
 		
 		when(_location.getVolume()).thenReturn(locationVolume);
@@ -81,43 +81,43 @@ public class PottsCellTest {
 		_criticals.put(Term.VOLUME, (double)locationVolume);
 		_criticals.put(Term.SURFACE, (double)locationSurface);
 		
-		// Tagged region criticals.
-		_criticalsTag = new EnumMap<>(Tag.class);
-		for (Tag tag : tagList) {
-			EnumMap<Term, Double> criticalsTagTerms = new EnumMap<>(Term.class);
-			criticalsTagTerms.put(Term.VOLUME, (double)locationTagVolumes.get(tag));
-			criticalsTagTerms.put(Term.SURFACE, (double)locationTagSurfaces.get(tag));
-			_criticalsTag.put(tag, criticalsTagTerms);
+		// Regionged region criticals.
+		_criticalsRegion = new EnumMap<>(Region.class);
+		for (Region region : regionList) {
+			EnumMap<Term, Double> criticalsRegionTerms = new EnumMap<>(Term.class);
+			criticalsRegionTerms.put(Term.VOLUME, (double)locationRegionVolumes.get(region));
+			criticalsRegionTerms.put(Term.SURFACE, (double)locationRegionSurfaces.get(region));
+			_criticalsRegion.put(region, criticalsRegionTerms);
 		}
 		
 		_lambdas = new EnumMap<>(Term.class);
 		_lambdas.put(Term.VOLUME, lambdaVolume);
 		_lambdas.put(Term.SURFACE, lambdaSurface);
 		
-		// Random lambda values for tagged regions.
-		_lambdasTag = new EnumMap<>(Tag.class);
-		for (Tag tag : tagList) {
-			EnumMap<Term, Double> lambdasTagTerms = new EnumMap<>(Term.class);
-			lambdasTagTerms.put(Term.VOLUME, Math.random() * 100);
-			lambdasTagTerms.put(Term.SURFACE, Math.random() * 100);
-			_lambdasTag.put(tag, lambdasTagTerms);
+		// Random lambda values for regions.
+		_lambdasRegion = new EnumMap<>(Region.class);
+		for (Region region : regionList) {
+			EnumMap<Term, Double> lambdasRegionTerms = new EnumMap<>(Term.class);
+			lambdasRegionTerms.put(Term.VOLUME, Math.random() * 100);
+			lambdasRegionTerms.put(Term.SURFACE, Math.random() * 100);
+			_lambdasRegion.put(region, lambdasRegionTerms);
 		}
 		
 		_adhesion = new double[] { adhesionTo0, adhesionTo1, adhesionTo2 };
 		
-		// Random adhesion values for tagged regions.
-		_adhesionTag = new EnumMap<>(Tag.class);
-		for (Tag tag : tagList) {
-			EnumMap<Tag, Double> adhesionTagTarget = new EnumMap<>(Tag.class);
-			for (Tag target : tagList) {
-				adhesionTagTarget.put(target, Math.random() * 100);
+		// Random adhesion values for regions.
+		_adhesionRegion = new EnumMap<>(Region.class);
+		for (Region region : regionList) {
+			EnumMap<Region, Double> adhesionRegionTarget = new EnumMap<>(Region.class);
+			for (Region target : regionList) {
+				adhesionRegionTarget.put(target, Math.random() * 100);
 			}
-			_adhesionTag.put(tag, adhesionTagTarget);
+			_adhesionRegion.put(region, adhesionRegionTarget);
 		}
 		
 		cellDefault = PottsCellMock._make(cellID, cellPop, false);
-		cellWithTags = PottsCellMock._make(cellID, 1, true);
-		cellWithoutTags = PottsCellMock._make(cellID, 1, false);
+		cellWithRegions = PottsCellMock._make(cellID, 1, true);
+		cellWithoutRegions = PottsCellMock._make(cellID, 1, false);
 	}
 	
 	public static class PottsCellMock extends PottsCell {
@@ -128,28 +128,28 @@ public class PottsCellTest {
 		
 		public PottsCellMock(int id, int pop, Location location, MiniBox parameters,
 						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
-						   EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
-						   EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag) {
-			super(id, pop, location, parameters, criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
+						   EnumMap<Region, EnumMap<Term, Double>> criticalsRegion, EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
+						   EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
+			super(id, pop, location, parameters, criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
 		}
 		
-		public PottsCellMock(int id, int pop, State state, int age, Location location, boolean tags, MiniBox parameters,
+		public PottsCellMock(int id, int pop, State state, int age, Location location, boolean regions, MiniBox parameters,
 						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
-						   EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
-						   EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag) {
-			super(id, pop, state, age, location, tags, parameters, criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
+						   EnumMap<Region, EnumMap<Term, Double>> criticalsRegion, EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
+						   EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
+			super(id, pop, state, age, location, regions, parameters, criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
 		}
 		
-		static PottsCellMock _make(int id, int pop, boolean tags) { return _make(id, pop, _location, tags); }
+		static PottsCellMock _make(int id, int pop, boolean regions) { return _make(id, pop, _location, regions); }
 		
-		static PottsCellMock _make(int id, int pop, Location location, boolean tags) {
-			if (!tags) { return new PottsCellMock(id, pop, location, _parameters, _criticals, _lambdas, _adhesion); }
-			else { return new PottsCellMock(id, pop, location, _parameters, _criticals, _lambdas, _adhesion, _criticalsTag, _lambdasTag, _adhesionTag); }
+		static PottsCellMock _make(int id, int pop, Location location, boolean regions) {
+			if (!regions) { return new PottsCellMock(id, pop, location, _parameters, _criticals, _lambdas, _adhesion); }
+			else { return new PottsCellMock(id, pop, location, _parameters, _criticals, _lambdas, _adhesion, _criticalsRegion, _lambdasRegion, _adhesionRegion); }
 		}
 		
 		public PottsCell make(int id, State state, Location location) {
-			return new PottsCellMock(id, pop, state, 0, location, hasTags, parameters,
-					criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
+			return new PottsCellMock(id, pop, state, 0, location, hasRegions, parameters,
+					criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
 		}
 		
 		double convert(double volume) { return volume * VOLUME_SURFACE_RATIO; }
@@ -199,13 +199,13 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void hasTags_withoutTags_returnsFalse() {
-		assertFalse(cellWithoutTags.hasTags());
+	public void hasRegions_withoutRegions_returnsFalse() {
+		assertFalse(cellWithoutRegions.hasRegions());
 	}
 	
 	@Test
-	public void hasTags_withTags_returnsTrue() {
-		assertTrue(cellWithTags.hasTags());
+	public void hasRegions_withRegions_returnsTrue() {
+		assertTrue(cellWithRegions.hasRegions());
 	}
 	
 	@Test
@@ -229,21 +229,21 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getVolume_validTags_returnsValue() {
-		for (Tag tag : tagList) {
-			assertEquals((int)locationTagVolumes.get(tag), cellWithTags.getVolume(tag));
+	public void getVolume_validRegions_returnsValue() {
+		for (Region region : regionList) {
+			assertEquals((int)locationRegionVolumes.get(region), cellWithRegions.getVolume(region));
 		}
 	}
 	
 	@Test
-	public void getVolume_nullTag_returnsZero() {
-		assertEquals(0, cellWithTags.getVolume(null));
+	public void getVolume_nullRegion_returnsZero() {
+		assertEquals(0, cellWithRegions.getVolume(null));
 	}
 	
 	@Test
-	public void getVolume_noTags_returnsZero() {
-		for (Tag tag : tagList) {
-			assertEquals(0, cellWithoutTags.getVolume(tag));
+	public void getVolume_noRegions_returnsZero() {
+		for (Region region : regionList) {
+			assertEquals(0, cellWithoutRegions.getVolume(region));
 		}
 	}
 	
@@ -253,21 +253,21 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getSurface_validTags_returnsValue() {
-		for (Tag tag : tagList) {
-			assertEquals((int)locationTagSurfaces.get(tag), cellWithTags.getSurface(tag));
+	public void getSurface_validRegions_returnsValue() {
+		for (Region region : regionList) {
+			assertEquals((int)locationRegionSurfaces.get(region), cellWithRegions.getSurface(region));
 		}
 	}
 	
 	@Test
-	public void getSurface_nullTag_returnsZero() {
-		assertEquals(0, cellWithTags.getSurface(null));
+	public void getSurface_nullRegion_returnsZero() {
+		assertEquals(0, cellWithRegions.getSurface(null));
 	}
 	
 	@Test
-	public void getSurface_noTags_returnsZero() {
-		for (Tag tag : tagList) {
-			assertEquals(0, cellWithoutTags.getSurface(tag));
+	public void getSurface_noRegions_returnsZero() {
+		for (Region region : regionList) {
+			assertEquals(0, cellWithoutRegions.getSurface(region));
 		}
 	}
 	
@@ -277,21 +277,21 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getTargetVolume_beforeInitializeValidTag_returnsZero() {
-		for (Tag tag : tagList) {
-			assertEquals(0, cellWithTags.getTargetVolume(tag), EPSILON);
+	public void getTargetVolume_beforeInitializeValidRegion_returnsZero() {
+		for (Region region : regionList) {
+			assertEquals(0, cellWithRegions.getTargetVolume(region), EPSILON);
 		}
 	}
 	
 	@Test
-	public void getTargetVolume_beforeInitializeInvalidTag_returnsZero() {
-		assertEquals(0, cellWithTags.getTargetVolume(null), EPSILON);
+	public void getTargetVolume_beforeInitializeInvalidRegion_returnsZero() {
+		assertEquals(0, cellWithRegions.getTargetVolume(null), EPSILON);
 	}
 	
 	@Test
-	public void getTargetVolume_beforeInitializeNoTags_returnsZero() {
-		for (Tag tag : tagList) {
-			assertEquals(0, cellWithoutTags.getTargetVolume(tag), EPSILON);
+	public void getTargetVolume_beforeInitializeNoRegions_returnsZero() {
+		for (Region region : regionList) {
+			assertEquals(0, cellWithoutRegions.getTargetVolume(region), EPSILON);
 		}
 	}
 	
@@ -303,28 +303,28 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getTargetVolume_afterInitializeValidTag_returnsValue() {
+	public void getTargetVolume_afterInitializeValidRegion_returnsValue() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
 		cell.initialize(null, null);
-		for (Tag tag : tagList) {
-			assertEquals(locationTagVolumes.get(tag), cell.getTargetVolume(tag), EPSILON);
+		for (Region region : regionList) {
+			assertEquals(locationRegionVolumes.get(region), cell.getTargetVolume(region), EPSILON);
 		}
 	}
 	
 	@Test
-	public void getTargetVolume_afterInitializeInvalidTag_returnsZero() {
+	public void getTargetVolume_afterInitializeInvalidRegion_returnsZero() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
 		cell.initialize(null, null);
 		assertEquals(0, cell.getTargetVolume(null), EPSILON);
-		assertEquals(0, cell.getTargetVolume(Tag.UNDEFINED), EPSILON);
+		assertEquals(0, cell.getTargetVolume(Region.UNDEFINED), EPSILON);
 	}
 	
 	@Test
-	public void getTargetVolume_afterInitializeNoTag_returnsZero() {
+	public void getTargetVolume_afterInitializeNoRegion_returnsZero() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, false);
 		cell.initialize(null, null);
-		for (Tag tag : tagList) {
-			assertEquals(0, cell.getTargetVolume(tag), EPSILON);
+		for (Region region : regionList) {
+			assertEquals(0, cell.getTargetVolume(region), EPSILON);
 		}
 	}
 	
@@ -334,21 +334,21 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getTargetSurface_beforeInitializeValidTag_returnsZero() {
-		for (Tag tag : tagList) {
-			assertEquals(0, cellWithTags.getTargetSurface(tag), EPSILON);
+	public void getTargetSurface_beforeInitializeValidRegion_returnsZero() {
+		for (Region region : regionList) {
+			assertEquals(0, cellWithRegions.getTargetSurface(region), EPSILON);
 		}
 	}
 	
 	@Test
-	public void getTargetSurface_beforeInitializeInvalidTag_returnsZero() {
-		assertEquals(0, cellWithTags.getTargetSurface(null), EPSILON);
+	public void getTargetSurface_beforeInitializeInvalidRegion_returnsZero() {
+		assertEquals(0, cellWithRegions.getTargetSurface(null), EPSILON);
 	}
 	
 	@Test
-	public void getTargetSurface_beforeInitializeNoTags_returnsZero() {
-		for (Tag tag : tagList) {
-			assertEquals(0, cellWithoutTags.getTargetSurface(tag), EPSILON);
+	public void getTargetSurface_beforeInitializeNoRegions_returnsZero() {
+		for (Region region : regionList) {
+			assertEquals(0, cellWithoutRegions.getTargetSurface(region), EPSILON);
 		}
 	}
 	
@@ -360,28 +360,28 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getTargetSurface_afterInitializeValidTag_returnsValue() {
+	public void getTargetSurface_afterInitializeValidRegion_returnsValue() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
 		cell.initialize(null, null);
-		for (Tag tag : tagList) {
-			assertEquals(locationTagSurfaces.get(tag), cell.getTargetSurface(tag), EPSILON);
+		for (Region region : regionList) {
+			assertEquals(locationRegionSurfaces.get(region), cell.getTargetSurface(region), EPSILON);
 		}
 	}
 	
 	@Test
-	public void getTargetSurface_afterInitializeInvalidTag_returnsZero() {
+	public void getTargetSurface_afterInitializeInvalidRegion_returnsZero() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
 		cell.initialize(null, null);
 		assertEquals(0, cell.getTargetSurface(null), EPSILON);
-		assertEquals(0, cell.getTargetSurface(Tag.UNDEFINED), EPSILON);
+		assertEquals(0, cell.getTargetSurface(Region.UNDEFINED), EPSILON);
 	}
 	
 	@Test
-	public void getTargetSurface_afterInitializeNoTag_returnsZero() {
+	public void getTargetSurface_afterInitializeNoRegion_returnsZero() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, false);
 		cell.initialize(null, null);
-		for (Tag tag : tagList) {
-			assertEquals(0, cell.getTargetSurface(tag), EPSILON);
+		for (Region region : regionList) {
+			assertEquals(0, cell.getTargetSurface(region), EPSILON);
 		}
 	}
 	
@@ -391,22 +391,22 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getCriticalVolume_beforeInitializeValidTag_returnsValue() {
-		for (Tag tag : tagList) {
-			assertEquals(locationTagVolumes.get(tag), cellWithTags.getCriticalVolume(tag), EPSILON);
+	public void getCriticalVolume_beforeInitializeValidRegion_returnsValue() {
+		for (Region region : regionList) {
+			assertEquals(locationRegionVolumes.get(region), cellWithRegions.getCriticalVolume(region), EPSILON);
 		}
 	}
 	
 	@Test
-	public void getCriticalVolume_beforeInitializeInvalidTag_returnsZero() {
-		assertEquals(0, cellWithTags.getCriticalVolume(null), EPSILON);
-		assertEquals(0, cellWithTags.getCriticalVolume(Tag.UNDEFINED), EPSILON);
+	public void getCriticalVolume_beforeInitializeInvalidRegion_returnsZero() {
+		assertEquals(0, cellWithRegions.getCriticalVolume(null), EPSILON);
+		assertEquals(0, cellWithRegions.getCriticalVolume(Region.UNDEFINED), EPSILON);
 	}
 	
 	@Test
-	public void getCriticalVolume_beforeInitializeNoTags_returnsZero() {
-		for (Tag tag : tagList) {
-			assertEquals(0, cellWithoutTags.getCriticalVolume(tag), EPSILON);
+	public void getCriticalVolume_beforeInitializeNoRegions_returnsZero() {
+		for (Region region : regionList) {
+			assertEquals(0, cellWithoutRegions.getCriticalVolume(region), EPSILON);
 		}
 	}
 	
@@ -418,27 +418,27 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getCriticalVolume_afterInitializeValidTag_returnsValue() {
+	public void getCriticalVolume_afterInitializeValidRegion_returnsValue() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
 		cell.initialize(null, null);
-		for (Tag tag : tagList) {
-			assertEquals(locationTagVolumes.get(tag), cell.getCriticalVolume(tag), EPSILON);
+		for (Region region : regionList) {
+			assertEquals(locationRegionVolumes.get(region), cell.getCriticalVolume(region), EPSILON);
 		}
 	}
 	
 	@Test
-	public void getCriticalVolume_afterInitializeInvalidTag_returnsZero() {
+	public void getCriticalVolume_afterInitializeInvalidRegion_returnsZero() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
 		cell.initialize(null, null);
 		assertEquals(0, cell.getCriticalVolume(null), EPSILON);
 	}
 	
 	@Test
-	public void getCriticalVolume_afterInitializeNoTag_returnsZero() {
+	public void getCriticalVolume_afterInitializeNoRegion_returnsZero() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, false);
 		cell.initialize(null, null);
-		for (Tag tag : tagList) {
-			assertEquals(0, cell.getCriticalVolume(tag), EPSILON);
+		for (Region region : regionList) {
+			assertEquals(0, cell.getCriticalVolume(region), EPSILON);
 		}
 	}
 	
@@ -448,22 +448,22 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getCriticalSurface_beforeInitializeValidTag_returnsZero() {
-		for (Tag tag : tagList) {
-			assertEquals(locationTagSurfaces.get(tag), cellWithTags.getCriticalSurface(tag), EPSILON);
+	public void getCriticalSurface_beforeInitializeValidRegion_returnsZero() {
+		for (Region region : regionList) {
+			assertEquals(locationRegionSurfaces.get(region), cellWithRegions.getCriticalSurface(region), EPSILON);
 		}
 	}
 	
 	@Test
-	public void getCriticalSurface_beforeInitializeInvalidTag_returnsZero() {
-		assertEquals(0, cellWithTags.getCriticalSurface(null), EPSILON);
-		assertEquals(0, cellWithTags.getCriticalSurface(Tag.UNDEFINED), EPSILON);
+	public void getCriticalSurface_beforeInitializeInvalidRegion_returnsZero() {
+		assertEquals(0, cellWithRegions.getCriticalSurface(null), EPSILON);
+		assertEquals(0, cellWithRegions.getCriticalSurface(Region.UNDEFINED), EPSILON);
 	}
 	
 	@Test
-	public void getCriticalSurface_beforeInitializeNoTags_returnsZero() {
-		for (Tag tag : tagList) {
-			assertEquals(0, cellWithoutTags.getCriticalSurface(tag), EPSILON);
+	public void getCriticalSurface_beforeInitializeNoRegions_returnsZero() {
+		for (Region region : regionList) {
+			assertEquals(0, cellWithoutRegions.getCriticalSurface(region), EPSILON);
 		}
 	}
 	
@@ -475,27 +475,27 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getCriticalSurface_afterInitializeValidTag_returnsValue() {
+	public void getCriticalSurface_afterInitializeValidRegion_returnsValue() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
 		cell.initialize(null, null);
-		for (Tag tag : tagList) {
-			assertEquals(locationTagSurfaces.get(tag), cell.getCriticalSurface(tag), EPSILON);
+		for (Region region : regionList) {
+			assertEquals(locationRegionSurfaces.get(region), cell.getCriticalSurface(region), EPSILON);
 		}
 	}
 	
 	@Test
-	public void getCriticalSurface_afterInitializeInvalidTag_returnsZero() {
+	public void getCriticalSurface_afterInitializeInvalidRegion_returnsZero() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
 		cell.initialize(null, null);
 		assertEquals(0, cell.getCriticalSurface(null), EPSILON);
 	}
 	
 	@Test
-	public void getCriticalSurface_afterInitializeNoTag_returnsZero() {
+	public void getCriticalSurface_afterInitializeNoRegion_returnsZero() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, false);
 		cell.initialize(null, null);
-		for (Tag tag : tagList) {
-			assertEquals(0, cell.getCriticalSurface(tag), EPSILON);
+		for (Region region : regionList) {
+			assertEquals(0, cell.getCriticalSurface(region), EPSILON);
 		}
 	}
 	
@@ -506,26 +506,26 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getLambda_givenTermValidTags_returnsValue() {
-		for (Tag tag : tagList) {
-			assertEquals(_lambdasTag.get(tag).get(Term.VOLUME), cellWithTags.getLambda(Term.VOLUME, tag), EPSILON);
-			assertEquals(_lambdasTag.get(tag).get(Term.SURFACE), cellWithTags.getLambda(Term.SURFACE, tag), EPSILON);
+	public void getLambda_givenTermValidRegions_returnsValue() {
+		for (Region region : regionList) {
+			assertEquals(_lambdasRegion.get(region).get(Term.VOLUME), cellWithRegions.getLambda(Term.VOLUME, region), EPSILON);
+			assertEquals(_lambdasRegion.get(region).get(Term.SURFACE), cellWithRegions.getLambda(Term.SURFACE, region), EPSILON);
 		}
 	}
 	
 	@Test
-	public void getLambda_givenTermInvalidTags_returnsNaN() {
-		assertEquals(Double.NaN, cellWithTags.getLambda(Term.VOLUME, null), EPSILON);
-		assertEquals(Double.NaN, cellWithTags.getLambda(Term.SURFACE, null), EPSILON);
-		assertEquals(Double.NaN, cellWithTags.getLambda(Term.VOLUME, Tag.UNDEFINED), EPSILON);
-		assertEquals(Double.NaN, cellWithTags.getLambda(Term.SURFACE, Tag.UNDEFINED), EPSILON);
+	public void getLambda_givenTermInvalidRegions_returnsNaN() {
+		assertEquals(Double.NaN, cellWithRegions.getLambda(Term.VOLUME, null), EPSILON);
+		assertEquals(Double.NaN, cellWithRegions.getLambda(Term.SURFACE, null), EPSILON);
+		assertEquals(Double.NaN, cellWithRegions.getLambda(Term.VOLUME, Region.UNDEFINED), EPSILON);
+		assertEquals(Double.NaN, cellWithRegions.getLambda(Term.SURFACE, Region.UNDEFINED), EPSILON);
 	}
 	
 	@Test
-	public void getLambda_givenTermNoTags_returnsNaN() {
-		for (Tag tag : tagList) {
-			assertEquals(Double.NaN, cellWithoutTags.getLambda(Term.VOLUME, tag), EPSILON);
-			assertEquals(Double.NaN, cellWithoutTags.getLambda(Term.SURFACE, tag), EPSILON);
+	public void getLambda_givenTermNoRegions_returnsNaN() {
+		for (Region region : regionList) {
+			assertEquals(Double.NaN, cellWithoutRegions.getLambda(Term.VOLUME, region), EPSILON);
+			assertEquals(Double.NaN, cellWithoutRegions.getLambda(Term.SURFACE, region), EPSILON);
 		}
 	}
 	
@@ -537,37 +537,37 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void getAdhesion_validTags_returnsValue() {
-		for (Tag tag : tagList) {
-			for (Tag target : tagList) {
-				assertEquals(_adhesionTag.get(tag).get(target), cellWithTags.getAdhesion(tag, target), EPSILON);
+	public void getAdhesion_validRegions_returnsValue() {
+		for (Region region : regionList) {
+			for (Region target : regionList) {
+				assertEquals(_adhesionRegion.get(region).get(target), cellWithRegions.getAdhesion(region, target), EPSILON);
 			}
 		}
 	}
 	
 	@Test
-	public void getAdhesion_nullTags_returnsNaN() {
-		assertEquals(Double.NaN, cellWithTags.getAdhesion(null, null), EPSILON);
-		for (Tag tag : tagList) {
-			assertEquals(Double.NaN, cellWithTags.getAdhesion(tag, null), EPSILON);
-			assertEquals(Double.NaN, cellWithTags.getAdhesion(null, tag), EPSILON);
+	public void getAdhesion_nullRegions_returnsNaN() {
+		assertEquals(Double.NaN, cellWithRegions.getAdhesion(null, null), EPSILON);
+		for (Region region : regionList) {
+			assertEquals(Double.NaN, cellWithRegions.getAdhesion(region, null), EPSILON);
+			assertEquals(Double.NaN, cellWithRegions.getAdhesion(null, region), EPSILON);
 		}
 	}
 	
 	@Test
-	public void getAdhesion_invalidTags_returnsNaN() {
-		assertEquals(Double.NaN, cellWithTags.getAdhesion(Tag.UNDEFINED, Tag.UNDEFINED), EPSILON);
-		for (Tag tag : tagList) {
-			assertEquals(Double.NaN, cellWithTags.getAdhesion(tag, Tag.UNDEFINED), EPSILON);
-			assertEquals(Double.NaN, cellWithTags.getAdhesion(Tag.UNDEFINED, tag), EPSILON);
+	public void getAdhesion_invalidRegions_returnsNaN() {
+		assertEquals(Double.NaN, cellWithRegions.getAdhesion(Region.UNDEFINED, Region.UNDEFINED), EPSILON);
+		for (Region region : regionList) {
+			assertEquals(Double.NaN, cellWithRegions.getAdhesion(region, Region.UNDEFINED), EPSILON);
+			assertEquals(Double.NaN, cellWithRegions.getAdhesion(Region.UNDEFINED, region), EPSILON);
 		}
 	}
 	
 	@Test
-	public void getAdhesion_noTags_returnsNaN() {
-		for (Tag tag : tagList) {
-			for (Tag target : tagList) {
-				assertEquals(Double.NaN, cellWithoutTags.getAdhesion(tag, target), EPSILON);
+	public void getAdhesion_noRegions_returnsNaN() {
+		for (Region region : regionList) {
+			for (Region target : regionList) {
+				assertEquals(Double.NaN, cellWithoutRegions.getAdhesion(region, target), EPSILON);
 			}
 		}
 	}
@@ -645,7 +645,7 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void initialize_withoutTags_callsMethod() {
+	public void initialize_withoutRegions_callsMethod() {
 		Location location = spy(mock(Location.class));
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, location, false);
 		int[][][] array = new int[1][3][3];
@@ -655,9 +655,9 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void initialize_withTags_callsMethod() {
+	public void initialize_withRegions_callsMethod() {
 		Location location = spy(mock(Location.class));
-		when(location.getTags()).thenReturn(tagList);
+		when(location.getRegions()).thenReturn(regionList);
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, location, true);
 		int[][][] array1 = new int[1][3][3];
 		int[][][] array2 = new int[1][3][3];
@@ -667,7 +667,7 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void initialize_withoutTags_updatesTargets() {
+	public void initialize_withoutRegions_updatesTargets() {
 		int volume = (int)(Math.random()*100);
 		int surface = (int)(Math.random()*100);
 		Location location = mock(Location.class);
@@ -679,12 +679,12 @@ public class PottsCellTest {
 		
 		assertEquals(volume, cell.getTargetVolume(), EPSILON);
 		assertEquals(surface, cell.getTargetSurface(), EPSILON);
-		assertEquals(0, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
-		assertEquals(0, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		assertEquals(0, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+		assertEquals(0, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 	}
 	
 	@Test
-	public void initialize_withTags_updatesTargets() {
+	public void initialize_withRegions_updatesTargets() {
 		int volume1 = (int)(Math.random()*100);
 		int volume2 = (int)(Math.random()*100);
 		int surface1 = (int)(Math.random()*100);
@@ -692,27 +692,27 @@ public class PottsCellTest {
 		Location location = mock(Location.class);
 		when(location.getVolume()).thenReturn(volume1 + volume2);
 		when(location.getSurface()).thenReturn(surface1 + surface2);
-		when(location.getVolume(Tag.DEFAULT)).thenReturn(volume1);
-		when(location.getSurface(Tag.DEFAULT)).thenReturn(surface1);
-		when(location.getVolume(Tag.NUCLEUS)).thenReturn(volume2);
-		when(location.getSurface(Tag.NUCLEUS)).thenReturn(surface2);
-		when(location.getTags()).thenReturn(tagList);
+		when(location.getVolume(Region.DEFAULT)).thenReturn(volume1);
+		when(location.getSurface(Region.DEFAULT)).thenReturn(surface1);
+		when(location.getVolume(Region.NUCLEUS)).thenReturn(volume2);
+		when(location.getSurface(Region.NUCLEUS)).thenReturn(surface2);
+		when(location.getRegions()).thenReturn(regionList);
 		
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, location, true);
 		cell.initialize(new int[1][3][3], new int[1][3][3]);
 		
 		assertEquals(volume1 + volume2, cell.getTargetVolume(), EPSILON);
 		assertEquals(surface1 + surface2, cell.getTargetSurface(), EPSILON);
-		assertEquals(volume1, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
-		assertEquals(surface1, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
-		assertEquals(volume2, cell.getTargetVolume(Tag.NUCLEUS), EPSILON);
-		assertEquals(surface2, cell.getTargetSurface(Tag.NUCLEUS), EPSILON);
-		assertEquals(0, cell.getTargetVolume(Tag.UNDEFINED), EPSILON);
-		assertEquals(0, cell.getTargetSurface(Tag.UNDEFINED), EPSILON);
+		assertEquals(volume1, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+		assertEquals(surface1, cell.getTargetSurface(Region.DEFAULT), EPSILON);
+		assertEquals(volume2, cell.getTargetVolume(Region.NUCLEUS), EPSILON);
+		assertEquals(surface2, cell.getTargetSurface(Region.NUCLEUS), EPSILON);
+		assertEquals(0, cell.getTargetVolume(Region.UNDEFINED), EPSILON);
+		assertEquals(0, cell.getTargetSurface(Region.UNDEFINED), EPSILON);
 	}
 	
 	@Test
-	public void initialize_targetsSetWithoutTags_doesNothing() {
+	public void initialize_targetsSetWithoutRegions_doesNothing() {
 		int volume = (int)(Math.random()*100);
 		int surface = (int)(Math.random()*100);
 		Location location = mock(Location.class);
@@ -728,12 +728,12 @@ public class PottsCellTest {
 		
 		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
 		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
-		assertEquals(0, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
-		assertEquals(0, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		assertEquals(0, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+		assertEquals(0, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 	}
 	
 	@Test
-	public void initialize_targetsSetWithTags_updatesTargets() {
+	public void initialize_targetsSetWithRegions_updatesTargets() {
 		int volume1 = (int)(Math.random()*100);
 		int volume2 = (int)(Math.random()*100);
 		int surface1 = (int)(Math.random()*100);
@@ -741,33 +741,33 @@ public class PottsCellTest {
 		Location location = mock(Location.class);
 		when(location.getVolume()).thenReturn(volume1 + volume2);
 		when(location.getSurface()).thenReturn(surface1 + surface2);
-		when(location.getVolume(Tag.DEFAULT)).thenReturn(volume1);
-		when(location.getSurface(Tag.DEFAULT)).thenReturn(surface1);
-		when(location.getVolume(Tag.NUCLEUS)).thenReturn(volume2);
-		when(location.getSurface(Tag.NUCLEUS)).thenReturn(surface2);
-		when(location.getTags()).thenReturn(tagList);
+		when(location.getVolume(Region.DEFAULT)).thenReturn(volume1);
+		when(location.getSurface(Region.DEFAULT)).thenReturn(surface1);
+		when(location.getVolume(Region.NUCLEUS)).thenReturn(volume2);
+		when(location.getSurface(Region.NUCLEUS)).thenReturn(surface2);
+		when(location.getRegions()).thenReturn(regionList);
 		
 		int targetVolume = (int)(Math.random()*100) + 1;
 		int targetSurface = (int)(Math.random()*100) + 1;
-		int targetTagVolume1 = (int)(Math.random()*100) + 1;
-		int targetTagSurface1 = (int)(Math.random()*100) + 1;
-		int targetTagVolume2 = (int)(Math.random()*100) + 1;
-		int targetTagSurface2 = (int)(Math.random()*100) + 1;
+		int targetRegionVolume1 = (int)(Math.random()*100) + 1;
+		int targetRegionSurface1 = (int)(Math.random()*100) + 1;
+		int targetRegionVolume2 = (int)(Math.random()*100) + 1;
+		int targetRegionSurface2 = (int)(Math.random()*100) + 1;
 		
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, location, true);
 		cell.setTargets(targetVolume, targetSurface);
-		cell.setTargets(Tag.DEFAULT, targetTagVolume1, targetTagSurface1);
-		cell.setTargets(Tag.NUCLEUS, targetTagVolume2, targetTagSurface2);
+		cell.setTargets(Region.DEFAULT, targetRegionVolume1, targetRegionSurface1);
+		cell.setTargets(Region.NUCLEUS, targetRegionVolume2, targetRegionSurface2);
 		cell.initialize(new int[1][3][3], new int[1][3][3]);
 		
 		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
 		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
-		assertEquals(targetTagVolume1, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
-		assertEquals(targetTagSurface1, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
-		assertEquals(targetTagVolume2, cell.getTargetVolume(Tag.NUCLEUS), EPSILON);
-		assertEquals(targetTagSurface2, cell.getTargetSurface(Tag.NUCLEUS), EPSILON);
-		assertEquals(0, cell.getTargetVolume(Tag.UNDEFINED), EPSILON);
-		assertEquals(0, cell.getTargetSurface(Tag.UNDEFINED), EPSILON);
+		assertEquals(targetRegionVolume1, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+		assertEquals(targetRegionSurface1, cell.getTargetSurface(Region.DEFAULT), EPSILON);
+		assertEquals(targetRegionVolume2, cell.getTargetVolume(Region.NUCLEUS), EPSILON);
+		assertEquals(targetRegionSurface2, cell.getTargetSurface(Region.NUCLEUS), EPSILON);
+		assertEquals(0, cell.getTargetVolume(Region.UNDEFINED), EPSILON);
+		assertEquals(0, cell.getTargetSurface(Region.UNDEFINED), EPSILON);
 	}
 	
 	@Test
@@ -794,7 +794,7 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void reset_withoutTags_callsMethod() {
+	public void reset_withoutRegions_callsMethod() {
 		Location location = spy(mock(Location.class));
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, location, false);
 		int[][][] array = new int[1][3][3];
@@ -805,9 +805,9 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void reset_withTags_callsMethod() {
+	public void reset_withRegions_callsMethod() {
 		Location location = spy(mock(Location.class));
-		when(location.getTags()).thenReturn(tagList);
+		when(location.getRegions()).thenReturn(regionList);
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, location, true);
 		int[][][] array1 = new int[1][3][3];
 		int[][][] array2 = new int[1][3][3];
@@ -818,7 +818,7 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void reset_withoutTags_updatesTargets() {
+	public void reset_withoutRegions_updatesTargets() {
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, false);
 		cell.initialize(new int[1][3][3], new int[1][3][3]);
 		cell.updateTarget(Math.random(), Math.random());
@@ -826,24 +826,24 @@ public class PottsCellTest {
 		
 		assertEquals(locationVolume, cell.getTargetVolume(), EPSILON);
 		assertEquals(locationSurface, cell.getTargetSurface(), EPSILON);
-		assertEquals(0, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
-		assertEquals(0, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		assertEquals(0, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+		assertEquals(0, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 	}
 	
 	@Test
-	public void reset_withTags_updatesTargets() {
+	public void reset_withRegions_updatesTargets() {
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
 		cell.initialize(new int[1][3][3], new int[1][3][3]);
-		cell.updateTarget(Tag.DEFAULT, Math.random(), Math.random());
-		cell.updateTarget(Tag.NUCLEUS, Math.random(), Math.random());
+		cell.updateTarget(Region.DEFAULT, Math.random(), Math.random());
+		cell.updateTarget(Region.NUCLEUS, Math.random(), Math.random());
 		cell.reset(new int[1][3][3], new int[1][3][3]);
 		
 		assertEquals(locationVolume, cell.getTargetVolume(), EPSILON);
 		assertEquals(locationSurface, cell.getTargetSurface(), EPSILON);
-		assertEquals(locationTagVolumes.get(Tag.DEFAULT), cell.getTargetVolume(Tag.DEFAULT), EPSILON);
-		assertEquals(locationTagSurfaces.get(Tag.DEFAULT), cell.getTargetSurface(Tag.DEFAULT), EPSILON);
-		assertEquals(locationTagVolumes.get(Tag.NUCLEUS), cell.getTargetVolume(Tag.NUCLEUS), EPSILON);
-		assertEquals(locationTagSurfaces.get(Tag.NUCLEUS), cell.getTargetSurface(Tag.NUCLEUS), EPSILON);
+		assertEquals(locationRegionVolumes.get(Region.DEFAULT), cell.getTargetVolume(Region.DEFAULT), EPSILON);
+		assertEquals(locationRegionSurfaces.get(Region.DEFAULT), cell.getTargetSurface(Region.DEFAULT), EPSILON);
+		assertEquals(locationRegionVolumes.get(Region.NUCLEUS), cell.getTargetVolume(Region.NUCLEUS), EPSILON);
+		assertEquals(locationRegionSurfaces.get(Region.NUCLEUS), cell.getTargetSurface(Region.NUCLEUS), EPSILON);
 	}
 	
 	@Test
@@ -857,7 +857,7 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void setTargets_noTags_updateValues() {
+	public void setTargets_noRegions_updateValues() {
 		double targetVolume = Math.random();
 		double targetSurface = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, false);
@@ -867,22 +867,22 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void setTargets_withTags_updateValues() {
+	public void setTargets_withRegions_updateValues() {
 		double targetVolume = Math.random();
 		double targetSurface = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
-		cell.setTargets(Tag.NUCLEUS, targetVolume, targetSurface);
+		cell.setTargets(Region.NUCLEUS, targetVolume, targetSurface);
 		
-		assertEquals(targetVolume, cell.getTargetVolume(Tag.NUCLEUS), EPSILON);
-		assertEquals(targetSurface, cell.getTargetSurface(Tag.NUCLEUS), EPSILON);
-		assertEquals(0, cell.getTargetVolume(Tag.UNDEFINED), EPSILON);
-		assertEquals(0, cell.getTargetSurface(Tag.UNDEFINED), EPSILON);
-		assertEquals(0, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
-		assertEquals(0, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		assertEquals(targetVolume, cell.getTargetVolume(Region.NUCLEUS), EPSILON);
+		assertEquals(targetSurface, cell.getTargetSurface(Region.NUCLEUS), EPSILON);
+		assertEquals(0, cell.getTargetVolume(Region.UNDEFINED), EPSILON);
+		assertEquals(0, cell.getTargetSurface(Region.UNDEFINED), EPSILON);
+		assertEquals(0, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+		assertEquals(0, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 	}
 	
 	@Test
-	public void updateTarget_untaggedScaleTwoNoTag_updatesValues() {
+	public void updateTarget_scaleTwoNoRegion_updatesValues() {
 		double rate = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, false);
 		cell.initialize(null, null);
@@ -896,7 +896,7 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void updateTarget_untaggedScaleTwoWithTags_updatesValues() {
+	public void updateTarget_scaleTwoWithRegions_updatesValues() {
 		double rate = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
 		cell.initialize(null, null);
@@ -908,15 +908,15 @@ public class PottsCellTest {
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
 		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
 		
-		double targetTagVolume = _criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
-		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
+		double targetRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
+		assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
 		
-		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
-		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
+		assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 	}
 	
 	@Test
-	public void updateTarget_untaggedScaleZeroNoTag_updatesValues() {
+	public void updateTarget_scaleZeroNoRegion_updatesValues() {
 		double rate = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, false);
 		cell.initialize(null, null);
@@ -930,7 +930,7 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void updateTarget_untaggedScaleZeroWithTag_updatesValues() {
+	public void updateTarget_scaleZeroWithRegion_updatesValues() {
 		double rate = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
 		cell.initialize(null, null);
@@ -942,15 +942,15 @@ public class PottsCellTest {
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
 		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
 		
-		double targetTagVolume = _criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
-		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
+		double targetRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
+		assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
 		
-		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
-		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
+		assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 	}
 	
 	@Test
-	public void updateTarget_untaggedScaleTwoNoTagModified_updatesValues() {
+	public void updateTarget_scaleTwoNoRegionModified_updatesValues() {
 		double rate = Math.random();
 		double delta = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, false);
@@ -966,7 +966,7 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void updateTarget_untaggedScaleTwoWithTagsModified_updatesValues() {
+	public void updateTarget_scaleTwoWithRegionsModified_updatesValues() {
 		double rate = Math.random();
 		double delta = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
@@ -980,15 +980,15 @@ public class PottsCellTest {
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
 		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
 		
-		double targetTagVolume = _criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
-		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
+		double targetRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
+		assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
 		
-		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
-		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
+		assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 	}
 	
 	@Test
-	public void updateTarget_untaggedScaleZeroNoTagModified_updatesValues() {
+	public void updateTarget_scaleZeroNoRegionModified_updatesValues() {
 		double rate = Math.random();
 		double delta = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, false);
@@ -1004,7 +1004,7 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void updateTarget_untaggedScaleZeroWithTagModified_updatesValues() {
+	public void updateTarget_scaleZeroWithRegionModified_updatesValues() {
 		double rate = Math.random() + 1;
 		double delta = Math.random() + 1;
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, true);
@@ -1018,27 +1018,27 @@ public class PottsCellTest {
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
 		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
 		
-		double targetTagVolume = _criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
-		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
+		double targetRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
+		assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
 		
-		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
-		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
+		assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 	}
 	
 	@Test
-	public void updateTarget_scaleTwoWithTag_updatesValues() {
+	public void updateTarget_regionScaleTwoWithRegion_updatesValues() {
 		double rate = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, 0, true);
 		cell.initialize(null, null);
-		cell.updateTarget(Tag.DEFAULT, rate, 2);
+		cell.updateTarget(Region.DEFAULT, rate, 2);
 		
-		double targetTagVolume = locationTagVolumes.get(Tag.DEFAULT) + rate*(locationTagVolumes.get(Tag.DEFAULT));
-		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
+		double targetRegionVolume = locationRegionVolumes.get(Region.DEFAULT) + rate*(locationRegionVolumes.get(Region.DEFAULT));
+		assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
 		
-		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
-		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
+		assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 		
-		double targetVolume = _criticals.get(Term.VOLUME) - _criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) + targetTagVolume;
+		double targetVolume = _criticals.get(Term.VOLUME) - _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) + targetRegionVolume;
 		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
 		
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
@@ -1046,19 +1046,19 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void updateTarget_scaleZeroWithTag_updatesValues() {
+	public void updateTarget_regionScaleZeroWithRegion_updatesValues() {
 		double rate = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, 0, true);
 		cell.initialize(null, null);
-		cell.updateTarget(Tag.DEFAULT, rate, 0);
+		cell.updateTarget(Region.DEFAULT, rate, 0);
 		
-		double targetTagVolume = locationTagVolumes.get(Tag.DEFAULT) + rate*(-locationTagVolumes.get(Tag.DEFAULT));
-		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
+		double targetRegionVolume = locationRegionVolumes.get(Region.DEFAULT) + rate*(-locationRegionVolumes.get(Region.DEFAULT));
+		assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
 		
-		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
-		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
+		assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 		
-		double targetVolume = _criticals.get(Term.VOLUME) - _criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) + targetTagVolume;
+		double targetVolume = _criticals.get(Term.VOLUME) - _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) + targetRegionVolume;
 		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
 		
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
@@ -1066,21 +1066,21 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void updateTarget_scaleTwoWithTagModified_updatesValues() {
+	public void updateTarget_regionScaleTwoWithRegionModified_updatesValues() {
 		double rate = Math.random();
 		double delta = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, 0, true);
 		cell.initialize(null, null);
-		cell.updateTarget(Tag.DEFAULT,rate + delta, 2);
-		cell.updateTarget(Tag.DEFAULT, rate, 2);
+		cell.updateTarget(Region.DEFAULT,rate + delta, 2);
+		cell.updateTarget(Region.DEFAULT, rate, 2);
 		
-		double targetTagVolume = locationTagVolumes.get(Tag.DEFAULT) + (rate + delta)*(locationTagVolumes.get(Tag.DEFAULT));
-		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
+		double targetRegionVolume = locationRegionVolumes.get(Region.DEFAULT) + (rate + delta)*(locationRegionVolumes.get(Region.DEFAULT));
+		assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
 		
-		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
-		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
+		assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 		
-		double targetVolume = _criticals.get(Term.VOLUME) - _criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) + targetTagVolume;
+		double targetVolume = _criticals.get(Term.VOLUME) - _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) + targetRegionVolume;
 		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
 		
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
@@ -1088,21 +1088,21 @@ public class PottsCellTest {
 	}
 	
 	@Test
-	public void updateTarget_scaleZeroWithTagModified_updatesValues() {
+	public void updateTarget_regionScaleZeroWithRegionModified_updatesValues() {
 		double rate = Math.random();
 		double delta = Math.random();
 		PottsCellMock cell = PottsCellMock._make(cellID, 0, true);
 		cell.initialize(null, null);
-		cell.updateTarget(Tag.DEFAULT,rate + delta, 0);
-		cell.updateTarget(Tag.DEFAULT,rate, 0);
+		cell.updateTarget(Region.DEFAULT,rate + delta, 0);
+		cell.updateTarget(Region.DEFAULT,rate, 0);
 		
-		double targetTagVolume = locationTagVolumes.get(Tag.DEFAULT) + (rate + delta)*(-locationTagVolumes.get(Tag.DEFAULT));
-		assertEquals(targetTagVolume, cell.getTargetVolume(Tag.DEFAULT), EPSILON);
+		double targetRegionVolume = locationRegionVolumes.get(Region.DEFAULT) + (rate + delta)*(-locationRegionVolumes.get(Region.DEFAULT));
+		assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
 		
-		double targetTagSurface = VOLUME_SURFACE_RATIO*targetTagVolume;
-		assertEquals(targetTagSurface, cell.getTargetSurface(Tag.DEFAULT), EPSILON);
+		double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
+		assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
 		
-		double targetVolume = _criticals.get(Term.VOLUME) - _criticalsTag.get(Tag.DEFAULT).get(Term.VOLUME) + targetTagVolume;
+		double targetVolume = _criticals.get(Term.VOLUME) - _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) + targetRegionVolume;
 		assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
 		
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;

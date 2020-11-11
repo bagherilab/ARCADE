@@ -6,7 +6,7 @@ import java.util.*;
 import arcade.env.loc.Location.Voxel;
 import static arcade.env.loc.PottsLocation.*;
 import static arcade.env.loc.Location.VOXEL_COMPARATOR;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 
 public class Location3DTest {
 	static ArrayList<Voxel> voxelListForDiametersXY, voxelListForDiametersYZ, voxelListForDiametersZX;
@@ -623,7 +623,7 @@ public class Location3DTest {
 		}
 		
 		PottsLocations3D loc = new PottsLocations3D(voxelsA);
-		for (Voxel voxel : voxelsB) { loc.add(Tag.UNDEFINED, voxel.x, voxel.y, voxel.z); }
+		for (Voxel voxel : voxelsB) { loc.add(Region.UNDEFINED, voxel.x, voxel.y, voxel.z); }
 		ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), 4./3*Math.PI*r*r*r);
 		
 		assertTrue(selected.size() < voxelsB.size());
@@ -651,7 +651,7 @@ public class Location3DTest {
 		}
 		
 		PottsLocations3D loc = new PottsLocations3D(voxelsA);
-		for (Voxel voxel : voxelsB) { loc.add(Tag.UNDEFINED, voxel.x, voxel.y, voxel.z); }
+		for (Voxel voxel : voxelsB) { loc.add(Region.UNDEFINED, voxel.x, voxel.y, voxel.z); }
 		ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), Integer.MAX_VALUE);
 		
 		assertEquals(selected.size(), voxelsA.size());
@@ -674,7 +674,7 @@ public class Location3DTest {
 		}
 		
 		PottsLocations3D loc = new PottsLocations3D(voxelsA);
-		for (Voxel voxel : voxelsB) { loc.add(Tag.UNDEFINED, voxel.x, voxel.y, voxel.z); }
+		for (Voxel voxel : voxelsB) { loc.add(Region.UNDEFINED, voxel.x, voxel.y, voxel.z); }
 		ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), 0);
 		
 		assertEquals(selected.size(), 0);

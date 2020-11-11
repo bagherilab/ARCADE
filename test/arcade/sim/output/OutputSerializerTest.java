@@ -23,7 +23,7 @@ import static arcade.sim.output.OutputSerializer.*;
 import static arcade.MainTest.*;
 import static arcade.agent.cell.Cell.State;
 import static arcade.agent.module.Module.Phase;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 
 public class OutputSerializerTest {
 	@Test
@@ -242,7 +242,7 @@ public class OutputSerializerTest {
 	}
 	
 	@Test
-	public void serialize_forCellNoTag_createsJSON() {
+	public void serialize_forCellNoRegion_createsJSON() {
 		CellSerializer serializer = new CellSerializer();
 		Cell cell = mock(Cell.class);
 		
@@ -271,8 +271,8 @@ public class OutputSerializerTest {
 		doReturn(state).when(cell).getState();
 		doReturn(phase).when(module).getPhase();
 		
-		doReturn(false).when(cell).hasTags();
-		doReturn(null).when(location).getTags();
+		doReturn(false).when(cell).hasRegions();
+		doReturn(null).when(location).getRegions();
 		
 		String expected = "{"
 				+ "\"id\":" + id + ","
@@ -289,7 +289,7 @@ public class OutputSerializerTest {
 	}
 	
 	@Test
-	public void serialize_forCellWithTag_createsJSON() {
+	public void serialize_forCellWithRegion_createsJSON() {
 		CellSerializer serializer = new CellSerializer();
 		Cell cell = mock(Cell.class);
 		
@@ -318,30 +318,30 @@ public class OutputSerializerTest {
 		doReturn(state).when(cell).getState();
 		doReturn(phase).when(module).getPhase();
 		
-		doReturn(true).when(cell).hasTags();
+		doReturn(true).when(cell).hasRegions();
 		
-		EnumSet<Tag> tags = EnumSet.of(Tag.NUCLEUS, Tag.DEFAULT);
-		doReturn(tags).when(location).getTags();
+		EnumSet<Region> regions = EnumSet.of(Region.NUCLEUS, Region.DEFAULT);
+		doReturn(regions).when(location).getRegions();
 		
 		int volume1 = randomInt();
 		int targetVolume1 = randomInt();
-		doReturn(volume1).when(location).getVolume(Tag.DEFAULT);
-		doReturn((double)targetVolume1).when(cell).getTargetVolume(Tag.DEFAULT);
+		doReturn(volume1).when(location).getVolume(Region.DEFAULT);
+		doReturn((double)targetVolume1).when(cell).getTargetVolume(Region.DEFAULT);
 		
 		int surface1 = randomInt();
 		int targetSurface1 = randomInt();
-		doReturn(surface1).when(location).getSurface(Tag.DEFAULT);
-		doReturn((double)targetSurface1).when(cell).getTargetSurface(Tag.DEFAULT);
+		doReturn(surface1).when(location).getSurface(Region.DEFAULT);
+		doReturn((double)targetSurface1).when(cell).getTargetSurface(Region.DEFAULT);
 		
 		int volume2 = randomInt();
 		int targetVolume2 = randomInt();
-		doReturn(volume2).when(location).getVolume(Tag.NUCLEUS);
-		doReturn((double)targetVolume2).when(cell).getTargetVolume(Tag.NUCLEUS);
+		doReturn(volume2).when(location).getVolume(Region.NUCLEUS);
+		doReturn((double)targetVolume2).when(cell).getTargetVolume(Region.NUCLEUS);
 		
 		int surface2 = randomInt();
 		int targetSurface2 = randomInt();
-		doReturn(surface2).when(location).getSurface(Tag.NUCLEUS);
-		doReturn((double)targetSurface2).when(cell).getTargetSurface(Tag.NUCLEUS);
+		doReturn(surface2).when(location).getSurface(Region.NUCLEUS);
+		doReturn((double)targetSurface2).when(cell).getTargetSurface(Region.NUCLEUS);
 		
 		String expected = "{"
 				+ "\"id\":" + id + ","
@@ -351,12 +351,12 @@ public class OutputSerializerTest {
 				+ "\"phase\":\"" + phase.name() + "\","
 				+ "\"voxels\":" + voxels + ","
 				+ "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0],"
-				+ "\"tags\":["
-				+ "{\"tag\":\"DEFAULT\","
+				+ "\"regions\":["
+				+ "{\"region\":\"DEFAULT\","
 				+ "\"voxels\":" + volume1 + ","
 				+ "\"targets\":[" + targetVolume1 + ".0," + targetSurface1 + ".0]"
 				+ "},"
-				+ "{\"tag\":\"NUCLEUS\","
+				+ "{\"region\":\"NUCLEUS\","
 				+ "\"voxels\":" + volume2 + ","
 				+ "\"targets\":[" + targetVolume2 + ".0," + targetSurface2 + ".0]"
 				+ "}]"
@@ -420,7 +420,7 @@ public class OutputSerializerTest {
 	}
 	
 	@Test
-	public void serialize_forLocationNoTag_createJSON() {
+	public void serialize_forLocationNoRegion_createJSON() {
 		LocationSerializer serializer = new LocationSerializer();
 		PottsLocation location = mock(PottsLocation.class);
 		
@@ -449,7 +449,7 @@ public class OutputSerializerTest {
 		};
 		
 		String expected = "["
-				+ "{\"tag\":\"UNDEFINED\",\"voxels\":["
+				+ "{\"region\":\"UNDEFINED\",\"voxels\":["
 				+ "[\"" + x1 + "|" + y1 + "|" + z1 + "\"],"
 				+ "[\"" + x2 + "|" + y2 + "|" + z2 + "\"]"
 				+ "]}"
@@ -460,7 +460,7 @@ public class OutputSerializerTest {
 	}
 	
 	@Test
-	public void serialize_forLocationWithTag_createJSON() {
+	public void serialize_forLocationWithRegion_createJSON() {
 		LocationSerializer serializer = new LocationSerializer();
 		PottsLocations location = mock(PottsLocations.class);
 		
@@ -483,9 +483,9 @@ public class OutputSerializerTest {
 		int z2 = randomInt();
 		voxels2.add(new Voxel(x2, y2, z2));
 		
-		location.locations = new EnumMap<>(Tag.class);
-		location.locations.put(Tag.DEFAULT, location1);
-		location.locations.put(Tag.NUCLEUS, location2);
+		location.locations = new EnumMap<>(Region.class);
+		location.locations.put(Region.DEFAULT, location1);
+		location.locations.put(Region.NUCLEUS, location2);
 		
 		JsonSerializationContext context = new JsonSerializationContext() {
 			public JsonElement serialize(Object src) {
@@ -499,9 +499,9 @@ public class OutputSerializerTest {
 		};
 		
 		String expected = "["
-				+ "{\"tag\":\"DEFAULT\""
+				+ "{\"region\":\"DEFAULT\""
 				+ ",\"voxels\":[[\"" + x1 + "|" + y1 + "|" + z1 + "\"]]},"
-				+ "{\"tag\":\"NUCLEUS\""
+				+ "{\"region\":\"NUCLEUS\""
 				+ ",\"voxels\":[[\"" + x2 + "|" + y2 + "|" + z2 + "\"]]}"
 				+ "]";
 		

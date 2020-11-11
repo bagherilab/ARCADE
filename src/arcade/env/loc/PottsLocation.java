@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 
 public abstract class PottsLocation implements Location {
 	/** Difference between split voxel numbers */
@@ -34,15 +34,15 @@ public abstract class PottsLocation implements Location {
 	
 	public ArrayList<Voxel> getVoxels() { return new ArrayList<>(voxels); }
 	
-	public EnumSet<Tag> getTags() { return null; }
+	public EnumSet<Region> getRegions() { return null; }
 	
 	public int getVolume() { return volume; }
 	
-	public int getVolume(Tag tag) { return getVolume(); }
+	public int getVolume(Region region) { return getVolume(); }
 	
 	public int getSurface() { return surface; }
 	
-	public int getSurface(Tag tag) { return getSurface(); }
+	public int getSurface(Region region) { return getSurface(); }
 	
 	public void add(int x, int y, int z) {
 		Voxel voxel = new Voxel(x, y, z);
@@ -53,7 +53,7 @@ public abstract class PottsLocation implements Location {
 		}
 	}
 	
-	public void add(Tag tag, int x, int y, int z) { add(x, y, z); }
+	public void add(Region region, int x, int y, int z) { add(x, y, z); }
 	
 	public void remove(int x, int y, int z) {
 		Voxel voxel = new Voxel(x, y, z);
@@ -64,16 +64,16 @@ public abstract class PottsLocation implements Location {
 		}
 	}
 	
-	public void remove(Tag tag, int x, int y, int z) { remove(x, y, z); }
+	public void remove(Region region, int x, int y, int z) { remove(x, y, z); }
 	
-	public void assign(Tag tag, Voxel voxel) { }
+	public void assign(Region region, Voxel voxel) { }
 	
-	public void clear(int[][][] ids, int[][][] tags) {
+	public void clear(int[][][] ids, int[][][] regions) {
 		for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = 0; }
 		voxels.clear();
 	}
 	
-	public void update(int id, int[][][] ids, int[][][] tags) {
+	public void update(int id, int[][][] ids, int[][][] regions) {
 		for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = id; }
 	}
 	

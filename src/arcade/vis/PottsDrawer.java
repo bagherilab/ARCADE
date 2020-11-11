@@ -181,7 +181,7 @@ public abstract class PottsDrawer extends Drawer {
 			
 			double[][] _to = array.field;
 			int[][] ids = getSlice(potts.IDS, PLANE, LENGTH, WIDTH, HEIGHT);
-			int[][] tags = getSlice(potts.TAGS, PLANE, LENGTH, WIDTH, HEIGHT);
+			int[][] regions = getSlice(potts.REGIONS, PLANE, LENGTH, WIDTH, HEIGHT);
 			
 			int A, B, C;
 			switch(PLANE) {
@@ -208,7 +208,7 @@ public abstract class PottsDrawer extends Drawer {
 					
 					switch(CODE) {
 						case DRAW_OVERLAY:
-							_to[a][b] = (tags[a][b] > 0 ? tags[a][b] - 1 : 0);
+							_to[a][b] = (regions[a][b] > 0 ? regions[a][b] - 1 : 0);
 							break;
 						case DRAW_POPULATION:
 							_to[a][b] = cell == null ? 0 : cell.getPop();
@@ -275,46 +275,46 @@ public abstract class PottsDrawer extends Drawer {
 			else if (CODE == DRAW_NUCLEUS) {
 				for (int a = 0; a < A; a++) {
 					for (int b = 0; b < B; b++) {
-						if (HEIGHT == 1) { _to[a][b] = (tags[a][b] == Tag.NUCLEUS.ordinal() ? 0.75 : 0); }
+						if (HEIGHT == 1) { _to[a][b] = (regions[a][b] == Region.NUCLEUS.ordinal() ? 0.75 : 0); }
 						else {
 							_to[a][b] = 0;
 							for (int c = 0; c < C; c++) {
 								int id;
-								int tag;
+								int region;
 								
 								switch (PLANE) {
 									case PLANE_X:
 										id = potts.IDS[a][c][b];
-										tag = potts.TAGS[a][c][b];
+										region = potts.REGIONS[a][c][b];
 										break;
 									case PLANE_Y:
 										id = potts.IDS[b][a][c];
-										tag = potts.TAGS[b][a][c];
+										region = potts.REGIONS[b][a][c];
 										break;
 									default: case PLANE_Z:
 										id = potts.IDS[c][a][b];
-										tag = potts.TAGS[c][a][b];
+										region = potts.REGIONS[c][a][b];
 								}
 								
-								_to[a][b] += (tag == Tag.NUCLEUS.ordinal() ? 1./C : 0);
+								_to[a][b] += (region == Region.NUCLEUS.ordinal() ? 1./C : 0);
 								
 								switch (PLANE) {
 									case PLANE_X:
 										if (id != 0 && c > 0 && c < C - 1
-												&& potts.TAGS[a][c + 1][b] == Tag.NUCLEUS.ordinal()
-												&& potts.TAGS[a][c - 1][b] == Tag.NUCLEUS.ordinal()
+												&& potts.REGIONS[a][c + 1][b] == Region.NUCLEUS.ordinal()
+												&& potts.REGIONS[a][c - 1][b] == Region.NUCLEUS.ordinal()
 										) { _to[a][b] -= 1./C; }
 										break;
 									case PLANE_Y:
 										if (id != 0 && c > 0 && c < C - 1
-												&& potts.TAGS[b][a][c + 1] == Tag.NUCLEUS.ordinal()
-												&& potts.TAGS[b][a][c - 1] == Tag.NUCLEUS.ordinal()
+												&& potts.REGIONS[b][a][c + 1] == Region.NUCLEUS.ordinal()
+												&& potts.REGIONS[b][a][c - 1] == Region.NUCLEUS.ordinal()
 										) { _to[a][b] -= 1./C; }
 										break;
 									default: case PLANE_Z:
 										if (id != 0 && c > 0 && c < C - 1
-												&& potts.TAGS[c + 1][a][b] == Tag.NUCLEUS.ordinal()
-												&& potts.TAGS[c - 1][a][b] == Tag.NUCLEUS.ordinal()
+												&& potts.REGIONS[c + 1][a][b] == Region.NUCLEUS.ordinal()
+												&& potts.REGIONS[c - 1][a][b] == Region.NUCLEUS.ordinal()
 										) { _to[a][b] -= 1./C; }
 								}
 							}

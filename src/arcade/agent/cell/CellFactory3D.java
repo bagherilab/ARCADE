@@ -4,7 +4,7 @@ import java.util.EnumMap;
 import arcade.env.loc.Location;
 import arcade.util.MiniBox;
 import static arcade.agent.cell.Cell.State;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 import static arcade.sim.Potts.Term;
 
 public class CellFactory3D extends CellFactory {
@@ -18,9 +18,9 @@ public class CellFactory3D extends CellFactory {
 	
 	Cell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
 				  EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
-				  EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
-				  EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag) {
+				  EnumMap<Region, EnumMap<Term, Double>> criticalsRegion, EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
+				  EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
 		return new PottsCell3D(id, pop, state, age, location, true, parameters,
-				criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
+				criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
 	}
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
 import ec.util.MersenneTwisterFast;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 
 public interface Location {
 	/** Location split directions */
@@ -47,14 +47,14 @@ public interface Location {
 	void add(int x, int y, int z);
 	
 	/**
-	 * Adds a voxel at the given coordinates for given tag.
+	 * Adds a voxel at the given coordinates for given region.
 	 *
-	 * @param tag  the voxel tag
+	 * @param region  the voxel region
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
 	 */
-	void add(Tag tag, int x, int y, int z);
+	void add(Region region, int x, int y, int z);
 	
 	/**
 	 * Removes the voxel at the given coordinates.
@@ -66,39 +66,39 @@ public interface Location {
 	void remove(int x, int y, int z);
 	
 	/**
-	 * Removes the voxel at the given coordinates for given tag.
+	 * Removes the voxel at the given coordinates for given region.
 	 * 
-	 * @param tag  the voxel tag
+	 * @param region  the voxel region
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
 	 */
-	void remove(Tag tag, int x, int y, int z);
+	void remove(Region region, int x, int y, int z);
 	
 	/**
-	 * Assigns the voxel at the given coordinates to the given tag.
+	 * Assigns the voxel at the given coordinates to the given region.
 	 * 
-	 * @param tag  the voxel tag
+	 * @param region  the voxel region
 	 * @param voxel  the voxel to assign
 	 */
-	void assign(Tag tag, Voxel voxel);
+	void assign(Region region, Voxel voxel);
 	
 	/**
 	 * Clears all voxel lists and arrays.
 	 * 
 	 * @param ids  the potts array for ids
-	 * @param tags  the potts array for tags
+	 * @param regions  the potts array for regions
 	 */
-	void clear(int[][][] ids, int[][][] tags);
+	void clear(int[][][] ids, int[][][] regions);
 	
 	/**
 	 * Updates the array for the location.
 	 * 
 	 * @param id  the location id
 	 * @param ids  the potts array for ids
-	 * @param tags  the potts array for tags
+	 * @param regions  the potts array for regions
 	 */
-	void update(int id, int[][][] ids, int[][][] tags);
+	void update(int id, int[][][] ids, int[][][] regions);
 	
 	/**
 	 * Splits the location voxels into two lists.
@@ -116,11 +116,11 @@ public interface Location {
 	ArrayList<Voxel> getVoxels();
 	
 	/**
-	 * Gets a set of tags.
+	 * Gets a set of regions.
 	 * 
-	 * @return  the set of tags
+	 * @return  the set of regions
 	 */
-	EnumSet<Tag> getTags();
+	EnumSet<Region> getRegions();
 	
 	/**
 	 * Gets the voxel at the center of the location.
@@ -137,12 +137,12 @@ public interface Location {
 	int getVolume();
 	
 	/**
-	 * Gets the volume of the location for a given tag.
+	 * Gets the volume of the location for a given region.
 	 * 
-	 * @param tag  the voxel tag
+	 * @param region  the voxel region
 	 * @return  the location volume (in voxels)
 	 */
-	int getVolume(Tag tag);
+	int getVolume(Region region);
 	
 	/**
 	 * Gets the surface area of the location.
@@ -152,12 +152,12 @@ public interface Location {
 	int getSurface();
 	
 	/**
-	 * Gets the surface area of the location for a given tag.
+	 * Gets the surface area of the location for a given region.
 	 * 
-	 * @param tag  the voxel tag
+	 * @param region  the voxel region
 	 * @return  the location surface area (in voxels)
 	 */
-	int getSurface(Tag tag);
+	int getSurface(Region region);
 	
 	/** Comparator for voxels */
 	Comparator<Voxel> VOXEL_COMPARATOR = (v1, v2) ->

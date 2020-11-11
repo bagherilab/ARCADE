@@ -11,7 +11,7 @@ import arcade.sim.Potts;
 import arcade.env.grid.Grid;
 import arcade.env.loc.Location;
 import arcade.util.MiniBox;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 import static arcade.agent.cell.Cell.State;
 import static arcade.agent.module.Module.Phase;
 import static arcade.agent.module.ProliferationModule.*;
@@ -268,29 +268,29 @@ public class ProliferationModuleSimpleTest {
 	}
 	
 	@Test
-	public void stepS_anyTransitionTagged_updatesCell() {
+	public void stepS_anyTransitionRegionged_updatesCell() {
 		for (int i = 0; i < 10; i++) {
 			Cell cell = mock(Cell.class);
 			doReturn(parameters).when(cell).getParameters();
-			doReturn(true).when(cell).hasTags();
+			doReturn(true).when(cell).hasRegions();
 			
 			ProliferationModule module = spy(new ProliferationModule.Simple(cell));
 			module.phase = Phase.PROLIFERATIVE_S;
 			module.stepS(i/10.);
 			
-			verify(cell).updateTarget(Tag.NUCLEUS, module.RATE_S, 2);
+			verify(cell).updateTarget(Region.NUCLEUS, module.RATE_S, 2);
 		}
 	}
 	
 	@Test
-	public void stepS_noTransitionTagged_maintainsPhase() {
+	public void stepS_noTransitionRegionged_maintainsPhase() {
 		Cell cell = mock(Cell.class);
 		doReturn(parameters).when(cell).getParameters();
-		doReturn(true).when(cell).hasTags();
+		doReturn(true).when(cell).hasRegions();
 		
 		double volume = Math.random()*100;
-		when(cell.getVolume(Tag.NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) - 1);
-		when(cell.getCriticalVolume(Tag.NUCLEUS)).thenReturn(volume);
+		when(cell.getVolume(Region.NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) - 1);
+		when(cell.getCriticalVolume(Region.NUCLEUS)).thenReturn(volume);
 		
 		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
 		module.phase = Phase.PROLIFERATIVE_S;
@@ -300,14 +300,14 @@ public class ProliferationModuleSimpleTest {
 	}
 	
 	@Test
-	public void stepS_withTransitionTagged_updatesPhase() {
+	public void stepS_withTransitionRegionged_updatesPhase() {
 		Cell cell = mock(Cell.class);
 		doReturn(parameters).when(cell).getParameters();
-		doReturn(true).when(cell).hasTags();
+		doReturn(true).when(cell).hasRegions();
 		
 		double volume = Math.random()*100;
-		when(cell.getVolume(Tag.NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) + 1);
-		when(cell.getCriticalVolume(Tag.NUCLEUS)).thenReturn(volume);
+		when(cell.getVolume(Region.NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) + 1);
+		when(cell.getCriticalVolume(Region.NUCLEUS)).thenReturn(volume);
 		
 		ProliferationModule module = spy(new ProliferationModule.Simple(cell));
 		module.phase = Phase.PROLIFERATIVE_S;
@@ -317,7 +317,7 @@ public class ProliferationModuleSimpleTest {
 	}
 	
 	@Test
-	public void stepS_noTransitionUntagged_maintainsPhase() {
+	public void stepS_noTransitionNoRegions_maintainsPhase() {
 		Cell cell = mock(Cell.class);
 		doReturn(parameters).when(cell).getParameters();
 		
@@ -329,7 +329,7 @@ public class ProliferationModuleSimpleTest {
 	}
 	
 	@Test
-	public void stepS_withTransitionUntagged_updatesPhase() {
+	public void stepS_withTransitionNoRegions_updatesPhase() {
 		Cell cell = mock(Cell.class);
 		doReturn(parameters).when(cell).getParameters();
 		
@@ -487,7 +487,7 @@ public class ProliferationModuleSimpleTest {
 		doReturn(schedule).when(sim).getSchedule();
 		
 		potts.IDS = new int[][][] { { { } } };
-		potts.TAGS = new int[][][] { { { } } };
+		potts.REGIONS = new int[][][] { { { } } };
 		
 		Location newLocation = mock(Location.class);
 		Cell newCell = mock(Cell.class);
@@ -501,8 +501,8 @@ public class ProliferationModuleSimpleTest {
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		module.addCell(random, sim);
 		
-		verify(cell).reset(potts.IDS, potts.TAGS);
-		verify(newCell).reset(potts.IDS, potts.TAGS);
+		verify(cell).reset(potts.IDS, potts.REGIONS);
+		verify(newCell).reset(potts.IDS, potts.REGIONS);
 		verify(grid).addObject(id, newCell);
 		verify(newCell).schedule(schedule);
 	}

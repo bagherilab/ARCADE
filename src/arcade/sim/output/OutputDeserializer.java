@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import com.google.gson.*;
 import static arcade.agent.cell.Cell.State;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 import static arcade.agent.module.Module.Phase;
 import static arcade.agent.cell.CellFactory.CellContainer;
 import static arcade.agent.cell.CellFactory.CellFactoryContainer;
@@ -57,30 +57,30 @@ public final class OutputDeserializer {
 			double targetVolume = targets.get(0).getAsDouble();
 			double targetSurface = targets.get(1).getAsDouble();
 			
-			EnumMap<Tag, Integer> tags = new EnumMap<>(Tag.class);
-			EnumMap<Tag, Double> targetTagVolumes = new EnumMap<>(Tag.class);
-			EnumMap<Tag, Double> targetTagSurfaces = new EnumMap<>(Tag.class);
+			EnumMap<Region, Integer> regions = new EnumMap<>(Region.class);
+			EnumMap<Region, Double> targetRegionVolumes = new EnumMap<>(Region.class);
+			EnumMap<Region, Double> targetRegionSurfaces = new EnumMap<>(Region.class);
 			
-			if (jsonObject.has("tags")) {
-				JsonArray jsonArray = jsonObject.getAsJsonArray("tags");
+			if (jsonObject.has("regions")) {
+				JsonArray jsonArray = jsonObject.getAsJsonArray("regions");
 				for (JsonElement object : jsonArray) {
-					JsonObject tagObject = object.getAsJsonObject();
-					Tag tag = Tag.valueOf(tagObject.get("tag").getAsString());
-					int tagVoxels = tagObject.get("voxels").getAsInt();
+					JsonObject regionObject = object.getAsJsonObject();
+					Region region = Region.valueOf(regionObject.get("region").getAsString());
+					int regionVoxels = regionObject.get("voxels").getAsInt();
 					
-					JsonArray tagTargets = tagObject.get("targets").getAsJsonArray();
-					targetTagVolumes.put(tag, tagTargets.get(0).getAsDouble());
-					targetTagSurfaces.put(tag, tagTargets.get(1).getAsDouble());
+					JsonArray regionTargets = regionObject.get("targets").getAsJsonArray();
+					targetRegionVolumes.put(region, regionTargets.get(0).getAsDouble());
+					targetRegionSurfaces.put(region, regionTargets.get(1).getAsDouble());
 					
-					tags.put(tag, tagVoxels);
+					regions.put(region, regionVoxels);
 				}
 			}
 			
 			CellContainer cell;
-			if (tags.size() == 0) { cell = new CellContainer(id, pop, age, state, phase,
+			if (regions.size() == 0) { cell = new CellContainer(id, pop, age, state, phase,
 					voxels, targetVolume, targetSurface); }
 			else { cell = new CellContainer(id, pop, age, state, phase,
-					voxels, tags, targetVolume, targetSurface, targetTagVolumes, targetTagSurfaces); }
+					voxels, regions, targetVolume, targetSurface, targetRegionVolumes, targetRegionSurfaces); }
 			
 			return cell;
 		}
@@ -121,16 +121,16 @@ public final class OutputDeserializer {
 			int id = jsonObject.get("id").getAsInt();
 			Voxel center = context.deserialize(jsonObject.get("center"), Voxel.class);
 			
-			// Set up list of all voxels and map for tag voxels.
+			// Set up list of all voxels and map for region voxels.
 			ArrayList<Voxel> allVoxels = new ArrayList<>();
-			EnumMap<Tag, ArrayList<Voxel>> tags = new EnumMap<>(Tag.class);
+			EnumMap<Region, ArrayList<Voxel>> regions = new EnumMap<>(Region.class);
 			
 			// Parse lists of voxels.
 			JsonArray jsonArray = jsonObject.getAsJsonArray("location");
 			for (JsonElement object : jsonArray) {
-				JsonObject tagObject = object.getAsJsonObject();
-				Tag tag = Tag.valueOf(tagObject.get("tag").getAsString());
-				JsonArray voxelArray = tagObject.get("voxels").getAsJsonArray();
+				JsonObject regionObject = object.getAsJsonObject();
+				Region region = Region.valueOf(regionObject.get("region").getAsString());
+				JsonArray voxelArray = regionObject.get("voxels").getAsJsonArray();
 				
 				ArrayList<Voxel> voxels = new ArrayList<>();
 				for (JsonElement element : voxelArray) {
@@ -139,12 +139,12 @@ public final class OutputDeserializer {
 					allVoxels.add(voxel);
 				}
 				
-				tags.put(tag, voxels);
+				regions.put(region, voxels);
 			}
 			
 			LocationContainer location;
 			if (jsonArray.size() == 1) { location = new LocationContainer(id, center, allVoxels, null); }
-			else { location = new LocationContainer(id, center, allVoxels, tags); }
+			else { location = new LocationContainer(id, center, allVoxels, regions); }
 			
 			return location;
 		}

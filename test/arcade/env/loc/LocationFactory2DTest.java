@@ -8,7 +8,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.sim.Simulation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 import static arcade.env.loc.Location.Voxel;
 import static arcade.agent.cell.CellFactory.CellContainer;
 import static arcade.env.loc.LocationFactory.LocationContainer;
@@ -203,7 +203,7 @@ public class LocationFactory2DTest {
 	}
 	
 	@Test
-	public void make_noTag_createsLocation() {
+	public void make_noRegion_createsLocation() {
 		LocationFactory2D factory = new LocationFactory2D();
 		Voxel center = new Voxel(0, 0, 0);
 		ArrayList<Voxel> voxels = factory.getPossible(center, 1);
@@ -217,27 +217,27 @@ public class LocationFactory2DTest {
 	}
 	
 	@Test
-	public void make_withTag_createsLocation() {
+	public void make_withRegion_createsLocation() {
 		LocationFactory2D factory = new LocationFactory2D();
 		Voxel center = new Voxel(0, 0, 0);
 		ArrayList<Voxel> voxels = factory.getPossible(center, 1);
 		
-		EnumMap<Tag, ArrayList<Voxel>> tagVoxelMap = new EnumMap<>(Tag.class);
-		tagVoxelMap.put(Tag.DEFAULT, voxels);
-		tagVoxelMap.put(Tag.NUCLEUS, voxels);
+		EnumMap<Region, ArrayList<Voxel>> regionVoxelMap = new EnumMap<>(Region.class);
+		regionVoxelMap.put(Region.DEFAULT, voxels);
+		regionVoxelMap.put(Region.NUCLEUS, voxels);
 		
-		EnumMap<Tag, Integer> tagTargetMap = new EnumMap<>(Tag.class);
-		tagTargetMap.put(Tag.DEFAULT, 0);
-		tagTargetMap.put(Tag.NUCLEUS, 1);
+		EnumMap<Region, Integer> regionTargetMap = new EnumMap<>(Region.class);
+		regionTargetMap.put(Region.DEFAULT, 0);
+		regionTargetMap.put(Region.NUCLEUS, 1);
 		
-		CellContainer cellContainer = new CellContainer(0, 0, 1, tagTargetMap);
-		LocationContainer locationContainer = new LocationContainer(0, center, voxels, tagVoxelMap);
+		CellContainer cellContainer = new CellContainer(0, 0, 1, regionTargetMap);
+		LocationContainer locationContainer = new LocationContainer(0, center, voxels, regionVoxelMap);
 		
 		Location location = factory.make(locationContainer, cellContainer, random);
 		assertTrue(location instanceof PottsLocations2D);
 		assertEquals(1, location.getVolume());
-		assertEquals(0, location.getVolume(Tag.DEFAULT));
-		assertEquals(1, location.getVolume(Tag.NUCLEUS));
+		assertEquals(0, location.getVolume(Region.DEFAULT));
+		assertEquals(1, location.getVolume(Region.NUCLEUS));
 	}
 	
 	@Test

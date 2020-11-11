@@ -9,12 +9,12 @@ import arcade.env.loc.*;
 import arcade.util.MiniBox;
 import static arcade.sim.Potts.Term;
 import static arcade.agent.cell.Cell.State;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 import static arcade.agent.cell.CellFactoryTest.*;
 
 public class CellFactory2DTest {
 	@Test
-	public void makeCell_noTags_createsObject() {
+	public void makeCell_noRegions_createsObject() {
 		CellFactory2D factory = new CellFactory2D();
 		
 		int cellID = (int)random() + 1;
@@ -44,7 +44,7 @@ public class CellFactory2DTest {
 	}
 	
 	@Test
-	public void makeCell_withTags_createsObject() {
+	public void makeCell_withRegions_createsObject() {
 		CellFactory2D factory = new CellFactory2D();
 		
 		int cellID = (int)random() + 1;
@@ -57,16 +57,16 @@ public class CellFactory2DTest {
 		EnumMap<Term, Double> lambdas = makeEnumMap();
 		double[] adhesion = new double[] { random(), random() };
 		
-		EnumSet<Tag> tagList = EnumSet.of(Tag.NUCLEUS, Tag.UNDEFINED);
-		doReturn(tagList).when(location).getTags();
+		EnumSet<Region> regionList = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
+		doReturn(regionList).when(location).getRegions();
 		
-		EnumMap<Tag, EnumMap<Term, Double>> criticalsTag = makeEnumMapTag(tagList);
-		EnumMap<Tag, EnumMap<Term, Double>> lambdasTag = makeEnumMapTag(tagList);
-		EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag = makeEnumMapTarget(tagList);
+		EnumMap<Region, EnumMap<Term, Double>> criticalsRegion = makeEnumMapRegion(regionList);
+		EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = makeEnumMapRegion(regionList);
+		EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = makeEnumMapTarget(regionList);
 		
 		Cell cell = factory.makeCell(cellID, cellPop, cellAge, cellState, location, parameters,
 				criticals, lambdas, adhesion,
-				criticalsTag, lambdasTag, adhesionTag);
+				criticalsRegion, lambdasRegion, adhesionRegion);
 		
 		assertTrue(cell instanceof PottsCell2D);
 		assertEquals(cellID, cell.getID());
@@ -81,14 +81,14 @@ public class CellFactory2DTest {
 		assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
 		assertEquals(adhesion[1], cell.getAdhesion(1), EPSILON);
 		
-		for (Tag tag : tagList) {
-			assertEquals(criticalsTag.get(tag).get(Term.VOLUME), cell.getCriticalVolume(tag), EPSILON);
-			assertEquals(criticalsTag.get(tag).get(Term.SURFACE), cell.getCriticalSurface(tag), EPSILON);
-			assertEquals(lambdasTag.get(tag).get(Term.VOLUME), cell.getLambda(Term.VOLUME, tag), EPSILON);
-			assertEquals(lambdasTag.get(tag).get(Term.SURFACE), cell.getLambda(Term.SURFACE, tag), EPSILON);
+		for (Region region : regionList) {
+			assertEquals(criticalsRegion.get(region).get(Term.VOLUME), cell.getCriticalVolume(region), EPSILON);
+			assertEquals(criticalsRegion.get(region).get(Term.SURFACE), cell.getCriticalSurface(region), EPSILON);
+			assertEquals(lambdasRegion.get(region).get(Term.VOLUME), cell.getLambda(Term.VOLUME, region), EPSILON);
+			assertEquals(lambdasRegion.get(region).get(Term.SURFACE), cell.getLambda(Term.SURFACE, region), EPSILON);
 			
-			for (Tag target : tagList) {
-				assertEquals(adhesionTag.get(tag).get(target), cell.getAdhesion(tag, target), EPSILON);
+			for (Region target : regionList) {
+				assertEquals(adhesionRegion.get(region).get(target), cell.getAdhesion(region, target), EPSILON);
 			}
 		}
 	}

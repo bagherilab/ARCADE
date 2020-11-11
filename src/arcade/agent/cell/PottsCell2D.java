@@ -13,7 +13,7 @@ public class PottsCell2D extends PottsCell {
 	 * Creates a {@code PottsCell} agent for 2D simulations.
 	 * <p>
 	 * The default state is proliferative and age is 0.
-	 * The cell is created with no tags.
+	 * The cell is created with no regions.
 	 *
 	 * @param id  the cell ID
 	 * @param pop  the cell population index
@@ -40,15 +40,15 @@ public class PottsCell2D extends PottsCell {
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
 	 * @param adhesion  the list of adhesion values
-	 * @param criticalsTag  the map of tagged critical values
-	 * @param lambdasTag  the map of tagged lambda multipliers
-	 * @param adhesionTag  the map of tagged adhesion values
+	 * @param criticalsRegion  the map of critical values for regions
+	 * @param lambdasRegion  the map of lambda multipliers for regions
+	 * @param adhesionRegion  the map of adhesion values for regions
 	 */
 	public PottsCell2D(int id, int pop, Location location, MiniBox parameters,
 					   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
-					   EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
-					   EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag) {
-		super(id, pop, location, parameters, criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
+					   EnumMap<Region, EnumMap<Term, Double>> criticalsRegion, EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
+					   EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
+		super(id, pop, location, parameters, criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
 	}
 	
 	/**
@@ -63,21 +63,21 @@ public class PottsCell2D extends PottsCell {
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
 	 * @param adhesion  the list of adhesion values
-	 * @param hasTags  {@code true} if the cell has tags, {@code false} otherwise
-	 * @param criticalsTag  the map of tagged critical values
-	 * @param lambdasTag  the map of tagged lambda multipliers
-	 * @param adhesionTag  the map of tagged adhesion values
+	 * @param hasRegions  {@code true} if the cell has regions, {@code false} otherwise
+	 * @param criticalsRegion  the map of critical values for regions
+	 * @param lambdasRegion  the map of lambda multipliers for regions
+	 * @param adhesionRegion  the map of adhesion values for regions
 	 */
-	public PottsCell2D(int id, int pop, State state, int age, Location location, boolean hasTags, MiniBox parameters,
+	public PottsCell2D(int id, int pop, State state, int age, Location location, boolean hasRegions, MiniBox parameters,
 					   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
-					   EnumMap<Tag, EnumMap<Term, Double>> criticalsTag, EnumMap<Tag, EnumMap<Term, Double>> lambdasTag,
-					   EnumMap<Tag, EnumMap<Tag, Double>> adhesionTag) {
-		super(id, pop, state, age, location, hasTags, parameters, criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
+					   EnumMap<Region, EnumMap<Term, Double>> criticalsRegion, EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
+					   EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
+		super(id, pop, state, age, location, hasRegions, parameters, criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
 	}
 	
 	public PottsCell make(int id, State state, Location location) {
-		return new PottsCell2D(id, pop, state, 0, location, hasTags, parameters,
-				criticals, lambdas, adhesion, criticalsTag, lambdasTag, adhesionTag);
+		return new PottsCell2D(id, pop, state, 0, location, hasRegions, parameters,
+				criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
 	}
 	
 	public double convert(double volume) {

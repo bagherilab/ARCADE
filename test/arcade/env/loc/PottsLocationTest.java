@@ -7,7 +7,7 @@ import java.util.*;
 import ec.util.MersenneTwisterFast;
 import arcade.env.loc.Location.Voxel;
 import arcade.env.loc.Location.Direction;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 import static arcade.env.loc.Location.VOXEL_COMPARATOR;
 
 public class PottsLocationTest {
@@ -139,9 +139,9 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void getTags_noTags_returnsNull() {
+	public void getRegions_noRegions_returnsNull() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
-		assertNull(loc.getTags());
+		assertNull(loc.getRegions());
 	}
 	
 	@Test
@@ -158,10 +158,10 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void getVolume_givenTag_returnsValue() {
+	public void getVolume_givenRegion_returnsValue() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
 		loc.add(0, 0, 0);
-		assertEquals(1, loc.getVolume(Tag.DEFAULT));
+		assertEquals(1, loc.getVolume(Region.DEFAULT));
 	}
 	
 	@Test
@@ -178,10 +178,10 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void getSurface_givenTag_returnsValue() {
+	public void getSurface_givenRegion_returnsValue() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
 		loc.add(0, 0, 0);
-		assertEquals(LOCATION_SURFACE + 1, loc.getSurface(Tag.DEFAULT));
+		assertEquals(LOCATION_SURFACE + 1, loc.getSurface(Region.DEFAULT));
 	}
 	
 	@Test
@@ -216,33 +216,33 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void add_newVoxelWithTag_updatesList() {
+	public void add_newVoxelWithRegion_updatesList() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
-		loc.add(Tag.DEFAULT, 0, 0, 0);
-		loc.add(Tag.UNDEFINED, 1, 0, 0);
+		loc.add(Region.DEFAULT, 0, 0, 0);
+		loc.add(Region.UNDEFINED, 1, 0, 0);
 		assertEquals(voxelListForAddRemove, loc.voxels);
 	}
 	
 	@Test
-	public void add_newVoxelWithTag_updatesVolume() {
+	public void add_newVoxelWithRegion_updatesVolume() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
-		loc.add(Tag.DEFAULT, 0, 0, 0);
+		loc.add(Region.DEFAULT, 0, 0, 0);
 		assertEquals(1, loc.volume);
 	}
 	
 	@Test
-	public void add_newVoxelWithTag_updatesSurface() {
+	public void add_newVoxelWithRegion_updatesSurface() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
-		loc.add(Tag.DEFAULT, 0, 0, 0);
+		loc.add(Region.DEFAULT, 0, 0, 0);
 		assertEquals(LOCATION_SURFACE + 1, loc.surface);
 	}
 	
 	@Test
-	public void add_existingVoxelWithTag_doesNothing() {
+	public void add_existingVoxelWithRegion_doesNothing() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
-		loc.add(Tag.DEFAULT, 0, 0, 0);
-		loc.add(Tag.UNDEFINED, 1, 0, 0);
-		loc.add(Tag.NUCLEUS, 0, 0, 0);
+		loc.add(Region.DEFAULT, 0, 0, 0);
+		loc.add(Region.UNDEFINED, 1, 0, 0);
+		loc.add(Region.NUCLEUS, 0, 0, 0);
 		assertEquals(voxelListForAddRemove, loc.voxels);
 	}
 	
@@ -285,47 +285,47 @@ public class PottsLocationTest {
 	}
 	
 	@Test
-	public void remove_existingVoxelWithTag_updatesList() {
+	public void remove_existingVoxelWithRegion_updatesList() {
 		PottsLocationMock loc = new PottsLocationMock(voxelListForAddRemove);
 		ArrayList<Voxel> voxelsRemoved = new ArrayList<>();
 		voxelsRemoved.add(new Voxel(1, 0, 0));
-		loc.remove(Tag.DEFAULT, 0, 0, 0);
+		loc.remove(Region.DEFAULT, 0, 0, 0);
 		assertEquals(voxelsRemoved, loc.voxels);
 	}
 	
 	@Test
-	public void remove_existingVoxelWithTag_updatesVolume() {
+	public void remove_existingVoxelWithRegion_updatesVolume() {
 		PottsLocationMock loc = new PottsLocationMock(voxelListForAddRemove);
-		loc.remove(Tag.DEFAULT, 0, 0, 0);
+		loc.remove(Region.DEFAULT, 0, 0, 0);
 		assertEquals(1, loc.volume);
 	}
 	
 	@Test
-	public void remove_existingVoxelWithTag_updatesSurface() {
+	public void remove_existingVoxelWithRegion_updatesSurface() {
 		PottsLocationMock loc = new PottsLocationMock(voxelListForAddRemove);
-		loc.remove(Tag.DEFAULT, 0, 0, 0);
+		loc.remove(Region.DEFAULT, 0, 0, 0);
 		assertEquals(LOCATION_SURFACE - 1, loc.surface);
 	}
 	
 	@Test
-	public void remove_allVoxelsWithTag_returnsEmptyList() {
+	public void remove_allVoxelsWithRegion_returnsEmptyList() {
 		PottsLocationMock loc = new PottsLocationMock(voxelListForAddRemove);
-		loc.remove(Tag.DEFAULT, 0, 0, 0);
-		loc.remove(Tag.UNDEFINED, 1, 0, 0);
+		loc.remove(Region.DEFAULT, 0, 0, 0);
+		loc.remove(Region.UNDEFINED, 1, 0, 0);
 		assertEquals(new ArrayList<>(), loc.voxels);
 	}
 	
 	@Test
-	public void remove_missingVoxelWithTag_doesNothing() {
+	public void remove_missingVoxelWithRegion_doesNothing() {
 		PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
-		loc.remove(Tag.DEFAULT, 0, 0, 0);
+		loc.remove(Region.DEFAULT, 0, 0, 0);
 		assertEquals(new ArrayList<>(), loc.voxels);
 	}
 	
 	@Test
 	public void assign_anyVoxel_doesNothing() {
 		PottsLocationMock loc = new PottsLocationMock(voxelListForAddRemove);
-		loc.assign(Tag.DEFAULT, new Voxel(0, 0, 0));
+		loc.assign(Region.DEFAULT, new Voxel(0, 0, 0));
 		assertEquals(voxelListForAddRemove, loc.voxels);
 	}
 	

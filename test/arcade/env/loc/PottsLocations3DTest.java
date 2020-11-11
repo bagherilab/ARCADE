@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.*;
 import ec.util.MersenneTwisterFast;
 import arcade.env.loc.Location.Voxel;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 
 public class PottsLocations3DTest {
 	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
@@ -43,9 +43,9 @@ public class PottsLocations3DTest {
 	}
 	
 	@Test
-	public void assignVoxels_randomFraction_updatesTags() {
+	public void assignVoxels_randomFraction_updatesRegions() {
 		PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-		loc.locations.put(Tag.UNDEFINED, new PottsLocation3D(new ArrayList<>()));
+		loc.locations.put(Region.UNDEFINED, new PottsLocation3D(new ArrayList<>()));
 		
 		int N = 10;
 		int f = (int)(Math.random()*10*0.9) + 1; // between 1 and 9, inclusive
@@ -58,42 +58,42 @@ public class PottsLocations3DTest {
 			}
 		}
 		
-		EnumMap<Tag, Double> fractions = new EnumMap<>(Tag.class);
-		fractions.put(Tag.DEFAULT, f/10.0);
-		fractions.put(Tag.UNDEFINED, 1 - f/10.0);
+		EnumMap<Region, Double> fractions = new EnumMap<>(Region.class);
+		fractions.put(Region.DEFAULT, f/10.0);
+		fractions.put(Region.UNDEFINED, 1 - f/10.0);
 		PottsLocations.assignVoxels(loc, fractions, randomDoubleZero);
 		
 		assertEquals(N*N*N, loc.voxels.size());
-		assertEquals(N*N*N, loc.locations.get(Tag.DEFAULT).voxels.size() + loc.locations.get(Tag.UNDEFINED).voxels.size());
+		assertEquals(N*N*N, loc.locations.get(Region.DEFAULT).voxels.size() + loc.locations.get(Region.UNDEFINED).voxels.size());
 		
-		int sizeDefault = loc.locations.get(Tag.DEFAULT).voxels.size();
-		int sizeAdditional = loc.locations.get(Tag.UNDEFINED).voxels.size();
+		int sizeDefault = loc.locations.get(Region.DEFAULT).voxels.size();
+		int sizeAdditional = loc.locations.get(Region.UNDEFINED).voxels.size();
 		
 		assertTrue((sizeDefault < f*N*N + 10) && (sizeDefault >= f*N*N - 10));
 		assertTrue((sizeAdditional <= (10 - f)*N*N + 10) && (sizeAdditional > (10 - f)*N*N - 10));
 	}
 	
 	@Test
-	public void assignVoxels_noCenterVoxel_updatesTags() {
+	public void assignVoxels_noCenterVoxel_updatesRegions() {
 		PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-		loc.locations.put(Tag.UNDEFINED, new PottsLocation2D(new ArrayList<>()));
+		loc.locations.put(Region.UNDEFINED, new PottsLocation2D(new ArrayList<>()));
 		
-		loc.add(Tag.DEFAULT, 0, 0, 0);
-		loc.add(Tag.DEFAULT, 1, 0, 0);
-		loc.add(Tag.DEFAULT, 2, 0, 1);
-		loc.add(Tag.DEFAULT, 0, 1, 2);
-		loc.add(Tag.DEFAULT, 0, 2, 0);
+		loc.add(Region.DEFAULT, 0, 0, 0);
+		loc.add(Region.DEFAULT, 1, 0, 0);
+		loc.add(Region.DEFAULT, 2, 0, 1);
+		loc.add(Region.DEFAULT, 0, 1, 2);
+		loc.add(Region.DEFAULT, 0, 2, 0);
 		
 		MersenneTwisterFast randomMock = mock(MersenneTwisterFast.class);
 		when(randomMock.nextInt(5)).thenReturn(0);
 		
-		EnumMap<Tag, Double> fractions = new EnumMap<>(Tag.class);
-		fractions.put(Tag.DEFAULT, 0.8);
-		fractions.put(Tag.UNDEFINED, 0.2);
+		EnumMap<Region, Double> fractions = new EnumMap<>(Region.class);
+		fractions.put(Region.DEFAULT, 0.8);
+		fractions.put(Region.UNDEFINED, 0.2);
 		PottsLocations.assignVoxels(loc, fractions, randomMock);
 		
-		assertEquals(4, loc.locations.get(Tag.DEFAULT).voxels.size());
-		assertEquals(1, loc.locations.get(Tag.UNDEFINED).voxels.size());
-		assertEquals(new Voxel(0, 0, 0), loc.locations.get(Tag.UNDEFINED).voxels.get(0));
+		assertEquals(4, loc.locations.get(Region.DEFAULT).voxels.size());
+		assertEquals(1, loc.locations.get(Region.UNDEFINED).voxels.size());
+		assertEquals(new Voxel(0, 0, 0), loc.locations.get(Region.UNDEFINED).voxels.get(0));
 	}
 }

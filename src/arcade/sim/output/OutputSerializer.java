@@ -118,22 +118,22 @@ public final class OutputSerializer {
 			targets.add((int)(100*src.getTargetSurface())/100.0);
 			json.add("targets", targets);
 			
-			if (src.hasTags()) {
-				JsonArray tags = new JsonArray();
-				for (Tag tag : src.getLocation().getTags()) {
-					JsonObject tagObject = new JsonObject();
-					tagObject.addProperty("tag", tag.name());
-					tagObject.addProperty("voxels", src.getLocation().getVolume(tag));
+			if (src.hasRegions()) {
+				JsonArray regions = new JsonArray();
+				for (Region region : src.getLocation().getRegions()) {
+					JsonObject regionObject = new JsonObject();
+					regionObject.addProperty("region", region.name());
+					regionObject.addProperty("voxels", src.getLocation().getVolume(region));
 					
-					JsonArray tagTargets = new JsonArray();
-					tagTargets.add((int)(100*src.getTargetVolume(tag))/100.0);
-					tagTargets.add((int)(100*src.getTargetSurface(tag))/100.0);
-					tagObject.add("targets", tagTargets);
+					JsonArray regionTargets = new JsonArray();
+					regionTargets.add((int)(100*src.getTargetVolume(region))/100.0);
+					regionTargets.add((int)(100*src.getTargetSurface(region))/100.0);
+					regionObject.add("targets", regionTargets);
 					
-					tags.add(tagObject);
+					regions.add(regionObject);
 				}
 				
-				json.add("tags", tags);
+				json.add("regions", regions);
 			}
 			
 			return json;
@@ -167,23 +167,23 @@ public final class OutputSerializer {
 		public JsonElement serialize(Location src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonArray json = new JsonArray();
 			
-			EnumMap<Tag, PottsLocation> locations;
+			EnumMap<Region, PottsLocation> locations;
 			
 			if (src instanceof PottsLocations) { locations = ((PottsLocations)src).locations; }
 			else {
-				locations = new EnumMap<>(Tag.class);
-				locations.put(Tag.UNDEFINED, (PottsLocation)src);
+				locations = new EnumMap<>(Region.class);
+				locations.put(Region.UNDEFINED, (PottsLocation)src);
 			}
 			
-			for (Tag tag : locations.keySet()) {
+			for (Region region : locations.keySet()) {
 				JsonObject obj = new JsonObject();
 				JsonArray array = new JsonArray();
 				
-				ArrayList<Voxel> voxels = locations.get(tag).getVoxels();
+				ArrayList<Voxel> voxels = locations.get(region).getVoxels();
 				voxels.sort(VOXEL_COMPARATOR);
 				for (Voxel voxel : voxels) { array.add(context.serialize(voxel)); }
 				
-				obj.addProperty("tag", tag.name());
+				obj.addProperty("region", region.name());
 				obj.add("voxels", array);
 				
 				json.add(obj);

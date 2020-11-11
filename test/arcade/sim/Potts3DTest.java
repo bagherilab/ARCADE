@@ -7,7 +7,7 @@ import java.util.HashSet;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
 import static arcade.sim.PottsTest.*;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 
 public class Potts3DTest {
 	private static final double EPSILON = 1E-4;
@@ -42,9 +42,9 @@ public class Potts3DTest {
 			// Assign adhesion values for subcellular domain.
 			for (int j = 0; j < nSubcells; j++) {
 				for (int k = 0; k < nSubcells; k++) {
-					Tag tag1 = Tag.values()[j + 1];
-					Tag tag2 = Tag.values()[k + 1];
-					when(c.getAdhesion(tag1, tag2)).thenReturn(SUBADHESIONS[k][j]);
+					Region region1 = Region.values()[j + 1];
+					Region region2 = Region.values()[k + 1];
+					when(c.getAdhesion(region1, region2)).thenReturn(SUBADHESIONS[k][j]);
 				}
 			}
 			
@@ -96,10 +96,10 @@ public class Potts3DTest {
 				}
 		};
 		
-		int D = Tag.DEFAULT.ordinal();
-		int N = Tag.NUCLEUS.ordinal();
+		int D = Region.DEFAULT.ordinal();
+		int N = Region.NUCLEUS.ordinal();
 		
-		potts.TAGS = new int[][][] {
+		potts.REGIONS = new int[][][] {
 				{
 						{ 0, 0, 0, 0, 0, 0 },
 						{ 0, 0, 0, 0, 0, 0 },
@@ -225,9 +225,9 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getAdhesion_validTags_calculateValue() {
-		assertEquals(subadhesion(Tag.DEFAULT, Tag.NUCLEUS)*1, potts.getAdhesion(1, Tag.DEFAULT.ordinal(), 1, 2, 2), EPSILON);
-		assertEquals(0, potts.getAdhesion(1, Tag.NUCLEUS.ordinal(), 1, 2, 2), EPSILON);
+	public void getAdhesion_validRegions_calculateValue() {
+		assertEquals(subadhesion(Region.DEFAULT, Region.NUCLEUS)*1, potts.getAdhesion(1, Region.DEFAULT.ordinal(), 1, 2, 2), EPSILON);
+		assertEquals(0, potts.getAdhesion(1, Region.NUCLEUS.ordinal(), 1, 2, 2), EPSILON);
 	}
 	
 	@Test
@@ -237,9 +237,9 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void calculateChange_validTags_calculatesValue() {
-		assertArrayEquals(new int[] { -6, 2 }, potts.calculateChange(1, Tag.NUCLEUS.ordinal(), Tag.DEFAULT.ordinal(), 2, 2, 2));
-		assertArrayEquals(new int[] { -4, 4 }, potts.calculateChange(1, Tag.DEFAULT.ordinal(), Tag.NUCLEUS.ordinal(), 2, 2, 1));
+	public void calculateChange_validRegions_calculatesValue() {
+		assertArrayEquals(new int[] { -6, 2 }, potts.calculateChange(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 2, 2, 2));
+		assertArrayEquals(new int[] { -4, 4 }, potts.calculateChange(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 2, 2, 1));
 	}
 	
 	@Test
@@ -279,8 +279,8 @@ public class Potts3DTest {
 	}
 	
 	@Test
-	public void getNeighborhood_givenTag_createsArray() {
-		boolean[][][] array1 = potts.getNeighborhood(1, Tag.DEFAULT.ordinal(), 2, 2, 2);
+	public void getNeighborhood_givenRegion_createsArray() {
+		boolean[][][] array1 = potts.getNeighborhood(1, Region.DEFAULT.ordinal(), 2, 2, 2);
 		assertArrayEquals(new boolean[] { false,  true, false }, array1[0][0]);
 		assertArrayEquals(new boolean[] { false,  true, false }, array1[0][1]);
 		assertArrayEquals(new boolean[] { false,  false, false }, array1[0][2]);
@@ -291,7 +291,7 @@ public class Potts3DTest {
 		assertArrayEquals(new boolean[] { false, false, false }, array1[2][1]);
 		assertArrayEquals(new boolean[] { false, false, false }, array1[2][2]);
 		
-		boolean[][][] array2 = potts.getNeighborhood(1,  Tag.NUCLEUS.ordinal(), 2, 2, 2);
+		boolean[][][] array2 = potts.getNeighborhood(1,  Region.NUCLEUS.ordinal(), 2, 2, 2);
 		assertArrayEquals(new boolean[] { false, false, false }, array2[0][0]);
 		assertArrayEquals(new boolean[] { false, false, false }, array2[0][1]);
 		assertArrayEquals(new boolean[] { false, false, false }, array2[0][2]);
@@ -371,17 +371,17 @@ public class Potts3DTest {
 		}));
 	}
 	
-	private HashSet<Integer> checkUniqueTag(Potts3D potts, int[][][] ids, int[][][] tags) {
+	private HashSet<Integer> checkUniqueRegion(Potts3D potts, int[][][] ids, int[][][] regions) {
 		potts.IDS = ids;
-		potts.TAGS = tags;
-		return potts.getUniqueTags(1, 1, 1);
+		potts.REGIONS = regions;
+		return potts.getUniqueRegions(1, 1, 1);
 	}
 	
 	@Test
-	public void getUniqueTags_validVoxel_returnsList() {
+	public void getUniqueRegions_validVoxel_returnsList() {
 		HashSet<Integer> unique = new HashSet<>();
 		
-		assertEquals(unique, checkUniqueTag(pottsMock, new int[][][] {
+		assertEquals(unique, checkUniqueRegion(pottsMock, new int[][][] {
 				{
 						{ 0, 0, 0 },
 						{ 0, 1, 0 },
@@ -415,7 +415,7 @@ public class Potts3DTest {
 				}
 		}));
 		
-		assertEquals(unique, checkUniqueTag(pottsMock, new int[][][] {
+		assertEquals(unique, checkUniqueRegion(pottsMock, new int[][][] {
 				{
 						{ 1, 1, 1 },
 						{ 1, 1, 1 },
@@ -451,7 +451,7 @@ public class Potts3DTest {
 		
 		unique.add(-2);
 		unique.add(-5);
-		assertEquals(unique, checkUniqueTag(pottsMock, new int[][][] {
+		assertEquals(unique, checkUniqueRegion(pottsMock, new int[][][] {
 				{
 						{ 0, 0, 0 },
 						{ 0, 1, 0 },

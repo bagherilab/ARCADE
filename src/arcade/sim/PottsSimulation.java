@@ -147,7 +147,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 				
 				// Add, initialize, and schedule the cell.
 				agents.addObject(i, cell);
-				cell.initialize(potts.IDS, potts.TAGS);
+				cell.initialize(potts.IDS, potts.REGIONS);
 				cell.schedule(schedule);
 				
 				// Update id tracking.

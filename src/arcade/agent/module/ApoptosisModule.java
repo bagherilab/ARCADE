@@ -104,12 +104,12 @@ public abstract class ApoptosisModule implements Module  {
 	 * @param r  a random number
 	 */
 	void stepEarly(double r) {
-		if (cell.hasTags()) {
+		if (cell.hasRegions()) {
 			// Cytoplasmic water loss.
-			cell.updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_LOSS, 0.5);
+			cell.updateTarget(Region.DEFAULT, RATE_CYTOPLASM_LOSS, 0.5);
 			
 			// Pyknosis of nucleus.
-			cell.updateTarget(Tag.NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
+			cell.updateTarget(Region.NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
 		} else {
 			cell.updateTarget(RATE_CYTOPLASM_LOSS, 0.5);
 		}
@@ -136,12 +136,12 @@ public abstract class ApoptosisModule implements Module  {
 	 * @param sim  the simulation instance
 	 */
 	void stepLate(double r, Simulation sim) {
-		if (cell.hasTags()) {
+		if (cell.hasRegions()) {
 			// Cytoplasm blebbing.
-			cell.updateTarget(Tag.DEFAULT, RATE_CYTOPLASM_BLEBBING, 0);
+			cell.updateTarget(Region.DEFAULT, RATE_CYTOPLASM_BLEBBING, 0);
 			
 			// Nuclear fragmentation.
-			cell.updateTarget(Tag.NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
+			cell.updateTarget(Region.NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
 		}
 		else {
 			cell.updateTarget(RATE_CYTOPLASM_BLEBBING, 0);
@@ -158,7 +158,7 @@ public abstract class ApoptosisModule implements Module  {
 	/**
 	 * Removes a cell from the simulation.
 	 * <p>
-	 * The location is cleared, along with any tagged regions.
+	 * The location is cleared, along with any regions.
 	 * The cell is then removed from the grid and simulation schedule.
 	 * 
 	 * @param sim  the simulation instance
@@ -167,7 +167,7 @@ public abstract class ApoptosisModule implements Module  {
 		Potts potts = sim.getPotts();
 		
 		// Clear the location.
-		cell.getLocation().clear(potts.IDS, potts.TAGS);
+		cell.getLocation().clear(potts.IDS, potts.REGIONS);
 		
 		// Remove the cell from the grid.
 		sim.getAgents().removeObject(cell.getID());

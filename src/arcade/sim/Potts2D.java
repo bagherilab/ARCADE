@@ -2,7 +2,7 @@ package arcade.sim;
 
 import java.util.HashSet;
 import arcade.agent.cell.Cell;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 
 public class Potts2D extends Potts {
 	/** Number of neighbors */
@@ -48,14 +48,14 @@ public class Potts2D extends Potts {
 	double getAdhesion(int id, int t, int x, int y, int z) {
 		double H = 0;
 		Cell c = getCell(id);
-		Tag tag = Tag.values()[t];
+		Region region = Region.values()[t];
 		
 		for (int i = x - 1; i <= x + 1; i++) {
 			for (int j = y - 1; j <= y + 1; j++) {
-				Tag tagxy = Tag.values()[TAGS[z][i][j]];
+				Region regionxy = Region.values()[REGIONS[z][i][j]];
 				if (!(i == x && j == y) && IDS[z][i][j] == id
-						&& tagxy != tag && tagxy != Tag.UNDEFINED && tagxy != Tag.DEFAULT) {
-					H += (c.getAdhesion(tag, tagxy) + c.getAdhesion(tagxy, tag))/2;
+						&& regionxy != region && regionxy != Region.UNDEFINED && regionxy != Region.DEFAULT) {
+					H += (c.getAdhesion(region, regionxy) + c.getAdhesion(regionxy, region))/2;
 				}
 			}
 		}
@@ -91,7 +91,7 @@ public class Potts2D extends Potts {
 		return new int[] { sourceSurfaceChange, targetSurfaceChange };
 	}
 	
-	int[] calculateChange(int id, int sourceTag, int targetTag, int x, int y, int z) {
+	int[] calculateChange(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
 		int beforeSource = 0;
 		int afterSource = 0;
 		int beforeTarget = 0;
@@ -100,16 +100,16 @@ public class Potts2D extends Potts {
 		// Iterate through each neighbor.
 		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 			int neighborID = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
-			int neighborTag = TAGS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
+			int neighborRegion = REGIONS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
 			
-			if (neighborTag != sourceTag || neighborID != id) {
+			if (neighborRegion != sourceRegion || neighborID != id) {
 				beforeSource++;
-				if (neighborTag == targetTag && neighborID == id) { beforeTarget++; }
+				if (neighborRegion == targetRegion && neighborID == id) { beforeTarget++; }
 			}
 			
-			if (neighborTag != targetTag || neighborID != id) {
+			if (neighborRegion != targetRegion || neighborID != id) {
 				afterTarget++;
-				if (neighborTag == sourceTag && neighborID == id) { afterSource++; }
+				if (neighborRegion == sourceRegion && neighborID == id) { afterSource++; }
 			}
 		}
 		
@@ -130,11 +130,11 @@ public class Potts2D extends Potts {
 		return new boolean[][][] { array };
 	}
 	
-	boolean[][][] getNeighborhood(int id, int tag, int x, int y, int z) {
+	boolean[][][] getNeighborhood(int id, int region, int x, int y, int z) {
 		boolean[][] array = new boolean[3][3];
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				array[i][j] = IDS[0][i + x - 1][j + y - 1] == id && TAGS[0][i + x - 1][j + y - 1] == tag;
+				array[i][j] = IDS[0][i + x - 1][j + y - 1] == id && REGIONS[0][i + x - 1][j + y - 1] == region;
 			}
 		}
 		return new boolean[][][] { array };
@@ -194,17 +194,17 @@ public class Potts2D extends Potts {
 		return unique;
 	}
 	
-	HashSet<Integer> getUniqueTags(int x, int y, int z) {
+	HashSet<Integer> getUniqueRegions(int x, int y, int z) {
 		int id = IDS[z][x][y];
-		int tag = TAGS[z][x][y];
+		int region = REGIONS[z][x][y];
 		HashSet<Integer> unique = new HashSet<>();
 		
 		for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
 			int neighborID = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]]; 
-			int neighborTag = TAGS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
+			int neighborRegion = REGIONS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
 			
 			if (neighborID != id) { continue; }
-			if (tag != neighborTag) { unique.add(neighborTag); }
+			if (region != neighborRegion) { unique.add(neighborRegion); }
 		}
 		
 		return unique;

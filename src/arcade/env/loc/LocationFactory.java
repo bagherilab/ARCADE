@@ -41,14 +41,14 @@ public abstract class LocationFactory {
 		public final int id;
 		public final ArrayList<Voxel> voxels;
 		public final Voxel center;
-		public final EnumMap<Tag, ArrayList<Voxel>> tags;
+		public final EnumMap<Region, ArrayList<Voxel>> regions;
 		
 		public LocationContainer(int id, Voxel center, ArrayList<Voxel> voxels,
-								 EnumMap<Tag, ArrayList<Voxel>> tags) {
+								 EnumMap<Region, ArrayList<Voxel>> regions) {
 			this.id = id;
 			this.center = center;
 			this.voxels = voxels;
-			this.tags = tags;
+			this.regions = regions;
 		}
 	}
 	
@@ -104,11 +104,11 @@ public abstract class LocationFactory {
 		ArrayList<Voxel> centers = getCenters(series._length, series._width, series._height, m);
 		Simulation.shuffle(centers, random);
 		
-		// Get tags (if they exist).
-		HashSet<String> tagKeys = new HashSet<>();
+		// Get regions (if they exist).
+		HashSet<String> regionKeys = new HashSet<>();
 		for (MiniBox population : series._populations.values()) {
-			MiniBox tagBox = population.filter("TAG");
-			if (tagBox.getKeys().size() > 0) { tagKeys.addAll(tagBox.getKeys()); }
+			MiniBox regionBox = population.filter("REGION");
+			if (regionBox.getKeys().size() > 0) { regionKeys.addAll(regionBox.getKeys()); }
 		}
 		
 		// Create containers for each center.
@@ -116,17 +116,17 @@ public abstract class LocationFactory {
 		for (Voxel center : centers) {
 			ArrayList<Voxel> voxels = getPossible(center, m);
 			
-			// Add tags (if they exist).
-			EnumMap<Tag, ArrayList<Voxel>> tags = null;
-			if (tagKeys.size() > 0) {
-				tags = new EnumMap<>(Tag.class);
-				for (String tagKey : tagKeys) {
-					Tag tag = Tag.valueOf(tagKey);
-					tags.put(tag, getPossible(center, m - 2));
+			// Add regions (if they exist).
+			EnumMap<Region, ArrayList<Voxel>> regions = null;
+			if (regionKeys.size() > 0) {
+				regions = new EnumMap<>(Region.class);
+				for (String regionKey : regionKeys) {
+					Region region = Region.valueOf(regionKey);
+					regions.put(region, getPossible(center, m - 2));
 				}
 			}
 			
-			LocationContainer locationContainer = new LocationContainer(id, center, voxels, tags);
+			LocationContainer locationContainer = new LocationContainer(id, center, voxels, regions);
 			locations.put(id, locationContainer);
 			id++;
 		}
@@ -277,28 +277,28 @@ public abstract class LocationFactory {
 		// Make location.
 		Location location;
 		
-		// Add tags.
-		if (cellContainer.tagVoxels != null) {
-			EnumMap<Tag, Integer> tagTargetMap = cellContainer.tagVoxels;
-			EnumMap<Tag, ArrayList<Voxel>> tagVoxelMap = locationContainer.tags;
+		// Add regions.
+		if (cellContainer.regionVoxels != null) {
+			EnumMap<Region, Integer> regionTargetMap = cellContainer.regionVoxels;
+			EnumMap<Region, ArrayList<Voxel>> regionVoxelMap = locationContainer.regions;
 			location = makeLocations(voxels);
 			
-			for (Tag tag : Tag.values()) {
-				// TODO add handling of other tags
-				if (tag != Tag.NUCLEUS) { continue; }
+			for (Region region : Region.values()) {
+				// TODO add handling of other regions
+				if (region != Region.NUCLEUS) { continue; }
 				
-				// Select tag voxels.
-				int tagTarget = tagTargetMap.get(tag);
-				ArrayList<Voxel> allTagVoxels = tagVoxelMap.get(tag);
-				ArrayList<Voxel> tagVoxels = getSelected(allTagVoxels, center, tagTarget);
+				// Select region voxels.
+				int regionTarget = regionTargetMap.get(region);
+				ArrayList<Voxel> allRegionVoxels = regionVoxelMap.get(region);
+				ArrayList<Voxel> regionVoxels = getSelected(allRegionVoxels, center, regionTarget);
 				
-				// Add or remove tag voxels to reach target number.
-				int tagSize = tagVoxels.size();
-				if (tagSize < tagTarget) { increase(random, allTagVoxels, tagVoxels, tagTarget); }
-				else if (tagSize > tagTarget) { decrease(random, tagVoxels, tagTarget); }
+				// Add or remove region voxels to reach target number.
+				int regionSize = regionVoxels.size();
+				if (regionSize < regionTarget) { increase(random, allRegionVoxels, regionVoxels, regionTarget); }
+				else if (regionSize > regionTarget) { decrease(random, regionVoxels, regionTarget); }
 				
-				// Assign tags.
-				for (Voxel voxel : tagVoxels) { location.assign(tag, voxel); }
+				// Assign regions.
+				for (Voxel voxel : regionVoxels) { location.assign(region, voxel); }
 			}
 		} else {
 			location = makeLocation(voxels);

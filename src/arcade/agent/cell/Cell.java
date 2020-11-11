@@ -28,15 +28,15 @@ public interface Cell extends Steppable {
 		AUTOTIC
 	}
 	
-	/** Cell tag codes */
-	enum Tag {
-		/** Tag for undefined */
+	/** Cell region codes */
+	enum Region {
+		/** Undefined region */
 		UNDEFINED,
 		
-		/** Tag for cytoplasm */
+		/** Region for cytoplasm */
 		DEFAULT,
 		
-		/** Tag for nucleus */
+		/** Region for nucleus */
 		NUCLEUS
 	}
 	
@@ -69,11 +69,11 @@ public interface Cell extends Steppable {
 	int getAge();
 	
 	/**
-	 * Checks if the cell has tags.
+	 * Checks if the cell has regions.
 	 *
-	 * @return  {@code true} if the cell has tags, {@code false} otherwise
+	 * @return  {@code true} if the cell has regions, {@code false} otherwise
 	 */
-	boolean hasTags();
+	boolean hasRegions();
 	
 	/**
 	 * Gets the cell location object.
@@ -102,12 +102,12 @@ public interface Cell extends Steppable {
 	int getVolume();
 	
 	/**
-	 * Gets the cell volume (in voxels) for a tagged region.
+	 * Gets the cell volume (in voxels) for a region.
 	 *  
-	 * @param tag  the tag
+	 * @param region  the region
 	 * @return  the cell volume
 	 */
-	int getVolume(Tag tag);
+	int getVolume(Region region);
 	
 	/**
 	 * Gets the cell surface (in voxels).
@@ -117,12 +117,12 @@ public interface Cell extends Steppable {
 	int getSurface();
 	
 	/**
-	 * Gets the cell surface (in voxels) for a tagged region.
+	 * Gets the cell surface (in voxels) for a region.
 	 * 
-	 * @param tag  the tag
+	 * @param region  the region
 	 * @return  the cell surface
 	 */
-	int getSurface(Tag tag);
+	int getSurface(Region region);
 	
 	/**
 	 * Gets the target volume (in voxels)
@@ -132,12 +132,12 @@ public interface Cell extends Steppable {
 	double getTargetVolume();
 	
 	/**
-	 * Gets the target volume (in voxels) for a tagged region.
+	 * Gets the target volume (in voxels) for a region.
 	 *
-	 * @param tag  the tag
+	 * @param region  the region
 	 * @return  the target volume
 	 */
-	double getTargetVolume(Tag tag);
+	double getTargetVolume(Region region);
 	
 	/**
 	 * Gets the target surface (in voxels)
@@ -147,12 +147,12 @@ public interface Cell extends Steppable {
 	double getTargetSurface();
 	
 	/**
-	 * Gets the target surface (in voxels) for a tagged region.
+	 * Gets the target surface (in voxels) for a region.
 	 * 
-	 * @param tag  the tag
+	 * @param region  the region
 	 * @return  the target surface
 	 */
-	double getTargetSurface(Tag tag);
+	double getTargetSurface(Region region);
 	
 	/**
 	 * Gets the critical volume (in voxels)
@@ -162,12 +162,12 @@ public interface Cell extends Steppable {
 	double getCriticalVolume();
 	
 	/**
-	 * Gets the critical volume (in voxels) for a tagged region.
+	 * Gets the critical volume (in voxels) for a region.
 	 *
-	 * @param tag  the tag
+	 * @param region  the region
 	 * @return  the target volume
 	 */
-	double getCriticalVolume(Tag tag);
+	double getCriticalVolume(Region region);
 	
 	/**
 	 * Gets the critical surface (in voxels)
@@ -177,12 +177,12 @@ public interface Cell extends Steppable {
 	double getCriticalSurface();
 	
 	/**
-	 * Gets the critical surface (in voxels) for a tagged region.
+	 * Gets the critical surface (in voxels) for a region.
 	 *
-	 * @param tag  the tag
+	 * @param region  the region
 	 * @return  the target surface
 	 */
-	double getCriticalSurface(Tag tag);
+	double getCriticalSurface(Region region);
 	
 	/**
 	 * Gets the lambda for the given term.
@@ -193,13 +193,13 @@ public interface Cell extends Steppable {
 	double getLambda(Term term);
 	
 	/**
-	 * Gets the lambda for the given term and tagged region.
+	 * Gets the lambda for the given term and region.
 	 *
 	 * @param term  the term of the Hamiltonian
-	 * @param tag  the tag
+	 * @param region  the region
 	 * @return  the lambda value
 	 */
-	double getLambda(Term term, Tag tag);
+	double getLambda(Term term, Region region);
 	
 	/**
 	 * Gets the adhesion to a cell of the given population.
@@ -210,13 +210,13 @@ public interface Cell extends Steppable {
 	double getAdhesion(int pop);
 	
 	/**
-	 * Gets the adhesion between two tagged regions.
+	 * Gets the adhesion between two regions.
 	 * 
-	 * @param tag1  the first tag
-	 * @param tag2  the second tag
+	 * @param region1  the first region
+	 * @param region2  the second region
 	 * @return  the adhesion value
 	 */
-	double getAdhesion(Tag tag1, Tag tag2);
+	double getAdhesion(Region region1, Region region2);
 	
 	/**
 	 * Sets the cell state.
@@ -251,17 +251,17 @@ public interface Cell extends Steppable {
 	 * Initializes the potts arrays with the cell.
 	 * 
 	 * @param ids  the {@link arcade.sim.Potts} array for ids
-	 * @param tags  the {@link arcade.sim.Potts} array for tags   
+	 * @param regions  the {@link arcade.sim.Potts} array for regions   
 	 */
-	void initialize(int[][][] ids, int[][][] tags);
+	void initialize(int[][][] ids, int[][][] regions);
 	
 	/**
 	 * Resets the potts arrays with the cell.
 	 *
 	 * @param ids  the {@link arcade.sim.Potts} array for ids
-	 * @param tags  the {@link arcade.sim.Potts} array for tags   
+	 * @param regions  the {@link arcade.sim.Potts} array for regions   
 	 */
-	void reset(int[][][] ids, int[][][] tags);
+	void reset(int[][][] ids, int[][][] regions);
 	
 	/**
 	 * Sets the target volume and surface for the cell.
@@ -272,13 +272,13 @@ public interface Cell extends Steppable {
 	void setTargets(double volume, double surface);
 	
 	/**
-	 * Sets the target volume and surface for a tagged region
+	 * Sets the target volume and surface for a region
 	 * 
-	 * @param tag  the tag
+	 * @param region  the region
 	 * @param volume  the target volume
 	 * @param surface  the target surface
 	 */
-	void setTargets(Tag tag, double volume, double surface);
+	void setTargets(Region region, double volume, double surface);
 	
 	/**
 	 * Updates target volume and surface area.
@@ -289,11 +289,11 @@ public interface Cell extends Steppable {
 	void updateTarget(double rate, double scale);
 	
 	/**
-	 * Updates target volume and surface area for a tagged region.
+	 * Updates target volume and surface area for a region.
 	 * 
-	 * @param tag  the tag
+	 * @param region  the region
 	 * @param rate  the rate of change
 	 * @param scale  the relative final size scaling
 	 */
-	void updateTarget(Tag tag, double rate, double scale);
+	void updateTarget(Region region, double rate, double scale);
 }

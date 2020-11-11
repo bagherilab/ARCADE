@@ -5,7 +5,7 @@ import sim.engine.*;
 import ec.util.MersenneTwisterFast;
 import arcade.agent.cell.Cell;
 import arcade.env.grid.Grid;
-import static arcade.agent.cell.Cell.Tag;
+import static arcade.agent.cell.Cell.Region;
 
 public abstract class Potts implements Steppable {
 	public enum Term {
@@ -31,14 +31,14 @@ public abstract class Potts implements Steppable {
 	/** Effective cell temperature */
 	final double TEMPERATURE;
 	
-	/** {@code true} if cells have tags, {@code false} otherwise */
-	final boolean TAGGED;
+	/** {@code true} if cells have regions, {@code false} otherwise */
+	final boolean HAS_REGIONS;
 	
 	/** Potts array for ids */
 	public int[][][] IDS;
 	
-	/** Potts array for tags */
-	public int[][][] TAGS;
+	/** Potts array for regions */
+	public int[][][] REGIONS;
 	
 	/** Grid holding cells */
 	public Grid grid;
@@ -51,7 +51,7 @@ public abstract class Potts implements Steppable {
 	public Potts(Series series) {
 		// Creates potts arrays.
 		IDS = new int[series._height][series._length][series._width];
-		TAGS = new int[series._height][series._length][series._width];
+		REGIONS = new int[series._height][series._length][series._width];
 		
 		// Ensure a 1 voxel border around to avoid boundary checks.
 		LENGTH = series._length - 2;
@@ -64,9 +64,9 @@ public abstract class Potts implements Steppable {
 		// Get temperature.
 		TEMPERATURE = series._potts.getDouble("TEMPERATURE");
 		
-		// Check if there are tags.
-		TAGGED = series._populations.values().stream()
-				.map(e -> e.filter("TAG").getKeys().size())
+		// Check if there are regions.
+		HAS_REGIONS = series._populations.values().stream()
+				.map(e -> e.filter("REGION").getKeys().size())
 				.anyMatch(e -> e > 0);
 	}
 	
@@ -87,18 +87,18 @@ public abstract class Potts implements Steppable {
 			z = (HEIGHT == 1 ? 0 : random.nextInt(HEIGHT) + 1);
 			r = random.nextDouble();
 			
-			// Check if cell is tagged.
-			boolean tagged = (IDS[z][x][y] != 0 && getCell(IDS[z][x][y]).hasTags());
+			// Check if cell has regions.
+			boolean hasRegions = (IDS[z][x][y] != 0 && getCell(IDS[z][x][y]).hasRegions());
 			
 			// Get unique targets.
 			HashSet<Integer> uniqueIDTargets = getUniqueIDs(x, y, z);
-			HashSet<Integer> uniqueTagTargets = getUniqueTags(x, y, z);
+			HashSet<Integer> uniqueRegionTargets = getUniqueRegions(x, y, z);
 			
 			// Select unique ID (if there is one), otherwise select unique
-			// tag (if there is one). If there are neither, then skip.
-			if (tagged && uniqueTagTargets.size() > 0) {
-				int targetTag = (int)uniqueTagTargets.toArray()[simstate.random.nextInt(uniqueTagTargets.size())];
-				flip(IDS[z][x][y], TAGS[z][x][y], targetTag, x, y, z, r);
+			// region (if there is one). If there are neither, then skip.
+			if (hasRegions && uniqueRegionTargets.size() > 0) {
+				int targetRegion = (int)uniqueRegionTargets.toArray()[simstate.random.nextInt(uniqueRegionTargets.size())];
+				flip(IDS[z][x][y], REGIONS[z][x][y], targetRegion, x, y, z, r);
 			}
 			else if (uniqueIDTargets.size() > 0) {
 				int targetID = (int)uniqueIDTargets.toArray()[simstate.random.nextInt(uniqueIDTargets.size())];
@@ -123,10 +123,10 @@ public abstract class Potts implements Steppable {
 			boolean candidateConnected = getConnectivity(getNeighborhood(sourceID, x, y, z), IDS[z][x][y] == 0);
 			if (!candidateConnected) { return; }
 			
-			// Check connectivity of tags.
-			if (TAGS[z][x][y] > Tag.DEFAULT.ordinal()) {
-				boolean candidateTagConnected = getConnectivity(getNeighborhood(sourceID, TAGS[z][x][y], x, y, z), false);
-				if (!candidateTagConnected) { return; }
+			// Check connectivity of regions.
+			if (REGIONS[z][x][y] > Region.DEFAULT.ordinal()) {
+				boolean candidateRegionConnected = getConnectivity(getNeighborhood(sourceID, REGIONS[z][x][y], x, y, z), false);
+				if (!candidateRegionConnected) { return; }
 			}
 		}
 		
@@ -135,10 +135,10 @@ public abstract class Potts implements Steppable {
 			boolean targetConnected = getConnectivity(getNeighborhood(targetID, x, y, z), IDS[z][x][y] == 0);
 			if (!targetConnected) { return; }
 			
-			// Check connectivity of tags.
-			if (TAGS[z][x][y] > Tag.DEFAULT.ordinal()) {
-				boolean candidateTagConnected = getConnectivity(getNeighborhood(targetID, TAGS[z][x][y], x, y, z), false);
-				if (!candidateTagConnected) { return; }
+			// Check connectivity of regions.
+			if (REGIONS[z][x][y] > Region.DEFAULT.ordinal()) {
+				boolean candidateRegionConnected = getConnectivity(getNeighborhood(targetID, REGIONS[z][x][y], x, y, z), false);
+				if (!candidateRegionConnected) { return; }
 			}
 		}
 		
@@ -170,7 +170,7 @@ public abstract class Potts implements Steppable {
 		
 		if (r < p) {
 			IDS[z][x][y] = targetID;
-			if (TAGGED) { TAGS[z][x][y] = (targetID == 0 ? Tag.UNDEFINED.ordinal() : Tag.DEFAULT.ordinal()); }
+			if (HAS_REGIONS) { REGIONS[z][x][y] = (targetID == 0 ? Region.UNDEFINED.ordinal() : Region.DEFAULT.ordinal()); }
 			
 			if (sourceID > 0) { getCell(sourceID).getLocation().remove(x, y, z); }
 			if (targetID > 0) { getCell(targetID).getLocation().add(x, y, z); }
@@ -178,50 +178,50 @@ public abstract class Potts implements Steppable {
 	}
 	
 	/**
-	 * Flips connected voxel from source to target tag based on Boltzmann probability.
+	 * Flips connected voxel from source to target region based on Boltzmann probability.
 	 *
 	 * @param id  the voxel id
-	 * @param sourceTag  the tag of the source voxel
-	 * @param targetTag  the tag of the target voxel
+	 * @param sourceRegion  the region of the source voxel
+	 * @param targetRegion  the region of the target voxel
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
 	 * @param r  a random number
 	 */
-	void flip(int id, int sourceTag, int targetTag, int x, int y, int z, double r) {
+	void flip(int id, int sourceRegion, int targetRegion, int x, int y, int z, double r) {
 		// Check connectivity of source.
-		if (sourceTag > Tag.DEFAULT.ordinal()) {
-			boolean candidateConnected = getConnectivity(getNeighborhood(id, sourceTag, x, y, z), false);
+		if (sourceRegion > Region.DEFAULT.ordinal()) {
+			boolean candidateConnected = getConnectivity(getNeighborhood(id, sourceRegion, x, y, z), false);
 			if (!candidateConnected) { return; }
 		}
 		
 		// Check connectivity of target.
-		if (targetTag > Tag.DEFAULT.ordinal()) {
-			boolean targetConnected = getConnectivity(getNeighborhood(id, targetTag, x, y, z), false);
+		if (targetRegion > Region.DEFAULT.ordinal()) {
+			boolean targetConnected = getConnectivity(getNeighborhood(id, targetRegion, x, y, z), false);
 			if (!targetConnected) { return; }
 		}
 		
-		// Change the voxel tag.
-		change(id, sourceTag, targetTag, x, y, z, r);
+		// Change the voxel region.
+		change(id, sourceRegion, targetRegion, x, y, z, r);
 	}
 	
 	/**
-	 * Calculates energy change to decide if a voxel tag is flipped.
+	 * Calculates energy change to decide if a voxel region is flipped.
 	 * 
 	 * @param id  the voxel id
-	 * @param sourceTag  the tag of the source voxel
-	 * @param targetTag  the tag of the target voxel
+	 * @param sourceRegion  the region of the source voxel
+	 * @param targetRegion  the region of the target voxel
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
 	 * @param r  a random number
 	 */
-	void change(int id, int sourceTag, int targetTag, int x, int y, int z, double r) {
+	void change(int id, int sourceRegion, int targetRegion, int x, int y, int z, double r) {
 		// Calculate energy change.
 		double dH = 0;
-		dH += getDeltaAdhesion(id, sourceTag, targetTag, x, y, z);
-		dH += getDeltaVolume(id, sourceTag, targetTag);
-		dH += getDeltaSurface(id, sourceTag, targetTag, x, y, z);
+		dH += getDeltaAdhesion(id, sourceRegion, targetRegion, x, y, z);
+		dH += getDeltaVolume(id, sourceRegion, targetRegion);
+		dH += getDeltaSurface(id, sourceRegion, targetRegion, x, y, z);
 		
 		// Calculate probability.
 		double p;
@@ -229,10 +229,10 @@ public abstract class Potts implements Steppable {
 		else { p = Math.exp(-dH/TEMPERATURE); }
 		
 		if (r < p) {
-			TAGS[z][x][y] = targetTag;
+			REGIONS[z][x][y] = targetRegion;
 			Cell c = getCell(id);
-			c.getLocation().remove(Tag.values()[sourceTag], x, y, z);
-			c.getLocation().add(Tag.values()[targetTag], x, y, z);
+			c.getLocation().remove(Region.values()[sourceRegion], x, y, z);
+			c.getLocation().add(Region.values()[targetRegion], x, y, z);
 		}
 	}
 	
@@ -259,16 +259,16 @@ public abstract class Potts implements Steppable {
 	abstract double getAdhesion(int id, int x, int y, int z);
 	
 	/**
-	 * Gets adhesion energy for a given voxel tag.
+	 * Gets adhesion energy for a given voxel region.
 	 *
 	 * @param id  the voxel id
-	 * @param tag  the voxel tag
+	 * @param region  the voxel region
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
 	 * @return  the energy
 	 */
-	abstract double getAdhesion(int id, int tag, int x, int y, int z);
+	abstract double getAdhesion(int id, int region, int x, int y, int z);
 	
 	/**
 	 * Gets change in adhesion energy.
@@ -287,19 +287,19 @@ public abstract class Potts implements Steppable {
 	}
 	
 	/**
-	 * Gets change in adhesion energy for tag.
+	 * Gets change in adhesion energy for region.
 	 *
 	 * @param id  the voxel id
-	 * @param sourceTag  the tag of the source voxel
-	 * @param targetTag  the tag of the target voxel
+	 * @param sourceRegion  the region of the source voxel
+	 * @param targetRegion  the region of the target voxel
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
 	 * @return  the change in energy
 	 */
-	double getDeltaAdhesion(int id, int sourceTag, int targetTag, int x, int y, int z) {
-		double source = getAdhesion(id, sourceTag, x, y, z);
-		double target = getAdhesion(id, targetTag, x, y, z);
+	double getDeltaAdhesion(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
+		double source = getAdhesion(id, sourceRegion, x, y, z);
+		double target = getAdhesion(id, targetRegion, x, y, z);
 		return target - source;
 	}
 	
@@ -320,20 +320,20 @@ public abstract class Potts implements Steppable {
 	}
 	
 	/**
-	 * Gets volume energy for a given change in volume for tag.
+	 * Gets volume energy for a given change in volume for region.
 	 *
 	 * @param id  the voxel id
-	 * @param t  the voxel tag 
+	 * @param t  the voxel region 
 	 * @param change  the change in volume
 	 * @return  the energy
 	 */
 	double getVolume(int id, int t, int change) {
-		Tag tag = Tag.values()[t];
-		if (id == 0 || tag == Tag.DEFAULT) { return 0; }
+		Region region = Region.values()[t];
+		if (id == 0 || region == Region.DEFAULT) { return 0; }
 		Cell c = getCell(id);
-		double volume = c.getVolume(tag);
-		double targetVolume = c.getTargetVolume(tag);
-		double lambda = c.getLambda(Term.VOLUME, tag);
+		double volume = c.getVolume(region);
+		double targetVolume = c.getTargetVolume(region);
+		double lambda = c.getLambda(Term.VOLUME, region);
 		return lambda * Math.pow((volume - targetVolume + change), 2);
 	}
 	
@@ -351,16 +351,16 @@ public abstract class Potts implements Steppable {
 	}
 	
 	/**
-	 * Gets change in volume energy for tag.
+	 * Gets change in volume energy for region.
 	 *
 	 * @param id  the voxel id
-	 * @param sourceTag  the tag of the source voxel
-	 * @param targetTag  the tag of the source voxel
+	 * @param sourceRegion  the region of the source voxel
+	 * @param targetRegion  the region of the source voxel
 	 * @return  the change in energy
 	 */
-	double getDeltaVolume(int id, int sourceTag, int targetTag) {
-		double source = getVolume(id, sourceTag, -1) - getVolume(id, sourceTag, 0);
-		double target = getVolume(id, targetTag, 1) - getVolume(id, targetTag, 0);
+	double getDeltaVolume(int id, int sourceRegion, int targetRegion) {
+		double source = getVolume(id, sourceRegion, -1) - getVolume(id, sourceRegion, 0);
+		double target = getVolume(id, targetRegion, 1) - getVolume(id, targetRegion, 0);
 		return target + source;
 	}
 	
@@ -381,20 +381,20 @@ public abstract class Potts implements Steppable {
 	}
 	
 	/**
-	 * Gets the surface energy for a given change in surface for tag.
+	 * Gets the surface energy for a given change in surface for region.
 	 *
 	 * @param id  the voxel id
-	 * @param t  the voxel tag   
+	 * @param t  the voxel region   
 	 * @param change  the change in surface
 	 * @return  the energy
 	 */
 	double getSurface(int id, int t, int change) {
-		Tag tag = Tag.values()[t];
-		if (id == 0 || tag == Tag.DEFAULT) { return 0; }
+		Region region = Region.values()[t];
+		if (id == 0 || region == Region.DEFAULT) { return 0; }
 		Cell c = getCell(id);
-		double surface = c.getSurface(tag);
-		double targetSurface = c.getTargetSurface(tag);
-		double lambda = c.getLambda(Term.SURFACE, tag);
+		double surface = c.getSurface(region);
+		double targetSurface = c.getTargetSurface(region);
+		double lambda = c.getLambda(Term.SURFACE, region);
 		return lambda * Math.pow((surface - targetSurface + change), 2);
 	}
 	
@@ -416,20 +416,20 @@ public abstract class Potts implements Steppable {
 	}
 	
 	/**
-	 * Gets change in surface energy for tag.
+	 * Gets change in surface energy for region.
 	 *
 	 * @param id  the voxel id
-	 * @param sourceTag  the id of the source voxel
-	 * @param targetTag  the id of the target voxel
+	 * @param sourceRegion  the id of the source voxel
+	 * @param targetRegion  the id of the target voxel
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
 	 * @return  the change in energy
 	 */
-	double getDeltaSurface(int id, int sourceTag, int targetTag, int x, int y, int z) {
-		int[] changes = calculateChange(id, sourceTag, targetTag, x, y, z);
-		double source = getSurface(id, sourceTag, changes[0]) - getSurface(id, sourceTag, 0);
-		double target = getSurface(id, targetTag, changes[1]) - getSurface(id, targetTag, 0);
+	double getDeltaSurface(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
+		int[] changes = calculateChange(id, sourceRegion, targetRegion, x, y, z);
+		double source = getSurface(id, sourceRegion, changes[0]) - getSurface(id, sourceRegion, 0);
+		double target = getSurface(id, targetRegion, changes[1]) - getSurface(id, targetRegion, 0);
 		return target + source;
 	}
 	
@@ -446,17 +446,17 @@ public abstract class Potts implements Steppable {
 	abstract int[] calculateChange(int sourceID, int targetID, int x, int y, int z);
 	
 	/**
-	 * Calculates change in surface for tag
+	 * Calculates change in surface for region
 	 *
 	 * @param id  the voxel id
-	 * @param sourceTag  the id of the source voxel
-	 * @param targetTag  the id of the target voxel
+	 * @param sourceRegion  the id of the source voxel
+	 * @param targetRegion  the id of the target voxel
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
 	 * @return  the list of changes in source and target
 	 */
-	abstract int[] calculateChange(int id, int sourceTag, int targetTag, int x, int y, int z);
+	abstract int[] calculateChange(int id, int sourceRegion, int targetRegion, int x, int y, int z);
 	
 	/**
 	 * Gets neighborhood for the given voxel.
@@ -470,16 +470,16 @@ public abstract class Potts implements Steppable {
 	abstract boolean[][][] getNeighborhood(int id, int x, int y, int z);
 	
 	/**
-	 * Gets neighborhood for the given voxel tag.
+	 * Gets neighborhood for the given voxel region.
 	 *
 	 * @param id  the voxel id
-	 * @param tag  the voxel tag
+	 * @param region  the voxel region
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
 	 * @return  {@code true} if simply connected, {@code false} otherwise
 	 */
-	abstract boolean[][][] getNeighborhood(int id, int tag, int x, int y, int z);
+	abstract boolean[][][] getNeighborhood(int id, int region, int x, int y, int z);
 	
 	/**
 	 * Determines connectivity of given neighborhood.
@@ -501,12 +501,12 @@ public abstract class Potts implements Steppable {
 	abstract HashSet<Integer> getUniqueIDs(int x, int y, int z);
 	
 	/**
-	 * Gets unique tags adjacent to given voxel.
+	 * Gets unique regions adjacent to given voxel.
 	 *
 	 * @param x  the x coordinate
 	 * @param y  the y coordinate
 	 * @param z  the z coordinate
-	 * @return  the list of unique tags
+	 * @return  the list of unique regions
 	 */
-	abstract HashSet<Integer> getUniqueTags(int x, int y, int z);
+	abstract HashSet<Integer> getUniqueRegions(int x, int y, int z);
 }

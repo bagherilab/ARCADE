@@ -178,16 +178,16 @@ public abstract class ProliferationModule implements Module {
 	 * Cell will transition to G1 phase once nucleus is at least
 	 * {@code GROWTH_CHECKPOINT_S} times the critical nucleus size.
 	 * <p>
-	 * If cell does not have tags, then cell will transition to G2 phase after
+	 * If cell does not have regions, then cell will transition to G2 phase after
 	 * an average time of {@code DURATION_S}.
 	 */
 	void stepS(double r) {
-		if (cell.hasTags()) {
+		if (cell.hasRegions()) {
 			// Increase size of nucleus.
-			cell.updateTarget(Tag.NUCLEUS, RATE_S, 2);
+			cell.updateTarget(Region.NUCLEUS, RATE_S, 2);
 			
 			// Check for transition to G2 phase.
-			if (cell.getVolume(Tag.NUCLEUS) > GROWTH_CHECKPOINT_S*cell.getCriticalVolume(Tag.NUCLEUS)) {
+			if (cell.getVolume(Region.NUCLEUS) > GROWTH_CHECKPOINT_S*cell.getCriticalVolume(Region.NUCLEUS)) {
 				phase = Phase.PROLIFERATIVE_G2;
 			}
 		} else {
@@ -259,7 +259,7 @@ public abstract class ProliferationModule implements Module {
 	/**
 	 * Adds a cell to the simulation.
 	 * <p>
-	 * The cell location is split, along with any tagged regions.
+	 * The cell location is split, along with any regions.
 	 * The new cell is created, initialized, and added to the schedule.
 	 * Both cells are reset remain in the proliferative state.
 	 * 
@@ -273,13 +273,13 @@ public abstract class ProliferationModule implements Module {
 		Location newLocation = cell.getLocation().split(random);
 		
 		// Reset current cell.
-		cell.reset(potts.IDS, potts.TAGS);
+		cell.reset(potts.IDS, potts.REGIONS);
 		
 		// Create and schedule new cell.
 		int newID = sim.getID();
 		Cell newCell = cell.make(newID, State.PROLIFERATIVE, newLocation);
 		sim.getAgents().addObject(newID, newCell);
-		newCell.reset(potts.IDS, potts.TAGS);
+		newCell.reset(potts.IDS, potts.REGIONS);
 		newCell.schedule(sim.getSchedule());
 	}
 }
