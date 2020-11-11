@@ -33,6 +33,12 @@ public class SeriesTest {
 	private static final int DEFAULT_WIDTH = randomInt();
 	private static final int DEFAULT_HEIGHT = randomOdd();
 	
+	private static final String REGION_ID_1 = randomString().toUpperCase();
+	private static final String REGION_ID_2 = randomString().toUpperCase();
+	
+	private static final String MODULE_ID_1 = randomString().toLowerCase();
+	private static final String MODULE_ID_2 = randomString().toLowerCase();
+	
 	private static final String[] POTTS_PARAMETER_NAMES = new String[] {
 			"POTTS_PARAMETER_1",
 			"POTTS_PARAMETER_2",
@@ -48,33 +54,45 @@ public class SeriesTest {
 	private static final int POTTS_PARAMETER_COUNT = POTTS_PARAMETER_NAMES.length;
 	
 	private static final String[] POPULATION_PARAMETER_NAMES = new String[] {
+			"ADHESION",
 			"POPULATION_PARAMETER_1",
 			"POPULATION_PARAMETER_2",
-			"POPULATION_PARAMETER_3",
-			"CRITICAL_VOLUME",
-			"CRITICAL_SURFACE",
-			"ADHESION"
+			MODULE_ID_1 + TAG_SEPARATOR + "MODULE_PARAMETER_11",
+			MODULE_ID_1 + TAG_SEPARATOR + "MODULE_PARAMETER_12",
+			MODULE_ID_2 + TAG_SEPARATOR + "MODULE_PARAMETER_21",
+			REGION_ID_1 + TAG_SEPARATOR + "POPULATION_PARAMETER_1",
+			REGION_ID_1 + TAG_SEPARATOR + "POPULATION_PARAMETER_2",
+			REGION_ID_2 + TAG_SEPARATOR + "POPULATION_PARAMETER_1",
+			REGION_ID_2 + TAG_SEPARATOR + "POPULATION_PARAMETER_2",
+			REGION_ID_1 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + REGION_ID_1,
+			REGION_ID_1 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + REGION_ID_2,
+			REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + REGION_ID_1,
+			REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + REGION_ID_2,
 	};
 	
 	private static final double[] POPULATION_PARAMETER_VALUES = new double[] {
 			randomDouble(),
 			randomDouble(),
 			randomDouble(),
-			randomInt(),
-			randomInt(),
-			randomDouble()
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
+			randomDouble(),
 	};
-	
-	private static final int POPULATION_PARAMETER_COUNT = POPULATION_PARAMETER_NAMES.length;
 	
 	private static final String POPULATION_ID_1 = randomString();
 	private static final String POPULATION_ID_2 = randomString();
 	private static final String POPULATION_ID_3 = randomString();
 	
-	private static final String TAG_ID_1 = randomString();
-	private static final String TAG_ID_2 = randomString();
-	
-	private static MiniBox POTTS, POPULATION, POPULATION_ADJUSTED;
+	private static MiniBox POTTS, POPULATION;
 	
 	private static final HashMap<String, ArrayList<Box>> setupListsMock = mock(HashMap.class);
 	
@@ -125,16 +143,11 @@ public class SeriesTest {
 		POTTS = PARAMETERS.getIdValForTag("POTTS");
 		
 		// POPULATION
-		for (int i = 0; i < POPULATION_PARAMETER_COUNT; i++) {
+		for (int i = 0; i < POPULATION_PARAMETER_NAMES.length; i++) {
 			PARAMETERS.addTag(POPULATION_PARAMETER_NAMES[i], "POPULATION");
 			PARAMETERS.addAtt(POPULATION_PARAMETER_NAMES[i], "value", "" + POPULATION_PARAMETER_VALUES[i]);
 		}
 		POPULATION = PARAMETERS.getIdValForTag("POPULATION");
-		
-		// Adjusted POPULATION
-		POPULATION_ADJUSTED = PARAMETERS.getIdValForTag("POPULATION");
-		POPULATION_ADJUSTED.put("CRITICAL_VOLUME", POPULATION_ADJUSTED.getDouble("CRITICAL_VOLUME")*DS*DS*DS);
-		POPULATION_ADJUSTED.put("CRITICAL_SURFACE", POPULATION_ADJUSTED.getDouble("CRITICAL_SURFACE")*DS*DS);
 	}
 	
 	private HashMap<String, MiniBox> makeDicts() {
@@ -619,7 +632,7 @@ public class SeriesTest {
 			dtField.setDouble(series, DT);
 		} catch (Exception ignored) { }
 		
-		series.updatePopulations(populations, POPULATION_ADJUSTED);
+		series.updatePopulations(populations, POPULATION);
 		return series;
 	}
 	
@@ -700,40 +713,42 @@ public class SeriesTest {
 	}
 	
 	@Test
-	public void updatePopulation_withTagsValidFraction_setsTags() {
+	public void updatePopulation_withRegionsValidFraction_setsTags() {
 		String[] fractions = new String[] { "0", "0.", "0.0", ".0", "0.5", "0.67", "1", "1.", "1.0" };
 		double[] values = new double[] { 0, 0, 0, 0, 0.5, 0.67, 1, 1, 1 };
 		
 		for (int i = 0; i < fractions.length; i++) {
 			Box[] boxes = new Box[] { new Box() };
 			boxes[0].add("id", POPULATION_ID_1);
-			boxes[0].addTag(TAG_ID_1, "TAG");
-			boxes[0].addAtt(TAG_ID_1,"fraction", fractions[i]);
+			boxes[0].addTag(REGION_ID_1, "REGION");
+			boxes[0].addAtt(REGION_ID_1,"fraction", fractions[i]);
 			Series series = makeSeriesForPopulation(boxes);
 			
 			MiniBox box = series._populations.get(POPULATION_ID_1);
-			assertEquals(values[i], box.getDouble("TAG" + TAG_SEPARATOR + TAG_ID_1), EPSILON);
+			assertEquals(values[i], box.getDouble("*" + TAG_SEPARATOR + REGION_ID_1), EPSILON);
+			assertFalse(box.contains("*" + TAG_SEPARATOR + REGION_ID_2));
 		}
 	}
 	
 	@Test
-	public void updatePopulation_withTagsInvalidFraction_setsTags() {
+	public void updatePopulation_withRegionsInvalidFraction_setsTags() {
 		String[] fractions = new String[] { "1.1", "2", "a", "-0.5" };
 		
 		for (String fraction : fractions) {
 			Box[] boxes = new Box[]{new Box()};
 			boxes[0].add("id", POPULATION_ID_1);
-			boxes[0].addTag(TAG_ID_1, "TAG");
-			boxes[0].addAtt(TAG_ID_1, "fraction", fraction);
+			boxes[0].addTag(REGION_ID_1, "REGION");
+			boxes[0].addAtt(REGION_ID_1, "fraction", fraction);
 			Series series = makeSeriesForPopulation(boxes);
 			
 			MiniBox box = series._populations.get(POPULATION_ID_1);
-			assertEquals(0, box.getDouble("TAG" + TAG_SEPARATOR + TAG_ID_1), EPSILON);
+			assertEquals(0, box.getDouble("*" + TAG_SEPARATOR + REGION_ID_1), EPSILON);
+			assertFalse(box.contains("*" + TAG_SEPARATOR + REGION_ID_2));
 		}
 	}
 	
 	@Test
-	public void updatePopulation_noParametersOnePopNoTags_usesDefaults() {
+	public void updatePopulation_noParametersOnePop_usesDefaults() {
 		Box[] boxes = new Box[] { new Box() };
 		boxes[0].add("id", POPULATION_ID_1);
 		Series series = makeSeriesForPopulation(boxes);
@@ -745,7 +760,7 @@ public class SeriesTest {
 	}
 	
 	@Test
-	public void updatePopulation_givenParametersOnePopNoTags_updatesValues() {
+	public void updatePopulation_givenParametersOnePop_updatesValues() {
 		for (String populationParameter1 : POPULATION_PARAMETER_NAMES) {
 			for (String populationParameter2 : POPULATION_PARAMETER_NAMES) {
 				Box[] boxes = new Box[] { new Box() };
@@ -762,11 +777,9 @@ public class SeriesTest {
 				MiniBox box = series._populations.get(POPULATION_ID_1);
 				
 				for (String parameter : POPULATION_PARAMETER_NAMES) {
-					double expected = POPULATION_ADJUSTED.getDouble(parameter);
+					double expected = POPULATION.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
-					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
-					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
 					assertEquals(expected, box.getDouble(parameter), EPSILON);
 				}
 			}
@@ -774,7 +787,7 @@ public class SeriesTest {
 	}
 	
 	@Test
-	public void updatePopulation_noParametersMultiplePopsNoTags_usesDefaults() {
+	public void updatePopulation_noParametersMultiplePops_usesDefaults() {
 		Box[] boxes = new Box[] { new Box(), new Box(), new Box() };
 		boxes[0].add("id", POPULATION_ID_1);
 		boxes[1].add("id", POPULATION_ID_2);
@@ -792,7 +805,7 @@ public class SeriesTest {
 	}
 	
 	@Test
-	public void updatePopulation_givenParametersMultiplePopsNoTags_updatesValues() {
+	public void updatePopulation_givenParametersMultiplePops_updatesValues() {
 		for (String populationParameter1 : POPULATION_PARAMETER_NAMES) {
 			for (String populationParameter2 : POPULATION_PARAMETER_NAMES) {
 				Box[] boxes = new Box[] { new Box(), new Box(), new Box() };
@@ -816,11 +829,9 @@ public class SeriesTest {
 					assertEquals(POPULATION.get(parameter), box1.get(parameter));
 					assertEquals(POPULATION.get(parameter), box3.get(parameter));
 					
-					double expected = POPULATION_ADJUSTED.getDouble(parameter);
+					double expected = POPULATION.getDouble(parameter);
 					if (parameter.equals(populationParameter1)) { expected = value; }
 					if (parameter.equals(populationParameter2)) { expected *= scale; }
-					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
-					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
 					assertEquals(expected, box2.getDouble(parameter), EPSILON);
 				}
 			}
@@ -828,7 +839,7 @@ public class SeriesTest {
 	}
 	
 	@Test
-	public void updatePopulation_noAdhesionOnePopNoTags_usesDefaults() {
+	public void updatePopulation_noAdhesionOnePop_usesDefaults() {
 		Box[] boxes = new Box[] { new Box() };
 		boxes[0].add("id", POPULATION_ID_1);
 		
@@ -844,7 +855,7 @@ public class SeriesTest {
 	}
 	
 	@Test
-	public void updatePopulation_givenAdhesionOnePopNoTags_updatesValues() {
+	public void updatePopulation_givenAdhesionOnePop_updatesValues() {
 		String[] pops = new String[] { "*", POPULATION_ID_1 };
 		for (String modifiedPop1 : pops) {
 			for (String modifiedPop2 : pops) {
@@ -876,7 +887,7 @@ public class SeriesTest {
 	}
 	
 	@Test
-	public void updatePopulation_noAdhesionMultiplePopsNoTags_usesDefaults() {
+	public void updatePopulation_noAdhesionMultiplePops_usesDefaults() {
 		Box[] boxes = new Box[] { new Box(), new Box(), new Box() };
 		boxes[0].add("id", POPULATION_ID_1);
 		boxes[1].add("id", POPULATION_ID_2);
@@ -906,7 +917,7 @@ public class SeriesTest {
 	}
 	
 	@Test
-	public void updatePopulation_givenAdhesionMultiplePopsNoTags_updatesValues() {
+	public void updatePopulation_givenAdhesionMultiplePops_updatesValues() {
 		String[] pops = new String[] { "*", POPULATION_ID_1, POPULATION_ID_2 };
 		for (String modifiedPop1 : pops) {
 			for (String modifiedPop2 : pops) {
@@ -942,267 +953,56 @@ public class SeriesTest {
 	}
 	
 	@Test
-	public void updatePopulation_noParametersOnePopWithTags_usesDefaults() {
+	public void updatePopulation_noAdhesionWithRegions_usesDefaults() {
+		String[] regions = new String[] { REGION_ID_1, REGION_ID_2 };
 		Box[] boxes = new Box[] { new Box() };
 		boxes[0].add("id", POPULATION_ID_1);
-		boxes[0].addTag(TAG_ID_1, "TAG");
-		boxes[0].addTag(TAG_ID_2, "TAG");
-		boxes[0].addAtt(TAG_ID_1,"fraction", "0");
-		boxes[0].addAtt(TAG_ID_2,"fraction", "0");
-		Series series = makeSeriesForPopulation(boxes);
-		MiniBox box = series._populations.get(POPULATION_ID_1);
-		
-		for (String parameter : POPULATION_PARAMETER_NAMES) {
-			assertEquals(POPULATION.get(parameter), box.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
-			assertEquals(POPULATION.get(parameter), box.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
-		}
-	}
-	
-	@Test
-	public void updatePopulation_givenParametersOnePopWithTags_updateValues() {
-		for (String populationParameter1 : POPULATION_PARAMETER_NAMES) {
-			for (String populationParameter2 : POPULATION_PARAMETER_NAMES) {
-				Box[] boxes = new Box[] { new Box() };
-				boxes[0].add("id", POPULATION_ID_1);
-				boxes[0].addTag(TAG_ID_1, "TAG");
-				boxes[0].addTag(TAG_ID_2, "TAG");
-				boxes[0].addAtt(TAG_ID_1,"fraction", "0");
-				boxes[0].addAtt(TAG_ID_2,"fraction", "0");
-				
-				double value = randomDouble();
-				double scale = randomDouble();
-				boxes[0].addAtt(populationParameter1, "value", "" + value);
-				boxes[0].addTag(populationParameter1, "PARAMETER");
-				boxes[0].addAtt(populationParameter2, "scale", "" + scale);
-				boxes[0].addTag(populationParameter2, "PARAMETER");
-				
-				Series series = makeSeriesForPopulation(boxes);
-				MiniBox box = series._populations.get(POPULATION_ID_1);
-				
-				for (String parameter : POPULATION_PARAMETER_NAMES) {
-					double expected = POPULATION_ADJUSTED.getDouble(parameter);
-					if (parameter.equals(populationParameter1)) { expected = value; }
-					if (parameter.equals(populationParameter2)) { expected *= scale; }
-					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
-					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
-					assertEquals(expected, box.getDouble(parameter), EPSILON);
-					assertEquals(expected, box.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
-					assertEquals(expected, box.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
-				}
-			}
-		}
-	}
-	
-	@Test
-	public void updatePopulation_noParametersMultiplePopsWithTags_usesDefaults() {
-		Box[] boxes = new Box[] { new Box(), new Box(), new Box() };
-		boxes[0].add("id", POPULATION_ID_1);
-		boxes[1].add("id", POPULATION_ID_2);
-		boxes[2].add("id", POPULATION_ID_3);
-		boxes[1].addTag(TAG_ID_1, "TAG");
-		boxes[1].addTag(TAG_ID_2, "TAG");
-		boxes[1].addAtt(TAG_ID_1,"fraction", "0");
-		boxes[1].addAtt(TAG_ID_2,"fraction", "0");
-		Series series = makeSeriesForPopulation(boxes);
-		MiniBox box1 = series._populations.get(POPULATION_ID_1);
-		MiniBox box2 = series._populations.get(POPULATION_ID_2);
-		MiniBox box3 = series._populations.get(POPULATION_ID_3);
-		
-		for (String parameter : POPULATION_PARAMETER_NAMES) {
-			assertNull(box1.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
-			assertNull(box1.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
-			assertEquals(POPULATION.get(parameter), box2.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
-			assertEquals(POPULATION.get(parameter), box2.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
-			assertNull(box3.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
-			assertNull(box3.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
-		}
-	}
-	
-	@Test
-	public void updatePopulation_givenParametersMultiplePopsWithTags_updateValues() {
-		for (String populationParameter1 : POPULATION_PARAMETER_NAMES) {
-			for (String populationParameter2 : POPULATION_PARAMETER_NAMES) {
-				Box[] boxes = new Box[] { new Box(), new Box(), new Box() };
-				boxes[0].add("id", POPULATION_ID_1);
-				boxes[1].add("id", POPULATION_ID_2);
-				boxes[2].add("id", POPULATION_ID_3);
-				boxes[1].addTag(TAG_ID_1, "TAG");
-				boxes[1].addTag(TAG_ID_2, "TAG");
-				boxes[1].addAtt(TAG_ID_1,"fraction", "0");
-				boxes[1].addAtt(TAG_ID_2,"fraction", "0");
-				
-				double value = randomDouble();
-				double scale = randomDouble();
-				boxes[1].addAtt(populationParameter1, "value", "" + value);
-				boxes[1].addTag(populationParameter1, "PARAMETER");
-				boxes[1].addAtt(populationParameter2, "scale", "" + scale);
-				boxes[1].addTag(populationParameter2, "PARAMETER");
-				
-				Series series = makeSeriesForPopulation(boxes);
-				MiniBox box1 = series._populations.get(POPULATION_ID_1);
-				MiniBox box2 = series._populations.get(POPULATION_ID_2);
-				MiniBox box3 = series._populations.get(POPULATION_ID_3);
-				
-				for (String parameter : POPULATION_PARAMETER_NAMES) {
-					assertNull(box1.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
-					assertNull(box1.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
-					assertNull(box3.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
-					assertNull(box3.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
-					
-					assertEquals(POPULATION.getDouble(parameter), box1.getDouble(parameter), EPSILON);
-					assertEquals(POPULATION.getDouble(parameter), box3.getDouble(parameter), EPSILON);
-					
-					double expected = POPULATION_ADJUSTED.getDouble(parameter);
-					if (parameter.equals(populationParameter1)) { expected = value; }
-					if (parameter.equals(populationParameter2)) { expected *= scale; }
-					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
-					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
-					assertEquals(expected, box2.getDouble(parameter), EPSILON);
-					assertEquals(expected, box2.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
-					assertEquals(expected, box2.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
-				}
-			}
-		}
-	}
-	
-	@Test
-	public void updatePopulation_givenTagParametersOnePop_updateValues() {
-		for (String populationParameter1 : POPULATION_PARAMETER_NAMES) {
-			for (String populationParameter2 : POPULATION_PARAMETER_NAMES) {
-				Box[] boxes = new Box[] { new Box() };
-				boxes[0].add("id", POPULATION_ID_1);
-				boxes[0].addTag(TAG_ID_1, "TAG");
-				boxes[0].addTag(TAG_ID_2, "TAG");
-				boxes[0].addAtt(TAG_ID_1,"fraction", "0");
-				boxes[0].addAtt(TAG_ID_2,"fraction", "0");
-				
-				double value = randomDouble();
-				double scale = randomDouble();
-				boxes[0].addAtt(TAG_ID_2 + TAG_SEPARATOR + populationParameter1, "value", "" + value);
-				boxes[0].addTag(TAG_ID_2 + TAG_SEPARATOR + populationParameter1, "PARAMETER");
-				boxes[0].addAtt(TAG_ID_2 + TAG_SEPARATOR + populationParameter2, "scale", "" + scale);
-				boxes[0].addTag(TAG_ID_2 + TAG_SEPARATOR + populationParameter2, "PARAMETER");
-				
-				Series series = makeSeriesForPopulation(boxes);
-				MiniBox box = series._populations.get(POPULATION_ID_1);
-				
-				for (String parameter : POPULATION_PARAMETER_NAMES) {
-					double expected = POPULATION_ADJUSTED.getDouble(parameter);
-					if (parameter.equals(populationParameter1)) { expected = value; }
-					if (parameter.equals(populationParameter2)) { expected *= scale; }
-					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
-					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
-					assertEquals(POPULATION.getDouble(parameter), box.getDouble(parameter), EPSILON);
-					assertEquals(POPULATION.getDouble(parameter), box.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
-					assertEquals(expected, box.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
-				}
-			}
-		}
-	}
-	
-	@Test
-	public void updatePopulation_givenTagParametersMultiplePops_updateValues() {
-		for (String populationParameter1 : POPULATION_PARAMETER_NAMES) {
-			for (String populationParameter2 : POPULATION_PARAMETER_NAMES) {
-				Box[] boxes = new Box[] { new Box(), new Box(), new Box() };
-				boxes[0].add("id", POPULATION_ID_1);
-				boxes[1].add("id", POPULATION_ID_2);
-				boxes[2].add("id", POPULATION_ID_3);
-				boxes[1].addTag(TAG_ID_1, "TAG");
-				boxes[1].addTag(TAG_ID_2, "TAG");
-				boxes[1].addAtt(TAG_ID_1,"fraction", "0");
-				boxes[1].addAtt(TAG_ID_2,"fraction", "0");
-				
-				double value = randomDouble();
-				double scale = randomDouble();
-				boxes[1].addAtt(TAG_ID_2 + TAG_SEPARATOR + populationParameter1, "value", "" + value);
-				boxes[1].addTag(TAG_ID_2 + TAG_SEPARATOR + populationParameter1, "PARAMETER");
-				boxes[1].addAtt(TAG_ID_2 + TAG_SEPARATOR + populationParameter2, "scale", "" + scale);
-				boxes[1].addTag(TAG_ID_2 + TAG_SEPARATOR + populationParameter2, "PARAMETER");
-				
-				Series series = makeSeriesForPopulation(boxes);
-				MiniBox box1 = series._populations.get(POPULATION_ID_1);
-				MiniBox box2 = series._populations.get(POPULATION_ID_2);
-				MiniBox box3 = series._populations.get(POPULATION_ID_3);
-				
-				for (String parameter : POPULATION_PARAMETER_NAMES) {
-					assertNull(box1.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
-					assertNull(box1.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
-					assertNull(box3.get(TAG_ID_1 + TAG_SEPARATOR + parameter));
-					assertNull(box3.get(TAG_ID_2 + TAG_SEPARATOR + parameter));
-					
-					assertEquals(POPULATION.getDouble(parameter), box1.getDouble(parameter), EPSILON);
-					assertEquals(POPULATION.getDouble(parameter), box3.getDouble(parameter), EPSILON);
-					
-					double expected = POPULATION_ADJUSTED.getDouble(parameter);
-					if (parameter.equals(populationParameter1)) { expected = value; }
-					if (parameter.equals(populationParameter2)) { expected *= scale; }
-					if (parameter.equals("CRITICAL_VOLUME")) { expected = Math.round(expected/(DS*DS*DS)); }
-					else if (parameter.equals("CRITICAL_SURFACE")) { expected = Math.round(expected/(DS*DS)); }
-					assertEquals(POPULATION.getDouble(parameter), box2.getDouble(parameter), EPSILON);
-					assertEquals(POPULATION.getDouble(parameter), box2.getDouble(TAG_ID_1 + TAG_SEPARATOR + parameter), EPSILON);
-					assertEquals(expected, box2.getDouble(TAG_ID_2 + TAG_SEPARATOR + parameter), EPSILON);
-				}
-			}
-		}
-	}
-	
-	@Test
-	public void updatePopulation_noAdhesionWithTags_usesDefaults() {
-		String[] tags = new String[] { TAG_ID_1, TAG_ID_2 };
-		Box[] boxes = new Box[] { new Box() };
-		boxes[0].add("id", POPULATION_ID_1);
-		boxes[0].addTag(TAG_ID_1, "TAG");
-		boxes[0].addTag(TAG_ID_2, "TAG");
-		boxes[0].addAtt(TAG_ID_1,"fraction", "0");
-		boxes[0].addAtt(TAG_ID_2,"fraction", "0");
-		
-		String adhesion = "" + randomDouble();
-		boxes[0].addAtt("ADHESION", "value", adhesion);
-		boxes[0].addTag("ADHESION", "PARAMETER");
+		boxes[0].addTag(REGION_ID_1, "REGION");
+		boxes[0].addTag(REGION_ID_2, "REGION");
+		boxes[0].addAtt(REGION_ID_1,"fraction", "0");
+		boxes[0].addAtt(REGION_ID_2,"fraction", "0");
 		
 		Series series = makeSeriesForPopulation(boxes);
 		MiniBox box = series._populations.get(POPULATION_ID_1);
 		
-		for (String tagA : tags) {
-			for (String tagB : tags) {
-				assertEquals(adhesion, box.get(tagA + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + tagB));
+		for (String region : regions) {
+			for (String target : regions) {
+				String name = region + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target;
+				assertEquals(POPULATION.get(name), box.get(name));
 			}
 		}
 	}
 	
 	@Test
-	public void updatePopulation_givenAdhesionWithTags_updateValues() {
-		String[] tags = new String[] { TAG_ID_1, TAG_ID_2 };
-		for (String modifiedTag1 : tags) {
-			for (String modifiedTag2 : tags) {
+	public void updatePopulation_givenAdhesionWithRegions_updateValues() {
+		String[] regions = new String[] { REGION_ID_1, REGION_ID_2 };
+		for (String modifiedRegion1 : regions) {
+			for (String modifiedRegion2 : regions) {
 				Box[] boxes = new Box[] { new Box() };
 				boxes[0].add("id", POPULATION_ID_1);
-				boxes[0].addTag(TAG_ID_1, "TAG");
-				boxes[0].addTag(TAG_ID_2, "TAG");
-				boxes[0].addAtt(TAG_ID_1,"fraction", "0");
-				boxes[0].addAtt(TAG_ID_2,"fraction", "0");
-				
-				double adhesion = randomDouble();
-				boxes[0].addAtt("ADHESION", "value", "" + adhesion);
-				boxes[0].addTag("ADHESION", "PARAMETER");
+				boxes[0].addTag(REGION_ID_1, "TAG");
+				boxes[0].addTag(REGION_ID_2, "TAG");
+				boxes[0].addAtt(REGION_ID_1,"fraction", "0");
+				boxes[0].addAtt(REGION_ID_2,"fraction", "0");
 				
 				double value = randomDouble();
 				double scale = randomDouble();
-				boxes[0].addAtt(TAG_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedTag1, "value", "" + value);
-				boxes[0].addTag(TAG_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedTag1, "PARAMETER");
-				boxes[0].addAtt(TAG_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedTag2, "scale", "" + scale);
-				boxes[0].addTag(TAG_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedTag2, "PARAMETER");
+				boxes[0].addAtt(REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedRegion1, "value", "" + value);
+				boxes[0].addTag(REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedRegion1, "PARAMETER");
+				boxes[0].addAtt(REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedRegion2, "scale", "" + scale);
+				boxes[0].addTag(REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedRegion2, "PARAMETER");
 				
 				Series series = makeSeriesForPopulation(boxes);
 				MiniBox box = series._populations.get(POPULATION_ID_1);
 				
-				for (String tag : tags) {
-					assertEquals(adhesion, box.getDouble(TAG_ID_1 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + tag), EPSILON);
-					double expected = adhesion;
-					if (tag.equals(modifiedTag1)) { expected = value; }
-					if (tag.equals(modifiedTag2)) { expected *= scale; }
-					assertEquals(expected, box.getDouble(TAG_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + tag), EPSILON);
+				for (String target : regions) {
+					String name1 = REGION_ID_1 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target;
+					String name2 = REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target;
+					assertEquals(POPULATION.getDouble(name1), box.getDouble(name1), EPSILON);
+					double expected = POPULATION.getDouble(name2);
+					if (target.equals(modifiedRegion1)) { expected = value; }
+					if (target.equals(modifiedRegion2)) { expected *= scale; }
+					assertEquals(expected, box.getDouble(name2), EPSILON);
 				}
 			}
 		}

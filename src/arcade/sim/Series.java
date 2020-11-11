@@ -319,40 +319,15 @@ public class Series {
 						population.get("ADHESION"), parameterValues, parameterScales);
 			}
 			
-			// Get tags.
-			Box tags = p.filterBoxByTag("TAG");
-			MiniBox tagFractions = tags.getIdValForTagAtt("TAG", "fraction");
+			// Get list of regions.
+			Box regions = p.filterBoxByTag("REGION");
+			MiniBox regionFractions = regions.getIdValForTagAtt("REGION", "fraction");
 			
-			// Add tag fractions and parameters.
-			for (String tag : tags.getKeys()) {
-				double tagFraction = (isValidFraction(tags, tag + KEY_SEPARATOR + "fraction") ? tagFractions.getDouble(tag) : 0);
-				population.put("TAG" + TAG_SEPARATOR + tag, tagFraction);
-				
-				// Add tag parameters.
-				for (String parameter : populationDefaults.getKeys()) {
-					String tagParameter = tag + TAG_SEPARATOR + parameter;
-					updateParameter(population, tagParameter,
-							population.get(parameter), parameterValues, parameterScales);
-				}
-				
-				// Scale tag volume and surface parameter units.
-				population.put(tag + TAG_SEPARATOR + "CRITICAL_VOLUME",
-						Math.round(population.getDouble(tag + TAG_SEPARATOR + "CRITICAL_VOLUME")/(DS*DS*DS)));
-				population.put(tag + TAG_SEPARATOR + "CRITICAL_SURFACE",
-						Math.round(population.getDouble(tag + TAG_SEPARATOR + "CRITICAL_SURFACE")/(DS*DS)));
-				
-				// Add tag adhesion values.
-				for (String target : tags.getKeys()) {
-					updateParameter(population, tag + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target,
-							population.get("ADHESION"), parameterValues, parameterScales);
-				}
+			// Add region fraction, if valid.
+			for (String region : regions.getKeys()) {
+				double tagFraction = (isValidFraction(regions, region + KEY_SEPARATOR + "fraction") ? regionFractions.getDouble(region) : 0);
+				population.put("*" + TAG_SEPARATOR + region, tagFraction);
 			}
-			
-			// Scale volume and surface parameter units.
-			population.put("CRITICAL_VOLUME",
-					Math.round(population.getDouble("CRITICAL_VOLUME")/(DS*DS*DS)));
-			population.put("CRITICAL_SURFACE",
-					Math.round(population.getDouble("CRITICAL_SURFACE")/(DS*DS)));
 		}
 	}
 	
