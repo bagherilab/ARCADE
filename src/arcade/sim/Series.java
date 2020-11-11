@@ -52,6 +52,9 @@ public class Series {
 	/** Spatial conversion factor (um/voxel) */
 	final double DS;
 	
+	/** Temporal conversion factor (hrs/tick) */
+	final double DT;
+	
 	/** Constructor for the simulation */
 	Constructor<?> simCons;
 	
@@ -122,6 +125,7 @@ public class Series {
 		
 		// Set conversion factors.
 		this.DS = (series.contains("ds") ? series.getDouble("ds") : defaults.getDouble("DS"));
+		this.DT = (series.contains("dt") ? series.getDouble("dt") : defaults.getDouble("DT"));
 		
 		// Initialize simulation series.
 		initialize(setupLists, parameters);
@@ -210,6 +214,11 @@ public class Series {
 		ArrayList<Box> populations = setupLists.get("populations");
 		updatePopulations(populations, populationDefaults);
 		
+		// Initialize molecules.
+		MiniBox moleculeDefaults = parameters.getIdValForTag("MOLECULE");
+		ArrayList<Box> molecules = setupLists.get("molecules");
+		updateMolecules(molecules, moleculeDefaults);
+		
 		// Add helpers.
 		MiniBox helperDefaults = parameters.getIdValForTag("HELPER");
 		ArrayList<Box> helpers = setupLists.get("helpers");
@@ -274,7 +283,8 @@ public class Series {
 		pops[0] = "*";
 		for (int i = 0; i < populations.size(); i++) { pops[i + 1] = populations.get(i).getValue("id"); }
 		
-		int iPop = 1;
+		// Assign codes to each population.
+		int code = 1;
 		
 		// Iterate through each setup dictionary to build population settings.
 		for (Box p : populations) {
@@ -282,15 +292,14 @@ public class Series {
 			
 			// Create new population and update code.
 			MiniBox population = new MiniBox();
-			population.put("CODE", iPop++);
+			population.put("CODE", code++);
 			_populations.put(id, population);
 			
-			// Add population init if given. If not given or invalid, set
-			// to zero.
+			// Add population init if given. If not given or invalid, set to zero.
 			int init = (isValidNumber(p, "init") ? (int)Double.parseDouble(p.getValue("init")) : 0);
 			population.put("INIT", init);
 			
-			// Get default parameters and any parameter tags.
+			// Get default parameters and any parameter adjustments.
 			Box parameters = p.filterBoxByTag("PARAMETER");
 			MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
 			MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
@@ -345,6 +354,16 @@ public class Series {
 			population.put("CRITICAL_SURFACE",
 					Math.round(population.getDouble("CRITICAL_SURFACE")/(DS*DS)));
 		}
+	}
+	
+	/**
+	 * Creates environment molecules.
+	 *
+	 * @param molecules  the list of molecule setup dictionaries
+	 * @param moleculeDefaults  the dictionary of default molecule parameters
+	 */
+	void updateMolecules(ArrayList<Box> molecules, MiniBox moleculeDefaults) {
+		// TODO
 	}
 	
 	/**

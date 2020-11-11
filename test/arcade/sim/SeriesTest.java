@@ -21,6 +21,7 @@ import static arcade.util.MiniBox.TAG_SEPARATOR;
 public class SeriesTest {
 	private static final double EPSILON = 1E-4;
 	private static final double DS = (Math.random()*10) + 1;
+	private static final double DT = Math.random() + 0.5;
 	private static Box PARAMETERS;
 	private static final String TEST_NAME = "DEFAULT_NAME";
 	private static final String TEST_PATH = "/default/path/";
@@ -105,6 +106,7 @@ public class SeriesTest {
 		PARAMETERS.addTag("WIDTH", "DEFAULT");
 		PARAMETERS.addTag("HEIGHT", "DEFAULT");
 		PARAMETERS.addTag("DS", "DEFAULT");
+		PARAMETERS.addTag("DT", "DEFAULT");
 		PARAMETERS.addAtt("START_SEED", "value", "" + DEFAULT_START_SEED);
 		PARAMETERS.addAtt("END_SEED", "value", "" + DEFAULT_END_SEED);
 		PARAMETERS.addAtt("TICKS", "value", "" + DEFAULT_TICKS);
@@ -113,6 +115,7 @@ public class SeriesTest {
 		PARAMETERS.addAtt("WIDTH", "value", "" + DEFAULT_WIDTH);
 		PARAMETERS.addAtt("HEIGHT", "value", "" + DEFAULT_HEIGHT);
 		PARAMETERS.addAtt("DS", "value", "" + DS);
+		PARAMETERS.addAtt("DT", "value", "" + DT);
 		
 		// POTTS
 		for (int i = 0; i < POTTS_PARAMETER_COUNT; i++) {
@@ -444,6 +447,24 @@ public class SeriesTest {
 	}
 	
 	@Test
+	public void constructor_dtNotGiven_usesDefault() {
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		
+		assertEquals(DT, series.DT, EPSILON);
+	}
+	
+	@Test
+	public void constructor_dtGiven_usesGiven() {
+		double dt = randomDouble();
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		setupDicts.get("series").put("dt", dt);
+		Series series = new Series(setupDicts, setupListsMock, PARAMETERS, false);
+		
+		assertEquals(dt, series.DT, EPSILON);
+	}
+	
+	@Test
 	public void initialize_default_callsMethods() {
 		HashMap<String, ArrayList<Box>> setupLists = makeLists();
 		Series series = mock(Series.class, CALLS_REAL_METHODS);
@@ -454,6 +475,9 @@ public class SeriesTest {
 		
 		ArrayList<Box> populations = setupLists.get("populations");
 		verify(series).updatePopulations(eq(populations), any(MiniBox.class));
+		
+		ArrayList<Box> molecules = setupLists.get("molecules");
+		verify(series).updateMolecules(eq(molecules), any(MiniBox.class));
 		
 		ArrayList<Box> helpers = setupLists.get("helpers");
 		verify(series).updateHelpers(eq(helpers), any(MiniBox.class));
@@ -586,9 +610,13 @@ public class SeriesTest {
 		populations.addAll(Arrays.asList(boxes));
 		
 		try {
-			Field field = Series.class.getDeclaredField("DS");
-			field.setAccessible(true);
-			field.setDouble(series, DS);
+			Field dsField = Series.class.getDeclaredField("DS");
+			dsField.setAccessible(true);
+			dsField.setDouble(series, DS);
+			
+			Field dtField = Series.class.getDeclaredField("DT");
+			dtField.setAccessible(true);
+			dtField.setDouble(series, DT);
 		} catch (Exception ignored) { }
 		
 		series.updatePopulations(populations, POPULATION_ADJUSTED);

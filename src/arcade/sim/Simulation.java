@@ -28,8 +28,6 @@ public interface Simulation {
 	/** Stepping order for cells */
 	int ORDERING_CELLS = 1;
 	
-	double DT = 30./60; // hours
-	
 	/**
 	 * Gets the {@link arcade.sim.Series} object for the current simulation.
 	 * <p>
