@@ -487,7 +487,7 @@ public class SeriesTest {
 		verify(series).updatePotts(eq(potts), any(MiniBox.class));
 		
 		ArrayList<Box> populations = setupLists.get("populations");
-		verify(series).updatePopulations(eq(populations), any(MiniBox.class));
+		verify(series).updatePopulations(eq(populations), any(MiniBox.class), any(MiniBox.class));
 		
 		ArrayList<Box> molecules = setupLists.get("molecules");
 		verify(series).updateMolecules(eq(molecules), any(MiniBox.class));
@@ -506,18 +506,18 @@ public class SeriesTest {
 	}
 	
 	@Test
-	public void updateParameter_noValueNoScaling_usesDefault() {
+	public void parseParameter_noValueNoScaling_usesDefault() {
 		MiniBox box = new MiniBox();
 		String parameter = randomString();
 		double defaultParameter = randomDouble();
 		MiniBox values = new MiniBox();
 		MiniBox scales = new MiniBox();
-		Series.updateParameter(box, parameter, "" + defaultParameter, values, scales);
+		Series.parseParameter(box, parameter, "" + defaultParameter, values, scales);
 		assertEquals(defaultParameter, box.getDouble(parameter), EPSILON);
 	}
 	
 	@Test
-	public void updateParameter_withValueOnly_usesDefault() {
+	public void parseParameter_withValueOnly_usesDefault() {
 		MiniBox box = new MiniBox();
 		String parameter = randomString();
 		double defaultParameter = randomDouble();
@@ -527,12 +527,12 @@ public class SeriesTest {
 		double parameterValue = randomDouble();
 		values.put(parameter, parameterValue);
 		
-		Series.updateParameter(box, parameter, "" + defaultParameter, values, scales);
+		Series.parseParameter(box, parameter, "" + defaultParameter, values, scales);
 		assertEquals(parameterValue, box.getDouble(parameter), EPSILON);
 	}
 	
 	@Test
-	public void updateParameter_withScaleOnly_usesDefault() {
+	public void parseParameter_withScaleOnly_usesDefault() {
 		MiniBox box = new MiniBox();
 		String parameter = randomString();
 		double defaultParameter = randomDouble();
@@ -542,12 +542,12 @@ public class SeriesTest {
 		double parameterScale = randomDouble();
 		scales.put(parameter, parameterScale);
 		
-		Series.updateParameter(box, parameter, "" + defaultParameter, values, scales);
+		Series.parseParameter(box, parameter, "" + defaultParameter, values, scales);
 		assertEquals(defaultParameter*parameterScale, box.getDouble(parameter), EPSILON);
 	}
 	
 	@Test
-	public void updateParameter_valueAndScale_usesDefault() {
+	public void parseParameter_valueAndScale_usesDefault() {
 		MiniBox box = new MiniBox();
 		String parameter = randomString();
 		double defaultParameter = randomDouble();
@@ -560,8 +560,33 @@ public class SeriesTest {
 		double parameterScale = randomDouble();
 		scales.put(parameter, parameterScale);
 		
-		Series.updateParameter(box, parameter, "" + defaultParameter, values, scales);
+		Series.parseParameter(box, parameter, "" + defaultParameter, values, scales);
 		assertEquals(parameterValue*parameterScale, box.getDouble(parameter), EPSILON);
+	}
+	
+	@Test
+	public void parseConversion_invalidConversion_returnsOne() {
+		assertEquals(1, Series.parseConversion(randomString(), DS, DT), EPSILON);
+	}
+	
+	@Test
+	public void parseConversion_noExponent_returnsValue() {
+		assertEquals(DS, Series.parseConversion("DS", DS, DT), EPSILON);
+		assertEquals(DT, Series.parseConversion("DT", DS, DT), EPSILON);
+	}
+	
+	@Test
+	public void parseConversion_positiveExponent_returnsValue() {
+		int n = randomInt();
+		assertEquals(Math.pow(DS, n), Series.parseConversion("DS^" + n, DS, DT), EPSILON);
+		assertEquals(Math.pow(DT, n), Series.parseConversion("DT^" + n, DS, DT), EPSILON);
+	}
+	
+	@Test
+	public void parseConversion_negativeExponent_returnsValue() {
+		int n = randomInt();
+		assertEquals(Math.pow(DS, -n), Series.parseConversion("DS^-" + n, DS, DT), EPSILON);
+		assertEquals(Math.pow(DT, -n), Series.parseConversion("DT^-" + n, DS, DT), EPSILON);
 	}
 	
 	private Series makeSeriesForPotts(Box box) {
@@ -617,6 +642,10 @@ public class SeriesTest {
 	}
 	
 	private Series makeSeriesForPopulation(Box[] boxes) {
+		return makeSeriesForPopulation(boxes, new MiniBox());
+	}
+	
+	private Series makeSeriesForPopulation(Box[] boxes, MiniBox conversion) {
 		HashMap<String, ArrayList<Box>> setupLists = makeLists();
 		Series series = mock(Series.class, CALLS_REAL_METHODS);
 		ArrayList<Box> populations = setupLists.get("populations");
@@ -632,14 +661,14 @@ public class SeriesTest {
 			dtField.setDouble(series, DT);
 		} catch (Exception ignored) { }
 		
-		series.updatePopulations(populations, POPULATION);
+		series.updatePopulations(populations, POPULATION, conversion);
 		return series;
 	}
 	
 	@Test
 	public void updatePopulation_noPopulations_createsMap() {
 		Series series = mock(Series.class, CALLS_REAL_METHODS);
-		series.updatePopulations(null, POPULATION);
+		series.updatePopulations(null, POPULATION, new MiniBox());
 		assertEquals(0, series._populations.size());
 	}
 	
@@ -1005,6 +1034,48 @@ public class SeriesTest {
 					assertEquals(expected, box.getDouble(name2), EPSILON);
 				}
 			}
+		}
+	}
+	
+	@Test
+	public void updatePopulation_withConversionOnePop_convertsValue() {
+		MiniBox conversion = new MiniBox();
+		String convertedParameter = POPULATION_PARAMETER_NAMES[(int)(Math.random()*POPULATION_PARAMETER_NAMES.length)];
+		conversion.put(convertedParameter, "DS");
+		
+		Box[] boxes = new Box[] { new Box() };
+		boxes[0].add("id", POPULATION_ID_1);
+		Series series = makeSeriesForPopulation(boxes, conversion);
+		MiniBox box = series._populations.get(POPULATION_ID_1);
+		
+		for (String parameter : POPULATION_PARAMETER_NAMES) {
+			double expected = POPULATION.getDouble(parameter);
+			if (parameter.equals(convertedParameter)) { expected *= DS; }
+			assertEquals(expected, box.getDouble(parameter), EPSILON);
+		}
+	}
+	
+	@Test
+	public void updatePopulation_withConversionMultiplePops_convertsValue() {
+		MiniBox conversion = new MiniBox();
+		String convertedParameter = POPULATION_PARAMETER_NAMES[(int)(Math.random()*POPULATION_PARAMETER_NAMES.length)];
+		conversion.put(convertedParameter, "DS");
+		
+		Box[] boxes = new Box[] { new Box(), new Box(), new Box() };
+		boxes[0].add("id", POPULATION_ID_1);
+		boxes[1].add("id", POPULATION_ID_2);
+		boxes[2].add("id", POPULATION_ID_3);
+		Series series = makeSeriesForPopulation(boxes, conversion);
+		MiniBox box1 = series._populations.get(POPULATION_ID_1);
+		MiniBox box2 = series._populations.get(POPULATION_ID_2);
+		MiniBox box3 = series._populations.get(POPULATION_ID_3);
+		
+		for (String parameter : POPULATION_PARAMETER_NAMES) {
+			double expected = POPULATION.getDouble(parameter);
+			if (parameter.equals(convertedParameter)) { expected *= DS; }
+			assertEquals(expected, box1.getDouble(parameter), EPSILON);
+			assertEquals(expected, box2.getDouble(parameter), EPSILON);
+			assertEquals(expected, box3.getDouble(parameter), EPSILON);
 		}
 	}
 	

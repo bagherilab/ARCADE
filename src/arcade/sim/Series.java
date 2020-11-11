@@ -211,8 +211,9 @@ public class Series {
 		
 		// Initialize populations.
 		MiniBox populationDefaults = parameters.getIdValForTag("POPULATION");
+		MiniBox populationConversions = parameters.getIdValForTagAtt("POPULATION", "conversion");
 		ArrayList<Box> populations = setupLists.get("populations");
-		updatePopulations(populations, populationDefaults);
+		updatePopulations(populations, populationDefaults, populationConversions);
 		
 		// Initialize molecules.
 		MiniBox moleculeDefaults = parameters.getIdValForTag("MOLECULE");
@@ -263,8 +264,8 @@ public class Series {
 		// Add in parameters. Start with value (if given) or default (if not
 		// given). Then apply any scaling.
 		for (String parameter : pottsDefaults.getKeys()) {
-			updateParameter(_potts, parameter,
-					pottsDefaults.get(parameter), parameterValues, parameterScales);
+			parseParameter(_potts, parameter, pottsDefaults.get(parameter),
+					parameterValues, parameterScales);
 		}
 	}
 	
@@ -273,8 +274,9 @@ public class Series {
 	 * 
 	 * @param populations  the list of population setup dictionaries
 	 * @param populationDefaults  the dictionary of default population parameters
+	 * @param populationConversions  the dictionary of population parameter conversions
 	 */
-	void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults) {
+	void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults, MiniBox populationConversions) {
 		_populations = new HashMap<>();
 		if (populations == null) { return; }
 		
@@ -307,15 +309,15 @@ public class Series {
 			// Add in parameters. Start with value (if given) or default (if not
 			// given). Then apply any scaling.
 			for (String parameter : populationDefaults.getKeys()) {
-				updateParameter(population, parameter,
-						populationDefaults.get(parameter), parameterValues, parameterScales);
+				parseParameter(population, parameter, populationDefaults.get(parameter),
+						parameterValues, parameterScales);
 			}
 			
 			// Add adhesion values for each population and media (*). Values
 			// are set as equal to the default (or adjusted) value, before
 			// any specific values or scaling is applied.
 			for (String target : pops) {
-				updateParameter(population, "ADHESION" + TARGET_SEPARATOR + target,
+				parseParameter(population, "ADHESION" + TARGET_SEPARATOR + target,
 						population.get("ADHESION"), parameterValues, parameterScales);
 			}
 			
@@ -327,6 +329,12 @@ public class Series {
 			for (String region : regions.getKeys()) {
 				double tagFraction = (isValidFraction(regions, region + KEY_SEPARATOR + "fraction") ? regionFractions.getDouble(region) : 0);
 				population.put("*" + TAG_SEPARATOR + region, tagFraction);
+			}
+			
+			// Apply conversion factors.
+			for (String convert : populationConversions.getKeys()) {
+				double conversion = parseConversion(populationConversions.get(convert), DS, DT);
+				population.put(convert, population.getDouble(convert)*conversion);
 			}
 		}
 	}
@@ -382,7 +390,7 @@ public class Series {
 	}
 	
 	/**
-	 * Updates parameter values from default.
+	 * Parses parameter values based on default value.
 	 *
 	 * @param box  the parameter map
 	 * @param parameter  the parameter name
@@ -390,7 +398,7 @@ public class Series {
 	 * @param values  the map of parameter values
 	 * @param scales  the map of parameter scaling
 	 */
-	static void updateParameter(MiniBox box, String parameter,
+	static void parseParameter(MiniBox box, String parameter,
 								String defaultParameter, MiniBox values, MiniBox scales) {
 		box.put(parameter, defaultParameter);
 		
@@ -401,6 +409,25 @@ public class Series {
 		if (scales.get(parameter) != null) {
 			box.put(parameter, box.getDouble(parameter)*scales.getDouble(parameter));
 		}
+	}
+	
+	/**
+	 * Updates conversion string into a value.
+	 * <p>
+	 * Conversion string is in the form of {@code D^N} where {@code D} is either
+	 * {@code DS} or {@code DT} and {@code N} is an integer exponent.
+	 * The {@code ^N} is not required if N = 1.
+	 * 
+	 * @param convert  the conversion string
+	 * @param DS  the spatial conversion factor
+	 * @param DT  the temporal conversion factor
+	 * @return  the updated conversion factor
+	 */
+	static double parseConversion(String convert, double DS, double DT) {
+		String[] split = convert.replace(" ","").split("\\^");
+		double v = (split[0].equals("DS") ? DS : (split[0].equals("DT") ? DT : 1));
+		int n = (split.length == 2 ? Integer.parseInt(split[1]) : 1);
+		return Math.pow(v, n);
 	}
 	
 	/**
