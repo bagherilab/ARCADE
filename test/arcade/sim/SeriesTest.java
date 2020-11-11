@@ -754,8 +754,8 @@ public class SeriesTest {
 			Series series = makeSeriesForPopulation(boxes);
 			
 			MiniBox box = series._populations.get(POPULATION_ID_1);
-			assertEquals(values[i], box.getDouble("*" + TAG_SEPARATOR + REGION_ID_1), EPSILON);
-			assertFalse(box.contains("*" + TAG_SEPARATOR + REGION_ID_2));
+			assertEquals(values[i], box.getDouble("(REGION)" + TAG_SEPARATOR + REGION_ID_1), EPSILON);
+			assertFalse(box.contains("(REGION)" + TAG_SEPARATOR + REGION_ID_2));
 		}
 	}
 	
@@ -771,8 +771,8 @@ public class SeriesTest {
 			Series series = makeSeriesForPopulation(boxes);
 			
 			MiniBox box = series._populations.get(POPULATION_ID_1);
-			assertEquals(0, box.getDouble("*" + TAG_SEPARATOR + REGION_ID_1), EPSILON);
-			assertFalse(box.contains("*" + TAG_SEPARATOR + REGION_ID_2));
+			assertEquals(0, box.getDouble("(REGION)" + TAG_SEPARATOR + REGION_ID_1), EPSILON);
+			assertFalse(box.contains("(REGION)" + TAG_SEPARATOR + REGION_ID_2));
 		}
 	}
 	
@@ -1009,8 +1009,8 @@ public class SeriesTest {
 			for (String modifiedRegion2 : regions) {
 				Box[] boxes = new Box[] { new Box() };
 				boxes[0].add("id", POPULATION_ID_1);
-				boxes[0].addTag(REGION_ID_1, "TAG");
-				boxes[0].addTag(REGION_ID_2, "TAG");
+				boxes[0].addTag(REGION_ID_1, "REGION");
+				boxes[0].addTag(REGION_ID_2, "REGION");
 				boxes[0].addAtt(REGION_ID_1,"fraction", "0");
 				boxes[0].addAtt(REGION_ID_2,"fraction", "0");
 				

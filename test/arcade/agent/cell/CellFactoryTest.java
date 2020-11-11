@@ -288,7 +288,7 @@ public class CellFactoryTest {
 			population.put("CRITICAL_SURFACE", criticals.get(Term.SURFACE) + pop);
 			
 			for (Region region : regionList) {
-				population.put("REGION" + TAG_SEPARATOR + region, 0);
+				population.put("(REGION)" + TAG_SEPARATOR + region, 0);
 				population.put(region + TAG_SEPARATOR + "LAMBDA_VOLUME", lambdasRegion.get(region).get(Term.VOLUME) + pop);
 				population.put(region + TAG_SEPARATOR + "LAMBDA_SURFACE", lambdasRegion.get(region).get(Term.SURFACE) + pop);
 				population.put(region + TAG_SEPARATOR + "CRITICAL_VOLUME", criticalsRegion.get(region).get(Term.VOLUME) + pop);
@@ -509,8 +509,8 @@ public class CellFactoryTest {
 		
 		Series series = createSeries(new int[] { init }, new int[] { voxels });
 		
-		series._populations.get("pop1").put("REGION" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels);
-		series._populations.get("pop1").put("REGION" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels);
+		series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels);
+		series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels);
 		
 		CellFactoryMock factory = new CellFactoryMock();
 		factory.popToIDs.put(1, new HashSet<>());
@@ -576,8 +576,8 @@ public class CellFactoryTest {
 		Series series = createSeries(new int[] { init1, init2, init3 },
 				new int[] { voxels1, voxels2, voxels3 });
 		
-		series._populations.get("pop2").put("REGION" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels2);
-		series._populations.get("pop2").put("REGION" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels2);
+		series._populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels2);
+		series._populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels2);
 		
 		CellFactoryMock factory = new CellFactoryMock();
 		factory.popToIDs.put(1, new HashSet<>());
@@ -611,8 +611,8 @@ public class CellFactoryTest {
 		
 		Series series = createSeries(new int[] { init }, new int[] { voxels });
 		
-		series._populations.get("pop1").put("REGION" + TAG_SEPARATOR + "UNDEFINED", 0.75);
-		series._populations.get("pop1").put("REGION" + TAG_SEPARATOR + "DEFAULT", 0.75);
+		series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", 0.75);
+		series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.75);
 		
 		CellFactoryMock factory = new CellFactoryMock();
 		factory.popToIDs.put(1, new HashSet<>());

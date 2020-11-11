@@ -168,7 +168,7 @@ public abstract class CellFactory {
 			popToRegions.put(pop, false);
 			
 			// Get regions (if they exist).
-			MiniBox regionBox = population.filter("REGION");
+			MiniBox regionBox = population.filter("(REGION)");
 			ArrayList<String> regionKeys = regionBox.getKeys();
 			if (regionKeys.size() > 0) {
 				popToRegions.put(pop, true);
@@ -260,7 +260,7 @@ public abstract class CellFactory {
 				int total = 0;
 				
 				for (Region region : Region.values()) {
-					double fraction = population.getDouble("REGION" + TAG_SEPARATOR + region);
+					double fraction = population.getDouble("(REGION)" + TAG_SEPARATOR + region);
 					int voxelFraction = (int)Math.round(fraction*voxels);
 					total += voxelFraction;
 					if (total > voxels) { voxelFraction -= (total - voxels); }

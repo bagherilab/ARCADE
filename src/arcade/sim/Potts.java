@@ -66,7 +66,7 @@ public abstract class Potts implements Steppable {
 		
 		// Check if there are regions.
 		HAS_REGIONS = series._populations.values().stream()
-				.map(e -> e.filter("REGION").getKeys().size())
+				.map(e -> e.filter("(REGION)").getKeys().size())
 				.anyMatch(e -> e > 0);
 	}
 	

@@ -328,7 +328,7 @@ public class Series {
 			// Add region fraction, if valid.
 			for (String region : regions.getKeys()) {
 				double tagFraction = (isValidFraction(regions, region + KEY_SEPARATOR + "fraction") ? regionFractions.getDouble(region) : 0);
-				population.put("*" + TAG_SEPARATOR + region, tagFraction);
+				population.put("(REGION)" + TAG_SEPARATOR + region, tagFraction);
 			}
 			
 			// Apply conversion factors.

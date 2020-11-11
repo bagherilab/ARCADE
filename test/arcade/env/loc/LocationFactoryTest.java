@@ -233,8 +233,8 @@ public class LocationFactoryTest {
 		int volume = randomInt();
 		Series series = createSeries(length, width, height, new double[] { volume });
 		
-		series._populations.get("pop1").put("REGION" + TAG_SEPARATOR + "DEFAULT", 0.0);
-		series._populations.get("pop1").put("REGION" + TAG_SEPARATOR + "NUCLEUS", 0.0);
+		series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.0);
+		series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", 0.0);
 		
 		LocationFactoryMock factory = new LocationFactoryMock();
 		factory.createLocations(series, random);
@@ -294,8 +294,8 @@ public class LocationFactoryTest {
 		int volume3 = volume1 - randomInt();
 		Series series = createSeries(length, width, height, new double[] { volume1, volume2, volume3 });
 		
-		series._populations.get("pop1").put("REGION" + TAG_SEPARATOR + "DEFAULT", 0.0);
-		series._populations.get("pop1").put("REGION" + TAG_SEPARATOR + "NUCLEUS", 0.0);
+		series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.0);
+		series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", 0.0);
 		
 		LocationFactoryMock factory = new LocationFactoryMock();
 		factory.createLocations(series, random);

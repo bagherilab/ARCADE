@@ -107,7 +107,7 @@ public abstract class LocationFactory {
 		// Get regions (if they exist).
 		HashSet<String> regionKeys = new HashSet<>();
 		for (MiniBox population : series._populations.values()) {
-			MiniBox regionBox = population.filter("REGION");
+			MiniBox regionBox = population.filter("(REGION)");
 			if (regionBox.getKeys().size() > 0) { regionKeys.addAll(regionBox.getKeys()); }
 		}
 		
