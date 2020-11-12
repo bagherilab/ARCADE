@@ -9,6 +9,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import arcade.util.Box;
+import static arcade.sim.Series.TARGET_SEPARATOR;
+import static arcade.util.MiniBox.TAG_SEPARATOR;
 
 /**
  * Custom XML file loader that uses SAX parsing to iterate through the XML file.
@@ -65,15 +67,34 @@ public class InputLoader extends DefaultHandler {
 	 */
 	public void startElement(String uri, String lName, String qName, Attributes att) {
 		int numAtts = att.getLength();
-		String id;
+		String id, tag, filter, target;
 		
 		// Iterate through each attribute and add to a map.
 		if (numAtts > 0) {
+			// Set id.
 			id = att.getValue("id");
-			box.addTag(id, qName.toUpperCase());
+			
+			// Search for any special attributes to set as tag.
+			String[] split = qName.split("\\.");
+			if (split.length == 2) {
+				filter = split[1];
+				tag = att.getValue(filter);
+				if (tag == null) { return; }
+				id = tag + TAG_SEPARATOR + id;
+			} else { filter = ""; }
+			
+			// Add target tag if set.
+			if (att.getValue("target") != null) { id += TARGET_SEPARATOR + att.getValue("target"); }
+			
+			box.addTag(id, split[0].toUpperCase());
+			
 			for (int i = 0; i < numAtts; i++) {
 				String name = att.getQName(i);
-				if (!name.equals("id")) { box.addAtt(id, name, att.getValue(i)); }
+				if (!name.equals("id")
+						&& !name.equals(filter)
+						&& !name.equals("target")) {
+					box.addAtt(id, name, att.getValue(i));
+				}
 			}
 		}
 	}

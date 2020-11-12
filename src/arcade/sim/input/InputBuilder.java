@@ -150,8 +150,14 @@ public class InputBuilder implements ContentHandler {
 		
 		int numAtts = atts.getLength();
 		String id;
+		
 		if (numAtts > 0) {
-			id = (atts.getValue("tag") == null ? "" : atts.getValue("tag") + TAG_SEPARATOR)
+			// If both region and module tags are included, the entry is invalid.
+			if (atts.getValue("region") != null && atts.getValue("module") != null) { return; }
+			
+			// Create id by combining tags (module or region), id, and target.
+			id = (atts.getValue("region") == null ? "" : atts.getValue("region").toUpperCase() + TAG_SEPARATOR)
+					+ (atts.getValue("module") == null ? "" : atts.getValue("module").toLowerCase() + TAG_SEPARATOR)
 					+ atts.getValue("id")
 					+ (atts.getValue("target") == null ? "" : TARGET_SEPARATOR + atts.getValue("target"));
 			box.addTag(id, tag.toUpperCase());
@@ -159,7 +165,7 @@ public class InputBuilder implements ContentHandler {
 			for (int i = 0; i < numAtts; i++) {
 				String name = atts.getQName(i);
 				switch (name) {
-					case "id": case "tag": case "target": break;
+					case "id": case "region": case "module": case "target": break;
 					default: box.addAtt(id, name, atts.getValue(i));
 				}
 			}

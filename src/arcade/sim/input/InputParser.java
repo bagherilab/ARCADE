@@ -201,7 +201,7 @@ public class InputParser {
 	}
 	
 	/**
-	 * Parses an the list of arguments.
+	 * Parses a list of arguments.
 	 * 
 	 * @param args  the list of arguments
 	 */
