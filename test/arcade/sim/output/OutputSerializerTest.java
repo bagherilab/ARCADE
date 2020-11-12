@@ -90,6 +90,9 @@ public class OutputSerializerTest {
 		doReturn(start).when(series).getStartSeed();
 		doReturn(end).when(series).getEndSeed();
 		
+		double ds = randomDouble();
+		double dt = randomDouble();
+		
 		int ticks = randomInt();
 		doReturn(ticks).when(series).getTicks();
 		
@@ -109,6 +112,14 @@ public class OutputSerializerTest {
 			Field heightField = Series.class.getDeclaredField("_height");
 			heightField.setAccessible(true);
 			heightField.setInt(series, height);
+			
+			Field dsField = Series.class.getDeclaredField("DS");
+			dsField.setAccessible(true);
+			dsField.setDouble(series, ds);
+			
+			Field dtField = Series.class.getDeclaredField("DT");
+			dtField.setAccessible(true);
+			dtField.setDouble(series, dt);
 		} catch (Exception ignored) { }
 		
 		series._potts = new MiniBox();
@@ -152,6 +163,10 @@ public class OutputSerializerTest {
 				+ "\"seeds\":{"
 				+ "\"start\":" + start + ","
 				+ "\"end\":" + end
+				+ "},"
+				+ "\"conversions\":{"
+				+ "\"DS\":" + ds + ","
+				+ "\"DT\":" + dt
 				+ "},"
 				+ "\"ticks\":" + ticks + ","
 				+ "\"size\":{"

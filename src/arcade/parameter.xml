@@ -2,19 +2,49 @@
     <!-- default parameters for series -->
     <default id="START_SEED" value="0" description="random seed for first simulation in series" />
     <default id="END_SEED" value="0" description="random seed for last simulation in series" />
-    <default id="TICKS" value="100" />
-    <default id="INTERVAL" value="50" />
-    <default id="LENGTH" value="100" />
-    <default id="WIDTH" value="100" />
-    <default id="HEIGHT" value="1" />
-
+    <default id="TICKS" value="100" units="ticks" description="number of ticks for simulation" />
+    <default id="INTERVAL" value="50" units="ticks" description="interval between outputs" />
+    <default id="LENGTH" value="100" units="voxels" description="x size of the simulation" />
+    <default id="WIDTH" value="100" units="voxels" description="y size of the simulation"/>
+    <default id="HEIGHT" value="1" units="voxels" description="z size of the simulation"/>
+    
+    <!-- default conversion factors -->
+    <default id="DS" value="2" units="um/voxel" description="spatial conversion factor" />
+    <default id="DT" value="0.5" units="hours/tick" description="temporal conversion factor" />
+    
     <!-- default parameters for potts -->
-    <potts id="TEMPERATURE" value="10" />
-
+    <potts id="TEMPERATURE" value="1" />
+    
     <!-- default parameters for populations -->
-	<population id="LAMBDA_VOLUME" value="1" />
-	<population id="LAMBDA_SURFACE" value="1" />
-	<population id="CRITICAL_VOLUME" value="20" />
-	<population id="CRITICAL_SURFACE" value="40" />
-	<population id="ADHESION" value="1" />
+    <population id="LAMBDA_VOLUME" value="1" />
+    <population id="LAMBDA_SURFACE" value="1" />
+    <population id="CRITICAL_VOLUME" value="1000" units="um^3" conversion="DS^-3" />
+    <population id="CRITICAL_SURFACE" value="500" units="um^2" conversion="DS^-2" />
+    <population id="ADHESION" value="1" />
+    
+    <!-- default region parameters -->
+    <population.region region="DEFAULT" id="LAMBDA_VOLUME" value="1" />
+    <population.region region="DEFAULT" id="LAMBDA_SURFACE" value="1" />
+    <population.region region="DEFAULT" id="ADHESION" target="DEFAULT" value="1" />
+    <population.region region="DEFAULT" id="ADHESION" target="NUCLEUS" value="1" />
+    
+    <!-- nucleus region parameters -->
+    <population.region region="NUCLEUS" id="CRITICAL_VOLUME" value="500" units="um^3" conversion="DS^-3" />
+    <population.region region="NUCLEUS" id="CRITICAL_SURFACE" value="150" units="um^2" conversion="DS^-2" />
+    <population.region region="NUCLEUS" id="LAMBDA_VOLUME" value="1" />
+    <population.region region="NUCLEUS" id="LAMBDA_SURFACE" value="1" />
+    <population.region region="NUCLEUS" id="ADHESION" target="DEFAULT" value="1" />
+    <population.region region="NUCLEUS" id="ADHESION" target="NUCLEUS" value="1" />
+    
+    <!-- proliferation module parameters -->
+    <population.module module="proliferation" id="DURATION_G1" value="11" units="hours" conversion="DT^-1" description="duration of proliferative G1 phase" />
+    <population.module module="proliferation" id="DURATION_S" value="8" units="hours" conversion="DT^-1" description="duration of proliferative S phase" />
+    <population.module module="proliferation" id="DURATION_G2" value="4" units="hours" conversion="DT^-1" description="duration of proliferative G2 phase" />
+    <population.module module="proliferation" id="DURATION_M" value="1" units="hours" conversion="DT^-1" description="duration of proliferative M phase" />
+    <population.module module="proliferation" id="DURATION_CHECKPOINT" value="1" units="hours" conversion="DT^-1" description="average duration for checkpoint recovery" />
+    <population.module module="proliferation" id="BASAL_APOPTOSIS_RATE" value="0.00127128" units="hours^-1" conversion="DT" description="basal rate of apoptosis" />
+    
+    <!-- apoptosis module parameters -->
+    <population.module module="apoptosis" id="DURATION_EARLY" value="3" units="hours" conversion="DT^-1" description="duration of early apoptosis phase" />
+    <population.module module="apoptosis" id="DURATION_LATE" value="5.6" units="hours" conversion="DT^-1" description="duration of late apoptosis phase" />
 </parameters>

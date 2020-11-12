@@ -50,10 +50,10 @@ public class Series {
 	private final String prefix;
 	
 	/** Spatial conversion factor (um/voxel) */
-	final double DS;
+	public final double DS;
 	
 	/** Temporal conversion factor (hrs/tick) */
-	final double DT;
+	public final double DT;
 	
 	/** Constructor for the simulation */
 	Constructor<?> simCons;
@@ -327,8 +327,8 @@ public class Series {
 			
 			// Add region fraction, if valid.
 			for (String region : regions.getKeys()) {
-				double tagFraction = (isValidFraction(regions, region + KEY_SEPARATOR + "fraction") ? regionFractions.getDouble(region) : 0);
-				population.put("(REGION)" + TAG_SEPARATOR + region, tagFraction);
+				double regionFraction = (isValidFraction(regions, region + KEY_SEPARATOR + "fraction") ? regionFractions.getDouble(region) : 0);
+				population.put("(REGION)" + TAG_SEPARATOR + region, regionFraction);
 			}
 			
 			// Apply conversion factors.

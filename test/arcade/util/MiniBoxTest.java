@@ -89,8 +89,8 @@ public class MiniBoxTest {
 	@Test
 	public void getDouble_givenValidKeyGivenInteger_returnsValue() {
 		String key = randomString();
-		String[] doubles = new String[] { "0", "1", "-1", "1E2", "-1E2" };
-		double[] values = new double[] { 0.0, 1.0, -1.0, 100, -100 };
+		String[] doubles = new String[] { "0", "1", "-1", "1E2", "-1E2", "1E-2", "-1E-2" };
+		double[] values = new double[] { 0.0, 1.0, -1.0, 100, -100, 0.01, -0.01 };
 		for (int i = 0; i < doubles.length; i++) {
 			MiniBox box = new MiniBox();
 			box.put(key, doubles[i]);
