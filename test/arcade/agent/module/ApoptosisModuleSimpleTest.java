@@ -37,8 +37,8 @@ public class ApoptosisModuleSimpleTest {
 		doReturn(box).when(cell).getParameters();
 		
 		parameters = new MiniBox();
-		parameters.put("DURATION_APOPTOSIS_EARLY", randomDouble());
-		parameters.put("DURATION_APOPTOSIS_LATE", randomDouble());
+		parameters.put("apoptosis/DURATION_EARLY", randomDouble());
+		parameters.put("apoptosis/DURATION_LATE", randomDouble());
 	}
 	
 	@Test
@@ -47,8 +47,8 @@ public class ApoptosisModuleSimpleTest {
 		doReturn(parameters).when(cell).getParameters();
 		ApoptosisModule module = new ApoptosisModule.Simple(cell);
 		
-		assertEquals(parameters.getDouble("DURATION_APOPTOSIS_EARLY"), module.DURATION_EARLY, EPSILON);
-		assertEquals(parameters.getDouble("DURATION_APOPTOSIS_LATE"), module.DURATION_LATE, EPSILON);
+		assertEquals(parameters.getDouble("apoptosis/DURATION_EARLY"), module.DURATION_EARLY, EPSILON);
+		assertEquals(parameters.getDouble("apoptosis/DURATION_LATE"), module.DURATION_LATE, EPSILON);
 	}
 	
 	@Test
@@ -57,8 +57,8 @@ public class ApoptosisModuleSimpleTest {
 		doReturn(parameters).when(cell).getParameters();
 		ApoptosisModule module = new ApoptosisModule.Simple(cell);
 		
-		double durationEarly = parameters.getDouble("DURATION_APOPTOSIS_EARLY");
-		double durationLate = parameters.getDouble("DURATION_APOPTOSIS_LATE");
+		double durationEarly = parameters.getDouble("apoptosis/DURATION_EARLY");
+		double durationLate = parameters.getDouble("apoptosis/DURATION_LATE");
 		
 		assertEquals(-Math.log(0.05)/durationEarly, module.RATE_CYTOPLASM_LOSS, EPSILON);
 		assertEquals(-Math.log(0.01)/durationEarly, module.RATE_NUCLEUS_PYKNOSIS, EPSILON);

@@ -37,12 +37,12 @@ public class ProliferationModuleSimpleTest {
 		doReturn(box).when(cell).getParameters();
 		
 		parameters = new MiniBox();
-		parameters.put("DURATION_PROLIFERATION_G1", randomDouble());
-		parameters.put("DURATION_PROLIFERATION_S", randomDouble());
-		parameters.put("DURATION_PROLIFERATION_G2", randomDouble());
-		parameters.put("DURATION_PROLIFERATION_M", randomDouble());
-		parameters.put("DURATION_PROLIFERATION_CHECKPOINT", randomDouble());
-		parameters.put("BASAL_APOPTOSIS_RATE", Math.random()/2);
+		parameters.put("proliferation/DURATION_G1", randomDouble());
+		parameters.put("proliferation/DURATION_S", randomDouble());
+		parameters.put("proliferation/DURATION_G2", randomDouble());
+		parameters.put("proliferation/DURATION_M", randomDouble());
+		parameters.put("proliferation/DURATION_CHECKPOINT", randomDouble());
+		parameters.put("proliferation/BASAL_APOPTOSIS_RATE", Math.random()/2);
 	}
 	
 	@Test
@@ -51,12 +51,12 @@ public class ProliferationModuleSimpleTest {
 		doReturn(parameters).when(cell).getParameters();
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		
-		assertEquals(parameters.getDouble("DURATION_PROLIFERATION_G1"), module.DURATION_G1, EPSILON);
-		assertEquals(parameters.getDouble("DURATION_PROLIFERATION_S"), module.DURATION_S, EPSILON);
-		assertEquals(parameters.getDouble("DURATION_PROLIFERATION_G2"), module.DURATION_G2, EPSILON);
-		assertEquals(parameters.getDouble("DURATION_PROLIFERATION_M"), module.DURATION_M, EPSILON);
-		assertEquals(parameters.getDouble("DURATION_PROLIFERATION_CHECKPOINT"), module.DURATION_CHECKPOINT, EPSILON);
-		assertEquals(parameters.getDouble("BASAL_APOPTOSIS_RATE"), module.BASAL_APOPTOSIS_RATE, EPSILON);
+		assertEquals(parameters.getDouble("proliferation/DURATION_G1"), module.DURATION_G1, EPSILON);
+		assertEquals(parameters.getDouble("proliferation/DURATION_S"), module.DURATION_S, EPSILON);
+		assertEquals(parameters.getDouble("proliferation/DURATION_G2"), module.DURATION_G2, EPSILON);
+		assertEquals(parameters.getDouble("proliferation/DURATION_M"), module.DURATION_M, EPSILON);
+		assertEquals(parameters.getDouble("proliferation/DURATION_CHECKPOINT"), module.DURATION_CHECKPOINT, EPSILON);
+		assertEquals(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE"), module.BASAL_APOPTOSIS_RATE, EPSILON);
 	}
 	
 	@Test
@@ -65,9 +65,9 @@ public class ProliferationModuleSimpleTest {
 		doReturn(parameters).when(cell).getParameters();
 		ProliferationModule module = new ProliferationModule.Simple(cell);
 		
-		double durationG1 = parameters.getDouble("DURATION_PROLIFERATION_G1");
-		double durationS = parameters.getDouble("DURATION_PROLIFERATION_S");
-		double durationG2 = parameters.getDouble("DURATION_PROLIFERATION_G2");
+		double durationG1 = parameters.getDouble("proliferation/DURATION_G1");
+		double durationS = parameters.getDouble("proliferation/DURATION_S");
+		double durationG2 = parameters.getDouble("proliferation/DURATION_G2");
 		
 		assertEquals(-Math.log(0.05)/durationG1, module.RATE_G1, EPSILON);
 		assertEquals(-Math.log(0.01)/durationS, module.RATE_S, EPSILON);

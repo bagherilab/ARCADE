@@ -65,12 +65,12 @@ public abstract class ProliferationModule implements Module {
 		
 		MiniBox parameters = cell.getParameters();
 		
-		DURATION_G1 = parameters.getDouble("DURATION_PROLIFERATION_G1");
-		DURATION_S = parameters.getDouble("DURATION_PROLIFERATION_S");
-		DURATION_G2 = parameters.getDouble("DURATION_PROLIFERATION_G2");
-		DURATION_M = parameters.getDouble("DURATION_PROLIFERATION_M");
-		DURATION_CHECKPOINT = parameters.getDouble("DURATION_PROLIFERATION_CHECKPOINT");
-		BASAL_APOPTOSIS_RATE = parameters.getDouble("BASAL_APOPTOSIS_RATE");
+		DURATION_G1 = parameters.getDouble("proliferation/DURATION_G1");
+		DURATION_S = parameters.getDouble("proliferation/DURATION_S");
+		DURATION_G2 = parameters.getDouble("proliferation/DURATION_G2");
+		DURATION_M = parameters.getDouble("proliferation/DURATION_M");
+		DURATION_CHECKPOINT = parameters.getDouble("proliferation/DURATION_CHECKPOINT");
+		BASAL_APOPTOSIS_RATE = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
 		
 		RATE_G1 = -Math.log(0.05)/DURATION_G1;
 		RATE_S = -Math.log(0.01)/DURATION_S;

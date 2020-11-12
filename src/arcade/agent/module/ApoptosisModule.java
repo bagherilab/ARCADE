@@ -46,8 +46,8 @@ public abstract class ApoptosisModule implements Module  {
 		
 		MiniBox parameters = cell.getParameters();
 		
-		DURATION_EARLY = parameters.getDouble("DURATION_APOPTOSIS_EARLY");
-		DURATION_LATE = parameters.getDouble("DURATION_APOPTOSIS_LATE");
+		DURATION_EARLY = parameters.getDouble("apoptosis/DURATION_EARLY");
+		DURATION_LATE = parameters.getDouble("apoptosis/DURATION_LATE");
 		
 		RATE_CYTOPLASM_LOSS = -Math.log(0.05)/DURATION_EARLY;
 		RATE_NUCLEUS_PYKNOSIS = -Math.log(0.01)/DURATION_EARLY;
