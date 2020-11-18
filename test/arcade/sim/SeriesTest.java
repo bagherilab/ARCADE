@@ -506,6 +506,58 @@ public class SeriesTest {
 	}
 	
 	@Test
+	public void isValidNumber_noValue_returnsFalse() {
+		Box box = new Box();
+		assertFalse(Series.isValidNumber(box, "number"));
+	}
+	
+	@Test
+	public void isValidNumber_invalidValues_returnsFalse() {
+		String[] values = new String[] { "-1", "1.", "-1.", "1.5", "-1.5", "1E-2" };
+		for (String value : values) {
+			Box box = new Box();
+			box.add("number", value);
+			assertFalse(Series.isValidNumber(box, "number"));
+		}
+	}
+	
+	@Test
+	public void isValidNumber_validValues_returnsTrue() {
+		String[] values = new String[] { "0", "1", "1E2" };
+		for (String value : values) {
+			Box box = new Box();
+			box.add("number", value);
+			assertTrue(Series.isValidNumber(box, "number"));
+		}
+	}
+	
+	@Test
+	public void isValidFraction_noValue_returnsFalse() {
+		Box box = new Box();
+		assertFalse(Series.isValidFraction(box, "number"));
+	}
+	
+	@Test
+	public void isValidFraction_invalidValues_returnsFalse() {
+		String[] values = new String[] { "-0", "-0.0", "-1", "-1.0", "2.0" };
+		for (String value : values) {
+			Box box = new Box();
+			box.add("number", value);
+			assertFalse(Series.isValidFraction(box, "number"));
+		}
+	}
+	
+	@Test
+	public void isValidFraction_validValues_returnsTrue() {
+		String[] values = new String[] { "0", "0.0", "1", "1.0", "0.5" };
+		for (String value : values) {
+			Box box = new Box();
+			box.add("number", value);
+			assertTrue(Series.isValidFraction(box, "number"));
+		}
+	}
+	
+	@Test
 	public void parseParameter_noValueNoScaling_usesDefault() {
 		MiniBox box = new MiniBox();
 		String parameter = randomString();

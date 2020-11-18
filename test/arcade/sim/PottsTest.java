@@ -14,6 +14,7 @@ import arcade.env.loc.Location;
 import arcade.util.MiniBox;
 import static arcade.sim.Potts.Term;
 import static arcade.agent.cell.Cell.Region;
+import static arcade.util.MiniBox.TAG_SEPARATOR;
 
 public class PottsTest {
 	private static final double EPSILON = 1E-4;
@@ -281,16 +282,102 @@ public class PottsTest {
 	
 	@Test
 	public void Potts_2D_assignsValues() {
-		Series series = makeSeries(1, 1, 1);
+		int length = (int)(Math.random()*100) + 1;
+		int width = (int)(Math.random()*100) + 1;
+		Series series = makeSeries(length + 2, width + 2, 1);
 		PottsMock potts = new PottsMock(series);
+		
+		assertEquals(length, potts.LENGTH);
+		assertEquals(width, potts.WIDTH);
 		assertEquals(1, potts.HEIGHT);
+		
+		assertEquals(1, potts.IDS.length);
+		assertEquals(1, potts.REGIONS.length);
+		assertEquals(length + 2, potts.IDS[0].length);
+		assertEquals(length + 2, potts.REGIONS[0].length);
+		assertEquals(width + 2, potts.IDS[0][0].length);
+		assertEquals(width + 2, potts.REGIONS[0][0].length);
 	}
 	
 	@Test
 	public void Potts_3D_assignsValues() {
-		Series series = makeSeries(1, 1, 4);
+		int length = (int)(Math.random()*100) + 1;
+		int width = (int)(Math.random()*100) + 1;
+		Series series = makeSeries(length + 2, width + 2, 4);
 		PottsMock potts = new PottsMock(series);
+		
+		assertEquals(length, potts.LENGTH);
+		assertEquals(width, potts.WIDTH);
 		assertEquals(2, potts.HEIGHT);
+		
+		assertEquals(4, potts.IDS.length);
+		assertEquals(4, potts.REGIONS.length);
+		assertEquals(length + 2, potts.IDS[0].length);
+		assertEquals(length + 2, potts.REGIONS[0].length);
+		assertEquals(width + 2, potts.IDS[0][0].length);
+		assertEquals(width + 2, potts.REGIONS[0][0].length);
+	}
+	
+	@Test
+	public void Potts_givenSeries_setsFields() {
+		int length = (int)(Math.random()*100) + 1;
+		int width = (int)(Math.random()*100) + 1;
+		int height = (int)(Math.random()*100) + 2;
+		int temperature = (int)(Math.random()*100) + 1;
+		
+		Series series = makeSeries(length, width, height);
+		series._potts = new MiniBox();
+		series._potts.put("TEMPERATURE", temperature);
+		
+		PottsMock potts = new PottsMock(series);
+		
+		assertEquals((length - 2)*(width - 2)*(height - 2), potts.STEPS);
+		assertEquals(temperature, potts.TEMPERATURE, EPSILON);
+	}
+	
+	@Test
+	public void Potts_noPopulations_setsFalse() {
+		Series series = makeSeries(0, 0, 0);
+		series._populations = new HashMap<>();
+		
+		PottsMock potts = new PottsMock(series);
+		assertFalse(potts.HAS_REGIONS);
+	}
+	
+	@Test
+	public void Potts_noRegions_setsFalse() {
+		Series series = makeSeries(0, 0, 0);
+		series._populations = new HashMap<>();
+		
+		MiniBox popA = new MiniBox();
+		MiniBox popB = new MiniBox();
+		MiniBox popC = new MiniBox();
+		
+		series._populations.put("A", popA);
+		series._populations.put("B", popB);
+		series._populations.put("C", popC);
+		
+		PottsMock potts = new PottsMock(series);
+		assertFalse(potts.HAS_REGIONS);
+	}
+	
+	@Test
+	public void Potts_withRegions_setsTrue() {
+		Series series = makeSeries(0, 0, 0);
+		series._populations = new HashMap<>();
+		
+		MiniBox popA = new MiniBox();
+		MiniBox popB = new MiniBox();
+		MiniBox popC = new MiniBox();
+		
+		series._populations.put("A", popA);
+		series._populations.put("B", popB);
+		series._populations.put("C", popC);
+		
+		popB.put("(REGION)" + TAG_SEPARATOR + "X", "0");
+		
+		PottsMock potts = new PottsMock(series);
+		assertTrue(potts.HAS_REGIONS);
 	}
 	
 	@Test
