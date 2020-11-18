@@ -14,6 +14,7 @@
     
     <!-- default parameters for potts -->
     <potts id="TEMPERATURE" value="1" />
+    <potts id="MCS" value="1" description="number of MCS steps per simulation tick" />
     
     <!-- default parameters for populations -->
     <population id="LAMBDA_VOLUME" value="1" />

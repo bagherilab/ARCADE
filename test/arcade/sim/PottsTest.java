@@ -116,6 +116,7 @@ public class PottsTest {
 		series._potts = mock(MiniBox.class);
 		series._populations = populations;
 		doReturn(TEMPERATURE).when(series._potts).getDouble("TEMPERATURE");
+		doReturn(1).when(series._potts).getInt("MCS");
 		
 		potts = new PottsMock(series);
 		potts.grid = grid;
@@ -179,6 +180,7 @@ public class PottsTest {
 		Series series = mock(Series.class);
 		series._potts = mock(MiniBox.class);
 		series._populations = mock(HashMap.class);
+		doReturn(1).when(series._potts).getInt("MCS");
 		return series;
 	}
 	
@@ -324,14 +326,16 @@ public class PottsTest {
 		int width = (int)(Math.random()*100) + 1;
 		int height = (int)(Math.random()*100) + 2;
 		int temperature = (int)(Math.random()*100) + 1;
+		int mcs = (int)(Math.random()*100);
 		
 		Series series = makeSeries(length, width, height);
 		series._potts = new MiniBox();
 		series._potts.put("TEMPERATURE", temperature);
+		series._potts.put("MCS", mcs);
 		
 		PottsMock potts = new PottsMock(series);
 		
-		assertEquals((length - 2)*(width - 2)*(height - 2), potts.STEPS);
+		assertEquals(mcs*(length - 2)*(width - 2)*(height - 2), potts.STEPS);
 		assertEquals(temperature, potts.TEMPERATURE, EPSILON);
 	}
 	
