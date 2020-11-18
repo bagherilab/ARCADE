@@ -1246,9 +1246,57 @@ public class SeriesTest {
 		doReturn(simstate).when(series.simCons).newInstance(any(int.class), eq(series));
 		doReturn(guistate).when(series.visCons).newInstance(any(Simulation.class));
 		
+		System.clearProperty("java.awt.headless");
+		
 		series.runVis();
 		verify(series.simCons).newInstance(series.getStartSeed() + SEED_OFFSET, series);
 		verify(series.visCons).newInstance(simstate);
 		verify(guistate).createController();
+	}
+	
+	@Test
+	public void runVis_headlessFalse_callsMethods() throws Exception {
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
+		
+		series.simCons = spy(series.simCons);
+		series.visCons = spy(series.visCons);
+		
+		Simulation simstate = mock(Simulation.class);
+		GUIState guistate = spy(mock(GUIState.class));
+		
+		doReturn(null).when(guistate).createController();
+		doReturn(simstate).when(series.simCons).newInstance(any(int.class), eq(series));
+		doReturn(guistate).when(series.visCons).newInstance(any(Simulation.class));
+		
+		System.setProperty("java.awt.headless", "false");
+		
+		series.runVis();
+		verify(series.simCons).newInstance(series.getStartSeed() + SEED_OFFSET, series);
+		verify(series.visCons).newInstance(simstate);
+		verify(guistate).createController();
+	}
+	
+	@Test
+	public void runVis_headlessTrue_doesNothing() throws Exception {
+		HashMap<String, MiniBox> setupDicts = makeDicts();
+		Series series = spy(new Series(setupDicts, setupListsMock, PARAMETERS, false));
+		
+		series.simCons = spy(series.simCons);
+		series.visCons = spy(series.visCons);
+		
+		Simulation simstate = mock(Simulation.class);
+		GUIState guistate = spy(mock(GUIState.class));
+		
+		doReturn(null).when(guistate).createController();
+		doReturn(simstate).when(series.simCons).newInstance(any(int.class), eq(series));
+		doReturn(guistate).when(series.visCons).newInstance(any(Simulation.class));
+		
+		System.setProperty("java.awt.headless", "true");
+		
+		series.runVis();
+		verify(series.simCons, never()).newInstance(series.getStartSeed() + SEED_OFFSET, series);
+		verify(series.visCons, never()).newInstance(simstate);
+		verify(guistate, never()).createController();
 	}
 }

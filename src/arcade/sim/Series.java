@@ -508,6 +508,7 @@ public class Series {
 	 * @throws Exception  if the visualization constructor cannot be instantiated
 	 */
 	public void runVis() throws Exception {
+		if (System.getProperty("java.awt.headless") != null && System.getProperty("java.awt.headless").equals("true")) { return; }
 		Simulation sim = (Simulation)(simCons.newInstance(startSeed + SEED_OFFSET, this));
 		((GUIState)visCons.newInstance(sim)).createController();
 	}

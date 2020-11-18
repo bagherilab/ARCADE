@@ -3,8 +3,6 @@ package arcade;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import static org.junit.Assert.*;
-
-import java.awt.*;
 import java.io.*;
 import java.util.Random;
 
@@ -81,7 +79,7 @@ public class MainTest {
 		}
 	}
 	
-	@Test(expected= HeadlessException.class)
+	@Test
 	public void main_withVis_savesNothing() throws Exception {
 		String name = "main_withVis_savesNothing";
 		File file = folder.newFile(name + ".xml");
