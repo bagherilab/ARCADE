@@ -46,7 +46,7 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html" title="class in arcade.agent.cell"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -194,27 +194,33 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&gt;&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#popToTagAdhesion">popToTagAdhesion</a></span></code>
-<div class="block">Map of population to tag adhesion values</div>
+<td class="colFirst"><code>(package private) java.util.HashMap&lt;java.lang.Integer,<a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#popToParameters">popToParameters</a></span></code>
+<div class="block">Map of population to parameters</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#popToTagCriticals">popToTagCriticals</a></span></code>
-<div class="block">Map of population to tag critical values</div>
+<td class="colFirst"><code>(package private) java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&gt;&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#popToRegionAdhesion">popToRegionAdhesion</a></span></code>
+<div class="block">Map of population to region adhesion values</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#popToTagLambdas">popToTagLambdas</a></span></code>
-<div class="block">Map of population to tag lambda values</div>
+<td class="colFirst"><code>(package private) java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#popToRegionCriticals">popToRegionCriticals</a></span></code>
+<div class="block">Map of population to region critical values</div>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>(package private) java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#popToRegionLambdas">popToRegionLambdas</a></span></code>
+<div class="block">Map of population to region lambda values</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>(package private) java.util.HashMap&lt;java.lang.Integer,java.lang.Boolean&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#popToTags">popToTags</a></span></code>
-<div class="block">Map of population to number of tags</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#popToRegions">popToRegions</a></span></code>
+<div class="block">Map of population to number of regions</div>
 </td>
 </tr>
 </table>
@@ -278,11 +284,12 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>(package private) abstract <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#makeCell-int-int-int-arcade.agent.cell.Cell.State-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-">makeCell</a></span>(int&nbsp;id,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#makeCell-int-int-int-arcade.agent.cell.Cell.State-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-">makeCell</a></span>(int&nbsp;id,
         int&nbsp;pop,
         int&nbsp;age,
         <a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a>&nbsp;state,
         <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;location,
+        <a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;parameters,
         java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;criticals,
         java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;lambdas,
         double[]&nbsp;adhesion)</code>
@@ -291,18 +298,19 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>(package private) abstract <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#makeCell-int-int-int-arcade.agent.cell.Cell.State-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">makeCell</a></span>(int&nbsp;id,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.html#makeCell-int-int-int-arcade.agent.cell.Cell.State-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">makeCell</a></span>(int&nbsp;id,
         int&nbsp;pop,
         int&nbsp;age,
         <a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a>&nbsp;state,
         <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;location,
+        <a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;parameters,
         java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;criticals,
         java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;lambdas,
         double[]&nbsp;adhesion,
-        java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsTag,
-        java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasTag,
-        java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&gt;&nbsp;adhesionTag)</code>
-<div class="block">Creates a <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a> object with tags.</div>
+        java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsRegion,
+        java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasRegion,
+        java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&gt;&nbsp;adhesionRegion)</code>
+<div class="block">Creates a <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a> object with regions.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
@@ -393,44 +401,54 @@ extends java.lang.Object</pre>
 <div class="block">Map of population to lambda values</div>
 </li>
 </ul>
-<a name="popToTagAdhesion">
+<a name="popToParameters">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>popToTagAdhesion</h4>
-<pre>java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&gt;&gt; popToTagAdhesion</pre>
-<div class="block">Map of population to tag adhesion values</div>
+<h4>popToParameters</h4>
+<pre>java.util.HashMap&lt;java.lang.Integer,<a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt; popToParameters</pre>
+<div class="block">Map of population to parameters</div>
 </li>
 </ul>
-<a name="popToTagCriticals">
+<a name="popToRegionAdhesion">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>popToTagCriticals</h4>
-<pre>java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&gt; popToTagCriticals</pre>
-<div class="block">Map of population to tag critical values</div>
+<h4>popToRegionAdhesion</h4>
+<pre>java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&gt;&gt; popToRegionAdhesion</pre>
+<div class="block">Map of population to region adhesion values</div>
 </li>
 </ul>
-<a name="popToTagLambdas">
+<a name="popToRegionCriticals">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>popToTagLambdas</h4>
-<pre>java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&gt; popToTagLambdas</pre>
-<div class="block">Map of population to tag lambda values</div>
+<h4>popToRegionCriticals</h4>
+<pre>java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&gt; popToRegionCriticals</pre>
+<div class="block">Map of population to region critical values</div>
 </li>
 </ul>
-<a name="popToTags">
+<a name="popToRegionLambdas">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>popToRegionLambdas</h4>
+<pre>java.util.HashMap&lt;java.lang.Integer,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&gt; popToRegionLambdas</pre>
+<div class="block">Map of population to region lambda values</div>
+</li>
+</ul>
+<a name="popToRegions">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>popToTags</h4>
-<pre>java.util.HashMap&lt;java.lang.Integer,java.lang.Boolean&gt; popToTags</pre>
-<div class="block">Map of population to number of tags</div>
+<h4>popToRegions</h4>
+<pre>java.util.HashMap&lt;java.lang.Integer,java.lang.Boolean&gt; popToRegions</pre>
+<div class="block">Map of population to number of regions</div>
 </li>
 </ul>
 </li>
@@ -522,7 +540,7 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="makeCell-int-int-int-arcade.agent.cell.Cell.State-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-">
+<a name="makeCell-int-int-int-arcade.agent.cell.Cell.State-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -533,6 +551,7 @@ extends java.lang.Object</pre>
                        int&nbsp;age,
                        <a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a>&nbsp;state,
                        <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;location,
+                       <a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;parameters,
                        java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;criticals,
                        java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;lambdas,
                        double[]&nbsp;adhesion)</pre>
@@ -544,13 +563,14 @@ extends java.lang.Object</pre>
 <dd><code>state</code> - the cell state</dd>
 <dd><code>age</code> - the cell age (in ticks)</dd>
 <dd><code>location</code> - the <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc"><code>Location</code></a> of the cell</dd>
+<dd><code>parameters</code> - the dictionary of parameters</dd>
 <dd><code>criticals</code> - the map of critical values</dd>
 <dd><code>lambdas</code> - the map of lambda multipliers</dd>
 <dd><code>adhesion</code> - the list of adhesion values</dd>
 </dl>
 </li>
 </ul>
-<a name="makeCell-int-int-int-arcade.agent.cell.Cell.State-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">
+<a name="makeCell-int-int-int-arcade.agent.cell.Cell.State-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -561,13 +581,14 @@ extends java.lang.Object</pre>
                        int&nbsp;age,
                        <a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a>&nbsp;state,
                        <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;location,
+                       <a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;parameters,
                        java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;criticals,
                        java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;lambdas,
                        double[]&nbsp;adhesion,
-                       java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsTag,
-                       java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasTag,
-                       java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&gt;&nbsp;adhesionTag)</pre>
-<div class="block">Creates a <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a> object with tags.</div>
+                       java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsRegion,
+                       java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasRegion,
+                       java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&gt;&nbsp;adhesionRegion)</pre>
+<div class="block">Creates a <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a> object with regions.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the cell ID</dd>
@@ -575,12 +596,13 @@ extends java.lang.Object</pre>
 <dd><code>state</code> - the cell state</dd>
 <dd><code>age</code> - the cell age (in ticks)</dd>
 <dd><code>location</code> - the <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc"><code>Location</code></a> of the cell</dd>
+<dd><code>parameters</code> - the dictionary of parameters</dd>
 <dd><code>criticals</code> - the map of critical values</dd>
 <dd><code>lambdas</code> - the map of lambda multipliers</dd>
 <dd><code>adhesion</code> - the list of adhesion values</dd>
-<dd><code>criticalsTag</code> - the map of tagged critical values</dd>
-<dd><code>lambdasTag</code> - the map of tagged lambda multipliers</dd>
-<dd><code>adhesionTag</code> - the map of tagged adhesion values</dd>
+<dd><code>criticalsRegion</code> - the map of critical values for regions</dd>
+<dd><code>lambdasRegion</code> - the map of lambda multipliers for regions</dd>
+<dd><code>adhesionRegion</code> - the map of adhesion values for regions</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a> object</dd>
 </dl>
@@ -626,7 +648,7 @@ extends java.lang.Object</pre>
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
 <li><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html" title="class in arcade.agent.cell"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">

@@ -105,6 +105,10 @@
 <dd>
 <div class="block">Creates a <code>Parameter</code> normal distribution.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#parameters">parameters</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
+<dd>
+<div class="block">Cell parameters</div>
+</dd>
 <dt><span class="memberNameLink"><a href="../arcade/sim/input/InputBuilder.html#parameters">parameters</a></span> - Variable in class arcade.sim.input.<a href="../arcade/sim/input/InputBuilder.html" title="class in arcade.sim.input">InputBuilder</a></dt>
 <dd>
 <div class="block">Container for default parameter values</div>
@@ -115,7 +119,11 @@
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/sim/input/InputParser.html#parseArguments-java.lang.String:A-">parseArguments(String[])</a></span> - Method in class arcade.sim.input.<a href="../arcade/sim/input/InputParser.html" title="class in arcade.sim.input">InputParser</a></dt>
 <dd>
-<div class="block">Parses an the list of arguments.</div>
+<div class="block">Parses a list of arguments.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/sim/Series.html#parseConversion-java.lang.String-double-double-">parseConversion(String, double, double)</a></span> - Static method in class arcade.sim.<a href="../arcade/sim/Series.html" title="class in arcade.sim">Series</a></dt>
+<dd>
+<div class="block">Updates conversion string into a value.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/sim/input/InputParser.html#parsed">parsed</a></span> - Variable in class arcade.sim.input.<a href="../arcade/sim/input/InputParser.html" title="class in arcade.sim.input">InputParser</a></dt>
 <dd>
@@ -124,6 +132,10 @@
 <dt><span class="memberNameLink"><a href="../arcade/sim/input/InputParser.html#parseFlaggedArgument-java.lang.String:A-int-arcade.sim.input.InputParser.Command-">parseFlaggedArgument(String[], int, InputParser.Command)</a></span> - Method in class arcade.sim.input.<a href="../arcade/sim/input/InputParser.html" title="class in arcade.sim.input">InputParser</a></dt>
 <dd>
 <div class="block">Parses a flagged (either option or switch) argument.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/sim/Series.html#parseParameter-arcade.util.MiniBox-java.lang.String-java.lang.String-arcade.util.MiniBox-arcade.util.MiniBox-">parseParameter(MiniBox, String, String, MiniBox, MiniBox)</a></span> - Static method in class arcade.sim.<a href="../arcade/sim/Series.html" title="class in arcade.sim">Series</a></dt>
+<dd>
+<div class="block">Parses parameter values based on default value.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/sim/input/InputParser.html#parsePositionArgument-java.lang.String:A-int-">parsePositionArgument(String[], int)</a></span> - Method in class arcade.sim.input.<a href="../arcade/sim/input/InputParser.html" title="class in arcade.sim.input">InputParser</a></dt>
 <dd>
@@ -185,21 +197,25 @@
 <dd>
 <div class="block">Map of population to lambda values</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/CellFactory.html#popToTagAdhesion">popToTagAdhesion</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/CellFactory.html" title="class in arcade.agent.cell">CellFactory</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/CellFactory.html#popToParameters">popToParameters</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/CellFactory.html" title="class in arcade.agent.cell">CellFactory</a></dt>
 <dd>
-<div class="block">Map of population to tag adhesion values</div>
+<div class="block">Map of population to parameters</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/CellFactory.html#popToTagCriticals">popToTagCriticals</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/CellFactory.html" title="class in arcade.agent.cell">CellFactory</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/CellFactory.html#popToRegionAdhesion">popToRegionAdhesion</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/CellFactory.html" title="class in arcade.agent.cell">CellFactory</a></dt>
 <dd>
-<div class="block">Map of population to tag critical values</div>
+<div class="block">Map of population to region adhesion values</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/CellFactory.html#popToTagLambdas">popToTagLambdas</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/CellFactory.html" title="class in arcade.agent.cell">CellFactory</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/CellFactory.html#popToRegionCriticals">popToRegionCriticals</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/CellFactory.html" title="class in arcade.agent.cell">CellFactory</a></dt>
 <dd>
-<div class="block">Map of population to tag lambda values</div>
+<div class="block">Map of population to region critical values</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/CellFactory.html#popToTags">popToTags</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/CellFactory.html" title="class in arcade.agent.cell">CellFactory</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/CellFactory.html#popToRegionLambdas">popToRegionLambdas</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/CellFactory.html" title="class in arcade.agent.cell">CellFactory</a></dt>
 <dd>
-<div class="block">Map of population to number of tags</div>
+<div class="block">Map of population to region lambda values</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/CellFactory.html#popToRegions">popToRegions</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/CellFactory.html" title="class in arcade.agent.cell">CellFactory</a></dt>
+<dd>
+<div class="block">Map of population to number of regions</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/vis/Drawer.html#port">port</a></span> - Variable in class arcade.vis.<a href="../arcade/vis/Drawer.html" title="class in arcade.vis">Drawer</a></dt>
 <dd>
@@ -247,43 +263,43 @@
 </dd>
 <dt><a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell"><span class="typeNameLink">PottsCell</span></a> - Class in <a href="../arcade/agent/cell/package-summary.html">arcade.agent.cell</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#PottsCell-int-int-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-">PottsCell(int, int, Location, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[])</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#PottsCell-int-int-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-">PottsCell(int, int, Location, MiniBox, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[])</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
 <dd>
 <div class="block">Creates a <code>PottsCell</code> agent.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#PottsCell-int-int-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell(int, int, Location, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Cell.Tag, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#PottsCell-int-int-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell(int, int, Location, MiniBox, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Cell.Region, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
 <dd>
 <div class="block">Creates a <code>PottsCell</code> agent.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#PottsCell-int-int-arcade.agent.cell.Cell.State-int-arcade.env.loc.Location-boolean-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell(int, int, Cell.State, int, Location, boolean, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Cell.Tag, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#PottsCell-int-int-arcade.agent.cell.Cell.State-int-arcade.env.loc.Location-boolean-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell(int, int, Cell.State, int, Location, boolean, MiniBox, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Cell.Region, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
 <dd>
 <div class="block">Creates a <code>PottsCell</code> agent.</div>
 </dd>
 <dt><a href="../arcade/agent/cell/PottsCell2D.html" title="class in arcade.agent.cell"><span class="typeNameLink">PottsCell2D</span></a> - Class in <a href="../arcade/agent/cell/package-summary.html">arcade.agent.cell</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-">PottsCell2D(int, int, Location, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[])</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell2D.html" title="class in arcade.agent.cell">PottsCell2D</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-">PottsCell2D(int, int, Location, MiniBox, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[])</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell2D.html" title="class in arcade.agent.cell">PottsCell2D</a></dt>
 <dd>
 <div class="block">Creates a <code>PottsCell</code> agent for 2D simulations.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell2D(int, int, Location, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Cell.Tag, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell2D.html" title="class in arcade.agent.cell">PottsCell2D</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell2D(int, int, Location, MiniBox, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Cell.Region, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell2D.html" title="class in arcade.agent.cell">PottsCell2D</a></dt>
 <dd>
 <div class="block">Creates a <code>PottsCell</code> agent for 2D simulations.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.agent.cell.Cell.State-int-arcade.env.loc.Location-boolean-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell2D(int, int, Cell.State, int, Location, boolean, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Cell.Tag, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell2D.html" title="class in arcade.agent.cell">PottsCell2D</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.agent.cell.Cell.State-int-arcade.env.loc.Location-boolean-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell2D(int, int, Cell.State, int, Location, boolean, MiniBox, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Cell.Region, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell2D.html" title="class in arcade.agent.cell">PottsCell2D</a></dt>
 <dd>
 <div class="block">Creates a <code>PottsCell</code> agent for 2D simulations.</div>
 </dd>
 <dt><a href="../arcade/agent/cell/PottsCell3D.html" title="class in arcade.agent.cell"><span class="typeNameLink">PottsCell3D</span></a> - Class in <a href="../arcade/agent/cell/package-summary.html">arcade.agent.cell</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell3D.html#PottsCell3D-int-int-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-">PottsCell3D(int, int, Location, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[])</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell3D.html" title="class in arcade.agent.cell">PottsCell3D</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell3D.html#PottsCell3D-int-int-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-">PottsCell3D(int, int, Location, MiniBox, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[])</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell3D.html" title="class in arcade.agent.cell">PottsCell3D</a></dt>
 <dd>
 <div class="block">Creates a <code>PottsCell</code> agent for 3D simulations.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell3D.html#PottsCell3D-int-int-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell3D(int, int, Location, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Cell.Tag, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell3D.html" title="class in arcade.agent.cell">PottsCell3D</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell3D.html#PottsCell3D-int-int-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell3D(int, int, Location, MiniBox, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Cell.Region, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell3D.html" title="class in arcade.agent.cell">PottsCell3D</a></dt>
 <dd>
 <div class="block">Creates a <code>PottsCell</code> agent for 3D simulations.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell3D.html#PottsCell3D-int-int-arcade.agent.cell.Cell.State-int-arcade.env.loc.Location-boolean-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell3D(int, int, Cell.State, int, Location, boolean, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Tag, EnumMap&lt;Cell.Tag, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell3D.html" title="class in arcade.agent.cell">PottsCell3D</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell3D.html#PottsCell3D-int-int-arcade.agent.cell.Cell.State-int-arcade.env.loc.Location-boolean-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell3D(int, int, Cell.State, int, Location, boolean, MiniBox, EnumMap&lt;Potts.Term, Double&gt;, EnumMap&lt;Potts.Term, Double&gt;, double[], EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Potts.Term, Double&gt;&gt;, EnumMap&lt;Cell.Region, EnumMap&lt;Cell.Region, Double&gt;&gt;)</a></span> - Constructor for class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell3D.html" title="class in arcade.agent.cell">PottsCell3D</a></dt>
 <dd>
 <div class="block">Creates a <code>PottsCell</code> agent for 3D simulations.</div>
 </dd>
@@ -385,9 +401,9 @@
 <dd>&nbsp;</dd>
 <dt><a href="../arcade/agent/module/ProliferationModule.html" title="class in arcade.agent.module"><span class="typeNameLink">ProliferationModule</span></a> - Class in <a href="../arcade/agent/module/package-summary.html">arcade.agent.module</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/module/ProliferationModule.html#ProliferationModule-arcade.agent.cell.PottsCell-">ProliferationModule(PottsCell)</a></span> - Constructor for class arcade.agent.module.<a href="../arcade/agent/module/ProliferationModule.html" title="class in arcade.agent.module">ProliferationModule</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/module/ProliferationModule.html#ProliferationModule-arcade.agent.cell.Cell-">ProliferationModule(Cell)</a></span> - Constructor for class arcade.agent.module.<a href="../arcade/agent/module/ProliferationModule.html" title="class in arcade.agent.module">ProliferationModule</a></dt>
 <dd>
-<div class="block">Creates a <code>ProliferationModule</code> for the given <a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell"><code>PottsCell</code></a>.</div>
+<div class="block">Creates a <code>ProliferationModule</code> for the given <a href="../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a>.</div>
 </dd>
 <dt><a href="../arcade/agent/module/ProliferationModule.Simple.html" title="class in arcade.agent.module"><span class="typeNameLink">ProliferationModule.Simple</span></a> - Class in <a href="../arcade/agent/module/package-summary.html">arcade.agent.module</a></dt>
 <dd>

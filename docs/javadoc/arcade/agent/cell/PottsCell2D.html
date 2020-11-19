@@ -138,7 +138,7 @@ extends <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arca
 <!--   -->
 </a>
 <h3>Nested classes/interfaces inherited from interface&nbsp;arcade.agent.cell.<a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a></h3>
-<code><a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a>, <a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a></code></li>
+<code><a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>, <a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a></code></li>
 </ul>
 </li>
 </ul>
@@ -166,7 +166,7 @@ extends <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arca
 <!--   -->
 </a>
 <h3>Fields inherited from class&nbsp;arcade.agent.cell.<a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></h3>
-<code><a href="../../../arcade/agent/cell/PottsCell.html#adhesion">adhesion</a>, <a href="../../../arcade/agent/cell/PottsCell.html#adhesionTag">adhesionTag</a>, <a href="../../../arcade/agent/cell/PottsCell.html#criticals">criticals</a>, <a href="../../../arcade/agent/cell/PottsCell.html#criticalsTag">criticalsTag</a>, <a href="../../../arcade/agent/cell/PottsCell.html#hasTags">hasTags</a>, <a href="../../../arcade/agent/cell/PottsCell.html#id">id</a>, <a href="../../../arcade/agent/cell/PottsCell.html#lambdas">lambdas</a>, <a href="../../../arcade/agent/cell/PottsCell.html#lambdasTag">lambdasTag</a>, <a href="../../../arcade/agent/cell/PottsCell.html#module">module</a>, <a href="../../../arcade/agent/cell/PottsCell.html#pop">pop</a>, <a href="../../../arcade/agent/cell/PottsCell.html#stopper">stopper</a></code></li>
+<code><a href="../../../arcade/agent/cell/PottsCell.html#adhesion">adhesion</a>, <a href="../../../arcade/agent/cell/PottsCell.html#adhesionRegion">adhesionRegion</a>, <a href="../../../arcade/agent/cell/PottsCell.html#criticals">criticals</a>, <a href="../../../arcade/agent/cell/PottsCell.html#criticalsRegion">criticalsRegion</a>, <a href="../../../arcade/agent/cell/PottsCell.html#hasRegions">hasRegions</a>, <a href="../../../arcade/agent/cell/PottsCell.html#id">id</a>, <a href="../../../arcade/agent/cell/PottsCell.html#lambdas">lambdas</a>, <a href="../../../arcade/agent/cell/PottsCell.html#lambdasRegion">lambdasRegion</a>, <a href="../../../arcade/agent/cell/PottsCell.html#module">module</a>, <a href="../../../arcade/agent/cell/PottsCell.html#parameters">parameters</a>, <a href="../../../arcade/agent/cell/PottsCell.html#pop">pop</a>, <a href="../../../arcade/agent/cell/PottsCell.html#stopper">stopper</a></code></li>
 </ul>
 </li>
 </ul>
@@ -182,25 +182,27 @@ extends <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arca
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.agent.cell.Cell.State-int-arcade.env.loc.Location-boolean-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell2D</a></span>(int&nbsp;id,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.agent.cell.Cell.State-int-arcade.env.loc.Location-boolean-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell2D</a></span>(int&nbsp;id,
            int&nbsp;pop,
            <a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a>&nbsp;state,
            int&nbsp;age,
            <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;location,
-           boolean&nbsp;hasTags,
+           boolean&nbsp;hasRegions,
+           <a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;parameters,
            java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;criticals,
            java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;lambdas,
            double[]&nbsp;adhesion,
-           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsTag,
-           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasTag,
-           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&gt;&nbsp;adhesionTag)</code>
+           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsRegion,
+           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasRegion,
+           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&gt;&nbsp;adhesionRegion)</code>
 <div class="block">Creates a <code>PottsCell</code> agent for 2D simulations.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-">PottsCell2D</a></span>(int&nbsp;id,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-">PottsCell2D</a></span>(int&nbsp;id,
            int&nbsp;pop,
            <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;location,
+           <a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;parameters,
            java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;criticals,
            java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;lambdas,
            double[]&nbsp;adhesion)</code>
@@ -208,15 +210,16 @@ extends <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arca
 </td>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell2D</a></span>(int&nbsp;id,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/PottsCell2D.html#PottsCell2D-int-int-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">PottsCell2D</a></span>(int&nbsp;id,
            int&nbsp;pop,
            <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;location,
+           <a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;parameters,
            java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;criticals,
            java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;lambdas,
            double[]&nbsp;adhesion,
-           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsTag,
-           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasTag,
-           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&gt;&nbsp;adhesionTag)</code>
+           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsRegion,
+           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasRegion,
+           java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&gt;&nbsp;adhesionRegion)</code>
 <div class="block">Creates a <code>PottsCell</code> agent for 2D simulations.</div>
 </td>
 </tr>
@@ -255,7 +258,7 @@ extends <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arca
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;arcade.agent.cell.<a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></h3>
-<code><a href="../../../arcade/agent/cell/PottsCell.html#getAdhesion-arcade.agent.cell.Cell.Tag-arcade.agent.cell.Cell.Tag-">getAdhesion</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getAdhesion-int-">getAdhesion</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getAge--">getAge</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getCriticalSurface--">getCriticalSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getCriticalSurface-arcade.agent.cell.Cell.Tag-">getCriticalSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getCriticalVolume--">getCriticalVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getCriticalVolume-arcade.agent.cell.Cell.Tag-">getCriticalVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getID--">getID</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getLambda-arcade.sim.Potts.Term-">getLambda</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getLambda-arcade.sim.Potts.Term-arcade.agent.cell.Cell.Tag-">getLambda</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getLocation--">getLocation</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getModule--">getModule</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getPop--">getPop</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getState--">getState</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getSurface--">getSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getSurface-arcade.agent.cell.Cell.Tag-">getSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getTargetSurface--">getTargetSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getTargetSurface-arcade.agent.cell.Cell.Tag-">getTargetSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getTargetVolume--">getTargetVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getTargetVolume-arcade.agent.cell.Cell.Tag-">getTargetVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getVolume--">getVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getVolume-arcade.agent.cell.Cell.Tag-">getVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#hasTags--">hasTags</a>, <a href="../../../arcade/agent/cell/PottsCell.html#initialize-int:A:A:A-int:A:A:A-">initialize</a>, <a href="../../../arcade/agent/cell/PottsCell.html#reset-int:A:A:A-int:A:A:A-">reset</a>, <a href="../../../arcade/agent/cell/PottsCell.html#schedule-sim.engine.Schedule-">schedule</a>, <a href="../../../arcade/agent/cell/PottsCell.html#setState-arcade.agent.cell.Cell.State-">setState</a>, <a href="../../../arcade/agent/cell/PottsCell.html#setTargets-arcade.agent.cell.Cell.Tag-double-double-">setTargets</a>, <a href="../../../arcade/agent/cell/PottsCell.html#setTargets-double-double-">setTargets</a>, <a href="../../../arcade/agent/cell/PottsCell.html#step-sim.engine.SimState-">step</a>, <a href="../../../arcade/agent/cell/PottsCell.html#updateTarget-arcade.agent.cell.Cell.Tag-double-double-">updateTarget</a>, <a href="../../../arcade/agent/cell/PottsCell.html#updateTarget-double-double-">updateTarget</a></code></li>
+<code><a href="../../../arcade/agent/cell/PottsCell.html#getAdhesion-arcade.agent.cell.Cell.Region-arcade.agent.cell.Cell.Region-">getAdhesion</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getAdhesion-int-">getAdhesion</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getAge--">getAge</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getCriticalSurface--">getCriticalSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getCriticalSurface-arcade.agent.cell.Cell.Region-">getCriticalSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getCriticalVolume--">getCriticalVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getCriticalVolume-arcade.agent.cell.Cell.Region-">getCriticalVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getID--">getID</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getLambda-arcade.sim.Potts.Term-">getLambda</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getLambda-arcade.sim.Potts.Term-arcade.agent.cell.Cell.Region-">getLambda</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getLocation--">getLocation</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getModule--">getModule</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getParameters--">getParameters</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getPop--">getPop</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getState--">getState</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getSurface--">getSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getSurface-arcade.agent.cell.Cell.Region-">getSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getTargetSurface--">getTargetSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getTargetSurface-arcade.agent.cell.Cell.Region-">getTargetSurface</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getTargetVolume--">getTargetVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getTargetVolume-arcade.agent.cell.Cell.Region-">getTargetVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getVolume--">getVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#getVolume-arcade.agent.cell.Cell.Region-">getVolume</a>, <a href="../../../arcade/agent/cell/PottsCell.html#hasRegions--">hasRegions</a>, <a href="../../../arcade/agent/cell/PottsCell.html#initialize-int:A:A:A-int:A:A:A-">initialize</a>, <a href="../../../arcade/agent/cell/PottsCell.html#reset-int:A:A:A-int:A:A:A-">reset</a>, <a href="../../../arcade/agent/cell/PottsCell.html#schedule-sim.engine.Schedule-">schedule</a>, <a href="../../../arcade/agent/cell/PottsCell.html#setState-arcade.agent.cell.Cell.State-">setState</a>, <a href="../../../arcade/agent/cell/PottsCell.html#setTargets-arcade.agent.cell.Cell.Region-double-double-">setTargets</a>, <a href="../../../arcade/agent/cell/PottsCell.html#setTargets-double-double-">setTargets</a>, <a href="../../../arcade/agent/cell/PottsCell.html#step-sim.engine.SimState-">step</a>, <a href="../../../arcade/agent/cell/PottsCell.html#stop--">stop</a>, <a href="../../../arcade/agent/cell/PottsCell.html#updateTarget-arcade.agent.cell.Cell.Region-double-double-">updateTarget</a>, <a href="../../../arcade/agent/cell/PottsCell.html#updateTarget-double-double-">updateTarget</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -296,7 +299,7 @@ extends <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arca
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="PottsCell2D-int-int-arcade.agent.cell.Cell.State-int-arcade.env.loc.Location-boolean-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">
+<a name="PottsCell2D-int-int-arcade.agent.cell.Cell.State-int-arcade.env.loc.Location-boolean-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -307,13 +310,14 @@ extends <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arca
                    <a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a>&nbsp;state,
                    int&nbsp;age,
                    <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;location,
-                   boolean&nbsp;hasTags,
+                   boolean&nbsp;hasRegions,
+                   <a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;parameters,
                    java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;criticals,
                    java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;lambdas,
                    double[]&nbsp;adhesion,
-                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsTag,
-                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasTag,
-                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&gt;&nbsp;adhesionTag)</pre>
+                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsRegion,
+                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasRegion,
+                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&gt;&nbsp;adhesionRegion)</pre>
 <div class="block">Creates a <code>PottsCell</code> agent for 2D simulations.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -322,17 +326,18 @@ extends <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arca
 <dd><code>state</code> - the cell state</dd>
 <dd><code>age</code> - the cell age (in ticks)</dd>
 <dd><code>location</code> - the <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc"><code>Location</code></a> of the cell</dd>
+<dd><code>parameters</code> - the dictionary of parameters</dd>
 <dd><code>criticals</code> - the map of critical values</dd>
 <dd><code>lambdas</code> - the map of lambda multipliers</dd>
 <dd><code>adhesion</code> - the list of adhesion values</dd>
-<dd><code>hasTags</code> - <code>true</code> if the cell has tags, <code>false</code> otherwise</dd>
-<dd><code>criticalsTag</code> - the map of tagged critical values</dd>
-<dd><code>lambdasTag</code> - the map of tagged lambda multipliers</dd>
-<dd><code>adhesionTag</code> - the map of tagged adhesion values</dd>
+<dd><code>hasRegions</code> - <code>true</code> if the cell has regions, <code>false</code> otherwise</dd>
+<dd><code>criticalsRegion</code> - the map of critical values for regions</dd>
+<dd><code>lambdasRegion</code> - the map of lambda multipliers for regions</dd>
+<dd><code>adhesionRegion</code> - the map of adhesion values for regions</dd>
 </dl>
 </li>
 </ul>
-<a name="PottsCell2D-int-int-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-">
+<a name="PottsCell2D-int-int-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -341,25 +346,27 @@ extends <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arca
 <pre>public&nbsp;PottsCell2D(int&nbsp;id,
                    int&nbsp;pop,
                    <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;location,
+                   <a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;parameters,
                    java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;criticals,
                    java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;lambdas,
                    double[]&nbsp;adhesion)</pre>
 <div class="block">Creates a <code>PottsCell</code> agent for 2D simulations.
  <p>
  The default state is proliferative and age is 0.
- The cell is created with no tags.</div>
+ The cell is created with no regions.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the cell ID</dd>
 <dd><code>pop</code> - the cell population index</dd>
 <dd><code>location</code> - the <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc"><code>Location</code></a> of the cell</dd>
+<dd><code>parameters</code> - the dictionary of parameters</dd>
 <dd><code>criticals</code> - the map of critical values</dd>
 <dd><code>lambdas</code> - the map of lambda multipliers</dd>
 <dd><code>adhesion</code> - the list of adhesion values</dd>
 </dl>
 </li>
 </ul>
-<a name="PottsCell2D-int-int-arcade.env.loc.Location-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">
+<a name="PottsCell2D-int-int-arcade.env.loc.Location-arcade.util.MiniBox-java.util.EnumMap-java.util.EnumMap-double:A-java.util.EnumMap-java.util.EnumMap-java.util.EnumMap-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -368,12 +375,13 @@ extends <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arca
 <pre>public&nbsp;PottsCell2D(int&nbsp;id,
                    int&nbsp;pop,
                    <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;location,
+                   <a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;parameters,
                    java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;criticals,
                    java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&nbsp;lambdas,
                    double[]&nbsp;adhesion,
-                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsTag,
-                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasTag,
-                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&gt;&nbsp;adhesionTag)</pre>
+                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;criticalsRegion,
+                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>,java.lang.Double&gt;&gt;&nbsp;lambdasRegion,
+                   java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&gt;&nbsp;adhesionRegion)</pre>
 <div class="block">Creates a <code>PottsCell</code> agent for 2D simulations.
  <p>
  The default state is proliferative and age is 0.</div>
@@ -382,12 +390,13 @@ extends <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arca
 <dd><code>id</code> - the cell ID</dd>
 <dd><code>pop</code> - the cell population index</dd>
 <dd><code>location</code> - the <a href="../../../arcade/env/loc/Location.html" title="interface in arcade.env.loc"><code>Location</code></a> of the cell</dd>
+<dd><code>parameters</code> - the dictionary of parameters</dd>
 <dd><code>criticals</code> - the map of critical values</dd>
 <dd><code>lambdas</code> - the map of lambda multipliers</dd>
 <dd><code>adhesion</code> - the list of adhesion values</dd>
-<dd><code>criticalsTag</code> - the map of tagged critical values</dd>
-<dd><code>lambdasTag</code> - the map of tagged lambda multipliers</dd>
-<dd><code>adhesionTag</code> - the map of tagged adhesion values</dd>
+<dd><code>criticalsRegion</code> - the map of critical values for regions</dd>
+<dd><code>lambdasRegion</code> - the map of lambda multipliers for regions</dd>
+<dd><code>adhesionRegion</code> - the map of adhesion values for regions</dd>
 </dl>
 </li>
 </ul>

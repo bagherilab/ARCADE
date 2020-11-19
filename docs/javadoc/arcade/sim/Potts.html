@@ -165,39 +165,39 @@ implements sim.engine.Steppable</pre>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>(package private) boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#HAS_REGIONS">HAS_REGIONS</a></span></code>
+<div class="block"><code>true</code> if cells have regions, <code>false</code> otherwise</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#HEIGHT">HEIGHT</a></span></code>
 <div class="block">Depth (z direction) of potts array</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>int[][][]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#IDS">IDS</a></span></code>
 <div class="block">Potts array for ids</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#LENGTH">LENGTH</a></span></code>
 <div class="block">Length (x direction) of potts array</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int[][][]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#REGIONS">REGIONS</a></span></code>
+<div class="block">Potts array for regions</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#STEPS">STEPS</a></span></code>
 <div class="block">Number of steps in Monte Carlo Step</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>(package private) boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#TAGGED">TAGGED</a></span></code>
-<div class="block"><code>true</code> if cells have tags, <code>false</code> otherwise</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>int[][][]</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#TAGS">TAGS</a></span></code>
-<div class="block">Potts array for tags</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -259,12 +259,12 @@ implements sim.engine.Steppable</pre>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>(package private) abstract int[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#calculateChange-int-int-int-int-int-int-">calculateChange</a></span>(int&nbsp;id,
-               int&nbsp;sourceTag,
-               int&nbsp;targetTag,
+               int&nbsp;sourceRegion,
+               int&nbsp;targetRegion,
                int&nbsp;x,
                int&nbsp;y,
                int&nbsp;z)</code>
-<div class="block">Calculates change in surface for tag</div>
+<div class="block">Calculates change in surface for region</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
@@ -281,13 +281,13 @@ implements sim.engine.Steppable</pre>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#change-int-int-int-int-int-int-double-">change</a></span>(int&nbsp;id,
-      int&nbsp;sourceTag,
-      int&nbsp;targetTag,
+      int&nbsp;sourceRegion,
+      int&nbsp;targetRegion,
       int&nbsp;x,
       int&nbsp;y,
       int&nbsp;z,
       double&nbsp;r)</code>
-<div class="block">Calculates energy change to decide if a voxel tag is flipped.</div>
+<div class="block">Calculates energy change to decide if a voxel region is flipped.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
@@ -304,13 +304,13 @@ implements sim.engine.Steppable</pre>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#flip-int-int-int-int-int-int-double-">flip</a></span>(int&nbsp;id,
-    int&nbsp;sourceTag,
-    int&nbsp;targetTag,
+    int&nbsp;sourceRegion,
+    int&nbsp;targetRegion,
     int&nbsp;x,
     int&nbsp;y,
     int&nbsp;z,
     double&nbsp;r)</code>
-<div class="block">Flips connected voxel from source to target tag based on Boltzmann probability.</div>
+<div class="block">Flips connected voxel from source to target region based on Boltzmann probability.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
@@ -325,11 +325,11 @@ implements sim.engine.Steppable</pre>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code>(package private) abstract double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#getAdhesion-int-int-int-int-int-">getAdhesion</a></span>(int&nbsp;id,
-           int&nbsp;tag,
+           int&nbsp;region,
            int&nbsp;x,
            int&nbsp;y,
            int&nbsp;z)</code>
-<div class="block">Gets adhesion energy for a given voxel tag.</div>
+<div class="block">Gets adhesion energy for a given voxel region.</div>
 </td>
 </tr>
 <tr id="i8" class="altColor">
@@ -358,12 +358,12 @@ implements sim.engine.Steppable</pre>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#getDeltaAdhesion-int-int-int-int-int-int-">getDeltaAdhesion</a></span>(int&nbsp;id,
-                int&nbsp;sourceTag,
-                int&nbsp;targetTag,
+                int&nbsp;sourceRegion,
+                int&nbsp;targetRegion,
                 int&nbsp;x,
                 int&nbsp;y,
                 int&nbsp;z)</code>
-<div class="block">Gets change in adhesion energy for tag.</div>
+<div class="block">Gets change in adhesion energy for region.</div>
 </td>
 </tr>
 <tr id="i12" class="altColor">
@@ -379,12 +379,12 @@ implements sim.engine.Steppable</pre>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#getDeltaSurface-int-int-int-int-int-int-">getDeltaSurface</a></span>(int&nbsp;id,
-               int&nbsp;sourceTag,
-               int&nbsp;targetTag,
+               int&nbsp;sourceRegion,
+               int&nbsp;targetRegion,
                int&nbsp;x,
                int&nbsp;y,
                int&nbsp;z)</code>
-<div class="block">Gets change in surface energy for tag.</div>
+<div class="block">Gets change in surface energy for region.</div>
 </td>
 </tr>
 <tr id="i14" class="altColor">
@@ -397,9 +397,9 @@ implements sim.engine.Steppable</pre>
 <tr id="i15" class="rowColor">
 <td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#getDeltaVolume-int-int-int-">getDeltaVolume</a></span>(int&nbsp;id,
-              int&nbsp;sourceTag,
-              int&nbsp;targetTag)</code>
-<div class="block">Gets change in volume energy for tag.</div>
+              int&nbsp;sourceRegion,
+              int&nbsp;targetRegion)</code>
+<div class="block">Gets change in volume energy for region.</div>
 </td>
 </tr>
 <tr id="i16" class="altColor">
@@ -414,11 +414,11 @@ implements sim.engine.Steppable</pre>
 <tr id="i17" class="rowColor">
 <td class="colFirst"><code>(package private) abstract boolean[][][]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#getNeighborhood-int-int-int-int-int-">getNeighborhood</a></span>(int&nbsp;id,
-               int&nbsp;tag,
+               int&nbsp;region,
                int&nbsp;x,
                int&nbsp;y,
                int&nbsp;z)</code>
-<div class="block">Gets neighborhood for the given voxel tag.</div>
+<div class="block">Gets neighborhood for the given voxel region.</div>
 </td>
 </tr>
 <tr id="i18" class="altColor">
@@ -433,7 +433,7 @@ implements sim.engine.Steppable</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#getSurface-int-int-int-">getSurface</a></span>(int&nbsp;id,
           int&nbsp;t,
           int&nbsp;change)</code>
-<div class="block">Gets the surface energy for a given change in surface for tag.</div>
+<div class="block">Gets the surface energy for a given change in surface for region.</div>
 </td>
 </tr>
 <tr id="i20" class="altColor">
@@ -446,10 +446,10 @@ implements sim.engine.Steppable</pre>
 </tr>
 <tr id="i21" class="rowColor">
 <td class="colFirst"><code>(package private) abstract java.util.HashSet&lt;java.lang.Integer&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#getUniqueTags-int-int-int-">getUniqueTags</a></span>(int&nbsp;x,
-             int&nbsp;y,
-             int&nbsp;z)</code>
-<div class="block">Gets unique tags adjacent to given voxel.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#getUniqueRegions-int-int-int-">getUniqueRegions</a></span>(int&nbsp;x,
+                int&nbsp;y,
+                int&nbsp;z)</code>
+<div class="block">Gets unique regions adjacent to given voxel.</div>
 </td>
 </tr>
 <tr id="i22" class="altColor">
@@ -464,7 +464,7 @@ implements sim.engine.Steppable</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts.html#getVolume-int-int-int-">getVolume</a></span>(int&nbsp;id,
          int&nbsp;t,
          int&nbsp;change)</code>
-<div class="block">Gets volume energy for a given change in volume for tag.</div>
+<div class="block">Gets volume energy for a given change in volume for region.</div>
 </td>
 </tr>
 <tr id="i24" class="altColor">
@@ -505,6 +505,16 @@ implements sim.engine.Steppable</pre>
 <div class="block">Grid holding cells</div>
 </li>
 </ul>
+<a name="HAS_REGIONS">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>HAS_REGIONS</h4>
+<pre>final&nbsp;boolean HAS_REGIONS</pre>
+<div class="block"><code>true</code> if cells have regions, <code>false</code> otherwise</div>
+</li>
+</ul>
 <a name="HEIGHT">
 <!--   -->
 </a>
@@ -535,6 +545,16 @@ implements sim.engine.Steppable</pre>
 <div class="block">Length (x direction) of potts array</div>
 </li>
 </ul>
+<a name="REGIONS">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>REGIONS</h4>
+<pre>public&nbsp;int[][][] REGIONS</pre>
+<div class="block">Potts array for regions</div>
+</li>
+</ul>
 <a name="STEPS">
 <!--   -->
 </a>
@@ -543,26 +563,6 @@ implements sim.engine.Steppable</pre>
 <h4>STEPS</h4>
 <pre>final&nbsp;int STEPS</pre>
 <div class="block">Number of steps in Monte Carlo Step</div>
-</li>
-</ul>
-<a name="TAGGED">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>TAGGED</h4>
-<pre>final&nbsp;boolean TAGGED</pre>
-<div class="block"><code>true</code> if cells have tags, <code>false</code> otherwise</div>
-</li>
-</ul>
-<a name="TAGS">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>TAGS</h4>
-<pre>public&nbsp;int[][][] TAGS</pre>
-<div class="block">Potts array for tags</div>
 </li>
 </ul>
 <a name="TEMPERATURE">
@@ -646,17 +646,17 @@ implements sim.engine.Steppable</pre>
 <li class="blockList">
 <h4>calculateChange</h4>
 <pre>abstract&nbsp;int[]&nbsp;calculateChange(int&nbsp;id,
-                               int&nbsp;sourceTag,
-                               int&nbsp;targetTag,
+                               int&nbsp;sourceRegion,
+                               int&nbsp;targetRegion,
                                int&nbsp;x,
                                int&nbsp;y,
                                int&nbsp;z)</pre>
-<div class="block">Calculates change in surface for tag</div>
+<div class="block">Calculates change in surface for region</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>sourceTag</code> - the id of the source voxel</dd>
-<dd><code>targetTag</code> - the id of the target voxel</dd>
+<dd><code>sourceRegion</code> - the id of the source voxel</dd>
+<dd><code>targetRegion</code> - the id of the target voxel</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -696,18 +696,18 @@ implements sim.engine.Steppable</pre>
 <li class="blockList">
 <h4>change</h4>
 <pre>void&nbsp;change(int&nbsp;id,
-            int&nbsp;sourceTag,
-            int&nbsp;targetTag,
+            int&nbsp;sourceRegion,
+            int&nbsp;targetRegion,
             int&nbsp;x,
             int&nbsp;y,
             int&nbsp;z,
             double&nbsp;r)</pre>
-<div class="block">Calculates energy change to decide if a voxel tag is flipped.</div>
+<div class="block">Calculates energy change to decide if a voxel region is flipped.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>sourceTag</code> - the tag of the source voxel</dd>
-<dd><code>targetTag</code> - the tag of the target voxel</dd>
+<dd><code>sourceRegion</code> - the region of the source voxel</dd>
+<dd><code>targetRegion</code> - the region of the target voxel</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -746,18 +746,18 @@ implements sim.engine.Steppable</pre>
 <li class="blockList">
 <h4>flip</h4>
 <pre>void&nbsp;flip(int&nbsp;id,
-          int&nbsp;sourceTag,
-          int&nbsp;targetTag,
+          int&nbsp;sourceRegion,
+          int&nbsp;targetRegion,
           int&nbsp;x,
           int&nbsp;y,
           int&nbsp;z,
           double&nbsp;r)</pre>
-<div class="block">Flips connected voxel from source to target tag based on Boltzmann probability.</div>
+<div class="block">Flips connected voxel from source to target region based on Boltzmann probability.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>sourceTag</code> - the tag of the source voxel</dd>
-<dd><code>targetTag</code> - the tag of the target voxel</dd>
+<dd><code>sourceRegion</code> - the region of the source voxel</dd>
+<dd><code>targetRegion</code> - the region of the target voxel</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -794,15 +794,15 @@ implements sim.engine.Steppable</pre>
 <li class="blockList">
 <h4>getAdhesion</h4>
 <pre>abstract&nbsp;double&nbsp;getAdhesion(int&nbsp;id,
-                            int&nbsp;tag,
+                            int&nbsp;region,
                             int&nbsp;x,
                             int&nbsp;y,
                             int&nbsp;z)</pre>
-<div class="block">Gets adhesion energy for a given voxel tag.</div>
+<div class="block">Gets adhesion energy for a given voxel region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>tag</code> - the voxel tag</dd>
+<dd><code>region</code> - the voxel region</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -876,17 +876,17 @@ implements sim.engine.Steppable</pre>
 <li class="blockList">
 <h4>getDeltaAdhesion</h4>
 <pre>double&nbsp;getDeltaAdhesion(int&nbsp;id,
-                        int&nbsp;sourceTag,
-                        int&nbsp;targetTag,
+                        int&nbsp;sourceRegion,
+                        int&nbsp;targetRegion,
                         int&nbsp;x,
                         int&nbsp;y,
                         int&nbsp;z)</pre>
-<div class="block">Gets change in adhesion energy for tag.</div>
+<div class="block">Gets change in adhesion energy for region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>sourceTag</code> - the tag of the source voxel</dd>
-<dd><code>targetTag</code> - the tag of the target voxel</dd>
+<dd><code>sourceRegion</code> - the region of the source voxel</dd>
+<dd><code>targetRegion</code> - the region of the target voxel</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -926,17 +926,17 @@ implements sim.engine.Steppable</pre>
 <li class="blockList">
 <h4>getDeltaSurface</h4>
 <pre>double&nbsp;getDeltaSurface(int&nbsp;id,
-                       int&nbsp;sourceTag,
-                       int&nbsp;targetTag,
+                       int&nbsp;sourceRegion,
+                       int&nbsp;targetRegion,
                        int&nbsp;x,
                        int&nbsp;y,
                        int&nbsp;z)</pre>
-<div class="block">Gets change in surface energy for tag.</div>
+<div class="block">Gets change in surface energy for region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>sourceTag</code> - the id of the source voxel</dd>
-<dd><code>targetTag</code> - the id of the target voxel</dd>
+<dd><code>sourceRegion</code> - the id of the source voxel</dd>
+<dd><code>targetRegion</code> - the id of the target voxel</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -970,14 +970,14 @@ implements sim.engine.Steppable</pre>
 <li class="blockList">
 <h4>getDeltaVolume</h4>
 <pre>double&nbsp;getDeltaVolume(int&nbsp;id,
-                      int&nbsp;sourceTag,
-                      int&nbsp;targetTag)</pre>
-<div class="block">Gets change in volume energy for tag.</div>
+                      int&nbsp;sourceRegion,
+                      int&nbsp;targetRegion)</pre>
+<div class="block">Gets change in volume energy for region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>sourceTag</code> - the tag of the source voxel</dd>
-<dd><code>targetTag</code> - the tag of the source voxel</dd>
+<dd><code>sourceRegion</code> - the region of the source voxel</dd>
+<dd><code>targetRegion</code> - the region of the source voxel</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the change in energy</dd>
 </dl>
@@ -1012,15 +1012,15 @@ implements sim.engine.Steppable</pre>
 <li class="blockList">
 <h4>getNeighborhood</h4>
 <pre>abstract&nbsp;boolean[][][]&nbsp;getNeighborhood(int&nbsp;id,
-                                       int&nbsp;tag,
+                                       int&nbsp;region,
                                        int&nbsp;x,
                                        int&nbsp;y,
                                        int&nbsp;z)</pre>
-<div class="block">Gets neighborhood for the given voxel tag.</div>
+<div class="block">Gets neighborhood for the given voxel region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>tag</code> - the voxel tag</dd>
+<dd><code>region</code> - the voxel region</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -1056,11 +1056,11 @@ implements sim.engine.Steppable</pre>
 <pre>double&nbsp;getSurface(int&nbsp;id,
                   int&nbsp;t,
                   int&nbsp;change)</pre>
-<div class="block">Gets the surface energy for a given change in surface for tag.</div>
+<div class="block">Gets the surface energy for a given change in surface for region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>t</code> - the voxel tag</dd>
+<dd><code>t</code> - the voxel region</dd>
 <dd><code>change</code> - the change in surface</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the energy</dd>
@@ -1087,23 +1087,23 @@ implements sim.engine.Steppable</pre>
 </dl>
 </li>
 </ul>
-<a name="getUniqueTags-int-int-int-">
+<a name="getUniqueRegions-int-int-int-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getUniqueTags</h4>
-<pre>abstract&nbsp;java.util.HashSet&lt;java.lang.Integer&gt;&nbsp;getUniqueTags(int&nbsp;x,
-                                                            int&nbsp;y,
-                                                            int&nbsp;z)</pre>
-<div class="block">Gets unique tags adjacent to given voxel.</div>
+<h4>getUniqueRegions</h4>
+<pre>abstract&nbsp;java.util.HashSet&lt;java.lang.Integer&gt;&nbsp;getUniqueRegions(int&nbsp;x,
+                                                               int&nbsp;y,
+                                                               int&nbsp;z)</pre>
+<div class="block">Gets unique regions adjacent to given voxel.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the list of unique tags</dd>
+<dd>the list of unique regions</dd>
 </dl>
 </li>
 </ul>
@@ -1134,11 +1134,11 @@ implements sim.engine.Steppable</pre>
 <pre>double&nbsp;getVolume(int&nbsp;id,
                  int&nbsp;t,
                  int&nbsp;change)</pre>
-<div class="block">Gets volume energy for a given change in volume for tag.</div>
+<div class="block">Gets volume energy for a given change in volume for region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>t</code> - the voxel tag</dd>
+<dd><code>t</code> - the voxel region</dd>
 <dd><code>change</code> - the change in volume</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the energy</dd>

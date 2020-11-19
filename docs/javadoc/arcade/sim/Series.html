@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":9,"i8":9,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":9,"i18":10,"i19":10,"i20":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":9,"i8":9,"i9":10,"i10":9,"i11":9,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -160,6 +160,18 @@ extends java.lang.Object</pre>
 <td class="colFirst"><code>private static java.text.DecimalFormat</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#DECIMAL_FORMAT">DECIMAL_FORMAT</a></span></code>
 <div class="block">Format for console output of simulation time</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>double</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#DS">DS</a></span></code>
+<div class="block">Spatial conversion factor (um/voxel)</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>double</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#DT">DT</a></span></code>
+<div class="block">Temporal conversion factor (hrs/tick)</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -365,74 +377,90 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i10" class="altColor">
+<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#parseConversion-java.lang.String-double-double-">parseConversion</a></span>(java.lang.String&nbsp;convert,
+               double&nbsp;DS,
+               double&nbsp;DT)</code>
+<div class="block">Updates conversion string into a value.</div>
+</td>
+</tr>
+<tr id="i11" class="rowColor">
+<td class="colFirst"><code>(package private) static void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#parseParameter-arcade.util.MiniBox-java.lang.String-java.lang.String-arcade.util.MiniBox-arcade.util.MiniBox-">parseParameter</a></span>(<a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;box,
+              java.lang.String&nbsp;parameter,
+              java.lang.String&nbsp;defaultParameter,
+              <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;values,
+              <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;scales)</code>
+<div class="block">Parses parameter values based on default value.</div>
+</td>
+</tr>
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#runSim-sim.engine.SimState-java.lang.String-">runSim</a></span>(sim.engine.SimState&nbsp;state,
       java.lang.String&nbsp;seed)</code>
 <div class="block">Iterates through each tick of the simulation.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#runSims--">runSims</a></span>()</code>
 <div class="block">Calls <code>runSim</code> for each random seed.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#runVis--">runVis</a></span>()</code>
 <div class="block">Creates controller for visualization.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>java.lang.String</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#toString--">toString</a></span>()</code>&nbsp;</td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#updateCheckpoints-java.util.ArrayList-arcade.util.MiniBox-">updateCheckpoints</a></span>(java.util.ArrayList&lt;<a href="../../arcade/util/Box.html" title="class in arcade.util">Box</a>&gt;&nbsp;checkpoints,
                  <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;checkpointDefaults)</code>
 <div class="block">Creates selected checkpoints.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#updateComponents-java.util.ArrayList-arcade.util.MiniBox-">updateComponents</a></span>(java.util.ArrayList&lt;<a href="../../arcade/util/Box.html" title="class in arcade.util">Box</a>&gt;&nbsp;components,
                 <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;componentDefaults)</code>
 <div class="block">Creates selected components.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#updateHelpers-java.util.ArrayList-arcade.util.MiniBox-">updateHelpers</a></span>(java.util.ArrayList&lt;<a href="../../arcade/util/Box.html" title="class in arcade.util">Box</a>&gt;&nbsp;helpers,
              <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;helperDefaults)</code>
 <div class="block">Creates selected helpers.</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
-<td class="colFirst"><code>(package private) static void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#updateParameter-arcade.util.MiniBox-java.lang.String-java.lang.String-arcade.util.MiniBox-arcade.util.MiniBox-">updateParameter</a></span>(<a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;box,
-               java.lang.String&nbsp;parameter,
-               java.lang.String&nbsp;defaultParameter,
-               <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;values,
-               <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;scales)</code>
-<div class="block">Updates parameter values from default.</div>
+<tr id="i19" class="rowColor">
+<td class="colFirst"><code>(package private) void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#updateMolecules-java.util.ArrayList-arcade.util.MiniBox-">updateMolecules</a></span>(java.util.ArrayList&lt;<a href="../../arcade/util/Box.html" title="class in arcade.util">Box</a>&gt;&nbsp;molecules,
+               <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;moleculeDefaults)</code>
+<div class="block">Creates environment molecules.</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>(package private) void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#updatePopulations-java.util.ArrayList-arcade.util.MiniBox-">updatePopulations</a></span>(java.util.ArrayList&lt;<a href="../../arcade/util/Box.html" title="class in arcade.util">Box</a>&gt;&nbsp;populations,
-                 <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;populationDefaults)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#updatePopulations-java.util.ArrayList-arcade.util.MiniBox-arcade.util.MiniBox-">updatePopulations</a></span>(java.util.ArrayList&lt;<a href="../../arcade/util/Box.html" title="class in arcade.util">Box</a>&gt;&nbsp;populations,
+                 <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;populationDefaults,
+                 <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;populationConversions)</code>
 <div class="block">Creates agent populations.</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#updatePotts-java.util.ArrayList-arcade.util.MiniBox-">updatePotts</a></span>(java.util.ArrayList&lt;<a href="../../arcade/util/Box.html" title="class in arcade.util">Box</a>&gt;&nbsp;potts,
            <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;pottsDefaults)</code>
 <div class="block">Calculates model sizing parameters.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Series.html#updateProfilers-java.util.ArrayList-arcade.util.MiniBox-">updateProfilers</a></span>(java.util.ArrayList&lt;<a href="../../arcade/util/Box.html" title="class in arcade.util">Box</a>&gt;&nbsp;profilers,
                <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;profilerDefaults)</code>
@@ -519,6 +547,26 @@ extends java.lang.Object</pre>
 <h4>DECIMAL_FORMAT</h4>
 <pre>private static final&nbsp;java.text.DecimalFormat DECIMAL_FORMAT</pre>
 <div class="block">Format for console output of simulation time</div>
+</li>
+</ul>
+<a name="DS">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>DS</h4>
+<pre>public final&nbsp;double DS</pre>
+<div class="block">Spatial conversion factor (um/voxel)</div>
+</li>
+</ul>
+<a name="DT">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>DT</h4>
+<pre>public final&nbsp;double DT</pre>
+<div class="block">Temporal conversion factor (hrs/tick)</div>
 </li>
 </ul>
 <a name="endSeed">
@@ -889,6 +937,52 @@ extends java.lang.Object</pre>
 <div class="block">Uses reflections to build constructors for simulation and visualization.</div>
 </li>
 </ul>
+<a name="parseConversion-java.lang.String-double-double-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>parseConversion</h4>
+<pre>static&nbsp;double&nbsp;parseConversion(java.lang.String&nbsp;convert,
+                              double&nbsp;DS,
+                              double&nbsp;DT)</pre>
+<div class="block">Updates conversion string into a value.
+ <p>
+ Conversion string is in the form of <code>D^N</code> where <code>D</code> is either
+ <code>DS</code> or <code>DT</code> and <code>N</code> is an integer exponent.
+ The <code>^N</code> is not required if N = 1.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>convert</code> - the conversion string</dd>
+<dd><code>DS</code> - the spatial conversion factor</dd>
+<dd><code>DT</code> - the temporal conversion factor</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the updated conversion factor</dd>
+</dl>
+</li>
+</ul>
+<a name="parseParameter-arcade.util.MiniBox-java.lang.String-java.lang.String-arcade.util.MiniBox-arcade.util.MiniBox-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>parseParameter</h4>
+<pre>static&nbsp;void&nbsp;parseParameter(<a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;box,
+                           java.lang.String&nbsp;parameter,
+                           java.lang.String&nbsp;defaultParameter,
+                           <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;values,
+                           <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;scales)</pre>
+<div class="block">Parses parameter values based on default value.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>box</code> - the parameter map</dd>
+<dd><code>parameter</code> - the parameter name</dd>
+<dd><code>defaultParameter</code> - the default parameter value</dd>
+<dd><code>values</code> - the map of parameter values</dd>
+<dd><code>scales</code> - the map of parameter scaling</dd>
+</dl>
+</li>
+</ul>
 <a name="runSim-sim.engine.SimState-java.lang.String-">
 <!--   -->
 </a>
@@ -996,41 +1090,37 @@ extends java.lang.Object</pre>
 </dl>
 </li>
 </ul>
-<a name="updateParameter-arcade.util.MiniBox-java.lang.String-java.lang.String-arcade.util.MiniBox-arcade.util.MiniBox-">
+<a name="updateMolecules-java.util.ArrayList-arcade.util.MiniBox-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>updateParameter</h4>
-<pre>static&nbsp;void&nbsp;updateParameter(<a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;box,
-                            java.lang.String&nbsp;parameter,
-                            java.lang.String&nbsp;defaultParameter,
-                            <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;values,
-                            <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;scales)</pre>
-<div class="block">Updates parameter values from default.</div>
+<h4>updateMolecules</h4>
+<pre>void&nbsp;updateMolecules(java.util.ArrayList&lt;<a href="../../arcade/util/Box.html" title="class in arcade.util">Box</a>&gt;&nbsp;molecules,
+                     <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;moleculeDefaults)</pre>
+<div class="block">Creates environment molecules.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>box</code> - the parameter map</dd>
-<dd><code>parameter</code> - the parameter name</dd>
-<dd><code>defaultParameter</code> - the default parameter value</dd>
-<dd><code>values</code> - the map of parameter values</dd>
-<dd><code>scales</code> - the map of parameter scaling</dd>
+<dd><code>molecules</code> - the list of molecule setup dictionaries</dd>
+<dd><code>moleculeDefaults</code> - the dictionary of default molecule parameters</dd>
 </dl>
 </li>
 </ul>
-<a name="updatePopulations-java.util.ArrayList-arcade.util.MiniBox-">
+<a name="updatePopulations-java.util.ArrayList-arcade.util.MiniBox-arcade.util.MiniBox-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>updatePopulations</h4>
 <pre>void&nbsp;updatePopulations(java.util.ArrayList&lt;<a href="../../arcade/util/Box.html" title="class in arcade.util">Box</a>&gt;&nbsp;populations,
-                       <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;populationDefaults)</pre>
+                       <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;populationDefaults,
+                       <a href="../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;populationConversions)</pre>
 <div class="block">Creates agent populations.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>populations</code> - the list of population setup dictionaries</dd>
 <dd><code>populationDefaults</code> - the dictionary of default population parameters</dd>
+<dd><code>populationConversions</code> - the dictionary of population parameter conversions</dd>
 </dl>
 </li>
 </ul>

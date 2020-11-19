@@ -113,9 +113,9 @@
 <div class="block">Cell age (in minutes)</div>
 </li>
 <li class="blockList">
-<h4>hasTags</h4>
-<pre>boolean hasTags</pre>
-<div class="block"><code>true</code> if the cell has tags, <code>false</code> otherwise</div>
+<h4>hasRegions</h4>
+<pre>boolean hasRegions</pre>
+<div class="block"><code>true</code> if the cell has regions, <code>false</code> otherwise</div>
 </li>
 <li class="blockList">
 <h4>targetVolume</h4>
@@ -123,9 +123,9 @@
 <div class="block">Target cell volume (in voxels)</div>
 </li>
 <li class="blockList">
-<h4>targetTagVolumes</h4>
-<pre>java.util.EnumMap&lt;K extends java.lang.Enum&lt;K&gt;,V&gt; targetTagVolumes</pre>
-<div class="block">Target tagged cell volumes (in voxels)</div>
+<h4>targetRegionVolumes</h4>
+<pre>java.util.EnumMap&lt;K extends java.lang.Enum&lt;K&gt;,V&gt; targetRegionVolumes</pre>
+<div class="block">Target region cell volumes (in voxels)</div>
 </li>
 <li class="blockList">
 <h4>targetSurface</h4>
@@ -133,9 +133,9 @@
 <div class="block">Target cell surface (in voxels)</div>
 </li>
 <li class="blockList">
-<h4>targetTagSurfaces</h4>
-<pre>java.util.EnumMap&lt;K extends java.lang.Enum&lt;K&gt;,V&gt; targetTagSurfaces</pre>
-<div class="block">Target tagged cell surfaces (in voxels)</div>
+<h4>targetRegionSurfaces</h4>
+<pre>java.util.EnumMap&lt;K extends java.lang.Enum&lt;K&gt;,V&gt; targetRegionSurfaces</pre>
+<div class="block">Target region cell surfaces (in voxels)</div>
 </li>
 <li class="blockList">
 <h4>criticals</h4>
@@ -143,9 +143,9 @@
 <div class="block">Critical values for cell (in voxels)</div>
 </li>
 <li class="blockList">
-<h4>criticalsTag</h4>
-<pre>java.util.EnumMap&lt;K extends java.lang.Enum&lt;K&gt;,V&gt; criticalsTag</pre>
-<div class="block">Critical values for cell (in voxels) by tag</div>
+<h4>criticalsRegion</h4>
+<pre>java.util.EnumMap&lt;K extends java.lang.Enum&lt;K&gt;,V&gt; criticalsRegion</pre>
+<div class="block">Critical values for cell (in voxels) by region</div>
 </li>
 <li class="blockList">
 <h4>lambdas</h4>
@@ -153,9 +153,9 @@
 <div class="block">Lambda parameters for cell</div>
 </li>
 <li class="blockList">
-<h4>lambdasTag</h4>
-<pre>java.util.EnumMap&lt;K extends java.lang.Enum&lt;K&gt;,V&gt; lambdasTag</pre>
-<div class="block">Lambda parameters for cell by tag</div>
+<h4>lambdasRegion</h4>
+<pre>java.util.EnumMap&lt;K extends java.lang.Enum&lt;K&gt;,V&gt; lambdasRegion</pre>
+<div class="block">Lambda parameters for cell by region</div>
 </li>
 <li class="blockList">
 <h4>adhesion</h4>
@@ -163,14 +163,19 @@
 <div class="block">Adhesion values for cell</div>
 </li>
 <li class="blockList">
-<h4>adhesionTag</h4>
-<pre>java.util.EnumMap&lt;K extends java.lang.Enum&lt;K&gt;,V&gt; adhesionTag</pre>
-<div class="block">Adhesion values for cell by tag</div>
+<h4>adhesionRegion</h4>
+<pre>java.util.EnumMap&lt;K extends java.lang.Enum&lt;K&gt;,V&gt; adhesionRegion</pre>
+<div class="block">Adhesion values for cell by region</div>
 </li>
-<li class="blockListLast">
+<li class="blockList">
 <h4>module</h4>
 <pre><a href="arcade/agent/module/Module.html" title="interface in arcade.agent.module">Module</a> module</pre>
 <div class="block">Cell state module</div>
+</li>
+<li class="blockListLast">
+<h4>parameters</h4>
+<pre><a href="arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a> parameters</pre>
+<div class="block">Cell parameters</div>
 </li>
 </ul>
 </li>
@@ -231,9 +236,9 @@
 <div class="block">Effective cell temperature</div>
 </li>
 <li class="blockList">
-<h4>TAGGED</h4>
-<pre>boolean TAGGED</pre>
-<div class="block"><code>true</code> if cells have tags, <code>false</code> otherwise</div>
+<h4>HAS_REGIONS</h4>
+<pre>boolean HAS_REGIONS</pre>
+<div class="block"><code>true</code> if cells have regions, <code>false</code> otherwise</div>
 </li>
 <li class="blockList">
 <h4>IDS</h4>
@@ -241,9 +246,9 @@
 <div class="block">Potts array for ids</div>
 </li>
 <li class="blockList">
-<h4>TAGS</h4>
-<pre>int[][][] TAGS</pre>
-<div class="block">Potts array for tags</div>
+<h4>REGIONS</h4>
+<pre>int[][][] REGIONS</pre>
+<div class="block">Potts array for regions</div>
 </li>
 <li class="blockListLast">
 <h4>grid</h4>

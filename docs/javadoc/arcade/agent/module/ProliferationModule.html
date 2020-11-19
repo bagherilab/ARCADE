@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -164,45 +164,45 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <th class="colLast" scope="col">Field and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#BASAL_APOPTOSIS_RATE">BASAL_APOPTOSIS_RATE</a></span></code>
-<div class="block">Basal rate of apoptosis (hours^-1)</div>
+<div class="block">Basal rate of apoptosis (ticks^-1)</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></code></td>
+<td class="colFirst"><code>(package private) <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#cell">cell</a></span></code>
 <div class="block"><a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a> object</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#DURATION_CHECKPOINT">DURATION_CHECKPOINT</a></span></code>
-<div class="block">Average duration for checkpoint recovery (hours)</div>
+<div class="block">Average duration for checkpoint recovery (ticks)</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#DURATION_G1">DURATION_G1</a></span></code>
-<div class="block">Average duration of G1 phase (hours)</div>
+<div class="block">Average duration of G1 phase (ticks)</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#DURATION_G2">DURATION_G2</a></span></code>
-<div class="block">Average duration of G2 phase (hours)</div>
+<div class="block">Average duration of G2 phase (ticks)</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#DURATION_M">DURATION_M</a></span></code>
-<div class="block">Average duration of M phase (hours)</div>
+<div class="block">Average duration of M phase (ticks)</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#DURATION_S">DURATION_S</a></span></code>
-<div class="block">Average duration of S phase (hours)</div>
+<div class="block">Average duration of S phase (ticks)</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -236,21 +236,21 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#RATE_G1">RATE_G1</a></span></code>
-<div class="block">Cell growth rate for phase G1 (hours^-1)</div>
+<div class="block">Cell growth rate for phase G1 (ticks^-1)</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#RATE_G2">RATE_G2</a></span></code>
-<div class="block">Cell growth rate for phase G2 (hours^-1)</div>
+<div class="block">Cell growth rate for phase G2 (ticks^-1)</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#RATE_S">RATE_S</a></span></code>
-<div class="block">Nucleus growth rate for phase S (hours^-1)</div>
+<div class="block">Nucleus growth rate for phase S (ticks^-1)</div>
 </td>
 </tr>
 </table>
@@ -268,8 +268,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#ProliferationModule-arcade.agent.cell.PottsCell-">ProliferationModule</a></span>(<a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a>&nbsp;cell)</code>
-<div class="block">Creates a <code>ProliferationModule</code> for the given <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell"><code>PottsCell</code></a>.</div>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#ProliferationModule-arcade.agent.cell.Cell-">ProliferationModule</a></span>(<a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a>&nbsp;cell)</code>
+<div class="block">Creates a <code>ProliferationModule</code> for the given <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a>.</div>
 </td>
 </tr>
 </table>
@@ -307,41 +307,37 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 </td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>java.lang.String</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#getName--">getName</a></span>()</code>&nbsp;</td>
-</tr>
-<tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="../../../arcade/agent/module/Module.Phase.html" title="enum in arcade.agent.module">Module.Phase</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#getPhase--">getPhase</a></span>()</code>
 <div class="block">Gets the module phase.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#setPhase-arcade.agent.module.Module.Phase-">setPhase</a></span>(<a href="../../../arcade/agent/module/Module.Phase.html" title="enum in arcade.agent.module">Module.Phase</a>&nbsp;phase)</code>
 <div class="block">Sets the module phase.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#simpleStep-ec.util.MersenneTwisterFast-arcade.sim.Simulation-">simpleStep</a></span>(ec.util.MersenneTwisterFast&nbsp;random,
           <a href="../../../arcade/sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim)</code>
 <div class="block">Calls the step method for the current simple phase.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#stepG1-double-">stepG1</a></span>(double&nbsp;r)</code>
 <div class="block">Performs actions for G1 phase.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#stepG2-double-">stepG2</a></span>(double&nbsp;r)</code>
 <div class="block">Performs actions for G2 phase.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#stepM-double-ec.util.MersenneTwisterFast-arcade.sim.Simulation-">stepM</a></span>(double&nbsp;r,
      ec.util.MersenneTwisterFast&nbsp;random,
@@ -349,7 +345,7 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <div class="block">Performs actions for M phase.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ProliferationModule.html#stepS-double-">stepS</a></span>(double&nbsp;r)</code>
 <div class="block">Performs actions for S phase.</div>
@@ -390,12 +386,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>BASAL_APOPTOSIS_RATE</h4>
-<pre>static final&nbsp;double BASAL_APOPTOSIS_RATE</pre>
-<div class="block">Basal rate of apoptosis (hours^-1)</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../constant-values.html#arcade.agent.module.ProliferationModule.BASAL_APOPTOSIS_RATE">Constant Field Values</a></dd>
-</dl>
+<pre>final&nbsp;double BASAL_APOPTOSIS_RATE</pre>
+<div class="block">Basal rate of apoptosis (ticks^-1)</div>
 </li>
 </ul>
 <a name="cell">
@@ -404,7 +396,7 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>cell</h4>
-<pre>final&nbsp;<a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a> cell</pre>
+<pre>final&nbsp;<a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a> cell</pre>
 <div class="block"><a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a> object</div>
 </li>
 </ul>
@@ -414,12 +406,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>DURATION_CHECKPOINT</h4>
-<pre>static final&nbsp;double DURATION_CHECKPOINT</pre>
-<div class="block">Average duration for checkpoint recovery (hours)</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../constant-values.html#arcade.agent.module.ProliferationModule.DURATION_CHECKPOINT">Constant Field Values</a></dd>
-</dl>
+<pre>final&nbsp;double DURATION_CHECKPOINT</pre>
+<div class="block">Average duration for checkpoint recovery (ticks)</div>
 </li>
 </ul>
 <a name="DURATION_G1">
@@ -428,12 +416,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>DURATION_G1</h4>
-<pre>static final&nbsp;double DURATION_G1</pre>
-<div class="block">Average duration of G1 phase (hours)</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../constant-values.html#arcade.agent.module.ProliferationModule.DURATION_G1">Constant Field Values</a></dd>
-</dl>
+<pre>final&nbsp;double DURATION_G1</pre>
+<div class="block">Average duration of G1 phase (ticks)</div>
 </li>
 </ul>
 <a name="DURATION_G2">
@@ -442,12 +426,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>DURATION_G2</h4>
-<pre>static final&nbsp;double DURATION_G2</pre>
-<div class="block">Average duration of G2 phase (hours)</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../constant-values.html#arcade.agent.module.ProliferationModule.DURATION_G2">Constant Field Values</a></dd>
-</dl>
+<pre>final&nbsp;double DURATION_G2</pre>
+<div class="block">Average duration of G2 phase (ticks)</div>
 </li>
 </ul>
 <a name="DURATION_M">
@@ -456,12 +436,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>DURATION_M</h4>
-<pre>static final&nbsp;double DURATION_M</pre>
-<div class="block">Average duration of M phase (hours)</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../constant-values.html#arcade.agent.module.ProliferationModule.DURATION_M">Constant Field Values</a></dd>
-</dl>
+<pre>final&nbsp;double DURATION_M</pre>
+<div class="block">Average duration of M phase (ticks)</div>
 </li>
 </ul>
 <a name="DURATION_S">
@@ -470,12 +446,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>DURATION_S</h4>
-<pre>static final&nbsp;double DURATION_S</pre>
-<div class="block">Average duration of S phase (hours)</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../constant-values.html#arcade.agent.module.ProliferationModule.DURATION_S">Constant Field Values</a></dd>
-</dl>
+<pre>final&nbsp;double DURATION_S</pre>
+<div class="block">Average duration of S phase (ticks)</div>
 </li>
 </ul>
 <a name="GROWTH_CHECKPOINT_G1">
@@ -546,8 +518,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>RATE_G1</h4>
-<pre>static final&nbsp;double RATE_G1</pre>
-<div class="block">Cell growth rate for phase G1 (hours^-1)</div>
+<pre>final&nbsp;double RATE_G1</pre>
+<div class="block">Cell growth rate for phase G1 (ticks^-1)</div>
 </li>
 </ul>
 <a name="RATE_G2">
@@ -556,8 +528,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>RATE_G2</h4>
-<pre>static final&nbsp;double RATE_G2</pre>
-<div class="block">Cell growth rate for phase G2 (hours^-1)</div>
+<pre>final&nbsp;double RATE_G2</pre>
+<div class="block">Cell growth rate for phase G2 (ticks^-1)</div>
 </li>
 </ul>
 <a name="RATE_S">
@@ -566,8 +538,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockListLast">
 <li class="blockList">
 <h4>RATE_S</h4>
-<pre>static final&nbsp;double RATE_S</pre>
-<div class="block">Nucleus growth rate for phase S (hours^-1)</div>
+<pre>final&nbsp;double RATE_S</pre>
+<div class="block">Nucleus growth rate for phase S (ticks^-1)</div>
 </li>
 </ul>
 </li>
@@ -578,17 +550,17 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="ProliferationModule-arcade.agent.cell.PottsCell-">
+<a name="ProliferationModule-arcade.agent.cell.Cell-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>ProliferationModule</h4>
-<pre>public&nbsp;ProliferationModule(<a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a>&nbsp;cell)</pre>
-<div class="block">Creates a <code>ProliferationModule</code> for the given <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell"><code>PottsCell</code></a>.</div>
+<pre>public&nbsp;ProliferationModule(<a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a>&nbsp;cell)</pre>
+<div class="block">Creates a <code>ProliferationModule</code> for the given <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>cell</code> - the <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell"><code>PottsCell</code></a> the module is associated with</dd>
+<dd><code>cell</code> - the <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a> the module is associated with</dd>
 </dl>
 </li>
 </ul>
@@ -610,7 +582,7 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
              <a href="../../../arcade/sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim)</pre>
 <div class="block">Adds a cell to the simulation.
  <p>
- The cell location is split, along with any tagged regions.
+ The cell location is split, along with any regions.
  The new cell is created, initialized, and added to the schedule.
  Both cells are reset remain in the proliferative state.</div>
 <dl>
@@ -654,15 +626,6 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
  </ul>
  <p>
  Cells that do not pass the cell growth checkpoint become arrested.</div>
-</li>
-</ul>
-<a name="getName--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getName</h4>
-<pre>public&nbsp;java.lang.String&nbsp;getName()</pre>
 </li>
 </ul>
 <a name="getPhase--">
@@ -791,7 +754,7 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
  Cell will transition to G1 phase once nucleus is at least
  <code>GROWTH_CHECKPOINT_S</code> times the critical nucleus size.
  <p>
- If cell does not have tags, then cell will transition to G2 phase after
+ If cell does not have regions, then cell will transition to G2 phase after
  an average time of <code>DURATION_S</code>.</div>
 </li>
 </ul>

@@ -169,11 +169,11 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#add-arcade.agent.cell.Cell.Tag-int-int-int-">add</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#add-arcade.agent.cell.Cell.Region-int-int-int-">add</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region,
    int&nbsp;x,
    int&nbsp;y,
    int&nbsp;z)</code>
-<div class="block">Adds a voxel at the given coordinates for given tag.</div>
+<div class="block">Adds a voxel at the given coordinates for given region.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -186,15 +186,15 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#assign-arcade.agent.cell.Cell.Tag-arcade.env.loc.Location.Voxel-">assign</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#assign-arcade.agent.cell.Cell.Region-arcade.env.loc.Location.Voxel-">assign</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region,
       <a href="../../../arcade/env/loc/Location.Voxel.html" title="class in arcade.env.loc">Location.Voxel</a>&nbsp;voxel)</code>
-<div class="block">Assigns the voxel at the given coordinates to the given tag.</div>
+<div class="block">Assigns the voxel at the given coordinates to the given region.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#clear-int:A:A:A-int:A:A:A-">clear</a></span>(int[][][]&nbsp;ids,
-     int[][][]&nbsp;tags)</code>
+     int[][][]&nbsp;regions)</code>
 <div class="block">Clears all voxel lists and arrays.</div>
 </td>
 </tr>
@@ -205,21 +205,21 @@ var activeTableTab = "activeTableTab";
 </td>
 </tr>
 <tr id="i5" class="rowColor">
+<td class="colFirst"><code>java.util.EnumSet&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#getRegions--">getRegions</a></span>()</code>
+<div class="block">Gets a set of regions.</div>
+</td>
+</tr>
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#getSurface--">getSurface</a></span>()</code>
 <div class="block">Gets the surface area of the location.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
-<td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#getSurface-arcade.agent.cell.Cell.Tag-">getSurface</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</code>
-<div class="block">Gets the surface area of the location for a given tag.</div>
-</td>
-</tr>
 <tr id="i7" class="rowColor">
-<td class="colFirst"><code>java.util.EnumSet&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#getTags--">getTags</a></span>()</code>
-<div class="block">Gets a set of tags.</div>
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#getSurface-arcade.agent.cell.Cell.Region-">getSurface</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</code>
+<div class="block">Gets the surface area of the location for a given region.</div>
 </td>
 </tr>
 <tr id="i8" class="altColor">
@@ -230,8 +230,8 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#getVolume-arcade.agent.cell.Cell.Tag-">getVolume</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</code>
-<div class="block">Gets the volume of the location for a given tag.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#getVolume-arcade.agent.cell.Cell.Region-">getVolume</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</code>
+<div class="block">Gets the volume of the location for a given region.</div>
 </td>
 </tr>
 <tr id="i10" class="altColor">
@@ -242,11 +242,11 @@ var activeTableTab = "activeTableTab";
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#remove-arcade.agent.cell.Cell.Tag-int-int-int-">remove</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#remove-arcade.agent.cell.Cell.Region-int-int-int-">remove</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region,
       int&nbsp;x,
       int&nbsp;y,
       int&nbsp;z)</code>
-<div class="block">Removes the voxel at the given coordinates for given tag.</div>
+<div class="block">Removes the voxel at the given coordinates for given region.</div>
 </td>
 </tr>
 <tr id="i12" class="altColor">
@@ -267,7 +267,7 @@ var activeTableTab = "activeTableTab";
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/env/loc/Location.html#update-int-int:A:A:A-int:A:A:A-">update</a></span>(int&nbsp;id,
       int[][][]&nbsp;ids,
-      int[][][]&nbsp;tags)</code>
+      int[][][]&nbsp;regions)</code>
 <div class="block">Updates the array for the location.</div>
 </td>
 </tr>
@@ -304,20 +304,20 @@ var activeTableTab = "activeTableTab";
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="add-arcade.agent.cell.Cell.Tag-int-int-int-">
+<a name="add-arcade.agent.cell.Cell.Region-int-int-int-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>add</h4>
-<pre>void&nbsp;add(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag,
+<pre>void&nbsp;add(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region,
          int&nbsp;x,
          int&nbsp;y,
          int&nbsp;z)</pre>
-<div class="block">Adds a voxel at the given coordinates for given tag.</div>
+<div class="block">Adds a voxel at the given coordinates for given region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the voxel tag</dd>
+<dd><code>region</code> - the voxel region</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -342,18 +342,18 @@ var activeTableTab = "activeTableTab";
 </dl>
 </li>
 </ul>
-<a name="assign-arcade.agent.cell.Cell.Tag-arcade.env.loc.Location.Voxel-">
+<a name="assign-arcade.agent.cell.Cell.Region-arcade.env.loc.Location.Voxel-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>assign</h4>
-<pre>void&nbsp;assign(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag,
+<pre>void&nbsp;assign(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region,
             <a href="../../../arcade/env/loc/Location.Voxel.html" title="class in arcade.env.loc">Location.Voxel</a>&nbsp;voxel)</pre>
-<div class="block">Assigns the voxel at the given coordinates to the given tag.</div>
+<div class="block">Assigns the voxel at the given coordinates to the given region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the voxel tag</dd>
+<dd><code>region</code> - the voxel region</dd>
 <dd><code>voxel</code> - the voxel to assign</dd>
 </dl>
 </li>
@@ -365,12 +365,12 @@ var activeTableTab = "activeTableTab";
 <li class="blockList">
 <h4>clear</h4>
 <pre>void&nbsp;clear(int[][][]&nbsp;ids,
-           int[][][]&nbsp;tags)</pre>
+           int[][][]&nbsp;regions)</pre>
 <div class="block">Clears all voxel lists and arrays.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>ids</code> - the potts array for ids</dd>
-<dd><code>tags</code> - the potts array for tags</dd>
+<dd><code>regions</code> - the potts array for regions</dd>
 </dl>
 </li>
 </ul>
@@ -388,6 +388,20 @@ var activeTableTab = "activeTableTab";
 </dl>
 </li>
 </ul>
+<a name="getRegions--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getRegions</h4>
+<pre>java.util.EnumSet&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&gt;&nbsp;getRegions()</pre>
+<div class="block">Gets a set of regions.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the set of regions</dd>
+</dl>
+</li>
+</ul>
 <a name="getSurface--">
 <!--   -->
 </a>
@@ -402,33 +416,19 @@ var activeTableTab = "activeTableTab";
 </dl>
 </li>
 </ul>
-<a name="getSurface-arcade.agent.cell.Cell.Tag-">
+<a name="getSurface-arcade.agent.cell.Cell.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getSurface</h4>
-<pre>int&nbsp;getSurface(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</pre>
-<div class="block">Gets the surface area of the location for a given tag.</div>
+<pre>int&nbsp;getSurface(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</pre>
+<div class="block">Gets the surface area of the location for a given region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the voxel tag</dd>
+<dd><code>region</code> - the voxel region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the location surface area (in voxels)</dd>
-</dl>
-</li>
-</ul>
-<a name="getTags--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getTags</h4>
-<pre>java.util.EnumSet&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&gt;&nbsp;getTags()</pre>
-<div class="block">Gets a set of tags.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the set of tags</dd>
 </dl>
 </li>
 </ul>
@@ -446,17 +446,17 @@ var activeTableTab = "activeTableTab";
 </dl>
 </li>
 </ul>
-<a name="getVolume-arcade.agent.cell.Cell.Tag-">
+<a name="getVolume-arcade.agent.cell.Cell.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getVolume</h4>
-<pre>int&nbsp;getVolume(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</pre>
-<div class="block">Gets the volume of the location for a given tag.</div>
+<pre>int&nbsp;getVolume(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</pre>
+<div class="block">Gets the volume of the location for a given region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the voxel tag</dd>
+<dd><code>region</code> - the voxel region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the location volume (in voxels)</dd>
 </dl>
@@ -476,20 +476,20 @@ var activeTableTab = "activeTableTab";
 </dl>
 </li>
 </ul>
-<a name="remove-arcade.agent.cell.Cell.Tag-int-int-int-">
+<a name="remove-arcade.agent.cell.Cell.Region-int-int-int-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>remove</h4>
-<pre>void&nbsp;remove(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag,
+<pre>void&nbsp;remove(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region,
             int&nbsp;x,
             int&nbsp;y,
             int&nbsp;z)</pre>
-<div class="block">Removes the voxel at the given coordinates for given tag.</div>
+<div class="block">Removes the voxel at the given coordinates for given region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the voxel tag</dd>
+<dd><code>region</code> - the voxel region</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -538,13 +538,13 @@ var activeTableTab = "activeTableTab";
 <h4>update</h4>
 <pre>void&nbsp;update(int&nbsp;id,
             int[][][]&nbsp;ids,
-            int[][][]&nbsp;tags)</pre>
+            int[][][]&nbsp;regions)</pre>
 <div class="block">Updates the array for the location.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the location id</dd>
 <dd><code>ids</code> - the potts array for ids</dd>
-<dd><code>tags</code> - the potts array for tags</dd>
+<dd><code>regions</code> - the potts array for regions</dd>
 </dl>
 </li>
 </ul>

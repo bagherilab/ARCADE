@@ -143,7 +143,7 @@
 <dd>
 <div class="block">Button for select file</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocations.html#selectVoxels-arcade.env.loc.PottsLocations-arcade.env.loc.Location.Voxel-arcade.agent.cell.Cell.Tag-java.util.ArrayList-double-ec.util.MersenneTwisterFast-">selectVoxels(PottsLocations, Location.Voxel, Cell.Tag, ArrayList&lt;Location.Voxel&gt;, double, MersenneTwisterFast)</a></span> - Static method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocations.html" title="class in arcade.env.loc">PottsLocations</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocations.html#selectVoxels-arcade.env.loc.PottsLocations-arcade.env.loc.Location.Voxel-arcade.agent.cell.Cell.Region-java.util.ArrayList-double-ec.util.MersenneTwisterFast-">selectVoxels(PottsLocations, Location.Voxel, Cell.Region, ArrayList&lt;Location.Voxel&gt;, double, MersenneTwisterFast)</a></span> - Static method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocations.html" title="class in arcade.env.loc">PottsLocations</a></dt>
 <dd>
 <div class="block">Selects voxels to assign based on distance from given center.</div>
 </dd>
@@ -239,13 +239,13 @@
 <dd>
 <div class="block">Sets the target volume and surface for the cell.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/Cell.html#setTargets-arcade.agent.cell.Cell.Tag-double-double-">setTargets(Cell.Tag, double, double)</a></span> - Method in interface arcade.agent.cell.<a href="../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/Cell.html#setTargets-arcade.agent.cell.Cell.Region-double-double-">setTargets(Cell.Region, double, double)</a></span> - Method in interface arcade.agent.cell.<a href="../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a></dt>
 <dd>
-<div class="block">Sets the target volume and surface for a tagged region</div>
+<div class="block">Sets the target volume and surface for a region</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#setTargets-double-double-">setTargets(double, double)</a></span> - Method in class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#setTargets-arcade.agent.cell.Cell.Tag-double-double-">setTargets(Cell.Tag, double, double)</a></span> - Method in class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#setTargets-arcade.agent.cell.Cell.Region-double-double-">setTargets(Cell.Region, double, double)</a></span> - Method in class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/env/lat/Lattice.html#setTo-double-">setTo(double)</a></span> - Method in interface arcade.env.lat.<a href="../arcade/env/lat/Lattice.html" title="interface in arcade.env.lat">Lattice</a></dt>
 <dd>
@@ -315,11 +315,11 @@
 <dd>
 <div class="block">Constructor for the simulation</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/module/ApoptosisModule.Simple.html#Simple-arcade.agent.cell.PottsCell-">Simple(PottsCell)</a></span> - Constructor for class arcade.agent.module.<a href="../arcade/agent/module/ApoptosisModule.Simple.html" title="class in arcade.agent.module">ApoptosisModule.Simple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/module/ApoptosisModule.Simple.html#Simple-arcade.agent.cell.Cell-">Simple(Cell)</a></span> - Constructor for class arcade.agent.module.<a href="../arcade/agent/module/ApoptosisModule.Simple.html" title="class in arcade.agent.module">ApoptosisModule.Simple</a></dt>
 <dd>
 <div class="block">Creates a <a href="../arcade/agent/module/ApoptosisModule.html" title="class in arcade.agent.module"><code>ApoptosisModule</code></a> using simple phases.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/module/ProliferationModule.Simple.html#Simple-arcade.agent.cell.PottsCell-">Simple(PottsCell)</a></span> - Constructor for class arcade.agent.module.<a href="../arcade/agent/module/ProliferationModule.Simple.html" title="class in arcade.agent.module">ProliferationModule.Simple</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/module/ProliferationModule.Simple.html#Simple-arcade.agent.cell.Cell-">Simple(Cell)</a></span> - Constructor for class arcade.agent.module.<a href="../arcade/agent/module/ProliferationModule.Simple.html" title="class in arcade.agent.module">ProliferationModule.Simple</a></dt>
 <dd>
 <div class="block">Creates a <a href="../arcade/agent/module/ProliferationModule.html" title="class in arcade.agent.module"><code>ProliferationModule</code></a> using simple phases.</div>
 </dd>
@@ -458,6 +458,12 @@
 <dd>
 <div class="block">Number of steps in Monte Carlo Step</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/Cell.html#stop--">stop()</a></span> - Method in interface arcade.agent.cell.<a href="../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a></dt>
+<dd>
+<div class="block">Stop the cell from stepping.</div>
+</dd>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#stop--">stop()</a></span> - Method in class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#stopper">stopper</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
 <dd>
 <div class="block">Stopper used to stop this agent from being stepped in the schedule</div>

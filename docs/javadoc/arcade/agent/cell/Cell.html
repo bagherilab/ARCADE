@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6,"i21":6,"i22":6,"i23":6,"i24":6,"i25":6,"i26":6,"i27":6,"i28":6,"i29":6,"i30":6,"i31":6};
+var methods = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":6,"i17":6,"i18":6,"i19":6,"i20":6,"i21":6,"i22":6,"i23":6,"i24":6,"i25":6,"i26":6,"i27":6,"i28":6,"i29":6,"i30":6,"i31":6,"i32":6,"i33":6};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -47,7 +47,7 @@ var activeTableTab = "activeTableTab";
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?arcade/agent/cell/Cell.html" target="_top">Frames</a></li>
@@ -128,14 +128,14 @@ extends sim.engine.Steppable</pre>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a></span></code>
-<div class="block">Cell state codes</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a></span></code>
+<div class="block">Cell region codes</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a></span></code>
-<div class="block">Cell tag codes</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a></span></code>
+<div class="block">Cell state codes</div>
 </td>
 </tr>
 </table>
@@ -155,9 +155,9 @@ extends sim.engine.Steppable</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getAdhesion-arcade.agent.cell.Cell.Tag-arcade.agent.cell.Cell.Tag-">getAdhesion</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag1,
-           <a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag2)</code>
-<div class="block">Gets the adhesion between two tagged regions.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getAdhesion-arcade.agent.cell.Cell.Region-arcade.agent.cell.Cell.Region-">getAdhesion</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region1,
+           <a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region2)</code>
+<div class="block">Gets the adhesion between two regions.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
@@ -180,8 +180,8 @@ extends sim.engine.Steppable</pre>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getCriticalSurface-arcade.agent.cell.Cell.Tag-">getCriticalSurface</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</code>
-<div class="block">Gets the critical surface (in voxels) for a tagged region.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getCriticalSurface-arcade.agent.cell.Cell.Region-">getCriticalSurface</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</code>
+<div class="block">Gets the critical surface (in voxels) for a region.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
@@ -192,8 +192,8 @@ extends sim.engine.Steppable</pre>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getCriticalVolume-arcade.agent.cell.Cell.Tag-">getCriticalVolume</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</code>
-<div class="block">Gets the critical volume (in voxels) for a tagged region.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getCriticalVolume-arcade.agent.cell.Cell.Region-">getCriticalVolume</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</code>
+<div class="block">Gets the critical volume (in voxels) for a region.</div>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
@@ -210,9 +210,9 @@ extends sim.engine.Steppable</pre>
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getLambda-arcade.sim.Potts.Term-arcade.agent.cell.Cell.Tag-">getLambda</a></span>(<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>&nbsp;term,
-         <a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</code>
-<div class="block">Gets the lambda for the given term and tagged region.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getLambda-arcade.sim.Potts.Term-arcade.agent.cell.Cell.Region-">getLambda</a></span>(<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>&nbsp;term,
+         <a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</code>
+<div class="block">Gets the lambda for the given term and region.</div>
 </td>
 </tr>
 <tr id="i10" class="altColor">
@@ -228,79 +228,85 @@ extends sim.engine.Steppable</pre>
 </td>
 </tr>
 <tr id="i12" class="altColor">
+<td class="colFirst"><code><a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getParameters--">getParameters</a></span>()</code>
+<div class="block">Gets the cell population parameters.</div>
+</td>
+</tr>
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getPop--">getPop</a></span>()</code>
 <div class="block">Gets the cell population index.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code><a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getState--">getState</a></span>()</code>
 <div class="block">Gets the cell state.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getSurface--">getSurface</a></span>()</code>
 <div class="block">Gets the cell surface (in voxels).</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getSurface-arcade.agent.cell.Cell.Tag-">getSurface</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</code>
-<div class="block">Gets the cell surface (in voxels) for a tagged region.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getSurface-arcade.agent.cell.Cell.Region-">getSurface</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</code>
+<div class="block">Gets the cell surface (in voxels) for a region.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getTargetSurface--">getTargetSurface</a></span>()</code>
 <div class="block">Gets the target surface (in voxels)</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getTargetSurface-arcade.agent.cell.Cell.Tag-">getTargetSurface</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</code>
-<div class="block">Gets the target surface (in voxels) for a tagged region.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getTargetSurface-arcade.agent.cell.Cell.Region-">getTargetSurface</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</code>
+<div class="block">Gets the target surface (in voxels) for a region.</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getTargetVolume--">getTargetVolume</a></span>()</code>
 <div class="block">Gets the target volume (in voxels)</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getTargetVolume-arcade.agent.cell.Cell.Tag-">getTargetVolume</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</code>
-<div class="block">Gets the target volume (in voxels) for a tagged region.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getTargetVolume-arcade.agent.cell.Cell.Region-">getTargetVolume</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</code>
+<div class="block">Gets the target volume (in voxels) for a region.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getVolume--">getVolume</a></span>()</code>
 <div class="block">Gets the cell volume (in voxels).</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
-<td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getVolume-arcade.agent.cell.Cell.Tag-">getVolume</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</code>
-<div class="block">Gets the cell volume (in voxels) for a tagged region.</div>
-</td>
-</tr>
 <tr id="i22" class="altColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#hasTags--">hasTags</a></span>()</code>
-<div class="block">Checks if the cell has tags.</div>
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#getVolume-arcade.agent.cell.Cell.Region-">getVolume</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</code>
+<div class="block">Gets the cell volume (in voxels) for a region.</div>
 </td>
 </tr>
 <tr id="i23" class="rowColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#initialize-int:A:A:A-int:A:A:A-">initialize</a></span>(int[][][]&nbsp;ids,
-          int[][][]&nbsp;tags)</code>
-<div class="block">Initializes the potts arrays with the cell.</div>
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#hasRegions--">hasRegions</a></span>()</code>
+<div class="block">Checks if the cell has regions.</div>
 </td>
 </tr>
 <tr id="i24" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#initialize-int:A:A:A-int:A:A:A-">initialize</a></span>(int[][][]&nbsp;ids,
+          int[][][]&nbsp;regions)</code>
+<div class="block">Initializes the potts arrays with the cell.</div>
+</td>
+</tr>
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code><a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#make-int-arcade.agent.cell.Cell.State-arcade.env.loc.Location-">make</a></span>(int&nbsp;id,
     <a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a>&nbsp;state,
@@ -308,49 +314,55 @@ extends sim.engine.Steppable</pre>
 <div class="block">Creates a new cell.</div>
 </td>
 </tr>
-<tr id="i25" class="rowColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#reset-int:A:A:A-int:A:A:A-">reset</a></span>(int[][][]&nbsp;ids,
-     int[][][]&nbsp;tags)</code>
+     int[][][]&nbsp;regions)</code>
 <div class="block">Resets the potts arrays with the cell.</div>
 </td>
 </tr>
-<tr id="i26" class="altColor">
+<tr id="i27" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#schedule-sim.engine.Schedule-">schedule</a></span>(sim.engine.Schedule&nbsp;schedule)</code>
 <div class="block">Schedules the cell in the simulation.</div>
 </td>
 </tr>
-<tr id="i27" class="rowColor">
+<tr id="i28" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#setState-arcade.agent.cell.Cell.State-">setState</a></span>(<a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a>&nbsp;state)</code>
 <div class="block">Sets the cell state.</div>
 </td>
 </tr>
-<tr id="i28" class="altColor">
+<tr id="i29" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#setTargets-arcade.agent.cell.Cell.Tag-double-double-">setTargets</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#setTargets-arcade.agent.cell.Cell.Region-double-double-">setTargets</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region,
           double&nbsp;volume,
           double&nbsp;surface)</code>
-<div class="block">Sets the target volume and surface for a tagged region</div>
+<div class="block">Sets the target volume and surface for a region</div>
 </td>
 </tr>
-<tr id="i29" class="rowColor">
+<tr id="i30" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#setTargets-double-double-">setTargets</a></span>(double&nbsp;volume,
           double&nbsp;surface)</code>
 <div class="block">Sets the target volume and surface for the cell.</div>
 </td>
 </tr>
-<tr id="i30" class="altColor">
+<tr id="i31" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#updateTarget-arcade.agent.cell.Cell.Tag-double-double-">updateTarget</a></span>(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag,
-            double&nbsp;rate,
-            double&nbsp;scale)</code>
-<div class="block">Updates target volume and surface area for a tagged region.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#stop--">stop</a></span>()</code>
+<div class="block">Stop the cell from stepping.</div>
 </td>
 </tr>
-<tr id="i31" class="rowColor">
+<tr id="i32" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#updateTarget-arcade.agent.cell.Cell.Region-double-double-">updateTarget</a></span>(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region,
+            double&nbsp;rate,
+            double&nbsp;scale)</code>
+<div class="block">Updates target volume and surface area for a region.</div>
+</td>
+</tr>
+<tr id="i33" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/Cell.html#updateTarget-double-double-">updateTarget</a></span>(double&nbsp;rate,
             double&nbsp;scale)</code>
@@ -379,19 +391,19 @@ extends sim.engine.Steppable</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="getAdhesion-arcade.agent.cell.Cell.Tag-arcade.agent.cell.Cell.Tag-">
+<a name="getAdhesion-arcade.agent.cell.Cell.Region-arcade.agent.cell.Cell.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getAdhesion</h4>
-<pre>double&nbsp;getAdhesion(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag1,
-                   <a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag2)</pre>
-<div class="block">Gets the adhesion between two tagged regions.</div>
+<pre>double&nbsp;getAdhesion(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region1,
+                   <a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region2)</pre>
+<div class="block">Gets the adhesion between two regions.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag1</code> - the first tag</dd>
-<dd><code>tag2</code> - the second tag</dd>
+<dd><code>region1</code> - the first region</dd>
+<dd><code>region2</code> - the second region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the adhesion value</dd>
 </dl>
@@ -441,17 +453,17 @@ extends sim.engine.Steppable</pre>
 </dl>
 </li>
 </ul>
-<a name="getCriticalSurface-arcade.agent.cell.Cell.Tag-">
+<a name="getCriticalSurface-arcade.agent.cell.Cell.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getCriticalSurface</h4>
-<pre>double&nbsp;getCriticalSurface(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</pre>
-<div class="block">Gets the critical surface (in voxels) for a tagged region.</div>
+<pre>double&nbsp;getCriticalSurface(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</pre>
+<div class="block">Gets the critical surface (in voxels) for a region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the tag</dd>
+<dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the target surface</dd>
 </dl>
@@ -471,17 +483,17 @@ extends sim.engine.Steppable</pre>
 </dl>
 </li>
 </ul>
-<a name="getCriticalVolume-arcade.agent.cell.Cell.Tag-">
+<a name="getCriticalVolume-arcade.agent.cell.Cell.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getCriticalVolume</h4>
-<pre>double&nbsp;getCriticalVolume(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</pre>
-<div class="block">Gets the critical volume (in voxels) for a tagged region.</div>
+<pre>double&nbsp;getCriticalVolume(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</pre>
+<div class="block">Gets the critical volume (in voxels) for a region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the tag</dd>
+<dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the target volume</dd>
 </dl>
@@ -517,19 +529,19 @@ extends sim.engine.Steppable</pre>
 </dl>
 </li>
 </ul>
-<a name="getLambda-arcade.sim.Potts.Term-arcade.agent.cell.Cell.Tag-">
+<a name="getLambda-arcade.sim.Potts.Term-arcade.agent.cell.Cell.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getLambda</h4>
 <pre>double&nbsp;getLambda(<a href="../../../arcade/sim/Potts.Term.html" title="enum in arcade.sim">Potts.Term</a>&nbsp;term,
-                 <a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</pre>
-<div class="block">Gets the lambda for the given term and tagged region.</div>
+                 <a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</pre>
+<div class="block">Gets the lambda for the given term and region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>term</code> - the term of the Hamiltonian</dd>
-<dd><code>tag</code> - the tag</dd>
+<dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the lambda value</dd>
 </dl>
@@ -561,6 +573,16 @@ extends sim.engine.Steppable</pre>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the cell module</dd>
 </dl>
+</li>
+</ul>
+<a name="getParameters--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getParameters</h4>
+<pre><a href="../../../arcade/util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;getParameters()</pre>
+<div class="block">Gets the cell population parameters.</div>
 </li>
 </ul>
 <a name="getPop--">
@@ -605,17 +627,17 @@ extends sim.engine.Steppable</pre>
 </dl>
 </li>
 </ul>
-<a name="getSurface-arcade.agent.cell.Cell.Tag-">
+<a name="getSurface-arcade.agent.cell.Cell.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getSurface</h4>
-<pre>int&nbsp;getSurface(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</pre>
-<div class="block">Gets the cell surface (in voxels) for a tagged region.</div>
+<pre>int&nbsp;getSurface(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</pre>
+<div class="block">Gets the cell surface (in voxels) for a region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the tag</dd>
+<dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the cell surface</dd>
 </dl>
@@ -635,17 +657,17 @@ extends sim.engine.Steppable</pre>
 </dl>
 </li>
 </ul>
-<a name="getTargetSurface-arcade.agent.cell.Cell.Tag-">
+<a name="getTargetSurface-arcade.agent.cell.Cell.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getTargetSurface</h4>
-<pre>double&nbsp;getTargetSurface(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</pre>
-<div class="block">Gets the target surface (in voxels) for a tagged region.</div>
+<pre>double&nbsp;getTargetSurface(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</pre>
+<div class="block">Gets the target surface (in voxels) for a region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the tag</dd>
+<dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the target surface</dd>
 </dl>
@@ -665,17 +687,17 @@ extends sim.engine.Steppable</pre>
 </dl>
 </li>
 </ul>
-<a name="getTargetVolume-arcade.agent.cell.Cell.Tag-">
+<a name="getTargetVolume-arcade.agent.cell.Cell.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getTargetVolume</h4>
-<pre>double&nbsp;getTargetVolume(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</pre>
-<div class="block">Gets the target volume (in voxels) for a tagged region.</div>
+<pre>double&nbsp;getTargetVolume(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</pre>
+<div class="block">Gets the target volume (in voxels) for a region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the tag</dd>
+<dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the target volume</dd>
 </dl>
@@ -695,33 +717,33 @@ extends sim.engine.Steppable</pre>
 </dl>
 </li>
 </ul>
-<a name="getVolume-arcade.agent.cell.Cell.Tag-">
+<a name="getVolume-arcade.agent.cell.Cell.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getVolume</h4>
-<pre>int&nbsp;getVolume(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag)</pre>
-<div class="block">Gets the cell volume (in voxels) for a tagged region.</div>
+<pre>int&nbsp;getVolume(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region)</pre>
+<div class="block">Gets the cell volume (in voxels) for a region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the tag</dd>
+<dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the cell volume</dd>
 </dl>
 </li>
 </ul>
-<a name="hasTags--">
+<a name="hasRegions--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>hasTags</h4>
-<pre>boolean&nbsp;hasTags()</pre>
-<div class="block">Checks if the cell has tags.</div>
+<h4>hasRegions</h4>
+<pre>boolean&nbsp;hasRegions()</pre>
+<div class="block">Checks if the cell has regions.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd><code>true</code> if the cell has tags, <code>false</code> otherwise</dd>
+<dd><code>true</code> if the cell has regions, <code>false</code> otherwise</dd>
 </dl>
 </li>
 </ul>
@@ -732,12 +754,12 @@ extends sim.engine.Steppable</pre>
 <li class="blockList">
 <h4>initialize</h4>
 <pre>void&nbsp;initialize(int[][][]&nbsp;ids,
-                int[][][]&nbsp;tags)</pre>
+                int[][][]&nbsp;regions)</pre>
 <div class="block">Initializes the potts arrays with the cell.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>ids</code> - the <a href="../../../arcade/sim/Potts.html" title="class in arcade.sim"><code>Potts</code></a> array for ids</dd>
-<dd><code>tags</code> - the <a href="../../../arcade/sim/Potts.html" title="class in arcade.sim"><code>Potts</code></a> array for tags</dd>
+<dd><code>regions</code> - the <a href="../../../arcade/sim/Potts.html" title="class in arcade.sim"><code>Potts</code></a> array for regions</dd>
 </dl>
 </li>
 </ul>
@@ -768,12 +790,12 @@ extends sim.engine.Steppable</pre>
 <li class="blockList">
 <h4>reset</h4>
 <pre>void&nbsp;reset(int[][][]&nbsp;ids,
-           int[][][]&nbsp;tags)</pre>
+           int[][][]&nbsp;regions)</pre>
 <div class="block">Resets the potts arrays with the cell.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>ids</code> - the <a href="../../../arcade/sim/Potts.html" title="class in arcade.sim"><code>Potts</code></a> array for ids</dd>
-<dd><code>tags</code> - the <a href="../../../arcade/sim/Potts.html" title="class in arcade.sim"><code>Potts</code></a> array for tags</dd>
+<dd><code>regions</code> - the <a href="../../../arcade/sim/Potts.html" title="class in arcade.sim"><code>Potts</code></a> array for regions</dd>
 </dl>
 </li>
 </ul>
@@ -805,19 +827,19 @@ extends sim.engine.Steppable</pre>
 </dl>
 </li>
 </ul>
-<a name="setTargets-arcade.agent.cell.Cell.Tag-double-double-">
+<a name="setTargets-arcade.agent.cell.Cell.Region-double-double-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>setTargets</h4>
-<pre>void&nbsp;setTargets(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag,
+<pre>void&nbsp;setTargets(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region,
                 double&nbsp;volume,
                 double&nbsp;surface)</pre>
-<div class="block">Sets the target volume and surface for a tagged region</div>
+<div class="block">Sets the target volume and surface for a region</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the tag</dd>
+<dd><code>region</code> - the region</dd>
 <dd><code>volume</code> - the target volume</dd>
 <dd><code>surface</code> - the target surface</dd>
 </dl>
@@ -839,19 +861,29 @@ extends sim.engine.Steppable</pre>
 </dl>
 </li>
 </ul>
-<a name="updateTarget-arcade.agent.cell.Cell.Tag-double-double-">
+<a name="stop--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>stop</h4>
+<pre>void&nbsp;stop()</pre>
+<div class="block">Stop the cell from stepping.</div>
+</li>
+</ul>
+<a name="updateTarget-arcade.agent.cell.Cell.Region-double-double-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>updateTarget</h4>
-<pre>void&nbsp;updateTarget(<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>&nbsp;tag,
+<pre>void&nbsp;updateTarget(<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>&nbsp;region,
                   double&nbsp;rate,
                   double&nbsp;scale)</pre>
-<div class="block">Updates target volume and surface area for a tagged region.</div>
+<div class="block">Updates target volume and surface area for a region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>tag</code> - the tag</dd>
+<dd><code>region</code> - the region</dd>
 <dd><code>rate</code> - the rate of change</dd>
 <dd><code>scale</code> - the relative final size scaling</dd>
 </dl>
@@ -900,7 +932,7 @@ extends sim.engine.Steppable</pre>
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../index.html?arcade/agent/cell/Cell.html" target="_top">Frames</a></li>

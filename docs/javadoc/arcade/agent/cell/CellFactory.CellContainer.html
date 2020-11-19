@@ -142,20 +142,20 @@ extends java.lang.Object</pre>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html#pop">pop</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html#state">state</a></span></code>&nbsp;</td>
+<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html#regionTargetSurface">regionTargetSurface</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html#tagTargetSurface">tagTargetSurface</a></span></code>&nbsp;</td>
+<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html#regionTargetVolume">regionTargetVolume</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html#tagTargetVolume">tagTargetVolume</a></span></code>&nbsp;</td>
+<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Integer&gt;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html#regionVoxels">regionVoxels</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Integer&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html#tagVoxels">tagVoxels</a></span></code>&nbsp;</td>
+<td class="colFirst"><code><a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html#state">state</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>double</code></td>
@@ -205,17 +205,17 @@ extends java.lang.Object</pre>
              <a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a>&nbsp;state,
              <a href="../../../arcade/agent/module/Module.Phase.html" title="enum in arcade.agent.module">Module.Phase</a>&nbsp;phase,
              int&nbsp;voxels,
-             java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Integer&gt;&nbsp;tagVoxels,
+             java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Integer&gt;&nbsp;regionVoxels,
              double&nbsp;targetVolume,
              double&nbsp;targetSurface,
-             java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&nbsp;tagTargetVolume,
-             java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&nbsp;tagTargetSurface)</code>&nbsp;</td>
+             java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&nbsp;regionTargetVolume,
+             java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&nbsp;regionTargetSurface)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../arcade/agent/cell/CellFactory.CellContainer.html#CellContainer-int-int-int-java.util.EnumMap-">CellContainer</a></span>(int&nbsp;id,
              int&nbsp;pop,
              int&nbsp;voxels,
-             java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Integer&gt;&nbsp;tagVoxels)</code>&nbsp;</td>
+             java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Integer&gt;&nbsp;regionVoxels)</code>&nbsp;</td>
 </tr>
 </table>
 </li>
@@ -283,6 +283,33 @@ extends java.lang.Object</pre>
 <pre>public final&nbsp;int pop</pre>
 </li>
 </ul>
+<a name="regionTargetSurface">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>regionTargetSurface</h4>
+<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt; regionTargetSurface</pre>
+</li>
+</ul>
+<a name="regionTargetVolume">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>regionTargetVolume</h4>
+<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt; regionTargetVolume</pre>
+</li>
+</ul>
+<a name="regionVoxels">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>regionVoxels</h4>
+<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Integer&gt; regionVoxels</pre>
+</li>
+</ul>
 <a name="state">
 <!--   -->
 </a>
@@ -290,33 +317,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>state</h4>
 <pre>public final&nbsp;<a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a> state</pre>
-</li>
-</ul>
-<a name="tagTargetSurface">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>tagTargetSurface</h4>
-<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt; tagTargetSurface</pre>
-</li>
-</ul>
-<a name="tagTargetVolume">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>tagTargetVolume</h4>
-<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt; tagTargetVolume</pre>
-</li>
-</ul>
-<a name="tagVoxels">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>tagVoxels</h4>
-<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Integer&gt; tagVoxels</pre>
 </li>
 </ul>
 <a name="targetSurface">
@@ -393,11 +393,11 @@ extends java.lang.Object</pre>
                      <a href="../../../arcade/agent/cell/Cell.State.html" title="enum in arcade.agent.cell">Cell.State</a>&nbsp;state,
                      <a href="../../../arcade/agent/module/Module.Phase.html" title="enum in arcade.agent.module">Module.Phase</a>&nbsp;phase,
                      int&nbsp;voxels,
-                     java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Integer&gt;&nbsp;tagVoxels,
+                     java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Integer&gt;&nbsp;regionVoxels,
                      double&nbsp;targetVolume,
                      double&nbsp;targetSurface,
-                     java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&nbsp;tagTargetVolume,
-                     java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Double&gt;&nbsp;tagTargetSurface)</pre>
+                     java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&nbsp;regionTargetVolume,
+                     java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Double&gt;&nbsp;regionTargetSurface)</pre>
 </li>
 </ul>
 <a name="CellContainer-int-int-int-java.util.EnumMap-">
@@ -409,7 +409,7 @@ extends java.lang.Object</pre>
 <pre>public&nbsp;CellContainer(int&nbsp;id,
                      int&nbsp;pop,
                      int&nbsp;voxels,
-                     java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Tag.html" title="enum in arcade.agent.cell">Cell.Tag</a>,java.lang.Integer&gt;&nbsp;tagVoxels)</pre>
+                     java.util.EnumMap&lt;<a href="../../../arcade/agent/cell/Cell.Region.html" title="enum in arcade.agent.cell">Cell.Region</a>,java.lang.Integer&gt;&nbsp;regionVoxels)</pre>
 </li>
 </ul>
 </li>

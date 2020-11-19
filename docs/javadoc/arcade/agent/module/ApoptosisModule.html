@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -170,21 +170,21 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></code></td>
+<td class="colFirst"><code>(package private) <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#cell">cell</a></span></code>
 <div class="block"><a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a> object</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#DURATION_EARLY">DURATION_EARLY</a></span></code>
-<div class="block">Average duration of early apoptosis (hours)</div>
+<div class="block">Average duration of early apoptosis (ticks)</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#DURATION_LATE">DURATION_LATE</a></span></code>
-<div class="block">Average duration of late apoptosis (hours)</div>
+<div class="block">Average duration of late apoptosis (ticks)</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -194,27 +194,27 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#RATE_CYTOPLASM_BLEBBING">RATE_CYTOPLASM_BLEBBING</a></span></code>
-<div class="block">Cytoplasm blebbing rate for late apoptosis (hours^-1)</div>
+<div class="block">Cytoplasm blebbing rate for late apoptosis (ticks^-1)</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#RATE_CYTOPLASM_LOSS">RATE_CYTOPLASM_LOSS</a></span></code>
-<div class="block">Cytoplasm water loss rate for early apoptosis (hours^-1)</div>
+<div class="block">Cytoplasm water loss rate for early apoptosis (ticks^-1)</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#RATE_NUCLEUS_FRAGMENTATION">RATE_NUCLEUS_FRAGMENTATION</a></span></code>
-<div class="block">Nucleus fragmentation rate for late apoptosis (hours^-1)</div>
+<div class="block">Nucleus fragmentation rate for late apoptosis (ticks^-1)</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#RATE_NUCLEUS_PYKNOSIS">RATE_NUCLEUS_PYKNOSIS</a></span></code>
-<div class="block">Nucleus pyknosis rate for early apoptosis (hours^-1)</div>
+<div class="block">Nucleus pyknosis rate for early apoptosis (ticks^-1)</div>
 </td>
 </tr>
 </table>
@@ -232,8 +232,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#ApoptosisModule-arcade.agent.cell.PottsCell-">ApoptosisModule</a></span>(<a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a>&nbsp;cell)</code>
-<div class="block">Creates a <code>ApoptosisModule</code> for the given <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell"><code>PottsCell</code></a>.</div>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#ApoptosisModule-arcade.agent.cell.Cell-">ApoptosisModule</a></span>(<a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a>&nbsp;cell)</code>
+<div class="block">Creates a <code>ApoptosisModule</code> for the given <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a>.</div>
 </td>
 </tr>
 </table>
@@ -252,41 +252,37 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>java.lang.String</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#getName--">getName</a></span>()</code>&nbsp;</td>
-</tr>
-<tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../arcade/agent/module/Module.Phase.html" title="enum in arcade.agent.module">Module.Phase</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#getPhase--">getPhase</a></span>()</code>
 <div class="block">Gets the module phase.</div>
 </td>
 </tr>
-<tr id="i2" class="altColor">
+<tr id="i1" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#removeCell-arcade.sim.Simulation-">removeCell</a></span>(<a href="../../../arcade/sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim)</code>
 <div class="block">Removes a cell from the simulation.</div>
 </td>
 </tr>
-<tr id="i3" class="rowColor">
+<tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#setPhase-arcade.agent.module.Module.Phase-">setPhase</a></span>(<a href="../../../arcade/agent/module/Module.Phase.html" title="enum in arcade.agent.module">Module.Phase</a>&nbsp;phase)</code>
 <div class="block">Sets the module phase.</div>
 </td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#simpleStep-ec.util.MersenneTwisterFast-arcade.sim.Simulation-">simpleStep</a></span>(ec.util.MersenneTwisterFast&nbsp;random,
           <a href="../../../arcade/sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim)</code>
 <div class="block">Calls the step method for the current simple phase.</div>
 </td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i4" class="altColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#stepEarly-double-">stepEarly</a></span>(double&nbsp;r)</code>
 <div class="block">Performs actions for early apoptosis phase.</div>
 </td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i5" class="rowColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../arcade/agent/module/ApoptosisModule.html#stepLate-double-arcade.sim.Simulation-">stepLate</a></span>(double&nbsp;r,
         <a href="../../../arcade/sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim)</code>
@@ -342,7 +338,7 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>cell</h4>
-<pre>final&nbsp;<a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a> cell</pre>
+<pre>final&nbsp;<a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a> cell</pre>
 <div class="block"><a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a> object</div>
 </li>
 </ul>
@@ -352,12 +348,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>DURATION_EARLY</h4>
-<pre>static final&nbsp;double DURATION_EARLY</pre>
-<div class="block">Average duration of early apoptosis (hours)</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../constant-values.html#arcade.agent.module.ApoptosisModule.DURATION_EARLY">Constant Field Values</a></dd>
-</dl>
+<pre>final&nbsp;double DURATION_EARLY</pre>
+<div class="block">Average duration of early apoptosis (ticks)</div>
 </li>
 </ul>
 <a name="DURATION_LATE">
@@ -366,12 +358,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>DURATION_LATE</h4>
-<pre>static final&nbsp;double DURATION_LATE</pre>
-<div class="block">Average duration of late apoptosis (hours)</div>
-<dl>
-<dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../constant-values.html#arcade.agent.module.ApoptosisModule.DURATION_LATE">Constant Field Values</a></dd>
-</dl>
+<pre>final&nbsp;double DURATION_LATE</pre>
+<div class="block">Average duration of late apoptosis (ticks)</div>
 </li>
 </ul>
 <a name="phase">
@@ -390,8 +378,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>RATE_CYTOPLASM_BLEBBING</h4>
-<pre>static final&nbsp;double RATE_CYTOPLASM_BLEBBING</pre>
-<div class="block">Cytoplasm blebbing rate for late apoptosis (hours^-1)</div>
+<pre>final&nbsp;double RATE_CYTOPLASM_BLEBBING</pre>
+<div class="block">Cytoplasm blebbing rate for late apoptosis (ticks^-1)</div>
 </li>
 </ul>
 <a name="RATE_CYTOPLASM_LOSS">
@@ -400,8 +388,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>RATE_CYTOPLASM_LOSS</h4>
-<pre>static final&nbsp;double RATE_CYTOPLASM_LOSS</pre>
-<div class="block">Cytoplasm water loss rate for early apoptosis (hours^-1)</div>
+<pre>final&nbsp;double RATE_CYTOPLASM_LOSS</pre>
+<div class="block">Cytoplasm water loss rate for early apoptosis (ticks^-1)</div>
 </li>
 </ul>
 <a name="RATE_NUCLEUS_FRAGMENTATION">
@@ -410,8 +398,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockList">
 <li class="blockList">
 <h4>RATE_NUCLEUS_FRAGMENTATION</h4>
-<pre>static final&nbsp;double RATE_NUCLEUS_FRAGMENTATION</pre>
-<div class="block">Nucleus fragmentation rate for late apoptosis (hours^-1)</div>
+<pre>final&nbsp;double RATE_NUCLEUS_FRAGMENTATION</pre>
+<div class="block">Nucleus fragmentation rate for late apoptosis (ticks^-1)</div>
 </li>
 </ul>
 <a name="RATE_NUCLEUS_PYKNOSIS">
@@ -420,8 +408,8 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <ul class="blockListLast">
 <li class="blockList">
 <h4>RATE_NUCLEUS_PYKNOSIS</h4>
-<pre>static final&nbsp;double RATE_NUCLEUS_PYKNOSIS</pre>
-<div class="block">Nucleus pyknosis rate for early apoptosis (hours^-1)</div>
+<pre>final&nbsp;double RATE_NUCLEUS_PYKNOSIS</pre>
+<div class="block">Nucleus pyknosis rate for early apoptosis (ticks^-1)</div>
 </li>
 </ul>
 </li>
@@ -432,17 +420,17 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="ApoptosisModule-arcade.agent.cell.PottsCell-">
+<a name="ApoptosisModule-arcade.agent.cell.Cell-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>ApoptosisModule</h4>
-<pre>public&nbsp;ApoptosisModule(<a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a>&nbsp;cell)</pre>
-<div class="block">Creates a <code>ApoptosisModule</code> for the given <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell"><code>PottsCell</code></a>.</div>
+<pre>public&nbsp;ApoptosisModule(<a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell">Cell</a>&nbsp;cell)</pre>
+<div class="block">Creates a <code>ApoptosisModule</code> for the given <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>cell</code> - the <a href="../../../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell"><code>PottsCell</code></a> the module is associated with</dd>
+<dd><code>cell</code> - the <a href="../../../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a> the module is associated with</dd>
 </dl>
 </li>
 </ul>
@@ -454,15 +442,6 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="getName--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getName</h4>
-<pre>public&nbsp;java.lang.String&nbsp;getName()</pre>
-</li>
-</ul>
 <a name="getPhase--">
 <!--   -->
 </a>
@@ -489,7 +468,7 @@ implements <a href="../../../arcade/agent/module/Module.html" title="interface i
 <pre>void&nbsp;removeCell(<a href="../../../arcade/sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim)</pre>
 <div class="block">Removes a cell from the simulation.
  <p>
- The location is cleared, along with any tagged regions.
+ The location is cleared, along with any regions.
  The cell is then removed from the grid and simulation schedule.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

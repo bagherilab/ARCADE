@@ -98,20 +98,6 @@
 <td><code><a href="arcade/agent/module/ApoptosisModule.html#APOPTOSIS_CHECKPOINT">APOPTOSIS_CHECKPOINT</a></code></td>
 <td class="colLast"><code>0.1</code></td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><a name="arcade.agent.module.ApoptosisModule.DURATION_EARLY">
-<!--   -->
-</a><code>static&nbsp;final&nbsp;double</code></td>
-<td><code><a href="arcade/agent/module/ApoptosisModule.html#DURATION_EARLY">DURATION_EARLY</a></code></td>
-<td class="colLast"><code>3.0</code></td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><a name="arcade.agent.module.ApoptosisModule.DURATION_LATE">
-<!--   -->
-</a><code>static&nbsp;final&nbsp;double</code></td>
-<td><code><a href="arcade/agent/module/ApoptosisModule.html#DURATION_LATE">DURATION_LATE</a></code></td>
-<td class="colLast"><code>5.6</code></td>
-</tr>
 </tbody>
 </table>
 </li>
@@ -124,48 +110,6 @@
 <th class="colLast" scope="col">Value</th>
 </tr>
 <tbody>
-<tr class="altColor">
-<td class="colFirst"><a name="arcade.agent.module.ProliferationModule.BASAL_APOPTOSIS_RATE">
-<!--   -->
-</a><code>static&nbsp;final&nbsp;double</code></td>
-<td><code><a href="arcade/agent/module/ProliferationModule.html#BASAL_APOPTOSIS_RATE">BASAL_APOPTOSIS_RATE</a></code></td>
-<td class="colLast"><code>0.00127128</code></td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><a name="arcade.agent.module.ProliferationModule.DURATION_CHECKPOINT">
-<!--   -->
-</a><code>static&nbsp;final&nbsp;double</code></td>
-<td><code><a href="arcade/agent/module/ProliferationModule.html#DURATION_CHECKPOINT">DURATION_CHECKPOINT</a></code></td>
-<td class="colLast"><code>1.0</code></td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><a name="arcade.agent.module.ProliferationModule.DURATION_G1">
-<!--   -->
-</a><code>static&nbsp;final&nbsp;double</code></td>
-<td><code><a href="arcade/agent/module/ProliferationModule.html#DURATION_G1">DURATION_G1</a></code></td>
-<td class="colLast"><code>11.0</code></td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><a name="arcade.agent.module.ProliferationModule.DURATION_G2">
-<!--   -->
-</a><code>static&nbsp;final&nbsp;double</code></td>
-<td><code><a href="arcade/agent/module/ProliferationModule.html#DURATION_G2">DURATION_G2</a></code></td>
-<td class="colLast"><code>4.0</code></td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><a name="arcade.agent.module.ProliferationModule.DURATION_M">
-<!--   -->
-</a><code>static&nbsp;final&nbsp;double</code></td>
-<td><code><a href="arcade/agent/module/ProliferationModule.html#DURATION_M">DURATION_M</a></code></td>
-<td class="colLast"><code>1.0</code></td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><a name="arcade.agent.module.ProliferationModule.DURATION_S">
-<!--   -->
-</a><code>static&nbsp;final&nbsp;double</code></td>
-<td><code><a href="arcade/agent/module/ProliferationModule.html#DURATION_S">DURATION_S</a></code></td>
-<td class="colLast"><code>8.0</code></td>
-</tr>
 <tr class="altColor">
 <td class="colFirst"><a name="arcade.agent.module.ProliferationModule.GROWTH_CHECKPOINT_G1">
 <!--   -->
@@ -433,20 +377,6 @@
 </tr>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><a name="arcade.sim.Simulation.DS">
-<!--   -->
-</a><code>public&nbsp;static&nbsp;final&nbsp;double</code></td>
-<td><code><a href="arcade/sim/Simulation.html#DS">DS</a></code></td>
-<td class="colLast"><code>2.0</code></td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><a name="arcade.sim.Simulation.DT">
-<!--   -->
-</a><code>public&nbsp;static&nbsp;final&nbsp;double</code></td>
-<td><code><a href="arcade/sim/Simulation.html#DT">DT</a></code></td>
-<td class="colLast"><code>0.5</code></td>
-</tr>
-<tr class="altColor">
 <td class="colFirst"><a name="arcade.sim.Simulation.ORDERING_CELLS">
 <!--   -->
 </a><code>public&nbsp;static&nbsp;final&nbsp;int</code></td>
@@ -514,14 +444,14 @@
 <!--   -->
 </a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="arcade/sim/output/OutputSerializer.html#DOUBLE_REGEX">DOUBLE_REGEX</a></code></td>
-<td class="colLast"><code>"^(-?\\d*\\.\\d*)$|^(-?\\d*\\.\\d*E\\d+)$"</code></td>
+<td class="colLast"><code>"^(-?\\d*\\.\\d*)$|^(-?\\d*\\.\\d*E-?\\d+)$"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a name="arcade.sim.output.OutputSerializer.INTEGER_REGEX">
 <!--   -->
 </a><code>public&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="arcade/sim/output/OutputSerializer.html#INTEGER_REGEX">INTEGER_REGEX</a></code></td>
-<td class="colLast"><code>"^(-?\\d+)$|^(-?\\d+E\\d+)$"</code></td>
+<td class="colLast"><code>"^(-?\\d+)$|^(-?\\d+E-?\\d+)$"</code></td>
 </tr>
 </tbody>
 </table>
@@ -624,7 +554,7 @@
 <!--   -->
 </a><code>private&nbsp;static&nbsp;final&nbsp;java.lang.String</code></td>
 <td><code><a href="arcade/util/MiniBox.html#NUMBER_REGEX">NUMBER_REGEX</a></code></td>
-<td class="colLast"><code>"^(-?\\d*\\.\\d*)$|^(-?\\d+)$|^(-?\\d+E\\d+)$|^(-?\\d*\\.\\d*E\\d+)$"</code></td>
+<td class="colLast"><code>"^(-?\\d*\\.\\d*)$|^(-?\\d+)$|^(-?\\d+E-?\\d+)$|^(-?\\d*\\.\\d*E-?\\d+)$"</code></td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a name="arcade.util.MiniBox.TAG_SEPARATOR">

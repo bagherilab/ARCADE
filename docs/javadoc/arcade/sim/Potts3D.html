@@ -214,7 +214,7 @@ extends <a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts<
 <!--   -->
 </a>
 <h3>Fields inherited from class&nbsp;arcade.sim.<a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts</a></h3>
-<code><a href="../../arcade/sim/Potts.html#grid">grid</a>, <a href="../../arcade/sim/Potts.html#HEIGHT">HEIGHT</a>, <a href="../../arcade/sim/Potts.html#IDS">IDS</a>, <a href="../../arcade/sim/Potts.html#LENGTH">LENGTH</a>, <a href="../../arcade/sim/Potts.html#STEPS">STEPS</a>, <a href="../../arcade/sim/Potts.html#TAGGED">TAGGED</a>, <a href="../../arcade/sim/Potts.html#TAGS">TAGS</a>, <a href="../../arcade/sim/Potts.html#TEMPERATURE">TEMPERATURE</a>, <a href="../../arcade/sim/Potts.html#WIDTH">WIDTH</a></code></li>
+<code><a href="../../arcade/sim/Potts.html#grid">grid</a>, <a href="../../arcade/sim/Potts.html#HAS_REGIONS">HAS_REGIONS</a>, <a href="../../arcade/sim/Potts.html#HEIGHT">HEIGHT</a>, <a href="../../arcade/sim/Potts.html#IDS">IDS</a>, <a href="../../arcade/sim/Potts.html#LENGTH">LENGTH</a>, <a href="../../arcade/sim/Potts.html#REGIONS">REGIONS</a>, <a href="../../arcade/sim/Potts.html#STEPS">STEPS</a>, <a href="../../arcade/sim/Potts.html#TEMPERATURE">TEMPERATURE</a>, <a href="../../arcade/sim/Potts.html#WIDTH">WIDTH</a></code></li>
 </ul>
 </li>
 </ul>
@@ -262,12 +262,12 @@ extends <a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts<
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>(package private) int[]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts3D.html#calculateChange-int-int-int-int-int-int-">calculateChange</a></span>(int&nbsp;id,
-               int&nbsp;sourceTag,
-               int&nbsp;targetTag,
+               int&nbsp;sourceRegion,
+               int&nbsp;targetRegion,
                int&nbsp;x,
                int&nbsp;y,
                int&nbsp;z)</code>
-<div class="block">Calculates change in surface for tag</div>
+<div class="block">Calculates change in surface for region</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
@@ -286,7 +286,7 @@ extends <a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts<
            int&nbsp;x,
            int&nbsp;y,
            int&nbsp;z)</code>
-<div class="block">Gets adhesion energy for a given voxel tag.</div>
+<div class="block">Gets adhesion energy for a given voxel region.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
@@ -308,11 +308,11 @@ extends <a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts<
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>(package private) boolean[][][]</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts3D.html#getNeighborhood-int-int-int-int-int-">getNeighborhood</a></span>(int&nbsp;id,
-               int&nbsp;tag,
+               int&nbsp;region,
                int&nbsp;x,
                int&nbsp;y,
                int&nbsp;z)</code>
-<div class="block">Gets neighborhood for the given voxel tag.</div>
+<div class="block">Gets neighborhood for the given voxel region.</div>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
@@ -325,10 +325,10 @@ extends <a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts<
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code>(package private) java.util.HashSet&lt;java.lang.Integer&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts3D.html#getUniqueTags-int-int-int-">getUniqueTags</a></span>(int&nbsp;x,
-             int&nbsp;y,
-             int&nbsp;z)</code>
-<div class="block">Gets unique tags adjacent to given voxel.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/sim/Potts3D.html#getUniqueRegions-int-int-int-">getUniqueRegions</a></span>(int&nbsp;x,
+                int&nbsp;y,
+                int&nbsp;z)</code>
+<div class="block">Gets unique regions adjacent to given voxel.</div>
 </td>
 </tr>
 </table>
@@ -522,20 +522,20 @@ extends <a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts<
 <li class="blockList">
 <h4>calculateChange</h4>
 <pre>int[]&nbsp;calculateChange(int&nbsp;id,
-                      int&nbsp;sourceTag,
-                      int&nbsp;targetTag,
+                      int&nbsp;sourceRegion,
+                      int&nbsp;targetRegion,
                       int&nbsp;x,
                       int&nbsp;y,
                       int&nbsp;z)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../arcade/sim/Potts.html#calculateChange-int-int-int-int-int-int-">Potts</a></code></span></div>
-<div class="block">Calculates change in surface for tag</div>
+<div class="block">Calculates change in surface for region</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../arcade/sim/Potts.html#calculateChange-int-int-int-int-int-int-">calculateChange</a></code>&nbsp;in class&nbsp;<code><a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>sourceTag</code> - the id of the source voxel</dd>
-<dd><code>targetTag</code> - the id of the target voxel</dd>
+<dd><code>sourceRegion</code> - the id of the source voxel</dd>
+<dd><code>targetRegion</code> - the id of the target voxel</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -581,13 +581,13 @@ extends <a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts<
                    int&nbsp;y,
                    int&nbsp;z)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../arcade/sim/Potts.html#getAdhesion-int-int-int-int-int-">Potts</a></code></span></div>
-<div class="block">Gets adhesion energy for a given voxel tag.</div>
+<div class="block">Gets adhesion energy for a given voxel region.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../arcade/sim/Potts.html#getAdhesion-int-int-int-int-int-">getAdhesion</a></code>&nbsp;in class&nbsp;<code><a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>t</code> - the voxel tag</dd>
+<dd><code>t</code> - the voxel region</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -649,18 +649,18 @@ extends <a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts<
 <li class="blockList">
 <h4>getNeighborhood</h4>
 <pre>boolean[][][]&nbsp;getNeighborhood(int&nbsp;id,
-                              int&nbsp;tag,
+                              int&nbsp;region,
                               int&nbsp;x,
                               int&nbsp;y,
                               int&nbsp;z)</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../arcade/sim/Potts.html#getNeighborhood-int-int-int-int-int-">Potts</a></code></span></div>
-<div class="block">Gets neighborhood for the given voxel tag.</div>
+<div class="block">Gets neighborhood for the given voxel region.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="../../arcade/sim/Potts.html#getNeighborhood-int-int-int-int-int-">getNeighborhood</a></code>&nbsp;in class&nbsp;<code><a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>id</code> - the voxel id</dd>
-<dd><code>tag</code> - the voxel tag</dd>
+<dd><code>region</code> - the voxel region</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
@@ -692,26 +692,26 @@ extends <a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts<
 </dl>
 </li>
 </ul>
-<a name="getUniqueTags-int-int-int-">
+<a name="getUniqueRegions-int-int-int-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>getUniqueTags</h4>
-<pre>java.util.HashSet&lt;java.lang.Integer&gt;&nbsp;getUniqueTags(int&nbsp;x,
-                                                   int&nbsp;y,
-                                                   int&nbsp;z)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../arcade/sim/Potts.html#getUniqueTags-int-int-int-">Potts</a></code></span></div>
-<div class="block">Gets unique tags adjacent to given voxel.</div>
+<h4>getUniqueRegions</h4>
+<pre>java.util.HashSet&lt;java.lang.Integer&gt;&nbsp;getUniqueRegions(int&nbsp;x,
+                                                      int&nbsp;y,
+                                                      int&nbsp;z)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../arcade/sim/Potts.html#getUniqueRegions-int-int-int-">Potts</a></code></span></div>
+<div class="block">Gets unique regions adjacent to given voxel.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../arcade/sim/Potts.html#getUniqueTags-int-int-int-">getUniqueTags</a></code>&nbsp;in class&nbsp;<code><a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts</a></code></dd>
+<dd><code><a href="../../arcade/sim/Potts.html#getUniqueRegions-int-int-int-">getUniqueRegions</a></code>&nbsp;in class&nbsp;<code><a href="../../arcade/sim/Potts.html" title="class in arcade.sim">Potts</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the list of unique tags</dd>
+<dd>the list of unique regions</dd>
 </dl>
 </li>
 </ul>

@@ -83,17 +83,17 @@
 <dd>
 <div class="block">Adds a voxel at the given coordinates.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/env/loc/Location.html#add-arcade.agent.cell.Cell.Tag-int-int-int-">add(Cell.Tag, int, int, int)</a></span> - Method in interface arcade.env.loc.<a href="../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/env/loc/Location.html#add-arcade.agent.cell.Cell.Region-int-int-int-">add(Cell.Region, int, int, int)</a></span> - Method in interface arcade.env.loc.<a href="../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a></dt>
 <dd>
-<div class="block">Adds a voxel at the given coordinates for given tag.</div>
+<div class="block">Adds a voxel at the given coordinates for given region.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocation.html#add-int-int-int-">add(int, int, int)</a></span> - Method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocation.html" title="class in arcade.env.loc">PottsLocation</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocation.html#add-arcade.agent.cell.Cell.Tag-int-int-int-">add(Cell.Tag, int, int, int)</a></span> - Method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocation.html" title="class in arcade.env.loc">PottsLocation</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocation.html#add-arcade.agent.cell.Cell.Region-int-int-int-">add(Cell.Region, int, int, int)</a></span> - Method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocation.html" title="class in arcade.env.loc">PottsLocation</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocations.html#add-int-int-int-">add(int, int, int)</a></span> - Method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocations.html" title="class in arcade.env.loc">PottsLocations</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocations.html#add-arcade.agent.cell.Cell.Tag-int-int-int-">add(Cell.Tag, int, int, int)</a></span> - Method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocations.html" title="class in arcade.env.loc">PottsLocations</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocations.html#add-arcade.agent.cell.Cell.Region-int-int-int-">add(Cell.Region, int, int, int)</a></span> - Method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocations.html" title="class in arcade.env.loc">PottsLocations</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/util/Box.html#add-java.lang.String-java.lang.String-">add(String, String)</a></span> - Method in class arcade.util.<a href="../arcade/util/Box.html" title="class in arcade.util">Box</a></dt>
 <dd>
@@ -155,9 +155,9 @@
 <dd>
 <div class="block">Adhesion values for cell</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#adhesionTag">adhesionTag</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/cell/PottsCell.html#adhesionRegion">adhesionRegion</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell">PottsCell</a></dt>
 <dd>
-<div class="block">Adhesion values for cell by tag</div>
+<div class="block">Adhesion values for cell by region</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/agent/cell/CellFactory.CellContainer.html#age">age</a></span> - Variable in class arcade.agent.cell.<a href="../arcade/agent/cell/CellFactory.CellContainer.html" title="class in arcade.agent.cell">CellFactory.CellContainer</a></dt>
 <dd>&nbsp;</dd>
@@ -189,9 +189,9 @@
 </dd>
 <dt><a href="../arcade/agent/module/ApoptosisModule.html" title="class in arcade.agent.module"><span class="typeNameLink">ApoptosisModule</span></a> - Class in <a href="../arcade/agent/module/package-summary.html">arcade.agent.module</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/agent/module/ApoptosisModule.html#ApoptosisModule-arcade.agent.cell.PottsCell-">ApoptosisModule(PottsCell)</a></span> - Constructor for class arcade.agent.module.<a href="../arcade/agent/module/ApoptosisModule.html" title="class in arcade.agent.module">ApoptosisModule</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/agent/module/ApoptosisModule.html#ApoptosisModule-arcade.agent.cell.Cell-">ApoptosisModule(Cell)</a></span> - Constructor for class arcade.agent.module.<a href="../arcade/agent/module/ApoptosisModule.html" title="class in arcade.agent.module">ApoptosisModule</a></dt>
 <dd>
-<div class="block">Creates a <code>ApoptosisModule</code> for the given <a href="../arcade/agent/cell/PottsCell.html" title="class in arcade.agent.cell"><code>PottsCell</code></a>.</div>
+<div class="block">Creates a <code>ApoptosisModule</code> for the given <a href="../arcade/agent/cell/Cell.html" title="interface in arcade.agent.cell"><code>Cell</code></a>.</div>
 </dd>
 <dt><a href="../arcade/agent/module/ApoptosisModule.Simple.html" title="class in arcade.agent.module"><span class="typeNameLink">ApoptosisModule.Simple</span></a> - Class in <a href="../arcade/agent/module/package-summary.html">arcade.agent.module</a></dt>
 <dd>
@@ -227,17 +227,17 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/vis/PottsDrawer.html#array">array</a></span> - Variable in class arcade.vis.<a href="../arcade/vis/PottsDrawer.html" title="class in arcade.vis">PottsDrawer</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/env/loc/Location.html#assign-arcade.agent.cell.Cell.Tag-arcade.env.loc.Location.Voxel-">assign(Cell.Tag, Location.Voxel)</a></span> - Method in interface arcade.env.loc.<a href="../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/env/loc/Location.html#assign-arcade.agent.cell.Cell.Region-arcade.env.loc.Location.Voxel-">assign(Cell.Region, Location.Voxel)</a></span> - Method in interface arcade.env.loc.<a href="../arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a></dt>
 <dd>
-<div class="block">Assigns the voxel at the given coordinates to the given tag.</div>
+<div class="block">Assigns the voxel at the given coordinates to the given region.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocation.html#assign-arcade.agent.cell.Cell.Tag-arcade.env.loc.Location.Voxel-">assign(Cell.Tag, Location.Voxel)</a></span> - Method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocation.html" title="class in arcade.env.loc">PottsLocation</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocation.html#assign-arcade.agent.cell.Cell.Region-arcade.env.loc.Location.Voxel-">assign(Cell.Region, Location.Voxel)</a></span> - Method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocation.html" title="class in arcade.env.loc">PottsLocation</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocations.html#assign-arcade.agent.cell.Cell.Tag-arcade.env.loc.Location.Voxel-">assign(Cell.Tag, Location.Voxel)</a></span> - Method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocations.html" title="class in arcade.env.loc">PottsLocations</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocations.html#assign-arcade.agent.cell.Cell.Region-arcade.env.loc.Location.Voxel-">assign(Cell.Region, Location.Voxel)</a></span> - Method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocations.html" title="class in arcade.env.loc">PottsLocations</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocations.html#assignVoxels-arcade.env.loc.PottsLocations-java.util.EnumMap-ec.util.MersenneTwisterFast-">assignVoxels(PottsLocations, EnumMap&lt;Cell.Tag, Double&gt;, MersenneTwisterFast)</a></span> - Static method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocations.html" title="class in arcade.env.loc">PottsLocations</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/env/loc/PottsLocations.html#assignVoxels-arcade.env.loc.PottsLocations-java.util.EnumMap-ec.util.MersenneTwisterFast-">assignVoxels(PottsLocations, EnumMap&lt;Cell.Region, Double&gt;, MersenneTwisterFast)</a></span> - Static method in class arcade.env.loc.<a href="../arcade/env/loc/PottsLocations.html" title="class in arcade.env.loc">PottsLocations</a></dt>
 <dd>
-<div class="block">Assigns tags to voxels based on given fractions.</div>
+<div class="block">Assigns regions to voxels based on given fractions.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="../arcade/vis/Panel.html#attach-arcade.vis.Drawer-java.lang.String-java.awt.geom.Rectangle2D.Double-">attach(Drawer, String, Rectangle2D.Double)</a></span> - Method in class arcade.vis.<a href="../arcade/vis/Panel.html" title="class in arcade.vis">Panel</a></dt>
 <dd>
