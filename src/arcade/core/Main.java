@@ -1,13 +1,13 @@
-package arcade;
+package arcade.core;
 
 import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.Date;
-import arcade.sim.Series;
-import arcade.sim.input.*;
-import arcade.sim.output.OutputSaver;
-import arcade.sim.output.OutputLoader;
-import arcade.util.*;
+import arcade.core.sim.Series;
+import arcade.core.sim.input.*;
+import arcade.core.sim.output.OutputSaver;
+import arcade.core.sim.output.OutputLoader;
+import arcade.core.util.*;
 
 /**
  * Main class for running simulations.
@@ -15,11 +15,11 @@ import arcade.util.*;
  * The class loads two XML files {@code command.xml} and {@code parameter.xml}
  * that specify the command line parser options and the default parameter
  * values, respectively.
- * The setup XML file is then parsed to produce an array of {@link arcade.sim.Series}
+ * The setup XML file is then parsed to produce an array of {@link arcade.core.sim.Series}
  * objects, each of which defines replicates (differing only in random seed) of
- * {@link arcade.sim.Simulation} instances to run.
+ * {@link arcade.core.sim.Simulation} instances to run.
  * <p>
- * If the VIS flag is used, only the first {@link arcade.sim.Series} in the array
+ * If the VIS flag is used, only the first {@link arcade.core.sim.Series} in the array
  * is run.
  * Otherwise, all valid {@code Series} are run.
  */

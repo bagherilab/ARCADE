@@ -1,7 +1,7 @@
-package arcade.agent.helper;
+package arcade.core.agent.helper;
 
 import sim.engine.Steppable;
-import arcade.sim.Simulation;
+import arcade.core.sim.Simulation;
 
 /** 
  * A {@code Helper} object is a steppable that interacts with agents.
@@ -14,7 +14,7 @@ import arcade.sim.Simulation;
  *     division</li>
  * </ul>
  * <p>
- * Unlike {@link arcade.agent.cell.Cell} objects, {@code Helper} objects do not
+ * Unlike {@link arcade.core.agent.cell.Cell} objects, {@code Helper} objects do not
  * represent a physical entity in the model.
  * Instead, they are a generic interface for introducing steppables to the model.
  */

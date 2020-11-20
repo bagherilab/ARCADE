@@ -1,20 +1,20 @@
-package arcade.env.comp;
+package arcade.core.env.comp;
 
 import sim.engine.Steppable;
-import arcade.sim.Simulation;
-import arcade.env.loc.Location;
+import arcade.core.sim.Simulation;
+import arcade.core.env.loc.Location;
 
 /** 
  * A {@code Component} object is a steppable that interacts with the environment.
  * <p>
  * {@code Component} objects can be used for:
  * <ul>
- *     <li>changing {@link arcade.env.lat.Lattice} arrays such as through diffusion
+ *     <li>changing {@link arcade.core.env.lat.Lattice} arrays such as through diffusion
  *     or introduction of a drug</li>
  *     <li>physical entities within the environment such as capillary beds or
  *     matric scaffolding</li>
  * </ul>
- * {@code Component} objects are the analog to {@link arcade.agent.helper.Helper}
+ * {@code Component} objects are the analog to {@link arcade.core.agent.helper.Helper}
  * for steppables that affect the environment.
  */
 

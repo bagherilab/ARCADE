@@ -1,8 +1,8 @@
-package arcade.util;
+package arcade.core.util;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import static arcade.util.Matrix.*;
+import static arcade.core.util.Matrix.*;
 
 /**
  * Static utility class implementing various numerical solvers.

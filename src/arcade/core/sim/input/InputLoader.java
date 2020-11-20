@@ -1,4 +1,4 @@
-package arcade.sim.input;
+package arcade.core.sim.input;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -8,15 +8,15 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-import arcade.util.Box;
-import static arcade.sim.Series.TARGET_SEPARATOR;
-import static arcade.util.MiniBox.TAG_SEPARATOR;
+import arcade.core.util.Box;
+import static arcade.core.sim.Series.TARGET_SEPARATOR;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
  * Custom XML file loader that uses SAX parsing to iterate through the XML file.
  * <p>
  * XML files should only be one level deep, with all values as attributes.
- * Results are stored in a {@link arcade.util.Box} object.
+ * Results are stored in a {@link arcade.core.util.Box} object.
  */
 
 public class InputLoader extends DefaultHandler {
@@ -42,7 +42,7 @@ public class InputLoader extends DefaultHandler {
 	}
 	
 	/**
-	 * Loads the given XML file into a {@link arcade.util.Box}.
+	 * Loads the given XML file into a {@link arcade.core.util.Box}.
 	 * 
 	 * @param xml  the XML file
 	 * @return  the box containing the parsed XML

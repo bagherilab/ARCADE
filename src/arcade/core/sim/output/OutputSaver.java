@@ -1,13 +1,13 @@
-package arcade.sim.output;
+package arcade.core.sim.output;
 
 import java.io.*;
 import java.util.logging.Logger;
 import com.google.gson.*;
 import sim.engine.*;
-import arcade.sim.Series;
-import arcade.sim.Potts;
-import arcade.sim.Simulation;
-import arcade.env.grid.Grid;
+import arcade.core.sim.Series;
+import arcade.core.sim.Potts;
+import arcade.core.sim.Simulation;
+import arcade.core.env.grid.Grid;
 
 public class OutputSaver implements Steppable {
 	/** Logger for class */
@@ -16,16 +16,16 @@ public class OutputSaver implements Steppable {
 	/** JSON representation */
 	final Gson gson;
 	
-	/** {@link arcade.sim.Series} instance */
+	/** {@link arcade.core.sim.Series} instance */
 	final Series series;
 	
 	/** Prefix for saved files */
 	String prefix;
 	
-	/** {@link arcade.sim.Simulation} instance */
+	/** {@link arcade.core.sim.Simulation} instance */
 	Simulation sim;
 	
-	/** {@link arcade.env.grid.Grid} instance containing agents */
+	/** {@link arcade.core.env.grid.Grid} instance containing agents */
 	Grid agents;
 	
 	/** {@link arcade.sim.Potts} instance */
@@ -42,7 +42,7 @@ public class OutputSaver implements Steppable {
 	}
 	
 	/**
-	 * Equips the given {@link arcade.sim.Simulation} instance to the saver.
+	 * Equips the given {@link arcade.core.sim.Simulation} instance to the saver.
 	 * 
 	 * @param sim  the simulation instance
 	 */
@@ -54,7 +54,7 @@ public class OutputSaver implements Steppable {
 	}
 	
 	/**
-	 * Saves the {@link arcade.sim.Series} as a JSON.
+	 * Saves the {@link arcade.core.sim.Series} as a JSON.
 	 */
 	public void save() {
 		String path = series.getPrefix() + ".json";

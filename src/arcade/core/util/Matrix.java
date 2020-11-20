@@ -1,4 +1,4 @@
-package arcade.util;
+package arcade.core.util;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,7 +8,7 @@ import java.util.Collections;
  * <p>
  * Class provides a subset of matrix operations needed for solving a system
  * of linear equations using the successive over-relaxation method in
- * {@link arcade.util.Solver}.
+ * {@link arcade.core.util.Solver}.
  */
 
 public class Matrix {

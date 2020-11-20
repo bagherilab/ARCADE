@@ -1,16 +1,16 @@
-package arcade.sim.input;
+package arcade.core.sim.input;
 
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
-import arcade.util.Box;
-import arcade.util.MiniBox;
+import arcade.core.util.Box;
+import arcade.core.util.MiniBox;
 
 /**
  * Command line parser built from XML defining the possible commands.
  * <p>
- * {@code InputParser} is built using the {@link arcade.util.Box} created by
- * {@link arcade.sim.input.InputLoader} when parsing {@code command.xml}.
+ * {@code InputParser} is built using the {@link arcade.core.util.Box} created by
+ * {@link arcade.core.sim.input.InputLoader} when parsing {@code command.xml}.
  * There are three command argument types:
  * <ul>
  *     <li><em>position</em> arguments are ordered by their location in the 

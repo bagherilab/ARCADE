@@ -1,4 +1,4 @@
-package arcade.util;
+package arcade.core.util;
 
 import java.io.Serializable;
 import sim.util.distribution.Normal;

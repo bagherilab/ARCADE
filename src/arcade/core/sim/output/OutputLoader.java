@@ -1,14 +1,14 @@
-package arcade.sim.output;
+package arcade.core.sim.output;
 
 import java.io.*;
 import java.util.logging.Logger;
 import com.google.gson.*;
-import arcade.sim.Series;
-import arcade.sim.Simulation;
-import arcade.agent.cell.CellFactory;
-import arcade.env.loc.LocationFactory;
-import static arcade.agent.cell.CellFactory.CellFactoryContainer;
-import static arcade.env.loc.LocationFactory.LocationFactoryContainer;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import arcade.core.agent.cell.CellFactory;
+import arcade.core.env.loc.LocationFactory;
+import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
+import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
 
 public class OutputLoader {
 	/** Logger for class */
@@ -17,7 +17,7 @@ public class OutputLoader {
 	/** JSON representation */
 	final Gson gson;
 	
-	/** {@link arcade.sim.Series} instance */
+	/** {@link arcade.core.sim.Series} instance */
 	final Series series;
 	
 	/** Prefix for loaded files */
@@ -49,7 +49,7 @@ public class OutputLoader {
 	}
 	
 	/**
-	 * Equips the given {@link arcade.sim.Simulation} instance to the loader.
+	 * Equips the given {@link arcade.core.sim.Simulation} instance to the loader.
 	 *
 	 * @param sim  the simulation instance
 	 */

@@ -1,7 +1,7 @@
-package arcade.agent.module;
+package arcade.core.agent.module;
 
-import arcade.sim.Simulation;
 import ec.util.MersenneTwisterFast;
+import arcade.core.sim.Simulation;
 
 public interface Module {
 	enum Phase {
@@ -31,7 +31,7 @@ public interface Module {
 	}
 	
 	/**
-	 * Performs the actions of the module during the {@link arcade.agent.cell.Cell} step.
+	 * Performs the actions of the module during the {@link arcade.core.agent.cell.Cell} step.
 	 * 
 	 * @param random  the random number generator
 	 * @param sim  the simulation instance

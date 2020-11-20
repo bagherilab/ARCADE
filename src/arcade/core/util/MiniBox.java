@@ -1,4 +1,4 @@
-package arcade.util;
+package arcade.core.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;

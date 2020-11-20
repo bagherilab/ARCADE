@@ -1,4 +1,4 @@
-package arcade.sim.input;
+package arcade.core.sim.input;
 
 import org.xml.sax.*;
 import javax.xml.parsers.SAXParser;
@@ -7,19 +7,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
-import arcade.sim.Series;
-import arcade.util.Box;
-import arcade.util.MiniBox;
-import static arcade.sim.Series.TARGET_SEPARATOR;
-import static arcade.util.MiniBox.TAG_SEPARATOR;
+import arcade.core.sim.Series;
+import arcade.core.util.Box;
+import arcade.core.util.MiniBox;
+import static arcade.core.sim.Series.TARGET_SEPARATOR;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
  * Custom builder for simulation setup XMLs.
  * <p>
  * The class checks for specific tags, which determine where the parsed data
- * is placed for further processing by the {@link arcade.sim.Series} class.
+ * is placed for further processing by the {@link arcade.core.sim.Series} class.
  * Once the end tag for a given {@code <series>} is reached, a new
- * {@link arcade.sim.Series} object is instantiated.
+ * {@link arcade.core.sim.Series} object is instantiated.
  * All content in the setup XML is stored as attribute-value pairs; there
  * is no content between tags (the {@code characters} method is not used).
  * <p>
@@ -46,7 +46,7 @@ public class InputBuilder implements ContentHandler {
 	/** XML reader */
 	XMLReader xmlReader;
 	
-	/** List holding {@link arcade.sim.Series} instances */
+	/** List holding {@link arcade.core.sim.Series} instances */
 	ArrayList<Series> series;
 	
 	/** Tracker for document location */
@@ -80,10 +80,10 @@ public class InputBuilder implements ContentHandler {
 	}
 	
 	/**
-	 * Builds {@link arcade.sim.Series} from the given XML file.
+	 * Builds {@link arcade.core.sim.Series} from the given XML file.
 	 * <p>
 	 * Reads through the setup XML file using an SAX parser with custom defined
-	 * content handler, which creates the {@link arcade.sim.Series} objects
+	 * content handler, which creates the {@link arcade.core.sim.Series} objects
 	 * as they are parsed.
 	 * SAX parses XML files using event handlers and therefore does not load the
 	 * entire XML file into memory (in contrast to DOM).
@@ -91,7 +91,7 @@ public class InputBuilder implements ContentHandler {
 	 * @param xml  the XML file
 	 * @param parameters  the default parameter values loaded from {@code parameter.xml}
 	 * @param isVis  {@code true} if run with visualization, {@code false} otherwise
-	 * @return  a list of {@link arcade.sim.Series} instances
+	 * @return  a list of {@link arcade.core.sim.Series} instances
 	 */
 	public ArrayList<Series> build(String xml, Box parameters, boolean isVis)
 			throws IOException, SAXException {
@@ -109,7 +109,7 @@ public class InputBuilder implements ContentHandler {
 	}
 	
 	/**
-	 * Creates a {@link arcade.util.MiniBox} dictionary from given attributes.
+	 * Creates a {@link arcade.core.util.MiniBox} dictionary from given attributes.
 	 * 
 	 * @param atts  the attributes
 	 * @return  a dictionary
@@ -121,7 +121,7 @@ public class InputBuilder implements ContentHandler {
 	}
 	
 	/**
-	 * Creates a {@link arcade.util.Box} dictionary from given attributes.
+	 * Creates a {@link arcade.core.util.Box} dictionary from given attributes.
 	 *
 	 * @param atts  the attributes
 	 * @return  a dictionary
@@ -133,7 +133,7 @@ public class InputBuilder implements ContentHandler {
 	}
 	
 	/**
-	 * Updates a {@link arcade.util.Box} dictionary with tagged attributes.
+	 * Updates a {@link arcade.core.util.Box} dictionary with tagged attributes.
 	 * <p>
 	 * Attributes are added to the last entry in the list of dictionaries.
 	 * One of the attributes must be "id" which is used as the id for the entry.

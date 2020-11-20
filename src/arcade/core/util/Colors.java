@@ -1,4 +1,4 @@
-package arcade.util;
+package arcade.core.util;
 
 import java.awt.Color;
 import sim.util.gui.ColorMap;

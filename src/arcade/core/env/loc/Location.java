@@ -1,10 +1,10 @@
-package arcade.env.loc;
+package arcade.core.env.loc;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
 import ec.util.MersenneTwisterFast;
-import static arcade.agent.cell.Cell.Region;
+import static arcade.core.agent.cell.Cell.Region;
 
 public interface Location {
 	/** Location split directions */

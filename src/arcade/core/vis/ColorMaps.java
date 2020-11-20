@@ -1,14 +1,14 @@
-package arcade.vis;
+package arcade.core.vis;
 
 import java.awt.*;
-import arcade.sim.Series;
-import arcade.util.Colors;
-import arcade.util.MiniBox;
+import arcade.core.sim.Series;
+import arcade.core.util.Colors;
+import arcade.core.util.MiniBox;
 
 /**
  * Container class for commonly used color maps.
  * <p>
- * Uses {@link arcade.util.Colors} to define mappings.
+ * Uses {@link arcade.core.util.Colors} to define mappings.
  */
 
 class ColorMaps {

@@ -1,4 +1,4 @@
-package arcade.gui;
+package arcade.core.gui;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,14 +10,14 @@ import java.util.logging.LogManager;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
-import arcade.Main;
+import arcade.core.Main;
 import sim.display.SimApplet;
 
 /**
  * Creates a {@code GUI} for selecting setup file and running the simulation.
  * <p>
  * When the model is called with arguments, then the {@code main} method in
- * {@link arcade.Main} is called directly and the {@code GUI} is not shown.
+ * {@link arcade.core.Main} is called directly and the {@code GUI} is not shown.
  */
 
 public class GUI implements ActionListener {

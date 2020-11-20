@@ -1,16 +1,16 @@
-package arcade.env.lat;
+package arcade.core.env.lat;
 
-import arcade.sim.Simulation;
-import arcade.env.loc.Location;
-import arcade.env.comp.Component;
-import arcade.util.MiniBox;
+import arcade.core.sim.Simulation;
+import arcade.core.env.loc.Location;
+import arcade.core.env.comp.Component;
+import arcade.core.util.MiniBox;
 
 /** 
  * A {@code Lattice} represents the environment for molecules.
  * <p>
  * Each {@code Lattice} is a 3D array of doubles, where the values can represent
  * molecular concentrations or other continuous quantities.
- * {@code Lattice} objects are associated with {@link arcade.env.comp.Component}
+ * {@code Lattice} objects are associated with {@link arcade.core.env.comp.Component}
  * objects that control changes in the values in the array (such as diffusion).
  */
 
@@ -115,7 +115,7 @@ public interface Lattice {
 	void setVal(Location loc, double val);
 	
 	/**
-	 * Gets the {@link arcade.env.comp.Component} of the given name
+	 * Gets the {@link arcade.core.env.comp.Component} of the given name
 	 * 
 	 * @param key  the component name
 	 * @return  the component instance
@@ -123,7 +123,7 @@ public interface Lattice {
 	Component getComponent(String key);
 	
 	/**
-	 * Sets the {@link arcade.env.comp.Component} with the given name 
+	 * Sets the {@link arcade.core.env.comp.Component} with the given name 
 	 * 
 	 * @param key  the component name
 	 * @param comp  the component instance

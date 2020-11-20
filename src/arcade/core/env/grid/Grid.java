@@ -1,4 +1,4 @@
-package arcade.env.grid;
+package arcade.core.env.grid;
 
 import sim.util.Bag;
 

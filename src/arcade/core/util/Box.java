@@ -1,11 +1,11 @@
-package arcade.util;
+package arcade.core.util;
 
 import java.util.ArrayList;
 
 /**
  * Container that maps a key to a tag category and a series of attributes.
  * <p>
- * {@code Box} objects use two {@link arcade.util.MiniBox} objects to map between
+ * {@code Box} objects use two {@link arcade.core.util.MiniBox} objects to map between
  * key, tags, and attributes.
  * Rather than nesting the key to attribute to values, the class automatically
  * joins key and attribute into a new key.

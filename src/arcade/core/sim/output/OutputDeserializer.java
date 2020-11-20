@@ -1,17 +1,17 @@
-package arcade.sim.output;
+package arcade.core.sim.output;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import com.google.gson.*;
-import static arcade.agent.cell.Cell.State;
-import static arcade.agent.cell.Cell.Region;
-import static arcade.agent.module.Module.Phase;
-import static arcade.agent.cell.CellFactory.CellContainer;
-import static arcade.agent.cell.CellFactory.CellFactoryContainer;
-import static arcade.env.loc.LocationFactory.LocationContainer;
-import static arcade.env.loc.LocationFactory.LocationFactoryContainer;
-import static arcade.env.loc.Location.Voxel;
+import static arcade.core.agent.cell.Cell.State;
+import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.agent.module.Module.Phase;
+import static arcade.core.agent.cell.CellFactory.CellContainer;
+import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
+import static arcade.core.env.loc.LocationFactory.LocationContainer;
+import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
+import static arcade.core.env.loc.Location.Voxel;
 
 public final class OutputDeserializer {
 	static Gson makeGSON() {

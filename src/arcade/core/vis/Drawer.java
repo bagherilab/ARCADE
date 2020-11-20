@@ -1,8 +1,8 @@
-package arcade.vis;
+package arcade.core.vis;
 
 import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Method;
-import arcade.agent.cell.Cell;
+import arcade.core.agent.cell.Cell;
 import sim.engine.*;
 import sim.portrayal.Portrayal;
 import sim.util.gui.ColorMap;
@@ -10,8 +10,8 @@ import sim.util.gui.ColorMap;
 /**
  * Visualization for simulation objects.
  * <p>
- * {@code Drawer} objects convert {@link arcade.sim.Potts},
- * {@link arcade.env.grid.Grid}, and {@link arcade.env.lat.Lattice} objects into 
+ * {@code Drawer} objects convert {@link arcade.core.sim.Potts},
+ * {@link arcade.core.env.grid.Grid}, and {@link arcade.core.env.lat.Lattice} objects into 
  * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> Portrayals,
  * which can then be displayed.
  */

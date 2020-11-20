@@ -1,11 +1,11 @@
-package arcade.sim;
+package arcade.core.sim;
 
 import java.util.ArrayList;
 import java.util.ListIterator;
 import ec.util.MersenneTwisterFast;
 import sim.engine.Schedule;
-import arcade.env.lat.Lattice;
-import arcade.env.grid.Grid;
+import arcade.core.env.lat.Lattice;
+import arcade.core.env.grid.Grid;
 
 /** 
  * A {@code Simulation} object sets up the agents and environments for a simulation.
@@ -29,12 +29,12 @@ public interface Simulation {
 	int ORDERING_CELLS = 1;
 	
 	/**
-	 * Gets the {@link arcade.sim.Series} object for the current simulation.
+	 * Gets the {@link arcade.core.sim.Series} object for the current simulation.
 	 * <p>
-	 * The {@link arcade.sim.Series} object can be further queried for information
+	 * The {@link arcade.core.sim.Series} object can be further queried for information
 	 * on configuration and parameters.
 	 * 
-	 * @return  the {@link arcade.sim.Series} instance
+	 * @return  the {@link arcade.core.sim.Series} instance
 	 */
 	Series getSeries();
 	
@@ -67,17 +67,17 @@ public interface Simulation {
 	Potts getPotts();
 	
 	/**
-	 * Gets the {@link arcade.env.grid.Grid} object holding the agents
+	 * Gets the {@link arcade.core.env.grid.Grid} object holding the agents
 	 *
-	 * @return  the {@link arcade.env.grid.Grid} object
+	 * @return  the {@link arcade.core.env.grid.Grid} object
 	 */
 	Grid getAgents();
 	
 	/**
-	 * Gets the {@link arcade.env.lat.Lattice} object for a given key.
+	 * Gets the {@link arcade.core.env.lat.Lattice} object for a given key.
 	 * 
 	 * @param key  the name of the lattice
-	 * @return  the {@link arcade.env.lat.Lattice} object
+	 * @return  the {@link arcade.core.env.lat.Lattice} object
 	 */
 	Lattice getEnvironment(String key);
 	
@@ -109,7 +109,7 @@ public interface Simulation {
 	void setupEnvironment();
 	
 	/**
-	 * Schedules any {@link arcade.agent.helper.Helper} instances.
+	 * Schedules any {@link arcade.core.agent.helper.Helper} instances.
 	 * <p>
 	 * The concrete implementing class calls this and all other {@code schedule}
 	 * methods from the MASON library {@code start()} method, which is called
@@ -118,7 +118,7 @@ public interface Simulation {
 	void scheduleHelpers();
 	
 	/**
-	 * Schedules any {@link arcade.env.comp.Component} instances.
+	 * Schedules any {@link arcade.core.env.comp.Component} instances.
 	 * <p>
 	 * The concrete implementing class calls this and all other {@code schedule}
 	 * methods from the MASON library {@code start()} method, which is called

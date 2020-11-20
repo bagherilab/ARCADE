@@ -1,17 +1,17 @@
-package arcade.sim.output;
+package arcade.core.sim.output;
 
 import java.lang.reflect.Type;
 import java.util.*;
 import com.google.gson.*;
-import arcade.sim.Series;
-import arcade.sim.Potts;
-import arcade.agent.cell.Cell;
-import arcade.env.grid.Grid;
-import arcade.env.loc.*;
-import arcade.util.MiniBox;
-import static arcade.env.loc.Location.VOXEL_COMPARATOR;
-import static arcade.env.loc.Location.Voxel;
-import static arcade.agent.cell.Cell.*;
+import arcade.core.sim.Series;
+import arcade.core.sim.Potts;
+import arcade.core.agent.cell.Cell;
+import arcade.core.env.grid.Grid;
+import arcade.core.env.loc.*;
+import arcade.core.util.MiniBox;
+import static arcade.core.env.loc.Location.VOXEL_COMPARATOR;
+import static arcade.core.env.loc.Location.Voxel;
+import static arcade.core.agent.cell.Cell.*;
 
 public final class OutputSerializer {
 	/** Regular expression for fractions */

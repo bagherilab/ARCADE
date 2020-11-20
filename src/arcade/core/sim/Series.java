@@ -1,4 +1,4 @@
-package arcade.sim;
+package arcade.core.sim;
 
 import java.lang.reflect.Constructor;
 import java.text.DecimalFormat;
@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import sim.display.GUIState;
 import sim.engine.SimState;
-import arcade.sim.output.*;
-import arcade.util.*;
-import static arcade.util.Box.KEY_SEPARATOR;
-import static arcade.util.MiniBox.TAG_SEPARATOR;
+import arcade.core.sim.output.*;
+import arcade.core.util.*;
+import static arcade.core.util.Box.KEY_SEPARATOR;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class Series {
 	/** Logger for {@code Series} */

@@ -1,10 +1,10 @@
-package arcade.agent.cell;
+package arcade.core.agent.cell;
 
 import sim.engine.*;
-import arcade.agent.module.Module;
-import arcade.env.loc.Location;
-import arcade.util.MiniBox;
-import static arcade.sim.Potts.Term;
+import arcade.core.agent.module.Module;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
+import static arcade.core.sim.Potts.Term;
 
 public interface Cell extends Steppable {
 	/** Cell state codes */
