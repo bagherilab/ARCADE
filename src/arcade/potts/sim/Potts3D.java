@@ -1,7 +1,7 @@
 package arcade.potts.sim;
 
 import java.util.HashSet;
-import arcade.core.agent.cell.Cell;
+import arcade.potts.agent.cell.PottsCell;
 import static arcade.core.agent.cell.Cell.Region;
 
 public class Potts3D extends Potts {
@@ -37,17 +37,17 @@ public class Potts3D extends Potts {
 	 *
 	 * @param series  the simulation series
 	 */
-	public Potts3D(Series series) { super(series); }
+	public Potts3D(PottsSeries series) { super(series); }
 	
 	double getAdhesion(int id, int x, int y, int z) {
 		double H = 0;
-		Cell a = getCell(id);
+		PottsCell a = getCell(id);
 		
 		for (int k = z - 1; k <= z + 1; k++) {
 			for (int i = x - 1; i <= x + 1; i++) {
 				for (int j = y - 1; j <= y + 1; j++) {
 					if (!(k == z && i == x && j == y) && IDS[k][i][j] != id) {
-						Cell b = getCell(IDS[k][i][j]);
+						PottsCell b = getCell(IDS[k][i][j]);
 						if (a == null) { H += b.getAdhesion(0); }
 						else if (b == null) { H += a.getAdhesion(0); }
 						else { H += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop()))/2.0; }
@@ -61,7 +61,7 @@ public class Potts3D extends Potts {
 	
 	double getAdhesion(int id, int t, int x, int y, int z) {
 		double H = 0;
-		Cell c = getCell(id);
+		PottsCell c = getCell(id);
 		Region region = Region.values()[t];
 		
 		for (int k = z - 1; k <= z + 1; k++) {

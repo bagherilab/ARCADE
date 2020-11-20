@@ -54,10 +54,10 @@ public abstract class Series {
 	public final double DT;
 	
 	/** Constructor for the simulation */
-	Constructor<?> simCons;
+	protected Constructor<?> simCons;
 	
 	/** Constructor for the visualization */
-	Constructor<?> visCons;
+	protected Constructor<?> visCons;
 	
 	/** Random seed of the first simulation in the series */
 	private final int startSeed;
@@ -175,7 +175,7 @@ public abstract class Series {
 	 * @param key  the number key
 	 * @return  {@code true if valid}, {@code false} otherwise
 	 */
-	static boolean isValidNumber(Box box, String key) {
+	protected static boolean isValidNumber(Box box, String key) {
 		if (box.getValue(key) == null) { return false; }
 		return box.getValue(key).matches(NUMBER_REGEX);
 	}
@@ -187,7 +187,7 @@ public abstract class Series {
 	 * @param key  the fraction key
 	 * @return  {@code true if valid}, {@code false} otherwise
 	 */
-	static boolean isValidFraction(Box box, String key) {
+	protected static boolean isValidFraction(Box box, String key) {
 		if (box.getValue(key) == null) { return false; }
 		return box.getValue(key).matches(FRACTION_REGEX);
 	}
@@ -198,7 +198,7 @@ public abstract class Series {
 	 * @param setupLists  the map of attribute to value for multiple instance tags
 	 * @param parameters  the default parameter values loaded from {@code parameter.xml}
 	 */
-	abstract void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters);
+	protected abstract void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters);
 	
 	/**
 	 * Creates agent populations.
@@ -207,7 +207,7 @@ public abstract class Series {
 	 * @param populationDefaults  the dictionary of default population parameters
 	 * @param populationConversions  the dictionary of population parameter conversions
 	 */
-	abstract void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults, MiniBox populationConversions);
+	protected abstract void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults, MiniBox populationConversions);
 	
 	/**
 	 * Creates environment molecules.
@@ -215,7 +215,7 @@ public abstract class Series {
 	 * @param molecules  the list of molecule setup dictionaries
 	 * @param moleculeDefaults  the dictionary of default molecule parameters
 	 */
-	abstract void updateMolecules(ArrayList<Box> molecules, MiniBox moleculeDefaults);
+	protected abstract void updateMolecules(ArrayList<Box> molecules, MiniBox moleculeDefaults);
 	
 	/**
 	 * Creates selected helpers.
@@ -223,7 +223,7 @@ public abstract class Series {
 	 * @param helpers  the list of helper dictionaries
 	 * @param helperDefaults  the dictionary of default helper parameters
 	 */
-	abstract void updateHelpers(ArrayList<Box> helpers, MiniBox helperDefaults);
+	protected abstract void updateHelpers(ArrayList<Box> helpers, MiniBox helperDefaults);
 	
 	/**
 	 * Creates selected components.
@@ -231,7 +231,7 @@ public abstract class Series {
 	 * @param components  the list of component dictionaries
 	 * @param componentDefaults  the dictionary of default component parameters
 	 */
-	abstract void updateComponents(ArrayList<Box> components, MiniBox componentDefaults);
+	protected abstract void updateComponents(ArrayList<Box> components, MiniBox componentDefaults);
 	
 	/**
 	 * Parses parameter values based on default value.
@@ -242,7 +242,7 @@ public abstract class Series {
 	 * @param values  the map of parameter values
 	 * @param scales  the map of parameter scaling
 	 */
-	static void parseParameter(MiniBox box, String parameter,
+	protected static void parseParameter(MiniBox box, String parameter,
 								String defaultParameter, MiniBox values, MiniBox scales) {
 		box.put(parameter, defaultParameter);
 		
@@ -267,7 +267,7 @@ public abstract class Series {
 	 * @param DT  the temporal conversion factor
 	 * @return  the updated conversion factor
 	 */
-	static double parseConversion(String convert, double DS, double DT) {
+	protected static double parseConversion(String convert, double DS, double DT) {
 		String[] split = convert.replace(" ","").split("\\^");
 		double v = (split[0].equals("DS") ? DS : (split[0].equals("DT") ? DT : 1));
 		int n = (split.length == 2 ? Integer.parseInt(split[1]) : 1);
@@ -277,7 +277,7 @@ public abstract class Series {
 	/**
 	 * Uses reflections to build constructors for simulation and visualization.
 	 */
-	abstract void makeConstructors();
+	protected abstract void makeConstructors();
 	
 	/** Calls {@code runSim} for each random seed.
 	 * 

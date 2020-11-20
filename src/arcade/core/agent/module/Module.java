@@ -4,32 +4,6 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 
 public interface Module {
-	enum Phase {
-		/** Code for undefined phase */
-		UNDEFINED,
-		
-		/** Code for proliferative G1 phase */
-		PROLIFERATIVE_G1,
-		
-		/** Code for proliferative S phase */
-		PROLIFERATIVE_S,
-		
-		/** Code for proliferative G2 phase */
-		PROLIFERATIVE_G2,
-		
-		/** Code for proliferative M phase */
-		PROLIFERATIVE_M,
-		
-		/** Code for early apoptosis phase */
-		APOPTOTIC_EARLY,
-		
-		/** Code for late apoptosis phase */
-		APOPTOTIC_LATE,
-		
-		/** Code for apoptosed cell */
-		APOPTOSED
-	}
-	
 	/**
 	 * Performs the actions of the module during the {@link arcade.core.agent.cell.Cell} step.
 	 * 
@@ -37,18 +11,4 @@ public interface Module {
 	 * @param sim  the simulation instance
 	 */
 	void step(MersenneTwisterFast random, Simulation sim);
-	
-	/**
-	 * Gets the module phase.
-	 * 
-	 * @return  the module phase
-	 */
-	Phase getPhase();
-	
-	/**
-	 * Sets the module phase.
-	 * 
-	 * @param phase  the module phase
-	 */
-	void setPhase(Phase phase);
 }

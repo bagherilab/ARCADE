@@ -7,11 +7,13 @@ import java.util.EnumMap;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
+import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
 import static arcade.core.agent.cell.Cell.*;
 import static arcade.core.agent.cell.CellFactory.CellContainer;
+import static arcade.potts.agent.cell.PottsCellFactory.PottsCellContainer;
 
-public abstract class LocationFactory {
+public abstract class PottsLocationFactory implements LocationFactory {
 	/** Map of id to location */
 	public final HashMap<Integer, LocationContainer> locations;
 	
@@ -19,32 +21,23 @@ public abstract class LocationFactory {
 	public LocationFactoryContainer container;
 	
 	/**
-	 * Creates a factory for making {@link arcade.core.env.loc.Location} instances.
+	 * Creates a factory for making {@link PottsLocation} instances.
 	 */
-	public LocationFactory() {
+	public PottsLocationFactory() {
 		locations = new HashMap<>();
 	}
 	
 	/**
-	 * Container class for loading into {@link arcade.core.env.loc.LocationFactory}.
+	 * Container class for loading a {@link PottsLocation}.
 	 */
-	public static class LocationFactoryContainer {
-		final public ArrayList<LocationContainer> locations;
-		public LocationFactoryContainer() { locations = new ArrayList<>(); }
-	}
-	
-	/**
-	 * Container class for loading a {@link arcade.core.env.loc.Location}.
-	 */
-	public static class LocationContainer {
-		public final int id;
+	public static class PottsLocationContainer extends LocationContainer {
 		public final ArrayList<Voxel> voxels;
 		public final Voxel center;
 		public final EnumMap<Region, ArrayList<Voxel>> regions;
 		
-		public LocationContainer(int id, Voxel center, ArrayList<Voxel> voxels,
+		public PottsLocationContainer(int id, Voxel center, ArrayList<Voxel> voxels,
 								 EnumMap<Region, ArrayList<Voxel>> regions) {
-			this.id = id;
+			super(id);
 			this.center = center;
 			this.voxels = voxels;
 			this.regions = regions;
@@ -52,28 +45,20 @@ public abstract class LocationFactory {
 	}
 	
 	/**
-	 * Initializes the factory for the given series.
+	 * {@inheritDoc}
 	 * <p>
 	 * For series with no loader, a list of available centers is created based
 	 * on population settings.
 	 * For series with a loader, the specified file is loaded into the factory.
-	 * 
-	 * @param series  the simulation series
-	 * @param random  the random number generator
 	 */
 	public void initialize(Series series, MersenneTwisterFast random) {
 		if (series.loader != null && series.loader.loadLocations) { loadLocations(series); }
 		else { createLocations(series, random); }
 	}
 	
-	/**
-	 * Loads location containers into the factory container.
-	 *
-	 * @param series  the simulation series
-	 */
-	void loadLocations(Series series) {
+	public void loadLocations(Series series) {
 		// Load locations.
-		series.loader.load(this);
+		container = series.loader.loadLocations();
 		
 		// Map loaded container to factory.
 		for (LocationContainer locationContainer : container.locations) {
@@ -81,13 +66,7 @@ public abstract class LocationFactory {
 		}
 	}
 	
-	/**
-	 * Creates location containers from population settings.
-	 *
-	 * @param series  the simulation series
-	 * @param random  the random number generator
-	 */
-	void createLocations(Series series, MersenneTwisterFast random) {
+	public void createLocations(Series series, MersenneTwisterFast random) {
 		int m = 0;
 		
 		// Find largest distance between centers.
@@ -125,7 +104,7 @@ public abstract class LocationFactory {
 				}
 			}
 			
-			LocationContainer locationContainer = new LocationContainer(id, center, voxels, regions);
+			LocationContainer locationContainer = new PottsLocationContainer(id, center, voxels, regions);
 			locations.put(id, locationContainer);
 			id++;
 		}
@@ -248,6 +227,11 @@ public abstract class LocationFactory {
 		}
 	}
 	
+	public Location make(LocationContainer locationContainer, CellContainer cellContainer,
+				  MersenneTwisterFast random) {
+		return make((PottsLocationContainer)locationContainer, (PottsCellContainer)cellContainer, random);
+	}
+	
 	/**
 	 * Creates a location from the given containers.
 	 * 
@@ -256,7 +240,7 @@ public abstract class LocationFactory {
 	 * @param random  the random number generator
 	 * @return  a {@link arcade.core.env.loc.Location} object
 	 */
-	public Location make(LocationContainer locationContainer, CellContainer cellContainer,
+	public Location make(PottsLocationContainer locationContainer, PottsCellContainer cellContainer,
 						 MersenneTwisterFast random) {
 		// Parse location container.
 		int target = cellContainer.voxels;

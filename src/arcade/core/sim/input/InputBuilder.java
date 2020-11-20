@@ -10,8 +10,6 @@ import java.util.logging.Logger;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import static arcade.core.sim.Series.TARGET_SEPARATOR;
-import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
  * Custom builder for simulation setup XMLs.
@@ -43,25 +41,25 @@ public abstract class InputBuilder implements ContentHandler {
 	XMLReader xmlReader;
 	
 	/** List holding {@link arcade.core.sim.Series} instances */
-	ArrayList<Series> series;
+	protected ArrayList<Series> series;
 	
 	/** Tracker for document location */
 	Locator locator;
 	
 	/** Log for document events */
-	String log;
+	protected String log;
 	
 	/** Map of setup dictionaries */
-	HashMap<String, MiniBox> setupDicts;
+	protected HashMap<String, MiniBox> setupDicts;
 	
 	/** Map of setup lists of dictionaries */
-	HashMap<String, ArrayList<Box>> setupLists;
+	protected HashMap<String, ArrayList<Box>> setupLists;
 	
 	/** Container for default parameter values */
-	Box parameters;
+	protected Box parameters;
 	
 	/** {@code true} if run with visualization, {@code false otherwise} */
-	boolean isVis;
+	protected boolean isVis;
 	
 	/**
 	 * Creates a {@code Handler} using {@code SAXParserFactory}.
@@ -110,7 +108,7 @@ public abstract class InputBuilder implements ContentHandler {
 	 * @param atts  the attributes
 	 * @return  a dictionary
 	 */
-	MiniBox makeMiniBox(Attributes atts) {
+	protected MiniBox makeMiniBox(Attributes atts) {
 		MiniBox box = new MiniBox();
 		for (int i = 0; i < atts.getLength(); i++) { box.put(atts.getQName(i), atts.getValue(i)); }
 		return box;
@@ -122,7 +120,7 @@ public abstract class InputBuilder implements ContentHandler {
 	 * @param atts  the attributes
 	 * @return  a dictionary
 	 */
-	Box makeBox(Attributes atts) {
+	protected Box makeBox(Attributes atts) {
 		Box box = new Box();
 		for (int i = 0; i < atts.getLength(); i++) { box.add(atts.getQName(i), atts.getValue(i)); }
 		return box;
@@ -135,7 +133,7 @@ public abstract class InputBuilder implements ContentHandler {
 	public void ignorableWhitespace(char[] ch, int start, int length) { }
 	public void processingInstruction(String target, String data) { }
 	
-	private void log(String str) {
+	protected void log(String str) {
 		if (locator != null) { log += String.format("\t%4d | %s\n", locator.getLineNumber(), str); }
 	}
 	

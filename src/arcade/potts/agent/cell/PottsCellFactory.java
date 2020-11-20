@@ -2,16 +2,18 @@ package arcade.potts.agent.cell;
 
 import java.util.*;
 import arcade.core.sim.Series;
+import arcade.core.agent.cell.*;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
+import arcade.potts.agent.module.PottsModule;
 import static arcade.potts.sim.Potts.Term;
 import static arcade.core.agent.cell.Cell.State;
 import static arcade.core.agent.cell.Cell.Region;
-import static arcade.core.agent.module.Module.Phase;
+import static arcade.potts.agent.module.PottsModule.Phase;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
-public abstract class CellFactory {
+public abstract class PottsCellFactory implements CellFactory {
 	/** Map of population to critical values */
 	HashMap<Integer, EnumMap<Term, Double>> popToCriticals;
 	
@@ -46,9 +48,9 @@ public abstract class CellFactory {
 	public CellFactoryContainer container;
 	
 	/**
-	 * Creates a factory for making {@link arcade.core.agent.cell.Cell} instances.
+	 * Creates a factory for making {@link PottsCell} instances.
 	 */
-	public CellFactory() {
+	public PottsCellFactory() {
 		cells = new HashMap<>();
 		popToCriticals = new HashMap<>();
 		popToLambdas = new HashMap<>();
@@ -62,21 +64,9 @@ public abstract class CellFactory {
 	}
 	
 	/**
-	 * Container class for loading into {@link arcade.core.agent.cell.CellFactory}.
+	 * Container class for loading a {@link PottsCell}.
 	 */
-	public static class CellFactoryContainer {
-		final public ArrayList<CellContainer> cells;
-		public CellFactoryContainer() { cells = new ArrayList<>(); }
-	}
-	
-	/**
-	 * Container class for loading a {@link arcade.core.agent.cell.Cell}.
-	 */
-	public static class CellContainer {
-		public final int id;
-		public final int pop;
-		public final int age;
-		public final State state;
+	public static class PottsCellContainer extends CellContainer {
 		public final Phase phase;
 		public final int voxels;
 		public final EnumMap<Region, Integer> regionVoxels;
@@ -85,27 +75,24 @@ public abstract class CellFactory {
 		public final EnumMap<Region, Double> regionTargetVolume;
 		public final EnumMap<Region, Double> regionTargetSurface;
 		
-		public CellContainer(int id, int pop, int voxels) {
+		public PottsCellContainer(int id, int pop, int voxels) {
 			this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels, null, 0, 0, null, null);
 		}
 		
-		public CellContainer(int id, int pop, int voxels, EnumMap<Region, Integer> regionVoxels) {
+		public PottsCellContainer(int id, int pop, int voxels, EnumMap<Region, Integer> regionVoxels) {
 			this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels, regionVoxels, 0, 0, null, null);
 		}
 		
-		public CellContainer(int id, int pop, int age, State state, Phase phase, int voxels,
+		public PottsCellContainer(int id, int pop, int age, State state, Phase phase, int voxels,
 							 double targetVolume, double targetSurface) {
 			this(id, pop, age, state, phase, voxels, null, targetVolume, targetSurface, null, null);
 		}
 		
-		public CellContainer(int id, int pop, int age, State state, Phase phase, int voxels,
+		public PottsCellContainer(int id, int pop, int age, State state, Phase phase, int voxels,
 							 EnumMap<Region, Integer> regionVoxels,
 							 double targetVolume, double targetSurface,
 							 EnumMap<Region, Double> regionTargetVolume, EnumMap<Region, Double> regionTargetSurface) {
-			this.id = id;
-			this.pop = pop;
-			this.age = age;
-			this.state = state;
+			super(id, pop, age, state);
 			this.phase = phase;
 			this.voxels = voxels;
 			this.regionVoxels = regionVoxels;
@@ -117,12 +104,10 @@ public abstract class CellFactory {
 	}
 	
 	/**
-	 * Initializes the factory for the given series.
+	 * {@inheritDoc}
 	 * <p>
 	 * Regardless of loader, the population settings are parsed to get critical,
 	 * lambda, and adhesion values used for instantiating cells.
-	 * 
-	 * @param series  the simulation series
 	 */
 	public void initialize(Series series) {
 		parseValues(series);
@@ -209,14 +194,9 @@ public abstract class CellFactory {
 		}
 	}
 	
-	/**
-	 * Loads cell containers into the factory container.
-	 *
-	 * @param series  the simulation series
-	 */
-	void loadCells(Series series) {
+	public void loadCells(Series series) {
 		// Load cells.
-		series.loader.load(this);
+		container = series.loader.loadCells();
 		
 		// Population sizes.
 		HashMap<Integer, Integer> popToSize = new HashMap<>();
@@ -236,12 +216,7 @@ public abstract class CellFactory {
 		}
 	}
 	
-	/**
-	 * Creates cell containers from population settings.
-	 * 
-	 * @param series  the simulation series
-	 */
-	void createCells(Series series) {
+	public void createCells(Series series) {
 		int id = 1;
 		
 		// Create containers for each population.
@@ -269,7 +244,7 @@ public abstract class CellFactory {
 			}
 			
 			for (int i = 0; i < n; i++) {
-				CellContainer cellContainer = new CellContainer(id, pop, voxels, regionVoxels);
+				CellContainer cellContainer = new PottsCellContainer(id, pop, voxels, regionVoxels);
 				cells.put(id, cellContainer);
 				popToIDs.get(cellContainer.pop).add(cellContainer.id);
 				id++;
@@ -289,8 +264,9 @@ public abstract class CellFactory {
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
 	 * @param adhesion  the list of adhesion values
+	 * @return  a {@link PottsCell} object
 	 */
-	abstract Cell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
+	abstract PottsCell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
 						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion);
 	
 	/**
@@ -308,21 +284,25 @@ public abstract class CellFactory {
 	 * @param criticalsRegion  the map of critical values for regions
 	 * @param lambdasRegion  the map of lambda multipliers for regions
 	 * @param adhesionRegion  the map of adhesion values for regions
-	 * @return  a {@link arcade.core.agent.cell.Cell} object
+	 * @return  a {@link PottsCell} object
 	 */
-	abstract Cell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
+	abstract PottsCell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
 						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
 						   EnumMap<Region, EnumMap<Term, Double>> criticalsRegion, EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
 						   EnumMap<Region, EnumMap<Region, Double>> adhesionRegion);
 	
+	public Cell make(CellContainer cellContainer, Location location) {
+		return make((PottsCellContainer)cellContainer, location);
+	}
+	
 	/**
-	 * Create a {@link arcade.core.agent.cell.Cell} object in the given population.
+	 * Create a {@link PottsCell} object.
 	 *
 	 * @param cellContainer  the cell container
 	 * @param location  the cell location
-	 * @return  a {@link arcade.core.agent.cell.Cell} object
+	 * @return  a {@link PottsCell} object
 	 */
-	public Cell make(CellContainer cellContainer, Location location) {
+	private Cell make(PottsCellContainer cellContainer, Location location) {
 		int id = cellContainer.id;
 		int pop = cellContainer.pop;
 		int age = cellContainer.age;
@@ -336,7 +316,7 @@ public abstract class CellFactory {
 		double[] adhesion = popToAdhesion.get(pop).clone();
 		
 		// Make cell.
-		Cell cell;
+		PottsCell cell;
 		
 		if (popToRegions.get(pop)) {
 			// Initialize region arrays.
@@ -366,7 +346,7 @@ public abstract class CellFactory {
 		}
 		
 		// Update cell module.
-		cell.getModule().setPhase(phase);
+		((PottsModule)cell.getModule()).setPhase(phase);
 		
 		return cell;
 	}

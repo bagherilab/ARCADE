@@ -10,30 +10,29 @@ import sim.util.gui.ColorMap;
 /**
  * Visualization for simulation objects.
  * <p>
- * {@code Drawer} objects convert {@link arcade.core.sim.Potts},
- * {@link arcade.core.env.grid.Grid}, and {@link arcade.core.env.lat.Lattice} objects into 
+ * {@code Drawer} objects convert simulation objects into 
  * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> Portrayals,
  * which can then be displayed.
  */
 
 public abstract class Drawer implements Steppable {
 	/** Portrayal */
-	final Portrayal port;
+	protected final Portrayal port;
 	
 	/** Name of drawing */
-	String name;
+	protected String name;
 	
 	/** Color map for drawing */
-	final ColorMap map;
+	protected final ColorMap map;
 	
 	/** Length of the array (x direction) */
-	final int length;
+	protected final int length;
 	
 	/** Width of the array (y direction) */
-	final int width;
+	protected final int width;
 	
 	/** Height of the array (z direction) */
-	final int height;
+	protected final int height;
 	
 	/**
 	 * Creates a {@code Drawer} and attaches it to the panel.
@@ -46,7 +45,7 @@ public abstract class Drawer implements Steppable {
 	 * @param map  the color map for the array
 	 * @param bounds  the size of the drawer within the panel
 	 */
-	Drawer(Panel panel, String name, int length, int width, int height,
+	public Drawer(Panel panel, String name, int length, int width, int height,
 			ColorMap map, Rectangle2D.Double bounds) {
 		this.name = name;
 		this.length = length;
@@ -69,7 +68,7 @@ public abstract class Drawer implements Steppable {
 	 * 
 	 * @return  the portrayal
 	 */
-	abstract Portrayal makePort();
+	public abstract Portrayal makePort();
 	
 	/**
 	 * Invokes the specified get method.

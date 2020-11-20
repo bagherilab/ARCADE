@@ -5,13 +5,17 @@ import java.util.logging.Logger;
 import com.google.gson.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
+import arcade.core.agent.cell.CellFactory;
+import arcade.core.env.loc.LocationFactory;
+import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
+import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
 
-public class OutputLoader {
+public abstract class OutputLoader {
 	/** Logger for class */
 	private final static Logger LOGGER = Logger.getLogger(OutputLoader.class.getName());
 	
 	/** JSON representation */
-	final Gson gson;
+	protected Gson gson;
 	
 	/** {@link arcade.core.sim.Series} instance */
 	final Series series;
@@ -19,15 +23,28 @@ public class OutputLoader {
 	/** Prefix for loaded files */
 	final String prefix;
 	
+	/** JSON for cells */
+	String cellJson;
+	
+	/** JSON for locations */
+	String locationJson;
+	
+	/** {@code true} if cells are loaded, {@code false} otherwise */
+	final public boolean loadCells;
+	
+	/** {@code true} if locations are loaded, {@code false} otherwise */
+	final public boolean loadLocations;
+	
 	/**
 	 * Creates an {@code OutputLoader} for the series.
 	 *
 	 * @param series  the simulation series
 	 */
-	public OutputLoader(Series series, String prefix) {
+	public OutputLoader(Series series, String prefix, boolean loadCells, boolean loadLocations) {
 		this.series = series;
 		this.prefix = prefix;
-		gson = OutputDeserializer.makeGSON();
+		this.loadCells = loadCells;
+		this.loadLocations = loadLocations;
 	}
 	
 	/**
@@ -38,6 +55,22 @@ public class OutputLoader {
 	public void equip(Simulation sim) {
 		String seed = String.format("%04d", sim.getSeed());
 		String path = prefix.replace("(#)", seed);
+		if (loadCells) { this.cellJson = read(path + ".CELLS.json"); }
+		if (loadLocations) {  this.locationJson = read(path + ".LOCATIONS.json"); }
+	}
+	
+	/**
+	 * Loads the JSON for a {@link arcade.core.env.loc.LocationFactory}
+	 */
+	public LocationFactoryContainer loadLocations() {
+		return gson.fromJson(locationJson, LocationFactoryContainer.class);
+	}
+	
+	/**
+	 * Loads the JSON for a {@link arcade.core.agent.cell.CellFactory}
+	 */
+	public CellFactoryContainer loadCells() {
+		return gson.fromJson(cellJson, CellFactoryContainer.class);
 	}
 	
 	/**

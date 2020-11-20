@@ -1,7 +1,9 @@
 package arcade.potts.vis;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
+import arcade.core.vis.Panel;
 import sim.engine.*;
 import sim.field.continuous.Continuous2D;
 import sim.field.grid.DoubleGrid2D;
@@ -17,9 +19,11 @@ import sim.portrayal.network.SpatialNetwork2D;
 import sim.util.Double2D;
 import sim.util.gui.ColorMap;
 import arcade.potts.sim.Potts;
-import arcade.core.sim.Simulation;
 import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
+import arcade.core.vis.*;
+import arcade.potts.agent.module.PottsModule;
+import arcade.potts.sim.PottsSimulation;
 import static arcade.core.agent.cell.Cell.Region;
 
 public abstract class PottsDrawer extends Drawer {
@@ -174,7 +178,7 @@ public abstract class PottsDrawer extends Drawer {
 		}
 		
 		public void step(SimState state) {
-			Simulation sim = (Simulation)state;
+			PottsSimulation sim = (PottsSimulation)state;
 			Grid agents = sim.getAgents();
 			Potts potts = sim.getPotts();
 			Cell cell;
@@ -214,7 +218,7 @@ public abstract class PottsDrawer extends Drawer {
 							_to[a][b] = cell == null ? 0 : cell.getPop();
 							break;
 						case DRAW_STATE:
-							_to[a][b] = cell == null ? 0 : cell.getModule().getPhase().ordinal();
+							_to[a][b] = cell == null ? 0 : ((PottsModule)cell.getModule()).getPhase().ordinal();
 							break;
 						case DRAW_VOLUME:
 							_to[a][b] = cell == null ? 0 : cell.getVolume();
@@ -364,7 +368,7 @@ public abstract class PottsDrawer extends Drawer {
 		}
 		
 		public void step(SimState state) {
-			Simulation sim = (Simulation)state;
+			PottsSimulation sim = (PottsSimulation)state;
 			field.clear();
 			graph.clear();
 			

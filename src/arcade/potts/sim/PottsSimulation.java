@@ -2,19 +2,31 @@ package arcade.potts.sim;
 
 import java.util.*;
 import sim.engine.*;
-import arcade.core.agent.cell.Cell;
-import arcade.core.agent.cell.CellFactory;
-import arcade.core.env.grid.*;
+import arcade.core.sim.Simulation;
+import arcade.core.sim.Series;
+import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.loc.Location;
-import arcade.core.env.loc.LocationFactory;
 import arcade.core.util.MiniBox;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.env.grid.PottsGrid;
+import arcade.potts.env.loc.PottsLocationFactory;
 import static arcade.core.agent.cell.CellFactory.CellContainer;
 import static arcade.core.env.loc.LocationFactory.LocationContainer;
 
 public abstract class PottsSimulation extends SimState implements Simulation {
+	/** Stepping order for simulation */
+	public enum Ordering {
+		/** Stepping order for potts */
+		POTTS,
+		
+		/** Stepping order for cells */
+		CELLS
+	}
+	
 	/** {@link arcade.core.sim.Series} object containing this simulation */
-	final Series series;
+	final PottsSeries series;
 	
 	/** Random number generator seed for this simulation */
 	final int seed;
@@ -36,7 +48,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	 */
 	public PottsSimulation(long seed, Series series) {
 		super(seed);
-		this.series = series;
+		this.series = (PottsSeries)series;
 		this.seed = (int)seed - Series.SEED_OFFSET;
 	}
 	
@@ -98,7 +110,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	
 	public void setupPotts() {
 		potts = makePotts();
-		schedule.scheduleRepeating(1, ORDERING_POTTS, potts);
+		schedule.scheduleRepeating(1, Ordering.POTTS.ordinal(), potts);
 	}
 	
 	/**
@@ -106,14 +118,14 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	 *
 	 * @return  a {@link arcade.core.env.loc.Location} factory
 	 */
-	abstract LocationFactory makeLocationFactory();
+	abstract PottsLocationFactory makeLocationFactory();
 	
 	/**
 	 * Creates a factory for cells.
 	 * 
 	 * @return  a {@link arcade.core.agent.cell.Cell} factory
 	 */
-	abstract CellFactory makeCellFactory();
+	abstract PottsCellFactory makeCellFactory();
 	
 	public void setupAgents() {
 		// Initialize grid for agents.
@@ -121,8 +133,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 		potts.grid = agents;
 		
 		// Create factory for locations.
-		LocationFactory locationFactory = makeLocationFactory();
-		CellFactory cellFactory = makeCellFactory();
+		PottsLocationFactory locationFactory = makeLocationFactory();
+		PottsCellFactory cellFactory = makeCellFactory();
 		
 		// Initialize factories.
 		locationFactory.initialize(series, random);
@@ -143,7 +155,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 				
 				// Make the location and cell.
 				Location location = locationFactory.make(locationContainer, cellContainer, random);
-				Cell cell = cellFactory.make(cellContainer, location);
+				PottsCell cell = (PottsCell)cellFactory.make(cellContainer, location);
 				
 				// Add, initialize, and schedule the cell.
 				agents.addObject(i, cell);

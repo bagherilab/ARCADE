@@ -2,13 +2,13 @@ package arcade.potts.agent.module;
 
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
-import arcade.core.agent.cell.Cell;
-import arcade.core.agent.module.Module;
 import arcade.core.util.MiniBox;
 import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSimulation;
+import arcade.potts.agent.cell.PottsCell;
 import static arcade.core.agent.cell.Cell.Region;
 
-public abstract class ApoptosisModule implements Module {
+public abstract class ApoptosisModule extends PottsModule {
 	/** Average duration of early apoptosis (ticks) */
 	final double DURATION_EARLY;
 	
@@ -30,19 +30,13 @@ public abstract class ApoptosisModule implements Module {
 	/** Ratio of critical volume for apoptosis */
 	static final double APOPTOSIS_CHECKPOINT = 0.1;
 	
-	/** Code for phase */
-	Phase phase;
-	
-	/** {@link arcade.core.agent.cell.Cell} object */
-	final Cell cell;
-	
 	/**
-	 * Creates a {@code ApoptosisModule} for the given {@link Cell}.
+	 * Creates a apoptosis {@code Module} for the given {@link PottsCell}.
 	 *
-	 * @param cell  the {@link Cell} the module is associated with
+	 * @param cell  the {@link PottsCell} the module is associated with
 	 */
-	public ApoptosisModule(Cell cell) {
-		this.cell = cell;
+	public ApoptosisModule(PottsCell cell) {
+		super(cell);
 		this.phase = Phase.APOPTOTIC_EARLY;
 		
 		MiniBox parameters = cell.getParameters();
@@ -63,16 +57,12 @@ public abstract class ApoptosisModule implements Module {
 		/**
 		 * Creates a {@link ApoptosisModule} using simple phases.
 		 *
-		 * @param cell  the {@link Cell} the module is associated with
+		 * @param cell  the {@link PottsCell} the module is associated with
 		 */
-		public Simple(Cell cell) { super(cell); }
+		public Simple(PottsCell cell) { super(cell); }
 		
 		public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
 	}
-	
-	public Phase getPhase() { return phase; }
-	
-	public void setPhase(Phase phase) { this.phase = phase; }
 	
 	/**
 	 * Calls the step method for the current simple phase.
@@ -165,7 +155,7 @@ public abstract class ApoptosisModule implements Module {
 	 * @param sim  the simulation instance
 	 */
 	void removeCell(Simulation sim) {
-		Potts potts = sim.getPotts();
+		Potts potts = ((PottsSimulation)sim).getPotts();
 		
 		// Clear the location.
 		cell.getLocation().clear(potts.IDS, potts.REGIONS);

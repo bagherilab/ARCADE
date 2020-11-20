@@ -2,8 +2,8 @@ package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 
-public class LocationFactory3D extends LocationFactory {
-	public LocationFactory3D() { super(); }
+public class PottsLocationFactory3D extends PottsLocationFactory {
+	public PottsLocationFactory3D() { super(); }
 	
 	int convert(double volume) {
 		int cbrt = (int)Math.ceil(Math.cbrt(volume));

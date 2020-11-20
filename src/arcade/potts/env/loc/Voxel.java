@@ -1,6 +1,14 @@
 package arcade.potts.env.loc;
 
+import java.util.Comparator;
+
 public final class Voxel {
+	/** Comparator for voxels */
+	public static final Comparator<Voxel> VOXEL_COMPARATOR = (v1, v2) ->
+			v1.z != v2.z ? Integer.compare(v1.z, v2.z) :
+					v1.x != v2.x ? Integer.compare(v1.x, v2.x) :
+							Integer.compare(v1.y, v2.y);
+	
 	/** Voxel x coordinate */
 	public final int x;
 	

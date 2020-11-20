@@ -4,7 +4,7 @@ import sim.engine.*;
 import arcade.core.sim.Simulation;
 import arcade.core.sim.Series;
 import arcade.core.vis.*;
-import static arcade.core.vis.ColorMaps.*;
+import static arcade.potts.vis.PottsColorMaps.*;
 
 public class PottsVisualization extends Visualization {
 	/** Maximum horizontal size of panel */
@@ -23,7 +23,7 @@ public class PottsVisualization extends Visualization {
 	final int HEIGHT;
 	
 	/** Color maps for the simulation */
-	final ColorMaps maps;
+	final PottsColorMaps maps;
 	
 	/** Horizontal size of the panels */
 	final int HORIZONTAL_SIZE;
@@ -41,7 +41,7 @@ public class PottsVisualization extends Visualization {
 		HEIGHT = series._height;
 		
 		// Get color maps.
-		maps = new ColorMaps(series);
+		maps = new PottsColorMaps(series);
 		
 		// Calculate sizing of panels.
 		int horizontal, vertical;

@@ -16,17 +16,17 @@ import sim.display.*;
 
 public abstract class Visualization extends GUIState {
 	/** List of panels in the visualization */
-	Panel[] panels;
+	protected Panel[] panels;
 	
 	/** List of drawers in the visualization */
-	Drawer[] drawers;
+	protected Drawer[] drawers;
 	
 	/**
 	 * Creates a {@code Visualization} for the given simulation.
 	 * 
 	 * @param state  the simulation state instance
 	 */
-	Visualization(SimState state) { super(state); }
+	protected Visualization(SimState state) { super(state); }
 	
 	/**
 	 * Sets the inspector to get state property methods.
@@ -47,14 +47,14 @@ public abstract class Visualization extends GUIState {
 	 * 
 	 * @return  the list of panels
 	 */
-	abstract Panel[] createPanels();
+	protected abstract Panel[] createPanels();
 	
 	/**
 	 * Creates drawers for the visualization.
 	 * 
 	 * @return  the list of drawers
 	 */
-	abstract Drawer[] createDrawers();
+	protected abstract Drawer[] createDrawers();
 	
 	/**
 	 * Creates a bounding box for panels.
@@ -65,7 +65,7 @@ public abstract class Visualization extends GUIState {
 	 * @param v  the vertical size of the bounding box
 	 * @return  the bounding box
 	 */
-	static Rectangle2D.Double getBox(int x, int y, int h, int v) {
+	protected static Rectangle2D.Double getBox(int x, int y, int h, int v) {
 		return new Rectangle2D.Double(x, y, h, v);
 	}
 	

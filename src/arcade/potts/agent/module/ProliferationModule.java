@@ -2,15 +2,15 @@ package arcade.potts.agent.module;
 
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
-import arcade.core.agent.cell.Cell;
-import arcade.core.agent.module.Module;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSimulation;
+import arcade.potts.agent.cell.PottsCell;
 import static arcade.core.agent.cell.Cell.State;
 import static arcade.core.agent.cell.Cell.Region;
 
-public abstract class ProliferationModule implements Module {
+public abstract class ProliferationModule extends PottsModule {
 	/** Average duration of G1 phase (ticks) */
 	final double DURATION_G1;
 	
@@ -47,22 +47,16 @@ public abstract class ProliferationModule implements Module {
 	/** Basal rate of apoptosis (ticks^-1) */
 	final double BASAL_APOPTOSIS_RATE;
 	
-	/** Code for phase */
-	Phase phase;
-	
-	/** {@link arcade.core.agent.cell.Cell} object */
-	final Cell cell;
-	
 	/** {@code true} if cell is arrested in a phase, {@code false} otherwise */
 	boolean isArrested;
 	
 	/**
-	 * Creates a {@code ProliferationModule} for the given {@link Cell}.
+	 * Creates a proliferation {@code Module} for the given {@link PottsCell}.
 	 * 
-	 * @param cell  the {@link Cell} the module is associated with
+	 * @param cell  the {@link PottsCell} the module is associated with
 	 */
-	public ProliferationModule(Cell cell) {
-		this.cell = cell;
+	public ProliferationModule(PottsCell cell) {
+		super(cell);
 		this.phase = Phase.PROLIFERATIVE_G1;
 		
 		MiniBox parameters = cell.getParameters();
@@ -86,16 +80,12 @@ public abstract class ProliferationModule implements Module {
 		/**
 		 * Creates a {@link ProliferationModule} using simple phases.
 		 * 
-		 * @param cell  the {@link Cell} the module is associated with
+		 * @param cell  the {@link PottsCell} the module is associated with
 		 */
-		public Simple(Cell cell) { super(cell); }
+		public Simple(PottsCell cell) { super(cell); }
 		
 		public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
 	}
-	
-	public Phase getPhase() { return phase; }
-	
-	public void setPhase(Phase phase) { this.phase = phase; }
 	
 	/**
 	 * Calls the step method for the current simple phase.
@@ -269,7 +259,7 @@ public abstract class ProliferationModule implements Module {
 	 * @param sim  the simulation instance
 	 */
 	void addCell(MersenneTwisterFast random, Simulation sim) {
-		Potts potts = sim.getPotts();
+		Potts potts = ((PottsSimulation)sim).getPotts();
 		
 		// Split current location.
 		Location newLocation = cell.getLocation().split(random);
@@ -279,7 +269,7 @@ public abstract class ProliferationModule implements Module {
 		
 		// Create and schedule new cell.
 		int newID = sim.getID();
-		Cell newCell = cell.make(newID, State.PROLIFERATIVE, newLocation);
+		PottsCell newCell = (PottsCell)cell.make(newID, State.PROLIFERATIVE, newLocation);
 		sim.getAgents().addObject(newID, newCell);
 		newCell.reset(potts.IDS, potts.REGIONS);
 		newCell.schedule(sim.getSchedule());

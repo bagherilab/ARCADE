@@ -90,6 +90,8 @@ public interface Cell extends Steppable {
 	
 	/**
 	 * Gets the cell population parameters.
+	 * 
+	 * @return  a dictionary of parameters
 	 */
 	MiniBox getParameters();
 	
@@ -211,38 +213,4 @@ public interface Cell extends Steppable {
 	 * @param schedule  the simulation schedule
 	 */
 	void schedule(Schedule schedule);
-	
-	/**
-	 * Sets the target volume and surface for the cell.
-	 * 
-	 * @param volume  the target volume
-	 * @param surface  the target surface
-	 */
-	void setTargets(double volume, double surface);
-	
-	/**
-	 * Sets the target volume and surface for a region
-	 * 
-	 * @param region  the region
-	 * @param volume  the target volume
-	 * @param surface  the target surface
-	 */
-	void setTargets(Region region, double volume, double surface);
-	
-	/**
-	 * Updates target volume and surface area.
-	 * 
-	 * @param rate  the rate of change
-	 * @param scale  the relative final size scaling
-	 */
-	void updateTarget(double rate, double scale);
-	
-	/**
-	 * Updates target volume and surface area for a region.
-	 * 
-	 * @param region  the region
-	 * @param rate  the rate of change
-	 * @param scale  the relative final size scaling
-	 */
-	void updateTarget(Region region, double rate, double scale);
 }

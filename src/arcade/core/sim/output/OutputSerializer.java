@@ -13,11 +13,11 @@ public final class OutputSerializer {
 	/** Regular expression for integers */
 	public static final String INTEGER_REGEX = "^(-?\\d+)$|^(-?\\d+E-?\\d+)$";
 	
-	static Gson makeGSON() {
+	public static GsonBuilder makeGSONBuilder() {
 		GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
 		gsonBuilder.registerTypeAdapter(Series.class, new SeriesSerializer());
 		gsonBuilder.registerTypeAdapter(MiniBox.class, new MiniBoxSerializer());
-		return gsonBuilder.create();
+		return gsonBuilder;
 	}
 	
 	static class MiniBoxSerializer implements JsonSerializer<MiniBox> {

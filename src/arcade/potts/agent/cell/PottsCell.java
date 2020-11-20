@@ -5,9 +5,11 @@ import java.util.EnumMap;
 import arcade.core.sim.Simulation;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.module.Module;
-import arcade.potts.agent.module.*;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
+import arcade.potts.agent.module.*;
+import arcade.potts.env.loc.PottsLocation;
+import static arcade.potts.sim.PottsSimulation.Ordering;
 import static arcade.potts.sim.Potts.Term;
 
 public abstract class PottsCell implements Cell {
@@ -15,7 +17,7 @@ public abstract class PottsCell implements Cell {
 	Stoppable stopper;
 	
 	/** Cell {@link arcade.core.env.loc.Location} object */
-	private final Location location;
+	private final PottsLocation location;
 	
 	/** Unique cell ID */
 	final int id;
@@ -137,7 +139,7 @@ public abstract class PottsCell implements Cell {
 		this.pop = pop;
 		this.age = age;
 		this.hasRegions = hasRegions;
-		this.location = location;
+		this.location = (PottsLocation)location;
 		this.parameters = parameters;
 		this.criticals = criticals.clone();
 		this.lambdas = lambdas.clone();
@@ -206,12 +208,38 @@ public abstract class PottsCell implements Cell {
 	
 	public double getCriticalSurface(Region region) { return (hasRegions && criticalsRegion.containsKey(region) ? criticalsRegion.get(region).get(Term.SURFACE) : 0); }
 	
+	/**
+	 * Gets the lambda for the given term.
+	 *
+	 * @param term  the term of the Hamiltonian
+	 * @return  the lambda value
+	 */
 	public double getLambda(Term term) { return lambdas.get(term); }
 	
+	/**
+	 * Gets the lambda for the given term and region.
+	 *
+	 * @param term  the term of the Hamiltonian
+	 * @param region  the region
+	 * @return  the lambda value
+	 */
 	public double getLambda(Term term, Region region) { return (hasRegions && lambdasRegion.containsKey(region) ? lambdasRegion.get(region).get(term) : Double.NaN); }
 	
+	/**
+	 * Gets the adhesion to a cell of the given population.
+	 *
+	 * @param pop  the cell population
+	 * @return  the adhesion value
+	 */
 	public double getAdhesion(int pop) { return adhesion[pop]; }
 	
+	/**
+	 * Gets the adhesion between two regions.
+	 *
+	 * @param region1  the first region
+	 * @param region2  the second region
+	 * @return  the adhesion value
+	 */
 	public double getAdhesion(Region region1, Region region2) { return (hasRegions && adhesionRegion.containsKey(region1) && adhesionRegion.containsKey(region2) ? adhesionRegion.get(region1).get(region2) : Double.NaN); }
 	
 	public void stop() { stopper.stop(); }
@@ -242,9 +270,15 @@ public abstract class PottsCell implements Cell {
 	}
 	
 	public void schedule(Schedule schedule) {
-		stopper = schedule.scheduleRepeating(this, Simulation.ORDERING_CELLS, 1);
+		stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);
 	}
 	
+	/**
+	 * Initializes the potts arrays with the cell.
+	 *
+	 * @param ids  the {@link arcade.potts.sim.Potts} array for ids
+	 * @param regions  the {@link arcade.potts.sim.Potts} array for regions   
+	 */
 	public void initialize(int[][][] ids, int[][][] regions) {
 		location.update(id, ids, regions);
 		
@@ -261,6 +295,12 @@ public abstract class PottsCell implements Cell {
 		}
 	}
 	
+	/**
+	 * Resets the potts arrays with the cell.
+	 *
+	 * @param ids  the {@link arcade.potts.sim.Potts} array for ids
+	 * @param regions  the {@link arcade.potts.sim.Potts} array for regions   
+	 */
 	public void reset(int[][][] ids, int[][][] regions) {
 		location.update(id, ids, regions);
 		
@@ -290,16 +330,35 @@ public abstract class PottsCell implements Cell {
 		module.step(simstate.random, sim);
 	}
 	
+	/**
+	 * Sets the target volume and surface for the cell.
+	 * 
+	 * @param volume  the target volume
+	 * @param surface  the target surface
+	 */
 	public void setTargets(double volume, double surface) {
 		targetVolume = volume;
 		targetSurface = surface;
 	}
 	
+	/**
+	 * Sets the target volume and surface for a region
+	 * 
+	 * @param region  the region
+	 * @param volume  the target volume
+	 * @param surface  the target surface
+	 */
 	public void setTargets(Region region, double volume, double surface) {
 		targetRegionVolumes.put(region, volume);
 		targetRegionSurfaces.put(region, surface);
 	}
 	
+	/**
+	 * Updates target volume and surface area.
+	 * 
+	 * @param rate  the rate of change
+	 * @param scale  the relative final size scaling
+	 */
 	public void updateTarget(double rate, double scale) {
 		double volume = getVolume();
 		if (hasRegions) { targetRegionVolumes.put(Region.DEFAULT, targetRegionVolumes.get(Region.DEFAULT) - targetVolume); }
@@ -321,6 +380,13 @@ public abstract class PottsCell implements Cell {
 		}
 	}
 	
+	/**
+	 * Updates target volume and surface area for a region.
+	 * 
+	 * @param region  the region
+	 * @param rate  the rate of change
+	 * @param scale  the relative final size scaling
+	 */
 	public void updateTarget(Region region, double rate, double scale) {
 		double regionVolume = getVolume(region);
 		targetVolume -= targetRegionVolumes.get(region);

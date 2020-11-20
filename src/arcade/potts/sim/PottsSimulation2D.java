@@ -11,11 +11,11 @@ public class PottsSimulation2D extends PottsSimulation {
 	
 	Potts makePotts() { return new Potts2D(series); }
 	
-	LocationFactory makeLocationFactory() {
-		return new LocationFactory2D();
+	PottsLocationFactory makeLocationFactory() {
+		return new PottsLocationFactory3D();
 	}
 	
-	CellFactory makeCellFactory() {
-		return new CellFactory2D();
+	PottsCellFactory makeCellFactory() {
+		return new PottsCellFactory2D();
 	}
 }

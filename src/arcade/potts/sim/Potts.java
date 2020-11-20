@@ -3,8 +3,8 @@ package arcade.potts.sim;
 import java.util.HashSet;
 import sim.engine.*;
 import ec.util.MersenneTwisterFast;
-import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
+import arcade.potts.agent.cell.PottsCell;
 import static arcade.core.agent.cell.Cell.Region;
 
 public abstract class Potts implements Steppable {
@@ -48,7 +48,7 @@ public abstract class Potts implements Steppable {
 	 *
 	 * @param series  the simulation series
 	 */
-	public Potts(Series series) {
+	public Potts(PottsSeries series) {
 		// Creates potts arrays.
 		IDS = new int[series._height][series._length][series._width];
 		REGIONS = new int[series._height][series._length][series._width];
@@ -231,7 +231,7 @@ public abstract class Potts implements Steppable {
 		
 		if (r < p) {
 			REGIONS[z][x][y] = targetRegion;
-			Cell c = getCell(id);
+			PottsCell c = getCell(id);
 			c.getLocation().remove(Region.values()[sourceRegion], x, y, z);
 			c.getLocation().add(Region.values()[targetRegion], x, y, z);
 		}
@@ -243,8 +243,8 @@ public abstract class Potts implements Steppable {
 	 * @param id  the cell id
 	 * @return  the {@link arcade.core.agent.cell.Cell} object, {@code null} if id is zero
 	 */
-	Cell getCell(int id) {
-		if (id > 0) { return (Cell)grid.getObjectAt(id); }
+	PottsCell getCell(int id) {
+		if (id > 0) { return (PottsCell)grid.getObjectAt(id); }
 		else { return null; }
 	}
 	
@@ -313,7 +313,7 @@ public abstract class Potts implements Steppable {
 	 */
 	double getVolume(int id, int change) {
 		if (id == 0) { return 0; }
-		Cell c = getCell(id);
+		PottsCell c = getCell(id);
 		double volume = c.getVolume();
 		double targetVolume = c.getTargetVolume();
 		double lambda = c.getLambda(Term.VOLUME);
@@ -331,7 +331,7 @@ public abstract class Potts implements Steppable {
 	double getVolume(int id, int t, int change) {
 		Region region = Region.values()[t];
 		if (id == 0 || region == Region.DEFAULT) { return 0; }
-		Cell c = getCell(id);
+		PottsCell c = getCell(id);
 		double volume = c.getVolume(region);
 		double targetVolume = c.getTargetVolume(region);
 		double lambda = c.getLambda(Term.VOLUME, region);
@@ -374,7 +374,7 @@ public abstract class Potts implements Steppable {
 	 */
 	double getSurface(int id, int change) {
 		if (id == 0) { return 0; }
-		Cell c = getCell(id);
+		PottsCell c = getCell(id);
 		double surface = c.getSurface();
 		double targetSurface = c.getTargetSurface();
 		double lambda = c.getLambda(Term.SURFACE);
@@ -392,7 +392,7 @@ public abstract class Potts implements Steppable {
 	double getSurface(int id, int t, int change) {
 		Region region = Region.values()[t];
 		if (id == 0 || region == Region.DEFAULT) { return 0; }
-		Cell c = getCell(id);
+		PottsCell c = getCell(id);
 		double surface = c.getSurface(region);
 		double targetSurface = c.getTargetSurface(region);
 		double lambda = c.getLambda(Term.SURFACE, region);

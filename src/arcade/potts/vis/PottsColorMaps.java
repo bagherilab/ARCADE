@@ -1,4 +1,4 @@
-package arcade.core.vis;
+package arcade.potts.vis;
 
 import java.awt.*;
 import arcade.core.sim.Series;
@@ -11,7 +11,7 @@ import arcade.core.util.MiniBox;
  * Uses {@link arcade.core.util.Colors} to define mappings.
  */
 
-class ColorMaps {
+public class PottsColorMaps {
 	static final Colors MAP_STATE = new Colors(
 			new Color[]{
 					new Color(0,0,0),
@@ -72,7 +72,7 @@ class ColorMaps {
 	 * 
 	 * @param series  the simulation series
 	 */
-	ColorMaps(Series series) {
+	PottsColorMaps(Series series) {
 		double volume = 0;
 		for (MiniBox box : series._populations.values()) {
 			if (box.getDouble("CRITICAL_VOLUME") > volume) {
