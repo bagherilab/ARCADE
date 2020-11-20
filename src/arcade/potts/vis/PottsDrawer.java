@@ -1,4 +1,4 @@
-package arcade.vis;
+package arcade.potts.vis;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -16,11 +16,11 @@ import sim.portrayal.network.SimpleEdgePortrayal2D;
 import sim.portrayal.network.SpatialNetwork2D;
 import sim.util.Double2D;
 import sim.util.gui.ColorMap;
-import arcade.sim.Potts;
-import arcade.sim.Simulation;
-import arcade.agent.cell.Cell;
-import arcade.env.grid.Grid;
-import static arcade.agent.cell.Cell.*;
+import arcade.potts.sim.Potts;
+import arcade.core.sim.Simulation;
+import arcade.core.agent.cell.Cell;
+import arcade.core.env.grid.Grid;
+import static arcade.core.agent.cell.Cell.Region;
 
 public abstract class PottsDrawer extends Drawer {
 	DoubleGrid2D array;

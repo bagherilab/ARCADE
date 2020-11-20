@@ -1,7 +1,10 @@
-package arcade.sim;
+package arcade.potts.sim;
 
-import arcade.agent.cell.*;
-import arcade.env.loc.*;
+import arcade.core.sim.Series;
+import arcade.core.agent.cell.CellFactory;
+import arcade.core.env.loc.LocationFactory;
+import arcade.potts.agent.cell.*;
+import arcade.potts.env.loc.*;
 
 public class PottsSimulation3D extends PottsSimulation {
 	public PottsSimulation3D(long seed, Series series) { super(seed, series); }

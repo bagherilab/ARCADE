@@ -1,9 +1,9 @@
-package arcade.env.loc;
+package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import static arcade.sim.Potts3D.*;
-import static arcade.env.loc.Location.*;
+import static arcade.potts.sim.Potts3D.*;
+import static arcade.core.env.loc.Location.*;
 
 public interface Location3D {
 	Direction[] DIRECTIONS = new Direction[] {

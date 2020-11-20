@@ -1,16 +1,15 @@
-package arcade.env.loc;
+package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.EnumMap;
 import ec.util.MersenneTwisterFast;
-import arcade.sim.Series;
-import arcade.sim.Simulation;
-import arcade.util.MiniBox;
-import static arcade.agent.cell.Cell.*;
-import static arcade.env.loc.Location.Voxel;
-import static arcade.agent.cell.CellFactory.CellContainer;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import static arcade.core.agent.cell.Cell.*;
+import static arcade.core.agent.cell.CellFactory.CellContainer;
 
 public abstract class LocationFactory {
 	/** Map of id to location */
@@ -20,14 +19,14 @@ public abstract class LocationFactory {
 	public LocationFactoryContainer container;
 	
 	/**
-	 * Creates a factory for making {@link arcade.env.loc.Location} instances.
+	 * Creates a factory for making {@link arcade.core.env.loc.Location} instances.
 	 */
 	public LocationFactory() {
 		locations = new HashMap<>();
 	}
 	
 	/**
-	 * Container class for loading into {@link arcade.env.loc.LocationFactory}.
+	 * Container class for loading into {@link arcade.core.env.loc.LocationFactory}.
 	 */
 	public static class LocationFactoryContainer {
 		final public ArrayList<LocationContainer> locations;
@@ -35,7 +34,7 @@ public abstract class LocationFactory {
 	}
 	
 	/**
-	 * Container class for loading a {@link arcade.env.loc.Location}.
+	 * Container class for loading a {@link arcade.core.env.loc.Location}.
 	 */
 	public static class LocationContainer {
 		public final int id;
@@ -255,7 +254,7 @@ public abstract class LocationFactory {
 	 * @param locationContainer  the location container
 	 * @param cellContainer  the cell container
 	 * @param random  the random number generator
-	 * @return  a {@link arcade.env.loc.Location} object
+	 * @return  a {@link arcade.core.env.loc.Location} object
 	 */
 	public Location make(LocationContainer locationContainer, CellContainer cellContainer,
 						 MersenneTwisterFast random) {

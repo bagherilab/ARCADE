@@ -1,4 +1,4 @@
-package arcade.env.loc;
+package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashMap;

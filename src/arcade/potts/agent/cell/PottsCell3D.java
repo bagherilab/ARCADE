@@ -1,9 +1,9 @@
-package arcade.agent.cell;
+package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
-import arcade.env.loc.Location;
-import arcade.util.MiniBox;
-import static arcade.sim.Potts.Term;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
+import static arcade.potts.sim.Potts.Term;
 
 public class PottsCell3D extends PottsCell {
 	/** Multiplier for calculating surface area from volume */
@@ -17,7 +17,7 @@ public class PottsCell3D extends PottsCell {
 	 *
 	 * @param id  the cell ID
 	 * @param pop  the cell population index
-	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param location  the {@link arcade.core.env.loc.Location} of the cell
 	 * @param parameters  the dictionary of parameters
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
@@ -35,7 +35,7 @@ public class PottsCell3D extends PottsCell {
 	 *
 	 * @param id  the cell ID
 	 * @param pop  the cell population index
-	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param location  the {@link arcade.core.env.loc.Location} of the cell
 	 * @param parameters  the dictionary of parameters
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
@@ -58,7 +58,7 @@ public class PottsCell3D extends PottsCell {
 	 * @param pop  the cell population index
 	 * @param state  the cell state
 	 * @param age  the cell age (in ticks)
-	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param location  the {@link arcade.core.env.loc.Location} of the cell
 	 * @param parameters  the dictionary of parameters
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers

@@ -1,8 +1,9 @@
-package arcade.env.grid;
+package arcade.potts.env.grid;
 
 import java.util.HashMap;
 import sim.util.Bag;
-import arcade.agent.cell.Cell;
+import arcade.core.env.grid.Grid;
+import arcade.core.agent.cell.Cell;
 
 public class PottsGrid implements Grid {
 	/** Map of ID to object */
@@ -12,7 +13,7 @@ public class PottsGrid implements Grid {
 	final Bag allObjects;
 	
 	/**
-	 * Creates a {@link arcade.env.grid.Grid} for potts.
+	 * Creates a {@link arcade.core.env.grid.Grid} for potts.
 	 */
 	public PottsGrid() {
 		objects = new HashMap<>();

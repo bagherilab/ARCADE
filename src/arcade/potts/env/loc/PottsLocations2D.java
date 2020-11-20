@@ -1,8 +1,8 @@
-package arcade.env.loc;
+package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import static arcade.agent.cell.Cell.Region;
+import static arcade.core.agent.cell.Cell.Region;
 
 public class PottsLocations2D extends PottsLocations implements Location2D {
 	/**

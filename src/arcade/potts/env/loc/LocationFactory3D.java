@@ -1,7 +1,6 @@
-package arcade.env.loc;
+package arcade.potts.env.loc;
 
 import java.util.ArrayList;
-import arcade.env.loc.Location.Voxel;
 
 public class LocationFactory3D extends LocationFactory {
 	public LocationFactory3D() { super(); }

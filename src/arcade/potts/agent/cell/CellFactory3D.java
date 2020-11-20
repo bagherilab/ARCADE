@@ -1,11 +1,12 @@
-package arcade.agent.cell;
+package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
-import arcade.env.loc.Location;
-import arcade.util.MiniBox;
-import static arcade.agent.cell.Cell.State;
-import static arcade.agent.cell.Cell.Region;
-import static arcade.sim.Potts.Term;
+import arcade.core.agent.cell.Cell;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
+import static arcade.core.agent.cell.Cell.State;
+import static arcade.core.agent.cell.Cell.Region;
+import static arcade.potts.sim.Potts.Term;
 
 public class CellFactory3D extends CellFactory {
 	public CellFactory3D() { super(); }

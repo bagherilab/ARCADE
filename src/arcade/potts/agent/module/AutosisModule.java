@@ -1,13 +1,14 @@
-package arcade.agent.module;
+package arcade.potts.agent.module;
 
 import ec.util.MersenneTwisterFast;
-import arcade.sim.Simulation;
-import arcade.agent.cell.PottsCell;
+import arcade.core.sim.Simulation;
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.module.Module;
 
 public class AutosisModule implements Module  {
-	final PottsCell cell;
+	final Cell cell;
 	
-	public AutosisModule(PottsCell cell) { this.cell = cell; }
+	public AutosisModule(Cell cell) { this.cell = cell; }
 	
 	public Phase getPhase() { return Phase.UNDEFINED; }
 	

@@ -1,15 +1,15 @@
-package arcade.agent.cell;
+package arcade.potts.agent.cell;
 
 import java.util.*;
-import arcade.sim.Series;
-import arcade.env.loc.Location;
-import arcade.util.MiniBox;
-import static arcade.sim.Potts.Term;
-import static arcade.agent.cell.Cell.State;
-import static arcade.agent.cell.Cell.Region;
-import static arcade.agent.module.Module.Phase;
-import static arcade.sim.Series.TARGET_SEPARATOR;
-import static arcade.util.MiniBox.TAG_SEPARATOR;
+import arcade.core.sim.Series;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
+import static arcade.potts.sim.Potts.Term;
+import static arcade.core.agent.cell.Cell.State;
+import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.agent.module.Module.Phase;
+import static arcade.core.sim.Series.TARGET_SEPARATOR;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public abstract class CellFactory {
 	/** Map of population to critical values */
@@ -46,7 +46,7 @@ public abstract class CellFactory {
 	public CellFactoryContainer container;
 	
 	/**
-	 * Creates a factory for making {@link arcade.agent.cell.Cell} instances.
+	 * Creates a factory for making {@link arcade.core.agent.cell.Cell} instances.
 	 */
 	public CellFactory() {
 		cells = new HashMap<>();
@@ -62,7 +62,7 @@ public abstract class CellFactory {
 	}
 	
 	/**
-	 * Container class for loading into {@link arcade.agent.cell.CellFactory}.
+	 * Container class for loading into {@link arcade.core.agent.cell.CellFactory}.
 	 */
 	public static class CellFactoryContainer {
 		final public ArrayList<CellContainer> cells;
@@ -70,7 +70,7 @@ public abstract class CellFactory {
 	}
 	
 	/**
-	 * Container class for loading a {@link arcade.agent.cell.Cell}.
+	 * Container class for loading a {@link arcade.core.agent.cell.Cell}.
 	 */
 	public static class CellContainer {
 		public final int id;
@@ -278,13 +278,13 @@ public abstract class CellFactory {
 	}
 	
 	/**
-	 * Creates a {@link arcade.agent.cell.Cell} object.
+	 * Creates a {@link arcade.core.agent.cell.Cell} object.
 	 *
 	 * @param id  the cell ID
 	 * @param pop  the cell population index
 	 * @param state  the cell state
 	 * @param age  the cell age (in ticks)
-	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param location  the {@link arcade.core.env.loc.Location} of the cell
 	 * @param parameters  the dictionary of parameters
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
@@ -294,13 +294,13 @@ public abstract class CellFactory {
 						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion);
 	
 	/**
-	 * Creates a {@link arcade.agent.cell.Cell} object with regions.
+	 * Creates a {@link arcade.core.agent.cell.Cell} object with regions.
 	 *
 	 * @param id  the cell ID
 	 * @param pop  the cell population index
 	 * @param state  the cell state
 	 * @param age  the cell age (in ticks)
-	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param location  the {@link arcade.core.env.loc.Location} of the cell
 	 * @param parameters  the dictionary of parameters
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
@@ -308,7 +308,7 @@ public abstract class CellFactory {
 	 * @param criticalsRegion  the map of critical values for regions
 	 * @param lambdasRegion  the map of lambda multipliers for regions
 	 * @param adhesionRegion  the map of adhesion values for regions
-	 * @return  a {@link arcade.agent.cell.Cell} object
+	 * @return  a {@link arcade.core.agent.cell.Cell} object
 	 */
 	abstract Cell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
 						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
@@ -316,11 +316,11 @@ public abstract class CellFactory {
 						   EnumMap<Region, EnumMap<Region, Double>> adhesionRegion);
 	
 	/**
-	 * Create a {@link arcade.agent.cell.Cell} object in the given population.
+	 * Create a {@link arcade.core.agent.cell.Cell} object in the given population.
 	 *
 	 * @param cellContainer  the cell container
 	 * @param location  the cell location
-	 * @return  a {@link arcade.agent.cell.Cell} object
+	 * @return  a {@link arcade.core.agent.cell.Cell} object
 	 */
 	public Cell make(CellContainer cellContainer, Location location) {
 		int id = cellContainer.id;

@@ -1,11 +1,11 @@
-package arcade.sim;
+package arcade.potts.sim;
 
 import java.util.HashSet;
 import sim.engine.*;
 import ec.util.MersenneTwisterFast;
-import arcade.agent.cell.Cell;
-import arcade.env.grid.Grid;
-import static arcade.agent.cell.Cell.Region;
+import arcade.core.agent.cell.Cell;
+import arcade.core.env.grid.Grid;
+import static arcade.core.agent.cell.Cell.Region;
 
 public abstract class Potts implements Steppable {
 	public enum Term {
@@ -238,10 +238,10 @@ public abstract class Potts implements Steppable {
 	}
 	
 	/**
-	 * Gets the {@link arcade.agent.cell.Cell} object for the given id.
+	 * Gets the {@link arcade.core.agent.cell.Cell} object for the given id.
 	 *
 	 * @param id  the cell id
-	 * @return  the {@link arcade.agent.cell.Cell} object, {@code null} if id is zero
+	 * @return  the {@link arcade.core.agent.cell.Cell} object, {@code null} if id is zero
 	 */
 	Cell getCell(int id) {
 		if (id > 0) { return (Cell)grid.getObjectAt(id); }

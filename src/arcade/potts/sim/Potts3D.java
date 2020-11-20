@@ -1,8 +1,8 @@
-package arcade.sim;
+package arcade.potts.sim;
 
 import java.util.HashSet;
-import arcade.agent.cell.Cell;
-import static arcade.agent.cell.Cell.Region;
+import arcade.core.agent.cell.Cell;
+import static arcade.core.agent.cell.Cell.Region;
 
 public class Potts3D extends Potts {
 	/** Number of neighbors */

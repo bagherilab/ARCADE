@@ -1,12 +1,14 @@
-package arcade.agent.module;
+package arcade.potts.agent.module;
 
 import ec.util.MersenneTwisterFast;
-import arcade.sim.Simulation;
-import arcade.sim.Potts;
-import arcade.agent.cell.Cell;
-import arcade.env.loc.Location;
-import arcade.util.MiniBox;
-import static arcade.agent.cell.Cell.*;
+import arcade.core.sim.Simulation;
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.module.Module;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
+import arcade.potts.sim.Potts;
+import static arcade.core.agent.cell.Cell.State;
+import static arcade.core.agent.cell.Cell.Region;
 
 public abstract class ProliferationModule implements Module {
 	/** Average duration of G1 phase (ticks) */
@@ -48,7 +50,7 @@ public abstract class ProliferationModule implements Module {
 	/** Code for phase */
 	Phase phase;
 	
-	/** {@link arcade.agent.cell.Cell} object */
+	/** {@link arcade.core.agent.cell.Cell} object */
 	final Cell cell;
 	
 	/** {@code true} if cell is arrested in a phase, {@code false} otherwise */

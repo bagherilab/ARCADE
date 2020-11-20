@@ -1,13 +1,14 @@
-package arcade.agent.module;
+package arcade.potts.agent.module;
 
 import ec.util.MersenneTwisterFast;
-import arcade.sim.Simulation;
-import arcade.sim.Potts;
-import arcade.agent.cell.Cell;
-import arcade.util.MiniBox;
-import static arcade.agent.cell.Cell.*;
+import arcade.core.sim.Simulation;
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.module.Module;
+import arcade.core.util.MiniBox;
+import arcade.potts.sim.Potts;
+import static arcade.core.agent.cell.Cell.Region;
 
-public abstract class ApoptosisModule implements Module  {
+public abstract class ApoptosisModule implements Module {
 	/** Average duration of early apoptosis (ticks) */
 	final double DURATION_EARLY;
 	
@@ -32,7 +33,7 @@ public abstract class ApoptosisModule implements Module  {
 	/** Code for phase */
 	Phase phase;
 	
-	/** {@link arcade.agent.cell.Cell} object */
+	/** {@link arcade.core.agent.cell.Cell} object */
 	final Cell cell;
 	
 	/**

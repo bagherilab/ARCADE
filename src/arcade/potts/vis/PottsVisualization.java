@@ -1,9 +1,10 @@
-package arcade.vis;
+package arcade.potts.vis;
 
 import sim.engine.*;
-import arcade.sim.Simulation;
-import arcade.sim.Series;
-import static arcade.vis.ColorMaps.*;
+import arcade.core.sim.Simulation;
+import arcade.core.sim.Series;
+import arcade.core.vis.*;
+import static arcade.core.vis.ColorMaps.*;
 
 public class PottsVisualization extends Visualization {
 	/** Maximum horizontal size of panel */

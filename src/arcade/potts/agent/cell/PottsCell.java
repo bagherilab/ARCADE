@@ -1,19 +1,20 @@
-package arcade.agent.cell;
+package arcade.potts.agent.cell;
 
 import sim.engine.*;
 import java.util.EnumMap;
-import arcade.sim.Simulation;
-import arcade.agent.module.Module;
-import arcade.agent.module.*;
-import arcade.env.loc.Location;
-import arcade.util.MiniBox;
-import static arcade.sim.Potts.Term;
+import arcade.core.sim.Simulation;
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.module.Module;
+import arcade.potts.agent.module.*;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
+import static arcade.potts.sim.Potts.Term;
 
 public abstract class PottsCell implements Cell {
 	/** Stopper used to stop this agent from being stepped in the schedule */
 	Stoppable stopper;
 	
-	/** Cell {@link arcade.env.loc.Location} object */
+	/** Cell {@link arcade.core.env.loc.Location} object */
 	private final Location location;
 	
 	/** Unique cell ID */
@@ -75,7 +76,7 @@ public abstract class PottsCell implements Cell {
 	 *
 	 * @param id  the cell ID
 	 * @param pop  the cell population index
-	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param location  the {@link arcade.core.env.loc.Location} of the cell
 	 * @param parameters  the dictionary of parameters
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
@@ -94,7 +95,7 @@ public abstract class PottsCell implements Cell {
 	 * 
 	 * @param id  the cell ID
 	 * @param pop  the cell population index
-	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param location  the {@link arcade.core.env.loc.Location} of the cell
 	 * @param parameters  the dictionary of parameters
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers
@@ -118,7 +119,7 @@ public abstract class PottsCell implements Cell {
 	 * @param pop  the cell population index
 	 * @param state  the cell state
 	 * @param age  the cell age (in ticks)
-	 * @param location  the {@link arcade.env.loc.Location} of the cell
+	 * @param location  the {@link arcade.core.env.loc.Location} of the cell
 	 * @param parameters  the dictionary of parameters
 	 * @param criticals  the map of critical values
 	 * @param lambdas  the map of lambda multipliers

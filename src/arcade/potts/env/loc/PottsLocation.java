@@ -1,12 +1,13 @@
-package arcade.env.loc;
+package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
-import arcade.sim.Simulation;
-import static arcade.agent.cell.Cell.Region;
+import arcade.core.sim.Simulation;
+import arcade.core.env.loc.Location;
+import static arcade.core.agent.cell.Cell.Region;
 
 public abstract class PottsLocation implements Location {
 	/** Difference between split voxel numbers */
@@ -238,7 +239,7 @@ public abstract class PottsLocation implements Location {
 	 * @param voxelsA  the list of voxels for this location
 	 * @param voxelsB  the list of voxels for the split location
 	 * @param random  the seeded random number generator
-	 * @return  a {@link arcade.env.loc.Location} object with the split voxels
+	 * @return  a {@link arcade.core.env.loc.Location} object with the split voxels
 	 */
 	Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
 							MersenneTwisterFast random) {

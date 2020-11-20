@@ -1,35 +1,35 @@
-package arcade.sim;
+package arcade.potts.sim;
 
 import java.util.*;
 import sim.engine.*;
-import arcade.agent.cell.Cell;
-import arcade.agent.cell.CellFactory;
-import arcade.env.grid.*;
-import arcade.env.lat.Lattice;
-import arcade.env.loc.Location;
-import arcade.env.loc.LocationFactory;
-import arcade.util.MiniBox;
-import static arcade.agent.cell.CellFactory.CellContainer;
-import static arcade.env.loc.LocationFactory.LocationContainer;
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.cell.CellFactory;
+import arcade.core.env.grid.*;
+import arcade.core.env.lat.Lattice;
+import arcade.core.env.loc.Location;
+import arcade.core.env.loc.LocationFactory;
+import arcade.core.util.MiniBox;
+import static arcade.core.agent.cell.CellFactory.CellContainer;
+import static arcade.core.env.loc.LocationFactory.LocationContainer;
 
 public abstract class PottsSimulation extends SimState implements Simulation {
-	/** {@link arcade.sim.Series} object containing this simulation */
+	/** {@link arcade.core.sim.Series} object containing this simulation */
 	final Series series;
 	
 	/** Random number generator seed for this simulation */
 	final int seed;
 	
-	/** {@link arcade.sim.Potts} object for the simulation */
+	/** {@link arcade.potts.sim.Potts} object for the simulation */
 	Potts potts;
 	
-	/** {@link arcade.env.grid.Grid} containing agents in the simulation */
+	/** {@link arcade.core.env.grid.Grid} containing agents in the simulation */
 	Grid agents;
 	
 	/** Cell ID tracker */
 	int id;
 	
 	/**
-	 * Simulation instance for a {@link arcade.sim.Series} for given random seed.
+	 * Simulation instance for a {@link arcade.core.sim.Series} for given random seed.
 	 * 
 	 * @param seed  the random seed for random number generator
 	 * @param series  the simulation series
@@ -90,9 +90,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	}
 	
 	/**
-	 * Creates the {@link arcade.sim.Potts} object for the simulation.
+	 * Creates the {@link arcade.potts.sim.Potts} object for the simulation.
 	 * 
-	 * @return  a {@link arcade.sim.Potts} object
+	 * @return  a {@link arcade.potts.sim.Potts} object
 	 */
 	abstract Potts makePotts();
 	
@@ -104,14 +104,14 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	/**
 	 * Creates a factory for locations.
 	 *
-	 * @return  a {@link arcade.env.loc.Location} factory
+	 * @return  a {@link arcade.core.env.loc.Location} factory
 	 */
 	abstract LocationFactory makeLocationFactory();
 	
 	/**
 	 * Creates a factory for cells.
 	 * 
-	 * @return  a {@link arcade.agent.cell.Cell} factory
+	 * @return  a {@link arcade.core.agent.cell.Cell} factory
 	 */
 	abstract CellFactory makeCellFactory();
 	
