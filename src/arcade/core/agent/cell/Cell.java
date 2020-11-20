@@ -4,7 +4,6 @@ import sim.engine.*;
 import arcade.core.agent.module.Module;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
-import static arcade.core.sim.Potts.Term;
 
 public interface Cell extends Steppable {
 	/** Cell state codes */
@@ -185,40 +184,6 @@ public interface Cell extends Steppable {
 	double getCriticalSurface(Region region);
 	
 	/**
-	 * Gets the lambda for the given term.
-	 * 
-	 * @param term  the term of the Hamiltonian
-	 * @return  the lambda value
-	 */
-	double getLambda(Term term);
-	
-	/**
-	 * Gets the lambda for the given term and region.
-	 *
-	 * @param term  the term of the Hamiltonian
-	 * @param region  the region
-	 * @return  the lambda value
-	 */
-	double getLambda(Term term, Region region);
-	
-	/**
-	 * Gets the adhesion to a cell of the given population.
-	 * 
-	 * @param pop  the cell population
-	 * @return  the adhesion value
-	 */
-	double getAdhesion(int pop);
-	
-	/**
-	 * Gets the adhesion between two regions.
-	 * 
-	 * @param region1  the first region
-	 * @param region2  the second region
-	 * @return  the adhesion value
-	 */
-	double getAdhesion(Region region1, Region region2);
-	
-	/**
 	 * Sets the cell state.
 	 *
 	 * @param state  the cell state
@@ -246,22 +211,6 @@ public interface Cell extends Steppable {
 	 * @param schedule  the simulation schedule
 	 */
 	void schedule(Schedule schedule);
-	
-	/**
-	 * Initializes the potts arrays with the cell.
-	 * 
-	 * @param ids  the {@link arcade.sim.Potts} array for ids
-	 * @param regions  the {@link arcade.sim.Potts} array for regions   
-	 */
-	void initialize(int[][][] ids, int[][][] regions);
-	
-	/**
-	 * Resets the potts arrays with the cell.
-	 *
-	 * @param ids  the {@link arcade.sim.Potts} array for ids
-	 * @param regions  the {@link arcade.sim.Potts} array for regions   
-	 */
-	void reset(int[][][] ids, int[][][] regions);
 	
 	/**
 	 * Sets the target volume and surface for the cell.

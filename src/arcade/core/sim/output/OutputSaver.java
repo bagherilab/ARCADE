@@ -5,11 +5,9 @@ import java.util.logging.Logger;
 import com.google.gson.*;
 import sim.engine.*;
 import arcade.core.sim.Series;
-import arcade.core.sim.Potts;
 import arcade.core.sim.Simulation;
-import arcade.core.env.grid.Grid;
 
-public class OutputSaver implements Steppable {
+public abstract class OutputSaver implements Steppable {
 	/** Logger for class */
 	private final static Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
 	
@@ -24,12 +22,6 @@ public class OutputSaver implements Steppable {
 	
 	/** {@link arcade.core.sim.Simulation} instance */
 	Simulation sim;
-	
-	/** {@link arcade.core.env.grid.Grid} instance containing agents */
-	Grid agents;
-	
-	/** {@link arcade.sim.Potts} instance */
-	Potts potts;
 	
 	/**
 	 * Creates an {@code OutputSaver} for the series.
@@ -49,8 +41,6 @@ public class OutputSaver implements Steppable {
 	public void equip(Simulation sim) {
 		this.prefix = String.format("%s_%04d", series.getPrefix(), sim.getSeed());
 		this.sim = sim;
-		this.potts = sim.getPotts();
-		this.agents = sim.getAgents();
 	}
 	
 	/**
@@ -66,13 +56,7 @@ public class OutputSaver implements Steppable {
 	 * 
 	 * @param tick  the tick
 	 */
-	public void save(double tick) {
-		String agentsPath = prefix + String.format("_%06d.%s.%s",(int)tick, "CELLS", "json");
-		write(agentsPath, format(gson.toJson(agents)));
-		
-		String pottsPath = prefix + String.format("_%06d.%s.%s", (int)tick, "LOCATIONS", "json");
-		write(pottsPath, format(gson.toJson(potts)));
-	}
+	abstract void save(double tick);
 	
 	/**
 	 * Steps through cell rules.

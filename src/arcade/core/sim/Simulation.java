@@ -22,12 +22,6 @@ import arcade.core.env.grid.Grid;
  */
 
 public interface Simulation {
-	/** Stepping order for potts */
-	int ORDERING_POTTS = 0;
-	
-	/** Stepping order for cells */
-	int ORDERING_CELLS = 1;
-	
 	/**
 	 * Gets the {@link arcade.core.sim.Series} object for the current simulation.
 	 * <p>
@@ -60,13 +54,6 @@ public interface Simulation {
 	int getID();
 	
 	/**
-	 * Gets the {@link arcade.sim.Potts} object for the current simulation.
-	 * 
-	 * @return  the {@link arcade.sim.Potts} instance
-	 */
-	Potts getPotts();
-	
-	/**
 	 * Gets the {@link arcade.core.env.grid.Grid} object holding the agents
 	 *
 	 * @return  the {@link arcade.core.env.grid.Grid} object
@@ -80,15 +67,6 @@ public interface Simulation {
 	 * @return  the {@link arcade.core.env.lat.Lattice} object
 	 */
 	Lattice getEnvironment(String key);
-	
-	/**
-	 * Sets up the potts object.
-	 * <p>
-	 * The concrete implementing class calls this and other {@code setup}
-	 * methods from the MASON library {@code start()} method, which is called
-	 * before the schedule starts stepping the simulation.
-	 */
-	void setupPotts();
 	
 	/**
 	 * Sets up the agents in the grid for the simulation.
