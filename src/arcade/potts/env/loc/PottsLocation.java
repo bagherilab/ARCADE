@@ -10,6 +10,36 @@ import arcade.core.env.loc.Location;
 import static arcade.core.agent.cell.Cell.Region;
 
 public abstract class PottsLocation implements Location {
+	/** Location split directions */
+	enum Direction {
+		/** Direction along the yz plane (y = 0, z = 0) */
+		YZ_PLANE,
+		
+		/** Direction along the zx plane (z = 0, x = 0) */
+		ZX_PLANE,
+		
+		/** Direction along the xy plane (x = 0, y = 0) */
+		XY_PLANE,
+		
+		/** Direction along the positive xy axis (x = y, z = 0) */
+		POSITIVE_XY,
+		
+		/** Direction along the negative xy axis (x = -y, z = 0) */
+		NEGATIVE_XY,
+		
+		/** Direction along the positive yz axis (y = z, x = 0) */
+		POSITIVE_YZ,
+		
+		/** Direction along the negative yz axis (y = -z, x = 0) */
+		NEGATIVE_YZ,
+		
+		/** Direction along the positive zx axis (z = x, y = 0) */
+		POSITIVE_ZX,
+		
+		/** Direction along the negative zx axis (z = -x, y = 0) */
+		NEGATIVE_ZX
+	}
+	
 	/** Difference between split voxel numbers */
 	final static private int BALANCE_DIFFERENCE = 2;
 	
@@ -33,6 +63,11 @@ public abstract class PottsLocation implements Location {
 		this.surface = calculateSurface();
 	}
 	
+	/**
+	 * Gets all voxels.
+	 * 
+	 * @return  the list of voxels.
+	 */
 	public ArrayList<Voxel> getVoxels() { return new ArrayList<>(voxels); }
 	
 	public EnumSet<Region> getRegions() { return null; }
@@ -45,6 +80,13 @@ public abstract class PottsLocation implements Location {
 	
 	public int getSurface(Region region) { return getSurface(); }
 	
+	/**
+	 * Adds a voxel at the given coordinates.
+	 * 
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
+	 */
 	public void add(int x, int y, int z) {
 		Voxel voxel = new Voxel(x, y, z);
 		if (!voxels.contains(voxel)) {
@@ -54,8 +96,23 @@ public abstract class PottsLocation implements Location {
 		}
 	}
 	
+	/**
+	 * Adds a voxel at the given coordinates for given region.
+	 * 
+	 * @param region  the voxel region
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
+	 */
 	public void add(Region region, int x, int y, int z) { add(x, y, z); }
 	
+	/**
+	 * Removes the voxel at the given coordinates.
+	 * 
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
+	 */
 	public void remove(int x, int y, int z) {
 		Voxel voxel = new Voxel(x, y, z);
 		if (voxels.contains(voxel)) {
@@ -65,27 +122,57 @@ public abstract class PottsLocation implements Location {
 		}
 	}
 	
+	/**
+	 * Removes the voxel at the given coordinates for given region.
+	 * 
+	 * @param region  the voxel region
+	 * @param x  the x coordinate
+	 * @param y  the y coordinate
+	 * @param z  the z coordinate
+	 */
 	public void remove(Region region, int x, int y, int z) { remove(x, y, z); }
 	
+	/**
+	 * Assigns the voxel at the given coordinates to the given region.
+	 * 
+	 * @param region  the voxel region
+	 * @param voxel  the voxel to assign
+	 */
 	public void assign(Region region, Voxel voxel) { }
 	
+	/**
+	 * Clears all voxel lists and arrays.
+	 * 
+	 * @param ids  the potts array for ids
+	 * @param regions  the potts array for regions
+	 */
 	public void clear(int[][][] ids, int[][][] regions) {
 		for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = 0; }
 		voxels.clear();
 	}
 	
+	/**
+	 * Updates the array for the location.
+	 * 
+	 * @param id  the location id
+	 * @param ids  the potts array for ids
+	 * @param regions  the potts array for regions
+	 */
 	public void update(int id, int[][][] ids, int[][][] regions) {
 		for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = id; }
 	}
 	
 	/**
-	 * {@inheritDoc}
+	 * Splits the location voxels into two lists.
 	 * <p>
 	 * The location are split along the direction with the shortest diameter.
 	 * The lists of locations are guaranteed to be connected, and generally will
 	 * be balanced in size.
 	 * One of the splits is assigned to the current location and the other is
 	 * returned.
+	 * 
+	 * @param random  the seeded random number generator
+	 * @return  a location with the split voxels
 	 */
 	public Location split(MersenneTwisterFast random) {
 		// Get center voxel.
@@ -108,6 +195,11 @@ public abstract class PottsLocation implements Location {
 		else { return separateVoxels(voxelsB, voxelsA, random); }
 	}
 	
+	/**
+	 * Gets the voxel at the center of the location.
+	 * 
+	 * @return  the center voxel, returns {@code null} if there are no voxels
+	 */
 	public Voxel getCenter() {
 		if (voxels.size() == 0) { return null; }
 		return new Voxel(getCenterX(), getCenterY(), getCenterZ());

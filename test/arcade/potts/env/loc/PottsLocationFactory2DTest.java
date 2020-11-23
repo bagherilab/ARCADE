@@ -1,22 +1,20 @@
-package arcade.env.loc;
+package arcade.potts.env.loc;
 
 import org.junit.*;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
-import arcade.sim.Simulation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.agent.cell.Cell.Region;
-import static arcade.env.loc.Location.Voxel;
-import static arcade.agent.cell.CellFactory.CellContainer;
-import static arcade.env.loc.LocationFactory.LocationContainer;
-import static arcade.env.loc.Location.VOXEL_COMPARATOR;
+import static arcade.core.agent.cell.Cell.Region;
+import static arcade.potts.agent.cell.PottsCellFactory.PottsCellContainer;
+import static arcade.potts.env.loc.PottsLocationFactory.PottsLocationContainer;
+import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
-public class LocationFactory2DTest {
+public class PottsLocationFactory2DTest {
 	final MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-	final LocationFactory2D factory = mock(LocationFactory2D.class, CALLS_REAL_METHODS);
+	final PottsLocationFactory2D factory = mock(PottsLocationFactory2D.class, CALLS_REAL_METHODS);
 	
 	@Test
 	public void convert_exactOddSquares_calculateValue() {
@@ -64,7 +62,7 @@ public class LocationFactory2DTest {
 		}
 		
 		voxels.add(new Voxel(0, 0, 0));
-		LocationFactory factory = new LocationFactory2D();
+		PottsLocationFactory factory = new PottsLocationFactory2D();
 		factory.increase(random, allVoxels, voxels, 5);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
@@ -94,7 +92,7 @@ public class LocationFactory2DTest {
 		}
 		
 		voxels.add(new Voxel(0, 0, 0));
-		LocationFactory factory = new LocationFactory2D();
+		PottsLocationFactory factory = new PottsLocationFactory2D();
 		factory.increase(random, allVoxels, voxels, 4);
 		
 		HashSet<Voxel> expected = new HashSet<>();
@@ -120,7 +118,7 @@ public class LocationFactory2DTest {
 		}
 		
 		voxels.add(new Voxel(0, 0, 0));
-		LocationFactory factory = new LocationFactory2D();
+		PottsLocationFactory factory = new PottsLocationFactory2D();
 		factory.increase(random, allVoxels, voxels, 5);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
@@ -144,7 +142,7 @@ public class LocationFactory2DTest {
 		voxels.add(new Voxel(-1, 0, 0));
 		voxels.add(new Voxel(0, -1, 0));
 		voxels.add(new Voxel(0, 1, 0));
-		LocationFactory factory = new LocationFactory2D();
+		PottsLocationFactory factory = new PottsLocationFactory2D();
 		factory.decrease(random, voxels, 1);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
@@ -166,7 +164,7 @@ public class LocationFactory2DTest {
 		voxels.add(new Voxel(-1, 0, 0));
 		voxels.add(new Voxel(0, -1, 0));
 		voxels.add(new Voxel(0, 1, 0));
-		LocationFactory factory = new LocationFactory2D();
+		PottsLocationFactory factory = new PottsLocationFactory2D();
 		factory.decrease(random, voxels, 3);
 		
 		HashSet<Voxel> expected = new HashSet<>();
@@ -185,7 +183,7 @@ public class LocationFactory2DTest {
 		ArrayList<Voxel> voxels = new ArrayList<>();
 		int n = 10;
 		for (int i = 0; i < n; i++) { voxels.add(new Voxel(i, (int)(Math.random()*10), 0)); }
-		LocationFactory factory = new LocationFactory2D();
+		PottsLocationFactory factory = new PottsLocationFactory2D();
 		PottsLocation location = factory.makeLocation(voxels);
 		assertTrue(location instanceof PottsLocation2D);
 		assertEquals(voxels, location.voxels);
@@ -196,7 +194,7 @@ public class LocationFactory2DTest {
 		ArrayList<Voxel> voxels = new ArrayList<>();
 		int n = 10;
 		for (int i = 0; i < n; i++) { voxels.add(new Voxel(i, (int)(Math.random()*10), 0)); }
-		LocationFactory factory = new LocationFactory2D();
+		PottsLocationFactory factory = new PottsLocationFactory2D();
 		PottsLocations location = factory.makeLocations(voxels);
 		assertTrue(location instanceof PottsLocations2D);
 		assertEquals(voxels, location.voxels);
@@ -204,21 +202,21 @@ public class LocationFactory2DTest {
 	
 	@Test
 	public void make_noRegion_createsLocation() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		Voxel center = new Voxel(0, 0, 0);
 		ArrayList<Voxel> voxels = factory.getPossible(center, 1);
 		
-		CellContainer cellContainer = new CellContainer(0, 0, 1);
-		LocationContainer locationContainer = new LocationContainer(0, center, voxels, null);
+		PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 1);
+		PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, null);
 		
-		Location location = factory.make(locationContainer, cellContainer, random);
+		PottsLocation location = (PottsLocation)factory.make(locationContainer, cellContainer, random);
 		assertTrue(location instanceof PottsLocation2D);
 		assertEquals(1, location.getVolume());
 	}
 	
 	@Test
 	public void make_withRegion_createsLocation() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		Voxel center = new Voxel(0, 0, 0);
 		ArrayList<Voxel> voxels = factory.getPossible(center, 1);
 		
@@ -230,10 +228,10 @@ public class LocationFactory2DTest {
 		regionTargetMap.put(Region.DEFAULT, 0);
 		regionTargetMap.put(Region.NUCLEUS, 1);
 		
-		CellContainer cellContainer = new CellContainer(0, 0, 1, regionTargetMap);
-		LocationContainer locationContainer = new LocationContainer(0, center, voxels, regionVoxelMap);
+		PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 1, regionTargetMap);
+		PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, regionVoxelMap);
 		
-		Location location = factory.make(locationContainer, cellContainer, random);
+		PottsLocation location = (PottsLocation)factory.make(locationContainer, cellContainer, random);
 		assertTrue(location instanceof PottsLocations2D);
 		assertEquals(1, location.getVolume());
 		assertEquals(0, location.getVolume(Region.DEFAULT));
@@ -242,14 +240,14 @@ public class LocationFactory2DTest {
 	
 	@Test
 	public void getPossible_givenZero_createsEmpty() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		ArrayList<Voxel> list = factory.getPossible(new Voxel(0, 0, 0), 0);
 		assertEquals(0, list.size());
 	}
 	
 	@Test
 	public void getPossible_givenSize_createsList() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		
 		int x = (int)(Math.random()*10);
 		int y = (int)(Math.random()*10);
@@ -270,7 +268,7 @@ public class LocationFactory2DTest {
 	
 	@Test
 	public void getCenters_threeSideExactEqualSize_createsCenters() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		ArrayList<Voxel> centers = factory.getCenters(8, 8, 1, 3);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
@@ -290,7 +288,7 @@ public class LocationFactory2DTest {
 	
 	@Test
 	public void getCenters_threeSideExactUnequalSize_createsCenters() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		ArrayList<Voxel> centers = factory.getCenters(11, 8, 1, 3);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
@@ -312,7 +310,7 @@ public class LocationFactory2DTest {
 	
 	@Test
 	public void getCenters_threeSideInexactEqualSize_createsCenters() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		ArrayList<Voxel> centers = factory.getCenters(7, 7, 1, 3);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
@@ -329,7 +327,7 @@ public class LocationFactory2DTest {
 	
 	@Test
 	public void getCenters_threeSideInexactUnequalSize_createsCenters() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		ArrayList<Voxel> centers = factory.getCenters(10, 7, 1, 3);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
@@ -347,7 +345,7 @@ public class LocationFactory2DTest {
 	
 	@Test
 	public void getCenters_fiveSideExactEqualSize_createsCenters() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		ArrayList<Voxel> centers = factory.getCenters(12, 12, 1, 5);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
@@ -367,7 +365,7 @@ public class LocationFactory2DTest {
 	
 	@Test
 	public void getCenters_fiveSideExactUnequalSize_createsCenters() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		ArrayList<Voxel> centers = factory.getCenters(17, 12, 1, 5);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
@@ -389,7 +387,7 @@ public class LocationFactory2DTest {
 	
 	@Test
 	public void getCenters_fiveSideInexactEqualSize_createsCenters() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		ArrayList<Voxel> centers = factory.getCenters(11, 11, 1, 5);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();
@@ -406,7 +404,7 @@ public class LocationFactory2DTest {
 	
 	@Test
 	public void getCenters_fiveSideInexactUnequalSize_createsCenters() {
-		LocationFactory2D factory = new LocationFactory2D();
+		PottsLocationFactory2D factory = new PottsLocationFactory2D();
 		ArrayList<Voxel> centers = factory.getCenters(16, 11, 1, 5);
 		
 		ArrayList<Voxel> expected = new ArrayList<>();

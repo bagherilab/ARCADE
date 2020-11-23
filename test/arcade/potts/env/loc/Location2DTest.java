@@ -1,12 +1,11 @@
-package arcade.env.loc;
+package arcade.potts.env.loc;
 
 import org.junit.*;
 import static org.junit.Assert.*;
 import java.util.*;
-import arcade.env.loc.Location.Voxel;
-import static arcade.env.loc.PottsLocation.*;
-import static arcade.env.loc.Location.VOXEL_COMPARATOR;
-import static arcade.agent.cell.Cell.Region;
+import static arcade.potts.env.loc.PottsLocation.Direction;
+import static arcade.potts.agent.cell.PottsCell.Region;
+import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public class Location2DTest {
 	static ArrayList<Voxel> voxelListForDiameters;

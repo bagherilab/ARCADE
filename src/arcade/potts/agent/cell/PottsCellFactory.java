@@ -42,7 +42,7 @@ public abstract class PottsCellFactory implements CellFactory {
 	public final HashMap<Integer, HashSet<Integer>> popToIDs;
 	
 	/** Map of id to cell */
-	public final HashMap<Integer, CellContainer> cells;
+	public final HashMap<Integer, PottsCellContainer> cells;
 	
 	/** Container for loaded cells */
 	public CellFactoryContainer container;
@@ -210,7 +210,7 @@ public abstract class PottsCellFactory implements CellFactory {
 		for (CellContainer cellContainer : container.cells) {
 			int pop = cellContainer.pop;
 			if (popToIDs.containsKey(pop) && popToIDs.get(pop).size() < popToSize.get(pop)) {
-				cells.put(cellContainer.id, cellContainer);
+				cells.put(cellContainer.id, (PottsCellContainer)cellContainer);
 				popToIDs.get(pop).add(cellContainer.id);
 			}
 		}
@@ -244,7 +244,7 @@ public abstract class PottsCellFactory implements CellFactory {
 			}
 			
 			for (int i = 0; i < n; i++) {
-				CellContainer cellContainer = new PottsCellContainer(id, pop, voxels, regionVoxels);
+				PottsCellContainer cellContainer = new PottsCellContainer(id, pop, voxels, regionVoxels);
 				cells.put(id, cellContainer);
 				popToIDs.get(cellContainer.pop).add(cellContainer.id);
 				id++;

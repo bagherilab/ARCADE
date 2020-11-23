@@ -6,6 +6,7 @@ import arcade.core.util.MiniBox;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.loc.PottsLocation;
 import static arcade.core.agent.cell.Cell.Region;
 
 public abstract class PottsModuleApoptosis extends PottsModule {
@@ -158,7 +159,7 @@ public abstract class PottsModuleApoptosis extends PottsModule {
 		Potts potts = ((PottsSimulation)sim).getPotts();
 		
 		// Clear the location.
-		cell.getLocation().clear(potts.IDS, potts.REGIONS);
+		((PottsLocation)cell.getLocation()).clear(potts.IDS, potts.REGIONS);
 		
 		// Remove the cell from the grid.
 		sim.getAgents().removeObject(cell.getID());

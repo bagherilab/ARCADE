@@ -45,7 +45,7 @@ public final class PottsOutputSerializer {
 			for (Object obj : src.grid.getAllObjects()) {
 				Cell cell = (Cell)obj;
 				JsonElement voxels = context.serialize(cell.getLocation());
-				JsonElement center = context.serialize(cell.getLocation().getCenter());
+				JsonElement center = context.serialize(((PottsLocation)cell.getLocation()).getCenter());
 				JsonObject location = new JsonObject();
 				location.addProperty("id", cell.getID());
 				location.add("center", center);

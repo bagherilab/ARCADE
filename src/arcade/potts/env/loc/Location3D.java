@@ -3,7 +3,7 @@ package arcade.potts.env.loc;
 import java.util.ArrayList;
 import java.util.HashMap;
 import static arcade.potts.sim.Potts3D.*;
-import static arcade.core.env.loc.Location.*;
+import static arcade.potts.env.loc.PottsLocation.Direction;
 
 public interface Location3D {
 	Direction[] DIRECTIONS = new Direction[] {

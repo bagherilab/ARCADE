@@ -5,10 +5,10 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
-import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.sim.*;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.loc.PottsLocation;
 import static arcade.core.agent.cell.Cell.Region;
 import static arcade.potts.agent.module.PottsModule.Phase;
 import static arcade.potts.agent.module.PottsModuleApoptosis.*;
@@ -173,7 +173,7 @@ public class PottsModuleApoptosisSimpleTest {
 			doReturn(parameters).when(cell).getParameters();
 			doReturn(true).when(cell).hasRegions();
 			
-			Location location = mock(Location.class);
+			PottsLocation location = mock(PottsLocation.class);
 			doReturn(location).when(cell).getLocation();
 			doNothing().when(location).clear(any(), any());
 			
@@ -194,7 +194,7 @@ public class PottsModuleApoptosisSimpleTest {
 			PottsCell cell = mock(PottsCell.class);
 			doReturn(parameters).when(cell).getParameters();
 			
-			Location location = mock(Location.class);
+			PottsLocation location = mock(PottsLocation.class);
 			doReturn(location).when(cell).getLocation();
 			doNothing().when(location).clear(any(), any());
 			
@@ -275,7 +275,7 @@ public class PottsModuleApoptosisSimpleTest {
 	
 	@Test
 	public void removeCell_called_removeObject() {
-		Location location = mock(Location.class);
+		PottsLocation location = mock(PottsLocation.class);
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
 		PottsSimulation sim = mock(PottsSimulation.class);

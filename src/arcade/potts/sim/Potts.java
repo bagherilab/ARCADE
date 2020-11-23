@@ -5,6 +5,7 @@ import sim.engine.*;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.loc.PottsLocation;
 import static arcade.core.agent.cell.Cell.Region;
 
 public abstract class Potts implements Steppable {
@@ -173,8 +174,8 @@ public abstract class Potts implements Steppable {
 			IDS[z][x][y] = targetID;
 			if (HAS_REGIONS) { REGIONS[z][x][y] = (targetID == 0 ? Region.UNDEFINED.ordinal() : Region.DEFAULT.ordinal()); }
 			
-			if (sourceID > 0) { getCell(sourceID).getLocation().remove(x, y, z); }
-			if (targetID > 0) { getCell(targetID).getLocation().add(x, y, z); }
+			if (sourceID > 0) { ((PottsLocation)getCell(sourceID).getLocation()).remove(x, y, z); }
+			if (targetID > 0) { ((PottsLocation)getCell(targetID).getLocation()).add(x, y, z); }
 		}
 	}
 	
@@ -232,8 +233,8 @@ public abstract class Potts implements Steppable {
 		if (r < p) {
 			REGIONS[z][x][y] = targetRegion;
 			PottsCell c = getCell(id);
-			c.getLocation().remove(Region.values()[sourceRegion], x, y, z);
-			c.getLocation().add(Region.values()[targetRegion], x, y, z);
+			((PottsLocation)c.getLocation()).remove(Region.values()[sourceRegion], x, y, z);
+			((PottsLocation)c.getLocation()).add(Region.values()[targetRegion], x, y, z);
 		}
 	}
 	

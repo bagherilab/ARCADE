@@ -1,15 +1,13 @@
-package arcade.env.loc;
+package arcade.potts.env.loc;
 
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.*;
 import ec.util.MersenneTwisterFast;
-import arcade.env.loc.Location.Voxel;
-import arcade.env.loc.PottsLocationTest.PottsLocationMock;
-import static arcade.agent.cell.Cell.Region;
-import static arcade.env.loc.PottsLocationTest.*;
-import static arcade.env.loc.Location.VOXEL_COMPARATOR;
+import static arcade.potts.agent.cell.PottsCell.Region;
+import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.env.loc.PottsLocationTest.*;
 
 public class PottsLocationsTest {
 	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;

@@ -1,12 +1,11 @@
-package arcade.env.loc;
+package arcade.potts.env.loc;
 
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.*;
 import ec.util.MersenneTwisterFast;
-import arcade.env.loc.Location.Voxel;
-import static arcade.agent.cell.Cell.Region;
+import static arcade.potts.agent.cell.PottsCell.Region;
 
 public class PottsLocations3DTest {
 	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;

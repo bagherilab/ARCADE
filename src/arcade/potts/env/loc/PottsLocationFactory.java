@@ -15,7 +15,7 @@ import static arcade.potts.agent.cell.PottsCellFactory.PottsCellContainer;
 
 public abstract class PottsLocationFactory implements LocationFactory {
 	/** Map of id to location */
-	public final HashMap<Integer, LocationContainer> locations;
+	public final HashMap<Integer, PottsLocationContainer> locations;
 	
 	/** Container for loaded locations */
 	public LocationFactoryContainer container;
@@ -62,7 +62,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 		
 		// Map loaded container to factory.
 		for (LocationContainer locationContainer : container.locations) {
-			locations.put(locationContainer.id, locationContainer);
+			locations.put(locationContainer.id, (PottsLocationContainer)locationContainer);
 		}
 	}
 	
@@ -104,7 +104,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 				}
 			}
 			
-			LocationContainer locationContainer = new PottsLocationContainer(id, center, voxels, regions);
+			PottsLocationContainer locationContainer = new PottsLocationContainer(id, center, voxels, regions);
 			locations.put(id, locationContainer);
 			id++;
 		}
@@ -258,7 +258,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 		else if (size > target) { decrease(random, voxels, target); }
 		
 		// Make location.
-		Location location;
+		PottsLocation location;
 		
 		// Add regions.
 		if (cellContainer.regionVoxels != null) {

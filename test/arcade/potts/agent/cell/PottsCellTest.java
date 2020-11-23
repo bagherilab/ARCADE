@@ -648,7 +648,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void initialize_withoutRegions_callsMethod() {
-		Location location = mock(PottsLocation.class);
+		PottsLocation location = mock(PottsLocation.class);
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, location, false);
 		int[][][] array = new int[1][3][3];
 		cell.initialize(array, null);
@@ -658,7 +658,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void initialize_withRegions_callsMethod() {
-		Location location = mock(PottsLocation.class);
+		PottsLocation location = mock(PottsLocation.class);
 		when(location.getRegions()).thenReturn(regionList);
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, location, true);
 		int[][][] array1 = new int[1][3][3];
@@ -672,7 +672,7 @@ public class PottsCellTest {
 	public void initialize_withoutRegions_updatesTargets() {
 		int volume = (int)(Math.random()*100);
 		int surface = (int)(Math.random()*100);
-		Location location = mock(PottsLocation.class);
+		PottsLocation location = mock(PottsLocation.class);
 		when(location.getVolume()).thenReturn(volume);
 		when(location.getSurface()).thenReturn(surface);
 		
@@ -797,7 +797,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void reset_withoutRegions_callsMethod() {
-		Location location = mock(PottsLocation.class);
+		PottsLocation location = mock(PottsLocation.class);
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, location, false);
 		int[][][] array = new int[1][3][3];
 		cell.initialize(array, null);
@@ -808,7 +808,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void reset_withRegions_callsMethod() {
-		Location location = mock(PottsLocation.class);
+		PottsLocation location = mock(PottsLocation.class);
 		when(location.getRegions()).thenReturn(regionList);
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, location, true);
 		int[][][] array1 = new int[1][3][3];

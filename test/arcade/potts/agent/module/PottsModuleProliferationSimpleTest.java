@@ -7,10 +7,10 @@ import java.lang.reflect.Field;
 import sim.engine.Schedule;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
-import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.sim.*;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.loc.PottsLocation;
 import static arcade.core.agent.cell.Cell.Region;
 import static arcade.core.agent.cell.Cell.State;
 import static arcade.potts.agent.module.PottsModule.Phase;
@@ -494,7 +494,7 @@ public class PottsModuleProliferationSimpleTest {
 	
 	@Test
 	public void addCell_called_addsObject() {
-		Location location = mock(Location.class);
+		PottsLocation location = mock(PottsLocation.class);
 		Potts potts = mock(Potts.class);
 		Grid grid = mock(Grid.class);
 		PottsSimulation sim = mock(PottsSimulation.class);
@@ -509,7 +509,7 @@ public class PottsModuleProliferationSimpleTest {
 		potts.IDS = new int[][][] { { { } } };
 		potts.REGIONS = new int[][][] { { { } } };
 		
-		Location newLocation = mock(Location.class);
+		PottsLocation newLocation = mock(PottsLocation.class);
 		PottsCell newCell = mock(PottsCell.class);
 		
 		doReturn(newCell).when(cell).make(eq(id), any(State.class), eq(newLocation));

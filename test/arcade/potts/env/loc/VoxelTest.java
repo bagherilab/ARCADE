@@ -1,8 +1,7 @@
-package arcade.env.loc;
+package arcade.potts.env.loc;
 
 import org.junit.*;
 import static org.junit.Assert.*;
-import arcade.env.loc.Location.Voxel;
 
 public class VoxelTest {
 	@Test

@@ -7,6 +7,7 @@ import arcade.core.util.MiniBox;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.loc.PottsLocation;
 import static arcade.core.agent.cell.Cell.State;
 import static arcade.core.agent.cell.Cell.Region;
 
@@ -262,7 +263,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
 		Potts potts = ((PottsSimulation)sim).getPotts();
 		
 		// Split current location.
-		Location newLocation = cell.getLocation().split(random);
+		Location newLocation = ((PottsLocation)cell.getLocation()).split(random);
 		
 		// Reset current cell.
 		cell.reset(potts.IDS, potts.REGIONS);
