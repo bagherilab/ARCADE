@@ -1,4 +1,4 @@
-package arcade.agent.cell;
+package arcade.potts.agent.cell;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -6,15 +6,17 @@ import static org.mockito.Mockito.*;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import sim.engine.*;
-import arcade.sim.PottsSimulation;
-import arcade.env.loc.*;
-import arcade.agent.module.*;
-import arcade.util.MiniBox;
-import static arcade.agent.cell.Cell.Region;
-import static arcade.agent.cell.Cell.State;
-import static arcade.agent.cell.CellFactoryTest.*;
-import static arcade.sim.Potts.Term;
-import static arcade.sim.Simulation.*;
+import arcade.core.env.loc.*;
+import arcade.core.agent.module.*;
+import arcade.core.util.MiniBox;
+import arcade.potts.sim.PottsSimulation;
+import arcade.potts.agent.module.*;
+import arcade.potts.env.loc.PottsLocation;
+import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.agent.cell.Cell.State;
+import static arcade.potts.sim.Potts.Term;
+import static arcade.potts.sim.PottsSimulation.Ordering;
+import static arcade.core.TestUtilities.*;
 
 public class PottsCellTest {
 	private static final double EPSILON = 1E-5;
@@ -55,7 +57,7 @@ public class PottsCellTest {
 		adhesionTo1 = Math.random();
 		adhesionTo2 = Math.random();
 		
-		_location = mock(Location.class);
+		_location = mock(PottsLocation.class);
 		regionList = EnumSet.of(Region.DEFAULT, Region.NUCLEUS);
 		when(_location.getRegions()).thenReturn(regionList);
 		
@@ -630,23 +632,23 @@ public class PottsCellTest {
 	public void schedule_validInput_callsMethod() {
 		Schedule schedule = spy(mock(Schedule.class));
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, false);
-		doReturn(mock(Stoppable.class)).when(schedule).scheduleRepeating(cell, ORDERING_CELLS, 1);
+		doReturn(mock(Stoppable.class)).when(schedule).scheduleRepeating(cell, Ordering.CELLS.ordinal(), 1);
 		cell.schedule(schedule);
-		verify(schedule).scheduleRepeating(cell, ORDERING_CELLS, 1);
+		verify(schedule).scheduleRepeating(cell, Ordering.CELLS.ordinal(), 1);
 	}
 	
 	@Test
 	public void schedule_validInput_assignStopper() {
 		Schedule schedule = spy(mock(Schedule.class));
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, false);
-		doReturn(mock(Stoppable.class)).when(schedule).scheduleRepeating(cell, ORDERING_CELLS, 1);
+		doReturn(mock(Stoppable.class)).when(schedule).scheduleRepeating(cell, Ordering.CELLS.ordinal(), 1);
 		cell.schedule(schedule);
 		assertNotNull(cell.stopper);
 	}
 	
 	@Test
 	public void initialize_withoutRegions_callsMethod() {
-		Location location = spy(mock(Location.class));
+		Location location = mock(PottsLocation.class);
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, location, false);
 		int[][][] array = new int[1][3][3];
 		cell.initialize(array, null);
@@ -656,7 +658,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void initialize_withRegions_callsMethod() {
-		Location location = spy(mock(Location.class));
+		Location location = mock(PottsLocation.class);
 		when(location.getRegions()).thenReturn(regionList);
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, location, true);
 		int[][][] array1 = new int[1][3][3];
@@ -670,7 +672,7 @@ public class PottsCellTest {
 	public void initialize_withoutRegions_updatesTargets() {
 		int volume = (int)(Math.random()*100);
 		int surface = (int)(Math.random()*100);
-		Location location = mock(Location.class);
+		Location location = mock(PottsLocation.class);
 		when(location.getVolume()).thenReturn(volume);
 		when(location.getSurface()).thenReturn(surface);
 		
@@ -689,7 +691,7 @@ public class PottsCellTest {
 		int volume2 = (int)(Math.random()*100);
 		int surface1 = (int)(Math.random()*100);
 		int surface2 = (int)(Math.random()*100);
-		Location location = mock(Location.class);
+		Location location = mock(PottsLocation.class);
 		when(location.getVolume()).thenReturn(volume1 + volume2);
 		when(location.getSurface()).thenReturn(surface1 + surface2);
 		when(location.getVolume(Region.DEFAULT)).thenReturn(volume1);
@@ -715,7 +717,7 @@ public class PottsCellTest {
 	public void initialize_targetsSetWithoutRegions_doesNothing() {
 		int volume = (int)(Math.random()*100);
 		int surface = (int)(Math.random()*100);
-		Location location = mock(Location.class);
+		Location location = mock(PottsLocation.class);
 		when(location.getVolume()).thenReturn(volume);
 		when(location.getSurface()).thenReturn(surface);
 		
@@ -738,7 +740,7 @@ public class PottsCellTest {
 		int volume2 = (int)(Math.random()*100);
 		int surface1 = (int)(Math.random()*100);
 		int surface2 = (int)(Math.random()*100);
-		Location location = mock(Location.class);
+		Location location = mock(PottsLocation.class);
 		when(location.getVolume()).thenReturn(volume1 + volume2);
 		when(location.getSurface()).thenReturn(surface1 + surface2);
 		when(location.getVolume(Region.DEFAULT)).thenReturn(volume1);
@@ -774,7 +776,7 @@ public class PottsCellTest {
 	public void initialize_targetsMixed_updatesTargets() {
 		int volume = (int)(Math.random()*100);
 		int surface = (int)(Math.random()*100);
-		Location location = mock(Location.class);
+		Location location = mock(PottsLocation.class);
 		when(location.getVolume()).thenReturn(volume);
 		when(location.getSurface()).thenReturn(surface);
 		
@@ -795,7 +797,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void reset_withoutRegions_callsMethod() {
-		Location location = spy(mock(Location.class));
+		Location location = mock(PottsLocation.class);
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, location, false);
 		int[][][] array = new int[1][3][3];
 		cell.initialize(array, null);
@@ -806,7 +808,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void reset_withRegions_callsMethod() {
-		Location location = spy(mock(Location.class));
+		Location location = mock(PottsLocation.class);
 		when(location.getRegions()).thenReturn(regionList);
 		PottsCellMock cell = PottsCellMock._make(cellID, 1, location, true);
 		int[][][] array1 = new int[1][3][3];

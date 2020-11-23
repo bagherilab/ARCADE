@@ -1,19 +1,20 @@
-package arcade.agent.cell;
+package arcade.potts.agent.cell;
 
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import arcade.env.loc.*;
-import arcade.util.MiniBox;
-import static arcade.agent.cell.PottsCell2D.*;
-import static arcade.agent.cell.Cell.Region;
-import static arcade.agent.cell.Cell.State;
-import static arcade.sim.Potts.Term;
+import arcade.core.env.loc.*;
+import arcade.core.util.MiniBox;
+import arcade.potts.env.loc.PottsLocation;
+import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.agent.cell.Cell.State;
+import static arcade.potts.agent.cell.PottsCell2D.SURFACE_VOLUME_MULTIPLIER;
+import static arcade.potts.sim.Potts.Term;
+import static arcade.core.TestUtilities.EPSILON;
 
 public class PottsCell2DTest {
-	private static final double EPSILON = 1E-5;
 	static EnumMap<Term, Double> criticals;
 	static EnumMap<Term, Double> lambdas;
 	static double[] adhesion;
@@ -46,7 +47,7 @@ public class PottsCell2DTest {
 	
 	@Test
 	public void defaultConstructor_withoutRegions_setsFields() {
-		Location location = mock(Location.class);
+		Location location = mock(PottsLocation.class);
 		PottsCell2D cell = new PottsCell2D(cellID, cellPop, location, parameters,
 				criticals, lambdas, adhesion);
 		
@@ -60,7 +61,7 @@ public class PottsCell2DTest {
 	
 	@Test
 	public void defaultConstructor_withRegions_setsFields() {
-		Location location = mock(Location.class);
+		Location location = mock(PottsLocation.class);
 		when(location.getRegions()).thenReturn(EnumSet.of(Region.DEFAULT, Region.NUCLEUS));
 		PottsCell2D cell = new PottsCell2D(cellID, cellPop, location, parameters,
 				criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
@@ -75,8 +76,8 @@ public class PottsCell2DTest {
 	
 	@Test
 	public void make_givenCell_setsFields() {
-		Location location1 = mock(Location.class);
-		Location location2 = mock(Location.class);
+		Location location1 = mock(PottsLocation.class);
+		Location location2 = mock(PottsLocation.class);
 		PottsCell2D cell1 = new PottsCell2D(cellID, cellPop, location1, parameters, criticals, lambdas, adhesion);
 		PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
 		
@@ -92,7 +93,7 @@ public class PottsCell2DTest {
 	@Test
 	public void convert_givenValue_calculatesValue() {
 		double volume = Math.random()*100;
-		Location location = mock(Location.class);
+		Location location = mock(PottsLocation.class);
 		PottsCell2D cell = new PottsCell2D(cellID, cellPop, location, parameters, criticals, lambdas, adhesion);
 		assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume), cell.convert(volume), EPSILON);
 	}

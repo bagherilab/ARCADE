@@ -1,33 +1,38 @@
-package arcade.agent.cell;
+package arcade.potts.agent.cell;
 
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import arcade.env.loc.*;
-import arcade.util.MiniBox;
-import static arcade.sim.Potts.Term;
-import static arcade.agent.cell.Cell.State;
-import static arcade.agent.cell.Cell.Region;
-import static arcade.agent.cell.CellFactoryTest.*;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
+import arcade.potts.env.loc.PottsLocation;
+import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.agent.cell.Cell.State;
+import static arcade.potts.sim.Potts.Term;
+import static arcade.potts.agent.cell.PottsCellFactoryTest.*;
+import static arcade.core.TestUtilities.*;
 
-public class CellFactory2DTest {
+public class PottsCellFactory2DTest {
 	@Test
 	public void makeCell_noRegions_createsObject() {
-		CellFactory2D factory = new CellFactory2D();
+		PottsCellFactory2D factory = new PottsCellFactory2D();
 		
-		int cellID = (int)random() + 1;
-		int cellPop = (int)random() + 1;
-		int cellAge = (int)random();
+		int cellID = randomIntBetween(1, 10);
+		int cellPop = randomIntBetween(1, 10);
+		int cellAge = randomIntBetween(1, 100);
 		State cellState = randomState();
-		Location location = mock(Location.class);
+		Location location = mock(PottsLocation.class);
 		MiniBox parameters = mock(MiniBox.class);
 		EnumMap<Term, Double> criticals = makeEnumMap();
 		EnumMap<Term, Double> lambdas = makeEnumMap();
-		double[] adhesion = new double[] { random(), random() };
+		double[] adhesion = new double[] {
+				randomDoubleBetween(0, 10),
+				randomDoubleBetween(0, 10)
+		};
 		
-		Cell cell = factory.makeCell(cellID, cellPop, cellAge, cellState, location, parameters, criticals, lambdas, adhesion);
+		PottsCell cell = factory.makeCell(cellID, cellPop, cellAge, cellState, location, parameters, criticals, lambdas, adhesion);
 		
 		assertTrue(cell instanceof PottsCell2D);
 		assertEquals(cellID, cell.getID());
@@ -45,17 +50,20 @@ public class CellFactory2DTest {
 	
 	@Test
 	public void makeCell_withRegions_createsObject() {
-		CellFactory2D factory = new CellFactory2D();
+		PottsCellFactory2D factory = new PottsCellFactory2D();
 		
-		int cellID = (int)random() + 1;
-		int cellPop = (int)random() + 1;
-		int cellAge = (int)random();
+		int cellID = randomIntBetween(1, 10);
+		int cellPop = randomIntBetween(1, 10);
+		int cellAge = randomIntBetween(1, 100);
 		State cellState = randomState();
-		Location location = mock(Location.class);
+		Location location = mock(PottsLocation.class);
 		MiniBox parameters = mock(MiniBox.class);
 		EnumMap<Term, Double> criticals = makeEnumMap();
 		EnumMap<Term, Double> lambdas = makeEnumMap();
-		double[] adhesion = new double[] { random(), random() };
+		double[] adhesion = new double[] {
+				randomDoubleBetween(0, 10),
+				randomDoubleBetween(0, 10)
+		};
 		
 		EnumSet<Region> regionList = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
 		doReturn(regionList).when(location).getRegions();
@@ -64,7 +72,7 @@ public class CellFactory2DTest {
 		EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = makeEnumMapRegion(regionList);
 		EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = makeEnumMapTarget(regionList);
 		
-		Cell cell = factory.makeCell(cellID, cellPop, cellAge, cellState, location, parameters,
+		PottsCell cell = factory.makeCell(cellID, cellPop, cellAge, cellState, location, parameters,
 				criticals, lambdas, adhesion,
 				criticalsRegion, lambdasRegion, adhesionRegion);
 		
