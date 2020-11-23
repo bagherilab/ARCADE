@@ -1,10 +1,10 @@
-package arcade.util;
+package arcade.core.util;
 
 import org.junit.*;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Comparator;
-import static arcade.util.Matrix.*;
+import static arcade.core.util.Matrix.*;
 
 public class MatrixTest {
 	private static final double EPSILON = 1E-10;

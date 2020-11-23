@@ -1,15 +1,14 @@
-package arcade.util;
+package arcade.core.util;
 
 import org.junit.*;
 import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import static arcade.MainTest.*;
-import static arcade.util.MiniBox.TAG_SEPARATOR;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.core.TestUtilities.*;
 
 public class MiniBoxTest {
-	private static final double EPSILON = 1E-10;
 	private static final int NUMBER_KEYS = 10;
 	
 	@Test
@@ -145,7 +144,7 @@ public class MiniBoxTest {
 	public void put_withInteger_updatesContainers() {
 		MiniBox box = new MiniBox();
 		String key = randomString();
-		int value = randomInt();
+		int value = randomIntBetween(0, 100);
 		box.put(key, value);
 		assertTrue(box.keys.contains(key));
 		assertTrue(box.contents.containsKey(key));
@@ -156,7 +155,7 @@ public class MiniBoxTest {
 	public void put_withDouble_updatesContainers() {
 		MiniBox box = new MiniBox();
 		String key = randomString();
-		double value = randomDouble();
+		double value = randomDoubleBetween(0, 100);
 		box.put(key, value);
 		assertTrue(box.keys.contains(key));
 		assertTrue(box.contents.containsKey(key));
@@ -331,11 +330,11 @@ public class MiniBoxTest {
 	@Test
 	public void toString_onlyNumbers_createsJSON() {
 		MiniBox box = new MiniBox();
-
+		
 		String key1 = randomString();
 		String key2 = randomString();
-		double value1 = randomDouble();
-		int value2 = randomInt();
+		double value1 = randomDoubleBetween(0, 100);
+		int value2 = randomIntBetween(0, 100);
 		
 		box.put(key1, value1);
 		box.put(key2, value2);
@@ -356,9 +355,9 @@ public class MiniBoxTest {
 		String key1 = randomString();
 		String key2 = randomString();
 		String key3 = randomString();
-		double value1 = randomDouble();
+		double value1 = randomDoubleBetween(0, 100);
 		String value2 = randomString();
-		int value3 = randomInt();
+		int value3 = randomIntBetween(0, 100);
 		
 		box.put(key1, value1);
 		box.put(key2, value2);
