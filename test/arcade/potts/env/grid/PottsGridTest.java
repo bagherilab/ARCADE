@@ -1,4 +1,4 @@
-package arcade.env.grid;
+package arcade.potts.env.grid;
 
 import org.junit.*;
 import static org.junit.Assert.*;
