@@ -1,8 +1,6 @@
 package arcade.potts.sim;
 
 import arcade.core.sim.Series;
-import arcade.core.agent.cell.CellFactory;
-import arcade.core.env.loc.LocationFactory;
 import arcade.potts.agent.cell.*;
 import arcade.potts.env.loc.*;
 

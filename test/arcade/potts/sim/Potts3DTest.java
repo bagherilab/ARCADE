@@ -1,18 +1,18 @@
-package arcade.sim;
+package arcade.potts.sim;
 
 import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.HashSet;
-import arcade.agent.cell.Cell;
-import arcade.env.grid.Grid;
-import static arcade.sim.PottsTest.*;
-import static arcade.agent.cell.Cell.Region;
+import arcade.core.env.grid.Grid;
+import arcade.potts.agent.cell.PottsCell;
+import static arcade.core.agent.cell.Cell.Region;
+import static arcade.potts.sim.PottsTest.*;
+import static arcade.core.TestUtilities.EPSILON;
 
 public class Potts3DTest {
-	private static final double EPSILON = 1E-4;
-	static Cell[] cells;
-	Series seriesMock = makeSeries();
+	static PottsCell[] cells;
+	PottsSeries seriesMock = makeSeries();
 	Potts3D pottsMock = new Potts3D(seriesMock);
 	static Potts3D potts;
 	
@@ -20,7 +20,7 @@ public class Potts3DTest {
 	
 	@BeforeClass
 	public static void setupGrid() {
-		Series series = makeSeries();
+		PottsSeries series = makeSeries();
 		Grid grid = mock(Grid.class);
 		
 		// Population for each cell domain.
@@ -28,10 +28,10 @@ public class Potts3DTest {
 		
 		int nCells = 3;
 		int nSubcells = 2;
-		cells = new Cell[nCells + 1];
+		cells = new PottsCell[nCells + 1];
 		
 		for (int i = 0; i < nCells; i++) {
-			Cell c = mock(Cell.class);
+			PottsCell c = mock(PottsCell.class);
 			when(c.getPop()).thenReturn(pops[i]);
 			
 			// Assign adhesion values for cells.

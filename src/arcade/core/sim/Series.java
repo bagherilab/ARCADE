@@ -124,6 +124,9 @@ public abstract class Series {
 		
 		// Initialize simulation series.
 		initialize(setupLists, parameters);
+		
+		// Create constructors for simulation and visualization.
+		makeConstructors();
 	}
 	
 	/**
@@ -277,7 +280,41 @@ public abstract class Series {
 	/**
 	 * Uses reflections to build constructors for simulation and visualization.
 	 */
-	protected abstract void makeConstructors();
+	protected void makeConstructors() {
+		// Create constructor for simulation class.
+		try {
+			Class<?> c = Class.forName(getSimClass());
+			simCons = c.getConstructor(long.class, Series.class);
+		} catch (Exception e) {
+			LOGGER.severe("simulation class [ " + getSimClass() + " ] not found");
+			e.printStackTrace();
+			isSkipped = true;
+		}
+		
+		// Create constructor for visualization class.
+		try {
+			Class<?> c = Class.forName(getVisClass());
+			visCons = c.getConstructor(Simulation.class);
+		} catch (Exception e) {
+			LOGGER.severe("visualization class [ " + getSimClass() + " ] not found");
+			e.printStackTrace();
+			isSkipped = true;
+		}
+	}
+	
+	/**
+	 * Gets the class name for the simulation.
+	 * 
+	 * @return  the simulation class
+	 */
+	protected abstract String getSimClass();
+	
+	/**
+	 * Gets the class name for the visualization.
+	 *
+	 * @return  the visualization class
+	 */
+	protected abstract String getVisClass();
 	
 	/** Calls {@code runSim} for each random seed.
 	 * 

@@ -1,4 +1,4 @@
-package arcade.sim;
+package arcade.potts.sim;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -9,16 +9,24 @@ import java.util.HashMap;
 import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
 import sim.engine.Schedule;
-import arcade.agent.cell.*;
-import arcade.env.loc.*;
-import arcade.util.MiniBox;
-import arcade.sim.output.OutputSaver;
-import static arcade.sim.Simulation.*;
-import static arcade.env.loc.Location.Voxel;
-import static arcade.sim.Series.SEED_OFFSET;
-import static arcade.sim.Series.TARGET_SEPARATOR;
-import static arcade.agent.cell.CellFactory.CellContainer;
-import static arcade.env.loc.LocationFactory.LocationContainer;
+import arcade.core.sim.Series;
+import arcade.core.agent.cell.*;
+import arcade.core.env.loc.*;
+import arcade.core.util.MiniBox;
+import arcade.core.sim.output.OutputSaver;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.loc.Voxel;
+import arcade.potts.env.loc.PottsLocation;
+import static arcade.core.sim.Simulation.*;
+import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.env.loc.PottsLocationFactory;
+import static arcade.core.sim.Series.SEED_OFFSET;
+import static arcade.core.sim.Series.TARGET_SEPARATOR;
+import static arcade.core.agent.cell.CellFactory.CellContainer;
+import static arcade.core.env.loc.LocationFactory.LocationContainer;
+import static arcade.potts.agent.cell.PottsCellFactory.PottsCellContainer;
+import static arcade.potts.env.loc.PottsLocationFactory.PottsLocationContainer;
+import static arcade.potts.sim.PottsSimulation.Ordering;
 
 public class PottsSimulationTest {
 	static final long RANDOM_SEED = (long)(Math.random()*1000);
@@ -29,7 +37,7 @@ public class PottsSimulationTest {
 	static double random() { return Math.random()*100; }
 	
 	static Series createSeries(int[] pops, String[] keys) {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		HashMap<String, MiniBox> populations = new HashMap<>();
 		
 		for (int i = 0; i < pops.length; i++) {
@@ -75,7 +83,7 @@ public class PottsSimulationTest {
 	}
 	
 	static class PottsSimulationMock extends PottsSimulation {
-		private final HashMap<MiniBox, HashMap<Integer, Location>> locationMap = new HashMap<>();
+		private final HashMap<MiniBox, HashMap<Integer, PottsLocation>> locationMap = new HashMap<>();
 		private final HashMap<MiniBox, HashMap<Integer, CellContainer>> cellContainerMap = new HashMap<>();
 		private final HashMap<MiniBox, HashMap<Integer, LocationContainer>> locationContainerMap = new HashMap<>();
 		
@@ -83,9 +91,9 @@ public class PottsSimulationTest {
 		
 		public Potts makePotts() { return mock(Potts.class); }
 		
-		private void mockLocations(LocationFactory factory, MiniBox pop,
+		private void mockLocations(PottsLocationFactory factory, MiniBox pop,
 										  int n, int m, MersenneTwisterFast random) {
-			HashMap<Integer, Location> idToLocation = new HashMap<>();
+			HashMap<Integer, PottsLocation> idToLocation = new HashMap<>();
 			locationMap.put(pop, idToLocation);
 			
 			HashMap<Integer, CellContainer> idToCellContainer = new HashMap<>();
@@ -96,25 +104,25 @@ public class PottsSimulationTest {
 			
 			for (int i = 0; i < n; i++) {
 				int id = i + m + 1;
-				Location loc = mock(Location.class);
-				LocationContainer locationContainer = mock(LocationContainer.class);
-				CellContainer cellContainer = mock(CellContainer.class);
+				PottsLocation loc = mock(PottsLocation.class);
+				LocationContainer locationContainer = mock(PottsLocationContainer.class);
+				CellContainer cellContainer = mock(PottsCellContainer.class);
 				
 				idToLocation.put(id, loc);
 				idToCellContainer.put(id, cellContainer);
 				idToLocationContainer.put(id, locationContainer);
 				
-				factory.locations.put(id, locationContainer);
+				factory.locations.put(id, (PottsLocationContainer)locationContainer);
 				doReturn(new Voxel(id, id, id)).when(loc).getCenter();
 				doReturn(loc).when(factory).make(locationContainer, cellContainer, random);
 			}
 		}
 		
-		LocationFactory makeLocationFactory() {
-			LocationFactory factory = mock(LocationFactory.class);
+		PottsLocationFactory makeLocationFactory() {
+			PottsLocationFactory factory = mock(PottsLocationFactory.class);
 			
 			try {
-				Field locationField = LocationFactory.class.getDeclaredField("locations");
+				Field locationField = PottsLocationFactory.class.getDeclaredField("locations");
 				locationField.setAccessible(true);
 				locationField.set(factory, new HashMap<Integer, LocationContainer>());
 			} catch (Exception ignored) { }
@@ -151,18 +159,18 @@ public class PottsSimulationTest {
 			return factory;
 		}
 		
-		private void mockCells(CellFactory factory, Series series, String code, int n, int m) {
+		private void mockCells(PottsCellFactory factory, Series series, String code, int n, int m) {
 			MiniBox pop = series._populations.get(code);
 			HashSet<Integer> ids = new HashSet<>();
 			
 			for (int i = 0; i < n; i++) {
 				int id = i + m + 1;
-				Cell cell = mock(Cell.class);
+				PottsCell cell = mock(PottsCell.class);
 				Location loc = locationMap.get(pop).get(id);
 				CellContainer container = cellContainerMap.get(pop).get(id);
 				ids.add(id);
 				
-				factory.cells.put(id, container);
+				factory.cells.put(id,(PottsCellContainer)container);
 				doReturn(id).when(cell).getID();
 				doReturn(pop.getInt("CODE")).when(cell).getPop();
 				doReturn(loc).when(cell).getLocation();
@@ -172,15 +180,15 @@ public class PottsSimulationTest {
 			factory.popToIDs.put(pop.getInt("CODE"), ids);
 		}
 		
-		CellFactory makeCellFactory() {
-			CellFactory factory = mock(CellFactory.class);
+		PottsCellFactory makeCellFactory() {
+			PottsCellFactory factory = mock(PottsCellFactory.class);
 			
 			try {
-				Field cellField = CellFactory.class.getDeclaredField("cells");
+				Field cellField = PottsCellFactory.class.getDeclaredField("cells");
 				cellField.setAccessible(true);
 				cellField.set(factory, new HashMap<Integer, CellContainer>());
 				
-				Field popField = CellFactory.class.getDeclaredField("popToIDs");
+				Field popField = PottsCellFactory.class.getDeclaredField("popToIDs");
 				popField.setAccessible(true);
 				popField.set(factory, new HashMap<Integer, ArrayList<Integer>>());
 			} catch (Exception ignored) { }
@@ -220,28 +228,28 @@ public class PottsSimulationTest {
 	
 	@Test
 	public void getSeries_initialized_returnsObject() {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
 		assertEquals(series, sim.getSeries());
 	}
 	
 	@Test
 	public void getSchedule_initialized_returnsObject() {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
 		assertEquals(sim.schedule, sim.getSchedule());
 	}
 	
 	@Test
 	public void getSeed_initialized_returnsValue() {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED + SEED_OFFSET, series);
 		assertEquals(RANDOM_SEED, sim.getSeed());
 	}
 	
 	@Test
 	public void getID_initialized_incrementsValue() {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
 		assertEquals(1, sim.getID());
 		assertEquals(2, sim.getID());
@@ -261,21 +269,21 @@ public class PottsSimulationTest {
 	
 	@Test
 	public void getPotts_initialized_returnsNull() {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
 		assertNull(sim.getPotts());
 	}
 	
 	@Test
 	public void getAgents_initialized_returnsNull() {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
 		assertNull(sim.getAgents());
 	}
 	
 	@Test
 	public void getEnvironments_initialized_returnsNull() {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
 		assertNull(sim.getEnvironment(""));
 	}
@@ -340,7 +348,7 @@ public class PottsSimulationTest {
 	
 	@Test
 	public void setupPotts_mockSeries_initializesPotts() {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
 		sim.setupPotts();
 		assertNotNull(sim.potts);
@@ -348,12 +356,12 @@ public class PottsSimulationTest {
 	
 	@Test
 	public void setupPotts_mockSeries_schedulesPotts() {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		Schedule schedule = spy(Schedule.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
 		sim.schedule = schedule;
 		sim.setupPotts();
-		verify(sim.schedule).scheduleRepeating(1, ORDERING_POTTS, sim.potts);
+		verify(sim.schedule).scheduleRepeating(1, Ordering.POTTS.ordinal(), sim.potts);
 	}
 	
 	@Test
@@ -393,7 +401,7 @@ public class PottsSimulationTest {
 			Cell cell = (Cell)sim.agents.getObjectAt(id);
 			assertEquals(id, cell.getID());
 			assertEquals(pops[i], cell.getPop());
-			assertEquals(new Voxel(id, id, id), cell.getLocation().getCenter());
+			assertEquals(new Voxel(id, id, id), ((PottsLocation)cell.getLocation()).getCenter());
 		}
 		
 		assertNull(sim.agents.getObjectAt(6));
@@ -407,7 +415,7 @@ public class PottsSimulationTest {
 		sim.setupAgents();
 		
 		for (Object obj : sim.agents.getAllObjects()) {
-			verify((Cell)obj).initialize(sim.potts.IDS, sim.potts.REGIONS);
+			verify((PottsCell)obj).initialize(sim.potts.IDS, sim.potts.REGIONS);
 			verify((Cell)obj).schedule(sim.schedule);
 		}
 	}
@@ -425,7 +433,7 @@ public class PottsSimulationTest {
 			Cell cell = (Cell)sim.agents.getObjectAt(id);
 			assertEquals(id, cell.getID());
 			assertEquals(pops[i], cell.getPop());
-			assertEquals(new Voxel(id, id, id), cell.getLocation().getCenter());
+			assertEquals(new Voxel(id, id, id), ((PottsLocation)cell.getLocation()).getCenter());
 		}
 		
 		assertEquals(TOTAL_LOCATIONS + 1, sim.getID());
@@ -438,8 +446,8 @@ public class PottsSimulationTest {
 		sim.setupAgents();
 		
 		for (Object obj : sim.agents.getAllObjects()) {
-			verify((Cell)obj).initialize(sim.potts.IDS, sim.potts.REGIONS);
-			verify((Cell)obj).schedule(sim.schedule);
+			verify((PottsCell)obj).initialize(sim.potts.IDS, sim.potts.REGIONS);
+			verify((PottsCell)obj).schedule(sim.schedule);
 		}
 	}
 	
@@ -472,7 +480,7 @@ public class PottsSimulationTest {
 	
 	@Test
 	public void doOutput_isScheduled_schedulesOutput() {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		Schedule schedule = mock(Schedule.class);
 		OutputSaver saver = mock(OutputSaver.class);
 		
@@ -490,7 +498,7 @@ public class PottsSimulationTest {
 	
 	@Test
 	public void doOutput_isNotScheduled_savesOutput() {
-		Series series = mock(Series.class);
+		Series series = mock(PottsSeries.class);
 		Schedule schedule = mock(Schedule.class);
 		OutputSaver saver = mock(OutputSaver.class);
 		

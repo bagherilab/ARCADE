@@ -3,7 +3,6 @@ package arcade.potts.sim;
 import java.util.ArrayList;
 import java.util.HashMap;
 import arcade.core.sim.Series;
-import arcade.core.sim.Simulation;
 import arcade.core.util.*;
 import static arcade.core.util.Box.KEY_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
@@ -25,6 +24,10 @@ public class PottsSeries extends Series {
 				  Box parameters, boolean isVis) {
 		super(setupDicts, setupLists, parameters, isVis);
 	}
+	
+	protected String getSimClass() { return "arcade.potts.sim.PottsSimulation" + (_height > 1 ? "3D" : "2D"); }
+	
+	protected String getVisClass() { return "arcade.potts.vis.PottsVisualization"; }
 	
 	/**
 	 * Initializes series simulation, agents, and environment.
@@ -58,9 +61,6 @@ public class PottsSeries extends Series {
 		MiniBox componentDefaults = parameters.getIdValForTag("COMPONENT");
 		ArrayList<Box> components = setupLists.get("components");
 		updateComponents(components, componentDefaults);
-		
-		// Create constructors for simulation and visualization.
-		makeConstructors();
 	}
 	
 	/**
@@ -186,25 +186,5 @@ public class PottsSeries extends Series {
 	 */
 	protected void updateComponents(ArrayList<Box> components, MiniBox componentDefaults) {
 		// TODO
-	}
-	
-	/**
-	 * Uses reflections to build constructors for simulation and visualization.
-	 */
-	protected void makeConstructors() {
-		String simClass = "arcade.potts.sim.PottsSimulation" + (_height > 1 ? "3D" : "2D");
-		String visClass = "arcade.potts.vis.PottsVisualization";
-		
-		// Create constructor for simulation class.
-		try {
-			Class<?> c = Class.forName(simClass);
-			simCons = c.getConstructor(long.class, Series.class);
-		} catch (Exception e) { e.printStackTrace(); }
-		
-		// Create constructor for visualization class.
-		try {
-			Class<?> c = Class.forName(visClass);
-			visCons = c.getConstructor(Simulation.class);
-		} catch (Exception e) { e.printStackTrace(); }
 	}
 }

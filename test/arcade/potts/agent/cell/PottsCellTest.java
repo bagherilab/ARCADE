@@ -19,7 +19,6 @@ import static arcade.potts.sim.PottsSimulation.Ordering;
 import static arcade.core.TestUtilities.*;
 
 public class PottsCellTest {
-	private static final double EPSILON = 1E-5;
 	private static final double VOLUME_SURFACE_RATIO = Math.random();
 	static double lambdaVolume;
 	static double lambdaSurface;
