@@ -217,7 +217,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void getModule_defaultConstructor_returnsObject() {
-		assertTrue(cellDefault.getModule() instanceof ProliferationModule);
+		assertTrue(cellDefault.getModule() instanceof PottsModuleProliferation);
 	}
 	
 	@Test
@@ -599,19 +599,19 @@ public class PottsCellTest {
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, false);
 		
 		cell.setState(State.QUIESCENT);
-		assertTrue(cell.module instanceof QuiescenceModule);
+		assertTrue(cell.module instanceof PottsModuleQuiescence);
 		
 		cell.setState(State.PROLIFERATIVE);
-		assertTrue(cell.module instanceof ProliferationModule);
+		assertTrue(cell.module instanceof PottsModuleProliferation);
 		
 		cell.setState(State.APOPTOTIC);
-		assertTrue(cell.module instanceof ApoptosisModule);
+		assertTrue(cell.module instanceof PottsModuleApoptosis);
 		
 		cell.setState(State.NECROTIC);
-		assertTrue(cell.module instanceof NecrosisModule);
+		assertTrue(cell.module instanceof PottsModuleNecrosis);
 		
 		cell.setState(State.AUTOTIC);
-		assertTrue(cell.module instanceof AutosisModule);
+		assertTrue(cell.module instanceof PottsModuleAutosis);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

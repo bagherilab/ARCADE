@@ -10,7 +10,7 @@ import arcade.potts.agent.cell.PottsCell;
 import static arcade.core.agent.cell.Cell.State;
 import static arcade.core.agent.cell.Cell.Region;
 
-public abstract class ProliferationModule extends PottsModule {
+public abstract class PottsModuleProliferation extends PottsModule {
 	/** Average duration of G1 phase (ticks) */
 	final double DURATION_G1;
 	
@@ -55,7 +55,7 @@ public abstract class ProliferationModule extends PottsModule {
 	 * 
 	 * @param cell  the {@link PottsCell} the module is associated with
 	 */
-	public ProliferationModule(PottsCell cell) {
+	public PottsModuleProliferation(PottsCell cell) {
 		super(cell);
 		this.phase = Phase.PROLIFERATIVE_G1;
 		
@@ -74,11 +74,11 @@ public abstract class ProliferationModule extends PottsModule {
 	}
 	
 	/**
-	 * Extension of {@link ProliferationModule} using simple phases.
+	 * Extension of {@link PottsModuleProliferation} using simple phases.
 	 */
-	public static class Simple extends ProliferationModule {
+	public static class Simple extends PottsModuleProliferation {
 		/**
-		 * Creates a {@link ProliferationModule} using simple phases.
+		 * Creates a {@link PottsModuleProliferation} using simple phases.
 		 * 
 		 * @param cell  the {@link PottsCell} the module is associated with
 		 */

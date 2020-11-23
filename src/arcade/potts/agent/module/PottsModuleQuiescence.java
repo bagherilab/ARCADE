@@ -4,8 +4,8 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.potts.agent.cell.PottsCell;
 
-public class AutosisModule extends PottsModule {
-	public AutosisModule(PottsCell cell) { super(cell); }
+public class PottsModuleQuiescence extends PottsModule {
+	public PottsModuleQuiescence(PottsCell cell) { super(cell); }
 	
 	public void step(MersenneTwisterFast random, Simulation sim) { }
 }

@@ -8,7 +8,7 @@ import arcade.potts.sim.PottsSimulation;
 import arcade.potts.agent.cell.PottsCell;
 import static arcade.core.agent.cell.Cell.Region;
 
-public abstract class ApoptosisModule extends PottsModule {
+public abstract class PottsModuleApoptosis extends PottsModule {
 	/** Average duration of early apoptosis (ticks) */
 	final double DURATION_EARLY;
 	
@@ -35,7 +35,7 @@ public abstract class ApoptosisModule extends PottsModule {
 	 *
 	 * @param cell  the {@link PottsCell} the module is associated with
 	 */
-	public ApoptosisModule(PottsCell cell) {
+	public PottsModuleApoptosis(PottsCell cell) {
 		super(cell);
 		this.phase = Phase.APOPTOTIC_EARLY;
 		
@@ -51,11 +51,11 @@ public abstract class ApoptosisModule extends PottsModule {
 	}
 	
 	/**
-	 * Extension of {@link ApoptosisModule} using simple phases.
+	 * Extension of {@link PottsModuleApoptosis} using simple phases.
 	 */
-	public static class Simple extends ApoptosisModule {
+	public static class Simple extends PottsModuleApoptosis {
 		/**
-		 * Creates a {@link ApoptosisModule} using simple phases.
+		 * Creates a {@link PottsModuleApoptosis} using simple phases.
 		 *
 		 * @param cell  the {@link PottsCell} the module is associated with
 		 */

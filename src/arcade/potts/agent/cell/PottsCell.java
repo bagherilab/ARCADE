@@ -249,19 +249,19 @@ public abstract class PottsCell implements Cell {
 		
 		switch (state) {
 			case QUIESCENT:
-				module = new QuiescenceModule(this);
+				module = new PottsModuleQuiescence(this);
 				break;
 			case PROLIFERATIVE:
-				module = new ProliferationModule.Simple(this);
+				module = new PottsModuleProliferation.Simple(this);
 				break;
 			case APOPTOTIC:
-				module = new ApoptosisModule.Simple(this);
+				module = new PottsModuleApoptosis.Simple(this);
 				break;
 			case NECROTIC:
-				module = new NecrosisModule(this);
+				module = new PottsModuleNecrosis(this);
 				break;
 			case AUTOTIC:
-				module = new AutosisModule(this);
+				module = new PottsModuleAutosis(this);
 				break;
 			default:
 				// State must be one of the above cases.
