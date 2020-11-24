@@ -15,13 +15,13 @@ import arcade.potts.env.loc.Voxel;
 public final class PottsOutputDeserializer {
 	static Gson makeGSON() {
 		GsonBuilder gsonBuilder = OutputDeserializer.makeGSONBuilder();
-		gsonBuilder.registerTypeAdapter(PottsCellContainer.class, new CellDeserializer());
-		gsonBuilder.registerTypeAdapter(PottsLocationContainer.class, new LocationDeserializer());
+		gsonBuilder.registerTypeAdapter(PottsCellContainer.class, new PottsCellDeserializer());
+		gsonBuilder.registerTypeAdapter(PottsLocationContainer.class, new PottsLocationDeserializer());
 		gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelDeserializer());
 		return gsonBuilder.create();
 	}
 	
-	static class CellDeserializer implements JsonDeserializer<PottsCellContainer> {
+	static class PottsCellDeserializer implements JsonDeserializer<PottsCellContainer> {
 		public PottsCellContainer deserialize(JsonElement json, Type typeOfT,
 									JsonDeserializationContext context) throws JsonParseException {
 			JsonObject jsonObject = json.getAsJsonObject();
@@ -77,7 +77,7 @@ public final class PottsOutputDeserializer {
 		}
 	}
 	
-	static class LocationDeserializer implements JsonDeserializer<PottsLocationContainer> {
+	static class PottsLocationDeserializer implements JsonDeserializer<PottsLocationContainer> {
 		public PottsLocationContainer deserialize(JsonElement json, Type typeOfT,
 									   JsonDeserializationContext context) throws JsonParseException {
 			JsonObject jsonObject = json.getAsJsonObject();

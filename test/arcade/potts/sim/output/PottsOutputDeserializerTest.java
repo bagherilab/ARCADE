@@ -1,4 +1,4 @@
-package arcade.sim.output;
+package arcade.potts.sim.output;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -8,20 +8,18 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import static arcade.agent.cell.Cell.State;
-import static arcade.agent.module.Module.Phase;
-import static arcade.agent.cell.CellFactory.CellContainer;
-import static arcade.agent.cell.CellFactory.CellFactoryContainer;
-import static arcade.env.loc.Location.Voxel;
-import static arcade.env.loc.LocationFactory.LocationContainer;
-import static arcade.env.loc.LocationFactory.LocationFactoryContainer;
-import static arcade.env.loc.Location.VOXEL_COMPARATOR;
-import static arcade.sim.output.OutputDeserializer.*;
-import static arcade.MainTest.*;
-import static arcade.agent.cell.CellFactoryTest.*;
-import static arcade.agent.cell.Cell.Region;
+import arcade.potts.env.loc.Voxel;
+import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.agent.cell.Cell.State;
+import static arcade.potts.agent.module.PottsModule.Phase;
+import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.sim.output.PottsOutputDeserializer.*;
+import static arcade.potts.agent.cell.PottsCellFactory.PottsCellContainer;
+import static arcade.potts.env.loc.PottsLocationFactory.PottsLocationContainer;
+import static arcade.core.TestUtilities.*;
+import static arcade.potts.PottsTestUtilities.*;
 
-public class OutputDeserializerTest {
+public class PottsOutputDeserializerTest {
 	private static final double EPSILON = 1E-10;
 	
 	static final JsonDeserializationContext VOXEL_CONTEXT = new JsonDeserializationContext() {
@@ -32,58 +30,32 @@ public class OutputDeserializerTest {
 		}
 	};
 	
-	static final JsonDeserializationContext LOCATION_CONTEXT = new JsonDeserializationContext() {
-		public <T> T deserialize(JsonElement json, Type typeOfT)
-				throws JsonParseException {
-			JsonObject array = json.getAsJsonObject();
-			int id = array.get("id").getAsInt();
-			LocationContainer container = new LocationContainer(id, null, null, null);
-			return (T)container;
-		}
-	};
-	
-	static final JsonDeserializationContext CELL_CONTEXT = new JsonDeserializationContext() {
-		public <T> T deserialize(JsonElement json, Type typeOfT)
-				throws JsonParseException {
-			JsonObject array = json.getAsJsonObject();
-			int id = array.get("id").getAsInt();
-			CellContainer container = new CellContainer(id, 0, 0);
-			return (T)container;
-		}
-	};
-	
 	@Test
 	public void makeGSON_registersAdaptors() {
-		Gson gson = OutputDeserializer.makeGSON();
+		Gson gson = PottsOutputDeserializer.makeGSON();
 		
-		TypeToken<CellContainer> cell = new TypeToken<CellContainer>() {};
+		TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() {};
 		assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
-		
-		TypeToken<CellFactoryContainer> cellFactory = new TypeToken<CellFactoryContainer>() {};
-		assertSame(gson.getAdapter(cellFactory).getClass(), TreeTypeAdapter.class);
 		
 		TypeToken<Voxel> voxel = new TypeToken<Voxel>() {};
 		assertSame(gson.getAdapter(voxel).getClass(), TreeTypeAdapter.class);
 		
-		TypeToken<LocationContainer> location = new TypeToken<LocationContainer>() {};
+		TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() {};
 		assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
-		
-		TypeToken<LocationFactoryContainer> locationFactory = new TypeToken<LocationFactoryContainer>() {};
-		assertSame(gson.getAdapter(locationFactory).getClass(), TreeTypeAdapter.class);
 	}
 	
 	@Test
 	public void deserializer_forCellNoRegion_createObject() {
-		CellDeserializer deserializer = new CellDeserializer();
+		PottsCellDeserializer deserializer = new PottsCellDeserializer();
 		
-		int id = randomInt();
-		int pop = randomInt();
-		int age = randomInt();
+		int id = randomIntBetween(1,100);
+		int pop = randomIntBetween(1,100);
+		int age = randomIntBetween(1,100);
 		State state = randomState();
 		Phase phase = randomPhase();
-		int voxels = randomInt();
-		int targetVolume = randomInt();
-		int targetSurface = randomInt();
+		int voxels = randomIntBetween(1,100);
+		int targetVolume = randomIntBetween(1,100);
+		int targetSurface = randomIntBetween(1,100);
 		
 		String string = "{"
 				+ "\"id\": " + id
@@ -96,7 +68,7 @@ public class OutputDeserializerTest {
 				+ "}";
 		
 		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
-		CellContainer object = deserializer.deserialize(json, CellContainer.class, null);
+		PottsCellContainer object = deserializer.deserialize(json, PottsCellContainer.class, null);
 		
 		assertEquals(id, object.id);
 		assertEquals(pop, object.pop);
@@ -113,25 +85,25 @@ public class OutputDeserializerTest {
 	
 	@Test
 	public void deserializer_forCellWithRegions_createObject() {
-		CellDeserializer deserializer = new CellDeserializer();
+		PottsCellDeserializer deserializer = new PottsCellDeserializer();
 		
-		int id = randomInt();
-		int pop = randomInt();
-		int age = randomInt();
+		int id = randomIntBetween(1,100);
+		int pop = randomIntBetween(1,100);
+		int age = randomIntBetween(1,100);
 		State state = randomState();
 		Phase phase = randomPhase();
-		int voxels = randomInt();
-		int targetVolume = randomInt();
-		int targetSurface = randomInt();
+		int voxels = randomIntBetween(1,100);
+		int targetVolume = randomIntBetween(1,100);
+		int targetSurface = randomIntBetween(1,100);
 		
 		Region region1 = Region.DEFAULT;
 		Region region2 = Region.NUCLEUS;
-		int regionVoxels1 = randomInt();
-		int regionVoxels2 = randomInt();
-		int targetRegionVolume1 = randomInt();
-		int targetRegionSurface1 = randomInt();
-		int targetRegionVolume2 = randomInt();
-		int targetRegionSurface2 = randomInt();
+		int regionVoxels1 = randomIntBetween(1,100);
+		int regionVoxels2 = randomIntBetween(1,100);
+		int targetRegionVolume1 = randomIntBetween(1,100);
+		int targetRegionSurface1 = randomIntBetween(1,100);
+		int targetRegionVolume2 = randomIntBetween(1,100);
+		int targetRegionSurface2 = randomIntBetween(1,100);
 		
 		String string = "{"
 				+ "\"id\": " + id
@@ -154,7 +126,7 @@ public class OutputDeserializerTest {
 				+ "}";
 		
 		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
-		CellContainer object = deserializer.deserialize(json, CellContainer.class, null);
+		PottsCellContainer object = deserializer.deserialize(json, PottsCellContainer.class, null);
 		
 		assertEquals(id, object.id);
 		assertEquals(pop, object.pop);
@@ -173,37 +145,12 @@ public class OutputDeserializerTest {
 	}
 	
 	@Test
-	public void deserializer_forCellFactory_createsObject() {
-		CellFactoryDeserializer deserializer = new CellFactoryDeserializer();
-		
-		int n = randomInt();
-		int id0 = randomInt();
-		
-		StringBuilder string = new StringBuilder("[");
-		for (int i = 0; i < n; i++) {
-			int id = id0 + i;
-			string.append("{\"id\":").append(id).append("}");
-			if (i < n - 1) { string.append(","); }
-		}
-		string.append("]");
-		
-		JsonArray json = JsonParser.parseString(string.toString()).getAsJsonArray();
-		CellFactoryContainer object = deserializer.deserialize(json, CellFactoryContainer.class, CELL_CONTEXT);
-		
-		assertEquals(n, object.cells.size());
-		for (int i = 0; i < n; i++) {
-			int id = id0 + i;
-			assertEquals(id, object.cells.get(i).id);
-		}
-	}
-	
-	@Test
 	public void deserializer_forVoxel_createObject() {
 		VoxelDeserializer deserializer = new VoxelDeserializer();
 		
-		int x = randomInt();
-		int y = randomInt();
-		int z = randomInt();
+		int x = randomIntBetween(1,100);
+		int y = randomIntBetween(1,100);
+		int z = randomIntBetween(1,100);
 		String string = "[" + x + "," + y + "," + z + "]";
 		
 		Voxel expected = new Voxel(x, y, z);
@@ -215,19 +162,19 @@ public class OutputDeserializerTest {
 	
 	@Test
 	public void deserializer_forLocationNoRegion_createObject() {
-		LocationDeserializer deserializer = new LocationDeserializer();
+		PottsLocationDeserializer deserializer = new PottsLocationDeserializer();
 		
 		Region region = Region.UNDEFINED;
-		int id = randomInt();
-		Voxel center = new Voxel(randomInt(), randomInt(), randomInt());
+		int id = randomIntBetween(1,100);
+		Voxel center = new Voxel(randomIntBetween(1,100), randomIntBetween(1,100), randomIntBetween(1,100));
 		
-		int x1 = randomInt();
-		int y1 = randomInt();
-		int z1 = randomInt();
+		int x1 = randomIntBetween(1,100);
+		int y1 = randomIntBetween(1,100);
+		int z1 = randomIntBetween(1,100);
 		
-		int x2 = x1 + randomInt();
-		int y2 = y1 + randomInt();
-		int z2 = z1 + randomInt();
+		int x2 = x1 + randomIntBetween(1,100);
+		int y2 = y1 + randomIntBetween(1,100);
+		int z2 = z1 + randomIntBetween(1,100);
 		
 		String string = "{\"id\": " + id
 				+ ",\"center\":[" + center.x + "," + center.y + "," + center.z + "]"
@@ -242,7 +189,7 @@ public class OutputDeserializerTest {
 		expected.add(new Voxel(x2, y2, z2));
 		
 		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
-		LocationContainer object = deserializer.deserialize(json, LocationContainer.class, VOXEL_CONTEXT);
+		PottsLocationContainer object = deserializer.deserialize(json, PottsLocationContainer.class, VOXEL_CONTEXT);
 		
 		assertEquals(id, object.id);
 		assertEquals(center, object.center);
@@ -256,26 +203,26 @@ public class OutputDeserializerTest {
 	
 	@Test
 	public void deserializer_forLocationWithRegion_createObject() {
-		LocationDeserializer deserializer = new LocationDeserializer();
+		PottsLocationDeserializer deserializer = new PottsLocationDeserializer();
 		
-		int id = randomInt();
-		Voxel center = new Voxel(randomInt(), randomInt(), randomInt());
+		int id = randomIntBetween(1,100);
+		Voxel center = new Voxel(randomIntBetween(1,100), randomIntBetween(1,100), randomIntBetween(1,100));
 		
-		int x1 = randomInt();
-		int y1 = randomInt();
-		int z1 = randomInt();
+		int x1 = randomIntBetween(1,100);
+		int y1 = randomIntBetween(1,100);
+		int z1 = randomIntBetween(1,100);
 		
-		int x2 = x1 + randomInt();
-		int y2 = y1 + randomInt();
-		int z2 = z1 + randomInt();
+		int x2 = x1 + randomIntBetween(1,100);
+		int y2 = y1 + randomIntBetween(1,100);
+		int z2 = z1 + randomIntBetween(1,100);
 		
-		int x3 = x2 + randomInt();
-		int y3 = y2 + randomInt();
-		int z3 = z2 + randomInt();
+		int x3 = x2 + randomIntBetween(1,100);
+		int y3 = y2 + randomIntBetween(1,100);
+		int z3 = z2 + randomIntBetween(1,100);
 		
-		int x4 = x3 + randomInt();
-		int y4 = y3 + randomInt();
-		int z4 = z3 + randomInt();
+		int x4 = x3 + randomIntBetween(1,100);
+		int y4 = y3 + randomIntBetween(1,100);
+		int z4 = z3 + randomIntBetween(1,100);
 		
 		Region region1 = Region.DEFAULT;
 		Region region2 = Region.NUCLEUS;
@@ -307,7 +254,7 @@ public class OutputDeserializerTest {
 		expected2.add(new Voxel(x4, y4, z4));
 		
 		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
-		LocationContainer object = deserializer.deserialize(json, LocationContainer.class, VOXEL_CONTEXT);
+		PottsLocationContainer object = deserializer.deserialize(json, PottsLocationContainer.class, VOXEL_CONTEXT);
 		
 		assertEquals(id, object.id);
 		assertEquals(center, object.center);
@@ -329,30 +276,5 @@ public class OutputDeserializerTest {
 		voxels2.sort(VOXEL_COMPARATOR);
 		expected2.sort(VOXEL_COMPARATOR);
 		assertEquals(expected2, voxels2);
-	}
-	
-	@Test
-	public void deserializer_forLocationFactory_createsObject() {
-		LocationFactoryDeserializer deserializer = new LocationFactoryDeserializer();
-		
-		int n = randomInt();
-		int id0 = randomInt();
-		
-		StringBuilder string = new StringBuilder("[");
-		for (int i = 0; i < n; i++) {
-			int id = id0 + i;
-			string.append("{\"id\":").append(id).append(",\"location\":[").append(id).append("]}");
-			if (i < n - 1) { string.append(","); }
-		}
-		string.append("]");
-		
-		JsonArray json = JsonParser.parseString(string.toString()).getAsJsonArray();
-		LocationFactoryContainer object = deserializer.deserialize(json, LocationFactoryContainer.class, LOCATION_CONTEXT);
-		
-		assertEquals(n, object.locations.size());
-		for (int i = 0; i < n; i++) {
-			int id = id0 + i;
-			assertEquals(id, object.locations.get(i).id);
-		}
 	}
 }
