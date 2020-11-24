@@ -1,51 +1,14 @@
-package arcade;
+package arcade.potts;
 
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import static org.junit.Assert.*;
 import java.io.*;
-import java.util.Random;
+import static arcade.core.TestUtilities.*;
 
-public class MainTest {
+public class PottsMainTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
-	
-	public static void write(File file, String contents) {
-		FileWriter fw = null;
-		BufferedWriter bw = null;
-		PrintWriter pw = null;
-		
-		try {
-			fw = new FileWriter(file, true);
-			bw = new BufferedWriter(fw);
-			pw = new PrintWriter(bw);
-			pw.print(contents);
-		} catch (IOException e) { e.printStackTrace(); }
-		finally {
-			try {
-				if (pw != null) { pw.close(); }
-				else if (bw != null) { bw.close(); }
-				else if (fw != null) {fw.close(); }
-			} catch (IOException e) { e.printStackTrace(); }
-		}
-	}
-	
-	public static String randomString() {
-		return new Random().ints(97, 123)
-				.limit(10)
-				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-				.toString();
-	}
-	
-	public static int randomInt() { return (int)(Math.random()*10) + 2; }
-	
-	public static double randomDouble() { return Math.random() + 1; }
-	
-	public static String[] randomValues(int n) {
-		String[] strings = new String[n];
-		for (int i = 0; i < n; i++) { strings[i] = randomString(); }
-		return strings;
-	}
 	
 	final static String SETUP_TEMPLATE = "<set path=\"###/\">" +
 			"<series name=\"***\" ticks=\"1\" interval=\"1\" height=\"1\" start=\"0\" end=\"0\">" +
@@ -65,7 +28,7 @@ public class MainTest {
 		
 		String setup = makeSetup(name);
 		write(file, setup);
-		Main.main(args);
+		PottsMain.main(args);
 		
 		File mainOutput = new File(folder.getRoot() + "/" + name + ".json");
 		assertTrue(mainOutput.exists());
@@ -74,7 +37,7 @@ public class MainTest {
 		for (String tp : timepoints) {
 			File cellOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".CELLS.json");
 			assertTrue(cellOutput.exists());
-			File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".LOCATIONS.json");
+			File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".POTTS.json");
 			assertTrue(locationOutput.exists());
 		}
 	}
@@ -89,7 +52,7 @@ public class MainTest {
 		
 		String setup = makeSetup(name);
 		write(file, setup);
-		Main.main(args);
+		PottsMain.main(args);
 		
 		File mainOutput = new File(folder.getRoot() + "/" + name + ".json");
 		assertFalse(mainOutput.exists());
@@ -98,7 +61,7 @@ public class MainTest {
 		for (String tp : timepoints) {
 			File cellOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".CELLS.json");
 			assertFalse(cellOutput.exists());
-			File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".LOCATIONS.json");
+			File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".POTTS.json");
 			assertFalse(locationOutput.exists());
 		}
 	}
@@ -114,7 +77,7 @@ public class MainTest {
 		
 		String setup = makeSetup(name);
 		write(file, setup);
-		Main.main(args);
+		PottsMain.main(args);
 		
 		File mainOutput = new File(folder.getRoot() + "/" + name + ".json");
 		assertTrue(mainOutput.exists());
@@ -131,7 +94,7 @@ public class MainTest {
 		
 		String setup = makeSetup(name);
 		write(file, setup);
-		Main.main(args);
+		PottsMain.main(args);
 		
 		File mainOutput = new File(folder.getRoot() + "/" + name + ".json");
 		assertTrue(mainOutput.exists());
@@ -151,7 +114,7 @@ public class MainTest {
 		
 		String setup = makeSetup(name);
 		write(file, setup);
-		Main.main(args);
+		PottsMain.main(args);
 		
 		File mainOutput = new File(folder.getRoot() + "/" + name + ".json");
 		assertTrue(mainOutput.exists());
@@ -165,7 +128,7 @@ public class MainTest {
 		
 		String setup = makeSetup(name);
 		write(file, setup);
-		Main.main(args);
+		PottsMain.main(args);
 	}
 	
 	@Test(expected=NullPointerException.class)
@@ -176,7 +139,7 @@ public class MainTest {
 		
 		String setup = makeSetup(name);
 		write(file, setup);
-		Main.main(args);
+		PottsMain.main(args);
 	}
 	
 	@Test(expected=NullPointerException.class)
@@ -187,6 +150,6 @@ public class MainTest {
 		
 		String setup = makeSetup(name);
 		write(file, setup);
-		Main.main(args);
+		PottsMain.main(args);
 	}
 }
