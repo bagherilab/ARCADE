@@ -15,7 +15,7 @@ public abstract class OutputLoader {
 	private final static Logger LOGGER = Logger.getLogger(OutputLoader.class.getName());
 	
 	/** JSON representation */
-	protected Gson gson;
+	public Gson gson;
 	
 	/** {@link arcade.core.sim.Series} instance */
 	final Series series;

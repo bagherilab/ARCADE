@@ -41,7 +41,7 @@ public abstract class InputBuilder implements ContentHandler {
 	XMLReader xmlReader;
 	
 	/** List holding {@link arcade.core.sim.Series} instances */
-	protected ArrayList<Series> series;
+	public ArrayList<Series> series;
 	
 	/** Tracker for document location */
 	Locator locator;
@@ -50,13 +50,13 @@ public abstract class InputBuilder implements ContentHandler {
 	protected String log;
 	
 	/** Map of setup dictionaries */
-	protected HashMap<String, MiniBox> setupDicts;
+	public HashMap<String, MiniBox> setupDicts;
 	
 	/** Map of setup lists of dictionaries */
-	protected HashMap<String, ArrayList<Box>> setupLists;
+	public HashMap<String, ArrayList<Box>> setupLists;
 	
 	/** Container for default parameter values */
-	protected Box parameters;
+	public Box parameters;
 	
 	/** {@code true} if run with visualization, {@code false otherwise} */
 	protected boolean isVis;

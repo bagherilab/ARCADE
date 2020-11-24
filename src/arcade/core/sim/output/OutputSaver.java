@@ -6,26 +6,22 @@ import com.google.gson.*;
 import sim.engine.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
-import arcade.core.env.grid.Grid;
 
 public abstract class OutputSaver implements Steppable {
 	/** Logger for class */
 	private final static Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
 	
 	/** JSON representation */
-	protected Gson gson;
+	public Gson gson;
 	
 	/** {@link arcade.core.sim.Series} instance */
 	final Series series;
 	
 	/** Prefix for saved files */
-	protected String prefix;
+	public String prefix;
 	
 	/** {@link arcade.core.sim.Simulation} instance */
 	Simulation sim;
-	
-	/** {@link arcade.core.env.grid.Grid} instance containing agents */
-	Grid grid;
 	
 	/**
 	 * Creates an {@code OutputSaver} for the series.
@@ -44,7 +40,6 @@ public abstract class OutputSaver implements Steppable {
 	public void equip(Simulation sim) {
 		this.prefix = String.format("%s_%04d", series.getPrefix(), sim.getSeed());
 		this.sim = sim;
-		this.grid = sim.getAgents();
 	}
 	
 	/**
@@ -60,10 +55,7 @@ public abstract class OutputSaver implements Steppable {
 	 * 
 	 * @param tick  the tick
 	 */
-	public void save(double tick) {
-		String gridPath = prefix + String.format("_%06d.%s.%s",(int)tick, "CELLS", "json");
-		write(gridPath, format(gson.toJson(grid, Grid.class)));
-	}
+	public abstract void save(double tick);
 	
 	/**
 	 * Steps through cell rules.
@@ -90,7 +82,7 @@ public abstract class OutputSaver implements Steppable {
 	 * @param filepath  the path for the file
 	 * @param contents  the contents of the file
 	 */
-	protected void write(String filepath, String contents) {
+	public void write(String filepath, String contents) {
 		try {
 			// Get writer
 			File outfile = new File(filepath);

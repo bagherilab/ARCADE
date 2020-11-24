@@ -1,11 +1,11 @@
-package arcade.sim.input;
+package arcade.core.sim.input;
 
 import org.junit.*;
-import arcade.util.Box;
-import arcade.util.MiniBox;
+import arcade.core.util.Box;
+import arcade.core.util.MiniBox;
 import static org.junit.Assert.*;
-import static arcade.sim.input.InputParser.*;
-import static arcade.MainTest.*;
+import static arcade.core.sim.input.InputParser.*;
+import static arcade.core.TestUtilities.*;
 
 public class InputParserTest {
 	private static final String COMMAND_ID_1 = randomString();
@@ -391,8 +391,8 @@ public class InputParserTest {
 		parser.parsed = new MiniBox();
 		parser.positionIndex = 1;
 		
-		int index = randomInt();
-		String[] arguments = randomValues(index + randomInt());
+		int index = randomIntBetween(1, 10);
+		String[] arguments = randomStrings(index + randomIntBetween(1, 10));
 		arguments[index] = randomString();
 		parser.parsePositionArgument(arguments, index);
 		
@@ -413,8 +413,8 @@ public class InputParserTest {
 		parser.parsed = new MiniBox();
 		parser.positionIndex = 1;
 		
-		int index = randomInt();
-		String[] arguments = randomValues(index + randomInt());
+		int index = randomIntBetween(1, 10);
+		String[] arguments = randomStrings(index + randomIntBetween(1, 10));
 		int newIndex = parser.parsePositionArgument(arguments, index);
 		
 		assertEquals(index + 1, newIndex);
@@ -428,8 +428,8 @@ public class InputParserTest {
 		InputParser parser = new InputParser(box);
 		parser.parsed = new MiniBox();
 		
-		int index = randomInt();
-		String[] arguments = randomValues(index + randomInt());
+		int index = randomIntBetween(1, 10);
+		String[] arguments = randomStrings(index + randomIntBetween(1, 10));
 		parser.parseFlaggedArgument(arguments, index, parser.allCommands.get(0));
 		
 		MiniBox expected = new MiniBox();
@@ -445,8 +445,8 @@ public class InputParserTest {
 		InputParser parser = new InputParser(box);
 		parser.parsed = new MiniBox();
 		
-		int index = randomInt();
-		String[] arguments = randomValues(index + randomInt());
+		int index = randomIntBetween(1, 10);
+		String[] arguments = randomStrings(index + randomIntBetween(1, 10));
 		int newIndex = parser.parseFlaggedArgument(arguments, index, parser.allCommands.get(0));
 		
 		assertEquals(index + 1, newIndex);
@@ -460,8 +460,8 @@ public class InputParserTest {
 		InputParser parser = new InputParser(box);
 		parser.parsed = new MiniBox();
 		
-		int index = randomInt();
-		String[] arguments = randomValues(index + randomInt());
+		int index = randomIntBetween(1, 10);
+		String[] arguments = randomStrings(index + randomIntBetween(2, 10));
 		arguments[index + 1] = arguments[index];
 		parser.parseFlaggedArgument(arguments, index, parser.allCommands.get(0));
 		
@@ -478,8 +478,8 @@ public class InputParserTest {
 		InputParser parser = new InputParser(box);
 		parser.parsed = new MiniBox();
 		
-		int index = randomInt();
-		String[] arguments = randomValues(index + randomInt());
+		int index = randomIntBetween(1, 10);
+		String[] arguments = randomStrings(index + randomIntBetween(2, 10));
 		int newIndex =  parser.parseFlaggedArgument(arguments, index, parser.allCommands.get(0));
 		
 		assertEquals(index + 2, newIndex);

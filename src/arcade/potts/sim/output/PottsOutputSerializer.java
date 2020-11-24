@@ -5,11 +5,10 @@ import java.util.*;
 import com.google.gson.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSerializer;
-import arcade.core.agent.cell.Cell;
-import arcade.core.env.grid.Grid;
-import arcade.core.env.loc.*;
 import arcade.potts.sim.*;
+import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.module.PottsModule;
+import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.loc.*;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 import static arcade.core.agent.cell.Cell.*;
@@ -19,9 +18,9 @@ public final class PottsOutputSerializer {
 		GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();
 		gsonBuilder.registerTypeHierarchyAdapter(PottsSeries.class, new PottsSeriesSerializer());
 		gsonBuilder.registerTypeHierarchyAdapter(Potts.class, new PottsSerializer());
-		gsonBuilder.registerTypeHierarchyAdapter(Grid.class, new GridSerializer());
-		gsonBuilder.registerTypeHierarchyAdapter(Cell.class, new CellSerializer());
-		gsonBuilder.registerTypeHierarchyAdapter(Location.class, new LocationSerializer());
+		gsonBuilder.registerTypeHierarchyAdapter(PottsGrid.class, new PottsGridSerializer());
+		gsonBuilder.registerTypeHierarchyAdapter(PottsCell.class, new PottsCellSerializer());
+		gsonBuilder.registerTypeHierarchyAdapter(PottsLocation.class, new PottsLocationSerializer());
 		gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelSerializer());
 		return gsonBuilder.create();
 	}
@@ -43,7 +42,7 @@ public final class PottsOutputSerializer {
 			JsonArray json = new JsonArray();
 			
 			for (Object obj : src.grid.getAllObjects()) {
-				Cell cell = (Cell)obj;
+				PottsCell cell = (PottsCell)obj;
 				JsonElement voxels = context.serialize(cell.getLocation());
 				JsonElement center = context.serialize(((PottsLocation)cell.getLocation()).getCenter());
 				JsonObject location = new JsonObject();
@@ -57,8 +56,8 @@ public final class PottsOutputSerializer {
 		}
 	}
 	
-	static class CellSerializer implements JsonSerializer<Cell> {
-		public JsonElement serialize(Cell src, Type typeOfSrc, JsonSerializationContext context) {
+	static class PottsCellSerializer implements JsonSerializer<PottsCell> {
+		public JsonElement serialize(PottsCell src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject json = new JsonObject();
 			
 			json.addProperty("id", src.getID());
@@ -95,8 +94,8 @@ public final class PottsOutputSerializer {
 		}
 	}
 	
-	static class GridSerializer implements JsonSerializer<Grid> {
-		public JsonElement serialize(Grid src, Type typeOfSrc, JsonSerializationContext context) {
+	static class PottsGridSerializer implements JsonSerializer<PottsGrid> {
+		public JsonElement serialize(PottsGrid src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonArray json = new JsonArray();
 			
 			for (Object obj : src.getAllObjects()) {
@@ -118,8 +117,8 @@ public final class PottsOutputSerializer {
 		}
 	}
 	
-	static class LocationSerializer implements JsonSerializer<Location> {
-		public JsonElement serialize(Location src, Type typeOfSrc, JsonSerializationContext context) {
+	static class PottsLocationSerializer implements JsonSerializer<PottsLocation> {
+		public JsonElement serialize(PottsLocation src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonArray json = new JsonArray();
 			
 			EnumMap<Region, PottsLocation> locations;
@@ -127,7 +126,7 @@ public final class PottsOutputSerializer {
 			if (src instanceof PottsLocations) { locations = ((PottsLocations)src).locations; }
 			else {
 				locations = new EnumMap<>(Region.class);
-				locations.put(Region.UNDEFINED, (PottsLocation)src);
+				locations.put(Region.UNDEFINED, src);
 			}
 			
 			for (Region region : locations.keySet()) {

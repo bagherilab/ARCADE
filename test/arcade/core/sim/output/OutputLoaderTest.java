@@ -1,4 +1,4 @@
-package arcade.sim.output;
+package arcade.core.sim.output;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -9,16 +9,22 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import arcade.sim.*;
-import arcade.agent.cell.CellFactory;
-import arcade.env.loc.LocationFactory;
-import static arcade.MainTest.*;
-import static arcade.agent.cell.CellFactory.CellFactoryContainer;
-import static arcade.env.loc.LocationFactory.LocationFactoryContainer;
+import arcade.core.sim.*;
+import arcade.core.agent.cell.CellFactory;
+import arcade.core.env.loc.LocationFactory;
+import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
+import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
+import static arcade.core.TestUtilities.*;
 
 public class OutputLoaderTest {
 	@Rule
 	public TemporaryFolder folder = new TemporaryFolder();
+	
+	static class OutputLoaderMock extends OutputLoader {
+		public OutputLoaderMock(Series series, String prefix, boolean loadCells, boolean loadLocations) {
+			super(series, prefix, loadCells, loadLocations);
+		}
+	}
 	
 	@Test
 	public void constructor_setsFields() {
@@ -27,18 +33,11 @@ public class OutputLoaderTest {
 		boolean loadCells = (Math.random() < 0.5);
 		boolean loadLocations = (Math.random() < 0.5);
 		
-		OutputLoader loader = new OutputLoader(series, prefix, loadCells, loadLocations);
+		OutputLoader loader = new OutputLoaderMock(series, prefix, loadCells, loadLocations);
 		assertSame(series, loader.series);
 		assertEquals(prefix, loader.prefix);
 		assertEquals(loadCells, loader.loadCells);
 		assertEquals(loadLocations, loader.loadLocations);
-	}
-	
-	@Test
-	public void constructor_initializesObjects() {
-		Series series = mock(Series.class);
-		OutputLoader loader = new OutputLoader(series, "", false, false);
-		assertNotNull(loader.gson);
 	}
 	
 	@Test
@@ -47,7 +46,7 @@ public class OutputLoaderTest {
 		Simulation sim = mock(Simulation.class);
 		
 		String prefix = folder.getRoot().getAbsolutePath() + "/equip_noCellsNoLocations_loadsNone";
-		OutputLoader loader = new OutputLoader(series, prefix, false, false);
+		OutputLoader loader = new OutputLoaderMock(series, prefix, false, false);
 		
 		loader.equip(sim);
 		assertNull(loader.cellJson);
@@ -61,7 +60,7 @@ public class OutputLoaderTest {
 		
 		folder.newFile("equip_loadCellsNoLocations_loadsCells.CELLS.json");
 		String prefix = folder.getRoot().getAbsolutePath() + "/equip_loadCellsNoLocations_loadsCells";
-		OutputLoader loader = new OutputLoader(series, prefix, true, false);
+		OutputLoader loader = new OutputLoaderMock(series, prefix, true, false);
 		
 		loader.equip(sim);
 		assertEquals("", loader.cellJson);
@@ -75,7 +74,7 @@ public class OutputLoaderTest {
 		
 		folder.newFile("equip_noCellsLoadLocations_loadsLocations.LOCATIONS.json");
 		String prefix = folder.getRoot().getAbsolutePath() + "/equip_noCellsLoadLocations_loadsLocations";
-		OutputLoader loader = new OutputLoader(series, prefix, false, true);
+		OutputLoader loader = new OutputLoaderMock(series, prefix, false, true);
 		
 		loader.equip(sim);
 		assertNull(loader.cellJson);
@@ -90,7 +89,7 @@ public class OutputLoaderTest {
 		folder.newFile("equip_loadCellsLoadLocations_loadsBoth.CELLS.json");
 		folder.newFile("equip_loadCellsLoadLocations_loadsBoth.LOCATIONS.json");
 		String prefix = folder.getRoot().getAbsolutePath() + "/equip_loadCellsLoadLocations_loadsBoth";
-		OutputLoader loader = new OutputLoader(series, prefix, true, true);
+		OutputLoader loader = new OutputLoaderMock(series, prefix, true, true);
 		
 		loader.equip(sim);
 		assertEquals("", loader.cellJson);
@@ -102,14 +101,14 @@ public class OutputLoaderTest {
 		Series series = mock(Series.class);
 		Simulation sim = mock(Simulation.class);
 		
-		int seed = randomInt();
+		int seed = randomSeed();
 		doReturn(seed).when(sim).getSeed();
 		
 		folder.newFile(String.format("equip_loadBothWithSeed_loadsSeed_%04d.CELLS.json", seed));
 		folder.newFile(String.format("equip_loadBothWithSeed_loadsSeed_%04d.LOCATIONS.json", seed));
 		
 		String prefix = folder.getRoot().getAbsolutePath() + "/equip_loadBothWithSeed_loadsSeed_(#)";
-		OutputLoader loader = new OutputLoader(series, prefix, true, true);
+		OutputLoader loader = new OutputLoaderMock(series, prefix, true, true);
 		
 		loader.equip(sim);
 		assertEquals("", loader.cellJson);
@@ -117,7 +116,7 @@ public class OutputLoaderTest {
 	}
 	
 	@Test
-	public void load_locationFactory_loadsFactory() {
+	public void loadLocations_called_loadsFactory() {
 		OutputLoader loader = mock(OutputLoader.class, CALLS_REAL_METHODS);
 		LocationFactory factory = mock(LocationFactory.class);
 		LocationFactoryContainer container = mock(LocationFactoryContainer.class);
@@ -133,13 +132,13 @@ public class OutputLoaderTest {
 			field.set(loader, gson);
 		} catch (Exception ignored) { }
 		
-		loader.load(factory);
+		LocationFactoryContainer loaded = loader.loadLocations();
 		verify(gson).fromJson(loader.locationJson, LocationFactoryContainer.class);
-		assertEquals(container, factory.container);
+		assertEquals(container, loaded);
 	}
 	
 	@Test
-	public void load_cellFactory_loadsCell() {
+	public void loadCells_called_loadsCell() {
 		OutputLoader loader = mock(OutputLoader.class, CALLS_REAL_METHODS);
 		CellFactory factory = mock(CellFactory.class);
 		CellFactoryContainer container = mock(CellFactoryContainer.class);
@@ -155,9 +154,9 @@ public class OutputLoaderTest {
 			field.set(loader, gson);
 		} catch (Exception ignored) { }
 		
-		loader.load(factory);
+		CellFactoryContainer loaded = loader.loadCells();
 		verify(gson).fromJson(loader.cellJson, CellFactoryContainer.class);
-		assertEquals(container, factory.container);
+		assertEquals(container, loaded);
 	}
 	
 	@Test
@@ -168,7 +167,7 @@ public class OutputLoaderTest {
 		FileUtils.writeStringToFile(file, contents, "UTF-8");
 		
 		Series series = mock(Series.class);
-		OutputLoader loader = new OutputLoader(series, "", false, false);
+		OutputLoader loader = new OutputLoaderMock(series, "", false, false);
 		String string = loader.read(filepath);
 		
 		assertEquals(contents.replace("\n", ""), string);
@@ -180,7 +179,7 @@ public class OutputLoaderTest {
 		String filepath = file.getAbsolutePath();
 		
 		Series series = mock(Series.class);
-		OutputLoader loader = new OutputLoader(series, "", false, false);
+		OutputLoader loader = new OutputLoaderMock(series, "", false, false);
 		String string = loader.read(filepath.replace("valid", "invalid"));
 		
 		assertNull(string);

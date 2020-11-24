@@ -1,4 +1,4 @@
-package arcade.sim.input;
+package arcade.core.sim.input;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -7,10 +7,10 @@ import java.io.*;
 import org.junit.rules.TemporaryFolder;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import arcade.util.Box;
-import static arcade.MainTest.*;
-import static arcade.sim.Series.TARGET_SEPARATOR;
-import static arcade.util.MiniBox.TAG_SEPARATOR;
+import arcade.core.util.Box;
+import static arcade.core.sim.Series.TARGET_SEPARATOR;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.core.TestUtilities.*;
 
 public class InputLoaderTest {
 	@Rule
