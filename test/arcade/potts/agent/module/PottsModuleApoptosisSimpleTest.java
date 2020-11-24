@@ -27,7 +27,7 @@ public class PottsModuleApoptosisSimpleTest {
 		when(random.nextDouble()).thenReturn(r);
 		sim = mock(PottsSimulation.class);
 		when(sim.getPotts()).thenReturn(mock(Potts.class));
-		when(sim.getAgents()).thenReturn(mock(Grid.class));
+		when(sim.getGrid()).thenReturn(mock(Grid.class));
 		cell = mock(PottsCell.class);
 		
 		MiniBox box = mock(MiniBox.class);
@@ -283,7 +283,7 @@ public class PottsModuleApoptosisSimpleTest {
 		int id = (int)(Math.random()*100) + 1;
 		doReturn(potts).when(sim).getPotts();
 		doReturn(id).when(cell).getID();
-		doReturn(grid).when(sim).getAgents();
+		doReturn(grid).when(sim).getGrid();
 		doReturn(location).when(cell).getLocation();
 		
 		potts.IDS = new int[][][] { { { } } };

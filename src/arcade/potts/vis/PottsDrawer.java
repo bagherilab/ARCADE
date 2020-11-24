@@ -179,7 +179,7 @@ public abstract class PottsDrawer extends Drawer {
 		
 		public void step(SimState state) {
 			PottsSimulation sim = (PottsSimulation)state;
-			Grid agents = sim.getAgents();
+			Grid grid = sim.getGrid();
 			Potts potts = sim.getPotts();
 			Cell cell;
 			
@@ -208,7 +208,7 @@ public abstract class PottsDrawer extends Drawer {
 			for (int a = 0; a < A; a++) {
 				for (int b = 0; b < B; b++) {
 					if (ids[a][b] == 0) { cell = null; }
-					else { cell = (Cell)agents.getObjectAt(ids[a][b]); }
+					else { cell = (Cell)grid.getObjectAt(ids[a][b]); }
 					
 					switch(CODE) {
 						case DRAW_OVERLAY:

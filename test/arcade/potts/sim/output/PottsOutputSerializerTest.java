@@ -25,10 +25,7 @@ import static arcade.potts.sim.output.PottsOutputSerializer.*;
 import static arcade.core.TestUtilities.*;
 
 public class PottsOutputSerializerTest {
-	@Test
-	public void makeGSON_registersAdaptors() {
-		Gson gson = PottsOutputSerializer.makeGSON();
-		
+	public static void checkAdaptors(Gson gson) {
 		TypeToken<Potts> potts = new TypeToken<Potts>() {};
 		assertSame(gson.getAdapter(potts).getClass(), TreeTypeAdapter.class);
 		
@@ -43,6 +40,12 @@ public class PottsOutputSerializerTest {
 		
 		TypeToken<Voxel> voxel = new TypeToken<Voxel>() {};
 		assertSame(gson.getAdapter(voxel).getClass(), TreeTypeAdapter.class);
+	}
+	
+	@Test
+	public void makeGSON_registersAdaptors() {
+		Gson gson = PottsOutputSerializer.makeGSON();
+		checkAdaptors(gson);
 	}
 	
 	@Test

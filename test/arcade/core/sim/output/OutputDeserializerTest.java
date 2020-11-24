@@ -35,16 +35,25 @@ public class OutputDeserializerTest {
 		}
 	};
 	
+	public static void checkAdaptors(Gson gson) {
+		TypeToken<CellFactoryContainer> cellFactory = new TypeToken<CellFactoryContainer>() {};
+		assertSame(gson.getAdapter(cellFactory).getClass(), TreeTypeAdapter.class);
+		
+		TypeToken<CellContainer> cell = new TypeToken<CellContainer>() {};
+		assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
+		
+		TypeToken<LocationFactoryContainer> locationFactory = new TypeToken<LocationFactoryContainer>() {};
+		assertSame(gson.getAdapter(locationFactory).getClass(), TreeTypeAdapter.class);
+		
+		TypeToken<LocationContainer> location = new TypeToken<LocationContainer>() {};
+		assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
+	}
+	
 	@Test
 	public void makeGSON_registersAdaptors() {
 		GsonBuilder gsonBuilder = OutputDeserializer.makeGSONBuilder();
 		Gson gson = gsonBuilder.create();
-		
-		TypeToken<CellFactoryContainer> cellFactory = new TypeToken<CellFactoryContainer>() {};
-		assertSame(gson.getAdapter(cellFactory).getClass(), TreeTypeAdapter.class);
-		
-		TypeToken<LocationFactoryContainer> locationFactory = new TypeToken<LocationFactoryContainer>() {};
-		assertSame(gson.getAdapter(locationFactory).getClass(), TreeTypeAdapter.class);
+		checkAdaptors(gson);
 	}
 	
 	@Test
@@ -73,6 +82,28 @@ public class OutputDeserializerTest {
 	}
 	
 	@Test
+	public void deserializer_forCell_createObject() {
+		CellDeserializer deserializer = new CellDeserializer();
+		
+		int id = randomIntBetween(1,100);
+		int pop = randomIntBetween(1,100);
+		int age = randomIntBetween(1,100);
+		
+		String string = "{"
+				+ "\"id\": " + id
+				+ ",\"pop\": " + pop
+				+ ",\"age\": " + age
+				+ "}";
+		
+		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
+		CellContainer object = deserializer.deserialize(json, CellContainer.class, null);
+		
+		assertEquals(id, object.id);
+		assertEquals(pop, object.pop);
+		assertEquals(age, object.age);
+	}
+	
+	@Test
 	public void deserializer_forLocationFactory_createsObject() {
 		LocationFactoryDeserializer deserializer = new LocationFactoryDeserializer();
 		
@@ -95,5 +126,21 @@ public class OutputDeserializerTest {
 			int id = id0 + i;
 			assertEquals(id, object.locations.get(i).id);
 		}
+	}
+	
+	@Test
+	public void deserializer_forLocation_createObject() {
+		LocationDeserializer deserializer = new LocationDeserializer();
+		
+		int id = randomIntBetween(1,100);
+		
+		String string = "{"
+				+ "\"id\": " + id
+				+ "}";
+		
+		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
+		LocationContainer object = deserializer.deserialize(json, LocationContainer.class, null);
+		
+		assertEquals(id, object.id);
 	}
 }

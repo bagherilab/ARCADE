@@ -37,7 +37,7 @@ public class PottsMainTest {
 		for (String tp : timepoints) {
 			File cellOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".CELLS.json");
 			assertTrue(cellOutput.exists());
-			File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".POTTS.json");
+			File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".LOCATIONS.json");
 			assertTrue(locationOutput.exists());
 		}
 	}
@@ -61,7 +61,7 @@ public class PottsMainTest {
 		for (String tp : timepoints) {
 			File cellOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".CELLS.json");
 			assertFalse(cellOutput.exists());
-			File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".POTTS.json");
+			File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".LOCATIONS.json");
 			assertFalse(locationOutput.exists());
 		}
 	}

@@ -275,17 +275,17 @@ public class PottsSimulationTest {
 	}
 	
 	@Test
-	public void getAgents_initialized_returnsNull() {
+	public void getGrid_initialized_returnsNull() {
 		Series series = mock(PottsSeries.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
-		assertNull(sim.getAgents());
+		assertNull(sim.getGrid());
 	}
 	
 	@Test
-	public void getEnvironments_initialized_returnsNull() {
+	public void getLattice_initialized_returnsNull() {
 		Series series = mock(PottsSeries.class);
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, series);
-		assertNull(sim.getEnvironment(""));
+		assertNull(sim.getLattice(""));
 	}
 	
 	@Test
@@ -369,7 +369,7 @@ public class PottsSimulationTest {
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesZeroPop);
 		sim.potts = mock(Potts.class);
 		sim.setupAgents();
-		assertEquals(sim.agents, sim.potts.grid);
+		assertEquals(sim.grid, sim.potts.grid);
 	}
 	
 	@Test
@@ -377,7 +377,7 @@ public class PottsSimulationTest {
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesZeroPop);
 		sim.potts = mock(Potts.class);
 		sim.setupAgents();
-		assertNotNull(sim.agents);
+		assertNotNull(sim.grid);
 	}
 	
 	@Test
@@ -385,7 +385,7 @@ public class PottsSimulationTest {
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesZeroPop);
 		sim.potts = mock(Potts.class);
 		sim.setupAgents();
-		assertEquals(0, sim.agents.getAllObjects().numObjs);
+		assertEquals(0, sim.grid.getAllObjects().numObjs);
 	}
 	
 	@Test
@@ -393,18 +393,18 @@ public class PottsSimulationTest {
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesOnePop);
 		sim.potts = mock(Potts.class);
 		sim.setupAgents();
-		assertEquals(TOTAL_LOCATIONS - 1, sim.agents.getAllObjects().numObjs);
+		assertEquals(TOTAL_LOCATIONS - 1, sim.grid.getAllObjects().numObjs);
 		
 		int[] pops = new int[] { 1, 1, 1, 1, 1 };
 		for (int i = 0; i < TOTAL_LOCATIONS - 1; i++) {
 			int id = i + 1;
-			Cell cell = (Cell)sim.agents.getObjectAt(id);
+			Cell cell = (Cell)sim.grid.getObjectAt(id);
 			assertEquals(id, cell.getID());
 			assertEquals(pops[i], cell.getPop());
 			assertEquals(new Voxel(id, id, id), ((PottsLocation)cell.getLocation()).getCenter());
 		}
 		
-		assertNull(sim.agents.getObjectAt(6));
+		assertNull(sim.grid.getObjectAt(6));
 		assertEquals(TOTAL_LOCATIONS, sim.getID());
 	}
 	
@@ -414,7 +414,7 @@ public class PottsSimulationTest {
 		sim.potts = mock(Potts.class);
 		sim.setupAgents();
 		
-		for (Object obj : sim.agents.getAllObjects()) {
+		for (Object obj : sim.grid.getAllObjects()) {
 			verify((PottsCell)obj).initialize(sim.potts.IDS, sim.potts.REGIONS);
 			verify((Cell)obj).schedule(sim.schedule);
 		}
@@ -425,12 +425,12 @@ public class PottsSimulationTest {
 		PottsSimulationMock sim = new PottsSimulationMock(RANDOM_SEED, seriesMultiPop);
 		sim.potts = mock(Potts.class);
 		sim.setupAgents();
-		assertEquals(TOTAL_LOCATIONS, sim.agents.getAllObjects().numObjs);
+		assertEquals(TOTAL_LOCATIONS, sim.grid.getAllObjects().numObjs);
 		
 		int[] pops = new int[] { 1, 1, 1, 2, 3, 3 };
 		for (int i = 0; i < TOTAL_LOCATIONS; i++) {
 			int id = i + 1;
-			Cell cell = (Cell)sim.agents.getObjectAt(id);
+			Cell cell = (Cell)sim.grid.getObjectAt(id);
 			assertEquals(id, cell.getID());
 			assertEquals(pops[i], cell.getPop());
 			assertEquals(new Voxel(id, id, id), ((PottsLocation)cell.getLocation()).getCenter());
@@ -445,7 +445,7 @@ public class PottsSimulationTest {
 		sim.potts = mock(Potts.class);
 		sim.setupAgents();
 		
-		for (Object obj : sim.agents.getAllObjects()) {
+		for (Object obj : sim.grid.getAllObjects()) {
 			verify((PottsCell)obj).initialize(sim.potts.IDS, sim.potts.REGIONS);
 			verify((PottsCell)obj).schedule(sim.schedule);
 		}
@@ -456,7 +456,7 @@ public class PottsSimulationTest {
 		PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, seriesNullLocation));
 		sim.potts = mock(Potts.class);
 		sim.setupAgents();
-		assertEquals(1, sim.agents.getAllObjects().numObjs);
+		assertEquals(1, sim.grid.getAllObjects().numObjs);
 		assertEquals(2, sim.getID());
 	}
 	
@@ -465,7 +465,7 @@ public class PottsSimulationTest {
 		PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, seriesNullCell));
 		sim.potts = mock(Potts.class);
 		sim.setupAgents();
-		assertEquals(1, sim.agents.getAllObjects().numObjs);
+		assertEquals(1, sim.grid.getAllObjects().numObjs);
 		assertEquals(2, sim.getID());
 	}
 	
@@ -474,7 +474,7 @@ public class PottsSimulationTest {
 		PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, seriesNullBoth));
 		sim.potts = mock(Potts.class);
 		sim.setupAgents();
-		assertEquals(1, sim.agents.getAllObjects().numObjs);
+		assertEquals(1, sim.grid.getAllObjects().numObjs);
 		assertEquals(2, sim.getID());
 	}
 	

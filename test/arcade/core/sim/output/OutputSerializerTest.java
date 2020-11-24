@@ -41,11 +41,7 @@ public class OutputSerializerTest {
 		}
 	};
 	
-	@Test
-	public void makeGSON_registersAdaptors() {
-		GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();
-		Gson gson = gsonBuilder.create();
-		
+	public static void checkAdaptors(Gson gson) {
 		TypeToken<Series> series = new TypeToken<Series>() {};
 		assertSame(gson.getAdapter(series).getClass(), TreeTypeAdapter.class);
 		
@@ -63,6 +59,13 @@ public class OutputSerializerTest {
 		
 		TypeToken<LocationContainer> location = new TypeToken<LocationContainer>() {};
 		assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
+	}
+	
+	@Test
+	public void makeGSON_registersAdaptors() {
+		GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();
+		Gson gson = gsonBuilder.create();
+		checkAdaptors(gson);
 	}
 	
 	@Test

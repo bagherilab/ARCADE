@@ -15,7 +15,7 @@ public abstract class OutputLoader {
 	private final static Logger LOGGER = Logger.getLogger(OutputLoader.class.getName());
 	
 	/** JSON representation */
-	public Gson gson;
+	final Gson gson;
 	
 	/** {@link arcade.core.sim.Series} instance */
 	final Series series;
@@ -45,7 +45,15 @@ public abstract class OutputLoader {
 		this.prefix = prefix;
 		this.loadCells = loadCells;
 		this.loadLocations = loadLocations;
+		this.gson = makeGSON();
 	}
+	
+	/**
+	 * Creates a {@code Gson} instance for deserializing objects.
+	 * 
+	 * @return  a {@code Gson} instance
+	 */
+	protected abstract Gson makeGSON();
 	
 	/**
 	 * Equips the given {@link arcade.core.sim.Simulation} instance to the loader.

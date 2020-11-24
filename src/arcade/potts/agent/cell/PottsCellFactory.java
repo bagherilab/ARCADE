@@ -67,6 +67,7 @@ public abstract class PottsCellFactory implements CellFactory {
 	 * Container class for loading a {@link PottsCell}.
 	 */
 	public static class PottsCellContainer extends CellContainer {
+		public final State state;
 		public final Phase phase;
 		public final int voxels;
 		public final EnumMap<Region, Integer> regionVoxels;
@@ -92,7 +93,8 @@ public abstract class PottsCellFactory implements CellFactory {
 							 EnumMap<Region, Integer> regionVoxels,
 							 double targetVolume, double targetSurface,
 							 EnumMap<Region, Double> regionTargetVolume, EnumMap<Region, Double> regionTargetSurface) {
-			super(id, pop, age, state);
+			super(id, pop, age);
+			this.state = state;
 			this.phase = phase;
 			this.voxels = voxels;
 			this.regionVoxels = regionVoxels;

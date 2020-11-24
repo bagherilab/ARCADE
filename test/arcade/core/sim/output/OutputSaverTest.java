@@ -22,6 +22,8 @@ public class OutputSaverTest {
 	
 	static class OutputSaverMock extends OutputSaver {
 		public OutputSaverMock(Series series) { super(series); }
+		
+		protected Gson makeGSON() { return mock(Gson.class); }
 	}
 	
 	@Test
@@ -29,6 +31,7 @@ public class OutputSaverTest {
 		Series series = mock(Series.class);
 		OutputSaver saver = new OutputSaverMock(series);
 		assertSame(series, saver.series);
+		assertNotNull(saver.gson);
 	}
 	
 	@Test

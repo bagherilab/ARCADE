@@ -12,8 +12,8 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.loc.PottsLocationFactory;
-import static arcade.core.agent.cell.CellFactory.CellContainer;
-import static arcade.core.env.loc.LocationFactory.LocationContainer;
+import static arcade.core.agent.cell.CellFactory.*;
+import static arcade.core.env.loc.LocationFactory.*;
 
 public abstract class PottsSimulation extends SimState implements Simulation {
 	/** Stepping order for simulation */
@@ -35,7 +35,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	Potts potts;
 	
 	/** {@link arcade.core.env.grid.Grid} containing agents in the simulation */
-	Grid agents;
+	Grid grid;
 	
 	/** Cell ID tracker */
 	int id;
@@ -56,9 +56,11 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	public Schedule getSchedule() { return schedule; }
 	public int getSeed() { return seed; }
 	public int getID() { return ++id; }
+	public CellFactoryContainer getCells() { return null; }
+	public LocationFactoryContainer getLocations() { return null; }
 	public Potts getPotts() { return potts; }
-	public Grid getAgents() { return agents; }
-	public Lattice getEnvironment(String key) { return null; }
+	public Grid getGrid() { return grid; }
+	public Lattice getLattice(String key) { return null; }
 	
 	/**
 	 * Called at the start of the simulation to set up agents and environment
@@ -129,8 +131,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	
 	public void setupAgents() {
 		// Initialize grid for agents.
-		agents = new PottsGrid();
-		potts.grid = agents;
+		grid = new PottsGrid();
+		potts.grid = grid;
 		
 		// Create factory for locations.
 		PottsLocationFactory locationFactory = makeLocationFactory();
@@ -158,7 +160,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 				PottsCell cell = (PottsCell)cellFactory.make(cellContainer, location);
 				
 				// Add, initialize, and schedule the cell.
-				agents.addObject(i, cell);
+				grid.addObject(i, cell);
 				cell.initialize(potts.IDS, potts.REGIONS);
 				cell.schedule(schedule);
 				

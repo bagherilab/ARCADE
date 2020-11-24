@@ -1,45 +1,16 @@
 package arcade.potts.sim.output;
 
-import arcade.core.env.grid.Grid;
+import com.google.gson.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSaver;
-import arcade.core.sim.Simulation;
-import arcade.potts.sim.PottsSimulation;
-import arcade.potts.sim.Potts;
 
 public class PottsOutputSaver extends OutputSaver {
-	/** {@link arcade.potts.sim.Potts} instance */
-	Potts potts;
-	
-	/** {@link arcade.core.env.grid.Grid} instance containing agents */
-	Grid grid;
-	
 	/**
-	 * Creates an {@code OutputSaver} for the series.
+	 * Creates an {@code PottsOutputSaver} for the series.
 	 * 
 	 * @param series  the simulation series
 	 */
-	public PottsOutputSaver(Series series) {
-		super(series);
-		gson = PottsOutputSerializer.makeGSON();
-	}
+	public PottsOutputSaver(Series series) { super(series); }
 	
-	public void equip(Simulation sim) {
-		super.equip(sim);
-		this.grid = sim.getAgents();
-		this.potts = ((PottsSimulation)sim).getPotts();
-	}
-	
-	/**
-	 * Saves a snapshot of the simulation at the given tick.
-	 * 
-	 * @param tick  the tick
-	 */
-	public void save(double tick) {
-		String gridPath = prefix + String.format("_%06d.%s.%s",(int)tick, "CELLS", "json");
-		write(gridPath, format(gson.toJson(grid)));
-		
-		String pottsPath = prefix + String.format("_%06d.%s.%s", (int)tick, "POTTS", "json");
-		write(pottsPath, format(gson.toJson(potts)));
-	}
+	protected Gson makeGSON() { return PottsOutputSerializer.makeGSON(); }
 }

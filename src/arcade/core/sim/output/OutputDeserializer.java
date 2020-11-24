@@ -9,11 +9,13 @@ public final class OutputDeserializer {
 	public static GsonBuilder makeGSONBuilder() {
 		GsonBuilder gsonBuilder = new GsonBuilder();
 		gsonBuilder.registerTypeAdapter(CellFactoryContainer.class, new CellFactoryDeserializer());
+		gsonBuilder.registerTypeAdapter(CellContainer.class, new CellDeserializer());
 		gsonBuilder.registerTypeAdapter(LocationFactoryContainer.class, new LocationFactoryDeserializer());
+		gsonBuilder.registerTypeAdapter(LocationContainer.class, new LocationDeserializer());
 		return gsonBuilder;
 	}
 	
-	static class CellFactoryDeserializer implements JsonDeserializer<CellFactoryContainer> {
+	public static class CellFactoryDeserializer implements JsonDeserializer<CellFactoryContainer> {
 		public CellFactoryContainer deserialize(JsonElement json, Type typeOfT,
 												JsonDeserializationContext context) throws JsonParseException {
 			JsonArray jsonArray = json.getAsJsonArray();
@@ -29,7 +31,19 @@ public final class OutputDeserializer {
 		}
 	}
 	
-	static class LocationFactoryDeserializer implements JsonDeserializer<LocationFactoryContainer> {
+	public static class CellDeserializer implements JsonDeserializer<CellContainer> {
+		public CellContainer deserialize(JsonElement json, Type typeOfT,
+												JsonDeserializationContext context) throws JsonParseException {
+			JsonObject array = json.getAsJsonObject();
+			int id = array.get("id").getAsInt();
+			int pop = array.get("pop").getAsInt();
+			int age = array.get("age").getAsInt();
+			CellContainer container = new CellContainer(id, pop, age);
+			return container;
+		}
+	}
+	
+	public static class LocationFactoryDeserializer implements JsonDeserializer<LocationFactoryContainer> {
 		public LocationFactoryContainer deserialize(JsonElement json, Type typeOfT,
 													JsonDeserializationContext context) throws JsonParseException {
 			JsonArray jsonArray = json.getAsJsonArray();
@@ -41,6 +55,16 @@ public final class OutputDeserializer {
 				container.locations.add(location);
 			}
 			
+			return container;
+		}
+	}
+	
+	public static class LocationDeserializer implements JsonDeserializer<LocationContainer> {
+		public LocationContainer deserialize(JsonElement json, Type typeOfT,
+										 JsonDeserializationContext context) throws JsonParseException {
+			JsonObject array = json.getAsJsonObject();
+			int id = array.get("id").getAsInt();
+			LocationContainer container = new LocationContainer(id);
 			return container;
 		}
 	}

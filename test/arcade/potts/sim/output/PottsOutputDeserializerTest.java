@@ -16,24 +16,36 @@ import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.sim.output.PottsOutputDeserializer.*;
 import static arcade.potts.agent.cell.PottsCellFactory.PottsCellContainer;
 import static arcade.potts.env.loc.PottsLocationFactory.PottsLocationContainer;
+import static arcade.core.sim.output.OutputDeserializer.*;
 import static arcade.core.TestUtilities.*;
 import static arcade.potts.PottsTestUtilities.*;
 
 public class PottsOutputDeserializerTest {
 	private static final double EPSILON = 1E-10;
 	
-	static final JsonDeserializationContext VOXEL_CONTEXT = new JsonDeserializationContext() {
+	static final JsonDeserializationContext CELL_CONTEXT = new JsonDeserializationContext() {
 		public <T> T deserialize(JsonElement json, Type typeOfT)
 				throws JsonParseException {
-			VoxelDeserializer deserializer = new VoxelDeserializer();
-			return (T) deserializer.deserialize(json, Voxel.class, null);
+			CellDeserializer deserializer = new CellDeserializer();
+			return (T)deserializer.deserialize(json, typeOfT, null);
 		}
 	};
 	
-	@Test
-	public void makeGSON_registersAdaptors() {
-		Gson gson = PottsOutputDeserializer.makeGSON();
-		
+	static final JsonDeserializationContext LOCATION_CONTEXT = new JsonDeserializationContext() {
+		public <T> T deserialize(JsonElement json, Type typeOfT)
+				throws JsonParseException {
+			if (typeOfT == Voxel.class) {
+				VoxelDeserializer deserializer = new VoxelDeserializer();
+				return (T) deserializer.deserialize(json, typeOfT, null);
+			}
+			else {
+				LocationDeserializer deserializer = new LocationDeserializer();
+				return (T)deserializer.deserialize(json, typeOfT, null);
+			}
+		}
+	};
+	
+	public static void checkAdaptors(Gson gson) {
 		TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() {};
 		assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
 		
@@ -42,6 +54,12 @@ public class PottsOutputDeserializerTest {
 		
 		TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() {};
 		assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
+	}
+	
+	@Test
+	public void makeGSON_registersAdaptors() {
+		Gson gson = PottsOutputDeserializer.makeGSON();
+		checkAdaptors(gson);
 	}
 	
 	@Test
@@ -68,7 +86,7 @@ public class PottsOutputDeserializerTest {
 				+ "}";
 		
 		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
-		PottsCellContainer object = deserializer.deserialize(json, PottsCellContainer.class, null);
+		PottsCellContainer object = deserializer.deserialize(json, PottsCellContainer.class, CELL_CONTEXT);
 		
 		assertEquals(id, object.id);
 		assertEquals(pop, object.pop);
@@ -126,7 +144,7 @@ public class PottsOutputDeserializerTest {
 				+ "}";
 		
 		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
-		PottsCellContainer object = deserializer.deserialize(json, PottsCellContainer.class, null);
+		PottsCellContainer object = deserializer.deserialize(json, PottsCellContainer.class, CELL_CONTEXT);
 		
 		assertEquals(id, object.id);
 		assertEquals(pop, object.pop);
@@ -189,7 +207,7 @@ public class PottsOutputDeserializerTest {
 		expected.add(new Voxel(x2, y2, z2));
 		
 		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
-		PottsLocationContainer object = deserializer.deserialize(json, PottsLocationContainer.class, VOXEL_CONTEXT);
+		PottsLocationContainer object = deserializer.deserialize(json, PottsLocationContainer.class, LOCATION_CONTEXT);
 		
 		assertEquals(id, object.id);
 		assertEquals(center, object.center);
@@ -254,7 +272,7 @@ public class PottsOutputDeserializerTest {
 		expected2.add(new Voxel(x4, y4, z4));
 		
 		JsonObject json = JsonParser.parseString(string).getAsJsonObject();
-		PottsLocationContainer object = deserializer.deserialize(json, PottsLocationContainer.class, VOXEL_CONTEXT);
+		PottsLocationContainer object = deserializer.deserialize(json, PottsLocationContainer.class, LOCATION_CONTEXT);
 		
 		assertEquals(id, object.id);
 		assertEquals(center, object.center);

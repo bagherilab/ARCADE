@@ -503,7 +503,7 @@ public class PottsModuleProliferationSimpleTest {
 		int id = (int)(Math.random()*100) + 1;
 		doReturn(potts).when(sim).getPotts();
 		doReturn(id).when(sim).getID();
-		doReturn(grid).when(sim).getAgents();
+		doReturn(grid).when(sim).getGrid();
 		doReturn(schedule).when(sim).getSchedule();
 		
 		potts.IDS = new int[][][] { { { } } };

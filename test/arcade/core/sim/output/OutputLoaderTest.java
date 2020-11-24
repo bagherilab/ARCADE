@@ -24,6 +24,8 @@ public class OutputLoaderTest {
 		public OutputLoaderMock(Series series, String prefix, boolean loadCells, boolean loadLocations) {
 			super(series, prefix, loadCells, loadLocations);
 		}
+		
+		protected Gson makeGSON() { return mock(Gson.class); }
 	}
 	
 	@Test
@@ -38,6 +40,7 @@ public class OutputLoaderTest {
 		assertEquals(prefix, loader.prefix);
 		assertEquals(loadCells, loader.loadCells);
 		assertEquals(loadLocations, loader.loadLocations);
+		assertNotNull(loader.gson);
 	}
 	
 	@Test

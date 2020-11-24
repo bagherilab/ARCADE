@@ -26,7 +26,7 @@ public final class OutputSerializer {
 		return gsonBuilder;
 	}
 	
-	static class MiniBoxSerializer implements JsonSerializer<MiniBox> {
+	public static class MiniBoxSerializer implements JsonSerializer<MiniBox> {
 		public JsonElement serialize(MiniBox src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject json = new JsonObject();
 			
@@ -42,7 +42,7 @@ public final class OutputSerializer {
 		}
 	}
 	
-	static class SeriesSerializer implements JsonSerializer<Series> {
+	public static class SeriesSerializer implements JsonSerializer<Series> {
 		public JsonElement serialize(Series src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject json = new JsonObject();
 			
@@ -78,7 +78,7 @@ public final class OutputSerializer {
 		}
 	}
 	
-	static class CellFactorySerializer implements JsonSerializer<CellFactoryContainer> {
+	public static class CellFactorySerializer implements JsonSerializer<CellFactoryContainer> {
 		public JsonElement serialize(CellFactoryContainer src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonArray json = new JsonArray();
 			
@@ -91,7 +91,7 @@ public final class OutputSerializer {
 		}
 	}
 	
-	static class CellSerializer implements JsonSerializer<CellContainer> {
+	public static class CellSerializer implements JsonSerializer<CellContainer> {
 		public JsonElement serialize(CellContainer src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject json = new JsonObject();
 			json.addProperty("id", src.id);
@@ -101,7 +101,7 @@ public final class OutputSerializer {
 		}
 	}
 	
-	static class LocationFactorySerializer implements JsonSerializer<LocationFactoryContainer> {
+	public static class LocationFactorySerializer implements JsonSerializer<LocationFactoryContainer> {
 		public JsonElement serialize(LocationFactoryContainer src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonArray json = new JsonArray();
 			
@@ -114,7 +114,7 @@ public final class OutputSerializer {
 		}
 	}
 	
-	static class LocationSerializer implements JsonSerializer<LocationContainer> {
+	public static class LocationSerializer implements JsonSerializer<LocationContainer> {
 		public JsonElement serialize(LocationContainer src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject json = new JsonObject();
 			json.addProperty("id", src.id);
