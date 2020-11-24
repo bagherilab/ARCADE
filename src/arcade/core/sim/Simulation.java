@@ -6,6 +6,8 @@ import ec.util.MersenneTwisterFast;
 import sim.engine.Schedule;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.grid.Grid;
+import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
+import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
 
 /** 
  * A {@code Simulation} object sets up the agents and environments for a simulation.
@@ -54,11 +56,23 @@ public interface Simulation {
 	int getID();
 	
 	/**
-	 * Gets the {@link arcade.core.env.grid.Grid} object holding the agents
+	 * 
+	 * @return
+	 */
+	CellFactoryContainer getCells();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	LocationFactoryContainer getLocations();
+	
+	/**
+	 * Gets the {@link arcade.core.env.grid.Grid} object holding the agents.
 	 *
 	 * @return  the {@link arcade.core.env.grid.Grid} object
 	 */
-	Grid getAgents();
+	Grid getGrid();
 	
 	/**
 	 * Gets the {@link arcade.core.env.lat.Lattice} object for a given key.
@@ -66,7 +80,7 @@ public interface Simulation {
 	 * @param key  the name of the lattice
 	 * @return  the {@link arcade.core.env.lat.Lattice} object
 	 */
-	Lattice getEnvironment(String key);
+	Lattice getLattice(String key);
 	
 	/**
 	 * Sets up the agents in the grid for the simulation.

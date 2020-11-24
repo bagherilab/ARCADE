@@ -15,6 +15,8 @@ import arcade.core.util.MiniBox;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
 import arcade.core.vis.*;
+import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
+import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
 import static arcade.core.sim.Series.SEED_OFFSET;
 import static arcade.core.TestUtilities.EPSILON;
 
@@ -31,8 +33,8 @@ public class SeriesTest {
 	private static final int DEFAULT_LENGTH = randomInt();
 	private static final int DEFAULT_WIDTH = randomInt();
 	private static final int DEFAULT_HEIGHT = randomOdd();
-	private static final String SIM_CONSTRUCTOR_CLASS = "arcade.core.sim.SeriesTest$SimulationMock";
-	private static final String VIS_CONSTRUCTOR_CLASS = "arcade.core.sim.SeriesTest$VisualizationMock";
+	private static final String SIM_CONSTRUCTOR_CLASS = SimulationMock.class.getName();
+	private static final String VIS_CONSTRUCTOR_CLASS = VisualizationMock.class.getName();
 	
 	private static final HashMap<String, ArrayList<Box>> setupListsMock = mock(HashMap.class);
 	
@@ -90,18 +92,6 @@ public class SeriesTest {
 		return setupDicts;
 	}
 	
-	private HashMap<String, ArrayList<Box>> makeLists() {
-		HashMap<String, ArrayList<Box>> setupLists = new HashMap<>();
-		
-		ArrayList<Box> potts = new ArrayList<>();
-		setupLists.put("potts", potts);
-		
-		ArrayList<Box> populations = new ArrayList<>();
-		setupLists.put("populations", populations);
-		
-		return setupLists;
-	}
-	
 	public static class SimulationMock extends SimState implements Simulation {
 		public SimulationMock(long seed, Series series) { super(seed); }
 		
@@ -113,9 +103,13 @@ public class SeriesTest {
 		
 		public int getID() { return 0; }
 		
-		public Grid getAgents() { return null; }
+		public Grid getGrid() { return null; }
 		
-		public Lattice getEnvironment(String key) { return null; }
+		public CellFactoryContainer getCells() { return null; }
+		
+		public LocationFactoryContainer getLocations() { return null; }
+		
+		public Lattice getLattice(String key) { return null; }
 		
 		public void setupAgents() { }
 		

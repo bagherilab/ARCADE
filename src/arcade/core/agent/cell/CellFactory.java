@@ -3,7 +3,6 @@ package arcade.core.agent.cell;
 import java.util.ArrayList;
 import arcade.core.sim.Series;
 import arcade.core.env.loc.Location;
-import static arcade.core.agent.cell.Cell.State;
 
 public interface CellFactory {
 	/**
@@ -13,13 +12,11 @@ public interface CellFactory {
 		public final int id;
 		public final int pop;
 		public final int age;
-		public final Cell.State state;
 		
-		public CellContainer(int id, int pop, int age, State state) {
+		public CellContainer(int id, int pop, int age) {
 			this.id = id;
 			this.pop = pop;
 			this.age = age;
-			this.state = state;
 		}
 	}
 	

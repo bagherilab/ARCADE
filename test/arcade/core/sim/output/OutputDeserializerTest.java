@@ -12,7 +12,6 @@ import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
 import static arcade.core.env.loc.LocationFactory.LocationContainer;
 import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
 import static arcade.core.sim.output.OutputDeserializer.*;
-import static arcade.core.agent.cell.Cell.State;
 import static arcade.core.TestUtilities.*;
 
 public class OutputDeserializerTest {
@@ -31,7 +30,7 @@ public class OutputDeserializerTest {
 				throws JsonParseException {
 			JsonObject array = json.getAsJsonObject();
 			int id = array.get("id").getAsInt();
-			CellContainer container = new CellContainer(id, 0, 0, State.UNDEFINED);
+			CellContainer container = new CellContainer(id, 0, 0);
 			return (T)container;
 		}
 	};

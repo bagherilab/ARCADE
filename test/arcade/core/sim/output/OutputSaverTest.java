@@ -12,6 +12,8 @@ import java.lang.reflect.Field;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.sim.*;
+import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
+import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
 import static arcade.core.TestUtilities.*;
 
 public class OutputSaverTest {
@@ -20,8 +22,6 @@ public class OutputSaverTest {
 	
 	static class OutputSaverMock extends OutputSaver {
 		public OutputSaverMock(Series series) { super(series); }
-		
-		public void save(double tick) { }
 	}
 	
 	@Test
@@ -54,10 +54,19 @@ public class OutputSaverTest {
 		Series series = mock(Series.class);
 		OutputSaver saver = new OutputSaverMock(series);
 		
+		CellFactoryContainer cells = mock(CellFactoryContainer.class);
+		LocationFactoryContainer locations = mock(LocationFactoryContainer.class);
+		
 		Simulation sim = mock(Simulation.class);
+		doReturn(cells).when(sim).getCells();
+		doReturn(locations).when(sim).getLocations();
+		
 		assertNull(saver.sim);
 		saver.equip(sim);
+		
 		assertSame(sim, saver.sim);
+		assertSame(cells, saver.cells);
+		assertSame(locations, saver.locations);
 	}
 	
 	@Test
@@ -88,14 +97,29 @@ public class OutputSaverTest {
 		Series series = mock(Series.class);
 		OutputSaver saver = new OutputSaverMock(series);
 		
+		CellFactoryContainer cells1 = mock(CellFactoryContainer.class);
+		LocationFactoryContainer locations1 = mock(LocationFactoryContainer.class);
+		
 		Simulation sim1 = mock(Simulation.class);
+		doReturn(cells1).when(sim1).getCells();
+		doReturn(locations1).when(sim1).getLocations();
+		
 		saver.equip(sim1);
 		assertSame(sim1, saver.sim);
+		assertSame(cells1, saver.cells);
+		assertSame(locations1, saver.locations);
+		
+		CellFactoryContainer cells2 = mock(CellFactoryContainer.class);
+		LocationFactoryContainer locations2 = mock(LocationFactoryContainer.class);
 		
 		Simulation sim2 = mock(Simulation.class);
+		doReturn(cells2).when(sim2).getCells();
+		doReturn(locations2).when(sim2).getLocations();
+		
 		saver.equip(sim2);
 		assertSame(sim2, saver.sim);
-		
+		assertSame(cells2, saver.cells);
+		assertSame(locations2, saver.locations);
 	}
 	
 	@Test
@@ -134,6 +158,66 @@ public class OutputSaverTest {
 		
 		saver.step(simstate);
 		verify(saver).save(tick);
+	}
+	
+	@Test
+	public void save_withTick_writesCells() {
+		Series series = mock(Series.class);
+		OutputSaver saver = spy(new OutputSaverMock(series));
+		doNothing().when(saver).write(anyString(), anyString());
+		
+		CellFactoryContainer cells = mock(CellFactoryContainer.class);
+		saver.cells = cells;
+		
+		Gson gson = spy(mock(Gson.class));
+		String contents = randomString();
+		doReturn(contents).when(gson).toJson(cells);
+		
+		try {
+			Field field = OutputSaver.class.getDeclaredField("gson");
+			field.setAccessible(true);
+			field.set(saver, gson);
+		} catch (Exception ignored) { }
+		
+		String prefix = randomString();
+		saver.prefix = prefix;
+		
+		double tick = randomDoubleBetween(1, 10);
+		saver.save(tick);
+		
+		verify(gson).toJson(cells);
+		verify(saver).write(prefix + String.format("_%06d", (int)tick)
+				+ ".CELLS.json", contents);
+	}
+	
+	@Test
+	public void save_withTick_writesLocations() {
+		Series series = mock(Series.class);
+		OutputSaver saver = spy(new OutputSaverMock(series));
+		doNothing().when(saver).write(anyString(), anyString());
+		
+		LocationFactoryContainer locations = mock(LocationFactoryContainer.class);
+		saver.locations = locations;
+		
+		Gson gson = spy(mock(Gson.class));
+		String contents = randomString();
+		doReturn(contents).when(gson).toJson(locations);
+		
+		try {
+			Field field = OutputSaver.class.getDeclaredField("gson");
+			field.setAccessible(true);
+			field.set(saver, gson);
+		} catch (Exception ignored) { }
+		
+		String prefix = randomString();
+		saver.prefix = prefix;
+		
+		double tick = randomDoubleBetween(1, 10);
+		saver.save(tick);
+		
+		verify(gson).toJson(locations);
+		verify(saver).write(prefix + String.format("_%06d", (int)tick)
+				+ ".LOCATIONS.json", contents);
 	}
 	
 	@Test

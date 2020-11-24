@@ -12,10 +12,35 @@ import java.lang.reflect.Type;
 import java.util.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import static arcade.core.agent.cell.CellFactory.CellContainer;
+import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
+import static arcade.core.env.loc.LocationFactory.LocationContainer;
+import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
 import static arcade.core.sim.output.OutputSerializer.*;
 import static arcade.core.TestUtilities.*;
 
 public class OutputSerializerTest {
+	static final JsonSerializationContext LOCATION_CONTEXT = new JsonSerializationContext() {
+		public JsonElement serialize(Object src) { return null; }
+		public JsonElement serialize(Object src, Type typeOfSrc) {
+			JsonObject object = new JsonObject();
+			object.addProperty("id", ((LocationContainer)src).id);
+			JsonArray array = new JsonArray();
+			array.add(((LocationContainer)src).id);
+			object.add("location", array);
+			return object;
+		}
+	};
+	
+	static final JsonSerializationContext CELL_CONTEXT = new JsonSerializationContext() {
+		public JsonElement serialize(Object src) { return null; }
+		public JsonElement serialize(Object src, Type typeOfSrc) {
+			JsonObject object = new JsonObject();
+			object.addProperty("id", ((CellContainer)src).id);
+			return object;
+		}
+	};
+	
 	@Test
 	public void makeGSON_registersAdaptors() {
 		GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();
@@ -26,6 +51,18 @@ public class OutputSerializerTest {
 		
 		TypeToken<MiniBox> minibox = new TypeToken<MiniBox>() {};
 		assertSame(gson.getAdapter(minibox).getClass(), TreeTypeAdapter.class);
+		
+		TypeToken<CellFactoryContainer> cellFactory = new TypeToken<CellFactoryContainer>() {};
+		assertSame(gson.getAdapter(cellFactory).getClass(), TreeTypeAdapter.class);
+		
+		TypeToken<CellContainer> cell = new TypeToken<CellContainer>() {};
+		assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
+		
+		TypeToken<LocationFactoryContainer> locationFactory = new TypeToken<LocationFactoryContainer>() {};
+		assertSame(gson.getAdapter(locationFactory).getClass(), TreeTypeAdapter.class);
+		
+		TypeToken<LocationContainer> location = new TypeToken<LocationContainer>() {};
+		assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
 	}
 	
 	@Test
@@ -98,12 +135,6 @@ public class OutputSerializerTest {
 			dtField.setDouble(series, dt);
 		} catch (Exception ignored) { }
 		
-//		series._potts = new MiniBox();
-		
-//		String key1 = randomString();
-//		String value1 = randomString();
-//		series._potts.put(key1, value1);
-		
 		series._populations = new HashMap<>();
 		String popA = "a" + randomString();
 		String popB = "b" + randomString();
@@ -150,7 +181,6 @@ public class OutputSerializerTest {
 				+ "\"width\":" + width + ","
 				+ "\"height\":" + height
 				+ "},"
-//				+ "\"potts\":{\"" + key1 + "\":\"" + value1 + "\"},"
 				+ "\"populations\":{"
 				+ "\"" + popA + "\":{\"" + keyA + "\":\"" + valueA + "\"},"
 				+ "\"" + popB + "\":{\"" + keyB + "\":\"" + valueB + "\"}"
@@ -158,6 +188,92 @@ public class OutputSerializerTest {
 				+ "}";
 		
 		JsonElement json = serializer.serialize(series, null, context);
+		assertEquals(expected, json.toString());
+	}
+	
+	@Test
+	public void serialize_forCellFactory_createsJSON() {
+		CellFactorySerializer serializer = new CellFactorySerializer();
+		CellFactoryContainer cellFactory = new CellFactoryContainer();
+		
+		int n = randomIntBetween(1, 10);
+		int id0 = randomIntBetween(1, 10);
+		
+		for (int i = 0; i < n; i++) {
+			int id = id0 + i;
+			CellContainer cell = new CellContainer(id, 0, 0);
+			cellFactory.cells.add(cell);
+		}
+		
+		StringBuilder expected = new StringBuilder("[");
+		for (int i = 0; i < n; i++) {
+			int id = id0 + i;
+			expected.append("{\"id\":").append(id).append("}");
+			if (i < n - 1) { expected.append(","); }
+		}
+		expected.append("]");
+		
+		JsonElement json = serializer.serialize(cellFactory, CellContainer.class, CELL_CONTEXT);
+		assertEquals(expected.toString(), json.toString());
+	}
+	
+	@Test
+	public void serialize_forCell_createsJSON() {
+		int id = randomIntBetween(1,100);
+		int pop = randomIntBetween(1,100);
+		int age = randomIntBetween(1,100);
+		
+		CellSerializer serializer = new CellSerializer();
+		CellContainer cell = new CellContainer(id, pop, age);
+		
+		String expected = "{"
+				+ "\"id\":" + id + ","
+				+ "\"pop\":" + pop + ","
+				+ "\"age\":" + age + ""
+				+ "}";
+		
+		JsonElement json = serializer.serialize(cell, null, null);
+		assertEquals(expected, json.toString());
+	}
+	
+	@Test
+	public void serialize_forLocationFactory_createsJSON() {
+		LocationFactorySerializer serializer = new LocationFactorySerializer();
+		LocationFactoryContainer locationFactory = new LocationFactoryContainer();
+		
+		int n = randomIntBetween(1, 10);
+		int id0 = randomIntBetween(1, 10);
+		
+		for (int i = 0; i < n; i++) {
+			int id = id0 + i;
+			LocationContainer location = new LocationContainer(id);
+			locationFactory.locations.add(location);
+		}
+		
+		StringBuilder expected = new StringBuilder("[");
+		for (int i = 0; i < n; i++) {
+			int id = id0 + i;
+			expected.append("{\"id\":").append(id).append(",\"location\":[").append(id).append("]}");
+			if (i < n - 1) { expected.append(","); }
+		}
+		expected.append("]");
+		
+		JsonElement json = serializer.serialize(locationFactory, LocationContainer.class, LOCATION_CONTEXT);
+		assertEquals(expected.toString(), json.toString());
+	}
+	
+	@Test
+	public void serialize_forLocation_createsJSON() {
+		int id = randomIntBetween(1,100);
+		
+		LocationSerializer serializer = new LocationSerializer();
+		LocationContainer location = new LocationContainer(id);
+		
+		String expected = "{"
+				+ "\"id\":" + id + ""
+				+ "}";
+		
+		JsonElement json = serializer.serialize(location, null, null);
 		assertEquals(expected, json.toString());
 	}
 }

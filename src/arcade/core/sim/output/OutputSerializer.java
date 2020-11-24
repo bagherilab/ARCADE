@@ -5,6 +5,8 @@ import java.util.*;
 import com.google.gson.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import arcade.core.agent.cell.CellFactory.*;
+import arcade.core.env.loc.LocationFactory.*;
 
 public final class OutputSerializer {
 	/** Regular expression for fractions */
@@ -17,6 +19,10 @@ public final class OutputSerializer {
 		GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
 		gsonBuilder.registerTypeAdapter(Series.class, new SeriesSerializer());
 		gsonBuilder.registerTypeAdapter(MiniBox.class, new MiniBoxSerializer());
+		gsonBuilder.registerTypeAdapter(CellFactoryContainer.class, new CellFactorySerializer());
+		gsonBuilder.registerTypeAdapter(CellContainer.class, new CellSerializer());
+		gsonBuilder.registerTypeAdapter(LocationFactoryContainer.class, new LocationFactorySerializer());
+		gsonBuilder.registerTypeAdapter(LocationContainer.class, new LocationSerializer());
 		return gsonBuilder;
 	}
 	
@@ -68,6 +74,50 @@ public final class OutputSerializer {
 			}
 			json.add("populations", populations);
 			
+			return json;
+		}
+	}
+	
+	static class CellFactorySerializer implements JsonSerializer<CellFactoryContainer> {
+		public JsonElement serialize(CellFactoryContainer src, Type typeOfSrc, JsonSerializationContext context) {
+			JsonArray json = new JsonArray();
+			
+			for (CellContainer cellContainer : src.cells) {
+				JsonElement cell = context.serialize(cellContainer, CellContainer.class);
+				json.add(cell);
+			}
+			
+			return json;
+		}
+	}
+	
+	static class CellSerializer implements JsonSerializer<CellContainer> {
+		public JsonElement serialize(CellContainer src, Type typeOfSrc, JsonSerializationContext context) {
+			JsonObject json = new JsonObject();
+			json.addProperty("id", src.id);
+			json.addProperty("pop", src.pop);
+			json.addProperty("age", src.age);
+			return json;
+		}
+	}
+	
+	static class LocationFactorySerializer implements JsonSerializer<LocationFactoryContainer> {
+		public JsonElement serialize(LocationFactoryContainer src, Type typeOfSrc, JsonSerializationContext context) {
+			JsonArray json = new JsonArray();
+			
+			for (LocationContainer locationContainer : src.locations) {
+				JsonElement location = context.serialize(locationContainer, LocationContainer.class);
+				json.add(location);
+			}
+			
+			return json;
+		}
+	}
+	
+	static class LocationSerializer implements JsonSerializer<LocationContainer> {
+		public JsonElement serialize(LocationContainer src, Type typeOfSrc, JsonSerializationContext context) {
+			JsonObject json = new JsonObject();
+			json.addProperty("id", src.id);
 			return json;
 		}
 	}

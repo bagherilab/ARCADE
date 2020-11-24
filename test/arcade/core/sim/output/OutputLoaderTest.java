@@ -116,9 +116,8 @@ public class OutputLoaderTest {
 	}
 	
 	@Test
-	public void loadLocations_called_loadsFactory() {
+	public void loadLocations_called_loadsContents() {
 		OutputLoader loader = mock(OutputLoader.class, CALLS_REAL_METHODS);
-		LocationFactory factory = mock(LocationFactory.class);
 		LocationFactoryContainer container = mock(LocationFactoryContainer.class);
 		String json = "[]";
 		
@@ -138,9 +137,8 @@ public class OutputLoaderTest {
 	}
 	
 	@Test
-	public void loadCells_called_loadsCell() {
+	public void loadCells_called_loadsContents() {
 		OutputLoader loader = mock(OutputLoader.class, CALLS_REAL_METHODS);
-		CellFactory factory = mock(CellFactory.class);
 		CellFactoryContainer container = mock(CellFactoryContainer.class);
 		String json = "[]";
 		
