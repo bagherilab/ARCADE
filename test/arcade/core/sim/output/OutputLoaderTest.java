@@ -10,10 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import arcade.core.sim.*;
-import arcade.core.agent.cell.CellFactory;
-import arcade.core.env.loc.LocationFactory;
-import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
-import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
+import arcade.core.agent.cell.CellFactoryContainer;
+import arcade.core.env.loc.LocationFactoryContainer;
 import static arcade.core.TestUtilities.*;
 
 public class OutputLoaderTest {

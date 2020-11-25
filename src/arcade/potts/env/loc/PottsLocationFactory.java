@@ -10,8 +10,8 @@ import arcade.core.sim.Simulation;
 import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
 import static arcade.core.agent.cell.Cell.*;
-import static arcade.core.agent.cell.CellFactory.CellContainer;
-import static arcade.potts.agent.cell.PottsCellFactory.PottsCellContainer;
+import arcade.core.agent.cell.CellContainer;
+import arcade.potts.agent.cell.PottsCellContainer;
 
 public abstract class PottsLocationFactory implements LocationFactory {
 	/** Map of id to location */
@@ -25,23 +25,6 @@ public abstract class PottsLocationFactory implements LocationFactory {
 	 */
 	public PottsLocationFactory() {
 		locations = new HashMap<>();
-	}
-	
-	/**
-	 * Container class for loading a {@link PottsLocation}.
-	 */
-	public static class PottsLocationContainer extends LocationContainer {
-		public final ArrayList<Voxel> voxels;
-		public final Voxel center;
-		public final EnumMap<Region, ArrayList<Voxel>> regions;
-		
-		public PottsLocationContainer(int id, Voxel center, ArrayList<Voxel> voxels,
-								 EnumMap<Region, ArrayList<Voxel>> regions) {
-			super(id);
-			this.center = center;
-			this.voxels = voxels;
-			this.regions = regions;
-		}
 	}
 	
 	/**

@@ -6,8 +6,8 @@ import ec.util.MersenneTwisterFast;
 import sim.engine.Schedule;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.grid.Grid;
-import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
-import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
+import arcade.core.agent.cell.CellFactoryContainer;
+import arcade.core.env.loc.LocationFactoryContainer;
 
 /** 
  * A {@code Simulation} object sets up the agents and environments for a simulation.

@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import com.google.gson.*;
 import arcade.core.sim.output.OutputDeserializer;
-import static arcade.core.agent.cell.CellFactory.*;
-import static arcade.core.env.loc.LocationFactory.*;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.loc.LocationContainer;
+import arcade.potts.agent.cell.PottsCellContainer;
+import arcade.potts.env.loc.PottsLocationContainer;
+import arcade.potts.env.loc.Voxel;
 import static arcade.core.agent.cell.Cell.State;
 import static arcade.core.agent.cell.Cell.Region;
 import static arcade.potts.agent.module.PottsModule.Phase;
-import static arcade.potts.agent.cell.PottsCellFactory.PottsCellContainer;
-import static arcade.potts.env.loc.PottsLocationFactory.PottsLocationContainer;
-import arcade.potts.env.loc.Voxel;
 
 public final class PottsOutputDeserializer {
 	static Gson makeGSON() {

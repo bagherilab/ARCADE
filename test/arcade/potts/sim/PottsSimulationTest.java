@@ -14,18 +14,17 @@ import arcade.core.agent.cell.*;
 import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
 import arcade.core.sim.output.OutputSaver;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.loc.LocationContainer;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.Voxel;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.sim.Simulation.*;
 import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.loc.PottsLocationFactory;
+import arcade.potts.env.loc.PottsLocationContainer;
 import static arcade.core.sim.Series.SEED_OFFSET;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
-import static arcade.core.agent.cell.CellFactory.CellContainer;
-import static arcade.core.env.loc.LocationFactory.LocationContainer;
-import static arcade.potts.agent.cell.PottsCellFactory.PottsCellContainer;
-import static arcade.potts.env.loc.PottsLocationFactory.PottsLocationContainer;
 import static arcade.potts.sim.PottsSimulation.Ordering;
 
 public class PottsSimulationTest {

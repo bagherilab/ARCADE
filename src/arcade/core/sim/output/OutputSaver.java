@@ -6,8 +6,8 @@ import com.google.gson.*;
 import sim.engine.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
-import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
-import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
+import arcade.core.agent.cell.CellFactoryContainer;
+import arcade.core.env.loc.LocationFactoryContainer;
 
 public abstract class OutputSaver implements Steppable {
 	/** Logger for class */

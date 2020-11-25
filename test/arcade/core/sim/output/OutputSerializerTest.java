@@ -12,10 +12,10 @@ import java.lang.reflect.Type;
 import java.util.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
-import static arcade.core.agent.cell.CellFactory.CellContainer;
-import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
-import static arcade.core.env.loc.LocationFactory.LocationContainer;
-import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactoryContainer;
+import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.loc.LocationFactoryContainer;
 import static arcade.core.sim.output.OutputSerializer.*;
 import static arcade.core.TestUtilities.*;
 

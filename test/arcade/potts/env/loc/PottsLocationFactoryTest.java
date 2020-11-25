@@ -10,12 +10,10 @@ import java.util.EnumMap;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputLoader;
-import arcade.core.env.loc.Location;
+import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
+import arcade.potts.agent.cell.PottsCellContainer;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
-import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
-import static arcade.potts.agent.cell.PottsCellFactory.PottsCellContainer;
-import static arcade.potts.env.loc.PottsLocationFactory.PottsLocationContainer;
 import static arcade.potts.agent.cell.PottsCell.Region;
 import static arcade.core.TestUtilities.*;
 

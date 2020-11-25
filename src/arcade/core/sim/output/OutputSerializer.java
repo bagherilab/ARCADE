@@ -5,8 +5,10 @@ import java.util.*;
 import com.google.gson.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
-import arcade.core.agent.cell.CellFactory.*;
-import arcade.core.env.loc.LocationFactory.*;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactoryContainer;
+import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.loc.LocationFactoryContainer;
 
 public final class OutputSerializer {
 	/** Regular expression for fractions */

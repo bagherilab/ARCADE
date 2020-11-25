@@ -7,10 +7,10 @@ import com.google.gson.internal.bind.TreeTypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
 import java.lang.reflect.Type;
-import static arcade.core.agent.cell.CellFactory.CellContainer;
-import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
-import static arcade.core.env.loc.LocationFactory.LocationContainer;
-import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactoryContainer;
+import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.loc.LocationFactoryContainer;
 import static arcade.core.sim.output.OutputDeserializer.*;
 import static arcade.core.TestUtilities.*;
 

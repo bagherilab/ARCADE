@@ -15,8 +15,8 @@ import arcade.core.util.MiniBox;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
 import arcade.core.vis.*;
-import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
-import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
+import arcade.core.agent.cell.CellFactoryContainer;
+import arcade.core.env.loc.LocationFactoryContainer;
 import static arcade.core.sim.Series.SEED_OFFSET;
 import static arcade.core.TestUtilities.EPSILON;
 

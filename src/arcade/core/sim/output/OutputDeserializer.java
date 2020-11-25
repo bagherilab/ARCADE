@@ -2,8 +2,10 @@ package arcade.core.sim.output;
 
 import com.google.gson.*;
 import java.lang.reflect.Type;
-import static arcade.core.agent.cell.CellFactory.*;
-import static arcade.core.env.loc.LocationFactory.*;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactoryContainer;
+import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.loc.LocationFactoryContainer;
 
 public final class OutputDeserializer {
 	public static GsonBuilder makeGSONBuilder() {

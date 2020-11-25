@@ -12,8 +12,10 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.loc.PottsLocationFactory;
-import static arcade.core.agent.cell.CellFactory.*;
-import static arcade.core.env.loc.LocationFactory.*;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactoryContainer;
+import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.loc.LocationFactoryContainer;
 
 public abstract class PottsSimulation extends SimState implements Simulation {
 	/** Stepping order for simulation */

@@ -5,10 +5,8 @@ import java.util.logging.Logger;
 import com.google.gson.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
-import arcade.core.agent.cell.CellFactory;
-import arcade.core.env.loc.LocationFactory;
-import static arcade.core.agent.cell.CellFactory.CellFactoryContainer;
-import static arcade.core.env.loc.LocationFactory.LocationFactoryContainer;
+import arcade.core.agent.cell.CellFactoryContainer;
+import arcade.core.env.loc.LocationFactoryContainer;
 
 public abstract class OutputLoader {
 	/** Logger for class */

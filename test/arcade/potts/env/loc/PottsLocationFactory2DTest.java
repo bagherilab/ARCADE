@@ -5,11 +5,10 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
+import arcade.potts.agent.cell.PottsCellContainer;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.agent.cell.Cell.Region;
-import static arcade.potts.agent.cell.PottsCellFactory.PottsCellContainer;
-import static arcade.potts.env.loc.PottsLocationFactory.PottsLocationContainer;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public class PottsLocationFactory2DTest {

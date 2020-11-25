@@ -1,33 +1,10 @@
 package arcade.core.env.loc;
 
-import java.util.ArrayList;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
-import static arcade.core.agent.cell.CellFactory.CellContainer;
+import arcade.core.agent.cell.CellContainer;
 
 public interface LocationFactory {
-	/**
-	 * Container class for loading a {@link Location}.
-	 */
-	class LocationContainer {
-		public final int id;
-		
-		public LocationContainer(int id) {
-			this.id = id;
-		}
-	}
-	
-	/**
-	 * Container class for loading into a {@link LocationFactory}.
-	 */
-	class LocationFactoryContainer {
-		/** List of loaded location containers */
-		public final ArrayList<LocationContainer> locations;
-		
-		/** Creates an empty {@link LocationFactory} container. */
-		public LocationFactoryContainer() { locations = new ArrayList<>(); }
-	}
-	
 	/**
 	 * Initializes the factory for the given series.
 	 * 
