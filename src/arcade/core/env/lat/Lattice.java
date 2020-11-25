@@ -146,21 +146,4 @@ public interface Lattice {
 	 * @return  the JSON string
 	 */
 	String toJSON(Location[][] locs);
-	
-	/**
-	 * Copies the contents on one 3D array to another 3D array.
-	 * 
-	 * The {@code clone} method only works at the one-dimensional level.
-	 * Otherwise, we would have shallow cloning.
-	 * 
-	 * @param fromArray  the array to copy from
-	 * @param toArray  the array to copy to
-	 */
-	static void copyArray(double[][][] fromArray, double[][][] toArray) {
-		for (int k = 0; k < fromArray.length; k++) {
-			for (int i = 0; i < fromArray[k].length; i++) {
-				toArray[k][i] = fromArray[k][i].clone();
-			}
-		}
-	}
 }
