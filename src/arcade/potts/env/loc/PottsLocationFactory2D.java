@@ -10,10 +10,6 @@ public class PottsLocationFactory2D extends PottsLocationFactory {
 		return sqrt + (sqrt%2 == 0 ? 1 : 0);
 	}
 	
-	PottsLocation makeLocation(ArrayList<Voxel> voxels) { return new PottsLocation2D(voxels); }
-	
-	PottsLocations makeLocations(ArrayList<Voxel> voxels) { return new PottsLocations2D(voxels); }
-	
 	ArrayList<Voxel> getNeighbors(Voxel voxel) { return Location2D.getNeighbors(voxel); }
 	
 	ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) { return Location2D.getSelected(voxels, focus, n); }

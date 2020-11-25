@@ -5,6 +5,14 @@ import static arcade.core.util.Enums.Region;
 
 public interface Location {
 	/**
+	 * Converts the location into a {@link LocationContainer}.
+	 * 
+	 * @param id  the location id
+	 * @return  a {@link LocationContainer} instance
+	 */
+	LocationContainer convert(int id);
+	
+	/**
 	 * Gets a set of regions.
 	 * 
 	 * @return  the set of regions

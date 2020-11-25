@@ -1,13 +1,11 @@
 package arcade.core.sim;
 
 import java.util.ArrayList;
-import java.util.ListIterator;
-import ec.util.MersenneTwisterFast;
 import sim.engine.Schedule;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.grid.Grid;
-import arcade.core.agent.cell.CellFactoryContainer;
-import arcade.core.env.loc.LocationFactoryContainer;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.loc.LocationContainer;
 
 /** 
  * A {@code Simulation} object sets up the agents and environments for a simulation.
@@ -56,19 +54,21 @@ public interface Simulation {
 	int getID();
 	
 	/**
+	 * Gets the list of {@link CellContainer} objects
 	 * 
-	 * @return
+	 * @return  a list of {@link CellContainer} objects
 	 */
-	CellFactoryContainer getCells();
+	ArrayList<CellContainer> getCells();
 	
 	/**
+	 * Gets the list of {@link LocationContainer} objects
 	 * 
-	 * @return
+	 * @return  a list of {@link LocationContainer} objects
 	 */
-	LocationFactoryContainer getLocations();
+	ArrayList<LocationContainer> getLocations();
 	
 	/**
-	 * Gets the {@link arcade.core.env.grid.Grid} object holding the agents.
+	 * Gets the {@link arcade.core.env.grid.Grid} object.
 	 *
 	 * @return  the {@link arcade.core.env.grid.Grid} object
 	 */

@@ -3,17 +3,13 @@ package arcade.potts.agent.cell;
 import java.util.*;
 import arcade.core.sim.Series;
 import arcade.core.agent.cell.*;
-import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
-import arcade.potts.agent.module.PottsModule;
-import static arcade.core.util.Enums.State;
 import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Term;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
-public abstract class PottsCellFactory implements CellFactory {
+public class PottsCellFactory implements CellFactory {
 	/** Map of population to critical values */
 	HashMap<Integer, EnumMap<Term, Double>> popToCriticals;
 	
@@ -43,9 +39,6 @@ public abstract class PottsCellFactory implements CellFactory {
 	
 	/** Map of id to cell */
 	public final HashMap<Integer, PottsCellContainer> cells;
-	
-	/** Container for loaded cells */
-	public CellFactoryContainer container;
 	
 	/**
 	 * Creates a factory for making {@link PottsCell} instances.
@@ -156,7 +149,7 @@ public abstract class PottsCellFactory implements CellFactory {
 	
 	public void loadCells(Series series) {
 		// Load cells.
-		container = series.loader.loadCells();
+		ArrayList<CellContainer> containers = series.loader.loadCells();
 		
 		// Population sizes.
 		HashMap<Integer, Integer> popToSize = new HashMap<>();
@@ -167,10 +160,11 @@ public abstract class PottsCellFactory implements CellFactory {
 		}
 		
 		// Map loaded container to factory.
-		for (CellContainer cellContainer : container.cells) {
+		for (CellContainer container : containers) {
+			PottsCellContainer cellContainer = (PottsCellContainer)container;
 			int pop = cellContainer.pop;
 			if (popToIDs.containsKey(pop) && popToIDs.get(pop).size() < popToSize.get(pop)) {
-				cells.put(cellContainer.id, (PottsCellContainer)cellContainer);
+				cells.put(cellContainer.id, cellContainer);
 				popToIDs.get(pop).add(cellContainer.id);
 			}
 		}
@@ -210,104 +204,5 @@ public abstract class PottsCellFactory implements CellFactory {
 				id++;
 			}
 		}
-	}
-	
-	/**
-	 * Creates a {@link arcade.core.agent.cell.Cell} object.
-	 *
-	 * @param id  the cell ID
-	 * @param pop  the cell population index
-	 * @param state  the cell state
-	 * @param age  the cell age (in ticks)
-	 * @param location  the {@link arcade.core.env.loc.Location} of the cell
-	 * @param parameters  the dictionary of parameters
-	 * @param criticals  the map of critical values
-	 * @param lambdas  the map of lambda multipliers
-	 * @param adhesion  the list of adhesion values
-	 * @return  a {@link PottsCell} object
-	 */
-	abstract PottsCell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
-						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion);
-	
-	/**
-	 * Creates a {@link arcade.core.agent.cell.Cell} object with regions.
-	 *
-	 * @param id  the cell ID
-	 * @param pop  the cell population index
-	 * @param state  the cell state
-	 * @param age  the cell age (in ticks)
-	 * @param location  the {@link arcade.core.env.loc.Location} of the cell
-	 * @param parameters  the dictionary of parameters
-	 * @param criticals  the map of critical values
-	 * @param lambdas  the map of lambda multipliers
-	 * @param adhesion  the list of adhesion values
-	 * @param criticalsRegion  the map of critical values for regions
-	 * @param lambdasRegion  the map of lambda multipliers for regions
-	 * @param adhesionRegion  the map of adhesion values for regions
-	 * @return  a {@link PottsCell} object
-	 */
-	abstract PottsCell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
-						   EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
-						   EnumMap<Region, EnumMap<Term, Double>> criticalsRegion, EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
-						   EnumMap<Region, EnumMap<Region, Double>> adhesionRegion);
-	
-	public Cell make(CellContainer cellContainer, Location location) {
-		return make((PottsCellContainer)cellContainer, location);
-	}
-	
-	/**
-	 * Create a {@link PottsCell} object.
-	 *
-	 * @param cellContainer  the cell container
-	 * @param location  the cell location
-	 * @return  a {@link PottsCell} object
-	 */
-	private Cell make(PottsCellContainer cellContainer, Location location) {
-		int id = cellContainer.id;
-		int pop = cellContainer.pop;
-		int age = cellContainer.age;
-		State state = cellContainer.state;
-		Phase phase = cellContainer.phase;
-		
-		// Get copies of critical, lambda, and adhesion values.
-		MiniBox parameters = popToParameters.get(pop);
-		EnumMap<Term, Double> criticals = popToCriticals.get(pop).clone();
-		EnumMap<Term, Double> lambdas = popToLambdas.get(pop).clone();
-		double[] adhesion = popToAdhesion.get(pop).clone();
-		
-		// Make cell.
-		PottsCell cell;
-		
-		if (popToRegions.get(pop)) {
-			// Initialize region arrays.
-			EnumMap<Region, EnumMap<Term, Double>> criticalsRegion = new EnumMap<>(Region.class);
-			EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = new EnumMap<>(Region.class);
-			EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = new EnumMap<>(Region.class);
-			
-			// Get copies of critical, lambda, and adhesion values.
-			for (Region region : location.getRegions()) {
-				criticalsRegion.put(region, popToRegionCriticals.get(pop).get(region).clone());
-				lambdasRegion.put(region, popToRegionLambdas.get(pop).get(region).clone());
-				adhesionRegion.put(region, popToRegionAdhesion.get(pop).get(region).clone());
-			}
-			
-			cell = makeCell(id, pop, age, state, location, parameters, criticals, lambdas, adhesion,
-					criticalsRegion, lambdasRegion, adhesionRegion);
-		} else {
-			cell = makeCell(id, pop, age, state, location, parameters, criticals, lambdas, adhesion);
-		}
-		
-		// Update cell targets.
-		cell.setTargets(cellContainer.targetVolume, cellContainer.targetSurface);
-		if (cellContainer.regionTargetVolume != null && cellContainer.regionTargetSurface != null) {
-			for (Region region : location.getRegions()) {
-				cell.setTargets(region, cellContainer.regionTargetVolume.get(region), cellContainer.regionTargetSurface.get(region));
-			}
-		}
-		
-		// Update cell module.
-		((PottsModule)cell.getModule()).setPhase(phase);
-		
-		return cell;
 	}
 }

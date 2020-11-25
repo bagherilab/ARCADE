@@ -6,6 +6,7 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.loc.Location;
+import arcade.core.env.loc.LocationContainer;
 import arcade.core.util.Utilities;
 import static arcade.core.util.Enums.Region;
 
@@ -104,6 +105,12 @@ public abstract class PottsLocations extends PottsLocation {
 		for (Region region : locations.keySet()) {
 			locations.get(region).update(region.ordinal(), regions, null);
 		}
+	}
+	
+	public LocationContainer convert(int id) {
+		EnumMap<Region, ArrayList<Voxel>> regions = new EnumMap<>(Region.class);
+		for (Region region : locations.keySet()) { regions.put(region, locations.get(region).voxels); }
+		return new PottsLocationContainer(id, getCenter(), voxels, regions);
 	}
 	
 	/**

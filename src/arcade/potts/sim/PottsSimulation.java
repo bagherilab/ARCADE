@@ -4,6 +4,7 @@ import java.util.*;
 import sim.engine.*;
 import arcade.core.sim.Simulation;
 import arcade.core.sim.Series;
+import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.loc.Location;
@@ -13,12 +14,10 @@ import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.loc.PottsLocationFactory;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.agent.cell.CellFactoryContainer;
 import arcade.core.env.loc.LocationContainer;
-import arcade.core.env.loc.LocationFactoryContainer;
 import static arcade.potts.util.PottsEnums.Ordering;
 
-public abstract class PottsSimulation extends SimState implements Simulation {	
+public abstract class PottsSimulation extends SimState implements Simulation {
 	/** {@link arcade.core.sim.Series} object containing this simulation */
 	final PottsSeries series;
 	
@@ -47,13 +46,21 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	}
 	
 	public Series getSeries() { return series; }
+	
 	public Schedule getSchedule() { return schedule; }
+	
 	public int getSeed() { return seed; }
+	
 	public int getID() { return ++id; }
-	public CellFactoryContainer getCells() { return null; }
-	public LocationFactoryContainer getLocations() { return null; }
+	
+	public ArrayList<CellContainer> getCells() { return null; }
+	
+	public ArrayList<LocationContainer> getLocations() { return null; }
+	
 	public Potts getPotts() { return potts; }
+	
 	public Grid getGrid() { return grid; }
+	
 	public Lattice getLattice(String key) { return null; }
 	
 	/**
@@ -150,8 +157,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 				if (locationContainer == null || cellContainer == null) { break; }
 				
 				// Make the location and cell.
-				Location location = locationFactory.make(locationContainer, cellContainer, random);
-				PottsCell cell = (PottsCell)cellFactory.make(cellContainer, location);
+				Location location = locationContainer.convert(locationFactory, cellContainer);
+				PottsCell cell = (PottsCell)cellContainer.convert(cellFactory, location);
 				
 				// Add, initialize, and schedule the cell.
 				grid.addObject(i, cell);

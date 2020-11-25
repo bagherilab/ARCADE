@@ -1,12 +1,17 @@
 package arcade.core.env.loc;
 
+import arcade.core.agent.cell.CellContainer;
+
 /**
- * Container class for loading a {@link Location}.
+ * Container class for {@link Location} objects.
  */
-public class LocationContainer {
-	public final int id;
-	
-	public LocationContainer(int id) {
-		this.id = id;
-	}
+public interface LocationContainer {
+	/**
+	 * Converts the location container into a {@link Location}.
+	 *
+	 * @param factory  the location factory instance
+	 * @param cell  the cell container
+	 * @return  a {@link Location} instance
+	 */
+	Location convert(LocationFactory factory, CellContainer cell);
 }

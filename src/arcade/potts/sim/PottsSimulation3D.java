@@ -14,6 +14,6 @@ public class PottsSimulation3D extends PottsSimulation {
 	}
 	
 	PottsCellFactory makeCellFactory() {
-		return new PottsCellFactory3D();
+		return new PottsCellFactory();
 	}
 }

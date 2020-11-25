@@ -4,6 +4,7 @@ import sim.engine.*;
 import java.util.EnumMap;
 import arcade.core.sim.Simulation;
 import arcade.core.agent.cell.Cell;
+import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.module.Module;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
@@ -413,4 +414,18 @@ public class PottsCell implements Cell {
 		targetSurface = location.convertVolume(targetVolume);
 	}
 	
+	public CellContainer convert() {
+		if (hasRegions) {
+			EnumMap<Region, Integer> regionVolumes = new EnumMap<>(Region.class);
+			for (Region region : location.getRegions()) { regionVolumes.put(region, location.getVolume(region)); }
+			
+			return new PottsCellContainer(id, pop, age, state,
+					((PottsModule)module).getPhase(), getVolume(), regionVolumes,
+					targetVolume, targetSurface, targetRegionVolumes, targetRegionSurfaces);
+		} else {
+			return new PottsCellContainer(id, pop, age, state,
+					((PottsModule)module).getPhase(), getVolume(),
+					targetVolume, targetSurface);
+		}
+	}
 }

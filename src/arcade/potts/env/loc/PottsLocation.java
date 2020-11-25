@@ -1,11 +1,9 @@
 package arcade.potts.env.loc;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
+import java.util.*;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.loc.Location;
+import arcade.core.env.loc.LocationContainer;
 import arcade.core.util.Utilities;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
@@ -302,6 +300,10 @@ public abstract class PottsLocation implements Location {
 		
 		// Convert diameter direction to slice direction.
 		return getSlice(d, diameters);
+	}
+	
+	public LocationContainer convert(int id) {
+		return new PottsLocationContainer(id, getCenter(), voxels, null);
 	}
 	
 	/**

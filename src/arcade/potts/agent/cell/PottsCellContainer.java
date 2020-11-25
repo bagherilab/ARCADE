@@ -2,14 +2,21 @@ package arcade.potts.agent.cell;
 
 import java.util.*;
 import arcade.core.agent.cell.*;
+import arcade.core.util.MiniBox;
+import arcade.core.env.loc.Location;
+import arcade.potts.agent.module.PottsModule;
 import static arcade.core.util.Enums.State;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Term;
 
 /**
  * Container class for loading a {@link PottsCell}.
  */
-public class PottsCellContainer extends CellContainer {
+public class PottsCellContainer implements CellContainer {
+	public final int id;
+	public final int pop;
+	public final int age;
 	public final State state;
 	public final Phase phase;
 	public final int voxels;
@@ -36,7 +43,9 @@ public class PottsCellContainer extends CellContainer {
 						 EnumMap<Region, Integer> regionVoxels,
 						 double targetVolume, double targetSurface,
 						 EnumMap<Region, Double> regionTargetVolume, EnumMap<Region, Double> regionTargetSurface) {
-		super(id, pop, age);
+		this.id = id;
+		this.pop = pop;
+		this.age = age;
 		this.state = state;
 		this.phase = phase;
 		this.voxels = voxels;
@@ -45,5 +54,53 @@ public class PottsCellContainer extends CellContainer {
 		this.targetSurface = targetSurface;
 		this.regionTargetVolume = regionTargetVolume;
 		this.regionTargetSurface = regionTargetSurface;
+	}
+	
+	public Cell convert(CellFactory factory, Location location) {
+		return convert((PottsCellFactory)factory, location);
+	}
+	
+	private Cell convert(PottsCellFactory factory, Location location) {
+		// Get copies of critical, lambda, and adhesion values.
+		MiniBox parameters = factory.popToParameters.get(pop);
+		EnumMap<Term, Double> criticals = factory.popToCriticals.get(pop).clone();
+		EnumMap<Term, Double> lambdas = factory.popToLambdas.get(pop).clone();
+		double[] adhesion = factory.popToAdhesion.get(pop).clone();
+		
+		// Make cell.
+		PottsCell cell;
+		
+		if (factory.popToRegions.get(pop)) {
+			// Initialize region arrays.
+			EnumMap<Region, EnumMap<Term, Double>> criticalsRegion = new EnumMap<>(Region.class);
+			EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = new EnumMap<>(Region.class);
+			EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = new EnumMap<>(Region.class);
+			
+			// Get copies of critical, lambda, and adhesion values.
+			for (Region region : location.getRegions()) {
+				criticalsRegion.put(region, factory.popToRegionCriticals.get(pop).get(region).clone());
+				lambdasRegion.put(region, factory.popToRegionLambdas.get(pop).get(region).clone());
+				adhesionRegion.put(region, factory.popToRegionAdhesion.get(pop).get(region).clone());
+			}
+			
+			cell = new PottsCell(id, pop, state, age, location, true, parameters,
+					criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
+		} else {
+			cell = new PottsCell(id, pop, state, age, location, false, parameters,
+					criticals, lambdas, adhesion, null, null, null);
+		}
+		
+		// Update cell targets.
+		cell.setTargets(targetVolume, targetSurface);
+		if (regionTargetVolume != null && regionTargetSurface != null) {
+			for (Region region : location.getRegions()) {
+				cell.setTargets(region, regionTargetVolume.get(region), regionTargetSurface.get(region));
+			}
+		}
+		
+		// Update cell module.
+		((PottsModule)cell.getModule()).setPhase(phase);
+		
+		return cell;
 	}
 }

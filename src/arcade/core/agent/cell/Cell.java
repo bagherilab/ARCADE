@@ -9,6 +9,13 @@ import static arcade.core.util.Enums.State;
 
 public interface Cell extends Steppable {
 	/**
+	 * Converts the cell into a {@link CellContainer}.
+	 *
+	 * @return  a {@link CellContainer} instance
+	 */
+	CellContainer convert();
+	
+	/**
 	 * Gets the unique cell ID.
 	 * 
 	 * @return  the cell ID

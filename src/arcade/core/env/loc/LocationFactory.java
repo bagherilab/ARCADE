@@ -2,7 +2,6 @@ package arcade.core.env.loc;
 
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
-import arcade.core.agent.cell.CellContainer;
 
 public interface LocationFactory {
 	/**
@@ -24,18 +23,6 @@ public interface LocationFactory {
 	 * Creates location containers from population settings.
 	 *
 	 * @param series  the simulation series
-	 * @param random  the random number generator
 	 */
-	void createLocations(Series series, MersenneTwisterFast random);
-	
-	/**
-	 * Create a {@link arcade.core.env.loc.Location} object.
-	 * 
-	 * @param locationContainer  the location container
-	 * @param cellContainer  the cell container
-	 * @param random  the random number generator
-	 * @return  a {@link arcade.core.env.loc.Location} object
-	 */
-	Location make(LocationContainer locationContainer, CellContainer cellContainer,
-						 MersenneTwisterFast random);
+	void createLocations(Series series);
 }
