@@ -1,7 +1,7 @@
 package arcade.core.env.loc;
 
 import java.util.EnumSet;
-import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.util.Enums.Region;
 
 public interface Location {
 	/**

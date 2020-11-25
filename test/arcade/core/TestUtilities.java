@@ -2,14 +2,11 @@ package arcade.core;
 
 import java.io.*;
 import java.util.Random;
-import static arcade.core.agent.cell.Cell.State;
 
 public final class TestUtilities {
 	public static final double EPSILON = 1E-10;
 	
 	public static int randomSeed() { return randomIntBetween(1, 1000); }
-	
-	public static State randomState() { return State.values()[(int)(Math.random()*State.values().length - 1) + 1]; }
 	
 	public static int randomIntBetween(int lower, int upper) { return (int)(Math.random()*(upper - lower)) + lower; }
 	

@@ -4,41 +4,10 @@ import sim.engine.*;
 import arcade.core.agent.module.Module;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
+import static arcade.core.util.Enums.Region;
+import static arcade.core.util.Enums.State;
 
 public interface Cell extends Steppable {
-	/** Cell state codes */
-	enum State {
-		/** Code for undefined state */
-		UNDEFINED,
-		
-		/** Code for quiescent cells */
-		QUIESCENT,
-		
-		/** Code for proliferative cells */
-		PROLIFERATIVE,
-		
-		/** Code for apoptotic cells */
-		APOPTOTIC,
-		
-		/** Code for necrotic cells */
-		NECROTIC,
-		
-		/** Code for autotic cells */
-		AUTOTIC
-	}
-	
-	/** Cell region codes */
-	enum Region {
-		/** Undefined region */
-		UNDEFINED,
-		
-		/** Region for cytoplasm */
-		DEFAULT,
-		
-		/** Region for nucleus */
-		NUCLEUS
-	}
-	
 	/**
 	 * Gets the unique cell ID.
 	 * 
