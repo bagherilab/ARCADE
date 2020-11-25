@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.HashSet;
 import arcade.core.env.grid.Grid;
 import arcade.potts.agent.cell.PottsCell;
-import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
 import static arcade.core.TestUtilities.EPSILON;
 

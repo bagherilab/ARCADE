@@ -8,8 +8,9 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.agent.cell.Cell.State;
-import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.util.Enums.State;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Phase;
 
 public abstract class PottsModuleProliferation extends PottsModule {
 	/** Average duration of G1 phase (ticks) */

@@ -2,7 +2,8 @@ package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Direction;
 
 public class PottsLocations3D extends PottsLocations implements Location3D {
 	/**

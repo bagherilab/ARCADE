@@ -24,7 +24,7 @@ import arcade.core.env.grid.Grid;
 import arcade.core.vis.*;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.sim.PottsSimulation;
-import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.util.Enums.Region;
 
 public abstract class PottsDrawer extends Drawer {
 	DoubleGrid2D array;

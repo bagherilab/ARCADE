@@ -11,14 +11,13 @@ import java.util.ArrayList;
 import arcade.potts.env.loc.Voxel;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.loc.PottsLocationContainer;
-import static arcade.core.agent.cell.Cell.Region;
-import static arcade.core.agent.cell.Cell.State;
-import static arcade.potts.agent.module.PottsModule.Phase;
+import static arcade.core.util.Enums.State;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.sim.output.PottsOutputDeserializer.*;
 import static arcade.core.sim.output.OutputDeserializer.*;
 import static arcade.core.TestUtilities.*;
-import static arcade.potts.PottsTestUtilities.*;
 
 public class PottsOutputDeserializerTest {
 	private static final double EPSILON = 1E-10;
@@ -69,8 +68,8 @@ public class PottsOutputDeserializerTest {
 		int id = randomIntBetween(1,100);
 		int pop = randomIntBetween(1,100);
 		int age = randomIntBetween(1,100);
-		State state = randomState();
-		Phase phase = randomPhase();
+		State state = State.random(RANDOM);
+		Phase phase = Phase.random(RANDOM);
 		int voxels = randomIntBetween(1,100);
 		int targetVolume = randomIntBetween(1,100);
 		int targetSurface = randomIntBetween(1,100);
@@ -108,8 +107,8 @@ public class PottsOutputDeserializerTest {
 		int id = randomIntBetween(1,100);
 		int pop = randomIntBetween(1,100);
 		int age = randomIntBetween(1,100);
-		State state = randomState();
-		Phase phase = randomPhase();
+		State state = State.random(RANDOM);
+		Phase phase = Phase.random(RANDOM);
 		int voxels = randomIntBetween(1,100);
 		int targetVolume = randomIntBetween(1,100);
 		int targetSurface = randomIntBetween(1,100);

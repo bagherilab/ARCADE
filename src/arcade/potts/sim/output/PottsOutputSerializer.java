@@ -11,7 +11,7 @@ import arcade.potts.agent.module.PottsModule;
 import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.loc.*;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
-import static arcade.core.agent.cell.Cell.*;
+import static arcade.core.util.Enums.Region;
 
 public final class PottsOutputSerializer {
 	static Gson makeGSON() {

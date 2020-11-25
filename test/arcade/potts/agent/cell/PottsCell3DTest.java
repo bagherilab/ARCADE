@@ -8,10 +8,10 @@ import java.util.EnumSet;
 import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.agent.cell.Cell.Region;
-import static arcade.core.agent.cell.Cell.State;
+import static arcade.core.util.Enums.State;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Term;
 import static arcade.potts.agent.cell.PottsCell3D.SURFACE_VOLUME_MULTIPLIER;
-import static arcade.potts.sim.Potts.Term;
 import static arcade.core.TestUtilities.EPSILON;
 
 public class PottsCell3DTest {

@@ -16,17 +16,9 @@ import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactoryContainer;
 import arcade.core.env.loc.LocationContainer;
 import arcade.core.env.loc.LocationFactoryContainer;
+import static arcade.potts.util.PottsEnums.Ordering;
 
-public abstract class PottsSimulation extends SimState implements Simulation {
-	/** Stepping order for simulation */
-	public enum Ordering {
-		/** Stepping order for potts */
-		POTTS,
-		
-		/** Stepping order for cells */
-		CELLS
-	}
-	
+public abstract class PottsSimulation extends SimState implements Simulation {	
 	/** {@link arcade.core.sim.Series} object containing this simulation */
 	final PottsSeries series;
 	

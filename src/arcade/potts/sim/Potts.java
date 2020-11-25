@@ -6,17 +6,10 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Term;
 
 public abstract class Potts implements Steppable {
-	public enum Term {
-		/** Code for volume term */
-		VOLUME,
-	
-		/** Code for surface term */
-		SURFACE
-	}
-	
 	/** Length (x direction) of potts array */
 	final int LENGTH;
 	

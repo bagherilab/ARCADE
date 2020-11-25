@@ -2,9 +2,9 @@ package arcade.potts.agent.cell;
 
 import java.util.*;
 import arcade.core.agent.cell.*;
-import static arcade.core.agent.cell.Cell.State;
-import static arcade.core.agent.cell.Cell.Region;
-import static arcade.potts.agent.module.PottsModule.Phase;
+import static arcade.core.util.Enums.State;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Phase;
 
 /**
  * Container class for loading a {@link PottsCell}.

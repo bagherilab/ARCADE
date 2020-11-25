@@ -2,6 +2,7 @@ package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import static arcade.potts.util.PottsEnums.Direction;
 
 public class PottsLocation3D extends PottsLocation implements Location3D {
 	/**

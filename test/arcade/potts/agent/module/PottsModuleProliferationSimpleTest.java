@@ -11,9 +11,9 @@ import arcade.core.util.MiniBox;
 import arcade.potts.sim.*;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.agent.cell.Cell.Region;
-import static arcade.core.agent.cell.Cell.State;
-import static arcade.potts.agent.module.PottsModule.Phase;
+import static arcade.core.util.Enums.State;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.agent.module.PottsModuleProliferation.*;
 import static arcade.core.TestUtilities.*;
 

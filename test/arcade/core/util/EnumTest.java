@@ -13,11 +13,12 @@ public class EnumTest {
 	public void State_random_returnsState() {
 		// Create set of all values.
 		EnumSet<State> enumSet = EnumSet.allOf(State.class);
+		enumSet.remove(State.UNDEFINED);
 		
 		// Create set of all random values.
 		ArrayList<State> enumRandom = new ArrayList<>();
 		
-		int n = State.values().length;
+		int n = State.values().length - 1;
 		for (int i = 0; i < n; i++) {
 			MersenneTwisterFast rng = mock(MersenneTwisterFast.class);
 			doReturn(i).when(rng).nextInt(n);
@@ -33,11 +34,12 @@ public class EnumTest {
 	public void Region_random_returnsRegion() {
 		// Create set of all values.
 		EnumSet<Region> enumSet = EnumSet.allOf(Region.class);
+		enumSet.remove(Region.UNDEFINED);
 		
 		// Create set of all random values.
 		ArrayList<Region> enumRandom = new ArrayList<>();
 		
-		int n = Region.values().length;
+		int n = Region.values().length - 1;
 		for (int i = 0; i < n; i++) {
 			MersenneTwisterFast rng = mock(MersenneTwisterFast.class);
 			doReturn(i).when(rng).nextInt(n);

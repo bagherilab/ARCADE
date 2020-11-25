@@ -2,7 +2,7 @@ package arcade.potts.sim;
 
 import java.util.HashSet;
 import arcade.potts.agent.cell.PottsCell;
-import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.util.Enums.Region;
 
 public class Potts2D extends Potts {
 	/** Number of neighbors */

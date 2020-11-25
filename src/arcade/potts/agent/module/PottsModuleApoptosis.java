@@ -7,7 +7,8 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Phase;
 
 public abstract class PottsModuleApoptosis extends PottsModule {
 	/** Average duration of early apoptosis (ticks) */

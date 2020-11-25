@@ -14,7 +14,7 @@ import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCellContainer;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
-import static arcade.potts.agent.cell.PottsCell.Region;
+import static arcade.core.util.Enums.Region;
 import static arcade.core.TestUtilities.*;
 
 public class PottsLocationFactoryTest {

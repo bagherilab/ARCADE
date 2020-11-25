@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import ec.util.MersenneTwisterFast;
-import arcade.core.sim.Simulation;
 import arcade.core.env.loc.Location;
-import static arcade.core.agent.cell.Cell.Region;
+import arcade.core.util.Utilities;
+import static arcade.core.util.Enums.Region;
 
 public abstract class PottsLocations extends PottsLocation {
 	private static final int MAX_ITERATIONS = 100;
@@ -224,7 +224,7 @@ public abstract class PottsLocations extends PottsLocation {
 				selected.addAll(neighbors);
 			} else {
 				ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
-				Simulation.shuffle(neighborsShuffled, random);
+				Utilities.shuffleList(neighborsShuffled, random);
 				for (int i = 0; i < n - currentSize; i++) {
 					selected.add(neighborsShuffled.get(i));
 				}

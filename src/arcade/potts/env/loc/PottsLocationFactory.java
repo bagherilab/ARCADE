@@ -6,12 +6,12 @@ import java.util.HashSet;
 import java.util.EnumMap;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
-import arcade.core.sim.Simulation;
 import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
-import static arcade.core.agent.cell.Cell.*;
 import arcade.core.agent.cell.CellContainer;
 import arcade.potts.agent.cell.PottsCellContainer;
+import arcade.core.util.Utilities;
+import static arcade.core.util.Enums.Region;
 
 public abstract class PottsLocationFactory implements LocationFactory {
 	/** Map of id to location */
@@ -63,7 +63,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 		
 		// Get center voxels.
 		ArrayList<Voxel> centers = getCenters(series._length, series._width, series._height, m);
-		Simulation.shuffle(centers, random);
+		Utilities.shuffleList(centers, random);
 		
 		// Get regions (if they exist).
 		HashSet<String> regionKeys = new HashSet<>();
@@ -174,7 +174,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 		
 		// Add in random neighbors until target size is reached.
 		ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
-		Simulation.shuffle(neighborsShuffled, random);
+		Utilities.shuffleList(neighborsShuffled, random);
 		int n = Math.min(target - size, neighborsShuffled.size());
 		for (int i = 0; i < n; i++) {
 			voxels.add(neighborsShuffled.get(i));
@@ -204,7 +204,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 		
 		// Remove random neighbors until target size is reached.
 		ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
-		Simulation.shuffle(neighborsShuffled, random);
+		Utilities.shuffleList(neighborsShuffled, random);
 		for (int i = 0; i < size - target; i++) {
 			voxels.remove(neighborsShuffled.get(i));
 		}

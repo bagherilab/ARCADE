@@ -8,9 +8,9 @@ import java.util.EnumSet;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.agent.cell.Cell.Region;
-import static arcade.core.agent.cell.Cell.State;
-import static arcade.potts.sim.Potts.Term;
+import static arcade.core.util.Enums.State;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Term;
 import static arcade.potts.agent.cell.PottsCellFactoryTest.*;
 import static arcade.core.TestUtilities.*;
 
@@ -22,7 +22,7 @@ public class PottsCellFactory2DTest {
 		int cellID = randomIntBetween(1, 10);
 		int cellPop = randomIntBetween(1, 10);
 		int cellAge = randomIntBetween(1, 100);
-		State cellState = randomState();
+		State cellState = State.random(RANDOM);
 		Location location = mock(PottsLocation.class);
 		MiniBox parameters = mock(MiniBox.class);
 		EnumMap<Term, Double> criticals = makeEnumMap();
@@ -55,7 +55,7 @@ public class PottsCellFactory2DTest {
 		int cellID = randomIntBetween(1, 10);
 		int cellPop = randomIntBetween(1, 10);
 		int cellAge = randomIntBetween(1, 100);
-		State cellState = randomState();
+		State cellState = State.random(RANDOM);
 		Location location = mock(PottsLocation.class);
 		MiniBox parameters = mock(MiniBox.class);
 		EnumMap<Term, Double> criticals = makeEnumMap();

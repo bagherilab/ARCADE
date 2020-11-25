@@ -29,7 +29,7 @@ public final class Enums {
 		 * @param rng  the random number generator
 		 * @return  a random {@code State}
 		 */
-		public static State random(MersenneTwisterFast rng) { return values()[rng.nextInt(values().length)]; }
+		public static State random(MersenneTwisterFast rng) { return values()[rng.nextInt(values().length - 1) + 1]; }
 	}
 	
 	/** Cell region codes */
@@ -49,6 +49,6 @@ public final class Enums {
 		 * @param rng  the random number generator
 		 * @return  a random {@code Region}
 		 */
-		public static Region random(MersenneTwisterFast rng) { return values()[rng.nextInt(values().length)]; }
+		public static Region random(MersenneTwisterFast rng) { return values()[rng.nextInt(values().length - 1) + 1]; }
 	}
 }

@@ -5,41 +5,12 @@ import java.util.HashMap;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
-import arcade.core.sim.Simulation;
 import arcade.core.env.loc.Location;
-import static arcade.core.agent.cell.Cell.Region;
+import arcade.core.util.Utilities;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Direction;
 
 public abstract class PottsLocation implements Location {
-	/** Location split directions */
-	enum Direction {
-		/** Direction along the yz plane (y = 0, z = 0) */
-		YZ_PLANE,
-		
-		/** Direction along the zx plane (z = 0, x = 0) */
-		ZX_PLANE,
-		
-		/** Direction along the xy plane (x = 0, y = 0) */
-		XY_PLANE,
-		
-		/** Direction along the positive xy axis (x = y, z = 0) */
-		POSITIVE_XY,
-		
-		/** Direction along the negative xy axis (x = -y, z = 0) */
-		NEGATIVE_XY,
-		
-		/** Direction along the positive yz axis (y = z, x = 0) */
-		POSITIVE_YZ,
-		
-		/** Direction along the negative yz axis (y = -z, x = 0) */
-		NEGATIVE_YZ,
-		
-		/** Direction along the positive zx axis (z = x, y = 0) */
-		POSITIVE_ZX,
-		
-		/** Direction along the negative zx axis (z = -x, y = 0) */
-		NEGATIVE_ZX
-	}
-	
 	/** Difference between split voxel numbers */
 	final static private int BALANCE_DIFFERENCE = 2;
 	
@@ -506,7 +477,7 @@ public abstract class PottsLocation implements Location {
 			}
 			
 			ArrayList<Voxel> neighborList = new ArrayList<>(neighborSet);
-			Simulation.shuffle(neighborList, random);
+			Utilities.shuffleList(neighborList, random);
 			
 			// Select a neighbor to move from one list to the other.
 			boolean added = false;

@@ -3,9 +3,9 @@ package arcade.potts.agent.cell;
 import java.util.EnumMap;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
-import static arcade.core.agent.cell.Cell.State;
-import static arcade.core.agent.cell.Cell.Region;
-import static arcade.potts.sim.Potts.Term;
+import static arcade.core.util.Enums.State;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsCellFactory2D extends PottsCellFactory {
 	public PottsCellFactory2D() { super(); }

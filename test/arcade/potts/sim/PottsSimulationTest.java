@@ -23,9 +23,9 @@ import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.loc.PottsLocationFactory;
 import arcade.potts.env.loc.PottsLocationContainer;
+import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.core.sim.Series.SEED_OFFSET;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
-import static arcade.potts.sim.PottsSimulation.Ordering;
 
 public class PottsSimulationTest {
 	static final long RANDOM_SEED = (long)(Math.random()*1000);

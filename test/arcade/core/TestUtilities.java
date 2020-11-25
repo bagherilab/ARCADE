@@ -2,9 +2,12 @@ package arcade.core;
 
 import java.io.*;
 import java.util.Random;
+import ec.util.MersenneTwisterFast;
 
 public final class TestUtilities {
 	public static final double EPSILON = 1E-10;
+	
+	public static final MersenneTwisterFast RANDOM = new MersenneTwisterFast((long) (Math.random()*1000));
 	
 	public static int randomSeed() { return randomIntBetween(1, 1000); }
 	

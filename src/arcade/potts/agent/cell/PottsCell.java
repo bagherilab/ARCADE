@@ -9,8 +9,10 @@ import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.*;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.potts.sim.PottsSimulation.Ordering;
-import static arcade.potts.sim.Potts.Term;
+import static arcade.core.util.Enums.State;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Term;
+import static arcade.potts.util.PottsEnums.Ordering;
 
 public abstract class PottsCell implements Cell {
 	/** Stopper used to stop this agent from being stepped in the schedule */

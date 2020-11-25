@@ -6,10 +6,10 @@ import arcade.core.agent.cell.*;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
-import static arcade.potts.sim.Potts.Term;
-import static arcade.core.agent.cell.Cell.State;
-import static arcade.core.agent.cell.Cell.Region;
-import static arcade.potts.agent.module.PottsModule.Phase;
+import static arcade.core.util.Enums.State;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Term;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 

@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.*;
 import ec.util.MersenneTwisterFast;
-import static arcade.potts.agent.cell.PottsCell.Region;
+import static arcade.core.util.Enums.Region;
 
 public class PottsLocations2DTest {
 	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;

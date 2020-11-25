@@ -3,7 +3,7 @@ package arcade.potts.env.loc;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import arcade.core.env.loc.*;
-import static arcade.core.agent.cell.Cell.*;
+import static arcade.core.util.Enums.Region;
 
 /**
  * Container class for loading a {@link PottsLocation}.

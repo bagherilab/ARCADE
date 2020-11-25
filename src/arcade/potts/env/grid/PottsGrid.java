@@ -3,7 +3,6 @@ package arcade.potts.env.grid;
 import java.util.HashMap;
 import sim.util.Bag;
 import arcade.core.env.grid.Grid;
-import arcade.core.agent.cell.Cell;
 
 public class PottsGrid implements Grid {
 	/** Map of ID to object */

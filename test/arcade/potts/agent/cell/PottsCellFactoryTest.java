@@ -18,12 +18,11 @@ import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
-import static arcade.core.agent.cell.Cell.Region;
-import static arcade.core.agent.cell.Cell.State;
-import static arcade.potts.agent.module.PottsModule.Phase;
-import static arcade.potts.sim.Potts.Term;
+import static arcade.core.util.Enums.Region;
+import static arcade.core.util.Enums.State;
+import static arcade.potts.util.PottsEnums.Term;
+import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.core.TestUtilities.*;
-import static arcade.potts.PottsTestUtilities.*;
 
 public class PottsCellFactoryTest {
 	static Series createSeries(int[] init, int[] volumes) {
@@ -655,8 +654,8 @@ public class PottsCellFactoryTest {
 		int cellID = randomIntBetween(1, 10);
 		int cellPop = randomIntBetween(1, 10);
 		int cellAge = randomIntBetween(1, 100);
-		State cellState = randomState();
-		Phase cellPhase = randomPhase();
+		State cellState = State.random(RANDOM);
+		Phase cellPhase = Phase.random(RANDOM);
 		EnumMap<Term, Double> criticals = makeEnumMap();
 		EnumMap<Term, Double> lambdas = makeEnumMap();
 		double[] adhesion = new double[] {
@@ -702,8 +701,8 @@ public class PottsCellFactoryTest {
 		int cellID1 = randomIntBetween(1, 10);
 		int cellPop1 = randomIntBetween(1, 10);
 		int cellAge1 = randomIntBetween(1, 100);
-		State cellState1 = randomState();
-		Phase cellPhase1 = randomPhase();
+		State cellState1 = State.random(RANDOM);
+		Phase cellPhase1 = Phase.random(RANDOM);
 		EnumMap<Term, Double> criticals1 = makeEnumMap();
 		EnumMap<Term, Double> lambdas1 = makeEnumMap();
 		double[] adhesion1 = new double[] {
@@ -723,8 +722,8 @@ public class PottsCellFactoryTest {
 		int cellID2 = cellID1 + 1;
 		int cellPop2 = cellPop1 + 1;
 		int cellAge2 = randomIntBetween(1, 100);
-		State cellState2 = randomState();
-		Phase cellPhase2 = randomPhase();
+		State cellState2 = State.random(RANDOM);
+		Phase cellPhase2 = Phase.random(RANDOM);
 		EnumMap<Term, Double> criticals2 = makeEnumMap();
 		EnumMap<Term, Double> lambdas2 = makeEnumMap();
 		double[] adhesion2 = new double[] {
@@ -796,8 +795,8 @@ public class PottsCellFactoryTest {
 		int cellID = randomIntBetween(1, 10);
 		int cellPop = randomIntBetween(1, 10);
 		int cellAge = randomIntBetween(1, 100);
-		State cellState = randomState();
-		Phase cellPhase = randomPhase();
+		State cellState = State.random(RANDOM);
+		Phase cellPhase = Phase.random(RANDOM);
 		EnumMap<Term, Double> criticals = makeEnumMap();
 		EnumMap<Term, Double> lambdas = makeEnumMap();
 		double[] adhesion = new double[] {
@@ -868,8 +867,8 @@ public class PottsCellFactoryTest {
 		int cellID1 = randomIntBetween(1, 10);
 		int cellPop1 = randomIntBetween(1, 10);
 		int cellAge1 = randomIntBetween(1, 100);
-		State cellState1 = randomState();
-		Phase cellPhase1 = randomPhase();
+		State cellState1 = State.random(RANDOM);
+		Phase cellPhase1 = Phase.random(RANDOM);
 		EnumMap<Term, Double> criticals1 = makeEnumMap();
 		EnumMap<Term, Double> lambdas1 = makeEnumMap();
 		double[] adhesion1 = new double[] {
@@ -889,8 +888,8 @@ public class PottsCellFactoryTest {
 		int cellID2 = cellID1 + 1;
 		int cellPop2 = cellPop1 + 1;
 		int cellAge2 = randomIntBetween(1, 100);
-		State cellState2 = randomState();
-		Phase cellPhase2 = randomPhase();
+		State cellState2 = State.random(RANDOM);
+		Phase cellPhase2 = Phase.random(RANDOM);
 		EnumMap<Term, Double> criticals2 = makeEnumMap();
 		EnumMap<Term, Double> lambdas2 = makeEnumMap();
 		double[] adhesion2 = new double[] {

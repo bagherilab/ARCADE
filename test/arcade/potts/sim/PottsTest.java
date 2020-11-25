@@ -15,8 +15,8 @@ import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.potts.sim.Potts.Term;
-import static arcade.core.agent.cell.Cell.Region;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Term;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.core.TestUtilities.EPSILON;
 

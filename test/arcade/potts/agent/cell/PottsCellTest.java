@@ -12,10 +12,10 @@ import arcade.core.util.MiniBox;
 import arcade.potts.sim.PottsSimulation;
 import arcade.potts.agent.module.*;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.agent.cell.Cell.Region;
-import static arcade.core.agent.cell.Cell.State;
-import static arcade.potts.sim.Potts.Term;
-import static arcade.potts.sim.PottsSimulation.Ordering;
+import static arcade.core.util.Enums.State;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Term;
+import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.core.TestUtilities.*;
 
 public class PottsCellTest {
@@ -180,7 +180,7 @@ public class PottsCellTest {
 	
 	@Test
 	public void getState_valueAssigned_returnsValue() {
-		State cellState = randomState();
+		State cellState = State.random(RANDOM);
 		PottsCellMock cell = new PottsCellMock(cellID, 0, cellState, 0, _location, false, _parameters,
 				_criticals, _lambdas, _adhesion, null, null, null);
 		assertEquals(cellState, cell.getState());

@@ -3,8 +3,8 @@ package arcade.potts.env.loc;
 import org.junit.*;
 import static org.junit.Assert.*;
 import java.util.*;
-import static arcade.potts.env.loc.PottsLocation.Direction;
-import static arcade.potts.agent.cell.PottsCell.Region;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public class Location3DTest {
