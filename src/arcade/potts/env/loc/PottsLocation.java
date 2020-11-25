@@ -218,6 +218,14 @@ public abstract class PottsLocation implements Location {
 	abstract PottsLocation makeLocation(ArrayList<Voxel> voxels);
 	
 	/**
+	 * Converts volume to surface area.
+	 * 
+	 * @param volume  the volume (in voxels)
+	 * @return  the surface area (in voxels)
+	 */
+	public abstract double convertVolume(double volume);
+	
+	/**
 	 * Calculates surface of location.
 	 *
 	 * @return  the surface

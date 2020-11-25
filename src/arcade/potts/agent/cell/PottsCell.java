@@ -14,7 +14,7 @@ import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Term;
 import static arcade.potts.util.PottsEnums.Ordering;
 
-public abstract class PottsCell implements Cell {
+public class PottsCell implements Cell {
 	/** Stopper used to stop this agent from being stepped in the schedule */
 	Stoppable stopper;
 	
@@ -246,6 +246,11 @@ public abstract class PottsCell implements Cell {
 	
 	public void stop() { stopper.stop(); }
 	
+	public PottsCell make(int id, State state, Location location) {
+		return new PottsCell(id, pop, state, 0, location, hasRegions, parameters,
+				criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
+	}
+	
 	public void setState(State state) {
 		this.state = state;
 		
@@ -374,11 +379,11 @@ public abstract class PottsCell implements Cell {
 			targetVolume = oldTargetVolume ;
 		}
 		
-		targetSurface = convert(targetVolume);
+		targetSurface = location.convertVolume(targetVolume);
 		
 		if (hasRegions) {
 			targetRegionVolumes.put(Region.DEFAULT, targetRegionVolumes.get(Region.DEFAULT) + targetVolume);
-			targetRegionSurfaces.put(Region.DEFAULT, convert(targetRegionVolumes.get(Region.DEFAULT)));
+			targetRegionSurfaces.put(Region.DEFAULT, location.convertVolume(targetRegionVolumes.get(Region.DEFAULT)));
 		}
 	}
 	
@@ -402,17 +407,10 @@ public abstract class PottsCell implements Cell {
 			targetRegionVolumes.put(region, oldTargetRegionVolume);
 		}
 		
-		targetRegionSurfaces.put(region, convert(targetRegionVolumes.get(region)));
+		targetRegionSurfaces.put(region, location.convertVolume(targetRegionVolumes.get(region)));
 		
 		targetVolume += targetRegionVolumes.get(region);
-		targetSurface = convert(targetVolume);
+		targetSurface = location.convertVolume(targetVolume);
 	}
 	
-	/**
-	 * Calculates volume to surface area.
-	 * 
-	 * @param volume  the volume (in voxels)
-	 * @return  the surface area (in voxels)
-	 */
-	abstract double convert(double volume);
 }

@@ -16,6 +16,8 @@ public class PottsLocation2D extends PottsLocation implements Location2D {
 	
 	ArrayList<Voxel> getNeighbors(Voxel voxel) { return Location2D.getNeighbors(voxel); }
 	
+	public double convertVolume(double volume) { return Location2D.convertVolume(volume); }
+	
 	int calculateSurface() { return Location2D.calculateSurface(voxels); }
 	
 	int updateSurface(Voxel voxel) { return Location2D.updateSurface(voxels, voxel); }

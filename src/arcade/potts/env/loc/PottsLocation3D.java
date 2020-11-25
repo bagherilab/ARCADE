@@ -16,6 +16,8 @@ public class PottsLocation3D extends PottsLocation implements Location3D {
 	
 	ArrayList<Voxel> getNeighbors(Voxel voxel) { return Location3D.getNeighbors(voxel); }
 	
+	public double convertVolume(double volume) { return Location3D.convertVolume(volume); }
+	
 	int calculateSurface() { return Location3D.calculateSurface(voxels); }
 	
 	int updateSurface(Voxel voxel) { return Location3D.updateSurface(voxels, voxel); }
