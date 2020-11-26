@@ -1,19 +1,20 @@
 package arcade.potts.env.loc;
 
 import org.junit.*;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashSet;
-import ec.util.MersenneTwisterFast;
-import arcade.potts.agent.cell.PottsCellContainer;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.util.Enums.Region;
+import java.util.ArrayList;
+import java.util.HashSet;
+import ec.util.MersenneTwisterFast;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public class PottsLocationFactory3DTest {
-	final MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-	final PottsLocationFactory3D factory = mock(PottsLocationFactory3D.class, CALLS_REAL_METHODS);
+	final static PottsLocationFactory3D factory = mock(PottsLocationFactory3D.class, CALLS_REAL_METHODS);
+	
+	@BeforeClass
+	public static void setupMocks() {
+		factory.random = mock(MersenneTwisterFast.class);
+	}
 	
 	@Test
 	public void convert_exactOddCubes_calculateValue() {
@@ -45,214 +46,6 @@ public class PottsLocationFactory3DTest {
 		assertEquals(5, factory.convert(4*4*4 - 1));
 		assertEquals(7, factory.convert(6*6*6 - 1));
 		assertEquals(9, factory.convert(8*8*8 - 1));
-	}
-	
-	@Test
-	public void increase_exactTarget_updatesList() {
-		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-		ArrayList<Voxel> allVoxels = new ArrayList<>();
-		ArrayList<Voxel> voxels = new ArrayList<>();
-		
-		int n = 10;
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				for (int k = 0; k < n; k++) {
-					allVoxels.add(new Voxel(i - n/2, j - n/2, k - n/2));
-				}
-			}
-		}
-		
-		voxels.add(new Voxel(0, 0, 0));
-		PottsLocationFactory factory = new PottsLocationFactory3D();
-		factory.increase(random, allVoxels, voxels, 7);
-		
-		ArrayList<Voxel> expected = new ArrayList<>();
-		expected.add(new Voxel(0, 0, 0));
-		expected.add(new Voxel(1, 0, 0));
-		expected.add(new Voxel(-1, 0, 0));
-		expected.add(new Voxel(0, -1, 0));
-		expected.add(new Voxel(0, 1, 0));
-		expected.add(new Voxel(0, 0, 1));
-		expected.add(new Voxel(0, 0, -1));
-		
-		voxels.sort(VOXEL_COMPARATOR);
-		expected.sort(VOXEL_COMPARATOR);
-		
-		assertEquals(expected, voxels);
-	}
-	
-	@Test
-	public void increase_inexactTarget_updatesList() {
-		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-		ArrayList<Voxel> allVoxels = new ArrayList<>();
-		ArrayList<Voxel> voxels = new ArrayList<>();
-		
-		int n = 10;
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				for (int k = 0; k < n; k++) {
-					allVoxels.add(new Voxel(i - n/2, j - n/2, k - n/2));
-				}
-			}
-		}
-		
-		voxels.add(new Voxel(0, 0, 0));
-		PottsLocationFactory factory = new PottsLocationFactory3D();
-		factory.increase(random, allVoxels, voxels, 6);
-		
-		HashSet<Voxel> expected = new HashSet<>();
-		expected.add(new Voxel(0, 0, 0));
-		expected.add(new Voxel(1, 0, 0));
-		expected.add(new Voxel(-1, 0, 0));
-		expected.add(new Voxel(0, -1, 0));
-		expected.add(new Voxel(0, 1, 0));
-		expected.add(new Voxel(0, 0, 1));
-		expected.add(new Voxel(0, 0, -1));
-		
-		assertEquals(6, voxels.size());
-		assertTrue(expected.containsAll(voxels));
-	}
-	
-	@Test
-	public void increase_invalidTarget_addsValid() {
-		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-		ArrayList<Voxel> allVoxels = new ArrayList<>();
-		ArrayList<Voxel> voxels = new ArrayList<>();
-		
-		int n = 10;
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				allVoxels.add(new Voxel(i - n/2, j - n/2, 0));
-			}
-		}
-		
-		voxels.add(new Voxel(0, 0, 0));
-		PottsLocationFactory factory = new PottsLocationFactory3D();
-		factory.increase(random, allVoxels, voxels, 7);
-		
-		ArrayList<Voxel> expected = new ArrayList<>();
-		expected.add(new Voxel(0, 0, 0));
-		expected.add(new Voxel(1, 0, 0));
-		expected.add(new Voxel(-1, 0, 0));
-		expected.add(new Voxel(0, -1, 0));
-		expected.add(new Voxel(0, 1, 0));
-		
-		voxels.sort(VOXEL_COMPARATOR);
-		expected.sort(VOXEL_COMPARATOR);
-		
-		assertEquals(expected, voxels);
-	}
-	
-	@Test
-	public void decrease_exactTarget_updatesList() {
-		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-		ArrayList<Voxel> voxels = new ArrayList<>();
-		
-		voxels.add(new Voxel(0, 0, 0));
-		voxels.add(new Voxel(1, 0, 0));
-		voxels.add(new Voxel(-1, 0, 0));
-		voxels.add(new Voxel(0, -1, 0));
-		voxels.add(new Voxel(0, 1, 0));
-		voxels.add(new Voxel(0, 0, 1));
-		voxels.add(new Voxel(0, 0, -1));
-		PottsLocationFactory factory = new PottsLocationFactory3D();
-		factory.decrease(random, voxels, 1);
-		
-		ArrayList<Voxel> expected = new ArrayList<>();
-		expected.add(new Voxel(0, 0, 0));
-		
-		voxels.sort(VOXEL_COMPARATOR);
-		expected.sort(VOXEL_COMPARATOR);
-		
-		assertEquals(expected, voxels);
-	}
-	
-	@Test
-	public void decrease_inexactTarget_updatesList() {
-		MersenneTwisterFast random = mock(MersenneTwisterFast.class);
-		ArrayList<Voxel> voxels = new ArrayList<>();
-		
-		voxels.add(new Voxel(0, 0, 0));
-		voxels.add(new Voxel(1, 0, 0));
-		voxels.add(new Voxel(-1, 0, 0));
-		voxels.add(new Voxel(0, -1, 0));
-		voxels.add(new Voxel(0, 1, 0));
-		voxels.add(new Voxel(0, 0, 1));
-		voxels.add(new Voxel(0, 0, -1));
-		PottsLocationFactory factory = new PottsLocationFactory3D();
-		factory.decrease(random, voxels, 4);
-		
-		HashSet<Voxel> expected = new HashSet<>();
-		expected.add(new Voxel(0, 0, 0));
-		expected.add(new Voxel(1, 0, 0));
-		expected.add(new Voxel(-1, 0, 0));
-		expected.add(new Voxel(0, -1, 0));
-		expected.add(new Voxel(0, 1, 0));
-		expected.add(new Voxel(0, 0, 1));
-		expected.add(new Voxel(0, 0, -1));
-		
-		assertEquals(4, voxels.size());
-		assertTrue(expected.containsAll(voxels));
-	}
-	
-	@Test
-	public void makeLocation_givenList_createsLocation() {
-		ArrayList<Voxel> voxels = new ArrayList<>();
-		int n = 10;
-		for (int i = 0; i < n; i++) { voxels.add(new Voxel(i, (int)(Math.random()*10), 0)); }
-		PottsLocationFactory factory = new PottsLocationFactory3D();
-		PottsLocation location = factory.makeLocation(voxels);
-		assertTrue(location instanceof PottsLocation3D);
-		assertEquals(voxels, location.voxels);
-	}
-	
-	@Test
-	public void makeLocations_givenList_createsLocations() {
-		ArrayList<Voxel> voxels = new ArrayList<>();
-		int n = 10;
-		for (int i = 0; i < n; i++) { voxels.add(new Voxel(i, (int)(Math.random()*10), 0)); }
-		PottsLocationFactory factory = new PottsLocationFactory3D();
-		PottsLocations location = factory.makeLocations(voxels);
-		assertTrue(location instanceof PottsLocations3D);
-		assertEquals(voxels, location.voxels);
-	}
-	
-	@Test
-	public void make_noRegion_createsLocation() {
-		PottsLocationFactory3D factory = new PottsLocationFactory3D();
-		Voxel center = new Voxel(0, 0, 0);
-		ArrayList<Voxel> voxels = factory.getPossible(center, 1);
-		
-		PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 1);
-		PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, null);
-		
-		PottsLocation location = (PottsLocation)factory.make(locationContainer, cellContainer, random);
-		assertTrue(location instanceof PottsLocation3D);
-		assertEquals(1, location.getVolume());
-	}
-	
-	@Test
-	public void make_withRegion_createsLocation() {
-		PottsLocationFactory3D factory = new PottsLocationFactory3D();
-		Voxel center = new Voxel(0, 0, 0);
-		ArrayList<Voxel> voxels = factory.getPossible(center, 1);
-		
-		EnumMap<Region, ArrayList<Voxel>> regionVoxelMap = new EnumMap<>(Region.class);
-		regionVoxelMap.put(Region.DEFAULT, voxels);
-		regionVoxelMap.put(Region.NUCLEUS, voxels);
-		
-		EnumMap<Region, Integer> regionTargetMap = new EnumMap<>(Region.class);
-		regionTargetMap.put(Region.DEFAULT, 0);
-		regionTargetMap.put(Region.NUCLEUS, 1);
-		
-		PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 1, regionTargetMap);
-		PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, regionVoxelMap);
-		
-		PottsLocation location = (PottsLocation)factory.make(locationContainer, cellContainer, random);
-		assertTrue(location instanceof PottsLocations3D);
-		assertEquals(1, location.getVolume());
-		assertEquals(0, location.getVolume(Region.DEFAULT));
-		assertEquals(1, location.getVolume(Region.NUCLEUS));
 	}
 	
 	@Test
@@ -448,5 +241,143 @@ public class PottsLocationFactory3DTest {
 		for (int i = 0; i < expected.size(); i++) {
 			assertEquals(expected.get(i), centers.get(i));
 		}
+	}
+	
+	@Test
+	public void increase_exactTarget_updatesList() {
+		ArrayList<Voxel> allVoxels = new ArrayList<>();
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		
+		int n = 10;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				for (int k = 0; k < n; k++) {
+					allVoxels.add(new Voxel(i - n/2, j - n/2, k - n/2));
+				}
+			}
+		}
+		
+		voxels.add(new Voxel(0, 0, 0));
+		factory.increase(allVoxels, voxels, 7);
+		
+		ArrayList<Voxel> expected = new ArrayList<>();
+		expected.add(new Voxel(0, 0, 0));
+		expected.add(new Voxel(1, 0, 0));
+		expected.add(new Voxel(-1, 0, 0));
+		expected.add(new Voxel(0, -1, 0));
+		expected.add(new Voxel(0, 1, 0));
+		expected.add(new Voxel(0, 0, 1));
+		expected.add(new Voxel(0, 0, -1));
+		
+		voxels.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
+		
+		assertEquals(expected, voxels);
+	}
+	
+	@Test
+	public void increase_inexactTarget_updatesList() {
+		ArrayList<Voxel> allVoxels = new ArrayList<>();
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		
+		int n = 10;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				for (int k = 0; k < n; k++) {
+					allVoxels.add(new Voxel(i - n/2, j - n/2, k - n/2));
+				}
+			}
+		}
+		
+		voxels.add(new Voxel(0, 0, 0));
+		factory.increase(allVoxels, voxels, 6);
+		
+		HashSet<Voxel> expected = new HashSet<>();
+		expected.add(new Voxel(0, 0, 0));
+		expected.add(new Voxel(1, 0, 0));
+		expected.add(new Voxel(-1, 0, 0));
+		expected.add(new Voxel(0, -1, 0));
+		expected.add(new Voxel(0, 1, 0));
+		expected.add(new Voxel(0, 0, 1));
+		expected.add(new Voxel(0, 0, -1));
+		
+		assertEquals(6, voxels.size());
+		assertTrue(expected.containsAll(voxels));
+	}
+	
+	@Test
+	public void increase_invalidTarget_addsValid() {
+		ArrayList<Voxel> allVoxels = new ArrayList<>();
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		
+		int n = 10;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				allVoxels.add(new Voxel(i - n/2, j - n/2, 0));
+			}
+		}
+		
+		voxels.add(new Voxel(0, 0, 0));
+		factory.increase(allVoxels, voxels, 7);
+		
+		ArrayList<Voxel> expected = new ArrayList<>();
+		expected.add(new Voxel(0, 0, 0));
+		expected.add(new Voxel(1, 0, 0));
+		expected.add(new Voxel(-1, 0, 0));
+		expected.add(new Voxel(0, -1, 0));
+		expected.add(new Voxel(0, 1, 0));
+		
+		voxels.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
+		
+		assertEquals(expected, voxels);
+	}
+	
+	@Test
+	public void decrease_exactTarget_updatesList() {
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		
+		voxels.add(new Voxel(0, 0, 0));
+		voxels.add(new Voxel(1, 0, 0));
+		voxels.add(new Voxel(-1, 0, 0));
+		voxels.add(new Voxel(0, -1, 0));
+		voxels.add(new Voxel(0, 1, 0));
+		voxels.add(new Voxel(0, 0, 1));
+		voxels.add(new Voxel(0, 0, -1));
+		factory.decrease(voxels, 1);
+		
+		ArrayList<Voxel> expected = new ArrayList<>();
+		expected.add(new Voxel(0, 0, 0));
+		
+		voxels.sort(VOXEL_COMPARATOR);
+		expected.sort(VOXEL_COMPARATOR);
+		
+		assertEquals(expected, voxels);
+	}
+	
+	@Test
+	public void decrease_inexactTarget_updatesList() {
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		
+		voxels.add(new Voxel(0, 0, 0));
+		voxels.add(new Voxel(1, 0, 0));
+		voxels.add(new Voxel(-1, 0, 0));
+		voxels.add(new Voxel(0, -1, 0));
+		voxels.add(new Voxel(0, 1, 0));
+		voxels.add(new Voxel(0, 0, 1));
+		voxels.add(new Voxel(0, 0, -1));
+		factory.decrease(voxels, 4);
+		
+		HashSet<Voxel> expected = new HashSet<>();
+		expected.add(new Voxel(0, 0, 0));
+		expected.add(new Voxel(1, 0, 0));
+		expected.add(new Voxel(-1, 0, 0));
+		expected.add(new Voxel(0, -1, 0));
+		expected.add(new Voxel(0, 1, 0));
+		expected.add(new Voxel(0, 0, 1));
+		expected.add(new Voxel(0, 0, -1));
+		
+		assertEquals(4, voxels.size());
+		assertTrue(expected.containsAll(voxels));
 	}
 }

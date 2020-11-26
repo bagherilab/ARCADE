@@ -68,6 +68,65 @@ public class PottsCellFactory implements CellFactory {
 		else { createCells(series); }
 	}
 	
+	public void loadCells(Series series) {
+		// Load cells.
+		ArrayList<CellContainer> containers = series.loader.loadCells();
+		
+		// Population sizes.
+		HashMap<Integer, Integer> popToSize = new HashMap<>();
+		for (MiniBox population : series._populations.values()) {
+			int n = population.getInt("INIT");
+			int pop = population.getInt("CODE");
+			popToSize.put(pop, n);
+		}
+		
+		// Map loaded container to factory.
+		for (CellContainer container : containers) {
+			PottsCellContainer cellContainer = (PottsCellContainer)container;
+			int pop = cellContainer.pop;
+			if (popToIDs.containsKey(pop) && popToIDs.get(pop).size() < popToSize.get(pop)) {
+				cells.put(cellContainer.id, cellContainer);
+				popToIDs.get(pop).add(cellContainer.id);
+			}
+		}
+	}
+	
+	public void createCells(Series series) {
+		int id = 1;
+		
+		// Create containers for each population.
+		for (MiniBox population : series._populations.values()) {
+			int n = population.getInt("INIT");
+			int pop = population.getInt("CODE");
+			boolean regions = popToRegions.get(pop);
+			
+			// Calculate voxels and (if they exist) region voxels.
+			int voxels = population.getInt("CRITICAL_VOLUME");
+			EnumMap<Region, Integer> regionVoxels;
+			
+			if (!regions) { regionVoxels = null; }
+			else {
+				regionVoxels = new EnumMap<>(Region.class);
+				int total = 0;
+				
+				for (Region region : Region.values()) {
+					double fraction = population.getDouble("(REGION)" + TAG_SEPARATOR + region);
+					int voxelFraction = (int)Math.round(fraction*voxels);
+					total += voxelFraction;
+					if (total > voxels) { voxelFraction -= (total - voxels); }
+					regionVoxels.put(region, voxelFraction);
+				}
+			}
+			
+			for (int i = 0; i < n; i++) {
+				PottsCellContainer cellContainer = new PottsCellContainer(id, pop, voxels, regionVoxels);
+				cells.put(id, cellContainer);
+				popToIDs.get(cellContainer.pop).add(cellContainer.id);
+				id++;
+			}
+		}
+	}
+	
 	/**
 	 * Parses the population settings into maps from population to parameter value.
 	 * 
@@ -143,65 +202,6 @@ public class PottsCellFactory implements CellFactory {
 				popToRegionCriticals.put(pop, criticalsRegion);
 				popToRegionLambdas.put(pop, lambdasRegion);
 				popToRegionAdhesion.put(pop, adhesionsRegion);
-			}
-		}
-	}
-	
-	public void loadCells(Series series) {
-		// Load cells.
-		ArrayList<CellContainer> containers = series.loader.loadCells();
-		
-		// Population sizes.
-		HashMap<Integer, Integer> popToSize = new HashMap<>();
-		for (MiniBox population : series._populations.values()) {
-			int n = population.getInt("INIT");
-			int pop = population.getInt("CODE");
-			popToSize.put(pop, n);
-		}
-		
-		// Map loaded container to factory.
-		for (CellContainer container : containers) {
-			PottsCellContainer cellContainer = (PottsCellContainer)container;
-			int pop = cellContainer.pop;
-			if (popToIDs.containsKey(pop) && popToIDs.get(pop).size() < popToSize.get(pop)) {
-				cells.put(cellContainer.id, cellContainer);
-				popToIDs.get(pop).add(cellContainer.id);
-			}
-		}
-	}
-	
-	public void createCells(Series series) {
-		int id = 1;
-		
-		// Create containers for each population.
-		for (MiniBox population : series._populations.values()) {
-			int n = population.getInt("INIT");
-			int pop = population.getInt("CODE");
-			boolean regions = popToRegions.get(pop);
-			
-			// Calculate voxels and (if they exist) region voxels.
-			int voxels = population.getInt("CRITICAL_VOLUME");
-			EnumMap<Region, Integer> regionVoxels;
-			
-			if (!regions) { regionVoxels = null; }
-			else {
-				regionVoxels = new EnumMap<>(Region.class);
-				int total = 0;
-				
-				for (Region region : Region.values()) {
-					double fraction = population.getDouble("(REGION)" + TAG_SEPARATOR + region);
-					int voxelFraction = (int)Math.round(fraction*voxels);
-					total += voxelFraction;
-					if (total > voxels) { voxelFraction -= (total - voxels); }
-					regionVoxels.put(region, voxelFraction);
-				}
-			}
-			
-			for (int i = 0; i < n; i++) {
-				PottsCellContainer cellContainer = new PottsCellContainer(id, pop, voxels, regionVoxels);
-				cells.put(id, cellContainer);
-				popToIDs.get(cellContainer.pop).add(cellContainer.id);
-				id++;
 			}
 		}
 	}

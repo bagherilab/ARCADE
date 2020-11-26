@@ -56,6 +56,8 @@ public class PottsCellContainer implements CellContainer {
 		this.regionTargetSurface = regionTargetSurface;
 	}
 	
+	public int getID() { return id; }
+	
 	public Cell convert(CellFactory factory, Location location) {
 		return convert((PottsCellFactory)factory, location);
 	}
@@ -99,7 +101,8 @@ public class PottsCellContainer implements CellContainer {
 		}
 		
 		// Update cell module.
-		((PottsModule)cell.getModule()).setPhase(phase);
+		PottsModule module = (PottsModule)cell.getModule();
+		if (module != null) { module.setPhase(phase); }
 		
 		return cell;
 	}

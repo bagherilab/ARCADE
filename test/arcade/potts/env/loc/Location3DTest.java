@@ -6,6 +6,8 @@ import java.util.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.env.loc.Location3D.SURFACE_VOLUME_MULTIPLIER;
+import static arcade.core.TestUtilities.EPSILON;
 
 public class Location3DTest {
 	static ArrayList<Voxel> voxelListForDiametersXY, voxelListForDiametersYZ, voxelListForDiametersZX;
@@ -185,6 +187,20 @@ public class Location3DTest {
 		assertEquals(0, (int)diameters.get(Direction.YZ_PLANE));
 		assertEquals(0, (int)diameters.get(Direction.POSITIVE_ZX));
 		assertEquals(0, (int)diameters.get(Direction.NEGATIVE_ZX));
+	}
+	
+	@Test
+	public void convertVolume_givenLocationValue_calculatesValue() {
+		PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+		double volume = Math.random()*100;
+		assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.pow(volume, 2./3), loc.convertVolume(volume), EPSILON);
+	}
+	
+	@Test
+	public void convertVolume_givenLocationsValue_calculatesValue() {
+		PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
+		double volume = Math.random()*100;
+		assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.pow(volume, 2./3), loc.convertVolume(volume), EPSILON);
 	}
 	
 	@Test
@@ -541,6 +557,15 @@ public class Location3DTest {
 		
 		assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.NEGATIVE_ZX, diametersA));
 		assertEquals(Direction.POSITIVE_ZX, loc.getSlice(Direction.NEGATIVE_ZX, diametersB));
+	}
+	
+	@Test
+	public void getSlice_invalidDirection_returnsNull() {
+		PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+		assertNull(loc.getSlice(Direction.UNDEFINED, null));
+		
+		PottsLocations3D locs = new PottsLocations3D(new ArrayList<>());
+		assertNull(locs.getSlice(Direction.UNDEFINED, null));
 	}
 	
 	@Test

@@ -26,69 +26,13 @@ public class PottsLocationContainer implements LocationContainer {
 		this.regions = regions;
 	}
 	
-	/**
-	 * Increases the number of voxels by adding from a given list of voxels.
-	 *
-	 * @param factory  the location factory instance
-	 * @param allVoxels  the list of all possible voxels
-	 * @param voxels  the list of selected voxels
-	 * @param target  the target number of voxels
-	 */
-	void increase(PottsLocationFactory factory, ArrayList<Voxel> allVoxels, ArrayList<Voxel> voxels, int target) {
-		int size = voxels.size();
-		HashSet<Voxel> neighbors = new HashSet<>();
-		
-		// Get neighbors.
-		for (Voxel voxel : voxels) {
-			ArrayList<Voxel> allNeighbors = factory.getNeighbors(voxel);
-			for (Voxel neighbor : allNeighbors) {
-				if (allVoxels.contains(neighbor) && !voxels.contains(neighbor)) { neighbors.add(neighbor); }
-			}
-		}
-		
-		// Add in random neighbors until target size is reached.
-		ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
-		Utilities.shuffleList(neighborsShuffled, factory.random);
-		int n = Math.min(target - size, neighborsShuffled.size());
-		for (int i = 0; i < n; i++) {
-			voxels.add(neighborsShuffled.get(i));
-		}
-	}
-	
-	/**
-	 * Decreases the number of voxels by removing.
-	 *
-	 * @param factory  the location factory instance
-	 * @param voxels  the list of selected voxels
-	 * @param target  the target number of voxels
-	 */
-	void decrease(PottsLocationFactory factory, ArrayList<Voxel> voxels, int target) {
-		int size = voxels.size();
-		ArrayList<Voxel> neighbors = new ArrayList<>();
-		
-		// Get neighbors.
-		for (Voxel voxel : voxels) {
-			ArrayList<Voxel> allNeighbors = factory.getNeighbors(voxel);
-			for (Voxel neighbor : allNeighbors) {
-				if (voxels.contains(neighbor)) { continue; }
-				neighbors.add(voxel);
-				break;
-			}
-		}
-		
-		// Remove random neighbors until target size is reached.
-		ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
-		Utilities.shuffleList(neighborsShuffled, factory.random);
-		for (int i = 0; i < size - target; i++) {
-			voxels.remove(neighborsShuffled.get(i));
-		}
-	}
+	public int getID() { return id; }
 	
 	public Location convert(LocationFactory factory, CellContainer cell) {
 		return convert((PottsLocationFactory)factory, (PottsCellContainer)cell);
 	}
 	
-	public Location convert(PottsLocationFactory factory, PottsCellContainer cell) {
+	private Location convert(PottsLocationFactory factory, PottsCellContainer cell) {
 		// Set 3D and parse cell container.
 		boolean is3D = (factory instanceof PottsLocationFactory3D);
 		int target = cell.voxels;
@@ -100,8 +44,8 @@ public class PottsLocationContainer implements LocationContainer {
 		
 		// Add or remove voxels to reach target number.
 		int size = voxels.size();
-		if (size < target) { increase(factory, allVoxels, voxels, target); }
-		else if (size > target) { decrease(factory, voxels, target); }
+		if (size < target) { factory.increase(allVoxels, voxels, target); }
+		else if (size > target) { factory.decrease(voxels, target); }
 		
 		// Make location.
 		PottsLocation location;
@@ -109,7 +53,7 @@ public class PottsLocationContainer implements LocationContainer {
 		// Add regions.
 		if (cell.regionVoxels != null) {
 			EnumMap<Region, Integer> regionTargetMap = cell.regionVoxels;
-			location = (is3D ? new PottsLocations2D(voxels) : new PottsLocations2D(voxels));
+			location = (is3D ? new PottsLocations3D(voxels) : new PottsLocations2D(voxels));
 			
 			for (Region region : Region.values()) {
 				// TODO add handling of other regions
@@ -122,14 +66,14 @@ public class PottsLocationContainer implements LocationContainer {
 				
 				// Add or remove region voxels to reach target number.
 				int regionSize = regionVoxels.size();
-				if (regionSize < regionTarget) { increase(factory, allRegionVoxels, regionVoxels, regionTarget); }
-				else if (regionSize > regionTarget) { decrease(factory, regionVoxels, regionTarget); }
+				if (regionSize < regionTarget) { factory.increase(allRegionVoxels, regionVoxels, regionTarget); }
+				else if (regionSize > regionTarget) { factory.decrease(regionVoxels, regionTarget); }
 				
 				// Assign regions.
 				for (Voxel voxel : regionVoxels) { location.assign(region, voxel); }
 			}
 		} else {
-			location = (is3D ? new PottsLocation2D(voxels) : new PottsLocation2D(voxels));
+			location = (is3D ? new PottsLocation3D(voxels) : new PottsLocation2D(voxels));
 		}
 		
 		return location;

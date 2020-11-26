@@ -53,7 +53,7 @@ public class OutputDeserializerTest {
 	}
 	
 	@Test
-	public void deserializer_forCellLocationList_createsObject() {
+	public void deserializer_forCellContainerList_createsObject() {
 		CellListDeserializer deserializer = new CellListDeserializer();
 		
 		int n = randomIntBetween(1, 10);

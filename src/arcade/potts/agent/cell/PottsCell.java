@@ -273,7 +273,8 @@ public class PottsCell implements Cell {
 				break;
 			default:
 				// State must be one of the above cases.
-				throw new IllegalArgumentException();
+				module = null;
+				break;
 		}
 	}
 	

@@ -6,6 +6,8 @@ import java.util.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.env.loc.Location2D.SURFACE_VOLUME_MULTIPLIER;
+import static arcade.core.TestUtilities.EPSILON;
 
 public class Location2DTest {
 	static ArrayList<Voxel> voxelListForDiameters;
@@ -100,6 +102,20 @@ public class Location2DTest {
 	}
 	
 	@Test
+	public void convertVolume_givenLocationValue_calculatesValue() {
+		PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+		double volume = Math.random()*100;
+		assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume), loc.convertVolume(volume), EPSILON);
+	}
+	
+	@Test
+	public void convertVolume_givenLocationsValue_calculatesValue() {
+		PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
+		double volume = Math.random()*100;
+		assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume), loc.convertVolume(volume), EPSILON);
+	}
+	
+	@Test
 	public void calculateSurface_validID_calculatesValue() {
 		ArrayList<Voxel> voxels = new ArrayList<>();
 		PottsLocation2D loc = new PottsLocation2D(voxels);
@@ -183,6 +199,15 @@ public class Location2DTest {
 		assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.YZ_PLANE, null));
 		assertEquals(Direction.POSITIVE_XY, loc.getSlice(Direction.NEGATIVE_XY, null));
 		assertEquals(Direction.NEGATIVE_XY, loc.getSlice(Direction.POSITIVE_XY, null));
+	}
+	
+	@Test
+	public void getSlice_invalidDirection_returnsNull() {
+		PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+		assertNull(loc.getSlice(Direction.UNDEFINED, null));
+		
+		PottsLocations2D locs = new PottsLocations2D(new ArrayList<>());
+		assertNull(locs.getSlice(Direction.UNDEFINED, null));
 	}
 	
 	@Test

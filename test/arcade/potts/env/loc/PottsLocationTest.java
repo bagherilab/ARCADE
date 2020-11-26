@@ -8,6 +8,7 @@ import ec.util.MersenneTwisterFast;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.core.TestUtilities.*;
 
 public class PottsLocationTest {
 	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
@@ -64,6 +65,8 @@ public class PottsLocationTest {
 		public PottsLocationMock(ArrayList<Voxel> voxels) { super(voxels); }
 		
 		PottsLocation makeLocation(ArrayList<Voxel> voxels) { return new PottsLocationMock(voxels); }
+		
+		public double convertVolume(double volume) { return 0; }
 		
 		int calculateSurface() { return LOCATION_SURFACE; }
 		
@@ -396,6 +399,28 @@ public class PottsLocationTest {
 		assertEquals(Direction.YZ_PLANE, loc.getDirection(random));
 		assertEquals(Direction.NEGATIVE_YZ, loc.getDirection(random));
 		assertEquals(Direction.POSITIVE_YZ, loc.getDirection(random));
+	}
+	
+	@Test
+	public void convert_createsContainer() {
+		int locationID = randomIntBetween(1, 10);
+		
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		int N = randomIntBetween(1, 10);
+		for (int i = 0; i < 2*N; i++) {
+			for (int j = 0; j < 2*N; j++) {
+				voxels.add(new Voxel(i, j, 0));
+			}
+		}
+		
+		PottsLocationMock location = new PottsLocationMock(voxels);
+		
+		PottsLocationContainer container = (PottsLocationContainer)location.convert(locationID);
+		
+		assertEquals(locationID, container.id);
+		assertEquals(new Voxel(N, N, 0), container.center);
+		assertEquals(voxels, container.allVoxels);
+		assertNull(container.regions);
 	}
 	
 	private ArrayList<Voxel> prepSplit() {

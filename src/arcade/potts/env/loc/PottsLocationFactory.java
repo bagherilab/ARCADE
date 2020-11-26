@@ -95,7 +95,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 	
 	/**
 	 * Converts volume to voxels per square side.
-	 *
+	 * 
 	 * @param volume  the target volume
 	 * @return  the voxels per side
 	 */
@@ -103,7 +103,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 	
 	/**
 	 * Gets list of neighbors of a given voxel.
-	 *
+	 * 
 	 * @param voxel  the voxel
 	 * @return  the list of neighbor voxels
 	 */
@@ -111,7 +111,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 	
 	/**
 	 * Selects specified number of voxels from a focus voxel.
-	 *
+	 * 
 	 * @param voxels  the list of voxels to select from
 	 * @param focus  the focus voxel
 	 * @param n  the number of voxels to select
@@ -130,7 +130,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
 	
 	/**
 	 * Gets all centers for the given range.
-	 *
+	 * 
 	 * @param length  the array length
 	 * @param width  the array width
 	 * @param height  the array height
@@ -139,4 +139,59 @@ public abstract class PottsLocationFactory implements LocationFactory {
 	 */
 	abstract ArrayList<Voxel> getCenters(int length, int width, int height, int m);
 	
+	/**
+	 * Increases the number of voxels by adding from a given list of voxels.
+	 * 
+	 * @param allVoxels  the list of all possible voxels
+	 * @param voxels  the list of selected voxels
+	 * @param target  the target number of voxels
+	 */
+	void increase(ArrayList<Voxel> allVoxels, ArrayList<Voxel> voxels, int target) {
+		int size = voxels.size();
+		HashSet<Voxel> neighbors = new HashSet<>();
+		
+		// Get neighbors.
+		for (Voxel voxel : voxels) {
+			ArrayList<Voxel> allNeighbors = getNeighbors(voxel);
+			for (Voxel neighbor : allNeighbors) {
+				if (allVoxels.contains(neighbor) && !voxels.contains(neighbor)) { neighbors.add(neighbor); }
+			}
+		}
+		
+		// Add in random neighbors until target size is reached.
+		ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
+		Utilities.shuffleList(neighborsShuffled, random);
+		int n = Math.min(target - size, neighborsShuffled.size());
+		for (int i = 0; i < n; i++) {
+			voxels.add(neighborsShuffled.get(i));
+		}
+	}
+	
+	/**
+	 * Decreases the number of voxels by removing from the given list of voxels.
+	 * 
+	 * @param voxels  the list of selected voxels
+	 * @param target  the target number of voxels
+	 */
+	void decrease(ArrayList<Voxel> voxels, int target) {
+		int size = voxels.size();
+		ArrayList<Voxel> neighbors = new ArrayList<>();
+		
+		// Get neighbors.
+		for (Voxel voxel : voxels) {
+			ArrayList<Voxel> allNeighbors = getNeighbors(voxel);
+			for (Voxel neighbor : allNeighbors) {
+				if (voxels.contains(neighbor)) { continue; }
+				neighbors.add(voxel);
+				break;
+			}
+		}
+		
+		// Remove random neighbors until target size is reached.
+		ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
+		Utilities.shuffleList(neighborsShuffled, random);
+		for (int i = 0; i < size - target; i++) {
+			voxels.remove(neighborsShuffled.get(i));
+		}
+	}
 }

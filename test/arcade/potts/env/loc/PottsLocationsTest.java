@@ -9,6 +9,7 @@ import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.env.loc.PottsLocationTest.*;
+import static arcade.core.TestUtilities.*;
 
 public class PottsLocationsTest {
 	static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
@@ -86,6 +87,8 @@ public class PottsLocationsTest {
 		PottsLocation makeLocation(ArrayList<Voxel> voxels) { return new PottsLocationMock(voxels); }
 		
 		PottsLocations makeLocations(ArrayList<Voxel> voxels) { return new PottsLocationsMock(voxels); }
+		
+		public double convertVolume(double volume) { return 0; }
 		
 		int calculateSurface() { return LOCATIONS_SURFACE; }
 		
@@ -550,6 +553,42 @@ public class PottsLocationsTest {
 		loc.update(3, ids, regions);
 		assertArrayEquals(new int[] { 3, 3, 2 }, ids[0][0]);
 		assertArrayEquals(new int[] { Region.UNDEFINED.ordinal(), Region.DEFAULT.ordinal(), 0 }, regions[0][0]);
+	}
+	
+	@Test
+	public void convert_createsContainer() {
+		int locationID = randomIntBetween(1, 10);
+		
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		int N = randomIntBetween(1, 10);
+		for (int i = 0; i < 2*N; i++) {
+			for (int j = 0; j < 2*N; j++) {
+				voxels.add(new Voxel(i, j, 0));
+			}
+		}
+		
+		PottsLocationsMock location = new PottsLocationsMock(voxels);
+		
+		EnumMap<Region, ArrayList<Voxel>> regions = new EnumMap<>(Region.class);
+		regions.put(Region.DEFAULT, new ArrayList<>());
+		regions.put(Region.NUCLEUS, new ArrayList<>());
+		for (int i = 0; i < 2*N; i++) {
+			for (int j = 0; j < 2*N; j++) {
+				if ((i + j)%2 == 0) { 
+					location.assign(Region.NUCLEUS, new Voxel(i, j, 0));
+					regions.get(Region.NUCLEUS).add(new Voxel(i, j, 0));
+				} else {
+					regions.get(Region.DEFAULT).add(new Voxel(i, j, 0));
+				}
+			}
+		}
+		
+		PottsLocationContainer container = (PottsLocationContainer)location.convert(locationID);
+		
+		assertEquals(locationID, container.id);
+		assertEquals(new Voxel(N, N, 0), container.center);
+		assertEquals(voxels, container.allVoxels);
+		assertEquals(regions, container.regions);
 	}
 	
 	@Test

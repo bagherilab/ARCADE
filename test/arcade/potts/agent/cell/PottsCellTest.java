@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import org.mockito.stubbing.Answer;
 import sim.engine.*;
 import arcade.core.env.loc.*;
 import arcade.core.agent.module.*;
@@ -14,8 +15,10 @@ import arcade.potts.agent.module.*;
 import arcade.potts.env.loc.PottsLocation;
 import static arcade.core.util.Enums.State;
 import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Term;
 import static arcade.potts.util.PottsEnums.Ordering;
+import static arcade.potts.agent.cell.PottsCellFactoryTest.*;
 import static arcade.core.TestUtilities.*;
 
 public class PottsCellTest {
@@ -59,6 +62,12 @@ public class PottsCellTest {
 		_location = mock(PottsLocation.class);
 		regionList = EnumSet.of(Region.DEFAULT, Region.NUCLEUS);
 		when(_location.getRegions()).thenReturn(regionList);
+		
+		Answer<Double> answer = invocation -> {
+			Double value = invocation.getArgument(0, Double.class);
+			return value * VOLUME_SURFACE_RATIO;
+		};
+		when(((PottsLocation)_location).convertVolume(anyDouble())).thenAnswer(answer);
 		
 		locationRegionVolumes = new EnumMap<>(Region.class);
 		locationRegionSurfaces = new EnumMap<>(Region.class);
@@ -152,8 +161,6 @@ public class PottsCellTest {
 			return new PottsCellMock(id, pop, state, 0, location, hasRegions, parameters,
 					criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
 		}
-		
-		double convert(double volume) { return volume * VOLUME_SURFACE_RATIO; }
 	}
 	
 	@Test
@@ -613,10 +620,11 @@ public class PottsCellTest {
 		assertTrue(cell.module instanceof PottsModuleAutosis);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void setState_invalidState_throwsException() {
+	@Test
+	public void setState_invalidState_setsNull() {
 		PottsCellMock cell = PottsCellMock._make(cellID, cellPop, false);
 		cell.setState(State.UNDEFINED);
+		assertNull(cell.getModule());
 	}
 	
 	@Test
@@ -625,6 +633,74 @@ public class PottsCellTest {
 		cell.stopper = mock(Stoppable.class);
 		cell.stop();
 		verify(cell.stopper).stop();
+	}
+	
+	@Test
+	public void make_noRegions_setsFields() {
+		int n = (int)(Math.random()*10) + 2;
+		EnumMap<Term, Double> criticals = new EnumMap<>(Term.class);
+		EnumMap<Term, Double>lambdas = new EnumMap<>(Term.class);
+		double[] adhesion = new double[n];
+		MiniBox parameters = mock(MiniBox.class);
+		Location location1 = mock(PottsLocation.class);
+		Location location2 = mock(PottsLocation.class);
+		
+		PottsCell cell1 = new PottsCell(cellID, cellPop, location1, parameters,
+				criticals, lambdas, adhesion);
+		PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
+		
+		assertEquals(cellID + 1, cell2.id);
+		assertEquals(cellPop, cell2.pop);
+		assertEquals(0, cell2.getAge());
+		assertFalse(cell2.hasRegions);
+		assertEquals(location2, cell2.getLocation());
+		assertEquals(cell2.parameters, parameters);
+		assertEquals(cell2.criticals, criticals);
+		assertEquals(cell2.lambdas, lambdas);
+		assertArrayEquals(cell2.adhesion, adhesion, EPSILON);
+	}
+	
+	@Test
+	public void make_hasRegions_setsFields() {
+		int n = (int)(Math.random()*10) + 2;
+		EnumMap<Term, Double> criticals = new EnumMap<>(Term.class);
+		EnumMap<Term, Double>lambdas = new EnumMap<>(Term.class);
+		double[] adhesion = new double[n];
+		MiniBox parameters = mock(MiniBox.class);
+		Location location1 = mock(PottsLocation.class);
+		Location location2 = mock(PottsLocation.class);
+		EnumMap<Region, EnumMap<Term, Double>> criticalsRegion = new EnumMap<>(Region.class);
+		EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = new EnumMap<>(Region.class);
+		EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = new EnumMap<>(Region.class);
+		
+		for (int i = 0; i < n; i++) { adhesion[i] = Math.random(); }
+		
+		for (Region region : Region.values()) {
+			criticalsRegion.put(region, new EnumMap<>(Term.class));
+			lambdasRegion.put(region, new EnumMap<>(Term.class));
+			adhesionRegion.put(region, new EnumMap<>(Region.class));
+		}
+		
+		EnumSet<Region> allRegions = EnumSet.allOf(Region.class);
+		doReturn(allRegions).when(location1).getRegions();
+		doReturn(allRegions).when(location2).getRegions();
+		
+		PottsCell cell1 = new PottsCell(cellID, cellPop, location1, parameters,
+				criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
+		PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
+		
+		assertEquals(cellID + 1, cell2.id);
+		assertEquals(cellPop, cell2.pop);
+		assertEquals(0, cell2.getAge());
+		assertTrue(cell2.hasRegions);
+		assertEquals(location2, cell2.getLocation());
+		assertEquals(cell2.parameters, parameters);
+		assertEquals(cell2.criticals, criticals);
+		assertEquals(cell2.lambdas, lambdas);
+		assertArrayEquals(cell2.adhesion, adhesion, EPSILON);
+		assertEquals(cell2.criticalsRegion, criticalsRegion);
+		assertEquals(cell2.lambdasRegion, lambdasRegion);
+		assertEquals(cell2.adhesionRegion, adhesionRegion);
 	}
 	
 	@Test
@@ -1108,5 +1184,118 @@ public class PottsCellTest {
 		
 		double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
 		assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
+	}
+	
+	@Test
+	public void convert_noRegions_createsContainer() {
+		Location location = mock(PottsLocation.class);
+		MiniBox parameters = mock(MiniBox.class);
+		
+		int cellID = randomIntBetween(1, 10);
+		int cellPop = randomIntBetween(1, 10);
+		int cellAge = randomIntBetween(1, 100);
+		State cellState = State.random(RANDOM);
+		Phase cellPhase = Phase.random(RANDOM);
+		EnumMap<Term, Double> criticals = makeEnumMap();
+		EnumMap<Term, Double> lambdas = makeEnumMap();
+		double[] adhesion = new double[] {
+				randomDoubleBetween(0, 10),
+				randomDoubleBetween(0, 10)
+		};
+		
+		PottsCell cell = new PottsCell(cellID, cellPop, cellState, cellAge, location, false, parameters,
+				criticals, lambdas, adhesion, null, null, null);
+		((PottsModule)cell.getModule()).setPhase(cellPhase);
+		
+		int voxels = randomIntBetween(1, 100);
+		doReturn(voxels).when(location).getVolume();
+		
+		int targetVolume = randomIntBetween(1, 100);
+		int targetSurface = randomIntBetween(1, 100);
+		cell.setTargets(targetVolume, targetSurface);
+		
+		PottsCellContainer container = (PottsCellContainer)cell.convert();
+		
+		assertEquals(cellID, container.id);
+		assertEquals(cellPop, container.pop);
+		assertEquals(cellAge, container.age);
+		assertEquals(cellState, container.state);
+		assertEquals(cellPhase, container.phase);
+		assertEquals(voxels, container.voxels);
+		assertNull(container.regionVoxels);
+		assertEquals(targetVolume, container.targetVolume, EPSILON);
+		assertEquals(targetSurface, container.targetSurface, EPSILON);
+		assertNull(container.regionTargetVolume);
+		assertNull(container.regionTargetSurface);
+	}
+	
+	@Test
+	public void convert_withRegions_createsContainer() {
+		Location location = mock(PottsLocation.class);
+		MiniBox parameters = mock(MiniBox.class);
+		
+		int cellID = randomIntBetween(1, 10);
+		int cellPop = randomIntBetween(1, 10);
+		int cellAge = randomIntBetween(1, 100);
+		State cellState = State.random(RANDOM);
+		Phase cellPhase = Phase.random(RANDOM);
+		EnumMap<Term, Double> criticals = makeEnumMap();
+		EnumMap<Term, Double> lambdas = makeEnumMap();
+		double[] adhesion = new double[] {
+				randomDoubleBetween(0, 10),
+				randomDoubleBetween(0, 10)
+		};
+		
+		EnumSet<Region> regionList = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
+		doReturn(regionList).when(location).getRegions();
+		
+		EnumMap<Region, EnumMap<Term, Double>> criticalsRegion = makeEnumMapRegion(regionList);
+		EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = makeEnumMapRegion(regionList);
+		EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = makeEnumMapTarget(regionList);
+		
+		PottsCell cell = new PottsCell(cellID, cellPop, cellState, cellAge, location, true, parameters,
+				criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
+		((PottsModule)cell.getModule()).setPhase(cellPhase);
+		
+		int voxels = randomIntBetween(1, 100);
+		doReturn(voxels).when(location).getVolume();
+		
+		EnumMap<Region, Integer> regionVoxels = new EnumMap<>(Region.class);
+		for (Region region : regionList) {
+			int value = randomIntBetween(1, 100);
+			regionVoxels.put(region, value);
+			doReturn(value).when(location).getVolume(region);
+		}
+		
+		int targetVolume = randomIntBetween(1, 100);
+		int targetSurface = randomIntBetween(1, 100);
+		cell.setTargets(targetVolume, targetSurface);
+		
+		EnumMap<Region, Integer> regionTargetVolume = new EnumMap<>(Region.class);
+		EnumMap<Region, Integer> regionTargetSurface = new EnumMap<>(Region.class);
+		for (Region region : regionList) {
+			int volume = randomIntBetween(1, 100);
+			int surface = randomIntBetween(1, 100);
+			regionTargetVolume.put(region, volume);
+			regionTargetSurface.put(region, surface);
+			cell.setTargets(region, volume, surface);
+		}
+		
+		PottsCellContainer container = (PottsCellContainer)cell.convert();
+		
+		assertEquals(cellID, container.id);
+		assertEquals(cellPop, container.pop);
+		assertEquals(cellAge, container.age);
+		assertEquals(cellState, container.state);
+		assertEquals(cellPhase, container.phase);
+		assertEquals(voxels, container.voxels);
+		assertEquals(targetVolume, container.targetVolume, EPSILON);
+		assertEquals(targetSurface, container.targetSurface, EPSILON);
+		
+		for (Region region : regionList) {
+			assertEquals(regionVoxels.get(region), container.regionVoxels.get(region));
+			assertEquals(regionTargetVolume.get(region), container.regionTargetVolume.get(region), EPSILON);
+			assertEquals(regionTargetSurface.get(region), container.regionTargetSurface.get(region), EPSILON);
+		}
 	}
 }
