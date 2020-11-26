@@ -1,26 +1,24 @@
 package arcade.potts.sim.output;
 
+import com.google.gson.*;
+import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.*;
-import com.google.gson.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSerializer;
 import arcade.potts.sim.*;
-import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.agent.module.PottsModule;
-import arcade.potts.env.grid.PottsGrid;
-import arcade.potts.env.loc.*;
-import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import arcade.potts.agent.cell.PottsCellContainer;
+import arcade.potts.env.loc.PottsLocationContainer;
+import arcade.potts.env.loc.Voxel;
 import static arcade.core.util.Enums.Region;
+import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public final class PottsOutputSerializer {
 	static Gson makeGSON() {
 		GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();
-		gsonBuilder.registerTypeHierarchyAdapter(PottsSeries.class, new PottsSeriesSerializer());
-		gsonBuilder.registerTypeHierarchyAdapter(Potts.class, new PottsSerializer());
-		gsonBuilder.registerTypeHierarchyAdapter(PottsGrid.class, new PottsGridSerializer());
-		gsonBuilder.registerTypeHierarchyAdapter(PottsCell.class, new PottsCellSerializer());
-		gsonBuilder.registerTypeHierarchyAdapter(PottsLocation.class, new PottsLocationSerializer());
+		gsonBuilder.registerTypeAdapter(PottsSeries.class, new PottsSeriesSerializer());
+		gsonBuilder.registerTypeAdapter(PottsCellContainer.class, new PottsCellSerializer());
+		gsonBuilder.registerTypeAdapter(PottsLocationContainer.class, new PottsLocationSerializer());
 		gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelSerializer());
 		return gsonBuilder.create();
 	}
@@ -37,51 +35,32 @@ public final class PottsOutputSerializer {
 		}
 	}
 	
-	static class PottsSerializer implements JsonSerializer<Potts> {
-		public JsonElement serialize(Potts src, Type typeOfSrc, JsonSerializationContext context) {
-			JsonArray json = new JsonArray();
-			
-			for (Object obj : src.grid.getAllObjects()) {
-				PottsCell cell = (PottsCell)obj;
-				JsonElement voxels = context.serialize(cell.getLocation());
-				JsonElement center = context.serialize(((PottsLocation)cell.getLocation()).getCenter());
-				JsonObject location = new JsonObject();
-				location.addProperty("id", cell.getID());
-				location.add("center", center);
-				location.add("location", voxels);
-				json.add(location);
-			}
-			
-			return json;
-		}
-	}
-	
-	static class PottsCellSerializer implements JsonSerializer<PottsCell> {
-		public JsonElement serialize(PottsCell src, Type typeOfSrc, JsonSerializationContext context) {
+	static class PottsCellSerializer implements JsonSerializer<PottsCellContainer> {
+		public JsonElement serialize(PottsCellContainer src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject json = new JsonObject();
 			
-			json.addProperty("id", src.getID());
-			json.addProperty("pop", src.getPop());
-			json.addProperty("age", src.getAge());
-			json.addProperty("state", src.getState().name());
-			json.addProperty("phase", ((PottsModule)src.getModule()).getPhase().name());
-			json.addProperty("voxels", src.getLocation().getVolume());
+			json.addProperty("id", src.id);
+			json.addProperty("pop", src.pop);
+			json.addProperty("age", src.age);
+			json.addProperty("state", src.state.name());
+			json.addProperty("phase", src.phase.name());
+			json.addProperty("voxels", src.voxels);
 			
 			JsonArray targets = new JsonArray();
-			targets.add((int)(100*src.getTargetVolume())/100.0);
-			targets.add((int)(100*src.getTargetSurface())/100.0);
+			targets.add((int)(100*src.targetVolume)/100.0);
+			targets.add((int)(100*src.targetSurface)/100.0);
 			json.add("targets", targets);
 			
-			if (src.hasRegions()) {
+			if (src.regionVoxels != null) {
 				JsonArray regions = new JsonArray();
-				for (Region region : src.getLocation().getRegions()) {
+				for (Region region : src.regionVoxels.keySet()) {
 					JsonObject regionObject = new JsonObject();
 					regionObject.addProperty("region", region.name());
-					regionObject.addProperty("voxels", src.getLocation().getVolume(region));
+					regionObject.addProperty("voxels", src.regionVoxels.get(region));
 					
 					JsonArray regionTargets = new JsonArray();
-					regionTargets.add((int)(100*src.getTargetVolume(region))/100.0);
-					regionTargets.add((int)(100*src.getTargetSurface(region))/100.0);
+					regionTargets.add((int)(100*src.regionTargetVolume.get(region))/100.0);
+					regionTargets.add((int)(100*src.regionTargetSurface.get(region))/100.0);
 					regionObject.add("targets", regionTargets);
 					
 					regions.add(regionObject);
@@ -94,14 +73,45 @@ public final class PottsOutputSerializer {
 		}
 	}
 	
-	static class PottsGridSerializer implements JsonSerializer<PottsGrid> {
-		public JsonElement serialize(PottsGrid src, Type typeOfSrc, JsonSerializationContext context) {
-			JsonArray json = new JsonArray();
+	static class PottsLocationSerializer implements JsonSerializer<PottsLocationContainer> {
+		public JsonElement serialize(PottsLocationContainer src, Type typeOfSrc, JsonSerializationContext context) {
+			JsonObject json = new JsonObject();
 			
-			for (Object obj : src.getAllObjects()) {
-				JsonElement cell = context.serialize(obj);
-				json.add(cell);
+			json.addProperty("id", src.id);
+			json.add("center", context.serialize(src.center));
+			
+			JsonArray location = new JsonArray();
+			
+			if (src.regions == null) {
+				JsonObject obj = new JsonObject();
+				JsonArray array = new JsonArray();
+				
+				ArrayList<Voxel> voxels = src.allVoxels;
+				voxels.sort(VOXEL_COMPARATOR);
+				for (Voxel voxel : voxels) { array.add(context.serialize(voxel)); }
+				
+				obj.addProperty("region", Region.UNDEFINED.name());
+				obj.add("voxels", array);
+				
+				location.add(obj);
+			} 
+			else {
+				for (Region region : src.regions.keySet()) {
+					JsonObject obj = new JsonObject();
+					JsonArray array = new JsonArray();
+					
+					ArrayList<Voxel> voxels = src.regions.get(region);
+					voxels.sort(VOXEL_COMPARATOR);
+					for (Voxel voxel : voxels) { array.add(context.serialize(voxel)); }
+					
+					obj.addProperty("region", region.name());
+					obj.add("voxels", array);
+					
+					location.add(obj);
+				}
 			}
+			
+			json.add("location", location);
 			
 			return json;
 		}
@@ -113,36 +123,6 @@ public final class PottsOutputSerializer {
 			json.add(src.x);
 			json.add(src.y);
 			json.add(src.z);
-			return json;
-		}
-	}
-	
-	static class PottsLocationSerializer implements JsonSerializer<PottsLocation> {
-		public JsonElement serialize(PottsLocation src, Type typeOfSrc, JsonSerializationContext context) {
-			JsonArray json = new JsonArray();
-			
-			EnumMap<Region, PottsLocation> locations;
-			
-			if (src instanceof PottsLocations) { locations = ((PottsLocations)src).locations; }
-			else {
-				locations = new EnumMap<>(Region.class);
-				locations.put(Region.UNDEFINED, src);
-			}
-			
-			for (Region region : locations.keySet()) {
-				JsonObject obj = new JsonObject();
-				JsonArray array = new JsonArray();
-				
-				ArrayList<Voxel> voxels = locations.get(region).getVoxels();
-				voxels.sort(VOXEL_COMPARATOR);
-				for (Voxel voxel : voxels) { array.add(context.serialize(voxel)); }
-				
-				obj.addProperty("region", region.name());
-				obj.add("voxels", array);
-				
-				json.add(obj);
-			}
-			
 			return json;
 		}
 	}

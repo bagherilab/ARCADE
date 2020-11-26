@@ -63,15 +63,17 @@ public abstract class OutputSaver implements Steppable {
 	/**
 	 * Save a list of {@link CellContainer} objects to a JSON.
 	 */
-	public void saveCells(String path) {
-		write(path + ".CELLS.json", format(gson.toJson(sim.getCells())));
+	public void saveCells(int tick) {
+		String path = prefix + String.format("_%06d.CELLS.json", tick);
+		write(path, format(gson.toJson(sim.getCells())));
 	}
 	
 	/**
 	 * Save a list of {@link LocationContainer} objects to a JSON.
 	 */
-	public void saveLocations(String path) {
-		write(path + ".LOCATIONS.json", format(gson.toJson(sim.getLocations())));
+	public void saveLocations(int tick) {
+		String path = prefix + String.format("_%06d.LOCATIONS.json", tick);
+		write(path, format(gson.toJson(sim.getLocations())));
 	}
 	
 	/**
@@ -81,9 +83,8 @@ public abstract class OutputSaver implements Steppable {
 	 */
 	public void step(SimState simstate) {
 		int tick = (int)simstate.schedule.getTime();
-		String path = prefix + String.format("_%06d", tick);
-		saveCells(path);
-		saveLocations(path);
+		saveCells(tick);
+		saveLocations(tick);
 	}
 	
 	/**

@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import com.google.gson.*;
 import arcade.core.sim.output.OutputDeserializer;
-import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.loc.PottsLocationContainer;
 import arcade.potts.env.loc.Voxel;
@@ -27,11 +25,10 @@ public final class PottsOutputDeserializer {
 		public PottsCellContainer deserialize(JsonElement json, Type typeOfT,
 									JsonDeserializationContext context) throws JsonParseException {
 			JsonObject jsonObject = json.getAsJsonObject();
-			CellContainer cellContainer = context.deserialize(json, CellContainer.class);
 			
-			int id = cellContainer.id;
-			int pop = cellContainer.pop;
-			int age = cellContainer.age;
+			int id = jsonObject.get("id").getAsInt();
+			int pop = jsonObject.get("pop").getAsInt();
+			int age = jsonObject.get("age").getAsInt();
 			int voxels = jsonObject.get("voxels").getAsInt();
 			
 			State state = State.valueOf(jsonObject.get("state").getAsString());
@@ -70,24 +67,13 @@ public final class PottsOutputDeserializer {
 		}
 	}
 	
-	static class VoxelDeserializer implements JsonDeserializer<Voxel> {
-		public Voxel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			JsonArray jsonArray = json.getAsJsonArray();
-			int x = jsonArray.get(0).getAsInt();
-			int y = jsonArray.get(1).getAsInt();
-			int z = jsonArray.get(2).getAsInt();
-			return new Voxel(x, y, z);
-		}
-	}
-	
 	static class PottsLocationDeserializer implements JsonDeserializer<PottsLocationContainer> {
 		public PottsLocationContainer deserialize(JsonElement json, Type typeOfT,
 									   JsonDeserializationContext context) throws JsonParseException {
 			JsonObject jsonObject = json.getAsJsonObject();
-			LocationContainer locationContainer = context.deserialize(json, LocationContainer.class);
 			
 			// Parse out id and center voxel.
-			int id = locationContainer.id;
+			int id = jsonObject.get("id").getAsInt();
 			Voxel center = context.deserialize(jsonObject.get("center"), Voxel.class);
 			
 			// Set up list of all voxels and map for region voxels.
@@ -112,10 +98,20 @@ public final class PottsOutputDeserializer {
 			}
 			
 			PottsLocationContainer location;
-			if (jsonArray.size() == 1) { location = new PottsLocationContainer(id, center, allVoxels, null); }
+			if (jsonArray.size() == 1) { location = new PottsLocationContainer(id, center, allVoxels); }
 			else { location = new PottsLocationContainer(id, center, allVoxels, regions); }
 			
 			return location;
+		}
+	}
+	
+	static class VoxelDeserializer implements JsonDeserializer<Voxel> {
+		public Voxel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			JsonArray jsonArray = json.getAsJsonArray();
+			int x = jsonArray.get(0).getAsInt();
+			int y = jsonArray.get(1).getAsInt();
+			int z = jsonArray.get(2).getAsInt();
+			return new Voxel(x, y, z);
 		}
 	}
 }

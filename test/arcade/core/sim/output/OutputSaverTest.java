@@ -146,11 +146,12 @@ public class OutputSaverTest {
 			field.set(saver, gson);
 		} catch (Exception ignored) { }
 		
-		String path = randomString();
+		saver.prefix = randomString();
+		int tick = randomIntBetween(0, 10);
 		
-		saver.saveCells(path);
+		saver.saveCells(tick);
 		verify(gson).toJson(cells);
-		verify(saver).write(path + ".CELLS.json", contents);
+		verify(saver).write(saver.prefix + String.format("_%06d.CELLS.json", tick), contents);
 	}
 	
 	@Test
@@ -174,31 +175,30 @@ public class OutputSaverTest {
 			field.set(saver, gson);
 		} catch (Exception ignored) { }
 		
-		String path = randomString();
+		saver.prefix = randomString();
+		int tick = randomIntBetween(0, 10);
 		
-		saver.saveLocations(path);
+		saver.saveLocations(tick);
 		verify(gson).toJson(locations);
-		verify(saver).write(path + ".LOCATIONS.json", contents);
+		verify(saver).write(saver.prefix + String.format("_%06d.LOCATIONS.json", tick), contents);
 	}
 	
 	@Test
 	public void step_singleStep_callsSave() {
 		OutputSaver saver = spy(mock(OutputSaver.class, CALLS_REAL_METHODS));
-		doNothing().when(saver).saveCells(anyString());
-		doNothing().when(saver).saveLocations(anyString());
+		doNothing().when(saver).saveCells(anyInt());
+		doNothing().when(saver).saveLocations(anyInt());
 		
 		SimState simstate = mock(SimState.class);
 		simstate.schedule = mock(Schedule.class);
 		int tick = randomIntBetween(1, 100);
 		doReturn((double)tick).when(simstate.schedule).getTime();
 		
-		String prefix = randomString();
-		saver.prefix = prefix;
-		String path = prefix + String.format("_%06d", tick);
+		saver.prefix = randomString();
 		
 		saver.step(simstate);
-		verify(saver).saveCells(path);
-		verify(saver).saveLocations(path);
+		verify(saver).saveCells(tick);
+		verify(saver).saveLocations(tick);
 	}
 	
 	@Test

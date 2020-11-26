@@ -303,7 +303,7 @@ public abstract class PottsLocation implements Location {
 	}
 	
 	public LocationContainer convert(int id) {
-		return new PottsLocationContainer(id, getCenter(), voxels, null);
+		return new PottsLocationContainer(id, getCenter(), voxels);
 	}
 	
 	/**

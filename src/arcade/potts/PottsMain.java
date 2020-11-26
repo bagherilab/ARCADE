@@ -60,7 +60,7 @@ public final class PottsMain {
 			// Create saver and save series JSON (for non-vis only)
 			if (!isVis) {
 				s.saver = new PottsOutputSaver(s);
-				s.saver.save();
+				s.saver.saveSeries();
 			}
 			
 			// Create loader if flagged.

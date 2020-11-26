@@ -53,9 +53,27 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	
 	public int getID() { return ++id; }
 	
-	public ArrayList<CellContainer> getCells() { return null; }
+	public ArrayList<CellContainer> getCells() {
+		ArrayList<CellContainer> cellContainers = new ArrayList<>();
+		
+		for (Object obj : grid.getAllObjects()) {
+			Cell cell = (Cell)obj;
+			cellContainers.add(cell.convert());
+		}
+		
+		return cellContainers;
+	}
 	
-	public ArrayList<LocationContainer> getLocations() { return null; }
+	public ArrayList<LocationContainer> getLocations() {
+		ArrayList<LocationContainer> locationContainers = new ArrayList<>();
+		
+		for (Object obj : grid.getAllObjects()) {
+			Cell cell = (Cell)obj;
+			locationContainers.add(cell.getLocation().convert(cell.getID()));
+		}
+		
+		return locationContainers;
+	}
 	
 	public Potts getPotts() { return potts; }
 	
@@ -190,6 +208,10 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 	 */
 	public void doOutput(boolean isScheduled) {
 		if (isScheduled) { series.saver.schedule(schedule, series.getInterval()); }
-		else { series.saver.save(schedule.getTime() + 1); }
+		else {
+			int tick = (int)schedule.getTime() + 1;
+			series.saver.saveCells(tick);
+			series.saver.saveLocations(tick);
+		}
 	}
 }

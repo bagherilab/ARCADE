@@ -148,7 +148,6 @@ public class Potts2D extends Potts {
 		}
 		
 		switch (links) {
-			case 0: return false;
 			case 1: return true;
 			case 2:
 				// Check for opposites N/S
@@ -178,9 +177,9 @@ public class Potts2D extends Potts {
 				return false;
 			case 4:
 				return zero;
+			default:
+				return false;
 		}
-		
-		return false;
 	}
 	
 	HashSet<Integer> getUniqueIDs(int x, int y, int z) {

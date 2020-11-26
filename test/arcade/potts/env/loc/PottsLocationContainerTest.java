@@ -25,7 +25,21 @@ public class PottsLocationContainerTest {
 	}
 	
 	@Test
-	public void constructor_setsFields() {
+	public void constructor_noRegions_setsFields() {
+		int id = randomIntBetween(1, 10);
+		ArrayList<Voxel> voxels = new ArrayList<>();
+		Voxel center = new Voxel(0, 0, 0);
+		
+		PottsLocationContainer locationContainer = new PottsLocationContainer(id, center, voxels);
+		
+		assertEquals(id, locationContainer.id);
+		assertSame(center, locationContainer.center);
+		assertSame(voxels, locationContainer.allVoxels);
+		assertNull(locationContainer.regions);
+	}
+	
+	@Test
+	public void constructor_withRegions_setsFields() {
 		int id = randomIntBetween(1, 10);
 		ArrayList<Voxel> voxels = new ArrayList<>();
 		Voxel center = new Voxel(0, 0, 0);

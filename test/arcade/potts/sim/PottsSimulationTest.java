@@ -104,16 +104,16 @@ public class PottsSimulationTest {
 			for (int i = 0; i < n; i++) {
 				int id = i + m + 1;
 				PottsLocation loc = mock(PottsLocation.class);
-				LocationContainer locationContainer = mock(PottsLocationContainer.class);
+				PottsLocationContainer locationContainer = mock(PottsLocationContainer.class);
 				CellContainer cellContainer = mock(PottsCellContainer.class);
 				
 				idToLocation.put(id, loc);
 				idToCellContainer.put(id, cellContainer);
 				idToLocationContainer.put(id, locationContainer);
 				
-				factory.locations.put(id, (PottsLocationContainer)locationContainer);
+				factory.locations.put(id, locationContainer);
 				doReturn(new Voxel(id, id, id)).when(loc).getCenter();
-				doReturn(loc).when(factory).make(locationContainer, cellContainer, random);
+				doReturn(loc).when(locationContainer).convert(factory, cellContainer);
 			}
 		}
 		
@@ -173,7 +173,7 @@ public class PottsSimulationTest {
 				doReturn(id).when(cell).getID();
 				doReturn(pop.getInt("CODE")).when(cell).getPop();
 				doReturn(loc).when(cell).getLocation();
-				doReturn(cell).when(factory).make(container, loc);
+				doReturn(cell).when(container).convert(factory, loc);
 			}
 			
 			factory.popToIDs.put(pop.getInt("CODE"), ids);
@@ -492,7 +492,8 @@ public class PottsSimulationTest {
 		
 		sim.doOutput(true);
 		verify(saver).schedule(schedule, interval);
-		verify(saver, never()).save(anyDouble());
+		verify(saver, never()).saveCells(anyInt());
+		verify(saver, never()).saveLocations(anyInt());
 	}
 	
 	@Test
@@ -510,6 +511,7 @@ public class PottsSimulationTest {
 		
 		sim.doOutput(false);
 		verify(saver, never()).schedule(eq(schedule), anyDouble());
-		verify(saver).save(time + 1);
+		verify(saver).saveCells((int)time + 1);
+		verify(saver).saveLocations((int)time + 1);
 	}
 }

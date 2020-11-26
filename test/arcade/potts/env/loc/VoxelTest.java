@@ -46,7 +46,7 @@ public class VoxelTest {
 	}
 	
 	@Test
-	public void tpString_validObject_returnsValue() {
+	public void toString_validObject_returnsValue() {
 		int x = (int)(Math.random()*100);
 		int y = (int)(Math.random()*100);
 		int z = (int)(Math.random()*100);

@@ -18,6 +18,10 @@ public class PottsLocationContainer implements LocationContainer {
 	public final Voxel center;
 	public final EnumMap<Region, ArrayList<Voxel>> regions;
 	
+	public PottsLocationContainer(int id, Voxel center, ArrayList<Voxel> voxels) {
+		this(id, center, voxels, null);
+	}
+	
 	public PottsLocationContainer(int id, Voxel center, ArrayList<Voxel> voxels,
 							 EnumMap<Region, ArrayList<Voxel>> regions) {
 		this.id = id;

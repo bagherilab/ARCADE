@@ -2,12 +2,15 @@ package arcade.potts.sim.output;
 
 import org.junit.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import com.google.gson.*;
 import com.google.gson.internal.bind.TreeTypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.loc.LocationContainer;
 import arcade.potts.env.loc.Voxel;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.loc.PottsLocationContainer;
@@ -16,17 +19,17 @@ import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.sim.output.PottsOutputDeserializer.*;
-import static arcade.core.sim.output.OutputDeserializer.*;
 import static arcade.core.TestUtilities.*;
 
 public class PottsOutputDeserializerTest {
-	private static final double EPSILON = 1E-10;
-	
 	static final JsonDeserializationContext CELL_CONTEXT = new JsonDeserializationContext() {
 		public <T> T deserialize(JsonElement json, Type typeOfT)
 				throws JsonParseException {
-			CellDeserializer deserializer = new CellDeserializer();
-			return (T)deserializer.deserialize(json, typeOfT, null);
+			JsonObject array = json.getAsJsonObject();
+			int id = array.get("id").getAsInt();
+			CellContainer container = mock(CellContainer.class);
+			doReturn(id).when(container).getID();
+			return (T)container;
 		}
 	};
 	
@@ -36,10 +39,12 @@ public class PottsOutputDeserializerTest {
 			if (typeOfT == Voxel.class) {
 				VoxelDeserializer deserializer = new VoxelDeserializer();
 				return (T) deserializer.deserialize(json, typeOfT, null);
-			}
-			else {
-				LocationDeserializer deserializer = new LocationDeserializer();
-				return (T)deserializer.deserialize(json, typeOfT, null);
+			} else {
+				JsonObject array = json.getAsJsonObject();
+				int id = array.get("id").getAsInt();
+				LocationContainer container = mock(LocationContainer.class);
+				doReturn(id).when(container).getID();
+				return (T)container;
 			}
 		}
 	};
@@ -162,22 +167,6 @@ public class PottsOutputDeserializerTest {
 	}
 	
 	@Test
-	public void deserializer_forVoxel_createObject() {
-		VoxelDeserializer deserializer = new VoxelDeserializer();
-		
-		int x = randomIntBetween(1,100);
-		int y = randomIntBetween(1,100);
-		int z = randomIntBetween(1,100);
-		String string = "[" + x + "," + y + "," + z + "]";
-		
-		Voxel expected = new Voxel(x, y, z);
-		
-		JsonArray json = JsonParser.parseString(string).getAsJsonArray();
-		Voxel object = deserializer.deserialize(json, Voxel.class, null);
-		assertEquals(expected, object);
-	}
-	
-	@Test
 	public void deserializer_forLocationNoRegion_createObject() {
 		PottsLocationDeserializer deserializer = new PottsLocationDeserializer();
 		
@@ -212,7 +201,7 @@ public class PottsOutputDeserializerTest {
 		assertEquals(center, object.center);
 		assertNull(object.regions);
 		
-		ArrayList<Voxel> voxels = object.voxels;
+		ArrayList<Voxel> voxels = object.allVoxels;
 		voxels.sort(VOXEL_COMPARATOR);
 		expected.sort(VOXEL_COMPARATOR);
 		assertEquals(expected, voxels);
@@ -279,7 +268,7 @@ public class PottsOutputDeserializerTest {
 		assertTrue(object.regions.containsKey(region1));
 		assertTrue(object.regions.containsKey(region2));
 		
-		ArrayList<Voxel> voxels = object.voxels;
+		ArrayList<Voxel> voxels = object.allVoxels;
 		voxels.sort(VOXEL_COMPARATOR);
 		expected.sort(VOXEL_COMPARATOR);
 		assertEquals(expected, voxels);
@@ -293,5 +282,21 @@ public class PottsOutputDeserializerTest {
 		voxels2.sort(VOXEL_COMPARATOR);
 		expected2.sort(VOXEL_COMPARATOR);
 		assertEquals(expected2, voxels2);
+	}
+	
+	@Test
+	public void deserializer_forVoxel_createObject() {
+		VoxelDeserializer deserializer = new VoxelDeserializer();
+		
+		int x = randomIntBetween(1,100);
+		int y = randomIntBetween(1,100);
+		int z = randomIntBetween(1,100);
+		String string = "[" + x + "," + y + "," + z + "]";
+		
+		Voxel expected = new Voxel(x, y, z);
+		
+		JsonArray json = JsonParser.parseString(string).getAsJsonArray();
+		Voxel object = deserializer.deserialize(json, Voxel.class, null);
+		assertEquals(expected, object);
 	}
 }

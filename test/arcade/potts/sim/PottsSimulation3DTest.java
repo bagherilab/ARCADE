@@ -7,7 +7,7 @@ import java.util.HashMap;
 import arcade.core.agent.cell.*;
 import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
-import arcade.potts.agent.cell.PottsCellFactory3D;
+import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.loc.PottsLocationFactory3D;
 import static arcade.potts.sim.PottsSimulationTest.RANDOM_SEED;
 
@@ -37,6 +37,6 @@ public class PottsSimulation3DTest {
 		series._populations = mock(HashMap.class);
 		PottsSimulation3D sim = new PottsSimulation3D(RANDOM_SEED, series);
 		CellFactory factory = sim.makeCellFactory();
-		assertTrue(factory instanceof PottsCellFactory3D);
+		assertTrue(factory instanceof PottsCellFactory);
 	}
 }
