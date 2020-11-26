@@ -9,10 +9,12 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import arcade.core.sim.*;
-import arcade.core.agent.cell.CellFactoryContainer;
-import arcade.core.env.loc.LocationFactoryContainer;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.loc.LocationContainer;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.sim.Simulation.*;
 
 public class OutputLoaderTest {
 	@Rule
@@ -117,34 +119,13 @@ public class OutputLoaderTest {
 	}
 	
 	@Test
-	public void loadLocations_called_loadsContents() {
-		OutputLoader loader = mock(OutputLoader.class, CALLS_REAL_METHODS);
-		LocationFactoryContainer container = mock(LocationFactoryContainer.class);
-		String json = "[]";
-		
-		Gson gson = mock(Gson.class);
-		doReturn(container).when(gson).fromJson(json, LocationFactoryContainer.class);
-		loader.locationJson = json;
-		
-		try {
-			Field field = OutputLoader.class.getDeclaredField("gson");
-			field.setAccessible(true);
-			field.set(loader, gson);
-		} catch (Exception ignored) { }
-		
-		LocationFactoryContainer loaded = loader.loadLocations();
-		verify(gson).fromJson(loader.locationJson, LocationFactoryContainer.class);
-		assertEquals(container, loaded);
-	}
-	
-	@Test
 	public void loadCells_called_loadsContents() {
 		OutputLoader loader = mock(OutputLoader.class, CALLS_REAL_METHODS);
-		CellFactoryContainer container = mock(CellFactoryContainer.class);
+		ArrayList<CellContainer> list = new ArrayList<>();
 		String json = "[]";
 		
 		Gson gson = mock(Gson.class);
-		doReturn(container).when(gson).fromJson(json, CellFactoryContainer.class);
+		doReturn(list).when(gson).fromJson(json, DEFAULT_CELL_TYPE);
 		loader.cellJson = json;
 		
 		try {
@@ -153,9 +134,30 @@ public class OutputLoaderTest {
 			field.set(loader, gson);
 		} catch (Exception ignored) { }
 		
-		CellFactoryContainer loaded = loader.loadCells();
-		verify(gson).fromJson(loader.cellJson, CellFactoryContainer.class);
-		assertEquals(container, loaded);
+		ArrayList<CellContainer> loaded = loader.loadCells();
+		verify(gson).fromJson(loader.cellJson, DEFAULT_CELL_TYPE);
+		assertEquals(list, loaded);
+	}
+	
+	@Test
+	public void loadLocations_called_loadsContents() {
+		OutputLoader loader = mock(OutputLoader.class, CALLS_REAL_METHODS);
+		ArrayList<LocationContainer> list = new ArrayList<>();
+		String json = "[]";
+		
+		Gson gson = mock(Gson.class);
+		doReturn(list).when(gson).fromJson(json, DEFAULT_LOCATION_TYPE);
+		loader.locationJson = json;
+		
+		try {
+			Field field = OutputLoader.class.getDeclaredField("gson");
+			field.setAccessible(true);
+			field.set(loader, gson);
+		} catch (Exception ignored) { }
+		
+		ArrayList<LocationContainer> loaded = loader.loadLocations();
+		verify(gson).fromJson(loader.locationJson, DEFAULT_LOCATION_TYPE);
+		assertSame(list, loaded);
 	}
 	
 	@Test

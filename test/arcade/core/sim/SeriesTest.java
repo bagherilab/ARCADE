@@ -15,8 +15,8 @@ import arcade.core.util.MiniBox;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
 import arcade.core.vis.*;
-import arcade.core.agent.cell.CellFactoryContainer;
-import arcade.core.env.loc.LocationFactoryContainer;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.loc.LocationContainer;
 import static arcade.core.sim.Series.SEED_OFFSET;
 import static arcade.core.TestUtilities.EPSILON;
 
@@ -105,9 +105,9 @@ public class SeriesTest {
 		
 		public Grid getGrid() { return null; }
 		
-		public CellFactoryContainer getCells() { return null; }
+		public ArrayList<CellContainer> getCells() { return null; }
 		
-		public LocationFactoryContainer getLocations() { return null; }
+		public ArrayList<LocationContainer> getLocations() { return null; }
 		
 		public Lattice getLattice(String key) { return null; }
 		

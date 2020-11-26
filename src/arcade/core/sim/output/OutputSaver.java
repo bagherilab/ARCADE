@@ -6,8 +6,8 @@ import com.google.gson.*;
 import sim.engine.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
-import arcade.core.agent.cell.CellFactoryContainer;
-import arcade.core.env.loc.LocationFactoryContainer;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.loc.LocationContainer;
 
 public abstract class OutputSaver implements Steppable {
 	/** Logger for class */
@@ -24,12 +24,6 @@ public abstract class OutputSaver implements Steppable {
 	
 	/** {@link arcade.core.sim.Simulation} instance */
 	Simulation sim;
-	
-	/** {@link CellFactoryContainer} instance containing cells */
-	CellFactoryContainer cells;
-	
-	/** {@link LocationFactoryContainer} instance containing locations */
-	LocationFactoryContainer locations;
 	
 	/**
 	 * Creates an {@code OutputSaver} for the series.
@@ -56,29 +50,28 @@ public abstract class OutputSaver implements Steppable {
 	public void equip(Simulation sim) {
 		this.prefix = String.format("%s_%04d", series.getPrefix(), sim.getSeed());
 		this.sim = sim;
-		this.cells = sim.getCells();
-		this.locations = sim.getLocations();
 	}
 	
 	/**
 	 * Saves the {@link arcade.core.sim.Series} as a JSON.
 	 */
-	public void save() {
+	public void saveSeries() {
 		String path = series.getPrefix() + ".json";
 		write(path, format(gson.toJson(series)));
 	}
 	
 	/**
-	 * Saves a snapshot of the simulation at the given tick.
-	 * 
-	 * @param tick  the tick
+	 * Save a list of {@link CellContainer} objects to a JSON.
 	 */
-	public void save(double tick) {
-		String gridPath = prefix + String.format("_%06d.%s.%s",(int)tick, "CELLS", "json");
-		write(gridPath, format(gson.toJson(cells)));
-		
-		String pottsPath = prefix + String.format("_%06d.%s.%s", (int)tick, "LOCATIONS", "json");
-		write(pottsPath, format(gson.toJson(locations)));
+	public void saveCells(String path) {
+		write(path + ".CELLS.json", format(gson.toJson(sim.getCells())));
+	}
+	
+	/**
+	 * Save a list of {@link LocationContainer} objects to a JSON.
+	 */
+	public void saveLocations(String path) {
+		write(path + ".LOCATIONS.json", format(gson.toJson(sim.getLocations())));
 	}
 	
 	/**
@@ -87,7 +80,10 @@ public abstract class OutputSaver implements Steppable {
 	 * @param simstate  the MASON simulation state
 	 */
 	public void step(SimState simstate) {
-		save(simstate.schedule.getTime());
+		int tick = (int)simstate.schedule.getTime();
+		String path = prefix + String.format("_%06d", tick);
+		saveCells(path);
+		saveLocations(path);
 	}
 	
 	/**

@@ -9,11 +9,12 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import sim.engine.Schedule;
+import java.util.ArrayList;
 import sim.engine.SimState;
+import sim.engine.Schedule;
 import arcade.core.sim.*;
-import arcade.core.agent.cell.CellFactoryContainer;
-import arcade.core.env.loc.LocationFactoryContainer;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.loc.LocationContainer;
 import static arcade.core.TestUtilities.*;
 
 public class OutputSaverTest {
@@ -57,19 +58,10 @@ public class OutputSaverTest {
 		Series series = mock(Series.class);
 		OutputSaver saver = new OutputSaverMock(series);
 		
-		CellFactoryContainer cells = mock(CellFactoryContainer.class);
-		LocationFactoryContainer locations = mock(LocationFactoryContainer.class);
-		
 		Simulation sim = mock(Simulation.class);
-		doReturn(cells).when(sim).getCells();
-		doReturn(locations).when(sim).getLocations();
-		
 		assertNull(saver.sim);
 		saver.equip(sim);
-		
 		assertSame(sim, saver.sim);
-		assertSame(cells, saver.cells);
-		assertSame(locations, saver.locations);
 	}
 	
 	@Test
@@ -100,33 +92,17 @@ public class OutputSaverTest {
 		Series series = mock(Series.class);
 		OutputSaver saver = new OutputSaverMock(series);
 		
-		CellFactoryContainer cells1 = mock(CellFactoryContainer.class);
-		LocationFactoryContainer locations1 = mock(LocationFactoryContainer.class);
-		
 		Simulation sim1 = mock(Simulation.class);
-		doReturn(cells1).when(sim1).getCells();
-		doReturn(locations1).when(sim1).getLocations();
-		
 		saver.equip(sim1);
 		assertSame(sim1, saver.sim);
-		assertSame(cells1, saver.cells);
-		assertSame(locations1, saver.locations);
-		
-		CellFactoryContainer cells2 = mock(CellFactoryContainer.class);
-		LocationFactoryContainer locations2 = mock(LocationFactoryContainer.class);
 		
 		Simulation sim2 = mock(Simulation.class);
-		doReturn(cells2).when(sim2).getCells();
-		doReturn(locations2).when(sim2).getLocations();
-		
 		saver.equip(sim2);
 		assertSame(sim2, saver.sim);
-		assertSame(cells2, saver.cells);
-		assertSame(locations2, saver.locations);
 	}
 	
 	@Test
-	public void save_noArguments_writeSeries() {
+	public void saveSeries_called_savesContents() {
 		Series series = mock(Series.class);
 		OutputSaver saver = spy(new OutputSaverMock(series));
 		doNothing().when(saver).write(anyString(), anyString());
@@ -144,35 +120,23 @@ public class OutputSaverTest {
 		String prefix = randomString();
 		doReturn(prefix).when(series).getPrefix();
 		
-		saver.save();
+		saver.saveSeries();
 		verify(gson).toJson(series);
 		verify(saver).write(prefix + ".json", contents);
 	}
 	
 	@Test
-	public void step_singleStep_callsSave() {
-		OutputSaver saver = spy(mock(OutputSaver.class, CALLS_REAL_METHODS));
-		doNothing().when(saver).save(anyDouble());
+	public void saveCells_called_savesContents() {
+		ArrayList<CellContainer> cells = new ArrayList<>();
+		Simulation sim = mock(Simulation.class);
+		doReturn(cells).when(sim).getCells();
 		
-		SimState simstate = mock(SimState.class);
-		simstate.schedule = mock(Schedule.class);
-		double tick = randomDoubleBetween(1, 10);
-		doReturn(tick).when(simstate.schedule).getTime();
-		
-		saver.step(simstate);
-		verify(saver).save(tick);
-	}
-	
-	@Test
-	public void save_withTick_writesCells() {
 		Series series = mock(Series.class);
 		OutputSaver saver = spy(new OutputSaverMock(series));
 		doNothing().when(saver).write(anyString(), anyString());
+		saver.sim = sim;
 		
-		CellFactoryContainer cells = mock(CellFactoryContainer.class);
-		saver.cells = cells;
-		
-		Gson gson = spy(mock(Gson.class));
+		Gson gson = mock(Gson.class);
 		String contents = randomString();
 		doReturn(contents).when(gson).toJson(cells);
 		
@@ -182,27 +146,25 @@ public class OutputSaverTest {
 			field.set(saver, gson);
 		} catch (Exception ignored) { }
 		
-		String prefix = randomString();
-		saver.prefix = prefix;
+		String path = randomString();
 		
-		double tick = randomDoubleBetween(1, 10);
-		saver.save(tick);
-		
+		saver.saveCells(path);
 		verify(gson).toJson(cells);
-		verify(saver).write(prefix + String.format("_%06d", (int)tick)
-				+ ".CELLS.json", contents);
+		verify(saver).write(path + ".CELLS.json", contents);
 	}
 	
 	@Test
-	public void save_withTick_writesLocations() {
+	public void saveLocations_called_savesContents() {
+		ArrayList<LocationContainer> locations = new ArrayList<>();
+		Simulation sim = mock(Simulation.class);
+		doReturn(locations).when(sim).getCells();
+		
 		Series series = mock(Series.class);
 		OutputSaver saver = spy(new OutputSaverMock(series));
 		doNothing().when(saver).write(anyString(), anyString());
+		saver.sim = sim;
 		
-		LocationFactoryContainer locations = mock(LocationFactoryContainer.class);
-		saver.locations = locations;
-		
-		Gson gson = spy(mock(Gson.class));
+		Gson gson = mock(Gson.class);
 		String contents = randomString();
 		doReturn(contents).when(gson).toJson(locations);
 		
@@ -212,15 +174,31 @@ public class OutputSaverTest {
 			field.set(saver, gson);
 		} catch (Exception ignored) { }
 		
+		String path = randomString();
+		
+		saver.saveLocations(path);
+		verify(gson).toJson(locations);
+		verify(saver).write(path + ".LOCATIONS.json", contents);
+	}
+	
+	@Test
+	public void step_singleStep_callsSave() {
+		OutputSaver saver = spy(mock(OutputSaver.class, CALLS_REAL_METHODS));
+		doNothing().when(saver).saveCells(anyString());
+		doNothing().when(saver).saveLocations(anyString());
+		
+		SimState simstate = mock(SimState.class);
+		simstate.schedule = mock(Schedule.class);
+		int tick = randomIntBetween(1, 100);
+		doReturn((double)tick).when(simstate.schedule).getTime();
+		
 		String prefix = randomString();
 		saver.prefix = prefix;
+		String path = prefix + String.format("_%06d", tick);
 		
-		double tick = randomDoubleBetween(1, 10);
-		saver.save(tick);
-		
-		verify(gson).toJson(locations);
-		verify(saver).write(prefix + String.format("_%06d", (int)tick)
-				+ ".LOCATIONS.json", contents);
+		saver.step(simstate);
+		verify(saver).saveCells(path);
+		verify(saver).saveLocations(path);
 	}
 	
 	@Test

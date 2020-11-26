@@ -1,12 +1,14 @@
 package arcade.core.sim.output;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.google.gson.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
-import arcade.core.agent.cell.CellFactoryContainer;
-import arcade.core.env.loc.LocationFactoryContainer;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.loc.LocationContainer;
+import static arcade.core.sim.Simulation.*;
 
 public abstract class OutputLoader {
 	/** Logger for class */
@@ -66,17 +68,17 @@ public abstract class OutputLoader {
 	}
 	
 	/**
-	 * Loads the JSON for a {@link arcade.core.env.loc.LocationFactory}
+	 * Loads the JSON for a list of {@link CellContainer} objects.
 	 */
-	public LocationFactoryContainer loadLocations() {
-		return gson.fromJson(locationJson, LocationFactoryContainer.class);
+	public ArrayList<CellContainer> loadCells() {
+		return gson.fromJson(cellJson, DEFAULT_CELL_TYPE);
 	}
 	
 	/**
-	 * Loads the JSON for a {@link arcade.core.agent.cell.CellFactory}
+	 * Loads the JSON for a list of {@link LocationContainer} objects.
 	 */
-	public CellFactoryContainer loadCells() {
-		return gson.fromJson(cellJson, CellFactoryContainer.class);
+	public ArrayList<LocationContainer> loadLocations() {
+		return gson.fromJson(locationJson, DEFAULT_LOCATION_TYPE);
 	}
 	
 	/**

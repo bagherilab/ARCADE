@@ -13,30 +13,25 @@ import java.util.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.agent.cell.CellFactoryContainer;
 import arcade.core.env.loc.LocationContainer;
-import arcade.core.env.loc.LocationFactoryContainer;
 import static arcade.core.sim.output.OutputSerializer.*;
 import static arcade.core.TestUtilities.*;
 
 public class OutputSerializerTest {
-	static final JsonSerializationContext LOCATION_CONTEXT = new JsonSerializationContext() {
-		public JsonElement serialize(Object src) { return null; }
-		public JsonElement serialize(Object src, Type typeOfSrc) {
-			JsonObject object = new JsonObject();
-			object.addProperty("id", ((LocationContainer)src).id);
-			JsonArray array = new JsonArray();
-			array.add(((LocationContainer)src).id);
-			object.add("location", array);
-			return object;
-		}
-	};
-	
 	static final JsonSerializationContext CELL_CONTEXT = new JsonSerializationContext() {
 		public JsonElement serialize(Object src) { return null; }
 		public JsonElement serialize(Object src, Type typeOfSrc) {
 			JsonObject object = new JsonObject();
-			object.addProperty("id", ((CellContainer)src).id);
+			object.addProperty("id", ((CellContainer)src).getID());
+			return object;
+		}
+	};
+	
+	static final JsonSerializationContext LOCATION_CONTEXT = new JsonSerializationContext() {
+		public JsonElement serialize(Object src) { return null; }
+		public JsonElement serialize(Object src, Type typeOfSrc) {
+			JsonObject object = new JsonObject();
+			object.addProperty("id", ((LocationContainer)src).getID());
 			return object;
 		}
 	};
@@ -48,17 +43,11 @@ public class OutputSerializerTest {
 		TypeToken<MiniBox> minibox = new TypeToken<MiniBox>() {};
 		assertSame(gson.getAdapter(minibox).getClass(), TreeTypeAdapter.class);
 		
-		TypeToken<CellFactoryContainer> cellFactory = new TypeToken<CellFactoryContainer>() {};
-		assertSame(gson.getAdapter(cellFactory).getClass(), TreeTypeAdapter.class);
+		TypeToken<ArrayList<CellContainer>> cellContainerList = new TypeToken<ArrayList<CellContainer>>() {};
+		assertSame(gson.getAdapter(cellContainerList).getClass(), TreeTypeAdapter.class);
 		
-		TypeToken<CellContainer> cell = new TypeToken<CellContainer>() {};
-		assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
-		
-		TypeToken<LocationFactoryContainer> locationFactory = new TypeToken<LocationFactoryContainer>() {};
-		assertSame(gson.getAdapter(locationFactory).getClass(), TreeTypeAdapter.class);
-		
-		TypeToken<LocationContainer> location = new TypeToken<LocationContainer>() {};
-		assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
+		TypeToken<ArrayList<LocationContainer>> locationContainerList = new TypeToken<ArrayList<LocationContainer>>() {};
+		assertSame(gson.getAdapter(locationContainerList).getClass(), TreeTypeAdapter.class);
 	}
 	
 	@Test
@@ -195,17 +184,18 @@ public class OutputSerializerTest {
 	}
 	
 	@Test
-	public void serialize_forCellFactory_createsJSON() {
-		CellFactorySerializer serializer = new CellFactorySerializer();
-		CellFactoryContainer cellFactory = new CellFactoryContainer();
+	public void serialize_forCellContainerList_createsJSON() {
+		CellListSerializer serializer = new CellListSerializer();
+		ArrayList<CellContainer> cells = new ArrayList<>();
 		
 		int n = randomIntBetween(1, 10);
 		int id0 = randomIntBetween(1, 10);
 		
 		for (int i = 0; i < n; i++) {
 			int id = id0 + i;
-			CellContainer cell = new CellContainer(id, 0, 0);
-			cellFactory.cells.add(cell);
+			CellContainer cell = mock(CellContainer.class);
+			doReturn(id).when(cell).getID();
+			cells.add(cell);
 		}
 		
 		StringBuilder expected = new StringBuilder("[");
@@ -216,67 +206,34 @@ public class OutputSerializerTest {
 		}
 		expected.append("]");
 		
-		JsonElement json = serializer.serialize(cellFactory, CellContainer.class, CELL_CONTEXT);
+		JsonElement json = serializer.serialize(cells, CellContainer.class, CELL_CONTEXT);
 		assertEquals(expected.toString(), json.toString());
 	}
 	
 	@Test
-	public void serialize_forCell_createsJSON() {
-		int id = randomIntBetween(1,100);
-		int pop = randomIntBetween(1,100);
-		int age = randomIntBetween(1,100);
-		
-		CellSerializer serializer = new CellSerializer();
-		CellContainer cell = new CellContainer(id, pop, age);
-		
-		String expected = "{"
-				+ "\"id\":" + id + ","
-				+ "\"pop\":" + pop + ","
-				+ "\"age\":" + age + ""
-				+ "}";
-		
-		JsonElement json = serializer.serialize(cell, null, null);
-		assertEquals(expected, json.toString());
-	}
-	
-	@Test
-	public void serialize_forLocationFactory_createsJSON() {
-		LocationFactorySerializer serializer = new LocationFactorySerializer();
-		LocationFactoryContainer locationFactory = new LocationFactoryContainer();
+	public void serialize_forLocationContainerList_createsJSON() {
+		LocationListSerializer serializer = new LocationListSerializer();
+		ArrayList<LocationContainer> locations = new ArrayList<>();
 		
 		int n = randomIntBetween(1, 10);
 		int id0 = randomIntBetween(1, 10);
 		
 		for (int i = 0; i < n; i++) {
 			int id = id0 + i;
-			LocationContainer location = new LocationContainer(id);
-			locationFactory.locations.add(location);
+			LocationContainer location = mock(LocationContainer.class);
+			doReturn(id).when(location).getID();
+			locations.add(location);
 		}
 		
 		StringBuilder expected = new StringBuilder("[");
 		for (int i = 0; i < n; i++) {
 			int id = id0 + i;
-			expected.append("{\"id\":").append(id).append(",\"location\":[").append(id).append("]}");
+			expected.append("{\"id\":").append(id).append("}");
 			if (i < n - 1) { expected.append(","); }
 		}
 		expected.append("]");
 		
-		JsonElement json = serializer.serialize(locationFactory, LocationContainer.class, LOCATION_CONTEXT);
+		JsonElement json = serializer.serialize(locations, LocationContainer.class, LOCATION_CONTEXT);
 		assertEquals(expected.toString(), json.toString());
-	}
-	
-	@Test
-	public void serialize_forLocation_createsJSON() {
-		int id = randomIntBetween(1,100);
-		
-		LocationSerializer serializer = new LocationSerializer();
-		LocationContainer location = new LocationContainer(id);
-		
-		String expected = "{"
-				+ "\"id\":" + id + ""
-				+ "}";
-		
-		JsonElement json = serializer.serialize(location, null, null);
-		assertEquals(expected, json.toString());
 	}
 }

@@ -1,6 +1,8 @@
 package arcade.core.sim;
 
 import java.util.ArrayList;
+import java.lang.reflect.Type;
+import com.google.gson.reflect.TypeToken;
 import sim.engine.Schedule;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.grid.Grid;
@@ -22,6 +24,10 @@ import arcade.core.env.loc.LocationContainer;
  */
 
 public interface Simulation {
+	Type DEFAULT_CELL_TYPE = new TypeToken<ArrayList<CellContainer>>(){}.getType();
+	
+	Type DEFAULT_LOCATION_TYPE = new TypeToken<ArrayList<LocationContainer>>(){}.getType();
+	
 	/**
 	 * Gets the {@link arcade.core.sim.Series} object for the current simulation.
 	 * <p>
