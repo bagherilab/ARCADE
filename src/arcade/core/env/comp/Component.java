@@ -19,54 +19,54 @@ import arcade.core.env.loc.Location;
  */
 
 public interface Component extends Steppable {
-	/** Number of borders */
-	int BORDERS = 6;
-	
-	/** ID for left border (x direction) */
-	int LEFT = 0;
-	
-	/** ID for right border (x direction) */
-	int RIGHT = 1;
-	
-	/** ID for top border (y direction) */
-	int TOP = 2;
-	
-	/** ID for bottom border (y direction) */
-	int BOTTOM = 3;
-	
-	/** ID for up border (z direction) */
-	int UP = 4;
-	
-	/** ID for down border (z direction) */
-	int DOWN = 5;
-	
-	/**
-	 * Schedules the component.
-	 * 
-	 * @param sim  the simulation instance.
-	 */
-	void scheduleComponent(Simulation sim);
-	
-	/**
-	 * Updates the component with old and new locations.
-	 * 
-	 * @param sim  the simulation instance
-	 * @param oldLoc  the old location
-	 * @param newLoc  the new location
-	 */
-	void updateComponent(Simulation sim, Location oldLoc, Location newLoc);
-	
-	/**
-	 * Gets the internal field of the component.
-	 * 
-	 * @return  the field
-	 */
-	double[][][] getField();
-	
-	/**
-	 * Represents object as a JSON entry.
-	 *
-	 * @return  the JSON string
-	 */
-	String toJSON();
+    /** Number of borders */
+    int BORDERS = 6;
+    
+    /** ID for left border (x direction) */
+    int LEFT = 0;
+    
+    /** ID for right border (x direction) */
+    int RIGHT = 1;
+    
+    /** ID for top border (y direction) */
+    int TOP = 2;
+    
+    /** ID for bottom border (y direction) */
+    int BOTTOM = 3;
+    
+    /** ID for up border (z direction) */
+    int UP = 4;
+    
+    /** ID for down border (z direction) */
+    int DOWN = 5;
+    
+    /**
+     * Schedules the component.
+     * 
+     * @param sim  the simulation instance.
+     */
+    void scheduleComponent(Simulation sim);
+    
+    /**
+     * Updates the component with old and new locations.
+     * 
+     * @param sim  the simulation instance
+     * @param oldLoc  the old location
+     * @param newLoc  the new location
+     */
+    void updateComponent(Simulation sim, Location oldLoc, Location newLoc);
+    
+    /**
+     * Gets the internal field of the component.
+     * 
+     * @return  the field
+     */
+    double[][][] getField();
+    
+    /**
+     * Represents object as a JSON entry.
+     *
+     * @return  the JSON string
+     */
+    String toJSON();
 }

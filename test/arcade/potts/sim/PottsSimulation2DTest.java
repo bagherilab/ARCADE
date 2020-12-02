@@ -12,31 +12,31 @@ import arcade.potts.env.loc.PottsLocationFactory2D;
 import static arcade.potts.sim.PottsSimulationTest.RANDOM_SEED;
 
 public class PottsSimulation2DTest {
-	@Test
-	public void makePotts_mockSeries_initializesPotts() {
-		PottsSeries series = mock(PottsSeries.class);
-		series._potts = mock(MiniBox.class);
-		series._populations = mock(HashMap.class);
-		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
-		Potts potts = sim.makePotts();
-		assertTrue(potts instanceof Potts2D);
-	}
-	
-	@Test
-	public void makeLocationFactory_createsFactory() {
-		PottsSeries series = mock(PottsSeries.class);
-		series._populations = mock(HashMap.class);
-		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
-		LocationFactory factory = sim.makeLocationFactory();
-		assertTrue(factory instanceof PottsLocationFactory2D);
-	}
-	
-	@Test
-	public void makeCellFactory_createsFactory() {
-		PottsSeries series = mock(PottsSeries.class);
-		series._populations = mock(HashMap.class);
-		PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
-		CellFactory factory = sim.makeCellFactory();
-		assertTrue(factory instanceof PottsCellFactory);
-	}
+    @Test
+    public void makePotts_mockSeries_initializesPotts() {
+        PottsSeries series = mock(PottsSeries.class);
+        series._potts = mock(MiniBox.class);
+        series._populations = mock(HashMap.class);
+        PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
+        Potts potts = sim.makePotts();
+        assertTrue(potts instanceof Potts2D);
+    }
+    
+    @Test
+    public void makeLocationFactory_createsFactory() {
+        PottsSeries series = mock(PottsSeries.class);
+        series._populations = mock(HashMap.class);
+        PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
+        LocationFactory factory = sim.makeLocationFactory();
+        assertTrue(factory instanceof PottsLocationFactory2D);
+    }
+    
+    @Test
+    public void makeCellFactory_createsFactory() {
+        PottsSeries series = mock(PottsSeries.class);
+        series._populations = mock(HashMap.class);
+        PottsSimulation2D sim = new PottsSimulation2D(RANDOM_SEED, series);
+        CellFactory factory = sim.makeCellFactory();
+        assertTrue(factory instanceof PottsCellFactory);
+    }
 }
