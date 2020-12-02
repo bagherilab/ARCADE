@@ -18,7 +18,7 @@ public abstract class PottsLocations extends PottsLocation {
     
     /**
      * Creates a {@code PottsLocations} for a list of voxels.
-     *
+     * 
      * @param voxels  the list of voxels
      */
     public PottsLocations(ArrayList<Voxel> voxels) {
@@ -67,7 +67,7 @@ public abstract class PottsLocations extends PottsLocation {
     public void assign(Region region, Voxel voxel) {
         Region oldRegion = Region.UNDEFINED;
         
-        // Check all regions for the voxel. 
+        // Check all regions for the voxel.
         for (Region key : locations.keySet()) {
             if (key != region && locations.get(key).voxels.contains(voxel)) { oldRegion = key; }
         }
@@ -115,7 +115,7 @@ public abstract class PottsLocations extends PottsLocation {
     
     /**
      * Makes a new {@code PottsLocations} with the given voxels.
-     *
+     * 
      * @param voxels  the list of voxels
      * @return  a new {@code PottsLocations}
      */
@@ -128,7 +128,7 @@ public abstract class PottsLocations extends PottsLocation {
      * 
      * @param voxelsA  the list of voxels for this location
      * @param voxelsB  the list of voxels for the split location
-     * @param random  the seeded random number generator 
+     * @param random  the seeded random number generator
      * @return  a {@link arcade.core.env.loc.Location} object with the split voxels
      */
     Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
@@ -167,7 +167,7 @@ public abstract class PottsLocations extends PottsLocation {
      * 
      * @param location  the location containing voxels to assign
      * @param fractions  the region fractions
-     * @param random  the seeded random number generator 
+     * @param random  the seeded random number generator
      */
     static void assignVoxels(PottsLocations location, EnumMap<Region, Double> fractions,
                              MersenneTwisterFast random) {
@@ -200,7 +200,7 @@ public abstract class PottsLocations extends PottsLocation {
      * @param region  the region to assign
      * @param voxels  the list of available voxels to assign
      * @param n  the target number of voxels to assign
-     * @param random  the seeded random number generator 
+     * @param random  the seeded random number generator
      */
     static void selectVoxels(PottsLocations location, Voxel center, Region region, ArrayList<Voxel> voxels,
                              double n, MersenneTwisterFast random) {

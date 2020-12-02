@@ -39,11 +39,11 @@ public class PottsLocationTest {
          *     x
          * 
          * Each list is a subset of the shape:
-         *
+         * 
          *  (A)         (B)
          *  x x . .     . . x x
          *  x     .     .     x
-         *  x           . 
+         *  x           .
          */
         
         voxelListA = new ArrayList<>();
@@ -432,7 +432,7 @@ public class PottsLocationTest {
         voxels.add(new Voxel(1, 1, 1));
         voxels.add(new Voxel(2, 2, 2));
         voxels.add(new Voxel(2, 2, 0));
-        return voxels; 
+        return voxels;
     }
     
     @Test

@@ -239,7 +239,7 @@ public class Potts2DTest {
     }
     
     /* -------------------------------------------------------------------------
-     * CONNECTIVITY FOR ZERO (0) NEIGHBORS 
+     * CONNECTIVITY FOR ZERO (0) NEIGHBORS
      * 
      * If there are zero neighbors, then the voxel is never connected.
     ------------------------------------------------------------------------- */
@@ -275,7 +275,7 @@ public class Potts2DTest {
     }
     
     /* -------------------------------------------------------------------------
-     * CONNECTIVITY FOR TWO (2) NEIGHBORS 
+     * CONNECTIVITY FOR TWO (2) NEIGHBORS
      * 
      * The two neighbors can be either adjacent (4 options) or opposite (2 options).
      * 
@@ -335,7 +335,7 @@ public class Potts2DTest {
     }
     
     /* -------------------------------------------------------------------------
-     * CONNECTIVITY FOR THREE (3) NEIGHBORS 
+     * CONNECTIVITY FOR THREE (3) NEIGHBORS
      * 
      * The three neighbors are positioned such that only one side is missing a
      * neighbor (4 options).
@@ -399,7 +399,7 @@ public class Potts2DTest {
     }
     
     /* -------------------------------------------------------------------------
-     * CONNECTIVITY FOR FOUR (4) NEIGHBORS 
+     * CONNECTIVITY FOR FOUR (4) NEIGHBORS
      * 
      * All four possible neighbor positions are occupied. The connectivity
      * depends on the ID of the voxel. Only ID = 0 is considered connected;

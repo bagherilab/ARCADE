@@ -20,14 +20,14 @@ public abstract class PottsModule implements Module {
     
     /**
      * Gets the module phase.
-     *
+     * 
      * @return  the module phase
      */
     public Phase getPhase() { return phase; }
     
     /**
      * Sets the module phase.
-     *
+     * 
      * @param phase  the module phase
      */
     public void setPhase(Phase phase) { this.phase = phase; }

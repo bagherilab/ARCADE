@@ -45,7 +45,7 @@ public final class Enums {
         
         /**
          * Randomly selects a {@code Region}.
-         *
+         * 
          * @param rng  the random number generator
          * @return  a random {@code Region}
          */

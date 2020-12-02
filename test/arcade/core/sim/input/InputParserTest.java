@@ -333,7 +333,7 @@ public class InputParserTest {
     }
     
     @Test
-    public void parseArg_givenPositions_parsesArgument() { 
+    public void parseArg_givenPositions_parsesArgument() {
         Box box = new Box();
         box.addTag(COMMAND_ID_1, "POSITION");
         box.addTag(COMMAND_ID_2, "POSITION");

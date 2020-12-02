@@ -81,7 +81,7 @@ public abstract class InputBuilder implements ContentHandler {
      * as they are parsed.
      * SAX parses XML files using event handlers and therefore does not load the
      * entire XML file into memory (in contrast to DOM).
-     *
+     * 
      * @param xml  the XML file
      * @param parameters  the default parameter values loaded from {@code parameter.xml}
      * @param isVis  {@code true} if run with visualization, {@code false} otherwise
@@ -116,7 +116,7 @@ public abstract class InputBuilder implements ContentHandler {
     
     /**
      * Creates a {@link arcade.core.util.Box} dictionary from given attributes.
-     *
+     * 
      * @param atts  the attributes
      * @return  a dictionary
      */

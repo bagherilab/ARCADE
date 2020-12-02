@@ -138,7 +138,7 @@ public class PottsTest {
         
         int[] calculateChange(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
             if (sourceRegion == Region.DEFAULT.ordinal()) { return new int[] { 2, 2 }; }
-            else { return new int[] { -3, -3 }; } 
+            else { return new int[] { -3, -3 }; }
         }
         
         boolean[][][] getNeighborhood(int id, int x, int y, int z) {
@@ -428,7 +428,7 @@ public class PottsTest {
         
         spy.step(simstate);
         verify(spy, times(steps)).getUniqueIDs(
-                intThat(i -> i < length - 1 && i > 0), 
+                intThat(i -> i < length - 1 && i > 0),
                 intThat(i -> i < width - 1 && i > 0),
                 intThat(i -> i < height - 1 && i > 0));
         verify(spy, times(steps)).getUniqueRegions(

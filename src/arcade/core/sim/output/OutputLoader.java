@@ -37,7 +37,7 @@ public abstract class OutputLoader {
     
     /**
      * Creates an {@code OutputLoader} for the series.
-     *
+     * 
      * @param series  the simulation series
      */
     public OutputLoader(Series series, String prefix, boolean loadCells, boolean loadLocations) {
@@ -57,7 +57,7 @@ public abstract class OutputLoader {
     
     /**
      * Equips the given {@link arcade.core.sim.Simulation} instance to the loader.
-     *
+     * 
      * @param sim  the simulation instance
      */
     public void equip(Simulation sim) {
@@ -83,7 +83,7 @@ public abstract class OutputLoader {
     
     /**
      * Reads the contents of the given file path.
-     *
+     * 
      * @param filepath  the path for the file
      */
     String read(String filepath) {

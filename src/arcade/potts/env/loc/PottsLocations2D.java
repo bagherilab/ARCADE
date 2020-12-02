@@ -8,7 +8,7 @@ import static arcade.potts.util.PottsEnums.Direction;
 public class PottsLocations2D extends PottsLocations implements Location2D {
     /**
      * Creates a 2D {@link PottsLocation} for a list of voxels.
-     *
+     * 
      * @param voxels  the list of voxels
      */
     public PottsLocations2D(ArrayList<Voxel> voxels) { super(voxels); }

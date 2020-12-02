@@ -34,7 +34,7 @@ public abstract class PottsModuleApoptosis extends PottsModule {
     
     /**
      * Creates a apoptosis {@code Module} for the given {@link PottsCell}.
-     *
+     * 
      * @param cell  the {@link PottsCell} the module is associated with
      */
     public PottsModuleApoptosis(PottsCell cell) {
@@ -58,7 +58,7 @@ public abstract class PottsModuleApoptosis extends PottsModule {
     public static class Simple extends PottsModuleApoptosis {
         /**
          * Creates a {@link PottsModuleApoptosis} using simple phases.
-         *
+         * 
          * @param cell  the {@link PottsCell} the module is associated with
          */
         public Simple(PottsCell cell) { super(cell); }
@@ -68,7 +68,7 @@ public abstract class PottsModuleApoptosis extends PottsModule {
     
     /**
      * Calls the step method for the current simple phase.
-     *
+     * 
      * @param random  the random number generator
      * @param sim  the simulation instance
      */

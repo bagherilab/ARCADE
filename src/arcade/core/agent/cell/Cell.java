@@ -10,7 +10,7 @@ import static arcade.core.util.Enums.State;
 public interface Cell extends Steppable {
     /**
      * Converts the cell into a {@link CellContainer}.
-     *
+     * 
      * @return  a {@link CellContainer} instance
      */
     CellContainer convert();
@@ -24,28 +24,28 @@ public interface Cell extends Steppable {
     
     /**
      * Gets the cell population index.
-     *
+     * 
      * @return  the cell population
      */
     int getPop();
     
     /**
      * Gets the cell state.
-     *
+     * 
      * @return  the cell state
      */
     State getState();
     
     /**
      * Gets the cell age (in minutes)
-     *
+     * 
      * @return  the cell age
      */
     int getAge();
     
     /**
      * Checks if the cell has regions.
-     *
+     * 
      * @return  {@code true} if the cell has regions, {@code false} otherwise
      */
     boolean hasRegions();
@@ -59,7 +59,7 @@ public interface Cell extends Steppable {
     
     /**
      * Gets the cell module object.
-     *
+     * 
      * @return  the cell module
      */
     Module getModule();
@@ -73,14 +73,14 @@ public interface Cell extends Steppable {
     
     /**
      * Gets the cell volume (in voxels).
-     *
+     * 
      * @return  the cell volume
      */
     int getVolume();
     
     /**
      * Gets the cell volume (in voxels) for a region.
-     *  
+     * 
      * @param region  the region
      * @return  the cell volume
      */
@@ -88,7 +88,7 @@ public interface Cell extends Steppable {
     
     /**
      * Gets the cell surface (in voxels).
-     *
+     * 
      * @return  the cell surface
      */
     int getSurface();
@@ -110,7 +110,7 @@ public interface Cell extends Steppable {
     
     /**
      * Gets the target volume (in voxels) for a region.
-     *
+     * 
      * @param region  the region
      * @return  the target volume
      */
@@ -118,7 +118,7 @@ public interface Cell extends Steppable {
     
     /**
      * Gets the target surface (in voxels)
-     *
+     * 
      * @return  the target surface
      */
     double getTargetSurface();
@@ -133,14 +133,14 @@ public interface Cell extends Steppable {
     
     /**
      * Gets the critical volume (in voxels)
-     *
+     * 
      * @return  the target volume
      */
     double getCriticalVolume();
     
     /**
      * Gets the critical volume (in voxels) for a region.
-     *
+     * 
      * @param region  the region
      * @return  the target volume
      */
@@ -148,14 +148,14 @@ public interface Cell extends Steppable {
     
     /**
      * Gets the critical surface (in voxels)
-     *
+     * 
      * @return  the target surface
      */
     double getCriticalSurface();
     
     /**
      * Gets the critical surface (in voxels) for a region.
-     *
+     * 
      * @param region  the region
      * @return  the target surface
      */
@@ -163,7 +163,7 @@ public interface Cell extends Steppable {
     
     /**
      * Sets the cell state.
-     *
+     * 
      * @param state  the cell state
      */
     void setState(State state);
@@ -175,7 +175,7 @@ public interface Cell extends Steppable {
     
     /**
      * Creates a new cell.
-     *
+     * 
      * @param id  the new cell ID
      * @param state  the new cell state
      * @param location  the new cell location
@@ -185,7 +185,7 @@ public interface Cell extends Steppable {
     
     /**
      * Schedules the cell in the simulation.
-     *
+     * 
      * @param schedule  the simulation schedule
      */
     void schedule(Schedule schedule);

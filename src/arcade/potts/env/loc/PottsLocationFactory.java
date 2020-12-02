@@ -121,7 +121,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
     
     /**
      * Gets all possible voxels within given range.
-     *
+     * 
      * @param m  the location range
      * @param focus  the focus voxel
      * @return  the list of possible voxels

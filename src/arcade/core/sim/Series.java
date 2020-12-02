@@ -44,7 +44,7 @@ public abstract class Series {
     /** Name of the series */
     private final String name;
     
-    /** Path and prefix for the series */ 
+    /** Path and prefix for the series */
     private final String prefix;
     
     /** Spatial conversion factor (um/voxel) */
@@ -159,14 +159,14 @@ public abstract class Series {
     
     /**
      * Gets the number of ticks per simulation
-     *
+     * 
      * @return  the ticks
      */
     public int getTicks() { return ticks; }
     
     /**
      * Gets the number of ticks between snapshots
-     *
+     * 
      * @return  the interval
      */
     public int getInterval() { return interval; }
@@ -185,7 +185,7 @@ public abstract class Series {
     
     /**
      * Checks if string contains valid fraction between 0 and 1, inclusive.
-     *
+     * 
      * @param box  the box containing the fraction
      * @param key  the fraction key
      * @return  {@code true if valid}, {@code false} otherwise
@@ -214,7 +214,7 @@ public abstract class Series {
     
     /**
      * Creates environment molecules.
-     *
+     * 
      * @param molecules  the list of molecule setup dictionaries
      * @param moleculeDefaults  the dictionary of default molecule parameters
      */
@@ -230,7 +230,7 @@ public abstract class Series {
     
     /**
      * Creates selected components.
-     *
+     * 
      * @param components  the list of component dictionaries
      * @param componentDefaults  the dictionary of default component parameters
      */
@@ -238,7 +238,7 @@ public abstract class Series {
     
     /**
      * Parses parameter values based on default value.
-     *
+     * 
      * @param box  the parameter map
      * @param parameter  the parameter name
      * @param defaultParameter  the default parameter value
@@ -311,7 +311,7 @@ public abstract class Series {
     
     /**
      * Gets the class name for the visualization.
-     *
+     * 
      * @return  the visualization class
      */
     protected abstract String getVisClass();
@@ -336,7 +336,7 @@ public abstract class Series {
             
             // Post-simulation output.
             simEnd = System.currentTimeMillis();
-            LOGGER.info("simulation [ " + name + " | " + seed + " ] finished in " 
+            LOGGER.info("simulation [ " + name + " | " + seed + " ] finished in "
                     + DECIMAL_FORMAT.format((double)(simEnd - simStart)/1000/60) + " minutes\n\n");
         }
     }

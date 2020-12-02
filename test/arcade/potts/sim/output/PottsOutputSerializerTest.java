@@ -88,7 +88,7 @@ public class PottsOutputSerializerTest {
         
         String expected = "{"
                 + "\"SERIES\":\"SERIES\","
-                + "\"potts\":{" 
+                + "\"potts\":{"
                 + "\"" + key1 + "\":\"" + value1 + "\","
                 + "\"" + key2 + "\":" + value2
                 + "}"
@@ -111,7 +111,7 @@ public class PottsOutputSerializerTest {
         int targetVolume = randomIntBetween(1,100);
         int targetSurface = randomIntBetween(1,100);
         
-        PottsCellContainer cellContainer = new PottsCellContainer(id, pop, age, state, phase, voxels, 
+        PottsCellContainer cellContainer = new PottsCellContainer(id, pop, age, state, phase, voxels,
                 null, targetVolume, targetSurface, null, null);
         
         String expected = "{"

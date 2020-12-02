@@ -160,7 +160,7 @@ public class PottsSeries extends Series {
     
     /**
      * Creates environment molecules.
-     *
+     * 
      * @param molecules  the list of molecule setup dictionaries
      * @param moleculeDefaults  the dictionary of default molecule parameters
      */
@@ -180,7 +180,7 @@ public class PottsSeries extends Series {
     
     /**
      * Creates selected components.
-     *
+     * 
      * @param components  the list of component dictionaries
      * @param componentDefaults  the dictionary of default component parameters
      */

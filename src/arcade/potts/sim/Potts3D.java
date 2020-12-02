@@ -34,7 +34,7 @@ public class Potts3D extends Potts {
     
     /**
      * Creates a cellular {@code Potts} model in 3D.
-     *
+     * 
      * @param series  the simulation series
      */
     public Potts3D(PottsSeries series) { super(series); }
@@ -231,7 +231,7 @@ public class Potts3D extends Potts {
                     if (array[1][1 + PLANE_A[i]][1 + PLANE_B[i]]
                             && array[1][1 + PLANE_A[(i + 1) % NUMBER_PLANE]][1 + PLANE_B[(i + 1) % NUMBER_PLANE]]) {
                         if (array[0][1][1]
-                                && (array[1][1 + CORNER_A[i]][1 + CORNER_B[i]] ? 
+                                && (array[1][1 + CORNER_A[i]][1 + CORNER_B[i]] ?
                                     (array[0][1 + PLANE_A[i]][1 + PLANE_B[i]] || array[0][1 + PLANE_A[(i + 1) % NUMBER_PLANE]][1 + PLANE_B[(i + 1) % NUMBER_PLANE]]) :
                                     (array[0][1 + PLANE_A[i]][1 + PLANE_B[i]] && array[0][1 + PLANE_A[(i + 1) % NUMBER_PLANE]][1 + PLANE_B[(i + 1) % NUMBER_PLANE]]))) {
                             return true;
@@ -332,7 +332,7 @@ public class Potts3D extends Potts {
                 int nPlane = 0;
                 int nCorner = 0;
                 
-                // Check XY 
+                // Check XY
                 if (!array[0][1][1] || !array[2][1][1]) {
                     int z = (array[0][1][1] ? 0 : 2);
                     for (int i = 0; i < NUMBER_PLANE; i++) {

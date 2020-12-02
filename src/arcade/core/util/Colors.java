@@ -145,7 +145,7 @@ public class Colors implements ColorMap {
     
     /**
      * Gets the color corresponding to level.
-     *
+     * 
      * @param level  the number value
      * @return  the color
      */
@@ -167,7 +167,7 @@ public class Colors implements ColorMap {
     
     /**
      * Gets the alpha corresponding to level.
-     *
+     * 
      * @param level  the number value
      * @return  the alpha value
      */

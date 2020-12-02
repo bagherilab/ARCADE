@@ -136,7 +136,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     
     /**
      * Creates a factory for locations.
-     *
+     * 
      * @return  a {@link arcade.core.env.loc.Location} factory
      */
     abstract PottsLocationFactory makeLocationFactory();

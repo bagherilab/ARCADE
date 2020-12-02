@@ -78,7 +78,7 @@ public class PottsCell implements Cell {
      * <p>
      * The default state is proliferative and age is 0.
      * The cell is created with no regions.
-     *
+     * 
      * @param id  the cell ID
      * @param pop  the cell population index
      * @param location  the {@link arcade.core.env.loc.Location} of the cell
@@ -213,7 +213,7 @@ public class PottsCell implements Cell {
     
     /**
      * Gets the lambda for the given term.
-     *
+     * 
      * @param term  the term of the Hamiltonian
      * @return  the lambda value
      */
@@ -221,7 +221,7 @@ public class PottsCell implements Cell {
     
     /**
      * Gets the lambda for the given term and region.
-     *
+     * 
      * @param term  the term of the Hamiltonian
      * @param region  the region
      * @return  the lambda value
@@ -230,7 +230,7 @@ public class PottsCell implements Cell {
     
     /**
      * Gets the adhesion to a cell of the given population.
-     *
+     * 
      * @param pop  the cell population
      * @return  the adhesion value
      */
@@ -238,7 +238,7 @@ public class PottsCell implements Cell {
     
     /**
      * Gets the adhesion between two regions.
-     *
+     * 
      * @param region1  the first region
      * @param region2  the second region
      * @return  the adhesion value
@@ -284,9 +284,9 @@ public class PottsCell implements Cell {
     
     /**
      * Initializes the potts arrays with the cell.
-     *
+     * 
      * @param ids  the {@link arcade.potts.sim.Potts} array for ids
-     * @param regions  the {@link arcade.potts.sim.Potts} array for regions   
+     * @param regions  the {@link arcade.potts.sim.Potts} array for regions
      */
     public void initialize(int[][][] ids, int[][][] regions) {
         location.update(id, ids, regions);
@@ -306,9 +306,9 @@ public class PottsCell implements Cell {
     
     /**
      * Resets the potts arrays with the cell.
-     *
+     * 
      * @param ids  the {@link arcade.potts.sim.Potts} array for ids
-     * @param regions  the {@link arcade.potts.sim.Potts} array for regions   
+     * @param regions  the {@link arcade.potts.sim.Potts} array for regions
      */
     public void reset(int[][][] ids, int[][][] regions) {
         location.update(id, ids, regions);

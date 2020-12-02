@@ -39,7 +39,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Creates a cellular {@code Potts} model.
-     *
+     * 
      * @param series  the simulation series
      */
     public Potts(PottsSeries series) {
@@ -67,7 +67,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Steps through array updates for Monte Carlo step.
-     *
+     * 
      * @param simstate  the MASON simulation state
      */
     public void step(SimState simstate) {
@@ -103,8 +103,8 @@ public abstract class Potts implements Steppable {
     }
     
     /**
-     * Flips connected voxel from source to target id based on Boltzmann probability. 
-     *
+     * Flips connected voxel from source to target id based on Boltzmann probability.
+     * 
      * @param sourceID  the id of the source voxel
      * @param targetID  the id of the target voxel
      * @param x  the x coordinate
@@ -174,7 +174,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Flips connected voxel from source to target region based on Boltzmann probability.
-     *
+     * 
      * @param id  the voxel id
      * @param sourceRegion  the region of the source voxel
      * @param targetRegion  the region of the target voxel
@@ -233,7 +233,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets the {@link arcade.core.agent.cell.Cell} object for the given id.
-     *
+     * 
      * @param id  the cell id
      * @return  the {@link arcade.core.agent.cell.Cell} object, {@code null} if id is zero
      */
@@ -244,7 +244,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets adhesion energy for a given voxel.
-     *
+     * 
      * @param id  the voxel id
      * @param x  the x coordinate
      * @param y  the y coordinate
@@ -255,7 +255,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets adhesion energy for a given voxel region.
-     *
+     * 
      * @param id  the voxel id
      * @param region  the voxel region
      * @param x  the x coordinate
@@ -267,7 +267,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets change in adhesion energy.
-     *
+     * 
      * @param sourceID  the id of the source voxel
      * @param targetID  the id of the target voxel
      * @param x  the x coordinate
@@ -283,7 +283,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets change in adhesion energy for region.
-     *
+     * 
      * @param id  the voxel id
      * @param sourceRegion  the region of the source voxel
      * @param targetRegion  the region of the target voxel
@@ -300,7 +300,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets volume energy for a given change in volume.
-     *
+     * 
      * @param id  the voxel id
      * @param change  the change in volume
      * @return  the energy
@@ -316,9 +316,9 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets volume energy for a given change in volume for region.
-     *
+     * 
      * @param id  the voxel id
-     * @param t  the voxel region 
+     * @param t  the voxel region
      * @param change  the change in volume
      * @return  the energy
      */
@@ -334,7 +334,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets change in volume energy.
-     *
+     * 
      * @param sourceID  the id of the source voxel
      * @param targetID  the id of the target voxel
      * @return  the change in energy
@@ -347,7 +347,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets change in volume energy for region.
-     *
+     * 
      * @param id  the voxel id
      * @param sourceRegion  the region of the source voxel
      * @param targetRegion  the region of the source voxel
@@ -361,7 +361,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets the surface energy for a given change in surface.
-     *
+     * 
      * @param id  the voxel id
      * @param change  the change in surface
      * @return  the energy
@@ -377,9 +377,9 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets the surface energy for a given change in surface for region.
-     *
+     * 
      * @param id  the voxel id
-     * @param t  the voxel region   
+     * @param t  the voxel region
      * @param change  the change in surface
      * @return  the energy
      */
@@ -395,7 +395,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets change in surface energy.
-     *
+     * 
      * @param sourceID  the id of the source voxel
      * @param targetID  the id of the target voxel
      * @param x  the x coordinate
@@ -412,7 +412,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets change in surface energy for region.
-     *
+     * 
      * @param id  the voxel id
      * @param sourceRegion  the id of the source voxel
      * @param targetRegion  the id of the target voxel
@@ -430,7 +430,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Calculates change in surface.
-     *
+     * 
      * @param sourceID  the id of the source voxel
      * @param targetID  the id of the target voxel
      * @param x  the x coordinate
@@ -442,7 +442,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Calculates change in surface for region
-     *
+     * 
      * @param id  the voxel id
      * @param sourceRegion  the id of the source voxel
      * @param targetRegion  the id of the target voxel
@@ -455,7 +455,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets neighborhood for the given voxel.
-     *
+     * 
      * @param id  the voxel id
      * @param x  the x coordinate
      * @param y  the y coordinate
@@ -466,7 +466,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets neighborhood for the given voxel region.
-     *
+     * 
      * @param id  the voxel id
      * @param region  the voxel region
      * @param x  the x coordinate
@@ -478,7 +478,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Determines connectivity of given neighborhood.
-     *
+     * 
      * @param array  the array of neighbors
      * @param zero  {@code true} if the location has a zero id, {@code false} otherwise
      * @return  {@code true} if simply connected, {@code false} otherwise
@@ -487,7 +487,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets unique IDs adjacent to given voxel.
-     *
+     * 
      * @param x  the x coordinate
      * @param y  the y coordinate
      * @param z  the z coordinate
@@ -497,7 +497,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets unique regions adjacent to given voxel.
-     *
+     * 
      * @param x  the x coordinate
      * @param y  the y coordinate
      * @param z  the z coordinate

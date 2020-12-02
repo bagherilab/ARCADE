@@ -13,7 +13,7 @@ import arcade.core.util.MiniBox;
  * {@link arcade.core.sim.input.InputLoader} when parsing {@code command.xml}.
  * There are three command argument types:
  * <ul>
- *     <li><em>position</em> arguments are ordered by their location in the 
+ *     <li><em>position</em> arguments are ordered by their location in the
  *     command and all are required</li>
  *     <li><em>option</em> arguments are indicated by a short ({@code -}) and/
  *     or long ({@code --}) flag followed by the contents</li>
@@ -23,7 +23,7 @@ import arcade.core.util.MiniBox;
  * General structure of {@code command.xml}:
  * <pre>
  *     &#60;commands&#62;
- *         &#60;position id="(unique id)" help="(help text)" /&#62; 
+ *         &#60;position id="(unique id)" help="(help text)" /&#62;
  *         ...
  *         &#60;option id="(unique id)" long="(long flag)" short="(short flag)"
  *                     default="(default value)" help="(help text)" /&#62;

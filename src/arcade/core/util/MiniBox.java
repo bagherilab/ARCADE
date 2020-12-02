@@ -60,7 +60,7 @@ public class MiniBox {
     
     /**
      * Gets the value for given key converted to a double.
-     *
+     * 
      * @param id  the key
      * @return  the value
      */
@@ -87,7 +87,7 @@ public class MiniBox {
     
     /**
      * Adds a key and double value pair to the map.
-     *
+     * 
      * @param id  the key
      * @param val  the value
      */
@@ -95,7 +95,7 @@ public class MiniBox {
     
     /**
      * Adds a key and value pair to the map.
-     *
+     * 
      * @param id  the key
      * @param val  the value
      */

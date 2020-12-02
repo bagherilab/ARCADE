@@ -20,7 +20,7 @@ public class Parameter implements Serializable {
     /** Normal distribution */
     private final Normal normal;
     
-    /** Values for truncated distributions */ 
+    /** Values for truncated distributions */
     private final double[] tails;
     
     /** {@code true} if parameter is a fraction between 0 and 1, {@code false} otherwise */
@@ -32,14 +32,14 @@ public class Parameter implements Serializable {
     /** Standard deviation of the distribution */
     private final double sigma;
     
-    /** Heterogeneity of the parameter */ 
+    /** Heterogeneity of the parameter */
     private final double h;
     
     /**
      * Creates a {@code Parameter} normal distribution.
      * 
      * @param mu  the mean of parameter normal distribution
-     * @param h  the amount of heterogeneity where standard deviation sigma = h*mu 
+     * @param h  the amount of heterogeneity where standard deviation sigma = h*mu
      * @param isFrac  indicates if distribution is truncated between 0 and 1
      * @param random  the random number generator
      */
@@ -70,7 +70,7 @@ public class Parameter implements Serializable {
     
     /**
      * Gets the standard deviation of the distribution.
-     *
+     * 
      * @return  the distribution standard deviation
      */
     public double getSigma() { return sigma; }
@@ -92,7 +92,7 @@ public class Parameter implements Serializable {
     
     /**
      * Draws a integer from the bounded normal distribution.
-     *
+     * 
      * @return  an integer drawn from the distribution
      */
     public int nextInt() { return (int)nextDouble(); }

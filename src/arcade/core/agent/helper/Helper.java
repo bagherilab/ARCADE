@@ -51,7 +51,7 @@ public interface Helper extends Steppable {
     
     /**
      * Represents object as a JSON entry.
-     *
+     * 
      * @return  the JSON string
      */
     String toJSON();

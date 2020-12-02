@@ -137,7 +137,7 @@ public class PottsOutputDeserializerTest {
                 + ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
                 + ",\"regions\":["
                 + "{\"region\":" + region1.name()
-                + ",\"voxels\":" + regionVoxels1 
+                + ",\"voxels\":" + regionVoxels1
                 + ",\"targets\":[" + targetRegionVolume1 + "," + targetRegionSurface1 + "]"
                 + "},"
                 + "{\"region\":" + region2.name()

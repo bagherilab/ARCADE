@@ -9,7 +9,7 @@ import sim.display.*;
  * Extension of {@code GUIState} wrapper of simulations for visualization.
  * <p>
  * {@code Visualization} organizes the visualization into {@link arcade.core.vis.Panel}
- * objects, on which visualizations are drawn, and {@link arcade.core.vis.Drawer} 
+ * objects, on which visualizations are drawn, and {@link arcade.core.vis.Drawer}
  * objects, which draw the visualization through methods provided by the
  * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
  */
@@ -37,7 +37,7 @@ public abstract class Visualization extends GUIState {
     
     /**
      * Remove the model inspector.
-     *
+     * 
      * @return  a {@code null} inspector
      */
     public Inspector getInspector() { return null; }

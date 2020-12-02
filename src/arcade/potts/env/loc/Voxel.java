@@ -20,7 +20,7 @@ public final class Voxel {
     
     /**
      * Creates a {@code Voxel} at the given coordinates.
-     *
+     * 
      * @param x  the x coordinate
      * @param y  the y coordinate
      * @param z  the z coordinate
@@ -33,14 +33,14 @@ public final class Voxel {
     
     /**
      * Gets hash based on (x, y, z) coordinates.
-     *
+     * 
      * @return  the hash
      */
     public final int hashCode() { return x + (y << 8) + (z << 16); }
     
     /**
      * Checks if two locations have the same (x, y, z) coordinates.
-     *
+     * 
      * @param obj  the voxel to compare
      * @return  {@code true} if voxels have the same coordinates, {@code false} otherwise
      */

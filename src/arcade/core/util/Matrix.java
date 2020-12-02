@@ -225,7 +225,7 @@ public class Matrix {
      * <p>
      * The matrices {@code L} and {@code U} are the square lower and upper
      * triangular matrices of the given matrix.
-     *
+     * 
      * @param A  the matrix of coefficients
      * @return  the left-hand side matrix
      */
@@ -302,7 +302,7 @@ public class Matrix {
     
     /**
      * Gets the upper triangular of a sparse matrix.
-     *
+     * 
      * @param A  the matrix
      * @param strict  {@code true} if triangular is strict, {@code false} otherwise
      * @return  the upper triangular matrix
@@ -316,7 +316,7 @@ public class Matrix {
     
     /**
      * Gets the lower triangular of a sparse matrix.
-     *
+     * 
      * @param A  the matrix
      * @param strict  {@code true} if triangular is strict, {@code false} otherwise
      * @return  the lower triangular matrix
@@ -368,7 +368,7 @@ public class Matrix {
     
     /**
      * Multiplies a sparse square matrix and a vector.
-     *
+     * 
      * @param A  the matrix
      * @param b  the vector
      * @return  the product of the matrix and vector
@@ -385,7 +385,7 @@ public class Matrix {
     
     /**
      * Multiplies two sparse square matrices.
-     *
+     * 
      * @param A  the first matrix
      * @param B  the second matrix
      * @return  the product of the two matrices
@@ -444,7 +444,7 @@ public class Matrix {
     
     /**
      * Subtracts two vectors.
-     *
+     * 
      * @param a  the first vector
      * @param b  the second vector
      * @return  the difference of the two vectors
@@ -472,7 +472,7 @@ public class Matrix {
     
     /**
      * Scales the values in a dense vector.
-     *
+     * 
      * @param a  the vector
      * @param scale  the value to scale by
      * @return  the scaled vector
@@ -486,7 +486,7 @@ public class Matrix {
     
     /**
      * Scales the values in a sparse matrix.
-     *
+     * 
      * @param A  the matrix
      * @param scale  the value to scale by
      * @return  the scaled matrix

@@ -487,7 +487,7 @@ public class Potts3DTest {
     }
     
     /* -------------------------------------------------------------------------
-     * CONNECTIVITY FOR ZERO (0) NEIGHBORS 
+     * CONNECTIVITY FOR ZERO (0) NEIGHBORS
      * 
      * If there are zero neighbors, then the voxel is never connected.
     ------------------------------------------------------------------------- */
@@ -548,7 +548,7 @@ public class Potts3DTest {
     }
     
     /* -------------------------------------------------------------------------
-     * CONNECTIVITY FOR TWO (2) NEIGHBORS 
+     * CONNECTIVITY FOR TWO (2) NEIGHBORS
      * 
      * The two neighbors can be either adjacent in the same plane (3 planes x 4
      * rotations = 12 options) or opposite in the same plane (3 options).
@@ -722,7 +722,7 @@ public class Potts3DTest {
     }
     
     /* -------------------------------------------------------------------------
-     * CONNECTIVITY FOR THREE (3) NEIGHBORS 
+     * CONNECTIVITY FOR THREE (3) NEIGHBORS
      * 
      * The three neighbors can be either in the same plane (3 planes x 4
      * rotations = 12 options) or positioned along corners (8 options).
@@ -1031,7 +1031,7 @@ public class Potts3DTest {
     }
     
     /* -------------------------------------------------------------------------
-     * CONNECTIVITY FOR FOUR (4) NEIGHBORS 
+     * CONNECTIVITY FOR FOUR (4) NEIGHBORS
      * 
      * The four neighbors can be either in the same plane (3 options) or
      * positioned with two along an axis and two in the plane normal (3 axis
@@ -1558,7 +1558,7 @@ public class Potts3DTest {
     }
     
     /* -------------------------------------------------------------------------
-     * CONNECTIVITY FOR FIVE (5) NEIGHBORS 
+     * CONNECTIVITY FOR FIVE (5) NEIGHBORS
      * 
      * The five neighbors are positioned such that only one face is missing a
      * neighbor (6 options).
@@ -1846,7 +1846,7 @@ public class Potts3DTest {
     }
     
     /* -------------------------------------------------------------------------
-     * CONNECTIVITY FOR SIX (6) NEIGHBORS 
+     * CONNECTIVITY FOR SIX (6) NEIGHBORS
      * 
      * All six possible neighbor positions are occupied. The connectivity
      * depends on the ID of the voxel. Only ID = 0 is considered connected;

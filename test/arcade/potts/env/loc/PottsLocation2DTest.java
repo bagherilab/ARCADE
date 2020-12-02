@@ -31,8 +31,8 @@ public class PottsLocation2DTest {
          *     x     x x
          * 
          * Each list is a subset of the shape:
-         *
-         *  (A)         (B)         (C)        (A) + (C)   (B) + (C)   (A) + (B) 
+         * 
+         *  (A)         (B)         (C)        (A) + (C)   (B) + (C)   (A) + (B)
          *  x x . .     . . x x     . . . .     x x . .     . . x x     x x x x
          *  x   . .     .   . x     .   x .     x   x .     .   x x     x   . x
          *  x     . .   .     . .   .     x x   x     x x   .     x x   x     .

@@ -151,7 +151,7 @@ public class GUI implements ActionListener {
         switch (cmd) {
             case "SELECT":
                 xml = getFile();
-                if (xml == null) { 
+                if (xml == null) {
                     fileField.setText("No input file selected");
                     runButton.setEnabled(false);
                     visCheck.setEnabled(false);
@@ -290,7 +290,7 @@ public class GUI implements ActionListener {
         JCheckBox checkBox = new JCheckBox(text);
         container.add(checkBox);
         return checkBox;
-    } 
+    }
     
     /**
      * Adds a text area to the container.

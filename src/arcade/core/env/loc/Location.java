@@ -21,7 +21,7 @@ public interface Location {
     
     /**
      * Gets the volume of the location.
-     *
+     * 
      * @return  the location volume (in voxels)
      */
     int getVolume();
@@ -36,7 +36,7 @@ public interface Location {
     
     /**
      * Gets the surface area of the location.
-     *
+     * 
      * @return  the location surface area (in voxels)
      */
     int getSurface();

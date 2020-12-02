@@ -49,7 +49,7 @@ public final class PottsEnums {
         
         /**
          * Randomly selects a {@code Phase}.
-         *
+         * 
          * @param rng  the random number generator
          * @return  a random {@code Phase}
          */
@@ -90,7 +90,7 @@ public final class PottsEnums {
         
         /**
          * Randomly selects a {@code Direction}.
-         *
+         * 
          * @param rng  the random number generator
          * @return  a random {@code Direction}
          */

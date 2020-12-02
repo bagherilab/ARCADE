@@ -574,7 +574,7 @@ public class PottsLocationsTest {
         regions.put(Region.NUCLEUS, new ArrayList<>());
         for (int i = 0; i < 2*N; i++) {
             for (int j = 0; j < 2*N; j++) {
-                if ((i + j)%2 == 0) { 
+                if ((i + j)%2 == 0) {
                     location.assign(Region.NUCLEUS, new Voxel(i, j, 0));
                     regions.get(Region.NUCLEUS).add(new Voxel(i, j, 0));
                 } else {

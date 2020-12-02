@@ -78,7 +78,7 @@ public abstract class OutputSaver implements Steppable {
     
     /**
      * Steps through cell rules.
-     *
+     * 
      * @param simstate  the MASON simulation state
      */
     public void step(SimState simstate) {

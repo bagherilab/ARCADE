@@ -40,14 +40,14 @@ public interface Lattice {
     
     /**
      * Gets the width of the lattice (y direction).
-     *
+     * 
      * @return  the width of the lattice
      */
     int getWidth();
     
     /**
      * Gets the depth of the lattice (z direction).
-     *
+     * 
      * @return  the depth of the lattice
      */
     int getDepth();
@@ -123,7 +123,7 @@ public interface Lattice {
     Component getComponent(String key);
     
     /**
-     * Sets the {@link arcade.core.env.comp.Component} with the given name 
+     * Sets the {@link arcade.core.env.comp.Component} with the given name
      * 
      * @param key  the component name
      * @param comp  the component instance
@@ -131,7 +131,7 @@ public interface Lattice {
     void setComponent(String key, Component comp);
     
     /**
-     * Adds a component to the lattice. 
+     * Adds a component to the lattice.
      * 
      * @param sim  the simulation instance
      * @param type  the component type
@@ -141,7 +141,7 @@ public interface Lattice {
     
     /**
      * Represents object as a JSON entry.
-     *
+     * 
      * @param locs  the lattice coordinates
      * @return  the JSON string
      */

@@ -12,7 +12,7 @@ public interface CellFactory {
     
     /**
      * Loads cell containers into the factory container.
-     *
+     * 
      * @param series  the simulation series
      */
     void loadCells(Series series);

@@ -54,7 +54,7 @@ public interface Simulation {
     
     /**
      * Gets the next available ID in the simulation.
-     *
+     * 
      * @return  the id
      */
     int getID();
@@ -75,7 +75,7 @@ public interface Simulation {
     
     /**
      * Gets the {@link arcade.core.env.grid.Grid} object.
-     *
+     * 
      * @return  the {@link arcade.core.env.grid.Grid} object
      */
     Grid getGrid();

@@ -23,7 +23,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Creates a {@code PottsLocation} for a list of voxels.
-     *
+     * 
      * @param voxels  the list of voxels
      */
     public PottsLocation(ArrayList<Voxel> voxels) {
@@ -176,7 +176,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets the x coordinate of the voxel at the center of the location.
-     *
+     * 
      * @return  the x coordinate
      */
     int getCenterX() {
@@ -187,7 +187,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets the y coordinate of the voxel at the center of the location.
-     *
+     * 
      * @return  the y coordinate
      */
     int getCenterY() {
@@ -198,7 +198,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets the z coordinate of the voxel at the center of the location.
-     *
+     * 
      * @return  the z coordinate
      */
     int getCenterZ() {
@@ -209,7 +209,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Makes a new {@code PottsLocation} with the given voxels.
-     *
+     * 
      * @param voxels  the list of voxels
      * @return  a new {@code PottsLocation}
      */
@@ -225,14 +225,14 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Calculates surface of location.
-     *
+     * 
      * @return  the surface
      */
     abstract int calculateSurface();
     
     /**
      * Calculates the local change in surface of the location.
-     *
+     * 
      * @param voxel  the voxel the update is centered in
      * @return  the change in surface
      */
@@ -240,7 +240,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets list of neighbors of a given voxel.
-     *
+     * 
      * @param voxel  the voxel
      * @return  the list of neighbor voxels
      */
@@ -308,7 +308,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Separates the voxels in the list between this location and a new location.
-     *
+     * 
      * @param voxelsA  the list of voxels for this location
      * @param voxelsB  the list of voxels for the split location
      * @param random  the seeded random number generator
@@ -455,7 +455,7 @@ public abstract class PottsLocation implements Location {
      * For small split sizes, there may not be a valid split that is both
      * connected and within the difference; in these cases, connectedness is
      * prioritized and the splits are returned not balanced.
-     *
+     * 
      * @param voxelsA  the list for the first half of the split
      * @param voxelsB  the list for the second half of the split
      * @param random  the seeded random number generator
@@ -537,7 +537,7 @@ public abstract class PottsLocation implements Location {
      * Some voxel lists may have more than one unconnected section.
      * 
      * @param voxels  the list of voxels
-     * @param random  the seeded random number generator 
+     * @param random  the seeded random number generator
      * @param update  {@code true} if the voxel list should be updated, {@code false} otherwise
      * @return  a list of unconnected voxels, {@code null} if the list is connected
      */
@@ -579,7 +579,7 @@ public abstract class PottsLocation implements Location {
         }
         
         // If not all coordinates have been visited, then the list of
-        // coordinates is not connected. 
+        // coordinates is not connected.
         if (unvisited.size() != 0) {
             if (unvisited.size() > visited.size()) {
                 if (update) { voxels.removeAll(visited); }

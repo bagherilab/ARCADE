@@ -37,7 +37,7 @@ public abstract class PottsDrawer extends Drawer {
         super(panel, name, length, width, depth, map, bounds);
     }
     
-    PottsDrawer(Panel panel, String name, 
+    PottsDrawer(Panel panel, String name,
             int length, int width, int depth, Rectangle2D.Double bounds) {
         super(panel, name, length, width, depth, null, bounds);
     }

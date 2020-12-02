@@ -200,7 +200,7 @@ public class Box {
     
     /**
      * Compares two {@code Box} instances.
-     *
+     * 
      * @param box  the {@code Box} to compare to
      * @return  {@code true} if both boxes have the same entries, {@code false} otherwise
      */
@@ -210,7 +210,7 @@ public class Box {
     
     /**
      * Formats the {@code Box} as a string.
-     *
+     * 
      * @return  the string
      */
     public String toString() {

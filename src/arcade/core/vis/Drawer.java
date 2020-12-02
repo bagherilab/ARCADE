@@ -10,7 +10,7 @@ import sim.util.gui.ColorMap;
 /**
  * Visualization for simulation objects.
  * <p>
- * {@code Drawer} objects convert simulation objects into 
+ * {@code Drawer} objects convert simulation objects into
  * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> Portrayals,
  * which can then be displayed.
  */

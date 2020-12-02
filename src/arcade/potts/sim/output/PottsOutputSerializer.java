@@ -94,7 +94,7 @@ public final class PottsOutputSerializer {
                 obj.add("voxels", array);
                 
                 location.add(obj);
-            } 
+            }
             else {
                 for (Region region : src.regions.keySet()) {
                     JsonObject obj = new JsonObject();

@@ -127,7 +127,7 @@ public abstract class Panel {
         
         /**
          * Creates a {@link arcade.core.vis.Panel} for 3D display.
-         *
+         * 
          * @param title  the title of the panel
          * @param x  the x position of the panel in pixels
          * @param y  the y position of the panel in pixels

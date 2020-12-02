@@ -199,7 +199,7 @@ public class Potts2D extends Potts {
         HashSet<Integer> unique = new HashSet<>();
         
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            int neighborID = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]]; 
+            int neighborID = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
             int neighborRegion = REGIONS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
             
             if (neighborID != id) { continue; }
