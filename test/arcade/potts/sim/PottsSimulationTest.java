@@ -9,9 +9,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
 import sim.engine.Schedule;
+import sim.util.Bag;
 import arcade.core.sim.Series;
 import arcade.core.agent.cell.*;
 import arcade.core.env.loc.*;
+import arcade.core.env.grid.Grid;
 import arcade.core.util.MiniBox;
 import arcade.core.sim.output.OutputSaver;
 import arcade.core.agent.cell.CellContainer;
@@ -26,6 +28,7 @@ import arcade.potts.env.loc.PottsLocationContainer;
 import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.core.sim.Series.SEED_OFFSET;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
+import static arcade.core.TestUtilities.*;
 
 public class PottsSimulationTest {
 	static final long RANDOM_SEED = (long)(Math.random()*1000);
@@ -264,6 +267,56 @@ public class PottsSimulationTest {
 		assertEquals(1, sim.getID());
 		sim.start();
 		assertEquals(1, sim.getID());
+	}
+	
+	@Test
+	public void getCells_givenList_returnsContainers() {
+		PottsSimulation sim = mock(PottsSimulation.class, CALLS_REAL_METHODS);
+		sim.grid = mock(Grid.class);
+		
+		Bag objects = new Bag();
+		ArrayList<CellContainer> cellContainers = new ArrayList<>();
+		doReturn(objects).when(sim.grid).getAllObjects();
+		
+		int N = randomIntBetween(5, 10);
+		for (int i = 0; i < N; i++) {
+			Cell cell = mock(Cell.class);
+			CellContainer cellContainer = mock(CellContainer.class);
+			doReturn(i).when(cell).getID();
+			doReturn(cellContainer).when(cell).convert();
+			
+			objects.add(cell);
+			cellContainers.add(cellContainer);
+		}
+		
+		assertEquals(cellContainers, sim.getCells());
+	}
+	
+	@Test
+	public void getLocations_givenList_returnsContainers() {
+		PottsSimulation sim = mock(PottsSimulation.class, CALLS_REAL_METHODS);
+		sim.grid = mock(Grid.class);
+		
+		Bag objects = new Bag();
+		ArrayList<LocationContainer> locationContainers = new ArrayList<>();
+		
+		doReturn(objects).when(sim.grid).getAllObjects();
+		
+		int N = randomIntBetween(5, 10);
+		for (int i = 0; i < N; i++) {
+			Cell cell = mock(Cell.class);
+			Location location = mock(Location.class);
+			LocationContainer locationContainer = mock(LocationContainer.class);
+			
+			doReturn(i).when(cell).getID();
+			doReturn(location).when(cell).getLocation();
+			doReturn(locationContainer).when(location).convert(i);
+			
+			objects.add(cell);
+			locationContainers.add(locationContainer);
+		}
+		
+		assertEquals(locationContainers, sim.getLocations());
 	}
 	
 	@Test

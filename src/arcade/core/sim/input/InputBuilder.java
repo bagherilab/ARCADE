@@ -58,7 +58,7 @@ public abstract class InputBuilder implements ContentHandler {
 	/** Container for default parameter values */
 	public Box parameters;
 	
-	/** {@code true} if run with visualization, {@code false otherwise} */
+	/** {@code true} if run with visualization, {@code false} otherwise */
 	protected boolean isVis;
 	
 	/**

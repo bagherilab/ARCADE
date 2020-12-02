@@ -83,13 +83,13 @@ public class InputParser {
 		// Create a Command object for each entry.
 		for (String id : options.getKeys()) {
 			// Create appropriate command type object.
-			int type = -1;
-			switch(options.getTag(id)) {
-				case "POSITION": type = POSITION; break;
-				case "OPTION": type = OPTION; break;
-				case "SWITCH": type = SWITCH; break;
+			Command cmd;
+			switch (options.getTag(id)) {
+				case "POSITION": cmd = new Command(id, POSITION); break;
+				case "OPTION": cmd = new Command(id, OPTION); break;
+				case "SWITCH": cmd = new Command(id, SWITCH); break;
+				default: continue;
 			}
-			Command cmd = new Command(id, type);
 			
 			// Modify selected attributes.
 			MiniBox atts = options.getAttValForId(id);
@@ -99,13 +99,15 @@ public class InputParser {
 				switch (att) {
 					case "help": cmd.help = val; break;
 					case "default":
-						if (type != POSITION && type != SWITCH) { cmd.defaults = val; }
+						if (cmd.type != POSITION && cmd.type != SWITCH) { cmd.defaults = val; }
 						break;
 					case "short":
-						if (type != POSITION) { cmd.shortFlag = val; }
+						if (cmd.type != POSITION) { cmd.shortFlag = val; }
 						break;
 					case "long":
-						if (type != POSITION) { cmd.longFlag = val; }
+						if (cmd.type != POSITION) { cmd.longFlag = val; }
+						break;
+					default:
 						break;
 				}
 			}

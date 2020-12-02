@@ -22,6 +22,19 @@ public class InputParserTest {
 	}
 	
 	@Test
+	public void constructor_invalidTag_skipsTag() {
+		Box box = new Box();
+		box.addTag(COMMAND_ID_1, "INVALID");
+		
+		InputParser parser = new InputParser(box);
+		
+		assertEquals(0, parser.allCommands.size());
+		assertEquals(0, parser.positionCommands.size());
+		assertEquals(0, parser.shortToCommand.size());
+		assertEquals(0, parser.longToCommand.size());
+	}
+	
+	@Test
 	public void constructor_emptyTags_addsCommands() {
 		Box box = new Box();
 		box.addTag(COMMAND_ID_1, "POSITION");
@@ -52,6 +65,23 @@ public class InputParserTest {
 		assertEquals(2, parser.allCommands.size());
 		assertEquals(0, parser.positionCommands.size());
 		assertEquals(1, parser.shortToCommand.size());
+		assertEquals(1, parser.longToCommand.size());
+	}
+	
+	@Test
+	public void constructor_invalidFlag_skipsFlag() {
+		String longFlag = randomString();
+		String invalidFlag = randomString();
+		
+		Box box = new Box();
+		box.addTag(COMMAND_ID_1, "OPTION");
+		box.addAtt(COMMAND_ID_1, "long", longFlag);
+		box.addAtt(COMMAND_ID_1, "invalid", invalidFlag);
+		InputParser parser = new InputParser(box);
+		
+		assertEquals(1, parser.allCommands.size());
+		assertEquals(0, parser.positionCommands.size());
+		assertEquals(0, parser.shortToCommand.size());
 		assertEquals(1, parser.longToCommand.size());
 	}
 	

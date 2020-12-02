@@ -117,4 +117,77 @@ public class InputBuilderTest {
 		
 		assertTrue(expected.compare(box));
 	}
+	
+	@Test
+	public void startPrefixMapping_called_doesNothing() {
+		InputBuilder builder = new InputBuilderMock();
+		
+		String prefix = randomString();
+		String uri = randomString();
+		builder.startPrefixMapping(prefix, uri);
+		
+		assertNull(builder.setupDicts);
+		assertNull(builder.setupLists);
+	}
+	
+	@Test
+	public void endPrefixMapping_called_doesNothing() {
+		InputBuilder builder = new InputBuilderMock();
+		
+		String prefix = randomString();
+		String uri = randomString();
+		builder.endPrefixMapping(prefix);
+		
+		assertNull(builder.setupDicts);
+		assertNull(builder.setupLists);
+	}
+	
+	@Test
+	public void skippedEntity_called_doesNothing() {
+		InputBuilder builder = new InputBuilderMock();
+		
+		String name = randomString();
+		builder.skippedEntity(name);
+		
+		assertNull(builder.setupDicts);
+		assertNull(builder.setupLists);
+	}
+	
+	@Test
+	public void characters_called_doesNothing() {
+		InputBuilder builder = new InputBuilderMock();
+		
+		int start = randomIntBetween(1, 10);
+		int length = randomIntBetween(1, 10);
+		char[] ch = new char[start + length];
+		builder.characters(ch, start, length);
+		
+		assertNull(builder.setupDicts);
+		assertNull(builder.setupLists);
+	}
+	
+	@Test
+	public void ignorableWhitespace_called_doesNothing() {
+		InputBuilder builder = new InputBuilderMock();
+		
+		int start = randomIntBetween(1, 10);
+		int length = randomIntBetween(1, 10);
+		char[] ch = new char[start + length];
+		builder.ignorableWhitespace(ch, start, length);
+		
+		assertNull(builder.setupDicts);
+		assertNull(builder.setupLists);
+	}
+	
+	@Test
+	public void processingInstruction_called_doesNothing() {
+		InputBuilder builder = new InputBuilderMock();
+		
+		String target = randomString();
+		String data = randomString();
+		builder.processingInstruction(target, data);
+		
+		assertNull(builder.setupDicts);
+		assertNull(builder.setupLists);
+	}
 }
