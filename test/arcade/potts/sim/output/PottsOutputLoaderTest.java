@@ -10,7 +10,7 @@ public class PottsOutputLoaderTest {
     @Test
     public void makeGSON_called_returnsObjects() {
         Series series = mock(Series.class);
-        PottsOutputLoader loader = new PottsOutputLoader(series, "", false, false);
+        PottsOutputLoader loader = new PottsOutputLoader(series);
         Gson gson = loader.makeGSON();
         OutputDeserializerTest.checkAdaptors(gson);
         PottsOutputDeserializerTest.checkAdaptors(gson);

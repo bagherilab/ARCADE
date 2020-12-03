@@ -10,9 +10,7 @@ public class PottsOutputLoader extends OutputLoader {
      * 
      * @param series  the simulation series
      */
-    public PottsOutputLoader(Series series, String prefix, boolean loadCells, boolean loadLocations) {
-        super(series, prefix, loadCells, loadLocations);
-    }
+    public PottsOutputLoader(Series series) { super(series); }
     
     protected Gson makeGSON() { return PottsOutputDeserializer.makeGSON(); }
 }

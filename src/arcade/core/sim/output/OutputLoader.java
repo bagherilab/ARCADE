@@ -21,7 +21,13 @@ public abstract class OutputLoader {
     final Series series;
     
     /** Prefix for loaded files */
-    final String prefix;
+    public String prefix;
+    
+    /** {@code true} if cells are loaded, {@code false} otherwise */
+    public boolean loadCells;
+    
+    /** {@code true} if locations are loaded, {@code false} otherwise */
+    public boolean loadLocations;
     
     /** JSON for cells */
     String cellJson;
@@ -29,22 +35,13 @@ public abstract class OutputLoader {
     /** JSON for locations */
     String locationJson;
     
-    /** {@code true} if cells are loaded, {@code false} otherwise */
-    final public boolean loadCells;
-    
-    /** {@code true} if locations are loaded, {@code false} otherwise */
-    final public boolean loadLocations;
-    
     /**
      * Creates an {@code OutputLoader} for the series.
      * 
      * @param series  the simulation series
      */
-    public OutputLoader(Series series, String prefix, boolean loadCells, boolean loadLocations) {
+    public OutputLoader(Series series) {
         this.series = series;
-        this.prefix = prefix;
-        this.loadCells = loadCells;
-        this.loadLocations = loadLocations;
         this.gson = makeGSON();
     }
     
