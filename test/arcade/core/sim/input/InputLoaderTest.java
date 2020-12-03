@@ -39,6 +39,18 @@ public class InputLoaderTest {
     }
     
     @Test
+    public void load_validInputGivenBox_usesBox() throws IOException, SAXException {
+        File file = folder.newFile("load_validInput_createsBox.xml");
+        write(file, "<tag></tag>");
+        
+        InputLoader loader = new InputLoader();
+        Box box = new Box();
+        loader.load(file.getAbsolutePath(), box);
+        assertNotNull(loader.box);
+        assertSame(box, loader.box);
+    }
+    
+    @Test
     public void load_validInputNoContents_loadsBox() throws IOException, SAXException {
         File file = folder.newFile("load_validInputNoContents_loadsBox.xml");
         write(file, "<tag></tag>");
@@ -46,6 +58,19 @@ public class InputLoaderTest {
         InputLoader loader = new InputLoader();
         Box box = loader.load(file.getAbsolutePath());
         
+        assertTrue(box.compare(new Box()));
+    }
+    
+    @Test
+    public void load_validInputNoContentsGivenBox_updatesBox() throws IOException, SAXException {
+        File file = folder.newFile("load_validInputNoContentsGivenBox_updatesBox.xml");
+        write(file, "<tag></tag>");
+        
+        InputLoader loader = new InputLoader();
+        Box box = new Box();
+        Box updated = loader.load(file.getAbsolutePath(), box);
+        
+        assertSame(updated, box);
         assertTrue(box.compare(new Box()));
     }
     
@@ -71,11 +96,42 @@ public class InputLoaderTest {
         assertTrue(box.compare(expected));
     }
     
+    @Test
+    public void load_validInputWithContentsGivenBox_updatesBox() throws IOException, SAXException {
+        File file = folder.newFile("load_validInputWithContents_loadsBox.xml");
+        write(file, "<tag>" +
+                "<tag1 id=\"id1\" att1=\"value11\" att2=\"value12\" />" +
+                "<tag2 id=\"id2\" att1=\"value21\" att2=\"value22\" />" +
+                "</tag>");
+        
+        InputLoader loader = new InputLoader();
+        Box box = new Box();
+        Box updated = loader.load(file.getAbsolutePath(), box);
+        
+        Box expected = new Box();
+        expected.addAtt("id1", "att1", "value11");
+        expected.addAtt("id1", "att2", "value12");
+        expected.addAtt("id2", "att1", "value21");
+        expected.addAtt("id2", "att2", "value22");
+        expected.addTag("id1", "TAG1");
+        expected.addTag("id2", "TAG2");
+    
+        assertSame(updated, box);
+        assertTrue(box.compare(expected));
+    }
+    
     @Test(expected = SAXException.class)
     public void load_invalid_throwsException() throws IOException, SAXException {
         File file = folder.newFile("load_invalid_throwsException.xml");
         InputLoader loader = new InputLoader();
         loader.load(file.getAbsolutePath());
+    }
+    
+    @Test(expected = SAXException.class)
+    public void load_invalidGivenBox_throwsException() throws IOException, SAXException {
+        File file = folder.newFile("load_invalid_throwsException.xml");
+        InputLoader loader = new InputLoader();
+        loader.load(file.getAbsolutePath(), new Box());
     }
     
     @Test

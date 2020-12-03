@@ -48,7 +48,19 @@ public class InputLoader extends DefaultHandler {
      * @return  the box containing the parsed XML
      */
     public Box load(String xml) throws IOException, SAXException {
-        box = new Box();
+        this.box = new Box();
+        return load(xml, box);
+    }
+    
+    /**
+     * Loads the given XML file into given {@link arcade.core.util.Box}.
+     * 
+     * @param xml  the XML file
+     * @param box  the box to load into
+     * @return  the box containing the parsed XML
+     */
+    public Box load(String xml, Box box) throws IOException, SAXException {
+        this.box = box;
         LOGGER.config("loading XML file [ " + xml + " ]");
         xmlReader.parse(xml);
         LOGGER.config("successfully loaded XML file [ " + xml + " ]\n\n" + box.toString());
