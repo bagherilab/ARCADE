@@ -119,9 +119,9 @@ public class PottsCellFactory implements CellFactory {
             }
             
             for (int i = 0; i < n; i++) {
-                PottsCellContainer cellContainer = new PottsCellContainer(id, pop, voxels, regionVoxels);
-                cells.put(id, cellContainer);
-                popToIDs.get(cellContainer.pop).add(cellContainer.id);
+                PottsCellContainer cont = new PottsCellContainer(id, pop, voxels, regionVoxels);
+                cells.put(id, cont);
+                popToIDs.get(cont.pop).add(cont.id);
                 id++;
             }
         }
@@ -167,14 +167,15 @@ public class PottsCellFactory implements CellFactory {
             // Get regions (if they exist).
             MiniBox regionBox = population.filter("(REGION)");
             ArrayList<String> regionKeys = regionBox.getKeys();
+            
             if (regionKeys.size() > 0) {
                 popToRegions.put(pop, true);
-                EnumMap<Region, EnumMap<Term, Double>> criticalsRegion = new EnumMap<>(Region.class);
-                EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = new EnumMap<>(Region.class);
-                EnumMap<Region, EnumMap<Region, Double>> adhesionsRegion = new EnumMap<>(Region.class);
+                EnumMap<Region, EnumMap<Term, Double>> criticalsReg = new EnumMap<>(Region.class);
+                EnumMap<Region, EnumMap<Term, Double>> lambdasReg = new EnumMap<>(Region.class);
+                EnumMap<Region, EnumMap<Region, Double>> adhesionsReg = new EnumMap<>(Region.class);
                 
                 for (String regionKey : regionKeys) {
-                    MiniBox populationRegion = population.filter(regionKey);
+                    MiniBox popRegion = population.filter(regionKey);
                     Region region = Region.valueOf(regionKey);
                     
                     // Iterate through terms to get critical and lambda values for region.
@@ -182,26 +183,28 @@ public class PottsCellFactory implements CellFactory {
                     EnumMap<Term, Double> lambdaRegionTerms = new EnumMap<>(Term.class);
                     
                     for (Term term : Term.values()) {
-                        criticalRegionTerms.put(term, populationRegion.getDouble("CRITICAL_" + term.name()));
-                        lambdaRegionTerms.put(term, populationRegion.getDouble("LAMBDA_" + term.name()));
+                        String name = term.name();
+                        criticalRegionTerms.put(term, popRegion.getDouble("CRITICAL_" + name));
+                        lambdaRegionTerms.put(term, popRegion.getDouble("LAMBDA_" + name));
                     }
                     
-                    criticalsRegion.put(region, criticalRegionTerms);
-                    lambdasRegion.put(region, lambdaRegionTerms);
+                    criticalsReg.put(region, criticalRegionTerms);
+                    lambdasReg.put(region, lambdaRegionTerms);
                     
                     // Iterate through regions to get adhesion values.
                     EnumMap<Region, Double> adhesionRegionValues = new EnumMap<>(Region.class);
                     
                     for (String targetKey : regionKeys) {
-                        adhesionRegionValues.put(Region.valueOf(targetKey), populationRegion.getDouble("ADHESION" + TARGET_SEPARATOR + targetKey));
+                        adhesionRegionValues.put(Region.valueOf(targetKey),
+                                popRegion.getDouble("ADHESION" + TARGET_SEPARATOR + targetKey));
                     }
                     
-                    adhesionsRegion.put(region, adhesionRegionValues);
+                    adhesionsReg.put(region, adhesionRegionValues);
                 }
                 
-                popToRegionCriticals.put(pop, criticalsRegion);
-                popToRegionLambdas.put(pop, lambdasRegion);
-                popToRegionAdhesion.put(pop, adhesionsRegion);
+                popToRegionCriticals.put(pop, criticalsReg);
+                popToRegionLambdas.put(pop, lambdasReg);
+                popToRegionAdhesion.put(pop, adhesionsReg);
             }
         }
     }

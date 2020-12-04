@@ -15,15 +15,17 @@ import static arcade.potts.util.PottsEnums.Phase;
 public final class PottsOutputDeserializer {
     static Gson makeGSON() {
         GsonBuilder gsonBuilder = OutputDeserializer.makeGSONBuilder();
-        gsonBuilder.registerTypeAdapter(PottsCellContainer.class, new PottsCellDeserializer());
-        gsonBuilder.registerTypeAdapter(PottsLocationContainer.class, new PottsLocationDeserializer());
+        gsonBuilder.registerTypeAdapter(PottsCellContainer.class,
+                new PottsCellDeserializer());
+        gsonBuilder.registerTypeAdapter(PottsLocationContainer.class,
+                new PottsLocationDeserializer());
         gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelDeserializer());
         return gsonBuilder.create();
     }
     
     static class PottsCellDeserializer implements JsonDeserializer<PottsCellContainer> {
         public PottsCellContainer deserialize(JsonElement json, Type typeOfT,
-                                    JsonDeserializationContext context) throws JsonParseException {
+                JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
             
             int id = jsonObject.get("id").getAsInt();
@@ -58,10 +60,15 @@ public final class PottsOutputDeserializer {
             }
             
             PottsCellContainer cell;
-            if (regions.size() == 0) { cell = new PottsCellContainer(id, pop, age, state, phase,
-                    voxels, targetVolume, targetSurface); }
-            else { cell = new PottsCellContainer(id, pop, age, state, phase,
-                    voxels, regions, targetVolume, targetSurface, targetRegionVolumes, targetRegionSurfaces); }
+            if (regions.size() == 0) {
+                cell = new PottsCellContainer(id, pop, age, state, phase,
+                        voxels, targetVolume, targetSurface);
+            }
+            else {
+                cell = new PottsCellContainer(id, pop, age, state, phase,
+                        voxels, regions, targetVolume, targetSurface,
+                        targetRegionVolumes, targetRegionSurfaces);
+            }
             
             return cell;
         }
@@ -69,7 +76,7 @@ public final class PottsOutputDeserializer {
     
     static class PottsLocationDeserializer implements JsonDeserializer<PottsLocationContainer> {
         public PottsLocationContainer deserialize(JsonElement json, Type typeOfT,
-                                       JsonDeserializationContext context) throws JsonParseException {
+                JsonDeserializationContext context) throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
             
             // Parse out id and center voxel.
@@ -98,15 +105,20 @@ public final class PottsOutputDeserializer {
             }
             
             PottsLocationContainer location;
-            if (jsonArray.size() == 1) { location = new PottsLocationContainer(id, center, allVoxels); }
-            else { location = new PottsLocationContainer(id, center, allVoxels, regions); }
+            if (jsonArray.size() == 1) {
+                location = new PottsLocationContainer(id, center, allVoxels);
+            }
+            else {
+                location = new PottsLocationContainer(id, center, allVoxels, regions);
+            }
             
             return location;
         }
     }
     
     static class VoxelDeserializer implements JsonDeserializer<Voxel> {
-        public Voxel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public Voxel deserialize(JsonElement json, Type typeOfT,
+                JsonDeserializationContext context) throws JsonParseException {
             JsonArray jsonArray = json.getAsJsonArray();
             int x = jsonArray.get(0).getAsInt();
             int y = jsonArray.get(1).getAsInt();

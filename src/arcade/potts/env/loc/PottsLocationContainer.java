@@ -64,17 +64,17 @@ public class PottsLocationContainer implements LocationContainer {
                 if (region != Region.NUCLEUS) { continue; }
                 
                 // Select region voxels.
-                int regionTarget = regionTargetMap.get(region);
-                ArrayList<Voxel> allRegionVoxels = regions.get(region);
-                ArrayList<Voxel> regionVoxels = factory.getSelected(allRegionVoxels, center, regionTarget);
+                int regTarget = regionTargetMap.get(region);
+                ArrayList<Voxel> allRegVoxels = regions.get(region);
+                ArrayList<Voxel> regVoxels = factory.getSelected(allRegVoxels, center, regTarget);
                 
                 // Add or remove region voxels to reach target number.
-                int regionSize = regionVoxels.size();
-                if (regionSize < regionTarget) { factory.increase(allRegionVoxels, regionVoxels, regionTarget); }
-                else if (regionSize > regionTarget) { factory.decrease(regionVoxels, regionTarget); }
+                int regSize = regVoxels.size();
+                if (regSize < regTarget) { factory.increase(allRegVoxels, regVoxels, regTarget); }
+                else if (regSize > regTarget) { factory.decrease(regVoxels, regTarget); }
                 
                 // Assign regions.
-                for (Voxel voxel : regionVoxels) { location.assign(region, voxel); }
+                for (Voxel voxel : regVoxels) { location.assign(region, voxel); }
             }
         } else {
             location = (is3D ? new PottsLocation3D(voxels) : new PottsLocation2D(voxels));

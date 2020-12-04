@@ -138,11 +138,12 @@ public abstract class OutputSaver implements Steppable {
      * @return  the formatted string
      */
     protected static String format(String string) {
+        String r1 = "\\[\\n[\\s\\t]+([\\d\\.]+),\\n[\\s\\t]+([\\d\\.]+)\\n\\s+\\]";
+        String r2 = "\\[\\n[\\s\\t]+([\\d\\.]+),\\n[\\s\\t]+([\\d\\.]+),"
+                + "\\n[\\s\\t]+([\\d\\.]+)\\n\\s+\\]";
         String formatted = string;
-        formatted = formatted.replaceAll("\\[\\n[\\s\\t]+([\\d\\.]+),\\n[\\s\\t]+([\\d\\.]+)\\n\\s+\\]",
-                "[$1, $2]");
-        formatted = formatted.replaceAll("\\[\\n[\\s\\t]+([\\d\\.]+),\\n[\\s\\t]+([\\d\\.]+),\\n[\\s\\t]+([\\d\\.]+)\\n\\s+\\]",
-                "[$1, $2, $3]");
+        formatted = formatted.replaceAll(r1, "[$1, $2]");
+        formatted = formatted.replaceAll(r2, "[$1, $2, $3]");
         return formatted;
     }
 }

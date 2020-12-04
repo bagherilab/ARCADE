@@ -97,7 +97,8 @@ public abstract class PottsDrawer extends Drawer {
         }
     }
     
-    private static void add(Continuous2D field, Network graph, int weight, int x1, int y1, int x2, int y2) {
+    private static void add(Continuous2D field, Network graph, int weight,
+                            int x1, int y1, int x2, int y2) {
         Double2D a = new Double2D(x1, y1);
         Double2D b = new Double2D(x2, y2);
         field.setObjectLocation(a, a);
@@ -218,7 +219,8 @@ public abstract class PottsDrawer extends Drawer {
                             _to[a][b] = cell == null ? 0 : cell.getPop();
                             break;
                         case DRAW_STATE:
-                            _to[a][b] = cell == null ? 0 : ((PottsModule)cell.getModule()).getPhase().ordinal();
+                            _to[a][b] = cell == null ? 0 :
+                                    ((PottsModule)cell.getModule()).getPhase().ordinal();
                             break;
                         case DRAW_VOLUME:
                             _to[a][b] = cell == null ? 0 : cell.getVolume();
@@ -277,9 +279,10 @@ public abstract class PottsDrawer extends Drawer {
                 }
             }
             else if (CODE == DRAW_NUCLEUS) {
+                int nucleus = Region.NUCLEUS.ordinal();
                 for (int a = 0; a < A; a++) {
                     for (int b = 0; b < B; b++) {
-                        if (HEIGHT == 1) { _to[a][b] = (regions[a][b] == Region.NUCLEUS.ordinal() ? 0.75 : 0); }
+                        if (HEIGHT == 1) { _to[a][b] = (regions[a][b] == nucleus ? 0.75 : 0); }
                         else {
                             _to[a][b] = 0;
                             for (int c = 0; c < C; c++) {
@@ -305,20 +308,20 @@ public abstract class PottsDrawer extends Drawer {
                                 switch (PLANE) {
                                     case PLANE_X:
                                         if (id != 0 && c > 0 && c < C - 1
-                                                && potts.REGIONS[a][c + 1][b] == Region.NUCLEUS.ordinal()
-                                                && potts.REGIONS[a][c - 1][b] == Region.NUCLEUS.ordinal()
+                                                && potts.REGIONS[a][c + 1][b] == nucleus
+                                                && potts.REGIONS[a][c - 1][b] == nucleus
                                         ) { _to[a][b] -= 1./C; }
                                         break;
                                     case PLANE_Y:
                                         if (id != 0 && c > 0 && c < C - 1
-                                                && potts.REGIONS[b][a][c + 1] == Region.NUCLEUS.ordinal()
-                                                && potts.REGIONS[b][a][c - 1] == Region.NUCLEUS.ordinal()
+                                                && potts.REGIONS[b][a][c + 1] == nucleus
+                                                && potts.REGIONS[b][a][c - 1] == nucleus
                                         ) { _to[a][b] -= 1./C; }
                                         break;
                                     default: case PLANE_Z:
                                         if (id != 0 && c > 0 && c < C - 1
-                                                && potts.REGIONS[c + 1][a][b] == Region.NUCLEUS.ordinal()
-                                                && potts.REGIONS[c - 1][a][b] == Region.NUCLEUS.ordinal()
+                                                && potts.REGIONS[c + 1][a][b] == nucleus
+                                                && potts.REGIONS[c - 1][a][b] == nucleus
                                         ) { _to[a][b] -= 1./C; }
                                 }
                             }
@@ -391,8 +394,12 @@ public abstract class PottsDrawer extends Drawer {
             
             for (int a = 0; a < A - 1; a++) {
                 for (int b = 0; b < B - 1; b++) {
-                    if (ids[a][b] != ids[a][b + 1]) { add(field, graph, 1, a, b + 1, a + 1, b + 1); }
-                    if (ids[a][b] != ids[a + 1][b]) { add(field, graph, 1, a + 1, b, a + 1, b + 1); }
+                    if (ids[a][b] != ids[a][b + 1]) {
+                        add(field, graph, 1, a, b + 1, a + 1, b + 1);
+                    }
+                    if (ids[a][b] != ids[a + 1][b]) {
+                        add(field, graph, 1, a + 1, b, a + 1, b + 1);
+                    }
                 }
             }
         }

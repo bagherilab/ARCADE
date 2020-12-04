@@ -81,19 +81,25 @@ public class Parameter implements Serializable {
      * @param mean  the mean of the new parameter
      * @return  a parameter instance with the new mean
      */
-    public Parameter update(double mean) { return new Parameter(mean, h, isFrac, random); }
+    public Parameter update(double mean) {
+        return new Parameter(mean, h, isFrac, random);
+    }
     
     /**
      * Draws a double from the bounded normal distribution.
      * 
      * @return  a double drawn from the distribution
      */
-    public double nextDouble() { return Math.max(Math.min(normal.nextDouble(), tails[0]), tails[1]); }
+    public double nextDouble() {
+        return Math.max(Math.min(normal.nextDouble(), tails[0]), tails[1]);
+    }
     
     /**
      * Draws a integer from the bounded normal distribution.
      * 
      * @return  an integer drawn from the distribution
      */
-    public int nextInt() { return (int)nextDouble(); }
+    public int nextInt() {
+        return (int)nextDouble();
+    }
 }

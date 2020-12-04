@@ -8,10 +8,10 @@ import static arcade.potts.vis.PottsColorMaps.*;
 
 public class PottsVisualization extends Visualization {
     /** Maximum horizontal size of panel */
-    static final int MAX_HORIZONTAL_SIZE = 600;
+    static final int MAX_HORIZONTAL = 600;
     
     /** Maximum vertical size of panel */
-    static final int MAX_VERTICAL_SIZE = 900;
+    static final int MAX_VERTICAL = 900;
     
     /** Length of the array (x direction) */
     final int LENGTH;
@@ -26,10 +26,10 @@ public class PottsVisualization extends Visualization {
     final PottsColorMaps maps;
     
     /** Horizontal size of the panels */
-    final int HORIZONTAL_SIZE;
+    final int HORIZONTAL;
     
     /** Vertical size of the panels */
-    final int VERTICAL_SIZE;
+    final int VERTICAL;
     
     public PottsVisualization(Simulation sim) {
         super((SimState)sim);
@@ -47,21 +47,21 @@ public class PottsVisualization extends Visualization {
         int horizontal, vertical;
         
         if (LENGTH != WIDTH) {
-            horizontal = MAX_HORIZONTAL_SIZE;
-            vertical = (int)Math.round((WIDTH + .0)/LENGTH*MAX_HORIZONTAL_SIZE);
+            horizontal = MAX_HORIZONTAL;
+            vertical = (int)Math.round((WIDTH + .0)/LENGTH*MAX_HORIZONTAL);
             
-            if (vertical > MAX_VERTICAL_SIZE) {
-                double frac = (MAX_VERTICAL_SIZE + .0)/vertical;
+            if (vertical > MAX_VERTICAL) {
+                double frac = (MAX_VERTICAL + .0)/vertical;
                 horizontal = (int)Math.round(horizontal * frac);
                 vertical = (int)Math.round(vertical * frac);
             }
         } else {
-            horizontal = MAX_HORIZONTAL_SIZE;
-            vertical = MAX_HORIZONTAL_SIZE;
+            horizontal = MAX_HORIZONTAL;
+            vertical = MAX_HORIZONTAL;
         }
-        
-        HORIZONTAL_SIZE = horizontal;
-        VERTICAL_SIZE = vertical;
+    
+        HORIZONTAL = horizontal;
+        VERTICAL = vertical;
     }
     
     public Drawer[] createDrawers() {
@@ -70,8 +70,8 @@ public class PottsVisualization extends Visualization {
     }
     
     Drawer[] create2DDrawers() {
-        int h = HORIZONTAL_SIZE/2;
-        int v = VERTICAL_SIZE/2;
+        int h = HORIZONTAL/2;
+        int v = VERTICAL/2;
         
         return new Drawer[] {
                 new PottsDrawer.PottsCells(panels[0], "agents:cytoplasm",
@@ -111,8 +111,8 @@ public class PottsVisualization extends Visualization {
     }
     
     Drawer[] create3DDrawers() {
-        int h = HORIZONTAL_SIZE/2;
-        int v = VERTICAL_SIZE/2;
+        int h = HORIZONTAL/2;
+        int v = VERTICAL/2;
         
         int hh = (int)Math.round((LENGTH + .0)/(LENGTH + HEIGHT)*h);
         int vv = (int)Math.round((WIDTH + .0)/(WIDTH + HEIGHT)*v);
@@ -220,8 +220,8 @@ public class PottsVisualization extends Visualization {
     
     public Panel[] createPanels() {
         return new Panel[]{
-                new Panel.Panel2D("POTTS", 100, 50, HORIZONTAL_SIZE, VERTICAL_SIZE, this),
-                new Panel.Panel2D("POTTS", HORIZONTAL_SIZE + 120, 50, HORIZONTAL_SIZE, VERTICAL_SIZE, this),
+                new Panel.Panel2D("POTTS", 100, 50, HORIZONTAL, VERTICAL, this),
+                new Panel.Panel2D("POTTS", HORIZONTAL + 120, 50, HORIZONTAL, VERTICAL, this),
         };
     }
 }

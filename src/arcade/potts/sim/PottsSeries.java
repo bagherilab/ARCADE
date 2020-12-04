@@ -25,9 +25,13 @@ public class PottsSeries extends Series {
         super(setupDicts, setupLists, parameters, isVis);
     }
     
-    protected String getSimClass() { return "arcade.potts.sim.PottsSimulation" + (_height > 1 ? "3D" : "2D"); }
+    protected String getSimClass() {
+        return "arcade.potts.sim.PottsSimulation" + (_height > 1 ? "3D" : "2D");
+    }
     
-    protected String getVisClass() { return "arcade.potts.vis.PottsVisualization"; }
+    protected String getVisClass() {
+        return "arcade.potts.vis.PottsVisualization";
+    }
     
     /**
      * Initializes series simulation, agents, and environment.
@@ -95,14 +99,17 @@ public class PottsSeries extends Series {
      * @param populationDefaults  the dictionary of default population parameters
      * @param populationConversions  the dictionary of population parameter conversions
      */
-    protected void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults, MiniBox populationConversions) {
+    protected void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults,
+                                     MiniBox populationConversions) {
         _populations = new HashMap<>();
         if (populations == null) { return; }
         
         // Get list of all populations (plus * indicating media).
         String[] pops = new String[populations.size() + 1];
         pops[0] = "*";
-        for (int i = 0; i < populations.size(); i++) { pops[i + 1] = populations.get(i).getValue("id"); }
+        for (int i = 0; i < populations.size(); i++) {
+            pops[i + 1] = populations.get(i).getValue("id");
+        }
         
         // Assign codes to each population.
         int code = 1;
@@ -146,7 +153,10 @@ public class PottsSeries extends Series {
             
             // Add region fraction, if valid.
             for (String region : regions.getKeys()) {
-                double regionFraction = (isValidFraction(regions, region + KEY_SEPARATOR + "fraction") ? regionFractions.getDouble(region) : 0);
+                String fraction = region + KEY_SEPARATOR + "fraction";
+                double regionFraction = (isValidFraction(regions, fraction)
+                        ? regionFractions.getDouble(region)
+                        : 0);
                 population.put("(REGION)" + TAG_SEPARATOR + region, regionFraction);
             }
             

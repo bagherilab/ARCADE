@@ -87,8 +87,8 @@ public abstract class PottsLocationFactory implements LocationFactory {
                 }
             }
             
-            PottsLocationContainer locationContainer = new PottsLocationContainer(id, center, voxels, regions);
-            locations.put(id, locationContainer);
+            PottsLocationContainer cont = new PottsLocationContainer(id, center, voxels, regions);
+            locations.put(id, cont);
             id++;
         }
     }
@@ -154,7 +154,9 @@ public abstract class PottsLocationFactory implements LocationFactory {
         for (Voxel voxel : voxels) {
             ArrayList<Voxel> allNeighbors = getNeighbors(voxel);
             for (Voxel neighbor : allNeighbors) {
-                if (allVoxels.contains(neighbor) && !voxels.contains(neighbor)) { neighbors.add(neighbor); }
+                if (allVoxels.contains(neighbor) && !voxels.contains(neighbor)) {
+                    neighbors.add(neighbor);
+                }
             }
         }
         

@@ -26,7 +26,8 @@ public final class OutputSerializer {
     }
     
     public static class MiniBoxSerializer implements JsonSerializer<MiniBox> {
-        public JsonElement serialize(MiniBox src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(MiniBox src, Type typeOfSrc,
+                                     JsonSerializationContext context) {
             JsonObject json = new JsonObject();
             
             for (String key : src.getKeys()) {
@@ -42,7 +43,8 @@ public final class OutputSerializer {
     }
     
     public static class SeriesSerializer implements JsonSerializer<Series> {
-        public JsonElement serialize(Series src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(Series src, Type typeOfSrc,
+                                     JsonSerializationContext context) {
             JsonObject json = new JsonObject();
             
             JsonObject seeds = new JsonObject();
@@ -77,8 +79,10 @@ public final class OutputSerializer {
         }
     }
     
-    public static class CellListSerializer implements JsonSerializer<ArrayList<CellContainer>> {
-        public JsonElement serialize(ArrayList<CellContainer> src, Type typeOfSrc, JsonSerializationContext context) {
+    public static class CellListSerializer
+            implements JsonSerializer<ArrayList<CellContainer>> {
+        public JsonElement serialize(ArrayList<CellContainer> src, Type typeOfSrc,
+                                     JsonSerializationContext context) {
             JsonArray json = new JsonArray();
             
             for (CellContainer cellContainer : src) {
@@ -90,12 +94,15 @@ public final class OutputSerializer {
         }
     }
     
-    public static class LocationListSerializer implements JsonSerializer<ArrayList<LocationContainer>> {
-        public JsonElement serialize(ArrayList<LocationContainer> src, Type typeOfSrc, JsonSerializationContext context) {
+    public static class LocationListSerializer
+            implements JsonSerializer<ArrayList<LocationContainer>> {
+        public JsonElement serialize(ArrayList<LocationContainer> src, Type typeOfSrc,
+                                     JsonSerializationContext context) {
             JsonArray json = new JsonArray();
             
             for (LocationContainer locationContainer : src) {
-                JsonElement location = context.serialize(locationContainer, LocationContainer.class);
+                JsonElement location = context.serialize(locationContainer,
+                        LocationContainer.class);
                 json.add(location);
             }
             

@@ -131,35 +131,49 @@ public class PottsCellTest {
     }
     
     public static class PottsCellMock extends PottsCell {
-        public PottsCellMock(int id, int pop, Location location, MiniBox parameters,
-                           EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion) {
-            super(id, pop, location, parameters, criticals, lambdas, adhesion);
+        public PottsCellMock(int id, int pop, Location location,
+                             MiniBox parameters, double[] adhesion,
+                             EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas) {
+            super(id, pop, location, parameters, adhesion, criticals, lambdas);
         }
         
-        public PottsCellMock(int id, int pop, Location location, MiniBox parameters,
-                           EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
-                           EnumMap<Region, EnumMap<Term, Double>> criticalsRegion, EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
-                           EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
-            super(id, pop, location, parameters, criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
+        public PottsCellMock(int id, int pop, Location location,
+                             MiniBox parameters, double[] adhesion,
+                             EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas,
+                             EnumMap<Region, EnumMap<Term, Double>> criticalsRegion,
+                             EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
+                             EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
+            super(id, pop, location, parameters, adhesion, criticals, lambdas,
+                    criticalsRegion, lambdasRegion, adhesionRegion);
         }
         
-        public PottsCellMock(int id, int pop, State state, int age, Location location, boolean regions, MiniBox parameters,
-                           EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
-                           EnumMap<Region, EnumMap<Term, Double>> criticalsRegion, EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
-                           EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
-            super(id, pop, state, age, location, regions, parameters, criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
+        public PottsCellMock(int id, int pop, State state, int age, Location location,
+                             boolean regions, MiniBox parameters, double[] adhesion,
+                             EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas,
+                             EnumMap<Region, EnumMap<Term, Double>> criticalsRegion,
+                             EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
+                             EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
+            super(id, pop, state, age, location, regions, parameters, adhesion,
+                    criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
         }
         
-        static PottsCellMock _make(int id, int pop, boolean regions) { return _make(id, pop, _location, regions); }
+        static PottsCellMock _make(int id, int pop, boolean regions) {
+            return _make(id, pop, _location, regions);
+        }
         
         static PottsCellMock _make(int id, int pop, Location location, boolean regions) {
-            if (!regions) { return new PottsCellMock(id, pop, location, _parameters, _criticals, _lambdas, _adhesion); }
-            else { return new PottsCellMock(id, pop, location, _parameters, _criticals, _lambdas, _adhesion, _criticalsRegion, _lambdasRegion, _adhesionRegion); }
+            if (!regions) { return new PottsCellMock(id, pop, location,
+                    _parameters, _adhesion, _criticals, _lambdas);
+            }
+            else { return new PottsCellMock(id, pop, location,
+                    _parameters, _adhesion, _criticals, _lambdas,
+                    _criticalsRegion, _lambdasRegion, _adhesionRegion);
+            }
         }
         
         public PottsCell make(int id, State state, Location location) {
             return new PottsCellMock(id, pop, state, 0, location, hasRegions, parameters,
-                    criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
+                    adhesion, criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
         }
     }
     
@@ -189,7 +203,7 @@ public class PottsCellTest {
     public void getState_valueAssigned_returnsValue() {
         State cellState = State.random(RANDOM);
         PottsCellMock cell = new PottsCellMock(cellID, 0, cellState, 0, _location, false, _parameters,
-                _criticals, _lambdas, _adhesion, null, null, null);
+                _adhesion, _criticals, _lambdas, null, null, null);
         assertEquals(cellState, cell.getState());
     }
     
@@ -202,7 +216,7 @@ public class PottsCellTest {
     public void getAge_valueAssigned_returnsValue() {
         int cellAge = (int)(Math.random() * 100);
         PottsCellMock cell = new PottsCellMock(cellID, 0, State.QUIESCENT, cellAge, _location, false, _parameters,
-                _criticals, _lambdas, _adhesion, null, null, null);
+                _adhesion, _criticals, _lambdas, null, null, null);
         assertEquals(cellAge, cell.getAge());
     }
     
@@ -646,7 +660,7 @@ public class PottsCellTest {
         Location location2 = mock(PottsLocation.class);
         
         PottsCell cell1 = new PottsCell(cellID, cellPop, location1, parameters,
-                criticals, lambdas, adhesion);
+                adhesion, criticals, lambdas);
         PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
         
         assertEquals(cellID + 1, cell2.id);
@@ -686,7 +700,7 @@ public class PottsCellTest {
         doReturn(allRegions).when(location2).getRegions();
         
         PottsCell cell1 = new PottsCell(cellID, cellPop, location1, parameters,
-                criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
+                adhesion, criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
         PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
         
         assertEquals(cellID + 1, cell2.id);
@@ -1203,8 +1217,8 @@ public class PottsCellTest {
                 randomDoubleBetween(0, 10)
         };
         
-        PottsCell cell = new PottsCell(cellID, cellPop, cellState, cellAge, location, false, parameters,
-                criticals, lambdas, adhesion, null, null, null);
+        PottsCell cell = new PottsCell(cellID, cellPop, cellState, cellAge, location, false, parameters, adhesion,
+                criticals, lambdas, null, null, null);
         ((PottsModule)cell.getModule()).setPhase(cellPhase);
         
         int voxels = randomIntBetween(1, 100);
@@ -1254,7 +1268,7 @@ public class PottsCellTest {
         EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = makeEnumMapTarget(regionList);
         
         PottsCell cell = new PottsCell(cellID, cellPop, cellState, cellAge, location, true, parameters,
-                criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
+                adhesion, criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
         ((PottsModule)cell.getModule()).setPhase(cellPhase);
         
         int voxels = randomIntBetween(1, 100);

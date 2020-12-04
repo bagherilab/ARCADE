@@ -19,21 +19,23 @@ public interface Location2D {
     static ArrayList<Voxel> getNeighbors(Voxel voxel) {
         ArrayList<Voxel> neighbors = new ArrayList<>();
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            neighbors.add(new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z));
+            Voxel v = new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z);
+            neighbors.add(v);
         }
         return neighbors;
     }
     
-    static double convertVolume(double volume) { return SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume); }
+    static double convertVolume(double volume) {
+        return SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume);
+    }
     
     static int calculateSurface(ArrayList<Voxel> voxels) {
         int surface = 0;
         
-        for (Voxel voxel : voxels) {
+        for (Voxel v : voxels) {
             for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-                if (!voxels.contains(new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z))) {
-                    surface++;
-                }
+                Voxel voxel = new Voxel(v.x + MOVES_X[i], v.y + MOVES_Y[i], v.z);
+                if (!voxels.contains(voxel)) { surface++; }
             }
         }
         
@@ -44,9 +46,9 @@ public interface Location2D {
         int change = 0;
         
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            if (!voxels.contains(new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z))) {
-                change++;
-            } else { change--; }
+            Voxel v = new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z);
+            if (!voxels.contains(v)) { change++; }
+            else { change--; }
         }
         
         return change;
@@ -123,7 +125,8 @@ public interface Location2D {
         
         // Select voxels within given radius.
         for (Voxel voxel : voxels) {
-            double d = Math.sqrt(Math.pow(focus.x - voxel.x, 2) + Math.pow(focus.y - voxel.y, 2));
+            double d = Math.sqrt(Math.pow(focus.x - voxel.x, 2)
+                    + Math.pow(focus.y - voxel.y, 2));
             if (d < r) { selected.add(voxel); }
         }
         

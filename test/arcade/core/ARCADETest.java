@@ -32,7 +32,7 @@ public class ARCADETest {
         public ARCADE_MOCK() { }
         
         protected String getResource(String s) {
-            return folder.getRoot().getAbsolutePath() + "/" + s; 
+            return folder.getRoot().getAbsolutePath() + "/" + s;
         }
         
         protected InputBuilder getBuilder() {

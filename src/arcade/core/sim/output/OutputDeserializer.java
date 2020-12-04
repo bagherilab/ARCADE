@@ -15,32 +15,34 @@ public final class OutputDeserializer {
         return gsonBuilder;
     }
     
-    public static class CellListDeserializer implements JsonDeserializer<ArrayList<CellContainer>> {
+    public static class CellListDeserializer
+            implements JsonDeserializer<ArrayList<CellContainer>> {
         public ArrayList<CellContainer> deserialize(JsonElement json, Type typeOfT,
-                                                JsonDeserializationContext context) throws JsonParseException {
+                JsonDeserializationContext context) throws JsonParseException {
             ArrayList<CellContainer> cells = new ArrayList<>();
             JsonArray jsonArray = json.getAsJsonArray();
             
             for (JsonElement element : jsonArray) {
                 JsonObject cell = element.getAsJsonObject();
-                CellContainer cellContainer = context.deserialize(cell, CellContainer.class);
-                cells.add(cellContainer);
+                CellContainer cont = context.deserialize(cell, CellContainer.class);
+                cells.add(cont);
             }
             
             return cells;
         }
     }
     
-    public static class LocationListDeserializer implements JsonDeserializer<ArrayList<LocationContainer>> {
+    public static class LocationListDeserializer
+            implements JsonDeserializer<ArrayList<LocationContainer>> {
         public ArrayList<LocationContainer> deserialize(JsonElement json, Type typeOfT,
-                                                    JsonDeserializationContext context) throws JsonParseException {
+                JsonDeserializationContext context) throws JsonParseException {
             ArrayList<LocationContainer> locations = new ArrayList<>();
             JsonArray jsonArray = json.getAsJsonArray();
             
             for (JsonElement element : jsonArray) {
                 JsonObject location = element.getAsJsonObject();
-                LocationContainer locationContainer = context.deserialize(location, LocationContainer.class);
-                locations.add(locationContainer);
+                LocationContainer cont = context.deserialize(location, LocationContainer.class);
+                locations.add(cont);
             }
             
             return locations;

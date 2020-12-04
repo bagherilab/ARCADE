@@ -16,15 +16,20 @@ import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 public final class PottsOutputSerializer {
     static Gson makeGSON() {
         GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();
-        gsonBuilder.registerTypeAdapter(PottsSeries.class, new PottsSeriesSerializer());
-        gsonBuilder.registerTypeAdapter(PottsCellContainer.class, new PottsCellSerializer());
-        gsonBuilder.registerTypeAdapter(PottsLocationContainer.class, new PottsLocationSerializer());
-        gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelSerializer());
+        gsonBuilder.registerTypeAdapter(PottsSeries.class,
+                new PottsSeriesSerializer());
+        gsonBuilder.registerTypeAdapter(PottsCellContainer.class,
+                new PottsCellSerializer());
+        gsonBuilder.registerTypeAdapter(PottsLocationContainer.class,
+                new PottsLocationSerializer());
+        gsonBuilder.registerTypeAdapter(Voxel.class,
+                new VoxelSerializer());
         return gsonBuilder.create();
     }
     
     static class PottsSeriesSerializer implements JsonSerializer<PottsSeries> {
-        public JsonElement serialize(PottsSeries src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(PottsSeries src, Type typeOfSrc,
+                                     JsonSerializationContext context) {
             JsonObject json = (JsonObject)context.serialize(src, Series.class);
             
             // Add potts parameters.
@@ -36,7 +41,8 @@ public final class PottsOutputSerializer {
     }
     
     static class PottsCellSerializer implements JsonSerializer<PottsCellContainer> {
-        public JsonElement serialize(PottsCellContainer src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(PottsCellContainer src, Type typeOfSrc,
+                                     JsonSerializationContext context) {
             JsonObject json = new JsonObject();
             
             json.addProperty("id", src.id);
@@ -74,7 +80,8 @@ public final class PottsOutputSerializer {
     }
     
     static class PottsLocationSerializer implements JsonSerializer<PottsLocationContainer> {
-        public JsonElement serialize(PottsLocationContainer src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(PottsLocationContainer src, Type typeOfSrc,
+                                     JsonSerializationContext context) {
             JsonObject json = new JsonObject();
             
             json.addProperty("id", src.id);
@@ -118,7 +125,8 @@ public final class PottsOutputSerializer {
     }
     
     static class VoxelSerializer implements JsonSerializer<Voxel> {
-        public JsonElement serialize(Voxel src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(Voxel src, Type typeOfSrc,
+                                     JsonSerializationContext context) {
             JsonArray json = new JsonArray();
             json.add(src.x);
             json.add(src.y);

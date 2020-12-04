@@ -38,7 +38,7 @@ import arcade.potts.PottsARCADE;
  * <ul>
  *     <li>{@code command.<imp>.xml} with custom command line parameters</li>
  *     <li>{@code parameter.<imp>.xml} with new default parameter values</li>
- *     <li>{@link InputBuilder}</li> for building implementation series from 
+ *     <li>{@link InputBuilder}</li> for building implementation series from
  *     the setup XML</li>
  *     <li>{@link OutputLoader}</li> for loading classes</li>
  *     <li>{@link OutputSaver}</li> for saving classes</li>
@@ -99,7 +99,8 @@ public abstract class ARCADE {
         LOGGER.info("loading framework command line parser from [ command.xml ]");
         Box commands = loader.load(ARCADE.class.getResource("command.xml").toString());
         
-        LOGGER.info("loading implementation [ " + this.getClass().getSimpleName() + " ] command line parser from [ command.xml ]");
+        LOGGER.info("loading implementation [ " + this.getClass().getSimpleName()
+                + " ] command line parser from [ command.xml ]");
         loader.load(this.getResource("command.xml"), commands);
         
         return commands;
@@ -111,7 +112,8 @@ public abstract class ARCADE {
         LOGGER.info("loading framework default parameters from [ parameter.xml ]");
         Box parameters = loader.load(ARCADE.class.getResource("parameter.xml").toString());
         
-        LOGGER.info("loading implementation [ " + this.getClass().getSimpleName() + " ] default parameters from [ parameter.xml ]");
+        LOGGER.info("loading implementation [ " + this.getClass().getSimpleName()
+                + " ] default parameters from [ parameter.xml ]");
         loader.load(this.getResource("parameter.xml"), parameters);
         
         return parameters;
@@ -124,7 +126,8 @@ public abstract class ARCADE {
         return parser.parse(args);
     }
     
-    ArrayList<Series> buildSeries(Box parameters, MiniBox settings) throws IOException, SAXException {
+    ArrayList<Series> buildSeries(Box parameters, MiniBox settings)
+            throws IOException, SAXException {
         String xml = settings.get("XML");
         boolean isVis = settings.contains("VIS");
         

@@ -53,7 +53,9 @@ public final class PottsEnums {
          * @param rng  the random number generator
          * @return  a random {@code Phase}
          */
-        public static Phase random(MersenneTwisterFast rng) { return values()[rng.nextInt(values().length - 1) + 1]; }
+        public static Phase random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
     }
     
     /** Location split directions */
@@ -94,6 +96,8 @@ public final class PottsEnums {
          * @param rng  the random number generator
          * @return  a random {@code Direction}
          */
-        public static Direction random(MersenneTwisterFast rng) { return values()[rng.nextInt(values().length - 1) + 1]; }
+        public static Direction random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
     }
 }

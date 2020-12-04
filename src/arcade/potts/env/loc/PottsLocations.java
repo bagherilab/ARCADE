@@ -31,9 +31,13 @@ public abstract class PottsLocations extends PottsLocation {
     
     public EnumSet<Region> getRegions() { return EnumSet.copyOf(locations.keySet()); }
     
-    public int getVolume(Region region) { return (locations.containsKey(region) ? locations.get(region).volume : 0); }
+    public int getVolume(Region region) {
+        return (locations.containsKey(region) ? locations.get(region).volume : 0);
+    }
     
-    public int getSurface(Region region) { return (locations.containsKey(region) ? locations.get(region).surface : 0); }
+    public int getSurface(Region region) {
+        return (locations.containsKey(region) ? locations.get(region).surface : 0);
+    }
     
     public void add(int x, int y, int z) {
         super.add(x, y, z);
@@ -44,11 +48,15 @@ public abstract class PottsLocations extends PottsLocation {
         super.add(x, y, z);
         
         Voxel voxel = new Voxel(x, y, z);
+        
         for (PottsLocation loc : locations.values()) {
             if (loc.voxels.contains(voxel)) { return; }
         }
         
-        if (!locations.containsKey(region)) { locations.put(region, makeLocation(new ArrayList<>())); }
+        if (!locations.containsKey(region)) {
+            locations.put(region, makeLocation(new ArrayList<>()));
+        }
+        
         locations.get(region).add(x, y, z);
     }
     
@@ -59,9 +67,16 @@ public abstract class PottsLocations extends PottsLocation {
     
     public void remove(Region region, int x, int y, int z) {
         Voxel voxel = new Voxel(x, y, z);
-        if (locations.containsKey(region) && !locations.get(region).voxels.contains(voxel)) { return; }
+        
+        if (locations.containsKey(region) && !locations.get(region).voxels.contains(voxel)) {
+            return;
+        }
+        
         super.remove(x, y, z);
-        if (locations.containsKey(region)) { locations.get(region).remove(x, y, z); }
+        
+        if (locations.containsKey(region)) {
+            locations.get(region).remove(x, y, z);
+        }
     }
     
     public void assign(Region region, Voxel voxel) {
@@ -109,7 +124,9 @@ public abstract class PottsLocations extends PottsLocation {
     
     public LocationContainer convert(int id) {
         EnumMap<Region, ArrayList<Voxel>> regions = new EnumMap<>(Region.class);
-        for (Region region : locations.keySet()) { regions.put(region, locations.get(region).voxels); }
+        for (Region region : locations.keySet()) {
+            regions.put(region, locations.get(region).voxels);
+        }
         return new PottsLocationContainer(id, getCenter(), voxels, regions);
     }
     
@@ -202,8 +219,8 @@ public abstract class PottsLocations extends PottsLocation {
      * @param n  the target number of voxels to assign
      * @param random  the seeded random number generator
      */
-    static void selectVoxels(PottsLocations location, Voxel center, Region region, ArrayList<Voxel> voxels,
-                             double n, MersenneTwisterFast random) {
+    static void selectVoxels(PottsLocations location, Voxel center, Region region,
+                             ArrayList<Voxel> voxels, double n, MersenneTwisterFast random) {
         ArrayList<Voxel> selected = location.getSelected(center, n);
         
         // Check that selected voxels are connected (remove any that are not).
@@ -220,7 +237,9 @@ public abstract class PottsLocations extends PottsLocation {
             for (Voxel voxel : selected) {
                 ArrayList<Voxel> allNeighbors = location.getNeighbors(voxel);
                 for (Voxel neighbor : allNeighbors) {
-                    if (voxels.contains(neighbor) && !selected.contains(neighbor)) { neighbors.add(neighbor); }
+                    if (voxels.contains(neighbor) && !selected.contains(neighbor)) {
+                        neighbors.add(neighbor);
+                    }
                 }
             }
             

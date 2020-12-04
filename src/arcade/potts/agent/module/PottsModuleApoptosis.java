@@ -63,7 +63,9 @@ public abstract class PottsModuleApoptosis extends PottsModule {
          */
         public Simple(PottsCell cell) { super(cell); }
         
-        public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
+        public void step(MersenneTwisterFast random, Simulation sim) {
+            super.simpleStep(random, sim);
+        }
     }
     
     /**

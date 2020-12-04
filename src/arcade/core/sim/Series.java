@@ -102,22 +102,40 @@ public abstract class Series {
         this.prefix = set.get("path") + (set.contains("prefix") ? set.get("prefix") : "") + name;
         
         // Set random seeds.
-        this.startSeed = (series.contains("start") ? series.getInt("start") : defaults.getInt("START_SEED"));
-        this.endSeed = (series.contains("end") ? series.getInt("end") : defaults.getInt("END_SEED"));
+        this.startSeed = (series.contains("start")
+                ? series.getInt("start")
+                : defaults.getInt("START_SEED"));
+        this.endSeed = (series.contains("end")
+                ? series.getInt("end")
+                : defaults.getInt("END_SEED"));
         
         // Set number of ticks and interval
-        this.ticks = (series.contains("ticks") ? series.getInt("ticks") : defaults.getInt("TICKS"));
-        this.interval = (series.contains("interval") ? series.getInt("interval") : defaults.getInt("INTERVAL"));
+        this.ticks = (series.contains("ticks")
+                ? series.getInt("ticks")
+                : defaults.getInt("TICKS"));
+        this.interval = (series.contains("interval")
+                ? series.getInt("interval")
+                : defaults.getInt("INTERVAL"));
         
         // Set sizing.
-        this._length = (series.contains("length") ? series.getInt("length") : defaults.getInt("LENGTH"));
-        this._width = (series.contains("width") ? series.getInt("width") : defaults.getInt("WIDTH"));
-        int height = (series.contains("height") ? series.getInt("height") : defaults.getInt("HEIGHT"));
+        this._length = (series.contains("length")
+                ? series.getInt("length")
+                : defaults.getInt("LENGTH"));
+        this._width = (series.contains("width")
+                ? series.getInt("width")
+                : defaults.getInt("WIDTH"));
+        int height = (series.contains("height")
+                ? series.getInt("height")
+                : defaults.getInt("HEIGHT"));
         this._height = ((height & 1) == 1 ? height : height + 1); // enforce odd
         
         // Set conversion factors.
-        this.DS = (series.contains("ds") ? series.getDouble("ds") : defaults.getDouble("DS"));
-        this.DT = (series.contains("dt") ? series.getDouble("dt") : defaults.getDouble("DT"));
+        this.DS = (series.contains("ds")
+                ? series.getDouble("ds")
+                : defaults.getDouble("DS"));
+        this.DT = (series.contains("dt")
+                ? series.getDouble("dt")
+                : defaults.getDouble("DT"));
         
         // Initialize simulation series.
         initialize(setupLists, parameters);
@@ -198,7 +216,8 @@ public abstract class Series {
      * @param setupLists  the map of attribute to value for multiple instance tags
      * @param parameters  the default parameter values loaded from {@code parameter.xml}
      */
-    protected abstract void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters);
+    protected abstract void initialize(HashMap<String, ArrayList<Box>> setupLists,
+                                       Box parameters);
     
     /**
      * Creates agent populations.
@@ -207,7 +226,9 @@ public abstract class Series {
      * @param populationDefaults  the dictionary of default population parameters
      * @param populationConversions  the dictionary of population parameter conversions
      */
-    protected abstract void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults, MiniBox populationConversions);
+    protected abstract void updatePopulations(ArrayList<Box> populations,
+                                              MiniBox populationDefaults,
+                                              MiniBox populationConversions);
     
     /**
      * Creates environment molecules.
@@ -215,7 +236,8 @@ public abstract class Series {
      * @param molecules  the list of molecule setup dictionaries
      * @param moleculeDefaults  the dictionary of default molecule parameters
      */
-    protected abstract void updateMolecules(ArrayList<Box> molecules, MiniBox moleculeDefaults);
+    protected abstract void updateMolecules(ArrayList<Box> molecules,
+                                            MiniBox moleculeDefaults);
     
     /**
      * Creates selected helpers.
@@ -223,7 +245,8 @@ public abstract class Series {
      * @param helpers  the list of helper dictionaries
      * @param helperDefaults  the dictionary of default helper parameters
      */
-    protected abstract void updateHelpers(ArrayList<Box> helpers, MiniBox helperDefaults);
+    protected abstract void updateHelpers(ArrayList<Box> helpers,
+                                          MiniBox helperDefaults);
     
     /**
      * Creates selected components.
@@ -231,7 +254,8 @@ public abstract class Series {
      * @param components  the list of component dictionaries
      * @param componentDefaults  the dictionary of default component parameters
      */
-    protected abstract void updateComponents(ArrayList<Box> components, MiniBox componentDefaults);
+    protected abstract void updateComponents(ArrayList<Box> components,
+                                             MiniBox componentDefaults);
     
     /**
      * Parses parameter values based on default value.
@@ -358,7 +382,8 @@ public abstract class Series {
             tick = state.schedule.getTime();
             
             if (tick >= checkpoint) {
-                LOGGER.info(String.format("simulation [ %s | %s ] tick %6d ( %4.2f %% )", name, seed, (int)tick, (100*tick/ticks)));
+                LOGGER.info(String.format("simulation [ %s | %s ] tick %6d ( %4.2f %% )",
+                        name, seed, (int)tick, (100*tick/ticks)));
                 checkpoint += delta;
             }
         } while (tick < ticks - 1);
@@ -373,7 +398,8 @@ public abstract class Series {
      * @throws Exception  if the visualization constructor cannot be instantiated
      */
     public void runVis() throws Exception {
-        if (System.getProperty("java.awt.headless") != null && System.getProperty("java.awt.headless").equals("true")) { return; }
+        if (System.getProperty("java.awt.headless") != null
+                && System.getProperty("java.awt.headless").equals("true")) { return; }
         Simulation sim = (Simulation)(simCons.newInstance(startSeed + SEED_OFFSET, this));
         ((GUIState)visCons.newInstance(sim)).createController();
     }

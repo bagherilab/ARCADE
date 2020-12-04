@@ -92,11 +92,13 @@ public abstract class Potts implements Steppable {
             // Select unique ID (if there is one), otherwise select unique
             // region (if there is one). If there are neither, then skip.
             if (hasRegions && uniqueRegionTargets.size() > 0) {
-                int targetRegion = (int)uniqueRegionTargets.toArray()[simstate.random.nextInt(uniqueRegionTargets.size())];
+                int i = simstate.random.nextInt(uniqueRegionTargets.size());
+                int targetRegion = (int)uniqueRegionTargets.toArray()[i];
                 flip(IDS[z][x][y], REGIONS[z][x][y], targetRegion, x, y, z, r);
             }
             else if (uniqueIDTargets.size() > 0) {
-                int targetID = (int)uniqueIDTargets.toArray()[simstate.random.nextInt(uniqueIDTargets.size())];
+                int i = simstate.random.nextInt(uniqueIDTargets.size());
+                int targetID = (int)uniqueIDTargets.toArray()[i];
                 flip(IDS[z][x][y], targetID, x, y, z, r);
             }
         }
@@ -115,24 +117,28 @@ public abstract class Potts implements Steppable {
     void flip(int sourceID, int targetID, int x, int y, int z, double r) {
         // Check connectivity of source.
         if (sourceID > 0) {
-            boolean candidateConnected = getConnectivity(getNeighborhood(sourceID, x, y, z), IDS[z][x][y] == 0);
+            boolean[][][] neighborhood = getNeighborhood(sourceID, x, y, z);
+            boolean candidateConnected = getConnectivity(neighborhood, IDS[z][x][y] == 0);
             if (!candidateConnected) { return; }
             
             // Check connectivity of regions.
             if (REGIONS[z][x][y] > Region.DEFAULT.ordinal()) {
-                boolean candidateRegionConnected = getConnectivity(getNeighborhood(sourceID, REGIONS[z][x][y], x, y, z), false);
+                boolean[][][] rNeighborhood = getNeighborhood(sourceID, REGIONS[z][x][y], x, y, z);
+                boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);
                 if (!candidateRegionConnected) { return; }
             }
         }
         
         // Check connectivity of target.
         if (targetID > 0) {
-            boolean targetConnected = getConnectivity(getNeighborhood(targetID, x, y, z), IDS[z][x][y] == 0);
+            boolean[][][] neighborhood = getNeighborhood(targetID, x, y, z);
+            boolean targetConnected = getConnectivity(neighborhood, IDS[z][x][y] == 0);
             if (!targetConnected) { return; }
             
             // Check connectivity of regions.
             if (REGIONS[z][x][y] > Region.DEFAULT.ordinal()) {
-                boolean candidateRegionConnected = getConnectivity(getNeighborhood(targetID, REGIONS[z][x][y], x, y, z), false);
+                boolean[][][] rNeighborhood = getNeighborhood(targetID, REGIONS[z][x][y], x, y, z);
+                boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);
                 if (!candidateRegionConnected) { return; }
             }
         }
@@ -165,7 +171,11 @@ public abstract class Potts implements Steppable {
         
         if (r < p) {
             IDS[z][x][y] = targetID;
-            if (HAS_REGIONS) { REGIONS[z][x][y] = (targetID == 0 ? Region.UNDEFINED.ordinal() : Region.DEFAULT.ordinal()); }
+            if (HAS_REGIONS) {
+                REGIONS[z][x][y] = (targetID == 0
+                        ? Region.UNDEFINED.ordinal()
+                        : Region.DEFAULT.ordinal());
+            }
             
             if (sourceID > 0) { ((PottsLocation)getCell(sourceID).getLocation()).remove(x, y, z); }
             if (targetID > 0) { ((PottsLocation)getCell(targetID).getLocation()).add(x, y, z); }
@@ -186,13 +196,15 @@ public abstract class Potts implements Steppable {
     void flip(int id, int sourceRegion, int targetRegion, int x, int y, int z, double r) {
         // Check connectivity of source.
         if (sourceRegion > Region.DEFAULT.ordinal()) {
-            boolean candidateConnected = getConnectivity(getNeighborhood(id, sourceRegion, x, y, z), false);
+            boolean[][][] neighborhood = getNeighborhood(id, sourceRegion, x, y, z);
+            boolean candidateConnected = getConnectivity(neighborhood, false);
             if (!candidateConnected) { return; }
         }
         
         // Check connectivity of target.
         if (targetRegion > Region.DEFAULT.ordinal()) {
-            boolean targetConnected = getConnectivity(getNeighborhood(id, targetRegion, x, y, z), false);
+            boolean[][][] neighborhood = getNeighborhood(id, targetRegion, x, y, z);
+            boolean targetConnected = getConnectivity(neighborhood, false);
             if (!targetConnected) { return; }
         }
         

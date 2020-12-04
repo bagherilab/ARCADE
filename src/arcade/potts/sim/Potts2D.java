@@ -52,10 +52,10 @@ public class Potts2D extends Potts {
         
         for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
-                Region regionxy = Region.values()[REGIONS[z][i][j]];
-                if (!(i == x && j == y) && IDS[z][i][j] == id
-                        && regionxy != region && regionxy != Region.UNDEFINED && regionxy != Region.DEFAULT) {
-                    H += (c.getAdhesion(region, regionxy) + c.getAdhesion(regionxy, region))/2;
+                Region xy = Region.values()[REGIONS[z][i][j]];
+                if (!(i == x && j == y) && IDS[z][i][j] == id && xy != region
+                        && xy != Region.UNDEFINED && xy != Region.DEFAULT) {
+                    H += (c.getAdhesion(region, xy) + c.getAdhesion(xy, region))/2;
                 }
             }
         }
@@ -134,7 +134,8 @@ public class Potts2D extends Potts {
         boolean[][] array = new boolean[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                array[i][j] = IDS[0][i + x - 1][j + y - 1] == id && REGIONS[0][i + x - 1][j + y - 1] == region;
+                array[i][j] = IDS[0][i + x - 1][j + y - 1] == id
+                        && REGIONS[0][i + x - 1][j + y - 1] == region;
             }
         }
         return new boolean[][][] { array };
@@ -157,21 +158,22 @@ public class Potts2D extends Potts {
                 // Check for corners
                 else {
                     for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-                        if (_array[1 + MOVES_X[i]][1 + MOVES_Y[i]]
-                                && _array[1 + MOVES_X[(i + 1)%NUMBER_NEIGHBORS] ][1 + MOVES_Y[(i + 1)%NUMBER_NEIGHBORS]]
-                                && _array[1 + CORNER_X[i]][1 + CORNER_Y[i]]) {
-                            return true;
-                        }
+                        boolean check1 = _array[1 + MOVES_X[i]][1 + MOVES_Y[i]];
+                        boolean check2 = _array[1 + MOVES_X[(i + 1)%NUMBER_NEIGHBORS]]
+                                                [1 + MOVES_Y[(i + 1)%NUMBER_NEIGHBORS]];
+                        boolean check3 = _array[1 + CORNER_X[i]][1 + CORNER_Y[i]];
+                        if (check1 && check2 && check3) { return true; }
                     }
                     return false;
                 }
             case 3:
                 for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
                     if (!_array[1 + MOVES_X[i]][1 + MOVES_Y[i]]) {
-                        if (_array[1 + CORNER_X[(i + 1)%NUMBER_NEIGHBORS]][1 + CORNER_Y[(i + 1)%NUMBER_NEIGHBORS]]
-                                && _array[1 + CORNER_X[(i + 2)%NUMBER_NEIGHBORS]][1 + CORNER_Y[(i + 2)%NUMBER_NEIGHBORS]]) {
-                            return true;
-                        }
+                        boolean check1 = _array[1 + CORNER_X[(i + 1)%NUMBER_NEIGHBORS]]
+                                               [1 + CORNER_Y[(i + 1)%NUMBER_NEIGHBORS]];
+                        boolean check2 = _array[1 + CORNER_X[(i + 2)%NUMBER_NEIGHBORS]]
+                                               [1 + CORNER_Y[(i + 2)%NUMBER_NEIGHBORS]];
+                        if (check1 && check2) { return true; }
                     }
                 }
                 return false;

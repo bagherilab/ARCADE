@@ -16,7 +16,8 @@ public class MiniBox {
     public static final String TAG_SEPARATOR = "/";
     
     /** Regular expression for numbers */
-    private static final String NUMBER_REGEX = "^(-?\\d*\\.\\d*)$|^(-?\\d+)$|^(-?\\d+E-?\\d+)$|^(-?\\d*\\.\\d*E-?\\d+)$";
+    private static final String NUMBER_REGEX = "^(-?\\d*\\.\\d*)$|^(-?\\d+)$|"
+            + "^(-?\\d+E-?\\d+)$|^(-?\\d*\\.\\d*E-?\\d+)$";
     
     /** List of keys */
     final ArrayList<String> keys;

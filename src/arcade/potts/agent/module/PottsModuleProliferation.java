@@ -86,7 +86,9 @@ public abstract class PottsModuleProliferation extends PottsModule {
          */
         public Simple(PottsCell cell) { super(cell); }
         
-        public void step(MersenneTwisterFast random, Simulation sim) { super.simpleStep(random, sim); }
+        public void step(MersenneTwisterFast random, Simulation sim) {
+            super.simpleStep(random, sim);
+        }
     }
     
     /**
@@ -181,7 +183,8 @@ public abstract class PottsModuleProliferation extends PottsModule {
             cell.updateTarget(Region.NUCLEUS, RATE_S, 2);
             
             // Check for transition to G2 phase.
-            if (cell.getVolume(Region.NUCLEUS) > GROWTH_CHECKPOINT_S*cell.getCriticalVolume(Region.NUCLEUS)) {
+            if (cell.getVolume(Region.NUCLEUS)
+                    > GROWTH_CHECKPOINT_S*cell.getCriticalVolume(Region.NUCLEUS)) {
                 phase = Phase.PROLIFERATIVE_G2;
             }
         } else {

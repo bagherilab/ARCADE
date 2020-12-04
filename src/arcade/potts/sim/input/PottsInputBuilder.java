@@ -30,17 +30,25 @@ public class PottsInputBuilder extends InputBuilder {
         Box box = lists.get(lists.size() - 1);
         
         int numAtts = atts.getLength();
-        String id;
+        String id, region, module, target;
         
         if (numAtts > 0) {
             // If both region and module tags are included, the entry is invalid.
             if (atts.getValue("region") != null && atts.getValue("module") != null) { return; }
             
+            // Get any tags (module or region) or target.
+            region = (atts.getValue("region") == null
+                    ? ""
+                    : atts.getValue("region").toUpperCase() + TAG_SEPARATOR);
+            module = (atts.getValue("module") == null
+                    ? ""
+                    : atts.getValue("module").toLowerCase() + TAG_SEPARATOR);
+            target = (atts.getValue("target") == null
+                    ? ""
+                    : TARGET_SEPARATOR + atts.getValue("target"));
+            
             // Create id by combining tags (module or region), id, and target.
-            id = (atts.getValue("region") == null ? "" : atts.getValue("region").toUpperCase() + TAG_SEPARATOR)
-                    + (atts.getValue("module") == null ? "" : atts.getValue("module").toLowerCase() + TAG_SEPARATOR)
-                    + atts.getValue("id")
-                    + (atts.getValue("target") == null ? "" : TARGET_SEPARATOR + atts.getValue("target"));
+            id = region + module + atts.getValue("id") + target;
             box.addTag(id, tag.toUpperCase());
             
             for (int i = 0; i < numAtts; i++) {

@@ -10,9 +10,13 @@ public class PottsLocationFactory3D extends PottsLocationFactory {
         return cbrt + (cbrt%2 == 0 ? 1 : 0);
     }
     
-    ArrayList<Voxel> getNeighbors(Voxel voxel) { return Location3D.getNeighbors(voxel); }
+    ArrayList<Voxel> getNeighbors(Voxel voxel) {
+        return Location3D.getNeighbors(voxel);
+    }
     
-    ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) { return Location3D.getSelected(voxels, focus, n); }
+    ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) {
+        return Location3D.getSelected(voxels, focus, n);
+    }
     
     ArrayList<Voxel> getPossible(Voxel focus, int m) {
         ArrayList<Voxel> voxels = new ArrayList<>();

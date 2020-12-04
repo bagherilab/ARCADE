@@ -27,22 +27,25 @@ public class PottsCellContainer implements CellContainer {
     public final EnumMap<Region, Double> regionTargetSurface;
     
     public PottsCellContainer(int id, int pop, int voxels) {
-        this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels, null, 0, 0, null, null);
+        this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
+                null, 0, 0, null, null);
     }
     
     public PottsCellContainer(int id, int pop, int voxels, EnumMap<Region, Integer> regionVoxels) {
-        this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels, regionVoxels, 0, 0, null, null);
+        this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
+                regionVoxels, 0, 0, null, null);
     }
     
-    public PottsCellContainer(int id, int pop, int age, State state, Phase phase, int voxels,
-                         double targetVolume, double targetSurface) {
+    public PottsCellContainer(int id, int pop, int age, State state, Phase phase,
+                              int voxels, double targetVolume, double targetSurface) {
         this(id, pop, age, state, phase, voxels, null, targetVolume, targetSurface, null, null);
     }
     
     public PottsCellContainer(int id, int pop, int age, State state, Phase phase, int voxels,
-                         EnumMap<Region, Integer> regionVoxels,
-                         double targetVolume, double targetSurface,
-                         EnumMap<Region, Double> regionTargetVolume, EnumMap<Region, Double> regionTargetSurface) {
+                              EnumMap<Region, Integer> regionVoxels,
+                              double targetVolume, double targetSurface,
+                              EnumMap<Region, Double> regionTargetVolume,
+                              EnumMap<Region, Double> regionTargetSurface) {
         this.id = id;
         this.pop = pop;
         this.age = age;
@@ -80,23 +83,28 @@ public class PottsCellContainer implements CellContainer {
             
             // Get copies of critical, lambda, and adhesion values.
             for (Region region : location.getRegions()) {
-                criticalsRegion.put(region, factory.popToRegionCriticals.get(pop).get(region).clone());
-                lambdasRegion.put(region, factory.popToRegionLambdas.get(pop).get(region).clone());
-                adhesionRegion.put(region, factory.popToRegionAdhesion.get(pop).get(region).clone());
+                criticalsRegion.put(region,
+                        factory.popToRegionCriticals.get(pop).get(region).clone());
+                lambdasRegion.put(region,
+                        factory.popToRegionLambdas.get(pop).get(region).clone());
+                adhesionRegion.put(region,
+                        factory.popToRegionAdhesion.get(pop).get(region).clone());
             }
             
-            cell = new PottsCell(id, pop, state, age, location, true, parameters,
-                    criticals, lambdas, adhesion, criticalsRegion, lambdasRegion, adhesionRegion);
+            cell = new PottsCell(id, pop, state, age, location, true, parameters, adhesion,
+                    criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
         } else {
-            cell = new PottsCell(id, pop, state, age, location, false, parameters,
-                    criticals, lambdas, adhesion, null, null, null);
+            cell = new PottsCell(id, pop, state, age, location, false, parameters, adhesion,
+                    criticals, lambdas, null, null, null);
         }
         
         // Update cell targets.
         cell.setTargets(targetVolume, targetSurface);
         if (regionTargetVolume != null && regionTargetSurface != null) {
             for (Region region : location.getRegions()) {
-                cell.setTargets(region, regionTargetVolume.get(region), regionTargetSurface.get(region));
+                cell.setTargets(region,
+                        regionTargetVolume.get(region),
+                        regionTargetSurface.get(region));
             }
         }
         
