@@ -73,7 +73,7 @@ jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest {
-        attributes["Main-Class"] = "arcade.Main"
+        attributes["Main-Class"] = "arcade.core.ARCADE"
     }
 }
 

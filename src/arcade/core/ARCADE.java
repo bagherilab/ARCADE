@@ -159,11 +159,11 @@ public abstract class ARCADE {
             
             // Run with visualization if requested, otherwise run command line.
             if (isVis) {
-                LOGGER.info("running simulation with visualization\n\n" + s.toString());
+                LOGGER.info("running simulation with visualization");
                 s.runVis();
                 break;
             } else {
-                LOGGER.info("running simulation series [ " + s.getName() + " ]\n\n" + s.toString());
+                LOGGER.info("running simulation series [ " + s.getName() + " ]");
                 s.runSims();
             }
         }
@@ -177,7 +177,7 @@ public abstract class ARCADE {
         // Change logger display format.
         ConsoleHandler handler = new ConsoleHandler();
         handler.setFormatter(new SimpleFormatter() {
-            private static final String FORMAT = "%1$tF %1$tT %2$-7s %3$-30s : %4$s %n";
+            private static final String FORMAT = "%1$tF %1$tT %2$-7s %3$-35s : %4$s %n";
             public synchronized String format(LogRecord lr) {
                 return String.format(FORMAT,
                         new Date(lr.getMillis()),
