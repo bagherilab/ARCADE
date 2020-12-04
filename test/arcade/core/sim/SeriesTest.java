@@ -628,10 +628,10 @@ public class SeriesTest {
         int[] start = new int[] { 0, 0, 10, 1 };
         int[] end = new int[] { 0, 1, 12, 0 };
         int[] n = new int[] { 1, 2, 3, 0 };
-        String[][] seeds = new String[][] {
-                { "00" },
-                { "00", "01" },
-                { "10", "11", "12" },
+        int[][] seeds = new int[][] {
+                { 0 },
+                { 0, 1 },
+                { 10, 11, 12 },
                 { }
         };
         
@@ -640,13 +640,13 @@ public class SeriesTest {
             setupDicts.get("series").put("start", start[i]);
             setupDicts.get("series").put("end", end[i]);
             Series series = spy(new SeriesMock(setupDicts, setupListsMock, PARAMETERS, false));
-            doNothing().when(series).runSim(any(SimState.class), any(String.class));
+            doNothing().when(series).runSim(any(SimState.class), any(int.class));
             
             series.simCons = spy(series.simCons);
             series.runSims();
             
-            verify(series, times(n[i])).runSim(any(SimState.class), any(String.class));
-            for (String seed : seeds[i]) {
+            verify(series, times(n[i])).runSim(any(SimState.class), any(int.class));
+            for (int seed : seeds[i]) {
                 verify(series.simCons).newInstance(start[i] + i + SEED_OFFSET, series);
                 verify(series).runSim(any(SimState.class), eq(seed));
             }
@@ -664,7 +664,7 @@ public class SeriesTest {
         state.schedule = spy(new Schedule());
         state.schedule.scheduleRepeating((Steppable) simState -> { }, 1);
         
-        series.runSim(state, randomString());
+        series.runSim(state, randomInt());
         
         verify(state).start();
         verify(state).finish();
@@ -683,7 +683,7 @@ public class SeriesTest {
         state.schedule = spy(new Schedule());
         state.schedule.scheduleOnce(ticks - 1, (Steppable) simState -> { });
         
-        series.runSim(state, randomString());
+        series.runSim(state, randomInt());
         
         verify(state).start();
         verify(state).finish();

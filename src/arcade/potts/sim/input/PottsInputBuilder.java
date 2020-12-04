@@ -54,13 +54,12 @@ public class PottsInputBuilder extends InputBuilder {
     }
     
     public void startElement(String uri, String local, String name, Attributes atts) {
-        log("start element [ " + name + " ]");
+        LOGGER.fine("start element [ " + name + " ]");
         
         switch (name) {
             case "set": case "series":
                 MiniBox minibox = makeMiniBox(atts);
                 setupDicts.put(name, minibox);
-                log += "\n" + minibox.toString() + "\n";
                 break;
             case "potts":
                 setupLists.put(name, new ArrayList<>());
@@ -82,7 +81,7 @@ public class PottsInputBuilder extends InputBuilder {
     }
     
     public void endElement(String uri, String local, String name) {
-        log("end element [ " + name + " ]");
+        LOGGER.fine("end element [ " + name + " ]");
         
         switch (name) {
             case "series":
@@ -91,13 +90,6 @@ public class PottsInputBuilder extends InputBuilder {
                 setupDicts = new HashMap<>();
                 setupLists = new HashMap<>();
                 setupDicts.put("set", set);
-                break;
-            case "potts":
-                log += "\n" + setupLists.get(name).get(0) + "\n";
-                break;
-            case "population":
-                int n = setupLists.get(name + "s").size();
-                log += "\n" + setupLists.get(name + "s").get(n - 1) + "\n";
                 break;
         }
     }

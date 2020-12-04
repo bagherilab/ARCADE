@@ -16,6 +16,7 @@ import arcade.core.env.loc.*;
 import arcade.core.env.grid.Grid;
 import arcade.core.util.MiniBox;
 import arcade.core.sim.output.OutputSaver;
+import arcade.core.sim.output.OutputLoader;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.LocationContainer;
 import arcade.potts.agent.cell.PottsCell;
@@ -341,39 +342,57 @@ public class PottsSimulationTest {
     }
     
     @Test
-    public void start_isVis_callsMethods() {
+    public void start_called_callsMethods() {
         Series series = createSeries(new int[0], new String[0]);
-        series.saver = mock(OutputSaver.class);
-        series.isVis = true;
         PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
         doNothing().when(sim).doOutput(anyBoolean());
         sim.start();
-        
+    
         verify(sim).setupPotts();
         verify(sim).setupAgents();
         verify(sim).setupEnvironment();
         verify(sim).scheduleHelpers();
         verify(sim).scheduleComponents();
+    }
+    
+    @Test
+    public void start_isVis_skipsSaver() {
+        Series series = createSeries(new int[0], new String[0]);
+        series.saver = mock(OutputSaver.class);
+        series.isVis = true;
+        
+        PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
+        doNothing().when(sim).doOutput(anyBoolean());
+        sim.start();
+        
         verify(sim, never()).doOutput(true);
         verify(series.saver, never()).equip(sim);
     }
     
     @Test
-    public void start_isNotVis_callsMethods() {
+    public void start_notVis_setsSaver() {
         Series series = createSeries(new int[0], new String[0]);
         series.saver = mock(OutputSaver.class);
         series.isVis = false;
+        
         PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
         doNothing().when(sim).doOutput(anyBoolean());
         sim.start();
         
-        verify(sim).setupPotts();
-        verify(sim).setupAgents();
-        verify(sim).setupEnvironment();
-        verify(sim).scheduleHelpers();
-        verify(sim).scheduleComponents();
         verify(sim).doOutput(true);
         verify(series.saver).equip(sim);
+    }
+    
+    @Test
+    public void start_notNull_setsLoader() {
+        Series series = createSeries(new int[0], new String[0]);
+        series.loader = mock(OutputLoader.class);
+        
+        PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
+        doNothing().when(sim).doOutput(anyBoolean());
+        sim.start();
+        
+        verify(series.loader).equip(sim);
     }
     
     @Test

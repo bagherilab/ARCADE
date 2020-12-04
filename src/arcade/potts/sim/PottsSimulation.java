@@ -104,7 +104,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         scheduleComponents();
         
         // Equip simulation to saver and schedule.
-        if (!series.isVis) {
+        if (series.saver != null && !series.isVis) {
             series.saver.equip(this);
             doOutput(true);
         }

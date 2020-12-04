@@ -35,7 +35,7 @@ import arcade.core.util.MiniBox;
  */
 public abstract class InputBuilder implements ContentHandler {
     /** Logger for class */
-    private static final Logger LOGGER = Logger.getLogger(InputBuilder.class.getName());
+    protected static final Logger LOGGER = Logger.getLogger(InputBuilder.class.getName());
     
     /** XML reader */
     XMLReader xmlReader;
@@ -46,8 +46,8 @@ public abstract class InputBuilder implements ContentHandler {
     /** Tracker for document location */
     Locator locator;
     
-    /** Log for document events */
-    protected String log;
+    /** Document identifier */
+    String document;
     
     /** Map of setup dictionaries */
     public HashMap<String, MiniBox> setupDicts;
@@ -89,7 +89,6 @@ public abstract class InputBuilder implements ContentHandler {
      */
     public ArrayList<Series> build(String xml, Box parameters, boolean isVis)
             throws IOException, SAXException {
-        log = "";
         series = new ArrayList<>();
         
         this.parameters = parameters;
@@ -133,22 +132,19 @@ public abstract class InputBuilder implements ContentHandler {
     public void ignorableWhitespace(char[] ch, int start, int length) { }
     public void processingInstruction(String target, String data) { }
     
-    protected void log(String str) {
-        if (locator != null) { log += String.format("\t%4d | %s\n", locator.getLineNumber(), str); }
-    }
-    
     public void setDocumentLocator(Locator locator) {
         this.locator = locator;
-        log("document [ " + locator.getSystemId() + " ]");
+        this.document = locator.getSystemId();
     }
     
     public void startDocument() {
         setupDicts = new HashMap<>();
         setupLists = new HashMap<>();
+        LOGGER.fine("start document [ " + document + " ]");
     }
     
     public void endDocument() {
-        LOGGER.config("finished building series\n\n" + log);
+        LOGGER.fine("end document [ " + document + " ]");
     }
     
     public abstract void startElement(String uri, String local, String name, Attributes atts);

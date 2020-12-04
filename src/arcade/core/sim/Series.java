@@ -26,9 +26,6 @@ public abstract class Series {
     /** Separator character for targets */
     public static final String TARGET_SEPARATOR = ":";
     
-    /** Format for console output of simulation time */
-    private final static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.0000");
-    
     /** {@code true} if the {@code Series} is not valid, {@code false} otherwise */
     public boolean isSkipped;
     
@@ -324,20 +321,19 @@ public abstract class Series {
         long simStart, simEnd;
         
         // Iterate through each seed.
-        for (int iSeed = startSeed; iSeed <= endSeed; iSeed++) {
+        for (int seed = startSeed; seed <= endSeed; seed++) {
             // Pre-simulation output.
-            String seed = (iSeed < 10 ? "0" : "") + iSeed;
-            LOGGER.info("simulation [ " + name + " | " + seed + " ] started");
+            LOGGER.info(String.format("simulation [ %s | %04d ] started", name, seed));
             simStart = System.currentTimeMillis();
             
             // Run simulation.
-            SimState state = (SimState)(simCons.newInstance(iSeed + SEED_OFFSET, this));
+            SimState state = (SimState)(simCons.newInstance(seed + SEED_OFFSET, this));
             runSim(state, seed);
             
             // Post-simulation output.
             simEnd = System.currentTimeMillis();
-            LOGGER.info("simulation [ " + name + " | " + seed + " ] finished in "
-                    + DECIMAL_FORMAT.format((double)(simEnd - simStart)/1000/60) + " minutes\n\n");
+            LOGGER.info(String.format("simulation [ %s | %04d ] finished in %.4f minutes",
+                    name, seed, (double)(simEnd - simStart)/1000/60));
         }
     }
     
@@ -347,20 +343,23 @@ public abstract class Series {
      * @param state  the simulation state instance
      * @param seed  the random seed
      */
-    void runSim(SimState state, String seed) {
+    void runSim(SimState state, int seed) {
         // Start simulation.
         state.start();
         
+        // Set up logger checkpoints.
+        double delta = ticks/10.0;
+        double checkpoint = delta;
+        
         // Run simulation loop.
         double tick;
-        int percent = 0;
         do {
             if (!state.schedule.step(state)) { break; }
             tick = state.schedule.getTime();
             
-            if (tick%(ticks/10.0) == 0) {
-                if (percent > 0 && percent < 100) { LOGGER.info("simulation [ " + name + " | " + seed + " ] " + percent + " % complete"); }
-                percent += 10;
+            if (tick >= checkpoint) {
+                LOGGER.info(String.format("simulation [ %s | %s ] tick %6d ( %4.2f %% )", name, seed, (int)tick, (100*tick/ticks)));
+                checkpoint += delta;
             }
         } while (tick < ticks - 1);
         
@@ -377,24 +376,5 @@ public abstract class Series {
         if (System.getProperty("java.awt.headless") != null && System.getProperty("java.awt.headless").equals("true")) { return; }
         Simulation sim = (Simulation)(simCons.newInstance(startSeed + SEED_OFFSET, this));
         ((GUIState)visCons.newInstance(sim)).createController();
-    }
-    
-    public String toString() {
-        // Convert populations to string.
-        StringBuilder pop = new StringBuilder();
-        for (String p : _populations.keySet()) {
-            pop.append(String.format("\t\tPOPULATION [ %s ]\n", p));
-        }
-        
-        String format = "\t%10s : %s\n";
-        return "\t======================================================================\n"
-            + (isVis ? "" : String.format(format, "output", prefix))
-            + String.format(format, "class", (isVis ? visCons.getName() : simCons.getName()))
-            + (isVis ? "" : String.format(format, "seeds", startSeed + " - " + endSeed))
-            + (isVis ? "" : String.format(format, "ticks", ticks))
-            + String.format(format, "size", _length + " x " + _width + " x " + _height)
-            + "\t----------------------------------------------------------------------\n"
-            + pop
-            + "\t======================================================================\n";
     }
 }
