@@ -53,8 +53,8 @@ public abstract class Potts implements Steppable {
         HEIGHT = (series._height == 1 ? 1 : series._height - 2);
         
         // Number of Monte Carlo steps
-        int MCS = series._potts.getInt("MCS");
-        STEPS = MCS*LENGTH*WIDTH*HEIGHT;
+        int mcs = series._potts.getInt("MCS");
+        STEPS = mcs*LENGTH*WIDTH*HEIGHT;
         
         // Get temperature.
         TEMPERATURE = series._potts.getDouble("TEMPERATURE");

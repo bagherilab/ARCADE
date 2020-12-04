@@ -45,10 +45,10 @@ public abstract class Series {
     private final String prefix;
     
     /** Spatial conversion factor (um/voxel) */
-    public final double DS;
+    public final double ds;
     
     /** Temporal conversion factor (hrs/tick) */
-    public final double DT;
+    public final double dt;
     
     /** Constructor for the simulation */
     protected Constructor<?> simCons;
@@ -130,10 +130,10 @@ public abstract class Series {
         this._height = ((height & 1) == 1 ? height : height + 1); // enforce odd
         
         // Set conversion factors.
-        this.DS = (series.contains("ds")
+        this.ds = (series.contains("ds")
                 ? series.getDouble("ds")
                 : defaults.getDouble("DS"));
-        this.DT = (series.contains("dt")
+        this.dt = (series.contains("dt")
                 ? series.getDouble("dt")
                 : defaults.getDouble("DT"));
         
@@ -287,13 +287,13 @@ public abstract class Series {
      * The {@code ^N} is not required if N = 1.
      * 
      * @param convert  the conversion string
-     * @param DS  the spatial conversion factor
-     * @param DT  the temporal conversion factor
+     * @param ds  the spatial conversion factor
+     * @param dt  the temporal conversion factor
      * @return  the updated conversion factor
      */
-    protected static double parseConversion(String convert, double DS, double DT) {
+    protected static double parseConversion(String convert, double ds, double dt) {
         String[] split = convert.replace(" ","").split("\\^");
-        double v = (split[0].equals("DS") ? DS : (split[0].equals("DT") ? DT : 1));
+        double v = (split[0].equals("DS") ? ds : (split[0].equals("DT") ? dt : 1));
         int n = (split.length == 2 ? Integer.parseInt(split[1]) : 1);
         return Math.pow(v, n);
     }

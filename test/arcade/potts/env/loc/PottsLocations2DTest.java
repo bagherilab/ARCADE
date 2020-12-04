@@ -46,11 +46,11 @@ public class PottsLocations2DTest {
         PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
         loc.locations.put(Region.UNDEFINED, new PottsLocation2D(new ArrayList<>()));
         
-        int N = 10;
+        int n = 10;
         int f = (int)(Math.random()*10*0.9) + 1; // between 1 and 9, inclusive
         
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
                 loc.add(i, j, 0);
             }
         }
@@ -60,14 +60,14 @@ public class PottsLocations2DTest {
         fractions.put(Region.UNDEFINED, 1 - f/10.0);
         PottsLocations.assignVoxels(loc, fractions, randomDoubleZero);
         
-        assertEquals(N*N, loc.voxels.size());
-        assertEquals(N*N, loc.locations.get(Region.DEFAULT).voxels.size()
+        assertEquals(n * n, loc.voxels.size());
+        assertEquals(n * n, loc.locations.get(Region.DEFAULT).voxels.size()
                 + loc.locations.get(Region.UNDEFINED).voxels.size());
         
         int sizeDefault = loc.locations.get(Region.DEFAULT).voxels.size();
         int sizeAdditional = loc.locations.get(Region.UNDEFINED).voxels.size();
-        assertTrue((sizeDefault < f*N + 1) && (sizeDefault >= f*N - 1));
-        assertTrue((sizeAdditional <= (10 - f)*N + 1) && (sizeAdditional > (10 - f)*N - 1));
+        assertTrue((sizeDefault < f * n + 1) && (sizeDefault >= f * n - 1));
+        assertTrue((sizeAdditional <= (10 - f) * n + 1) && (sizeAdditional > (10 - f) * n - 1));
     }
     
     @Test

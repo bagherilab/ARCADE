@@ -573,11 +573,11 @@ public class Location3DTest {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
         int r = 4;
-        int N = 10;
-        for (int k = 0; k < N; k++) {
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    voxels.add(new Voxel(i - N/2, j - N/2, k - N/2));
+        int n = 10;
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    voxels.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
                 }
             }
         }
@@ -585,7 +585,7 @@ public class Location3DTest {
         PottsLocation3D loc = new PottsLocation3D(voxels);
         ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), 4./3*Math.PI*r*r*r);
         
-        assertTrue(selected.size() < N*N*N);
+        assertTrue(selected.size() < n * n * n);
         for (Voxel voxel : selected) {
             assertTrue(Math.sqrt(Math.pow(voxel.x, 2) + Math.pow(voxel.y, 2) + Math.pow(voxel.z, 2)) <= r);
         }
@@ -595,11 +595,11 @@ public class Location3DTest {
     public void getSelected_maxSizeLocation_returnsList() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
-        int N = 10;
-        for (int k = 0; k < N; k++) {
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    voxels.add(new Voxel(i - N/2, j - N/2, k - N/2));
+        int n = 10;
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    voxels.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
                 }
             }
         }
@@ -607,18 +607,18 @@ public class Location3DTest {
         PottsLocation3D loc = new PottsLocation3D(voxels);
         ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), Integer.MAX_VALUE);
         
-        assertEquals(selected.size(), N*N*N);
+        assertEquals(selected.size(), n * n * n);
     }
     
     @Test
     public void getSelected_minSizeLocation_returnsList() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
-        int N = 10;
-        for (int k = 0; k < N; k++) {
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    voxels.add(new Voxel(i - N/2, j - N/2, k - N/2));
+        int n = 10;
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    voxels.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
                 }
             }
         }
@@ -635,13 +635,15 @@ public class Location3DTest {
         ArrayList<Voxel> voxelsB = new ArrayList<>();
         
         int r = 4;
-        int N = 10;
-        for (int k = 0; k < N; k++) {
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    if (i == N/2 && j == N/2 && k == N/2) { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
-                    else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - N/2, j - N/2, k - N/2)); }
-                    else { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
+        int n = 10;
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (i == n / 2 && j == n / 2 && k == n / 2) {
+                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
+                    }
+                    else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
+                    else { voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
                 }
             }
         }
@@ -663,13 +665,15 @@ public class Location3DTest {
         ArrayList<Voxel> voxelsA = new ArrayList<>();
         ArrayList<Voxel> voxelsB = new ArrayList<>();
         
-        int N = 10;
-        for (int k = 0; k < N; k++) {
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    if (i == N/2 && j == N/2 && k == N/2) { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
-                    else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - N/2, j - N/2, k - N/2)); }
-                    else { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
+        int n = 10;
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (i == n / 2 && j == n / 2 && k == n / 2) {
+                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
+                    }
+                    else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
+                    else { voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
                 }
             }
         }
@@ -686,13 +690,15 @@ public class Location3DTest {
         ArrayList<Voxel> voxelsA = new ArrayList<>();
         ArrayList<Voxel> voxelsB = new ArrayList<>();
         
-        int N = 10;
-        for (int k = 0; k < N; k++) {
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    if (i == N/2 && j == N/2 && k == N/2) { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
-                    else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - N/2, j - N/2, k - N/2)); }
-                    else { voxelsB.add(new Voxel(i - N/2, j - N/2, k- N/2)); }
+        int n = 10;
+        for (int k = 0; k < n; k++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    if (i == n / 2 && j == n / 2 && k == n / 2) {
+                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
+                    }
+                    else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
+                    else { voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
                 }
             }
         }

@@ -562,9 +562,9 @@ public class PottsLocationsTest {
         int locationID = randomIntBetween(1, 10);
         
         ArrayList<Voxel> voxels = new ArrayList<>();
-        int N = randomIntBetween(1, 10);
-        for (int i = 0; i < 2*N; i++) {
-            for (int j = 0; j < 2*N; j++) {
+        int n = randomIntBetween(1, 10);
+        for (int i = 0; i < 2 * n; i++) {
+            for (int j = 0; j < 2 * n; j++) {
                 voxels.add(new Voxel(i, j, 0));
             }
         }
@@ -574,8 +574,8 @@ public class PottsLocationsTest {
         EnumMap<Region, ArrayList<Voxel>> regions = new EnumMap<>(Region.class);
         regions.put(Region.DEFAULT, new ArrayList<>());
         regions.put(Region.NUCLEUS, new ArrayList<>());
-        for (int i = 0; i < 2*N; i++) {
-            for (int j = 0; j < 2*N; j++) {
+        for (int i = 0; i < 2 * n; i++) {
+            for (int j = 0; j < 2 * n; j++) {
                 if ((i + j)%2 == 0) {
                     location.assign(Region.NUCLEUS, new Voxel(i, j, 0));
                     regions.get(Region.NUCLEUS).add(new Voxel(i, j, 0));
@@ -588,7 +588,7 @@ public class PottsLocationsTest {
         PottsLocationContainer container = (PottsLocationContainer)location.convert(locationID);
         
         assertEquals(locationID, container.id);
-        assertEquals(new Voxel(N, N, 0), container.center);
+        assertEquals(new Voxel(n, n, 0), container.center);
         assertEquals(voxels, container.allVoxels);
         assertEquals(regions, container.regions);
     }

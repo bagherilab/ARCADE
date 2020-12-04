@@ -52,15 +52,15 @@ public class Matrix {
     /**
      * Converts a dense matrix representation to a sparse matrix representation.
      * 
-     * @param A  the dense matrix representation
+     * @param mat  the dense matrix representation
      * @return  the sparse matrix representation
      */
-    public static ArrayList<Value> toSparse(double[][] A) {
+    public static ArrayList<Value> toSparse(double[][] mat) {
         ArrayList<Value> a = new ArrayList<>();
-        int n = A.length;
+        int n = mat.length;
         for(int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                if (A[i][j] != 0) { a.add(new Value(i, j, A[i][j])); }
+                if (mat[i][j] != 0) { a.add(new Value(i, j, mat[i][j])); }
             }
         }
         return a;
@@ -68,42 +68,43 @@ public class Matrix {
     
     /**
      * Converts a sparse matrix representation to a dense matrix representation.
-     * @param A  the sparse matrix representation
+     * 
+     * @param mat  the sparse matrix representation
      * @return  the dense matrix representation
      */
-    public static double[][] toDense(ArrayList<Value> A) {
+    public static double[][] toDense(ArrayList<Value> mat) {
         int n = 0;
-        for (Value v : A) {
+        for (Value v : mat) {
             if (v.i > n) { n = v.i; }
             if (v.j > n) { n = v.j; }
         }
         double[][] a = new double[n + 1][n + 1];
-        for (Value v : A) { a[v.i][v.j] = v.v; }
+        for (Value v : mat) { a[v.i][v.j] = v.v; }
         return a;
     }
     
     /**
      * Inverts a upper triangular matrix.
      * 
-     * @param U  the upper triangular matrix to invert
+     * @param mat  the upper triangular matrix to invert
      * @return  the inverted matrix
      */
-    public static double[][] invertUpper(double[][] U) {
-        int n = U.length;
+    public static double[][] invertUpper(double[][] mat) {
+        int n = mat.length;
         double[][] inv = new double[n][n];
         for (int k = 0; k < n; k++) {
             for (int i = 0; i < k; i++) {
                 for (int j = 0; j < k; j++) {
-                    inv[i][k] = inv[i][k] + inv[i][j]*U[j][k];
+                    inv[i][k] = inv[i][k] + inv[i][j]*mat[j][k];
                     if (inv[i][k] == -0.0) { inv[i][k] = 0; }
                 }
             }
             for (int j = 0; j < k; j++) {
-                inv[j][k] = -inv[j][k]/U[k][k];
+                inv[j][k] = -inv[j][k]/mat[k][k];
                 if (inv[j][k] == -0.0) { inv[j][k] = 0; }
             }
             
-            inv[k][k] = 1.0/U[k][k];
+            inv[k][k] = 1.0/mat[k][k];
         }
         return inv;
     }
@@ -111,25 +112,25 @@ public class Matrix {
     /**
      * Inverts a lower triangular matrix.
      * 
-     * @param L  the lower triangular matrix to invert
+     * @param mat  the lower triangular matrix to invert
      * @return  the inverted matrix
      */
-    public static double[][] invertLower(double[][] L) {
-        int n = L.length;
+    public static double[][] invertLower(double[][] mat) {
+        int n = mat.length;
         double[][] inv = new double[n][n];
         for (int k = 0; k < n; k++) {
             for (int i = 0; i < k; i++) {
                 for (int j = 0; j < k; j++) {
-                    inv[k][i] = inv[k][i] + inv[j][i]*L[k][j];
+                    inv[k][i] = inv[k][i] + inv[j][i]*mat[k][j];
                     if (inv[k][i] == -0.0) { inv[k][i] = 0; }
                 }
             }
             for (int j = 0; j < k; j++) {
-                inv[k][j] = -inv[k][j]/L[k][k];
+                inv[k][j] = -inv[k][j]/mat[k][k];
                 if (inv[k][j] == -0.0) { inv[k][j] = 0; }
             }
             
-            inv[k][k] = 1.0/L[k][k];
+            inv[k][k] = 1.0/mat[k][k];
         }
         return inv;
     }
@@ -140,18 +141,18 @@ public class Matrix {
      * <p>
      * Matrix L must be a square lower triangular matrix.
      * 
-     * @param L  the matrix of coefficients
-     * @param b  the right-hand side vector
+     * @param mat  the matrix of coefficients
+     * @param vec  the right-hand side vector
      * @return  the left-hand side vector
      */
-    public static double[] forwardSubstitution(double[][] L, double[] b) {
-        int n = b.length;
+    public static double[] forwardSubstitution(double[][] mat, double[] vec) {
+        int n = vec.length;
         double[] subbed = new double[n];
         for (int i = 0; i < n; i++) {
             double val = 0;
-            for (int j = 0; j < i; j++) { val += subbed[j]*L[i][j]; }
-            val = b[i] - val;
-            subbed[i] = val/L[i][i];
+            for (int j = 0; j < i; j++) { val += subbed[j]*mat[i][j]; }
+            val = vec[i] - val;
+            subbed[i] = val/mat[i][i];
         }
         return subbed;
     }
@@ -163,20 +164,20 @@ public class Matrix {
      * The matrices {@code L} and {@code U} are the square lower and upper
      * triangular matrices of the given matrix.
      * 
-     * @param A  the matrix of coefficients
+     * @param mat  the matrix of coefficients
      * @return  the left-hand side matrix
      */
-    public static double[][] forwardSubstitution(double[][] A) {
-        double[][] L = getLower(A, false);
-        double[][] U = getUpper(A, true);
-        int n = L.length;
+    public static double[][] forwardSubstitution(double[][] mat) {
+        double[][] lower = getLower(mat, false);
+        double[][] upper = getUpper(mat, true);
+        int n = lower.length;
         double[][] subbed = new double[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 double val = 0;
-                for (int k = 0; k < i; k++) { val += subbed[k][j]*L[i][k]; }
-                val = U[i][j] - val;
-                subbed[i][j] = val/L[i][i];
+                for (int k = 0; k < i; k++) { val += subbed[k][j]*lower[i][k]; }
+                val = upper[i][j] - val;
+                subbed[i][j] = val/lower[i][i];
             }
         }
         return subbed;
@@ -186,33 +187,33 @@ public class Matrix {
      * Solves the equation {@code Lx = b} using forward substitution for a
      * sparse matrix.
      * 
-     * @param L  the matrix of coefficients
-     * @param b  the right-hand side vector
+     * @param mat  the matrix of coefficients
+     * @param vec  the right-hand side vector
      * @return  the left-hand side vector
      */
-    public static double[] forwardSubstitution(ArrayList<Value> L, double[] b) {
-        Collections.sort(L, (v1, v2) ->
+    public static double[] forwardSubstitution(ArrayList<Value> mat, double[] vec) {
+        Collections.sort(mat, (v1, v2) ->
             (v1.i == v2.i ? Integer.compare(v1.j, v2.j) : (v1.i > v2.i ? 1 : -1))
         );
         
-        int n = b.length;
+        int n = vec.length;
         double[] subbed = new double[n];
         double[] diag = new double[n];
         
         // Group lower diagonal by row.
         ArrayList<ArrayList<Value>> rowsL = new ArrayList<>();
         for (int r = 0; r < n; r++) { rowsL.add(new ArrayList<>()); }
-        for (Value v : L) { rowsL.get(v.i).add(v); }
+        for (Value v : mat) { rowsL.get(v.i).add(v); }
         
         // Get values along diagonal.
-        for (Value v : L) { if (v.i == v.j) { diag[v.i] = v.v; } }
+        for (Value v : mat) { if (v.i == v.j) { diag[v.i] = v.v; } }
         
         // Iterate only through non-zero entries in the lower diagonal matrix.
         for (int i = 0; i < n; i++) {
             ArrayList<Value> rowL = rowsL.get(i);
             double val = 0;
             for (Value v : rowL) { val += subbed[v.j]*v.v; }
-            val = b[i] - val;
+            val = vec[i] - val;
             subbed[i] = val/diag[i];
         }
         
@@ -226,27 +227,27 @@ public class Matrix {
      * The matrices {@code L} and {@code U} are the square lower and upper
      * triangular matrices of the given matrix.
      * 
-     * @param A  the matrix of coefficients
+     * @param mat  the matrix of coefficients
      * @return  the left-hand side matrix
      */
-    public static ArrayList<Value> forwardSubstitution(ArrayList<Value> A) {
-        Collections.sort(A, (v1, v2) ->
+    public static ArrayList<Value> forwardSubstitution(ArrayList<Value> mat) {
+        Collections.sort(mat, (v1, v2) ->
             (v1.i == v2.i ? Integer.compare(v1.j, v2.j) : (v1.i > v2.i ? 1 : -1))
         );
         
-        double[][] U = getUpper(toDense(A), true);
-        ArrayList<Value> L = getLower(A, true);
-        int n = U.length;
+        double[][] upper = getUpper(toDense(mat), true);
+        ArrayList<Value> lower = getLower(mat, true);
+        int n = upper.length;
         double[][] subbed = new double[n][n];
         double[] diag = new double[n];
         
         // Group lower diagonal by row.
         ArrayList<ArrayList<Value>> rows = new ArrayList<>();
         for (int r = 0; r < n; r++) { rows.add(new ArrayList<>()); }
-        for (Value v : L) { rows.get(v.i).add(v); }
+        for (Value v : lower) { rows.get(v.i).add(v); }
         
         // Get values along diagonal.
-        for (Value v : A) { if (v.i == v.j) { diag[v.i] = v.v; } }
+        for (Value v : mat) { if (v.i == v.j) { diag[v.i] = v.v; } }
         
         // Iterate only through non-zero entries in the lower diagonal matrix.
         for (int i = 0; i < n; i++) {
@@ -254,7 +255,7 @@ public class Matrix {
             for (int j = 0; j < n; j++) {
                 double val = 0;
                 for (Value v : row) { val += subbed[v.j][j]*v.v; }
-                val = U[i][j] - val;
+                val = upper[i][j] - val;
                 subbed[i][j] = val/diag[i];
             }
         }
@@ -265,83 +266,83 @@ public class Matrix {
     /**
      * Gets the upper triangular of a dense matrix.
      * 
-     * @param A  the matrix
+     * @param mat  the matrix
      * @param strict  {@code true} if triangular is strict, {@code false} otherwise
      * @return  the upper triangular matrix
      */
-    public static double[][] getUpper(double[][] A, boolean strict) {
-        int n = A.length;
+    public static double[][] getUpper(double[][] mat, boolean strict) {
+        int n = mat.length;
         int off = (strict ? 1 : 0);
-        double[][] U = new double[n][n];
+        double[][] upper = new double[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = i + off; j < n; j++) {
-                U[i][j] = A[i][j];
+                upper[i][j] = mat[i][j];
             }
         }
-        return U;
+        return upper;
     }
     
     /**
      * Gets the lower triangular of a dense matrix.
      * 
-     * @param A  the matrix
+     * @param mat  the matrix
      * @param strict  {@code true} if triangular is strict, {@code false} otherwise
      * @return  the lower triangular matrix
      */
-    public static double[][] getLower(double[][] A, boolean strict) {
-        int n = A.length;
+    public static double[][] getLower(double[][] mat, boolean strict) {
+        int n = mat.length;
         int off = (strict ? 0 : 1);
-        double[][] U = new double[n][n];
+        double[][] lower = new double[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < i + off; j++) {
-                U[i][j] = A[i][j];
+                lower[i][j] = mat[i][j];
             }
         }
-        return U;
+        return lower;
     }
     
     /**
      * Gets the upper triangular of a sparse matrix.
      * 
-     * @param A  the matrix
+     * @param mat  the matrix
      * @param strict  {@code true} if triangular is strict, {@code false} otherwise
      * @return  the upper triangular matrix
      */
-    public static ArrayList<Value> getUpper(ArrayList<Value> A, boolean strict) {
-        ArrayList<Value> U = new ArrayList<>();
+    public static ArrayList<Value> getUpper(ArrayList<Value> mat, boolean strict) {
+        ArrayList<Value> upper = new ArrayList<>();
         int off = (strict ? 0 : 1);
-        for (Value v : A) { if (v.j > v.i - off) { U.add(v); } }
-        return U;
+        for (Value v : mat) { if (v.j > v.i - off) { upper.add(v); } }
+        return upper;
     }
     
     /**
      * Gets the lower triangular of a sparse matrix.
      * 
-     * @param A  the matrix
+     * @param mat  the matrix
      * @param strict  {@code true} if triangular is strict, {@code false} otherwise
      * @return  the lower triangular matrix
      */
-    public static ArrayList<Value> getLower(ArrayList<Value> A, boolean strict) {
-        ArrayList<Value> L = new ArrayList<>();
+    public static ArrayList<Value> getLower(ArrayList<Value> mat, boolean strict) {
+        ArrayList<Value> lower = new ArrayList<>();
         int off = (strict ? 0 : 1);
-        for (Value v : A) { if (v.j < v.i + off) { L.add(v); } }
-        return L;
+        for (Value v : mat) { if (v.j < v.i + off) { lower.add(v); } }
+        return lower;
     }
     
     /**
      * Multiplies two dense square matrices.
      * 
-     * @param A  the first matrix
-     * @param B  the second matrix
+     * @param matA  the first matrix
+     * @param matB  the second matrix
      * @return  the product of the two matrices
      */
-    public static double[][] multiply(double[][] A, double[][] B) {
-        int n = A.length;
+    public static double[][] multiply(double[][] matA, double[][] matB) {
+        int n = matA.length;
         double[][] multiplied = new double[n][n];
         for(int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 for (int k = 0; k < n; k++) {
-                    multiplied[i][j] += A[i][k]*B[k][j];
+                    multiplied[i][j] += matA[i][k]*matB[k][j];
                 }
             }
         }
@@ -351,16 +352,16 @@ public class Matrix {
     /**
      * Multiplies a dense square matrix and a vector.
      * 
-     * @param A  the matrix
-     * @param b  the vector
+     * @param mat  the matrix
+     * @param vec  the vector
      * @return  the product of the matrix and vector
      */
-    public static double[] multiply(double[][] A, double[] b) {
-        int n = A.length;
+    public static double[] multiply(double[][] mat, double[] vec) {
+        int n = mat.length;
         double[] multiplied = new double[n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                multiplied[i] += A[i][j]*b[j];
+                multiplied[i] += mat[i][j]*vec[j];
             }
         }
         return multiplied;
@@ -369,16 +370,16 @@ public class Matrix {
     /**
      * Multiplies a sparse square matrix and a vector.
      * 
-     * @param A  the matrix
-     * @param b  the vector
+     * @param mat  the matrix
+     * @param vec  the vector
      * @return  the product of the matrix and vector
      */
-    public static double[] multiply(ArrayList<Value> A, double[] b) {
-        int n = b.length;
+    public static double[] multiply(ArrayList<Value> mat, double[] vec) {
+        int n = vec.length;
         double[] multiplied = new double[n];
         
         // Iterate through all entries and multiply.
-        for (Value a : A) { multiplied[a.i] += a.v*b[a.j]; }
+        for (Value a : mat) { multiplied[a.i] += a.v*vec[a.j]; }
         
         return multiplied;
     }
@@ -386,17 +387,17 @@ public class Matrix {
     /**
      * Multiplies two sparse square matrices.
      * 
-     * @param A  the first matrix
-     * @param B  the second matrix
+     * @param matA  the first matrix
+     * @param matB  the second matrix
      * @return  the product of the two matrices
      */
-    public static ArrayList<Value> multiply(ArrayList<Value> A, ArrayList<Value> B) {
+    public static ArrayList<Value> multiply(ArrayList<Value> matA, ArrayList<Value> matB) {
         ArrayList<Value> multiplied = new ArrayList<>();
         ArrayList<Value> products = new ArrayList<>();
         
         // Iterate through both matrices and calculate products.
-        for (Value a : A) {
-            for (Value b : B) {
+        for (Value a : matA) {
+            for (Value b : matB) {
                 if (a.j == b.i) { products.add(new Value(a.i, b.j, a.v*b.v)); }
             }
         }
@@ -431,81 +432,81 @@ public class Matrix {
     /**
      * Adds two vectors.
      * 
-     * @param a  the first vector
-     * @param b  the second vector
+     * @param vecA  the first vector
+     * @param vecB  the second vector
      * @return  the sum of the two vectors
      */
-    public static double[] add(double[] a, double[] b) {
-        int n = a.length;
+    public static double[] add(double[] vecA, double[] vecB) {
+        int n = vecA.length;
         double[] added = new double[n];
-        for (int i = 0; i < n; i++) { added[i] = a[i] + b[i]; }
+        for (int i = 0; i < n; i++) { added[i] = vecA[i] + vecB[i]; }
         return added;
     }
     
     /**
      * Subtracts two vectors.
      * 
-     * @param a  the first vector
-     * @param b  the second vector
+     * @param vecA  the first vector
+     * @param vecB  the second vector
      * @return  the difference of the two vectors
      */
-    public static double[] subtract(double[] a, double[] b) {
-        int n = a.length;
+    public static double[] subtract(double[] vecA, double[] vecB) {
+        int n = vecA.length;
         double[] subtracted = new double[n];
-        for (int i = 0; i < n; i++) { subtracted[i] = a[i] - b[i]; }
+        for (int i = 0; i < n; i++) { subtracted[i] = vecA[i] - vecB[i]; }
         return subtracted;
     }
     
     /**
      * Scales the values in a dense matrix.
      * 
-     * @param A  the matrix
+     * @param mat  the matrix
      * @param scale  the value to scale by
      * @return  the scaled matrix
      */
-    public static double[][] scale(double[][] A, double scale) {
-        int n = A.length;
+    public static double[][] scale(double[][] mat, double scale) {
+        int n = mat.length;
         double[][] scaled = new double[n][n];
-        for (int i = 0; i < n; i++) { scaled[i] = scale(A[i], scale); }
+        for (int i = 0; i < n; i++) { scaled[i] = scale(mat[i], scale); }
         return scaled;
     }
     
     /**
      * Scales the values in a dense vector.
      * 
-     * @param a  the vector
+     * @param vec  the vector
      * @param scale  the value to scale by
      * @return  the scaled vector
      */
-    public static double[] scale(double[] a, double scale) {
-        int n = a.length;
+    public static double[] scale(double[] vec, double scale) {
+        int n = vec.length;
         double[] scaled = new double[n];
-        for (int i = 0; i < n; i++) { scaled[i] = a[i]*scale; }
+        for (int i = 0; i < n; i++) { scaled[i] = vec[i]*scale; }
         return scaled;
     }
     
     /**
      * Scales the values in a sparse matrix.
      * 
-     * @param A  the matrix
+     * @param mat  the matrix
      * @param scale  the value to scale by
      * @return  the scaled matrix
      */
-    public static ArrayList<Value> scale(ArrayList<Value> A, double scale) {
+    public static ArrayList<Value> scale(ArrayList<Value> mat, double scale) {
         ArrayList<Value> scaled = new ArrayList<>();
-        for (Value a : A) { scaled.add(new Value(a.i, a.j, a.v*scale)); }
+        for (Value a : mat) { scaled.add(new Value(a.i, a.j, a.v*scale)); }
         return scaled;
     }
     
     /**
      * Normalizes the vector.
      * 
-     * @param a  the vector
+     * @param vec  the vector
      * @return  the normalized vector
      */
-    public static double normalize(double[] a) {
+    public static double normalize(double[] vec) {
         double sum = 0;
-        for (double v : a) { sum += v*v; }
+        for (double v : vec) { sum += v*v; }
         return Math.sqrt(sum);
     }
 }

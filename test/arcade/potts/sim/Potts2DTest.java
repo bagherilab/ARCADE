@@ -68,15 +68,15 @@ public class Potts2DTest {
                 }
         };
         
-        int D = REGION_DEFAULT;
-        int N = REGION_NUCLEUS;
+        int d = REGION_DEFAULT;
+        int n = REGION_NUCLEUS;
         
         potts.REGIONS = new int[][][] {
                 {
                         { 0, 0, 0, 0, 0, 0 },
-                        { 0, D, D, D, 0, 0 },
-                        { 0, 0, N, N, 0, 0 },
-                        { 0, D, D, 0, 0, 0 },
+                        { 0, d, d, d, 0, 0 },
+                        { 0, 0, n, n, 0, 0 },
+                        { 0, d, d, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0 },
                 }
         };

@@ -9,7 +9,7 @@ import static arcade.core.util.Matrix.*;
  */
 
 public class Solver {
-    private static Logger LOGGER = Logger.getLogger(Solver.class.getName());
+    private static Logger logger = Logger.getLogger(Solver.class.getName());
     private static final double ERROR = 1E-5;
     private static final double EPSILON = 1E-10;
     private static final int MAX_STEPS = 100;
@@ -175,21 +175,21 @@ public class Solver {
     
     // METHOD: SOR. Solves using Successive Over Relaxation. Selects either the
     // dense (naive) or sparse approach based on matrix size.
-    public static double[] SOR(double[][] A, double[] b, double[] x0) {
-        int n = A.length;
-        if (n < MATRIX_THRESHOLD) { return denseSOR(A, b, x0); }
-        else { return sparseSOR(A, b, x0); }
+    public static double[] sor(double[][] mat, double[] vec, double[] x0) {
+        int n = mat.length;
+        if (n < MATRIX_THRESHOLD) { return denseSOR(mat, vec, x0); }
+        else { return sparseSOR(mat, vec, x0); }
     }
     
     // METHOD: SOR. Solves SOR using dense matrix representation.
-    private static double[] denseSOR(double[][] A, double[] b, double[] x0) {
+    private static double[] denseSOR(double[][] mat, double[] vec, double[] x0) {
         int i = 0;
         double error = Double.POSITIVE_INFINITY;
         
         // Calculate iteration factors
-        double[] C = forwardSubstitution(A, b);
-        double[][] T = forwardSubstitution(A);
-        T = scale(T, -1);
+        double[] c = forwardSubstitution(mat, vec);
+        double[][] t = forwardSubstitution(mat);
+        t = scale(t, -1);
         
         // Set initial guess.
         double[] xCurr = x0;
@@ -198,14 +198,14 @@ public class Solver {
         // Iterate until convergence.
         while (i < MAX_ITERS && error > TOLERANCE) {
             // Calculate new guess for x.
-            xCurr = add(scale(add(multiply(T, xPrev), C), OMEGA), scale(xPrev, 1 - OMEGA));
+            xCurr = add(scale(add(multiply(t, xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));
             
             // Set previous to copy of current and increment iteration count.
             xPrev = xCurr;
             i++;
             
             // Calculate L2 norm of residuals to check for convergence.
-            double[] r = subtract(b, multiply(A, xCurr));
+            double[] r = subtract(vec, multiply(mat, xCurr));
             error = normalize(r);
         }
         
@@ -213,17 +213,17 @@ public class Solver {
     }
     
     // METHOD: SOR. Solves SOR using sparse matrix representation.
-    private static double[] sparseSOR(double[][] A, double[] b, double[] x0) {
+    private static double[] sparseSOR(double[][] mat, double[] vec, double[] x0) {
         int i = 0;
         double error = Double.POSITIVE_INFINITY;
         
         // Convert to sparse representation.
-        ArrayList<Value> sparseA = toSparse(A);
+        ArrayList<Value> sparseA = toSparse(mat);
         
         // Calculate iteration factors
-        double[] C = forwardSubstitution(sparseA, b);
-        ArrayList<Value> T = forwardSubstitution(sparseA);
-        T = scale(T, -1);
+        double[] c = forwardSubstitution(sparseA, vec);
+        ArrayList<Value> t = forwardSubstitution(sparseA);
+        t = scale(t, -1);
         
         // Set initial guess.
         double[] xCurr = x0;
@@ -232,14 +232,14 @@ public class Solver {
         // Iterate until convergence.
         while (i < MAX_ITERS && error > TOLERANCE) {
             // Calculate new guess for x.
-            xCurr = add(scale(add(multiply(T, xPrev), C), OMEGA), scale(xPrev, 1 - OMEGA));
+            xCurr = add(scale(add(multiply(t, xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));
             
             // Set previous to copy of current and increment iteration count.
             xPrev = xCurr;
             i++;
             
             // Calculate L2 norm of residuals to check for convergence.
-            double[] r = subtract(b, multiply(sparseA, xCurr));
+            double[] r = subtract(vec, multiply(sparseA, xCurr));
             error = normalize(r);
         }
         
@@ -253,7 +253,7 @@ public class Solver {
         
         // Check that given bounds are opposite signs.
         if (Math.signum(func.f(a)) == Math.signum(func.f(b))) {
-            LOGGER.severe("bisection unable to find root");
+            logger.severe("bisection unable to find root");
             System.exit(-1);
         }
         

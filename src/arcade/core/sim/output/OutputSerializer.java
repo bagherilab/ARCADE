@@ -53,8 +53,8 @@ public final class OutputSerializer {
             json.add("seeds", seeds);
             
             JsonObject conversions = new JsonObject();
-            conversions.addProperty("DS", src.DS);
-            conversions.addProperty("DT", src.DT);
+            conversions.addProperty("DS", src.ds);
+            conversions.addProperty("DT", src.dt);
             json.add("conversions", conversions);
             
             json.addProperty("ticks", src.getTicks());

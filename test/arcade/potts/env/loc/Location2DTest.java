@@ -215,17 +215,17 @@ public class Location2DTest {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
         int r = 4;
-        int N = 10;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                voxels.add(new Voxel(i - N/2, j - N/2, 0));
+        int n = 10;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                voxels.add(new Voxel(i - n / 2, j - n / 2, 0));
             }
         }
         
         PottsLocation2D loc = new PottsLocation2D(voxels);
         ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), Math.PI*r*r);
         
-        assertTrue(selected.size() < N*N);
+        assertTrue(selected.size() < n * n);
         for (Voxel voxel : selected) {
             assertTrue(Math.sqrt(Math.pow(voxel.x, 2) + Math.pow(voxel.y, 2)) <= r);
         }
@@ -235,27 +235,27 @@ public class Location2DTest {
     public void getSelected_maxSizeLocation_returnsList() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
-        int N = 10;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                voxels.add(new Voxel(i - N/2, j - N/2, 0));
+        int n = 10;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                voxels.add(new Voxel(i - n / 2, j - n / 2, 0));
             }
         }
         
         PottsLocation2D loc = new PottsLocation2D(voxels);
         ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), Integer.MAX_VALUE);
         
-        assertEquals(selected.size(), N*N);
+        assertEquals(selected.size(), n * n);
     }
     
     @Test
     public void getSelected_minSizeLocation_returnsList() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
-        int N = 10;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                voxels.add(new Voxel(i - N/2, j - N/2, 0));
+        int n = 10;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                voxels.add(new Voxel(i - n / 2, j - n / 2, 0));
             }
         }
         
@@ -271,12 +271,12 @@ public class Location2DTest {
         ArrayList<Voxel> voxelsB = new ArrayList<>();
         
         int r = 4;
-        int N = 10;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (i == N/2 && j == N/2) { voxelsB.add(new Voxel(i - N/2, j - N/2, 0)); }
-                else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - N/2, j - N/2, 0)); }
-                else { voxelsB.add(new Voxel(i - N/2, j - N/2, 0)); }
+        int n = 10;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == n / 2 && j == n / 2) { voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0)); }
+                else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - n / 2, j - n / 2, 0)); }
+                else { voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0)); }
             }
         }
         
@@ -297,12 +297,12 @@ public class Location2DTest {
         ArrayList<Voxel> voxelsA = new ArrayList<>();
         ArrayList<Voxel> voxelsB = new ArrayList<>();
         
-        int N = 10;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (i == N/2 && j == N/2) { voxelsB.add(new Voxel(i - N/2, j - N/2, 0)); }
-                else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - N/2, j - N/2, 0)); }
-                else { voxelsB.add(new Voxel(i - N/2, j - N/2, 0)); }
+        int n = 10;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == n / 2 && j == n / 2) { voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0)); }
+                else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - n / 2, j - n / 2, 0)); }
+                else { voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0)); }
             }
         }
         
@@ -318,12 +318,12 @@ public class Location2DTest {
         ArrayList<Voxel> voxelsA = new ArrayList<>();
         ArrayList<Voxel> voxelsB = new ArrayList<>();
         
-        int N = 10;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (i == N/2 && j == N/2) { voxelsB.add(new Voxel(i - N/2, j - N/2, 0)); }
-                else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - N/2, j - N/2, 0)); }
-                else { voxelsB.add(new Voxel(i - N/2, j - N/2, 0)); }
+        int n = 10;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == n / 2 && j == n / 2) { voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0)); }
+                else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - n / 2, j - n / 2, 0)); }
+                else { voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0)); }
             }
         }
         

@@ -24,8 +24,8 @@ public class PottsTest {
     private static final double TEMPERATURE = 10;
     private static final double LV = random();
     private static final double LS = random();
-    private static final double regionLV = random();
-    private static final double regionLS = random();
+    private static final double REGION_LV = random();
+    private static final double REGION_LS = random();
     private static final double R = Math.random();
     private static final double R_PLUS = Math.exp(-3/TEMPERATURE) + EPSILON;
     private static final double R_MINUS = Math.exp(-3/TEMPERATURE) - EPSILON;
@@ -96,10 +96,10 @@ public class PottsTest {
             doReturn(targetSubsurfaces[1]).when(c).getTargetSurface(Region.NUCLEUS);
             
             // Assign lambda values for cell regions.
-            doReturn(regionLV).when(c).getLambda(Term.VOLUME, Region.DEFAULT);
-            doReturn(regionLV).when(c).getLambda(Term.VOLUME, Region.NUCLEUS);
-            doReturn(regionLS).when(c).getLambda(Term.SURFACE, Region.DEFAULT);
-            doReturn(regionLS).when(c).getLambda(Term.SURFACE, Region.NUCLEUS);
+            doReturn(REGION_LV).when(c).getLambda(Term.VOLUME, Region.DEFAULT);
+            doReturn(REGION_LV).when(c).getLambda(Term.VOLUME, Region.NUCLEUS);
+            doReturn(REGION_LS).when(c).getLambda(Term.SURFACE, Region.DEFAULT);
+            doReturn(REGION_LS).when(c).getLambda(Term.SURFACE, Region.NUCLEUS);
             
             when(grid.getObjectAt(i + 1)).thenReturn(c);
             cells[i + 1] = c;
@@ -645,7 +645,7 @@ public class PottsTest {
     }
     
     @Test
-    public void change_negativeEnergyZeroSourceNonzeroTargetRegionged_updatesFields() {
+    public void change_negativeEnergyZeroSourceNonzeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(0, 1, -1, true);
         spy.IDS[0][0][0] = 0;
         spy.REGIONS[0][0][0] = Region.UNDEFINED.ordinal();
@@ -656,7 +656,7 @@ public class PottsTest {
     }
     
     @Test
-    public void change_negativeEnergyNonzeroSourceZeroTargetRegionged_updatesFields() {
+    public void change_negativeEnergyNonzeroSourceZeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 0, -1, true);
         spy.IDS[0][0][0] = 1;
         spy.REGIONS[0][0][0] = Region.DEFAULT.ordinal();
@@ -667,7 +667,7 @@ public class PottsTest {
     }
     
     @Test
-    public void change_negativeEnergyNonzeroSourceNonzeroTargetRegionged_updatesFields() {
+    public void change_negativeEnergyNonzeroSourceNonzeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 2, -1, true);
         spy.IDS[0][0][0] = 1;
         spy.REGIONS[0][0][0] = Region.DEFAULT.ordinal();
@@ -679,7 +679,7 @@ public class PottsTest {
     }
     
     @Test
-    public void change_positiveEnergyZeroSourceNonzeroTargetRegionged_updatesFields() {
+    public void change_positiveEnergyZeroSourceNonzeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(0, 1, 1, true);
         spy.IDS[0][0][0] = 0;
         spy.REGIONS[0][0][0] = Region.UNDEFINED.ordinal();
@@ -697,7 +697,7 @@ public class PottsTest {
     }
     
     @Test
-    public void change_positiveEnergyNonzeroSourceZeroTargetRegionged_updatesFields() {
+    public void change_positiveEnergyNonzeroSourceZeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 0, 1, true);
         spy.IDS[0][0][0] = 1;
         spy.REGIONS[0][0][0] = Region.DEFAULT.ordinal();
@@ -714,7 +714,7 @@ public class PottsTest {
     }
     
     @Test
-    public void change_positiveEnergyNonzeroSourceNonzeroTargetRegionged_updatesFields() {
+    public void change_positiveEnergyNonzeroSourceNonzeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 2, 1, true);
         spy.IDS[0][0][0] = 1;
         spy.REGIONS[0][0][0] = Region.DEFAULT.ordinal();
@@ -911,9 +911,9 @@ public class PottsTest {
     
     @Test
     public void getVolume_validRegionsNotZero_calculatesValue() {
-        assertEquals(regionLV*Math.pow(1 - 2, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), 0), EPSILON);
-        assertEquals(regionLV*Math.pow(1 - 2 + 1, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), 1), EPSILON);
-        assertEquals(regionLV*Math.pow(1 - 2 - 1, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), -1), EPSILON);
+        assertEquals(REGION_LV*Math.pow(1 - 2, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), 0), EPSILON);
+        assertEquals(REGION_LV*Math.pow(1 - 2 + 1, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), 1), EPSILON);
+        assertEquals(REGION_LV*Math.pow(1 - 2 - 1, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), -1), EPSILON);
     }
     
     @Test
@@ -950,9 +950,9 @@ public class PottsTest {
         double subcell2 = Math.pow(1 - 2, 2);
         double subcell2plus1 = Math.pow(1 - 2 + 1, 2);
         double subcell2minus1 = Math.pow(1 - 2 - 1, 2);
-        assertEquals(regionLV*(subcell2plus1 - subcell2),
+        assertEquals(REGION_LV*(subcell2plus1 - subcell2),
                 potts.getDeltaVolume(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal()), EPSILON);
-        assertEquals(regionLV*(subcell2minus1 - subcell2),
+        assertEquals(REGION_LV*(subcell2minus1 - subcell2),
                 potts.getDeltaVolume(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal()), EPSILON);
     }
     
@@ -965,9 +965,9 @@ public class PottsTest {
     
     @Test
     public void getSurface_validRegionsNotZero_calculatesValue() {
-        assertEquals(regionLS*Math.pow(4 - 5, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), 0), EPSILON);
-        assertEquals(regionLS*Math.pow(4 - 5 + 1, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), 1), EPSILON);
-        assertEquals(regionLS*Math.pow(4 - 5 - 1, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), -1), EPSILON);
+        assertEquals(REGION_LS*Math.pow(4 - 5, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), 0), EPSILON);
+        assertEquals(REGION_LS*Math.pow(4 - 5 + 1, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), 1), EPSILON);
+        assertEquals(REGION_LS*Math.pow(4 - 5 - 1, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), -1), EPSILON);
     }
     
     @Test
@@ -1002,9 +1002,9 @@ public class PottsTest {
         double subcell2 = Math.pow(4 - 5, 2);
         double subcell2minus3 = Math.pow(4 - 5 - 3, 2);
         double subcell2plus2 = Math.pow(4 - 5 + 2, 2);
-        assertEquals(regionLS*(subcell2minus3 - subcell2),
+        assertEquals(REGION_LS*(subcell2minus3 - subcell2),
                 potts.getDeltaSurface(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 0, 0, 0), EPSILON);
-        assertEquals(regionLS*(subcell2plus2 - subcell2),
+        assertEquals(REGION_LS*(subcell2plus2 - subcell2),
                 potts.getDeltaSurface(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0), EPSILON);
     }
     

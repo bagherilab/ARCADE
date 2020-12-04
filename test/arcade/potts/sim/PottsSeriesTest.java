@@ -19,7 +19,7 @@ import static arcade.core.TestUtilities.EPSILON;
 public class PottsSeriesTest {
     private static final double DS = (Math.random()*10) + 1;
     private static final double DT = Math.random() + 0.5;
-    private static Box PARAMETERS;
+    private static final Box PARAMETERS = new Box();
     
     private static final String REGION_ID_1 = randomString().toUpperCase();
     private static final String REGION_ID_2 = randomString().toUpperCase();
@@ -80,7 +80,8 @@ public class PottsSeriesTest {
     private static final String POPULATION_ID_2 = randomString();
     private static final String POPULATION_ID_3 = randomString();
     
-    private static MiniBox POTTS, POPULATION;
+    private static final MiniBox POTTS = new MiniBox();
+    private static final MiniBox POPULATION = new MiniBox();
     
     static int randomInt() { return (int)(Math.random()*100) + 1; }
     
@@ -95,8 +96,6 @@ public class PottsSeriesTest {
     
     @BeforeClass
     public static void setupParameters() {
-        PARAMETERS = new Box();
-        
         // DEFAULTS
         PARAMETERS.addTag("DS", "DEFAULT");
         PARAMETERS.addTag("DT", "DEFAULT");
@@ -108,14 +107,16 @@ public class PottsSeriesTest {
             PARAMETERS.addTag(POTTS_PARAMETER_NAMES[i], "POTTS");
             PARAMETERS.addAtt(POTTS_PARAMETER_NAMES[i], "value", "" + POTTS_PARAMETER_VALUES[i]);
         }
-        POTTS = PARAMETERS.getIdValForTag("POTTS");
+        MiniBox potts = PARAMETERS.getIdValForTag("POTTS");
+        for (String key : potts.getKeys()) { POTTS.put(key, potts.get(key)); }
         
         // POPULATION
         for (int i = 0; i < POPULATION_PARAMETER_NAMES.length; i++) {
             PARAMETERS.addTag(POPULATION_PARAMETER_NAMES[i], "POPULATION");
             PARAMETERS.addAtt(POPULATION_PARAMETER_NAMES[i], "value", "" + POPULATION_PARAMETER_VALUES[i]);
         }
-        POPULATION = PARAMETERS.getIdValForTag("POPULATION");
+        MiniBox population = PARAMETERS.getIdValForTag("POPULATION");
+        for (String key : population.getKeys()) { POPULATION.put(key, potts.get(key)); }
     }
     
     private HashMap<String, ArrayList<Box>> makeLists() {

@@ -28,25 +28,25 @@ public class Potts2D extends Potts {
     public Potts2D(PottsSeries series) { super(series); }
     
     double getAdhesion(int id, int x, int y, int z) {
-        double H = 0;
+        double h = 0;
         PottsCell a = getCell(id);
         
         for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
                 if (!(i == x && j == y) && IDS[z][i][j] != id) {
                     PottsCell b = getCell(IDS[z][i][j]);
-                    if (a == null) { H += b.getAdhesion(0); }
-                    else if (b == null) { H += a.getAdhesion(0); }
-                    else { H += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop()))/2.0; }
+                    if (a == null) { h += b.getAdhesion(0); }
+                    else if (b == null) { h += a.getAdhesion(0); }
+                    else { h += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop()))/2.0; }
                 }
             }
         }
         
-        return H;
+        return h;
     }
     
     double getAdhesion(int id, int t, int x, int y, int z) {
-        double H = 0;
+        double h = 0;
         PottsCell c = getCell(id);
         Region region = Region.values()[t];
         
@@ -55,12 +55,12 @@ public class Potts2D extends Potts {
                 Region xy = Region.values()[REGIONS[z][i][j]];
                 if (!(i == x && j == y) && IDS[z][i][j] == id && xy != region
                         && xy != Region.UNDEFINED && xy != Region.DEFAULT) {
-                    H += (c.getAdhesion(region, xy) + c.getAdhesion(xy, region))/2;
+                    h += (c.getAdhesion(region, xy) + c.getAdhesion(xy, region))/2;
                 }
             }
         }
         
-        return H;
+        return h;
     }
     
     int[] calculateChange(int sourceID, int targetID, int x, int y, int z) {
@@ -142,37 +142,37 @@ public class Potts2D extends Potts {
     }
     
     boolean getConnectivity(boolean[][][] array, boolean zero) {
-        boolean[][] _array = array[0];
+        boolean[][] subarray = array[0];
         int links = 0;
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            if (_array[1 + MOVES_X[i]][1 + MOVES_Y[i]]) { links++; }
+            if (subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]]) { links++; }
         }
         
         switch (links) {
             case 1: return true;
             case 2:
                 // Check for opposites N/S
-                if (_array[1][2] && _array[1][0]) { return false; }
+                if (subarray[1][2] && subarray[1][0]) { return false; }
                 // Check for opposites E/W
-                else if (_array[2][1] && _array[0][1]) { return false; }
+                else if (subarray[2][1] && subarray[0][1]) { return false; }
                 // Check for corners
                 else {
                     for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-                        boolean check1 = _array[1 + MOVES_X[i]][1 + MOVES_Y[i]];
-                        boolean check2 = _array[1 + MOVES_X[(i + 1)%NUMBER_NEIGHBORS]]
-                                                [1 + MOVES_Y[(i + 1)%NUMBER_NEIGHBORS]];
-                        boolean check3 = _array[1 + CORNER_X[i]][1 + CORNER_Y[i]];
+                        boolean check1 = subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]];
+                        boolean check2 = subarray[1 + MOVES_X[(i + 1)%NUMBER_NEIGHBORS]]
+                                                 [1 + MOVES_Y[(i + 1)%NUMBER_NEIGHBORS]];
+                        boolean check3 = subarray[1 + CORNER_X[i]][1 + CORNER_Y[i]];
                         if (check1 && check2 && check3) { return true; }
                     }
                     return false;
                 }
             case 3:
                 for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-                    if (!_array[1 + MOVES_X[i]][1 + MOVES_Y[i]]) {
-                        boolean check1 = _array[1 + CORNER_X[(i + 1)%NUMBER_NEIGHBORS]]
-                                               [1 + CORNER_Y[(i + 1)%NUMBER_NEIGHBORS]];
-                        boolean check2 = _array[1 + CORNER_X[(i + 2)%NUMBER_NEIGHBORS]]
-                                               [1 + CORNER_Y[(i + 2)%NUMBER_NEIGHBORS]];
+                    if (!subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]]) {
+                        boolean check1 = subarray[1 + CORNER_X[(i + 1)%NUMBER_NEIGHBORS]]
+                                                 [1 + CORNER_Y[(i + 1)%NUMBER_NEIGHBORS]];
+                        boolean check2 = subarray[1 + CORNER_X[(i + 2)%NUMBER_NEIGHBORS]]
+                                                 [1 + CORNER_Y[(i + 2)%NUMBER_NEIGHBORS]];
                         if (check1 && check2) { return true; }
                     }
                 }

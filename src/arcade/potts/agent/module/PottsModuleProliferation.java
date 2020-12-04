@@ -14,28 +14,28 @@ import static arcade.potts.util.PottsEnums.Phase;
 
 public abstract class PottsModuleProliferation extends PottsModule {
     /** Average duration of G1 phase (ticks) */
-    final double DURATION_G1;
+    final double durationG1;
     
     /** Average duration of S phase (ticks) */
-    final double DURATION_S;
+    final double durationS;
     
     /** Average duration of G2 phase (ticks) */
-    final double DURATION_G2;
+    final double durationG2;
     
     /** Average duration of M phase (ticks) */
-    final double DURATION_M;
+    final double durationM;
     
     /** Average duration for checkpoint recovery (ticks) */
-    final double DURATION_CHECKPOINT;
+    final double durationCheckpoint;
     
     /** Cell growth rate for phase G1 (ticks^-1) */
-    final double RATE_G1;
+    final double rateG1;
     
     /** Nucleus growth rate for phase S (ticks^-1) */
-    final double RATE_S;
+    final double rateS;
     
     /** Cell growth rate for phase G2 (ticks^-1) */
-    final double RATE_G2;
+    final double rateG2;
     
     /** Ratio of critical volume for G1 growth checkpoint */
     static final double GROWTH_CHECKPOINT_G1 = 2*0.95;
@@ -47,7 +47,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
     static final double GROWTH_CHECKPOINT_G2 = 2*0.99;
     
     /** Basal rate of apoptosis (ticks^-1) */
-    final double BASAL_APOPTOSIS_RATE;
+    final double basalApoptosisRate;
     
     /** {@code true} if cell is arrested in a phase, {@code false} otherwise */
     boolean isArrested;
@@ -63,16 +63,16 @@ public abstract class PottsModuleProliferation extends PottsModule {
         
         MiniBox parameters = cell.getParameters();
         
-        DURATION_G1 = parameters.getDouble("proliferation/DURATION_G1");
-        DURATION_S = parameters.getDouble("proliferation/DURATION_S");
-        DURATION_G2 = parameters.getDouble("proliferation/DURATION_G2");
-        DURATION_M = parameters.getDouble("proliferation/DURATION_M");
-        DURATION_CHECKPOINT = parameters.getDouble("proliferation/DURATION_CHECKPOINT");
-        BASAL_APOPTOSIS_RATE = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
+        durationG1 = parameters.getDouble("proliferation/DURATION_G1");
+        durationS = parameters.getDouble("proliferation/DURATION_S");
+        durationG2 = parameters.getDouble("proliferation/DURATION_G2");
+        durationM = parameters.getDouble("proliferation/DURATION_M");
+        durationCheckpoint = parameters.getDouble("proliferation/DURATION_CHECKPOINT");
+        basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         
-        RATE_G1 = -Math.log(0.05)/DURATION_G1;
-        RATE_S = -Math.log(0.01)/DURATION_S;
-        RATE_G2 = -Math.log(0.01)/DURATION_G2;
+        rateG1 = -Math.log(0.05)/durationG1;
+        rateS = -Math.log(0.01)/durationS;
+        rateG2 = -Math.log(0.01)/durationG2;
     }
     
     /**
@@ -132,16 +132,16 @@ public abstract class PottsModuleProliferation extends PottsModule {
      */
     void stepG1(double r) {
         // Random chance of apoptosis.
-        if (r < BASAL_APOPTOSIS_RATE) {
+        if (r < basalApoptosisRate) {
             cell.setState(State.APOPTOTIC);
             return;
         }
         
         // Increase size of cell.
-        cell.updateTarget(RATE_G1, 2);
+        cell.updateTarget(rateG1, 2);
         
         // Check for transition to S phase.
-        double p = 1.0/(isArrested ? DURATION_CHECKPOINT : DURATION_G1);
+        double p = 1.0/(isArrested ? durationCheckpoint : durationG1);
         if (r < p) { checkpointG1(); }
     }
     
@@ -180,7 +180,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
     void stepS(double r) {
         if (cell.hasRegions()) {
             // Increase size of nucleus.
-            cell.updateTarget(Region.NUCLEUS, RATE_S, 2);
+            cell.updateTarget(Region.NUCLEUS, rateS, 2);
             
             // Check for transition to G2 phase.
             if (cell.getVolume(Region.NUCLEUS)
@@ -188,7 +188,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
                 phase = Phase.PROLIFERATIVE_G2;
             }
         } else {
-            double p = 1.0/DURATION_S;
+            double p = 1.0/durationS;
             if (r < p) { phase = Phase.PROLIFERATIVE_G2; }
         }
     }
@@ -207,10 +207,10 @@ public abstract class PottsModuleProliferation extends PottsModule {
      */
     void stepG2(double r) {
         // Increase size of cell.
-        cell.updateTarget(RATE_G2, 2);
+        cell.updateTarget(rateG2, 2);
         
         // Check for transition to M phase.
-        double p = 1.0/(isArrested ? DURATION_CHECKPOINT : DURATION_G2);
+        double p = 1.0/(isArrested ? durationCheckpoint : durationG2);
         if (r < p) { checkpointG2(); }
     }
     
@@ -246,7 +246,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      */
     void stepM(double r, MersenneTwisterFast random, Simulation sim) {
         // Check for completion of M phase.
-        double p = 1.0/DURATION_M;
+        double p = 1.0/durationM;
         if (r < p) {
             addCell(random, sim);
             phase = Phase.PROLIFERATIVE_G1;

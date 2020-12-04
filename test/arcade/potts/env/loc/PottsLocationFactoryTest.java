@@ -145,10 +145,10 @@ public class PottsLocationFactoryTest {
     
     @Test
     public void loadLocations_givenLoaded_updatesList() {
-        int N = randomIntBetween(1,100);
+        int n = randomIntBetween(1,100);
         ArrayList<PottsLocationContainer> containers = new ArrayList<>();
         ArrayList<ArrayList<Voxel>> allVoxels = new ArrayList<>();
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < n; i++) {
             ArrayList<Voxel> voxels = new ArrayList<>();
             voxels.add(new Voxel(i, i, i));
             voxels.add(new Voxel(i, 0, 0));
@@ -164,12 +164,12 @@ public class PottsLocationFactoryTest {
         series.loader = mock(OutputLoader.class);
         
         ArrayList<LocationContainer> container = new ArrayList();
-        for (int i = 0; i < N; i++) { container.add(containers.get(i)); }
+        for (int i = 0; i < n; i++) { container.add(containers.get(i)); }
         doReturn(container).when(series.loader).loadLocations();
         
         factory.loadLocations(series);
-        assertEquals(N, factory.locations.size());
-        for (int i = 0; i < N; i++) {
+        assertEquals(n, factory.locations.size());
+        for (int i = 0; i < n; i++) {
             PottsLocationContainer pottsLocationContainer = factory.locations.get(i);
             assertEquals(new Voxel(i, i, i), pottsLocationContainer.center);
             assertEquals(allVoxels.get(i), pottsLocationContainer.allVoxels);

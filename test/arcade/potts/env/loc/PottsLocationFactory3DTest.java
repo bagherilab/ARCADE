@@ -9,43 +9,43 @@ import ec.util.MersenneTwisterFast;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public class PottsLocationFactory3DTest {
-    final static PottsLocationFactory3D factory = mock(PottsLocationFactory3D.class, CALLS_REAL_METHODS);
+    final static PottsLocationFactory3D FACTORY = mock(PottsLocationFactory3D.class, CALLS_REAL_METHODS);
     
     @BeforeClass
     public static void setupMocks() {
-        factory.random = mock(MersenneTwisterFast.class);
+        FACTORY.random = mock(MersenneTwisterFast.class);
     }
     
     @Test
     public void convert_exactOddCubes_calculateValue() {
-        assertEquals(1, factory.convert(1*1*1));
-        assertEquals(3, factory.convert(3*3*3));
-        assertEquals(5, factory.convert(5*5*5));
-        assertEquals(7, factory.convert(7*7*7));
+        assertEquals(1, FACTORY.convert(1*1*1));
+        assertEquals(3, FACTORY.convert(3*3*3));
+        assertEquals(5, FACTORY.convert(5*5*5));
+        assertEquals(7, FACTORY.convert(7*7*7));
     }
     
     @Test
     public void convert_exactEvenCubes_calculateValue() {
-        assertEquals(3, factory.convert(2*2*2));
-        assertEquals(5, factory.convert(4*4*4));
-        assertEquals(7, factory.convert(6*6*6));
-        assertEquals(9, factory.convert(8*8*8));
+        assertEquals(3, FACTORY.convert(2*2*2));
+        assertEquals(5, FACTORY.convert(4*4*4));
+        assertEquals(7, FACTORY.convert(6*6*6));
+        assertEquals(9, FACTORY.convert(8*8*8));
     }
     
     @Test
     public void convert_inexactOddCubes_calculateValue() {
-        assertEquals(3, factory.convert(1*1*1 + 1));
-        assertEquals(5, factory.convert(3*3*3 + 1));
-        assertEquals(7, factory.convert(5*5*5 + 1));
-        assertEquals(9, factory.convert(7*7*7 + 1));
+        assertEquals(3, FACTORY.convert(1*1*1 + 1));
+        assertEquals(5, FACTORY.convert(3*3*3 + 1));
+        assertEquals(7, FACTORY.convert(5*5*5 + 1));
+        assertEquals(9, FACTORY.convert(7*7*7 + 1));
     }
     
     @Test
     public void convert_inexactEvenCubes_calculateValue() {
-        assertEquals(3, factory.convert(2*2*2 - 1));
-        assertEquals(5, factory.convert(4*4*4 - 1));
-        assertEquals(7, factory.convert(6*6*6 - 1));
-        assertEquals(9, factory.convert(8*8*8 - 1));
+        assertEquals(3, FACTORY.convert(2*2*2 - 1));
+        assertEquals(5, FACTORY.convert(4*4*4 - 1));
+        assertEquals(7, FACTORY.convert(6*6*6 - 1));
+        assertEquals(9, FACTORY.convert(8*8*8 - 1));
     }
     
     @Test
@@ -258,7 +258,7 @@ public class PottsLocationFactory3DTest {
         }
         
         voxels.add(new Voxel(0, 0, 0));
-        factory.increase(allVoxels, voxels, 7);
+        FACTORY.increase(allVoxels, voxels, 7);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(0, 0, 0));
@@ -290,7 +290,7 @@ public class PottsLocationFactory3DTest {
         }
         
         voxels.add(new Voxel(0, 0, 0));
-        factory.increase(allVoxels, voxels, 6);
+        FACTORY.increase(allVoxels, voxels, 6);
         
         HashSet<Voxel> expected = new HashSet<>();
         expected.add(new Voxel(0, 0, 0));
@@ -318,7 +318,7 @@ public class PottsLocationFactory3DTest {
         }
         
         voxels.add(new Voxel(0, 0, 0));
-        factory.increase(allVoxels, voxels, 7);
+        FACTORY.increase(allVoxels, voxels, 7);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(0, 0, 0));
@@ -344,7 +344,7 @@ public class PottsLocationFactory3DTest {
         voxels.add(new Voxel(0, 1, 0));
         voxels.add(new Voxel(0, 0, 1));
         voxels.add(new Voxel(0, 0, -1));
-        factory.decrease(voxels, 1);
+        FACTORY.decrease(voxels, 1);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(0, 0, 0));
@@ -366,7 +366,7 @@ public class PottsLocationFactory3DTest {
         voxels.add(new Voxel(0, 1, 0));
         voxels.add(new Voxel(0, 0, 1));
         voxels.add(new Voxel(0, 0, -1));
-        factory.decrease(voxels, 4);
+        FACTORY.decrease(voxels, 4);
         
         HashSet<Voxel> expected = new HashSet<>();
         expected.add(new Voxel(0, 0, 0));

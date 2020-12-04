@@ -141,7 +141,7 @@ public abstract class PottsLocations extends PottsLocation {
     /**
      * Separates the voxels in the list between this location and a new location.
      * <p>
-     * Regionged regions are re-assigned between the two splits.
+     * Regions are re-assigned between the two splits.
      * 
      * @param voxelsA  the list of voxels for this location
      * @param voxelsB  the list of voxels for the split location

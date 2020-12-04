@@ -122,151 +122,151 @@ public class MatrixTest {
     
     @Test
     public void getUpper_isNotStrictDense_getsMatrix() {
-        double[][] E = new double[][] {
+        double[][] expected = new double[][] {
                 {  1,  2,  3,  4,  5 },
                 {  0,  7,  8,  9, 10 },
                 {  0,  0, 13, 14, 15 },
                 {  0,  0,  0, 19, 20 },
                 {  0,  0,  0,  0, 25 }
         };
-        assertArrayEquals(E, getUpper(A1D, false));
+        assertArrayEquals(expected, getUpper(A1D, false));
     }
     
     @Test
     public void getUpper_isNotStrictSparse_getsMatrix() {
-        ArrayList<Value> E = new ArrayList<>();
-        E.add(new Value(0, 0, 1));
-        E.add(new Value(0, 1, 2));
-        E.add(new Value(0, 2, 3));
-        E.add(new Value(0, 3, 4));
-        E.add(new Value(0, 4, 5));
-        E.add(new Value(1, 1, 7));
-        E.add(new Value(1, 2, 8));
-        E.add(new Value(1, 3, 9));
-        E.add(new Value(1, 4, 10));
-        E.add(new Value(2, 2, 13));
-        E.add(new Value(2, 3, 14));
-        E.add(new Value(2, 4, 15));
-        E.add(new Value(3, 3, 19));
-        E.add(new Value(3, 4, 20));
-        E.add(new Value(4, 4, 25));
+        ArrayList<Value> expected = new ArrayList<>();
+        expected.add(new Value(0, 0, 1));
+        expected.add(new Value(0, 1, 2));
+        expected.add(new Value(0, 2, 3));
+        expected.add(new Value(0, 3, 4));
+        expected.add(new Value(0, 4, 5));
+        expected.add(new Value(1, 1, 7));
+        expected.add(new Value(1, 2, 8));
+        expected.add(new Value(1, 3, 9));
+        expected.add(new Value(1, 4, 10));
+        expected.add(new Value(2, 2, 13));
+        expected.add(new Value(2, 3, 14));
+        expected.add(new Value(2, 4, 15));
+        expected.add(new Value(3, 3, 19));
+        expected.add(new Value(3, 4, 20));
+        expected.add(new Value(4, 4, 25));
         
-        ArrayList<Value> U = getUpper(A1S, false);
-        U.sort(COMPARATOR);
-        E.sort(COMPARATOR);
+        ArrayList<Value> upper = getUpper(A1S, false);
+        upper.sort(COMPARATOR);
+        expected.sort(COMPARATOR);
         
-        assertEquals(E, U);
+        assertEquals(expected, upper);
     }
     
     @Test
     public void getUpper_isStrictDense_getsMatrix() {
-        double[][] E = new double[][] {
+        double[][] expected = new double[][] {
             {  0,  2,  3,  4,  5 },
             {  0,  0,  8,  9, 10 },
             {  0,  0,  0, 14, 15 },
             {  0,  0,  0,  0, 20 },
             {  0,  0,  0,  0,  0 }
         };
-        assertArrayEquals(E, getUpper(A1D, true));
+        assertArrayEquals(expected, getUpper(A1D, true));
     }
     
     @Test
     public void getUpper_isStrictSparse_getsMatrix() {
-        ArrayList<Value> E = new ArrayList<>();
-        E.add(new Value(0, 1, 2));
-        E.add(new Value(0, 2, 3));
-        E.add(new Value(0, 3, 4));
-        E.add(new Value(0, 4, 5));
-        E.add(new Value(1, 2, 8));
-        E.add(new Value(1, 3, 9));
-        E.add(new Value(1, 4, 10));
-        E.add(new Value(2, 3, 14));
-        E.add(new Value(2, 4, 15));
-        E.add(new Value(3, 4, 20));
+        ArrayList<Value> expected = new ArrayList<>();
+        expected.add(new Value(0, 1, 2));
+        expected.add(new Value(0, 2, 3));
+        expected.add(new Value(0, 3, 4));
+        expected.add(new Value(0, 4, 5));
+        expected.add(new Value(1, 2, 8));
+        expected.add(new Value(1, 3, 9));
+        expected.add(new Value(1, 4, 10));
+        expected.add(new Value(2, 3, 14));
+        expected.add(new Value(2, 4, 15));
+        expected.add(new Value(3, 4, 20));
         
-        ArrayList<Value> U = getUpper(A1S, true);
-        U.sort(COMPARATOR);
-        E.sort(COMPARATOR);
+        ArrayList<Value> upper = getUpper(A1S, true);
+        upper.sort(COMPARATOR);
+        expected.sort(COMPARATOR);
         
-        assertEquals(E, U);
+        assertEquals(expected, upper);
     }
     
     @Test
     public void getLower_isNotStrictDense_getsMatrix() {
-        double[][] E = new double[][] {
+        double[][] expected = new double[][] {
             {  1,  0,  0,  0,  0 },
             {  6,  7,  0,  0,  0 },
             { 11, 12, 13,  0,  0 },
             { 16, 17, 18, 19,  0 },
             { 21, 22, 23, 24, 25 }
         };
-        assertArrayEquals(E, getLower(A1D, false));
+        assertArrayEquals(expected, getLower(A1D, false));
     }
     
     @Test
     public void getLower_isNotStrictSparse_getsMatrix() {
-        ArrayList<Value> E = new ArrayList<>();
-        E.add(new Value(0, 0, 1));
-        E.add(new Value(1, 0, 6));
-        E.add(new Value(1, 1, 7));
-        E.add(new Value(2, 0, 11));
-        E.add(new Value(2, 1, 12));
-        E.add(new Value(2, 2, 13));
-        E.add(new Value(3, 0, 16));
-        E.add(new Value(3, 1, 17));
-        E.add(new Value(3, 2, 18));
-        E.add(new Value(3, 3, 19));
-        E.add(new Value(4, 0, 21));
-        E.add(new Value(4, 1, 22));
-        E.add(new Value(4, 2, 23));
-        E.add(new Value(4, 3, 24));
-        E.add(new Value(4, 4, 25));
+        ArrayList<Value> expected = new ArrayList<>();
+        expected.add(new Value(0, 0, 1));
+        expected.add(new Value(1, 0, 6));
+        expected.add(new Value(1, 1, 7));
+        expected.add(new Value(2, 0, 11));
+        expected.add(new Value(2, 1, 12));
+        expected.add(new Value(2, 2, 13));
+        expected.add(new Value(3, 0, 16));
+        expected.add(new Value(3, 1, 17));
+        expected.add(new Value(3, 2, 18));
+        expected.add(new Value(3, 3, 19));
+        expected.add(new Value(4, 0, 21));
+        expected.add(new Value(4, 1, 22));
+        expected.add(new Value(4, 2, 23));
+        expected.add(new Value(4, 3, 24));
+        expected.add(new Value(4, 4, 25));
         
-        ArrayList<Value> L = getLower(A1S, false);
-        L.sort(COMPARATOR);
-        E.sort(COMPARATOR);
+        ArrayList<Value> lower = getLower(A1S, false);
+        lower.sort(COMPARATOR);
+        expected.sort(COMPARATOR);
         
-        assertEquals(E, L);
+        assertEquals(expected, lower);
     }
     
     @Test
     public void getLower_isStrictDense_getsMatrix() {
-        double[][] E = new double[][] {
+        double[][] expected = new double[][] {
                 {  0,  0,  0,  0,  0 },
                 {  6,  0,  0,  0,  0 },
                 { 11, 12,  0,  0,  0 },
                 { 16, 17, 18,  0,  0 },
                 { 21, 22, 23, 24,  0 }
         };
-        assertArrayEquals(E, getLower(A1D, true));
+        assertArrayEquals(expected, getLower(A1D, true));
     }
     
     @Test
     public void getLower_isStrictSparse_getsMatrix() {
-        ArrayList<Value> E = new ArrayList<>();
-        E.add(new Value(1, 0, 6));
-        E.add(new Value(2, 0, 11));
-        E.add(new Value(2, 1, 12));
-        E.add(new Value(3, 0, 16));
-        E.add(new Value(3, 1, 17));
-        E.add(new Value(3, 2, 18));
-        E.add(new Value(4, 0, 21));
-        E.add(new Value(4, 1, 22));
-        E.add(new Value(4, 2, 23));
-        E.add(new Value(4, 3, 24));
+        ArrayList<Value> expected = new ArrayList<>();
+        expected.add(new Value(1, 0, 6));
+        expected.add(new Value(2, 0, 11));
+        expected.add(new Value(2, 1, 12));
+        expected.add(new Value(3, 0, 16));
+        expected.add(new Value(3, 1, 17));
+        expected.add(new Value(3, 2, 18));
+        expected.add(new Value(4, 0, 21));
+        expected.add(new Value(4, 1, 22));
+        expected.add(new Value(4, 2, 23));
+        expected.add(new Value(4, 3, 24));
         
-        ArrayList<Value> L = getLower(A1S, true);
-        L.sort(COMPARATOR);
-        E.sort(COMPARATOR);
+        ArrayList<Value> lower = getLower(A1S, true);
+        lower.sort(COMPARATOR);
+        expected.sort(COMPARATOR);
         
-        assertEquals(E, L);
+        assertEquals(expected, lower);
     }
     
     @Test
     public void multiply_denseRepresentation_calculatesMatrix() {
-        double[] A2B1 = new double[] { 18, 20, 16, 18,  4 };
-        double[] A3B1 = new double[] { 29, 24, 23, 26, 31 };
-        double[][] A2A3 = new double[][] {
+        double[] multiplyA2B1 = new double[] { 18, 20, 16, 18,  4 };
+        double[] multiplyA3B1 = new double[] { 29, 24, 23, 26, 31 };
+        double[][] multiplyA2A3 = new double[][] {
             { 28, 11, 16, 17, 8 },
             { 23, 18, 11,  7, 3 },
             { 24, 12,  3,  7, 6 },
@@ -274,50 +274,50 @@ public class MatrixTest {
             {  7,  7,  7,  4, 1 }
         };
         
-        assertArrayEquals(multiply(A2D, B1D), A2B1, EPSILON);
-        assertArrayEquals(multiply(A3D, B1D), A3B1, EPSILON);
-        assertArrayEquals(multiply(A2D, A3D), A2A3);
+        assertArrayEquals(multiply(A2D, B1D), multiplyA2B1, EPSILON);
+        assertArrayEquals(multiply(A3D, B1D), multiplyA3B1, EPSILON);
+        assertArrayEquals(multiply(A2D, A3D), multiplyA2A3);
     }
     
     @Test
     public void multiply_sparseRepresentation_calculatesMatrix() {
-        ArrayList<Value> E = new ArrayList<>();
-        E.add(new Value(0, 0, 28));
-        E.add(new Value(0, 1, 11));
-        E.add(new Value(0, 2, 16));
-        E.add(new Value(0, 3, 17));
-        E.add(new Value(0, 4, 8));
-        E.add(new Value(1, 0, 23));
-        E.add(new Value(1, 1, 18));
-        E.add(new Value(1, 2, 11));
-        E.add(new Value(1, 3, 7));
-        E.add(new Value(1, 4, 3));
-        E.add(new Value(2, 0, 24));
-        E.add(new Value(2, 1, 12));
-        E.add(new Value(2, 2, 3));
-        E.add(new Value(2, 3, 7));
-        E.add(new Value(2, 4, 6));
-        E.add(new Value(3, 0, 19));
-        E.add(new Value(3, 1, 12));
-        E.add(new Value(3, 2, 7));
-        E.add(new Value(3, 3, 5));
-        E.add(new Value(3, 4, 3));
-        E.add(new Value(4, 0, 7));
-        E.add(new Value(4, 1, 7));
-        E.add(new Value(4, 2, 7));
-        E.add(new Value(4, 3, 4));
-        E.add(new Value(4, 4, 1));
+        ArrayList<Value> expected = new ArrayList<>();
+        expected.add(new Value(0, 0, 28));
+        expected.add(new Value(0, 1, 11));
+        expected.add(new Value(0, 2, 16));
+        expected.add(new Value(0, 3, 17));
+        expected.add(new Value(0, 4, 8));
+        expected.add(new Value(1, 0, 23));
+        expected.add(new Value(1, 1, 18));
+        expected.add(new Value(1, 2, 11));
+        expected.add(new Value(1, 3, 7));
+        expected.add(new Value(1, 4, 3));
+        expected.add(new Value(2, 0, 24));
+        expected.add(new Value(2, 1, 12));
+        expected.add(new Value(2, 2, 3));
+        expected.add(new Value(2, 3, 7));
+        expected.add(new Value(2, 4, 6));
+        expected.add(new Value(3, 0, 19));
+        expected.add(new Value(3, 1, 12));
+        expected.add(new Value(3, 2, 7));
+        expected.add(new Value(3, 3, 5));
+        expected.add(new Value(3, 4, 3));
+        expected.add(new Value(4, 0, 7));
+        expected.add(new Value(4, 1, 7));
+        expected.add(new Value(4, 2, 7));
+        expected.add(new Value(4, 3, 4));
+        expected.add(new Value(4, 4, 1));
         
-        ArrayList<Value> M = multiply(A2S, A3S);
-        M.sort(COMPARATOR);
-        E.sort(COMPARATOR);
+        ArrayList<Value> multiplied = multiply(A2S, A3S);
+        multiplied.sort(COMPARATOR);
+        expected.sort(COMPARATOR);
         
-        assertEquals(E, M);
+        assertEquals(expected, multiplied);
     }
     
     @Test
     public void invertUpper_givenUpper_calculatesInversion() {
-        double[][] A2_IU = new double[][]{
+        double[][] invertUpperA2 = new double[][]{
             { 0.5, -1.5,   3,  1, -0.5 },
             {   0,    1,  -2, -1,   0 },
             {   0,    0,   1, -1,   1 },
@@ -325,7 +325,7 @@ public class MatrixTest {
             {   0,    0,   0,  0,   1 }
         };
         
-        double[][] A3_IU = new double[][]{
+        double[][] invertUpperA3 = new double[][]{
             { 1,   0, -4, -3,  0 },
             { 0, 0.5,  0, -1, -1 },
             { 0,   0,  1,  0,  0 },
@@ -333,13 +333,13 @@ public class MatrixTest {
             { 0,   0,  0,  0,  1 }
         };
         
-        assertArrayEquals(invertUpper(A2D), A2_IU);
-        assertArrayEquals(invertUpper(A3D), A3_IU);
+        assertArrayEquals(invertUpper(A2D), invertUpperA2);
+        assertArrayEquals(invertUpper(A3D), invertUpperA3);
     }
     
     @Test
     public void invertLower_givenLower_calculatesInversion() {
-        double[][] A2_IL = new double[][]{
+        double[][] invertLowerA2 = new double[][]{
                 { 0.5,   0,  0,  0, 0 },
                 {   0,   1,  0,  0, 0 },
                 {   0,  -3,  1,  0, 0 },
@@ -347,7 +347,7 @@ public class MatrixTest {
                 {   0, -10,  4, -2, 1 }
         };
         
-        double[][] A3_IL = new double[][]{
+        double[][] invertLowerA3 = new double[][]{
                 {  1,    0,  0,  0, 0 },
                 { -3,  0.5,  0,  0, 0 },
                 {  5, -1.5,  1,  0, 0 },
@@ -355,39 +355,39 @@ public class MatrixTest {
                 { -9,    1,  1, -2, 1 }
         };
         
-        assertArrayEquals(invertLower(A2D), A2_IL);
-        assertArrayEquals(invertLower(A3D), A3_IL);
+        assertArrayEquals(invertLower(A2D), invertLowerA2);
+        assertArrayEquals(invertLower(A3D), invertLowerA3);
     }
     
     @Test
     public void forwardSubstitution_denseGivenLower_solvesEquation() {
-        double[] A1B1_MI = multiply(invertLower(A1D), B1D);
-        double[] A1B1_FS = forwardSubstitution(A1D, B1D);
-        assertArrayEquals(A1B1_MI, A1B1_FS, EPSILON);
+        double[] mulitplyInvertA1B1 = multiply(invertLower(A1D), B1D);
+        double[] forwardSubstitutionA1B1 = forwardSubstitution(A1D, B1D);
+        assertArrayEquals(mulitplyInvertA1B1, forwardSubstitutionA1B1, EPSILON);
     }
     
     @Test
     public void forwardSubstitution_denseGivenCoefficients_solvesEquation() {
-        double[][] A1_MI = multiply(invertLower(A1D), getUpper(A1D, true));
-        double[][] A1_FS = forwardSubstitution(A1D);
-        for (int i = 0; i < A1_MI.length; i++) {
-            assertArrayEquals(A1_MI[i], A1_FS[i], EPSILON);
+        double[][] mulitplyInvertA1 = multiply(invertLower(A1D), getUpper(A1D, true));
+        double[][] forwardSubstitutionA1 = forwardSubstitution(A1D);
+        for (int i = 0; i < mulitplyInvertA1.length; i++) {
+            assertArrayEquals(mulitplyInvertA1[i], forwardSubstitutionA1[i], EPSILON);
         }
     }
     
     @Test
     public void forwardSubstitution_sparseGivenLower_solvesEquation() {
-        double[] A1B1_MI = multiply(invertLower(A1D), B1D);
-        double[] A1B1_FSD = forwardSubstitution(A1S, B1D);
-        assertArrayEquals(A1B1_MI, A1B1_FSD, EPSILON);
+        double[] mulitplyInvertA1B1 = multiply(invertLower(A1D), B1D);
+        double[] forwardSubstitutionA1B1 = forwardSubstitution(A1S, B1D);
+        assertArrayEquals(mulitplyInvertA1B1, forwardSubstitutionA1B1, EPSILON);
     }
     
     @Test
     public void forwardSubstitution_sparseGivenCoefficients_solvesEquation() {
-        double[][] A1_MI = multiply(invertLower(A1D), getUpper(A1D, true));
-        double[][] A1_FSD = toDense(forwardSubstitution(A1S));
-        for (int i = 0; i < A1_MI.length; i++) {
-            assertArrayEquals(A1_MI[i], A1_FSD[i], EPSILON);
+        double[][] mulitplyInvertA1 = multiply(invertLower(A1D), getUpper(A1D, true));
+        double[][] forwardSubstitutionA1 = toDense(forwardSubstitution(A1S));
+        for (int i = 0; i < mulitplyInvertA1.length; i++) {
+            assertArrayEquals(mulitplyInvertA1[i], forwardSubstitutionA1[i], EPSILON);
         }
     }
 }

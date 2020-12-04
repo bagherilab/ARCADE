@@ -120,11 +120,11 @@ public class OutputSerializerTest {
             heightField.setAccessible(true);
             heightField.setInt(series, height);
             
-            Field dsField = Series.class.getDeclaredField("DS");
+            Field dsField = Series.class.getDeclaredField("ds");
             dsField.setAccessible(true);
             dsField.setDouble(series, ds);
             
-            Field dtField = Series.class.getDeclaredField("DT");
+            Field dtField = Series.class.getDeclaredField("dt");
             dtField.setAccessible(true);
             dtField.setDouble(series, dt);
         } catch (Exception ignored) { }

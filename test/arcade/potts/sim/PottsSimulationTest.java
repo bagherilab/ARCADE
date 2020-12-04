@@ -279,8 +279,8 @@ public class PottsSimulationTest {
         ArrayList<CellContainer> cellContainers = new ArrayList<>();
         doReturn(objects).when(sim.grid).getAllObjects();
         
-        int N = randomIntBetween(5, 10);
-        for (int i = 0; i < N; i++) {
+        int n = randomIntBetween(5, 10);
+        for (int i = 0; i < n; i++) {
             Cell cell = mock(Cell.class);
             CellContainer cellContainer = mock(CellContainer.class);
             doReturn(i).when(cell).getID();
@@ -303,8 +303,8 @@ public class PottsSimulationTest {
         
         doReturn(objects).when(sim.grid).getAllObjects();
         
-        int N = randomIntBetween(5, 10);
-        for (int i = 0; i < N; i++) {
+        int n = randomIntBetween(5, 10);
+        for (int i = 0; i < n; i++) {
             Cell cell = mock(Cell.class);
             Location location = mock(Location.class);
             LocationContainer locationContainer = mock(LocationContainer.class);

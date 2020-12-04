@@ -12,22 +12,22 @@ import static arcade.potts.util.PottsEnums.Phase;
 
 public abstract class PottsModuleApoptosis extends PottsModule {
     /** Average duration of early apoptosis (ticks) */
-    final double DURATION_EARLY;
+    final double durationEarly;
     
     /** Average duration of late apoptosis (ticks) */
-    final double DURATION_LATE;
+    final double durationLate;
     
     /** Cytoplasm water loss rate for early apoptosis (ticks^-1) */
-    final double RATE_CYTOPLASM_LOSS;
+    final double rateCytoplasmLoss;
     
     /** Nucleus pyknosis rate for early apoptosis (ticks^-1) */
-    final double RATE_NUCLEUS_PYKNOSIS;
+    final double rateNucleusPyknosis;
     
     /** Cytoplasm blebbing rate for late apoptosis (ticks^-1) */
-    final double RATE_CYTOPLASM_BLEBBING;
+    final double rateCytoplasmBlebbing;
     
     /** Nucleus fragmentation rate for late apoptosis (ticks^-1) */
-    final double RATE_NUCLEUS_FRAGMENTATION;
+    final double rateNucleusFragmentation;
     
     /** Ratio of critical volume for apoptosis */
     static final double APOPTOSIS_CHECKPOINT = 0.1;
@@ -43,13 +43,13 @@ public abstract class PottsModuleApoptosis extends PottsModule {
         
         MiniBox parameters = cell.getParameters();
         
-        DURATION_EARLY = parameters.getDouble("apoptosis/DURATION_EARLY");
-        DURATION_LATE = parameters.getDouble("apoptosis/DURATION_LATE");
+        durationEarly = parameters.getDouble("apoptosis/DURATION_EARLY");
+        durationLate = parameters.getDouble("apoptosis/DURATION_LATE");
         
-        RATE_CYTOPLASM_LOSS = -Math.log(0.05)/DURATION_EARLY;
-        RATE_NUCLEUS_PYKNOSIS = -Math.log(0.01)/DURATION_EARLY;
-        RATE_CYTOPLASM_BLEBBING = -Math.log(0.01)/DURATION_LATE;
-        RATE_NUCLEUS_FRAGMENTATION = -Math.log(0.01)/DURATION_LATE;
+        rateCytoplasmLoss = -Math.log(0.05)/durationEarly;
+        rateNucleusPyknosis = -Math.log(0.01)/durationEarly;
+        rateCytoplasmBlebbing = -Math.log(0.01)/durationLate;
+        rateNucleusFragmentation = -Math.log(0.01)/durationLate;
     }
     
     /**
@@ -101,16 +101,16 @@ public abstract class PottsModuleApoptosis extends PottsModule {
     void stepEarly(double r) {
         if (cell.hasRegions()) {
             // Cytoplasmic water loss.
-            cell.updateTarget(Region.DEFAULT, RATE_CYTOPLASM_LOSS, 0.5);
+            cell.updateTarget(Region.DEFAULT, rateCytoplasmLoss, 0.5);
             
             // Pyknosis of nucleus.
-            cell.updateTarget(Region.NUCLEUS, RATE_NUCLEUS_PYKNOSIS, 0.5);
+            cell.updateTarget(Region.NUCLEUS, rateNucleusPyknosis, 0.5);
         } else {
-            cell.updateTarget(RATE_CYTOPLASM_LOSS, 0.5);
+            cell.updateTarget(rateCytoplasmLoss, 0.5);
         }
         
         // Check for transition to late phase.
-        double p = 1.0/DURATION_EARLY;
+        double p = 1.0/durationEarly;
         if (r < p) {
             phase = Phase.APOPTOTIC_LATE;
         }
@@ -133,17 +133,17 @@ public abstract class PottsModuleApoptosis extends PottsModule {
     void stepLate(double r, Simulation sim) {
         if (cell.hasRegions()) {
             // Cytoplasm blebbing.
-            cell.updateTarget(Region.DEFAULT, RATE_CYTOPLASM_BLEBBING, 0);
+            cell.updateTarget(Region.DEFAULT, rateCytoplasmBlebbing, 0);
             
             // Nuclear fragmentation.
-            cell.updateTarget(Region.NUCLEUS, RATE_NUCLEUS_FRAGMENTATION, 0);
+            cell.updateTarget(Region.NUCLEUS, rateNucleusFragmentation, 0);
         }
         else {
-            cell.updateTarget(RATE_CYTOPLASM_BLEBBING, 0);
+            cell.updateTarget(rateCytoplasmBlebbing, 0);
         }
         
         // Check for completion of late phase.
-        double p = 1.0/DURATION_LATE;
+        double p = 1.0/durationLate;
         if (r < p || cell.getVolume() < APOPTOSIS_CHECKPOINT*cell.getCriticalVolume()) {
             removeCell(sim);
             phase = Phase.APOPTOSED;

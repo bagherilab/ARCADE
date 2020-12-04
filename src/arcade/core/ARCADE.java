@@ -47,7 +47,7 @@ import arcade.potts.PottsARCADE;
 
 public abstract class ARCADE {
     /** Logger for {@code ARCADE}. */
-    protected static Logger LOGGER;
+    protected static Logger logger;
     
     protected abstract String getResource(String s);
     
@@ -58,11 +58,11 @@ public abstract class ARCADE {
     protected abstract OutputSaver getSaver(Series series);
     
     public static void main(String[] args) throws Exception {
-        LOGGER = updateLogger();
+        logger = updateLogger();
         
         // Check that arguments includes at least one entry.
         if (args.length == 0) {
-            LOGGER.warning("ARCADE simulation type must be specified");
+            logger.warning("ARCADE simulation type must be specified");
             throw new InvalidParameterException();
         }
         
@@ -71,11 +71,11 @@ public abstract class ARCADE {
         
         switch (args[0]) {
             case "potts":
-                LOGGER.info("running ARCADE [ potts ] simulations");
+                logger.info("running ARCADE [ potts ] simulations");
                 arcade = new PottsARCADE();
                 break;
             default:
-                LOGGER.warning("ARCADE [ " + args[0] + " ] does not exist");
+                logger.warning("ARCADE [ " + args[0] + " ] does not exist");
                 throw new InvalidParameterException();
         }
         
@@ -95,11 +95,11 @@ public abstract class ARCADE {
     
     Box loadCommands() throws IOException, SAXException {
         InputLoader loader = new InputLoader();
-        
-        LOGGER.info("loading framework command line parser from [ command.xml ]");
+    
+        logger.info("loading framework command line parser from [ command.xml ]");
         Box commands = loader.load(ARCADE.class.getResource("command.xml").toString());
-        
-        LOGGER.info("loading implementation [ " + this.getClass().getSimpleName()
+    
+        logger.info("loading implementation [ " + this.getClass().getSimpleName()
                 + " ] command line parser from [ command.xml ]");
         loader.load(this.getResource("command.xml"), commands);
         
@@ -108,11 +108,11 @@ public abstract class ARCADE {
     
     Box loadParameters() throws IOException, SAXException {
         InputLoader loader = new InputLoader();
-        
-        LOGGER.info("loading framework default parameters from [ parameter.xml ]");
+    
+        logger.info("loading framework default parameters from [ parameter.xml ]");
         Box parameters = loader.load(ARCADE.class.getResource("parameter.xml").toString());
-        
-        LOGGER.info("loading implementation [ " + this.getClass().getSimpleName()
+    
+        logger.info("loading implementation [ " + this.getClass().getSimpleName()
                 + " ] default parameters from [ parameter.xml ]");
         loader.load(this.getResource("parameter.xml"), parameters);
         
@@ -121,7 +121,7 @@ public abstract class ARCADE {
     
     MiniBox parseArguments(String[] args, Box commands) {
         // Parse command line arguments.
-        LOGGER.info("parsing command line arguments");
+        logger.info("parsing command line arguments");
         InputParser parser = new InputParser(commands);
         return parser.parse(args);
     }
@@ -162,11 +162,11 @@ public abstract class ARCADE {
             
             // Run with visualization if requested, otherwise run command line.
             if (isVis) {
-                LOGGER.info("running simulation with visualization");
+                logger.info("running simulation with visualization");
                 s.runVis();
                 break;
             } else {
-                LOGGER.info("running simulation series [ " + s.getName() + " ]");
+                logger.info("running simulation series [ " + s.getName() + " ]");
                 s.runSims();
             }
         }

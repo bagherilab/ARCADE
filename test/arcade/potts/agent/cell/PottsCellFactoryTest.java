@@ -344,99 +344,16 @@ public class PottsCellFactoryTest {
     
     @Test
     public void loadCells_givenLoadedValidPops_updatesLists() {
-        int N = randomIntBetween(1, 10);
-        int M = randomIntBetween(1, 10);
+        int n = randomIntBetween(1, 10);
+        int m = randomIntBetween(1, 10);
         ArrayList<PottsCellContainer> containers = new ArrayList<>();
         
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < n; i++) {
             PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1,10));
             containers.add(container);
         }
         
-        for (int i = N; i < N + M; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 2, randomIntBetween(1,10));
-            containers.add(container);
-        }
-        
-        PottsCellFactoryMock factory = new PottsCellFactoryMock();
-        factory.popToIDs.put(1, new HashSet<>());
-        factory.popToIDs.put(2, new HashSet<>());
-        Series series = mock(Series.class);
-        series.loader = mock(OutputLoader.class);
-        
-        series._populations = new HashMap<>();
-        
-        MiniBox pop1 = new MiniBox();
-        pop1.put("CODE", 1);
-        pop1.put("INIT", N);
-        series._populations.put("A", pop1);
-        
-        MiniBox pop2 = new MiniBox();
-        pop2.put("CODE", 2);
-        pop2.put("INIT", M);
-        series._populations.put("B", pop2);
-        
-        ArrayList<CellContainer> container = new ArrayList();
-        for (int i = 0; i < N + M; i++) { container.add(containers.get(i)); }
-        doReturn(container).when(series.loader).loadCells();
-        
-        factory.loadCells(series);
-        assertEquals(N + M, factory.cells.size());
-        assertEquals(N, factory.popToIDs.get(1).size());
-        assertEquals(M, factory.popToIDs.get(2).size());
-        for (int i = 0; i < N; i++) {
-            assertEquals(i, factory.cells.get(i).id);
-            assertEquals(1, factory.cells.get(i).pop);
-        }
-        for (int i = N; i < N + M; i++) {
-            assertEquals(i, factory.cells.get(i).id);
-            assertEquals(2, factory.cells.get(i).pop);
-        }
-    }
-    
-    @Test
-    public void loadCells_givenLoadedInvalidPops_updatesLists() {
-        int N = randomIntBetween(1,10);
-        ArrayList<PottsCellContainer> containers = new ArrayList<>();
-        
-        for (int i = 0; i < N; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1,10));
-            containers.add(container);
-        }
-        
-        PottsCellFactoryMock factory = new PottsCellFactoryMock();
-        Series series = mock(Series.class);
-        series.loader = mock(OutputLoader.class);
-        
-        series._populations = new HashMap<>();
-        
-        MiniBox pop1 = new MiniBox();
-        pop1.put("CODE", 1);
-        pop1.put("INIT", N);
-        series._populations.put("A", pop1);
-        
-        ArrayList<CellContainer> container = new ArrayList();
-        for (int i = 0; i < N; i++) { container.add(containers.get(i)); }
-        doReturn(container).when(series.loader).loadCells();
-        
-        factory.loadCells(series);
-        assertEquals(0, factory.cells.size());
-        assertFalse(factory.popToIDs.containsKey(1));
-    }
-    
-    @Test
-    public void loadCells_givenLoadedLimitedInit_updatesLists() {
-        int n = randomIntBetween(1,10);
-        int N = n + randomIntBetween(1,10);
-        int M = randomIntBetween(1,10);
-        ArrayList<PottsCellContainer> containers = new ArrayList<>();
-        
-        for (int i = 0; i < N; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1,10));
-            containers.add(container);
-        }
-        
-        for (int i = N; i < N + M; i++) {
+        for (int i = n; i < n + m; i++) {
             PottsCellContainer container = new PottsCellContainer(i, 2, randomIntBetween(1,10));
             containers.add(container);
         }
@@ -456,22 +373,105 @@ public class PottsCellFactoryTest {
         
         MiniBox pop2 = new MiniBox();
         pop2.put("CODE", 2);
-        pop2.put("INIT", M);
+        pop2.put("INIT", m);
         series._populations.put("B", pop2);
         
         ArrayList<CellContainer> container = new ArrayList();
-        for (int i = 0; i < N + M; i++) { container.add(containers.get(i)); }
+        for (int i = 0; i < n + m; i++) { container.add(containers.get(i)); }
         doReturn(container).when(series.loader).loadCells();
         
         factory.loadCells(series);
-        assertEquals(n + M, factory.cells.size());
+        assertEquals(n + m, factory.cells.size());
         assertEquals(n, factory.popToIDs.get(1).size());
-        assertEquals(M, factory.popToIDs.get(2).size());
+        assertEquals(m, factory.popToIDs.get(2).size());
         for (int i = 0; i < n; i++) {
             assertEquals(i, factory.cells.get(i).id);
             assertEquals(1, factory.cells.get(i).pop);
         }
-        for (int i = N; i < N + M; i++) {
+        for (int i = n; i < n + m; i++) {
+            assertEquals(i, factory.cells.get(i).id);
+            assertEquals(2, factory.cells.get(i).pop);
+        }
+    }
+    
+    @Test
+    public void loadCells_givenLoadedInvalidPops_updatesLists() {
+        int n = randomIntBetween(1,10);
+        ArrayList<PottsCellContainer> containers = new ArrayList<>();
+        
+        for (int i = 0; i < n; i++) {
+            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1,10));
+            containers.add(container);
+        }
+        
+        PottsCellFactoryMock factory = new PottsCellFactoryMock();
+        Series series = mock(Series.class);
+        series.loader = mock(OutputLoader.class);
+        
+        series._populations = new HashMap<>();
+        
+        MiniBox pop1 = new MiniBox();
+        pop1.put("CODE", 1);
+        pop1.put("INIT", n);
+        series._populations.put("A", pop1);
+        
+        ArrayList<CellContainer> container = new ArrayList();
+        for (int i = 0; i < n; i++) { container.add(containers.get(i)); }
+        doReturn(container).when(series.loader).loadCells();
+        
+        factory.loadCells(series);
+        assertEquals(0, factory.cells.size());
+        assertFalse(factory.popToIDs.containsKey(1));
+    }
+    
+    @Test
+    public void loadCells_givenLoadedLimitedInit_updatesLists() {
+        int num = randomIntBetween(1,10);
+        int n = num + randomIntBetween(1,10);
+        int m = randomIntBetween(1,10);
+        ArrayList<PottsCellContainer> containers = new ArrayList<>();
+        
+        for (int i = 0; i < n; i++) {
+            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1,10));
+            containers.add(container);
+        }
+        
+        for (int i = n; i < n + m; i++) {
+            PottsCellContainer container = new PottsCellContainer(i, 2, randomIntBetween(1,10));
+            containers.add(container);
+        }
+        
+        PottsCellFactoryMock factory = new PottsCellFactoryMock();
+        factory.popToIDs.put(1, new HashSet<>());
+        factory.popToIDs.put(2, new HashSet<>());
+        Series series = mock(Series.class);
+        series.loader = mock(OutputLoader.class);
+        
+        series._populations = new HashMap<>();
+        
+        MiniBox pop1 = new MiniBox();
+        pop1.put("CODE", 1);
+        pop1.put("INIT", num);
+        series._populations.put("A", pop1);
+        
+        MiniBox pop2 = new MiniBox();
+        pop2.put("CODE", 2);
+        pop2.put("INIT", m);
+        series._populations.put("B", pop2);
+        
+        ArrayList<CellContainer> container = new ArrayList();
+        for (int i = 0; i < n + m; i++) { container.add(containers.get(i)); }
+        doReturn(container).when(series.loader).loadCells();
+        
+        factory.loadCells(series);
+        assertEquals(num + m, factory.cells.size());
+        assertEquals(num, factory.popToIDs.get(1).size());
+        assertEquals(m, factory.popToIDs.get(2).size());
+        for (int i = 0; i < num; i++) {
+            assertEquals(i, factory.cells.get(i).id);
+            assertEquals(1, factory.cells.get(i).pop);
+        }
+        for (int i = n; i < n + m; i++) {
             assertEquals(i, factory.cells.get(i).id);
             assertEquals(2, factory.cells.get(i).pop);
         }

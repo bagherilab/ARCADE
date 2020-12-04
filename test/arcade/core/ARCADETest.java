@@ -24,7 +24,7 @@ public class ARCADETest {
     private static final String XML = randomString();
     
     @BeforeClass
-    public static void setFields() { ARCADE.LOGGER = mock(Logger.class); }
+    public static void setFields() { ARCADE.logger = mock(Logger.class); }
     
     class ARCADE_MOCK extends ARCADE {
         ArrayList<Series> seriesList;

@@ -128,8 +128,8 @@ public class PottsLocationTest {
     public void getVoxels_hasVoxels_returnsList() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
-        int N = (int)(Math.random()*100) + 1;
-        for (int i = 0; i < N; i++) { voxels.add(new Voxel(i, i, i)); }
+        int n = (int)(Math.random()*100) + 1;
+        for (int i = 0; i < n; i++) { voxels.add(new Voxel(i, i, i)); }
         
         PottsLocationMock loc = new PottsLocationMock(voxels);
         ArrayList<Voxel> voxelList = loc.getVoxels();
@@ -406,9 +406,9 @@ public class PottsLocationTest {
         int locationID = randomIntBetween(1, 10);
         
         ArrayList<Voxel> voxels = new ArrayList<>();
-        int N = randomIntBetween(1, 10);
-        for (int i = 0; i < 2*N; i++) {
-            for (int j = 0; j < 2*N; j++) {
+        int n = randomIntBetween(1, 10);
+        for (int i = 0; i < 2 * n; i++) {
+            for (int j = 0; j < 2 * n; j++) {
                 voxels.add(new Voxel(i, j, 0));
             }
         }
@@ -418,7 +418,7 @@ public class PottsLocationTest {
         PottsLocationContainer container = (PottsLocationContainer)location.convert(locationID);
         
         assertEquals(locationID, container.id);
-        assertEquals(new Voxel(N, N, 0), container.center);
+        assertEquals(new Voxel(n, n, 0), container.center);
         assertEquals(voxels, container.allVoxels);
         assertNull(container.regions);
     }

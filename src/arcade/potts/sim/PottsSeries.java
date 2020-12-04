@@ -162,7 +162,7 @@ public class PottsSeries extends Series {
             
             // Apply conversion factors.
             for (String convert : populationConversions.getKeys()) {
-                double conversion = parseConversion(populationConversions.get(convert), DS, DT);
+                double conversion = parseConversion(populationConversions.get(convert), ds, dt);
                 population.put(convert, population.getDouble(convert)*conversion);
             }
         }
