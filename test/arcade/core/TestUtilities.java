@@ -3,6 +3,7 @@ package arcade.core;
 import java.io.*;
 import java.util.Random;
 import ec.util.MersenneTwisterFast;
+import org.junit.rules.TemporaryFolder;
 
 public final class TestUtilities {
     public static final double EPSILON = 1E-10;
@@ -26,6 +27,16 @@ public final class TestUtilities {
                 .limit(10)
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
                 .toString();
+    }
+    
+    public static final String SETUP_TEMPLATE = "<set path=\"###/\">" +
+            "<series name=\"***\" ticks=\"1\" interval=\"1\" height=\"1\" start=\"0\" end=\"0\">" +
+            "</series></set>";
+    
+    public static String makeSetup(TemporaryFolder folder, String name) {
+        return SETUP_TEMPLATE
+                .replace("###", folder.getRoot().getAbsolutePath())
+                .replace("***", name);
     }
     
     public static void write(File file, String contents) {

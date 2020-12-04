@@ -1,0 +1,14 @@
+<parameters>
+    <!-- default parameters for series -->
+    <default id="START_SEED" value="0" description="random seed for first simulation in series" />
+    <default id="END_SEED" value="0" description="random seed for last simulation in series" />
+    <default id="TICKS" value="100" units="ticks" description="number of ticks for simulation" />
+    <default id="INTERVAL" value="50" units="ticks" description="interval between outputs" />
+    <default id="LENGTH" value="100" units="voxels" description="x size of the simulation" />
+    <default id="WIDTH" value="100" units="voxels" description="y size of the simulation"/>
+    <default id="HEIGHT" value="1" units="voxels" description="z size of the simulation"/>
+
+    <!-- default conversion factors -->
+    <default id="DS" value="2" units="um/voxel" description="spatial conversion factor" />
+    <default id="DT" value="0.5" units="hours/tick" description="temporal conversion factor" />
+</parameters>

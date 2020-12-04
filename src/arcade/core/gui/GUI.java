@@ -10,14 +10,14 @@ import java.util.logging.LogManager;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
-import arcade.core.Main;
+import arcade.core.ARCADE;
 import sim.display.SimApplet;
 
 /**
  * Creates a {@code GUI} for selecting setup file and running the simulation.
  * <p>
  * When the model is called with arguments, then the {@code main} method in
- * {@link arcade.core.Main} is called directly and the {@code GUI} is not shown.
+ * {@link arcade.core.ARCADE} is called directly and the {@code GUI} is not shown.
  */
 
 public class GUI implements ActionListener {
@@ -46,7 +46,7 @@ public class GUI implements ActionListener {
     private File xml;
     
     public static void main(String[] args) throws Exception {
-        if (args.length > 0) { Main.main(args); }
+        if (args.length > 0) { ARCADE.main(args); }
         else { SwingUtilities.invokeLater(GUI::createAndShowGUI); }
     }
     
@@ -170,8 +170,8 @@ public class GUI implements ActionListener {
                         LogManager.getLogManager().reset();
                         
                         if (visCheck.isSelected()) {
-                            Main.main(new String[]{xml.getAbsolutePath(), "--vis"});
-                        } else { Main.main(new String[]{xml.getAbsolutePath()}); }
+                            ARCADE.main(new String[]{"", xml.getAbsolutePath(), "--vis"});
+                        } else { ARCADE.main(new String[]{"", xml.getAbsolutePath()}); }
                         
                     } catch (Exception ex) {
                         ex.printStackTrace();
