@@ -579,10 +579,11 @@ public class PottsSeriesTest {
                 
                 double value = randomDouble();
                 double scale = randomDouble();
-                boxes[0].addAtt(REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedRegion1, "value", "" + value);
-                boxes[0].addTag(REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedRegion1, "PARAMETER");
-                boxes[0].addAtt(REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedRegion2, "scale", "" + scale);
-                boxes[0].addTag(REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + modifiedRegion2, "PARAMETER");
+                String key = REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR;
+                boxes[0].addAtt(key + modifiedRegion1, "value", "" + value);
+                boxes[0].addTag(key + modifiedRegion1, "PARAMETER");
+                boxes[0].addAtt(key + modifiedRegion2, "scale", "" + scale);
+                boxes[0].addTag(key + modifiedRegion2, "PARAMETER");
                 
                 PottsSeries series = makeSeriesForPopulation(boxes);
                 MiniBox box = series._populations.get(POPULATION_ID_1);

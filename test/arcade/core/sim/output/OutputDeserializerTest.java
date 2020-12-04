@@ -38,10 +38,12 @@ public class OutputDeserializerTest {
     };
     
     public static void checkAdaptors(Gson gson) {
-        TypeToken<ArrayList<CellContainer>> cellContainerList = new TypeToken<ArrayList<CellContainer>>() {};
+        TypeToken<ArrayList<CellContainer>> cellContainerList =
+                new TypeToken<ArrayList<CellContainer>>() {};
         assertSame(gson.getAdapter(cellContainerList).getClass(), TreeTypeAdapter.class);
         
-        TypeToken<ArrayList<LocationContainer>> locationContainerList = new TypeToken<ArrayList<LocationContainer>>() {};
+        TypeToken<ArrayList<LocationContainer>> locationContainerList =
+                new TypeToken<ArrayList<LocationContainer>>() {};
         assertSame(gson.getAdapter(locationContainerList).getClass(), TreeTypeAdapter.class);
     }
     

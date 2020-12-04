@@ -140,7 +140,8 @@ public class SeriesTest {
         
         protected void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters) { }
         
-        protected void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults, MiniBox populationConversions) { }
+        protected void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults,
+                                         MiniBox populationConversions) { }
         
         protected void updateMolecules(ArrayList<Box> molecules, MiniBox moleculeDefaults) { }
         

@@ -10,11 +10,17 @@ public final class TestUtilities {
     
     public static final MersenneTwisterFast RANDOM = new MersenneTwisterFast((long) (Math.random()*1000));
     
-    public static int randomSeed() { return randomIntBetween(1, 1000); }
+    public static int randomSeed() {
+        return randomIntBetween(1, 1000);
+    }
     
-    public static int randomIntBetween(int lower, int upper) { return (int)(Math.random()*(upper - lower)) + lower; }
+    public static int randomIntBetween(int lower, int upper) {
+        return (int)(Math.random()*(upper - lower)) + lower;
+    }
     
-    public static double randomDoubleBetween(double lower, double upper) { return Math.random()*(upper - lower) + lower; }
+    public static double randomDoubleBetween(double lower, double upper) {
+        return Math.random()*(upper - lower) + lower;
+    }
     
     public static String[] randomStrings(int n) {
         String[] strings = new String[n];

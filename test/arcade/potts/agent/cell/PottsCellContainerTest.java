@@ -150,8 +150,8 @@ public class PottsCellContainerTest {
         factory.popToParameters.put(cellPop, parameters);
         factory.popToRegions.put(cellPop, false);
         
-        PottsCellContainer container = new PottsCellContainer(cellID, cellPop, cellAge, cellState, cellPhase,
-                0, null, 0, 0, null, null);
+        PottsCellContainer container = new PottsCellContainer(cellID, cellPop, cellAge,
+                cellState, cellPhase, 0, null, 0, 0, null, null);
         Cell cell = container.convert(factory, location);
         
         assertTrue(cell instanceof PottsCell);
@@ -208,8 +208,8 @@ public class PottsCellContainerTest {
         
         factory.popToRegions.put(cellPop, true);
         
-        PottsCellContainer container = new PottsCellContainer(cellID, cellPop, cellAge, cellState, cellPhase,
-                0, null, 0, 0, null, null);
+        PottsCellContainer container = new PottsCellContainer(cellID, cellPop, cellAge,
+                cellState, cellPhase, 0, null, 0, 0, null, null);
         Cell cell = container.convert(factory, location);
         
         assertTrue(cell instanceof PottsCell);
@@ -230,15 +230,19 @@ public class PottsCellContainerTest {
         assertEquals(0, cell.getTargetSurface(), EPSILON);
         
         for (Region region : regionList) {
-            assertEquals(criticalsRegion.get(region).get(Term.VOLUME), cell.getCriticalVolume(region), EPSILON);
-            assertEquals(criticalsRegion.get(region).get(Term.SURFACE), cell.getCriticalSurface(region), EPSILON);
-            assertEquals(lambdasRegion.get(region).get(Term.VOLUME), ((PottsCell)cell).getLambda(Term.VOLUME, region), EPSILON);
-            assertEquals(lambdasRegion.get(region).get(Term.SURFACE), ((PottsCell)cell).getLambda(Term.SURFACE, region), EPSILON);
+            EnumMap<Term, Double> criticalTerms = criticalsRegion.get(region);
+            EnumMap<Term, Double> lambdaTerms = lambdasRegion.get(region);
+            
+            assertEquals(criticalTerms.get(Term.VOLUME), cell.getCriticalVolume(region), EPSILON);
+            assertEquals(criticalTerms.get(Term.SURFACE), cell.getCriticalSurface(region), EPSILON);
+            assertEquals(lambdaTerms.get(Term.VOLUME), ((PottsCell)cell).getLambda(Term.VOLUME, region), EPSILON);
+            assertEquals(lambdaTerms.get(Term.SURFACE), ((PottsCell)cell).getLambda(Term.SURFACE, region), EPSILON);
             assertEquals(0, cell.getTargetVolume(region), EPSILON);
             assertEquals(0, cell.getTargetSurface(region), EPSILON);
             
             for (Region target : regionList) {
-                assertEquals(adhesionRegion.get(region).get(target), ((PottsCell)cell).getAdhesion(region, target), EPSILON);
+                assertEquals(adhesionRegion.get(region).get(target),
+                        ((PottsCell)cell).getAdhesion(region, target), EPSILON);
             }
         }
     }

@@ -11,6 +11,8 @@ import static arcade.potts.sim.PottsTest.*;
 import static arcade.core.TestUtilities.EPSILON;
 
 public class Potts3DTest {
+    static final int REGION_DEFAULT = Region.DEFAULT.ordinal();
+    static final int REGION_NUCLEUS = Region.NUCLEUS.ordinal();
     static PottsCell[] cells;
     PottsSeries seriesMock = makeSeries();
     Potts3D pottsMock = new Potts3D(seriesMock);
@@ -96,8 +98,8 @@ public class Potts3DTest {
                 }
         };
         
-        int D = Region.DEFAULT.ordinal();
-        int N = Region.NUCLEUS.ordinal();
+        int D = REGION_DEFAULT;
+        int N = REGION_NUCLEUS;
         
         potts.REGIONS = new int[][][] {
                 {
@@ -226,8 +228,9 @@ public class Potts3DTest {
     
     @Test
     public void getAdhesion_validRegions_calculateValue() {
-        assertEquals(subadhesion(Region.DEFAULT, Region.NUCLEUS)*1, potts.getAdhesion(1, Region.DEFAULT.ordinal(), 1, 2, 2), EPSILON);
-        assertEquals(0, potts.getAdhesion(1, Region.NUCLEUS.ordinal(), 1, 2, 2), EPSILON);
+        double adhesion = subadhesion(Region.DEFAULT, Region.NUCLEUS);
+        assertEquals(adhesion, potts.getAdhesion(1, REGION_DEFAULT, 1, 2, 2), EPSILON);
+        assertEquals(0, potts.getAdhesion(1, REGION_NUCLEUS, 1, 2, 2), EPSILON);
     }
     
     @Test
@@ -238,8 +241,8 @@ public class Potts3DTest {
     
     @Test
     public void calculateChange_validRegions_calculatesValue() {
-        assertArrayEquals(new int[] { -6, 2 }, potts.calculateChange(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 2, 2, 2));
-        assertArrayEquals(new int[] { -4, 4 }, potts.calculateChange(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 2, 2, 1));
+        assertArrayEquals(new int[] { -6, 2 }, potts.calculateChange(1, REGION_NUCLEUS, REGION_DEFAULT, 2, 2, 2));
+        assertArrayEquals(new int[] { -4, 4 }, potts.calculateChange(1, REGION_DEFAULT, REGION_NUCLEUS, 2, 2, 1));
     }
     
     @Test
@@ -280,7 +283,7 @@ public class Potts3DTest {
     
     @Test
     public void getNeighborhood_givenRegion_createsArray() {
-        boolean[][][] array1 = potts.getNeighborhood(1, Region.DEFAULT.ordinal(), 2, 2, 2);
+        boolean[][][] array1 = potts.getNeighborhood(1, REGION_DEFAULT, 2, 2, 2);
         assertArrayEquals(new boolean[] { false,  true, false }, array1[0][0]);
         assertArrayEquals(new boolean[] { false,  true, false }, array1[0][1]);
         assertArrayEquals(new boolean[] { false,  false, false }, array1[0][2]);
@@ -291,7 +294,7 @@ public class Potts3DTest {
         assertArrayEquals(new boolean[] { false, false, false }, array1[2][1]);
         assertArrayEquals(new boolean[] { false, false, false }, array1[2][2]);
         
-        boolean[][][] array2 = potts.getNeighborhood(1,  Region.NUCLEUS.ordinal(), 2, 2, 2);
+        boolean[][][] array2 = potts.getNeighborhood(1,  REGION_NUCLEUS, 2, 2, 2);
         assertArrayEquals(new boolean[] { false, false, false }, array2[0][0]);
         assertArrayEquals(new boolean[] { false, false, false }, array2[0][1]);
         assertArrayEquals(new boolean[] { false, false, false }, array2[0][2]);
@@ -665,7 +668,8 @@ public class Potts3DTest {
     public void getConnectivity_twoNeighborsAdjacentXYZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_XY, combo, LINKS_TWO_NEIGHBORS_ADJACENT_XY), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_XY,
+                        combo, LINKS_TWO_NEIGHBORS_ADJACENT_XY), Axis.Z_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -675,7 +679,8 @@ public class Potts3DTest {
     public void getConnectivity_twoNeighborsAdjacentYZZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_YZ, combo, LINKS_TWO_NEIGHBORS_ADJACENT_YZ), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_YZ,
+                        combo, LINKS_TWO_NEIGHBORS_ADJACENT_YZ), Axis.X_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -685,7 +690,8 @@ public class Potts3DTest {
     public void getConnectivity_twoNeighborsAdjacentZXZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_ZX, combo, LINKS_TWO_NEIGHBORS_ADJACENT_ZX), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_ZX,
+                        combo, LINKS_TWO_NEIGHBORS_ADJACENT_ZX), Axis.Y_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -695,7 +701,8 @@ public class Potts3DTest {
     public void getConnectivity_twoNeighborsAdjacentXYOneLink_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_XY, combo, LINKS_TWO_NEIGHBORS_ADJACENT_XY), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_XY,
+                        combo, LINKS_TWO_NEIGHBORS_ADJACENT_XY), Axis.Z_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -705,7 +712,8 @@ public class Potts3DTest {
     public void getConnectivity_twoNeighborsAdjacentYZOneLink_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_YZ, combo, LINKS_TWO_NEIGHBORS_ADJACENT_YZ), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_YZ,
+                        combo, LINKS_TWO_NEIGHBORS_ADJACENT_YZ), Axis.X_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -715,7 +723,8 @@ public class Potts3DTest {
     public void getConnectivity_twoNeighborsAdjacentZXOneLink_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_ZX, combo, LINKS_TWO_NEIGHBORS_ADJACENT_ZX), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT_ZX,
+                        combo, LINKS_TWO_NEIGHBORS_ADJACENT_ZX), Axis.Y_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -892,7 +901,8 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsPlaneXYZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_PLANE_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_XY, combo, LINKS_THREE_NEIGHBORS_PLANE_XY), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_XY,
+                        combo, LINKS_THREE_NEIGHBORS_PLANE_XY), Axis.Z_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -902,7 +912,8 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsPlaneYZZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_PLANE_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_YZ, combo, LINKS_THREE_NEIGHBORS_PLANE_YZ), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_YZ,
+                        combo, LINKS_THREE_NEIGHBORS_PLANE_YZ), Axis.X_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -912,7 +923,8 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsPlaneZXZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_PLANE_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_ZX, combo, LINKS_THREE_NEIGHBORS_PLANE_ZX), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_ZX,
+                        combo, LINKS_THREE_NEIGHBORS_PLANE_ZX), Axis.Y_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -922,7 +934,8 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsPlaneXYOneLink_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_PLANE_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_XY, combo, LINKS_THREE_NEIGHBORS_PLANE_XY), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_XY,
+                        combo, LINKS_THREE_NEIGHBORS_PLANE_XY), Axis.Z_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -932,7 +945,8 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsPlaneYZOneLink_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_PLANE_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_YZ, combo, LINKS_THREE_NEIGHBORS_PLANE_YZ), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_YZ,
+                        combo, LINKS_THREE_NEIGHBORS_PLANE_YZ), Axis.X_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -942,7 +956,8 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsPlaneZXOneLink_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_PLANE_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_ZX, combo, LINKS_THREE_NEIGHBORS_PLANE_ZX), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_ZX,
+                        combo, LINKS_THREE_NEIGHBORS_PLANE_ZX), Axis.Y_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -952,7 +967,8 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsPlaneXYTwoLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_PLANE_TWO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_XY, combo, LINKS_THREE_NEIGHBORS_PLANE_XY), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_XY,
+                        combo, LINKS_THREE_NEIGHBORS_PLANE_XY), Axis.Z_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -962,7 +978,8 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsPlaneYZTwoLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_PLANE_TWO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_YZ, combo, LINKS_THREE_NEIGHBORS_PLANE_YZ), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_YZ,
+                        combo, LINKS_THREE_NEIGHBORS_PLANE_YZ), Axis.X_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -972,7 +989,8 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsPlaneZXTwoLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_PLANE_TWO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_ZX, combo, LINKS_THREE_NEIGHBORS_PLANE_ZX), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS_PLANE_ZX,
+                        combo, LINKS_THREE_NEIGHBORS_PLANE_ZX), Axis.Y_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -982,10 +1000,12 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsCornerZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_CORNER_ZERO_LINKS) {
-                boolean[][][] arrayA = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_A, combo, LINKS_THREE_NEIGHBORS_CORNER_A), Axis.Z_AXIS, rotation);
+                boolean[][][] arrayA = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_A,
+                        combo, LINKS_THREE_NEIGHBORS_CORNER_A), Axis.Z_AXIS, rotation);
                 assertFalse(potts.getConnectivity(arrayA, false));
                 
-                boolean[][][] arrayB = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_B, combo, LINKS_THREE_NEIGHBORS_CORNER_B), Axis.Z_AXIS, rotation);
+                boolean[][][] arrayB = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_B,
+                        combo, LINKS_THREE_NEIGHBORS_CORNER_B), Axis.Z_AXIS, rotation);
                 assertFalse(potts.getConnectivity(arrayB, false));
             }
         }
@@ -995,10 +1015,12 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsCornerOneLink_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_CORNER_ONE_LINK) {
-                boolean[][][] arrayA = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_A, combo, LINKS_THREE_NEIGHBORS_CORNER_A), Axis.Z_AXIS, rotation);
+                boolean[][][] arrayA = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_A,
+                        combo, LINKS_THREE_NEIGHBORS_CORNER_A), Axis.Z_AXIS, rotation);
                 assertFalse(potts.getConnectivity(arrayA, false));
                 
-                boolean[][][] arrayB = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_B, combo, LINKS_THREE_NEIGHBORS_CORNER_B), Axis.Z_AXIS, rotation);
+                boolean[][][] arrayB = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_B,
+                        combo, LINKS_THREE_NEIGHBORS_CORNER_B), Axis.Z_AXIS, rotation);
                 assertFalse(potts.getConnectivity(arrayB, false));
             }
         }
@@ -1008,10 +1030,12 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsCornerTwoLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_CORNER_TWO_LINKS) {
-                boolean[][][] arrayA = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_A, combo, LINKS_THREE_NEIGHBORS_CORNER_A), Axis.Z_AXIS, rotation);
+                boolean[][][] arrayA = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_A,
+                        combo, LINKS_THREE_NEIGHBORS_CORNER_A), Axis.Z_AXIS, rotation);
                 assertTrue(potts.getConnectivity(arrayA, false));
                 
-                boolean[][][] arrayB = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_B, combo, LINKS_THREE_NEIGHBORS_CORNER_B), Axis.Z_AXIS, rotation);
+                boolean[][][] arrayB = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_B,
+                        combo, LINKS_THREE_NEIGHBORS_CORNER_B), Axis.Z_AXIS, rotation);
                 assertTrue(potts.getConnectivity(arrayB, false));
             }
         }
@@ -1021,10 +1045,12 @@ public class Potts3DTest {
     public void getConnectivity_threeNeighborsCornerThreeLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_CORNER_THREE_LINKS) {
-                boolean[][][] arrayA = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_A, combo, LINKS_THREE_NEIGHBORS_CORNER_A), Axis.Z_AXIS, rotation);
+                boolean[][][] arrayA = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_A,
+                        combo, LINKS_THREE_NEIGHBORS_CORNER_A), Axis.Z_AXIS, rotation);
                 assertTrue(potts.getConnectivity(arrayA, false));
                 
-                boolean[][][] arrayB = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_B, combo, LINKS_THREE_NEIGHBORS_CORNER_B), Axis.Z_AXIS, rotation);
+                boolean[][][] arrayB = rotate(combine(BASE_THREE_NEIGHBORS_CORNER_B,
+                        combo, LINKS_THREE_NEIGHBORS_CORNER_B), Axis.Z_AXIS, rotation);
                 assertTrue(potts.getConnectivity(arrayB, false));
             }
         }
@@ -1280,13 +1306,16 @@ public class Potts3DTest {
     @Test
     public void getConnectivity_fourNeighborsPlaneZeroLinks_returnsFalse() {
         for (int[] combo : COMBOS_FOUR_NEIGHBORS_PLANE_ZERO_LINKS) {
-            boolean[][][] arrayXY = combine(BASE_FOUR_NEIGHBORS_PLANE_XY, combo, LINKS_FOUR_NEIGHBORS_PLANE_XY);
+            boolean[][][] arrayXY = combine(BASE_FOUR_NEIGHBORS_PLANE_XY,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_XY);
             assertFalse(potts.getConnectivity(arrayXY, false));
             
-            boolean[][][] arrayYZ = combine(BASE_FOUR_NEIGHBORS_PLANE_YZ, combo, LINKS_FOUR_NEIGHBORS_PLANE_YZ);
+            boolean[][][] arrayYZ = combine(BASE_FOUR_NEIGHBORS_PLANE_YZ,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_YZ);
             assertFalse(potts.getConnectivity(arrayYZ, false));
             
-            boolean[][][] arrayZX = combine(BASE_FOUR_NEIGHBORS_PLANE_ZX, combo, LINKS_FOUR_NEIGHBORS_PLANE_ZX);
+            boolean[][][] arrayZX = combine(BASE_FOUR_NEIGHBORS_PLANE_ZX,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_ZX);
             assertFalse(potts.getConnectivity(arrayZX, false));
         }
     }
@@ -1294,13 +1323,16 @@ public class Potts3DTest {
     @Test
     public void getConnectivity_fourNeighborsPlaneOneLink_returnsFalse() {
         for (int[] combo : COMBOS_FOUR_NEIGHBORS_PLANE_ONE_LINK) {
-            boolean[][][] arrayXY = combine(BASE_FOUR_NEIGHBORS_PLANE_XY, combo, LINKS_FOUR_NEIGHBORS_PLANE_XY);
+            boolean[][][] arrayXY = combine(BASE_FOUR_NEIGHBORS_PLANE_XY,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_XY);
             assertFalse(potts.getConnectivity(arrayXY, false));
             
-            boolean[][][] arrayYZ = combine(BASE_FOUR_NEIGHBORS_PLANE_YZ, combo, LINKS_FOUR_NEIGHBORS_PLANE_YZ);
+            boolean[][][] arrayYZ = combine(BASE_FOUR_NEIGHBORS_PLANE_YZ,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_YZ);
             assertFalse(potts.getConnectivity(arrayYZ, false));
             
-            boolean[][][] arrayZX = combine(BASE_FOUR_NEIGHBORS_PLANE_ZX, combo, LINKS_FOUR_NEIGHBORS_PLANE_ZX);
+            boolean[][][] arrayZX = combine(BASE_FOUR_NEIGHBORS_PLANE_ZX,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_ZX);
             assertFalse(potts.getConnectivity(arrayZX, false));
         }
     }
@@ -1308,13 +1340,16 @@ public class Potts3DTest {
     @Test
     public void getConnectivity_fourNeighborsPlaneTwoLinks_returnsFalse() {
         for (int[] combo : COMBOS_FOUR_NEIGHBORS_PLANE_TWO_LINKS) {
-            boolean[][][] arrayXY = combine(BASE_FOUR_NEIGHBORS_PLANE_XY, combo, LINKS_FOUR_NEIGHBORS_PLANE_XY);
+            boolean[][][] arrayXY = combine(BASE_FOUR_NEIGHBORS_PLANE_XY,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_XY);
             assertFalse(potts.getConnectivity(arrayXY, false));
             
-            boolean[][][] arrayYZ = combine(BASE_FOUR_NEIGHBORS_PLANE_YZ, combo, LINKS_FOUR_NEIGHBORS_PLANE_YZ);
+            boolean[][][] arrayYZ = combine(BASE_FOUR_NEIGHBORS_PLANE_YZ,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_YZ);
             assertFalse(potts.getConnectivity(arrayYZ, false));
             
-            boolean[][][] arrayZX = combine(BASE_FOUR_NEIGHBORS_PLANE_ZX, combo, LINKS_FOUR_NEIGHBORS_PLANE_ZX);
+            boolean[][][] arrayZX = combine(BASE_FOUR_NEIGHBORS_PLANE_ZX,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_ZX);
             assertFalse(potts.getConnectivity(arrayZX, false));
         }
     }
@@ -1322,13 +1357,16 @@ public class Potts3DTest {
     @Test
     public void getConnectivity_fourNeighborsPlaneThreeLinks_returnsTrue() {
         for (int[] combo : COMBOS_FOUR_NEIGHBORS_PLANE_THREE_LINKS) {
-            boolean[][][] arrayXY = combine(BASE_FOUR_NEIGHBORS_PLANE_XY, combo, LINKS_FOUR_NEIGHBORS_PLANE_XY);
+            boolean[][][] arrayXY = combine(BASE_FOUR_NEIGHBORS_PLANE_XY,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_XY);
             assertTrue(potts.getConnectivity(arrayXY, false));
             
-            boolean[][][] arrayYZ = combine(BASE_FOUR_NEIGHBORS_PLANE_YZ, combo, LINKS_FOUR_NEIGHBORS_PLANE_YZ);
+            boolean[][][] arrayYZ = combine(BASE_FOUR_NEIGHBORS_PLANE_YZ,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_YZ);
             assertTrue(potts.getConnectivity(arrayYZ, false));
             
-            boolean[][][] arrayZX = combine(BASE_FOUR_NEIGHBORS_PLANE_ZX, combo, LINKS_FOUR_NEIGHBORS_PLANE_ZX);
+            boolean[][][] arrayZX = combine(BASE_FOUR_NEIGHBORS_PLANE_ZX,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_ZX);
             assertTrue(potts.getConnectivity(arrayZX, false));
         }
     }
@@ -1336,13 +1374,16 @@ public class Potts3DTest {
     @Test
     public void getConnectivity_fourNeighborsPlaneFourLinks_returnsTrue() {
         for (int[] combo : COMBOS_FOUR_NEIGHBORS_PLANE_FOUR_LINKS) {
-            boolean[][][] arrayXY = combine(BASE_FOUR_NEIGHBORS_PLANE_XY, combo, LINKS_FOUR_NEIGHBORS_PLANE_XY);
+            boolean[][][] arrayXY = combine(BASE_FOUR_NEIGHBORS_PLANE_XY,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_XY);
             assertTrue(potts.getConnectivity(arrayXY, false));
             
-            boolean[][][] arrayYZ = combine(BASE_FOUR_NEIGHBORS_PLANE_YZ, combo, LINKS_FOUR_NEIGHBORS_PLANE_YZ);
+            boolean[][][] arrayYZ = combine(BASE_FOUR_NEIGHBORS_PLANE_YZ,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_YZ);
             assertTrue(potts.getConnectivity(arrayYZ, false));
             
-            boolean[][][] arrayZX = combine(BASE_FOUR_NEIGHBORS_PLANE_ZX, combo, LINKS_FOUR_NEIGHBORS_PLANE_ZX);
+            boolean[][][] arrayZX = combine(BASE_FOUR_NEIGHBORS_PLANE_ZX,
+                    combo, LINKS_FOUR_NEIGHBORS_PLANE_ZX);
             assertTrue(potts.getConnectivity(arrayZX, false));
         }
     }
@@ -1351,7 +1392,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisXZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X, combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1361,7 +1403,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisYZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y, combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1371,7 +1414,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisZZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z, combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1381,7 +1425,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisXOneLink_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X, combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1391,7 +1436,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisYOneLink_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y, combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1401,7 +1447,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisZOneLink_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z, combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1411,7 +1458,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisXTwoLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_TWO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X, combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1421,7 +1469,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisYTwoLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_TWO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y, combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1431,7 +1480,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisZTwoLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_TWO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z, combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1441,7 +1491,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisXThreeLinksValid_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_THREE_LINKS_VALID) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X, combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1451,7 +1502,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisYThreeLinksValid_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_THREE_LINKS_VALID) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y, combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1461,7 +1513,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisZThreeLinksValid_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_THREE_LINKS_VALID) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z, combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1471,7 +1524,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisXThreeLinksInvalid_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_THREE_LINKS_INVALID) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X, combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1481,7 +1535,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisYThreeLinksInvalid_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_THREE_LINKS_INVALID) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y, combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1491,7 +1546,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisZThreeLinksInvalid_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_THREE_LINKS_INVALID) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z, combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1501,7 +1557,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisXFourLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_FOUR_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X, combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1511,7 +1568,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisYFourLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_FOUR_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y, combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1521,7 +1579,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisZFourLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_FOUR_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z, combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1531,7 +1590,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisXFiveLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_FIVE_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X, combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_X,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_X), Axis.X_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1541,7 +1601,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisYFiveLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_FIVE_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y, combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Y,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Y), Axis.Y_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1551,7 +1612,8 @@ public class Potts3DTest {
     public void getConnectivity_fourNeighborsAxisZFiveLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_FOUR_NEIGHBORS_AXIS_FIVE_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z, combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
+                boolean[][][] array = rotate(combine(BASE_FOUR_NEIGHBORS_AXIS_Z,
+                        combo, LINKS_FOUR_NEIGHBORS_AXIS_Z), Axis.Z_AXIS, rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1711,7 +1773,8 @@ public class Potts3DTest {
     public void getConnectivity_fiveNeighborsZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int[] combo : COMBOS_FIVE_NEIGHBORS_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS,
+                        combo, LINKS_FIVE_NEIGHBORS), rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1721,7 +1784,8 @@ public class Potts3DTest {
     public void getConnectivity_fiveNeighborsOneLink_returnsFalse() {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int[] combo : COMBOS_FIVE_NEIGHBORS_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS,
+                        combo, LINKS_FIVE_NEIGHBORS), rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1731,7 +1795,8 @@ public class Potts3DTest {
     public void getConnectivity_fiveNeighborsTwoLinks_returnsFalse() {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int[] combo : COMBOS_FIVE_NEIGHBORS_TWO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS,
+                        combo, LINKS_FIVE_NEIGHBORS), rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1741,7 +1806,8 @@ public class Potts3DTest {
     public void getConnectivity_fiveNeighborsThreeLinks_returnsFalse() {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int[] combo : COMBOS_FIVE_NEIGHBORS_THREE_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS,
+                        combo, LINKS_FIVE_NEIGHBORS), rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1751,7 +1817,8 @@ public class Potts3DTest {
     public void getConnectivity_fiveNeighborsFourLinksValid_returnsTrue() {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int[] combo : COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_VALID) {
-                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS,
+                        combo, LINKS_FIVE_NEIGHBORS), rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1761,7 +1828,8 @@ public class Potts3DTest {
     public void getConnectivity_fiveNeighborsFourLinksInvalid_returnsFalse() {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int[] combo : COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_INVALID) {
-                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS,
+                        combo, LINKS_FIVE_NEIGHBORS), rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -1772,7 +1840,8 @@ public class Potts3DTest {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int symmetry = 0; symmetry < 4; symmetry++) {
                 for (int[] combo : COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_VALID_SYMMETRY) {
-                    boolean[][][] array = rotate(rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), Axis.Z_AXIS, symmetry), rotation);
+                    boolean[][][] array = rotate(rotate(combine(BASE_FIVE_NEIGHBORS,
+                            combo, LINKS_FIVE_NEIGHBORS), Axis.Z_AXIS, symmetry), rotation);
                     assertTrue(potts.getConnectivity(array, false));
                 }
             }
@@ -1784,7 +1853,8 @@ public class Potts3DTest {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int symmetry = 0; symmetry < 4; symmetry++) {
                 for (int[] combo : COMBOS_FIVE_NEIGHBORS_FOUR_LINKS_INVALID_SYMMETRY) {
-                    boolean[][][] array = rotate(rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), Axis.Z_AXIS, symmetry), rotation);
+                    boolean[][][] array = rotate(rotate(combine(BASE_FIVE_NEIGHBORS,
+                            combo, LINKS_FIVE_NEIGHBORS), Axis.Z_AXIS, symmetry), rotation);
                     assertFalse(potts.getConnectivity(array, false));
                 }
             }
@@ -1796,7 +1866,8 @@ public class Potts3DTest {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int symmetry = 0; symmetry < 4; symmetry++) {
                 for (int[] combo : COMBOS_FIVE_NEIGHBORS_FIVE_LINKS_VALID_SYMMETRY) {
-                    boolean[][][] array = rotate(rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), Axis.Z_AXIS, symmetry), rotation);
+                    boolean[][][] array = rotate(rotate(combine(BASE_FIVE_NEIGHBORS,
+                            combo, LINKS_FIVE_NEIGHBORS), Axis.Z_AXIS, symmetry), rotation);
                     assertTrue(potts.getConnectivity(array, false));
                 }
             }
@@ -1808,7 +1879,8 @@ public class Potts3DTest {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int symmetry = 0; symmetry < 4; symmetry++) {
                 for (int[] combo : COMBOS_FIVE_NEIGHBORS_FIVE_LINKS_INVALID_SYMMETRY) {
-                    boolean[][][] array = rotate(rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), Axis.Z_AXIS, symmetry), rotation);
+                    boolean[][][] array = rotate(rotate(combine(BASE_FIVE_NEIGHBORS,
+                            combo, LINKS_FIVE_NEIGHBORS), Axis.Z_AXIS, symmetry), rotation);
                     assertFalse(potts.getConnectivity(array, false));
                 }
             }
@@ -1819,7 +1891,8 @@ public class Potts3DTest {
     public void getConnectivity_fiveNeighborsSixLinks_returnsTrue() {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int[] combo : COMBOS_FIVE_NEIGHBORS_SIX_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS,
+                        combo, LINKS_FIVE_NEIGHBORS), rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1829,7 +1902,8 @@ public class Potts3DTest {
     public void getConnectivity_fiveNeighborsSevenLinks_returnsTrue() {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int[] combo : COMBOS_FIVE_NEIGHBORS_SEVEN_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS,
+                        combo, LINKS_FIVE_NEIGHBORS), rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -1839,7 +1913,8 @@ public class Potts3DTest {
     public void getConnectivity_fiveNeighborsEightLinks_returnsTrue() {
         for (int rotation = 0; rotation < 6; rotation++) {
             for (int[] combo : COMBOS_FIVE_NEIGHBORS_EIGHT_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS, combo, LINKS_FIVE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_FIVE_NEIGHBORS,
+                        combo, LINKS_FIVE_NEIGHBORS), rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }

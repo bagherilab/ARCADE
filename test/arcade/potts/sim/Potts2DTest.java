@@ -11,6 +11,8 @@ import static arcade.potts.sim.PottsTest.*;
 import static arcade.core.TestUtilities.EPSILON;
 
 public class Potts2DTest {
+    static final int REGION_DEFAULT = Region.DEFAULT.ordinal();
+    static final int REGION_NUCLEUS = Region.NUCLEUS.ordinal();
     static PottsCell[] cells;
     PottsSeries seriesMock = makeSeries();
     Potts2D pottsMock = new Potts2D(seriesMock);
@@ -66,8 +68,8 @@ public class Potts2DTest {
                 }
         };
         
-        int D = Region.DEFAULT.ordinal();
-        int N = Region.NUCLEUS.ordinal();
+        int D = REGION_DEFAULT;
+        int N = REGION_NUCLEUS;
         
         potts.REGIONS = new int[][][] {
                 {
@@ -120,8 +122,9 @@ public class Potts2DTest {
     
     @Test
     public void getAdhesion_validRegions_calculateValue() {
-        assertEquals(subadhesion(Region.DEFAULT, Region.NUCLEUS), potts.getAdhesion(1, Region.DEFAULT.ordinal(), 1, 2, 0), EPSILON);
-        assertEquals(0, potts.getAdhesion(1, Region.NUCLEUS.ordinal(), 2, 2, 0), EPSILON);
+        double adhesion = subadhesion(Region.DEFAULT, Region.NUCLEUS);
+        assertEquals(adhesion, potts.getAdhesion(1, REGION_DEFAULT, 1, 2, 0), EPSILON);
+        assertEquals(0, potts.getAdhesion(1, REGION_NUCLEUS, 2, 2, 0), EPSILON);
     }
     
     @Test
@@ -132,8 +135,8 @@ public class Potts2DTest {
     
     @Test
     public void calculateChange_validRegions_calculatesValue() {
-        assertArrayEquals(new int[] { -4, 2 }, potts.calculateChange(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 2, 2, 0));
-        assertArrayEquals(new int[] { -2, 2 }, potts.calculateChange(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 2, 1, 0));
+        assertArrayEquals(new int[] { -4, 2 }, potts.calculateChange(1, REGION_NUCLEUS, REGION_DEFAULT, 2, 2, 0));
+        assertArrayEquals(new int[] { -2, 2 }, potts.calculateChange(1, REGION_DEFAULT, REGION_NUCLEUS, 2, 1, 0));
     }
     
     @Test
@@ -156,12 +159,12 @@ public class Potts2DTest {
     
     @Test
     public void getNeighborhood_givenRegion_createsArray() {
-        boolean[][][] array1 = potts.getNeighborhood(1, Region.DEFAULT.ordinal(),2, 2, 0);
+        boolean[][][] array1 = potts.getNeighborhood(1, REGION_DEFAULT,2, 2, 0);
         assertArrayEquals(new boolean[] {  true,  true, false }, array1[0][0]);
         assertArrayEquals(new boolean[] { false, false, false }, array1[0][1]);
         assertArrayEquals(new boolean[] { false, false, false }, array1[0][2]);
         
-        boolean[][][] array2 = potts.getNeighborhood(1, Region.NUCLEUS.ordinal(),2, 2, 0);
+        boolean[][][] array2 = potts.getNeighborhood(1, REGION_NUCLEUS,2, 2, 0);
         assertArrayEquals(new boolean[] { false, false, false }, array2[0][0]);
         assertArrayEquals(new boolean[] { false,  true, false }, array2[0][1]);
         assertArrayEquals(new boolean[] { false, false, false }, array2[0][2]);
@@ -318,7 +321,8 @@ public class Potts2DTest {
     public void getConnectivity_twoNeighborsAdjacentZeroLink_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT, combo, LINKS_TWO_NEIGHBORS_ADJACENT), rotation);
+                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT,
+                        combo, LINKS_TWO_NEIGHBORS_ADJACENT), rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -328,7 +332,8 @@ public class Potts2DTest {
     public void getConnectivity_twoNeighborsAdjacentOneLink_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT, combo, LINKS_TWO_NEIGHBORS_ADJACENT), rotation);
+                boolean[][][] array = rotate(combine(BASE_TWO_NEIGHBORS_ADJACENT,
+                        combo, LINKS_TWO_NEIGHBORS_ADJACENT), rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }
@@ -372,7 +377,8 @@ public class Potts2DTest {
     public void getConnectivity_threeNeighborsZeroLinks_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_ZERO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS, combo, LINKS_THREE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS,
+                        combo, LINKS_THREE_NEIGHBORS), rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -382,7 +388,8 @@ public class Potts2DTest {
     public void getConnectivity_threeNeighborsOneLink_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_ONE_LINK) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS, combo, LINKS_THREE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS,
+                        combo, LINKS_THREE_NEIGHBORS), rotation);
                 assertFalse(potts.getConnectivity(array, false));
             }
         }
@@ -392,7 +399,8 @@ public class Potts2DTest {
     public void getConnectivity_threeNeighborsPlaneXYTwoLinks_returnsTrue() {
         for (int rotation = 0; rotation < 4; rotation++) {
             for (int[] combo : COMBOS_THREE_NEIGHBORS_TWO_LINKS) {
-                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS, combo, LINKS_THREE_NEIGHBORS), rotation);
+                boolean[][][] array = rotate(combine(BASE_THREE_NEIGHBORS,
+                        combo, LINKS_THREE_NEIGHBORS), rotation);
                 assertTrue(potts.getConnectivity(array, false));
             }
         }

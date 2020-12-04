@@ -70,7 +70,7 @@ public class PottsCellFactoryTest {
         public PottsCellFactoryMock() { super(); }
         
         PottsCell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
-                      EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion) {
+                           EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion) {
             PottsCell cell = mock(PottsCell.class);
             
             when(cell.getID()).thenReturn(id);
@@ -97,9 +97,10 @@ public class PottsCellFactoryTest {
         }
         
         PottsCell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
-                      EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
-                      EnumMap<Region, EnumMap<Term, Double>> criticalsRegion, EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
-                      EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
+                           EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
+                           EnumMap<Region, EnumMap<Term, Double>> criticalsRegion,
+                           EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
+                           EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
             PottsCell cell = mock(PottsCell.class);
             
             when(cell.getID()).thenReturn(id);
@@ -291,13 +292,16 @@ public class PottsCellFactoryTest {
             
             for (Region region : regionList) {
                 population.put("(REGION)" + TAG_SEPARATOR + region, 0);
-                population.put(region + TAG_SEPARATOR + "LAMBDA_VOLUME", lambdasRegion.get(region).get(Term.VOLUME) + pop);
-                population.put(region + TAG_SEPARATOR + "LAMBDA_SURFACE", lambdasRegion.get(region).get(Term.SURFACE) + pop);
-                population.put(region + TAG_SEPARATOR + "CRITICAL_VOLUME", criticalsRegion.get(region).get(Term.VOLUME) + pop);
-                population.put(region + TAG_SEPARATOR + "CRITICAL_SURFACE", criticalsRegion.get(region).get(Term.SURFACE) + pop);
+                EnumMap<Term, Double> criticalTerms = criticalsRegion.get(region);
+                EnumMap<Term, Double> lambdaTerms = lambdasRegion.get(region);
+                population.put(region + TAG_SEPARATOR + "CRITICAL_VOLUME", criticalTerms.get(Term.VOLUME) + pop);
+                population.put(region + TAG_SEPARATOR + "CRITICAL_SURFACE", criticalTerms.get(Term.SURFACE) + pop);
+                population.put(region + TAG_SEPARATOR + "LAMBDA_VOLUME", lambdaTerms.get(Term.VOLUME) + pop);
+                population.put(region + TAG_SEPARATOR + "LAMBDA_SURFACE", lambdaTerms.get(Term.SURFACE) + pop);
                 
                 for (Region target : regionList) {
-                    population.put(region + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target, adhesionRegion.get(region).get(target) + pop);
+                    String key = region + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target;
+                    population.put(key, adhesionRegion.get(region).get(target) + pop);
                 }
             }
             
@@ -320,13 +324,19 @@ public class PottsCellFactoryTest {
             assertTrue(factory.popToRegions.get(pop));
             
             for (Region region : regionList) {
-                assertEquals(criticalsRegion.get(region).get(Term.VOLUME) + pop, factory.popToRegionCriticals.get(pop).get(region).get(Term.VOLUME), EPSILON);
-                assertEquals(criticalsRegion.get(region).get(Term.SURFACE) + pop, factory.popToRegionCriticals.get(pop).get(region).get(Term.SURFACE), EPSILON);
-                assertEquals(lambdasRegion.get(region).get(Term.VOLUME) + pop, factory.popToRegionLambdas.get(pop).get(region).get(Term.VOLUME), EPSILON);
-                assertEquals(lambdasRegion.get(region).get(Term.SURFACE) + pop, factory.popToRegionLambdas.get(pop).get(region).get(Term.SURFACE), EPSILON);
+                EnumMap<Term, Double> criticalTerms = criticalsRegion.get(region);
+                EnumMap<Term, Double> lambdaTerms = lambdasRegion.get(region);
+                EnumMap<Term, Double> factoryCriticalTerms = factory.popToRegionCriticals.get(pop).get(region);
+                EnumMap<Term, Double> factoryLambdaTerms = factory.popToRegionLambdas.get(pop).get(region);
+                
+                assertEquals(criticalTerms.get(Term.VOLUME) + pop, factoryCriticalTerms.get(Term.VOLUME), EPSILON);
+                assertEquals(criticalTerms.get(Term.SURFACE) + pop, factoryCriticalTerms.get(Term.SURFACE), EPSILON);
+                assertEquals(lambdaTerms.get(Term.VOLUME) + pop, factoryLambdaTerms.get(Term.VOLUME), EPSILON);
+                assertEquals(lambdaTerms.get(Term.SURFACE) + pop, factoryLambdaTerms.get(Term.SURFACE), EPSILON);
                 
                 for (Region target : regionList) {
-                    assertEquals(adhesionRegion.get(region).get(target) + pop, factory.popToRegionAdhesion.get(pop).get(region).get(target), EPSILON);
+                    assertEquals(adhesionRegion.get(region).get(target) + pop,
+                            factory.popToRegionAdhesion.get(pop).get(region).get(target), EPSILON);
                 }
             }
         }

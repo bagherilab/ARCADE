@@ -61,7 +61,8 @@ public class PottsLocations2DTest {
         PottsLocations.assignVoxels(loc, fractions, randomDoubleZero);
         
         assertEquals(N*N, loc.voxels.size());
-        assertEquals(N*N, loc.locations.get(Region.DEFAULT).voxels.size() + loc.locations.get(Region.UNDEFINED).voxels.size());
+        assertEquals(N*N, loc.locations.get(Region.DEFAULT).voxels.size()
+                + loc.locations.get(Region.UNDEFINED).voxels.size());
         
         int sizeDefault = loc.locations.get(Region.DEFAULT).voxels.size();
         int sizeAdditional = loc.locations.get(Region.UNDEFINED).voxels.size();

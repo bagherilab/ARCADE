@@ -202,8 +202,8 @@ public class PottsCellTest {
     @Test
     public void getState_valueAssigned_returnsValue() {
         State cellState = State.random(RANDOM);
-        PottsCellMock cell = new PottsCellMock(cellID, 0, cellState, 0, _location, false, _parameters,
-                _adhesion, _criticals, _lambdas, null, null, null);
+        PottsCellMock cell = new PottsCellMock(cellID, 0, cellState, 0, _location,
+                false, _parameters, _adhesion, _criticals, _lambdas, null, null, null);
         assertEquals(cellState, cell.getState());
     }
     
@@ -215,8 +215,8 @@ public class PottsCellTest {
     @Test
     public void getAge_valueAssigned_returnsValue() {
         int cellAge = (int)(Math.random() * 100);
-        PottsCellMock cell = new PottsCellMock(cellID, 0, State.QUIESCENT, cellAge, _location, false, _parameters,
-                _adhesion, _criticals, _lambdas, null, null, null);
+        PottsCellMock cell = new PottsCellMock(cellID, 0, State.QUIESCENT, cellAge, _location,
+                false, _parameters, _adhesion, _criticals, _lambdas, null, null, null);
         assertEquals(cellAge, cell.getAge());
     }
     
@@ -530,8 +530,10 @@ public class PottsCellTest {
     @Test
     public void getLambda_givenTermValidRegions_returnsValue() {
         for (Region region : regionList) {
-            assertEquals(_lambdasRegion.get(region).get(Term.VOLUME), cellWithRegions.getLambda(Term.VOLUME, region), EPSILON);
-            assertEquals(_lambdasRegion.get(region).get(Term.SURFACE), cellWithRegions.getLambda(Term.SURFACE, region), EPSILON);
+            assertEquals(_lambdasRegion.get(region).get(Term.VOLUME),
+                    cellWithRegions.getLambda(Term.VOLUME, region), EPSILON);
+            assertEquals(_lambdasRegion.get(region).get(Term.SURFACE),
+                    cellWithRegions.getLambda(Term.SURFACE, region), EPSILON);
         }
     }
     
@@ -562,7 +564,8 @@ public class PottsCellTest {
     public void getAdhesion_validRegions_returnsValue() {
         for (Region region : regionList) {
             for (Region target : regionList) {
-                assertEquals(_adhesionRegion.get(region).get(target), cellWithRegions.getAdhesion(region, target), EPSILON);
+                assertEquals(_adhesionRegion.get(region).get(target),
+                        cellWithRegions.getAdhesion(region, target), EPSILON);
             }
         }
     }
@@ -998,8 +1001,9 @@ public class PottsCellTest {
         
         double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
-        
-        double targetRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
+    
+        double criticalRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME);
+        double targetRegionVolume = criticalRegionVolume - _criticals.get(Term.VOLUME) + targetVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
         double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
@@ -1033,7 +1037,8 @@ public class PottsCellTest {
         double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
         
-        double targetRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
+        double criticalRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME);
+        double targetRegionVolume = criticalRegionVolume - _criticals.get(Term.VOLUME) + targetVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
         double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
@@ -1071,7 +1076,8 @@ public class PottsCellTest {
         double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
         
-        double targetRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
+        double criticalRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME);
+        double targetRegionVolume = criticalRegionVolume - _criticals.get(Term.VOLUME) + targetVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
         double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
@@ -1109,7 +1115,8 @@ public class PottsCellTest {
         double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
         
-        double targetRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) - _criticals.get(Term.VOLUME) + targetVolume;
+        double criticalRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME);
+        double targetRegionVolume = criticalRegionVolume - _criticals.get(Term.VOLUME) + targetVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
         double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
@@ -1123,13 +1130,15 @@ public class PottsCellTest {
         cell.initialize(null, null);
         cell.updateTarget(Region.DEFAULT, rate, 2);
         
-        double targetRegionVolume = locationRegionVolumes.get(Region.DEFAULT) + rate*(locationRegionVolumes.get(Region.DEFAULT));
+        double locationRegionVolume = locationRegionVolumes.get(Region.DEFAULT);
+        double targetRegionVolume = locationRegionVolume + rate*(locationRegionVolume);
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
         double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
-        double targetVolume = _criticals.get(Term.VOLUME) - _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) + targetRegionVolume;
+        double criticalRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME);
+        double targetVolume = _criticals.get(Term.VOLUME) - criticalRegionVolume + targetRegionVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
         double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
@@ -1143,13 +1152,15 @@ public class PottsCellTest {
         cell.initialize(null, null);
         cell.updateTarget(Region.DEFAULT, rate, 0);
         
-        double targetRegionVolume = locationRegionVolumes.get(Region.DEFAULT) + rate*(-locationRegionVolumes.get(Region.DEFAULT));
+        double locationRegionVolume = locationRegionVolumes.get(Region.DEFAULT);
+        double targetRegionVolume = locationRegionVolume + rate*(-locationRegionVolume);
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
         double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
-        double targetVolume = _criticals.get(Term.VOLUME) - _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) + targetRegionVolume;
+        double criticalRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME);
+        double targetVolume = _criticals.get(Term.VOLUME) - criticalRegionVolume + targetRegionVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
         double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
@@ -1165,13 +1176,15 @@ public class PottsCellTest {
         cell.updateTarget(Region.DEFAULT,rate + delta, 2);
         cell.updateTarget(Region.DEFAULT, rate, 2);
         
-        double targetRegionVolume = locationRegionVolumes.get(Region.DEFAULT) + (rate + delta)*(locationRegionVolumes.get(Region.DEFAULT));
+        double locationRegionVolume = locationRegionVolumes.get(Region.DEFAULT);
+        double targetRegionVolume = locationRegionVolume + (rate + delta)*locationRegionVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
         double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
-        double targetVolume = _criticals.get(Term.VOLUME) - _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) + targetRegionVolume;
+        double criticalRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME);
+        double targetVolume = _criticals.get(Term.VOLUME) - criticalRegionVolume + targetRegionVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
         double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
@@ -1187,13 +1200,15 @@ public class PottsCellTest {
         cell.updateTarget(Region.DEFAULT,rate + delta, 0);
         cell.updateTarget(Region.DEFAULT,rate, 0);
         
-        double targetRegionVolume = locationRegionVolumes.get(Region.DEFAULT) + (rate + delta)*(-locationRegionVolumes.get(Region.DEFAULT));
+        double locationRegionVolume = locationRegionVolumes.get(Region.DEFAULT);
+        double targetRegionVolume = locationRegionVolume + (rate + delta)*(-locationRegionVolume);
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
         double targetRegionSurface = VOLUME_SURFACE_RATIO*targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
-        double targetVolume = _criticals.get(Term.VOLUME) - _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME) + targetRegionVolume;
+        double criticalRegionVolume = _criticalsRegion.get(Region.DEFAULT).get(Term.VOLUME);
+        double targetVolume = _criticals.get(Term.VOLUME) - criticalRegionVolume + targetRegionVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
         double targetSurface = VOLUME_SURFACE_RATIO*targetVolume;
@@ -1217,8 +1232,8 @@ public class PottsCellTest {
                 randomDoubleBetween(0, 10)
         };
         
-        PottsCell cell = new PottsCell(cellID, cellPop, cellState, cellAge, location, false, parameters, adhesion,
-                criticals, lambdas, null, null, null);
+        PottsCell cell = new PottsCell(cellID, cellPop, cellState, cellAge, location,
+                false, parameters, adhesion, criticals, lambdas, null, null, null);
         ((PottsModule)cell.getModule()).setPhase(cellPhase);
         
         int voxels = randomIntBetween(1, 100);
@@ -1267,8 +1282,8 @@ public class PottsCellTest {
         EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = makeEnumMapRegion(regionList);
         EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = makeEnumMapTarget(regionList);
         
-        PottsCell cell = new PottsCell(cellID, cellPop, cellState, cellAge, location, true, parameters,
-                adhesion, criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
+        PottsCell cell = new PottsCell(cellID, cellPop, cellState, cellAge, location, true,
+                parameters, adhesion, criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
         ((PottsModule)cell.getModule()).setPhase(cellPhase);
         
         int voxels = randomIntBetween(1, 100);

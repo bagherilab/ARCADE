@@ -14,7 +14,9 @@ import static arcade.core.TestUtilities.*;
 public class PottsLocationsTest {
     static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
     static ArrayList<Voxel> voxelListForVolumeSurface;
-    static ArrayList<Voxel> voxelListForMultipleRegionsA, voxelListForMultipleRegionsB, voxelListForMultipleRegions;
+    static ArrayList<Voxel> voxelListForMultipleRegionsA;
+    static ArrayList<Voxel> voxelListForMultipleRegionsB;
+    static ArrayList<Voxel> voxelListForMultipleRegions;
     static ArrayList<Voxel> voxelListForAddRemove;
     static ArrayList<Voxel> voxelListForRegionAddRemove;
     static ArrayList<Voxel> voxelListSingle;
@@ -634,7 +636,8 @@ public class PottsLocationsTest {
         loc.add(Region.UNDEFINED, 2, 1, 0);
         loc.add(Region.UNDEFINED, 2, 2, 0);
         
-        PottsLocations split = (PottsLocations)loc.separateVoxels(voxelListForMultipleRegionsA, voxelListForMultipleRegionsB, randomDoubleZero);
+        PottsLocations split = (PottsLocations)loc.separateVoxels(voxelListForMultipleRegionsA,
+                voxelListForMultipleRegionsB, randomDoubleZero);
         
         ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListForMultipleRegionsA);
         ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListForMultipleRegionsB);
