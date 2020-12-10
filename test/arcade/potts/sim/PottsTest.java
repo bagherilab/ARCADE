@@ -27,10 +27,10 @@ public class PottsTest {
     private static final double REGION_LV = random();
     private static final double REGION_LS = random();
     private static final double R = Math.random();
-    private static final double R_PLUS = Math.exp(-3/TEMPERATURE) + EPSILON;
-    private static final double R_MINUS = Math.exp(-3/TEMPERATURE) - EPSILON;
-    private static final double[] ADHESION_ID = { 0, Math.random()*100, Math.random()*100 };
-    private static final double[] ADHESION_REGION = { 0, Math.random()*100, Math.random()*100 };
+    private static final double R_PLUS = Math.exp(-3 / TEMPERATURE) + EPSILON;
+    private static final double R_MINUS = Math.exp(-3 / TEMPERATURE) - EPSILON;
+    private static final double[] ADHESION_ID = { 0, Math.random() * 100, Math.random() * 100 };
+    private static final double[] ADHESION_REGION = { 0, Math.random() * 100, Math.random() * 100 };
     static final double[][] ADHESIONS = new double[][] {
             { Double.NaN, Double.NaN, Double.NaN },
             { 1, 2, 3 },
@@ -44,7 +44,7 @@ public class PottsTest {
     Location[] locations;
     PottsMock potts;
     
-    public static double random() { return Math.random()*100; }
+    public static double random() { return Math.random() * 100; }
     
     @Before
     public void setupGrid() {
@@ -113,7 +113,7 @@ public class PottsTest {
         populations.put("A", new MiniBox());
         populations.put("B", new MiniBox());
         
-        populations.get("B").put("REGION/region", "0.0");
+        populations.get("B").put("REGION / region", "0.0");
         
         PottsSeries series = mock(PottsSeries.class);
         series.potts = mock(MiniBox.class);
@@ -170,13 +170,13 @@ public class PottsTest {
     }
     
     public static double adhesion(int a, int b) {
-        return (ADHESIONS[a][b] + ADHESIONS[b][a])/2;
+        return (ADHESIONS[a][b] + ADHESIONS[b][a]) / 2;
     }
     
     public static double subadhesion(Region a, Region b) {
         int aa = a.ordinal() - 1;
         int bb = b.ordinal() - 1;
-        return (SUBADHESIONS[aa][bb] + SUBADHESIONS[bb][aa])/2;
+        return (SUBADHESIONS[aa][bb] + SUBADHESIONS[bb][aa]) / 2;
     }
     
     static PottsSeries makeSeries() {
@@ -287,8 +287,8 @@ public class PottsTest {
     
     @Test
     public void Potts_2D_assignsValues() {
-        int length = (int)(Math.random()*100) + 1;
-        int width = (int)(Math.random()*100) + 1;
+        int length = (int) (Math.random() * 100) + 1;
+        int width = (int) (Math.random() * 100) + 1;
         PottsSeries series = makeSeries(length + 2, width + 2, 1);
         PottsMock potts = new PottsMock(series);
         
@@ -306,8 +306,8 @@ public class PottsTest {
     
     @Test
     public void Potts_3D_assignsValues() {
-        int length = (int)(Math.random()*100) + 1;
-        int width = (int)(Math.random()*100) + 1;
+        int length = (int) (Math.random() * 100) + 1;
+        int width = (int) (Math.random() * 100) + 1;
         PottsSeries series = makeSeries(length + 2, width + 2, 4);
         PottsMock potts = new PottsMock(series);
         
@@ -325,11 +325,11 @@ public class PottsTest {
     
     @Test
     public void Potts_givenSeries_setsFields() {
-        int length = (int)(Math.random()*100) + 1;
-        int width = (int)(Math.random()*100) + 1;
-        int height = (int)(Math.random()*100) + 2;
-        int temperature = (int)(Math.random()*100) + 1;
-        int mcs = (int)(Math.random()*100);
+        int length = (int) (Math.random() * 100) + 1;
+        int width = (int) (Math.random() * 100) + 1;
+        int height = (int) (Math.random() * 100) + 2;
+        int temperature = (int) (Math.random() * 100) + 1;
+        int mcs = (int) (Math.random() * 100);
         
         PottsSeries series = makeSeries(length, width, height);
         series.potts = new MiniBox();
@@ -338,7 +338,7 @@ public class PottsTest {
         
         PottsMock potts = new PottsMock(series);
         
-        assertEquals(mcs*(length - 2)*(width - 2)*(height - 2), potts.steps);
+        assertEquals(mcs * (length - 2) * (width - 2) * (height - 2), potts.steps);
         assertEquals(temperature, potts.temperature, EPSILON);
     }
     
@@ -393,12 +393,12 @@ public class PottsTest {
         SimState simstate = mock(SimState.class);
         simstate.random = random;
         
-        int length = (int)(Math.random()*10) + 3;
-        int width = (int)(Math.random()*10) + 3;
+        int length = (int) (Math.random() * 10) + 3;
+        int width = (int) (Math.random() * 10) + 3;
         
         PottsSeries series = makeSeries(length, width, 1);
         PottsMock spy = spy(new PottsMock(series));
-        int steps = spy.length*spy.width*spy.height;
+        int steps = spy.length * spy.width * spy.height;
         
         spy.step(simstate);
         verify(spy, times(steps)).getUniqueIDs(
@@ -417,14 +417,14 @@ public class PottsTest {
         SimState simstate = mock(SimState.class);
         simstate.random = random;
         
-        int length = (int)(Math.random()*10) + 3;
-        int width = (int)(Math.random()*10) + 3;
-        int height = (int)(Math.random()*10) + 4;
+        int length = (int) (Math.random() * 10) + 3;
+        int width = (int) (Math.random() * 10) + 3;
+        int height = (int) (Math.random() * 10) + 4;
         
         PottsSeries series = makeSeries(length, width, height);
         
         PottsMock spy = spy(new PottsMock(series));
-        int steps = spy.length*spy.width*spy.height;
+        int steps = spy.length * spy.width * spy.height;
         
         spy.step(simstate);
         verify(spy, times(steps)).getUniqueIDs(
@@ -635,8 +635,8 @@ public class PottsTest {
     
     @Test
     public void change_zeros_callsMethods() {
-        int id1 = (int)random();
-        int id2 = (int)random();
+        int id1 = (int) random();
+        int id2 = (int) random();
         PottsMock spy = makeChangeMock(id1, id2, 0, false);
         spy.change(id1, id2, 0, 0, 0, 1);
         verify(spy).getDeltaAdhesion(id1, id2, 0, 0, 0);
@@ -652,7 +652,7 @@ public class PottsTest {
         spy.change(0, 1, 0, 0, 0, 0);
         assertEquals(1, spy.ids[0][0][0]);
         assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).add(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation())).add(0, 0, 0);
     }
     
     @Test
@@ -663,7 +663,7 @@ public class PottsTest {
         spy.change(1, 0, 0, 0, 0, 0);
         assertEquals(0, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
     
     @Test
@@ -674,8 +674,8 @@ public class PottsTest {
         spy.change(1, 2, 0, 0, 0, 0);
         assertEquals(2, spy.ids[0][0][0]);
         assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
     
     @Test
@@ -687,13 +687,13 @@ public class PottsTest {
         spy.change(0, 1, 0, 0, 0, R_PLUS);
         assertEquals(0, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).add(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation()), never()).add(0, 0, 0);
         
         spy.change(0, 1, 0, 0, 0, R_MINUS);
         assertEquals(1, spy.ids[0][0][0]);
         assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
-        Cell cell2 = (Cell)spy.grid.getObjectAt(1);
-        verify((PottsLocation)cell2.getLocation()).add(0, 0, 0);
+        Cell cell2 = (Cell) spy.grid.getObjectAt(1);
+        verify((PottsLocation) cell2.getLocation()).add(0, 0, 0);
     }
     
     @Test
@@ -705,12 +705,12 @@ public class PottsTest {
         spy.change(1, 0, 0, 0, 0, R_PLUS);
         assertEquals(1, spy.ids[0][0][0]);
         assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
         
         spy.change(1, 0, 0, 0, 0, R_MINUS);
         assertEquals(0, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
     
     @Test
@@ -722,14 +722,14 @@ public class PottsTest {
         spy.change(1, 2, 0, 0, 0, R_PLUS);
         assertEquals(1, spy.ids[0][0][0]);
         assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation()), never()).add(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(2)).getLocation()), never()).add(0, 0, 0);
         
         spy.change(1, 2, 0, 0, 0, R_MINUS);
         assertEquals(2, spy.ids[0][0][0]);
         assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
     }
     
     @Test
@@ -740,7 +740,7 @@ public class PottsTest {
         spy.change(0, 1, 0, 0, 0, 0);
         assertEquals(1, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).add(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation())).add(0, 0, 0);
     }
     
     @Test
@@ -751,7 +751,7 @@ public class PottsTest {
         spy.change(1, 0, 0, 0, 0, 0);
         assertEquals(0, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
     
     @Test
@@ -762,8 +762,8 @@ public class PottsTest {
         spy.change(1, 2, 0, 0, 0, 0);
         assertEquals(2, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
     
     @Test
@@ -775,12 +775,12 @@ public class PottsTest {
         spy.change(0, 1, 0, 0, 0, R_PLUS);
         assertEquals(0, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).add(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation()), never()).add(0, 0, 0);
         
         spy.change(0, 1, 0, 0, 0, R_MINUS);
         assertEquals(1, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).add(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation())).add(0, 0, 0);
     }
     
     @Test
@@ -792,12 +792,12 @@ public class PottsTest {
         spy.change(1, 0, 0, 0, 0, R_PLUS);
         assertEquals(1, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
         
         spy.change(1, 0, 0, 0, 0, R_MINUS);
         assertEquals(0, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
     
     @Test
@@ -809,14 +809,14 @@ public class PottsTest {
         spy.change(1, 2, 0, 0, 0, R_PLUS);
         assertEquals(1, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation()), never()).add(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(2)).getLocation()), never()).add(0, 0, 0);
         
         spy.change(1, 2, 0, 0, 0, R_MINUS);
         assertEquals(2, spy.ids[0][0][0]);
         assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
+        verify(((PottsLocation) ((Cell) spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
     }
     
     @Test
@@ -853,8 +853,8 @@ public class PottsTest {
     
     @Test
     public void change_zerosRegions_callsMethods() {
-        int region1 = (int)random();
-        int region2 = (int)random();
+        int region1 = (int) random();
+        int region2 = (int) random();
         PottsMock spy = makeChangeMock(region1, region2, 0);
         spy.change(1, region1, region2, 0, 0, 0, 1);
         verify(spy).getDeltaAdhesion(1, region1, region2, 0, 0, 0);
@@ -867,10 +867,12 @@ public class PottsTest {
         PottsMock spy = makeChangeMock(Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), -1);
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.DEFAULT.ordinal();
+        Grid grid = spy.grid;
+        
         spy.change(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0, 0);
         assertEquals(Region.NUCLEUS.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(Region.DEFAULT, 0, 0, 0);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).add(Region.NUCLEUS, 0, 0, 0);
+        verify(((PottsLocation) ((Cell) grid.getObjectAt(1)).getLocation())).remove(Region.DEFAULT, 0, 0, 0);
+        verify(((PottsLocation) ((Cell) grid.getObjectAt(1)).getLocation())).add(Region.NUCLEUS, 0, 0, 0);
     }
     
     @Test
@@ -878,16 +880,17 @@ public class PottsTest {
         PottsMock spy = makeChangeMock(Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 1);
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.DEFAULT.ordinal();
+        Grid grid = spy.grid;
         
         spy.change(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0, R_PLUS);
         assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).remove(Region.DEFAULT, 0, 0, 0);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).add(Region.NUCLEUS, 0, 0, 0);
+        verify(((PottsLocation) ((Cell) grid.getObjectAt(1)).getLocation()), never()).remove(Region.DEFAULT, 0, 0, 0);
+        verify(((PottsLocation) ((Cell) grid.getObjectAt(1)).getLocation()), never()).add(Region.NUCLEUS, 0, 0, 0);
         
         spy.change(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0, R_MINUS);
         assertEquals(Region.NUCLEUS.ordinal(), spy.regions[0][0][0]);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(Region.DEFAULT, 0, 0, 0);
-        verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).add(Region.NUCLEUS, 0, 0, 0);
+        verify(((PottsLocation) ((Cell) grid.getObjectAt(1)).getLocation())).remove(Region.DEFAULT, 0, 0, 0);
+        verify(((PottsLocation) ((Cell) grid.getObjectAt(1)).getLocation())).add(Region.NUCLEUS, 0, 0, 0);
     }
 
     @Test
@@ -904,16 +907,16 @@ public class PottsTest {
     
     @Test
     public void getVolume_validIDsNotZero_calculatesValue() {
-        assertEquals(LV*Math.pow(4 - 2, 2), potts.getVolume(1, 0), EPSILON);
-        assertEquals(LV*Math.pow(4 - 2 + 1, 2), potts.getVolume(1, 1), EPSILON);
-        assertEquals(LV*Math.pow(4 - 2 - 1, 2), potts.getVolume(1, -1), EPSILON);
+        assertEquals(LV * Math.pow(4 - 2, 2), potts.getVolume(1, 0), EPSILON);
+        assertEquals(LV * Math.pow(4 - 2 + 1, 2), potts.getVolume(1, 1), EPSILON);
+        assertEquals(LV * Math.pow(4 - 2 - 1, 2), potts.getVolume(1, -1), EPSILON);
     }
     
     @Test
     public void getVolume_validRegionsNotZero_calculatesValue() {
-        assertEquals(REGION_LV*Math.pow(1 - 2, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), 0), EPSILON);
-        assertEquals(REGION_LV*Math.pow(1 - 2 + 1, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), 1), EPSILON);
-        assertEquals(REGION_LV*Math.pow(1 - 2 - 1, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), -1), EPSILON);
+        assertEquals(REGION_LV * Math.pow(1 - 2, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), 0), EPSILON);
+        assertEquals(REGION_LV * Math.pow(1 - 2 + 1, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), 1), EPSILON);
+        assertEquals(REGION_LV * Math.pow(1 - 2 - 1, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), -1), EPSILON);
     }
     
     @Test
@@ -941,8 +944,8 @@ public class PottsTest {
         double cell2 = Math.pow(2 - 3, 2);
         double cell2plus1 = Math.pow(2 - 3 + 1, 2);
         double cell2minus1 = Math.pow(2 - 3 - 1, 2);
-        assertEquals(LV*(cell1minus1 - cell1 + cell2plus1 - cell2), potts.getDeltaVolume(1, 2), EPSILON);
-        assertEquals(LV*(cell2minus1 - cell2 + cell1plus1 - cell1), potts.getDeltaVolume(2, 1), EPSILON);
+        assertEquals(LV * (cell1minus1 - cell1 + cell2plus1 - cell2), potts.getDeltaVolume(1, 2), EPSILON);
+        assertEquals(LV * (cell2minus1 - cell2 + cell1plus1 - cell1), potts.getDeltaVolume(2, 1), EPSILON);
     }
     
     @Test
@@ -950,24 +953,24 @@ public class PottsTest {
         double subcell2 = Math.pow(1 - 2, 2);
         double subcell2plus1 = Math.pow(1 - 2 + 1, 2);
         double subcell2minus1 = Math.pow(1 - 2 - 1, 2);
-        assertEquals(REGION_LV*(subcell2plus1 - subcell2),
+        assertEquals(REGION_LV * (subcell2plus1 - subcell2),
                 potts.getDeltaVolume(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal()), EPSILON);
-        assertEquals(REGION_LV*(subcell2minus1 - subcell2),
+        assertEquals(REGION_LV * (subcell2minus1 - subcell2),
                 potts.getDeltaVolume(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal()), EPSILON);
     }
     
     @Test
     public void getSurface_validIDsNotZero_calculatesValue() {
-        assertEquals(LS*Math.pow(8 - 10, 2), potts.getSurface(1, 0), EPSILON);
-        assertEquals(LS*Math.pow(8 - 10 + 1, 2), potts.getSurface(1, 1), EPSILON);
-        assertEquals(LS*Math.pow(8 - 10 - 1, 2), potts.getSurface(1, -1), EPSILON);
+        assertEquals(LS * Math.pow(8 - 10, 2), potts.getSurface(1, 0), EPSILON);
+        assertEquals(LS * Math.pow(8 - 10 + 1, 2), potts.getSurface(1, 1), EPSILON);
+        assertEquals(LS * Math.pow(8 - 10 - 1, 2), potts.getSurface(1, -1), EPSILON);
     }
     
     @Test
     public void getSurface_validRegionsNotZero_calculatesValue() {
-        assertEquals(REGION_LS*Math.pow(4 - 5, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), 0), EPSILON);
-        assertEquals(REGION_LS*Math.pow(4 - 5 + 1, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), 1), EPSILON);
-        assertEquals(REGION_LS*Math.pow(4 - 5 - 1, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), -1), EPSILON);
+        assertEquals(REGION_LS * Math.pow(4 - 5, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), 0), EPSILON);
+        assertEquals(REGION_LS * Math.pow(4 - 5 + 1, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), 1), EPSILON);
+        assertEquals(REGION_LS * Math.pow(4 - 5 - 1, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), -1), EPSILON);
     }
     
     @Test
@@ -993,8 +996,8 @@ public class PottsTest {
         double cell1plus1 = Math.pow(8 - 10 + 1, 2);
         double cell2 = Math.pow(6 - 10, 2);
         double cell2minus1 = Math.pow(6 - 10 - 1, 2);
-        assertEquals(LS*(cell1plus1 - cell1 + cell2minus1 - cell2), potts.getDeltaSurface(1, 2, 0, 0, 0), EPSILON);
-        assertEquals(LS*(cell2minus1 - cell2 + cell1plus1 - cell1), potts.getDeltaSurface(2, 1, 0, 0, 0), EPSILON);
+        assertEquals(LS * (cell1plus1 - cell1 + cell2minus1 - cell2), potts.getDeltaSurface(1, 2, 0, 0, 0), EPSILON);
+        assertEquals(LS * (cell2minus1 - cell2 + cell1plus1 - cell1), potts.getDeltaSurface(2, 1, 0, 0, 0), EPSILON);
     }
     
     @Test
@@ -1002,9 +1005,9 @@ public class PottsTest {
         double subcell2 = Math.pow(4 - 5, 2);
         double subcell2minus3 = Math.pow(4 - 5 - 3, 2);
         double subcell2plus2 = Math.pow(4 - 5 + 2, 2);
-        assertEquals(REGION_LS*(subcell2minus3 - subcell2),
+        assertEquals(REGION_LS * (subcell2minus3 - subcell2),
                 potts.getDeltaSurface(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 0, 0, 0), EPSILON);
-        assertEquals(REGION_LS*(subcell2plus2 - subcell2),
+        assertEquals(REGION_LS * (subcell2plus2 - subcell2),
                 potts.getDeltaSurface(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0), EPSILON);
     }
     

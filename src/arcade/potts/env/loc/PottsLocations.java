@@ -156,7 +156,7 @@ public abstract class PottsLocations extends PottsLocation {
         // Update voxels in current location.
         for (Region region : locations.keySet()) {
             // Track fraction of voxels for each region.
-            fractions.put(region, (double)locations.get(region).voxels.size()/voxels.size());
+            fractions.put(region, (double) locations.get(region).voxels.size() / voxels.size());
             
             // Assign to default region if in current split (A), otherwise remove
             // because it is in the new split (B).
@@ -195,7 +195,7 @@ public abstract class PottsLocations extends PottsLocation {
             if (region == Region.DEFAULT) { continue; }
             
             // Get approximate number of voxels to assign.
-            double n = fractions.get(region)*location.volume;
+            double n = fractions.get(region) * location.volume;
             
             // Select assignment center. If the center voxel doesn't exist,
             // then select random voxel.

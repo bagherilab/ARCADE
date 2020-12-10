@@ -30,7 +30,7 @@ public final class PottsOutputSerializer {
     static class PottsSeriesSerializer implements JsonSerializer<PottsSeries> {
         public JsonElement serialize(PottsSeries src, Type typeOfSrc,
                                      JsonSerializationContext context) {
-            JsonObject json = (JsonObject)context.serialize(src, Series.class);
+            JsonObject json = (JsonObject) context.serialize(src, Series.class);
             
             // Add potts parameters.
             JsonElement potts = context.serialize(src.potts);
@@ -53,8 +53,8 @@ public final class PottsOutputSerializer {
             json.addProperty("voxels", src.voxels);
             
             JsonArray targets = new JsonArray();
-            targets.add((int)(100*src.targetVolume)/100.0);
-            targets.add((int)(100*src.targetSurface)/100.0);
+            targets.add((int) (100 * src.targetVolume) / 100.0);
+            targets.add((int) (100 * src.targetSurface) / 100.0);
             json.add("targets", targets);
             
             if (src.regionVoxels != null) {
@@ -65,8 +65,8 @@ public final class PottsOutputSerializer {
                     regionObject.addProperty("voxels", src.regionVoxels.get(region));
                     
                     JsonArray regionTargets = new JsonArray();
-                    regionTargets.add((int)(100*src.regionTargetVolume.get(region))/100.0);
-                    regionTargets.add((int)(100*src.regionTargetSurface.get(region))/100.0);
+                    regionTargets.add((int) (100 * src.regionTargetVolume.get(region)) / 100.0);
+                    regionTargets.add((int) (100 * src.regionTargetSurface.get(region)) / 100.0);
                     regionObject.add("targets", regionTargets);
                     
                     regions.add(regionObject);

@@ -46,7 +46,7 @@ public class Graph implements Serializable {
     public boolean hasEdge(Node from, Node to) {
         Bag bag = getEdgesOut(from);
         if (bag == null) { return false; }
-        for (Object obj : bag) { if (to.equals(((Edge)obj).to)) { return true; } }
+        for (Object obj : bag) { if (to.equals(((Edge) obj).to)) { return true; } }
         return false;
     }
     
@@ -57,7 +57,7 @@ public class Graph implements Serializable {
     // that subgraph links are not correct.
     public void getSubgraph(Graph g, Filter f) {
         for (Object obj : allEdges) {
-            Edge edge = (Edge)obj;
+            Edge edge = (Edge) obj;
             if (f.filter(edge)) {
                 g.allEdges.add(edge);
                 g.setOutMap(edge.getFrom(), edge);
@@ -74,7 +74,7 @@ public class Graph implements Serializable {
         Set<Node> set = new LinkedHashSet<Node>() { { addAll(sOut); addAll(sIn); }};
         
         for (Object obj : set) {
-            Node node = (Node)obj;
+            Node node = (Node) obj;
             Node join = node.duplicate();
             Bag out = getEdgesOut(node);
             Bag in = getEdgesIn(node);
@@ -82,7 +82,7 @@ public class Graph implements Serializable {
             // Iterate through all edges OUT of node.
             if (out != null) {
                 for (Object x : out) {
-                    Edge e = (Edge)x;
+                    Edge e = (Edge) x;
                     e.setFrom(join);
                 }
             }
@@ -90,7 +90,7 @@ public class Graph implements Serializable {
             // Iterate through all edges IN to node.
             if (in != null) {
                 for (Object x : in) {
-                    Edge e = (Edge)x;
+                    Edge e = (Edge) x;
                     e.setTo(join);
                 }
             }
@@ -131,7 +131,7 @@ public class Graph implements Serializable {
         Bag outTo = getEdgesOut(edge.getTo());
         if (outTo != null) {
             for (Object obj : outTo) {
-                Edge e = (Edge)obj;
+                Edge e = (Edge) obj;
                 if (!e.edgesIn.contains(edge)) { e.edgesIn.add(edge); }
                 if (!edge.edgesOut.contains(e)) { edge.edgesOut.add(e); }
             }
@@ -140,7 +140,7 @@ public class Graph implements Serializable {
         Bag inFrom = getEdgesIn(edge.getFrom());
         if (inFrom != null) {
             for (Object obj : inFrom) {
-                Edge e = (Edge)obj;
+                Edge e = (Edge) obj;
                 if (!e.edgesOut.contains(edge)) { e.edgesOut.add(edge); }
                 if (!edge.edgesIn.contains(e)) { edge.edgesIn.add(e); }
             }
@@ -175,7 +175,7 @@ public class Graph implements Serializable {
         Bag outTo = getEdgesOut(edge.getTo());
         if (outTo != null) {
             for (Object obj : outTo) {
-                Edge e = (Edge)obj;
+                Edge e = (Edge) obj;
                 e.edgesIn.remove(edge);
                 edge.edgesOut.remove(e);
             }
@@ -184,7 +184,7 @@ public class Graph implements Serializable {
         Bag inFrom = getEdgesIn(edge.getFrom());
         if (inFrom != null) {
             for (Object obj : inFrom) {
-                Edge e = (Edge)obj;
+                Edge e = (Edge) obj;
                 e.edgesOut.remove(edge);
                 edge.edgesIn.remove(e);
             }
@@ -254,7 +254,7 @@ public class Graph implements Serializable {
         public int getZ() { return z; }
         
         public int compareTo(Object object) {
-            Node comp = (Node)object;
+            Node comp = (Node) object;
             int xComp = Integer.compare(x, comp.getX());
             int yComp = Integer.compare(y, comp.getY());
             
@@ -274,7 +274,7 @@ public class Graph implements Serializable {
         // METHOD: equals. Override object to check if two locations are equal.
         public final boolean equals(Object obj) {
             if (obj instanceof Node) {
-                Node node = (Node)obj;
+                Node node = (Node) obj;
                 return node.x == x && node.y == y && node.z == z;
             }
             return false;
@@ -309,7 +309,7 @@ public class Graph implements Serializable {
         public ArrayList<Edge> getEdgesIn() { return edgesIn; }
         public ArrayList<Edge> getEdgesOut() { return edgesOut; }
         public Node getNode(int dir) {
-            switch(dir) {
+            switch (dir) {
                 case DIR_FROM: return from;
                 case DIR_TO: return to;
                 default: return null;

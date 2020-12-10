@@ -44,7 +44,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
         
         // Map loaded container to factory.
         for (LocationContainer container : containers) {
-            PottsLocationContainer locationContainer = (PottsLocationContainer)container;
+            PottsLocationContainer locationContainer = (PottsLocationContainer) container;
             locations.put(locationContainer.id, locationContainer);
         }
     }

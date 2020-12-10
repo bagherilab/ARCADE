@@ -40,7 +40,7 @@ public class Matrix {
         
         public final boolean equals(Object obj) {
             if (!(obj instanceof Value)) { return false; }
-            Value value = (Value)obj;
+            Value value = (Value) obj;
             return value.i == i && value.j == j && value.v == v;
         }
         
@@ -58,7 +58,7 @@ public class Matrix {
     public static ArrayList<Value> toSparse(double[][] mat) {
         ArrayList<Value> a = new ArrayList<>();
         int n = mat.length;
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (mat[i][j] != 0) { a.add(new Value(i, j, mat[i][j])); }
             }
@@ -95,16 +95,16 @@ public class Matrix {
         for (int k = 0; k < n; k++) {
             for (int i = 0; i < k; i++) {
                 for (int j = 0; j < k; j++) {
-                    inv[i][k] = inv[i][k] + inv[i][j]*mat[j][k];
+                    inv[i][k] = inv[i][k] + inv[i][j] * mat[j][k];
                     if (inv[i][k] == -0.0) { inv[i][k] = 0; }
                 }
             }
             for (int j = 0; j < k; j++) {
-                inv[j][k] = -inv[j][k]/mat[k][k];
+                inv[j][k] = -inv[j][k] / mat[k][k];
                 if (inv[j][k] == -0.0) { inv[j][k] = 0; }
             }
             
-            inv[k][k] = 1.0/mat[k][k];
+            inv[k][k] = 1.0 / mat[k][k];
         }
         return inv;
     }
@@ -121,16 +121,16 @@ public class Matrix {
         for (int k = 0; k < n; k++) {
             for (int i = 0; i < k; i++) {
                 for (int j = 0; j < k; j++) {
-                    inv[k][i] = inv[k][i] + inv[j][i]*mat[k][j];
+                    inv[k][i] = inv[k][i] + inv[j][i] * mat[k][j];
                     if (inv[k][i] == -0.0) { inv[k][i] = 0; }
                 }
             }
             for (int j = 0; j < k; j++) {
-                inv[k][j] = -inv[k][j]/mat[k][k];
+                inv[k][j] = -inv[k][j] / mat[k][k];
                 if (inv[k][j] == -0.0) { inv[k][j] = 0; }
             }
             
-            inv[k][k] = 1.0/mat[k][k];
+            inv[k][k] = 1.0 / mat[k][k];
         }
         return inv;
     }
@@ -150,9 +150,9 @@ public class Matrix {
         double[] subbed = new double[n];
         for (int i = 0; i < n; i++) {
             double val = 0;
-            for (int j = 0; j < i; j++) { val += subbed[j]*mat[i][j]; }
+            for (int j = 0; j < i; j++) { val += subbed[j] * mat[i][j]; }
             val = vec[i] - val;
-            subbed[i] = val/mat[i][i];
+            subbed[i] = val / mat[i][i];
         }
         return subbed;
     }
@@ -175,9 +175,9 @@ public class Matrix {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 double val = 0;
-                for (int k = 0; k < i; k++) { val += subbed[k][j]*lower[i][k]; }
+                for (int k = 0; k < i; k++) { val += subbed[k][j] * lower[i][k]; }
                 val = upper[i][j] - val;
-                subbed[i][j] = val/lower[i][i];
+                subbed[i][j] = val / lower[i][i];
             }
         }
         return subbed;
@@ -212,9 +212,9 @@ public class Matrix {
         for (int i = 0; i < n; i++) {
             ArrayList<Value> rowL = rowsL.get(i);
             double val = 0;
-            for (Value v : rowL) { val += subbed[v.j]*v.v; }
+            for (Value v : rowL) { val += subbed[v.j] * v.v; }
             val = vec[i] - val;
-            subbed[i] = val/diag[i];
+            subbed[i] = val / diag[i];
         }
         
         return subbed;
@@ -254,9 +254,9 @@ public class Matrix {
             ArrayList<Value> row = rows.get(i);
             for (int j = 0; j < n; j++) {
                 double val = 0;
-                for (Value v : row) { val += subbed[v.j][j]*v.v; }
+                for (Value v : row) { val += subbed[v.j][j] * v.v; }
                 val = upper[i][j] - val;
-                subbed[i][j] = val/diag[i];
+                subbed[i][j] = val / diag[i];
             }
         }
         
@@ -339,10 +339,10 @@ public class Matrix {
     public static double[][] multiply(double[][] matA, double[][] matB) {
         int n = matA.length;
         double[][] multiplied = new double[n][n];
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 for (int k = 0; k < n; k++) {
-                    multiplied[i][j] += matA[i][k]*matB[k][j];
+                    multiplied[i][j] += matA[i][k] * matB[k][j];
                 }
             }
         }
@@ -361,7 +361,7 @@ public class Matrix {
         double[] multiplied = new double[n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                multiplied[i] += mat[i][j]*vec[j];
+                multiplied[i] += mat[i][j] * vec[j];
             }
         }
         return multiplied;
@@ -379,7 +379,7 @@ public class Matrix {
         double[] multiplied = new double[n];
         
         // Iterate through all entries and multiply.
-        for (Value a : mat) { multiplied[a.i] += a.v*vec[a.j]; }
+        for (Value a : mat) { multiplied[a.i] += a.v * vec[a.j]; }
         
         return multiplied;
     }
@@ -398,7 +398,7 @@ public class Matrix {
         // Iterate through both matrices and calculate products.
         for (Value a : matA) {
             for (Value b : matB) {
-                if (a.j == b.i) { products.add(new Value(a.i, b.j, a.v*b.v)); }
+                if (a.j == b.i) { products.add(new Value(a.i, b.j, a.v * b.v)); }
             }
         }
         
@@ -481,7 +481,7 @@ public class Matrix {
     public static double[] scale(double[] vec, double scale) {
         int n = vec.length;
         double[] scaled = new double[n];
-        for (int i = 0; i < n; i++) { scaled[i] = vec[i]*scale; }
+        for (int i = 0; i < n; i++) { scaled[i] = vec[i] * scale; }
         return scaled;
     }
     
@@ -494,7 +494,7 @@ public class Matrix {
      */
     public static ArrayList<Value> scale(ArrayList<Value> mat, double scale) {
         ArrayList<Value> scaled = new ArrayList<>();
-        for (Value a : mat) { scaled.add(new Value(a.i, a.j, a.v*scale)); }
+        for (Value a : mat) { scaled.add(new Value(a.i, a.j, a.v * scale)); }
         return scaled;
     }
     
@@ -506,7 +506,7 @@ public class Matrix {
      */
     public static double normalize(double[] vec) {
         double sum = 0;
-        for (double v : vec) { sum += v*v; }
+        for (double v : vec) { sum += v * v; }
         return Math.sqrt(sum);
     }
 }

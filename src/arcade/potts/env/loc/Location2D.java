@@ -7,7 +7,7 @@ import static arcade.potts.util.PottsEnums.Direction;
 
 public interface Location2D {
     /** Multiplier for calculating surface area from volume */
-    double SURFACE_VOLUME_MULTIPLIER = 2*Math.sqrt(Math.PI)*1.5;
+    double SURFACE_VOLUME_MULTIPLIER = 2 * Math.sqrt(Math.PI) * 1.5;
     
     Direction[] DIRECTIONS = new Direction[] {
             Direction.YZ_PLANE,
@@ -26,7 +26,7 @@ public interface Location2D {
     }
     
     static double convertVolume(double volume) {
-        return SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume);
+        return SURFACE_VOLUME_MULTIPLIER * Math.sqrt(volume);
     }
     
     static int calculateSurface(ArrayList<Voxel> voxels) {
@@ -121,7 +121,7 @@ public interface Location2D {
     
     static ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) {
         ArrayList<Voxel> selected = new ArrayList<>();
-        double r = Math.sqrt(n/Math.PI);
+        double r = Math.sqrt(n / Math.PI);
         
         // Select voxels within given radius.
         for (Voxel voxel : voxels) {

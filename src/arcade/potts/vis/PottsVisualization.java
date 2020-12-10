@@ -32,7 +32,7 @@ public class PottsVisualization extends Visualization {
     final int vertical;
     
     public PottsVisualization(Simulation sim) {
-        super((SimState)sim);
+        super((SimState) sim);
         
         // Update sizes.
         Series series = sim.getSeries();
@@ -48,12 +48,12 @@ public class PottsVisualization extends Visualization {
         
         if (length != width) {
             horz = MAX_HORIZONTAL;
-            vert = (int)Math.round((width + .0)/length*MAX_HORIZONTAL);
+            vert = (int) Math.round((width + .0) / length * MAX_HORIZONTAL);
             
             if (vert > MAX_VERTICAL) {
-                double frac = (MAX_VERTICAL + .0)/vert;
-                horz = (int)Math.round(horz * frac);
-                vert = (int)Math.round(vert * frac);
+                double frac = (MAX_VERTICAL + .0) / vert;
+                horz = (int) Math.round(horz * frac);
+                vert = (int) Math.round(vert * frac);
             }
         } else {
             horz = MAX_HORIZONTAL;
@@ -70,8 +70,8 @@ public class PottsVisualization extends Visualization {
     }
     
     Drawer[] create2DDrawers() {
-        int h = horizontal/2;
-        int v = vertical/2;
+        int h = horizontal / 2;
+        int v = vertical / 2;
         
         return new Drawer[] {
                 new PottsDrawer.PottsCells(panels[0], "agents:cytoplasm",
@@ -111,29 +111,29 @@ public class PottsVisualization extends Visualization {
     }
     
     Drawer[] create3DDrawers() {
-        int h = horizontal/2;
-        int v = vertical/2;
+        int h = horizontal / 2;
+        int v = vertical / 2;
         
-        int hh = (int)Math.round((length + .0)/(length + height)*h);
-        int vv = (int)Math.round((width + .0)/(width + height)*v);
+        int hh = (int) Math.round((length + .0) / (length + height) * h);
+        int vv = (int) Math.round((width + .0) / (width + height) * v);
         
-        int hx = (int)Math.round((height + .0)/(length + height)*h);
-        int vx = (int)Math.round((height + .0)/(width + height)*v);
+        int hx = (int) Math.round((height + .0) / (length + height) * h);
+        int vx = (int) Math.round((height + .0) / (width + height) * v);
         
         return new Drawer[] {
                 new PottsDrawer.PottsCells(panels[0], "agents:cytoplasm:z",
-                        length, width, height, MAP_CYTOPLASM, getBox(0, 0, hh*2, vv*2)),
+                        length, width, height, MAP_CYTOPLASM, getBox(0, 0, hh * 2, vv * 2)),
                 new PottsDrawer.PottsCells(panels[0], "agents:cytoplasm:x",
-                        length, width, height, MAP_CYTOPLASM, getBox(hh*2, 0, hx*2, vv*2)),
+                        length, width, height, MAP_CYTOPLASM, getBox(hh * 2, 0, hx * 2, vv * 2)),
                 new PottsDrawer.PottsCells(panels[0], "agents:cytoplasm:y",
-                        length, width, height, MAP_CYTOPLASM, getBox(0, vv*2, hh*2, vx*2)),
+                        length, width, height, MAP_CYTOPLASM, getBox(0, vv * 2, hh * 2, vx * 2)),
                 
                 new PottsDrawer.PottsCells(panels[0], "agents:nucleus:z",
-                        length, width, height, MAP_NUCLEUS, getBox(0, 0, hh*2, vv*2)),
+                        length, width, height, MAP_NUCLEUS, getBox(0, 0, hh * 2, vv * 2)),
                 new PottsDrawer.PottsCells(panels[0], "agents:nucleus:x",
-                        length, width, height, MAP_NUCLEUS, getBox(hh*2, 0, hx*2, vv*2)),
+                        length, width, height, MAP_NUCLEUS, getBox(hh * 2, 0, hx * 2, vv * 2)),
                 new PottsDrawer.PottsCells(panels[0], "agents:nucleus:y",
-                        length, width, height, MAP_NUCLEUS, getBox(0, vv*2, hh*2, vx*2)),
+                        length, width, height, MAP_NUCLEUS, getBox(0, vv * 2, hh * 2, vx * 2)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:state:z",
                         length, width, height, MAP_STATE, getBox(0, 0, hh, vv)),

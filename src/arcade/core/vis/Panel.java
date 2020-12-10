@@ -104,7 +104,7 @@ public abstract class Panel {
         }
         
         public void attach(Drawer drawer, String name, Rectangle2D.Double bounds) {
-            FieldPortrayal2D port = (FieldPortrayal2D)(drawer.getPortrayal());
+            FieldPortrayal2D port = (FieldPortrayal2D) (drawer.getPortrayal());
             if (bounds == null) { display.attach(port, name); }
             else { display.attach(port, name, bounds); }
         }
@@ -142,7 +142,7 @@ public abstract class Panel {
         }
         
         public void attach(Drawer drawer, String name, Rectangle2D.Double bounds) {
-            Portrayal3D port = (Portrayal3D)(drawer.getPortrayal());
+            Portrayal3D port = (Portrayal3D) (drawer.getPortrayal());
             display.attach(port, name);
         }
         

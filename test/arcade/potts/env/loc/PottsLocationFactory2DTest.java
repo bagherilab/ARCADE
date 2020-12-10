@@ -18,34 +18,34 @@ public class PottsLocationFactory2DTest {
     
     @Test
     public void convert_exactOddSquares_calculateValue() {
-        assertEquals(1, FACTORY.convert(1*1*1));
-        assertEquals(3, FACTORY.convert(3*3*1));
-        assertEquals(5, FACTORY.convert(5*5*1));
-        assertEquals(7, FACTORY.convert(7*7*1));
+        assertEquals(1, FACTORY.convert(1 * 1 * 1));
+        assertEquals(3, FACTORY.convert(3 * 3 * 1));
+        assertEquals(5, FACTORY.convert(5 * 5 * 1));
+        assertEquals(7, FACTORY.convert(7 * 7 * 1));
     }
     
     @Test
     public void convert_exactEvenSquares_calculateValue() {
-        assertEquals(3, FACTORY.convert(2*2*1));
-        assertEquals(5, FACTORY.convert(4*4*1));
-        assertEquals(7, FACTORY.convert(6*6*1));
-        assertEquals(9, FACTORY.convert(8*8*1));
+        assertEquals(3, FACTORY.convert(2 * 2 * 1));
+        assertEquals(5, FACTORY.convert(4 * 4 * 1));
+        assertEquals(7, FACTORY.convert(6 * 6 * 1));
+        assertEquals(9, FACTORY.convert(8 * 8 * 1));
     }
     
     @Test
     public void convert_inexactOddSquares_calculateValue() {
-        assertEquals(3, FACTORY.convert(1*1*1 + 1));
-        assertEquals(5, FACTORY.convert(3*3*1 + 1));
-        assertEquals(7, FACTORY.convert(5*5*1 + 1));
-        assertEquals(9, FACTORY.convert(7*7*1 + 1));
+        assertEquals(3, FACTORY.convert(1 * 1 * 1 + 1));
+        assertEquals(5, FACTORY.convert(3 * 3 * 1 + 1));
+        assertEquals(7, FACTORY.convert(5 * 5 * 1 + 1));
+        assertEquals(9, FACTORY.convert(7 * 7 * 1 + 1));
     }
     
     @Test
     public void convert_inexactEvenSquares_calculateValue() {
-        assertEquals(3, FACTORY.convert(2*2*1 - 1));
-        assertEquals(5, FACTORY.convert(4*4*1 - 1));
-        assertEquals(7, FACTORY.convert(6*6*1 - 1));
-        assertEquals(9, FACTORY.convert(8*8*1 - 1));
+        assertEquals(3, FACTORY.convert(2 * 2 * 1 - 1));
+        assertEquals(5, FACTORY.convert(4 * 4 * 1 - 1));
+        assertEquals(7, FACTORY.convert(6 * 6 * 1 - 1));
+        assertEquals(9, FACTORY.convert(8 * 8 * 1 - 1));
     }
     
     @Test
@@ -59,19 +59,19 @@ public class PottsLocationFactory2DTest {
     public void getPossible_givenSize_createsList() {
         PottsLocationFactory2D factory = new PottsLocationFactory2D();
         
-        int x = (int)(Math.random()*10);
-        int y = (int)(Math.random()*10);
-        int z = (int)(Math.random()*10);
-        int n = ((int)(Math.random()*10)*2) + 1;
+        int x = (int) (Math.random() * 10);
+        int y = (int) (Math.random() * 10);
+        int z = (int) (Math.random() * 10);
+        int n = ((int) (Math.random() * 10) * 2) + 1;
         
         ArrayList<Voxel> list = factory.getPossible(new Voxel(x, y, z), n);
-        assertEquals(n*n, list.size());
+        assertEquals(n * n, list.size());
         
         for (Voxel voxel : list) {
-            assertTrue(voxel.x < x + (n - 1)/2 + 1);
-            assertTrue(voxel.x > x - (n - 1)/2 - 1);
-            assertTrue(voxel.y < y + (n - 1)/2 + 1);
-            assertTrue(voxel.y > y - (n - 1)/2 - 1);
+            assertTrue(voxel.x < x + (n - 1) / 2 + 1);
+            assertTrue(voxel.x > x - (n - 1) / 2 - 1);
+            assertTrue(voxel.y < y + (n - 1) / 2 + 1);
+            assertTrue(voxel.y > y - (n - 1) / 2 - 1);
             assertEquals(0, voxel.z);
         }
     }
@@ -238,7 +238,7 @@ public class PottsLocationFactory2DTest {
         int n = 10;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                allVoxels.add(new Voxel(i - n/2, j - n/2, 0));
+                allVoxels.add(new Voxel(i - n / 2, j - n / 2, 0));
             }
         }
         
@@ -266,7 +266,7 @@ public class PottsLocationFactory2DTest {
         int n = 10;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                allVoxels.add(new Voxel(i - n/2, j - n/2, 0));
+                allVoxels.add(new Voxel(i - n / 2, j - n / 2, 0));
             }
         }
         
@@ -291,7 +291,7 @@ public class PottsLocationFactory2DTest {
         
         int n = 10;
         for (int i = 0; i < n; i++) {
-            allVoxels.add(new Voxel(i - n/2, 0, 0));
+            allVoxels.add(new Voxel(i - n / 2, 0, 0));
         }
         
         voxels.add(new Voxel(0, 0, 0));

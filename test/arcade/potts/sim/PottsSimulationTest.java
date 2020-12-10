@@ -32,12 +32,12 @@ import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.TestUtilities.*;
 
 public class PottsSimulationTest {
-    static final long RANDOM_SEED = (long)(Math.random()*1000);
+    static final long RANDOM_SEED = (long) (Math.random() * 1000);
     private static final int TOTAL_LOCATIONS = 6;
     static Series seriesZeroPop, seriesOnePop, seriesMultiPop,
             seriesNullCell, seriesNullLocation, seriesNullBoth;
     
-    static double random() { return Math.random()*100; }
+    static double random() { return Math.random() * 100; }
     
     static Series createSeries(int[] pops, String[] keys) {
         Series series = mock(PottsSeries.class);
@@ -173,7 +173,7 @@ public class PottsSimulationTest {
                 CellContainer container = cellContainerMap.get(pop).get(id);
                 ids.add(id);
                 
-                factory.cells.put(id,(PottsCellContainer)container);
+                factory.cells.put(id, (PottsCellContainer) container);
                 doReturn(id).when(cell).getID();
                 doReturn(pop.getInt("CODE")).when(cell).getPop();
                 doReturn(loc).when(cell).getLocation();
@@ -469,10 +469,10 @@ public class PottsSimulationTest {
         int[] pops = new int[] { 1, 1, 1, 1, 1 };
         for (int i = 0; i < TOTAL_LOCATIONS - 1; i++) {
             int id = i + 1;
-            Cell cell = (Cell)sim.grid.getObjectAt(id);
+            Cell cell = (Cell) sim.grid.getObjectAt(id);
             assertEquals(id, cell.getID());
             assertEquals(pops[i], cell.getPop());
-            assertEquals(new Voxel(id, id, id), ((PottsLocation)cell.getLocation()).getCenter());
+            assertEquals(new Voxel(id, id, id), ((PottsLocation) cell.getLocation()).getCenter());
         }
         
         assertNull(sim.grid.getObjectAt(6));
@@ -486,8 +486,8 @@ public class PottsSimulationTest {
         sim.setupAgents();
         
         for (Object obj : sim.grid.getAllObjects()) {
-            verify((PottsCell)obj).initialize(sim.potts.ids, sim.potts.regions);
-            verify((Cell)obj).schedule(sim.schedule);
+            verify((PottsCell) obj).initialize(sim.potts.ids, sim.potts.regions);
+            verify((Cell) obj).schedule(sim.schedule);
         }
     }
     
@@ -501,10 +501,10 @@ public class PottsSimulationTest {
         int[] pops = new int[] { 1, 1, 1, 2, 3, 3 };
         for (int i = 0; i < TOTAL_LOCATIONS; i++) {
             int id = i + 1;
-            Cell cell = (Cell)sim.grid.getObjectAt(id);
+            Cell cell = (Cell) sim.grid.getObjectAt(id);
             assertEquals(id, cell.getID());
             assertEquals(pops[i], cell.getPop());
-            assertEquals(new Voxel(id, id, id), ((PottsLocation)cell.getLocation()).getCenter());
+            assertEquals(new Voxel(id, id, id), ((PottsLocation) cell.getLocation()).getCenter());
         }
         
         assertEquals(TOTAL_LOCATIONS + 1, sim.getID());
@@ -517,8 +517,8 @@ public class PottsSimulationTest {
         sim.setupAgents();
         
         for (Object obj : sim.grid.getAllObjects()) {
-            verify((PottsCell)obj).initialize(sim.potts.ids, sim.potts.regions);
-            verify((PottsCell)obj).schedule(sim.schedule);
+            verify((PottsCell) obj).initialize(sim.potts.ids, sim.potts.regions);
+            verify((PottsCell) obj).schedule(sim.schedule);
         }
     }
     
@@ -559,7 +559,7 @@ public class PottsSimulationTest {
         sim.series.saver = saver;
         sim.schedule = schedule;
         
-        int interval = (int)(random()*100);
+        int interval = (int) (random() * 100);
         doReturn(interval).when(series).getInterval();
         
         sim.doOutput(true);
@@ -583,7 +583,7 @@ public class PottsSimulationTest {
         
         sim.doOutput(false);
         verify(saver, never()).schedule(eq(schedule), anyDouble());
-        verify(saver).saveCells((int)time + 1);
-        verify(saver).saveLocations((int)time + 1);
+        verify(saver).saveCells((int) time + 1);
+        verify(saver).saveLocations((int) time + 1);
     }
 }

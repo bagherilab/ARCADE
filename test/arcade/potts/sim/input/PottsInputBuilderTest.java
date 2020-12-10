@@ -52,7 +52,7 @@ public class PottsInputBuilderTest {
     
     @Test
     public void updateBox_noAtts_updatesContainer() {
-        int nLists = randomIntBetween(1,10);
+        int nLists = randomIntBetween(1, 10);
         
         PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
         builder.setupLists = makeSetupLists(nLists);
@@ -66,8 +66,8 @@ public class PottsInputBuilderTest {
     
     @Test
     public void updateBox_noTagsNoTarget_updatesContainer() {
-        int nLists = randomIntBetween(1,10);
-        int nAtts = randomIntBetween(1,10);
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
         String id = randomString();
         
         PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
@@ -86,8 +86,8 @@ public class PottsInputBuilderTest {
     
     @Test
     public void updateBox_withRegionTagNoTarget_updatesContainer() {
-        int nLists = randomIntBetween(1,10);
-        int nAtts = randomIntBetween(1,10);
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
         String id = randomString();
         String region = randomString();
         
@@ -110,8 +110,8 @@ public class PottsInputBuilderTest {
     
     @Test
     public void updateBox_withModuleTagNoTarget_updatesContainer() {
-        int nLists = randomIntBetween(1,10);
-        int nAtts = randomIntBetween(1,10);
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
         String id = randomString();
         String module = randomString();
         
@@ -134,8 +134,8 @@ public class PottsInputBuilderTest {
     
     @Test
     public void updateBox_withRegionModuleTagsNoTarget_updatesContainer() {
-        int nLists = randomIntBetween(1,10);
-        int nAtts = randomIntBetween(1,10);
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
         String id = randomString();
         String region = randomString();
         String module = randomString();
@@ -162,8 +162,8 @@ public class PottsInputBuilderTest {
     
     @Test
     public void updateBox_noTagWithTarget_updatesContainer() {
-        int nLists = randomIntBetween(1,10);
-        int nAtts = randomIntBetween(1,10);
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
         String id = randomString();
         String target = randomString();
         
@@ -186,8 +186,8 @@ public class PottsInputBuilderTest {
     
     @Test
     public void updateBox_withRegionTagWithTarget_updatesContainer() {
-        int nLists = randomIntBetween(1,10);
-        int nAtts = randomIntBetween(1,10);
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
         String id = randomString();
         String region = randomString();
         String target = randomString();
@@ -214,8 +214,8 @@ public class PottsInputBuilderTest {
     
     @Test
     public void updateBox_withModuleTagWithTarget_updatesContainer() {
-        int nLists = randomIntBetween(1,10);
-        int nAtts = randomIntBetween(1,10);
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
         String id = randomString();
         String module = randomString();
         String target = randomString();
@@ -242,8 +242,8 @@ public class PottsInputBuilderTest {
     
     @Test
     public void updateBox_withRegionModuleTagsWithTarget_updatesContainer() {
-        int nLists = randomIntBetween(1,10);
-        int nAtts = randomIntBetween(1,10);
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
         String id = randomString();
         String region = randomString();
         String module = randomString();
@@ -277,7 +277,7 @@ public class PottsInputBuilderTest {
         PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
         builder.setupDicts = new HashMap<>();
         
-        int n = randomIntBetween(1,10);
+        int n = randomIntBetween(1, 10);
         Attributes attributes = makeAttributesMock(n);
         builder.startElement("", "", "set", attributes);
         
@@ -293,7 +293,7 @@ public class PottsInputBuilderTest {
         PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
         builder.setupDicts = new HashMap<>();
         
-        int n = randomIntBetween(1,10);
+        int n = randomIntBetween(1, 10);
         Attributes attributes = makeAttributesMock(n);
         builder.startElement("", "", "series", attributes);
         
@@ -309,7 +309,7 @@ public class PottsInputBuilderTest {
         PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
         builder.setupLists = new HashMap<>();
         
-        Attributes attributes = makeAttributesMock(randomIntBetween(1,10));
+        Attributes attributes = makeAttributesMock(randomIntBetween(1, 10));
         builder.startElement("", "", "populations", attributes);
         
         assertTrue(builder.setupLists.containsKey("populations"));
@@ -321,7 +321,7 @@ public class PottsInputBuilderTest {
         PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
         builder.setupLists = new HashMap<>();
         
-        Attributes attributes = makeAttributesMock(randomIntBetween(1,10));
+        Attributes attributes = makeAttributesMock(randomIntBetween(1, 10));
         builder.startElement("", "", "potts", attributes);
         
         assertTrue(builder.setupLists.containsKey("potts"));
@@ -334,7 +334,7 @@ public class PottsInputBuilderTest {
         builder.setupLists = new HashMap<>();
         builder.setupLists.put("populations", new ArrayList<>());
         
-        int n = randomIntBetween(1,10);
+        int n = randomIntBetween(1, 10);
         Attributes attributes = makeAttributesMock(n);
         builder.startElement("", "", "population", attributes);
         
@@ -354,7 +354,7 @@ public class PottsInputBuilderTest {
         
         String id = randomString();
         String tag = randomString();
-        int n = randomIntBetween(1,10);
+        int n = randomIntBetween(1, 10);
         Attributes attributes = makeAttributesMock(n + 1);
         doReturn("id").when(attributes).getQName(n);
         doReturn(id).when(attributes).getValue(n);
@@ -377,7 +377,7 @@ public class PottsInputBuilderTest {
         
         String id = randomString();
         String tag = randomString();
-        int n = randomIntBetween(1,10);
+        int n = randomIntBetween(1, 10);
         Attributes attributes = makeAttributesMock(n + 1);
         doReturn("id").when(attributes).getQName(n);
         doReturn(id).when(attributes).getValue(n);

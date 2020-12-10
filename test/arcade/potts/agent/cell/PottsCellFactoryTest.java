@@ -68,75 +68,6 @@ public class PottsCellFactoryTest {
     
     static class PottsCellFactoryMock extends PottsCellFactory {
         public PottsCellFactoryMock() { super(); }
-        
-        PottsCell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
-                           EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion) {
-            PottsCell cell = mock(PottsCell.class);
-            
-            when(cell.getID()).thenReturn(id);
-            when(cell.getPop()).thenReturn(pop);
-            when(cell.getAge()).thenReturn(age);
-            when(cell.getState()).thenReturn(state);
-            when(cell.getLocation()).thenReturn(location);
-            when(cell.getParameters()).thenReturn(parameters);
-            
-            Module module = mock(PottsModule.class);
-            when(cell.getModule()).thenReturn(module);
-            
-            when(cell.getCriticalVolume()).thenReturn(criticals.get(Term.VOLUME));
-            when(cell.getCriticalSurface()).thenReturn(criticals.get(Term.SURFACE));
-            
-            when(cell.getLambda(Term.VOLUME)).thenReturn(lambdas.get(Term.VOLUME));
-            when(cell.getLambda(Term.SURFACE)).thenReturn(lambdas.get(Term.SURFACE));
-            
-            for (int i = 0; i < adhesion.length; i++) {
-                when(cell.getAdhesion(i)).thenReturn(adhesion[i]);
-            }
-            
-            return cell;
-        }
-        
-        PottsCell makeCell(int id, int pop, int age, State state, Location location, MiniBox parameters,
-                           EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas, double[] adhesion,
-                           EnumMap<Region, EnumMap<Term, Double>> criticalsRegion,
-                           EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
-                           EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
-            PottsCell cell = mock(PottsCell.class);
-            
-            when(cell.getID()).thenReturn(id);
-            when(cell.getPop()).thenReturn(pop);
-            when(cell.getAge()).thenReturn(age);
-            when(cell.getState()).thenReturn(state);
-            when(cell.getLocation()).thenReturn(location);
-            when(cell.getParameters()).thenReturn(parameters);
-            
-            Module module = mock(PottsModule.class);
-            when(cell.getModule()).thenReturn(module);
-            
-            when(cell.getCriticalVolume()).thenReturn(criticals.get(Term.VOLUME));
-            when(cell.getCriticalSurface()).thenReturn(criticals.get(Term.SURFACE));
-            
-            when(cell.getLambda(Term.VOLUME)).thenReturn(lambdas.get(Term.VOLUME));
-            when(cell.getLambda(Term.SURFACE)).thenReturn(lambdas.get(Term.SURFACE));
-            
-            for (int i = 0; i < adhesion.length; i++) {
-                when(cell.getAdhesion(i)).thenReturn(adhesion[i]);
-            }
-            
-            for (Region region : location.getRegions()) {
-                when(cell.getCriticalVolume(region)).thenReturn(criticalsRegion.get(region).get(Term.VOLUME));
-                when(cell.getCriticalSurface(region)).thenReturn(criticalsRegion.get(region).get(Term.SURFACE));
-                
-                when(cell.getLambda(Term.VOLUME, region)).thenReturn(lambdasRegion.get(region).get(Term.VOLUME));
-                when(cell.getLambda(Term.SURFACE, region)).thenReturn(lambdasRegion.get(region).get(Term.SURFACE));
-                
-                for (Region target : location.getRegions()) {
-                    when(cell.getAdhesion(region, target)).thenReturn(adhesionRegion.get(region).get(target));
-                }
-            }
-            
-            return cell;
-        }
     }
     
     @Test
@@ -349,12 +280,12 @@ public class PottsCellFactoryTest {
         ArrayList<PottsCellContainer> containers = new ArrayList<>();
         
         for (int i = 0; i < n; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1,10));
+            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1, 10));
             containers.add(container);
         }
         
         for (int i = n; i < n + m; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 2, randomIntBetween(1,10));
+            PottsCellContainer container = new PottsCellContainer(i, 2, randomIntBetween(1, 10));
             containers.add(container);
         }
         
@@ -396,11 +327,11 @@ public class PottsCellFactoryTest {
     
     @Test
     public void loadCells_givenLoadedInvalidPops_updatesLists() {
-        int n = randomIntBetween(1,10);
+        int n = randomIntBetween(1, 10);
         ArrayList<PottsCellContainer> containers = new ArrayList<>();
         
         for (int i = 0; i < n; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1,10));
+            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1, 10));
             containers.add(container);
         }
         
@@ -426,18 +357,18 @@ public class PottsCellFactoryTest {
     
     @Test
     public void loadCells_givenLoadedLimitedInit_updatesLists() {
-        int num = randomIntBetween(1,10);
-        int n = num + randomIntBetween(1,10);
-        int m = randomIntBetween(1,10);
+        int num = randomIntBetween(1, 10);
+        int n = num + randomIntBetween(1, 10);
+        int m = randomIntBetween(1, 10);
         ArrayList<PottsCellContainer> containers = new ArrayList<>();
         
         for (int i = 0; i < n; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1,10));
+            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1, 10));
             containers.add(container);
         }
         
         for (int i = n; i < n + m; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 2, randomIntBetween(1,10));
+            PottsCellContainer container = new PottsCellContainer(i, 2, randomIntBetween(1, 10));
             containers.add(container);
         }
         
@@ -490,8 +421,8 @@ public class PottsCellFactoryTest {
     
     @Test
     public void createCells_onePopulationNoRegions_createsList() {
-        int voxels = randomIntBetween(1,10);
-        int init = randomIntBetween(1,10);
+        int voxels = randomIntBetween(1, 10);
+        int init = randomIntBetween(1, 10);
         Series series = createSeries(new int[] { init }, new int[] { voxels });
         
         PottsCellFactoryMock factory = new PottsCellFactoryMock();
@@ -503,23 +434,23 @@ public class PottsCellFactoryTest {
         assertEquals(init, factory.popToIDs.get(1).size());
         
         for (int i : factory.popToIDs.get(1)) {
-            PottsCellContainer pottsCellContainer = (PottsCellContainer)factory.cells.get(i);
+            PottsCellContainer pottsCellContainer = factory.cells.get(i);
             assertEquals(voxels, pottsCellContainer.voxels);
         }
     }
     
     @Test
     public void createCells_onePopulationWithRegions_createsList() {
-        int voxelsA = 10*randomIntBetween(1,10);
-        int voxelsB = 10*randomIntBetween(1,10);
+        int voxelsA = 10 * randomIntBetween(1, 10);
+        int voxelsB = 10 * randomIntBetween(1, 10);
         
         int voxels = voxelsA + voxelsB;
-        int init = randomIntBetween(1,10);
+        int init = randomIntBetween(1, 10);
         
         Series series = createSeries(new int[] { init }, new int[] { voxels });
         
-        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels);
-        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels);
+        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double) voxelsA / voxels);
+        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double) voxelsB / voxels);
         
         PottsCellFactoryMock factory = new PottsCellFactoryMock();
         factory.popToIDs.put(1, new HashSet<>());
@@ -530,23 +461,23 @@ public class PottsCellFactoryTest {
         assertEquals(init, factory.popToIDs.get(1).size());
         
         for (int i : factory.popToIDs.get(1)) {
-            PottsCellContainer pottsCellContainer = (PottsCellContainer)factory.cells.get(i);
+            PottsCellContainer pottsCellContainer = factory.cells.get(i);
             assertEquals(voxels, pottsCellContainer.voxels);
-            assertEquals(voxelsA, (int)pottsCellContainer.regionVoxels.get(Region.UNDEFINED));
-            assertEquals(voxelsB, (int)pottsCellContainer.regionVoxels.get(Region.NUCLEUS));
-            assertEquals(0, (int)pottsCellContainer.regionVoxels.get(Region.DEFAULT));
+            assertEquals(voxelsA, (int) pottsCellContainer.regionVoxels.get(Region.UNDEFINED));
+            assertEquals(voxelsB, (int) pottsCellContainer.regionVoxels.get(Region.NUCLEUS));
+            assertEquals(0, (int) pottsCellContainer.regionVoxels.get(Region.DEFAULT));
         }
     }
     
     @Test
     public void createCells_multiplePopulationsNoRegions_createsList() {
-        int voxels1 = randomIntBetween(1,10);
-        int voxels2 = randomIntBetween(1,10);
-        int voxels3 = randomIntBetween(1,10);
+        int voxels1 = randomIntBetween(1, 10);
+        int voxels2 = randomIntBetween(1, 10);
+        int voxels3 = randomIntBetween(1, 10);
         
-        int init1 = randomIntBetween(1,10);
-        int init2 = randomIntBetween(1,10);
-        int init3 = randomIntBetween(1,10);
+        int init1 = randomIntBetween(1, 10);
+        int init2 = randomIntBetween(1, 10);
+        int init3 = randomIntBetween(1, 10);
         
         Series series = createSeries(new int[] { init1, init2, init3 },
                 new int[] { voxels1, voxels2, voxels3 });
@@ -566,37 +497,37 @@ public class PottsCellFactoryTest {
         assertEquals(init3, factory.popToIDs.get(3).size());
         
         for (int i : factory.popToIDs.get(1)) {
-            PottsCellContainer pottsCellContainer = (PottsCellContainer)factory.cells.get(i);
+            PottsCellContainer pottsCellContainer = factory.cells.get(i);
             assertEquals(voxels1, pottsCellContainer.voxels);
         }
         for (int i : factory.popToIDs.get(2)) {
-            PottsCellContainer pottsCellContainer = (PottsCellContainer)factory.cells.get(i);
+            PottsCellContainer pottsCellContainer = factory.cells.get(i);
             assertEquals(voxels2, pottsCellContainer.voxels);
         }
         for (int i : factory.popToIDs.get(3)) {
-            PottsCellContainer pottsCellContainer = (PottsCellContainer)factory.cells.get(i);
+            PottsCellContainer pottsCellContainer = factory.cells.get(i);
             assertEquals(voxels3, pottsCellContainer.voxels);
         }
     }
     
     @Test
     public void createCells_multiplePopulationsWithRegions_createsList() {
-        int voxelsA = 10*randomIntBetween(1,10);
-        int voxelsB = 10*randomIntBetween(1,10);
+        int voxelsA = 10 * randomIntBetween(1, 10);
+        int voxelsB = 10 * randomIntBetween(1, 10);
         
-        int voxels1 = randomIntBetween(1,10);
+        int voxels1 = randomIntBetween(1, 10);
         int voxels2 = voxelsA + voxelsB;
-        int voxels3 = randomIntBetween(1,10);
+        int voxels3 = randomIntBetween(1, 10);
         
-        int init1 = randomIntBetween(1,10);
-        int init2 = randomIntBetween(1,10);
-        int init3 = randomIntBetween(1,10);
+        int init1 = randomIntBetween(1, 10);
+        int init2 = randomIntBetween(1, 10);
+        int init3 = randomIntBetween(1, 10);
         
         Series series = createSeries(new int[] { init1, init2, init3 },
                 new int[] { voxels1, voxels2, voxels3 });
         
-        series.populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels2);
-        series.populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels2);
+        series.populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double) voxelsA / voxels2);
+        series.populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double) voxelsB / voxels2);
         
         PottsCellFactoryMock factory = new PottsCellFactoryMock();
         factory.popToIDs.put(1, new HashSet<>());
@@ -613,27 +544,27 @@ public class PottsCellFactoryTest {
         assertEquals(init3, factory.popToIDs.get(3).size());
         
         for (int i : factory.popToIDs.get(1)) {
-            PottsCellContainer pottsCellContainer = (PottsCellContainer)factory.cells.get(i);
+            PottsCellContainer pottsCellContainer = factory.cells.get(i);
             assertEquals(voxels1, pottsCellContainer.voxels);
         }
         for (int i : factory.popToIDs.get(2)) {
-            PottsCellContainer pottsCellContainer = (PottsCellContainer)factory.cells.get(i);
+            PottsCellContainer pottsCellContainer = factory.cells.get(i);
             assertEquals(voxels2, pottsCellContainer.voxels);
-            assertEquals(voxelsA, (int)pottsCellContainer.regionVoxels.get(Region.UNDEFINED));
-            assertEquals(voxelsB, (int)pottsCellContainer.regionVoxels.get(Region.NUCLEUS));
-            assertEquals(0, (int)pottsCellContainer.regionVoxels.get(Region.DEFAULT));
+            assertEquals(voxelsA, (int) pottsCellContainer.regionVoxels.get(Region.UNDEFINED));
+            assertEquals(voxelsB, (int) pottsCellContainer.regionVoxels.get(Region.NUCLEUS));
+            assertEquals(0, (int) pottsCellContainer.regionVoxels.get(Region.DEFAULT));
         }
         for (int i : factory.popToIDs.get(3)) {
-            PottsCellContainer pottsCellContainer = (PottsCellContainer)factory.cells.get(i);
+            PottsCellContainer pottsCellContainer = factory.cells.get(i);
             assertEquals(voxels3, pottsCellContainer.voxels);
         }
     }
     
     @Test
     public void createCells_extraRegions_skipsExtra() {
-        int voxel = randomIntBetween(1,10);
-        int voxels = 4*voxel;
-        int init = randomIntBetween(1,10);
+        int voxel = randomIntBetween(1, 10);
+        int voxels = 4 * voxel;
+        int init = randomIntBetween(1, 10);
         
         Series series = createSeries(new int[] { init }, new int[] { voxels });
         
@@ -649,10 +580,10 @@ public class PottsCellFactoryTest {
         assertEquals(init, factory.popToIDs.get(1).size());
         
         for (int i : factory.popToIDs.get(1)) {
-            PottsCellContainer pottsCellContainer = (PottsCellContainer)factory.cells.get(i);
+            PottsCellContainer pottsCellContainer = factory.cells.get(i);
             assertEquals(voxels, pottsCellContainer.voxels);
-            assertEquals(3*voxel, (int)pottsCellContainer.regionVoxels.get(Region.UNDEFINED));
-            assertEquals(voxel, (int)pottsCellContainer.regionVoxels.get(Region.DEFAULT));
+            assertEquals(3 * voxel, (int) pottsCellContainer.regionVoxels.get(Region.UNDEFINED));
+            assertEquals(voxel, (int) pottsCellContainer.regionVoxels.get(Region.DEFAULT));
         }
     }
 }

@@ -33,7 +33,7 @@ public class PottsLocationContainer implements LocationContainer {
     public int getID() { return id; }
     
     public Location convert(LocationFactory factory, CellContainer cell) {
-        return convert((PottsLocationFactory)factory, (PottsCellContainer)cell);
+        return convert((PottsLocationFactory) factory, (PottsCellContainer) cell);
     }
     
     private Location convert(PottsLocationFactory factory, PottsCellContainer cell) {

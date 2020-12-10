@@ -192,7 +192,7 @@ public class OutputSaverTest {
         SimState simstate = mock(SimState.class);
         simstate.schedule = mock(Schedule.class);
         int tick = randomIntBetween(1, 100);
-        doReturn((double)tick).when(simstate.schedule).getTime();
+        doReturn((double) tick).when(simstate.schedule).getTime();
         
         saver.prefix = randomString();
         

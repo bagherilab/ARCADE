@@ -124,7 +124,8 @@ public class PottsSeries extends Series {
             this.populations.put(id, population);
             
             // Add population init if given. If not given or invalid, set to zero.
-            int init = (isValidNumber(p, "init") ? (int)Double.parseDouble(p.getValue("init")) : 0);
+            int init = (isValidNumber(p, "init")
+                    ? (int) Double.parseDouble(p.getValue("init")) : 0);
             population.put("INIT", init);
             
             // Get default parameters and any parameter adjustments.
@@ -163,7 +164,7 @@ public class PottsSeries extends Series {
             // Apply conversion factors.
             for (String convert : populationConversions.getKeys()) {
                 double conversion = parseConversion(populationConversions.get(convert), ds, dt);
-                population.put(convert, population.getDouble(convert)*conversion);
+                population.put(convert, population.getDouble(convert) * conversion);
             }
         }
     }

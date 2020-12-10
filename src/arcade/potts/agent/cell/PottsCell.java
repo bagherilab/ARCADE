@@ -145,7 +145,7 @@ public class PottsCell implements Cell {
         this.pop = pop;
         this.age = age;
         this.hasRegions = hasRegions;
-        this.location = (PottsLocation)location;
+        this.location = (PottsLocation) location;
         this.parameters = parameters;
         this.criticals = criticals.clone();
         this.lambdas = lambdas.clone();
@@ -327,8 +327,8 @@ public class PottsCell implements Cell {
         if (!hasRegions) { return; }
         
         for (Region region : location.getRegions()) {
-            targetRegionVolumes.put(region, (double)location.getVolume(region));
-            targetRegionSurfaces.put(region, (double)location.getSurface(region));
+            targetRegionVolumes.put(region, (double) location.getVolume(region));
+            targetRegionSurfaces.put(region, (double) location.getSurface(region));
         }
     }
     
@@ -358,7 +358,7 @@ public class PottsCell implements Cell {
      * @param simstate  the MASON simulation state
      */
     public void step(SimState simstate) {
-        Simulation sim = (Simulation)simstate;
+        Simulation sim = (Simulation) simstate;
         
         // Increase age of cell (in ticks).
         age++;
@@ -404,12 +404,12 @@ public class PottsCell implements Cell {
         }
         
         double oldTargetVolume = targetVolume;
-        targetVolume = volume + rate*(scale*criticals.get(Term.VOLUME) - volume);
+        targetVolume = volume + rate * (scale * criticals.get(Term.VOLUME) - volume);
         
         // Ensure that target volume increases or decreases monotonically.
-        if ((scale > 1 && targetVolume < oldTargetVolume) ||
-                (scale < 1 && targetVolume > oldTargetVolume)) {
-            targetVolume = oldTargetVolume ;
+        if ((scale > 1 && targetVolume < oldTargetVolume)
+                || (scale < 1 && targetVolume > oldTargetVolume)) {
+            targetVolume = oldTargetVolume;
         }
         
         targetSurface = location.convertVolume(targetVolume);
@@ -434,12 +434,12 @@ public class PottsCell implements Cell {
         targetVolume -= targetRegionVolumes.get(region);
         
         double oldTargetRegionVolume = targetRegionVolumes.get(region);
-        double update = rate*(scale*criticalsRegion.get(region).get(Term.VOLUME) - regionVolume);
-        targetRegionVolumes.put(region, regionVolume + update);
+        double update = scale * criticalsRegion.get(region).get(Term.VOLUME) - regionVolume;
+        targetRegionVolumes.put(region, regionVolume + rate * update);
         
         // Ensure that target volume increases or decreases monotonically.
-        if ((scale > 1 && targetRegionVolumes.get(region) < oldTargetRegionVolume) ||
-                (scale < 1 && targetRegionVolumes.get(region) > oldTargetRegionVolume)) {
+        if ((scale > 1 && targetRegionVolumes.get(region) < oldTargetRegionVolume)
+                || (scale < 1 && targetRegionVolumes.get(region) > oldTargetRegionVolume)) {
             targetRegionVolumes.put(region, oldTargetRegionVolume);
         }
         
@@ -457,11 +457,11 @@ public class PottsCell implements Cell {
             }
             
             return new PottsCellContainer(id, pop, age, state,
-                    ((PottsModule)module).getPhase(), getVolume(), regionVolumes,
+                    ((PottsModule) module).getPhase(), getVolume(), regionVolumes,
                     targetVolume, targetSurface, targetRegionVolumes, targetRegionSurfaces);
         } else {
             return new PottsCellContainer(id, pop, age, state,
-                    ((PottsModule)module).getPhase(), getVolume(),
+                    ((PottsModule) module).getPhase(), getVolume(),
                     targetVolume, targetSurface);
         }
     }

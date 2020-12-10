@@ -22,7 +22,7 @@ public class PottsLocationsTest {
     static ArrayList<Voxel> voxelListSingle;
     static ArrayList<Voxel> voxelListDouble;
     static ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
-    final static int LOCATIONS_SURFACE = (int)(Math.random()*100);
+    final static int LOCATIONS_SURFACE = (int) (Math.random() * 100);
     
     @BeforeClass
     public static void setupMocks() {
@@ -271,7 +271,7 @@ public class PottsLocationsTest {
     @Test
     public void add_existingVoxelWithRegion_doesNothing() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListSingle);
-        loc.add(Region.UNDEFINED,0, 0, 0);
+        loc.add(Region.UNDEFINED, 0, 0, 0);
         assertEquals(voxelListSingle, loc.voxels);
         assertEquals(voxelListSingle, loc.locations.get(Region.DEFAULT).voxels);
         assertNull(loc.locations.get(Region.UNDEFINED));
@@ -323,7 +323,7 @@ public class PottsLocationsTest {
     @Test
     public void remove_existingVoxelWithRegion_updatesList() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForRegionAddRemove);
-        loc.add(Region.UNDEFINED,0, 0, 0);
+        loc.add(Region.UNDEFINED, 0, 0, 0);
         loc.add(Region.UNDEFINED, 1, 0, 0);
         
         ArrayList<Voxel> voxelsRemoved = new ArrayList<>();
@@ -346,7 +346,7 @@ public class PottsLocationsTest {
     @Test
     public void remove_existingVoxelWithRegion_updatesVolume() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForRegionAddRemove);
-        loc.add(Region.UNDEFINED,0, 0, 0);
+        loc.add(Region.UNDEFINED, 0, 0, 0);
         loc.add(Region.UNDEFINED, 1, 0, 0);
         loc.remove(Region.UNDEFINED, 0, 0, 0);
         assertEquals(2, loc.volume);
@@ -357,7 +357,7 @@ public class PottsLocationsTest {
     @Test
     public void remove_existingVoxelWithRegion_updatesSurface() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForRegionAddRemove);
-        loc.add(Region.UNDEFINED,0, 0, 0);
+        loc.add(Region.UNDEFINED, 0, 0, 0);
         loc.add(Region.UNDEFINED, 1, 0, 0);
         loc.remove(Region.UNDEFINED, 0, 0, 0);
         assertEquals(LOCATIONS_SURFACE + 2 - 1, loc.surface);
@@ -368,7 +368,7 @@ public class PottsLocationsTest {
     @Test
     public void remove_alternateVoxelWithRegion_doesNothing() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForRegionAddRemove);
-        loc.add(Region.UNDEFINED,0, 0, 0);
+        loc.add(Region.UNDEFINED, 0, 0, 0);
         loc.add(Region.UNDEFINED, 1, 0, 0);
         
         ArrayList<Voxel> voxelsRemoved = new ArrayList<>();
@@ -393,7 +393,7 @@ public class PottsLocationsTest {
     @Test
     public void remove_allVoxelsWithRegion_returnsEmptyList() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForRegionAddRemove);
-        loc.add(Region.UNDEFINED,0, 0, 0);
+        loc.add(Region.UNDEFINED, 0, 0, 0);
         loc.add(Region.UNDEFINED, 1, 0, 0);
         loc.remove(0, 0, 0);
         loc.remove(1, 0, 0);
@@ -576,7 +576,7 @@ public class PottsLocationsTest {
         regions.put(Region.NUCLEUS, new ArrayList<>());
         for (int i = 0; i < 2 * n; i++) {
             for (int j = 0; j < 2 * n; j++) {
-                if ((i + j)%2 == 0) {
+                if ((i + j) % 2 == 0) {
                     location.assign(Region.NUCLEUS, new Voxel(i, j, 0));
                     regions.get(Region.NUCLEUS).add(new Voxel(i, j, 0));
                 } else {
@@ -585,7 +585,7 @@ public class PottsLocationsTest {
             }
         }
         
-        PottsLocationContainer container = (PottsLocationContainer)location.convert(locationID);
+        PottsLocationContainer container = (PottsLocationContainer) location.convert(locationID);
         
         assertEquals(locationID, container.id);
         assertEquals(new Voxel(n, n, 0), container.center);
@@ -596,7 +596,7 @@ public class PottsLocationsTest {
     @Test
     public void separateVoxels_validListsNoRegions_updatesLists() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListAB);
-        PottsLocations split = (PottsLocations)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
+        PottsLocations split = (PottsLocations) loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
         
         ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListA);
         ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListB);
@@ -613,7 +613,7 @@ public class PottsLocationsTest {
     @Test
     public void separateVoxels_validListsNoRegions_updatesVolumes() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListAB);
-        PottsLocations split = (PottsLocations)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
+        PottsLocations split = (PottsLocations) loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
         assertEquals(4, loc.volume);
         assertEquals(3, split.volume);
         
@@ -622,7 +622,7 @@ public class PottsLocationsTest {
     @Test
     public void separateVoxels_validListsNoRegions_updatesSurfaces() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListAB);
-        PottsLocations split = (PottsLocations)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
+        PottsLocations split = (PottsLocations) loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
         assertEquals(LOCATIONS_SURFACE - 3, loc.surface);
         assertEquals(LOCATIONS_SURFACE, split.surface);
     }
@@ -636,7 +636,7 @@ public class PottsLocationsTest {
         loc.add(Region.UNDEFINED, 2, 1, 0);
         loc.add(Region.UNDEFINED, 2, 2, 0);
         
-        PottsLocations split = (PottsLocations)loc.separateVoxels(voxelListForMultipleRegionsA,
+        PottsLocations split = (PottsLocations) loc.separateVoxels(voxelListForMultipleRegionsA,
                 voxelListForMultipleRegionsB, randomDoubleZero);
         
         ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListForMultipleRegionsA);

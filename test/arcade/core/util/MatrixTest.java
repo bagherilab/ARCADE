@@ -42,10 +42,9 @@ public class MatrixTest {
     
     private static final ArrayList<Value> B1S = new ArrayList<>();
     
-    public static final Comparator<Value> COMPARATOR = (v1, v2) ->
-            v1.i != v2.i ? Integer.compare(v1.i, v2.i) :
-                    v1.j != v2.j ? Integer.compare(v1.j, v2.j) :
-                            Double.compare(v1.v, v2.v);
+    public static final Comparator<Value> COMPARATOR = (v1, v2) -> v1.i != v2.i
+            ? Integer.compare(v1.i, v2.i) : v1.j != v2.j
+            ? Integer.compare(v1.j, v2.j) : Double.compare(v1.v, v2.v);
     
     @BeforeClass
     public static void setupMatrices() {

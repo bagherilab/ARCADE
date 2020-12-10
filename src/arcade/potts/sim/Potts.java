@@ -54,7 +54,7 @@ public abstract class Potts implements Steppable {
         
         // Number of Monte Carlo steps
         int mcs = series.potts.getInt("MCS");
-        steps = mcs*length*width*height;
+        steps = mcs * length * width * height;
         
         // Get temperature.
         temperature = series.potts.getDouble("TEMPERATURE");
@@ -93,12 +93,12 @@ public abstract class Potts implements Steppable {
             // region (if there is one). If there are neither, then skip.
             if (hasRegions && uniqueRegionTargets.size() > 0) {
                 int i = simstate.random.nextInt(uniqueRegionTargets.size());
-                int targetRegion = (int)uniqueRegionTargets.toArray()[i];
+                int targetRegion = (int) uniqueRegionTargets.toArray()[i];
                 flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);
             }
             else if (uniqueIDTargets.size() > 0) {
                 int i = simstate.random.nextInt(uniqueIDTargets.size());
-                int targetID = (int)uniqueIDTargets.toArray()[i];
+                int targetID = (int) uniqueIDTargets.toArray()[i];
                 flip(ids[z][x][y], targetID, x, y, z, r);
             }
         }
@@ -167,7 +167,7 @@ public abstract class Potts implements Steppable {
         // Calculate probability.
         double p;
         if (dH < 0) { p = 1; }
-        else { p = Math.exp(-dH/temperature); }
+        else { p = Math.exp(-dH / temperature); }
         
         if (r < p) {
             ids[z][x][y] = targetID;
@@ -177,8 +177,8 @@ public abstract class Potts implements Steppable {
                         : Region.DEFAULT.ordinal());
             }
             
-            if (sourceID > 0) { ((PottsLocation)getCell(sourceID).getLocation()).remove(x, y, z); }
-            if (targetID > 0) { ((PottsLocation)getCell(targetID).getLocation()).add(x, y, z); }
+            if (sourceID > 0) { ((PottsLocation) getCell(sourceID).getLocation()).remove(x, y, z); }
+            if (targetID > 0) { ((PottsLocation) getCell(targetID).getLocation()).add(x, y, z); }
         }
     }
     
@@ -233,13 +233,13 @@ public abstract class Potts implements Steppable {
         // Calculate probability.
         double p;
         if (dH < 0) { p = 1; }
-        else { p = Math.exp(-dH/temperature); }
+        else { p = Math.exp(-dH / temperature); }
         
         if (r < p) {
             regions[z][x][y] = targetRegion;
             PottsCell c = getCell(id);
-            ((PottsLocation)c.getLocation()).remove(Region.values()[sourceRegion], x, y, z);
-            ((PottsLocation)c.getLocation()).add(Region.values()[targetRegion], x, y, z);
+            ((PottsLocation) c.getLocation()).remove(Region.values()[sourceRegion], x, y, z);
+            ((PottsLocation) c.getLocation()).add(Region.values()[targetRegion], x, y, z);
         }
     }
     
@@ -250,7 +250,7 @@ public abstract class Potts implements Steppable {
      * @return  the {@link arcade.core.agent.cell.Cell} object, {@code null} if id is zero
      */
     PottsCell getCell(int id) {
-        if (id > 0) { return (PottsCell)grid.getObjectAt(id); }
+        if (id > 0) { return (PottsCell) grid.getObjectAt(id); }
         else { return null; }
     }
     

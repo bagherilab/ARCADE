@@ -15,7 +15,7 @@ public class Colors implements ColorMap {
     private static final int BINS = 256;
     
     /** Color with no alpha */
-    private static final Color EMPTY = new Color(0,0,0,0);
+    private static final Color EMPTY = new Color(0, 0, 0, 0);
     
     /** Color map */
     private final Color[] colors;
@@ -86,7 +86,7 @@ public class Colors implements ColorMap {
         
         int sum = 0;
         for (int i = 0; i < n; i++) {
-            int bin = (int)Math.round(BINS*(vals[i + 1] - vals[i])/(max - min));
+            int bin = (int) Math.round(BINS * (vals[i + 1] - vals[i]) / (max - min));
             interpColors(colors[i], colors[i + 1], sum, sum + bin);
             sum += bin;
         }
@@ -103,7 +103,7 @@ public class Colors implements ColorMap {
      * @param end  the ending value
      */
     private void interpColors(Color minCol, Color maxCol, int start, int end) {
-        int n = (end > BINS ? BINS : end ) - start;
+        int n = (end > BINS ? BINS : end) - start;
         int r, g, b, a;
         double delta;
         
@@ -119,11 +119,11 @@ public class Colors implements ColorMap {
         
         // Increment color between bounds.
         for (int i = 0; i < n; i++) {
-            delta = (double)i/n;
-            r = (int)(minR + (maxR - minR)*delta);
-            g = (int)(minG + (maxG - minG)*delta);
-            b = (int)(minB + (maxB - minB)*delta);
-            a = (int)(minA + (maxA - minA)*delta);
+            delta = (double) i / n;
+            r = (int) (minR + (maxR - minR) * delta);
+            g = (int) (minG + (maxG - minG) * delta);
+            b = (int) (minB + (maxB - minB) * delta);
+            a = (int) (minA + (maxA - minA) * delta);
             colors[i + start] = new Color(r, g, b, a);
         }
     }
@@ -139,7 +139,7 @@ public class Colors implements ColorMap {
      * @return  the color map index
      */
     private int getIndex(double level) {
-        int index = (int)(len*(((mod == 0 ? level : level%mod) - min)/(max - min)));
+        int index = (int) (len * (((mod == 0 ? level : level % mod) - min) / (max - min)));
         return index < 0 ? 0 : index >= len ? len : index;
     }
     

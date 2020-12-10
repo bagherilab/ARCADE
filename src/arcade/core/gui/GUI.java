@@ -85,8 +85,8 @@ public class GUI implements ActionListener {
         GroupLayout grouping = prepGrouping(northPanel);
         
         addATextField("No input file selected", 40, northPanel);
-        ((JTextField)northPanel.getComponent(0)).setEditable(false);
-        fileField = ((JTextField)northPanel.getComponent(0));
+        ((JTextField) northPanel.getComponent(0)).setEditable(false);
+        fileField = ((JTextField) northPanel.getComponent(0));
         
         selectButton = addAButton("SELECT SETUP", northPanel);
         selectButton.addActionListener(this);
@@ -330,9 +330,9 @@ public class GUI implements ActionListener {
      */
     private static Border makeBorder() {
         return BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(5,7,5,7),
+                BorderFactory.createEmptyBorder(5, 7, 5, 7),
                 BorderFactory.createCompoundBorder(
                         BorderFactory.createTitledBorder("test").getBorder(),
-                        BorderFactory.createEmptyBorder(5,7,5,7)));
+                        BorderFactory.createEmptyBorder(5, 7, 5, 7)));
     }
 }

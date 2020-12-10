@@ -22,7 +22,7 @@ public class OutputSerializerTest {
         public JsonElement serialize(Object src) { return null; }
         public JsonElement serialize(Object src, Type typeOfSrc) {
             JsonObject object = new JsonObject();
-            object.addProperty("id", ((CellContainer)src).getID());
+            object.addProperty("id", ((CellContainer) src).getID());
             return object;
         }
     };
@@ -31,24 +31,24 @@ public class OutputSerializerTest {
         public JsonElement serialize(Object src) { return null; }
         public JsonElement serialize(Object src, Type typeOfSrc) {
             JsonObject object = new JsonObject();
-            object.addProperty("id", ((LocationContainer)src).getID());
+            object.addProperty("id", ((LocationContainer) src).getID());
             return object;
         }
     };
     
     public static void checkAdaptors(Gson gson) {
-        TypeToken<Series> series = new TypeToken<Series>() {};
+        TypeToken<Series> series = new TypeToken<Series>() { };
         assertSame(gson.getAdapter(series).getClass(), TreeTypeAdapter.class);
         
-        TypeToken<MiniBox> minibox = new TypeToken<MiniBox>() {};
+        TypeToken<MiniBox> minibox = new TypeToken<MiniBox>() { };
         assertSame(gson.getAdapter(minibox).getClass(), TreeTypeAdapter.class);
         
         TypeToken<ArrayList<CellContainer>> cellContainerList =
-                new TypeToken<ArrayList<CellContainer>>() {};
+                new TypeToken<ArrayList<CellContainer>>() { };
         assertSame(gson.getAdapter(cellContainerList).getClass(), TreeTypeAdapter.class);
         
         TypeToken<ArrayList<LocationContainer>> locationContainerList =
-                new TypeToken<ArrayList<LocationContainer>>() {};
+                new TypeToken<ArrayList<LocationContainer>>() { };
         assertSame(gson.getAdapter(locationContainerList).getClass(), TreeTypeAdapter.class);
     }
     
@@ -149,7 +149,7 @@ public class OutputSerializerTest {
         JsonSerializationContext context = new JsonSerializationContext() {
             public JsonElement serialize(Object src) {
                 if (src instanceof MiniBox) {
-                    MiniBox box = (MiniBox)src;
+                    MiniBox box = (MiniBox) src;
                     JsonObject json = new JsonObject();
                     json.addProperty(box.getKeys().get(0), box.get(box.getKeys().get(0)));
                     return json;

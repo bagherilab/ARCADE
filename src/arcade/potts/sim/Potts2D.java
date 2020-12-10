@@ -37,7 +37,7 @@ public class Potts2D extends Potts {
                     PottsCell b = getCell(ids[z][i][j]);
                     if (a == null) { h += b.getAdhesion(0); }
                     else if (b == null) { h += a.getAdhesion(0); }
-                    else { h += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop()))/2.0; }
+                    else { h += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop())) / 2.0; }
                 }
             }
         }
@@ -55,7 +55,7 @@ public class Potts2D extends Potts {
                 Region xy = Region.values()[regions[z][i][j]];
                 if (!(i == x && j == y) && ids[z][i][j] == id && xy != region
                         && xy != Region.UNDEFINED && xy != Region.DEFAULT) {
-                    h += (c.getAdhesion(region, xy) + c.getAdhesion(xy, region))/2;
+                    h += (c.getAdhesion(region, xy) + c.getAdhesion(xy, region)) / 2.0;
                 }
             }
         }
@@ -150,38 +150,42 @@ public class Potts2D extends Potts {
         
         switch (links) {
             case 1: return true;
-            case 2:
-                // Check for opposites N/S
-                if (subarray[1][2] && subarray[1][0]) { return false; }
-                // Check for opposites E/W
-                else if (subarray[2][1] && subarray[0][1]) { return false; }
-                // Check for corners
-                else {
-                    for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-                        boolean check1 = subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]];
-                        boolean check2 = subarray[1 + MOVES_X[(i + 1)%NUMBER_NEIGHBORS]]
-                                                 [1 + MOVES_Y[(i + 1)%NUMBER_NEIGHBORS]];
-                        boolean check3 = subarray[1 + CORNER_X[i]][1 + CORNER_Y[i]];
-                        if (check1 && check2 && check3) { return true; }
-                    }
-                    return false;
-                }
-            case 3:
-                for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-                    if (!subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]]) {
-                        boolean check1 = subarray[1 + CORNER_X[(i + 1)%NUMBER_NEIGHBORS]]
-                                                 [1 + CORNER_Y[(i + 1)%NUMBER_NEIGHBORS]];
-                        boolean check2 = subarray[1 + CORNER_X[(i + 2)%NUMBER_NEIGHBORS]]
-                                                 [1 + CORNER_Y[(i + 2)%NUMBER_NEIGHBORS]];
-                        if (check1 && check2) { return true; }
-                    }
-                }
-                return false;
-            case 4:
-                return zero;
-            default:
-                return false;
+            case 2: return getConnectivityTwoNeighbors(subarray);
+            case 3: return getConnectivityThreeNeighbors(subarray);
+            case 4: return zero;
+            default: return false;
         }
+    }
+    
+    private boolean getConnectivityTwoNeighbors(boolean[][] subarray) {
+        // Check for opposites N / S
+        if (subarray[1][2] && subarray[1][0]) { return false; }
+        // Check for opposites E / W
+        else if (subarray[2][1] && subarray[0][1]) { return false; }
+        // Check for corners
+        else {
+            for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
+                boolean check1 = subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]];
+                boolean check2 = subarray[1 + MOVES_X[(i + 1) % NUMBER_NEIGHBORS]]
+                        [1 + MOVES_Y[(i + 1) % NUMBER_NEIGHBORS]];
+                boolean check3 = subarray[1 + CORNER_X[i]][1 + CORNER_Y[i]];
+                if (check1 && check2 && check3) { return true; }
+            }
+            return false;
+        }
+    }
+    
+    private boolean getConnectivityThreeNeighbors(boolean[][] subarray) {
+        for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
+            if (!subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]]) {
+                boolean check1 = subarray[1 + CORNER_X[(i + 1) % NUMBER_NEIGHBORS]]
+                        [1 + CORNER_Y[(i + 1) % NUMBER_NEIGHBORS]];
+                boolean check2 = subarray[1 + CORNER_X[(i + 2) % NUMBER_NEIGHBORS]]
+                        [1 + CORNER_Y[(i + 2) % NUMBER_NEIGHBORS]];
+                if (check1 && check2) { return true; }
+            }
+        }
+        return false;
     }
     
     HashSet<Integer> getUniqueIDs(int x, int y, int z) {

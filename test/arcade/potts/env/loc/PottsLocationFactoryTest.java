@@ -52,7 +52,7 @@ public class PottsLocationFactoryTest {
     static class PottsLocationFactoryMock extends PottsLocationFactory {
         public PottsLocationFactoryMock() { super(); }
         
-        int convert(double volume) { return (int)(volume + 1); }
+        int convert(double volume) { return (int) (volume + 1); }
         
         ArrayList<Voxel> getNeighbors(Voxel voxel) {
             ArrayList<Voxel> neighbors = new ArrayList<>();
@@ -145,7 +145,7 @@ public class PottsLocationFactoryTest {
     
     @Test
     public void loadLocations_givenLoaded_updatesList() {
-        int n = randomIntBetween(1,100);
+        int n = randomIntBetween(1, 100);
         ArrayList<PottsLocationContainer> containers = new ArrayList<>();
         ArrayList<ArrayList<Voxel>> allVoxels = new ArrayList<>();
         for (int i = 0; i < n; i++) {
@@ -189,16 +189,16 @@ public class PottsLocationFactoryTest {
     @Test
     public void createLocations_onePopulationNoRegions_createsList() {
         int length = randomIntBetween(1, 10);
-        int width = randomIntBetween(1,10);
-        int height = randomIntBetween(1,10);
-        int volume = randomIntBetween(1,100);
+        int width = randomIntBetween(1, 10);
+        int height = randomIntBetween(1, 10);
+        int volume = randomIntBetween(1, 100);
         Series series = createSeries(length, width, height, new double[] { volume });
         
         PottsLocationFactoryMock factory = new PottsLocationFactoryMock();
         factory.random = random;
         factory.createLocations(series);
         
-        assertEquals(length*width*height, factory.locations.values().size());
+        assertEquals(length * width * height, factory.locations.values().size());
         for (PottsLocationContainer container : factory.locations.values()) {
             assertTrue(container.center.x <= length + volume + 3);
             assertTrue(container.center.x >= volume + 3);
@@ -212,10 +212,10 @@ public class PottsLocationFactoryTest {
     
     @Test
     public void createLocations_onePopulationWithRegions_createsList() {
-        int length = randomIntBetween(1,10);
-        int width = randomIntBetween(1,10);
-        int height = randomIntBetween(1,10);
-        int volume = randomIntBetween(1,100);
+        int length = randomIntBetween(1, 10);
+        int width = randomIntBetween(1, 10);
+        int height = randomIntBetween(1, 10);
+        int volume = randomIntBetween(1, 100);
         Series series = createSeries(length, width, height, new double[] { volume });
         
         series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.0);
@@ -225,7 +225,7 @@ public class PottsLocationFactoryTest {
         factory.random = random;
         factory.createLocations(series);
         
-        assertEquals(length*width*height, factory.locations.values().size());
+        assertEquals(length * width * height, factory.locations.values().size());
         for (PottsLocationContainer container : factory.locations.values()) {
             assertTrue(container.center.x <= length + volume + 3);
             assertTrue(container.center.x >= volume + 3);
@@ -247,19 +247,19 @@ public class PottsLocationFactoryTest {
     
     @Test
     public void createLocations_multiplePopulationsNoRegions_createsList() {
-        int length = randomIntBetween(1,10);
-        int width = randomIntBetween(1,10);
-        int height = randomIntBetween(1,10);
-        int volume1 = randomIntBetween(1,100);
-        int volume2 = volume1 + randomIntBetween(1,100);
-        int volume3 = volume1 - randomIntBetween(1,100);
+        int length = randomIntBetween(1, 10);
+        int width = randomIntBetween(1, 10);
+        int height = randomIntBetween(1, 10);
+        int volume1 = randomIntBetween(1, 100);
+        int volume2 = volume1 + randomIntBetween(1, 100);
+        int volume3 = volume1 - randomIntBetween(1, 100);
         Series series = createSeries(length, width, height, new double[] { volume1, volume2, volume3 });
         
         PottsLocationFactoryMock factory = new PottsLocationFactoryMock();
         factory.random = random;
         factory.createLocations(series);
         
-        assertEquals(length*width*height, factory.locations.values().size());
+        assertEquals(length * width * height, factory.locations.values().size());
         for (PottsLocationContainer container : factory.locations.values()) {
             assertTrue(container.center.x <= length + volume2 + 3);
             assertTrue(container.center.x >= volume2 + 3);
@@ -273,12 +273,12 @@ public class PottsLocationFactoryTest {
     
     @Test
     public void createLocations_multiplePopulationsWithRegions_createsList() {
-        int length = randomIntBetween(1,10);
-        int width = randomIntBetween(1,10);
-        int height = randomIntBetween(1,10);
-        int volume1 = randomIntBetween(1,100);
-        int volume2 = volume1 + randomIntBetween(1,100);
-        int volume3 = volume1 - randomIntBetween(1,100);
+        int length = randomIntBetween(1, 10);
+        int width = randomIntBetween(1, 10);
+        int height = randomIntBetween(1, 10);
+        int volume1 = randomIntBetween(1, 100);
+        int volume2 = volume1 + randomIntBetween(1, 100);
+        int volume3 = volume1 - randomIntBetween(1, 100);
         Series series = createSeries(length, width, height, new double[] { volume1, volume2, volume3 });
         
         series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.0);
@@ -288,7 +288,7 @@ public class PottsLocationFactoryTest {
         factory.random = random;
         factory.createLocations(series);
         
-        assertEquals(length*width*height, factory.locations.values().size());
+        assertEquals(length * width * height, factory.locations.values().size());
         for (PottsLocationContainer container : factory.locations.values()) {
             assertTrue(container.center.x <= length + volume2 + 3);
             assertTrue(container.center.x >= volume2 + 3);

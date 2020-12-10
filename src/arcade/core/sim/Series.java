@@ -275,7 +275,7 @@ public abstract class Series {
         }
         
         if (scales.get(parameter) != null) {
-            box.put(parameter, box.getDouble(parameter)*scales.getDouble(parameter));
+            box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));
         }
     }
     
@@ -292,7 +292,7 @@ public abstract class Series {
      * @return  the updated conversion factor
      */
     protected static double parseConversion(String convert, double ds, double dt) {
-        String[] split = convert.replace(" ","").split("\\^");
+        String[] split = convert.replace(" ", "").split("\\^");
         double v = (split[0].equals("DS") ? ds : (split[0].equals("DT") ? dt : 1));
         int n = (split.length == 2 ? Integer.parseInt(split[1]) : 1);
         return Math.pow(v, n);
@@ -351,13 +351,13 @@ public abstract class Series {
             simStart = System.currentTimeMillis();
             
             // Run simulation.
-            SimState state = (SimState)(simCons.newInstance(seed + SEED_OFFSET, this));
+            SimState state = (SimState) (simCons.newInstance(seed + SEED_OFFSET, this));
             runSim(state, seed);
             
             // Post-simulation output.
             simEnd = System.currentTimeMillis();
             LOGGER.info(String.format("simulation [ %s | %04d ] finished in %.4f minutes",
-                    name, seed, (double)(simEnd - simStart)/1000/60));
+                    name, seed, (double) (simEnd - simStart) / 1000 / 60));
         }
     }
     
@@ -372,7 +372,7 @@ public abstract class Series {
         state.start();
         
         // Set up logger checkpoints.
-        double delta = ticks/10.0;
+        double delta = ticks / 10.0;
         double checkpoint = delta;
         
         // Run simulation loop.
@@ -383,7 +383,7 @@ public abstract class Series {
             
             if (tick >= checkpoint) {
                 LOGGER.info(String.format("simulation [ %s | %s ] tick %6d ( %4.2f %% )",
-                        name, seed, (int)tick, (100*tick/ticks)));
+                        name, seed, (int) tick, (100 * tick / ticks)));
                 checkpoint += delta;
             }
         } while (tick < ticks - 1);
@@ -400,7 +400,7 @@ public abstract class Series {
     public void runVis() throws Exception {
         if (System.getProperty("java.awt.headless") != null
                 && System.getProperty("java.awt.headless").equals("true")) { return; }
-        Simulation sim = (Simulation)(simCons.newInstance(startSeed + SEED_OFFSET, this));
-        ((GUIState)visCons.newInstance(sim)).createController();
+        Simulation sim = (Simulation) (simCons.newInstance(startSeed + SEED_OFFSET, this));
+        ((GUIState) visCons.newInstance(sim)).createController();
     }
 }

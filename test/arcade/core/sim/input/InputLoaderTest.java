@@ -77,10 +77,10 @@ public class InputLoaderTest {
     @Test
     public void load_validInputWithContents_loadsBox() throws IOException, SAXException {
         File file = folder.newFile("load_validInputWithContents_loadsBox.xml");
-        write(file, "<tag>" +
-                "<tag1 id=\"id1\" att1=\"value11\" att2=\"value12\" />" +
-                "<tag2 id=\"id2\" att1=\"value21\" att2=\"value22\" />" +
-                "</tag>");
+        write(file, "<tag>"
+                + "<tag1 id=\"id1\" att1=\"value11\" att2=\"value12\" />"
+                + "<tag2 id=\"id2\" att1=\"value21\" att2=\"value22\" />"
+                + "</tag>");
         
         InputLoader loader = new InputLoader();
         Box box = loader.load(file.getAbsolutePath());
@@ -99,10 +99,10 @@ public class InputLoaderTest {
     @Test
     public void load_validInputWithContentsGivenBox_updatesBox() throws IOException, SAXException {
         File file = folder.newFile("load_validInputWithContents_loadsBox.xml");
-        write(file, "<tag>" +
-                "<tag1 id=\"id1\" att1=\"value11\" att2=\"value12\" />" +
-                "<tag2 id=\"id2\" att1=\"value21\" att2=\"value22\" />" +
-                "</tag>");
+        write(file, "<tag>"
+                + "<tag1 id=\"id1\" att1=\"value11\" att2=\"value12\" />"
+                + "<tag2 id=\"id2\" att1=\"value21\" att2=\"value22\" />"
+                + "</tag>");
         
         InputLoader loader = new InputLoader();
         Box box = new Box();

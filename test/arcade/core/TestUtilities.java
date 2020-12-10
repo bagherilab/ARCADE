@@ -8,18 +8,18 @@ import org.junit.rules.TemporaryFolder;
 public final class TestUtilities {
     public static final double EPSILON = 1E-10;
     
-    public static final MersenneTwisterFast RANDOM = new MersenneTwisterFast((long) (Math.random()*1000));
+    public static final MersenneTwisterFast RANDOM = new MersenneTwisterFast((long) (Math.random() * 1000));
     
     public static int randomSeed() {
         return randomIntBetween(1, 1000);
     }
     
     public static int randomIntBetween(int lower, int upper) {
-        return (int)(Math.random()*(upper - lower)) + lower;
+        return (int) (Math.random() * (upper - lower)) + lower;
     }
     
     public static double randomDoubleBetween(double lower, double upper) {
-        return Math.random()*(upper - lower) + lower;
+        return Math.random() * (upper - lower) + lower;
     }
     
     public static String[] randomStrings(int n) {
@@ -35,9 +35,9 @@ public final class TestUtilities {
                 .toString();
     }
     
-    public static final String SETUP_TEMPLATE = "<set path=\"###/\">" +
-            "<series name=\"***\" ticks=\"1\" interval=\"1\" height=\"1\" start=\"0\" end=\"0\">" +
-            "</series></set>";
+    public static final String SETUP_TEMPLATE = "<set path=\"###/\">"
+            + "<series name=\"***\" ticks=\"1\" interval=\"1\" height=\"1\" start=\"0\" end=\"0\">"
+            + "</series></set>";
     
     public static String makeSetup(TemporaryFolder folder, String name) {
         return SETUP_TEMPLATE
@@ -60,7 +60,7 @@ public final class TestUtilities {
             try {
                 if (pw != null) { pw.close(); }
                 else if (bw != null) { bw.close(); }
-                else if (fw != null) {fw.close(); }
+                else if (fw != null) { fw.close(); }
             } catch (IOException e) { e.printStackTrace(); }
         }
     }

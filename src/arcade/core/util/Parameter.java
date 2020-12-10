@@ -48,12 +48,12 @@ public class Parameter implements Serializable {
         this.isFrac = isFrac;
         this.random = random;
         this.mu = mu;
-        this.sigma = mu*h;
+        this.sigma = mu * h;
         
         normal = new Normal(mu, Math.abs(sigma), random);
         tails = new double[2];
-        tails[(mu < 0 ? 1 : 0)] = mu + 2*sigma;
-        tails[(mu < 0 ? 0 : 1)] = mu - 2*sigma;
+        tails[(mu < 0 ? 1 : 0)] = mu + 2 * sigma;
+        tails[(mu < 0 ? 0 : 1)] = mu - 2 * sigma;
         
         if (isFrac) {
             tails[0] = Math.min(tails[0], 1.0);
@@ -100,6 +100,6 @@ public class Parameter implements Serializable {
      * @return  an integer drawn from the distribution
      */
     public int nextInt() {
-        return (int)nextDouble();
+        return (int) nextDouble();
     }
 }

@@ -12,7 +12,7 @@ import static arcade.core.TestUtilities.*;
 
 public class PottsLocationTest {
     static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
-    final static int LOCATION_SURFACE = (int)(Math.random()*100);
+    final static int LOCATION_SURFACE = (int) (Math.random() * 100);
     static ArrayList<Voxel> voxelListForAddRemove;
     static ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
     
@@ -128,7 +128,7 @@ public class PottsLocationTest {
     public void getVoxels_hasVoxels_returnsList() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
-        int n = (int)(Math.random()*100) + 1;
+        int n = (int) (Math.random() * 100) + 1;
         for (int i = 0; i < n; i++) { voxels.add(new Voxel(i, i, i)); }
         
         PottsLocationMock loc = new PottsLocationMock(voxels);
@@ -415,7 +415,7 @@ public class PottsLocationTest {
         
         PottsLocationMock location = new PottsLocationMock(voxels);
         
-        PottsLocationContainer container = (PottsLocationContainer)location.convert(locationID);
+        PottsLocationContainer container = (PottsLocationContainer) location.convert(locationID);
         
         assertEquals(locationID, container.id);
         assertEquals(new Voxel(n, n, 0), container.center);
@@ -855,7 +855,7 @@ public class PottsLocationTest {
     @Test
     public void separateVoxels_validLists_updatesLists() {
         PottsLocationMock loc = new PottsLocationMock(voxelListAB);
-        PottsLocation split = (PottsLocation)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
+        PottsLocation split = (PottsLocation) loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
         
         ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListA);
         ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListB);
@@ -872,7 +872,7 @@ public class PottsLocationTest {
     @Test
     public void separateVoxels_validLists_updatesVolumes() {
         PottsLocationMock loc = new PottsLocationMock(voxelListAB);
-        PottsLocation split = (PottsLocation)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
+        PottsLocation split = (PottsLocation) loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
         assertEquals(4, loc.volume);
         assertEquals(3, split.volume);
     }
@@ -880,7 +880,7 @@ public class PottsLocationTest {
     @Test
     public void separateVoxels_validLists_updatesSurfaces() {
         PottsLocationMock loc = new PottsLocationMock(voxelListAB);
-        PottsLocation split = (PottsLocation)loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
+        PottsLocation split = (PottsLocation) loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
         assertEquals(LOCATION_SURFACE, loc.surface);
         assertEquals(LOCATION_SURFACE, split.surface);
     }

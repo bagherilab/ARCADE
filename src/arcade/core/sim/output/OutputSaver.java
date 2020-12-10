@@ -82,7 +82,7 @@ public abstract class OutputSaver implements Steppable {
      * @param simstate  the MASON simulation state
      */
     public void step(SimState simstate) {
-        int tick = (int)simstate.schedule.getTime();
+        int tick = (int) simstate.schedule.getTime();
         saveCells(tick);
         saveLocations(tick);
     }

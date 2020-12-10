@@ -237,7 +237,7 @@ public class PottsLocation3DTest {
     @Test
     public void split_balanceableLocationRandomZero_returnsList() {
         PottsLocation3D loc = new PottsLocation3D(voxelListAB);
-        PottsLocation3D split = (PottsLocation3D)loc.split(randomDoubleZero);
+        PottsLocation3D split = (PottsLocation3D) loc.split(randomDoubleZero);
         
         ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListA);
         locVoxels.remove(new Voxel(1, 0, 0));
@@ -259,7 +259,7 @@ public class PottsLocation3DTest {
     @Test
     public void split_balanceableLocationRandomOne_returnsList() {
         PottsLocation3D loc = new PottsLocation3D(voxelListAB);
-        PottsLocation3D split = (PottsLocation3D)loc.split(randomDoubleOne);
+        PottsLocation3D split = (PottsLocation3D) loc.split(randomDoubleOne);
         
         ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListB);
         ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListA);

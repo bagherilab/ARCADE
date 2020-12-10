@@ -17,7 +17,7 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.core.TestUtilities.EPSILON;
 
 public class PottsSeriesTest {
-    private static final double DS = (Math.random()*10) + 1;
+    private static final double DS = (Math.random() * 10) + 1;
     private static final double DT = Math.random() + 0.5;
     private static final Box PARAMETERS = new Box();
     
@@ -83,9 +83,9 @@ public class PottsSeriesTest {
     private static final MiniBox POTTS = new MiniBox();
     private static final MiniBox POPULATION = new MiniBox();
     
-    static int randomInt() { return (int)(Math.random()*100) + 1; }
+    static int randomInt() { return (int) (Math.random() * 100) + 1; }
     
-    static double randomDouble() { return Math.random()*100; }
+    static double randomDouble() { return Math.random() * 100; }
     
     static String randomString() {
         return new Random().ints(65, 91)
@@ -314,7 +314,7 @@ public class PottsSeriesTest {
             Box[] boxes = new Box[] { new Box() };
             boxes[0].add("id", POPULATION_ID_1);
             boxes[0].addTag(REGION_ID_1, "REGION");
-            boxes[0].addAtt(REGION_ID_1,"fraction", fractions[i]);
+            boxes[0].addAtt(REGION_ID_1, "fraction", fractions[i]);
             PottsSeries series = makeSeriesForPopulation(boxes);
             
             MiniBox box = series.populations.get(POPULATION_ID_1);
@@ -552,8 +552,8 @@ public class PottsSeriesTest {
         boxes[0].add("id", POPULATION_ID_1);
         boxes[0].addTag(REGION_ID_1, "REGION");
         boxes[0].addTag(REGION_ID_2, "REGION");
-        boxes[0].addAtt(REGION_ID_1,"fraction", "0");
-        boxes[0].addAtt(REGION_ID_2,"fraction", "0");
+        boxes[0].addAtt(REGION_ID_1, "fraction", "0");
+        boxes[0].addAtt(REGION_ID_2, "fraction", "0");
         
         PottsSeries series = makeSeriesForPopulation(boxes);
         MiniBox box = series.populations.get(POPULATION_ID_1);
@@ -575,8 +575,8 @@ public class PottsSeriesTest {
                 boxes[0].add("id", POPULATION_ID_1);
                 boxes[0].addTag(REGION_ID_1, "REGION");
                 boxes[0].addTag(REGION_ID_2, "REGION");
-                boxes[0].addAtt(REGION_ID_1,"fraction", "0");
-                boxes[0].addAtt(REGION_ID_2,"fraction", "0");
+                boxes[0].addAtt(REGION_ID_1, "fraction", "0");
+                boxes[0].addAtt(REGION_ID_2, "fraction", "0");
                 
                 double value = randomDouble();
                 double scale = randomDouble();
@@ -605,7 +605,8 @@ public class PottsSeriesTest {
     @Test
     public void updatePopulation_withConversionOnePop_convertsValue() {
         MiniBox conversion = new MiniBox();
-        String convertedParameter = POPULATION_PARAMETER_NAMES[(int)(Math.random()*POPULATION_PARAMETER_NAMES.length)];
+        int i = (int) (Math.random() * POPULATION_PARAMETER_NAMES.length);
+        String convertedParameter = POPULATION_PARAMETER_NAMES[i];
         conversion.put(convertedParameter, "DS");
         
         Box[] boxes = new Box[] { new Box() };
@@ -623,7 +624,8 @@ public class PottsSeriesTest {
     @Test
     public void updatePopulation_withConversionMultiplePops_convertsValue() {
         MiniBox conversion = new MiniBox();
-        String convertedParameter = POPULATION_PARAMETER_NAMES[(int)(Math.random()*POPULATION_PARAMETER_NAMES.length)];
+        int i = (int) (Math.random() * POPULATION_PARAMETER_NAMES.length);
+        String convertedParameter = POPULATION_PARAMETER_NAMES[i];
         conversion.put(convertedParameter, "DS");
         
         Box[] boxes = new Box[] { new Box(), new Box(), new Box() };

@@ -208,7 +208,7 @@ public class Potts3DTest {
         for (int i = 0; (s[i] = i) < k - 1; i++);
         array[index++] = s.clone();
         
-        for(;;) {
+        for (;;) {
             int i;
             for (i = k - 1; i >= 0 && s[i] == n - k + i; i--);
             if (i < 0) { break; }
@@ -220,10 +220,14 @@ public class Potts3DTest {
     
     @Test
     public void getAdhesion_validIDs_calculatesValue() {
-        assertEquals(ADHESIONS[1][0]*11 + ADHESIONS[2][0]*6, potts.getAdhesion(0, 2, 2, 2), EPSILON);
-        assertEquals(ADHESIONS[1][0]*9 + adhesion(1, 2)*6 + ADHESIONS[1][1]*3, potts.getAdhesion(1, 2, 2, 2), EPSILON);
-        assertEquals(ADHESIONS[2][0]*8 + adhesion(1, 2)*12, potts.getAdhesion(2, 2, 2, 2), EPSILON);
-        assertEquals(ADHESIONS[1][0]*9 + adhesion(1, 2)*6 + ADHESIONS[1][1]*8, potts.getAdhesion(3, 2, 2, 2), EPSILON);
+        assertEquals(ADHESIONS[1][0] * 11 + ADHESIONS[2][0] * 6,
+                potts.getAdhesion(0, 2, 2, 2), EPSILON);
+        assertEquals(ADHESIONS[1][0] * 9 + adhesion(1, 2) * 6 + ADHESIONS[1][1] * 3,
+                potts.getAdhesion(1, 2, 2, 2), EPSILON);
+        assertEquals(ADHESIONS[2][0] * 8 + adhesion(1, 2) * 12,
+                potts.getAdhesion(2, 2, 2, 2), EPSILON);
+        assertEquals(ADHESIONS[1][0] * 9 + adhesion(1, 2) * 6 + ADHESIONS[1][1] * 8,
+                potts.getAdhesion(3, 2, 2, 2), EPSILON);
     }
     
     @Test
@@ -652,9 +656,9 @@ public class Potts3DTest {
             { 1 }, // Y
     };
     
-    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS = new int [][] { {} };
+    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS = new int[][] { {} };
     
-    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK = new int [][] { { 0 } };
+    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK = new int[][] { { 0 } };
     
     @Test
     public void getConnectivity_twoNeighborsOpposite_returnsFalse() {
@@ -868,7 +872,7 @@ public class Potts3DTest {
             { 1, 0, 0 }, // Y
     };
     
-    private static final int[][] COMBOS_THREE_NEIGHBORS_PLANE_ZERO_LINKS = new int [][] { {} };
+    private static final int[][] COMBOS_THREE_NEIGHBORS_PLANE_ZERO_LINKS = new int[][] { {} };
     
     private static final int[][] COMBOS_THREE_NEIGHBORS_PLANE_ONE_LINK = new int[][] {
             { 0 },
@@ -879,7 +883,7 @@ public class Potts3DTest {
             { 0, 1 },
     };
     
-    private static final int[][] COMBOS_THREE_NEIGHBORS_CORNER_ZERO_LINKS = new int [][] { {} };
+    private static final int[][] COMBOS_THREE_NEIGHBORS_CORNER_ZERO_LINKS = new int[][] { {} };
     
     private static final int[][] COMBOS_THREE_NEIGHBORS_CORNER_ONE_LINK = new int[][] {
             { 0 },
@@ -1223,7 +1227,7 @@ public class Potts3DTest {
             { 1, 1, 0, 0, 0 }, // Y
     };
     
-    private static final int[][] COMBOS_FOUR_NEIGHBORS_PLANE_ZERO_LINKS = new int [][] { {} };
+    private static final int[][] COMBOS_FOUR_NEIGHBORS_PLANE_ZERO_LINKS = new int[][] { {} };
     
     private static final int[][] COMBOS_FOUR_NEIGHBORS_PLANE_ONE_LINK = new int[][] {
             { 0 },
@@ -1252,7 +1256,7 @@ public class Potts3DTest {
             { 0, 1, 2, 3 },
     };
     
-    private static final int[][] COMBOS_FOUR_NEIGHBORS_AXIS_ZERO_LINKS = new int [][] { {} };
+    private static final int[][] COMBOS_FOUR_NEIGHBORS_AXIS_ZERO_LINKS = new int[][] { {} };
     
     private static final int[][] COMBOS_FOUR_NEIGHBORS_AXIS_ONE_LINK = new int[][] {
             { 0 },
@@ -1661,7 +1665,7 @@ public class Potts3DTest {
             { 1, 0, 2, 1, 0, 2, 0, 2 }, // Y
     };
     
-    private static final int[][] COMBOS_FIVE_NEIGHBORS_ZERO_LINKS = new int [][] { {} };
+    private static final int[][] COMBOS_FIVE_NEIGHBORS_ZERO_LINKS = new int[][] { {} };
     
     private static final int[][] COMBOS_FIVE_NEIGHBORS_ONE_LINK = new int[8][1];
     

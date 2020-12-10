@@ -38,13 +38,13 @@ public abstract class PottsModuleProliferation extends PottsModule {
     final double rateG2;
     
     /** Ratio of critical volume for G1 growth checkpoint */
-    static final double GROWTH_CHECKPOINT_G1 = 2*0.95;
+    static final double GROWTH_CHECKPOINT_G1 = 2 * 0.95;
     
     /** Ratio of critical volume for S nucleus checkpoint */
-    static final double GROWTH_CHECKPOINT_S = 2*0.99;
+    static final double GROWTH_CHECKPOINT_S = 2 * 0.99;
     
     /** Ratio of critical volume for G2 growth checkpoint */
-    static final double GROWTH_CHECKPOINT_G2 = 2*0.99;
+    static final double GROWTH_CHECKPOINT_G2 = 2 * 0.99;
     
     /** Basal rate of apoptosis (ticks^-1) */
     final double basalApoptosisRate;
@@ -70,9 +70,9 @@ public abstract class PottsModuleProliferation extends PottsModule {
         durationCheckpoint = parameters.getDouble("proliferation/DURATION_CHECKPOINT");
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
         
-        rateG1 = -Math.log(0.05)/durationG1;
-        rateS = -Math.log(0.01)/durationS;
-        rateG2 = -Math.log(0.01)/durationG2;
+        rateG1 = -Math.log(0.05) / durationG1;
+        rateS = -Math.log(0.01) / durationS;
+        rateG2 = -Math.log(0.01) / durationG2;
     }
     
     /**
@@ -141,7 +141,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
         cell.updateTarget(rateG1, 2);
         
         // Check for transition to S phase.
-        double p = 1.0/(isArrested ? durationCheckpoint : durationG1);
+        double p = 1.0 / (isArrested ? durationCheckpoint : durationG1);
         if (r < p) { checkpointG1(); }
     }
     
@@ -157,7 +157,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * Cells that do not pass the cell growth checkpoint become arrested.
      */
     void checkpointG1() {
-        if (cell.getVolume() >= GROWTH_CHECKPOINT_G1*cell.getCriticalVolume()) {
+        if (cell.getVolume() >= GROWTH_CHECKPOINT_G1 * cell.getCriticalVolume()) {
             phase = Phase.PROLIFERATIVE_S;
             isArrested = false;
         }
@@ -184,11 +184,11 @@ public abstract class PottsModuleProliferation extends PottsModule {
             
             // Check for transition to G2 phase.
             if (cell.getVolume(Region.NUCLEUS)
-                    > GROWTH_CHECKPOINT_S*cell.getCriticalVolume(Region.NUCLEUS)) {
+                    > GROWTH_CHECKPOINT_S * cell.getCriticalVolume(Region.NUCLEUS)) {
                 phase = Phase.PROLIFERATIVE_G2;
             }
         } else {
-            double p = 1.0/durationS;
+            double p = 1.0 / durationS;
             if (r < p) { phase = Phase.PROLIFERATIVE_G2; }
         }
     }
@@ -210,7 +210,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
         cell.updateTarget(rateG2, 2);
         
         // Check for transition to M phase.
-        double p = 1.0/(isArrested ? durationCheckpoint : durationG2);
+        double p = 1.0 / (isArrested ? durationCheckpoint : durationG2);
         if (r < p) { checkpointG2(); }
     }
     
@@ -226,7 +226,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * Cells that do not pass the cell growth checkpoint become arrested.
      */
     void checkpointG2() {
-        if (cell.getVolume() >= GROWTH_CHECKPOINT_G2*cell.getCriticalVolume()) {
+        if (cell.getVolume() >= GROWTH_CHECKPOINT_G2 * cell.getCriticalVolume()) {
             phase = Phase.PROLIFERATIVE_M;
             isArrested = false;
         }
@@ -246,7 +246,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      */
     void stepM(double r, MersenneTwisterFast random, Simulation sim) {
         // Check for completion of M phase.
-        double p = 1.0/durationM;
+        double p = 1.0 / durationM;
         if (r < p) {
             addCell(random, sim);
             phase = Phase.PROLIFERATIVE_G1;
@@ -264,10 +264,10 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * @param sim  the simulation instance
      */
     void addCell(MersenneTwisterFast random, Simulation sim) {
-        Potts potts = ((PottsSimulation)sim).getPotts();
+        Potts potts = ((PottsSimulation) sim).getPotts();
         
         // Split current location.
-        Location newLocation = ((PottsLocation)cell.getLocation()).split(random);
+        Location newLocation = ((PottsLocation) cell.getLocation()).split(random);
         
         // Reset current cell.
         cell.reset(potts.ids, potts.regions);

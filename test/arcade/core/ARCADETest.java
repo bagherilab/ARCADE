@@ -56,15 +56,15 @@ public class ARCADETest {
         protected OutputSaver getSaver(Series series) { return mock(OutputSaver.class); }
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void main_noArgs_throwsException() throws Exception {
         String[] args = new String[] { };
         ARCADE.main(args);
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void main_invalidType_throwsException() throws Exception {
-        String[] args = new String[] { "*" } ;
+        String[] args = new String[] { "*" };
         ARCADE.main(args);
     }
     
@@ -106,7 +106,7 @@ public class ARCADETest {
         assertEquals(args[0], settings.get("POSITION_ARG"));
     }
     
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void parseArguments_invalidArguments_parsesArguments() {
         Box commands = new Box();
         String[] args = new String[] { };

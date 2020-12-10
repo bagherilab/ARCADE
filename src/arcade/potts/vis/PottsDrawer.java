@@ -45,10 +45,10 @@ public abstract class PottsDrawer extends Drawer {
     public Portrayal makePort() {
         String[] split = name.split(":");
         
-        switch(split[0]) {
+        switch (split[0]) {
             case "grid":
                 graph = new Network(true);
-                field = new Continuous2D(1.0,1,1);
+                field = new Continuous2D(1.0, 1, 1);
                 SimpleEdgePortrayal2D sep = new SimpleEdgePortrayal2DGridWrapper();
                 NetworkPortrayal2D gridPort = new NetworkPortrayal2D();
                 gridPort.setField(new SpatialNetwork2D(field, graph));
@@ -92,8 +92,8 @@ public abstract class PottsDrawer extends Drawer {
         }
         
         protected double getPositiveWeight(Object object, EdgeDrawInfo2D info) {
-            sim.field.network.Edge edge = (sim.field.network.Edge)object;
-            return (Integer)edge.getInfo();
+            sim.field.network.Edge edge = (sim.field.network.Edge) object;
+            return (Integer) edge.getInfo();
         }
     }
     
@@ -111,12 +111,12 @@ public abstract class PottsDrawer extends Drawer {
     static final int PLANE_Y = 2;
     
     static int[][] getSlice(int[][][] array, int plane, int length, int width, int height) {
-        switch(plane) {
+        switch (plane) {
             case PLANE_X:
                 int[][] planex = new int[height][width];
                 for (int k = 0; k < height; k++) {
                     for (int j = 0; j < width; j++) {
-                        planex[k][j] = array[k][(length - 1)/2][j];
+                        planex[k][j] = array[k][(length - 1) / 2][j];
                     }
                 }
                 return planex;
@@ -124,12 +124,12 @@ public abstract class PottsDrawer extends Drawer {
                 int[][] planey = new int[length][height];
                 for (int k = 0; k < height; k++) {
                     for (int i = 0; i < length; i++) {
-                        planey[i][k] = array[k][i][(width - 1)/2];
+                        planey[i][k] = array[k][i][(width - 1) / 2];
                     }
                 }
                 return planey;
             default: case PLANE_Z:
-                return array[(height - 1)/2];
+                return array[(height - 1) / 2];
         }
     }
     
@@ -179,7 +179,7 @@ public abstract class PottsDrawer extends Drawer {
         }
         
         public void step(SimState state) {
-            PottsSimulation sim = (PottsSimulation)state;
+            PottsSimulation sim = (PottsSimulation) state;
             Grid grid = sim.getGrid();
             Potts potts = sim.getPotts();
             Cell cell;
@@ -189,7 +189,7 @@ public abstract class PottsDrawer extends Drawer {
             int[][] regions = getSlice(potts.regions, plane, length, width, height);
             
             int aa, bb, cc;
-            switch(plane) {
+            switch (plane) {
                 case PLANE_X:
                     aa = height;
                     bb = width;
@@ -209,9 +209,9 @@ public abstract class PottsDrawer extends Drawer {
             for (int a = 0; a < aa; a++) {
                 for (int b = 0; b < bb; b++) {
                     if (ids[a][b] == 0) { cell = null; }
-                    else { cell = (Cell)grid.getObjectAt(ids[a][b]); }
+                    else { cell = (Cell) grid.getObjectAt(ids[a][b]); }
                     
-                    switch(code) {
+                    switch (code) {
                         case DRAW_OVERLAY:
                             to[a][b] = (regions[a][b] > 0 ? regions[a][b] - 1 : 0);
                             break;
@@ -219,8 +219,9 @@ public abstract class PottsDrawer extends Drawer {
                             to[a][b] = cell == null ? 0 : cell.getPop();
                             break;
                         case DRAW_STATE:
-                            to[a][b] = cell == null ? 0 :
-                                    ((PottsModule)cell.getModule()).getPhase().ordinal();
+                            to[a][b] = cell == null
+                                    ? 0
+                                    : ((PottsModule) cell.getModule()).getPhase().ordinal();
                             break;
                         case DRAW_VOLUME:
                             to[a][b] = cell == null ? 0 : cell.getVolume();
@@ -232,98 +233,104 @@ public abstract class PottsDrawer extends Drawer {
                 }
             }
             
-            if (code == DRAW_CYTOPLASM) {
-                for (int a = 0; a < aa; a++) {
-                    for (int b = 0; b < bb; b++) {
-                        if (height == 1) { to[a][b] = ids[a][b] > 0 ? 0.75 : 0; }
-                        else {
-                            to[a][b] = 0;
-                            for (int c = 0; c < cc; c++) {
-                                int id;
-                                
-                                switch (plane) {
-                                    case PLANE_X:
-                                        id = potts.ids[a][c][b];
-                                        break;
-                                    case PLANE_Y:
-                                        id = potts.ids[b][a][c];
-                                        break;
-                                    default: case PLANE_Z:
-                                        id = potts.ids[c][a][b];
-                                }
-                                
-                                to[a][b] += (id > 0 ? 1./cc : 0);
-                                
-                                switch (plane) {
-                                    case PLANE_X:
-                                        if (id != 0 && c > 0 && c < cc - 1
-                                                && potts.ids[a][c + 1][b] == id
-                                                && potts.ids[a][c - 1][b] == id
-                                        ) { to[a][b] -= 1./cc; }
-                                        break;
-                                    case PLANE_Y:
-                                        if (id != 0 && c > 0 && c < cc - 1
-                                                && potts.ids[b][a][c + 1] == id
-                                                && potts.ids[b][a][c - 1] == id
-                                        ) { to[a][b] -= 1./cc; }
-                                        break;
-                                    default: case PLANE_Z:
-                                        if (id != 0 && c > 0 && c < cc - 1
-                                                && potts.ids[c + 1][a][b] == id
-                                                && potts.ids[c - 1][a][b] == id
-                                        ) { to[a][b] -= 1./cc; }
-                                }
+            if (code == DRAW_CYTOPLASM) { drawCytoplasm(aa, bb, cc, to, ids, potts); }
+            else if (code == DRAW_NUCLEUS) { drawNucleus(aa, bb, cc, to, regions, potts); }
+        }
+        
+        private void drawCytoplasm(int aa, int bb, int cc, double[][] to,
+                                   int[][] ids, Potts potts) {
+            for (int a = 0; a < aa; a++) {
+                for (int b = 0; b < bb; b++) {
+                    if (height == 1) { to[a][b] = ids[a][b] > 0 ? 0.75 : 0; }
+                    else {
+                        to[a][b] = 0;
+                        for (int c = 0; c < cc; c++) {
+                            int id;
+                    
+                            switch (plane) {
+                                case PLANE_X:
+                                    id = potts.ids[a][c][b];
+                                    break;
+                                case PLANE_Y:
+                                    id = potts.ids[b][a][c];
+                                    break;
+                                default: case PLANE_Z:
+                                    id = potts.ids[c][a][b];
+                            }
+                    
+                            to[a][b] += (id > 0 ? 1. / cc : 0);
+                    
+                            switch (plane) {
+                                case PLANE_X:
+                                    if (id != 0 && c > 0 && c < cc - 1
+                                            && potts.ids[a][c + 1][b] == id
+                                            && potts.ids[a][c - 1][b] == id
+                                    ) { to[a][b] -= 1. / cc; }
+                                    break;
+                                case PLANE_Y:
+                                    if (id != 0 && c > 0 && c < cc - 1
+                                            && potts.ids[b][a][c + 1] == id
+                                            && potts.ids[b][a][c - 1] == id
+                                    ) { to[a][b] -= 1. / cc; }
+                                    break;
+                                default: case PLANE_Z:
+                                    if (id != 0 && c > 0 && c < cc - 1
+                                            && potts.ids[c + 1][a][b] == id
+                                            && potts.ids[c - 1][a][b] == id
+                                    ) { to[a][b] -= 1. / cc; }
                             }
                         }
                     }
                 }
             }
-            else if (code == DRAW_NUCLEUS) {
-                int nucleus = Region.NUCLEUS.ordinal();
-                for (int a = 0; a < aa; a++) {
-                    for (int b = 0; b < bb; b++) {
-                        if (height == 1) { to[a][b] = (regions[a][b] == nucleus ? 0.75 : 0); }
-                        else {
-                            to[a][b] = 0;
-                            for (int c = 0; c < cc; c++) {
-                                int id;
-                                int region;
-                                
-                                switch (plane) {
-                                    case PLANE_X:
-                                        id = potts.ids[a][c][b];
-                                        region = potts.regions[a][c][b];
-                                        break;
-                                    case PLANE_Y:
-                                        id = potts.ids[b][a][c];
-                                        region = potts.regions[b][a][c];
-                                        break;
-                                    default: case PLANE_Z:
-                                        id = potts.ids[c][a][b];
-                                        region = potts.regions[c][a][b];
-                                }
-                                
-                                to[a][b] += (region == Region.NUCLEUS.ordinal() ? 1./cc : 0);
-                                
-                                switch (plane) {
-                                    case PLANE_X:
-                                        if (id != 0 && c > 0 && c < cc - 1
-                                                && potts.regions[a][c + 1][b] == nucleus
-                                                && potts.regions[a][c - 1][b] == nucleus
-                                        ) { to[a][b] -= 1./cc; }
-                                        break;
-                                    case PLANE_Y:
-                                        if (id != 0 && c > 0 && c < cc - 1
-                                                && potts.regions[b][a][c + 1] == nucleus
-                                                && potts.regions[b][a][c - 1] == nucleus
-                                        ) { to[a][b] -= 1./cc; }
-                                        break;
-                                    default: case PLANE_Z:
-                                        if (id != 0 && c > 0 && c < cc - 1
-                                                && potts.regions[c + 1][a][b] == nucleus
-                                                && potts.regions[c - 1][a][b] == nucleus
-                                        ) { to[a][b] -= 1./cc; }
-                                }
+        }
+        
+        private void drawNucleus(int aa, int bb, int cc, double[][] to,
+                                 int[][] regions, Potts potts) {
+            int nucleus = Region.NUCLEUS.ordinal();
+            for (int a = 0; a < aa; a++) {
+                for (int b = 0; b < bb; b++) {
+                    if (height == 1) { to[a][b] = (regions[a][b] == nucleus ? 0.75 : 0); }
+                    else {
+                        to[a][b] = 0;
+                        for (int c = 0; c < cc; c++) {
+                            int id;
+                            int region;
+                    
+                            switch (plane) {
+                                case PLANE_X:
+                                    id = potts.ids[a][c][b];
+                                    region = potts.regions[a][c][b];
+                                    break;
+                                case PLANE_Y:
+                                    id = potts.ids[b][a][c];
+                                    region = potts.regions[b][a][c];
+                                    break;
+                                default: case PLANE_Z:
+                                    id = potts.ids[c][a][b];
+                                    region = potts.regions[c][a][b];
+                            }
+                    
+                            to[a][b] += (region == Region.NUCLEUS.ordinal() ? 1. / cc : 0);
+                    
+                            switch (plane) {
+                                case PLANE_X:
+                                    if (id != 0 && c > 0 && c < cc - 1
+                                            && potts.regions[a][c + 1][b] == nucleus
+                                            && potts.regions[a][c - 1][b] == nucleus
+                                    ) { to[a][b] -= 1. / cc; }
+                                    break;
+                                case PLANE_Y:
+                                    if (id != 0 && c > 0 && c < cc - 1
+                                            && potts.regions[b][a][c + 1] == nucleus
+                                            && potts.regions[b][a][c - 1] == nucleus
+                                    ) { to[a][b] -= 1. / cc; }
+                                    break;
+                                default: case PLANE_Z:
+                                    if (id != 0 && c > 0 && c < cc - 1
+                                            && potts.regions[c + 1][a][b] == nucleus
+                                            && potts.regions[c - 1][a][b] == nucleus
+                                    ) { to[a][b] -= 1. / cc; }
                             }
                         }
                     }
@@ -355,7 +362,7 @@ public abstract class PottsDrawer extends Drawer {
                 }
             } else { plane = PLANE_Z; }
             
-            switch(plane) {
+            switch (plane) {
                 case PLANE_X:
                     field.width = height;
                     field.height = width;
@@ -371,14 +378,14 @@ public abstract class PottsDrawer extends Drawer {
         }
         
         public void step(SimState state) {
-            PottsSimulation sim = (PottsSimulation)state;
+            PottsSimulation sim = (PottsSimulation) state;
             field.clear();
             graph.clear();
             
             int[][] ids = getSlice(sim.getPotts().ids, plane, length, width, height);
             
             int aa, bb;
-            switch(plane) {
+            switch (plane) {
                 case PLANE_X:
                     aa = height;
                     bb = width;

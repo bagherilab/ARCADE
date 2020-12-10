@@ -24,9 +24,9 @@ import arcade.core.env.loc.LocationContainer;
  */
 
 public interface Simulation {
-    Type DEFAULT_CELL_TYPE = new TypeToken<ArrayList<CellContainer>>(){}.getType();
+    Type DEFAULT_CELL_TYPE = new TypeToken<ArrayList<CellContainer>>() { }.getType();
     
-    Type DEFAULT_LOCATION_TYPE = new TypeToken<ArrayList<LocationContainer>>(){}.getType();
+    Type DEFAULT_LOCATION_TYPE = new TypeToken<ArrayList<LocationContainer>>() { }.getType();
     
     /**
      * Gets the {@link arcade.core.sim.Series} object for the current simulation.

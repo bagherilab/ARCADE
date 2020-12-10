@@ -62,7 +62,7 @@ public class PottsCellContainer implements CellContainer {
     public int getID() { return id; }
     
     public Cell convert(CellFactory factory, Location location) {
-        return convert((PottsCellFactory)factory, location);
+        return convert((PottsCellFactory) factory, location);
     }
     
     private Cell convert(PottsCellFactory factory, Location location) {
@@ -109,7 +109,7 @@ public class PottsCellContainer implements CellContainer {
         }
         
         // Update cell module.
-        PottsModule module = (PottsModule)cell.getModule();
+        PottsModule module = (PottsModule) cell.getModule();
         if (module != null) { module.setPhase(phase); }
         
         return cell;

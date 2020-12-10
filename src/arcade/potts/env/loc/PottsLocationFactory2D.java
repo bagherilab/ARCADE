@@ -6,8 +6,8 @@ public class PottsLocationFactory2D extends PottsLocationFactory {
     public PottsLocationFactory2D() { super(); }
     
     int convert(double volume) {
-        int sqrt = (int)Math.ceil(Math.sqrt(volume));
-        return sqrt + (sqrt%2 == 0 ? 1 : 0);
+        int sqrt = (int) Math.ceil(Math.sqrt(volume));
+        return sqrt + (sqrt % 2 == 0 ? 1 : 0);
     }
     
     ArrayList<Voxel> getNeighbors(Voxel voxel) {
@@ -24,8 +24,8 @@ public class PottsLocationFactory2D extends PottsLocationFactory {
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < m; j++) {
                 voxels.add(new Voxel(
-                        focus.x + i - (m - 1)/2,
-                        focus.y + j - (m - 1)/2,
+                        focus.x + i - (m - 1) / 2,
+                        focus.y + j - (m - 1) / 2,
                         0));
             }
         }
@@ -35,10 +35,10 @@ public class PottsLocationFactory2D extends PottsLocationFactory {
     
     ArrayList<Voxel> getCenters(int length, int width, int height, int m) {
         ArrayList<Voxel> centers = new ArrayList<>();
-        for (int i = 0; i < (length - 2)/m; i++) {
-            for (int j = 0; j < (width - 2)/m; j++) {
-                int cx = i*m + (m + 1)/2;
-                int cy = j*m + (m + 1)/2;
+        for (int i = 0; i < (length - 2) / m; i++) {
+            for (int j = 0; j < (width - 2) / m; j++) {
+                int cx = i * m + (m + 1) / 2;
+                int cy = j * m + (m + 1) / 2;
                 centers.add(new Voxel(cx, cy, 0));
             }
         }

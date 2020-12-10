@@ -41,8 +41,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      */
     public PottsSimulation(long seed, Series series) {
         super(seed);
-        this.series = (PottsSeries)series;
-        this.seed = (int)seed - Series.SEED_OFFSET;
+        this.series = (PottsSeries) series;
+        this.seed = (int) seed - Series.SEED_OFFSET;
     }
     
     public Series getSeries() { return series; }
@@ -57,7 +57,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         ArrayList<CellContainer> cellContainers = new ArrayList<>();
         
         for (Object obj : grid.getAllObjects()) {
-            Cell cell = (Cell)obj;
+            Cell cell = (Cell) obj;
             cellContainers.add(cell.convert());
         }
         
@@ -68,7 +68,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         ArrayList<LocationContainer> locationContainers = new ArrayList<>();
         
         for (Object obj : grid.getAllObjects()) {
-            Cell cell = (Cell)obj;
+            Cell cell = (Cell) obj;
             locationContainers.add(cell.getLocation().convert(cell.getID()));
         }
         
@@ -176,7 +176,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
                 
                 // Make the location and cell.
                 Location location = locationContainer.convert(locationFactory, cellContainer);
-                PottsCell cell = (PottsCell)cellContainer.convert(cellFactory, location);
+                PottsCell cell = (PottsCell) cellContainer.convert(cellFactory, location);
                 
                 // Add, initialize, and schedule the cell.
                 grid.addObject(i, cell);
@@ -209,7 +209,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     public void doOutput(boolean isScheduled) {
         if (isScheduled) { series.saver.schedule(schedule, series.getInterval()); }
         else {
-            int tick = (int)schedule.getTime() + 1;
+            int tick = (int) schedule.getTime() + 1;
             series.saver.saveCells(tick);
             series.saver.saveLocations(tick);
         }

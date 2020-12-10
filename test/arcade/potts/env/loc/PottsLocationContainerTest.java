@@ -126,7 +126,7 @@ public class PottsLocationContainerTest {
             Location location = locationContainer.convert(FACTORY, cellContainer);
             assertEquals(n, location.getVolume());
             assertTrue(location instanceof PottsLocations);
-            assertEquals(n - i, ((PottsLocations)location).locations.get(Region.NUCLEUS).getVolume());
+            assertEquals(n - i, ((PottsLocations) location).locations.get(Region.NUCLEUS).getVolume());
         }
     }
     
@@ -151,7 +151,7 @@ public class PottsLocationContainerTest {
             Location location = locationContainer.convert(FACTORY, cellContainer);
             assertEquals(n, location.getVolume());
             assertTrue(location instanceof PottsLocations);
-            assertEquals(n - i, ((PottsLocations)location).locations.get(Region.NUCLEUS).getVolume());
+            assertEquals(n - i, ((PottsLocations) location).locations.get(Region.NUCLEUS).getVolume());
         }
     }
     
@@ -176,7 +176,7 @@ public class PottsLocationContainerTest {
             Location location = locationContainer.convert(FACTORY, cellContainer);
             assertEquals(n, location.getVolume());
             assertTrue(location instanceof PottsLocations);
-            assertEquals(n - i, ((PottsLocations)location).locations.get(Region.NUCLEUS).getVolume());
+            assertEquals(n - i, ((PottsLocations) location).locations.get(Region.NUCLEUS).getVolume());
         }
     }
     

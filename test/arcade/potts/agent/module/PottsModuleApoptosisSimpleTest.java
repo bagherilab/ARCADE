@@ -35,8 +35,8 @@ public class PottsModuleApoptosisSimpleTest {
         doReturn(box).when(cell).getParameters();
         
         parameters = new MiniBox();
-        parameters.put("apoptosis/DURATION_EARLY", randomDoubleBetween(1,100));
-        parameters.put("apoptosis/DURATION_LATE", randomDoubleBetween(1,100));
+        parameters.put("apoptosis/DURATION_EARLY", randomDoubleBetween(1, 100));
+        parameters.put("apoptosis/DURATION_LATE", randomDoubleBetween(1, 100));
     }
     
     @Test
@@ -58,10 +58,10 @@ public class PottsModuleApoptosisSimpleTest {
         double durationEarly = parameters.getDouble("apoptosis/DURATION_EARLY");
         double durationLate = parameters.getDouble("apoptosis/DURATION_LATE");
         
-        assertEquals(-Math.log(0.05)/durationEarly, module.rateCytoplasmLoss, EPSILON);
-        assertEquals(-Math.log(0.01)/durationEarly, module.rateNucleusPyknosis, EPSILON);
-        assertEquals(-Math.log(0.01)/durationLate, module.rateCytoplasmBlebbing, EPSILON);
-        assertEquals(-Math.log(0.01)/durationLate, module.rateNucleusFragmentation, EPSILON);
+        assertEquals(-Math.log(0.05) / durationEarly, module.rateCytoplasmLoss, EPSILON);
+        assertEquals(-Math.log(0.01) / durationEarly, module.rateNucleusPyknosis, EPSILON);
+        assertEquals(-Math.log(0.01) / durationLate, module.rateCytoplasmBlebbing, EPSILON);
+        assertEquals(-Math.log(0.01) / durationLate, module.rateNucleusFragmentation, EPSILON);
     }
     
     @Test
@@ -72,7 +72,7 @@ public class PottsModuleApoptosisSimpleTest {
     
     @Test
     public void setPhase_givenValue_setsValue() {
-        Phase phase = Phase.values()[(int)(Math.random()*Phase.values().length)];
+        Phase phase = Phase.values()[(int) (Math.random() * Phase.values().length)];
         PottsModuleApoptosis module = new PottsModuleApoptosis.Simple(cell);
         module.setPhase(phase);
         assertEquals(phase, module.phase);
@@ -118,7 +118,7 @@ public class PottsModuleApoptosisSimpleTest {
             
             PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
             module.phase = Phase.APOPTOTIC_EARLY;
-            module.stepEarly(i/10.);
+            module.stepEarly(i / 10.);
             
             verify(cell).updateTarget(Region.DEFAULT, module.rateCytoplasmLoss, 0.5);
             verify(cell).updateTarget(Region.NUCLEUS, module.rateNucleusPyknosis, 0.5);
@@ -134,7 +134,7 @@ public class PottsModuleApoptosisSimpleTest {
             
             PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
             module.phase = Phase.APOPTOTIC_EARLY;
-            module.stepEarly(i/10.);
+            module.stepEarly(i / 10.);
             
             verify(cell, never()).updateTarget(Region.DEFAULT, module.rateCytoplasmLoss, 0.5);
             verify(cell, never()).updateTarget(Region.NUCLEUS, module.rateNucleusPyknosis, 0.5);
@@ -149,7 +149,7 @@ public class PottsModuleApoptosisSimpleTest {
         
         PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
         module.phase = Phase.APOPTOTIC_EARLY;
-        module.stepEarly(1.0/module.durationEarly + EPSILON);
+        module.stepEarly(1.0 / module.durationEarly + EPSILON);
         
         assertEquals(Phase.APOPTOTIC_EARLY, module.phase);
     }
@@ -161,7 +161,7 @@ public class PottsModuleApoptosisSimpleTest {
         
         PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
         module.phase = Phase.APOPTOTIC_EARLY;
-        module.stepEarly(1.0/module.durationEarly - EPSILON);
+        module.stepEarly(1.0 / module.durationEarly - EPSILON);
         
         assertEquals(Phase.APOPTOTIC_LATE, module.phase);
     }
@@ -180,7 +180,7 @@ public class PottsModuleApoptosisSimpleTest {
             PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
             doNothing().when(module).removeCell(sim);
             module.phase = Phase.APOPTOTIC_LATE;
-            module.stepLate(i/10., sim);
+            module.stepLate(i / 10., sim);
             
             verify(cell).updateTarget(Region.DEFAULT, module.rateCytoplasmBlebbing, 0);
             verify(cell).updateTarget(Region.NUCLEUS, module.rateNucleusFragmentation, 0);
@@ -201,7 +201,7 @@ public class PottsModuleApoptosisSimpleTest {
             PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
             doNothing().when(module).removeCell(sim);
             module.phase = Phase.APOPTOTIC_LATE;
-            module.stepLate(i/10., sim);
+            module.stepLate(i / 10., sim);
             
             verify(cell, never()).updateTarget(Region.DEFAULT, module.rateCytoplasmBlebbing, 0);
             verify(cell, never()).updateTarget(Region.NUCLEUS, module.rateNucleusFragmentation, 0);
@@ -217,7 +217,7 @@ public class PottsModuleApoptosisSimpleTest {
         PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
         doNothing().when(module).removeCell(sim);
         module.phase = Phase.APOPTOTIC_LATE;
-        module.stepLate(1.0/module.durationLate + EPSILON, sim);
+        module.stepLate(1.0 / module.durationLate + EPSILON, sim);
         
         verify(module, never()).removeCell(sim);
         assertEquals(Phase.APOPTOTIC_LATE, module.phase);
@@ -231,7 +231,7 @@ public class PottsModuleApoptosisSimpleTest {
         PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
         doNothing().when(module).removeCell(sim);
         module.phase = Phase.APOPTOTIC_LATE;
-        module.stepLate(1.0/module.durationLate - EPSILON, sim);
+        module.stepLate(1.0 / module.durationLate - EPSILON, sim);
         
         verify(module).removeCell(sim);
         assertEquals(Phase.APOPTOSED, module.phase);
@@ -242,8 +242,8 @@ public class PottsModuleApoptosisSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         
-        double volume = Math.random()*100;
-        when(cell.getVolume()).thenReturn((int)(volume*APOPTOSIS_CHECKPOINT) + 1);
+        double volume = Math.random() * 100;
+        when(cell.getVolume()).thenReturn((int) (volume * APOPTOSIS_CHECKPOINT) + 1);
         when(cell.getCriticalVolume()).thenReturn(volume);
         
         PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
@@ -260,8 +260,8 @@ public class PottsModuleApoptosisSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         
-        double volume = Math.random()*100;
-        when(cell.getVolume()).thenReturn((int)(volume*APOPTOSIS_CHECKPOINT) - 1);
+        double volume = Math.random() * 100;
+        when(cell.getVolume()).thenReturn((int) (volume * APOPTOSIS_CHECKPOINT) - 1);
         when(cell.getCriticalVolume()).thenReturn(volume);
         
         PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
@@ -280,7 +280,7 @@ public class PottsModuleApoptosisSimpleTest {
         Grid grid = mock(Grid.class);
         PottsSimulation sim = mock(PottsSimulation.class);
         
-        int id = (int)(Math.random()*100) + 1;
+        int id = (int) (Math.random() * 100) + 1;
         doReturn(potts).when(sim).getPotts();
         doReturn(id).when(cell).getID();
         doReturn(grid).when(sim).getGrid();

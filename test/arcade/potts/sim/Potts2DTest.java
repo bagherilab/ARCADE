@@ -114,10 +114,14 @@ public class Potts2DTest {
     
     @Test
     public void getAdhesion_validIDs_calculatesValue() {
-        assertEquals(ADHESIONS[1][0]*5 + ADHESIONS[2][0]*2, potts.getAdhesion(0, 2, 2, 0), EPSILON);
-        assertEquals(ADHESIONS[1][0] + adhesion(1, 2)*2 + ADHESIONS[1][1]*2, potts.getAdhesion(1, 2, 2, 0), EPSILON);
-        assertEquals(ADHESIONS[2][0]*1 + adhesion(1, 2)*5, potts.getAdhesion(2, 2, 2, 0), EPSILON);
-        assertEquals(ADHESIONS[1][0] + adhesion(1, 2)*2 + ADHESIONS[1][1]*3, potts.getAdhesion(3, 2, 2, 0), EPSILON);
+        assertEquals(ADHESIONS[1][0] * 5 + ADHESIONS[2][0] * 2,
+                potts.getAdhesion(0, 2, 2, 0), EPSILON);
+        assertEquals(ADHESIONS[1][0] + adhesion(1, 2) * 2 + ADHESIONS[1][1] * 2,
+                potts.getAdhesion(1, 2, 2, 0), EPSILON);
+        assertEquals(ADHESIONS[2][0] * 1 + adhesion(1, 2) * 5,
+                potts.getAdhesion(2, 2, 2, 0), EPSILON);
+        assertEquals(ADHESIONS[1][0] + adhesion(1, 2) * 2 + ADHESIONS[1][1] * 3,
+                potts.getAdhesion(3, 2, 2, 0), EPSILON);
     }
     
     @Test
@@ -159,12 +163,12 @@ public class Potts2DTest {
     
     @Test
     public void getNeighborhood_givenRegion_createsArray() {
-        boolean[][][] array1 = potts.getNeighborhood(1, REGION_DEFAULT,2, 2, 0);
+        boolean[][][] array1 = potts.getNeighborhood(1, REGION_DEFAULT, 2, 2, 0);
         assertArrayEquals(new boolean[] {  true,  true, false }, array1[0][0]);
         assertArrayEquals(new boolean[] { false, false, false }, array1[0][1]);
         assertArrayEquals(new boolean[] { false, false, false }, array1[0][2]);
         
-        boolean[][][] array2 = potts.getNeighborhood(1, REGION_NUCLEUS,2, 2, 0);
+        boolean[][][] array2 = potts.getNeighborhood(1, REGION_NUCLEUS, 2, 2, 0);
         assertArrayEquals(new boolean[] { false, false, false }, array2[0][0]);
         assertArrayEquals(new boolean[] { false,  true, false }, array2[0][1]);
         assertArrayEquals(new boolean[] { false, false, false }, array2[0][2]);
@@ -305,9 +309,9 @@ public class Potts2DTest {
             { 0 }, // Y
     };
     
-    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS = new int [][] { {} };
+    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS = new int[][] { {} };
     
-    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK = new int [][] { { 0 } };
+    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK = new int[][] { { 0 } };
     
     @Test
     public void getConnectivity_twoNeighborsOpposite_returnsFalse() {
@@ -362,7 +366,7 @@ public class Potts2DTest {
             { 0, 0 }, // Y
     };
     
-    private static final int[][] COMBOS_THREE_NEIGHBORS_ZERO_LINKS = new int [][] { {} };
+    private static final int[][] COMBOS_THREE_NEIGHBORS_ZERO_LINKS = new int[][] { {} };
     
     private static final int[][] COMBOS_THREE_NEIGHBORS_ONE_LINK = new int[][] {
             { 0 },

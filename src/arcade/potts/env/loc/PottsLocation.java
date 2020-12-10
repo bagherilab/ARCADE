@@ -182,7 +182,7 @@ public abstract class PottsLocation implements Location {
     int getCenterX() {
         double x = 0;
         for (Voxel voxel : voxels) { x += voxel.x; }
-        return (int)Math.round(x/voxels.size());
+        return (int) Math.round(x / voxels.size());
     }
     
     /**
@@ -193,7 +193,7 @@ public abstract class PottsLocation implements Location {
     int getCenterY() {
         double y = 0;
         for (Voxel voxel : voxels) { y += voxel.y; }
-        return (int)Math.round(y/voxels.size());
+        return (int) Math.round(y / voxels.size());
     }
     
     /**
@@ -204,7 +204,7 @@ public abstract class PottsLocation implements Location {
     int getCenterZ() {
         double z = 0;
         for (Voxel voxel : voxels) { z += voxel.z; }
-        return (int)Math.round(z/voxels.size());
+        return (int) Math.round(z / voxels.size());
     }
     
     /**
@@ -438,7 +438,7 @@ public abstract class PottsLocation implements Location {
             unconnectedBA = checkVoxels(voxelsB, location, random, true);
             
             if (unconnectedB != null) { voxelsA.addAll(unconnectedB); }
-            unconnectedAB = checkVoxels(voxelsA, location, random,true);
+            unconnectedAB = checkVoxels(voxelsA, location, random, true);
             
             unconnectedA = unconnectedAB;
             unconnectedB = unconnectedBA;
@@ -499,7 +499,7 @@ public abstract class PottsLocation implements Location {
                     
                     // Check that removal of coordinate does not cause the list
                     // to become unconnected.
-                    ArrayList<Voxel> unconnected = checkVoxels(fromVoxels, location, random,false);
+                    ArrayList<Voxel> unconnected = checkVoxels(fromVoxels, location, random, false);
                     if (unconnected == null) {
                         added = true;
                         break;

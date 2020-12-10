@@ -161,13 +161,13 @@ public class PottsCellContainerTest {
         assertEquals(cellAge, cell.getAge());
         assertEquals(cellState, cell.getState());
         assertEquals(parameters, cell.getParameters());
-        assertEquals(cellPhase, ((PottsModule)cell.getModule()).getPhase());
+        assertEquals(cellPhase, ((PottsModule) cell.getModule()).getPhase());
         assertEquals(criticals.get(Term.VOLUME), cell.getCriticalVolume(), EPSILON);
         assertEquals(criticals.get(Term.SURFACE), cell.getCriticalSurface(), EPSILON);
-        assertEquals(lambdas.get(Term.VOLUME), ((PottsCell)cell).getLambda(Term.VOLUME), EPSILON);
-        assertEquals(lambdas.get(Term.SURFACE), ((PottsCell)cell).getLambda(Term.SURFACE), EPSILON);
-        assertEquals(adhesion[0], ((PottsCell)cell).getAdhesion(0), EPSILON);
-        assertEquals(adhesion[1], ((PottsCell)cell).getAdhesion(1), EPSILON);
+        assertEquals(lambdas.get(Term.VOLUME), ((PottsCell) cell).getLambda(Term.VOLUME), EPSILON);
+        assertEquals(lambdas.get(Term.SURFACE), ((PottsCell) cell).getLambda(Term.SURFACE), EPSILON);
+        assertEquals(adhesion[0], ((PottsCell) cell).getAdhesion(0), EPSILON);
+        assertEquals(adhesion[1], ((PottsCell) cell).getAdhesion(1), EPSILON);
         assertEquals(0, cell.getTargetVolume(), EPSILON);
         assertEquals(0, cell.getTargetSurface(), EPSILON);
     }
@@ -219,13 +219,13 @@ public class PottsCellContainerTest {
         assertEquals(cellAge, cell.getAge());
         assertEquals(cellState, cell.getState());
         assertEquals(parameters, cell.getParameters());
-        assertEquals(cellPhase, ((PottsModule)cell.getModule()).getPhase());
+        assertEquals(cellPhase, ((PottsModule) cell.getModule()).getPhase());
         assertEquals(criticals.get(Term.VOLUME), cell.getCriticalVolume(), EPSILON);
         assertEquals(criticals.get(Term.SURFACE), cell.getCriticalSurface(), EPSILON);
-        assertEquals(lambdas.get(Term.VOLUME), ((PottsCell)cell).getLambda(Term.VOLUME), EPSILON);
-        assertEquals(lambdas.get(Term.SURFACE), ((PottsCell)cell).getLambda(Term.SURFACE), EPSILON);
-        assertEquals(adhesion[0], ((PottsCell)cell).getAdhesion(0), EPSILON);
-        assertEquals(adhesion[1], ((PottsCell)cell).getAdhesion(1), EPSILON);
+        assertEquals(lambdas.get(Term.VOLUME), ((PottsCell) cell).getLambda(Term.VOLUME), EPSILON);
+        assertEquals(lambdas.get(Term.SURFACE), ((PottsCell) cell).getLambda(Term.SURFACE), EPSILON);
+        assertEquals(adhesion[0], ((PottsCell) cell).getAdhesion(0), EPSILON);
+        assertEquals(adhesion[1], ((PottsCell) cell).getAdhesion(1), EPSILON);
         assertEquals(0, cell.getTargetVolume(), EPSILON);
         assertEquals(0, cell.getTargetSurface(), EPSILON);
         
@@ -235,14 +235,14 @@ public class PottsCellContainerTest {
             
             assertEquals(criticalTerms.get(Term.VOLUME), cell.getCriticalVolume(region), EPSILON);
             assertEquals(criticalTerms.get(Term.SURFACE), cell.getCriticalSurface(region), EPSILON);
-            assertEquals(lambdaTerms.get(Term.VOLUME), ((PottsCell)cell).getLambda(Term.VOLUME, region), EPSILON);
-            assertEquals(lambdaTerms.get(Term.SURFACE), ((PottsCell)cell).getLambda(Term.SURFACE, region), EPSILON);
+            assertEquals(lambdaTerms.get(Term.VOLUME), ((PottsCell) cell).getLambda(Term.VOLUME, region), EPSILON);
+            assertEquals(lambdaTerms.get(Term.SURFACE), ((PottsCell) cell).getLambda(Term.SURFACE, region), EPSILON);
             assertEquals(0, cell.getTargetVolume(region), EPSILON);
             assertEquals(0, cell.getTargetSurface(region), EPSILON);
             
             for (Region target : regionList) {
                 assertEquals(adhesionRegion.get(region).get(target),
-                        ((PottsCell)cell).getAdhesion(region, target), EPSILON);
+                        ((PottsCell) cell).getAdhesion(region, target), EPSILON);
             }
         }
     }
@@ -262,7 +262,7 @@ public class PottsCellContainerTest {
         
         PottsCellContainer container = new PottsCellContainer(1, 1, 0,
                 State.UNDEFINED, Phase.UNDEFINED, 0, targetVolume, targetSurface);
-        PottsCell cell = (PottsCell)container.convert(factory, location);
+        PottsCell cell = (PottsCell) container.convert(factory, location);
         
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
@@ -303,7 +303,7 @@ public class PottsCellContainerTest {
         PottsCellContainer container = new PottsCellContainer(1, 1, 0,
                 State.UNDEFINED, Phase.UNDEFINED, 0, null,
                 targetVolume, targetSurface, targetRegionVolumes, targetRegionSurfaces);
-        PottsCell cell = (PottsCell)container.convert(factory, location);
+        PottsCell cell = (PottsCell) container.convert(factory, location);
         
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
@@ -349,7 +349,7 @@ public class PottsCellContainerTest {
         PottsCellContainer container1 = new PottsCellContainer(1, 1, 0,
                 State.UNDEFINED, Phase.UNDEFINED, 0, null,
                 targetVolume, targetSurface, targetRegionVolumes, null);
-        PottsCell cell1 = (PottsCell)container1.convert(factory, location);
+        PottsCell cell1 = (PottsCell) container1.convert(factory, location);
         
         assertEquals(targetVolume, cell1.getTargetVolume(), EPSILON);
         assertEquals(targetSurface, cell1.getTargetSurface(), EPSILON);
@@ -362,7 +362,7 @@ public class PottsCellContainerTest {
         PottsCellContainer container2 = new PottsCellContainer(1, 1, 0,
                 State.UNDEFINED, Phase.UNDEFINED, 0, null,
                 targetVolume, targetSurface, null, targetRegionSurfaces);
-        PottsCell cell2 = (PottsCell)container2.convert(factory, location);
+        PottsCell cell2 = (PottsCell) container2.convert(factory, location);
         
         assertEquals(targetVolume, cell2.getTargetVolume(), EPSILON);
         assertEquals(targetSurface, cell2.getTargetSurface(), EPSILON);

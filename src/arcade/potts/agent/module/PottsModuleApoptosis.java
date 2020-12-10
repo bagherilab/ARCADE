@@ -46,10 +46,10 @@ public abstract class PottsModuleApoptosis extends PottsModule {
         durationEarly = parameters.getDouble("apoptosis/DURATION_EARLY");
         durationLate = parameters.getDouble("apoptosis/DURATION_LATE");
         
-        rateCytoplasmLoss = -Math.log(0.05)/durationEarly;
-        rateNucleusPyknosis = -Math.log(0.01)/durationEarly;
-        rateCytoplasmBlebbing = -Math.log(0.01)/durationLate;
-        rateNucleusFragmentation = -Math.log(0.01)/durationLate;
+        rateCytoplasmLoss = -Math.log(0.05) / durationEarly;
+        rateNucleusPyknosis = -Math.log(0.01) / durationEarly;
+        rateCytoplasmBlebbing = -Math.log(0.01) / durationLate;
+        rateNucleusFragmentation = -Math.log(0.01) / durationLate;
     }
     
     /**
@@ -110,7 +110,7 @@ public abstract class PottsModuleApoptosis extends PottsModule {
         }
         
         // Check for transition to late phase.
-        double p = 1.0/durationEarly;
+        double p = 1.0 / durationEarly;
         if (r < p) {
             phase = Phase.APOPTOTIC_LATE;
         }
@@ -143,8 +143,8 @@ public abstract class PottsModuleApoptosis extends PottsModule {
         }
         
         // Check for completion of late phase.
-        double p = 1.0/durationLate;
-        if (r < p || cell.getVolume() < APOPTOSIS_CHECKPOINT*cell.getCriticalVolume()) {
+        double p = 1.0 / durationLate;
+        if (r < p || cell.getVolume() < APOPTOSIS_CHECKPOINT * cell.getCriticalVolume()) {
             removeCell(sim);
             phase = Phase.APOPTOSED;
         }
@@ -159,10 +159,10 @@ public abstract class PottsModuleApoptosis extends PottsModule {
      * @param sim  the simulation instance
      */
     void removeCell(Simulation sim) {
-        Potts potts = ((PottsSimulation)sim).getPotts();
+        Potts potts = ((PottsSimulation) sim).getPotts();
         
         // Clear the location.
-        ((PottsLocation)cell.getLocation()).clear(potts.ids, potts.regions);
+        ((PottsLocation) cell.getLocation()).clear(potts.ids, potts.regions);
         
         // Remove the cell from the grid.
         sim.getGrid().removeObject(cell.getID());

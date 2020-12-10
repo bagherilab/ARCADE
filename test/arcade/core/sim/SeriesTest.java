@@ -21,7 +21,7 @@ import static arcade.core.sim.Series.SEED_OFFSET;
 import static arcade.core.TestUtilities.EPSILON;
 
 public class SeriesTest {
-    private static final double DS = (Math.random()*10) + 1;
+    private static final double DS = (Math.random() * 10) + 1;
     private static final double DT = Math.random() + 0.5;
     private static final Box PARAMETERS = new Box();
     private static final String TEST_NAME = "DEFAULT_NAME";
@@ -38,13 +38,13 @@ public class SeriesTest {
     
     private static final HashMap<String, ArrayList<Box>> SETUP_LISTS_MOCK = mock(HashMap.class);
     
-    static int randomInt() { return (int)(Math.random()*100) + 1; }
+    static int randomInt() { return (int) (Math.random() * 100) + 1; }
     
-    static double randomDouble() { return Math.random()*100; }
+    static double randomDouble() { return Math.random() * 100; }
     
-    static int randomEven() { return (int)(Math.random()*100)*2; }
+    static int randomEven() { return (int) (Math.random() * 100) * 2; }
     
-    static int randomOdd() { return (int)(Math.random()*100)*2 + 1; }
+    static int randomOdd() { return (int) (Math.random() * 100) * 2 + 1; }
     
     static String randomString() {
         return new Random().ints(65, 91)
@@ -119,7 +119,7 @@ public class SeriesTest {
     }
     
     public static class VisualizationMock extends Visualization {
-        public VisualizationMock(Simulation sim) { super((SimState)sim); }
+        public VisualizationMock(Simulation sim) { super((SimState) sim); }
         
         protected Panel[] createPanels() { return new Panel[0]; }
         
@@ -543,7 +543,7 @@ public class SeriesTest {
         scales.put(parameter, parameterScale);
         
         Series.parseParameter(box, parameter, "" + defaultParameter, values, scales);
-        assertEquals(defaultParameter*parameterScale, box.getDouble(parameter), EPSILON);
+        assertEquals(defaultParameter * parameterScale, box.getDouble(parameter), EPSILON);
     }
     
     @Test
@@ -561,7 +561,7 @@ public class SeriesTest {
         scales.put(parameter, parameterScale);
         
         Series.parseParameter(box, parameter, "" + defaultParameter, values, scales);
-        assertEquals(parameterValue*parameterScale, box.getDouble(parameter), EPSILON);
+        assertEquals(parameterValue * parameterScale, box.getDouble(parameter), EPSILON);
     }
     
     @Test

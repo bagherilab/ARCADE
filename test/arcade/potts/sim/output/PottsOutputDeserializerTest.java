@@ -29,7 +29,7 @@ public class PottsOutputDeserializerTest {
             int id = array.get("id").getAsInt();
             CellContainer container = mock(CellContainer.class);
             doReturn(id).when(container).getID();
-            return (T)container;
+            return (T) container;
         }
     };
     
@@ -44,19 +44,19 @@ public class PottsOutputDeserializerTest {
                 int id = array.get("id").getAsInt();
                 LocationContainer container = mock(LocationContainer.class);
                 doReturn(id).when(container).getID();
-                return (T)container;
+                return (T) container;
             }
         }
     };
     
     public static void checkAdaptors(Gson gson) {
-        TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() {};
+        TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() { };
         assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
         
-        TypeToken<Voxel> voxel = new TypeToken<Voxel>() {};
+        TypeToken<Voxel> voxel = new TypeToken<Voxel>() { };
         assertSame(gson.getAdapter(voxel).getClass(), TreeTypeAdapter.class);
         
-        TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() {};
+        TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() { };
         assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
     }
     
@@ -70,14 +70,14 @@ public class PottsOutputDeserializerTest {
     public void deserializer_forCellNoRegion_createObject() {
         PottsCellDeserializer deserializer = new PottsCellDeserializer();
         
-        int id = randomIntBetween(1,100);
-        int pop = randomIntBetween(1,100);
-        int age = randomIntBetween(1,100);
+        int id = randomIntBetween(1, 100);
+        int pop = randomIntBetween(1, 100);
+        int age = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
-        int voxels = randomIntBetween(1,100);
-        int targetVolume = randomIntBetween(1,100);
-        int targetSurface = randomIntBetween(1,100);
+        int voxels = randomIntBetween(1, 100);
+        int targetVolume = randomIntBetween(1, 100);
+        int targetSurface = randomIntBetween(1, 100);
         
         String string = "{"
                 + "\"id\": " + id
@@ -109,23 +109,23 @@ public class PottsOutputDeserializerTest {
     public void deserializer_forCellWithRegions_createObject() {
         PottsCellDeserializer deserializer = new PottsCellDeserializer();
         
-        int id = randomIntBetween(1,100);
-        int pop = randomIntBetween(1,100);
-        int age = randomIntBetween(1,100);
+        int id = randomIntBetween(1, 100);
+        int pop = randomIntBetween(1, 100);
+        int age = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
-        int voxels = randomIntBetween(1,100);
-        int targetVolume = randomIntBetween(1,100);
-        int targetSurface = randomIntBetween(1,100);
+        int voxels = randomIntBetween(1, 100);
+        int targetVolume = randomIntBetween(1, 100);
+        int targetSurface = randomIntBetween(1, 100);
         
         Region region1 = Region.DEFAULT;
         Region region2 = Region.NUCLEUS;
-        int regionVoxels1 = randomIntBetween(1,100);
-        int regionVoxels2 = randomIntBetween(1,100);
-        int targetRegionVolume1 = randomIntBetween(1,100);
-        int targetRegionSurface1 = randomIntBetween(1,100);
-        int targetRegionVolume2 = randomIntBetween(1,100);
-        int targetRegionSurface2 = randomIntBetween(1,100);
+        int regionVoxels1 = randomIntBetween(1, 100);
+        int regionVoxels2 = randomIntBetween(1, 100);
+        int targetRegionVolume1 = randomIntBetween(1, 100);
+        int targetRegionSurface1 = randomIntBetween(1, 100);
+        int targetRegionVolume2 = randomIntBetween(1, 100);
+        int targetRegionSurface2 = randomIntBetween(1, 100);
         
         String string = "{"
                 + "\"id\": " + id
@@ -158,8 +158,8 @@ public class PottsOutputDeserializerTest {
         assertEquals(voxels, object.voxels);
         assertEquals(targetVolume, object.targetVolume, EPSILON);
         assertEquals(targetSurface, object.targetSurface, EPSILON);
-        assertEquals(regionVoxels1, (int)object.regionVoxels.get(region1));
-        assertEquals(regionVoxels2, (int)object.regionVoxels.get(region2));
+        assertEquals(regionVoxels1, (int) object.regionVoxels.get(region1));
+        assertEquals(regionVoxels2, (int) object.regionVoxels.get(region2));
         assertEquals(targetRegionVolume1, object.regionTargetVolume.get(region1), EPSILON);
         assertEquals(targetRegionSurface1, object.regionTargetSurface.get(region1), EPSILON);
         assertEquals(targetRegionVolume2, object.regionTargetVolume.get(region2), EPSILON);
@@ -171,16 +171,16 @@ public class PottsOutputDeserializerTest {
         PottsLocationDeserializer deserializer = new PottsLocationDeserializer();
         
         Region region = Region.UNDEFINED;
-        int id = randomIntBetween(1,100);
-        Voxel center = new Voxel(randomIntBetween(1,100), randomIntBetween(1,100), randomIntBetween(1,100));
+        int id = randomIntBetween(1, 100);
+        Voxel center = new Voxel(randomIntBetween(1, 100), randomIntBetween(1, 100), randomIntBetween(1, 100));
         
-        int x1 = randomIntBetween(1,100);
-        int y1 = randomIntBetween(1,100);
-        int z1 = randomIntBetween(1,100);
+        int x1 = randomIntBetween(1, 100);
+        int y1 = randomIntBetween(1, 100);
+        int z1 = randomIntBetween(1, 100);
         
-        int x2 = x1 + randomIntBetween(1,100);
-        int y2 = y1 + randomIntBetween(1,100);
-        int z2 = z1 + randomIntBetween(1,100);
+        int x2 = x1 + randomIntBetween(1, 100);
+        int y2 = y1 + randomIntBetween(1, 100);
+        int z2 = z1 + randomIntBetween(1, 100);
         
         String string = "{\"id\": " + id
                 + ",\"center\":[" + center.x + "," + center.y + "," + center.z + "]"
@@ -211,24 +211,24 @@ public class PottsOutputDeserializerTest {
     public void deserializer_forLocationWithRegion_createObject() {
         PottsLocationDeserializer deserializer = new PottsLocationDeserializer();
         
-        int id = randomIntBetween(1,100);
-        Voxel center = new Voxel(randomIntBetween(1,100), randomIntBetween(1,100), randomIntBetween(1,100));
+        int id = randomIntBetween(1, 100);
+        Voxel center = new Voxel(randomIntBetween(1, 100), randomIntBetween(1, 100), randomIntBetween(1, 100));
         
-        int x1 = randomIntBetween(1,100);
-        int y1 = randomIntBetween(1,100);
-        int z1 = randomIntBetween(1,100);
+        int x1 = randomIntBetween(1, 100);
+        int y1 = randomIntBetween(1, 100);
+        int z1 = randomIntBetween(1, 100);
         
-        int x2 = x1 + randomIntBetween(1,100);
-        int y2 = y1 + randomIntBetween(1,100);
-        int z2 = z1 + randomIntBetween(1,100);
+        int x2 = x1 + randomIntBetween(1, 100);
+        int y2 = y1 + randomIntBetween(1, 100);
+        int z2 = z1 + randomIntBetween(1, 100);
         
-        int x3 = x2 + randomIntBetween(1,100);
-        int y3 = y2 + randomIntBetween(1,100);
-        int z3 = z2 + randomIntBetween(1,100);
+        int x3 = x2 + randomIntBetween(1, 100);
+        int y3 = y2 + randomIntBetween(1, 100);
+        int z3 = z2 + randomIntBetween(1, 100);
         
-        int x4 = x3 + randomIntBetween(1,100);
-        int y4 = y3 + randomIntBetween(1,100);
-        int z4 = z3 + randomIntBetween(1,100);
+        int x4 = x3 + randomIntBetween(1, 100);
+        int y4 = y3 + randomIntBetween(1, 100);
+        int z4 = z3 + randomIntBetween(1, 100);
         
         Region region1 = Region.DEFAULT;
         Region region2 = Region.NUCLEUS;
@@ -288,9 +288,9 @@ public class PottsOutputDeserializerTest {
     public void deserializer_forVoxel_createObject() {
         VoxelDeserializer deserializer = new VoxelDeserializer();
         
-        int x = randomIntBetween(1,100);
-        int y = randomIntBetween(1,100);
-        int z = randomIntBetween(1,100);
+        int x = randomIntBetween(1, 100);
+        int y = randomIntBetween(1, 100);
+        int z = randomIntBetween(1, 100);
         String string = "[" + x + "," + y + "," + z + "]";
         
         Voxel expected = new Voxel(x, y, z);

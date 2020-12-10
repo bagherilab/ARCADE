@@ -4,10 +4,9 @@ import java.util.Comparator;
 
 public final class Voxel {
     /** Comparator for voxels */
-    public static final Comparator<Voxel> VOXEL_COMPARATOR = (v1, v2) ->
-            v1.z != v2.z ? Integer.compare(v1.z, v2.z) :
-                    v1.x != v2.x ? Integer.compare(v1.x, v2.x) :
-                            Integer.compare(v1.y, v2.y);
+    public static final Comparator<Voxel> VOXEL_COMPARATOR = (v1, v2) -> v1.z != v2.z
+            ? Integer.compare(v1.z, v2.z) : v1.x != v2.x
+            ? Integer.compare(v1.x, v2.x) : Integer.compare(v1.y, v2.y);
     
     /** Voxel x coordinate */
     public final int x;
@@ -46,7 +45,7 @@ public final class Voxel {
      */
     public final boolean equals(Object obj) {
         if (!(obj instanceof Voxel)) { return false; }
-        Voxel voxel = (Voxel)obj;
+        Voxel voxel = (Voxel) obj;
         return voxel.x == x && voxel.y == y && voxel.z == z;
     }
     

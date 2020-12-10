@@ -36,11 +36,11 @@ public class PottsModuleProliferationSimpleTest {
         doReturn(box).when(cell).getParameters();
         
         parameters = new MiniBox();
-        parameters.put("proliferation/DURATION_G1", randomDoubleBetween(1,10));
-        parameters.put("proliferation/DURATION_S", randomDoubleBetween(1,10));
-        parameters.put("proliferation/DURATION_G2", randomDoubleBetween(1,10));
-        parameters.put("proliferation/DURATION_M", randomDoubleBetween(1,10));
-        parameters.put("proliferation/DURATION_CHECKPOINT", randomDoubleBetween(1,10));
+        parameters.put("proliferation/DURATION_G1", randomDoubleBetween(1, 10));
+        parameters.put("proliferation/DURATION_S", randomDoubleBetween(1, 10));
+        parameters.put("proliferation/DURATION_G2", randomDoubleBetween(1, 10));
+        parameters.put("proliferation/DURATION_M", randomDoubleBetween(1, 10));
+        parameters.put("proliferation/DURATION_CHECKPOINT", randomDoubleBetween(1, 10));
         parameters.put("proliferation/BASAL_APOPTOSIS_RATE", randomDoubleBetween(0, 0.5));
     }
     
@@ -68,9 +68,9 @@ public class PottsModuleProliferationSimpleTest {
         double durationS = parameters.getDouble("proliferation/DURATION_S");
         double durationG2 = parameters.getDouble("proliferation/DURATION_G2");
         
-        assertEquals(-Math.log(0.05)/durationG1, module.rateG1, EPSILON);
-        assertEquals(-Math.log(0.01)/durationS, module.rateS, EPSILON);
-        assertEquals(-Math.log(0.01)/durationG2, module.rateG2, EPSILON);
+        assertEquals(-Math.log(0.05) / durationG1, module.rateG1, EPSILON);
+        assertEquals(-Math.log(0.01) / durationS, module.rateS, EPSILON);
+        assertEquals(-Math.log(0.01) / durationG2, module.rateG2, EPSILON);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class PottsModuleProliferationSimpleTest {
     
     @Test
     public void setPhase_givenValue_setsValue() {
-        Phase phase = Phase.values()[(int)(Math.random()*Phase.values().length)];
+        Phase phase = Phase.values()[(int) (Math.random() * Phase.values().length)];
         PottsModuleProliferation module = new PottsModuleProliferation.Simple(cell);
         module.setPhase(phase);
         assertEquals(phase, module.phase);
@@ -170,7 +170,7 @@ public class PottsModuleProliferationSimpleTest {
             
             PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
             module.phase = Phase.PROLIFERATIVE_G1;
-            module.stepG1(i/10. + module.basalApoptosisRate);
+            module.stepG1(i / 10. + module.basalApoptosisRate);
             
             verify(cell).updateTarget(module.rateG1, 2);
         }
@@ -184,7 +184,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_G1;
         module.isArrested = false;
-        module.stepG1(1.0/module.durationG1 + EPSILON);
+        module.stepG1(1.0 / module.durationG1 + EPSILON);
         
         verify(module, never()).checkpointG1();
         assertEquals(Phase.PROLIFERATIVE_G1, module.phase);
@@ -205,7 +205,7 @@ public class PottsModuleProliferationSimpleTest {
         
         module.phase = Phase.PROLIFERATIVE_G1;
         module.isArrested = false;
-        module.stepG1(1.0/module.durationG1 - EPSILON);
+        module.stepG1(1.0 / module.durationG1 - EPSILON);
         
         verify(module).checkpointG1();
         assertEquals(Phase.PROLIFERATIVE_S, module.phase);
@@ -226,7 +226,7 @@ public class PottsModuleProliferationSimpleTest {
         
         module.phase = Phase.PROLIFERATIVE_G1;
         module.isArrested = true;
-        module.stepG1(1.0/module.durationCheckpoint + EPSILON);
+        module.stepG1(1.0 / module.durationCheckpoint + EPSILON);
         
         verify(module, never()).checkpointG1();
         assertEquals(Phase.PROLIFERATIVE_G1, module.phase);
@@ -248,7 +248,7 @@ public class PottsModuleProliferationSimpleTest {
         module.phase = Phase.PROLIFERATIVE_G1;
         module.isArrested = true;
         
-        module.stepG1(1.0/module.durationCheckpoint - EPSILON);
+        module.stepG1(1.0 / module.durationCheckpoint - EPSILON);
         verify(module).checkpointG1();
         assertEquals(Phase.PROLIFERATIVE_S, module.phase);
     }
@@ -258,8 +258,8 @@ public class PottsModuleProliferationSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         
-        double volume = Math.random()*100;
-        when(cell.getVolume()).thenReturn((int)(volume*GROWTH_CHECKPOINT_G1) + 1);
+        double volume = Math.random() * 100;
+        when(cell.getVolume()).thenReturn((int) (volume * GROWTH_CHECKPOINT_G1) + 1);
         when(cell.getCriticalVolume()).thenReturn(volume);
         
         PottsModuleProliferation module = new PottsModuleProliferation.Simple(cell);
@@ -275,8 +275,8 @@ public class PottsModuleProliferationSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         
-        double volume = Math.random()*100;
-        when(cell.getVolume()).thenReturn((int)(volume*GROWTH_CHECKPOINT_G1) - 1);
+        double volume = Math.random() * 100;
+        when(cell.getVolume()).thenReturn((int) (volume * GROWTH_CHECKPOINT_G1) - 1);
         when(cell.getCriticalVolume()).thenReturn(volume);
         
         PottsModuleProliferation module = new PottsModuleProliferation.Simple(cell);
@@ -296,7 +296,7 @@ public class PottsModuleProliferationSimpleTest {
             
             PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
             module.phase = Phase.PROLIFERATIVE_S;
-            module.stepS(i/10.);
+            module.stepS(i / 10.);
             
             verify(cell).updateTarget(Region.NUCLEUS, module.rateS, 2);
         }
@@ -308,8 +308,8 @@ public class PottsModuleProliferationSimpleTest {
         doReturn(parameters).when(cell).getParameters();
         doReturn(true).when(cell).hasRegions();
         
-        double volume = Math.random()*100;
-        when(cell.getVolume(Region.NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) - 1);
+        double volume = Math.random() * 100;
+        when(cell.getVolume(Region.NUCLEUS)).thenReturn((int) (volume * GROWTH_CHECKPOINT_S) - 1);
         when(cell.getCriticalVolume(Region.NUCLEUS)).thenReturn(volume);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
@@ -325,8 +325,8 @@ public class PottsModuleProliferationSimpleTest {
         doReturn(parameters).when(cell).getParameters();
         doReturn(true).when(cell).hasRegions();
         
-        double volume = Math.random()*100;
-        when(cell.getVolume(Region.NUCLEUS)).thenReturn((int)(volume*GROWTH_CHECKPOINT_S) + 1);
+        double volume = Math.random() * 100;
+        when(cell.getVolume(Region.NUCLEUS)).thenReturn((int) (volume * GROWTH_CHECKPOINT_S) + 1);
         when(cell.getCriticalVolume(Region.NUCLEUS)).thenReturn(volume);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
@@ -343,7 +343,7 @@ public class PottsModuleProliferationSimpleTest {
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_S;
-        module.stepS(1.0/module.durationS + EPSILON);
+        module.stepS(1.0 / module.durationS + EPSILON);
         
         assertEquals(Phase.PROLIFERATIVE_S, module.phase);
     }
@@ -355,7 +355,7 @@ public class PottsModuleProliferationSimpleTest {
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_S;
-        module.stepS(1.0/module.durationS - EPSILON);
+        module.stepS(1.0 / module.durationS - EPSILON);
         
         assertEquals(Phase.PROLIFERATIVE_G2, module.phase);
     }
@@ -368,7 +368,7 @@ public class PottsModuleProliferationSimpleTest {
             
             PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
             module.phase = Phase.PROLIFERATIVE_G2;
-            module.stepG2(i/10.);
+            module.stepG2(i / 10.);
             
             verify(cell).updateTarget(module.rateG2, 2);
         }
@@ -382,7 +382,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
         module.isArrested = false;
-        module.stepG2(1.0/module.durationG2 + EPSILON);
+        module.stepG2(1.0 / module.durationG2 + EPSILON);
         
         verify(module, never()).checkpointG2();
         assertEquals(Phase.PROLIFERATIVE_G2, module.phase);
@@ -396,7 +396,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
         module.isArrested = false;
-        module.stepG2(1.0/module.durationG2 - EPSILON);
+        module.stepG2(1.0 / module.durationG2 - EPSILON);
         
         verify(module).checkpointG2();
         assertEquals(Phase.PROLIFERATIVE_M, module.phase);
@@ -410,7 +410,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
         module.isArrested = true;
-        module.stepG2(1.0/module.durationCheckpoint + EPSILON);
+        module.stepG2(1.0 / module.durationCheckpoint + EPSILON);
         
         verify(module, never()).checkpointG2();
         assertEquals(Phase.PROLIFERATIVE_G2, module.phase);
@@ -424,7 +424,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
         module.isArrested = true;
-        module.stepG2(1.0/module.durationCheckpoint - EPSILON);
+        module.stepG2(1.0 / module.durationCheckpoint - EPSILON);
         
         verify(module).checkpointG2();
         assertEquals(Phase.PROLIFERATIVE_M, module.phase);
@@ -435,8 +435,8 @@ public class PottsModuleProliferationSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         
-        double volume = Math.random()*100;
-        when(cell.getVolume()).thenReturn((int)(volume*GROWTH_CHECKPOINT_G2) + 1);
+        double volume = Math.random() * 100;
+        when(cell.getVolume()).thenReturn((int) (volume * GROWTH_CHECKPOINT_G2) + 1);
         when(cell.getCriticalVolume()).thenReturn(volume);
         
         PottsModuleProliferation module = new PottsModuleProliferation.Simple(cell);
@@ -452,8 +452,8 @@ public class PottsModuleProliferationSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         
-        double volume = Math.random()*100;
-        when(cell.getVolume()).thenReturn((int)(volume*GROWTH_CHECKPOINT_G2) - 1);
+        double volume = Math.random() * 100;
+        when(cell.getVolume()).thenReturn((int) (volume * GROWTH_CHECKPOINT_G2) - 1);
         when(cell.getCriticalVolume()).thenReturn(volume);
         
         PottsModuleProliferation module = new PottsModuleProliferation.Simple(cell);
@@ -472,7 +472,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         doNothing().when(module).addCell(random, sim);
         module.phase = Phase.PROLIFERATIVE_M;
-        module.stepM(1.0/module.durationM + EPSILON, random, sim);
+        module.stepM(1.0 / module.durationM + EPSILON, random, sim);
         
         verify(module, never()).addCell(random, sim);
         assertEquals(Phase.PROLIFERATIVE_M, module.phase);
@@ -486,7 +486,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         doNothing().when(module).addCell(random, sim);
         module.phase = Phase.PROLIFERATIVE_M;
-        module.stepM(1.0/module.durationM - EPSILON, random, sim);
+        module.stepM(1.0 / module.durationM - EPSILON, random, sim);
         
         verify(module).addCell(random, sim);
         assertEquals(Phase.PROLIFERATIVE_G1, module.phase);
@@ -500,7 +500,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsSimulation sim = mock(PottsSimulation.class);
         Schedule schedule = mock(Schedule.class);
         
-        int id = (int)(Math.random()*100) + 1;
+        int id = (int) (Math.random() * 100) + 1;
         doReturn(potts).when(sim).getPotts();
         doReturn(id).when(sim).getID();
         doReturn(grid).when(sim).getGrid();

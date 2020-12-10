@@ -22,7 +22,7 @@ public class OutputDeserializerTest {
             int id = array.get("id").getAsInt();
             CellContainer container = mock(CellContainer.class);
             doReturn(id).when(container).getID();
-            return (T)container;
+            return (T) container;
         }
     };
     
@@ -33,17 +33,17 @@ public class OutputDeserializerTest {
             int id = array.get("id").getAsInt();
             LocationContainer container = mock(LocationContainer.class);
             doReturn(id).when(container).getID();
-            return (T)container;
+            return (T) container;
         }
     };
     
     public static void checkAdaptors(Gson gson) {
         TypeToken<ArrayList<CellContainer>> cellContainerList =
-                new TypeToken<ArrayList<CellContainer>>() {};
+                new TypeToken<ArrayList<CellContainer>>() { };
         assertSame(gson.getAdapter(cellContainerList).getClass(), TreeTypeAdapter.class);
         
         TypeToken<ArrayList<LocationContainer>> locationContainerList =
-                new TypeToken<ArrayList<LocationContainer>>() {};
+                new TypeToken<ArrayList<LocationContainer>>() { };
         assertSame(gson.getAdapter(locationContainerList).getClass(), TreeTypeAdapter.class);
     }
     

@@ -82,7 +82,7 @@ public class PottsCellFactory implements CellFactory {
         
         // Map loaded container to factory.
         for (CellContainer container : containers) {
-            PottsCellContainer cellContainer = (PottsCellContainer)container;
+            PottsCellContainer cellContainer = (PottsCellContainer) container;
             int pop = cellContainer.pop;
             if (popToIDs.containsKey(pop) && popToIDs.get(pop).size() < popToSize.get(pop)) {
                 cells.put(cellContainer.id, cellContainer);
@@ -111,7 +111,7 @@ public class PottsCellFactory implements CellFactory {
                 
                 for (Region region : Region.values()) {
                     double fraction = population.getDouble("(REGION)" + TAG_SEPARATOR + region);
-                    int voxelFraction = (int)Math.round(fraction*voxels);
+                    int voxelFraction = (int) Math.round(fraction * voxels);
                     total += voxelFraction;
                     if (total > voxels) { voxelFraction -= (total - voxels); }
                     regionVoxels.put(region, voxelFraction);

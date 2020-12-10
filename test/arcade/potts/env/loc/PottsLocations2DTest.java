@@ -47,7 +47,7 @@ public class PottsLocations2DTest {
         loc.locations.put(Region.UNDEFINED, new PottsLocation2D(new ArrayList<>()));
         
         int n = 10;
-        int f = (int)(Math.random()*10*0.9) + 1; // between 1 and 9, inclusive
+        int f = (int) (Math.random() * 10 * 0.9) + 1; // between 1 and 9, inclusive
         
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -56,8 +56,8 @@ public class PottsLocations2DTest {
         }
         
         EnumMap<Region, Double> fractions = new EnumMap<>(Region.class);
-        fractions.put(Region.DEFAULT, f/10.0);
-        fractions.put(Region.UNDEFINED, 1 - f/10.0);
+        fractions.put(Region.DEFAULT, f / 10.0);
+        fractions.put(Region.UNDEFINED, 1 - f / 10.0);
         PottsLocations.assignVoxels(loc, fractions, randomDoubleZero);
         
         assertEquals(n * n, loc.voxels.size());

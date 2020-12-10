@@ -65,54 +65,54 @@ public class Location2DTest {
     public void getDiameters_validLocation_calculatesValues() {
         PottsLocation2D loc = new PottsLocation2D(voxelListForDiameters);
         HashMap<Direction, Integer> diameters = loc.getDiameters();
-        assertEquals(3, (int)diameters.get(Direction.YZ_PLANE));
-        assertEquals(2, (int)diameters.get(Direction.ZX_PLANE));
-        assertEquals(4, (int)diameters.get(Direction.POSITIVE_XY));
-        assertEquals(3, (int)diameters.get(Direction.NEGATIVE_XY));
+        assertEquals(3, (int) diameters.get(Direction.YZ_PLANE));
+        assertEquals(2, (int) diameters.get(Direction.ZX_PLANE));
+        assertEquals(4, (int) diameters.get(Direction.POSITIVE_XY));
+        assertEquals(3, (int) diameters.get(Direction.NEGATIVE_XY));
     }
     
     @Test
     public void getDiameters_invalidLocation_returnsZero() {
         PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         HashMap<Direction, Integer> diameters = loc.getDiameters();
-        assertEquals(0, (int)diameters.get(Direction.YZ_PLANE));
-        assertEquals(0, (int)diameters.get(Direction.ZX_PLANE));
-        assertEquals(0, (int)diameters.get(Direction.POSITIVE_XY));
-        assertEquals(0, (int)diameters.get(Direction.NEGATIVE_XY));
+        assertEquals(0, (int) diameters.get(Direction.YZ_PLANE));
+        assertEquals(0, (int) diameters.get(Direction.ZX_PLANE));
+        assertEquals(0, (int) diameters.get(Direction.POSITIVE_XY));
+        assertEquals(0, (int) diameters.get(Direction.NEGATIVE_XY));
     }
     
     @Test
     public void getDiameters_validLocations_calculatesValues() {
         PottsLocations2D loc = new PottsLocations2D(voxelListForDiameters);
         HashMap<Direction, Integer> diameters = loc.getDiameters();
-        assertEquals(3, (int)diameters.get(Direction.YZ_PLANE));
-        assertEquals(2, (int)diameters.get(Direction.ZX_PLANE));
-        assertEquals(4, (int)diameters.get(Direction.POSITIVE_XY));
-        assertEquals(3, (int)diameters.get(Direction.NEGATIVE_XY));
+        assertEquals(3, (int) diameters.get(Direction.YZ_PLANE));
+        assertEquals(2, (int) diameters.get(Direction.ZX_PLANE));
+        assertEquals(4, (int) diameters.get(Direction.POSITIVE_XY));
+        assertEquals(3, (int) diameters.get(Direction.NEGATIVE_XY));
     }
     
     @Test
     public void getDiameters_invalidLocations_returnsZero() {
         PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
         HashMap<Direction, Integer> diameters = loc.getDiameters();
-        assertEquals(0, (int)diameters.get(Direction.YZ_PLANE));
-        assertEquals(0, (int)diameters.get(Direction.ZX_PLANE));
-        assertEquals(0, (int)diameters.get(Direction.POSITIVE_XY));
-        assertEquals(0, (int)diameters.get(Direction.NEGATIVE_XY));
+        assertEquals(0, (int) diameters.get(Direction.YZ_PLANE));
+        assertEquals(0, (int) diameters.get(Direction.ZX_PLANE));
+        assertEquals(0, (int) diameters.get(Direction.POSITIVE_XY));
+        assertEquals(0, (int) diameters.get(Direction.NEGATIVE_XY));
     }
     
     @Test
     public void convertVolume_givenLocationValue_calculatesValue() {
         PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
-        double volume = Math.random()*100;
-        assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume), loc.convertVolume(volume), EPSILON);
+        double volume = Math.random() * 100;
+        assertEquals(SURFACE_VOLUME_MULTIPLIER * Math.sqrt(volume), loc.convertVolume(volume), EPSILON);
     }
     
     @Test
     public void convertVolume_givenLocationsValue_calculatesValue() {
         PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
-        double volume = Math.random()*100;
-        assertEquals(SURFACE_VOLUME_MULTIPLIER*Math.sqrt(volume), loc.convertVolume(volume), EPSILON);
+        double volume = Math.random() * 100;
+        assertEquals(SURFACE_VOLUME_MULTIPLIER * Math.sqrt(volume), loc.convertVolume(volume), EPSILON);
     }
     
     @Test
@@ -223,7 +223,7 @@ public class Location2DTest {
         }
         
         PottsLocation2D loc = new PottsLocation2D(voxels);
-        ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), Math.PI*r*r);
+        ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), Math.PI * r * r);
         
         assertTrue(selected.size() < n * n);
         for (Voxel voxel : selected) {
@@ -282,7 +282,7 @@ public class Location2DTest {
         
         PottsLocations2D loc = new PottsLocations2D(voxelsA);
         for (Voxel voxel : voxelsB) { loc.add(Region.UNDEFINED, voxel.x, voxel.y, voxel.z); }
-        ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), Math.PI*r*r);
+        ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), Math.PI * r * r);
         
         assertTrue(selected.size() < voxelsB.size());
         for (Voxel voxel : selected) {

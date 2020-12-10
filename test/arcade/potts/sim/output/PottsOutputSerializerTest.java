@@ -23,7 +23,7 @@ import static arcade.core.TestUtilities.*;
 public class PottsOutputSerializerTest {
     static final JsonSerializationContext LOCATION_CONTEXT = new JsonSerializationContext() {
         public JsonElement serialize(Object src) {
-            Voxel voxel = (Voxel)src;
+            Voxel voxel = (Voxel) src;
             JsonArray json = new JsonArray();
             json.add(voxel.x + "|" + voxel.y + "|" + voxel.z);
             return json;
@@ -33,16 +33,16 @@ public class PottsOutputSerializerTest {
     };
     
     public static void checkAdaptors(Gson gson) {
-        TypeToken<PottsSeries> series = new TypeToken<PottsSeries>() {};
+        TypeToken<PottsSeries> series = new TypeToken<PottsSeries>() { };
         assertSame(gson.getAdapter(series).getClass(), TreeTypeAdapter.class);
         
-        TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() {};
+        TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() { };
         assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
         
-        TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() {};
+        TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() { };
         assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
         
-        TypeToken<Voxel> voxel = new TypeToken<Voxel>() {};
+        TypeToken<Voxel> voxel = new TypeToken<Voxel>() { };
         assertSame(gson.getAdapter(voxel).getClass(), TreeTypeAdapter.class);
     }
     
@@ -70,7 +70,7 @@ public class PottsOutputSerializerTest {
         JsonSerializationContext context = new JsonSerializationContext() {
             public JsonElement serialize(Object src) {
                 if (src instanceof MiniBox) {
-                    MiniBox box = (MiniBox)src;
+                    MiniBox box = (MiniBox) src;
                     JsonObject json = new JsonObject();
                     json.addProperty(box.getKeys().get(0), box.get(box.getKeys().get(0)));
                     json.addProperty(box.getKeys().get(1), box.getInt(box.getKeys().get(1)));
@@ -102,14 +102,14 @@ public class PottsOutputSerializerTest {
     public void serialize_forCellNoRegion_createsJSON() {
         PottsCellSerializer serializer = new PottsCellSerializer();
         
-        int id = randomIntBetween(1,100);
-        int pop = randomIntBetween(1,100);
-        int age = randomIntBetween(1,100);
+        int id = randomIntBetween(1, 100);
+        int pop = randomIntBetween(1, 100);
+        int age = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
-        int voxels = randomIntBetween(1,100);
-        int targetVolume = randomIntBetween(1,100);
-        int targetSurface = randomIntBetween(1,100);
+        int voxels = randomIntBetween(1, 100);
+        int targetVolume = randomIntBetween(1, 100);
+        int targetSurface = randomIntBetween(1, 100);
         
         PottsCellContainer cellContainer = new PottsCellContainer(id, pop, age, state, phase, voxels,
                 null, targetVolume, targetSurface, null, null);
@@ -132,35 +132,35 @@ public class PottsOutputSerializerTest {
     public void serialize_forCellWithRegion_createsJSON() {
         PottsCellSerializer serializer = new PottsCellSerializer();
         
-        int id = randomIntBetween(1,100);
-        int pop = randomIntBetween(1,100);
-        int age = randomIntBetween(1,100);
+        int id = randomIntBetween(1, 100);
+        int pop = randomIntBetween(1, 100);
+        int age = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
-        int voxels = randomIntBetween(1,100);
-        int targetVolume = randomIntBetween(1,100);
-        int targetSurface = randomIntBetween(1,100);
+        int voxels = randomIntBetween(1, 100);
+        int targetVolume = randomIntBetween(1, 100);
+        int targetSurface = randomIntBetween(1, 100);
         
         Region region1 = Region.DEFAULT;
         Region region2 = Region.NUCLEUS;
-        int regionVoxels1 = randomIntBetween(1,100);
-        int regionVoxels2 = randomIntBetween(1,100);
-        int targetRegionVolume1 = randomIntBetween(1,100);
-        int targetRegionSurface1 = randomIntBetween(1,100);
-        int targetRegionVolume2 = randomIntBetween(1,100);
-        int targetRegionSurface2 = randomIntBetween(1,100);
+        int regionVoxels1 = randomIntBetween(1, 100);
+        int regionVoxels2 = randomIntBetween(1, 100);
+        int targetRegionVolume1 = randomIntBetween(1, 100);
+        int targetRegionSurface1 = randomIntBetween(1, 100);
+        int targetRegionVolume2 = randomIntBetween(1, 100);
+        int targetRegionSurface2 = randomIntBetween(1, 100);
         
         EnumMap<Region, Integer> regionVoxels = new EnumMap<>(Region.class);
         regionVoxels.put(region1, regionVoxels1);
         regionVoxels.put(region2, regionVoxels2);
         
         EnumMap<Region, Double> regionTargetVolume = new EnumMap<>(Region.class);
-        regionTargetVolume.put(region1, (double)targetRegionVolume1);
-        regionTargetVolume.put(region2, (double)targetRegionVolume2);
+        regionTargetVolume.put(region1, (double) targetRegionVolume1);
+        regionTargetVolume.put(region2, (double) targetRegionVolume2);
         
         EnumMap<Region, Double> regionTargetSurface = new EnumMap<>(Region.class);
-        regionTargetSurface.put(region1, (double)targetRegionSurface1);
-        regionTargetSurface.put(region2, (double)targetRegionSurface2);
+        regionTargetSurface.put(region1, (double) targetRegionSurface1);
+        regionTargetSurface.put(region2, (double) targetRegionSurface2);
         
         PottsCellContainer cellContainer = new PottsCellContainer(id, pop, age, state, phase, voxels,
                 regionVoxels, targetVolume, targetSurface, regionTargetVolume, regionTargetSurface);
@@ -192,16 +192,16 @@ public class PottsOutputSerializerTest {
     public void serialize_forLocationNoRegion_createJSON() {
         PottsLocationSerializer serializer = new PottsLocationSerializer();
         
-        int id = randomIntBetween(1,100);
-        Voxel center = new Voxel(randomIntBetween(1,100), randomIntBetween(1,100), randomIntBetween(1,100));
+        int id = randomIntBetween(1, 100);
+        Voxel center = new Voxel(randomIntBetween(1, 100), randomIntBetween(1, 100), randomIntBetween(1, 100));
         
-        int x1 = randomIntBetween(1,100);
-        int y1 = randomIntBetween(1,100);
-        int z1 = randomIntBetween(1,100);
+        int x1 = randomIntBetween(1, 100);
+        int y1 = randomIntBetween(1, 100);
+        int z1 = randomIntBetween(1, 100);
         
-        int x2 = x1 + randomIntBetween(1,100);
-        int y2 = y1 + randomIntBetween(1,100);
-        int z2 = z1 + randomIntBetween(1,100);
+        int x2 = x1 + randomIntBetween(1, 100);
+        int y2 = y1 + randomIntBetween(1, 100);
+        int z2 = z1 + randomIntBetween(1, 100);
         
         ArrayList<Voxel> voxels = new ArrayList<>();
         voxels.add(new Voxel(x1, y1, z1));
@@ -227,24 +227,24 @@ public class PottsOutputSerializerTest {
     public void serialize_forLocationWithRegion_createJSON() {
         PottsLocationSerializer serializer = new PottsLocationSerializer();
         
-        int id = randomIntBetween(1,100);
-        Voxel center = new Voxel(randomIntBetween(1,100), randomIntBetween(1,100), randomIntBetween(1,100));
+        int id = randomIntBetween(1, 100);
+        Voxel center = new Voxel(randomIntBetween(1, 100), randomIntBetween(1, 100), randomIntBetween(1, 100));
         
-        int x1 = randomIntBetween(1,100);
-        int y1 = randomIntBetween(1,100);
-        int z1 = randomIntBetween(1,100);
+        int x1 = randomIntBetween(1, 100);
+        int y1 = randomIntBetween(1, 100);
+        int z1 = randomIntBetween(1, 100);
         
-        int x2 = x1 + randomIntBetween(1,100);
-        int y2 = y1 + randomIntBetween(1,100);
-        int z2 = z1 + randomIntBetween(1,100);
+        int x2 = x1 + randomIntBetween(1, 100);
+        int y2 = y1 + randomIntBetween(1, 100);
+        int z2 = z1 + randomIntBetween(1, 100);
         
-        int x3 = x2 + randomIntBetween(1,100);
-        int y3 = y2 + randomIntBetween(1,100);
-        int z3 = z2 + randomIntBetween(1,100);
+        int x3 = x2 + randomIntBetween(1, 100);
+        int y3 = y2 + randomIntBetween(1, 100);
+        int z3 = z2 + randomIntBetween(1, 100);
         
-        int x4 = x3 + randomIntBetween(1,100);
-        int y4 = y3 + randomIntBetween(1,100);
-        int z4 = z3 + randomIntBetween(1,100);
+        int x4 = x3 + randomIntBetween(1, 100);
+        int y4 = y3 + randomIntBetween(1, 100);
+        int z4 = z3 + randomIntBetween(1, 100);
         
         ArrayList<Voxel> voxels = new ArrayList<>();
         voxels.add(new Voxel(x1, y1, z1));
@@ -288,9 +288,9 @@ public class PottsOutputSerializerTest {
     public void serialize_forVoxel_createsJSON() {
         VoxelSerializer serializer = new VoxelSerializer();
         
-        int x = randomIntBetween(1,100);
-        int y = randomIntBetween(1,100);
-        int z = randomIntBetween(1,100);
+        int x = randomIntBetween(1, 100);
+        int y = randomIntBetween(1, 100);
+        int z = randomIntBetween(1, 100);
         Voxel voxel = new Voxel(x, y, z);
         
         String expected = "[" + x + "," + y + "," + z + "]";
