@@ -22,7 +22,7 @@ public class OutputSaverTest {
     public TemporaryFolder folder = new TemporaryFolder();
     
     static class OutputSaverMock extends OutputSaver {
-        public OutputSaverMock(Series series) { super(series); }
+        OutputSaverMock(Series series) { super(series); }
         
         protected Gson makeGSON() { return mock(Gson.class); }
     }

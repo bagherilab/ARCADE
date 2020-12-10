@@ -137,8 +137,7 @@ public abstract class PottsModuleApoptosis extends PottsModule {
             
             // Nuclear fragmentation.
             cell.updateTarget(Region.NUCLEUS, rateNucleusFragmentation, 0);
-        }
-        else {
+        } else {
             cell.updateTarget(rateCytoplasmBlebbing, 0);
         }
         

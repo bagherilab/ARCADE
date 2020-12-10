@@ -11,7 +11,7 @@ import arcade.core.env.loc.LocationContainer;
 
 public abstract class OutputSaver implements Steppable {
     /** Logger for class */
-    private final static Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
     
     /** JSON representation */
     final Gson gson;

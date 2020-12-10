@@ -46,8 +46,11 @@ public class GUI implements ActionListener {
     private File xml;
     
     public static void main(String[] args) throws Exception {
-        if (args.length > 0) { ARCADE.main(args); }
-        else { SwingUtilities.invokeLater(GUI::createAndShowGUI); }
+        if (args.length > 0) {
+            ARCADE.main(args);
+        } else {
+            SwingUtilities.invokeLater(GUI::createAndShowGUI);
+        }
     }
     
     /** Creates the GUI and makes it visible. */
@@ -155,8 +158,7 @@ public class GUI implements ActionListener {
                     fileField.setText("No input file selected");
                     runButton.setEnabled(false);
                     visCheck.setEnabled(false);
-                }
-                else {
+                } else {
                     displayArea.append("\nselected input xml [" + xml.getName() + "]\n");
                     fileField.setText(xml.getAbsolutePath());
                     runButton.setEnabled(true);
@@ -171,7 +173,9 @@ public class GUI implements ActionListener {
                         
                         if (visCheck.isSelected()) {
                             ARCADE.main(new String[]{"", xml.getAbsolutePath(), "--vis"});
-                        } else { ARCADE.main(new String[]{"", xml.getAbsolutePath()}); }
+                        } else {
+                            ARCADE.main(new String[]{"", xml.getAbsolutePath()});
+                        }
                         
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -198,7 +202,9 @@ public class GUI implements ActionListener {
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             dataFile = chooser.getSelectedFile();
             chooserDir = dataFile.getParent();
-        } else { return null; }
+        } else {
+            return null;
+        }
         
         return dataFile;
     }

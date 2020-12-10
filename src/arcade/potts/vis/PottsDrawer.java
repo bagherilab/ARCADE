@@ -175,7 +175,9 @@ public abstract class PottsDrawer extends Drawer {
                     case "y": plane = PLANE_Y; break;
                     case "z":  default: plane = PLANE_Z;
                 }
-            } else { plane = PLANE_Z; }
+            } else {
+                plane = PLANE_Z;
+            }
         }
         
         public void step(SimState state) {
@@ -208,8 +210,11 @@ public abstract class PottsDrawer extends Drawer {
             
             for (int a = 0; a < aa; a++) {
                 for (int b = 0; b < bb; b++) {
-                    if (ids[a][b] == 0) { cell = null; }
-                    else { cell = (Cell) grid.getObjectAt(ids[a][b]); }
+                    if (ids[a][b] == 0) {
+                        cell = null;
+                    } else {
+                        cell = (Cell) grid.getObjectAt(ids[a][b]);
+                    }
                     
                     switch (code) {
                         case DRAW_OVERLAY:
@@ -233,16 +238,20 @@ public abstract class PottsDrawer extends Drawer {
                 }
             }
             
-            if (code == DRAW_CYTOPLASM) { drawCytoplasm(aa, bb, cc, to, ids, potts); }
-            else if (code == DRAW_NUCLEUS) { drawNucleus(aa, bb, cc, to, regions, potts); }
+            if (code == DRAW_CYTOPLASM) {
+                drawCytoplasm(aa, bb, cc, to, ids, potts);
+            } else if (code == DRAW_NUCLEUS) {
+                drawNucleus(aa, bb, cc, to, regions, potts);
+            }
         }
         
         private void drawCytoplasm(int aa, int bb, int cc, double[][] to,
                                    int[][] ids, Potts potts) {
             for (int a = 0; a < aa; a++) {
                 for (int b = 0; b < bb; b++) {
-                    if (height == 1) { to[a][b] = ids[a][b] > 0 ? 0.75 : 0; }
-                    else {
+                    if (height == 1) {
+                        to[a][b] = ids[a][b] > 0 ? 0.75 : 0;
+                    } else {
                         to[a][b] = 0;
                         for (int c = 0; c < cc; c++) {
                             int id;
@@ -290,8 +299,9 @@ public abstract class PottsDrawer extends Drawer {
             int nucleus = Region.NUCLEUS.ordinal();
             for (int a = 0; a < aa; a++) {
                 for (int b = 0; b < bb; b++) {
-                    if (height == 1) { to[a][b] = (regions[a][b] == nucleus ? 0.75 : 0); }
-                    else {
+                    if (height == 1) {
+                        to[a][b] = (regions[a][b] == nucleus ? 0.75 : 0);
+                    } else {
                         to[a][b] = 0;
                         for (int c = 0; c < cc; c++) {
                             int id;
@@ -360,7 +370,9 @@ public abstract class PottsDrawer extends Drawer {
                     case "y": plane = PLANE_Y; break;
                     case "z":  default: plane = PLANE_Z;
                 }
-            } else { plane = PLANE_Z; }
+            } else {
+                plane = PLANE_Z;
+            }
             
             switch (plane) {
                 case PLANE_X:

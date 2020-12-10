@@ -63,8 +63,7 @@ public final class PottsOutputDeserializer {
             if (regions.size() == 0) {
                 cell = new PottsCellContainer(id, pop, age, state, phase,
                         voxels, targetVolume, targetSurface);
-            }
-            else {
+            } else {
                 cell = new PottsCellContainer(id, pop, age, state, phase,
                         voxels, regions, targetVolume, targetSurface,
                         targetRegionVolumes, targetRegionSurfaces);
@@ -107,8 +106,7 @@ public final class PottsOutputDeserializer {
             PottsLocationContainer location;
             if (jsonArray.size() == 1) {
                 location = new PottsLocationContainer(id, center, allVoxels);
-            }
-            else {
+            } else {
                 location = new PottsLocationContainer(id, center, allVoxels, regions);
             }
             

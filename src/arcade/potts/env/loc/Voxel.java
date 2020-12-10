@@ -35,7 +35,7 @@ public final class Voxel {
      * 
      * @return  the hash
      */
-    public final int hashCode() { return x + (y << 8) + (z << 16); }
+    public int hashCode() { return x + (y << 8) + (z << 16); }
     
     /**
      * Checks if two locations have the same (x, y, z) coordinates.
@@ -43,7 +43,7 @@ public final class Voxel {
      * @param obj  the voxel to compare
      * @return  {@code true} if voxels have the same coordinates, {@code false} otherwise
      */
-    public final boolean equals(Object obj) {
+    public boolean equals(Object obj) {
         if (!(obj instanceof Voxel)) { return false; }
         Voxel voxel = (Voxel) obj;
         return voxel.x == x && voxel.y == y && voxel.z == z;

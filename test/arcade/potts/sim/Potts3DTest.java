@@ -152,7 +152,9 @@ public class Potts3DTest {
     
     private static boolean[][][] combine(boolean[][][] base, int[] combo, int[][] links) {
         boolean[][][] array = duplicate(base);
-        for (int i : combo) { array[links[0][i]][links[1][i]][links[2][i]] = true; }
+        for (int i : combo) {
+            array[links[0][i]][links[1][i]][links[2][i]] = true;
+        }
         return array;
     }
     
@@ -205,15 +207,27 @@ public class Potts3DTest {
         int index = 0;
         int[] s = new int[k];
         
-        for (int i = 0; (s[i] = i) < k - 1; i++);
+        for (int i = 0; i < k; i++) {
+            s[i] = i;
+        }
+
         array[index++] = s.clone();
         
         for (;;) {
-            int i;
-            for (i = k - 1; i >= 0 && s[i] == n - k + i; i--);
-            if (i < 0) { break; }
-            s[i]++;
-            for (++i; i < k; i++) { s[i] = s[i - 1] + 1; }
+            int ii = k - 1;
+
+            for (int i = k - 1; i >= 0 && s[i] == n - k + i; i--) {
+                ii--;
+            }
+
+            if (ii < 0) { break; }
+            
+            s[ii]++;
+
+            for (++ii; ii < k; ii++) {
+                s[ii] = s[ii - 1] + 1;
+            }
+
             array[index++] = s.clone();
         }
     }

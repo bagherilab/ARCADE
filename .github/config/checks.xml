@@ -21,13 +21,13 @@
         <property name="optional" value="false"/>
     </module>
 
-    <!-- Checks whether files end with a new line. -->
+    <!-- Checks whether files end with a new line -->
     <module name="NewlineAtEndOfFile" />
 
-    <!-- Checks that property files contain the same keys. -->
+    <!-- Checks that property files contain the same keys -->
     <module name="Translation" />
 
-    <!-- Checks for Size Violations. -->
+    <!-- Checks for Size Violations -->
     <module name="FileLength" />
     <module name="LineLength">
         <property name="id" value="LineLength"/>
@@ -43,7 +43,7 @@
     <!-- Checks for whitespace -->
     <module name="FileTabCharacter" />
 
-    <!-- Miscellaneous check for trailing spaces in code. -->
+    <!-- Miscellaneous check for trailing spaces in code -->
     <module name="RegexpSingleline">
         <property name="format" value="[^\s*]\s+$" />
         <property name="minimum" value="0" />
@@ -51,7 +51,7 @@
         <property name="message" value="Code line has trailing spaces." />
     </module>
 
-    <!-- Miscellaneous check for trailing spaces in Javadoc. -->
+    <!-- Miscellaneous check for trailing spaces in Javadoc -->
     <module name="RegexpSingleline">
         <property name="format" value="\*\s\s+$" />
         <property name="minimum" value="0" />
@@ -59,7 +59,7 @@
         <property name="message" value="Javadoc has trailing spaces." />
     </module>
 
-    <!-- Miscellaneous check for missing Javadoc spaces. -->
+    <!-- Miscellaneous check for missing Javadoc spaces -->
     <module name="RegexpSingleline">
         <property name="format" value="\s+\*$" />
         <property name="minimum" value="0" />
@@ -68,7 +68,7 @@
     </module>
 
     <module name="TreeWalker">
-        <!-- Checks for Naming Conventions. -->
+        <!-- Checks for naming conventions -->
         <module name="ConstantName" />
         <module name="LocalFinalVariableName" />
         <module name="LocalVariableName" />
@@ -78,5 +78,38 @@
         <module name="ParameterName" />
         <module name="StaticVariableName" />
         <module name="TypeName" />
+
+        <!-- Checks for size violations -->
+        <module name="MethodLength" />
+        <module name="ParameterNumber">
+            <property name="tokens" value="METHOD_DEF" />
+        </module>
+
+        <!-- Checks for whitespace -->
+        <module name="EmptyForIteratorPad" />
+        <module name="GenericWhitespace" />
+        <module name="MethodParamPad" />
+        <module name="NoWhitespaceAfter">
+            <property name="tokens" value="AT, INC, DEC, UNARY_MINUS, UNARY_PLUS, BNOT, LNOT, DOT, ARRAY_DECLARATOR, INDEX_OP" />
+        </module>
+        <module name="NoWhitespaceBefore" />
+        <module name="OperatorWrap" />
+        <module name="ParenPad" />
+        <module name="TypecastParenPad" />
+        <module name="WhitespaceAfter" />
+        <module name="WhitespaceAround" />
+
+        <!-- Checks for modifiers -->
+        <module name="ModifierOrder" />
+        <module name="RedundantModifier" />
+
+        <!-- Checks for blocks -->
+        <module name="AvoidNestedBlocks" />
+        <module name="EmptyBlock" />
+        <module name="LeftCurly">
+            <property name="tokens" value="ANNOTATION_DEF, CLASS_DEF, ENUM_CONSTANT_DEF, ENUM_DEF, INTERFACE_DEF, LAMBDA, LITERAL_CASE, LITERAL_CATCH, LITERAL_DEFAULT, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, OBJBLOCK, STATIC_INIT, RECORD_DEF, COMPACT_CTOR_DEF" />
+        </module>
+        <module name="NeedBraces" />
+        <module name="RightCurly" />
     </module>
 </module>

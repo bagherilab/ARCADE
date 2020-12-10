@@ -41,7 +41,9 @@ public class Solver {
         for (int j = 0; j < nSteps; j++) {
             t = t0 + j * h;
             dydt = eq.dydt(t, y);
-            for (int i = 0; i < n; i++) { y[i] += h * dydt[i]; }
+            for (int i = 0; i < n; i++) {
+                y[i] += h * dydt[i];
+            }
         }
         
         return y;
@@ -178,8 +180,11 @@ public class Solver {
     // dense (naive) or sparse approach based on matrix size.
     public static double[] sor(double[][] mat, double[] vec, double[] x0) {
         int n = mat.length;
-        if (n < MATRIX_THRESHOLD) { return denseSOR(mat, vec, x0); }
-        else { return sparseSOR(mat, vec, x0); }
+        if (n < MATRIX_THRESHOLD) {
+            return denseSOR(mat, vec, x0);
+        } else {
+            return sparseSOR(mat, vec, x0);
+        }
     }
     
     // METHOD: SOR. Solves SOR using dense matrix representation.
@@ -264,10 +269,15 @@ public class Solver {
             fc = func.f(c);
             
             // Check for exit conditions.
-            if (fc == 0 || (b - a) / 2 < DELTA) { return c; }
-            else {
-                if (Math.signum(fc) == Math.signum(func.f(a))) { a = c; }
-                else { b = c; }
+            if (fc == 0 || (b - a) / 2 < DELTA) {
+                return c;
+            } else {
+                if (Math.signum(fc) == Math.signum(func.f(a))) {
+                    a = c;
+                } else {
+                    b = c;
+                }
+                
                 i++;
             }
         }

@@ -8,6 +8,7 @@ import org.junit.rules.TemporaryFolder;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
@@ -32,7 +33,7 @@ public class InputBuilderTest {
     }
     
     static class InputBuilderMock extends InputBuilder {
-        public InputBuilderMock() { super(); }
+        InputBuilderMock() { super(); }
         
         public void startElement(String uri, String local, String name, Attributes atts) { }
         
@@ -100,7 +101,7 @@ public class InputBuilderTest {
         MiniBox box = builder.makeMiniBox(attributes);
         
         MiniBox expected = new MiniBox();
-        for (int i = 0; i < n; i++) { expected.put(ATT_QNAME + i, ATT_VALUE + i); }
+        IntStream.range(0, n).forEach(i -> expected.put(ATT_QNAME + i, ATT_VALUE + i));
         
         assertTrue(expected.compare(box));
     }
@@ -113,7 +114,7 @@ public class InputBuilderTest {
         Box box = builder.makeBox(attributes);
         
         Box expected = new Box();
-        for (int i = 0; i < n; i++) { expected.add(ATT_QNAME + i, ATT_VALUE + i); }
+        IntStream.range(0, n).forEach(i -> expected.add(ATT_QNAME + i, ATT_VALUE + i));
         
         assertTrue(expected.compare(box));
     }

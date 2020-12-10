@@ -70,7 +70,9 @@ public abstract class InputBuilder implements ContentHandler {
             SAXParser saxParser = spf.newSAXParser();
             xmlReader = saxParser.getXMLReader();
             xmlReader.setContentHandler(this);
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -109,7 +111,9 @@ public abstract class InputBuilder implements ContentHandler {
      */
     protected MiniBox makeMiniBox(Attributes atts) {
         MiniBox box = new MiniBox();
-        for (int i = 0; i < atts.getLength(); i++) { box.put(atts.getQName(i), atts.getValue(i)); }
+        for (int i = 0; i < atts.getLength(); i++) {
+            box.put(atts.getQName(i), atts.getValue(i));
+        }
         return box;
     }
     
@@ -121,7 +125,9 @@ public abstract class InputBuilder implements ContentHandler {
      */
     protected Box makeBox(Attributes atts) {
         Box box = new Box();
-        for (int i = 0; i < atts.getLength(); i++) { box.add(atts.getQName(i), atts.getValue(i)); }
+        for (int i = 0; i < atts.getLength(); i++) {
+            box.add(atts.getQName(i), atts.getValue(i));
+        }
         return box;
     }
     

@@ -47,8 +47,11 @@ public interface Location2D {
         
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
             Voxel v = new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z);
-            if (!voxels.contains(v)) { change++; }
-            else { change--; }
+            if (!voxels.contains(v)) {
+                change++;
+            } else {
+                change--;
+            }
         }
         
         return change;
@@ -86,12 +89,17 @@ public interface Location2D {
                 }
                 
                 continue;
+            } else if (j == 0) {
+                dir = Direction.YZ_PLANE; v = i;
+            } else if (i == 0) {
+                dir = Direction.ZX_PLANE; v = j;
+            } else if (i == j) {
+                dir = Direction.POSITIVE_XY; v = i;
+            } else if (i == -j) {
+                dir = Direction.NEGATIVE_XY; v = i;
+            } else {
+                continue;
             }
-            else if (j == 0) { dir = Direction.YZ_PLANE; v = i; }
-            else if (i == 0) { dir = Direction.ZX_PLANE; v = j; }
-            else if (i == j) { dir = Direction.POSITIVE_XY; v = i; }
-            else if (i == -j) { dir = Direction.NEGATIVE_XY; v = i; }
-            else { continue; }
             
             existsMap.put(dir, true);
             if (v > maxValueMap.get(dir)) { maxValueMap.put(dir, v); }

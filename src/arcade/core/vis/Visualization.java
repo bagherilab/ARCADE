@@ -92,7 +92,9 @@ public abstract class Visualization extends GUIState {
      */
     public void quit() {
         super.quit();
-        for (Panel panel : panels) { panel.remove(); }
+        for (Panel panel : panels) {
+            panel.remove();
+        }
     }
     
     /**
@@ -104,14 +106,21 @@ public abstract class Visualization extends GUIState {
         super.init(control);
         panels = createPanels();
         drawers = createDrawers();
-        for (Panel panel : panels) { panel.register(control); }
+        for (Panel panel : panels) {
+            panel.register(control);
+        }
     }
     
     /**
      * Sets up and schedules portrayals.
      */
     public void setup() {
-        for (Drawer drawer : drawers) { this.scheduleRepeatingImmediatelyBefore(drawer); }
-        for (Panel panel : panels) { panel.reset(); }
+        for (Drawer drawer : drawers) {
+            this.scheduleRepeatingImmediatelyBefore(drawer);
+        }
+        
+        for (Panel panel : panels) {
+            panel.reset();
+        }
     }
 }

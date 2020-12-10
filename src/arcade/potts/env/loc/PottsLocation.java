@@ -10,7 +10,7 @@ import static arcade.potts.util.PottsEnums.Direction;
 
 public abstract class PottsLocation implements Location {
     /** Difference between split voxel numbers */
-    final static private int BALANCE_DIFFERENCE = 2;
+    private static final int BALANCE_DIFFERENCE = 2;
     
     /** List of voxels for the location */
     final ArrayList<Voxel> voxels;
@@ -116,7 +116,7 @@ public abstract class PottsLocation implements Location {
      * @param regions  the potts array for regions
      */
     public void clear(int[][][] ids, int[][][] regions) {
-        for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = 0; }
+        voxels.forEach(voxel -> ids[voxel.z][voxel.x][voxel.y] = 0);
         voxels.clear();
     }
     
@@ -128,7 +128,7 @@ public abstract class PottsLocation implements Location {
      * @param regions  the potts array for regions
      */
     public void update(int id, int[][][] ids, int[][][] regions) {
-        for (Voxel voxel : voxels) { ids[voxel.z][voxel.x][voxel.y] = id; }
+        voxels.forEach(voxel -> ids[voxel.z][voxel.x][voxel.y] = id);
     }
     
     /**
@@ -160,8 +160,11 @@ public abstract class PottsLocation implements Location {
         balanceVoxels(voxelsA, voxelsB, this, random);
         
         // Select one split to keep for this location and return the other.
-        if (random.nextDouble() < 0.5) { return separateVoxels(voxelsA, voxelsB, random); }
-        else { return separateVoxels(voxelsB, voxelsA, random); }
+        if (random.nextDouble() < 0.5) {
+            return separateVoxels(voxelsA, voxelsB, random);
+        } else {
+            return separateVoxels(voxelsB, voxelsA, random);
+        }
     }
     
     /**
@@ -180,8 +183,7 @@ public abstract class PottsLocation implements Location {
      * @return  the x coordinate
      */
     int getCenterX() {
-        double x = 0;
-        for (Voxel voxel : voxels) { x += voxel.x; }
+        double x = voxels.stream().mapToDouble(voxel -> voxel.x).sum();
         return (int) Math.round(x / voxels.size());
     }
     
@@ -191,8 +193,7 @@ public abstract class PottsLocation implements Location {
      * @return  the y coordinate
      */
     int getCenterY() {
-        double y = 0;
-        for (Voxel voxel : voxels) { y += voxel.y; }
+        double y = voxels.stream().mapToDouble(voxel -> voxel.y).sum();
         return (int) Math.round(y / voxels.size());
     }
     
@@ -202,8 +203,7 @@ public abstract class PottsLocation implements Location {
      * @return  the z coordinate
      */
     int getCenterZ() {
-        double z = 0;
-        for (Voxel voxel : voxels) { z += voxel.z; }
+        double z = voxels.stream().mapToDouble(voxel -> voxel.z).sum();
         return (int) Math.round(z / voxels.size());
     }
     
@@ -337,75 +337,120 @@ public abstract class PottsLocation implements Location {
         for (Voxel voxel : voxels) {
             switch (direction) {
                 case ZX_PLANE:
-                    if (voxel.y < center.y) { voxelsA.add(voxel); }
-                    else if (voxel.y > center.y) { voxelsB.add(voxel); }
-                    else {
-                        if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
-                        else { voxelsB.add(voxel); }
+                    if (voxel.y < center.y) {
+                        voxelsA.add(voxel);
+                    } else if (voxel.y > center.y) {
+                        voxelsB.add(voxel);
+                    } else {
+                        if (random.nextDouble() > 0.5) {
+                            voxelsA.add(voxel);
+                        } else {
+                            voxelsB.add(voxel);
+                        }
                     }
                     break;
                 case YZ_PLANE:
-                    if (voxel.x < center.x) { voxelsA.add(voxel); }
-                    else if (voxel.x > center.x) { voxelsB.add(voxel); }
-                    else {
-                        if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
-                        else { voxelsB.add(voxel); }
+                    if (voxel.x < center.x) {
+                        voxelsA.add(voxel);
+                    } else if (voxel.x > center.x) {
+                        voxelsB.add(voxel);
+                    } else {
+                        if (random.nextDouble() > 0.5) {
+                            voxelsA.add(voxel);
+                        } else {
+                            voxelsB.add(voxel);
+                        }
                     }
                     break;
                 case XY_PLANE:
-                    if (voxel.z < center.z) { voxelsA.add(voxel); }
-                    else if (voxel.z > center.z) { voxelsB.add(voxel); }
-                    else {
-                        if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
-                        else { voxelsB.add(voxel); }
+                    if (voxel.z < center.z) {
+                        voxelsA.add(voxel);
+                    } else if (voxel.z > center.z) {
+                        voxelsB.add(voxel);
+                    } else {
+                        if (random.nextDouble() > 0.5) {
+                            voxelsA.add(voxel);
+                        } else {
+                            voxelsB.add(voxel);
+                        }
                     }
                     break;
                 case POSITIVE_XY:
-                    if (voxel.x - center.x > center.y - voxel.y) { voxelsA.add(voxel); }
-                    else if (voxel.x - center.x < center.y - voxel.y) { voxelsB.add(voxel); }
-                    else {
-                        if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
-                        else { voxelsB.add(voxel); }
+                    if (voxel.x - center.x > center.y - voxel.y) {
+                        voxelsA.add(voxel);
+                    } else if (voxel.x - center.x < center.y - voxel.y) {
+                        voxelsB.add(voxel);
+                    } else {
+                        if (random.nextDouble() > 0.5) {
+                            voxelsA.add(voxel);
+                        } else {
+                            voxelsB.add(voxel);
+                        }
                     }
                     break;
                 case NEGATIVE_XY:
-                    if (voxel.x - center.x > voxel.y - center.y) { voxelsA.add(voxel); }
-                    else if (voxel.x - center.x < voxel.y - center.y) { voxelsB.add(voxel); }
-                    else {
-                        if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
-                        else { voxelsB.add(voxel); }
+                    if (voxel.x - center.x > voxel.y - center.y) {
+                        voxelsA.add(voxel);
+                    } else if (voxel.x - center.x < voxel.y - center.y) {
+                        voxelsB.add(voxel);
+                    } else {
+                        if (random.nextDouble() > 0.5) {
+                            voxelsA.add(voxel);
+                        } else {
+                            voxelsB.add(voxel);
+                        }
                     }
                     break;
                 case POSITIVE_YZ:
-                    if (voxel.y - center.y > center.z - voxel.z) { voxelsA.add(voxel); }
-                    else if (voxel.y - center.y < center.z - voxel.z) { voxelsB.add(voxel); }
-                    else {
-                        if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
-                        else { voxelsB.add(voxel); }
+                    if (voxel.y - center.y > center.z - voxel.z) {
+                        voxelsA.add(voxel);
+                    } else if (voxel.y - center.y < center.z - voxel.z) {
+                        voxelsB.add(voxel);
+                    } else {
+                        if (random.nextDouble() > 0.5) {
+                            voxelsA.add(voxel);
+                        } else {
+                            voxelsB.add(voxel);
+                        }
                     }
                     break;
                 case NEGATIVE_YZ:
-                    if (voxel.y - center.y > voxel.z - center.z) { voxelsA.add(voxel); }
-                    else if (voxel.y - center.y < voxel.z - center.z) { voxelsB.add(voxel); }
-                    else {
-                        if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
-                        else { voxelsB.add(voxel); }
+                    if (voxel.y - center.y > voxel.z - center.z) {
+                        voxelsA.add(voxel);
+                    } else if (voxel.y - center.y < voxel.z - center.z) {
+                        voxelsB.add(voxel);
+                    } else {
+                        if (random.nextDouble() > 0.5) {
+                            voxelsA.add(voxel);
+                        } else {
+                            voxelsB.add(voxel);
+                        }
                     }
                     break;
                 case POSITIVE_ZX:
-                    if (voxel.z - center.z > center.x - voxel.x) { voxelsA.add(voxel); }
-                    else if (voxel.z - center.z < center.x - voxel.x) { voxelsB.add(voxel); }
-                    else {
-                        if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
-                        else { voxelsB.add(voxel); }
+                    if (voxel.z - center.z > center.x - voxel.x) {
+                        voxelsA.add(voxel);
+                    } else if (voxel.z - center.z < center.x - voxel.x) {
+                        voxelsB.add(voxel);
+                    } else {
+                        if (random.nextDouble() > 0.5) {
+                            voxelsA.add(voxel);
+                        } else {
+                            voxelsB.add(voxel);
+                        }
                     }
                     break;
                 case NEGATIVE_ZX:
-                    if (voxel.z - center.z > voxel.x - center.x) { voxelsA.add(voxel); }
-                    else if (voxel.z - center.z < voxel.x - center.x) { voxelsB.add(voxel); }
-                    else {
-                        if (random.nextDouble() > 0.5) { voxelsA.add(voxel); }
-                        else { voxelsB.add(voxel); }
+                    if (voxel.z - center.z > voxel.x - center.x) {
+                        voxelsA.add(voxel);
+                    } else if (voxel.z - center.z < voxel.x - center.x) {
+                        voxelsB.add(voxel);
+                    } else {
+                        if (random.nextDouble() > 0.5) {
+                            voxelsA.add(voxel);
+                        } else {
+                            voxelsB.add(voxel);
+                        }
                     }
                     break;
             }
@@ -471,8 +516,7 @@ public abstract class PottsLocation implements Location {
             if (nA > nB) {
                 fromVoxels = voxelsA;
                 toVoxels = voxelsB;
-            }
-            else {
+            } else {
                 fromVoxels = voxelsB;
                 toVoxels = voxelsA;
             }
@@ -503,8 +547,7 @@ public abstract class PottsLocation implements Location {
                     if (unconnected == null) {
                         added = true;
                         break;
-                    }
-                    else {
+                    } else {
                         fromVoxels.add(voxel);
                         toVoxels.remove(voxel);
                         invalidCoords.add(voxel);
@@ -588,7 +631,8 @@ public abstract class PottsLocation implements Location {
                 if (update) { voxels.removeAll(unvisited); }
                 return unvisited;
             }
+        } else {
+            return null;
         }
-        else { return null; }
     }
 }

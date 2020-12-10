@@ -139,8 +139,12 @@ public class MiniBox {
         
         for (String key : allKeys) {
             if (!contents.containsKey(key)) { return false; }
-            if (!box.contents.containsKey(key)) { return false; }
-            else if (!contents.get(key).equals(box.get(key))) { return false; }
+
+            if (!box.contents.containsKey(key)) {
+                return false;
+            } else if (!contents.get(key).equals(box.get(key))) {
+                return false;
+            }
         }
         
         return true;
@@ -154,7 +158,9 @@ public class MiniBox {
     public String toString() {
         String format = "%20s : %s\n";
         StringBuilder s = new StringBuilder();
-        for (String id : keys) { s.append(String.format(format, id, contents.get(id))); }
+        for (String id : keys) {
+            s.append(String.format(format, id, contents.get(id)));
+        }
         return s.toString();
     }
 }

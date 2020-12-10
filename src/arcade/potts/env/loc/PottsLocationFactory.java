@@ -34,8 +34,11 @@ public abstract class PottsLocationFactory implements LocationFactory {
      */
     public void initialize(Series series, MersenneTwisterFast random) {
         this.random = random;
-        if (series.loader != null && series.loader.loadLocations) { loadLocations(series); }
-        else { createLocations(series); }
+        if (series.loader != null && series.loader.loadLocations) {
+            loadLocations(series);
+        } else {
+            createLocations(series);
+        }
     }
     
     public void loadLocations(Series series) {

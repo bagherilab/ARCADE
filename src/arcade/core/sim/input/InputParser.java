@@ -116,7 +116,9 @@ public class InputParser {
             if (cmd.type != POSITION) {
                 if (cmd.shortFlag != null) { shortToCommand.put(cmd.shortFlag, cmd); }
                 if (cmd.longFlag != null) { longToCommand.put(cmd.longFlag, cmd); }
-            } else { positionCommands.add(cmd); }
+            } else {
+              positionCommands.add(cmd);
+            }
         }
         
         LOGGER.config("successfully configured command line parser\n\n" + this.toString());
@@ -186,7 +188,9 @@ public class InputParser {
         if (positionIndex != positionCommands.size()) {
             LOGGER.severe("missing position arguments");
             throw new IllegalArgumentException();
-        } else { LOGGER.config("successfully parsed commands\n\n" + parsed.toString()); }
+        } else {
+          LOGGER.config("successfully parsed commands\n\n" + parsed.toString());
+        }
         
         return parsed;
     }
@@ -218,12 +222,10 @@ public class InputParser {
             if (arg.startsWith("--")) {
                 Command cmd = longToCommand.get(args[currentIndex].substring(2));
                 currentIndex = parseFlaggedArgument(args, currentIndex, cmd);
-            }
-            else if (arg.startsWith("-")) {
+            } else if (arg.startsWith("-")) {
                 Command cmd = shortToCommand.get(args[currentIndex].substring(1));
                 currentIndex = parseFlaggedArgument(args, currentIndex, cmd);
-            }
-            else {
+            } else {
                 currentIndex = parsePositionArgument(args, currentIndex);
             }
         }
@@ -237,8 +239,11 @@ public class InputParser {
      * @param cmd  the command object
      */
     int parseFlaggedArgument(String[] args, int index, Command cmd) {
-        if (cmd.type == SWITCH) { parsed.put(cmd.id, ""); }
-        else { parsed.put(cmd.id, args[++index]); }
+        if (cmd.type == SWITCH) {
+          parsed.put(cmd.id, "");
+        } else {
+          parsed.put(cmd.id, args[++index]);
+        }
         return ++index;
     }
     
@@ -256,7 +261,9 @@ public class InputParser {
     
     public String toString() {
         StringBuilder s = new StringBuilder();
-        for (Command cmd : allCommands) { s.append(cmd.toString()); }
+        for (Command cmd : allCommands) {
+          s.append(cmd.toString());
+        }
         return s.toString();
     }
 }

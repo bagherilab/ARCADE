@@ -12,7 +12,7 @@ import static arcade.core.TestUtilities.*;
 
 public class PottsLocationTest {
     static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
-    final static int LOCATION_SURFACE = (int) (Math.random() * 100);
+    static final int LOCATION_SURFACE = (int) (Math.random() * 100);
     static ArrayList<Voxel> voxelListForAddRemove;
     static ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
     
@@ -62,7 +62,7 @@ public class PottsLocationTest {
     }
     
     static class PottsLocationMock extends PottsLocation {
-        public PottsLocationMock(ArrayList<Voxel> voxels) { super(voxels); }
+        PottsLocationMock(ArrayList<Voxel> voxels) { super(voxels); }
         
         PottsLocation makeLocation(ArrayList<Voxel> voxels) { return new PottsLocationMock(voxels); }
         
@@ -92,11 +92,9 @@ public class PottsLocationTest {
                 diameters.put(Direction.XY_PLANE, 1);
                 diameters.put(Direction.POSITIVE_XY, 2);
                 diameters.put(Direction.NEGATIVE_ZX, 3);
-            }
-            else if (voxels.size() == 7) {
+            } else if (voxels.size() == 7) {
                 diameters.put(Direction.YZ_PLANE, 1);
-            }
-            else {
+            } else {
                 diameters.put(Direction.XY_PLANE, 1);
                 diameters.put(Direction.POSITIVE_XY, 1);
                 diameters.put(Direction.NEGATIVE_ZX, 1);
@@ -129,7 +127,9 @@ public class PottsLocationTest {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
         int n = (int) (Math.random() * 100) + 1;
-        for (int i = 0; i < n; i++) { voxels.add(new Voxel(i, i, i)); }
+        for (int i = 0; i < n; i++) {
+            voxels.add(new Voxel(i, i, i));
+        }
         
         PottsLocationMock loc = new PottsLocationMock(voxels);
         ArrayList<Voxel> voxelList = loc.getVoxels();

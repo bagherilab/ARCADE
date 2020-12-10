@@ -46,7 +46,9 @@ public class Graph implements Serializable {
     public boolean hasEdge(Node from, Node to) {
         Bag bag = getEdgesOut(from);
         if (bag == null) { return false; }
-        for (Object obj : bag) { if (to.equals(((Edge) obj).to)) { return true; } }
+        for (Object obj : bag) {
+            if (to.equals(((Edge) obj).to)) { return true; }
+        }
         return false;
     }
     
@@ -217,7 +219,9 @@ public class Graph implements Serializable {
         for (Object obj : sortedFrom) {
             Bag b = nodeToOutBag.get(obj);
             s += obj.toString() + " : ";
-            for (int i = 0; i < b.numObjs; i++) { s += b.get(i) + " "; }
+            for (int i = 0; i < b.numObjs; i++) {
+                s += b.get(i) + " ";
+            }
             s += "\n";
         }
         
@@ -229,7 +233,9 @@ public class Graph implements Serializable {
         for (Object obj : sortedTo) {
             Bag b = nodeToInBag.get(obj);
             s += obj.toString() + " : ";
-            for (int i = 0; i < b.numObjs; i++) { s += b.get(i) + " "; }
+            for (int i = 0; i < b.numObjs; i++) {
+                s += b.get(i) + " ";
+            }
             s += "\n";
         }
         
@@ -258,8 +264,11 @@ public class Graph implements Serializable {
             int xComp = Integer.compare(x, comp.getX());
             int yComp = Integer.compare(y, comp.getY());
             
-            if (xComp == 0) { return yComp; }
-            else { return xComp; }
+            if (xComp == 0) {
+                return yComp;
+            } else {
+                return xComp;
+            }
         }
         
         // ABSTRACT METHODS.

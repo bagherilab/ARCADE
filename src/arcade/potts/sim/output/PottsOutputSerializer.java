@@ -95,21 +95,20 @@ public final class PottsOutputSerializer {
                 
                 ArrayList<Voxel> voxels = src.allVoxels;
                 voxels.sort(VOXEL_COMPARATOR);
-                for (Voxel voxel : voxels) { array.add(context.serialize(voxel)); }
+                voxels.forEach(voxel -> array.add(context.serialize(voxel)));
                 
                 obj.addProperty("region", Region.UNDEFINED.name());
                 obj.add("voxels", array);
                 
                 location.add(obj);
-            }
-            else {
+            } else {
                 for (Region region : src.regions.keySet()) {
                     JsonObject obj = new JsonObject();
                     JsonArray array = new JsonArray();
                     
                     ArrayList<Voxel> voxels = src.regions.get(region);
                     voxels.sort(VOXEL_COMPARATOR);
-                    for (Voxel voxel : voxels) { array.add(context.serialize(voxel)); }
+                    voxels.forEach(voxel -> array.add(context.serialize(voxel)));
                     
                     obj.addProperty("region", region.name());
                     obj.add("voxels", array);

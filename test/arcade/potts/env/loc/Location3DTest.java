@@ -641,15 +641,17 @@ public class Location3DTest {
                 for (int j = 0; j < n; j++) {
                     if (i == n / 2 && j == n / 2 && k == n / 2) {
                         voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
+                    } else if (Math.random() < 0.5) {
+                        voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
+                    } else {
+                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
                     }
-                    else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
-                    else { voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
                 }
             }
         }
         
         PottsLocations3D loc = new PottsLocations3D(voxelsA);
-        for (Voxel voxel : voxelsB) { loc.add(Region.UNDEFINED, voxel.x, voxel.y, voxel.z); }
+        voxelsB.forEach(voxel -> loc.add(Region.UNDEFINED, voxel.x, voxel.y, voxel.z));
         ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), 4. / 3 * Math.PI * r * r * r);
         
         assertTrue(selected.size() < voxelsB.size());
@@ -671,15 +673,17 @@ public class Location3DTest {
                 for (int j = 0; j < n; j++) {
                     if (i == n / 2 && j == n / 2 && k == n / 2) {
                         voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
+                    } else if (Math.random() < 0.5) {
+                        voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
+                    } else {
+                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
                     }
-                    else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
-                    else { voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
                 }
             }
         }
         
         PottsLocations3D loc = new PottsLocations3D(voxelsA);
-        for (Voxel voxel : voxelsB) { loc.add(Region.UNDEFINED, voxel.x, voxel.y, voxel.z); }
+        voxelsB.forEach(voxel -> loc.add(Region.UNDEFINED, voxel.x, voxel.y, voxel.z));
         ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), Integer.MAX_VALUE);
         
         assertEquals(selected.size(), voxelsA.size());
@@ -696,15 +700,17 @@ public class Location3DTest {
                 for (int j = 0; j < n; j++) {
                     if (i == n / 2 && j == n / 2 && k == n / 2) {
                         voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
+                    } else if (Math.random() < 0.5) {
+                        voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
+                    } else {
+                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
                     }
-                    else if (Math.random() < 0.5) { voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
-                    else { voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2)); }
                 }
             }
         }
         
         PottsLocations3D loc = new PottsLocations3D(voxelsA);
-        for (Voxel voxel : voxelsB) { loc.add(Region.UNDEFINED, voxel.x, voxel.y, voxel.z); }
+        voxelsB.forEach(voxel -> loc.add(Region.UNDEFINED, voxel.x, voxel.y, voxel.z));
         ArrayList<Voxel> selected = loc.getSelected(new Voxel(0, 0, 0), 0);
         
         assertEquals(selected.size(), 0);

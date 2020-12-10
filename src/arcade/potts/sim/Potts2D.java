@@ -35,9 +35,13 @@ public class Potts2D extends Potts {
             for (int j = y - 1; j <= y + 1; j++) {
                 if (!(i == x && j == y) && ids[z][i][j] != id) {
                     PottsCell b = getCell(ids[z][i][j]);
-                    if (a == null) { h += b.getAdhesion(0); }
-                    else if (b == null) { h += a.getAdhesion(0); }
-                    else { h += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop())) / 2.0; }
+                    if (a == null) {
+                        h += b.getAdhesion(0);
+                    } else if (b == null) {
+                        h += a.getAdhesion(0);
+                    } else {
+                        h += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop())) / 2.0;
+                    }
                 }
             }
         }
@@ -158,12 +162,14 @@ public class Potts2D extends Potts {
     }
     
     private boolean getConnectivityTwoNeighbors(boolean[][] subarray) {
-        // Check for opposites N / S
-        if (subarray[1][2] && subarray[1][0]) { return false; }
-        // Check for opposites E / W
-        else if (subarray[2][1] && subarray[0][1]) { return false; }
-        // Check for corners
-        else {
+        if (subarray[1][2] && subarray[1][0]) {
+            // Check for opposites N / S
+            return false;
+        } else if (subarray[2][1] && subarray[0][1]) {
+            // Check for opposites E / W
+            return false;
+        } else {
+            // Check for corners
             for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
                 boolean check1 = subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]];
                 boolean check2 = subarray[1 + MOVES_X[(i + 1) % NUMBER_NEIGHBORS]]

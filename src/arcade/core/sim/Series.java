@@ -12,7 +12,7 @@ import arcade.core.util.*;
 
 public abstract class Series {
     /** Logger for {@code Series} */
-    private final static Logger LOGGER = Logger.getLogger(Series.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Series.class.getName());
     
     /** Regular expression for numbers */
     private static final String NUMBER_REGEX = "^(\\d+)|(\\d+E\\d+)$";

@@ -35,8 +35,13 @@ public final class Utilities {
     public static void shuffleList(ArrayList<?> list, MersenneTwisterFast rng) {
         int size = list.size();
         Object[] arr = list.toArray();
-        for (int i = size; i > 1; i--) { swap(arr, i - 1, rng.nextInt(i)); }
+
+        for (int i = size; i > 1; i--) {
+            swap(arr, i - 1, rng.nextInt(i));
+        }
+
         ListIterator it = list.listIterator();
+        
         for (int i = 0; i < size; i++) {
             it.next();
             it.set(arr[i]);

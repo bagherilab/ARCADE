@@ -4,24 +4,21 @@ import org.junit.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.stream.IntStream;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputLoader;
 import arcade.core.agent.cell.*;
-import arcade.core.agent.module.Module;
-import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
-import arcade.potts.agent.module.PottsModule;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Term;
-import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.core.TestUtilities.*;
 
 public class PottsCellFactoryTest {
@@ -43,7 +40,7 @@ public class PottsCellFactoryTest {
     
     static EnumMap<Term, Double> makeEnumMap() {
         EnumMap<Term, Double> map = new EnumMap<>(Term.class);
-        for (Term term : Term.values()) { map.put(term, randomDoubleBetween(0, 100)); }
+        Arrays.stream(Term.values()).forEach(term -> map.put(term, randomDoubleBetween(0, 100)));
         return map;
     }
     
@@ -60,14 +57,14 @@ public class PottsCellFactoryTest {
         EnumMap<Region, EnumMap<Region, Double>> map = new EnumMap<>(Region.class);
         for (Region region : regionList) {
             EnumMap<Region, Double> mapValues = new EnumMap<>(Region.class);
-            for (Region target : regionList) { mapValues.put(target, randomDoubleBetween(0, 100)); }
+            regionList.forEach(target -> mapValues.put(target, randomDoubleBetween(0, 100)));
             map.put(region, mapValues);
         }
         return map;
     }
     
     static class PottsCellFactoryMock extends PottsCellFactory {
-        public PottsCellFactoryMock() { super(); }
+        PottsCellFactoryMock() { super(); }
     }
     
     @Test
@@ -307,8 +304,8 @@ public class PottsCellFactoryTest {
         pop2.put("INIT", m);
         series.populations.put("B", pop2);
         
-        ArrayList<CellContainer> container = new ArrayList();
-        for (int i = 0; i < n + m; i++) { container.add(containers.get(i)); }
+        ArrayList<CellContainer> container = new ArrayList<>();
+        IntStream.range(0, n + m).forEach(i -> container.add(containers.get(i)));
         doReturn(container).when(series.loader).loadCells();
         
         factory.loadCells(series);
@@ -346,8 +343,8 @@ public class PottsCellFactoryTest {
         pop1.put("INIT", n);
         series.populations.put("A", pop1);
         
-        ArrayList<CellContainer> container = new ArrayList();
-        for (int i = 0; i < n; i++) { container.add(containers.get(i)); }
+        ArrayList<CellContainer> container = new ArrayList<>();
+        IntStream.range(0, n).forEach(i -> container.add(containers.get(i)));
         doReturn(container).when(series.loader).loadCells();
         
         factory.loadCells(series);
@@ -390,8 +387,8 @@ public class PottsCellFactoryTest {
         pop2.put("INIT", m);
         series.populations.put("B", pop2);
         
-        ArrayList<CellContainer> container = new ArrayList();
-        for (int i = 0; i < n + m; i++) { container.add(containers.get(i)); }
+        ArrayList<CellContainer> container = new ArrayList<>();
+        IntStream.range(0, n + m).forEach(i -> container.add(containers.get(i)));
         doReturn(container).when(series.loader).loadCells();
         
         factory.loadCells(series);

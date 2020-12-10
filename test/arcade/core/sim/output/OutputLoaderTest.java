@@ -21,7 +21,7 @@ public class OutputLoaderTest {
     public TemporaryFolder folder = new TemporaryFolder();
     
     static class OutputLoaderMock extends OutputLoader {
-        public OutputLoaderMock(Series series) { super(series); }
+        OutputLoaderMock(Series series) { super(series); }
         
         protected Gson makeGSON() { return mock(Gson.class); }
     }

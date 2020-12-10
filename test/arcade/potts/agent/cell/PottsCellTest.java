@@ -130,7 +130,7 @@ public class PottsCellTest {
         cellWithoutRegions = make(cellID, 1, false);
     }
     
-    static public class PottsCellMock extends PottsCell {
+    public static class PottsCellMock extends PottsCell {
         public PottsCellMock(int id, int pop, Location location,
                              MiniBox parameters, double[] adhesion,
                              EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas) {
@@ -170,10 +170,11 @@ public class PottsCellTest {
     }
     
     static PottsCellMock make(int id, int pop, Location location, boolean regions) {
-        if (!regions) { return new PottsCellMock(id, pop, location,
+        if (!regions) {
+            return new PottsCellMock(id, pop, location,
                 parameters, adhesion, criticals, lambdas);
-        }
-        else { return new PottsCellMock(id, pop, location,
+        } else {
+            return new PottsCellMock(id, pop, location,
                 parameters, adhesion, criticals, lambdas,
                 criticalsRegion, lambdasRegion, adhesionRegion);
         }
@@ -692,7 +693,9 @@ public class PottsCellTest {
         EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = new EnumMap<>(Region.class);
         EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = new EnumMap<>(Region.class);
         
-        for (int i = 0; i < n; i++) { adhesion[i] = Math.random(); }
+        for (int i = 0; i < n; i++) {
+            adhesion[i] = Math.random();
+        }
         
         for (Region region : Region.values()) {
             criticalsRegion.put(region, new EnumMap<>(Term.class));

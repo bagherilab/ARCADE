@@ -65,8 +65,11 @@ public class PottsVisualization extends Visualization {
     }
     
     public Drawer[] createDrawers() {
-        if (height == 1) { return create2DDrawers(); }
-        else { return create3DDrawers(); }
+        if (height == 1) {
+            return create2DDrawers();
+        } else {
+            return create3DDrawers();
+        }
     }
     
     Drawer[] create2DDrawers() {

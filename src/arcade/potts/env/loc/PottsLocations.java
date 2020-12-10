@@ -62,7 +62,7 @@ public abstract class PottsLocations extends PottsLocation {
     
     public void remove(int x, int y, int z) {
         super.remove(x, y, z);
-        for (PottsLocation location : locations.values()) { location.remove(x, y, z); }
+        locations.forEach((region, location) -> location.remove(x, y, z));
     }
     
     public void remove(Region region, int x, int y, int z) {
@@ -162,8 +162,11 @@ public abstract class PottsLocations extends PottsLocation {
             // because it is in the new split (B).
             ArrayList<Voxel> regionVoxels = new ArrayList<>(locations.get(region).voxels);
             for (Voxel voxel : regionVoxels) {
-                if (voxelsA.contains(voxel)) { assign(Region.DEFAULT, voxel); }
-                else { remove(voxel.x, voxel.y, voxel.z); }
+                if (voxelsA.contains(voxel)) {
+                    assign(Region.DEFAULT, voxel);
+                } else {
+                    remove(voxel.x, voxel.y, voxel.z);
+                }
             }
             
             // Create empty regions in split location.
@@ -262,6 +265,6 @@ public abstract class PottsLocations extends PottsLocation {
         }
         
         // Reassign selected voxels.
-        for (Voxel voxel : selected) { location.assign(region, voxel); }
+        selected.forEach(voxel -> location.assign(region, voxel));
     }
 }

@@ -79,7 +79,9 @@ public class Matrix {
             if (v.j > n) { n = v.j; }
         }
         double[][] a = new double[n + 1][n + 1];
-        for (Value v : mat) { a[v.i][v.j] = v.v; }
+        for (Value v : mat) {
+            a[v.i][v.j] = v.v;
+        }
         return a;
     }
     
@@ -150,7 +152,9 @@ public class Matrix {
         double[] subbed = new double[n];
         for (int i = 0; i < n; i++) {
             double val = 0;
-            for (int j = 0; j < i; j++) { val += subbed[j] * mat[i][j]; }
+            for (int j = 0; j < i; j++) {
+                val += subbed[j] * mat[i][j];
+            }
             val = vec[i] - val;
             subbed[i] = val / mat[i][i];
         }
@@ -175,7 +179,9 @@ public class Matrix {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 double val = 0;
-                for (int k = 0; k < i; k++) { val += subbed[k][j] * lower[i][k]; }
+                for (int k = 0; k < i; k++) {
+                    val += subbed[k][j] * lower[i][k];
+                }
                 val = upper[i][j] - val;
                 subbed[i][j] = val / lower[i][i];
             }
@@ -202,17 +208,25 @@ public class Matrix {
         
         // Group lower diagonal by row.
         ArrayList<ArrayList<Value>> rowsL = new ArrayList<>();
-        for (int r = 0; r < n; r++) { rowsL.add(new ArrayList<>()); }
-        for (Value v : mat) { rowsL.get(v.i).add(v); }
+        for (int r = 0; r < n; r++) {
+            rowsL.add(new ArrayList<>());
+        }
+        for (Value v : mat) {
+            rowsL.get(v.i).add(v);
+        }
         
         // Get values along diagonal.
-        for (Value v : mat) { if (v.i == v.j) { diag[v.i] = v.v; } }
+        for (Value v : mat) {
+            if (v.i == v.j) { diag[v.i] = v.v; }
+        }
         
         // Iterate only through non-zero entries in the lower diagonal matrix.
         for (int i = 0; i < n; i++) {
             ArrayList<Value> rowL = rowsL.get(i);
             double val = 0;
-            for (Value v : rowL) { val += subbed[v.j] * v.v; }
+            for (Value v : rowL) {
+                val += subbed[v.j] * v.v;
+            }
             val = vec[i] - val;
             subbed[i] = val / diag[i];
         }
@@ -231,9 +245,8 @@ public class Matrix {
      * @return  the left-hand side matrix
      */
     public static ArrayList<Value> forwardSubstitution(ArrayList<Value> mat) {
-        Collections.sort(mat, (v1, v2) ->
-            (v1.i == v2.i ? Integer.compare(v1.j, v2.j) : (v1.i > v2.i ? 1 : -1))
-        );
+        mat.sort((v1, v2) ->
+                (v1.i == v2.i ? Integer.compare(v1.j, v2.j) : (v1.i > v2.i ? 1 : -1)));
         
         double[][] upper = getUpper(toDense(mat), true);
         ArrayList<Value> lower = getLower(mat, true);
@@ -243,18 +256,26 @@ public class Matrix {
         
         // Group lower diagonal by row.
         ArrayList<ArrayList<Value>> rows = new ArrayList<>();
-        for (int r = 0; r < n; r++) { rows.add(new ArrayList<>()); }
-        for (Value v : lower) { rows.get(v.i).add(v); }
+        for (int r = 0; r < n; r++) {
+            rows.add(new ArrayList<>());
+        }
+        for (Value v : lower) {
+            rows.get(v.i).add(v);
+        }
         
         // Get values along diagonal.
-        for (Value v : mat) { if (v.i == v.j) { diag[v.i] = v.v; } }
+        for (Value v : mat) {
+            if (v.i == v.j) { diag[v.i] = v.v; }
+        }
         
         // Iterate only through non-zero entries in the lower diagonal matrix.
         for (int i = 0; i < n; i++) {
             ArrayList<Value> row = rows.get(i);
             for (int j = 0; j < n; j++) {
                 double val = 0;
-                for (Value v : row) { val += subbed[v.j][j] * v.v; }
+                for (Value v : row) {
+                    val += subbed[v.j][j] * v.v;
+                }
                 val = upper[i][j] - val;
                 subbed[i][j] = val / diag[i];
             }
@@ -311,7 +332,9 @@ public class Matrix {
     public static ArrayList<Value> getUpper(ArrayList<Value> mat, boolean strict) {
         ArrayList<Value> upper = new ArrayList<>();
         int off = (strict ? 0 : 1);
-        for (Value v : mat) { if (v.j > v.i - off) { upper.add(v); } }
+        for (Value v : mat) {
+            if (v.j > v.i - off) { upper.add(v); }
+        }
         return upper;
     }
     
@@ -325,7 +348,9 @@ public class Matrix {
     public static ArrayList<Value> getLower(ArrayList<Value> mat, boolean strict) {
         ArrayList<Value> lower = new ArrayList<>();
         int off = (strict ? 0 : 1);
-        for (Value v : mat) { if (v.j < v.i + off) { lower.add(v); } }
+        for (Value v : mat) {
+            if (v.j < v.i + off) { lower.add(v); }
+        }
         return lower;
     }
     
@@ -379,7 +404,9 @@ public class Matrix {
         double[] multiplied = new double[n];
         
         // Iterate through all entries and multiply.
-        for (Value a : mat) { multiplied[a.i] += a.v * vec[a.j]; }
+        for (Value a : mat) {
+            multiplied[a.i] += a.v * vec[a.j];
+        }
         
         return multiplied;
     }
@@ -439,7 +466,9 @@ public class Matrix {
     public static double[] add(double[] vecA, double[] vecB) {
         int n = vecA.length;
         double[] added = new double[n];
-        for (int i = 0; i < n; i++) { added[i] = vecA[i] + vecB[i]; }
+        for (int i = 0; i < n; i++) {
+            added[i] = vecA[i] + vecB[i];
+        }
         return added;
     }
     
@@ -453,7 +482,9 @@ public class Matrix {
     public static double[] subtract(double[] vecA, double[] vecB) {
         int n = vecA.length;
         double[] subtracted = new double[n];
-        for (int i = 0; i < n; i++) { subtracted[i] = vecA[i] - vecB[i]; }
+        for (int i = 0; i < n; i++) {
+            subtracted[i] = vecA[i] - vecB[i];
+        }
         return subtracted;
     }
     
@@ -467,7 +498,9 @@ public class Matrix {
     public static double[][] scale(double[][] mat, double scale) {
         int n = mat.length;
         double[][] scaled = new double[n][n];
-        for (int i = 0; i < n; i++) { scaled[i] = scale(mat[i], scale); }
+        for (int i = 0; i < n; i++) {
+            scaled[i] = scale(mat[i], scale);
+        }
         return scaled;
     }
     
@@ -481,7 +514,9 @@ public class Matrix {
     public static double[] scale(double[] vec, double scale) {
         int n = vec.length;
         double[] scaled = new double[n];
-        for (int i = 0; i < n; i++) { scaled[i] = vec[i] * scale; }
+        for (int i = 0; i < n; i++) {
+            scaled[i] = vec[i] * scale;
+        }
         return scaled;
     }
     
@@ -494,7 +529,9 @@ public class Matrix {
      */
     public static ArrayList<Value> scale(ArrayList<Value> mat, double scale) {
         ArrayList<Value> scaled = new ArrayList<>();
-        for (Value a : mat) { scaled.add(new Value(a.i, a.j, a.v * scale)); }
+        for (Value a : mat) {
+            scaled.add(new Value(a.i, a.j, a.v * scale));
+        }
         return scaled;
     }
     
@@ -506,7 +543,9 @@ public class Matrix {
      */
     public static double normalize(double[] vec) {
         double sum = 0;
-        for (double v : vec) { sum += v * v; }
+        for (double v : vec) {
+            sum += v * v;
+        }
         return Math.sqrt(sum);
     }
 }

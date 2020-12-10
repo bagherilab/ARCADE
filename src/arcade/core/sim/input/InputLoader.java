@@ -38,7 +38,9 @@ public class InputLoader extends DefaultHandler {
             SAXParser saxParser = spf.newSAXParser();
             xmlReader = saxParser.getXMLReader();
             xmlReader.setContentHandler(this);
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -93,7 +95,9 @@ public class InputLoader extends DefaultHandler {
                 tag = att.getValue(filter);
                 if (tag == null) { return; }
                 id = tag + TAG_SEPARATOR + id;
-            } else { filter = ""; }
+            } else {
+                filter = "";
+            }
             
             // Add target tag if set.
             if (att.getValue("target") != null) { id += TARGET_SEPARATOR + att.getValue("target"); }

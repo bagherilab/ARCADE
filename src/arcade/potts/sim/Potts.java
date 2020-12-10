@@ -95,8 +95,7 @@ public abstract class Potts implements Steppable {
                 int i = simstate.random.nextInt(uniqueRegionTargets.size());
                 int targetRegion = (int) uniqueRegionTargets.toArray()[i];
                 flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);
-            }
-            else if (uniqueIDTargets.size() > 0) {
+            } else if (uniqueIDTargets.size() > 0) {
                 int i = simstate.random.nextInt(uniqueIDTargets.size());
                 int targetID = (int) uniqueIDTargets.toArray()[i];
                 flip(ids[z][x][y], targetID, x, y, z, r);
@@ -166,8 +165,11 @@ public abstract class Potts implements Steppable {
         
         // Calculate probability.
         double p;
-        if (dH < 0) { p = 1; }
-        else { p = Math.exp(-dH / temperature); }
+        if (dH < 0) {
+            p = 1;
+        } else {
+            p = Math.exp(-dH / temperature);
+        }
         
         if (r < p) {
             ids[z][x][y] = targetID;
@@ -232,8 +234,11 @@ public abstract class Potts implements Steppable {
         
         // Calculate probability.
         double p;
-        if (dH < 0) { p = 1; }
-        else { p = Math.exp(-dH / temperature); }
+        if (dH < 0) {
+            p = 1;
+        } else {
+            p = Math.exp(-dH / temperature);
+        }
         
         if (r < p) {
             regions[z][x][y] = targetRegion;
@@ -250,8 +255,11 @@ public abstract class Potts implements Steppable {
      * @return  the {@link arcade.core.agent.cell.Cell} object, {@code null} if id is zero
      */
     PottsCell getCell(int id) {
-        if (id > 0) { return (PottsCell) grid.getObjectAt(id); }
-        else { return null; }
+        if (id > 0) {
+            return (PottsCell) grid.getObjectAt(id);
+        } else {
+            return null;
+        }
     }
     
     /**

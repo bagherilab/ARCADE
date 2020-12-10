@@ -207,8 +207,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      * @param isScheduled  {@code true} if the output should be scheduled, {@code false} otherwise
      */
     public void doOutput(boolean isScheduled) {
-        if (isScheduled) { series.saver.schedule(schedule, series.getInterval()); }
-        else {
+        if (isScheduled) {
+            series.saver.schedule(schedule, series.getInterval());
+        } else {
             int tick = (int) schedule.getTime() + 1;
             series.saver.saveCells(tick);
             series.saver.saveLocations(tick);

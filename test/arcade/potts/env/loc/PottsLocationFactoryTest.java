@@ -6,13 +6,12 @@ import static org.mockito.Mockito.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.EnumMap;
+import java.util.stream.IntStream;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputLoader;
 import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
-import arcade.potts.agent.cell.PottsCellContainer;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.TestUtilities.*;
@@ -50,7 +49,7 @@ public class PottsLocationFactoryTest {
     }
     
     static class PottsLocationFactoryMock extends PottsLocationFactory {
-        public PottsLocationFactoryMock() { super(); }
+        PottsLocationFactoryMock() { super(); }
         
         int convert(double volume) { return (int) (volume + 1); }
         
@@ -63,13 +62,17 @@ public class PottsLocationFactoryTest {
         
         ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) {
             ArrayList<Voxel> selected = new ArrayList<>();
-            for (int i = 0; i < n + focus.x; i++) { selected.add(new Voxel(i, 0, 0)); }
+            for (int i = 0; i < n + focus.x; i++) {
+                selected.add(new Voxel(i, 0, 0));
+            }
             return selected;
         }
         
         ArrayList<Voxel> getPossible(Voxel focus, int m) {
             ArrayList<Voxel> possible = new ArrayList<>();
-            for (int i = 0; i < m; i++) { possible.add(new Voxel(i, 0, 0)); }
+            for (int i = 0; i < m; i++) {
+                possible.add(new Voxel(i, 0, 0));
+            }
             return possible;
         }
         
@@ -163,8 +166,8 @@ public class PottsLocationFactoryTest {
         Series series = mock(Series.class);
         series.loader = mock(OutputLoader.class);
         
-        ArrayList<LocationContainer> container = new ArrayList();
-        for (int i = 0; i < n; i++) { container.add(containers.get(i)); }
+        ArrayList<LocationContainer> container = new ArrayList<>();
+        IntStream.range(0, n).forEach(i -> container.add(containers.get(i)));
         doReturn(container).when(series.loader).loadLocations();
         
         factory.loadLocations(series);

@@ -160,8 +160,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
         if (cell.getVolume() >= GROWTH_CHECKPOINT_G1 * cell.getCriticalVolume()) {
             phase = Phase.PROLIFERATIVE_S;
             isArrested = false;
-        }
-        else {
+        } else {
             isArrested = true;
         }
     }
@@ -229,8 +228,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
         if (cell.getVolume() >= GROWTH_CHECKPOINT_G2 * cell.getCriticalVolume()) {
             phase = Phase.PROLIFERATIVE_M;
             isArrested = false;
-        }
-        else {
+        } else {
             isArrested = true;
         }
     }

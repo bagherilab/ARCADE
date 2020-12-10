@@ -29,7 +29,7 @@ public class ARCADETest {
     class MockARCADE extends ARCADE {
         ArrayList<Series> seriesList;
         
-        public MockARCADE() { }
+        MockARCADE() { }
         
         protected String getResource(String s) {
             return folder.getRoot().getAbsolutePath() + "/" + s;
@@ -46,7 +46,9 @@ public class ARCADETest {
                     seriesList.add(series);
                     return seriesList;
                 }).when(builder).build(eq(XML), any(Box.class), anyBoolean());
-            } catch (Exception e) { e.printStackTrace(); }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             
             return builder;
         }
@@ -233,21 +235,27 @@ public class ARCADETest {
     public void runSeries_multipleSeriesNoVis_runsAll() throws Exception {
         ArrayList<Series> series = new ArrayList<>();
         int n = randomIntBetween(5, 10);
-        for (int i = 0; i < n; i++) { series.add(mock(Series.class)); }
+        for (int i = 0; i < n; i++) {
+            series.add(mock(Series.class));
+        }
         
         MiniBox settings = new MiniBox();
         
         ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
-        for (int i = 0; i < n; i++) { verify(series.get(i)).runSims(); }
+        for (int i = 0; i < n; i++) {
+            verify(series.get(i)).runSims();
+        }
     }
     
     @Test
     public void runSeries_multipleSeriesWithVis_runsFirst() throws Exception {
         ArrayList<Series> series = new ArrayList<>();
         int n = randomIntBetween(5, 10);
-        for (int i = 0; i < n; i++) { series.add(mock(Series.class)); }
+        for (int i = 0; i < n; i++) {
+            series.add(mock(Series.class));
+        }
         
         MiniBox settings = new MiniBox();
         settings.put("VIS", "");
@@ -256,7 +264,9 @@ public class ARCADETest {
         arcade.runSeries(series, settings);
         
         verify(series.get(0)).runVis();
-        for (int i = 1; i < n; i++) { verify(series.get(i), never()).runSims(); }
+        for (int i = 1; i < n; i++) {
+            verify(series.get(i), never()).runSims();
+        }
     }
     
     @Test

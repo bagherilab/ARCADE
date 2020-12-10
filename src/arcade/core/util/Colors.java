@@ -91,7 +91,9 @@ public class Colors implements ColorMap {
             sum += bin;
         }
         
-        for (int i = Math.min(BINS, sum); i < BINS + 1; i++) { this.colors[i] = colors[n]; }
+        for (int i = Math.min(BINS, sum); i < BINS + 1; i++) {
+            this.colors[i] = colors[n];
+        }
     }
     
     /**

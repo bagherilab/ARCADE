@@ -33,9 +33,13 @@ public final class OutputSerializer {
             for (String key : src.getKeys()) {
                 String value = src.get(key);
                 
-                if (value.matches(INTEGER_REGEX)) { json.addProperty(key, src.getInt(key)); }
-                else if (value.matches(DOUBLE_REGEX)) { json.addProperty(key, src.getDouble(key)); }
-                else { json.addProperty(key, value); }
+                if (value.matches(INTEGER_REGEX)) {
+                    json.addProperty(key, src.getInt(key));
+                } else if (value.matches(DOUBLE_REGEX)) {
+                    json.addProperty(key, src.getDouble(key));
+                } else {
+                    json.addProperty(key, value);
+                }
             }
             
             return json;

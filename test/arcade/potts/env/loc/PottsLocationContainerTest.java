@@ -13,9 +13,9 @@ import static arcade.core.util.Enums.Region;
 import static arcade.core.TestUtilities.*;
 
 public class PottsLocationContainerTest {
-    final static PottsLocationFactory FACTORY = new PottsLocationFactoryMock();
-    final static PottsLocationFactory2D FACTORY_2D = mock(PottsLocationFactory2D.class, CALLS_REAL_METHODS);
-    final static PottsLocationFactory3D FACTORY_3D = mock(PottsLocationFactory3D.class, CALLS_REAL_METHODS);
+    static final PottsLocationFactory FACTORY = new PottsLocationFactoryMock();
+    static final PottsLocationFactory2D FACTORY_2D = mock(PottsLocationFactory2D.class, CALLS_REAL_METHODS);
+    static final PottsLocationFactory3D FACTORY_3D = mock(PottsLocationFactory3D.class, CALLS_REAL_METHODS);
     
     @BeforeClass
     public static void setupMocks() {

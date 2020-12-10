@@ -137,8 +137,11 @@ public class PottsTest {
         }
         
         int[] calculateChange(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
-            if (sourceRegion == Region.DEFAULT.ordinal()) { return new int[] { 2, 2 }; }
-            else { return new int[] { -3, -3 }; }
+            if (sourceRegion == Region.DEFAULT.ordinal()) {
+                return new int[] { 2, 2 };
+            } else {
+                return new int[] { -3, -3 };
+            }
         }
         
         boolean[][][] getNeighborhood(int id, int x, int y, int z) {

@@ -64,8 +64,11 @@ public class PottsCellFactory implements CellFactory {
      */
     public void initialize(Series series) {
         parseValues(series);
-        if (series.loader != null && series.loader.loadCells) { loadCells(series); }
-        else { createCells(series); }
+        if (series.loader != null && series.loader.loadCells) {
+            loadCells(series);
+        } else {
+            createCells(series);
+        }
     }
     
     public void loadCells(Series series) {
@@ -104,8 +107,9 @@ public class PottsCellFactory implements CellFactory {
             int voxels = population.getInt("CRITICAL_VOLUME");
             EnumMap<Region, Integer> regionVoxels;
             
-            if (!regions) { regionVoxels = null; }
-            else {
+            if (!regions) {
+                regionVoxels = null;
+            } else {
                 regionVoxels = new EnumMap<>(Region.class);
                 int total = 0;
                 

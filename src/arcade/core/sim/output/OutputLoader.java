@@ -12,7 +12,7 @@ import static arcade.core.sim.Simulation.*;
 
 public abstract class OutputLoader {
     /** Logger for class */
-    private final static Logger LOGGER = Logger.getLogger(OutputLoader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(OutputLoader.class.getName());
     
     /** JSON representation */
     final Gson gson;
@@ -93,7 +93,9 @@ public abstract class OutputLoader {
             // Write contents
             StringBuilder contents = new StringBuilder();
             String line;
-            while ((line = br.readLine()) != null) { contents.append(line); }
+            while ((line = br.readLine()) != null) {
+                contents.append(line);
+            }
             
             // Close streams.
             br.close();

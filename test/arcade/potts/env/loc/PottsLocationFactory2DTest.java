@@ -9,7 +9,7 @@ import ec.util.MersenneTwisterFast;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public class PottsLocationFactory2DTest {
-    final static PottsLocationFactory2D FACTORY = mock(PottsLocationFactory2D.class, CALLS_REAL_METHODS);
+    static final PottsLocationFactory2D FACTORY = mock(PottsLocationFactory2D.class, CALLS_REAL_METHODS);
     
     @BeforeClass
     public static void setupMocks() {

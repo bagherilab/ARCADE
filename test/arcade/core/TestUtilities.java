@@ -24,7 +24,9 @@ public final class TestUtilities {
     
     public static String[] randomStrings(int n) {
         String[] strings = new String[n];
-        for (int i = 0; i < n; i++) { strings[i] = randomString(); }
+        for (int i = 0; i < n; i++) {
+            strings[i] = randomString();
+        }
         return strings;
     }
     
@@ -55,13 +57,20 @@ public final class TestUtilities {
             bw = new BufferedWriter(fw);
             pw = new PrintWriter(bw);
             pw.print(contents);
-        } catch (IOException e) { e.printStackTrace(); }
-        finally {
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
             try {
-                if (pw != null) { pw.close(); }
-                else if (bw != null) { bw.close(); }
-                else if (fw != null) { fw.close(); }
-            } catch (IOException e) { e.printStackTrace(); }
+                if (pw != null) {
+                    pw.close();
+                } else if (bw != null) {
+                    bw.close();
+                } else if (fw != null) {
+                    fw.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

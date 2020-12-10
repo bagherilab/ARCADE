@@ -92,7 +92,9 @@ public class Potts2DTest {
     
     private static boolean[][][] combine(boolean[][][] base, int[] combo, int[][] links) {
         boolean[][][] array = duplicate(base);
-        for (int i : combo) { array[0][links[0][i]][links[1][i]] = true; }
+        for (int i : combo) {
+            array[0][links[0][i]][links[1][i]] = true;
+        }
         return array;
     }
     

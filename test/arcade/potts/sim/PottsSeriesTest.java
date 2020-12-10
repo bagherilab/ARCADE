@@ -108,7 +108,9 @@ public class PottsSeriesTest {
             PARAMETERS.addAtt(POTTS_PARAMETER_NAMES[i], "value", "" + POTTS_PARAMETER_VALUES[i]);
         }
         MiniBox potts = PARAMETERS.getIdValForTag("POTTS");
-        for (String key : potts.getKeys()) { POTTS.put(key, potts.get(key)); }
+        for (String key : potts.getKeys()) {
+            POTTS.put(key, potts.get(key));
+        }
         
         // POPULATION
         for (int i = 0; i < POPULATION_PARAMETER_NAMES.length; i++) {
@@ -116,7 +118,9 @@ public class PottsSeriesTest {
             PARAMETERS.addAtt(POPULATION_PARAMETER_NAMES[i], "value", "" + POPULATION_PARAMETER_VALUES[i]);
         }
         MiniBox population = PARAMETERS.getIdValForTag("POPULATION");
-        for (String key : population.getKeys()) { POPULATION.put(key, potts.get(key)); }
+        for (String key : population.getKeys()) {
+            POPULATION.put(key, potts.get(key));
+        }
     }
     
     private HashMap<String, ArrayList<Box>> makeLists() {

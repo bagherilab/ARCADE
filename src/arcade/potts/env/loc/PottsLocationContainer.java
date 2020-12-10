@@ -43,13 +43,19 @@ public class PottsLocationContainer implements LocationContainer {
         
         // Select voxels.
         ArrayList<Voxel> voxels;
-        if (target == allVoxels.size()) { voxels = new ArrayList<>(allVoxels); }
-        else { voxels = factory.getSelected(allVoxels, center, target); }
+        if (target == allVoxels.size()) {
+            voxels = new ArrayList<>(allVoxels);
+        } else {
+            voxels = factory.getSelected(allVoxels, center, target);
+        }
         
         // Add or remove voxels to reach target number.
         int size = voxels.size();
-        if (size < target) { factory.increase(allVoxels, voxels, target); }
-        else if (size > target) { factory.decrease(voxels, target); }
+        if (size < target) {
+            factory.increase(allVoxels, voxels, target);
+        } else if (size > target) {
+            factory.decrease(voxels, target);
+        }
         
         // Make location.
         PottsLocation location;
@@ -70,11 +76,14 @@ public class PottsLocationContainer implements LocationContainer {
                 
                 // Add or remove region voxels to reach target number.
                 int regSize = regVoxels.size();
-                if (regSize < regTarget) { factory.increase(allRegVoxels, regVoxels, regTarget); }
-                else if (regSize > regTarget) { factory.decrease(regVoxels, regTarget); }
+                if (regSize < regTarget) {
+                    factory.increase(allRegVoxels, regVoxels, regTarget);
+                } else if (regSize > regTarget) {
+                    factory.decrease(regVoxels, regTarget);
+                }
                 
                 // Assign regions.
-                for (Voxel voxel : regVoxels) { location.assign(region, voxel); }
+                regVoxels.forEach(voxel -> location.assign(region, voxel));
             }
         } else {
             location = (is3D ? new PottsLocation3D(voxels) : new PottsLocation2D(voxels));

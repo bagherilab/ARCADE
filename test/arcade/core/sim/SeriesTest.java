@@ -130,7 +130,7 @@ public class SeriesTest {
         boolean invalidSim;
         boolean invalidVis;
         
-        public SeriesMock(HashMap<String, MiniBox> setupDicts,
+        SeriesMock(HashMap<String, MiniBox> setupDicts,
                           HashMap<String, ArrayList<Box>> setupLists,
                           Box parameters, boolean isVis) {
             super(setupDicts, setupLists, parameters, isVis);

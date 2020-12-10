@@ -22,7 +22,7 @@ public class PottsLocationsTest {
     static ArrayList<Voxel> voxelListSingle;
     static ArrayList<Voxel> voxelListDouble;
     static ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
-    final static int LOCATIONS_SURFACE = (int) (Math.random() * 100);
+    static final int LOCATIONS_SURFACE = (int) (Math.random() * 100);
     
     @BeforeClass
     public static void setupMocks() {
@@ -84,7 +84,7 @@ public class PottsLocationsTest {
     }
     
     static class PottsLocationsMock extends PottsLocations {
-        public PottsLocationsMock(ArrayList<Voxel> voxels) { super(voxels); }
+        PottsLocationsMock(ArrayList<Voxel> voxels) { super(voxels); }
         
         PottsLocation makeLocation(ArrayList<Voxel> voxels) { return new PottsLocationMock(voxels); }
         
@@ -116,11 +116,9 @@ public class PottsLocationsTest {
                 diameters.put(Direction.XY_PLANE, 1);
                 diameters.put(Direction.POSITIVE_XY, 2);
                 diameters.put(Direction.NEGATIVE_ZX, 3);
-            }
-            else if (voxels.size() == 7) {
+            } else if (voxels.size() == 7) {
                 diameters.put(Direction.YZ_PLANE, 1);
-            }
-            else {
+            } else {
                 diameters.put(Direction.XY_PLANE, 1);
                 diameters.put(Direction.POSITIVE_XY, 1);
                 diameters.put(Direction.NEGATIVE_ZX, 1);

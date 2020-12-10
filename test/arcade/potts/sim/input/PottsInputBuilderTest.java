@@ -7,6 +7,7 @@ import org.junit.rules.TemporaryFolder;
 import org.xml.sax.Attributes;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.stream.IntStream;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
@@ -38,7 +39,7 @@ public class PottsInputBuilderTest {
     private HashMap<String, ArrayList<Box>> makeSetupLists(int n) {
         HashMap<String, ArrayList<Box>> setupLists = new HashMap<>();
         ArrayList<Box> boxes = new ArrayList<>();
-        for (int i = 0; i < n; i++) { boxes.add(new Box()); }
+        IntStream.range(0, n).forEach(i -> boxes.add(new Box()));
         setupLists.put(LIST_NAME + "s", boxes);
         return setupLists;
     }
@@ -46,7 +47,7 @@ public class PottsInputBuilderTest {
     private Box makeExpected(String id, int n) {
         Box expected = new Box();
         expected.addTag(id, TAG_NAME.toUpperCase());
-        for (int i = 0; i < n; i++) { expected.addAtt(id, ATT_QNAME + i, ATT_VALUE + i); }
+        IntStream.range(0, n).forEach(i -> expected.addAtt(id, ATT_QNAME + i, ATT_VALUE + i));
         return expected;
     }
     
@@ -282,7 +283,7 @@ public class PottsInputBuilderTest {
         builder.startElement("", "", "set", attributes);
         
         MiniBox expected = new MiniBox();
-        for (int i = 0; i < n; i++) { expected.put(ATT_QNAME + i, ATT_VALUE + i); }
+        IntStream.range(0, n).forEach(i -> expected.put(ATT_QNAME + i, ATT_VALUE + i));
         
         assertTrue(builder.setupDicts.containsKey("set"));
         assertTrue(expected.compare(builder.setupDicts.get("set")));
@@ -298,7 +299,7 @@ public class PottsInputBuilderTest {
         builder.startElement("", "", "series", attributes);
         
         MiniBox expected = new MiniBox();
-        for (int i = 0; i < n; i++) { expected.put(ATT_QNAME + i, ATT_VALUE + i); }
+        IntStream.range(0, n).forEach(i -> expected.put(ATT_QNAME + i, ATT_VALUE + i));
         
         assertTrue(builder.setupDicts.containsKey("series"));
         assertTrue(expected.compare(builder.setupDicts.get("series")));
@@ -339,7 +340,7 @@ public class PottsInputBuilderTest {
         builder.startElement("", "", "population", attributes);
         
         Box expected = new Box();
-        for (int i = 0; i < n; i++) { expected.add(ATT_QNAME + i, ATT_VALUE + i); }
+        IntStream.range(0, n).forEach(i -> expected.add(ATT_QNAME + i, ATT_VALUE + i));
         
         assertEquals(1, builder.setupLists.get("populations").size());
         assertTrue(expected.compare(builder.setupLists.get("populations").get(0)));
@@ -363,7 +364,7 @@ public class PottsInputBuilderTest {
         
         Box expected = new Box();
         expected.addTag(id, tag.toUpperCase());
-        for (int i = 0; i < n; i++) { expected.addAtt(id, ATT_QNAME + i, ATT_VALUE + i); }
+        IntStream.range(0, n).forEach(i -> expected.addAtt(id, ATT_QNAME + i, ATT_VALUE + i));
         
         assertTrue(expected.compare(builder.setupLists.get("potts").get(0)));
     }
@@ -386,7 +387,7 @@ public class PottsInputBuilderTest {
         
         Box expected = new Box();
         expected.addTag(id, tag.toUpperCase());
-        for (int i = 0; i < n; i++) { expected.addAtt(id, ATT_QNAME + i, ATT_VALUE + i); }
+        IntStream.range(0, n).forEach(i -> expected.addAtt(id, ATT_QNAME + i, ATT_VALUE + i));
         
         assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(0)));
     }
