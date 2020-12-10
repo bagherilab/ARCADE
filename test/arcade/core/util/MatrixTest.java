@@ -119,6 +119,11 @@ public class MatrixTest {
         B1S.add(new Value(0, 4, 2));
     }
     
+    @Test(expected = UnsupportedOperationException.class)
+    public void constructor_called_throwsException() {
+        Matrix matrix = new Matrix();
+    }
+    
     @Test
     public void getUpper_isNotStrictDense_getsMatrix() {
         double[][] expected = new double[][] {

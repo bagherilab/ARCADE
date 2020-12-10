@@ -14,6 +14,10 @@ import static arcade.core.util.Enums.Region;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public final class PottsOutputSerializer {
+    protected PottsOutputSerializer() {
+        throw new UnsupportedOperationException();
+    }
+    
     static Gson makeGSON() {
         GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();
         gsonBuilder.registerTypeAdapter(PottsSeries.class,

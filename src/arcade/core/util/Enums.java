@@ -3,6 +3,10 @@ package arcade.core.util;
 import ec.util.MersenneTwisterFast;
 
 public final class Enums {
+    protected Enums() {
+        throw new UnsupportedOperationException();
+    }
+    
     /** Cell state codes */
     public enum State {
         /** Code for undefined state */

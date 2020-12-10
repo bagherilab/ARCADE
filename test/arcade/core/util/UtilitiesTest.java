@@ -9,6 +9,11 @@ import static arcade.core.util.Utilities.*;
 import static arcade.core.TestUtilities.*;
 
 public class UtilitiesTest {
+    @Test(expected = UnsupportedOperationException.class)
+    public void constructor_called_throwsException() {
+        Utilities utilities = new Utilities();
+    }
+    
     @Test
     public void copyArray_givenArray_createsDeepCopy() {
         int x = randomIntBetween(2, 10);

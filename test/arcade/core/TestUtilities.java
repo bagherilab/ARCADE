@@ -10,6 +10,10 @@ public final class TestUtilities {
     
     public static final MersenneTwisterFast RANDOM = new MersenneTwisterFast((long) (Math.random() * 1000));
     
+    protected TestUtilities() {
+        throw new UnsupportedOperationException();
+    }
+    
     public static int randomSeed() {
         return randomIntBetween(1, 1000);
     }

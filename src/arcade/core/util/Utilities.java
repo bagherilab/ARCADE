@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 public final class Utilities {
+    protected Utilities() {
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * Copies the contents on one 3D array to another 3D array.
      * 

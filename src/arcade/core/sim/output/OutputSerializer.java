@@ -16,6 +16,10 @@ public final class OutputSerializer {
     /** Regular expression for integers */
     public static final String INTEGER_REGEX = "^(-?\\d+)$|^(-?\\d+E-?\\d+)$";
     
+    protected OutputSerializer() {
+        throw new UnsupportedOperationException();
+    }
+    
     public static GsonBuilder makeGSONBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
         gsonBuilder.registerTypeAdapter(Series.class, new SeriesSerializer());

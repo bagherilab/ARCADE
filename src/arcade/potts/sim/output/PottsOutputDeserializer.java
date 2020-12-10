@@ -13,6 +13,10 @@ import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Phase;
 
 public final class PottsOutputDeserializer {
+    protected PottsOutputDeserializer() {
+        throw new UnsupportedOperationException();
+    }
+    
     static Gson makeGSON() {
         GsonBuilder gsonBuilder = OutputDeserializer.makeGSONBuilder();
         gsonBuilder.registerTypeAdapter(PottsCellContainer.class,

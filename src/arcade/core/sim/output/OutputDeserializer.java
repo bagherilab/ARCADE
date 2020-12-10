@@ -8,6 +8,10 @@ import arcade.core.env.loc.LocationContainer;
 import static arcade.core.sim.Simulation.*;
 
 public final class OutputDeserializer {
+    protected OutputDeserializer() {
+        throw new UnsupportedOperationException();
+    }
+    
     public static GsonBuilder makeGSONBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(DEFAULT_CELL_TYPE, new CellListDeserializer());

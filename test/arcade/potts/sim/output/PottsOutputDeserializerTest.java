@@ -60,6 +60,11 @@ public class PottsOutputDeserializerTest {
         assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
     }
     
+    @Test(expected = UnsupportedOperationException.class)
+    public void constructor_called_throwsException() {
+        PottsOutputDeserializer deserializer = new PottsOutputDeserializer();
+    }
+    
     @Test
     public void makeGSON_registersAdaptors() {
         Gson gson = PottsOutputDeserializer.makeGSON();

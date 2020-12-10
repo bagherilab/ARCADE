@@ -20,6 +20,10 @@ public class Solver {
     private static final double DELTA = 1E-5;
     private static final int MATRIX_THRESHOLD = 100;
     
+    protected Solver() {
+        throw new UnsupportedOperationException();
+    }
+    
     // INTERFACE: Equation. Defines ODE equations for numerical solvers.
     public interface Equations { double[] dydt(double t, double[] y); }
     

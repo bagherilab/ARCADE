@@ -46,6 +46,11 @@ public class PottsOutputSerializerTest {
         assertSame(gson.getAdapter(voxel).getClass(), TreeTypeAdapter.class);
     }
     
+    @Test(expected = UnsupportedOperationException.class)
+    public void constructor_called_throwsException() {
+        PottsOutputSerializer serializer = new PottsOutputSerializer();
+    }
+    
     @Test
     public void makeGSON_registersAdaptors() {
         Gson gson = PottsOutputSerializer.makeGSON();

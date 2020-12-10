@@ -3,6 +3,10 @@ package arcade.potts.util;
 import ec.util.MersenneTwisterFast;
 
 public final class PottsEnums {
+    protected PottsEnums() {
+        throw new UnsupportedOperationException();
+    }
+    
     /** Stepping order for simulation */
     public enum Ordering {
         /** Stepping order for potts */

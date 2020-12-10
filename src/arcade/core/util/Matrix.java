@@ -49,6 +49,10 @@ public class Matrix {
         }
     }
     
+    protected Matrix() {
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * Converts a dense matrix representation to a sparse matrix representation.
      * 

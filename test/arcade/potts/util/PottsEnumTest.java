@@ -9,6 +9,11 @@ import static org.junit.Assert.*;
 import static arcade.potts.util.PottsEnums.*;
 
 public class PottsEnumTest {
+    @Test(expected = UnsupportedOperationException.class)
+    public void constructor_called_throwsException() {
+        PottsEnums enums = new PottsEnums();
+    }
+    
     @Test
     public void Phase_random_returnsPhase() {
         // Create set of all values.

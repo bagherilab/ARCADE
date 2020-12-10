@@ -9,6 +9,11 @@ import static org.junit.Assert.*;
 import static arcade.core.util.Enums.*;
 
 public class EnumTest {
+    @Test(expected = UnsupportedOperationException.class)
+    public void constructor_called_throwsException() {
+        Enums enums = new Enums();
+    }
+    
     @Test
     public void State_random_returnsState() {
         // Create set of all values.
