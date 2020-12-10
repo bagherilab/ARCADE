@@ -6,8 +6,6 @@ import com.google.gson.*;
 import sim.engine.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
-import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
 
 public abstract class OutputSaver implements Steppable {
     /** Logger for class */
@@ -61,7 +59,7 @@ public abstract class OutputSaver implements Steppable {
     }
     
     /**
-     * Save a list of {@link CellContainer} objects to a JSON.
+     * Save a list of {@link arcade.core.agent.cell.CellContainer} objects to a JSON.
      */
     public void saveCells(int tick) {
         String path = prefix + String.format("_%06d.CELLS.json", tick);
@@ -69,7 +67,7 @@ public abstract class OutputSaver implements Steppable {
     }
     
     /**
-     * Save a list of {@link LocationContainer} objects to a JSON.
+     * Save a list of {@link arcade.core.env.loc.LocationContainer} objects to a JSON.
      */
     public void saveLocations(int tick) {
         String path = prefix + String.format("_%06d.LOCATIONS.json", tick);

@@ -1,7 +1,6 @@
 package arcade.core.sim;
 
 import java.lang.reflect.Constructor;
-import java.text.DecimalFormat;
 import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;

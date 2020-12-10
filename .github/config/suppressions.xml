@@ -7,4 +7,6 @@
 <suppressions>
     <suppress checks="LineLength" files="test/*" id="LineLength" />
     <suppress checks="MethodName" files="test/*" />
+    <suppress checks="JavadocVariable" files="test/*" />
+    <suppress checks="MissingJavadocMethod" files="test/*" />
 </suppressions> 
