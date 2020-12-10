@@ -162,7 +162,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         cellFactory.initialize(series);
         
         // Iterate through each population to create agents.
-        for (MiniBox population : series._populations.values()) {
+        for (MiniBox population : series.populations.values()) {
             int pop = population.getInt("CODE");
             HashSet<Integer> ids = cellFactory.popToIDs.get(pop);
             
@@ -180,7 +180,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
                 
                 // Add, initialize, and schedule the cell.
                 grid.addObject(i, cell);
-                cell.initialize(potts.IDS, potts.REGIONS);
+                cell.initialize(potts.ids, potts.regions);
                 cell.schedule(schedule);
                 
                 // Update id tracking.

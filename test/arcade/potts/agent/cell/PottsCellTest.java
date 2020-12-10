@@ -64,7 +64,7 @@ public class PottsCellTest {
         when(location.getRegions()).thenReturn(regionList);
         
         Answer<Double> answer = invocation -> {
-            Double value = invocation.getArgument(0, Double.class);
+            Double value = invocation.getArgument(0);
             return value * VOLUME_SURFACE_RATIO;
         };
         when(((PottsLocation)location).convertVolume(anyDouble())).thenAnswer(answer);

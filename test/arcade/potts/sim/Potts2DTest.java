@@ -58,7 +58,7 @@ public class Potts2DTest {
         potts = new Potts2D(series);
         potts.grid = grid;
         
-        potts.IDS = new int[][][] {
+        potts.ids = new int[][][] {
                 {
                         { 0, 0, 0, 0, 0, 0 },
                         { 0, 1, 1, 3, 3, 0 },
@@ -71,7 +71,7 @@ public class Potts2DTest {
         int d = REGION_DEFAULT;
         int n = REGION_NUCLEUS;
         
-        potts.REGIONS = new int[][][] {
+        potts.regions = new int[][][] {
                 {
                         { 0, 0, 0, 0, 0, 0 },
                         { 0, d, d, d, 0, 0 },
@@ -171,7 +171,7 @@ public class Potts2DTest {
     }
     
     private HashSet<Integer> checkUniqueID(Potts2D potts, int[][] ids) {
-        potts.IDS = new int[][][] { ids };
+        potts.ids = new int[][][] { ids };
         return potts.getUniqueIDs(1, 1, 0);
     }
     
@@ -200,8 +200,8 @@ public class Potts2DTest {
     }
     
     private HashSet<Integer> checkUniqueRegion(Potts2D potts, int[][] ids, int[][] regions) {
-        potts.IDS = new int[][][] { ids };
-        potts.REGIONS = new int[][][] { regions };
+        potts.ids = new int[][][] { ids };
+        potts.regions = new int[][][] { regions };
         return potts.getUniqueRegions(1, 1, 0);
     }
     

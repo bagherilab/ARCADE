@@ -270,13 +270,13 @@ public abstract class PottsModuleProliferation extends PottsModule {
         Location newLocation = ((PottsLocation)cell.getLocation()).split(random);
         
         // Reset current cell.
-        cell.reset(potts.IDS, potts.REGIONS);
+        cell.reset(potts.ids, potts.regions);
         
         // Create and schedule new cell.
         int newID = sim.getID();
-        PottsCell newCell = (PottsCell)cell.make(newID, State.PROLIFERATIVE, newLocation);
+        PottsCell newCell = cell.make(newID, State.PROLIFERATIVE, newLocation);
         sim.getGrid().addObject(newID, newCell);
-        newCell.reset(potts.IDS, potts.REGIONS);
+        newCell.reset(potts.ids, potts.regions);
         newCell.schedule(sim.getSchedule());
     }
 }

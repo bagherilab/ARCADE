@@ -63,9 +63,9 @@ public class PottsColorMaps {
             new Color(0, 255, 255, 255),
     }, new double[] { 0, 0.1, 1 });
     
-    final Colors MAP_VOLUME;
+    final Colors mapVolume;
     
-    final Colors MAP_SURFACE;
+    final Colors mapSurface;
     
     /**
      * Creates {@code ColorMaps} for the given series.
@@ -74,13 +74,13 @@ public class PottsColorMaps {
      */
     PottsColorMaps(Series series) {
         double volume = 0;
-        for (MiniBox box : series._populations.values()) {
+        for (MiniBox box : series.populations.values()) {
             if (box.getDouble("CRITICAL_VOLUME") > volume) {
                 volume = box.getDouble("CRITICAL_VOLUME");
             }
         }
-        
-        MAP_VOLUME = new Colors(
+    
+        mapVolume = new Colors(
                 new Color[]{
                         new Color(0,0,0),
                         new Color(251, 230, 197),
@@ -104,13 +104,13 @@ public class PottsColorMaps {
         );
         
         double surface = 0;
-        for (MiniBox box : series._populations.values()) {
+        for (MiniBox box : series.populations.values()) {
             if (box.getDouble("CRITICAL_SURFACE") > surface) {
                 surface = box.getDouble("CRITICAL_SURFACE");
             }
         }
         
-        MAP_SURFACE = new Colors(
+        mapSurface = new Colors(
                 new Color[]{
                         new Color(0,0,0),
                         new Color(251, 230, 197),

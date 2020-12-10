@@ -69,16 +69,16 @@ public abstract class Series {
     private final int interval;
     
     /** Length of the simulation */
-    public final int _length;
+    public final int length;
     
     /** Width of the simulation */
-    public final int _width;
+    public final int width;
     
     /** Height of the simulation */
-    public final int _height;
+    public final int height;
     
     /** Map of population settings */
-    public HashMap<String, MiniBox> _populations;
+    public HashMap<String, MiniBox> populations;
     
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
@@ -118,16 +118,16 @@ public abstract class Series {
                 : defaults.getInt("INTERVAL"));
         
         // Set sizing.
-        this._length = (series.contains("length")
+        this.length = (series.contains("length")
                 ? series.getInt("length")
                 : defaults.getInt("LENGTH"));
-        this._width = (series.contains("width")
+        this.width = (series.contains("width")
                 ? series.getInt("width")
                 : defaults.getInt("WIDTH"));
         int height = (series.contains("height")
                 ? series.getInt("height")
                 : defaults.getInt("HEIGHT"));
-        this._height = ((height & 1) == 1 ? height : height + 1); // enforce odd
+        this.height = ((height & 1) == 1 ? height : height + 1); // enforce odd
         
         // Set conversion factors.
         this.ds = (series.contains("ds")

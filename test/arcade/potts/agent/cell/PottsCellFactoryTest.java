@@ -27,7 +27,7 @@ import static arcade.core.TestUtilities.*;
 public class PottsCellFactoryTest {
     static Series createSeries(int[] init, int[] volumes) {
         Series series = mock(Series.class);
-        series._populations = new HashMap<>();
+        series.populations = new HashMap<>();
         
         for (int i = 0; i < volumes.length; i++) {
             int pop = i + 1;
@@ -35,7 +35,7 @@ public class PottsCellFactoryTest {
             box.put("CODE", pop);
             box.put("INIT", init[i]);
             box.put("CRITICAL_VOLUME", volumes[i]);
-            series._populations.put("pop" + pop, box);
+            series.populations.put("pop" + pop, box);
         }
         
         return series;
@@ -205,7 +205,7 @@ public class PottsCellFactoryTest {
     @Test
     public void parseValues_noRegions_updatesLists() {
         Series series = mock(Series.class);
-        series._populations = new HashMap<>();
+        series.populations = new HashMap<>();
         
         EnumMap<Term, Double> criticals = makeEnumMap();
         EnumMap<Term, Double> lambdas = makeEnumMap();
@@ -233,7 +233,7 @@ public class PottsCellFactoryTest {
             population.put("CRITICAL_VOLUME", criticals.get(Term.VOLUME) + pop);
             population.put("CRITICAL_SURFACE", criticals.get(Term.SURFACE) + pop);
             
-            series._populations.put(popKeys[i], population);
+            series.populations.put(popKeys[i], population);
             popParameters[i] = population;
         }
         
@@ -256,7 +256,7 @@ public class PottsCellFactoryTest {
     @Test
     public void parseValues_withRegions_updatesLists() {
         Series series = mock(Series.class);
-        series._populations = new HashMap<>();
+        series.populations = new HashMap<>();
         
         EnumMap<Term, Double> criticals = makeEnumMap();
         EnumMap<Term, Double> lambdas = makeEnumMap();
@@ -305,7 +305,7 @@ public class PottsCellFactoryTest {
                 }
             }
             
-            series._populations.put(popKeys[i], population);
+            series.populations.put(popKeys[i], population);
             popParameters[i] = population;
         }
         
@@ -364,17 +364,17 @@ public class PottsCellFactoryTest {
         Series series = mock(Series.class);
         series.loader = mock(OutputLoader.class);
         
-        series._populations = new HashMap<>();
+        series.populations = new HashMap<>();
         
         MiniBox pop1 = new MiniBox();
         pop1.put("CODE", 1);
         pop1.put("INIT", n);
-        series._populations.put("A", pop1);
+        series.populations.put("A", pop1);
         
         MiniBox pop2 = new MiniBox();
         pop2.put("CODE", 2);
         pop2.put("INIT", m);
-        series._populations.put("B", pop2);
+        series.populations.put("B", pop2);
         
         ArrayList<CellContainer> container = new ArrayList();
         for (int i = 0; i < n + m; i++) { container.add(containers.get(i)); }
@@ -408,12 +408,12 @@ public class PottsCellFactoryTest {
         Series series = mock(Series.class);
         series.loader = mock(OutputLoader.class);
         
-        series._populations = new HashMap<>();
+        series.populations = new HashMap<>();
         
         MiniBox pop1 = new MiniBox();
         pop1.put("CODE", 1);
         pop1.put("INIT", n);
-        series._populations.put("A", pop1);
+        series.populations.put("A", pop1);
         
         ArrayList<CellContainer> container = new ArrayList();
         for (int i = 0; i < n; i++) { container.add(containers.get(i)); }
@@ -447,17 +447,17 @@ public class PottsCellFactoryTest {
         Series series = mock(Series.class);
         series.loader = mock(OutputLoader.class);
         
-        series._populations = new HashMap<>();
+        series.populations = new HashMap<>();
         
         MiniBox pop1 = new MiniBox();
         pop1.put("CODE", 1);
         pop1.put("INIT", num);
-        series._populations.put("A", pop1);
+        series.populations.put("A", pop1);
         
         MiniBox pop2 = new MiniBox();
         pop2.put("CODE", 2);
         pop2.put("INIT", m);
-        series._populations.put("B", pop2);
+        series.populations.put("B", pop2);
         
         ArrayList<CellContainer> container = new ArrayList();
         for (int i = 0; i < n + m; i++) { container.add(containers.get(i)); }
@@ -518,8 +518,8 @@ public class PottsCellFactoryTest {
         
         Series series = createSeries(new int[] { init }, new int[] { voxels });
         
-        series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels);
-        series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels);
+        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels);
+        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels);
         
         PottsCellFactoryMock factory = new PottsCellFactoryMock();
         factory.popToIDs.put(1, new HashSet<>());
@@ -595,8 +595,8 @@ public class PottsCellFactoryTest {
         Series series = createSeries(new int[] { init1, init2, init3 },
                 new int[] { voxels1, voxels2, voxels3 });
         
-        series._populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels2);
-        series._populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels2);
+        series.populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double)voxelsA/voxels2);
+        series.populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double)voxelsB/voxels2);
         
         PottsCellFactoryMock factory = new PottsCellFactoryMock();
         factory.popToIDs.put(1, new HashSet<>());
@@ -637,8 +637,8 @@ public class PottsCellFactoryTest {
         
         Series series = createSeries(new int[] { init }, new int[] { voxels });
         
-        series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", 0.75);
-        series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.75);
+        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", 0.75);
+        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.75);
         
         PottsCellFactoryMock factory = new PottsCellFactoryMock();
         factory.popToIDs.put(1, new HashSet<>());

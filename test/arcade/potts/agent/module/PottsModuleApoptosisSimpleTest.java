@@ -286,13 +286,13 @@ public class PottsModuleApoptosisSimpleTest {
         doReturn(grid).when(sim).getGrid();
         doReturn(location).when(cell).getLocation();
         
-        potts.IDS = new int[][][] { { { } } };
-        potts.REGIONS = new int[][][] { { { } } };
+        potts.ids = new int[][][] { { { } } };
+        potts.regions = new int[][][] { { { } } };
         
         PottsModuleApoptosis module = new PottsModuleApoptosis.Simple(cell);
         module.removeCell(sim);
         
-        verify(location).clear(potts.IDS, potts.REGIONS);
+        verify(location).clear(potts.ids, potts.regions);
         verify(grid).removeObject(id);
         verify(cell).stop();
     }

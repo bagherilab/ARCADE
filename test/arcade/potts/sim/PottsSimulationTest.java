@@ -54,7 +54,7 @@ public class PottsSimulationTest {
             }
         }
         
-        series._populations = populations;
+        series.populations = populations;
         
         return series;
     }
@@ -66,23 +66,23 @@ public class PottsSimulationTest {
         
         // One population.
         seriesOnePop = createSeries(new int[] { 1 }, new String[] { "A" });
-        seriesOnePop._populations.get("A").put("INIT", 5.);
+        seriesOnePop.populations.get("A").put("INIT", 5.);
         
         // Multiple populations.
         seriesMultiPop = createSeries(new int[] { 1, 2, 3 }, new String[] { "B", "C", "D" });
-        seriesMultiPop._populations.get("B").put("INIT", 3);
-        seriesMultiPop._populations.get("C").put("INIT", 1);
-        seriesMultiPop._populations.get("D").put("INIT", 2);
+        seriesMultiPop.populations.get("B").put("INIT", 3);
+        seriesMultiPop.populations.get("C").put("INIT", 1);
+        seriesMultiPop.populations.get("D").put("INIT", 2);
         
         // Invalid populations.
         seriesNullCell = createSeries(new int[] { 1 }, new String[] { "A" });
-        seriesNullCell._populations.get("A").put("INIT", 2);
+        seriesNullCell.populations.get("A").put("INIT", 2);
         
         seriesNullLocation = createSeries(new int[] { 1 }, new String[] { "A" });
-        seriesNullLocation._populations.get("A").put("INIT", 2);
+        seriesNullLocation.populations.get("A").put("INIT", 2);
         
         seriesNullBoth = createSeries(new int[] { 1 }, new String[] { "A" });
-        seriesNullBoth._populations.get("A").put("INIT", 2);
+        seriesNullBoth.populations.get("A").put("INIT", 2);
     }
     
     static class PottsSimulationMock extends PottsSimulation {
@@ -131,30 +131,30 @@ public class PottsSimulationTest {
             } catch (Exception ignored) { }
             
             doAnswer(invocation -> {
-                mockLocations(factory, seriesOnePop._populations.get("A"), 5, 0, random);
+                mockLocations(factory, seriesOnePop.populations.get("A"), 5, 0, random);
                 return null;
             }).when(factory).initialize(seriesOnePop, random);
             
             doAnswer(invocation -> {
-                mockLocations(factory, seriesMultiPop._populations.get("B"), 3, 0, random);
-                mockLocations(factory, seriesMultiPop._populations.get("C"), 1, 3, random);
-                mockLocations(factory, seriesMultiPop._populations.get("D"), 2, 4, random);
+                mockLocations(factory, seriesMultiPop.populations.get("B"), 3, 0, random);
+                mockLocations(factory, seriesMultiPop.populations.get("C"), 1, 3, random);
+                mockLocations(factory, seriesMultiPop.populations.get("D"), 2, 4, random);
                 return null;
             }).when(factory).initialize(seriesMultiPop, random);
             
             doAnswer(invocation -> {
-                mockLocations(factory, seriesNullCell._populations.get("A"), 2, 0, random);
+                mockLocations(factory, seriesNullCell.populations.get("A"), 2, 0, random);
                 return null;
             }).when(factory).initialize(seriesNullCell, random);
             
             doAnswer(invocation -> {
-                mockLocations(factory, seriesNullLocation._populations.get("A"), 2, 0, random);
+                mockLocations(factory, seriesNullLocation.populations.get("A"), 2, 0, random);
                 factory.locations.remove(2);
                 return null;
             }).when(factory).initialize(seriesNullLocation, random);
             
             doAnswer(invocation -> {
-                mockLocations(factory, seriesNullBoth._populations.get("A"), 2, 0, random);
+                mockLocations(factory, seriesNullBoth.populations.get("A"), 2, 0, random);
                 factory.locations.remove(2);
                 return null;
             }).when(factory).initialize(seriesNullBoth, random);
@@ -163,7 +163,7 @@ public class PottsSimulationTest {
         }
         
         private void mockCells(PottsCellFactory factory, Series series, String code, int n, int m) {
-            MiniBox pop = series._populations.get(code);
+            MiniBox pop = series.populations.get(code);
             HashSet<Integer> ids = new HashSet<>();
             
             for (int i = 0; i < n; i++) {
@@ -486,7 +486,7 @@ public class PottsSimulationTest {
         sim.setupAgents();
         
         for (Object obj : sim.grid.getAllObjects()) {
-            verify((PottsCell)obj).initialize(sim.potts.IDS, sim.potts.REGIONS);
+            verify((PottsCell)obj).initialize(sim.potts.ids, sim.potts.regions);
             verify((Cell)obj).schedule(sim.schedule);
         }
     }
@@ -517,7 +517,7 @@ public class PottsSimulationTest {
         sim.setupAgents();
         
         for (Object obj : sim.grid.getAllObjects()) {
-            verify((PottsCell)obj).initialize(sim.potts.IDS, sim.potts.REGIONS);
+            verify((PottsCell)obj).initialize(sim.potts.ids, sim.potts.regions);
             verify((PottsCell)obj).schedule(sim.schedule);
         }
     }

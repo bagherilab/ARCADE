@@ -506,8 +506,8 @@ public class PottsModuleProliferationSimpleTest {
         doReturn(grid).when(sim).getGrid();
         doReturn(schedule).when(sim).getSchedule();
         
-        potts.IDS = new int[][][] { { { } } };
-        potts.REGIONS = new int[][][] { { { } } };
+        potts.ids = new int[][][] { { { } } };
+        potts.regions = new int[][][] { { { } } };
         
         PottsLocation newLocation = mock(PottsLocation.class);
         PottsCell newCell = mock(PottsCell.class);
@@ -521,8 +521,8 @@ public class PottsModuleProliferationSimpleTest {
         PottsModuleProliferation module = new PottsModuleProliferation.Simple(cell);
         module.addCell(random, sim);
         
-        verify(cell).reset(potts.IDS, potts.REGIONS);
-        verify(newCell).reset(potts.IDS, potts.REGIONS);
+        verify(cell).reset(potts.ids, potts.regions);
+        verify(newCell).reset(potts.ids, potts.regions);
         verify(grid).addObject(id, newCell);
         verify(newCell).schedule(schedule);
     }

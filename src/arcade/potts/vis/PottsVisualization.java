@@ -14,214 +14,214 @@ public class PottsVisualization extends Visualization {
     static final int MAX_VERTICAL = 900;
     
     /** Length of the array (x direction) */
-    final int LENGTH;
+    final int length;
     
     /** Width of the array (y direction) */
-    final int WIDTH;
+    final int width;
     
     /** Height of the array (z direction) */
-    final int HEIGHT;
+    final int height;
     
     /** Color maps for the simulation */
     final PottsColorMaps maps;
     
     /** Horizontal size of the panels */
-    final int HORIZONTAL;
+    final int horizontal;
     
     /** Vertical size of the panels */
-    final int VERTICAL;
+    final int vertical;
     
     public PottsVisualization(Simulation sim) {
         super((SimState)sim);
         
         // Update sizes.
         Series series = sim.getSeries();
-        LENGTH = series._length;
-        WIDTH = series._width;
-        HEIGHT = series._height;
+        length = series.length;
+        width = series.width;
+        height = series.height;
         
         // Get color maps.
         maps = new PottsColorMaps(series);
         
         // Calculate sizing of panels.
-        int horizontal, vertical;
+        int horz, vert;
         
-        if (LENGTH != WIDTH) {
-            horizontal = MAX_HORIZONTAL;
-            vertical = (int)Math.round((WIDTH + .0)/LENGTH*MAX_HORIZONTAL);
+        if (length != width) {
+            horz = MAX_HORIZONTAL;
+            vert = (int)Math.round((width + .0)/length*MAX_HORIZONTAL);
             
-            if (vertical > MAX_VERTICAL) {
-                double frac = (MAX_VERTICAL + .0)/vertical;
-                horizontal = (int)Math.round(horizontal * frac);
-                vertical = (int)Math.round(vertical * frac);
+            if (vert > MAX_VERTICAL) {
+                double frac = (MAX_VERTICAL + .0)/vert;
+                horz = (int)Math.round(horz * frac);
+                vert = (int)Math.round(vert * frac);
             }
         } else {
-            horizontal = MAX_HORIZONTAL;
-            vertical = MAX_HORIZONTAL;
+            horz = MAX_HORIZONTAL;
+            vert = MAX_HORIZONTAL;
         }
-    
-        HORIZONTAL = horizontal;
-        VERTICAL = vertical;
+        
+        horizontal = horz;
+        vertical = vert;
     }
     
     public Drawer[] createDrawers() {
-        if (HEIGHT == 1) { return create2DDrawers(); }
+        if (height == 1) { return create2DDrawers(); }
         else { return create3DDrawers(); }
     }
     
     Drawer[] create2DDrawers() {
-        int h = HORIZONTAL/2;
-        int v = VERTICAL/2;
+        int h = horizontal/2;
+        int v = vertical/2;
         
         return new Drawer[] {
                 new PottsDrawer.PottsCells(panels[0], "agents:cytoplasm",
-                        LENGTH, WIDTH, HEIGHT, MAP_CYTOPLASM, null),
+                        length, width, height, MAP_CYTOPLASM, null),
                 new PottsDrawer.PottsCells(panels[0], "agents:nucleus",
-                        LENGTH, WIDTH, HEIGHT, MAP_NUCLEUS, null),
+                        length, width, height, MAP_NUCLEUS, null),
                 new PottsDrawer.PottsGrid(panels[0], "grid",
-                        LENGTH, WIDTH, HEIGHT, null),
+                        length, width, height, null),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:state",
-                        LENGTH, WIDTH, HEIGHT, MAP_STATE, getBox(0, 0, h, v)),
+                        length, width, height, MAP_STATE, getBox(0, 0, h, v)),
                 new PottsDrawer.PottsCells(panels[1], "agents:population",
-                        LENGTH, WIDTH, HEIGHT, MAP_POPULATION, getBox(h, 0, h, v)),
+                        length, width, height, MAP_POPULATION, getBox(h, 0, h, v)),
                 new PottsDrawer.PottsCells(panels[1], "agents:volume",
-                        LENGTH, WIDTH, HEIGHT, maps.MAP_VOLUME, getBox(0, v, h, v)),
+                        length, width, height, maps.mapVolume, getBox(0, v, h, v)),
                 new PottsDrawer.PottsCells(panels[1], "agents:surface",
-                        LENGTH, WIDTH, HEIGHT, maps.MAP_SURFACE, getBox(h, v, h, v)),
+                        length, width, height, maps.mapSurface, getBox(h, v, h, v)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(0, 0, h, v)),
+                        length, width, height, MAP_OVERLAY, getBox(0, 0, h, v)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(h, 0, h, v)),
+                        length, width, height, MAP_OVERLAY, getBox(h, 0, h, v)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(0, v, h, v)),
+                        length, width, height, MAP_OVERLAY, getBox(0, v, h, v)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(h, v, h, v)),
+                        length, width, height, MAP_OVERLAY, getBox(h, v, h, v)),
                 
                 new PottsDrawer.PottsGrid(panels[1], "grid",
-                        LENGTH, WIDTH, HEIGHT, getBox(0, 0, h, v)),
+                        length, width, height, getBox(0, 0, h, v)),
                 new PottsDrawer.PottsGrid(panels[1], "grid",
-                        LENGTH, WIDTH, HEIGHT, getBox(h, 0, h, v)),
+                        length, width, height, getBox(h, 0, h, v)),
                 new PottsDrawer.PottsGrid(panels[1], "grid",
-                        LENGTH, WIDTH, HEIGHT, getBox(0, v, h, v)),
+                        length, width, height, getBox(0, v, h, v)),
                 new PottsDrawer.PottsGrid(panels[1], "grid",
-                        LENGTH, WIDTH, HEIGHT, getBox(h, v, h, v)),
+                        length, width, height, getBox(h, v, h, v)),
         };
     }
     
     Drawer[] create3DDrawers() {
-        int h = HORIZONTAL/2;
-        int v = VERTICAL/2;
+        int h = horizontal/2;
+        int v = vertical/2;
         
-        int hh = (int)Math.round((LENGTH + .0)/(LENGTH + HEIGHT)*h);
-        int vv = (int)Math.round((WIDTH + .0)/(WIDTH + HEIGHT)*v);
+        int hh = (int)Math.round((length + .0)/(length + height)*h);
+        int vv = (int)Math.round((width + .0)/(width + height)*v);
         
-        int hx = (int)Math.round((HEIGHT + .0)/(LENGTH + HEIGHT)*h);
-        int vx = (int)Math.round((HEIGHT + .0)/(WIDTH + HEIGHT)*v);
+        int hx = (int)Math.round((height + .0)/(length + height)*h);
+        int vx = (int)Math.round((height + .0)/(width + height)*v);
         
         return new Drawer[] {
                 new PottsDrawer.PottsCells(panels[0], "agents:cytoplasm:z",
-                        LENGTH, WIDTH, HEIGHT, MAP_CYTOPLASM, getBox(0, 0, hh*2, vv*2)),
+                        length, width, height, MAP_CYTOPLASM, getBox(0, 0, hh*2, vv*2)),
                 new PottsDrawer.PottsCells(panels[0], "agents:cytoplasm:x",
-                        LENGTH, WIDTH, HEIGHT, MAP_CYTOPLASM, getBox(hh*2, 0, hx*2, vv*2)),
+                        length, width, height, MAP_CYTOPLASM, getBox(hh*2, 0, hx*2, vv*2)),
                 new PottsDrawer.PottsCells(panels[0], "agents:cytoplasm:y",
-                        LENGTH, WIDTH, HEIGHT, MAP_CYTOPLASM, getBox(0, vv*2, hh*2, vx*2)),
+                        length, width, height, MAP_CYTOPLASM, getBox(0, vv*2, hh*2, vx*2)),
                 
                 new PottsDrawer.PottsCells(panels[0], "agents:nucleus:z",
-                        LENGTH, WIDTH, HEIGHT, MAP_NUCLEUS, getBox(0, 0, hh*2, vv*2)),
+                        length, width, height, MAP_NUCLEUS, getBox(0, 0, hh*2, vv*2)),
                 new PottsDrawer.PottsCells(panels[0], "agents:nucleus:x",
-                        LENGTH, WIDTH, HEIGHT, MAP_NUCLEUS, getBox(hh*2, 0, hx*2, vv*2)),
+                        length, width, height, MAP_NUCLEUS, getBox(hh*2, 0, hx*2, vv*2)),
                 new PottsDrawer.PottsCells(panels[0], "agents:nucleus:y",
-                        LENGTH, WIDTH, HEIGHT, MAP_NUCLEUS, getBox(0, vv*2, hh*2, vx*2)),
+                        length, width, height, MAP_NUCLEUS, getBox(0, vv*2, hh*2, vx*2)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:state:z",
-                        LENGTH, WIDTH, HEIGHT, MAP_STATE, getBox(0, 0, hh, vv)),
+                        length, width, height, MAP_STATE, getBox(0, 0, hh, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:population:z",
-                        LENGTH, WIDTH, HEIGHT, MAP_POPULATION, getBox(h, 0, hh, vv)),
+                        length, width, height, MAP_POPULATION, getBox(h, 0, hh, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:volume:z",
-                        LENGTH, WIDTH, HEIGHT, maps.MAP_VOLUME, getBox(0, v, hh, vv)),
+                        length, width, height, maps.mapVolume, getBox(0, v, hh, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:surface:z",
-                        LENGTH, WIDTH, HEIGHT, maps.MAP_SURFACE, getBox(h, v, hh, vv)),
+                        length, width, height, maps.mapSurface, getBox(h, v, hh, vv)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:z",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(0, 0, hh, vv)),
+                        length, width, height, MAP_OVERLAY, getBox(0, 0, hh, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:z",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(h, 0, hh, vv)),
+                        length, width, height, MAP_OVERLAY, getBox(h, 0, hh, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:z",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(0, v, hh, vv)),
+                        length, width, height, MAP_OVERLAY, getBox(0, v, hh, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:z",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(h, v, hh, vv)),
+                        length, width, height, MAP_OVERLAY, getBox(h, v, hh, vv)),
                 
                 new PottsDrawer.PottsGrid(panels[1], "grid:z",
-                        LENGTH, WIDTH, HEIGHT, getBox(0, 0, hh, vv)),
+                        length, width, height, getBox(0, 0, hh, vv)),
                 new PottsDrawer.PottsGrid(panels[1], "grid:z",
-                        LENGTH, WIDTH, HEIGHT, getBox(h, 0, hh, vv)),
+                        length, width, height, getBox(h, 0, hh, vv)),
                 new PottsDrawer.PottsGrid(panels[1], "grid:z",
-                        LENGTH, WIDTH, HEIGHT, getBox(0, v, hh, vv)),
+                        length, width, height, getBox(0, v, hh, vv)),
                 new PottsDrawer.PottsGrid(panels[1], "grid:z",
-                        LENGTH, WIDTH, HEIGHT, getBox(h, v, hh, vv)),
+                        length, width, height, getBox(h, v, hh, vv)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:state:x",
-                        LENGTH, WIDTH, HEIGHT, MAP_STATE, getBox(hh, 0, hx, vv)),
+                        length, width, height, MAP_STATE, getBox(hh, 0, hx, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:population:x",
-                        LENGTH, WIDTH, HEIGHT, MAP_POPULATION, getBox(h + hh, 0, hx, vv)),
+                        length, width, height, MAP_POPULATION, getBox(h + hh, 0, hx, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:volume:x",
-                        LENGTH, WIDTH, HEIGHT, maps.MAP_VOLUME, getBox(hh, v, hx, vv)),
+                        length, width, height, maps.mapVolume, getBox(hh, v, hx, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:surface:x",
-                        LENGTH, WIDTH, HEIGHT, maps.MAP_SURFACE, getBox(h + hh, v, hx, vv)),
+                        length, width, height, maps.mapSurface, getBox(h + hh, v, hx, vv)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:x",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(hh, 0, hx, vv)),
+                        length, width, height, MAP_OVERLAY, getBox(hh, 0, hx, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:x",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(h + hh, 0, hx, vv)),
+                        length, width, height, MAP_OVERLAY, getBox(h + hh, 0, hx, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:x",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(hh, v, hx, vv)),
+                        length, width, height, MAP_OVERLAY, getBox(hh, v, hx, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:x",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(h + hh, v, hx, vv)),
+                        length, width, height, MAP_OVERLAY, getBox(h + hh, v, hx, vv)),
                 
                 new PottsDrawer.PottsGrid(panels[1], "grid:x",
-                        LENGTH, WIDTH, HEIGHT, getBox(hh, 0, hx, vv)),
+                        length, width, height, getBox(hh, 0, hx, vv)),
                 new PottsDrawer.PottsGrid(panels[1], "grid:x",
-                        LENGTH, WIDTH, HEIGHT, getBox(h + hh, 0, hx, vv)),
+                        length, width, height, getBox(h + hh, 0, hx, vv)),
                 new PottsDrawer.PottsGrid(panels[1], "grid:x",
-                        LENGTH, WIDTH, HEIGHT, getBox(hh, v, hx, vv)),
+                        length, width, height, getBox(hh, v, hx, vv)),
                 new PottsDrawer.PottsGrid(panels[1], "grid:x",
-                        LENGTH, WIDTH, HEIGHT, getBox(h + hh, v, hx, vv)),
+                        length, width, height, getBox(h + hh, v, hx, vv)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:state:y",
-                        LENGTH, WIDTH, HEIGHT, MAP_STATE, getBox(0, vv, hh, vx)),
+                        length, width, height, MAP_STATE, getBox(0, vv, hh, vx)),
                 new PottsDrawer.PottsCells(panels[1], "agents:population:y",
-                        LENGTH, WIDTH, HEIGHT, MAP_POPULATION, getBox(h, vv, hh, vx)),
+                        length, width, height, MAP_POPULATION, getBox(h, vv, hh, vx)),
                 new PottsDrawer.PottsCells(panels[1], "agents:volume:y",
-                        LENGTH, WIDTH, HEIGHT, maps.MAP_VOLUME, getBox(0, v + vv, hh, vx)),
+                        length, width, height, maps.mapVolume, getBox(0, v + vv, hh, vx)),
                 new PottsDrawer.PottsCells(panels[1], "agents:surface:y",
-                        LENGTH, WIDTH, HEIGHT, maps.MAP_SURFACE, getBox(h, v + vv, hh, vx)),
+                        length, width, height, maps.mapSurface, getBox(h, v + vv, hh, vx)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:y",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(0, vv, hh, vx)),
+                        length, width, height, MAP_OVERLAY, getBox(0, vv, hh, vx)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:y",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(h, vv, hh, vx)),
+                        length, width, height, MAP_OVERLAY, getBox(h, vv, hh, vx)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:y",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(0, v + vv, hh, vx)),
+                        length, width, height, MAP_OVERLAY, getBox(0, v + vv, hh, vx)),
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:y",
-                        LENGTH, WIDTH, HEIGHT, MAP_OVERLAY, getBox(h, v + vv, hh, vx)),
+                        length, width, height, MAP_OVERLAY, getBox(h, v + vv, hh, vx)),
                 
                 new PottsDrawer.PottsGrid(panels[1], "grid:y",
-                        LENGTH, WIDTH, HEIGHT, getBox(0, vv, hh, vx)),
+                        length, width, height, getBox(0, vv, hh, vx)),
                 new PottsDrawer.PottsGrid(panels[1], "grid:y",
-                        LENGTH, WIDTH, HEIGHT, getBox(h, vv, hh, vx)),
+                        length, width, height, getBox(h, vv, hh, vx)),
                 new PottsDrawer.PottsGrid(panels[1], "grid:y",
-                        LENGTH, WIDTH, HEIGHT, getBox(0, v + vv, hh, vx)),
+                        length, width, height, getBox(0, v + vv, hh, vx)),
                 new PottsDrawer.PottsGrid(panels[1], "grid:y",
-                        LENGTH, WIDTH, HEIGHT, getBox(h, v + vv, hh, vx)),
+                        length, width, height, getBox(h, v + vv, hh, vx)),
         };
     }
     
     public Panel[] createPanels() {
         return new Panel[]{
-                new Panel.Panel2D("POTTS", 100, 50, HORIZONTAL, VERTICAL, this),
-                new Panel.Panel2D("POTTS", HORIZONTAL + 120, 50, HORIZONTAL, VERTICAL, this),
+                new Panel.Panel2D("POTTS", 100, 50, horizontal, vertical, this),
+                new Panel.Panel2D("POTTS", horizontal + 120, 50, horizontal, vertical, this),
         };
     }
 }

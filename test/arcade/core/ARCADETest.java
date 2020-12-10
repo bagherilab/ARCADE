@@ -26,10 +26,10 @@ public class ARCADETest {
     @BeforeClass
     public static void setFields() { ARCADE.logger = mock(Logger.class); }
     
-    class ARCADE_MOCK extends ARCADE {
+    class MockARCADE extends ARCADE {
         ArrayList<Series> seriesList;
         
-        public ARCADE_MOCK() { }
+        public MockARCADE() { }
         
         protected String getResource(String s) {
             return folder.getRoot().getAbsolutePath() + "/" + s;
@@ -42,7 +42,7 @@ public class ARCADETest {
                 doAnswer(invocation -> {
                     seriesList = new ArrayList<>();
                     Series series = mock(Series.class);
-                    series.isVis = invocation.getArgument(2, Boolean.class);
+                    series.isVis = invocation.getArgument(2);
                     seriesList.add(series);
                     return seriesList;
                 }).when(builder).build(eq(XML), any(Box.class), anyBoolean());
@@ -73,7 +73,7 @@ public class ARCADETest {
         File file = folder.newFile("command.xml");
         write(file, "<commands><switch id=\"MOCK\" /></commands>");
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         Box commands = arcade.loadCommands();
         
         assertEquals("POSITION", commands.getTag("ARCADE"));
@@ -85,7 +85,7 @@ public class ARCADETest {
         File file = folder.newFile("parameter.xml");
         write(file, "<parameter><mockparameter id=\"MOCK\" value=\"MOCK_VALUE\" /></parameter>");
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         Box parameters = arcade.loadParameters();
         
         assertEquals("DEFAULT", parameters.getTag("START_SEED"));
@@ -101,7 +101,7 @@ public class ARCADETest {
         Box commands = new Box();
         String[] args = new String[] { randomString() };
         commands.addTag("POSITION_ARG", "POSITION");
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         MiniBox settings = arcade.parseArguments(args, commands);
         assertEquals(args[0], settings.get("POSITION_ARG"));
     }
@@ -111,7 +111,7 @@ public class ARCADETest {
         Box commands = new Box();
         String[] args = new String[] { };
         commands.addTag("POSITION_ARG", "POSITION");
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.parseArguments(args, commands);
     }
     
@@ -121,7 +121,7 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("XML", XML);
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         ArrayList<Series> series = arcade.buildSeries(parameters, settings);
         
         assertEquals(1, series.size());
@@ -135,7 +135,7 @@ public class ARCADETest {
         settings.put("XML", XML);
         settings.put("VIS", "");
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         ArrayList<Series> series = arcade.buildSeries(parameters, settings);
         
         assertEquals(1, series.size());
@@ -149,7 +149,7 @@ public class ARCADETest {
         
         MiniBox settings = new MiniBox();
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
         verify(series.get(0)).runSims();
@@ -164,7 +164,7 @@ public class ARCADETest {
         
         MiniBox settings = new MiniBox();
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
         verify(series.get(0), never()).runSims();
@@ -178,7 +178,7 @@ public class ARCADETest {
         
         MiniBox settings = new MiniBox();
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
         verify(series.get(0).saver).saveSeries();
@@ -192,7 +192,7 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("VIS", "");
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
         verify(series.get(0), never()).runSims();
@@ -208,7 +208,7 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("VIS", "");
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
         verify(series.get(0), never()).runSims();
@@ -223,7 +223,7 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("VIS", "");
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
         assertNull(series.get(0).saver);
@@ -237,7 +237,7 @@ public class ARCADETest {
         
         MiniBox settings = new MiniBox();
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
         for (int i = 0; i < n; i++) { verify(series.get(i)).runSims(); }
@@ -252,7 +252,7 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("VIS", "");
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
         verify(series.get(0)).runVis();
@@ -267,7 +267,7 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("LOADCELLS", "");
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
         assertTrue(series.get(0).loader.loadCells);
@@ -282,7 +282,7 @@ public class ARCADETest {
         MiniBox settings = new MiniBox();
         settings.put("LOADLOCATIONS", "");
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
         assertFalse(series.get(0).loader.loadCells);
@@ -298,7 +298,7 @@ public class ARCADETest {
         settings.put("LOADCELLS", "");
         settings.put("LOADLOCATIONS", "");
         
-        ARCADE arcade = new ARCADE_MOCK();
+        ARCADE arcade = new MockARCADE();
         arcade.runSeries(series, settings);
         
         assertTrue(series.get(0).loader.loadCells);

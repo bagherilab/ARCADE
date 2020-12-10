@@ -53,7 +53,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
         int m = 0;
         
         // Find largest distance between centers.
-        for (MiniBox population : series._populations.values()) {
+        for (MiniBox population : series.populations.values()) {
             double criticalVolume = population.getDouble("CRITICAL_VOLUME");
             int voxelsPerSide = convert(criticalVolume) + 2;
             if (voxelsPerSide > m) { m = voxelsPerSide; }
@@ -62,12 +62,12 @@ public abstract class PottsLocationFactory implements LocationFactory {
         if (m == 0) { return; }
         
         // Get center voxels.
-        ArrayList<Voxel> centers = getCenters(series._length, series._width, series._height, m);
+        ArrayList<Voxel> centers = getCenters(series.length, series.width, series.height, m);
         Utilities.shuffleList(centers, random);
         
         // Get regions (if they exist).
         HashSet<String> regionKeys = new HashSet<>();
-        for (MiniBox population : series._populations.values()) {
+        for (MiniBox population : series.populations.values()) {
             MiniBox regionBox = population.filter("(REGION)");
             if (regionBox.getKeys().size() > 0) { regionKeys.addAll(regionBox.getKeys()); }
         }

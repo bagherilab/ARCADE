@@ -108,15 +108,15 @@ public class OutputSerializerTest {
         int height = randomIntBetween(0, 100);
         
         try {
-            Field lengthField = Series.class.getDeclaredField("_length");
+            Field lengthField = Series.class.getDeclaredField("length");
             lengthField.setAccessible(true);
             lengthField.setInt(series, length);
             
-            Field widthField = Series.class.getDeclaredField("_width");
+            Field widthField = Series.class.getDeclaredField("width");
             widthField.setAccessible(true);
             widthField.setInt(series, width);
             
-            Field heightField = Series.class.getDeclaredField("_height");
+            Field heightField = Series.class.getDeclaredField("height");
             heightField.setAccessible(true);
             heightField.setInt(series, height);
             
@@ -129,7 +129,7 @@ public class OutputSerializerTest {
             dtField.setDouble(series, dt);
         } catch (Exception ignored) { }
         
-        series._populations = new HashMap<>();
+        series.populations = new HashMap<>();
         String popA = "a" + randomString();
         String popB = "b" + randomString();
         
@@ -143,8 +143,8 @@ public class OutputSerializerTest {
         String valueB = randomString();
         b.put(keyB, valueB);
         
-        series._populations.put(popA, a);
-        series._populations.put(popB, b);
+        series.populations.put(popA, a);
+        series.populations.put(popB, b);
         
         JsonSerializationContext context = new JsonSerializationContext() {
             public JsonElement serialize(Object src) {

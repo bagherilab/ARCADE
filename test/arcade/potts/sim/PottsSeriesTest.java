@@ -166,13 +166,13 @@ public class PottsSeriesTest {
     public void updatePotts_noSetting_createsBox() {
         PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
         series.updatePotts(null, POTTS);
-        assertNotNull(series._potts);
+        assertNotNull(series.potts);
     }
     
     @Test
     public void updatePotts_noParameters_usesDefaults() {
         PottsSeries series = makeSeriesForPotts(null);
-        MiniBox box = series._potts;
+        MiniBox box = series.potts;
         
         for (String parameter : POTTS_PARAMETER_NAMES) {
             assertEquals(POTTS.get(parameter), box.get(parameter));
@@ -193,7 +193,7 @@ public class PottsSeriesTest {
                 potts.addTag(pottsParameter2, "PARAMETER");
                 
                 PottsSeries series = makeSeriesForPotts(potts);
-                MiniBox box = series._potts;
+                MiniBox box = series.potts;
                 
                 for (String parameter : POTTS_PARAMETER_NAMES) {
                     double expected = POTTS.getDouble(parameter);
@@ -233,7 +233,7 @@ public class PottsSeriesTest {
     public void updatePopulation_noPopulations_createsMap() {
         PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
         series.updatePopulations(null, POPULATION, new MiniBox());
-        assertEquals(0, series._populations.size());
+        assertEquals(0, series.populations.size());
     }
     
     @Test
@@ -242,9 +242,9 @@ public class PottsSeriesTest {
         boxes[0].add("id", POPULATION_ID_1);
         PottsSeries series = makeSeriesForPopulation(boxes);
         
-        assertEquals(1, series._populations.size());
-        assertNotNull(series._populations.get(POPULATION_ID_1));
-        assertEquals(1, series._populations.get(POPULATION_ID_1).getInt("CODE"));
+        assertEquals(1, series.populations.size());
+        assertNotNull(series.populations.get(POPULATION_ID_1));
+        assertEquals(1, series.populations.get(POPULATION_ID_1).getInt("CODE"));
     }
     
     @Test
@@ -255,13 +255,13 @@ public class PottsSeriesTest {
         boxes[2].add("id", POPULATION_ID_3);
         PottsSeries series = makeSeriesForPopulation(boxes);
         
-        assertEquals(3, series._populations.size());
-        assertNotNull(series._populations.get(POPULATION_ID_1));
-        assertNotNull(series._populations.get(POPULATION_ID_2));
-        assertNotNull(series._populations.get(POPULATION_ID_3));
-        assertEquals(1, series._populations.get(POPULATION_ID_1).getInt("CODE"));
-        assertEquals(2, series._populations.get(POPULATION_ID_2).getInt("CODE"));
-        assertEquals(3, series._populations.get(POPULATION_ID_3).getInt("CODE"));
+        assertEquals(3, series.populations.size());
+        assertNotNull(series.populations.get(POPULATION_ID_1));
+        assertNotNull(series.populations.get(POPULATION_ID_2));
+        assertNotNull(series.populations.get(POPULATION_ID_3));
+        assertEquals(1, series.populations.get(POPULATION_ID_1).getInt("CODE"));
+        assertEquals(2, series.populations.get(POPULATION_ID_2).getInt("CODE"));
+        assertEquals(3, series.populations.get(POPULATION_ID_3).getInt("CODE"));
     }
     
     @Test
@@ -270,7 +270,7 @@ public class PottsSeriesTest {
         boxes[0].add("id", POPULATION_ID_1);
         PottsSeries series = makeSeriesForPopulation(boxes);
         
-        MiniBox box = series._populations.get(POPULATION_ID_1);
+        MiniBox box = series.populations.get(POPULATION_ID_1);
         assertEquals(0, box.getDouble("INIT"), EPSILON);
     }
     
@@ -285,7 +285,7 @@ public class PottsSeriesTest {
             boxes[0].add("init", fractions[i]);
             PottsSeries series = makeSeriesForPopulation(boxes);
             
-            MiniBox box = series._populations.get(POPULATION_ID_1);
+            MiniBox box = series.populations.get(POPULATION_ID_1);
             assertEquals(values[i], box.getInt("INIT"));
         }
     }
@@ -300,7 +300,7 @@ public class PottsSeriesTest {
             boxes[0].add("init", fraction);
             PottsSeries series = makeSeriesForPopulation(boxes);
             
-            MiniBox box = series._populations.get(POPULATION_ID_1);
+            MiniBox box = series.populations.get(POPULATION_ID_1);
             assertEquals(0, box.getDouble("INIT"), EPSILON);
         }
     }
@@ -317,7 +317,7 @@ public class PottsSeriesTest {
             boxes[0].addAtt(REGION_ID_1,"fraction", fractions[i]);
             PottsSeries series = makeSeriesForPopulation(boxes);
             
-            MiniBox box = series._populations.get(POPULATION_ID_1);
+            MiniBox box = series.populations.get(POPULATION_ID_1);
             assertEquals(values[i], box.getDouble("(REGION)" + TAG_SEPARATOR + REGION_ID_1), EPSILON);
             assertFalse(box.contains("(REGION)" + TAG_SEPARATOR + REGION_ID_2));
         }
@@ -334,7 +334,7 @@ public class PottsSeriesTest {
             boxes[0].addAtt(REGION_ID_1, "fraction", fraction);
             PottsSeries series = makeSeriesForPopulation(boxes);
             
-            MiniBox box = series._populations.get(POPULATION_ID_1);
+            MiniBox box = series.populations.get(POPULATION_ID_1);
             assertEquals(0, box.getDouble("(REGION)" + TAG_SEPARATOR + REGION_ID_1), EPSILON);
             assertFalse(box.contains("(REGION)" + TAG_SEPARATOR + REGION_ID_2));
         }
@@ -345,7 +345,7 @@ public class PottsSeriesTest {
         Box[] boxes = new Box[] { new Box() };
         boxes[0].add("id", POPULATION_ID_1);
         PottsSeries series = makeSeriesForPopulation(boxes);
-        MiniBox box = series._populations.get(POPULATION_ID_1);
+        MiniBox box = series.populations.get(POPULATION_ID_1);
         
         for (String parameter : POPULATION_PARAMETER_NAMES) {
             assertEquals(POPULATION.get(parameter), box.get(parameter));
@@ -367,7 +367,7 @@ public class PottsSeriesTest {
                 boxes[0].addTag(populationParameter2, "PARAMETER");
                 
                 PottsSeries series = makeSeriesForPopulation(boxes);
-                MiniBox box = series._populations.get(POPULATION_ID_1);
+                MiniBox box = series.populations.get(POPULATION_ID_1);
                 
                 for (String parameter : POPULATION_PARAMETER_NAMES) {
                     double expected = POPULATION.getDouble(parameter);
@@ -386,9 +386,9 @@ public class PottsSeriesTest {
         boxes[1].add("id", POPULATION_ID_2);
         boxes[2].add("id", POPULATION_ID_3);
         PottsSeries series = makeSeriesForPopulation(boxes);
-        MiniBox box1 = series._populations.get(POPULATION_ID_1);
-        MiniBox box2 = series._populations.get(POPULATION_ID_2);
-        MiniBox box3 = series._populations.get(POPULATION_ID_3);
+        MiniBox box1 = series.populations.get(POPULATION_ID_1);
+        MiniBox box2 = series.populations.get(POPULATION_ID_2);
+        MiniBox box3 = series.populations.get(POPULATION_ID_3);
         
         for (String parameter : POPULATION_PARAMETER_NAMES) {
             assertEquals(POPULATION.get(parameter), box1.get(parameter));
@@ -414,9 +414,9 @@ public class PottsSeriesTest {
                 boxes[1].addTag(populationParameter2, "PARAMETER");
                 
                 PottsSeries series = makeSeriesForPopulation(boxes);
-                MiniBox box1 = series._populations.get(POPULATION_ID_1);
-                MiniBox box2 = series._populations.get(POPULATION_ID_2);
-                MiniBox box3 = series._populations.get(POPULATION_ID_3);
+                MiniBox box1 = series.populations.get(POPULATION_ID_1);
+                MiniBox box2 = series.populations.get(POPULATION_ID_2);
+                MiniBox box3 = series.populations.get(POPULATION_ID_3);
                 
                 for (String parameter : POPULATION_PARAMETER_NAMES) {
                     assertEquals(POPULATION.get(parameter), box1.get(parameter));
@@ -441,7 +441,7 @@ public class PottsSeriesTest {
         boxes[0].addTag("ADHESION", "PARAMETER");
         
         PottsSeries series = makeSeriesForPopulation(boxes);
-        MiniBox box = series._populations.get(POPULATION_ID_1);
+        MiniBox box = series.populations.get(POPULATION_ID_1);
         
         assertEquals(adhesion, box.get("ADHESION:*"));
         assertEquals(adhesion, box.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_1));
@@ -467,7 +467,7 @@ public class PottsSeriesTest {
                 boxes[0].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "PARAMETER");
                 
                 PottsSeries series = makeSeriesForPopulation(boxes);
-                MiniBox box = series._populations.get(POPULATION_ID_1);
+                MiniBox box = series.populations.get(POPULATION_ID_1);
                 
                 for (String pop : pops) {
                     double expected = adhesion;
@@ -491,9 +491,9 @@ public class PottsSeriesTest {
         boxes[1].addTag("ADHESION", "PARAMETER");
         
         PottsSeries series = makeSeriesForPopulation(boxes);
-        MiniBox box1 = series._populations.get(POPULATION_ID_1);
-        MiniBox box2 = series._populations.get(POPULATION_ID_2);
-        MiniBox box3 = series._populations.get(POPULATION_ID_3);
+        MiniBox box1 = series.populations.get(POPULATION_ID_1);
+        MiniBox box2 = series.populations.get(POPULATION_ID_2);
+        MiniBox box3 = series.populations.get(POPULATION_ID_3);
         
         assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION:*"));
         assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_1));
@@ -530,8 +530,8 @@ public class PottsSeriesTest {
                 boxes[1].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "PARAMETER");
                 
                 PottsSeries series = makeSeriesForPopulation(boxes);
-                MiniBox box1 = series._populations.get(POPULATION_ID_1);
-                MiniBox box2 = series._populations.get(POPULATION_ID_2);
+                MiniBox box1 = series.populations.get(POPULATION_ID_1);
+                MiniBox box2 = series.populations.get(POPULATION_ID_2);
                 
                 for (String pop : pops) {
                     assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION" + TARGET_SEPARATOR + pop));
@@ -556,7 +556,7 @@ public class PottsSeriesTest {
         boxes[0].addAtt(REGION_ID_2,"fraction", "0");
         
         PottsSeries series = makeSeriesForPopulation(boxes);
-        MiniBox box = series._populations.get(POPULATION_ID_1);
+        MiniBox box = series.populations.get(POPULATION_ID_1);
         
         for (String region : regions) {
             for (String target : regions) {
@@ -587,7 +587,7 @@ public class PottsSeriesTest {
                 boxes[0].addTag(key + modifiedRegion2, "PARAMETER");
                 
                 PottsSeries series = makeSeriesForPopulation(boxes);
-                MiniBox box = series._populations.get(POPULATION_ID_1);
+                MiniBox box = series.populations.get(POPULATION_ID_1);
                 
                 for (String target : regions) {
                     String name1 = REGION_ID_1 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target;
@@ -611,7 +611,7 @@ public class PottsSeriesTest {
         Box[] boxes = new Box[] { new Box() };
         boxes[0].add("id", POPULATION_ID_1);
         PottsSeries series = makeSeriesForPopulation(boxes, conversion);
-        MiniBox box = series._populations.get(POPULATION_ID_1);
+        MiniBox box = series.populations.get(POPULATION_ID_1);
         
         for (String parameter : POPULATION_PARAMETER_NAMES) {
             double expected = POPULATION.getDouble(parameter);
@@ -631,9 +631,9 @@ public class PottsSeriesTest {
         boxes[1].add("id", POPULATION_ID_2);
         boxes[2].add("id", POPULATION_ID_3);
         PottsSeries series = makeSeriesForPopulation(boxes, conversion);
-        MiniBox box1 = series._populations.get(POPULATION_ID_1);
-        MiniBox box2 = series._populations.get(POPULATION_ID_2);
-        MiniBox box3 = series._populations.get(POPULATION_ID_3);
+        MiniBox box1 = series.populations.get(POPULATION_ID_1);
+        MiniBox box2 = series.populations.get(POPULATION_ID_2);
+        MiniBox box3 = series.populations.get(POPULATION_ID_3);
         
         for (String parameter : POPULATION_PARAMETER_NAMES) {
             double expected = POPULATION.getDouble(parameter);
@@ -664,7 +664,7 @@ public class PottsSeriesTest {
         PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
         
         try {
-            Field field = Series.class.getDeclaredField("_height");
+            Field field = Series.class.getDeclaredField("height");
             field.setAccessible(true);
             field.setInt(series, 3);
         } catch (Exception ignored) { }

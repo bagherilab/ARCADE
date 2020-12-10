@@ -9,7 +9,7 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class PottsSeries extends Series {
     /** Map of potts settings */
-    public MiniBox _potts;
+    public MiniBox potts;
     
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
@@ -26,7 +26,7 @@ public class PottsSeries extends Series {
     }
     
     protected String getSimClass() {
-        return "arcade.potts.sim.PottsSimulation" + (_height > 1 ? "3D" : "2D");
+        return "arcade.potts.sim.PottsSimulation" + (height > 1 ? "3D" : "2D");
     }
     
     protected String getVisClass() {
@@ -74,7 +74,7 @@ public class PottsSeries extends Series {
      * @param pottsDefaults  the dictionary of default potts parameters
      */
     void updatePotts(ArrayList<Box> potts, MiniBox pottsDefaults) {
-        _potts = new MiniBox();
+        this.potts = new MiniBox();
         
         Box box = new Box();
         if (potts != null && potts.size() == 1 && potts.get(0) != null) { box = potts.get(0); }
@@ -87,7 +87,7 @@ public class PottsSeries extends Series {
         // Add in parameters. Start with value (if given) or default (if not
         // given). Then apply any scaling.
         for (String parameter : pottsDefaults.getKeys()) {
-            parseParameter(_potts, parameter, pottsDefaults.get(parameter),
+            parseParameter(this.potts, parameter, pottsDefaults.get(parameter),
                     parameterValues, parameterScales);
         }
     }
@@ -101,7 +101,7 @@ public class PottsSeries extends Series {
      */
     protected void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults,
                                      MiniBox populationConversions) {
-        _populations = new HashMap<>();
+        this.populations = new HashMap<>();
         if (populations == null) { return; }
         
         // Get list of all populations (plus * indicating media).
@@ -121,7 +121,7 @@ public class PottsSeries extends Series {
             // Create new population and update code.
             MiniBox population = new MiniBox();
             population.put("CODE", code++);
-            _populations.put(id, population);
+            this.populations.put(id, population);
             
             // Add population init if given. If not given or invalid, set to zero.
             int init = (isValidNumber(p, "init") ? (int)Double.parseDouble(p.getValue("init")) : 0);

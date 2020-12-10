@@ -57,15 +57,15 @@ public class PottsOutputSerializerTest {
         PottsSeriesSerializer serializer = new PottsSeriesSerializer();
         PottsSeries series = mock(PottsSeries.class);
         
-        series._potts = new MiniBox();
+        series.potts = new MiniBox();
         
         String key1 = randomString();
         String value1 = randomString();
-        series._potts.put(key1, value1);
+        series.potts.put(key1, value1);
         
         String key2 = randomString();
         int value2 = randomIntBetween(0, 10);
-        series._potts.put(key2, value2);
+        series.potts.put(key2, value2);
         
         JsonSerializationContext context = new JsonSerializationContext() {
             public JsonElement serialize(Object src) {

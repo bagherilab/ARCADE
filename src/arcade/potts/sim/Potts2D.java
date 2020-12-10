@@ -33,8 +33,8 @@ public class Potts2D extends Potts {
         
         for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
-                if (!(i == x && j == y) && IDS[z][i][j] != id) {
-                    PottsCell b = getCell(IDS[z][i][j]);
+                if (!(i == x && j == y) && ids[z][i][j] != id) {
+                    PottsCell b = getCell(ids[z][i][j]);
                     if (a == null) { h += b.getAdhesion(0); }
                     else if (b == null) { h += a.getAdhesion(0); }
                     else { h += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop()))/2.0; }
@@ -52,8 +52,8 @@ public class Potts2D extends Potts {
         
         for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
-                Region xy = Region.values()[REGIONS[z][i][j]];
-                if (!(i == x && j == y) && IDS[z][i][j] == id && xy != region
+                Region xy = Region.values()[regions[z][i][j]];
+                if (!(i == x && j == y) && ids[z][i][j] == id && xy != region
                         && xy != Region.UNDEFINED && xy != Region.DEFAULT) {
                     h += (c.getAdhesion(region, xy) + c.getAdhesion(xy, region))/2;
                 }
@@ -71,7 +71,7 @@ public class Potts2D extends Potts {
         
         // Iterate through each neighbor.
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            int neighbor = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
+            int neighbor = ids[z][x + MOVES_X[i]][y + MOVES_Y[i]];
             
             if (neighbor != sourceID) {
                 beforeSource++;
@@ -99,8 +99,8 @@ public class Potts2D extends Potts {
         
         // Iterate through each neighbor.
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            int neighborID = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
-            int neighborRegion = REGIONS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
+            int neighborID = ids[z][x + MOVES_X[i]][y + MOVES_Y[i]];
+            int neighborRegion = regions[z][x + MOVES_X[i]][y + MOVES_Y[i]];
             
             if (neighborRegion != sourceRegion || neighborID != id) {
                 beforeSource++;
@@ -124,7 +124,7 @@ public class Potts2D extends Potts {
         boolean[][] array = new boolean[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                array[i][j] = IDS[0][i + x - 1][j + y - 1] == id;
+                array[i][j] = ids[0][i + x - 1][j + y - 1] == id;
             }
         }
         return new boolean[][][] { array };
@@ -134,8 +134,8 @@ public class Potts2D extends Potts {
         boolean[][] array = new boolean[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                array[i][j] = IDS[0][i + x - 1][j + y - 1] == id
-                        && REGIONS[0][i + x - 1][j + y - 1] == region;
+                array[i][j] = ids[0][i + x - 1][j + y - 1] == id
+                        && regions[0][i + x - 1][j + y - 1] == region;
             }
         }
         return new boolean[][][] { array };
@@ -185,24 +185,24 @@ public class Potts2D extends Potts {
     }
     
     HashSet<Integer> getUniqueIDs(int x, int y, int z) {
-        int id = IDS[z][x][y];
+        int id = ids[z][x][y];
         HashSet<Integer> unique = new HashSet<>();
         
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            int neighbor = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
+            int neighbor = ids[z][x + MOVES_X[i]][y + MOVES_Y[i]];
             if (id != neighbor) { unique.add(neighbor); }
         }
         return unique;
     }
     
     HashSet<Integer> getUniqueRegions(int x, int y, int z) {
-        int id = IDS[z][x][y];
-        int region = REGIONS[z][x][y];
+        int id = ids[z][x][y];
+        int region = regions[z][x][y];
         HashSet<Integer> unique = new HashSet<>();
         
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            int neighborID = IDS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
-            int neighborRegion = REGIONS[z][x + MOVES_X[i]][y + MOVES_Y[i]];
+            int neighborID = ids[z][x + MOVES_X[i]][y + MOVES_Y[i]];
+            int neighborRegion = regions[z][x + MOVES_X[i]][y + MOVES_Y[i]];
             
             if (neighborID != id) { continue; }
             if (region != neighborRegion) { unique.add(neighborRegion); }

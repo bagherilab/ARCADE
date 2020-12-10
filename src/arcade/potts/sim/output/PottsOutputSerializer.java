@@ -33,7 +33,7 @@ public final class PottsOutputSerializer {
             JsonObject json = (JsonObject)context.serialize(src, Series.class);
             
             // Add potts parameters.
-            JsonElement potts = context.serialize(src._potts);
+            JsonElement potts = context.serialize(src.potts);
             json.add("potts", potts);
             
             return json;

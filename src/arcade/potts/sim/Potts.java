@@ -11,28 +11,28 @@ import static arcade.potts.util.PottsEnums.Term;
 
 public abstract class Potts implements Steppable {
     /** Length (x direction) of potts array */
-    final int LENGTH;
+    final int length;
     
     /** Width (y direction) of potts array */
-    final int WIDTH;
+    final int width;
     
     /** Depth (z direction) of potts array */
-    final int HEIGHT;
+    final int height;
     
     /** Number of steps in Monte Carlo Step */
-    final int STEPS;
+    final int steps;
     
     /** Effective cell temperature */
-    final double TEMPERATURE;
+    final double temperature;
     
     /** {@code true} if cells have regions, {@code false} otherwise */
-    final boolean HAS_REGIONS;
+    final boolean hasRegions;
     
     /** Potts array for ids */
-    public int[][][] IDS;
+    public int[][][] ids;
     
     /** Potts array for regions */
-    public int[][][] REGIONS;
+    public int[][][] regions;
     
     /** Grid holding cells */
     public Grid grid;
@@ -44,23 +44,23 @@ public abstract class Potts implements Steppable {
      */
     public Potts(PottsSeries series) {
         // Creates potts arrays.
-        IDS = new int[series._height][series._length][series._width];
-        REGIONS = new int[series._height][series._length][series._width];
+        ids = new int[series.height][series.length][series.width];
+        regions = new int[series.height][series.length][series.width];
         
         // Ensure a 1 voxel border around to avoid boundary checks.
-        LENGTH = series._length - 2;
-        WIDTH = series._width - 2;
-        HEIGHT = (series._height == 1 ? 1 : series._height - 2);
+        length = series.length - 2;
+        width = series.width - 2;
+        height = (series.height == 1 ? 1 : series.height - 2);
         
         // Number of Monte Carlo steps
-        int mcs = series._potts.getInt("MCS");
-        STEPS = mcs*LENGTH*WIDTH*HEIGHT;
+        int mcs = series.potts.getInt("MCS");
+        steps = mcs*length*width*height;
         
         // Get temperature.
-        TEMPERATURE = series._potts.getDouble("TEMPERATURE");
+        temperature = series.potts.getDouble("TEMPERATURE");
         
         // Check if there are regions.
-        HAS_REGIONS = series._populations.values().stream()
+        hasRegions = series.populations.values().stream()
                 .map(e -> e.filter("(REGION)").getKeys().size())
                 .anyMatch(e -> e > 0);
     }
@@ -75,15 +75,15 @@ public abstract class Potts implements Steppable {
         double r;
         int x, y, z;
         
-        for (int step = 0; step < STEPS; step++) {
+        for (int step = 0; step < steps; step++) {
             // Get random coordinate for candidate.
-            x = random.nextInt(LENGTH) + 1;
-            y = random.nextInt(WIDTH) + 1;
-            z = (HEIGHT == 1 ? 0 : random.nextInt(HEIGHT) + 1);
+            x = random.nextInt(length) + 1;
+            y = random.nextInt(width) + 1;
+            z = (height == 1 ? 0 : random.nextInt(height) + 1);
             r = random.nextDouble();
             
             // Check if cell has regions.
-            boolean hasRegions = (IDS[z][x][y] != 0 && getCell(IDS[z][x][y]).hasRegions());
+            boolean hasRegions = (ids[z][x][y] != 0 && getCell(ids[z][x][y]).hasRegions());
             
             // Get unique targets.
             HashSet<Integer> uniqueIDTargets = getUniqueIDs(x, y, z);
@@ -94,12 +94,12 @@ public abstract class Potts implements Steppable {
             if (hasRegions && uniqueRegionTargets.size() > 0) {
                 int i = simstate.random.nextInt(uniqueRegionTargets.size());
                 int targetRegion = (int)uniqueRegionTargets.toArray()[i];
-                flip(IDS[z][x][y], REGIONS[z][x][y], targetRegion, x, y, z, r);
+                flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);
             }
             else if (uniqueIDTargets.size() > 0) {
                 int i = simstate.random.nextInt(uniqueIDTargets.size());
                 int targetID = (int)uniqueIDTargets.toArray()[i];
-                flip(IDS[z][x][y], targetID, x, y, z, r);
+                flip(ids[z][x][y], targetID, x, y, z, r);
             }
         }
     }
@@ -118,12 +118,12 @@ public abstract class Potts implements Steppable {
         // Check connectivity of source.
         if (sourceID > 0) {
             boolean[][][] neighborhood = getNeighborhood(sourceID, x, y, z);
-            boolean candidateConnected = getConnectivity(neighborhood, IDS[z][x][y] == 0);
+            boolean candidateConnected = getConnectivity(neighborhood, ids[z][x][y] == 0);
             if (!candidateConnected) { return; }
             
             // Check connectivity of regions.
-            if (REGIONS[z][x][y] > Region.DEFAULT.ordinal()) {
-                boolean[][][] rNeighborhood = getNeighborhood(sourceID, REGIONS[z][x][y], x, y, z);
+            if (regions[z][x][y] > Region.DEFAULT.ordinal()) {
+                boolean[][][] rNeighborhood = getNeighborhood(sourceID, regions[z][x][y], x, y, z);
                 boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);
                 if (!candidateRegionConnected) { return; }
             }
@@ -132,12 +132,12 @@ public abstract class Potts implements Steppable {
         // Check connectivity of target.
         if (targetID > 0) {
             boolean[][][] neighborhood = getNeighborhood(targetID, x, y, z);
-            boolean targetConnected = getConnectivity(neighborhood, IDS[z][x][y] == 0);
+            boolean targetConnected = getConnectivity(neighborhood, ids[z][x][y] == 0);
             if (!targetConnected) { return; }
             
             // Check connectivity of regions.
-            if (REGIONS[z][x][y] > Region.DEFAULT.ordinal()) {
-                boolean[][][] rNeighborhood = getNeighborhood(targetID, REGIONS[z][x][y], x, y, z);
+            if (regions[z][x][y] > Region.DEFAULT.ordinal()) {
+                boolean[][][] rNeighborhood = getNeighborhood(targetID, regions[z][x][y], x, y, z);
                 boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);
                 if (!candidateRegionConnected) { return; }
             }
@@ -167,12 +167,12 @@ public abstract class Potts implements Steppable {
         // Calculate probability.
         double p;
         if (dH < 0) { p = 1; }
-        else { p = Math.exp(-dH/TEMPERATURE); }
+        else { p = Math.exp(-dH/temperature); }
         
         if (r < p) {
-            IDS[z][x][y] = targetID;
-            if (HAS_REGIONS) {
-                REGIONS[z][x][y] = (targetID == 0
+            ids[z][x][y] = targetID;
+            if (hasRegions) {
+                regions[z][x][y] = (targetID == 0
                         ? Region.UNDEFINED.ordinal()
                         : Region.DEFAULT.ordinal());
             }
@@ -233,10 +233,10 @@ public abstract class Potts implements Steppable {
         // Calculate probability.
         double p;
         if (dH < 0) { p = 1; }
-        else { p = Math.exp(-dH/TEMPERATURE); }
+        else { p = Math.exp(-dH/temperature); }
         
         if (r < p) {
-            REGIONS[z][x][y] = targetRegion;
+            regions[z][x][y] = targetRegion;
             PottsCell c = getCell(id);
             ((PottsLocation)c.getLocation()).remove(Region.values()[sourceRegion], x, y, z);
             ((PottsLocation)c.getLocation()).add(Region.values()[targetRegion], x, y, z);

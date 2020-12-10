@@ -60,17 +60,17 @@ public final class OutputSerializer {
             json.addProperty("ticks", src.getTicks());
             
             JsonObject size = new JsonObject();
-            size.addProperty("length", src._length);
-            size.addProperty("width", src._width);
-            size.addProperty("height", src._height);
+            size.addProperty("length", src.length);
+            size.addProperty("width", src.width);
+            size.addProperty("height", src.height);
             json.add("size", size);
             
             // Add population parameters.
             JsonObject populations = new JsonObject();
-            List<String> keys = new ArrayList<>(src._populations.keySet());
+            List<String> keys = new ArrayList<>(src.populations.keySet());
             Collections.sort(keys);
             for (String pop : keys) {
-                JsonElement population = context.serialize(src._populations.get(pop));
+                JsonElement population = context.serialize(src.populations.get(pop));
                 populations.add(pop, population);
             }
             json.add("populations", populations);

@@ -116,10 +116,10 @@ public class PottsTest {
         populations.get("B").put("REGION/region", "0.0");
         
         PottsSeries series = mock(PottsSeries.class);
-        series._potts = mock(MiniBox.class);
-        series._populations = populations;
-        doReturn(TEMPERATURE).when(series._potts).getDouble("TEMPERATURE");
-        doReturn(1).when(series._potts).getInt("MCS");
+        series.potts = mock(MiniBox.class);
+        series.populations = populations;
+        doReturn(TEMPERATURE).when(series.potts).getDouble("TEMPERATURE");
+        doReturn(1).when(series.potts).getInt("MCS");
         
         potts = new PottsMock(series);
         potts.grid = grid;
@@ -181,9 +181,9 @@ public class PottsTest {
     
     static PottsSeries makeSeries() {
         PottsSeries series = mock(PottsSeries.class);
-        series._potts = mock(MiniBox.class);
-        series._populations = mock(HashMap.class);
-        doReturn(1).when(series._potts).getInt("MCS");
+        series.potts = mock(MiniBox.class);
+        series.populations = mock(HashMap.class);
+        doReturn(1).when(series.potts).getInt("MCS");
         return series;
     }
     
@@ -191,15 +191,15 @@ public class PottsTest {
         PottsSeries series = makeSeries();
         
         try {
-            Field lengthField = Series.class.getDeclaredField("_length");
+            Field lengthField = Series.class.getDeclaredField("length");
             lengthField.setAccessible(true);
             lengthField.setInt(series, length);
             
-            Field widthField = Series.class.getDeclaredField("_width");
+            Field widthField = Series.class.getDeclaredField("width");
             widthField.setAccessible(true);
             widthField.setInt(series, width);
             
-            Field heightField = Series.class.getDeclaredField("_height");
+            Field heightField = Series.class.getDeclaredField("height");
             heightField.setAccessible(true);
             heightField.setInt(series, height);
         } catch (Exception ignored) { }
@@ -211,10 +211,10 @@ public class PottsTest {
         PottsSeries series = makeSeries(4, 4, 1);
         PottsMock spy = spy(new PottsMock(series));
         
-        spy.REGIONS[0][0][0] = Region.NUCLEUS.ordinal();
-        spy.REGIONS[0][0][1] = Region.NUCLEUS.ordinal();
-        spy.REGIONS[0][1][0] = Region.NUCLEUS.ordinal();
-        spy.REGIONS[0][1][1] = Region.NUCLEUS.ordinal();
+        spy.regions[0][0][0] = Region.NUCLEUS.ordinal();
+        spy.regions[0][0][1] = Region.NUCLEUS.ordinal();
+        spy.regions[0][1][0] = Region.NUCLEUS.ordinal();
+        spy.regions[0][1][1] = Region.NUCLEUS.ordinal();
         
         doNothing().when(spy).change(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyDouble());
         doNothing().when(spy).change(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyDouble());
@@ -228,11 +228,11 @@ public class PottsTest {
         spy.grid = grid;
         
         try {
-            Field regionField = Potts.class.getDeclaredField("HAS_REGIONS");
+            Field regionField = Potts.class.getDeclaredField("hasRegions");
             regionField.setAccessible(true);
             regionField.setBoolean(spy, hasRegions);
             
-            Field tempField = Potts.class.getDeclaredField("TEMPERATURE");
+            Field tempField = Potts.class.getDeclaredField("temperature");
             tempField.setAccessible(true);
             tempField.setDouble(spy, TEMPERATURE);
         } catch (Exception ignored) { }
@@ -267,7 +267,7 @@ public class PottsTest {
         spy.grid = grid;
         
         try {
-            Field tempField = Potts.class.getDeclaredField("TEMPERATURE");
+            Field tempField = Potts.class.getDeclaredField("temperature");
             tempField.setAccessible(true);
             tempField.setDouble(spy, TEMPERATURE);
         } catch (Exception ignored) { }
@@ -292,16 +292,16 @@ public class PottsTest {
         PottsSeries series = makeSeries(length + 2, width + 2, 1);
         PottsMock potts = new PottsMock(series);
         
-        assertEquals(length, potts.LENGTH);
-        assertEquals(width, potts.WIDTH);
-        assertEquals(1, potts.HEIGHT);
+        assertEquals(length, potts.length);
+        assertEquals(width, potts.width);
+        assertEquals(1, potts.height);
         
-        assertEquals(1, potts.IDS.length);
-        assertEquals(1, potts.REGIONS.length);
-        assertEquals(length + 2, potts.IDS[0].length);
-        assertEquals(length + 2, potts.REGIONS[0].length);
-        assertEquals(width + 2, potts.IDS[0][0].length);
-        assertEquals(width + 2, potts.REGIONS[0][0].length);
+        assertEquals(1, potts.ids.length);
+        assertEquals(1, potts.regions.length);
+        assertEquals(length + 2, potts.ids[0].length);
+        assertEquals(length + 2, potts.regions[0].length);
+        assertEquals(width + 2, potts.ids[0][0].length);
+        assertEquals(width + 2, potts.regions[0][0].length);
     }
     
     @Test
@@ -311,16 +311,16 @@ public class PottsTest {
         PottsSeries series = makeSeries(length + 2, width + 2, 4);
         PottsMock potts = new PottsMock(series);
         
-        assertEquals(length, potts.LENGTH);
-        assertEquals(width, potts.WIDTH);
-        assertEquals(2, potts.HEIGHT);
+        assertEquals(length, potts.length);
+        assertEquals(width, potts.width);
+        assertEquals(2, potts.height);
         
-        assertEquals(4, potts.IDS.length);
-        assertEquals(4, potts.REGIONS.length);
-        assertEquals(length + 2, potts.IDS[0].length);
-        assertEquals(length + 2, potts.REGIONS[0].length);
-        assertEquals(width + 2, potts.IDS[0][0].length);
-        assertEquals(width + 2, potts.REGIONS[0][0].length);
+        assertEquals(4, potts.ids.length);
+        assertEquals(4, potts.regions.length);
+        assertEquals(length + 2, potts.ids[0].length);
+        assertEquals(length + 2, potts.regions[0].length);
+        assertEquals(width + 2, potts.ids[0][0].length);
+        assertEquals(width + 2, potts.regions[0][0].length);
     }
     
     @Test
@@ -332,59 +332,59 @@ public class PottsTest {
         int mcs = (int)(Math.random()*100);
         
         PottsSeries series = makeSeries(length, width, height);
-        series._potts = new MiniBox();
-        series._potts.put("TEMPERATURE", temperature);
-        series._potts.put("MCS", mcs);
+        series.potts = new MiniBox();
+        series.potts.put("TEMPERATURE", temperature);
+        series.potts.put("MCS", mcs);
         
         PottsMock potts = new PottsMock(series);
         
-        assertEquals(mcs*(length - 2)*(width - 2)*(height - 2), potts.STEPS);
-        assertEquals(temperature, potts.TEMPERATURE, EPSILON);
+        assertEquals(mcs*(length - 2)*(width - 2)*(height - 2), potts.steps);
+        assertEquals(temperature, potts.temperature, EPSILON);
     }
     
     @Test
     public void Potts_noPopulations_setsFalse() {
         PottsSeries series = makeSeries(0, 0, 0);
-        series._populations = new HashMap<>();
+        series.populations = new HashMap<>();
         
         PottsMock potts = new PottsMock(series);
-        assertFalse(potts.HAS_REGIONS);
+        assertFalse(potts.hasRegions);
     }
     
     @Test
     public void Potts_noRegions_setsFalse() {
         PottsSeries series = makeSeries(0, 0, 0);
-        series._populations = new HashMap<>();
+        series.populations = new HashMap<>();
         
         MiniBox popA = new MiniBox();
         MiniBox popB = new MiniBox();
         MiniBox popC = new MiniBox();
         
-        series._populations.put("A", popA);
-        series._populations.put("B", popB);
-        series._populations.put("C", popC);
+        series.populations.put("A", popA);
+        series.populations.put("B", popB);
+        series.populations.put("C", popC);
         
         PottsMock potts = new PottsMock(series);
-        assertFalse(potts.HAS_REGIONS);
+        assertFalse(potts.hasRegions);
     }
     
     @Test
     public void Potts_withRegions_setsTrue() {
         PottsSeries series = makeSeries(0, 0, 0);
-        series._populations = new HashMap<>();
+        series.populations = new HashMap<>();
         
         MiniBox popA = new MiniBox();
         MiniBox popB = new MiniBox();
         MiniBox popC = new MiniBox();
         
-        series._populations.put("A", popA);
-        series._populations.put("B", popB);
-        series._populations.put("C", popC);
+        series.populations.put("A", popA);
+        series.populations.put("B", popB);
+        series.populations.put("C", popC);
         
         popB.put("(REGION)" + TAG_SEPARATOR + "X", "0");
         
         PottsMock potts = new PottsMock(series);
-        assertTrue(potts.HAS_REGIONS);
+        assertTrue(potts.hasRegions);
     }
     
     @Test
@@ -398,7 +398,7 @@ public class PottsTest {
         
         PottsSeries series = makeSeries(length, width, 1);
         PottsMock spy = spy(new PottsMock(series));
-        int steps = spy.LENGTH*spy.WIDTH*spy.HEIGHT;
+        int steps = spy.length*spy.width*spy.height;
         
         spy.step(simstate);
         verify(spy, times(steps)).getUniqueIDs(
@@ -424,7 +424,7 @@ public class PottsTest {
         PottsSeries series = makeSeries(length, width, height);
         
         PottsMock spy = spy(new PottsMock(series));
-        int steps = spy.LENGTH*spy.WIDTH*spy.HEIGHT;
+        int steps = spy.length*spy.width*spy.height;
         
         spy.step(simstate);
         verify(spy, times(steps)).getUniqueIDs(
@@ -449,7 +449,7 @@ public class PottsTest {
         PottsSeries series = makeSeries(3, 3, 1);
         
         PottsMock spy = spy(new PottsMock(series));
-        spy.IDS[0][0][0] = 1;
+        spy.ids[0][0][0] = 1;
         
         PottsCell cell = mock(PottsCell.class);
         doReturn(false).when(cell).hasRegions();
@@ -475,7 +475,7 @@ public class PottsTest {
         PottsSeries series = makeSeries(3, 3, 1);
         
         PottsMock spy = spy(new PottsMock(series));
-        spy.IDS[0][0][0] = 1;
+        spy.ids[0][0][0] = 1;
         
         PottsCell cell = mock(PottsCell.class);
         doReturn(true).when(cell).hasRegions();
@@ -501,8 +501,8 @@ public class PottsTest {
         PottsSeries series = makeSeries(3, 3, 1);
         
         PottsMock spy = spy(new PottsMock(series));
-        spy.IDS[0][1][0] = 1;
-        spy.REGIONS[0][1][0] = Region.DEFAULT.ordinal();
+        spy.ids[0][1][0] = 1;
+        spy.regions[0][1][0] = Region.DEFAULT.ordinal();
         
         PottsCell cell = mock(PottsCell.class);
         doReturn(false).when(cell).hasRegions();
@@ -528,8 +528,8 @@ public class PottsTest {
         PottsSeries series = makeSeries(3, 3, 1);
         
         PottsMock spy = spy(new PottsMock(series));
-        spy.IDS[0][1][0] = 1;
-        spy.REGIONS[0][1][0] = Region.DEFAULT.ordinal();
+        spy.ids[0][1][0] = 1;
+        spy.regions[0][1][0] = Region.DEFAULT.ordinal();
         
         PottsCell cell = mock(PottsCell.class);
         doReturn(true).when(cell).hasRegions();
@@ -554,7 +554,7 @@ public class PottsTest {
     @Test
     public void flip_unconnectedSourceIDNeighbor_returns() {
         PottsMock spy = makeFlipMock();
-        spy.IDS[0][0][0] = 1;
+        spy.ids[0][0][0] = 1;
         spy.flip(1, 0, 0, 0, 0, R);
         verify(spy).getNeighborhood(1, 0, 0, 0);
         verify(spy, never()).change(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), eq(R));
@@ -581,7 +581,7 @@ public class PottsTest {
     @Test
     public void flip_connectedSourceDefaultRegion_completes() {
         PottsMock spy = makeFlipMock();
-        spy.REGIONS[0][1][1] = Region.DEFAULT.ordinal();
+        spy.regions[0][1][1] = Region.DEFAULT.ordinal();
         spy.flip(1, 0, 1, 1, 0, R);
         verify(spy).getNeighborhood(1, 1, 1, 0);
         verify(spy, never()).getNeighborhood(1, Region.DEFAULT.ordinal(), 1, 1, 0);
@@ -599,7 +599,7 @@ public class PottsTest {
     @Test
     public void flip_unconnectedTargetIDNeighbor_returns() {
         PottsMock spy = makeFlipMock();
-        spy.IDS[0][0][0] = 1;
+        spy.ids[0][0][0] = 1;
         spy.flip(0, 2, 0, 0, 0, R);
         verify(spy).getNeighborhood(2, 0, 0, 0);
         verify(spy, never()).change(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), eq(R));
@@ -626,7 +626,7 @@ public class PottsTest {
     @Test
     public void flip_connectedTargetDefaultRegion_completes() {
         PottsMock spy = makeFlipMock();
-        spy.REGIONS[0][1][1] = Region.DEFAULT.ordinal();
+        spy.regions[0][1][1] = Region.DEFAULT.ordinal();
         spy.flip(0, 2, 1, 1, 0, R);
         verify(spy).getNeighborhood(2, 1, 1, 0);
         verify(spy, never()).getNeighborhood(2, Region.DEFAULT.ordinal(), 1, 1, 0);
@@ -647,33 +647,33 @@ public class PottsTest {
     @Test
     public void change_negativeEnergyZeroSourceNonzeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(0, 1, -1, true);
-        spy.IDS[0][0][0] = 0;
-        spy.REGIONS[0][0][0] = Region.UNDEFINED.ordinal();
+        spy.ids[0][0][0] = 0;
+        spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         spy.change(0, 1, 0, 0, 0, 0);
-        assertEquals(1, spy.IDS[0][0][0]);
-        assertEquals(Region.DEFAULT.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(1, spy.ids[0][0][0]);
+        assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).add(0, 0, 0);
     }
     
     @Test
     public void change_negativeEnergyNonzeroSourceZeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 0, -1, true);
-        spy.IDS[0][0][0] = 1;
-        spy.REGIONS[0][0][0] = Region.DEFAULT.ordinal();
+        spy.ids[0][0][0] = 1;
+        spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         spy.change(1, 0, 0, 0, 0, 0);
-        assertEquals(0, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(0, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
     
     @Test
     public void change_negativeEnergyNonzeroSourceNonzeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 2, -1, true);
-        spy.IDS[0][0][0] = 1;
-        spy.REGIONS[0][0][0] = Region.DEFAULT.ordinal();
+        spy.ids[0][0][0] = 1;
+        spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         spy.change(1, 2, 0, 0, 0, 0);
-        assertEquals(2, spy.IDS[0][0][0]);
-        assertEquals(Region.DEFAULT.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(2, spy.ids[0][0][0]);
+        assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
@@ -681,17 +681,17 @@ public class PottsTest {
     @Test
     public void change_positiveEnergyZeroSourceNonzeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(0, 1, 1, true);
-        spy.IDS[0][0][0] = 0;
-        spy.REGIONS[0][0][0] = Region.UNDEFINED.ordinal();
+        spy.ids[0][0][0] = 0;
+        spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         
         spy.change(0, 1, 0, 0, 0, R_PLUS);
-        assertEquals(0, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(0, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).add(0, 0, 0);
         
         spy.change(0, 1, 0, 0, 0, R_MINUS);
-        assertEquals(1, spy.IDS[0][0][0]);
-        assertEquals(Region.DEFAULT.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(1, spy.ids[0][0][0]);
+        assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
         Cell cell2 = (Cell)spy.grid.getObjectAt(1);
         verify((PottsLocation)cell2.getLocation()).add(0, 0, 0);
     }
@@ -699,35 +699,35 @@ public class PottsTest {
     @Test
     public void change_positiveEnergyNonzeroSourceZeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 0, 1, true);
-        spy.IDS[0][0][0] = 1;
-        spy.REGIONS[0][0][0] = Region.DEFAULT.ordinal();
+        spy.ids[0][0][0] = 1;
+        spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         
         spy.change(1, 0, 0, 0, 0, R_PLUS);
-        assertEquals(1, spy.IDS[0][0][0]);
-        assertEquals(Region.DEFAULT.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(1, spy.ids[0][0][0]);
+        assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
         
         spy.change(1, 0, 0, 0, 0, R_MINUS);
-        assertEquals(0, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(0, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
     
     @Test
     public void change_positiveEnergyNonzeroSourceNonzeroTargetRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 2, 1, true);
-        spy.IDS[0][0][0] = 1;
-        spy.REGIONS[0][0][0] = Region.DEFAULT.ordinal();
+        spy.ids[0][0][0] = 1;
+        spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         
         spy.change(1, 2, 0, 0, 0, R_PLUS);
-        assertEquals(1, spy.IDS[0][0][0]);
-        assertEquals(Region.DEFAULT.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(1, spy.ids[0][0][0]);
+        assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation()), never()).add(0, 0, 0);
         
         spy.change(1, 2, 0, 0, 0, R_MINUS);
-        assertEquals(2, spy.IDS[0][0][0]);
-        assertEquals(Region.DEFAULT.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(2, spy.ids[0][0][0]);
+        assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
     }
@@ -735,33 +735,33 @@ public class PottsTest {
     @Test
     public void change_negativeEnergyZeroSourceNonzeroTargetNoRegions_updatesFields() {
         PottsMock spy = makeChangeMock(0, 1, -1, false);
-        spy.IDS[0][0][0] = 0;
-        spy.REGIONS[0][0][0] = Region.UNDEFINED.ordinal();
+        spy.ids[0][0][0] = 0;
+        spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         spy.change(0, 1, 0, 0, 0, 0);
-        assertEquals(1, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(1, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).add(0, 0, 0);
     }
     
     @Test
     public void change_negativeEnergyNonzeroSourceZeroTargetNoRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 0, -1, false);
-        spy.IDS[0][0][0] = 1;
-        spy.REGIONS[0][0][0] = Region.UNDEFINED.ordinal();
+        spy.ids[0][0][0] = 1;
+        spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         spy.change(1, 0, 0, 0, 0, 0);
-        assertEquals(0, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(0, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
     
     @Test
     public void change_negativeEnergyNonzeroSourceNonzeroTargetNoRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 2, -1, false);
-        spy.IDS[0][0][0] = 1;
-        spy.REGIONS[0][0][0] = Region.UNDEFINED.ordinal();
+        spy.ids[0][0][0] = 1;
+        spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         spy.change(1, 2, 0, 0, 0, 0);
-        assertEquals(2, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(2, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
@@ -769,52 +769,52 @@ public class PottsTest {
     @Test
     public void change_positiveEnergyZeroSourceNonzeroTargetNoRegions_updatesFields() {
         PottsMock spy = makeChangeMock(0, 1, 1, false);
-        spy.IDS[0][0][0] = 0;
-        spy.REGIONS[0][0][0] = Region.UNDEFINED.ordinal();
+        spy.ids[0][0][0] = 0;
+        spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         
         spy.change(0, 1, 0, 0, 0, R_PLUS);
-        assertEquals(0, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(0, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).add(0, 0, 0);
         
         spy.change(0, 1, 0, 0, 0, R_MINUS);
-        assertEquals(1, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(1, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).add(0, 0, 0);
     }
     
     @Test
     public void change_positiveEnergyNonzeroSourceZeroTargetNoRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 0, 1, false);
-        spy.IDS[0][0][0] = 1;
-        spy.REGIONS[0][0][0] = Region.UNDEFINED.ordinal();
+        spy.ids[0][0][0] = 1;
+        spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         
         spy.change(1, 0, 0, 0, 0, R_PLUS);
-        assertEquals(1, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(1, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
         
         spy.change(1, 0, 0, 0, 0, R_MINUS);
-        assertEquals(0, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(0, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
     }
     
     @Test
     public void change_positiveEnergyNonzeroSourceNonzeroTargetNoRegions_updatesFields() {
         PottsMock spy = makeChangeMock(1, 2, 1, false);
-        spy.IDS[0][0][0] = 1;
-        spy.REGIONS[0][0][0] = Region.UNDEFINED.ordinal();
+        spy.ids[0][0][0] = 1;
+        spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         
         spy.change(1, 2, 0, 0, 0, R_PLUS);
-        assertEquals(1, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(1, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).remove(0, 0, 0);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation()), never()).add(0, 0, 0);
         
         spy.change(1, 2, 0, 0, 0, R_MINUS);
-        assertEquals(2, spy.IDS[0][0][0]);
-        assertEquals(Region.UNDEFINED.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(2, spy.ids[0][0][0]);
+        assertEquals(Region.UNDEFINED.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(0, 0, 0);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(2)).getLocation())).add(0, 0, 0);
     }
@@ -865,10 +865,10 @@ public class PottsTest {
     @Test
     public void change_negativeEnergyRegions_updatesFields() {
         PottsMock spy = makeChangeMock(Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), -1);
-        spy.IDS[0][0][0] = 1;
-        spy.REGIONS[0][0][0] = Region.DEFAULT.ordinal();
+        spy.ids[0][0][0] = 1;
+        spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         spy.change(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0, 0);
-        assertEquals(Region.NUCLEUS.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(Region.NUCLEUS.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(Region.DEFAULT, 0, 0, 0);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).add(Region.NUCLEUS, 0, 0, 0);
     }
@@ -876,16 +876,16 @@ public class PottsTest {
     @Test
     public void change_positiveEnergyRegions_updatesFields() {
         PottsMock spy = makeChangeMock(Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 1);
-        spy.IDS[0][0][0] = 1;
-        spy.REGIONS[0][0][0] = Region.DEFAULT.ordinal();
+        spy.ids[0][0][0] = 1;
+        spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         
         spy.change(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0, R_PLUS);
-        assertEquals(Region.DEFAULT.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(Region.DEFAULT.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).remove(Region.DEFAULT, 0, 0, 0);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation()), never()).add(Region.NUCLEUS, 0, 0, 0);
         
         spy.change(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0, R_MINUS);
-        assertEquals(Region.NUCLEUS.ordinal(), spy.REGIONS[0][0][0]);
+        assertEquals(Region.NUCLEUS.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).remove(Region.DEFAULT, 0, 0, 0);
         verify(((PottsLocation)((Cell)spy.grid.getObjectAt(1)).getLocation())).add(Region.NUCLEUS, 0, 0, 0);
     }

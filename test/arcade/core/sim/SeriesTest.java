@@ -248,9 +248,9 @@ public class SeriesTest {
         HashMap<String, MiniBox> setupDicts = makeDicts();
         Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false));
         
-        assertEquals(DEFAULT_LENGTH, series._length);
-        assertEquals(DEFAULT_WIDTH, series._width);
-        assertEquals(DEFAULT_HEIGHT, series._height);
+        assertEquals(DEFAULT_LENGTH, series.length);
+        assertEquals(DEFAULT_WIDTH, series.width);
+        assertEquals(DEFAULT_HEIGHT, series.height);
     }
     
     @Test
@@ -265,23 +265,23 @@ public class SeriesTest {
         setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(length, series._length);
-        assertEquals(DEFAULT_WIDTH, series._width);
-        assertEquals(DEFAULT_HEIGHT, series._height);
+        assertEquals(length, series.length);
+        assertEquals(DEFAULT_WIDTH, series.width);
+        assertEquals(DEFAULT_HEIGHT, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("width", width);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(DEFAULT_LENGTH, series._length);
-        assertEquals(width, series._width);
-        assertEquals(DEFAULT_HEIGHT, series._height);
+        assertEquals(DEFAULT_LENGTH, series.length);
+        assertEquals(width, series.width);
+        assertEquals(DEFAULT_HEIGHT, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("height", height);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(DEFAULT_LENGTH, series._length);
-        assertEquals(DEFAULT_WIDTH, series._width);
-        assertEquals(height, series._height);
+        assertEquals(DEFAULT_LENGTH, series.length);
+        assertEquals(DEFAULT_WIDTH, series.width);
+        assertEquals(height, series.height);
     }
     
     @Test
@@ -297,25 +297,25 @@ public class SeriesTest {
         setupDicts.get("series").put("length", length);
         setupDicts.get("series").put("width", width);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(length, series._length);
-        assertEquals(width, series._width);
-        assertEquals(DEFAULT_HEIGHT, series._height);
+        assertEquals(length, series.length);
+        assertEquals(width, series.width);
+        assertEquals(DEFAULT_HEIGHT, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("width", width);
         setupDicts.get("series").put("height", height);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(DEFAULT_LENGTH, series._length);
-        assertEquals(width, series._width);
-        assertEquals(height, series._height);
+        assertEquals(DEFAULT_LENGTH, series.length);
+        assertEquals(width, series.width);
+        assertEquals(height, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
         setupDicts.get("series").put("height", height);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(length, series._length);
-        assertEquals(DEFAULT_WIDTH, series._width);
-        assertEquals(height, series._height);
+        assertEquals(length, series.length);
+        assertEquals(DEFAULT_WIDTH, series.width);
+        assertEquals(height, series.height);
     }
     
     @Test
@@ -330,9 +330,9 @@ public class SeriesTest {
         setupDicts.get("series").put("height", height);
         Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
         
-        assertEquals(length, series._length);
-        assertEquals(width, series._width);
-        assertEquals(height, series._height);
+        assertEquals(length, series.length);
+        assertEquals(width, series.width);
+        assertEquals(height, series.height);
     }
     
     @Test
@@ -347,23 +347,23 @@ public class SeriesTest {
         setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(length, series._length);
-        assertEquals(DEFAULT_WIDTH, series._width);
-        assertEquals(DEFAULT_HEIGHT, series._height);
+        assertEquals(length, series.length);
+        assertEquals(DEFAULT_WIDTH, series.width);
+        assertEquals(DEFAULT_HEIGHT, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("width", width);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(DEFAULT_LENGTH, series._length);
-        assertEquals(width, series._width);
-        assertEquals(DEFAULT_HEIGHT, series._height);
+        assertEquals(DEFAULT_LENGTH, series.length);
+        assertEquals(width, series.width);
+        assertEquals(DEFAULT_HEIGHT, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("height", height);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(DEFAULT_LENGTH, series._length);
-        assertEquals(DEFAULT_WIDTH, series._width);
-        assertEquals(height + 1, series._height);
+        assertEquals(DEFAULT_LENGTH, series.length);
+        assertEquals(DEFAULT_WIDTH, series.width);
+        assertEquals(height + 1, series.height);
     }
     
     @Test
@@ -379,25 +379,25 @@ public class SeriesTest {
         setupDicts.get("series").put("length", length);
         setupDicts.get("series").put("width", width);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(length, series._length);
-        assertEquals(width, series._width);
-        assertEquals(DEFAULT_HEIGHT, series._height);
+        assertEquals(length, series.length);
+        assertEquals(width, series.width);
+        assertEquals(DEFAULT_HEIGHT, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("width", width);
         setupDicts.get("series").put("height", height);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(DEFAULT_LENGTH, series._length);
-        assertEquals(width, series._width);
-        assertEquals(height + 1, series._height);
+        assertEquals(DEFAULT_LENGTH, series.length);
+        assertEquals(width, series.width);
+        assertEquals(height + 1, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
         setupDicts.get("series").put("height", height);
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
-        assertEquals(length, series._length);
-        assertEquals(DEFAULT_WIDTH, series._width);
-        assertEquals(height + 1, series._height);
+        assertEquals(length, series.length);
+        assertEquals(DEFAULT_WIDTH, series.width);
+        assertEquals(height + 1, series.height);
     }
     
     @Test
@@ -412,9 +412,9 @@ public class SeriesTest {
         setupDicts.get("series").put("height", height);
         Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
         
-        assertEquals(length, series._length);
-        assertEquals(width, series._width);
-        assertEquals(height + 1, series._height);
+        assertEquals(length, series.length);
+        assertEquals(width, series.width);
+        assertEquals(height + 1, series.height);
     }
     
     @Test

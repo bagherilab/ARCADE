@@ -22,18 +22,18 @@ public class PottsLocationFactoryTest {
     
     static Series createSeries(int length, int width, int height, double[] volumes) {
         Series series = mock(Series.class);
-        series._populations = new HashMap<>();
+        series.populations = new HashMap<>();
         
         try {
-            Field lengthField = Series.class.getDeclaredField("_length");
+            Field lengthField = Series.class.getDeclaredField("length");
             lengthField.setAccessible(true);
             lengthField.setInt(series, length);
             
-            Field widthField = Series.class.getDeclaredField("_width");
+            Field widthField = Series.class.getDeclaredField("width");
             widthField.setAccessible(true);
             widthField.setInt(series, width);
             
-            Field heightField = Series.class.getDeclaredField("_height");
+            Field heightField = Series.class.getDeclaredField("height");
             heightField.setAccessible(true);
             heightField.setInt(series, height);
         } catch (Exception ignored) { }
@@ -43,7 +43,7 @@ public class PottsLocationFactoryTest {
             MiniBox box = new MiniBox();
             box.put("CODE", pop);
             box.put("CRITICAL_VOLUME", volumes[i]);
-            series._populations.put("pop" + pop, box);
+            series.populations.put("pop" + pop, box);
         }
         
         return series;
@@ -218,8 +218,8 @@ public class PottsLocationFactoryTest {
         int volume = randomIntBetween(1,100);
         Series series = createSeries(length, width, height, new double[] { volume });
         
-        series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.0);
-        series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", 0.0);
+        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.0);
+        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", 0.0);
         
         PottsLocationFactoryMock factory = new PottsLocationFactoryMock();
         factory.random = random;
@@ -281,8 +281,8 @@ public class PottsLocationFactoryTest {
         int volume3 = volume1 - randomIntBetween(1,100);
         Series series = createSeries(length, width, height, new double[] { volume1, volume2, volume3 });
         
-        series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.0);
-        series._populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", 0.0);
+        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.0);
+        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", 0.0);
         
         PottsLocationFactoryMock factory = new PottsLocationFactoryMock();
         factory.random = random;

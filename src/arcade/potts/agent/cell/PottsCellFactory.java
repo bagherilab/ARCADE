@@ -74,7 +74,7 @@ public class PottsCellFactory implements CellFactory {
         
         // Population sizes.
         HashMap<Integer, Integer> popToSize = new HashMap<>();
-        for (MiniBox population : series._populations.values()) {
+        for (MiniBox population : series.populations.values()) {
             int n = population.getInt("INIT");
             int pop = population.getInt("CODE");
             popToSize.put(pop, n);
@@ -95,7 +95,7 @@ public class PottsCellFactory implements CellFactory {
         int id = 1;
         
         // Create containers for each population.
-        for (MiniBox population : series._populations.values()) {
+        for (MiniBox population : series.populations.values()) {
             int n = population.getInt("INIT");
             int pop = population.getInt("CODE");
             boolean regions = popToRegions.get(pop);
@@ -133,13 +133,13 @@ public class PottsCellFactory implements CellFactory {
      * @param series  the simulation series
      */
     void parseValues(Series series) {
-        Set<String> keySet = series._populations.keySet();
+        Set<String> keySet = series.populations.keySet();
         
         for (String key : keySet) {
-            MiniBox population = series._populations.get(key);
+            MiniBox population = series.populations.get(key);
             int pop = population.getInt("CODE");
             popToIDs.put(pop, new HashSet<>());
-            popToParameters.put(pop, series._populations.get(key));
+            popToParameters.put(pop, series.populations.get(key));
             
             // Iterate through terms to get critical and lambda values.
             EnumMap<Term, Double> criticals = new EnumMap<>(Term.class);
@@ -157,7 +157,7 @@ public class PottsCellFactory implements CellFactory {
             double[] adhesion = new double[keySet.size() + 1];
             adhesion[0] = population.getDouble("ADHESION" + TARGET_SEPARATOR + "*");
             for (String p : keySet) {
-                adhesion[series._populations.get(p).getInt("CODE")] =
+                adhesion[series.populations.get(p).getInt("CODE")] =
                         population.getDouble("ADHESION" + TARGET_SEPARATOR + p);
             }
             
