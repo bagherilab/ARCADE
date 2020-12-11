@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import static arcade.potts.util.PottsEnums.Direction;
 
-public class PottsLocation3D extends PottsLocation implements Location3D {
+public final class PottsLocation3D extends PottsLocation implements Location3D {
     /**
      * Creates a 3D {@link PottsLocation} for a list of voxels.
      * 
@@ -12,34 +12,42 @@ public class PottsLocation3D extends PottsLocation implements Location3D {
      */
     public PottsLocation3D(ArrayList<Voxel> voxels) { super(voxels); }
     
+    @Override
     PottsLocation makeLocation(ArrayList<Voxel> voxels) {
         return new PottsLocation3D(voxels);
     }
     
+    @Override
     ArrayList<Voxel> getNeighbors(Voxel voxel) {
         return Location3D.getNeighbors(voxel);
     }
     
+    @Override
     public double convertVolume(double volume) {
         return Location3D.convertVolume(volume);
     }
     
+    @Override
     int calculateSurface() {
         return Location3D.calculateSurface(voxels);
     }
     
+    @Override
     int updateSurface(Voxel voxel) {
         return Location3D.updateSurface(voxels, voxel);
     }
     
+    @Override
     HashMap<Direction, Integer> getDiameters() {
         return Location3D.getDiameters(voxels, getCenter());
     }
     
+    @Override
     Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) {
         return Location3D.getSlice(direction, diameters);
     }
     
+    @Override
     ArrayList<Voxel> getSelected(Voxel focus, double n) {
         return Location3D.getSelected(voxels, focus, n);
     }

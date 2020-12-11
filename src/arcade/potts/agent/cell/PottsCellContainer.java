@@ -13,7 +13,7 @@ import static arcade.potts.util.PottsEnums.Term;
 /**
  * Container class for loading a {@link PottsCell}.
  */
-public class PottsCellContainer implements CellContainer {
+public final class PottsCellContainer implements CellContainer {
     public final int id;
     public final int pop;
     public final int age;
@@ -59,8 +59,10 @@ public class PottsCellContainer implements CellContainer {
         this.regionTargetSurface = regionTargetSurface;
     }
     
+    @Override
     public int getID() { return id; }
     
+    @Override
     public Cell convert(CellFactory factory, Location location) {
         return convert((PottsCellFactory) factory, location);
     }

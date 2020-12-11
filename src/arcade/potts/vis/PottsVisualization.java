@@ -6,7 +6,7 @@ import arcade.core.sim.Simulation;
 import arcade.core.vis.*;
 import static arcade.potts.vis.PottsColorMaps.*;
 
-public class PottsVisualization extends Visualization {
+public final class PottsVisualization extends Visualization {
     /** Maximum horizontal size of panel */
     static final int MAX_HORIZONTAL = 600;
     
@@ -65,6 +65,7 @@ public class PottsVisualization extends Visualization {
         vertical = vert;
     }
     
+    @Override
     public Drawer[] createDrawers() {
         if (height == 1) {
             return create2DDrawers();
@@ -222,6 +223,7 @@ public class PottsVisualization extends Visualization {
         };
     }
     
+    @Override
     public Panel[] createPanels() {
         return new Panel[]{
                 new Panel.Panel2D("POTTS", 100, 50, horizontal, vertical, this),

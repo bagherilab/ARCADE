@@ -37,8 +37,10 @@ public class InputBuilderTest {
     static class InputBuilderMock extends InputBuilder {
         InputBuilderMock() { super(); }
         
+        @Override
         public void startElement(String uri, String local, String name, Attributes atts) { }
         
+        @Override
         public void endElement(String uri, String local, String name) { }
     }
     

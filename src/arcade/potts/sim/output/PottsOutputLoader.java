@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputLoader;
 
-public class PottsOutputLoader extends OutputLoader {
+public final class PottsOutputLoader extends OutputLoader {
     /**
      * Creates an {@code PottsOutputLoader} for the series.
      * 
@@ -12,5 +12,6 @@ public class PottsOutputLoader extends OutputLoader {
      */
     public PottsOutputLoader(Series series) { super(series); }
     
+    @Override
     protected Gson makeGSON() { return PottsOutputDeserializer.makeGSON(); }
 }

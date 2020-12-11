@@ -69,14 +69,19 @@ public class PottsLocationTest {
     static class PottsLocationMock extends PottsLocation {
         PottsLocationMock(ArrayList<Voxel> voxels) { super(voxels); }
         
+        @Override
         PottsLocation makeLocation(ArrayList<Voxel> voxels) { return new PottsLocationMock(voxels); }
         
+        @Override
         public double convertVolume(double volume) { return 0; }
         
+        @Override
         int calculateSurface() { return LOCATION_SURFACE; }
         
+        @Override
         int updateSurface(Voxel voxel) { return 1; }
         
+        @Override
         ArrayList<Voxel> getNeighbors(Voxel voxel) {
             int num = 6;
             int[] x = { 0, 1, 0, -1, 0, 0 };
@@ -90,6 +95,7 @@ public class PottsLocationTest {
             return neighbors;
         }
         
+        @Override
         HashMap<Direction, Integer> getDiameters() {
             HashMap<Direction, Integer> diameters = new HashMap<>();
             
@@ -108,6 +114,7 @@ public class PottsLocationTest {
             return diameters;
         }
         
+        @Override
         Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) {
             switch (direction) {
                 case XY_PLANE: return Direction.NEGATIVE_YZ;
@@ -118,6 +125,7 @@ public class PottsLocationTest {
             }
         }
         
+        @Override
         ArrayList<Voxel> getSelected(Voxel center, double n) { return new ArrayList<>(); }
     }
     

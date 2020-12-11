@@ -2,22 +2,26 @@ package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 
-public class PottsLocationFactory3D extends PottsLocationFactory {
+public final class PottsLocationFactory3D extends PottsLocationFactory {
     public PottsLocationFactory3D() { super(); }
     
+    @Override
     int convert(double volume) {
         int cbrt = (int) Math.ceil(Math.cbrt(volume));
         return cbrt + (cbrt % 2 == 0 ? 1 : 0);
     }
     
+    @Override
     ArrayList<Voxel> getNeighbors(Voxel voxel) {
         return Location3D.getNeighbors(voxel);
     }
     
+    @Override
     ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) {
         return Location3D.getSelected(voxels, focus, n);
     }
     
+    @Override
     ArrayList<Voxel> getPossible(Voxel focus, int m) {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
@@ -35,6 +39,7 @@ public class PottsLocationFactory3D extends PottsLocationFactory {
         return voxels;
     }
     
+    @Override
     ArrayList<Voxel> getCenters(int length, int width, int height, int m) {
         ArrayList<Voxel> centers = new ArrayList<>();
         for (int i = 0; i < (length - 2) / m; i++) {

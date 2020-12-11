@@ -35,8 +35,10 @@ public final class PottsOutputDeserializer {
     }
     
     static class PottsCellDeserializer implements JsonDeserializer<PottsCellContainer> {
+        @Override
         public PottsCellContainer deserialize(JsonElement json, Type typeOfT,
-                JsonDeserializationContext context) throws JsonParseException {
+                                              JsonDeserializationContext context)
+                throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
             
             int id = jsonObject.get("id").getAsInt();
@@ -85,8 +87,10 @@ public final class PottsOutputDeserializer {
     }
     
     static class PottsLocationDeserializer implements JsonDeserializer<PottsLocationContainer> {
+        @Override
         public PottsLocationContainer deserialize(JsonElement json, Type typeOfT,
-                JsonDeserializationContext context) throws JsonParseException {
+                                                  JsonDeserializationContext context)
+                throws JsonParseException {
             JsonObject jsonObject = json.getAsJsonObject();
             
             // Parse out id and center voxel.
@@ -126,8 +130,9 @@ public final class PottsOutputDeserializer {
     }
     
     static class VoxelDeserializer implements JsonDeserializer<Voxel> {
+        @Override
         public Voxel deserialize(JsonElement json, Type typeOfT,
-                JsonDeserializationContext context) throws JsonParseException {
+                                 JsonDeserializationContext context) throws JsonParseException {
             JsonArray jsonArray = json.getAsJsonArray();
             int x = jsonArray.get(0).getAsInt();
             int y = jsonArray.get(1).getAsInt();

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import sim.util.Bag;
 import arcade.core.env.grid.Grid;
 
-public class PottsGrid implements Grid {
+public final class PottsGrid implements Grid {
     /** Map of ID to object */
     final HashMap<Integer, Object> objects;
     
@@ -20,20 +20,24 @@ public class PottsGrid implements Grid {
         objects.put(0, null);
     }
     
+    @Override
     public Bag getAllObjects() { return allObjects; }
     
+    @Override
     public void addObject(int id, Object obj) {
         if (objects.containsKey(id)) { return; }
         allObjects.add(obj);
         objects.put(id, obj);
     }
     
+    @Override
     public void removeObject(int id) {
         Object obj = objects.get(id);
         allObjects.remove(obj);
         objects.remove(id);
     }
     
+    @Override
     public Object getObjectAt(int id) {
         return objects.get(id);
     }

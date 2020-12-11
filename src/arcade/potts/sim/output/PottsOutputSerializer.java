@@ -37,6 +37,7 @@ public final class PottsOutputSerializer {
     }
     
     static class PottsSeriesSerializer implements JsonSerializer<PottsSeries> {
+        @Override
         public JsonElement serialize(PottsSeries src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonObject json = (JsonObject) context.serialize(src, Series.class);
@@ -50,6 +51,7 @@ public final class PottsOutputSerializer {
     }
     
     static class PottsCellSerializer implements JsonSerializer<PottsCellContainer> {
+        @Override
         public JsonElement serialize(PottsCellContainer src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonObject json = new JsonObject();
@@ -89,6 +91,7 @@ public final class PottsOutputSerializer {
     }
     
     static class PottsLocationSerializer implements JsonSerializer<PottsLocationContainer> {
+        @Override
         public JsonElement serialize(PottsLocationContainer src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonObject json = new JsonObject();
@@ -133,6 +136,7 @@ public final class PottsOutputSerializer {
     }
     
     static class VoxelSerializer implements JsonSerializer<Voxel> {
+        @Override
         public JsonElement serialize(Voxel src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonArray json = new JsonArray();

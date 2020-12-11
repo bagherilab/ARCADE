@@ -32,6 +32,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
      * on population settings.
      * For series with a loader, the specified file is loaded into the factory.
      */
+    @Override
     public void initialize(Series series, MersenneTwisterFast random) {
         this.random = random;
         if (series.loader != null && series.loader.loadLocations) {
@@ -41,6 +42,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
         }
     }
     
+    @Override
     public void loadLocations(Series series) {
         // Load locations.
         ArrayList<LocationContainer> containers = series.loader.loadLocations();
@@ -52,6 +54,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
         }
     }
     
+    @Override
     public void createLocations(Series series) {
         int m = 0;
         

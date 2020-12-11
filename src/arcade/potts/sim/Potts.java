@@ -36,7 +36,7 @@ public abstract class Potts implements Steppable {
     public int[][][] regions;
     
     /** Grid holding cells */
-    public Grid grid;
+    Grid grid;
     
     /**
      * Creates a cellular {@code Potts} model.
@@ -71,6 +71,7 @@ public abstract class Potts implements Steppable {
      * 
      * @param simstate  the MASON simulation state
      */
+    @Override
     public void step(SimState simstate) {
         MersenneTwisterFast random = simstate.random;
         double r;

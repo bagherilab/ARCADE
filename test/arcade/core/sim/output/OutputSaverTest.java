@@ -25,6 +25,7 @@ public class OutputSaverTest {
     static class OutputSaverMock extends OutputSaver {
         OutputSaverMock(Series series) { super(series); }
         
+        @Override
         protected Gson makeGSON() { return mock(Gson.class); }
     }
     

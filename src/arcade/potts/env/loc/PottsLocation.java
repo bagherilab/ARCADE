@@ -42,14 +42,19 @@ public abstract class PottsLocation implements Location {
      */
     public ArrayList<Voxel> getVoxels() { return new ArrayList<>(voxels); }
     
+    @Override
     public EnumSet<Region> getRegions() { return null; }
     
-    public int getVolume() { return volume; }
+    @Override
+    public final int getVolume() { return volume; }
     
+    @Override
     public int getVolume(Region region) { return getVolume(); }
     
-    public int getSurface() { return surface; }
+    @Override
+    public final int getSurface() { return surface; }
     
+    @Override
     public int getSurface(Region region) { return getSurface(); }
     
     /**
@@ -305,6 +310,7 @@ public abstract class PottsLocation implements Location {
         return getSlice(d, diameters);
     }
     
+    @Override
     public LocationContainer convert(int id) {
         return new PottsLocationContainer(id, getCenter(), voxels);
     }

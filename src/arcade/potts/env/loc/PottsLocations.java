@@ -14,7 +14,7 @@ public abstract class PottsLocations extends PottsLocation {
     private static final int MAX_ITERATIONS = 100;
     
     /** Map of region to location */
-    public EnumMap<Region, PottsLocation> locations;
+    protected EnumMap<Region, PottsLocation> locations;
     
     /**
      * Creates a {@code PottsLocations} for a list of voxels.
@@ -29,21 +29,26 @@ public abstract class PottsLocations extends PottsLocation {
         locations.put(Region.DEFAULT, makeLocation(voxelCopy));
     }
     
+    @Override
     public EnumSet<Region> getRegions() { return EnumSet.copyOf(locations.keySet()); }
     
+    @Override
     public int getVolume(Region region) {
         return (locations.containsKey(region) ? locations.get(region).volume : 0);
     }
     
+    @Override
     public int getSurface(Region region) {
         return (locations.containsKey(region) ? locations.get(region).surface : 0);
     }
     
+    @Override
     public void add(int x, int y, int z) {
         super.add(x, y, z);
         locations.get(Region.DEFAULT).add(x, y, z);
     }
     
+    @Override
     public void add(Region region, int x, int y, int z) {
         super.add(x, y, z);
         
@@ -60,11 +65,13 @@ public abstract class PottsLocations extends PottsLocation {
         locations.get(region).add(x, y, z);
     }
     
+    @Override
     public void remove(int x, int y, int z) {
         super.remove(x, y, z);
         locations.forEach((region, location) -> location.remove(x, y, z));
     }
     
+    @Override
     public void remove(Region region, int x, int y, int z) {
         Voxel voxel = new Voxel(x, y, z);
         
@@ -79,6 +86,7 @@ public abstract class PottsLocations extends PottsLocation {
         }
     }
     
+    @Override
     public void assign(Region region, Voxel voxel) {
         Region oldRegion = Region.UNDEFINED;
         
@@ -104,6 +112,7 @@ public abstract class PottsLocations extends PottsLocation {
         locations.get(oldRegion).surface -= locations.get(oldRegion).updateSurface(voxel);
     }
     
+    @Override
     public void clear(int[][][] ids, int[][][] regions) {
         for (Voxel voxel : voxels) {
             ids[voxel.z][voxel.x][voxel.y] = 0;
@@ -114,6 +123,7 @@ public abstract class PottsLocations extends PottsLocation {
         locations.clear();
     }
     
+    @Override
     public void update(int id, int[][][] ids, int[][][] regions) {
         super.update(id, ids, regions);
         
@@ -122,6 +132,7 @@ public abstract class PottsLocations extends PottsLocation {
         }
     }
     
+    @Override
     public LocationContainer convert(int id) {
         EnumMap<Region, ArrayList<Voxel>> regions = new EnumMap<>(Region.class);
         for (Region region : locations.keySet()) {
@@ -148,6 +159,7 @@ public abstract class PottsLocations extends PottsLocation {
      * @param random  the seeded random number generator
      * @return  a {@link arcade.core.env.loc.Location} object with the split voxels
      */
+    @Override
     Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
                             MersenneTwisterFast random) {
         PottsLocations splitLocation = makeLocations(voxelsB);

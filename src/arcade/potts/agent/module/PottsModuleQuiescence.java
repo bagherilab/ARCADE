@@ -7,5 +7,6 @@ import arcade.potts.agent.cell.PottsCell;
 public class PottsModuleQuiescence extends PottsModule {
     public PottsModuleQuiescence(PottsCell cell) { super(cell); }
     
+    @Override
     public void step(MersenneTwisterFast random, Simulation sim) { }
 }

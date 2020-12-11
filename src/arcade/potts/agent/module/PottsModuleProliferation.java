@@ -78,7 +78,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
     /**
      * Extension of {@link PottsModuleProliferation} using simple phases.
      */
-    public static class Simple extends PottsModuleProliferation {
+    public static final class Simple extends PottsModuleProliferation {
         /**
          * Creates a {@link PottsModuleProliferation} using simple phases.
          * 
@@ -86,6 +86,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
          */
         public Simple(PottsCell cell) { super(cell); }
         
+        @Override
         public void step(MersenneTwisterFast random, Simulation sim) {
             super.simpleStep(random, sim);
         }

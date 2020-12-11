@@ -28,6 +28,7 @@ import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsOutputDeserializerTest {
     static final JsonDeserializationContext CELL_CONTEXT = new JsonDeserializationContext() {
+        @Override
         public <T> T deserialize(JsonElement json, Type typeOfT)
                 throws JsonParseException {
             JsonObject array = json.getAsJsonObject();
@@ -39,6 +40,7 @@ public class PottsOutputDeserializerTest {
     };
     
     static final JsonDeserializationContext LOCATION_CONTEXT = new JsonDeserializationContext() {
+        @Override
         public <T> T deserialize(JsonElement json, Type typeOfT)
                 throws JsonParseException {
             if (typeOfT == Voxel.class) {

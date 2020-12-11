@@ -63,13 +63,9 @@ public class PottsCellFactoryTest {
         return map;
     }
     
-    static class PottsCellFactoryMock extends PottsCellFactory {
-        PottsCellFactoryMock() { super(); }
-    }
-    
     @Test
     public void initialize_noLoading_callsMethod() {
-        PottsCellFactory factory = spy(new PottsCellFactoryMock());
+        PottsCellFactory factory = spy(new PottsCellFactory());
         Series series = mock(Series.class);
         series.loader = null;
         
@@ -86,7 +82,7 @@ public class PottsCellFactoryTest {
     
     @Test
     public void initialize_noLoadingWithLoader_callsMethod() {
-        PottsCellFactory factory = spy(new PottsCellFactoryMock());
+        PottsCellFactory factory = spy(new PottsCellFactory());
         Series series = mock(Series.class);
         series.loader = mock(OutputLoader.class);
         
@@ -109,7 +105,7 @@ public class PottsCellFactoryTest {
     
     @Test
     public void initialize_withLoadingWithLoader_callsMethod() {
-        PottsCellFactory factory = spy(new PottsCellFactoryMock());
+        PottsCellFactory factory = spy(new PottsCellFactory());
         Series series = mock(Series.class);
         series.loader = mock(OutputLoader.class);
         
@@ -165,7 +161,7 @@ public class PottsCellFactoryTest {
             popParameters[i] = population;
         }
         
-        PottsCellFactory factory = new PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         factory.parseValues(series);
         
         for (int i = 0; i < popKeys.length; i++) {
@@ -237,7 +233,7 @@ public class PottsCellFactoryTest {
             popParameters[i] = population;
         }
         
-        PottsCellFactory factory = new PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         factory.parseValues(series);
         
         for (int i = 0; i < popKeys.length; i++) {
@@ -286,7 +282,7 @@ public class PottsCellFactoryTest {
             containers.add(container);
         }
         
-        PottsCellFactoryMock factory = new PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
         factory.popToIDs.put(2, new HashSet<>());
         Series series = mock(Series.class);
@@ -332,7 +328,7 @@ public class PottsCellFactoryTest {
             containers.add(container);
         }
         
-        PottsCellFactoryMock factory = new PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         Series series = mock(Series.class);
         series.loader = mock(OutputLoader.class);
         
@@ -369,7 +365,7 @@ public class PottsCellFactoryTest {
             containers.add(container);
         }
         
-        PottsCellFactoryMock factory = new PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
         factory.popToIDs.put(2, new HashSet<>());
         Series series = mock(Series.class);
@@ -409,7 +405,7 @@ public class PottsCellFactoryTest {
     public void createCells_noPopulation_createsEmpty() {
         Series series = createSeries(new int[] { }, new int[] { });
         
-        PottsCellFactoryMock factory = new PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         factory.createCells(series);
         
         assertEquals(0, factory.cells.size());
@@ -422,7 +418,7 @@ public class PottsCellFactoryTest {
         int init = randomIntBetween(1, 10);
         Series series = createSeries(new int[] { init }, new int[] { voxels });
         
-        PottsCellFactoryMock factory = new PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
         factory.popToRegions.put(1, false);
         factory.createCells(series);
@@ -449,7 +445,7 @@ public class PottsCellFactoryTest {
         series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double) voxelsA / voxels);
         series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double) voxelsB / voxels);
         
-        PottsCellFactoryMock factory = new PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
         factory.popToRegions.put(1, true);
         factory.createCells(series);
@@ -479,7 +475,7 @@ public class PottsCellFactoryTest {
         Series series = createSeries(new int[] { init1, init2, init3 },
                 new int[] { voxels1, voxels2, voxels3 });
         
-        PottsCellFactoryMock factory = new PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
         factory.popToIDs.put(2, new HashSet<>());
         factory.popToIDs.put(3, new HashSet<>());
@@ -526,7 +522,7 @@ public class PottsCellFactoryTest {
         series.populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", (double) voxelsA / voxels2);
         series.populations.get("pop2").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", (double) voxelsB / voxels2);
         
-        PottsCellFactoryMock factory = new PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
         factory.popToIDs.put(2, new HashSet<>());
         factory.popToIDs.put(3, new HashSet<>());
@@ -568,7 +564,7 @@ public class PottsCellFactoryTest {
         series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "UNDEFINED", 0.75);
         series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.75);
         
-        PottsCellFactoryMock factory = new PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
         factory.popToRegions.put(1, true);
         factory.createCells(series);

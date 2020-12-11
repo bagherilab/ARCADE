@@ -129,14 +129,18 @@ public class PottsTest {
     static class PottsMock extends Potts {
         PottsMock(PottsSeries series) { super(series); }
         
+        @Override
         double getAdhesion(int id, int x, int y, int z) { return ADHESION_ID[id]; }
         
+        @Override
         double getAdhesion(int id, int region, int x, int y, int z) { return ADHESION_REGION[region]; }
         
+        @Override
         int[] calculateChange(int sourceID, int targetID, int x, int y, int z) {
             return new int[] { (sourceID == 1 ? 1 : -1), (targetID == 1 ? 1 : -1) };
         }
         
+        @Override
         int[] calculateChange(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
             if (sourceRegion == Region.DEFAULT.ordinal()) {
                 return new int[] { 2, 2 };
@@ -145,24 +149,29 @@ public class PottsTest {
             }
         }
         
+        @Override
         boolean[][][] getNeighborhood(int id, int x, int y, int z) {
             return new boolean[][][] { { { x != 0 } } };
         }
         
+        @Override
         boolean[][][] getNeighborhood(int id, int region, int x, int y, int z) {
             return new boolean[][][] { { { y != 0 } } };
         }
         
+        @Override
         boolean getConnectivity(boolean[][][] array, boolean zero) {
             return array[0][0][0];
         }
         
+        @Override
         HashSet<Integer> getUniqueIDs(int x, int y, int z) {
             HashSet<Integer> set = new HashSet<>();
             if (x == 0 && y == 0) { set.add(1); set.add(2); }
             return set;
         }
         
+        @Override
         HashSet<Integer> getUniqueRegions(int x, int y, int z) {
             HashSet<Integer> set = new HashSet<>();
             if (x == 1 && y == 0) {

@@ -41,6 +41,7 @@ public abstract class PottsDrawer extends Drawer {
         super(panel, name, length, width, depth, null, bounds);
     }
     
+    @Override
     public Portrayal makePort() {
         String[] split = name.split(":");
         
@@ -83,6 +84,7 @@ public abstract class PottsDrawer extends Drawer {
         
         SimpleEdgePortrayal2DGridWrapper() { setScaling(NEVER_SCALE); }
         
+        @Override
         public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
             shape = SHAPE_THIN_LINE;
             fromPaint = color;
@@ -90,6 +92,7 @@ public abstract class PottsDrawer extends Drawer {
             super.draw(object, graphics, info);
         }
         
+        @Override
         protected double getPositiveWeight(Object object, EdgeDrawInfo2D info) {
             sim.field.network.Edge edge = (sim.field.network.Edge) object;
             return (Integer) edge.getInfo();
@@ -179,6 +182,7 @@ public abstract class PottsDrawer extends Drawer {
             }
         }
         
+        @Override
         public void step(SimState state) {
             PottsSimulation sim = (PottsSimulation) state;
             Grid grid = sim.getGrid();
@@ -392,6 +396,7 @@ public abstract class PottsDrawer extends Drawer {
             }
         }
         
+        @Override
         public void step(SimState state) {
             PottsSimulation sim = (PottsSimulation) state;
             field.clear();

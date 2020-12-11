@@ -15,10 +15,10 @@ public class Matrix {
     /** Container class for sparse matrix representation. */
     public static class Value {
         /** Row index of value */
-        public int i;
+        int i;
         
         /** Column index of value */
-        public int j;
+        int j;
         
         /** Value in matrix */
         double v;

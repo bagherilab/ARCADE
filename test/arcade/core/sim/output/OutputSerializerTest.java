@@ -23,7 +23,9 @@ import static arcade.core.sim.output.OutputSerializer.*;
 
 public class OutputSerializerTest {
     static final JsonSerializationContext CELL_CONTEXT = new JsonSerializationContext() {
+        @Override
         public JsonElement serialize(Object src) { return null; }
+        @Override
         public JsonElement serialize(Object src, Type typeOfSrc) {
             JsonObject object = new JsonObject();
             object.addProperty("id", ((CellContainer) src).getID());
@@ -32,7 +34,9 @@ public class OutputSerializerTest {
     };
     
     static final JsonSerializationContext LOCATION_CONTEXT = new JsonSerializationContext() {
+        @Override
         public JsonElement serialize(Object src) { return null; }
+        @Override
         public JsonElement serialize(Object src, Type typeOfSrc) {
             JsonObject object = new JsonObject();
             object.addProperty("id", ((LocationContainer) src).getID());
@@ -156,6 +160,7 @@ public class OutputSerializerTest {
         series.populations.put(popB, b);
         
         JsonSerializationContext context = new JsonSerializationContext() {
+            @Override
             public JsonElement serialize(Object src) {
                 if (src instanceof MiniBox) {
                     MiniBox box = (MiniBox) src;
@@ -166,6 +171,7 @@ public class OutputSerializerTest {
                 return null;
             }
             
+            @Override
             public JsonElement serialize(Object src, Type typeOfSrc) { return null; }
         };
         

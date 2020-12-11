@@ -154,6 +154,7 @@ public class Colors implements ColorMap {
      * @param level  the number value
      * @return  the color
      */
+    @Override
     public Color getColor(double level) {
         if (level == defaultValue) { return EMPTY; }
         return colors[getIndex(level)];
@@ -165,6 +166,7 @@ public class Colors implements ColorMap {
      * @param level  the number value
      * @return  the RGB value
      */
+    @Override
     public int getRGB(double level) {
         if (level == defaultValue) { return EMPTY.getRGB(); }
         return colors[getIndex(level)].getRGB();
@@ -176,6 +178,7 @@ public class Colors implements ColorMap {
      * @param level  the number value
      * @return  the alpha value
      */
+    @Override
     public int getAlpha(double level) {
         if (level == defaultValue) { return EMPTY.getAlpha(); }
         return colors[getIndex(level)].getAlpha();
@@ -187,6 +190,7 @@ public class Colors implements ColorMap {
      * @param level  the number value
      * @return  {@code true} if level is valid, {@code false} otherwise
      */
+    @Override
     public boolean validLevel(double level) { return level >= min && level <= max; }
     
     /**
@@ -194,5 +198,6 @@ public class Colors implements ColorMap {
      * 
      * @return  the default number value
      */
+    @Override
     public double defaultValue() { return defaultValue; }
 }

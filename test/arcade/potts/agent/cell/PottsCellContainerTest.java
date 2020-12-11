@@ -129,7 +129,7 @@ public class PottsCellContainerTest {
     @Test
     public void convert_noRegionsNoTarget_createsObject() {
         Location location = mock(PottsLocation.class);
-        PottsCellFactory factory = new PottsCellFactoryTest.PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         
         int cellID = randomIntBetween(1, 10);
         int cellPop = randomIntBetween(1, 10);
@@ -175,7 +175,7 @@ public class PottsCellContainerTest {
     @Test
     public void convert_withRegionsNoTarget_createsObject() {
         Location location = mock(PottsLocation.class);
-        PottsCellFactory factory = new PottsCellFactoryTest.PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         
         int cellID = randomIntBetween(1, 10);
         int cellPop = randomIntBetween(1, 10);
@@ -250,7 +250,7 @@ public class PottsCellContainerTest {
     @Test
     public void convert_noRegionsWithTarget_createsObject() {
         Location location = mock(PottsLocation.class);
-        PottsCellFactory factory = new PottsCellFactoryTest.PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         
         double targetVolume = randomDoubleBetween(1, 100);
         double targetSurface = randomDoubleBetween(1, 100);
@@ -271,7 +271,7 @@ public class PottsCellContainerTest {
     @Test
     public void convert_withRegionsWithTarget_createsObject() {
         Location location = mock(PottsLocation.class);
-        PottsCellFactory factory = new PottsCellFactoryTest.PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         
         double targetVolume = randomDoubleBetween(1, 100);
         double targetSurface = randomDoubleBetween(1, 100);
@@ -317,7 +317,7 @@ public class PottsCellContainerTest {
     @Test
     public void convert_withRegionsMixedTarget_createsObject() {
         Location location = mock(PottsLocation.class);
-        PottsCellFactory factory = new PottsCellFactoryTest.PottsCellFactoryMock();
+        PottsCellFactory factory = new PottsCellFactory();
         
         double targetVolume = randomDoubleBetween(1, 100);
         double targetSurface = randomDoubleBetween(1, 100);

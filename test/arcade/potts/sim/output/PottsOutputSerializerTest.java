@@ -26,6 +26,7 @@ import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsOutputSerializerTest {
     static final JsonSerializationContext LOCATION_CONTEXT = new JsonSerializationContext() {
+        @Override
         public JsonElement serialize(Object src) {
             Voxel voxel = (Voxel) src;
             JsonArray json = new JsonArray();
@@ -33,6 +34,7 @@ public class PottsOutputSerializerTest {
             return json;
         }
         
+        @Override
         public JsonElement serialize(Object src, Type typeOfSrc) { return null; }
     };
     
@@ -77,6 +79,7 @@ public class PottsOutputSerializerTest {
         series.potts.put(key2, value2);
         
         JsonSerializationContext context = new JsonSerializationContext() {
+            @Override
             public JsonElement serialize(Object src) {
                 if (src instanceof MiniBox) {
                     MiniBox box = (MiniBox) src;
@@ -88,6 +91,7 @@ public class PottsOutputSerializerTest {
                 return null;
             }
             
+            @Override
             public JsonElement serialize(Object src, Type typeOfSrc) {
                 JsonObject json = new JsonObject();
                 json.addProperty("SERIES", "SERIES");

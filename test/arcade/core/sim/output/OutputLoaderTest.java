@@ -24,6 +24,7 @@ public class OutputLoaderTest {
     static class OutputLoaderMock extends OutputLoader {
         OutputLoaderMock(Series series) { super(series); }
         
+        @Override
         protected Gson makeGSON() { return mock(Gson.class); }
     }
     

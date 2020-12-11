@@ -160,6 +160,7 @@ public class GUI implements ActionListener {
      * 
      * @param e  the action event
      */
+    @Override
     public void actionPerformed(ActionEvent e)  {
         String cmd = e.getActionCommand();
         
@@ -231,6 +232,7 @@ public class GUI implements ActionListener {
          * @param f  the file
          * @return  {@code true} if the file is an XML, {@code false} otherwise
          */
+        @Override
         public boolean accept(File f) {
             if (f.isDirectory()) {
                 return true;
@@ -263,6 +265,7 @@ public class GUI implements ActionListener {
         /**
          * Writes to the text area.
          */
+        @Override
         public void write(int b) {
             // redirects data to the text area
             textArea.append(String.valueOf((char) b));

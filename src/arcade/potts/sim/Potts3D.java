@@ -4,7 +4,7 @@ import java.util.HashSet;
 import arcade.potts.agent.cell.PottsCell;
 import static arcade.core.util.Enums.Region;
 
-public class Potts3D extends Potts {
+public final class Potts3D extends Potts {
     /** Number of neighbors */
     public static final int NUMBER_NEIGHBORS = 6;
     
@@ -39,6 +39,7 @@ public class Potts3D extends Potts {
      */
     public Potts3D(PottsSeries series) { super(series); }
     
+    @Override
     double getAdhesion(int id, int x, int y, int z) {
         double h = 0;
         PottsCell a = getCell(id);
@@ -63,6 +64,7 @@ public class Potts3D extends Potts {
         return h;
     }
     
+    @Override
     double getAdhesion(int id, int t, int x, int y, int z) {
         double h = 0;
         PottsCell c = getCell(id);
@@ -83,6 +85,7 @@ public class Potts3D extends Potts {
         return h;
     }
     
+    @Override
     int[] calculateChange(int sourceID, int targetID, int x, int y, int z) {
         int beforeSource = 0;
         int afterSource = 0;
@@ -111,6 +114,7 @@ public class Potts3D extends Potts {
         return new int[] { sourceSurfaceChange, targetSurfaceChange };
     }
     
+    @Override
     int[] calculateChange(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
         int beforeSource = 0;
         int afterSource = 0;
@@ -140,6 +144,7 @@ public class Potts3D extends Potts {
         return new int[] { sourceSurfaceChange, targetSurfaceChange };
     }
     
+    @Override
     boolean[][][] getNeighborhood(int id, int x, int y, int z) {
         boolean[][][] array = new boolean[3][3][3];
         for (int k = 0; k < 3; k++) {
@@ -152,6 +157,7 @@ public class Potts3D extends Potts {
         return array;
     }
     
+    @Override
     boolean[][][] getNeighborhood(int id, int region, int x, int y, int z) {
         boolean[][][] array = new boolean[3][3][3];
         for (int k = 0; k < 3; k++) {
@@ -165,6 +171,7 @@ public class Potts3D extends Potts {
         return array;
     }
     
+    @Override
     boolean getConnectivity(boolean[][][] array, boolean zero) {
         int links = 0;
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
@@ -449,6 +456,7 @@ public class Potts3D extends Potts {
         }
     }
     
+    @Override
     HashSet<Integer> getUniqueIDs(int x, int y, int z) {
         int id = ids[z][x][y];
         HashSet<Integer> unique = new HashSet<>();
@@ -460,6 +468,7 @@ public class Potts3D extends Potts {
         return unique;
     }
     
+    @Override
     HashSet<Integer> getUniqueRegions(int x, int y, int z) {
         int id = ids[z][x][y];
         int region = regions[z][x][y];

@@ -13,7 +13,7 @@ import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Term;
 
-public class PottsCellFactory implements CellFactory {
+public final class PottsCellFactory implements CellFactory {
     /** Map of population to critical values */
     HashMap<Integer, EnumMap<Term, Double>> popToCriticals;
     
@@ -66,6 +66,7 @@ public class PottsCellFactory implements CellFactory {
      * Regardless of loader, the population settings are parsed to get critical,
      * lambda, and adhesion values used for instantiating cells.
      */
+    @Override
     public void initialize(Series series) {
         parseValues(series);
         if (series.loader != null && series.loader.loadCells) {
@@ -75,6 +76,7 @@ public class PottsCellFactory implements CellFactory {
         }
     }
     
+    @Override
     public void loadCells(Series series) {
         // Load cells.
         ArrayList<CellContainer> containers = series.loader.loadCells();
@@ -98,6 +100,7 @@ public class PottsCellFactory implements CellFactory {
         }
     }
     
+    @Override
     public void createCells(Series series) {
         int id = 1;
         

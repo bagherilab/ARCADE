@@ -10,7 +10,7 @@ import arcade.potts.sim.PottsSeries;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
-public class PottsInputBuilder extends InputBuilder {
+public final class PottsInputBuilder extends InputBuilder {
     public PottsInputBuilder() { super(); }
     
     /**
@@ -64,6 +64,7 @@ public class PottsInputBuilder extends InputBuilder {
         }
     }
     
+    @Override
     public void startElement(String uri, String local, String name, Attributes atts) {
         LOGGER.fine("start element [ " + name + " ]");
         
@@ -91,6 +92,7 @@ public class PottsInputBuilder extends InputBuilder {
         if (split.length == 2) { updateBox(split[0], split[1], atts); }
     }
     
+    @Override
     public void endElement(String uri, String local, String name) {
         LOGGER.fine("end element [ " + name + " ]");
         

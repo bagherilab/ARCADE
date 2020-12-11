@@ -103,6 +103,7 @@ public abstract class Panel {
             setup(title, x, y);
         }
         
+        @Override
         public void attach(Drawer drawer, String name, Rectangle2D.Double bounds) {
             FieldPortrayal2D port = (FieldPortrayal2D) (drawer.getPortrayal());
             if (bounds == null) {
@@ -112,6 +113,7 @@ public abstract class Panel {
             }
         }
         
+        @Override
         public void reset() {
             display.reset();
             display.repaint();
@@ -144,11 +146,13 @@ public abstract class Panel {
             setup(title, x, y);
         }
         
+        @Override
         public void attach(Drawer drawer, String name, Rectangle2D.Double bounds) {
             Portrayal3D port = (Portrayal3D) (drawer.getPortrayal());
             display.attach(port, name);
         }
         
+        @Override
         public void reset() {
             display.createSceneGraph();
             display.reset();

@@ -22,6 +22,7 @@ import static arcade.core.sim.output.OutputDeserializer.*;
 
 public class OutputDeserializerTest {
     static final JsonDeserializationContext CELL_CONTEXT = new JsonDeserializationContext() {
+        @Override
         public <T> T deserialize(JsonElement json, Type typeOfT)
                 throws JsonParseException {
             JsonObject array = json.getAsJsonObject();
@@ -33,6 +34,7 @@ public class OutputDeserializerTest {
     };
     
     static final JsonDeserializationContext LOCATION_CONTEXT = new JsonDeserializationContext() {
+        @Override
         public <T> T deserialize(JsonElement json, Type typeOfT)
                 throws JsonParseException {
             JsonObject array = json.getAsJsonObject();

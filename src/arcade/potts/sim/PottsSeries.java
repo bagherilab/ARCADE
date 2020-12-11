@@ -8,7 +8,7 @@ import arcade.core.util.MiniBox;
 import static arcade.core.util.Box.KEY_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
-public class PottsSeries extends Series {
+public final class PottsSeries extends Series {
     /** Map of potts settings */
     public MiniBox potts;
     
@@ -26,10 +26,12 @@ public class PottsSeries extends Series {
         super(setupDicts, setupLists, parameters, isVis);
     }
     
+    @Override
     protected String getSimClass() {
         return "arcade.potts.sim.PottsSimulation" + (height > 1 ? "3D" : "2D");
     }
     
+    @Override
     protected String getVisClass() {
         return "arcade.potts.vis.PottsVisualization";
     }
@@ -40,6 +42,7 @@ public class PottsSeries extends Series {
      * @param setupLists  the map of attribute to value for multiple instance tags
      * @param parameters  the default parameter values loaded from {@code parameter.xml}
      */
+    @Override
     protected void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters) {
         // Initialize potts.
         MiniBox pottsDefaults = parameters.getIdValForTag("POTTS");
@@ -95,6 +98,7 @@ public class PottsSeries extends Series {
         }
     }
     
+    @Override
     protected void updatePopulations(ArrayList<Box> populationsBox, MiniBox populationDefaults,
                                      MiniBox populationConversions) {
         this.populations = new HashMap<>();
@@ -165,14 +169,17 @@ public class PottsSeries extends Series {
         }
     }
     
+    @Override
     protected void updateMolecules(ArrayList<Box> moleculesBox, MiniBox moleculeDefaults) {
         // TODO
     }
     
+    @Override
     protected void updateHelpers(ArrayList<Box> helpersBox, MiniBox helperDefaults) {
         // TODO
     }
     
+    @Override
     protected void updateComponents(ArrayList<Box> componentsBox, MiniBox componentDefaults) {
         // TODO
     }

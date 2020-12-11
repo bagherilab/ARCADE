@@ -22,7 +22,7 @@ import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.potts.util.PottsEnums.Term;
 
-public class PottsCell implements Cell {
+public final class PottsCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule */
     Stoppable stopper;
     
@@ -42,7 +42,7 @@ public class PottsCell implements Cell {
     private int age;
     
     /** {@code true} if the cell has regions, {@code false} otherwise */
-    public boolean hasRegions;
+    private final boolean hasRegions;
     
     /** Target cell volume (in voxels) */
     private double targetVolume;
@@ -181,56 +181,76 @@ public class PottsCell implements Cell {
         }
     }
     
+    @Override
     public int getID() { return id; }
     
+    @Override
     public int getPop() { return pop; }
     
+    @Override
     public State getState() { return state; }
     
+    @Override
     public int getAge() { return age; }
     
+    @Override
     public boolean hasRegions() { return hasRegions; }
     
+    @Override
     public Location getLocation() { return location; }
     
+    @Override
     public Module getModule() { return module; }
     
+    @Override
     public MiniBox getParameters() { return parameters; }
     
+    @Override
     public int getVolume() { return location.getVolume(); }
     
+    @Override
     public int getVolume(Region region) { return (hasRegions ? location.getVolume(region) : 0); }
     
+    @Override
     public int getSurface() { return location.getSurface(); }
     
+    @Override
     public int getSurface(Region region) { return (hasRegions ? location.getSurface(region) : 0); }
     
+    @Override
     public double getTargetVolume() { return targetVolume; }
     
+    @Override
     public double getTargetVolume(Region region) {
         return (hasRegions && targetRegionVolumes.containsKey(region)
                 ? targetRegionVolumes.get(region)
                 : 0);
     }
     
+    @Override
     public double getTargetSurface() { return targetSurface; }
     
+    @Override
     public double getTargetSurface(Region region) {
         return (hasRegions && targetRegionSurfaces.containsKey(region)
                 ? targetRegionSurfaces.get(region)
                 : 0);
     }
     
+    @Override
     public double getCriticalVolume() { return criticals.get(Term.VOLUME); }
     
+    @Override
     public double getCriticalVolume(Region region) {
         return (hasRegions && criticalsRegion.containsKey(region)
                 ? criticalsRegion.get(region).get(Term.VOLUME)
                 : 0);
     }
     
+    @Override
     public double getCriticalSurface() { return criticals.get(Term.SURFACE); }
     
+    @Override
     public double getCriticalSurface(Region region) {
         return (hasRegions && criticalsRegion.containsKey(region)
                 ? criticalsRegion.get(region).get(Term.SURFACE)
@@ -280,13 +300,16 @@ public class PottsCell implements Cell {
                 : Double.NaN);
     }
     
+    @Override
     public void stop() { stopper.stop(); }
     
+    @Override
     public PottsCell make(int newID, State newState, Location newLocation) {
         return new PottsCell(newID, pop, newState, 0, newLocation, hasRegions, parameters, adhesion,
                 criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
     }
     
+    @Override
     public void setState(State state) {
         this.state = state;
         
@@ -313,6 +336,7 @@ public class PottsCell implements Cell {
         }
     }
     
+    @Override
     public void schedule(Schedule schedule) {
         stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);
     }
@@ -364,6 +388,7 @@ public class PottsCell implements Cell {
      * 
      * @param simstate  the MASON simulation state
      */
+    @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
         
@@ -456,6 +481,7 @@ public class PottsCell implements Cell {
         targetSurface = location.convertVolume(targetVolume);
     }
     
+    @Override
     public CellContainer convert() {
         if (hasRegions) {
             EnumMap<Region, Integer> regionVolumes = new EnumMap<>(Region.class);

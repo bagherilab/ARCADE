@@ -94,36 +94,50 @@ public class SeriesTest {
     public static class SimulationMock extends SimState implements Simulation {
         public SimulationMock(long seed, Series series) { super(seed); }
         
+        @Override
         public Series getSeries() { return null; }
         
+        @Override
         public Schedule getSchedule() { return null; }
         
+        @Override
         public int getSeed() { return 0; }
         
+        @Override
         public int getID() { return 0; }
         
+        @Override
         public Grid getGrid() { return null; }
         
+        @Override
         public ArrayList<CellContainer> getCells() { return null; }
         
+        @Override
         public ArrayList<LocationContainer> getLocations() { return null; }
         
+        @Override
         public Lattice getLattice(String key) { return null; }
         
+        @Override
         public void setupAgents() { }
         
+        @Override
         public void setupEnvironment() { }
         
+        @Override
         public void scheduleHelpers() { }
         
+        @Override
         public void scheduleComponents() { }
     }
     
     public static class VisualizationMock extends Visualization {
         public VisualizationMock(Simulation sim) { super((SimState) sim); }
         
+        @Override
         protected Panel[] createPanels() { return new Panel[0]; }
         
+        @Override
         protected Drawer[] createDrawers() { return new Drawer[0]; }
     }
     
@@ -137,19 +151,26 @@ public class SeriesTest {
             super(setupDicts, setupLists, parameters, isVis);
         }
         
+        @Override
         protected void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters) { }
         
+        @Override
         protected void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults,
                                          MiniBox populationConversions) { }
         
+        @Override
         protected void updateMolecules(ArrayList<Box> molecules, MiniBox moleculeDefaults) { }
         
+        @Override
         protected void updateHelpers(ArrayList<Box> helpers, MiniBox helperDefaults) { }
         
+        @Override
         protected void updateComponents(ArrayList<Box> components, MiniBox componentDefaults) { }
         
+        @Override
         protected String getSimClass() { return (invalidSim ? "" : SIM_CONSTRUCTOR_CLASS); }
         
+        @Override
         protected String getVisClass() { return (invalidVis ? "" : VIS_CONSTRUCTOR_CLASS); }
     }
     

@@ -33,10 +33,12 @@ public class ARCADETest {
         
         MockARCADE() { }
         
+        @Override
         protected String getResource(String s) {
             return folder.getRoot().getAbsolutePath() + "/" + s;
         }
         
+        @Override
         protected InputBuilder getBuilder() {
             InputBuilder builder = mock(InputBuilder.class);
             
@@ -55,8 +57,10 @@ public class ARCADETest {
             return builder;
         }
         
+        @Override
         protected OutputLoader getLoader(Series series) { return mock(OutputLoader.class); }
         
+        @Override
         protected OutputSaver getSaver(Series series) { return mock(OutputSaver.class); }
     }
     

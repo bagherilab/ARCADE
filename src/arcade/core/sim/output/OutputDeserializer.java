@@ -26,10 +26,12 @@ public final class OutputDeserializer {
         return gsonBuilder;
     }
     
-    public static class CellListDeserializer
+    public static final class CellListDeserializer
             implements JsonDeserializer<ArrayList<CellContainer>> {
+        @Override
         public ArrayList<CellContainer> deserialize(JsonElement json, Type typeOfT,
-                JsonDeserializationContext context) throws JsonParseException {
+                                                    JsonDeserializationContext context)
+                throws JsonParseException {
             ArrayList<CellContainer> cells = new ArrayList<>();
             JsonArray jsonArray = json.getAsJsonArray();
             
@@ -43,10 +45,12 @@ public final class OutputDeserializer {
         }
     }
     
-    public static class LocationListDeserializer
+    public static final class LocationListDeserializer
             implements JsonDeserializer<ArrayList<LocationContainer>> {
+        @Override
         public ArrayList<LocationContainer> deserialize(JsonElement json, Type typeOfT,
-                JsonDeserializationContext context) throws JsonParseException {
+                                                        JsonDeserializationContext context)
+                throws JsonParseException {
             ArrayList<LocationContainer> locations = new ArrayList<>();
             JsonArray jsonArray = json.getAsJsonArray();
             

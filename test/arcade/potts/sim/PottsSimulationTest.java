@@ -94,6 +94,7 @@ public class PottsSimulationTest {
         
         PottsSimulationMock(long seed, Series series) { super(seed, series); }
         
+        @Override
         public Potts makePotts() { return mock(Potts.class); }
         
         private void mockLocations(PottsLocationFactory factory, MiniBox pop,
@@ -123,6 +124,7 @@ public class PottsSimulationTest {
             }
         }
         
+        @Override
         PottsLocationFactory makeLocationFactory() {
             PottsLocationFactory factory = mock(PottsLocationFactory.class);
             
@@ -185,6 +187,7 @@ public class PottsSimulationTest {
             factory.popToIDs.put(pop.getInt("CODE"), ids);
         }
         
+        @Override
         PottsCellFactory makeCellFactory() {
             PottsCellFactory factory = mock(PottsCellFactory.class);
             

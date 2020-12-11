@@ -15,7 +15,7 @@ import sim.util.Bag;
  * nested within GraphSites.
  */
 
-public class Graph implements Serializable {
+public final class Graph implements Serializable {
     public static final int DIR_FROM = -1;
     public static final int DIR_TO = 1;
     private static final int ADD = 1;
@@ -262,6 +262,7 @@ public class Graph implements Serializable {
         public int getY() { return y; }
         public int getZ() { return z; }
         
+        @Override
         public int compareTo(Object object) {
             Node comp = (Node) object;
             int xComp = Integer.compare(x, comp.getX());

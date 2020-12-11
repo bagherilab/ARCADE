@@ -37,7 +37,8 @@ public final class OutputSerializer {
         return gsonBuilder;
     }
     
-    public static class MiniBoxSerializer implements JsonSerializer<MiniBox> {
+    public static final class MiniBoxSerializer implements JsonSerializer<MiniBox> {
+        @Override
         public JsonElement serialize(MiniBox src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonObject json = new JsonObject();
@@ -58,7 +59,8 @@ public final class OutputSerializer {
         }
     }
     
-    public static class SeriesSerializer implements JsonSerializer<Series> {
+    public static final class SeriesSerializer implements JsonSerializer<Series> {
+        @Override
         public JsonElement serialize(Series src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonObject json = new JsonObject();
@@ -95,8 +97,9 @@ public final class OutputSerializer {
         }
     }
     
-    public static class CellListSerializer
+    public static final class CellListSerializer
             implements JsonSerializer<ArrayList<CellContainer>> {
+        @Override
         public JsonElement serialize(ArrayList<CellContainer> src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonArray json = new JsonArray();
@@ -110,8 +113,9 @@ public final class OutputSerializer {
         }
     }
     
-    public static class LocationListSerializer
+    public static final class LocationListSerializer
             implements JsonSerializer<ArrayList<LocationContainer>> {
+        @Override
         public JsonElement serialize(ArrayList<LocationContainer> src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonArray json = new JsonArray();

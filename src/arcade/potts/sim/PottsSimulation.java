@@ -47,15 +47,20 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         this.seed = (int) seed - Series.SEED_OFFSET;
     }
     
-    public Series getSeries() { return series; }
+    @Override
+    public final Series getSeries() { return series; }
     
-    public Schedule getSchedule() { return schedule; }
+    @Override
+    public final Schedule getSchedule() { return schedule; }
     
-    public int getSeed() { return seed; }
+    @Override
+    public final int getSeed() { return seed; }
     
-    public int getID() { return ++id; }
+    @Override
+    public final int getID() { return ++id; }
     
-    public ArrayList<CellContainer> getCells() {
+    @Override
+    public final ArrayList<CellContainer> getCells() {
         ArrayList<CellContainer> cellContainers = new ArrayList<>();
         
         for (Object obj : grid.getAllObjects()) {
@@ -66,7 +71,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         return cellContainers;
     }
     
-    public ArrayList<LocationContainer> getLocations() {
+    @Override
+    public final ArrayList<LocationContainer> getLocations() {
         ArrayList<LocationContainer> locationContainers = new ArrayList<>();
         
         for (Object obj : grid.getAllObjects()) {
@@ -77,16 +83,19 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         return locationContainers;
     }
     
-    public Potts getPotts() { return potts; }
+    public final Potts getPotts() { return potts; }
     
-    public Grid getGrid() { return grid; }
+    @Override
+    public final Grid getGrid() { return grid; }
     
-    public Lattice getLattice(String key) { return null; }
+    @Override
+    public final Lattice getLattice(String key) { return null; }
     
     /**
      * Called at the start of the simulation to set up agents and environment
      * and schedule components and helpers as needed.
      */
+    @Override
     public void start() {
         super.start();
         
@@ -115,6 +124,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     /**
      * Called at the end of the simulation.
      */
+    @Override
     public void finish() {
         super.finish();
         
@@ -131,7 +141,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      */
     abstract Potts makePotts();
     
-    public void setupPotts() {
+    public final void setupPotts() {
         potts = makePotts();
         schedule.scheduleRepeating(1, Ordering.POTTS.ordinal(), potts);
     }
@@ -150,7 +160,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      */
     abstract PottsCellFactory makeCellFactory();
     
-    public void setupAgents() {
+    @Override
+    public final void setupAgents() {
         // Initialize grid for agents.
         grid = new PottsGrid();
         potts.grid = grid;
@@ -191,15 +202,18 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         }
     }
     
-    public void setupEnvironment() {
+    @Override
+    public final void setupEnvironment() {
         // TODO add environment setup (currently not needed)
     }
     
-    public void scheduleHelpers() {
+    @Override
+    public final void scheduleHelpers() {
         // TODO add helper scheduling
     }
     
-    public void scheduleComponents() {
+    @Override
+    public final void scheduleComponents() {
         // TODO add component scheduling
     }
     

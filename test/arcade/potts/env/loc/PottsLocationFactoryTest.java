@@ -51,8 +51,10 @@ public class PottsLocationFactoryTest {
     static class PottsLocationFactoryMock extends PottsLocationFactory {
         PottsLocationFactoryMock() { super(); }
         
+        @Override
         int convert(double volume) { return (int) (volume + 1); }
         
+        @Override
         ArrayList<Voxel> getNeighbors(Voxel voxel) {
             ArrayList<Voxel> neighbors = new ArrayList<>();
             neighbors.add(new Voxel(voxel.x - 1, 0, 0));
@@ -60,6 +62,7 @@ public class PottsLocationFactoryTest {
             return neighbors;
         }
         
+        @Override
         ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) {
             ArrayList<Voxel> selected = new ArrayList<>();
             for (int i = 0; i < n + focus.x; i++) {
@@ -68,6 +71,7 @@ public class PottsLocationFactoryTest {
             return selected;
         }
         
+        @Override
         ArrayList<Voxel> getPossible(Voxel focus, int m) {
             ArrayList<Voxel> possible = new ArrayList<>();
             for (int i = 0; i < m; i++) {
@@ -76,6 +80,7 @@ public class PottsLocationFactoryTest {
             return possible;
         }
         
+        @Override
         ArrayList<Voxel> getCenters(int length, int width, int height, int m) {
             ArrayList<Voxel> centers = new ArrayList<>();
             for (int i = 0; i < length; i++) {

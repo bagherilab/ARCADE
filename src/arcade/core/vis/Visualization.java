@@ -34,6 +34,7 @@ public abstract class Visualization extends GUIState {
      * 
      * @return  the MASON simulation state
      */
+    @Override
     public Object getSimulationInspectedObject() { return state; }
     
     /**
@@ -41,6 +42,7 @@ public abstract class Visualization extends GUIState {
      * 
      * @return  a {@code null} inspector
      */
+    @Override
     public Inspector getInspector() { return null; }
     
     /**
@@ -73,6 +75,7 @@ public abstract class Visualization extends GUIState {
     /**
      * Starts a visualization.
      */
+    @Override
     public void start() {
         super.start();
         setup();
@@ -83,6 +86,7 @@ public abstract class Visualization extends GUIState {
      * 
      * @param state  the MASON simulation state
      */
+    @Override
     public void load(SimState state) {
         super.load(state);
         setup();
@@ -91,6 +95,7 @@ public abstract class Visualization extends GUIState {
     /**
      * Quits the visualization.
      */
+    @Override
     public void quit() {
         super.quit();
         for (Panel panel : panels) {
@@ -103,6 +108,7 @@ public abstract class Visualization extends GUIState {
      * 
      * @param control  the controller
      */
+    @Override
     public void init(Controller control) {
         super.init(control);
         panels = createPanels();

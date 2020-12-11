@@ -10,7 +10,7 @@ import static arcade.core.util.Enums.Region;
 /**
  * Container class for loading a {@link PottsLocation}.
  */
-public class PottsLocationContainer implements LocationContainer {
+public final class PottsLocationContainer implements LocationContainer {
     public final int id;
     public final ArrayList<Voxel> allVoxels;
     public final Voxel center;
@@ -28,8 +28,10 @@ public class PottsLocationContainer implements LocationContainer {
         this.regions = regions;
     }
     
+    @Override
     public int getID() { return id; }
     
+    @Override
     public Location convert(LocationFactory factory, CellContainer cell) {
         return convert((PottsLocationFactory) factory, (PottsCellContainer) cell);
     }
