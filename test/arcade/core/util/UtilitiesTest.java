@@ -1,12 +1,12 @@
 package arcade.core.util;
 
-import org.junit.*;
 import java.util.ArrayList;
 import java.util.Comparator;
+import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
-import static arcade.core.util.Utilities.*;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.util.Utilities.*;
 
 public class UtilitiesTest {
     @Test(expected = UnsupportedOperationException.class)

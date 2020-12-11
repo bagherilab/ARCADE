@@ -1,18 +1,22 @@
 package arcade.potts.env.loc;
 
-import org.junit.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import java.util.*;
-import ec.util.MersenneTwisterFast;
-import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Direction;
-import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
-import static arcade.potts.env.loc.PottsLocationTest.*;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.env.loc.PottsLocationTest.*;
+import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.util.PottsEnums.Direction;
 
 public class PottsLocationsTest {
-    static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
+    static MersenneTwisterFast randomDoubleZero;
+    static MersenneTwisterFast randomDoubleOne;
     static ArrayList<Voxel> voxelListForVolumeSurface;
     static ArrayList<Voxel> voxelListForMultipleRegionsA;
     static ArrayList<Voxel> voxelListForMultipleRegionsB;
@@ -21,7 +25,9 @@ public class PottsLocationsTest {
     static ArrayList<Voxel> voxelListForRegionAddRemove;
     static ArrayList<Voxel> voxelListSingle;
     static ArrayList<Voxel> voxelListDouble;
-    static ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
+    static ArrayList<Voxel> voxelListA;
+    static ArrayList<Voxel> voxelListB;
+    static ArrayList<Voxel> voxelListAB;
     static final int LOCATIONS_SURFACE = (int) (Math.random() * 100);
     
     @BeforeClass
@@ -133,8 +139,8 @@ public class PottsLocationsTest {
                 case POSITIVE_XY: return Direction.YZ_PLANE;
                 case NEGATIVE_ZX: return Direction.POSITIVE_YZ;
                 case YZ_PLANE: return Direction.ZX_PLANE;
+                default: return null;
             }
-            return null;
         }
         
         ArrayList<Voxel> getSelected(Voxel center, double n) { return new ArrayList<>(); }

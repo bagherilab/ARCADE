@@ -1,20 +1,21 @@
 package arcade.potts.sim;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import arcade.potts.vis.PottsVisualization;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static arcade.core.TestUtilities.EPSILON;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
-import static arcade.core.TestUtilities.EPSILON;
 
 public class PottsSeriesTest {
     private static final double DS = (Math.random() * 10) + 1;

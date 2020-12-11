@@ -58,11 +58,11 @@ public class InputLoader extends DefaultHandler {
      * Loads the given XML file into given {@link arcade.core.util.Box}.
      * 
      * @param xml  the XML file
-     * @param box  the box to load into
+     * @param loadBox  the box to load into
      * @return  the box containing the parsed XML
      */
-    public Box load(String xml, Box box) throws IOException, SAXException {
-        this.box = box;
+    public Box load(String xml, Box loadBox) throws IOException, SAXException {
+        this.box = loadBox;
         LOGGER.config("loading XML file [ " + xml + " ]");
         xmlReader.parse(xml);
         LOGGER.config("successfully loaded XML file [ " + xml + " ]\n\n" + box.toString());
@@ -81,7 +81,10 @@ public class InputLoader extends DefaultHandler {
      */
     public void startElement(String uri, String lName, String qName, Attributes att) {
         int numAtts = att.getLength();
-        String id, tag, filter, target;
+        String id;
+        String tag;
+        String filter;
+        String target;
         
         // Iterate through each attribute and add to a map.
         if (numAtts > 0) {

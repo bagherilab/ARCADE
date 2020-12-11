@@ -3,8 +3,7 @@ package arcade.potts.vis;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-import arcade.core.vis.Panel;
-import sim.engine.*;
+import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
 import sim.field.grid.DoubleGrid2D;
 import sim.field.network.Network;
@@ -18,11 +17,11 @@ import sim.portrayal.network.SimpleEdgePortrayal2D;
 import sim.portrayal.network.SpatialNetwork2D;
 import sim.util.Double2D;
 import sim.util.gui.ColorMap;
-import arcade.potts.sim.Potts;
 import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
 import arcade.core.vis.*;
 import arcade.potts.agent.module.PottsModule;
+import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import static arcade.core.util.Enums.Region;
 
@@ -74,9 +73,9 @@ public abstract class PottsDrawer extends Drawer {
                 valuePort.setField(array);
                 valuePort.setMap(map);
                 return valuePort;
+            default:
+                return null;
         }
-        
-        return null;
     }
     
     private static class SimpleEdgePortrayal2DGridWrapper extends SimpleEdgePortrayal2D {
@@ -190,7 +189,9 @@ public abstract class PottsDrawer extends Drawer {
             int[][] ids = getSlice(potts.ids, plane, length, width, height);
             int[][] regions = getSlice(potts.regions, plane, length, width, height);
             
-            int aa, bb, cc;
+            int aa;
+            int bb;
+            int cc;
             switch (plane) {
                 case PLANE_X:
                     aa = height;
@@ -233,6 +234,8 @@ public abstract class PottsDrawer extends Drawer {
                             break;
                         case DRAW_SURFACE:
                             to[a][b] = cell == null ? 0 : cell.getSurface();
+                            break;
+                        default:
                             break;
                     }
                 }
@@ -396,7 +399,8 @@ public abstract class PottsDrawer extends Drawer {
             
             int[][] ids = getSlice(sim.getPotts().ids, plane, length, width, height);
             
-            int aa, bb;
+            int aa;
+            int bb;
             switch (plane) {
                 case PLANE_X:
                     aa = height;

@@ -1,13 +1,13 @@
 package arcade.core;
 
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import java.security.InvalidParameterException;
 import org.xml.sax.SAXException;
 import arcade.core.sim.Series;
 import arcade.core.sim.input.InputBuilder;
@@ -58,7 +58,7 @@ public abstract class ARCADE {
     protected abstract OutputSaver getSaver(Series series);
     
     public static void main(String[] args) throws Exception {
-        logger = updateLogger();
+        updateLogger();
         
         // Check that arguments includes at least one entry.
         if (args.length == 0) {
@@ -132,7 +132,9 @@ public abstract class ARCADE {
         boolean isVis = settings.contains("VIS");
         
         InputBuilder builder = this.getBuilder();
-        return builder.build(xml, parameters, isVis);
+        builder.parameters = parameters;
+        builder.isVis = isVis;
+        return builder.build(xml);
     }
     
     void runSeries(ArrayList<Series> series, MiniBox settings) throws Exception {
@@ -172,9 +174,9 @@ public abstract class ARCADE {
         }
     }
     
-    public static Logger updateLogger() {
+    public static void updateLogger() {
         // Setup logger.
-        Logger logger = Logger.getLogger("arcade");
+        logger = Logger.getLogger(ARCADE.class.getName());
         logger.setUseParentHandlers(false);
         
         // Change logger display format.
@@ -192,6 +194,5 @@ public abstract class ARCADE {
         });
         
         logger.addHandler(handler);
-        return Logger.getLogger(ARCADE.class.getName());
     }
 }

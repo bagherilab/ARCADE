@@ -1,13 +1,14 @@
 package arcade.core.sim;
 
 import java.lang.reflect.Constructor;
-import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 import sim.display.GUIState;
 import sim.engine.SimState;
 import arcade.core.sim.output.*;
-import arcade.core.util.*;
+import arcade.core.util.Box;
+import arcade.core.util.MiniBox;
 
 public abstract class Series {
     /** Logger for {@code Series} */
@@ -123,10 +124,10 @@ public abstract class Series {
         this.width = (series.contains("width")
                 ? series.getInt("width")
                 : defaults.getInt("WIDTH"));
-        int height = (series.contains("height")
+        int h = (series.contains("height")
                 ? series.getInt("height")
                 : defaults.getInt("HEIGHT"));
-        this.height = ((height & 1) == 1 ? height : height + 1); // enforce odd
+        this.height = ((h & 1) == 1 ? h : h + 1); // enforce odd
         
         // Set conversion factors.
         this.ds = (series.contains("ds")
@@ -221,39 +222,39 @@ public abstract class Series {
     /**
      * Creates agent populations.
      * 
-     * @param populations  the list of population setup dictionaries
+     * @param populationsBox  the list of population setup dictionaries
      * @param populationDefaults  the dictionary of default population parameters
      * @param populationConversions  the dictionary of population parameter conversions
      */
-    protected abstract void updatePopulations(ArrayList<Box> populations,
+    protected abstract void updatePopulations(ArrayList<Box> populationsBox,
                                               MiniBox populationDefaults,
                                               MiniBox populationConversions);
     
     /**
      * Creates environment molecules.
      * 
-     * @param molecules  the list of molecule setup dictionaries
+     * @param moleculesBox  the list of molecule setup dictionaries
      * @param moleculeDefaults  the dictionary of default molecule parameters
      */
-    protected abstract void updateMolecules(ArrayList<Box> molecules,
+    protected abstract void updateMolecules(ArrayList<Box> moleculesBox,
                                             MiniBox moleculeDefaults);
     
     /**
      * Creates selected helpers.
      * 
-     * @param helpers  the list of helper dictionaries
+     * @param helpersBox  the list of helper dictionaries
      * @param helperDefaults  the dictionary of default helper parameters
      */
-    protected abstract void updateHelpers(ArrayList<Box> helpers,
+    protected abstract void updateHelpers(ArrayList<Box> helpersBox,
                                           MiniBox helperDefaults);
     
     /**
      * Creates selected components.
      * 
-     * @param components  the list of component dictionaries
+     * @param componentsBox  the list of component dictionaries
      * @param componentDefaults  the dictionary of default component parameters
      */
-    protected abstract void updateComponents(ArrayList<Box> components,
+    protected abstract void updateComponents(ArrayList<Box> componentsBox,
                                              MiniBox componentDefaults);
     
     /**
@@ -265,8 +266,8 @@ public abstract class Series {
      * @param values  the map of parameter values
      * @param scales  the map of parameter scaling
      */
-    protected static void parseParameter(MiniBox box, String parameter,
-                                String defaultParameter, MiniBox values, MiniBox scales) {
+    protected static void parseParameter(MiniBox box, String parameter, String defaultParameter,
+                                         MiniBox values, MiniBox scales) {
         box.put(parameter, defaultParameter);
         
         if (values.get(parameter) != null) {
@@ -341,7 +342,8 @@ public abstract class Series {
      * @throws Exception  if the simulation constructor cannot be instantiated
      */
     public void runSims() throws Exception {
-        long simStart, simEnd;
+        long simStart;
+        long simEnd;
         
         // Iterate through each seed.
         for (int seed = startSeed; seed <= endSeed; seed++) {

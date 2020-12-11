@@ -1,8 +1,8 @@
 package arcade.core.env.lat;
 
-import arcade.core.sim.Simulation;
-import arcade.core.env.loc.Location;
 import arcade.core.env.comp.Component;
+import arcade.core.env.loc.Location;
+import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 
 /** 

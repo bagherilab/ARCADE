@@ -1,6 +1,6 @@
 package arcade.potts.vis;
 
-import java.awt.*;
+import java.awt.Color;
 import arcade.core.sim.Series;
 import arcade.core.util.Colors;
 import arcade.core.util.MiniBox;
@@ -15,7 +15,7 @@ public class PottsColorMaps {
     static final Colors MAP_STATE = new Colors(
             new Color[]{
                     new Color(0, 0, 0),
-//                    new Color(43, 136, 158),
+                    // new Color(43, 136, 158),
                     new Color(115, 175, 72),        // proliferative : G1
                     new Color(82, 161, 76),        // proliferative : S
                     new Color(48, 147, 80),        // proliferative : G2
@@ -23,8 +23,8 @@ public class PottsColorMaps {
                     new Color(237, 173, 8),    // apoptosis : early
                     new Color(119, 87, 4),        // apoptosis : late
                     new Color(99, 67, 4),        // apoptosis : apoptosed
-//                    new Color(225, 124, 5),
-//                    new Color(204, 80, 62)
+                    // new Color(225, 124, 5),
+                    // new Color(204, 80, 62)
             },
             new double[] { 0, 1, 2, 3, 4, 5, 6, 7 }
     );

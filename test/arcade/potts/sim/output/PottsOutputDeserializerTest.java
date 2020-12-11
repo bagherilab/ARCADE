@@ -1,25 +1,30 @@
 package arcade.potts.sim.output;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import com.google.gson.*;
-import com.google.gson.internal.bind.TreeTypeAdapter;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.Gson;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import org.junit.Test;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
+import com.google.gson.internal.bind.TreeTypeAdapter;
+import com.google.gson.reflect.TypeToken;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.LocationContainer;
-import arcade.potts.env.loc.Voxel;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.loc.PottsLocationContainer;
-import static arcade.core.util.Enums.State;
+import arcade.potts.env.loc.Voxel;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static arcade.core.TestUtilities.*;
 import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.core.util.Enums.State;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.sim.output.PottsOutputDeserializer.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsOutputDeserializerTest {
     static final JsonDeserializationContext CELL_CONTEXT = new JsonDeserializationContext() {

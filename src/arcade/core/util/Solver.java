@@ -117,7 +117,9 @@ public class Solver {
         double[] y5 = y0.clone();
         double[] y6 = y0.clone();
         double[] w = new double[n];
-        double err, maxerr, tol;
+        double err;
+        double maxerr;
+        double tol;
         
         while (t < tf && steps < MAX_STEPS) {
             steps++;
@@ -258,7 +260,8 @@ public class Solver {
     
     // METHOD: bisection. Finds root using bisection method.
     public static double bisection(Function func, double a, double b) {
-        double c, fc;
+        double c;
+        double fc;
         int i = 0;
         
         // Check that given bounds are opposite signs.

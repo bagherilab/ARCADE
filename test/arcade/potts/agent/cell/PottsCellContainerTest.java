@@ -1,21 +1,21 @@
 package arcade.potts.agent.cell;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import org.junit.Test;
 import arcade.core.agent.cell.Cell;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.util.Enums.State;
-import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Term;
-import static arcade.potts.util.PottsEnums.Phase;
-import static arcade.potts.agent.cell.PottsCellFactoryTest.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.util.Enums.Region;
+import static arcade.core.util.Enums.State;
+import static arcade.potts.agent.cell.PottsCellFactoryTest.*;
+import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsCellContainerTest {
     @Test

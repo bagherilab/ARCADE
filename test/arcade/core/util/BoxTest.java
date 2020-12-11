@@ -1,11 +1,11 @@
 package arcade.core.util;
 
-import org.junit.*;
-import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.HashSet;
-import static arcade.core.util.Box.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.util.Box.*;
 
 public class BoxTest {
     private static final int NUMBER_KEYS = 10;

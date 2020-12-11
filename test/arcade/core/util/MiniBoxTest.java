@@ -1,12 +1,12 @@
 package arcade.core.util;
 
-import org.junit.*;
-import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class MiniBoxTest {
     private static final int NUMBER_KEYS = 10;

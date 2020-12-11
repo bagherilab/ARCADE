@@ -1,12 +1,12 @@
 package arcade.potts.env.loc;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.EnumMap;
 import ec.util.MersenneTwisterFast;
-import arcade.core.sim.Series;
 import arcade.core.env.loc.*;
+import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Utilities;
 import static arcade.core.util.Enums.Region;

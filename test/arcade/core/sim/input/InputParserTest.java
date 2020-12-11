@@ -1,11 +1,11 @@
 package arcade.core.sim.input;
 
-import org.junit.*;
+import org.junit.Test;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import static org.junit.Assert.*;
-import static arcade.core.sim.input.InputParser.*;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.sim.input.InputParser.*;
 
 public class InputParserTest {
     private static final String COMMAND_ID_1 = randomString();

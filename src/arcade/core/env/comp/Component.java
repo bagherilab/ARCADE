@@ -1,8 +1,8 @@
 package arcade.core.env.comp;
 
 import sim.engine.Steppable;
-import arcade.core.sim.Simulation;
 import arcade.core.env.loc.Location;
+import arcade.core.sim.Simulation;
 
 /** 
  * A {@code Component} object is a steppable that interacts with the environment.

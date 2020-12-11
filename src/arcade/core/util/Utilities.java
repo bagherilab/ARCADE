@@ -1,8 +1,8 @@
 package arcade.core.util;
 
-import ec.util.MersenneTwisterFast;
 import java.util.ArrayList;
 import java.util.ListIterator;
+import ec.util.MersenneTwisterFast;
 
 public final class Utilities {
     protected Utilities() {

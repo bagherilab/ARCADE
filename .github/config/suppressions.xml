@@ -5,8 +5,13 @@
     "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
 <suppressions>
+	<!-- Checks for size violations -->
     <suppress checks="LineLength" files="test/*" id="LineLength" />
-    <suppress checks="MethodName" files="test/*" />
+
+    <!-- Checks for Javadoc comments -->
     <suppress checks="JavadocVariable" files="test/*" />
     <suppress checks="MissingJavadocMethod" files="test/*" />
+
+    <!-- Checks for naming conventions -->
+    <suppress checks="MethodName" files="test/*" />
 </suppressions> 

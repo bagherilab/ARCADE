@@ -106,7 +106,10 @@ public class Colors implements ColorMap {
      */
     private void interpColors(Color minCol, Color maxCol, int start, int end) {
         int n = (end > BINS ? BINS : end) - start;
-        int r, g, b, a;
+        int r;
+        int g;
+        int b;
+        int a;
         double delta;
         
         // Create color array.

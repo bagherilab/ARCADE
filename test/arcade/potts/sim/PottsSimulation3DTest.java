@@ -1,14 +1,14 @@
 package arcade.potts.sim;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.util.HashMap;
+import org.junit.Test;
 import arcade.core.agent.cell.*;
 import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.loc.PottsLocationFactory3D;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.potts.sim.PottsSimulationTest.RANDOM_SEED;
 
 public class PottsSimulation3DTest {

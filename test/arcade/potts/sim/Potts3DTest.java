@@ -1,14 +1,15 @@
 package arcade.potts.sim;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.util.HashSet;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import arcade.core.env.grid.Grid;
 import arcade.potts.agent.cell.PottsCell;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static arcade.core.TestUtilities.EPSILON;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
-import static arcade.core.TestUtilities.EPSILON;
 
 public class Potts3DTest {
     static final int REGION_DEFAULT = Region.DEFAULT.ordinal();
@@ -174,6 +175,9 @@ public class Potts3DTest {
                                 break;
                             case Z_AXIS:
                                 rotated[k][i][j] = array[k][2 - j][i];
+                                break;
+                            default:
+                                break;
                         }
                     }
                 }
@@ -210,24 +214,22 @@ public class Potts3DTest {
         for (int i = 0; i < k; i++) {
             s[i] = i;
         }
-
+        
         array[index++] = s.clone();
         
         for (;;) {
             int ii = k - 1;
-
             for (int i = k - 1; i >= 0 && s[i] == n - k + i; i--) {
                 ii--;
             }
-
+            
             if (ii < 0) { break; }
             
             s[ii]++;
-
             for (++ii; ii < k; ii++) {
                 s[ii] = s[ii - 1] + 1;
             }
-
+            
             array[index++] = s.clone();
         }
     }
@@ -324,9 +326,9 @@ public class Potts3DTest {
         assertArrayEquals(new boolean[] { false, false, false }, array2[2][2]);
     }
     
-    private HashSet<Integer> checkUniqueID(Potts3D potts, int[][][] ids) {
-        potts.ids = ids;
-        return potts.getUniqueIDs(1, 1, 1);
+    private HashSet<Integer> checkUniqueID(Potts3D potts3D, int[][][] ids) {
+        potts3D.ids = ids;
+        return potts3D.getUniqueIDs(1, 1, 1);
     }
     
     @Test
@@ -392,10 +394,10 @@ public class Potts3DTest {
         }));
     }
     
-    private HashSet<Integer> checkUniqueRegion(Potts3D potts, int[][][] ids, int[][][] regions) {
-        potts.ids = ids;
-        potts.regions = regions;
-        return potts.getUniqueRegions(1, 1, 1);
+    private HashSet<Integer> checkUniqueRegion(Potts3D potts3D, int[][][] ids, int[][][] regions) {
+        potts3D.ids = ids;
+        potts3D.regions = regions;
+        return potts3D.getUniqueRegions(1, 1, 1);
     }
     
     @Test

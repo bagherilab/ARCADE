@@ -1,13 +1,13 @@
 package arcade.core.util;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Collections;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import sim.util.Bag;
 
 /**
@@ -23,7 +23,8 @@ public class Graph implements Serializable {
     private final Bag allEdges; // collection of all Edges in the graph
     private final Map<Node, Bag> nodeToOutBag; // Node to collection of Edges OUT of node
     private final Map<Node, Bag> nodeToInBag; // Node to collection of Edges IN to node
-    private final int[][] inDegree, outDegree;
+    private final int[][] inDegree;
+    private final int[][] outDegree;
     
     // CONSTRUCTOR.
     public Graph(int length, int width) {
@@ -245,7 +246,9 @@ public class Graph implements Serializable {
     // CLASS: Node. Nested class representing a graph node that tracks its
     // position in the lattice.
     public abstract static class Node implements Serializable, Comparable {
-        protected int x, y, z;
+        protected int x;
+        protected int y;
+        protected int z;
         
         // CONSTRUCTOR.
         public Node(int x, int y, int z) {
@@ -299,8 +302,10 @@ public class Graph implements Serializable {
     // and FROM nodes as well as edges into its FROM node and edges out of its
     // TO node.
     public abstract static class Edge implements Serializable {
-        protected Node to, from;
-        private final ArrayList<Edge> edgesIn, edgesOut;
+        protected Node to;
+        protected Node from;
+        private final ArrayList<Edge> edgesIn;
+        private final ArrayList<Edge> edgesOut;
         
         // CONSTRUCTOR.
         public Edge(Node from, Node to) {

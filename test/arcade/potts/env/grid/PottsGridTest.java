@@ -1,8 +1,8 @@
 package arcade.potts.env.grid;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
 import sim.util.Bag;
+import static org.junit.Assert.*;
 
 public class PottsGridTest {
     final String objectA = "A";

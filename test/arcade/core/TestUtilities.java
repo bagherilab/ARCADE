@@ -1,9 +1,13 @@
 package arcade.core;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Random;
-import ec.util.MersenneTwisterFast;
 import org.junit.rules.TemporaryFolder;
+import ec.util.MersenneTwisterFast;
 
 public final class TestUtilities {
     public static final double EPSILON = 1E-10;

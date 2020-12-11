@@ -1,24 +1,25 @@
 package arcade.core.sim;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import sim.display.GUIState;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
-import sim.display.GUIState;
-import arcade.core.util.Box;
-import arcade.core.util.MiniBox;
+import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
-import arcade.core.vis.*;
-import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.LocationContainer;
-import static arcade.core.sim.Series.SEED_OFFSET;
+import arcade.core.util.Box;
+import arcade.core.util.MiniBox;
+import arcade.core.vis.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.EPSILON;
+import static arcade.core.sim.Series.SEED_OFFSET;
 
 public class SeriesTest {
     private static final double DS = (Math.random() * 10) + 1;

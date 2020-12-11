@@ -1,13 +1,17 @@
 package arcade.potts.agent.cell;
 
-import java.util.*;
-import arcade.core.sim.Series;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import arcade.core.agent.cell.*;
+import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Term;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
+import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsCellFactory implements CellFactory {
     /** Map of population to critical values */

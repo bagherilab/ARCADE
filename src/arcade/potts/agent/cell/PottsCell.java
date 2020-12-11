@@ -1,19 +1,26 @@
 package arcade.potts.agent.cell;
 
-import sim.engine.*;
 import java.util.EnumMap;
-import arcade.core.sim.Simulation;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.engine.Stoppable;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.module.Module;
 import arcade.core.env.loc.Location;
+import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
-import arcade.potts.agent.module.*;
+import arcade.potts.agent.module.PottsModule;
+import arcade.potts.agent.module.PottsModuleApoptosis;
+import arcade.potts.agent.module.PottsModuleAutosis;
+import arcade.potts.agent.module.PottsModuleNecrosis;
+import arcade.potts.agent.module.PottsModuleProliferation;
+import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.util.Enums.State;
 import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Term;
+import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Ordering;
+import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule */
@@ -254,10 +261,10 @@ public class PottsCell implements Cell {
     /**
      * Gets the adhesion to a cell of the given population.
      * 
-     * @param pop  the cell population
+     * @param target  the target cell population
      * @return  the adhesion value
      */
-    public double getAdhesion(int pop) { return adhesion[pop]; }
+    public double getAdhesion(int target) { return adhesion[target]; }
     
     /**
      * Gets the adhesion between two regions.
@@ -275,8 +282,8 @@ public class PottsCell implements Cell {
     
     public void stop() { stopper.stop(); }
     
-    public PottsCell make(int id, State state, Location location) {
-        return new PottsCell(id, pop, state, 0, location, hasRegions, parameters, adhesion,
+    public PottsCell make(int newID, State newState, Location newLocation) {
+        return new PottsCell(newID, pop, newState, 0, newLocation, hasRegions, parameters, adhesion,
                 criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
     }
     

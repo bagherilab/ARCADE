@@ -1,6 +1,7 @@
 package arcade.core.agent.cell;
 
-import sim.engine.*;
+import sim.engine.Schedule;
+import sim.engine.Steppable;
 import arcade.core.agent.module.Module;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;

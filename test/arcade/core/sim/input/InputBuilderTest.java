@@ -1,17 +1,19 @@
 package arcade.core.sim.input;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.stream.IntStream;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import java.util.ArrayList;
-import java.util.stream.IntStream;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.*;
 
 public class InputBuilderTest {
@@ -58,7 +60,7 @@ public class InputBuilderTest {
         write(file, "<set />");
         
         InputBuilder builder = new InputBuilderMock();
-        ArrayList<Series> series = builder.build(file.getAbsolutePath(), null, false);
+        ArrayList<Series> series = builder.build(file.getAbsolutePath());
         
         assertEquals(0, series.size());
     }
@@ -69,28 +71,16 @@ public class InputBuilderTest {
         write(file, "<set />");
         
         InputBuilder builder = new InputBuilderMock();
-        builder.build(file.getAbsolutePath(), new Box(), false);
+        builder.build(file.getAbsolutePath());
         
         assertNotNull(builder.series);
-    }
-    
-    @Test
-    public void build_validInput_setsParameters() throws IOException, SAXException {
-        File file = folder.newFile("build_validInput_setsParameters.xml");
-        write(file, "<set />");
-        
-        InputBuilder builder = new InputBuilderMock();
-        builder.build(file.getAbsolutePath(), new Box(), true);
-        
-        assertNotNull(builder.parameters);
-        assertTrue(builder.isVis);
     }
     
     @Test(expected = SAXException.class)
     public void build_invalid_throwsException() throws IOException, SAXException {
         File file = folder.newFile("build_invalid_throwsException.xml");
         InputBuilder builder = new InputBuilderMock();
-        builder.build(file.getAbsolutePath(), null, false);
+        builder.build(file.getAbsolutePath());
     }
     
     @Test

@@ -1,15 +1,16 @@
 package arcade.potts;
 
 import java.io.File;
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import arcade.core.ARCADE;
 import arcade.core.sim.Series;
 import arcade.potts.sim.input.PottsInputBuilder;
 import arcade.potts.sim.output.PottsOutputLoader;
 import arcade.potts.sim.output.PottsOutputSaver;
-import org.junit.rules.TemporaryFolder;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.*;
 
 public class PottsARCADETest {

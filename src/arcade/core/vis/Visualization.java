@@ -1,9 +1,10 @@
 package arcade.core.vis;
 
 import java.awt.geom.Rectangle2D;
+import sim.display.Controller;
+import sim.display.GUIState;
 import sim.engine.SimState;
 import sim.portrayal.Inspector;
-import sim.display.*;
 
 /** 
  * Extension of {@code GUIState} wrapper of simulations for visualization.

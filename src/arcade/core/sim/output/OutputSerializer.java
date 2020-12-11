@@ -1,13 +1,21 @@
 package arcade.core.sim.output;
 
 import java.lang.reflect.Type;
-import java.util.*;
-import com.google.gson.*;
-import arcade.core.sim.Series;
-import arcade.core.util.MiniBox;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.LocationContainer;
-import static arcade.core.sim.Simulation.*;
+import arcade.core.sim.Series;
+import arcade.core.util.MiniBox;
+import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
+import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
 public final class OutputSerializer {
     /** Regular expression for fractions */

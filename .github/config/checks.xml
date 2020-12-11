@@ -27,7 +27,7 @@
     <!-- Checks that property files contain the same keys -->
     <module name="Translation" />
 
-    <!-- Checks for Size Violations -->
+    <!-- Checks for size violations -->
     <module name="FileLength" />
     <module name="LineLength">
         <property name="id" value="LineLength"/>
@@ -88,11 +88,20 @@
         <module name="TypeName" />
 
         <!-- Checks for imports -->
-        <!-- <module name="AvoidStarImport" /> -->
+        <module name="AvoidStarImport">
+            <property name="excludes" value="arcade.core.agent.cell, arcade.core.agent.module, arcade.core.agent.helper, arcade.core.env.loc, arcade.core.env.grid, arcade.core.env.grid, arcade.core.env.lat, arcade.core.sim, arcade.core.sim.input, arcade.core.sim.output, arcade.core.vis"/>
+            <property name="allowStaticMemberImports" value="true" />
+        </module>
         <module name="IllegalImport" />
         <module name="RedundantImport" />
         <module name="UnusedImports">
             <property name="processJavadoc" value="false" />
+        </module>
+        <module name="ImportOrder">
+            <property name="groups" value="/^java\./,javax,org,com,sim,ec,arcade.core,arcade"/>
+            <property name="staticGroups" value="org,java,arcade.core,arcade"/>
+            <property name="sortStaticImportsAlphabetically" value="true" />
+            <property name="option" value="bottom"/>
         </module>
 
         <!-- Checks for size violations -->
@@ -123,7 +132,7 @@
         <module name="AvoidNestedBlocks" />
         <module name="EmptyBlock" />
         <module name="LeftCurly">
-            <property name="tokens" value="ANNOTATION_DEF, CLASS_DEF, ENUM_CONSTANT_DEF, ENUM_DEF, INTERFACE_DEF, LAMBDA, LITERAL_CASE, LITERAL_CATCH, LITERAL_DEFAULT, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, OBJBLOCK, STATIC_INIT, RECORD_DEF, COMPACT_CTOR_DEF" />
+            <property name="tokens" value="ANNOTATION_DEF, CLASS_DEF, ENUM_CONSTANT_DEF, ENUM_DEF, INTERFACE_DEF, LAMBDA, LITERAL_CASE, LITERAL_CATCH, LITERAL_DEFAULT, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, OBJBLOCK, STATIC_INIT, RECORD_DEF" />
         </module>
         <module name="NeedBraces" />
         <module name="RightCurly" />
@@ -131,7 +140,12 @@
         <!-- Checks for common coding problems -->
         <module name="EmptyStatement" />
         <module name="EqualsHashCode" />
-        <!-- <module name="HiddenField" /> -->
+        <module name="HiddenField">
+            <property name="ignoreConstructorParameter" value="true" />
+            <property name="ignoreSetter" value="true" />
+            <property name="ignoreAbstractMethods" value="true" />
+            <property name="ignoreFormat" value="(random|sim|series)"/>
+        </module>
         <module name="IllegalInstantiation" />
         <module name="InnerAssignment" />
         <!-- <module name="MagicNumber" /> -->
@@ -151,7 +165,7 @@
 
         <!-- Miscellaneous other checks -->
         <module name="ArrayTypeStyle" />
-        <!-- <module name="FinalParameters" /> -->
+        <module name="CommentsIndentation" />
         <module name="TodoComment" />
         <module name="UpperEll" />
     </module>

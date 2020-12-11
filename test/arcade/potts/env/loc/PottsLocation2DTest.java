@@ -1,16 +1,23 @@
 package arcade.potts.env.loc;
 
-import org.junit.*;
+import java.util.ArrayList;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import java.util.*;
-import ec.util.MersenneTwisterFast;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public class PottsLocation2DTest {
-    static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
-    static ArrayList<Voxel> voxelListA, voxelListB, voxelListC;
-    static ArrayList<Voxel> voxelListAC, voxelListCA, voxelListBC, voxelListAB;
+    static MersenneTwisterFast randomDoubleZero;
+    static MersenneTwisterFast randomDoubleOne;
+    static ArrayList<Voxel> voxelListA;
+    static ArrayList<Voxel> voxelListB;
+    static ArrayList<Voxel> voxelListC;
+    static ArrayList<Voxel> voxelListAC;
+    static ArrayList<Voxel> voxelListCA;
+    static ArrayList<Voxel> voxelListBC;
+    static ArrayList<Voxel> voxelListAB;
     
     @BeforeClass
     public static void setupMocks() {

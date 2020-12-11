@@ -1,15 +1,20 @@
 package arcade.potts.sim.output;
 
-import com.google.gson.*;
-import com.google.gson.Gson;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSerializer;
-import arcade.potts.sim.*;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.loc.PottsLocationContainer;
 import arcade.potts.env.loc.Voxel;
+import arcade.potts.sim.PottsSeries;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 

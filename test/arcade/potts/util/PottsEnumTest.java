@@ -1,12 +1,13 @@
 package arcade.potts.util;
 
-import org.junit.*;
-import static org.mockito.Mockito.*;
-import java.util.EnumSet;
 import java.util.ArrayList;
+import java.util.EnumSet;
+import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
-import static arcade.potts.util.PottsEnums.*;
+import static org.mockito.Mockito.*;
+import static arcade.potts.util.PottsEnums.Direction;
+import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsEnumTest {
     @Test(expected = UnsupportedOperationException.class)

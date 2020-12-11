@@ -1,11 +1,11 @@
 package arcade.potts.sim.input;
 
-import org.xml.sax.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.xml.sax.Attributes;
+import arcade.core.sim.input.InputBuilder;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import arcade.core.sim.input.InputBuilder;
 import arcade.potts.sim.PottsSeries;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
@@ -30,7 +30,10 @@ public class PottsInputBuilder extends InputBuilder {
         Box box = lists.get(lists.size() - 1);
         
         int numAtts = atts.getLength();
-        String id, region, module, target;
+        String id;
+        String region;
+        String module;
+        String target;
         
         if (numAtts > 0) {
             // If both region and module tags are included, the entry is invalid.
@@ -98,6 +101,8 @@ public class PottsInputBuilder extends InputBuilder {
                 setupDicts = new HashMap<>();
                 setupLists = new HashMap<>();
                 setupDicts.put("set", set);
+                break;
+            default:
                 break;
         }
     }

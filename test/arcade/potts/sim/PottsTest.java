@@ -1,24 +1,25 @@
 package arcade.potts.sim;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
+import org.junit.Before;
+import org.junit.Test;
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
-import arcade.core.sim.Series;
 import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.loc.Location;
+import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Term;
-import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.EPSILON;
+import static arcade.core.util.Enums.Region;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsTest {
     private static final double TEMPERATURE = 10;
@@ -293,18 +294,18 @@ public class PottsTest {
         int length = (int) (Math.random() * 100) + 1;
         int width = (int) (Math.random() * 100) + 1;
         PottsSeries series = makeSeries(length + 2, width + 2, 1);
-        PottsMock potts = new PottsMock(series);
+        PottsMock pottsMock = new PottsMock(series);
         
-        assertEquals(length, potts.length);
-        assertEquals(width, potts.width);
-        assertEquals(1, potts.height);
+        assertEquals(length, pottsMock.length);
+        assertEquals(width, pottsMock.width);
+        assertEquals(1, pottsMock.height);
         
-        assertEquals(1, potts.ids.length);
-        assertEquals(1, potts.regions.length);
-        assertEquals(length + 2, potts.ids[0].length);
-        assertEquals(length + 2, potts.regions[0].length);
-        assertEquals(width + 2, potts.ids[0][0].length);
-        assertEquals(width + 2, potts.regions[0][0].length);
+        assertEquals(1, pottsMock.ids.length);
+        assertEquals(1, pottsMock.regions.length);
+        assertEquals(length + 2, pottsMock.ids[0].length);
+        assertEquals(length + 2, pottsMock.regions[0].length);
+        assertEquals(width + 2, pottsMock.ids[0][0].length);
+        assertEquals(width + 2, pottsMock.regions[0][0].length);
     }
     
     @Test
@@ -312,18 +313,18 @@ public class PottsTest {
         int length = (int) (Math.random() * 100) + 1;
         int width = (int) (Math.random() * 100) + 1;
         PottsSeries series = makeSeries(length + 2, width + 2, 4);
-        PottsMock potts = new PottsMock(series);
+        PottsMock pottsMock = new PottsMock(series);
         
-        assertEquals(length, potts.length);
-        assertEquals(width, potts.width);
-        assertEquals(2, potts.height);
+        assertEquals(length, pottsMock.length);
+        assertEquals(width, pottsMock.width);
+        assertEquals(2, pottsMock.height);
         
-        assertEquals(4, potts.ids.length);
-        assertEquals(4, potts.regions.length);
-        assertEquals(length + 2, potts.ids[0].length);
-        assertEquals(length + 2, potts.regions[0].length);
-        assertEquals(width + 2, potts.ids[0][0].length);
-        assertEquals(width + 2, potts.regions[0][0].length);
+        assertEquals(4, pottsMock.ids.length);
+        assertEquals(4, pottsMock.regions.length);
+        assertEquals(length + 2, pottsMock.ids[0].length);
+        assertEquals(length + 2, pottsMock.regions[0].length);
+        assertEquals(width + 2, pottsMock.ids[0][0].length);
+        assertEquals(width + 2, pottsMock.regions[0][0].length);
     }
     
     @Test
@@ -339,10 +340,10 @@ public class PottsTest {
         series.potts.put("TEMPERATURE", temperature);
         series.potts.put("MCS", mcs);
         
-        PottsMock potts = new PottsMock(series);
+        PottsMock pottsMock = new PottsMock(series);
         
-        assertEquals(mcs * (length - 2) * (width - 2) * (height - 2), potts.steps);
-        assertEquals(temperature, potts.temperature, EPSILON);
+        assertEquals(mcs * (length - 2) * (width - 2) * (height - 2), pottsMock.steps);
+        assertEquals(temperature, pottsMock.temperature, EPSILON);
     }
     
     @Test
@@ -350,8 +351,8 @@ public class PottsTest {
         PottsSeries series = makeSeries(0, 0, 0);
         series.populations = new HashMap<>();
         
-        PottsMock potts = new PottsMock(series);
-        assertFalse(potts.hasRegions);
+        PottsMock pottsMock = new PottsMock(series);
+        assertFalse(pottsMock.hasRegions);
     }
     
     @Test
@@ -367,8 +368,8 @@ public class PottsTest {
         series.populations.put("B", popB);
         series.populations.put("C", popC);
         
-        PottsMock potts = new PottsMock(series);
-        assertFalse(potts.hasRegions);
+        PottsMock pottsMock = new PottsMock(series);
+        assertFalse(pottsMock.hasRegions);
     }
     
     @Test
@@ -386,8 +387,8 @@ public class PottsTest {
         
         popB.put("(REGION)" + TAG_SEPARATOR + "X", "0");
         
-        PottsMock potts = new PottsMock(series);
-        assertTrue(potts.hasRegions);
+        PottsMock pottsMock = new PottsMock(series);
+        assertTrue(pottsMock.hasRegions);
     }
     
     @Test

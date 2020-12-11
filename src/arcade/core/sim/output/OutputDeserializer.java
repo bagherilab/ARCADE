@@ -2,10 +2,17 @@ package arcade.core.sim.output;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import com.google.gson.*;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.LocationContainer;
-import static arcade.core.sim.Simulation.*;
+import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
+import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
 public final class OutputDeserializer {
     protected OutputDeserializer() {

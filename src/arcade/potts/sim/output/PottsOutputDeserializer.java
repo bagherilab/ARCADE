@@ -3,13 +3,20 @@ package arcade.potts.sim.output;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import arcade.core.sim.output.OutputDeserializer;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.loc.PottsLocationContainer;
 import arcade.potts.env.loc.Voxel;
-import static arcade.core.util.Enums.State;
 import static arcade.core.util.Enums.Region;
+import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
 
 public final class PottsOutputDeserializer {

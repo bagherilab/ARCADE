@@ -1,21 +1,25 @@
 package arcade.core.sim.output;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import com.google.gson.*;
-import com.google.gson.internal.bind.TreeTypeAdapter;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.Gson;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.*;
-import arcade.core.sim.Series;
-import arcade.core.util.MiniBox;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.junit.Test;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.internal.bind.TreeTypeAdapter;
+import com.google.gson.reflect.TypeToken;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.LocationContainer;
-import static arcade.core.sim.output.OutputSerializer.*;
+import arcade.core.sim.Series;
+import arcade.core.util.MiniBox;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.sim.output.OutputSerializer.*;
 
 public class OutputSerializerTest {
     static final JsonSerializationContext CELL_CONTEXT = new JsonSerializationContext() {

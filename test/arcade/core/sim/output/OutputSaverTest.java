@@ -1,20 +1,21 @@
 package arcade.core.sim.output;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import com.google.gson.Gson;
-import org.apache.commons.io.FileUtils;
-import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import sim.engine.SimState;
+import org.apache.commons.io.FileUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import com.google.gson.Gson;
 import sim.engine.Schedule;
-import arcade.core.sim.*;
+import sim.engine.SimState;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.LocationContainer;
+import arcade.core.sim.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.*;
 
 public class OutputSaverTest {

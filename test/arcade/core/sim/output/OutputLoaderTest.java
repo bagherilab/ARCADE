@@ -1,18 +1,19 @@
 package arcade.core.sim.output;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import com.google.gson.Gson;
-import org.apache.commons.io.FileUtils;
-import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import arcade.core.sim.*;
+import org.apache.commons.io.FileUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import com.google.gson.Gson;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.LocationContainer;
+import arcade.core.sim.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.*;
 import static arcade.core.sim.Simulation.*;
 

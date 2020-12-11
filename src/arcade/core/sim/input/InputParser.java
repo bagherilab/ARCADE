@@ -1,8 +1,8 @@
 package arcade.core.sim.input;
 
-import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Logger;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 

@@ -1,12 +1,16 @@
 package arcade.core.sim.input;
 
-import org.xml.sax.*;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
@@ -59,7 +63,7 @@ public abstract class InputBuilder implements ContentHandler {
     public Box parameters;
     
     /** {@code true} if run with visualization, {@code false} otherwise */
-    protected boolean isVis;
+    public boolean isVis;
     
     /**
      * Creates a {@code Handler} using {@code SAXParserFactory}.
@@ -85,16 +89,11 @@ public abstract class InputBuilder implements ContentHandler {
      * entire XML file into memory (in contrast to DOM).
      * 
      * @param xml  the XML file
-     * @param parameters  the default parameter values loaded from {@code parameter.xml}
-     * @param isVis  {@code true} if run with visualization, {@code false} otherwise
      * @return  a list of {@link arcade.core.sim.Series} instances
      */
-    public ArrayList<Series> build(String xml, Box parameters, boolean isVis)
+    public ArrayList<Series> build(String xml)
             throws IOException, SAXException {
         series = new ArrayList<>();
-        
-        this.parameters = parameters;
-        this.isVis = isVis;
         
         LOGGER.config("building series from XML file [ " + xml + " ]");
         xmlReader.parse(xml);
@@ -138,8 +137,8 @@ public abstract class InputBuilder implements ContentHandler {
     public void ignorableWhitespace(char[] ch, int start, int length) { }
     public void processingInstruction(String target, String data) { }
     
-    public void setDocumentLocator(Locator locator) {
-        this.locator = locator;
+    public void setDocumentLocator(Locator documentLocator) {
+        this.locator = documentLocator;
         this.document = locator.getSystemId();
     }
     

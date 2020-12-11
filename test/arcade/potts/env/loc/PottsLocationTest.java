@@ -1,20 +1,25 @@
 package arcade.potts.env.loc;
 
-import org.junit.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import java.util.*;
-import ec.util.MersenneTwisterFast;
-import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Direction;
-import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.util.PottsEnums.Direction;
 
 public class PottsLocationTest {
-    static MersenneTwisterFast randomDoubleZero, randomDoubleOne;
+    static MersenneTwisterFast randomDoubleZero;
+    static MersenneTwisterFast randomDoubleOne;
     static final int LOCATION_SURFACE = (int) (Math.random() * 100);
     static ArrayList<Voxel> voxelListForAddRemove;
-    static ArrayList<Voxel> voxelListA, voxelListB, voxelListAB;
+    static ArrayList<Voxel> voxelListA;
+    static ArrayList<Voxel> voxelListB;
+    static ArrayList<Voxel> voxelListAB;
     
     @BeforeClass
     public static void setupMocks() {
@@ -109,8 +114,8 @@ public class PottsLocationTest {
                 case POSITIVE_XY: return Direction.YZ_PLANE;
                 case NEGATIVE_ZX: return Direction.POSITIVE_YZ;
                 case YZ_PLANE: return Direction.ZX_PLANE;
+                default: return null;
             }
-            return null;
         }
         
         ArrayList<Voxel> getSelected(Voxel center, double n) { return new ArrayList<>(); }

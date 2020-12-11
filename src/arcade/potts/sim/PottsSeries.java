@@ -3,7 +3,8 @@ package arcade.potts.sim;
 import java.util.ArrayList;
 import java.util.HashMap;
 import arcade.core.sim.Series;
-import arcade.core.util.*;
+import arcade.core.util.Box;
+import arcade.core.util.MiniBox;
 import static arcade.core.util.Box.KEY_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
@@ -42,42 +43,44 @@ public class PottsSeries extends Series {
     protected void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters) {
         // Initialize potts.
         MiniBox pottsDefaults = parameters.getIdValForTag("POTTS");
-        ArrayList<Box> potts = setupLists.get("potts");
-        updatePotts(potts, pottsDefaults);
+        ArrayList<Box> pottsBox = setupLists.get("potts");
+        updatePotts(pottsBox, pottsDefaults);
         
         // Initialize populations.
         MiniBox populationDefaults = parameters.getIdValForTag("POPULATION");
         MiniBox populationConversions = parameters.getIdValForTagAtt("POPULATION", "conversion");
-        ArrayList<Box> populations = setupLists.get("populations");
-        updatePopulations(populations, populationDefaults, populationConversions);
+        ArrayList<Box> populationsBox = setupLists.get("populations");
+        updatePopulations(populationsBox, populationDefaults, populationConversions);
         
         // Initialize molecules.
         MiniBox moleculeDefaults = parameters.getIdValForTag("MOLECULE");
-        ArrayList<Box> molecules = setupLists.get("molecules");
-        updateMolecules(molecules, moleculeDefaults);
+        ArrayList<Box> moleculesBox = setupLists.get("molecules");
+        updateMolecules(moleculesBox, moleculeDefaults);
         
         // Add helpers.
         MiniBox helperDefaults = parameters.getIdValForTag("HELPER");
-        ArrayList<Box> helpers = setupLists.get("helpers");
-        updateHelpers(helpers, helperDefaults);
+        ArrayList<Box> helpersBox = setupLists.get("helpers");
+        updateHelpers(helpersBox, helperDefaults);
         
         // Add components.
         MiniBox componentDefaults = parameters.getIdValForTag("COMPONENT");
-        ArrayList<Box> components = setupLists.get("components");
-        updateComponents(components, componentDefaults);
+        ArrayList<Box> componentsBox = setupLists.get("components");
+        updateComponents(componentsBox, componentDefaults);
     }
     
     /**
      * Calculates model sizing parameters.
      * 
-     * @param potts  the potts setup dictionary
+     * @param pottsBox  the potts setup dictionary
      * @param pottsDefaults  the dictionary of default potts parameters
      */
-    void updatePotts(ArrayList<Box> potts, MiniBox pottsDefaults) {
+    void updatePotts(ArrayList<Box> pottsBox, MiniBox pottsDefaults) {
         this.potts = new MiniBox();
         
         Box box = new Box();
-        if (potts != null && potts.size() == 1 && potts.get(0) != null) { box = potts.get(0); }
+        if (pottsBox != null && pottsBox.size() == 1 && pottsBox.get(0) != null) {
+            box = pottsBox.get(0);
+        }
         
         // Get default parameters and any parameter tags.
         Box parameters = box.filterBoxByTag("PARAMETER");
@@ -92,30 +95,23 @@ public class PottsSeries extends Series {
         }
     }
     
-    /**
-     * Creates agent populations.
-     * 
-     * @param populations  the list of population setup dictionaries
-     * @param populationDefaults  the dictionary of default population parameters
-     * @param populationConversions  the dictionary of population parameter conversions
-     */
-    protected void updatePopulations(ArrayList<Box> populations, MiniBox populationDefaults,
+    protected void updatePopulations(ArrayList<Box> populationsBox, MiniBox populationDefaults,
                                      MiniBox populationConversions) {
         this.populations = new HashMap<>();
-        if (populations == null) { return; }
+        if (populationsBox == null) { return; }
         
         // Get list of all populations (plus * indicating media).
-        String[] pops = new String[populations.size() + 1];
+        String[] pops = new String[populationsBox.size() + 1];
         pops[0] = "*";
-        for (int i = 0; i < populations.size(); i++) {
-            pops[i + 1] = populations.get(i).getValue("id");
+        for (int i = 0; i < populationsBox.size(); i++) {
+            pops[i + 1] = populationsBox.get(i).getValue("id");
         }
         
         // Assign codes to each population.
         int code = 1;
         
         // Iterate through each setup dictionary to build population settings.
-        for (Box p : populations) {
+        for (Box p : populationsBox) {
             String id = p.getValue("id");
             
             // Create new population and update code.
@@ -169,33 +165,15 @@ public class PottsSeries extends Series {
         }
     }
     
-    /**
-     * Creates environment molecules.
-     * 
-     * @param molecules  the list of molecule setup dictionaries
-     * @param moleculeDefaults  the dictionary of default molecule parameters
-     */
-    protected void updateMolecules(ArrayList<Box> molecules, MiniBox moleculeDefaults) {
+    protected void updateMolecules(ArrayList<Box> moleculesBox, MiniBox moleculeDefaults) {
         // TODO
     }
     
-    /**
-     * Creates selected helpers.
-     * 
-     * @param helpers  the list of helper dictionaries
-     * @param helperDefaults  the dictionary of default helper parameters
-     */
-    protected void updateHelpers(ArrayList<Box> helpers, MiniBox helperDefaults) {
+    protected void updateHelpers(ArrayList<Box> helpersBox, MiniBox helperDefaults) {
         // TODO
     }
     
-    /**
-     * Creates selected components.
-     * 
-     * @param components  the list of component dictionaries
-     * @param componentDefaults  the dictionary of default component parameters
-     */
-    protected void updateComponents(ArrayList<Box> components, MiniBox componentDefaults) {
+    protected void updateComponents(ArrayList<Box> componentsBox, MiniBox componentDefaults) {
         // TODO
     }
 }

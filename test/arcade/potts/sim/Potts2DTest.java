@@ -1,14 +1,15 @@
 package arcade.potts.sim;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.util.HashSet;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import arcade.core.env.grid.Grid;
 import arcade.potts.agent.cell.PottsCell;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static arcade.core.TestUtilities.EPSILON;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
-import static arcade.core.TestUtilities.EPSILON;
 
 public class Potts2DTest {
     static final int REGION_DEFAULT = Region.DEFAULT.ordinal();
@@ -176,9 +177,9 @@ public class Potts2DTest {
         assertArrayEquals(new boolean[] { false, false, false }, array2[0][2]);
     }
     
-    private HashSet<Integer> checkUniqueID(Potts2D potts, int[][] ids) {
-        potts.ids = new int[][][] { ids };
-        return potts.getUniqueIDs(1, 1, 0);
+    private HashSet<Integer> checkUniqueID(Potts2D potts2D, int[][] ids) {
+        potts2D.ids = new int[][][] { ids };
+        return potts2D.getUniqueIDs(1, 1, 0);
     }
     
     @Test
@@ -205,10 +206,10 @@ public class Potts2DTest {
                 { 1, 0, 1 } }));
     }
     
-    private HashSet<Integer> checkUniqueRegion(Potts2D potts, int[][] ids, int[][] regions) {
-        potts.ids = new int[][][] { ids };
-        potts.regions = new int[][][] { regions };
-        return potts.getUniqueRegions(1, 1, 0);
+    private HashSet<Integer> checkUniqueRegion(Potts2D potts2D, int[][] ids, int[][] regions) {
+        potts2D.ids = new int[][][] { ids };
+        potts2D.regions = new int[][][] { regions };
+        return potts2D.getUniqueRegions(1, 1, 0);
     }
     
     @Test

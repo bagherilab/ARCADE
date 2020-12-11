@@ -1,12 +1,12 @@
 package arcade.potts.agent.cell;
 
-import java.util.*;
+import java.util.EnumMap;
 import arcade.core.agent.cell.*;
-import arcade.core.util.MiniBox;
 import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
-import static arcade.core.util.Enums.State;
 import static arcade.core.util.Enums.Region;
+import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Term;
 

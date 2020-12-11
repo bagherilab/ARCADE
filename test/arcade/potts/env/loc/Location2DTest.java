@@ -1,13 +1,15 @@
 package arcade.potts.env.loc;
 
-import org.junit.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import static org.junit.Assert.*;
-import java.util.*;
-import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Direction;
-import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
-import static arcade.potts.env.loc.Location2D.SURFACE_VOLUME_MULTIPLIER;
 import static arcade.core.TestUtilities.EPSILON;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.env.loc.Location2D.SURFACE_VOLUME_MULTIPLIER;
+import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.util.PottsEnums.Direction;
 
 public class Location2DTest {
     static ArrayList<Voxel> voxelListForDiameters;

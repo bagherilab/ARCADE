@@ -1,20 +1,22 @@
 package arcade.core;
 
-import org.junit.*;
-import org.junit.rules.TemporaryFolder;
-import org.xml.sax.SAXException;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.xml.sax.SAXException;
 import arcade.core.sim.Series;
 import arcade.core.sim.input.InputBuilder;
 import arcade.core.sim.output.OutputLoader;
 import arcade.core.sim.output.OutputSaver;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.*;
 
 public class ARCADETest {
@@ -42,10 +44,10 @@ public class ARCADETest {
                 doAnswer(invocation -> {
                     seriesList = new ArrayList<>();
                     Series series = mock(Series.class);
-                    series.isVis = invocation.getArgument(2);
                     seriesList.add(series);
+                    series.isVis = builder.isVis;
                     return seriesList;
-                }).when(builder).build(eq(XML), any(Box.class), anyBoolean());
+                }).when(builder).build(eq(XML));
             } catch (Exception e) {
                 e.printStackTrace();
             }

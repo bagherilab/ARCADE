@@ -1,10 +1,10 @@
 package arcade.potts.sim.output;
 
-import org.junit.*;
-import static org.mockito.Mockito.*;
-import com.google.gson.*;
+import org.junit.Test;
+import com.google.gson.Gson;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputDeserializerTest;
+import static org.mockito.Mockito.*;
 
 public class PottsOutputLoaderTest {
     @Test

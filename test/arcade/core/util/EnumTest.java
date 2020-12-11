@@ -1,11 +1,11 @@
 package arcade.core.util;
 
-import org.junit.*;
-import static org.mockito.Mockito.*;
-import java.util.EnumSet;
 import java.util.ArrayList;
+import java.util.EnumSet;
+import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.util.Enums.*;
 
 public class EnumTest {

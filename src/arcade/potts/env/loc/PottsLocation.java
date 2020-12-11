@@ -1,6 +1,9 @@
 package arcade.potts.env.loc;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.loc.Location;
 import arcade.core.env.loc.LocationContainer;
@@ -453,6 +456,8 @@ public abstract class PottsLocation implements Location {
                         }
                     }
                     break;
+                default:
+                    break;
             }
         }
     }
@@ -511,7 +516,8 @@ public abstract class PottsLocation implements Location {
         int nB = voxelsB.size();
         
         while (Math.abs(nA - nB) > BALANCE_DIFFERENCE) {
-            ArrayList<Voxel> fromVoxels, toVoxels;
+            ArrayList<Voxel> fromVoxels;
+            ArrayList<Voxel> toVoxels;
             
             if (nA > nB) {
                 fromVoxels = voxelsA;

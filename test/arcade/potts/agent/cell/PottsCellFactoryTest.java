@@ -1,25 +1,25 @@
 package arcade.potts.agent.cell;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.IntStream;
+import org.junit.Test;
+import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputLoader;
-import arcade.core.agent.cell.*;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static arcade.core.TestUtilities.*;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.Enums.Region;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Term;
-import static arcade.core.TestUtilities.*;
 
 public class PottsCellFactoryTest {
     static Series createSeries(int[] init, int[] volumes) {

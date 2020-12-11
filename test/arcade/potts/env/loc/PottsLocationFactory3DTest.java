@@ -1,11 +1,12 @@
 package arcade.potts.env.loc;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import ec.util.MersenneTwisterFast;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public class PottsLocationFactory3DTest {

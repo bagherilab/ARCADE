@@ -1,20 +1,20 @@
 package arcade.potts.env.loc;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.IntStream;
+import org.junit.Test;
 import ec.util.MersenneTwisterFast;
+import arcade.core.env.loc.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputLoader;
-import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.MiniBox.TAG_SEPARATOR;
-import static arcade.core.util.Enums.Region;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.util.Enums.Region;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class PottsLocationFactoryTest {
     final MersenneTwisterFast random = mock(MersenneTwisterFast.class);

@@ -1,14 +1,19 @@
 package arcade.core.sim.output;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import com.google.gson.*;
-import arcade.core.sim.Series;
-import arcade.core.sim.Simulation;
+import com.google.gson.Gson;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.LocationContainer;
-import static arcade.core.sim.Simulation.*;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
+import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
 public abstract class OutputLoader {
     /** Logger for class */

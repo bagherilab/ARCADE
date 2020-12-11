@@ -1,41 +1,43 @@
 package arcade.potts.sim;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import ec.util.MersenneTwisterFast;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import sim.engine.Schedule;
 import sim.util.Bag;
-import arcade.core.sim.Series;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
-import arcade.core.env.loc.*;
 import arcade.core.env.grid.Grid;
+import arcade.core.env.loc.*;
+import arcade.core.sim.Series;
+import arcade.core.sim.output.*;
 import arcade.core.util.MiniBox;
-import arcade.core.sim.output.OutputSaver;
-import arcade.core.sim.output.OutputLoader;
-import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.env.loc.Voxel;
-import arcade.potts.env.loc.PottsLocation;
-import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.agent.cell.PottsCellContainer;
-import arcade.potts.env.loc.PottsLocationFactory;
+import arcade.potts.agent.cell.PottsCellFactory;
+import arcade.potts.env.loc.PottsLocation;
 import arcade.potts.env.loc.PottsLocationContainer;
-import static arcade.potts.util.PottsEnums.Ordering;
+import arcade.potts.env.loc.PottsLocationFactory;
+import arcade.potts.env.loc.Voxel;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static arcade.core.TestUtilities.*;
 import static arcade.core.sim.Series.SEED_OFFSET;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
-import static arcade.core.TestUtilities.*;
+import static arcade.potts.util.PottsEnums.Ordering;
 
 public class PottsSimulationTest {
     static final long RANDOM_SEED = (long) (Math.random() * 1000);
     private static final int TOTAL_LOCATIONS = 6;
-    static Series seriesZeroPop, seriesOnePop, seriesMultiPop,
-            seriesNullCell, seriesNullLocation, seriesNullBoth;
+    static Series seriesZeroPop;
+    static Series seriesOnePop;
+    static Series seriesMultiPop;
+    static Series seriesNullCell;
+    static Series seriesNullLocation;
+    static Series seriesNullBoth;
     
     static double random() { return Math.random() * 100; }
     

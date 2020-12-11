@@ -1,16 +1,17 @@
 package arcade.potts.env.loc;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import java.util.EnumMap;
 import java.util.ArrayList;
+import java.util.EnumMap;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.loc.Location;
 import arcade.potts.agent.cell.PottsCellContainer;
-import static arcade.potts.env.loc.PottsLocationFactoryTest.PottsLocationFactoryMock;
-import static arcade.core.util.Enums.Region;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.env.loc.PottsLocationFactoryTest.PottsLocationFactoryMock;
 
 public class PottsLocationContainerTest {
     static final PottsLocationFactory FACTORY = new PottsLocationFactoryMock();

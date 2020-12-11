@@ -2,10 +2,10 @@ package arcade.core.vis;
 
 import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Method;
-import arcade.core.agent.cell.Cell;
-import sim.engine.*;
+import sim.engine.Steppable;
 import sim.portrayal.Portrayal;
 import sim.util.gui.ColorMap;
+import arcade.core.agent.cell.Cell;
 
 /**
  * Visualization for simulation objects.

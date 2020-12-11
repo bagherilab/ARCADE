@@ -184,7 +184,7 @@ public class Potts3D extends Potts {
     
     private boolean getConnectivityTwoNeighbors(boolean[][][] array) {
         if (array[1][1][0] && array[1][1][2]) {
-             // Check for opposites N/S
+            // Check for opposites N/S
             return false;
         } else if (array[1][0][1] && array[1][2][1]) {
             // Check for opposites E/W
@@ -303,7 +303,7 @@ public class Potts3D extends Potts {
             boolean[] planeA = new boolean[2];
             boolean[] planeB = new boolean[2];
             boolean corner = false;
-        
+            
             for (int i = 0; i < NUMBER_PLANE; i++) {
                 // Check for X
                 boolean x1 = array[1 + PLANE_B[i]][1][1 + PLANE_A[i]];
@@ -323,7 +323,7 @@ public class Potts3D extends Potts {
                     corner = array[1 + CORNER_B[i]][1][1 + CORNER_A[i]];
                     break;
                 }
-            
+                
                 // Check for Y
                 boolean y1 = array[1 + PLANE_A[i]][1 + PLANE_B[i]][1];
                 boolean y2 = array[1 + PLANE_A[(i + 1) % NUMBER_PLANE]]
@@ -361,7 +361,7 @@ public class Potts3D extends Potts {
                     corner = array[1][1 + CORNER_A[i]][1 + CORNER_B[i]];
                 }
             }
-
+            
             if (planeA[0] && planeA[1] && (planeB[0] || planeB[1] || corner)) {
                 return true;
             } else if (planeB[0] && planeB[1] && (planeA[0] || planeA[1] || corner)) {
@@ -373,11 +373,10 @@ public class Potts3D extends Potts {
     }
     
     private boolean getConnectivityFiveNeighbors(boolean[][][] array) {
-        boolean[] plane = new boolean[4];
-        boolean[] corner = new boolean[4];
+        boolean[] plane = new boolean[NUMBER_PLANE];
+        boolean[] corner = new boolean[NUMBER_PLANE];
         int nPlane = 0;
         int nCorner = 0;
-    
         
         if (!array[0][1][1] || !array[2][1][1]) {
             // Check XY
@@ -397,7 +396,7 @@ public class Potts3D extends Potts {
                 if (corner[i]) { nCorner++; }
                 if (plane[i]) { nPlane++; }
             }
-        } else if (!array[1][1][0] || !array[1][1][2]) {
+        } else { // !array[1][1][0] || !array[1][1][2]
             // Check ZX
             int y = (array[1][1][0] ? 0 : 2);
             for (int i = 0; i < NUMBER_PLANE; i++) {
@@ -408,35 +407,46 @@ public class Potts3D extends Potts {
             }
         }
     
-        if (nCorner + nPlane < 4) { return false; }
-        if (nPlane == 4 || nCorner + nPlane > 5) { return true; }
-        if (nCorner > 2) { return nPlane > 0; }
-        if (nCorner == 1 && nPlane == 3) {
+        if (nCorner + nPlane < 4) {
+            return false;
+        } else if (nPlane == 4 || nCorner + nPlane > 5) {
+            return true;
+        } else if (nCorner > 2) {
+            return nPlane > 0;
+        } else if (nCorner == 1) { // nPlane == 3
             for (int i = 0; i < NUMBER_PLANE; i++) {
                 if (!plane[i] && (corner[i] || corner[(i + 3) % NUMBER_PLANE])) {
                     return true;
                 }
             }
             return false;
-        }
-        if (nCorner == 2 && nPlane == 2) {
+        } else if (nPlane == 2) { // nCorner == 2
+            boolean isAdjacent = false;
+            int index = NUMBER_PLANE;
             for (int i = 0; i < NUMBER_PLANE; i++) {
-                if (plane[i] && plane[(i + 1) % NUMBER_PLANE]) { return !corner[i]; }
-                if (plane[i] && plane[(i + 2) % NUMBER_PLANE]) {
-                    boolean corner1 = corner[(i + 1) % NUMBER_PLANE];
-                    boolean corner2 = corner[(i + 2) % NUMBER_PLANE];
-                    boolean corner3 = corner[(i + 3) % NUMBER_PLANE];
-                    return (!corner[i] || !corner1) && (!corner2 || !corner3);
+                if (plane[i] && plane[(i + 1) % NUMBER_PLANE]) {
+                    isAdjacent = true;
+                    index = i;
+                } else if (plane[i] && plane[(i + 2) % NUMBER_PLANE]) {
+                    index = i;
                 }
             }
-        }
-        if (nCorner == 2 && nPlane == 3) {
-            for (int i = 0; i < NUMBER_PLANE; i++) {
-                if (!plane[i]) { return corner[i] || corner[(i + 3) % NUMBER_PLANE]; }
+            
+            if (isAdjacent) {
+                return !corner[index];
+            } else {
+                boolean corner1 = corner[(index + 1) % NUMBER_PLANE];
+                boolean corner2 = corner[(index + 2) % NUMBER_PLANE];
+                boolean corner3 = corner[(index + 3) % NUMBER_PLANE];
+                return (!corner[index] || !corner1) && (!corner2 || !corner3);
             }
+        } else { // nCorner == 2 && nPlane == 3
+            int index = NUMBER_PLANE;
+            for (int i = 0; i < NUMBER_PLANE; i++) {
+                if (!plane[i]) { index = i; }
+            }
+            return corner[index] || corner[(index + 3) % NUMBER_PLANE];
         }
-        
-        return false;
     }
     
     HashSet<Integer> getUniqueIDs(int x, int y, int z) {

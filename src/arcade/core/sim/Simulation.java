@@ -1,12 +1,12 @@
 package arcade.core.sim;
 
-import java.util.ArrayList;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import com.google.gson.reflect.TypeToken;
 import sim.engine.Schedule;
-import arcade.core.env.lat.Lattice;
-import arcade.core.env.grid.Grid;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.grid.Grid;
+import arcade.core.env.lat.Lattice;
 import arcade.core.env.loc.LocationContainer;
 
 /** 

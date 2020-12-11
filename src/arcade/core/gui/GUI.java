@@ -1,17 +1,29 @@
 package arcade.core.gui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.logging.LogManager;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.filechooser.FileFilter;
-import arcade.core.ARCADE;
 import sim.display.SimApplet;
+import arcade.core.ARCADE;
 
 /**
  * Creates a {@code GUI} for selecting setup file and running the simulation.
@@ -183,6 +195,8 @@ public class GUI implements ActionListener {
                 });
                 thread.start();
                 
+                break;
+            default:
                 break;
         }
     }

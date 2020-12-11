@@ -1,11 +1,12 @@
 package arcade.core.util;
 
-import org.junit.*;
-import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Comparator;
-import static arcade.core.util.Matrix.*;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
 import static arcade.core.TestUtilities.EPSILON;
+import static arcade.core.util.Matrix.*;
 
 public class MatrixTest {
     private static final double[][] A1D = new double[][] {

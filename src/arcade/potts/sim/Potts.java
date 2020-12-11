@@ -1,7 +1,8 @@
 package arcade.potts.sim;
 
 import java.util.HashSet;
-import sim.engine.*;
+import sim.engine.SimState;
+import sim.engine.Steppable;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.potts.agent.cell.PottsCell;
@@ -73,7 +74,9 @@ public abstract class Potts implements Steppable {
     public void step(SimState simstate) {
         MersenneTwisterFast random = simstate.random;
         double r;
-        int x, y, z;
+        int x;
+        int y;
+        int z;
         
         for (int step = 0; step < steps; step++) {
             // Get random coordinate for candidate.
@@ -83,7 +86,7 @@ public abstract class Potts implements Steppable {
             r = random.nextDouble();
             
             // Check if cell has regions.
-            boolean hasRegions = (ids[z][x][y] != 0 && getCell(ids[z][x][y]).hasRegions());
+            boolean hasRegionsCell = (ids[z][x][y] != 0 && getCell(ids[z][x][y]).hasRegions());
             
             // Get unique targets.
             HashSet<Integer> uniqueIDTargets = getUniqueIDs(x, y, z);
@@ -91,7 +94,7 @@ public abstract class Potts implements Steppable {
             
             // Select unique ID (if there is one), otherwise select unique
             // region (if there is one). If there are neither, then skip.
-            if (hasRegions && uniqueRegionTargets.size() > 0) {
+            if (hasRegionsCell && uniqueRegionTargets.size() > 0) {
                 int i = simstate.random.nextInt(uniqueRegionTargets.size());
                 int targetRegion = (int) uniqueRegionTargets.toArray()[i];
                 flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);

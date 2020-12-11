@@ -1,9 +1,9 @@
 package arcade.potts.env.loc;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.loc.Location;
 import arcade.core.env.loc.LocationContainer;

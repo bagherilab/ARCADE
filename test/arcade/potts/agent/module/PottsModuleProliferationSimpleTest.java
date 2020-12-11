@@ -1,39 +1,41 @@
 package arcade.potts.agent.module;
 
-import org.junit.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
 import java.lang.reflect.Field;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import sim.engine.Schedule;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.core.util.MiniBox;
-import arcade.potts.sim.*;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
-import static arcade.core.util.Enums.State;
-import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Phase;
-import static arcade.potts.agent.module.PottsModuleProliferation.*;
+import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSimulation;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import static arcade.core.TestUtilities.*;
+import static arcade.core.util.Enums.Region;
+import static arcade.core.util.Enums.State;
+import static arcade.potts.agent.module.PottsModuleProliferation.*;
+import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsModuleProliferationSimpleTest {
     private static final double R = 1.0;
     static MersenneTwisterFast random;
-    static PottsSimulation sim;
-    static PottsCell cell;
+    static PottsSimulation simMock;
+    static PottsCell cellMock;
     static MiniBox parameters;
     
     @BeforeClass
     public static void setupMocks() {
         random = mock(MersenneTwisterFast.class);
         when(random.nextDouble()).thenReturn(R);
-        sim = mock(PottsSimulation.class);
-        cell = mock(PottsCell.class);
+        simMock = mock(PottsSimulation.class);
+        cellMock = mock(PottsCell.class);
         
         MiniBox box = mock(MiniBox.class);
         doReturn(0.).when(box).getDouble(anyString());
-        doReturn(box).when(cell).getParameters();
+        doReturn(box).when(cellMock).getParameters();
         
         parameters = new MiniBox();
         parameters.put("proliferation/DURATION_G1", randomDoubleBetween(1, 10));
@@ -75,62 +77,62 @@ public class PottsModuleProliferationSimpleTest {
 
     @Test
     public void getPhase_defaultConstructor_returnsValue() {
-        PottsModuleProliferation module = new PottsModuleProliferation.Simple(cell);
+        PottsModuleProliferation module = new PottsModuleProliferation.Simple(cellMock);
         assertEquals(Phase.PROLIFERATIVE_G1, module.getPhase());
     }
     
     @Test
     public void setPhase_givenValue_setsValue() {
         Phase phase = Phase.values()[(int) (Math.random() * Phase.values().length)];
-        PottsModuleProliferation module = new PottsModuleProliferation.Simple(cell);
+        PottsModuleProliferation module = new PottsModuleProliferation.Simple(cellMock);
         module.setPhase(phase);
         assertEquals(phase, module.phase);
     }
     
     @Test
     public void step_givenPhaseG1_callsMethod() {
-        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cellMock));
         module.phase = Phase.PROLIFERATIVE_G1;
         
-        module.step(random, sim);
+        module.step(random, simMock);
         verify(module).stepG1(R);
         verify(module, never()).stepS(R);
         verify(module, never()).stepG2(R);
-        verify(module, never()).stepM(R, random, sim);
+        verify(module, never()).stepM(R, random, simMock);
     }
     
     @Test
     public void step_givenPhaseS_callsMethod() {
-        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cellMock));
         module.phase = Phase.PROLIFERATIVE_S;
         
-        module.step(random, sim);
+        module.step(random, simMock);
         verify(module).stepS(R);
         verify(module, never()).stepG1(R);
         verify(module, never()).stepG2(R);
-        verify(module, never()).stepM(R, random, sim);
+        verify(module, never()).stepM(R, random, simMock);
     }
     
     @Test
     public void step_givenPhaseG2_callsMethod() {
-        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cellMock));
         module.phase = Phase.PROLIFERATIVE_G2;
         
-        module.step(random, sim);
+        module.step(random, simMock);
         verify(module).stepG2(R);
         verify(module, never()).stepG1(R);
         verify(module, never()).stepS(R);
-        verify(module, never()).stepM(R, random, sim);
+        verify(module, never()).stepM(R, random, simMock);
     }
     
     @Test
     public void step_givenPhaseM_callsMethod() {
-        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
-        doNothing().when(module).addCell(random, sim);
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cellMock));
+        doNothing().when(module).addCell(random, simMock);
         module.phase = Phase.PROLIFERATIVE_M;
         
-        module.step(random, sim);
-        verify(module).stepM(R, random, sim);
+        module.step(random, simMock);
+        verify(module).stepM(R, random, simMock);
         verify(module, never()).stepG1(R);
         verify(module, never()).stepS(R);
         verify(module, never()).stepG2(R);
@@ -138,11 +140,11 @@ public class PottsModuleProliferationSimpleTest {
     
     @Test
     public void step_invalidPhase_doesNothing() {
-        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cellMock));
         module.phase = Phase.UNDEFINED;
         
-        module.step(random, sim);
-        verify(module, never()).stepM(R, random, sim);
+        module.step(random, simMock);
+        verify(module, never()).stepM(R, random, simMock);
         verify(module, never()).stepG1(R);
         verify(module, never()).stepS(R);
         verify(module, never()).stepG2(R);
@@ -470,11 +472,11 @@ public class PottsModuleProliferationSimpleTest {
         doReturn(parameters).when(cell).getParameters();
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
-        doNothing().when(module).addCell(random, sim);
+        doNothing().when(module).addCell(random, simMock);
         module.phase = Phase.PROLIFERATIVE_M;
-        module.stepM(1.0 / module.durationM + EPSILON, random, sim);
+        module.stepM(1.0 / module.durationM + EPSILON, random, simMock);
         
-        verify(module, never()).addCell(random, sim);
+        verify(module, never()).addCell(random, simMock);
         assertEquals(Phase.PROLIFERATIVE_M, module.phase);
     }
     
@@ -484,16 +486,21 @@ public class PottsModuleProliferationSimpleTest {
         doReturn(parameters).when(cell).getParameters();
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
-        doNothing().when(module).addCell(random, sim);
+        doNothing().when(module).addCell(random, simMock);
         module.phase = Phase.PROLIFERATIVE_M;
-        module.stepM(1.0 / module.durationM - EPSILON, random, sim);
+        module.stepM(1.0 / module.durationM - EPSILON, random, simMock);
         
-        verify(module).addCell(random, sim);
+        verify(module).addCell(random, simMock);
         assertEquals(Phase.PROLIFERATIVE_G1, module.phase);
     }
     
     @Test
     public void addCell_called_addsObject() {
+        PottsCell cell = mock(PottsCell.class);
+        MiniBox box = mock(MiniBox.class);
+        doReturn(0.).when(box).getDouble(anyString());
+        doReturn(box).when(cell).getParameters();
+        
         PottsLocation location = mock(PottsLocation.class);
         Potts potts = mock(Potts.class);
         Grid grid = mock(Grid.class);

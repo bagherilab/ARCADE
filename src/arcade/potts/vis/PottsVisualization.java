@@ -1,8 +1,8 @@
 package arcade.potts.vis;
 
-import sim.engine.*;
-import arcade.core.sim.Simulation;
+import sim.engine.SimState;
 import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.core.vis.*;
 import static arcade.potts.vis.PottsColorMaps.*;
 
@@ -44,7 +44,8 @@ public class PottsVisualization extends Visualization {
         maps = new PottsColorMaps(series);
         
         // Calculate sizing of panels.
-        int horz, vert;
+        int horz;
+        int vert;
         
         if (length != width) {
             horz = MAX_HORIZONTAL;

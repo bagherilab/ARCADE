@@ -1,20 +1,22 @@
 package arcade.potts.sim;
 
-import java.util.*;
-import sim.engine.*;
-import arcade.core.sim.Simulation;
-import arcade.core.sim.Series;
+import java.util.ArrayList;
+import java.util.HashSet;
+import sim.engine.Schedule;
+import sim.engine.SimState;
 import arcade.core.agent.cell.Cell;
+import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.loc.Location;
+import arcade.core.env.loc.LocationContainer;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.loc.PottsLocationFactory;
-import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
 import static arcade.potts.util.PottsEnums.Ordering;
 
 public abstract class PottsSimulation extends SimState implements Simulation {

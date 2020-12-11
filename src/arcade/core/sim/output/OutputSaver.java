@@ -1,9 +1,15 @@
 package arcade.core.sim.output;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.logging.Logger;
-import com.google.gson.*;
-import sim.engine.*;
+import com.google.gson.Gson;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.engine.Steppable;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 

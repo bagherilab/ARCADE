@@ -3,10 +3,10 @@ package arcade.potts.agent.module;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
-import arcade.potts.sim.Potts;
-import arcade.potts.sim.PottsSimulation;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
+import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSimulation;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Phase;
 
