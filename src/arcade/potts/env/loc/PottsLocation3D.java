@@ -18,8 +18,8 @@ public final class PottsLocation3D extends PottsLocation implements Location3D {
     }
     
     @Override
-    ArrayList<Voxel> getNeighbors(Voxel voxel) {
-        return Location3D.getNeighbors(voxel);
+    ArrayList<Voxel> getNeighbors(Voxel focus) {
+        return Location3D.getNeighbors(focus);
     }
     
     @Override

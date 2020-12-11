@@ -38,7 +38,7 @@ public interface Cell extends Steppable {
     State getState();
     
     /**
-     * Gets the cell age (in minutes)
+     * Gets the cell age (in ticks).
      * 
      * @return  the cell age
      */
@@ -103,7 +103,7 @@ public interface Cell extends Steppable {
     int getSurface(Region region);
     
     /**
-     * Gets the target volume (in voxels)
+     * Gets the target volume (in voxels).
      * 
      * @return  the target volume
      */
@@ -118,7 +118,7 @@ public interface Cell extends Steppable {
     double getTargetVolume(Region region);
     
     /**
-     * Gets the target surface (in voxels)
+     * Gets the target surface (in voxels).
      * 
      * @return  the target surface
      */
@@ -133,7 +133,7 @@ public interface Cell extends Steppable {
     double getTargetSurface(Region region);
     
     /**
-     * Gets the critical volume (in voxels)
+     * Gets the critical volume (in voxels).
      * 
      * @return  the target volume
      */
@@ -148,7 +148,7 @@ public interface Cell extends Steppable {
     double getCriticalVolume(Region region);
     
     /**
-     * Gets the critical surface (in voxels)
+     * Gets the critical surface (in voxels).
      * 
      * @return  the target surface
      */

@@ -24,8 +24,10 @@ import arcade.core.env.loc.LocationContainer;
  */
 
 public interface Simulation {
+    /** Default type for cell container list. */
     Type DEFAULT_CELL_TYPE = new TypeToken<ArrayList<CellContainer>>() { }.getType();
     
+    /** Default type for location container list. */
     Type DEFAULT_LOCATION_TYPE = new TypeToken<ArrayList<LocationContainer>>() { }.getType();
     
     /**
@@ -60,14 +62,14 @@ public interface Simulation {
     int getID();
     
     /**
-     * Gets the list of {@link CellContainer} objects
+     * Gets the list of {@link CellContainer} objects.
      * 
      * @return  a list of {@link CellContainer} objects
      */
     ArrayList<CellContainer> getCells();
     
     /**
-     * Gets the list of {@link LocationContainer} objects
+     * Gets the list of {@link LocationContainer} objects.
      * 
      * @return  a list of {@link LocationContainer} objects
      */

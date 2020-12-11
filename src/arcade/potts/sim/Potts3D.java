@@ -5,31 +5,31 @@ import arcade.potts.agent.cell.PottsCell;
 import static arcade.core.util.Enums.Region;
 
 public final class Potts3D extends Potts {
-    /** Number of neighbors */
+    /** Number of neighbors. */
     public static final int NUMBER_NEIGHBORS = 6;
     
-    /** List of x direction movements (N, E, S, W, U, D) */
+    /** List of x direction movements (N, E, S, W, U, D). */
     public static final int[] MOVES_X = { 0, 1, 0, -1, 0, 0 };
     
-    /** List of y direction movements (N, E, S, W, U, D) */
+    /** List of y direction movements (N, E, S, W, U, D). */
     public static final int[] MOVES_Y = { -1, 0, 1, 0, 0, 0 };
     
-    /** List of z direction movements (N, E, S, W, U, D) */
+    /** List of z direction movements (N, E, S, W, U, D). */
     public static final int[] MOVES_Z = { 0, 0, 0, 0, 1, -1 };
     
-    /** Number of neighbors in plane */
+    /** Number of neighbors in plane. */
     private static final int NUMBER_PLANE = 4;
     
-    /** List of plane movements for first coordinate */
+    /** List of plane movements for first coordinate. */
     private static final int[] PLANE_A = { 0, 1, 0, -1 };
     
-    /** List of plane movements for second coordinate */
+    /** List of plane movements for second coordinate. */
     private static final int[] PLANE_B = { -1, 0, 1, 0 };
     
-    /** List of a direction corner movements */
+    /** List of a direction corner movements. */
     private static final int[] CORNER_A = { 1, 1, -1, -1 };
     
-    /** List of b direction corner movements */
+    /** List of b direction corner movements. */
     private static final int[] CORNER_B = { -1, 1, 1, -1 };
     
     /**

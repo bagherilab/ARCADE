@@ -14,25 +14,25 @@ import ec.util.MersenneTwisterFast;
  */
 
 public class Parameter implements Serializable {
-    /** Random number generator */
+    /** Random number generator. */
     private final MersenneTwisterFast random;
     
-    /** Normal distribution */
+    /** Normal distribution. */
     private final Normal normal;
     
-    /** Values for truncated distributions */
+    /** Values for truncated distributions. */
     private final double[] tails;
     
-    /** {@code true} if parameter is a fraction between 0 and 1, {@code false} otherwise */
+    /** {@code true} if parameter is a fraction between 0 and 1, {@code false} otherwise. */
     private final boolean isFrac;
     
-    /** Mean of the distribution */
+    /** Mean of the distribution. */
     private final double mu;
     
-    /** Standard deviation of the distribution */
+    /** Standard deviation of the distribution. */
     private final double sigma;
     
-    /** Heterogeneity of the parameter */
+    /** Heterogeneity of the parameter. */
     private final double h;
     
     /**

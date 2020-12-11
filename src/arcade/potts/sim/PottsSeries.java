@@ -9,7 +9,7 @@ import static arcade.core.util.Box.KEY_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public final class PottsSeries extends Series {
-    /** Map of potts settings */
+    /** Map of potts settings. */
     public MiniBox potts;
     
     /**

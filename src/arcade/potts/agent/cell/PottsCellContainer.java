@@ -14,33 +14,104 @@ import static arcade.potts.util.PottsEnums.Term;
  * Container class for loading a {@link PottsCell}.
  */
 public final class PottsCellContainer implements CellContainer {
+    /** Unique cell container ID. */
     public final int id;
+    
+    /** Cell population index. */
     public final int pop;
+    
+    /** Cell age (in ticks). */
     public final int age;
+    
+    /** Cell state. */
     public final State state;
+    
+    /** Cell phase. */
     public final Phase phase;
+    
+    /** Cell size (in voxels). */
     public final int voxels;
+    
+    /** Cell region sizes (in voxels). */
     public final EnumMap<Region, Integer> regionVoxels;
+    
+    /** Target cell volume (in voxels). */
     public final double targetVolume;
+    
+    /** Target cell surface (in voxels). */
     public final double targetSurface;
+    
+    /** Target region cell volumes (in voxels). */
     public final EnumMap<Region, Double> regionTargetVolume;
+    
+    /** Target region cell surfaces (in voxels). */
     public final EnumMap<Region, Double> regionTargetSurface;
     
+    /**
+     * Creates a {@code PottsCellContainer} instance.
+     * <p>
+     * The default state is proliferative (phase G1) and age is 0.
+     * The container does not have any regions or targets.
+     * 
+     * @param id  the cell ID
+     * @param pop  the cell population index
+     * @param voxels  the cell size (in voxels)
+     */
     public PottsCellContainer(int id, int pop, int voxels) {
         this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
                 null, 0, 0, null, null);
     }
     
+    /**
+     * Creates a {@code PottsCellContainer} instance.
+     * <p>
+     * The default state is proliferative (phase G1) and age is 0.
+     * The container does not have any targets.
+     * 
+     * @param id  the cell ID
+     * @param pop  the cell population index
+     * @param voxels  the cell size (in voxels)
+     * @param regionVoxels  the cell region sizes (in voxels)
+     */
     public PottsCellContainer(int id, int pop, int voxels, EnumMap<Region, Integer> regionVoxels) {
         this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
                 regionVoxels, 0, 0, null, null);
     }
     
+    /**
+     * Creates a {@code PottsCellContainer} instance.
+     * <p>
+     * The container does not have any regions.
+     * 
+     * @param id  the cell ID
+     * @param pop  the cell population index
+     * @param age  the cell age
+     * @param state  the cell state
+     * @param phase  the cell phase
+     * @param voxels  the cell size (in voxels)
+     * @param targetVolume  the target volume
+     * @param targetSurface  the target surface
+     */
     public PottsCellContainer(int id, int pop, int age, State state, Phase phase,
                               int voxels, double targetVolume, double targetSurface) {
         this(id, pop, age, state, phase, voxels, null, targetVolume, targetSurface, null, null);
     }
     
+    /**
+     * Creates a {@code PottsCellContainer} instance.
+     * 
+     * @param id  the cell ID
+     * @param pop  the cell population index
+     * @param age  the cell age
+     * @param state  the cell state
+     * @param phase  the cell phase
+     * @param voxels  the cell size (in voxels)
+     * @param regionVoxels  the cell region sizes (in voxels)
+     * @param targetVolume  the target volume
+     * @param targetSurface  the target surface
+     * @param regionTargetVolume  the target region volumes
+     * @param regionTargetSurface  the target surface volumes
+     */
     public PottsCellContainer(int id, int pop, int age, State state, Phase phase, int voxels,
                               EnumMap<Region, Integer> regionVoxels,
                               double targetVolume, double targetSurface,

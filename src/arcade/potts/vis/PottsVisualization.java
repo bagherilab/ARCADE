@@ -7,28 +7,28 @@ import arcade.core.vis.*;
 import static arcade.potts.vis.PottsColorMaps.*;
 
 public final class PottsVisualization extends Visualization {
-    /** Maximum horizontal size of panel */
+    /** Maximum horizontal size of panel. */
     static final int MAX_HORIZONTAL = 600;
     
-    /** Maximum vertical size of panel */
+    /** Maximum vertical size of panel. */
     static final int MAX_VERTICAL = 900;
     
-    /** Length of the array (x direction) */
+    /** Length of the array (x direction). */
     final int length;
     
-    /** Width of the array (y direction) */
+    /** Width of the array (y direction). */
     final int width;
     
-    /** Height of the array (z direction) */
+    /** Height of the array (z direction). */
     final int height;
     
-    /** Color maps for the simulation */
+    /** Color maps for the simulation. */
     final PottsColorMaps maps;
     
-    /** Horizontal size of the panels */
+    /** Horizontal size of the panels. */
     final int horizontal;
     
-    /** Vertical size of the panels */
+    /** Vertical size of the panels. */
     final int vertical;
     
     public PottsVisualization(Simulation sim) {

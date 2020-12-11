@@ -14,34 +14,34 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Term;
 
 public final class PottsCellFactory implements CellFactory {
-    /** Map of population to critical values */
+    /** Map of population to critical values. */
     HashMap<Integer, EnumMap<Term, Double>> popToCriticals;
     
-    /** Map of population to lambda values */
+    /** Map of population to lambda values. */
     HashMap<Integer, EnumMap<Term, Double>> popToLambdas;
     
-    /** Map of population to adhesion values */
+    /** Map of population to adhesion values. */
     HashMap<Integer, double[]> popToAdhesion;
     
-    /** Map of population to parameters */
+    /** Map of population to parameters. */
     HashMap<Integer, MiniBox> popToParameters;
     
-    /** Map of population to number of regions */
+    /** Map of population to number of regions. */
     HashMap<Integer, Boolean> popToRegions;
     
-    /** Map of population to region critical values */
+    /** Map of population to region critical values. */
     HashMap<Integer, EnumMap<Region, EnumMap<Term, Double>>> popToRegionCriticals;
     
-    /** Map of population to region lambda values */
+    /** Map of population to region lambda values. */
     HashMap<Integer, EnumMap<Region, EnumMap<Term, Double>>> popToRegionLambdas;
     
-    /** Map of population to region adhesion values */
+    /** Map of population to region adhesion values. */
     HashMap<Integer, EnumMap<Region, EnumMap<Region, Double>>> popToRegionAdhesion;
     
-    /** Map of population to list of ids */
+    /** Map of population to list of ids. */
     public final HashMap<Integer, HashSet<Integer>> popToIDs;
     
-    /** Map of id to cell */
+    /** Map of id to cell. */
     public final HashMap<Integer, PottsCellContainer> cells;
     
     /**

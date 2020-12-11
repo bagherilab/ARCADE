@@ -11,28 +11,28 @@ import sim.util.gui.ColorMap;
  */
 
 public class Colors implements ColorMap {
-    /** Number of bins */
+    /** Number of bins. */
     private static final int BINS = 256;
     
-    /** Color with no alpha */
+    /** Color with no alpha. */
     private static final Color EMPTY = new Color(0, 0, 0, 0);
     
-    /** Color map */
+    /** Color map. */
     private final Color[] colors;
     
-    /** Minimum value */
+    /** Minimum value. */
     private final double min;
     
-    /** Maximum value */
+    /** Maximum value. */
     private final double max;
     
-    /** Number of colors in the color map */
+    /** Number of colors in the color map. */
     private final int len;
     
-    /** Default value */
+    /** Default value. */
     private final double defaultValue;
     
-    /** Modulo on index, 0 if no modulo is applied */
+    /** Modulo on index, 0 if no modulo is applied. */
     private final int mod;
     
     /**

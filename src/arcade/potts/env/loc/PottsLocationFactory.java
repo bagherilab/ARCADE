@@ -12,10 +12,10 @@ import arcade.core.util.Utilities;
 import static arcade.core.util.Enums.Region;
 
 public abstract class PottsLocationFactory implements LocationFactory {
-    /** Random number generator instance */
+    /** Random number generator instance. */
     MersenneTwisterFast random;
     
-    /** Map of id to location */
+    /** Map of id to location. */
     public final HashMap<Integer, PottsLocationContainer> locations;
     
     /**

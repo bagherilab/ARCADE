@@ -15,13 +15,13 @@ import arcade.core.util.MiniBox;
  */
 
 public interface Lattice {
-    /** ID for diffuser component */
+    /** ID for diffuser component. */
     int DIFFUSED = 0;
     
-    /** ID for generator component */
+    /** ID for generator component. */
     int GENERATED = 1;
     
-    /** ID for sites component */
+    /** ID for sites component. */
     int SITES = -1;
     
     /**
@@ -68,7 +68,7 @@ public interface Lattice {
     void setField(double[][][] vals);
     
     /**
-     * Sets the underlying array to the given value
+     * Sets the underlying array to the given value.
      * 
      * @param val  the value to set
      */
@@ -115,7 +115,7 @@ public interface Lattice {
     void setVal(Location loc, double val);
     
     /**
-     * Gets the {@link arcade.core.env.comp.Component} of the given name
+     * Gets the {@link arcade.core.env.comp.Component} of the given name.
      * 
      * @param key  the component name
      * @return  the component instance
@@ -123,7 +123,7 @@ public interface Lattice {
     Component getComponent(String key);
     
     /**
-     * Sets the {@link arcade.core.env.comp.Component} with the given name
+     * Sets the {@link arcade.core.env.comp.Component} with the given name.
      * 
      * @param key  the component name
      * @param comp  the component instance

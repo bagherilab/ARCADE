@@ -11,31 +11,31 @@ import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Term;
 
 public abstract class Potts implements Steppable {
-    /** Length (x direction) of potts array */
+    /** Length (x direction) of potts array. */
     final int length;
     
-    /** Width (y direction) of potts array */
+    /** Width (y direction) of potts array. */
     final int width;
     
-    /** Depth (z direction) of potts array */
+    /** Depth (z direction) of potts array. */
     final int height;
     
-    /** Number of steps in Monte Carlo Step */
+    /** Number of steps in Monte Carlo Step. */
     final int steps;
     
-    /** Effective cell temperature */
+    /** Effective cell temperature. */
     final double temperature;
     
-    /** {@code true} if cells have regions, {@code false} otherwise */
+    /** {@code true} if cells have regions, {@code false} otherwise. */
     final boolean hasRegions;
     
-    /** Potts array for ids */
+    /** Potts array for ids. */
     public int[][][] ids;
     
-    /** Potts array for regions */
+    /** Potts array for regions. */
     public int[][][] regions;
     
-    /** Grid holding cells */
+    /** Grid holding cells. */
     Grid grid;
     
     /**
@@ -465,7 +465,7 @@ public abstract class Potts implements Steppable {
     abstract int[] calculateChange(int sourceID, int targetID, int x, int y, int z);
     
     /**
-     * Calculates change in surface for region
+     * Calculates change in surface for region.
      * 
      * @param id  the voxel id
      * @param sourceRegion  the id of the source voxel

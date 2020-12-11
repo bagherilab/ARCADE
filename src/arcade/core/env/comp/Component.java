@@ -19,25 +19,25 @@ import arcade.core.sim.Simulation;
  */
 
 public interface Component extends Steppable {
-    /** Number of borders */
+    /** Number of borders. */
     int BORDERS = 6;
     
-    /** ID for left border (x direction) */
+    /** ID for left border (x direction). */
     int LEFT = 0;
     
-    /** ID for right border (x direction) */
+    /** ID for right border (x direction). */
     int RIGHT = 1;
     
-    /** ID for top border (y direction) */
+    /** ID for top border (y direction). */
     int TOP = 2;
     
-    /** ID for bottom border (y direction) */
+    /** ID for bottom border (y direction). */
     int BOTTOM = 3;
     
-    /** ID for up border (z direction) */
+    /** ID for up border (z direction). */
     int UP = 4;
     
-    /** ID for down border (z direction) */
+    /** ID for down border (z direction). */
     int DOWN = 5;
     
     /**

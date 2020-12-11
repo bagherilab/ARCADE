@@ -14,19 +14,19 @@ import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 
 public abstract class OutputSaver implements Steppable {
-    /** Logger for class */
+    /** Logger for {@code OutputSaver}. */
     private static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
     
-    /** JSON representation */
+    /** JSON representation. */
     final Gson gson;
     
-    /** {@link arcade.core.sim.Series} instance */
+    /** {@link arcade.core.sim.Series} instance. */
     final Series series;
     
-    /** Prefix for saved files */
+    /** Prefix for saved files. */
     public String prefix;
     
-    /** {@link arcade.core.sim.Simulation} instance */
+    /** {@link arcade.core.sim.Simulation} instance. */
     Simulation sim;
     
     /**
@@ -66,6 +66,8 @@ public abstract class OutputSaver implements Steppable {
     
     /**
      * Save a list of {@link arcade.core.agent.cell.CellContainer} objects to a JSON.
+     * 
+     * @param tick  the simulation tick
      */
     public void saveCells(int tick) {
         String path = prefix + String.format("_%06d.CELLS.json", tick);
@@ -74,6 +76,8 @@ public abstract class OutputSaver implements Steppable {
     
     /**
      * Save a list of {@link arcade.core.env.loc.LocationContainer} objects to a JSON.
+     * 
+     * @param tick  the simulation tick
      */
     public void saveLocations(int tick) {
         String path = prefix + String.format("_%06d.LOCATIONS.json", tick);

@@ -38,31 +38,31 @@ import arcade.core.util.MiniBox;
  * </pre>
  */
 public abstract class InputBuilder implements ContentHandler {
-    /** Logger for class */
+    /** Logger for {@code InputBuilder}. */
     protected static final Logger LOGGER = Logger.getLogger(InputBuilder.class.getName());
     
-    /** XML reader */
+    /** XML reader. */
     XMLReader xmlReader;
     
-    /** List holding {@link arcade.core.sim.Series} instances */
+    /** List holding {@link arcade.core.sim.Series} instances. */
     public ArrayList<Series> series;
     
-    /** Tracker for document location */
+    /** Tracker for document location. */
     Locator locator;
     
-    /** Document identifier */
+    /** Document identifier. */
     String document;
     
-    /** Map of setup dictionaries */
+    /** Map of setup dictionaries. */
     public HashMap<String, MiniBox> setupDicts;
     
-    /** Map of setup lists of dictionaries */
+    /** Map of setup lists of dictionaries. */
     public HashMap<String, ArrayList<Box>> setupLists;
     
-    /** Container for default parameter values */
+    /** Container for default parameter values. */
     public Box parameters;
     
-    /** {@code true} if run with visualization, {@code false} otherwise */
+    /** {@code true} if run with visualization, {@code false} otherwise. */
     public boolean isVis;
     
     /**

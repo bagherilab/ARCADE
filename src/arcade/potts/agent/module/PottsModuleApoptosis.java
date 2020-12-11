@@ -11,25 +11,25 @@ import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Phase;
 
 public abstract class PottsModuleApoptosis extends PottsModule {
-    /** Average duration of early apoptosis (ticks) */
+    /** Average duration of early apoptosis (ticks). */
     final double durationEarly;
     
-    /** Average duration of late apoptosis (ticks) */
+    /** Average duration of late apoptosis (ticks). */
     final double durationLate;
     
-    /** Cytoplasm water loss rate for early apoptosis (ticks^-1) */
+    /** Cytoplasm water loss rate for early apoptosis (ticks^-1). */
     final double rateCytoplasmLoss;
     
-    /** Nucleus pyknosis rate for early apoptosis (ticks^-1) */
+    /** Nucleus pyknosis rate for early apoptosis (ticks^-1). */
     final double rateNucleusPyknosis;
     
-    /** Cytoplasm blebbing rate for late apoptosis (ticks^-1) */
+    /** Cytoplasm blebbing rate for late apoptosis (ticks^-1). */
     final double rateCytoplasmBlebbing;
     
-    /** Nucleus fragmentation rate for late apoptosis (ticks^-1) */
+    /** Nucleus fragmentation rate for late apoptosis (ticks^-1). */
     final double rateNucleusFragmentation;
     
-    /** Ratio of critical volume for apoptosis */
+    /** Ratio of critical volume for apoptosis. */
     static final double APOPTOSIS_CHECKPOINT = 0.1;
     
     /**

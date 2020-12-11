@@ -11,9 +11,10 @@ import arcade.core.util.Utilities;
 import static arcade.core.util.Enums.Region;
 
 public abstract class PottsLocations extends PottsLocation {
+    /** Maximum number of iterations for balancing. */
     private static final int MAX_ITERATIONS = 100;
     
-    /** Map of region to location */
+    /** Map of region to location. */
     protected EnumMap<Region, PottsLocation> locations;
     
     /**

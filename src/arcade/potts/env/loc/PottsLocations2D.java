@@ -24,8 +24,8 @@ public final class PottsLocations2D extends PottsLocations implements Location2D
     }
     
     @Override
-    ArrayList<Voxel> getNeighbors(Voxel voxel) {
-        return Location2D.getNeighbors(voxel);
+    ArrayList<Voxel> getNeighbors(Voxel focus) {
+        return Location2D.getNeighbors(focus);
     }
     
     @Override

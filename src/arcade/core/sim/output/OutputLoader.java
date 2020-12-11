@@ -16,28 +16,28 @@ import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
 public abstract class OutputLoader {
-    /** Logger for class */
+    /** Logger for {@code OutputLoader}. */
     private static final Logger LOGGER = Logger.getLogger(OutputLoader.class.getName());
     
-    /** JSON representation */
+    /** JSON representation. */
     final Gson gson;
     
-    /** {@link arcade.core.sim.Series} instance */
+    /** {@link arcade.core.sim.Series} instance. */
     final Series series;
     
-    /** Prefix for loaded files */
+    /** Prefix for loaded files. */
     public String prefix;
     
-    /** {@code true} if cells are loaded, {@code false} otherwise */
+    /** {@code true} if cells are loaded, {@code false} otherwise. */
     public boolean loadCells;
     
-    /** {@code true} if locations are loaded, {@code false} otherwise */
+    /** {@code true} if locations are loaded, {@code false} otherwise. */
     public boolean loadLocations;
     
-    /** JSON for cells */
+    /** JSON for cells. */
     String cellJson;
     
-    /** JSON for locations */
+    /** JSON for locations. */
     String locationJson;
     
     /**
@@ -71,6 +71,8 @@ public abstract class OutputLoader {
     
     /**
      * Loads the JSON for a list of {@link CellContainer} objects.
+     * 
+     * @return  a list of {@link CellContainer} objects
      */
     public ArrayList<CellContainer> loadCells() {
         return gson.fromJson(cellJson, DEFAULT_CELL_TYPE);
@@ -78,6 +80,8 @@ public abstract class OutputLoader {
     
     /**
      * Loads the JSON for a list of {@link LocationContainer} objects.
+     * 
+     * @return  a list of {@link LocationContainer} objects
      */
     public ArrayList<LocationContainer> loadLocations() {
         return gson.fromJson(locationJson, DEFAULT_LOCATION_TYPE);
@@ -87,6 +91,7 @@ public abstract class OutputLoader {
      * Reads the contents of the given file path.
      * 
      * @param filepath  the path for the file
+     * @return  the contents of the path, {@code null} if unable to read
      */
     String read(String filepath) {
         try {

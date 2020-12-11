@@ -7,24 +7,24 @@ public final class Enums {
         throw new UnsupportedOperationException();
     }
     
-    /** Cell state codes */
+    /** Cell state codes. */
     public enum State {
-        /** Code for undefined state */
+        /** Code for undefined state. */
         UNDEFINED,
         
-        /** Code for quiescent cells */
+        /** Code for quiescent cells. */
         QUIESCENT,
         
-        /** Code for proliferative cells */
+        /** Code for proliferative cells. */
         PROLIFERATIVE,
         
-        /** Code for apoptotic cells */
+        /** Code for apoptotic cells. */
         APOPTOTIC,
         
-        /** Code for necrotic cells */
+        /** Code for necrotic cells. */
         NECROTIC,
         
-        /** Code for autotic cells */
+        /** Code for autotic cells. */
         AUTOTIC;
         
         /**
@@ -38,15 +38,15 @@ public final class Enums {
         }
     }
     
-    /** Cell region codes */
+    /** Cell region codes. */
     public enum Region {
-        /** Undefined region */
+        /** Undefined region. */
         UNDEFINED,
         
-        /** Region for cytoplasm */
+        /** Region for cytoplasm. */
         DEFAULT,
         
-        /** Region for nucleus */
+        /** Region for nucleus. */
         NUCLEUS;
         
         /**

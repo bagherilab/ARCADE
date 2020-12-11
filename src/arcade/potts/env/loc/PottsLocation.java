@@ -12,16 +12,16 @@ import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 
 public abstract class PottsLocation implements Location {
-    /** Difference between split voxel numbers */
+    /** Difference between split voxel numbers. */
     private static final int BALANCE_DIFFERENCE = 2;
     
-    /** List of voxels for the location */
+    /** List of voxels for the location. */
     final ArrayList<Voxel> voxels;
     
-    /** Location volume */
+    /** Location volume. */
     int volume;
     
-    /** Location surface */
+    /** Location surface. */
     int surface;
     
     /**
@@ -249,10 +249,10 @@ public abstract class PottsLocation implements Location {
     /**
      * Gets list of neighbors of a given voxel.
      * 
-     * @param voxel  the voxel
+     * @param focus  the focus voxel
      * @return  the list of neighbor voxels
      */
-    abstract ArrayList<Voxel> getNeighbors(Voxel voxel);
+    abstract ArrayList<Voxel> getNeighbors(Voxel focus);
     
     /**
      * Calculates diameters in each direction.
@@ -280,7 +280,7 @@ public abstract class PottsLocation implements Location {
     abstract ArrayList<Voxel> getSelected(Voxel focus, double n);
     
     /**
-     * Gets the direction of the slice
+     * Gets the direction of the slice.
      * 
      * @param random  the seeded random number generator
      * @return  the direction of the slice
@@ -336,8 +336,10 @@ public abstract class PottsLocation implements Location {
      * Splits the voxels in the location along a given direction.
      * 
      * @param direction  the direction of the slice
+     * @param voxels  the list of voxels
      * @param voxelsA  the container list for the first half of the split
      * @param voxelsB  the container list for the second half of the split
+     * @param center  the center voxel
      * @param random  the seeded random number generator
      */
     static void splitVoxels(Direction direction, ArrayList<Voxel> voxels,
@@ -476,6 +478,7 @@ public abstract class PottsLocation implements Location {
      * 
      * @param voxelsA  the list for the first half of the split
      * @param voxelsB  the list for the second half of the split
+     * @param location  the location instance
      * @param random  the seeded random number generator
      */
     static void connectVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
@@ -514,6 +517,7 @@ public abstract class PottsLocation implements Location {
      * 
      * @param voxelsA  the list for the first half of the split
      * @param voxelsB  the list for the second half of the split
+     * @param location  the location instance
      * @param random  the seeded random number generator
      */
     static void balanceVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
@@ -592,6 +596,7 @@ public abstract class PottsLocation implements Location {
      * Some voxel lists may have more than one unconnected section.
      * 
      * @param voxels  the list of voxels
+     * @param location  the location instance
      * @param random  the seeded random number generator
      * @param update  {@code true} if the voxel list should be updated, {@code false} otherwise
      * @return  a list of unconnected voxels, {@code null} if the list is connected

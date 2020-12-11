@@ -38,10 +38,10 @@ import arcade.potts.PottsARCADE;
  * <ul>
  *     <li>{@code command.<imp>.xml} with custom command line parameters</li>
  *     <li>{@code parameter.<imp>.xml} with new default parameter values</li>
- *     <li>{@link InputBuilder}</li> for building implementation series from
+ *     <li>{@link InputBuilder} for building implementation series from
  *     the setup XML</li>
- *     <li>{@link OutputLoader}</li> for loading classes</li>
- *     <li>{@link OutputSaver}</li> for saving classes</li>
+ *     <li>{@link OutputLoader} for loading classes</li>
+ *     <li>{@link OutputSaver} for saving classes</li>
  * </ul>
  */
 
@@ -93,6 +93,11 @@ public abstract class ARCADE {
         arcade.runSeries(series, settings);
     }
     
+    /**
+     * Loads command line parser from {@code command.xml} files.
+     * 
+     * @return  a container of command line settings
+     */
     Box loadCommands() throws IOException, SAXException {
         InputLoader loader = new InputLoader();
     

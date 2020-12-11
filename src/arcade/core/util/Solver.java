@@ -2,35 +2,92 @@ package arcade.core.util;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import static arcade.core.util.Matrix.*;
+import static arcade.util.Matrix.*;
 
 /**
  * Static utility class implementing various numerical solvers.
+ * <p>
+ * Implemented solvers include:
+ * <ul>
+ *     <li><em>forward Euler</em>: first-order method for ODEs</li>
+ *     <li><em>classic Runge–Kutta (RK4)</em>: fourth-order method for ODEs</li>
+ *     <li><em>Cash–Karp</em>: adaptive step size method for ODEs</li>
+ *     <li><em>successive over-relaxation (SOR)</em>: variant of the Gauss–Seidel
+ *     method for solving a linear system of equations</li>
+ * </ul>
  */
 
 public class Solver {
-    private static Logger logger = Logger.getLogger(Solver.class.getName());
+    /** Logger for {@code Solver}. */
+    private static final Logger LOGGER = Logger.getLogger(Solver.class.getName());
+    
+    /** Error tolerance for Cash-Karp. */
     private static final double ERROR = 1E-5;
+    
+    /** Epsilon value for Cash-Karp. */
     private static final double EPSILON = 1E-10;
+    
+    /** Maximum number of steps for Cash-Karp. */
     private static final int MAX_STEPS = 100;
+    
+    /** Safety value for Cash-Karp. */
     private static final double SAFETY = 0.9;
+    
+    /** Relaxation factor for SOR. */
     private static final double OMEGA = 1.4;
+    
+    /** Maximum number of iterations. */
     private static final int MAX_ITERS = 10000;
+    
+    /** Error tolerance for SOR. */
     private static final double TOLERANCE = 1E-8;
+    
+    /** Convergence delta for bisection method. */
     private static final double DELTA = 1E-5;
+    
+    /** Matrix size threshold for dense representation. */
     private static final int MATRIX_THRESHOLD = 100;
     
+    /** Defines ODE equations for numerical solvers. */
+    public interface Equations {
+        /**
+         * Applies equations to inputs.
+         * 
+         * @param t  the time step
+         * @param y  the array of inputs
+         * @return  the array of outputs
+         */
+        double[] dydt(double t, double[] y);
+    }
+    
+    /** Defines a continuous function. */
+    public interface Function {
+        /**
+         * Applies function to input.
+         * 
+         * @param x  the input value
+         * @return  the output value
+         */
+        double f(double x);
+    }
+    
+    /**
+     * Hidden constructor for {@code Solver} utility class.
+     */
     protected Solver() {
         throw new UnsupportedOperationException();
     }
     
-    // INTERFACE: Equation. Defines ODE equations for numerical solvers.
-    public interface Equations { double[] dydt(double t, double[] y); }
-    
-    // INTERFACE: Function. Defines function for numerical solver.
-    public interface Function { double f(double x); }
-    
-    // METHOD: euler. Solves using forward Euler.
+    /**
+     * Solves a system of ODEs using forward Euler.
+     * 
+     * @param eq  the system of equations
+     * @param t0  the initial time
+     * @param y0  the array of initial values
+     * @param tf  the final time
+     * @param h  the time step
+     * @return  the array of final values
+     */
     public static double[] euler(Equations eq, double t0, double[] y0, double tf, double h) {
         int n = y0.length;
         double t = t0;
@@ -53,7 +110,16 @@ public class Solver {
         return y;
     }
     
-    // METHOD: rungeKutta. Solves using classic Runge-Kutta.
+    /**
+     * Solves a system of ODEs using classic Runge-Kutta.
+     * 
+     * @param eq  the system of equations
+     * @param t0  the initial time
+     * @param y0  the array of initial values
+     * @param tf  the final time
+     * @param h  the time step
+     * @return  the array of final values
+     */
     public static double[] rungeKutta(Equations eq, double t0, double[] y0, double tf, double h) {
         int n = y0.length;
         double t = t0;
@@ -101,7 +167,16 @@ public class Solver {
         return y;
     }
     
-    // METHOD: cashKarp. Solves using adaptive timestep Cash-Karp.
+    /**
+     * Solves a system of ODEs using adaptive timestep Cash-Karp.
+     * 
+     * @param eq  the system of equations
+     * @param t0  the initial time
+     * @param y0  the array of initial values
+     * @param tf  the final time
+     * @param h  the time step
+     * @return  the array of final values
+     */
     public static double[] cashKarp(Equations eq, double t0, double[] y0, double tf, double h) {
         int n = y0.length;
         int steps = 0;
@@ -112,7 +187,7 @@ public class Solver {
         double[] k4 = new double[n];
         double[] k5 = new double[n];
         double[] k6 = new double[n];
-        double[] dydt = new double[n];
+        double[] dydt;
         double[] y = y0.clone();
         double[] y5 = y0.clone();
         double[] y6 = y0.clone();
@@ -182,8 +257,16 @@ public class Solver {
         return y;
     }
     
-    // METHOD: SOR. Solves using Successive Over Relaxation. Selects either the
-    // dense (naive) or sparse approach based on matrix size.
+    /**
+     * Solves a linear system of equations using successive over-relaxation.
+     * <p>
+     * Based on matrix size, the algorithm with use a dense or sparse approach.
+     * 
+     * @param mat  the matrix of coefficients
+     * @param vec  the right-hand side vector
+     * @param x0  the initial guess for the left-hand side vector
+     * @return  the vector of final values
+     */
     public static double[] sor(double[][] mat, double[] vec, double[] x0) {
         int n = mat.length;
         if (n < MATRIX_THRESHOLD) {
@@ -193,7 +276,14 @@ public class Solver {
         }
     }
     
-    // METHOD: SOR. Solves SOR using dense matrix representation.
+    /**
+     * Solves linear system of equations using SOR with dense matrix representation.
+     * 
+     * @param mat  the matrix of coefficients
+     * @param vec  the right-hand side vector
+     * @param x0  the initial guess for the left-hand side vector
+     * @return  the vector of final values
+     */
     private static double[] denseSOR(double[][] mat, double[] vec, double[] x0) {
         int i = 0;
         double error = Double.POSITIVE_INFINITY;
@@ -224,7 +314,14 @@ public class Solver {
         return xCurr;
     }
     
-    // METHOD: SOR. Solves SOR using sparse matrix representation.
+    /**
+     * Solves linear system of equations using SOR with sparse matrix representation.
+     * 
+     * @param mat  the matrix of coefficients
+     * @param vec  the right-hand side vector
+     * @param x0  the initial guess for the left-hand side vector
+     * @return  the vector of final values
+     */
     private static double[] sparseSOR(double[][] mat, double[] vec, double[] x0) {
         int i = 0;
         double error = Double.POSITIVE_INFINITY;
@@ -258,7 +355,18 @@ public class Solver {
         return xCurr;
     }
     
-    // METHOD: bisection. Finds root using bisection method.
+    /**
+     * Finds root using bisection method.
+     * <p>
+     * Root is found by repeatedly bisecting the interval and selecting the
+     * interval in which the function changes sign.
+     * If no root is found, the simulation will exit.
+     * 
+     * @param func  the function
+     * @param a  the lower bound on the interval
+     * @param b  the upper bound on the interval
+     * @return  the root of the function
+     */
     public static double bisection(Function func, double a, double b) {
         double c;
         double fc;
@@ -266,7 +374,7 @@ public class Solver {
         
         // Check that given bounds are opposite signs.
         if (Math.signum(func.f(a)) == Math.signum(func.f(b))) {
-            logger.severe("bisection unable to find root");
+            LOGGER.severe("bisection unable to find root");
             System.exit(-1);
         }
         

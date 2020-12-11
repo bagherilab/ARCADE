@@ -16,10 +16,10 @@ import sim.portrayal.Inspector;
  */
 
 public abstract class Visualization extends GUIState {
-    /** List of panels in the visualization */
+    /** List of panels in the visualization. */
     protected Panel[] panels;
     
-    /** List of drawers in the visualization */
+    /** List of drawers in the visualization. */
     protected Drawer[] drawers;
     
     /**

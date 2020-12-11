@@ -7,48 +7,48 @@ public final class PottsEnums {
         throw new UnsupportedOperationException();
     }
     
-    /** Stepping order for simulation */
+    /** Stepping order for simulation. */
     public enum Ordering {
-        /** Stepping order for potts */
+        /** Stepping order for potts. */
         POTTS,
         
-        /** Stepping order for cells */
+        /** Stepping order for cells. */
         CELLS
     }
     
-    /** Potts energy terms */
+    /** Potts energy terms. */
     public enum Term {
-        /** Code for volume term */
+        /** Code for volume term. */
         VOLUME,
         
-        /** Code for surface term */
+        /** Code for surface term. */
         SURFACE
     }
     
-    /** Module phase codes */
+    /** Module phase codes. */
     public enum Phase {
-        /** Code for undefined phase */
+        /** Code for undefined phase. */
         UNDEFINED,
         
-        /** Code for proliferative G1 phase */
+        /** Code for proliferative G1 phase. */
         PROLIFERATIVE_G1,
         
-        /** Code for proliferative S phase */
+        /** Code for proliferative S phase. */
         PROLIFERATIVE_S,
         
-        /** Code for proliferative G2 phase */
+        /** Code for proliferative G2 phase. */
         PROLIFERATIVE_G2,
         
-        /** Code for proliferative M phase */
+        /** Code for proliferative M phase. */
         PROLIFERATIVE_M,
         
-        /** Code for early apoptosis phase */
+        /** Code for early apoptosis phase. */
         APOPTOTIC_EARLY,
         
-        /** Code for late apoptosis phase */
+        /** Code for late apoptosis phase. */
         APOPTOTIC_LATE,
         
-        /** Code for apoptosed cell */
+        /** Code for apoptosed cell. */
         APOPTOSED;
         
         /**
@@ -62,36 +62,36 @@ public final class PottsEnums {
         }
     }
     
-    /** Location split directions */
+    /** Location split directions. */
     public enum Direction {
-        /** Unspecified direction */
+        /** Unspecified direction. */
         UNDEFINED,
         
-        /** Direction along the yz plane (y = 0, z = 0) */
+        /** Direction along the yz plane (y = 0, z = 0). */
         YZ_PLANE,
         
-        /** Direction along the zx plane (z = 0, x = 0) */
+        /** Direction along the zx plane (z = 0, x = 0). */
         ZX_PLANE,
         
-        /** Direction along the xy plane (x = 0, y = 0) */
+        /** Direction along the xy plane (x = 0, y = 0). */
         XY_PLANE,
         
-        /** Direction along the positive xy axis (x = y, z = 0) */
+        /** Direction along the positive xy axis (x = y, z = 0). */
         POSITIVE_XY,
         
-        /** Direction along the negative xy axis (x = -y, z = 0) */
+        /** Direction along the negative xy axis (x = -y, z = 0). */
         NEGATIVE_XY,
         
-        /** Direction along the positive yz axis (y = z, x = 0) */
+        /** Direction along the positive yz axis (y = z, x = 0). */
         POSITIVE_YZ,
         
-        /** Direction along the negative yz axis (y = -z, x = 0) */
+        /** Direction along the negative yz axis (y = -z, x = 0). */
         NEGATIVE_YZ,
         
-        /** Direction along the positive zx axis (z = x, y = 0) */
+        /** Direction along the positive zx axis (z = x, y = 0). */
         POSITIVE_ZX,
         
-        /** Direction along the negative zx axis (z = -x, y = 0) */
+        /** Direction along the negative zx axis (z = -x, y = 0). */
         NEGATIVE_ZX;
         
         /**

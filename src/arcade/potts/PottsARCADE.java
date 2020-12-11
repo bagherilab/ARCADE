@@ -10,6 +10,9 @@ import arcade.potts.sim.output.PottsOutputLoader;
 import arcade.potts.sim.output.PottsOutputSaver;
 
 public final class PottsARCADE extends ARCADE {
+    /**
+     * ARCADE model with potts.
+     */
     public PottsARCADE() { }
     
     @Override

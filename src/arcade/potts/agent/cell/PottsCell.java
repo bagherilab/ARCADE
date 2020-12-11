@@ -23,61 +23,61 @@ import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.potts.util.PottsEnums.Term;
 
 public final class PottsCell implements Cell {
-    /** Stopper used to stop this agent from being stepped in the schedule */
+    /** Stopper used to stop this agent from being stepped in the schedule. */
     Stoppable stopper;
     
-    /** Cell {@link arcade.core.env.loc.Location} object */
+    /** Cell {@link arcade.core.env.loc.Location} object. */
     private final PottsLocation location;
     
-    /** Unique cell ID */
+    /** Unique cell ID. */
     final int id;
     
-    /** Cell population index */
+    /** Cell population index. */
     final int pop;
     
-    /** Cell state */
+    /** Cell state. */
     private State state;
     
-    /** Cell age (in minutes) */
+    /** Cell age (in ticks). */
     private int age;
     
-    /** {@code true} if the cell has regions, {@code false} otherwise */
+    /** {@code true} if the cell has regions, {@code false} otherwise. */
     private final boolean hasRegions;
     
-    /** Target cell volume (in voxels) */
+    /** Target cell volume (in voxels). */
     private double targetVolume;
     
-    /** Target region cell volumes (in voxels) */
+    /** Target region cell volumes (in voxels). */
     private final EnumMap<Region, Double> targetRegionVolumes;
     
-    /** Target cell surface (in voxels) */
+    /** Target cell surface (in voxels). */
     private double targetSurface;
     
-    /** Target region cell surfaces (in voxels) */
+    /** Target region cell surfaces (in voxels). */
     private final EnumMap<Region, Double> targetRegionSurfaces;
     
-    /** Critical values for cell (in voxels) */
+    /** Critical values for cell (in voxels). */
     final EnumMap<Term, Double> criticals;
     
-    /** Critical values for cell (in voxels) by region */
+    /** Critical values for cell (in voxels) by region. */
     final EnumMap<Region, EnumMap<Term, Double>> criticalsRegion;
     
-    /** Lambda parameters for cell */
+    /** Lambda parameters for cell. */
     final EnumMap<Term, Double> lambdas;
     
-    /** Lambda parameters for cell by region */
+    /** Lambda parameters for cell by region. */
     final EnumMap<Region, EnumMap<Term, Double>> lambdasRegion;
     
-    /** Adhesion values for cell */
+    /** Adhesion values for cell. */
     final double[] adhesion;
     
-    /** Adhesion values for cell by region*/
+    /** Adhesion values for cell by region. */
     final EnumMap<Region, EnumMap<Region, Double>> adhesionRegion;
     
-    /** Cell state module */
+    /** Cell state module. */
     protected Module module;
     
-    /** Cell parameters */
+    /** Cell parameters. */
     final MiniBox parameters;
     
     /**
@@ -411,7 +411,7 @@ public final class PottsCell implements Cell {
     }
     
     /**
-     * Sets the target volume and surface for a region
+     * Sets the target volume and surface for a region.
      * 
      * @param region  the region
      * @param volume  the target volume

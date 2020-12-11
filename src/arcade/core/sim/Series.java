@@ -11,73 +11,73 @@ import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 
 public abstract class Series {
-    /** Logger for {@code Series} */
+    /** Logger for {@code Series}. */
     private static final Logger LOGGER = Logger.getLogger(Series.class.getName());
     
-    /** Regular expression for numbers */
+    /** Regular expression for numbers. */
     private static final String NUMBER_REGEX = "^(\\d+)|(\\d+E\\d+)$";
     
-    /** Regular expression for fractions */
+    /** Regular expression for fractions. */
     private static final String FRACTION_REGEX = "^(([0]*(\\.\\d*|))|(1[\\.0]*))$";
     
-    /** Offset of random seed to avoid using seed of 0 */
+    /** Offset of random seed to avoid using seed of 0. */
     public static final int SEED_OFFSET = 1000;
     
-    /** Separator character for targets */
+    /** Separator character for targets. */
     public static final String TARGET_SEPARATOR = ":";
     
-    /** {@code true} if the {@code Series} is not valid, {@code false} otherwise */
+    /** {@code true} if the {@code Series} is not valid, {@code false} otherwise. */
     public boolean isSkipped;
     
-    /** {@code true} if {@code Series} is run with visualization, {@code false} otherwise */
+    /** {@code true} if {@code Series} is run with visualization, {@code false} otherwise. */
     public boolean isVis;
     
-    /** Output saver for the simulation */
+    /** Output saver for the simulation. */
     public OutputSaver saver;
     
-    /** Output loader for the simulation */
+    /** Output loader for the simulation. */
     public OutputLoader loader;
     
-    /** Name of the series */
+    /** Name of the series. */
     private final String name;
     
-    /** Path and prefix for the series */
+    /** Path and prefix for the series. */
     private final String prefix;
     
-    /** Spatial conversion factor (um/voxel) */
+    /** Spatial conversion factor (um/voxel). */
     public final double ds;
     
-    /** Temporal conversion factor (hrs/tick) */
+    /** Temporal conversion factor (hrs/tick). */
     public final double dt;
     
-    /** Constructor for the simulation */
+    /** Constructor for the simulation. */
     protected Constructor<?> simCons;
     
-    /** Constructor for the visualization */
+    /** Constructor for the visualization. */
     protected Constructor<?> visCons;
     
-    /** Random seed of the first simulation in the series */
+    /** Random seed of the first simulation in the series. */
     private final int startSeed;
     
-    /** Random seed of the last simulation in the series */
+    /** Random seed of the last simulation in the series. */
     private final int endSeed;
     
-    /** Simulation length in ticks */
+    /** Simulation length in ticks. */
     private final int ticks;
     
-    /** Snapshot interval in ticks */
+    /** Snapshot interval in ticks. */
     private final int interval;
     
-    /** Length of the simulation */
+    /** Length of the simulation. */
     public final int length;
     
-    /** Width of the simulation */
+    /** Width of the simulation. */
     public final int width;
     
-    /** Height of the simulation */
+    /** Height of the simulation. */
     public final int height;
     
-    /** Map of population settings */
+    /** Map of population settings. */
     public HashMap<String, MiniBox> populations;
     
     /**
@@ -173,14 +173,14 @@ public abstract class Series {
     public int getEndSeed() { return endSeed; }
     
     /**
-     * Gets the number of ticks per simulation
+     * Gets the number of ticks per simulation.
      * 
      * @return  the ticks
      */
     public int getTicks() { return ticks; }
     
     /**
-     * Gets the number of ticks between snapshots
+     * Gets the number of ticks between snapshots.
      * 
      * @return  the interval
      */

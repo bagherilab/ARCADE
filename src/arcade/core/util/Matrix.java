@@ -14,13 +14,13 @@ import java.util.Collections;
 public class Matrix {
     /** Container class for sparse matrix representation. */
     public static class Value {
-        /** Row index of value */
+        /** Row index of value. */
         int i;
         
-        /** Column index of value */
+        /** Column index of value. */
         int j;
         
-        /** Value in matrix */
+        /** Value in matrix. */
         double v;
         
         /**

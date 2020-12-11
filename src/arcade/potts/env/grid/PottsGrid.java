@@ -5,10 +5,10 @@ import sim.util.Bag;
 import arcade.core.env.grid.Grid;
 
 public final class PottsGrid implements Grid {
-    /** Map of ID to object */
+    /** Map of ID to object. */
     final HashMap<Integer, Object> objects;
     
-    /** Collection of all objects in the grid */
+    /** Collection of all objects in the grid. */
     final Bag allObjects;
     
     /**

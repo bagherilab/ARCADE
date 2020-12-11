@@ -1,6 +1,5 @@
 package arcade.core.util;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,22 +10,47 @@ import java.util.Set;
 import sim.util.Bag;
 
 /**
- * Utility class for a directed graph using the nodes as hashes. Previously
- * nested within GraphSites.
+ * Container class for directed graph using nodes as hashes.
+ * <p>
+ * {@code Edge} objects represent edges in the graph and {@code Node} objects
+ * represent nodes in the graph.
+ * Nodes may have more than one edge in or out.
  */
 
-public final class Graph implements Serializable {
+public final class Graph {
+    /** Code indicating the FROM node of an edge. */
     public static final int DIR_FROM = -1;
+    
+    /** Code indicating the TO node of an edge. */
     public static final int DIR_TO = 1;
+    
+    /** Code indicating that an edge was added for degree updates. */
     private static final int ADD = 1;
+    
+    /** Code indicating that an edge was removed for degree updates. */
     private static final int REMOVE = -1;
-    private final Bag allEdges; // collection of all Edges in the graph
-    private final Map<Node, Bag> nodeToOutBag; // Node to collection of Edges OUT of node
-    private final Map<Node, Bag> nodeToInBag; // Node to collection of Edges IN to node
+    
+    /** Collection of all {@code Edge} objects in a graph. */
+    private final Bag allEdges;
+    
+    /** Map of {@code Node} OUT to bag of {@code Edge} objects. */
+    private final Map<Node, Bag> nodeToOutBag;
+    
+    /** Map of {@code Node} IN to bag of {@code Edge} objects. */
+    private final Map<Node, Bag> nodeToInBag;
+    
+    /** Array of in degree for node coordinates. */
     private final int[][] inDegree;
+    
+    /** Array of out degree for node coordinates. */
     private final int[][] outDegree;
     
-    // CONSTRUCTOR.
+    /**
+     * Creates a {@code Graph} for the given array size.
+     * 
+     * @param length  the length of the array (x direction)
+     * @param width  the width of the array (y direction)
+     */
     public Graph(int length, int width) {
         allEdges = new Bag();
         nodeToOutBag = new HashMap<>();
@@ -35,15 +59,60 @@ public final class Graph implements Serializable {
         outDegree = new int[length][width];
     }
     
-    // PROPERTIES.
+    /**
+     * Gets all edges in the graph.
+     * 
+     * @return  a bag containing the edges
+     */
     public Bag getAllEdges() { return allEdges; }
+    
+    /**
+     * Gets edges out of the given node.
+     * 
+     * @param node  the node that edges are from
+     * @return  a bag containing the edges
+     */
     public Bag getEdgesOut(Node node) { return nodeToOutBag.get(node); }
+    
+    /**
+     * Gets edges into the given node.
+     * 
+     * @param node  the node that edges are to
+     * @return  a bag containing the edges
+     */
     public Bag getEdgesIn(Node node) { return nodeToInBag.get(node); }
+    
+    /**
+     * Gets the in degree at the given node.
+     * 
+     * @param node  the node
+     * @return  the in degree
+     */
     public int getInDegree(Node node) { return inDegree[node.x][node.y]; }
+    
+    /**
+     * Gets the out degree at the given node.
+     * 
+     * @param node  the node
+     * @return  the out degree
+     */
     public int getOutDegree(Node node) { return outDegree[node.x][node.y]; }
+    
+    /**
+     * Gets the total degree (in degree + out degree) at the given node.
+     * 
+     * @param node  the node
+     * @return  the degree
+     */
     public int getDegree(Node node) { return inDegree[node.x][node.y] + outDegree[node.x][node.y]; }
     
-    // METHOD: hasEdge. Checks if graph has an edge between the given FROM and TO nodes.
+    /**
+     * Checks if the graph has an edge between the given nodes.
+     * 
+     * @param from  the node the edge points from
+     * @param to  the node the edge points to
+     * @return  {@code true} if edge exists, {@code false} otherwise
+     */
     public boolean hasEdge(Node from, Node to) {
         Bag bag = getEdgesOut(from);
         if (bag == null) { return false; }
@@ -53,11 +122,25 @@ public final class Graph implements Serializable {
         return false;
     }
     
-    // INTERFACE: Function. Defines function for numerical solver.
-    public interface Filter { boolean filter(Edge edge); }
+    /** Defines a filter for edges in a graph. */
+    public interface Filter {
+        /**
+         * Applies filter to an {link Edge} object.
+         * 
+         * @param edge  the edge
+         * @return  {@code true} if edge passes the filter, {@code false} otherwise
+         */
+        boolean filter(Edge edge);
+    }
     
-    // METHOD: getSubgraph. Returns a subgraph filtered by given filter. Note
-    // that subgraph links are not correct.
+    /**
+     * Filters this graph for edges and copies them to the given graph object.
+     * <p>
+     * Notes that the links in the subgraph are not correct.
+     * 
+     * @param g  the graph to add filtered edges to
+     * @param f  the edge filter
+     */
     public void getSubgraph(Graph g, Filter f) {
         for (Object obj : allEdges) {
             Edge edge = (Edge) obj;
@@ -69,8 +152,9 @@ public final class Graph implements Serializable {
         }
     }
     
-    // METHOD: mergeNodes. Sets the TO and FROM nodes for edges that connect to
-    // the same node object.
+    /**
+     * Sets the TO and FROM nodes for edges to be the same object.
+     */
     public void mergeNodes() {
         Set<Node> sOut = nodeToOutBag.keySet();
         Set<Node> sIn = nodeToInBag.keySet();
@@ -100,7 +184,11 @@ public final class Graph implements Serializable {
         }
     }
     
-    // METHOD: addEdge. Adds edge to graph.
+    /**
+     * Adds edge to graph.
+     * 
+     * @param edge  the edge to add
+     */
     public void addEdge(Edge edge) {
         allEdges.add(edge);
         setOutMap(edge.getFrom(), edge);
@@ -109,7 +197,12 @@ public final class Graph implements Serializable {
         updateDegrees(edge, ADD);
     }
     
-    // METHOD: setOutMap. Updates bag for node to OUT edge(s) mapping.
+    /**
+     * Adds the edge to the bag for the mapping of OUT node to edge.
+     * 
+     * @param node  the node hash
+     * @param edge  the edge
+     */
     private void setOutMap(Node node, Edge edge) {
         Bag objs = nodeToOutBag.get(node);
         if (objs == null) {
@@ -119,7 +212,12 @@ public final class Graph implements Serializable {
         objs.add(edge);
     }
     
-    // METHOD: setInMap. Updates bag for node to IN edge(s) mapping.
+    /**
+     * Adds the edge to the bag for the mapping of IN node to edge.
+     * 
+     * @param node  the node hash
+     * @param edge  the edge
+     */
     private void setInMap(Node node, Edge edge) {
         Bag objs = nodeToInBag.get(node);
         if (objs == null) {
@@ -129,7 +227,11 @@ public final class Graph implements Serializable {
         objs.add(edge);
     }
     
-    // METHOD: setLinks. Adds edge links.
+    /**
+     * Adds links between edges in and out of the nodes for a given edge.
+     * 
+     * @param edge  the edge
+     */
     public void setLinks(Edge edge) {
         Bag outTo = getEdgesOut(edge.getTo());
         if (outTo != null) {
@@ -150,7 +252,11 @@ public final class Graph implements Serializable {
         }
     }
     
-    // METHOD: removeEdge. Removes edge from graph.
+    /**
+     * Removes edge from graph.
+     * 
+     * @param edge  the edge to remove
+     */
     public void removeEdge(Edge edge) {
         allEdges.remove(edge);
         unsetOutMap(edge.getFrom(), edge);
@@ -159,21 +265,35 @@ public final class Graph implements Serializable {
         updateDegrees(edge, REMOVE);
     }
     
-    // METHOD: unsetOutMap. Updates bag for node to OUT edge(s) mapping.
+    /**
+     * Removes the edge from the bag for the mapping of OUT node to edge.
+     * 
+     * @param node  the node hash
+     * @param edge  the edge
+     */
     private void unsetOutMap(Node node, Edge edge) {
         Bag objs = nodeToOutBag.get(node);
         objs.remove(edge);
         if (objs.numObjs == 0) { nodeToOutBag.remove(node); }
     }
     
-    // METHOD: unsetInMap. Updates bag for node to IN edge(s) mapping.
+    /**
+     * Removes the edge from the bag for the mapping of IN node to edge.
+     * 
+     * @param node  the node hash
+     * @param edge  the edge
+     */
     private void unsetInMap(Node node, Edge edge) {
         Bag objs = nodeToInBag.get(node);
         objs.remove(edge);
         if (objs.numObjs == 0) { nodeToInBag.remove(node); }
     }
     
-    // METHOD: unsetLinks. Removes edge links.
+    /**
+     * Removes links between edges in and out of the nodes for a given edge.
+     * 
+     * @param edge  the edge
+     */
     private void unsetLinks(Edge edge) {
         Bag outTo = getEdgesOut(edge.getTo());
         if (outTo != null) {
@@ -194,7 +314,12 @@ public final class Graph implements Serializable {
         }
     }
     
-    // METHOD: updateDegrees. Updates the in and out degree for given edge.
+    /**
+     * Updates the in and out degree for the given edge.
+     * 
+     * @param edge  the edge that was added or removed
+     * @param type  the type of update (addition or removal)
+     */
     private void updateDegrees(Edge edge, int type) {
         Node from = edge.from;
         Node to = edge.to;
@@ -202,13 +327,21 @@ public final class Graph implements Serializable {
         outDegree[from.getX()][from.getY()] += type;
     }
     
-    // METHOD: reverseEdge. Removes the given edge and adds the reverse edge.
+    /**
+     * Removes the given edge and adds the reversed edge.
+     * 
+     * @param edge  the edge to reverse
+     */
     public void reverseEdge(Edge edge) {
         removeEdge(edge);
         addEdge(edge.reverse());
     }
     
-    // METHOD: toString. Override to display object as string.
+    /**
+     * Displays the graph as a list of edges and nodes.
+     * 
+     * @return  the string representation of the graph
+     */
     public String toString() {
         String s = "";
         
@@ -243,26 +376,61 @@ public final class Graph implements Serializable {
         return s;
     }
     
-    // CLASS: Node. Nested class representing a graph node that tracks its
-    // position in the lattice.
-    public abstract static class Node implements Serializable, Comparable {
+    /**
+     * Nested class representing a graph node.
+     * <p>
+     * The node tracks its corresponding position in the lattice.
+     */
+    public abstract static class Node implements Comparable {
+        /** Coordinate in x direction. */
         protected int x;
+        
+        /** Coordinate in y direction. */
         protected int y;
+        
+        /** Coordinate in z direction. */
         protected int z;
         
-        // CONSTRUCTOR.
+        /** Creates a {@code Node} at the given coordinates.
+         * 
+         * @param x  the x coordinate
+         * @param y  the y coordinate
+         * @param z  the z coordinate
+         */
         public Node(int x, int y, int z) {
             this.x = x;
             this.y = y;
             this.z = z;
         }
         
-        // PROPERTIES.
+        /**
+         * Gets the x coordinate of the node.
+         * 
+         * @return  the x coordinate
+         */
         public int getX() { return x; }
+        
+        /**
+         * Gets the y coordinate of the node.
+         * 
+         * @return  the y coordinate
+         */
         public int getY() { return y; }
+        
+        /**
+         * Gets the z coordinate of the node.
+         * 
+         * @return  the z coordinate
+         */
         public int getZ() { return z; }
         
-        @Override
+        /**
+         * Compares a node to this node.
+         * 
+         * @param object  the node to compare
+         * @return  zero if the x and y coordinates are equal, otherwise the
+         *          the result of integer comparison for x and y
+         */
         public int compareTo(Object object) {
             Node comp = (Node) object;
             int xComp = Integer.compare(x, comp.getX());
@@ -275,16 +443,34 @@ public final class Graph implements Serializable {
             }
         }
         
-        // ABSTRACT METHODS.
+        /**
+         * Creates a duplicate node with the same coordinates.
+         * 
+         * @return  a {@code Node} copy
+         */
         public abstract Node duplicate();
         
-        // METHOD: update. Updates position based on given Node.
+        /**
+         * Updates the position of this {@code Node} with coordinate from given
+         * {@code Node}.
+         * 
+         * @param node  the {@code Node} with coordinates to update with
+         */
         public void update(Node node) { this.x = node.x; this.y = node.y; this.z = node.z; }
         
-        // METHOD: hashCode. Override object hashing.
+        /**
+         * Specifies object hashing based on coordinates.
+         * 
+         * @return  a hash based on coordinates
+         */
         public final int hashCode() { return x + y << 8 + z << 16; }
         
-        // METHOD: equals. Override object to check if two locations are equal.
+        /**
+         * Checks if two nodes are equal based on coordinates.
+         * 
+         * @param obj  the object to check
+         * @return  {@code true} if the coordinate match, {@code false} otherwise
+         */
         public final boolean equals(Object obj) {
             if (obj instanceof Node) {
                 Node node = (Node) obj;
@@ -293,22 +479,36 @@ public final class Graph implements Serializable {
             return false;
         }
         
-        // METHOD: toString. Override to display object as string.
         public String toString() {
             return "(" + x + "," + y + "," + z + ")";
         }
     }
     
-    // CLASS: Edge. Nested class representing a graph edge that tracks its TO
-    // and FROM nodes as well as edges into its FROM node and edges out of its
-    // TO node.
-    public abstract static class Edge implements Serializable {
+    /**
+     * Nested class representing a graph edge.
+     * <p>
+     * The edge tracks its corresponding nodes as well as the edges into the
+     * FROM node and out of the TO node.
+     */
+    public abstract static class Edge {
+        /** Node this edge points to. */
         protected Node to;
+        
+        /** Node this edge points from. */
         protected Node from;
+        
+        /** List of edges that point into the node this edge points from. */
         private final ArrayList<Edge> edgesIn;
+        
+        /** List of edges that point out of the node this edge points to. */
         private final ArrayList<Edge> edgesOut;
         
-        // CONSTRUCTOR.
+        /**
+         * Creates an {@code Edge} between two {@link Node} objects.
+         * 
+         * @param from  the node the edge is from
+         * @param to  the node the edge is to
+         */
         public Edge(Node from, Node to) {
             this.from = from.duplicate();
             this.to = to.duplicate();
@@ -316,13 +516,54 @@ public final class Graph implements Serializable {
             edgesOut = new ArrayList<>();
         }
         
-        // PROPERTIES.
+        /**
+         * Gets the node the edge points from.
+         * 
+         * @return  the node the edge points from
+         */
         public Node getFrom() { return from; }
+        
+        /**
+         * Gets the node the edge points to.
+         * 
+         * @return  the node the edge points to
+         */
         public Node getTo() { return to; }
+        
+        /**
+         * Sets the node the edge points to.
+         * 
+         * @param to  the node the edge points to
+         */
         public void setTo(Node to) { this.to = to; }
+        
+        /**
+         * Sets the node the edge points from.
+         * 
+         * @param from  the node the edge points from
+         */
         public void setFrom(Node from) { this.from = from; }
+        
+        /**
+         * Gets the list of edges that point into the node this edge points from.
+         * 
+         * @return  the list of edges
+         */
         public ArrayList<Edge> getEdgesIn() { return edgesIn; }
+        
+        /**
+         * Gets the list of edges that point out of the node this edge points to.
+         * 
+         * @return  the list of edges
+         */
         public ArrayList<Edge> getEdgesOut() { return edgesOut; }
+        
+        /**
+         * Gets the node for the given direction of this edge.
+         * 
+         * @param dir  the direction
+         * @return  the node
+         */
         public Node getNode(int dir) {
             switch (dir) {
                 case DIR_FROM: return from;
@@ -331,7 +572,11 @@ public final class Graph implements Serializable {
             }
         }
         
-        // METHOD: reverse. Reverses the edge.
+        /**
+         * Reverses the edge by swapping the nodes.
+         * 
+         * @return  the reversed edge
+         */
         Edge reverse() {
             Node tempTo = to;
             Node tempFrom = from;
@@ -340,13 +585,14 @@ public final class Graph implements Serializable {
             return this;
         }
         
-        // METHOD: clear. Removes the linked edges.
+        /**
+         * Removes the linked edges.
+         */
         public void clear() {
             edgesIn.clear();
             edgesOut.clear();
         }
         
-        // METHOD: toString. Override to display object as string.
         public String toString() {
             return "[" + from.toString() + "~" + to.toString() + "]";
         }

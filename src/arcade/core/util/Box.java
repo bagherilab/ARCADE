@@ -12,16 +12,16 @@ import java.util.ArrayList;
  */
 
 public class Box {
-    /** Separator character for keys */
+    /** Separator character for keys. */
     public static final String KEY_SEPARATOR = "~";
     
-    /** List of keys */
+    /** List of keys. */
     final ArrayList<String> keys;
     
-    /** Map of id to tag */
+    /** Map of id to tag. */
     final MiniBox idToTag;
     
-    /** Map of id to value */
+    /** Map of id to value. */
     final MiniBox idToVal;
     
     /**

@@ -20,13 +20,13 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
  */
 
 public class InputLoader extends DefaultHandler {
-    /** Logger for class */
+    /** Logger for {@code InputLoader}. */
     private static final Logger LOGGER = Logger.getLogger(InputLoader.class.getName());
     
-    /** XML reader */
+    /** XML reader. */
     XMLReader xmlReader;
     
-    /** Box holding parsed XML */
+    /** Box holding parsed XML. */
     Box box;
     
     /**

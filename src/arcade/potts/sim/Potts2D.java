@@ -5,19 +5,19 @@ import arcade.potts.agent.cell.PottsCell;
 import static arcade.core.util.Enums.Region;
 
 public final class Potts2D extends Potts {
-    /** Number of neighbors */
+    /** Number of neighbors. */
     public static final int NUMBER_NEIGHBORS = 4;
     
-    /** List of x direction movements (N, E, S, W) */
+    /** List of x direction movements (N, E, S, W). */
     public static final int[] MOVES_X = { 0, 1, 0, -1 };
     
-    /** List of y direction movements (N, E, S, W) */
+    /** List of y direction movements (N, E, S, W). */
     public static final int[] MOVES_Y = { -1, 0, 1, 0 };
     
-    /** List of x direction corner movements (NE, SE, SW, NW) */
+    /** List of x direction corner movements (NE, SE, SW, NW). */
     private static final int[] CORNER_X = { 1, 1, -1, -1 };
     
-    /** List of y direction corner movements (NE, SE, SW, NW) */
+    /** List of y direction corner movements (NE, SE, SW, NW). */
     private static final int[] CORNER_Y = { -1, 1, 1, -1 };
     
     /**

@@ -20,19 +20,19 @@ import arcade.potts.env.loc.PottsLocationFactory;
 import static arcade.potts.util.PottsEnums.Ordering;
 
 public abstract class PottsSimulation extends SimState implements Simulation {
-    /** {@link arcade.core.sim.Series} object containing this simulation */
+    /** {@link arcade.core.sim.Series} object containing this simulation. */
     final PottsSeries series;
     
-    /** Random number generator seed for this simulation */
+    /** Random number generator seed for this simulation. */
     final int seed;
     
-    /** {@link arcade.potts.sim.Potts} object for the simulation */
+    /** {@link arcade.potts.sim.Potts} object for the simulation. */
     Potts potts;
     
-    /** {@link arcade.core.env.grid.Grid} containing agents in the simulation */
+    /** {@link arcade.core.env.grid.Grid} containing agents in the simulation. */
     Grid grid;
     
-    /** Cell ID tracker */
+    /** Cell ID tracker. */
     int id;
     
     /**

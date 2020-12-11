@@ -11,15 +11,39 @@ import static arcade.core.util.Enums.Region;
  * Container class for loading a {@link PottsLocation}.
  */
 public final class PottsLocationContainer implements LocationContainer {
+    /** Unique location container ID. */
     public final int id;
+    
+    /** List of all available voxels. */
     public final ArrayList<Voxel> allVoxels;
+    
+    /** Voxel at center of available voxels. */
     public final Voxel center;
+    
+    /** Map of region to list of voxels. */
     public final EnumMap<Region, ArrayList<Voxel>> regions;
     
+    /**
+     * Creates a {@code PottsLocationContainer} instance.
+     * <p>
+     * The container does not have any regions.
+     * 
+     * @param id  the location ID
+     * @param center  the location center
+     * @param voxels  the list of voxels
+     */
     public PottsLocationContainer(int id, Voxel center, ArrayList<Voxel> voxels) {
         this(id, center, voxels, null);
     }
     
+    /**
+     * Creates a {@code PottsLocationContainer} instance.
+     * 
+     * @param id  the location ID
+     * @param center  the location center
+     * @param voxels  the list of voxels
+     * @param regions  the list of region voxels
+     */
     public PottsLocationContainer(int id, Voxel center, ArrayList<Voxel> voxels,
                              EnumMap<Region, ArrayList<Voxel>> regions) {
         this.id = id;

@@ -12,8 +12,8 @@ public final class PottsLocationFactory3D extends PottsLocationFactory {
     }
     
     @Override
-    ArrayList<Voxel> getNeighbors(Voxel voxel) {
-        return Location3D.getNeighbors(voxel);
+    ArrayList<Voxel> getNeighbors(Voxel focus) {
+        return Location3D.getNeighbors(focus);
     }
     
     @Override

@@ -13,43 +13,43 @@ import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
 
 public abstract class PottsModuleProliferation extends PottsModule {
-    /** Average duration of G1 phase (ticks) */
+    /** Average duration of G1 phase (ticks). */
     final double durationG1;
     
-    /** Average duration of S phase (ticks) */
+    /** Average duration of S phase (ticks). */
     final double durationS;
     
-    /** Average duration of G2 phase (ticks) */
+    /** Average duration of G2 phase (ticks). */
     final double durationG2;
     
-    /** Average duration of M phase (ticks) */
+    /** Average duration of M phase (ticks). */
     final double durationM;
     
-    /** Average duration for checkpoint recovery (ticks) */
+    /** Average duration for checkpoint recovery (ticks). */
     final double durationCheckpoint;
     
-    /** Cell growth rate for phase G1 (ticks^-1) */
+    /** Cell growth rate for phase G1 (ticks^-1). */
     final double rateG1;
     
-    /** Nucleus growth rate for phase S (ticks^-1) */
+    /** Nucleus growth rate for phase S (ticks^-1). */
     final double rateS;
     
-    /** Cell growth rate for phase G2 (ticks^-1) */
+    /** Cell growth rate for phase G2 (ticks^-1). */
     final double rateG2;
     
-    /** Ratio of critical volume for G1 growth checkpoint */
+    /** Ratio of critical volume for G1 growth checkpoint. */
     static final double GROWTH_CHECKPOINT_G1 = 2 * 0.95;
     
-    /** Ratio of critical volume for S nucleus checkpoint */
+    /** Ratio of critical volume for S nucleus checkpoint. */
     static final double GROWTH_CHECKPOINT_S = 2 * 0.99;
     
-    /** Ratio of critical volume for G2 growth checkpoint */
+    /** Ratio of critical volume for G2 growth checkpoint. */
     static final double GROWTH_CHECKPOINT_G2 = 2 * 0.99;
     
-    /** Basal rate of apoptosis (ticks^-1) */
+    /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
     
-    /** {@code true} if cell is arrested in a phase, {@code false} otherwise */
+    /** {@code true} if cell is arrested in a phase, {@code false} otherwise. */
     boolean isArrested;
     
     /**
@@ -176,6 +176,8 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * <p>
      * If cell does not have regions, then cell will transition to G2 phase after
      * an average time of {@code DURATION_S}.
+     * 
+     * @param r  a random number
      */
     void stepS(double r) {
         if (cell.hasRegions()) {

@@ -33,28 +33,28 @@ import arcade.core.ARCADE;
  */
 
 public class GUI implements ActionListener {
-    /** GUI frame */
+    /** GUI frame. */
     private static JFrame frame;
     
-    /** Directory for file chooser */
+    /** Directory for file chooser. */
     private static String chooserDir = null;
     
-    /** Text field for file */
+    /** Text field for file. */
     private JTextField fileField;
     
-    /** Button for select file */
+    /** Button for select file. */
     private JButton selectButton;
     
-    /** Button for run simulation */
+    /** Button for run simulation. */
     private JButton runButton;
     
-    /** Text area for display */
+    /** Text area for display. */
     private JTextArea displayArea;
     
-    /** Check box for visualization */
+    /** Check box for visualization. */
     private JCheckBox visCheck;
     
-    /** XML setup file */
+    /** XML setup file. */
     private File xml;
     
     public static void main(String[] args) throws Exception {
@@ -250,7 +250,7 @@ public class GUI implements ActionListener {
     
     /** Custom output stream for console text. */
     public static class CustomOutputStream extends OutputStream {
-        /** Text area for output */
+        /** Text area for output. */
         private JTextArea textArea;
         
         /**

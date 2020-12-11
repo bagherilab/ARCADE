@@ -16,22 +16,22 @@ import arcade.core.agent.cell.Cell;
  */
 
 public abstract class Drawer implements Steppable {
-    /** Portrayal */
+    /** Portrayal. */
     protected final Portrayal port;
     
-    /** Name of drawing */
+    /** Name of drawing. */
     protected String name;
     
-    /** Color map for drawing */
+    /** Color map for drawing. */
     protected final ColorMap map;
     
-    /** Length of the array (x direction) */
+    /** Length of the array (x direction). */
     protected final int length;
     
-    /** Width of the array (y direction) */
+    /** Width of the array (y direction). */
     protected final int width;
     
-    /** Height of the array (z direction) */
+    /** Height of the array (z direction). */
     protected final int height;
     
     /**

@@ -18,10 +18,10 @@ import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
 public final class OutputSerializer {
-    /** Regular expression for fractions */
+    /** Regular expression for fractions. */
     public static final String DOUBLE_REGEX = "^(-?\\d*\\.\\d*)$|^(-?\\d*\\.\\d*E-?\\d+)$";
     
-    /** Regular expression for integers */
+    /** Regular expression for integers. */
     public static final String INTEGER_REGEX = "^(-?\\d+)$|^(-?\\d+E-?\\d+)$";
     
     protected OutputSerializer() {

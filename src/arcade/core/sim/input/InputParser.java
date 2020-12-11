@@ -36,34 +36,34 @@ import arcade.core.util.MiniBox;
  */
 
 public class InputParser {
-    /** Logger for class */
+    /** Logger for {@code InputParser}. */
     private static final Logger LOGGER = Logger.getLogger(InputParser.class.getName());
     
-    /** ID for position commands */
+    /** ID for position commands. */
     static final int POSITION = 0;
     
-    /** ID for option commands */
+    /** ID for option commands. */
     static final int OPTION = 1;
     
-    /** ID for switch commands */
+    /** ID for switch commands. */
     static final int SWITCH = 2;
     
-    /** Dictionary of parsed commands */
+    /** Dictionary of parsed commands. */
     MiniBox parsed;
     
-    /** List of all commands */
+    /** List of all commands. */
     final ArrayList<Command> allCommands;
     
-    /** Map of short flags to command */
+    /** Map of short flags to command. */
     final HashMap<String, Command> shortToCommand;
     
-    /** Map of long flags to command */
+    /** Map of long flags to command. */
     final HashMap<String, Command> longToCommand;
     
-    /** List of position commands */
+    /** List of position commands. */
     final ArrayList<Command> positionCommands;
     
-    /** Current index for position arguments */
+    /** Current index for position arguments. */
     int positionIndex;
     
     /**
@@ -131,25 +131,25 @@ public class InputParser {
      * parsing {@code command.xml}.
      */
     static class Command {
-        /** Format string */
+        /** Format string. */
         String format = "\t%20s %s\n";
         
-        /** Command type */
+        /** Command type. */
         int type;
         
-        /** Command id */
+        /** Command id. */
         String id;
         
-        /** Command default value */
+        /** Command default value. */
         String defaults;
         
-        /** Command help text */
+        /** Command help text. */
         String help;
         
-        /** Command short flag */
+        /** Command short flag. */
         String shortFlag;
         
-        /** Command long flag */
+        /** Command long flag. */
         String longFlag;
         
         /**
@@ -237,6 +237,7 @@ public class InputParser {
      * @param args  the argument contents
      * @param index  the argument index
      * @param cmd  the command object
+     * @return  the next argument index
      */
     int parseFlaggedArgument(String[] args, int index, Command cmd) {
         if (cmd.type == SWITCH) {
@@ -252,6 +253,7 @@ public class InputParser {
      * 
      * @param args  the argument contents
      * @param index  the argument index
+     * @return  the next argument index
      */
     int parsePositionArgument(String[] args, int index) {
         parsed.put(positionCommands.get(positionIndex).id, args[index]);

@@ -22,7 +22,7 @@ import sim.portrayal3d.Portrayal3D;
  */
 
 public abstract class Panel {
-    /** Frame for panel */
+    /** Frame for panel. */
     JFrame frame;
     
     /**
@@ -83,7 +83,7 @@ public abstract class Panel {
      * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
      */
     public static class Panel2D extends Panel {
-        /** Display object for 2D */
+        /** Display object for 2D. */
         final Display2D display;
         
         /**
@@ -127,7 +127,7 @@ public abstract class Panel {
      * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
      */
     public static class Panel3D extends Panel {
-        /** Display object for 3D */
+        /** Display object for 3D. */
         final Display3D display;
         
         /**

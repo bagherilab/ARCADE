@@ -5,10 +5,10 @@ import arcade.potts.agent.cell.PottsCell;
 import static arcade.potts.util.PottsEnums.Phase;
 
 public abstract class PottsModule implements Module {
-    /** The {@link PottsCell} object the module is associated with */
+    /** The {@link PottsCell} object the module is associated with. */
     final PottsCell cell;
     
-    /** Code for module phase */
+    /** Code for module phase. */
     Phase phase;
     
     /**

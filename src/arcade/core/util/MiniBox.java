@@ -12,17 +12,17 @@ import java.util.HashSet;
  */
 
 public class MiniBox {
-    /** Separator character for tags */
+    /** Separator character for tags. */
     public static final String TAG_SEPARATOR = "/";
     
-    /** Regular expression for numbers */
+    /** Regular expression for numbers. */
     private static final String NUMBER_REGEX = "^(-?\\d*\\.\\d*)$|^(-?\\d+)$|"
             + "^(-?\\d+E-?\\d+)$|^(-?\\d*\\.\\d*E-?\\d+)$";
     
-    /** List of keys */
+    /** List of keys. */
     final ArrayList<String> keys;
     
-    /** Map of keys to values */
+    /** Map of keys to values. */
     final HashMap<String, String> contents;
     
     /**

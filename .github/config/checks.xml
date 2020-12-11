@@ -21,6 +21,9 @@
         <property name="optional" value="false"/>
     </module>
 
+    <!-- Checks that a package-info.java file exists for each package -->
+    <module name="JavadocPackage" />
+
     <!-- Checks whether files end with a new line -->
     <module name="NewlineAtEndOfFile" />
 
@@ -70,11 +73,11 @@
     <module name="TreeWalker">
         <!-- Checks for Javadoc comments -->
         <module name="InvalidJavadocPosition" />
-        <!-- <module name="JavadocMethod" /> -->
+        <module name="JavadocMethod" />
         <module name="JavadocType" />
-        <!-- <module name="JavadocVariable" /> -->
-        <!-- <module name="JavadocStyle" /> -->
-        <!-- <module name="MissingJavadocMethod" /> -->
+        <module name="JavadocVariable" />
+        <module name="JavadocStyle" />
+        <module name="MissingJavadocMethod" />
 
         <!-- Checks for naming conventions -->
         <module name="ConstantName" />
@@ -149,19 +152,24 @@
         <module name="IllegalInstantiation" />
         <module name="InnerAssignment" />
         <!-- <module name="MagicNumber" /> -->
-        <!-- <module name="MissingSwitchDefault" /> -->
-        <!-- <module name="MultipleVariableDeclarations" /> -->
+        <module name="MissingSwitchDefault" />
+        <module name="MultipleVariableDeclarations" />
         <module name="SimplifyBooleanExpression" />
         <module name="SimplifyBooleanReturn" />
 
         <!-- Checks for class design-->
-        <!-- <module name="DesignForExtension" /> -->
+        <!-- <module name="DesignForExtension">
+            <property name="ignoredAnnotations" value="Override, Test, Before, After, BeforeClass, AfterClass" />
+        </module> -->
         <module name="FinalClass" />
         <module name="HideUtilityClassConstructor" />
         <module name="InterfaceIsType" />
-        <!-- <module name="VisibilityModifier">
+        <module name="VisibilityModifier">
             <property name="packageAllowed" value="true" />
-        </module> -->
+            <property name="protectedAllowed" value="true" />
+            <property name="allowPublicFinalFields" value="true" />
+            <property name="publicMemberPattern" value="^series*" />
+        </module>
 
         <!-- Miscellaneous other checks -->
         <module name="ArrayTypeStyle" />

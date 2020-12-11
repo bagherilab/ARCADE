@@ -6,9 +6,10 @@ import static arcade.potts.sim.Potts3D.*;
 import static arcade.potts.util.PottsEnums.Direction;
 
 public interface Location3D {
-    /** Multiplier for calculating surface area from volume */
+    /** Multiplier for calculating surface area from volume. */
     double SURFACE_VOLUME_MULTIPLIER = Math.cbrt(36 * Math.PI) * 2;
     
+    /** List of valid 3D directions. */
     Direction[] DIRECTIONS = new Direction[] {
             Direction.YZ_PLANE,
             Direction.ZX_PLANE,
@@ -21,19 +22,37 @@ public interface Location3D {
             Direction.NEGATIVE_ZX
     };
     
-    static ArrayList<Voxel> getNeighbors(Voxel voxel) {
+    /**
+     * Gets list of neighbors of a given voxel.
+     * 
+     * @param focus  the focus voxel
+     * @return  the list of neighbor voxels
+     */
+    static ArrayList<Voxel> getNeighbors(Voxel focus) {
         ArrayList<Voxel> neighbors = new ArrayList<>();
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            Voxel v = new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z + MOVES_Z[i]);
+            Voxel v = new Voxel(focus.x + MOVES_X[i], focus.y + MOVES_Y[i], focus.z + MOVES_Z[i]);
             neighbors.add(v);
         }
         return neighbors;
     }
     
+    /**
+     * Converts volume to surface area.
+     * 
+     * @param volume  the volume (in voxels)
+     * @return  the surface area (in voxels)
+     */
     static double convertVolume(double volume) {
         return SURFACE_VOLUME_MULTIPLIER * Math.pow(volume, 2. / 3);
     }
     
+    /**
+     * Calculates surface of location.
+     * 
+     * @param voxels  the list of voxels
+     * @return  the surface
+     */
     static int calculateSurface(ArrayList<Voxel> voxels) {
         int surface = 0;
         
@@ -47,6 +66,13 @@ public interface Location3D {
         return surface;
     }
     
+    /**
+     * Calculates the local change in surface of the location.
+     * 
+     * @param voxels  the list of voxels
+     * @param voxel  the voxel the update is centered in
+     * @return  the change in surface
+     */
     static int updateSurface(ArrayList<Voxel> voxels, Voxel voxel) {
         int change = 0;
         
@@ -62,7 +88,14 @@ public interface Location3D {
         return change;
     }
     
-    static HashMap<Direction, Integer> getDiameters(ArrayList<Voxel> voxels, Voxel center) {
+    /**
+     * Calculates diameters in each direction.
+     * 
+     * @param voxels  the list of voxels
+     * @param focus  the focus voxel
+     * @return  the map of direction to diameter
+     */
+    static HashMap<Direction, Integer> getDiameters(ArrayList<Voxel> voxels, Voxel focus) {
         HashMap<Direction, Integer> minValueMap = new HashMap<>();
         HashMap<Direction, Integer> maxValueMap = new HashMap<>();
         HashMap<Direction, Boolean> existsMap = new HashMap<>();
@@ -80,9 +113,9 @@ public interface Location3D {
         // Iterate through all the voxels for the location to update minimum and
         // maximum values in each direction.
         for (Voxel voxel : voxels) {
-            int i = voxel.x - center.x;
-            int j = voxel.y - center.y;
-            int k = voxel.z - center.z;
+            int i = voxel.x - focus.x;
+            int j = voxel.y - focus.y;
+            int k = voxel.z - focus.z;
             
             // Need to update all directions if at the center.
             if (i == 0 && j == 0 && k == 0) {
@@ -133,6 +166,13 @@ public interface Location3D {
         return diameterMap;
     }
     
+    /**
+     * Selects the slice direction for a given minimum diameter direction.
+     * 
+     * @param direction  the direction of the minimum diameter
+     * @param diameters  the list of diameters
+     * @return  the slice direction
+     */
     static Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) {
         switch (direction) {
             case YZ_PLANE:
@@ -167,6 +207,14 @@ public interface Location3D {
         }
     }
     
+    /**
+     * Selects specified number of voxels from a focus voxel.
+     * 
+     * @param voxels  the list of voxels
+     * @param focus  the focus voxel
+     * @param n  the number of voxels to select
+     * @return  the list of selected voxels
+     */
     static ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) {
         ArrayList<Voxel> selected = new ArrayList<>();
         double r = Math.cbrt((3 * n) / (4 * Math.PI));
