@@ -17,6 +17,20 @@ import arcade.core.util.MiniBox;
 import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
+/**
+ * Container class for object serializers.
+ * <p>
+ * Generic serializers include:
+ * <ul>
+ *     <li>{@link SeriesSerializer} for serializing {@link Series} settings</li>
+ *     <li>{@link MiniBoxSerializer} for serializing {@link MiniBox} objects</li>
+ *     <li>{@link CellListSerializer} for serializing a list of
+ *     {@link CellContainer} instances</li>
+ *     <li>{@link LocationListSerializer} for serializing a list of
+ *     {@link LocationContainer} instances</li>
+ * </ul>
+ */
+
 public final class OutputSerializer {
     /** Regular expression for fractions. */
     public static final String DOUBLE_REGEX = "^(-?\\d*\\.\\d*)$|^(-?\\d*\\.\\d*E-?\\d+)$";
@@ -24,10 +38,18 @@ public final class OutputSerializer {
     /** Regular expression for integers. */
     public static final String INTEGER_REGEX = "^(-?\\d+)$|^(-?\\d+E-?\\d+)$";
     
+    /**
+     * Hidden utility class constructor.
+     */
     protected OutputSerializer() {
         throw new UnsupportedOperationException();
     }
     
+    /**
+     * Creates a {@code GsonBuilder} with generic adaptors.
+     *
+     * @return  a {@code GsonBuilder} instance
+     */
     public static GsonBuilder makeGSONBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();
         gsonBuilder.registerTypeAdapter(Series.class, new SeriesSerializer());
@@ -37,6 +59,18 @@ public final class OutputSerializer {
         return gsonBuilder;
     }
     
+    /**
+     * Serializer for {@link MiniBox} objects.
+     * <p>
+     * The contents of the box are formatted as:
+     * <pre>
+     *     {
+     *         "(key)" : (value),
+     *         "(key)" : (value),
+     *         ...
+     *     }
+     * </pre>
+     */
     public static final class MiniBoxSerializer implements JsonSerializer<MiniBox> {
         @Override
         public JsonElement serialize(MiniBox src, Type typeOfSrc,
@@ -59,6 +93,37 @@ public final class OutputSerializer {
         }
     }
     
+    /**
+     * Serializer for {@link Series} objects.
+     * <p>
+     * The series object is formatted as:
+     * <pre>
+     *     {
+     *         "seeds": {
+     *             "start": (start seed),
+     *             "end": (end seed)
+     *         },
+     *         "conversions": {
+     *             "DS": (ds),
+     *             "DT": (dt)
+     *         },
+     *         "ticks": (ticks),
+     *         "size": {
+     *             "length": (length),
+     *             "width": (width),
+     *             "height": (height)
+     *         },
+     *         "populations": {
+     *             "(population_code)": {
+     *                 "(key)" : (value),
+     *                 "(key)" : (value),
+     *                 ...
+     *             },
+     *             ...
+     *         }
+     *     }
+     * </pre>
+     */
     public static final class SeriesSerializer implements JsonSerializer<Series> {
         @Override
         public JsonElement serialize(Series src, Type typeOfSrc,
@@ -97,6 +162,18 @@ public final class OutputSerializer {
         }
     }
     
+    /**
+     * Serializer for a list of {@link CellContainer} objects.
+     * <p>
+     * The series object is formatted as:
+     * <pre>
+     *     [
+     *          (serialized cell container),
+     *          (serialized cell container),
+     *          ...
+     *     ]
+     * </pre>
+     */
     public static final class CellListSerializer
             implements JsonSerializer<ArrayList<CellContainer>> {
         @Override
@@ -113,6 +190,18 @@ public final class OutputSerializer {
         }
     }
     
+    /**
+     * Serializer for a list of {@link LocationContainer} objects.
+     * <p>
+     * The series object is formatted as:
+     * <pre>
+     *     [
+     *          (serialized location container),
+     *          (serialized location container),
+     *          ...
+     *     ]
+     * </pre>
+     */
     public static final class LocationListSerializer
             implements JsonSerializer<ArrayList<LocationContainer>> {
         @Override

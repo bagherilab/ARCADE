@@ -14,11 +14,31 @@ import arcade.core.env.loc.LocationContainer;
 import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
+/**
+ * Container class for object deserializers.
+ * <p>
+ * Generic deserializers include:
+ * <ul>
+ *     <li>{@link CellListDeserializer} for deserializing a list of
+ *     {@link CellContainer} instances</li>
+ *     <li>{@link LocationListDeserializer} for deserializing a list of
+ *     {@link LocationContainer} instances</li>
+ * </ul>
+ */
+
 public final class OutputDeserializer {
+    /**
+     * Hidden utility class constructor.
+     */
     protected OutputDeserializer() {
         throw new UnsupportedOperationException();
     }
     
+    /**
+     * Creates a {@code GsonBuilder} with generic adaptors.
+     *
+     * @return  a {@code GsonBuilder} instance
+     */
     public static GsonBuilder makeGSONBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(DEFAULT_CELL_TYPE, new CellListDeserializer());
@@ -26,6 +46,9 @@ public final class OutputDeserializer {
         return gsonBuilder;
     }
     
+    /**
+     * Deserializer for a list of {@link CellContainer} objects.
+     */
     public static final class CellListDeserializer
             implements JsonDeserializer<ArrayList<CellContainer>> {
         @Override
@@ -45,6 +68,9 @@ public final class OutputDeserializer {
         }
     }
     
+    /**
+     * Deserializer for a list of {@link LocationContainer} objects.
+     */
     public static final class LocationListDeserializer
             implements JsonDeserializer<ArrayList<LocationContainer>> {
         @Override

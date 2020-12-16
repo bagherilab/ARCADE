@@ -5,7 +5,7 @@ import arcade.core.env.loc.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 
-/** 
+/**
  * A {@code Lattice} represents the environment for molecules.
  * <p>
  * Each {@code Lattice} is a 3D array of doubles, where the values can represent
@@ -26,35 +26,35 @@ public interface Lattice {
     
     /**
      * Gets the underlying lattice array.
-     * 
+     *
      * @return  the array
      */
     double[][][] getField();
     
     /**
      * Gets the length of the lattice (x direction).
-     * 
+     *
      * @return  the length of the lattice
      */
     int getLength();
     
     /**
      * Gets the width of the lattice (y direction).
-     * 
+     *
      * @return  the width of the lattice
      */
     int getWidth();
     
     /**
      * Gets the depth of the lattice (z direction).
-     * 
+     *
      * @return  the depth of the lattice
      */
     int getDepth();
     
     /**
      * Sets the underlying array at the height index to the given array.
-     * 
+     *
      * @param vals  the array of values
      * @param index  the height index
      */
@@ -62,21 +62,21 @@ public interface Lattice {
     
     /**
      * Sets the underlying array to the given array of values.
-     * 
+     *
      * @param vals  the array of values
      */
     void setField(double[][][] vals);
     
     /**
      * Sets the underlying array to the given value.
-     * 
+     *
      * @param val  the value to set
      */
     void setTo(double val);
     
     /**
      * Gets the sum of values across lattice coordinates corresponding to the location.
-     * 
+     *
      * @param loc  the location
      * @return  the sum value
      */
@@ -84,7 +84,7 @@ public interface Lattice {
     
     /**
      * Gets the average value across lattice coordinates corresponding to the location.
-     * 
+     *
      * @param loc  the location
      * @return  the average values
      */
@@ -92,7 +92,7 @@ public interface Lattice {
     
     /**
      * Updates the value at the lattice coordinates corresponding to the location.
-     * 
+     *
      * @param loc  the location
      * @param frac  the fraction change in value
      */
@@ -100,7 +100,7 @@ public interface Lattice {
     
     /**
      * Increments the value at the lattice coordinates corresponding to the location.
-     * 
+     *
      * @param loc  the location
      * @param inc  the change in value
      */
@@ -108,7 +108,7 @@ public interface Lattice {
     
     /**
      * Sets the value at the lattice coordinates corresponding to the location.
-     * 
+     *
      * @param loc  the location
      * @param val  the new value
      */
@@ -116,7 +116,7 @@ public interface Lattice {
     
     /**
      * Gets the {@link arcade.core.env.comp.Component} of the given name.
-     * 
+     *
      * @param key  the component name
      * @return  the component instance
      */
@@ -124,7 +124,7 @@ public interface Lattice {
     
     /**
      * Sets the {@link arcade.core.env.comp.Component} with the given name.
-     * 
+     *
      * @param key  the component name
      * @param comp  the component instance
      */
@@ -132,7 +132,7 @@ public interface Lattice {
     
     /**
      * Adds a component to the lattice.
-     * 
+     *
      * @param sim  the simulation instance
      * @param type  the component type
      * @param molecule  the molecule parameters
@@ -141,7 +141,7 @@ public interface Lattice {
     
     /**
      * Represents object as a JSON entry.
-     * 
+     *
      * @param locs  the lattice coordinates
      * @return  the JSON string
      */

@@ -22,24 +22,21 @@ import arcade.potts.PottsARCADE;
 /**
  * Entry point class for ARCADE simulations.
  * <p>
- * The class loads two XML files {@code command.xml} and {@code parameter.xml}
- * that specify the command line parser options and the default parameter
- * values, respectively.
- * The setup XML file is then parsed to produce an array of {@link Series}
- * objects, each of which defines replicates (differing only in random seed) of
- * {@link arcade.core.sim.Simulation} instances to run.
+ * The class loads two XML files {@code command.xml} and {@code parameter.xml} that specify the
+ * command line parser options and the default parameter values, respectively.
+ * The setup XML file is then parsed to produce an array of {@link Series} objects, each of which
+ * defines replicates (differing only in random seed) of {@link arcade.core.sim.Simulation}
+ * instances to run.
  * <p>
- * If the visualization flag is used, only the first valid {@link Series} in
- * the array is run.
+ * If the visualization flag is used, only the first valid {@link Series} in the array is run.
  * Otherwise, all valid {@code Series} are run.
  * <p>
- * An implementing package {@code <imp>} extends this class to define
- * implementation specific:
+ * An implementing package {@code <implementation>} extends this class to define implementation
+ * specific:
  * <ul>
- *     <li>{@code command.<imp>.xml} with custom command line parameters</li>
- *     <li>{@code parameter.<imp>.xml} with new default parameter values</li>
- *     <li>{@link InputBuilder} for building implementation series from
- *     the setup XML</li>
+ *     <li>{@code command.<implementation>.xml} with custom command line parameters</li>
+ *     <li>{@code parameter.<implementation>.xml} with new default parameter values</li>
+ *     <li>{@link InputBuilder} for building implementation series from the setup XML</li>
  *     <li>{@link OutputLoader} for loading classes</li>
  *     <li>{@link OutputSaver} for saving classes</li>
  * </ul>
@@ -49,14 +46,42 @@ public abstract class ARCADE {
     /** Logger for {@code ARCADE}. */
     protected static Logger logger;
     
+    /**
+     * Gets the resource relative to the location of the class.
+     *
+     * @param s  the resource name
+     * @return  the resource location
+     */
     protected abstract String getResource(String s);
     
+    /**
+     * Gets an {@link InputBuilder} instance.
+     *
+     * @return  an {@link InputBuilder} instance
+     */
     protected abstract InputBuilder getBuilder();
     
+    /**
+     * Gets an {@link OutputLoader} instance for the series.
+     *
+     * @param series  the {@link Series} instance
+     * @return  an {@link OutputLoader} instance
+     */
     protected abstract OutputLoader getLoader(Series series);
     
+    /**
+     * Gets an {@link OutputSaver} instance for the series.
+     *
+     * @param series  the {@link Series} instance
+     * @return  an {@link OutputSaver} instance
+     */
     protected abstract OutputSaver getSaver(Series series);
     
+    /**
+     * Main function for running ARCADE simulations.
+     *
+     * @param args  list of command line arguments
+     */
     public static void main(String[] args) throws Exception {
         updateLogger();
         
@@ -95,7 +120,7 @@ public abstract class ARCADE {
     
     /**
      * Loads command line parser from {@code command.xml} files.
-     * 
+     *
      * @return  a container of command line settings
      */
     Box loadCommands() throws IOException, SAXException {
@@ -111,6 +136,11 @@ public abstract class ARCADE {
         return commands;
     }
     
+    /**
+     * Loads default parameter from {@code parameter.xml} files.
+     *
+     * @return  a container of default parameter values
+     */
     Box loadParameters() throws IOException, SAXException {
         InputLoader loader = new InputLoader();
     
@@ -124,6 +154,13 @@ public abstract class ARCADE {
         return parameters;
     }
     
+    /**
+     * Parses arguments using command line parser.
+     *
+     * @param args  the list of arguments
+     * @param commands  the command line parser settings
+     * @return  the container of parsed arguments
+     */
     MiniBox parseArguments(String[] args, Box commands) {
         // Parse command line arguments.
         logger.info("parsing command line arguments");
@@ -131,6 +168,13 @@ public abstract class ARCADE {
         return parser.parse(args);
     }
     
+    /**
+     * Builds series based on setup file.
+     *
+     * @param parameters  a container of default parameter values
+     * @param settings  a container of parsed arguments
+     * @return  a list of {@link Series} instances
+     */
     ArrayList<Series> buildSeries(Box parameters, MiniBox settings)
             throws IOException, SAXException {
         String xml = settings.get("XML");
@@ -142,6 +186,15 @@ public abstract class ARCADE {
         return builder.build(xml);
     }
     
+    /**
+     * Runs simulations for each {@link Series}.
+     * <p>
+     * If the {@code --vis} flag is set, then only the first valid series is run.
+     * Otherwise, all valid series in the list are run.
+     *
+     * @param series  the list of {@link Series} instances
+     * @param settings  a container of parsed arguments
+     */
     void runSeries(ArrayList<Series> series, MiniBox settings) throws Exception {
         boolean isVis = settings.contains("VIS");
         String loadPath = settings.get("LOADPATH");
@@ -179,6 +232,9 @@ public abstract class ARCADE {
         }
     }
     
+    /**
+     * Updates the logger handler with custom formatting.
+     */
     public static void updateLogger() {
         // Setup logger.
         logger = Logger.getLogger(ARCADE.class.getName());

@@ -57,6 +57,11 @@ public class GUI implements ActionListener {
     /** XML setup file. */
     private File xml;
     
+    /**
+     * Main function for running ARCADE simulations through the GUI.
+     *
+     * @param args  list of command line arguments
+     */
     public static void main(String[] args) throws Exception {
         if (args.length > 0) {
             ARCADE.main(args);
@@ -85,7 +90,7 @@ public class GUI implements ActionListener {
     
     /**
      * Creates the content pane.
-     * 
+     *
      * @return  the panel containing the {@code IntroScreen}
      */
     private JPanel createContent() {
@@ -157,7 +162,7 @@ public class GUI implements ActionListener {
     
     /**
      * Performs the action for the given event.
-     * 
+     *
      * @param e  the action event
      */
     @Override
@@ -204,7 +209,7 @@ public class GUI implements ActionListener {
     
     /**
      * Opens dialog to select input file.
-     * 
+     *
      * @return the selected file, null if no file is selected
      */
     public File getFile() {
@@ -228,7 +233,7 @@ public class GUI implements ActionListener {
     private static class XMLFileFilter extends FileFilter {
         /**
          * Determines if the file is an XML file.
-         * 
+         *
          * @param f  the file
          * @return  {@code true} if the file is an XML, {@code false} otherwise
          */
@@ -255,7 +260,7 @@ public class GUI implements ActionListener {
         
         /**
          * Creates an output stream for the text area.
-         * 
+         *
          * @param textArea  the text area
          */
         CustomOutputStream(JTextArea textArea) {
@@ -277,7 +282,7 @@ public class GUI implements ActionListener {
     
     /**
      * Adds a button to the container.
-     * 
+     *
      * @param text  the text for the button
      * @param container  the container to add to
      * @return  the button object
@@ -290,7 +295,7 @@ public class GUI implements ActionListener {
     
     /**
      * Adds a text field to the container.
-     * 
+     *
      * @param text  the text for the field
      * @param length  the length of the text field
      * @param container  the container to add to
@@ -304,7 +309,7 @@ public class GUI implements ActionListener {
     
     /**
      * Adds a check box to the container.
-     * 
+     *
      * @param text  the text for the check box
      * @param container  the container to add to
      * @return  the check box object
@@ -317,7 +322,7 @@ public class GUI implements ActionListener {
     
     /**
      * Adds a text area to the container.
-     * 
+     *
      * @param container  the container to add to
      * @param text  the text to add
      * @return  the text area object
@@ -334,7 +339,7 @@ public class GUI implements ActionListener {
     
     /**
      * Prepares a grouping layout.
-     * 
+     *
      * @param pane  the container
      * @return  the group layout
      */
@@ -348,7 +353,7 @@ public class GUI implements ActionListener {
     
     /**
      * Creates a border with just padding.
-     * 
+     *
      * @return  the border
      */
     private static Border makeBorder() {

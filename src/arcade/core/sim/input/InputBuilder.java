@@ -37,6 +37,7 @@ import arcade.core.util.MiniBox;
  *     &#60;/set&#62;
  * </pre>
  */
+
 public abstract class InputBuilder implements ContentHandler {
     /** Logger for {@code InputBuilder}. */
     protected static final Logger LOGGER = Logger.getLogger(InputBuilder.class.getName());
@@ -87,7 +88,7 @@ public abstract class InputBuilder implements ContentHandler {
      * as they are parsed.
      * SAX parses XML files using event handlers and therefore does not load the
      * entire XML file into memory (in contrast to DOM).
-     * 
+     *
      * @param xml  the XML file
      * @return  a list of {@link arcade.core.sim.Series} instances
      */
@@ -104,7 +105,7 @@ public abstract class InputBuilder implements ContentHandler {
     
     /**
      * Creates a {@link arcade.core.util.MiniBox} dictionary from given attributes.
-     * 
+     *
      * @param atts  the attributes
      * @return  a dictionary
      */
@@ -118,7 +119,7 @@ public abstract class InputBuilder implements ContentHandler {
     
     /**
      * Creates a {@link arcade.core.util.Box} dictionary from given attributes.
-     * 
+     *
      * @param atts  the attributes
      * @return  a dictionary
      */

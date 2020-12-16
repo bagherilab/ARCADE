@@ -36,7 +36,7 @@ public abstract class Drawer implements Steppable {
     
     /**
      * Creates a {@code Drawer} and attaches it to the panel.
-     * 
+     *
      * @param panel  the panel the drawer is attached to
      * @param name  the name of the drawer
      * @param length  the length of array (x direction)
@@ -58,21 +58,21 @@ public abstract class Drawer implements Steppable {
     
     /**
      * Gets the portrayal.
-     * 
+     *
      * @return  the portrayal
      */
     public Portrayal getPortrayal() { return port; }
     
     /**
      * Creates the portrayal and underlying array objects.
-     * 
+     *
      * @return  the portrayal
      */
     public abstract Portrayal makePort();
     
     /**
      * Invokes the specified get method.
-     * 
+     *
      * @param method  the method name
      * @param c  the cell object
      * @return  the result of the get method

@@ -21,9 +21,6 @@
         <property name="optional" value="false"/>
     </module>
 
-    <!-- Checks that a package-info.java file exists for each package -->
-    <module name="JavadocPackage" />
-
     <!-- Checks whether files end with a new line -->
     <module name="NewlineAtEndOfFile" />
 
@@ -56,20 +53,12 @@
 
     <!-- Miscellaneous check for trailing spaces in Javadoc -->
     <module name="RegexpSingleline">
-        <property name="format" value="\*\s\s+$" />
+        <property name="format" value="\*\s+$" />
         <property name="minimum" value="0" />
         <property name="maximum" value="0" />
         <property name="message" value="Javadoc has trailing spaces." />
     </module>
-
-    <!-- Miscellaneous check for missing Javadoc spaces -->
-    <module name="RegexpSingleline">
-        <property name="format" value="\s+\*$" />
-        <property name="minimum" value="0" />
-        <property name="maximum" value="0" />
-        <property name="message" value="Javadoc missing space." />
-    </module>
-
+    
     <module name="TreeWalker">
         <!-- Checks for Javadoc comments -->
         <module name="InvalidJavadocPosition" />
@@ -77,7 +66,14 @@
         <module name="JavadocType" />
         <module name="JavadocVariable" />
         <module name="JavadocStyle" />
-        <module name="MissingJavadocMethod" />
+        <module name="MissingJavadocMethod">
+            <property name="scope" value="private" />
+        </module>
+        <module name="MissingJavadocType">
+            <property name="scope" value="private" />
+        </module>
+        <module name="NonEmptyAtclauseDescription" />
+        <module name="RequireEmptyLineBeforeBlockTagGroup" />
 
         <!-- Checks for naming conventions -->
         <module name="ConstantName" />
@@ -135,7 +131,7 @@
         <module name="AvoidNestedBlocks" />
         <module name="EmptyBlock" />
         <module name="LeftCurly">
-            <property name="tokens" value="ANNOTATION_DEF, CLASS_DEF, ENUM_CONSTANT_DEF, ENUM_DEF, INTERFACE_DEF, LAMBDA, LITERAL_CASE, LITERAL_CATCH, LITERAL_DEFAULT, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, OBJBLOCK, STATIC_INIT, RECORD_DEF" />
+            <property name="tokens" value="ANNOTATION_DEF, CLASS_DEF, ENUM_CONSTANT_DEF, ENUM_DEF, INTERFACE_DEF, LAMBDA, LITERAL_CASE, LITERAL_CATCH, LITERAL_DEFAULT, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, OBJBLOCK, STATIC_INIT" />
         </module>
         <module name="NeedBraces" />
         <module name="RightCurly" />

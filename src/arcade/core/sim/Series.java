@@ -10,6 +10,18 @@ import arcade.core.sim.output.*;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 
+/**
+ * Container for a series of {@link Simulation} objects, differing only in random seed.
+ * <p>
+ * The class is instantiated by parsing an XML document specifying model setup.
+ * Constructors for the {@link Simulation} objects are built, but not called to
+ * instantiate the simulation until the series is run.
+ * {@code Series} objects that are not valid are flagged with {@code isSkipped}
+ * and are not run.
+ * <p>
+ * {@link Simulation} objects are passed their parent {@code Series} object.
+ */
+
 public abstract class Series {
     /** Logger for {@code Series}. */
     private static final Logger LOGGER = Logger.getLogger(Series.class.getName());
@@ -82,7 +94,7 @@ public abstract class Series {
     
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
-     * 
+     *
      * @param setupDicts  the map of attribute to value for single instance tags
      * @param setupLists  the map of attribute to value for multiple instance tags
      * @param parameters  the default parameter values loaded from {@code parameter.xml}
@@ -146,49 +158,49 @@ public abstract class Series {
     
     /**
      * Gets the name of the series.
-     * 
+     *
      * @return  the name of the series
      */
     public String getName() { return name; }
     
     /**
      * Gets the prefix for the series, including file path.
-     * 
+     *
      * @return  the file path and prefix for the series
      */
     public String getPrefix() { return prefix; }
     
     /**
      * Gets the start random seed.
-     * 
+     *
      * @return  the random seed
      */
     public int getStartSeed() { return startSeed; }
     
     /**
      * Gets the end random seed.
-     * 
+     *
      * @return  the random seed
      */
     public int getEndSeed() { return endSeed; }
     
     /**
      * Gets the number of ticks per simulation.
-     * 
+     *
      * @return  the ticks
      */
     public int getTicks() { return ticks; }
     
     /**
      * Gets the number of ticks between snapshots.
-     * 
+     *
      * @return  the interval
      */
     public int getInterval() { return interval; }
     
     /**
      * Checks if string contains valid number greater than 0.
-     * 
+     *
      * @param box  the box containing the fraction
      * @param key  the number key
      * @return  {@code true if valid}, {@code false} otherwise
@@ -200,7 +212,7 @@ public abstract class Series {
     
     /**
      * Checks if string contains valid fraction between 0 and 1, inclusive.
-     * 
+     *
      * @param box  the box containing the fraction
      * @param key  the fraction key
      * @return  {@code true if valid}, {@code false} otherwise
@@ -212,7 +224,7 @@ public abstract class Series {
     
     /**
      * Initializes series simulation, agents, and environment.
-     * 
+     *
      * @param setupLists  the map of attribute to value for multiple instance tags
      * @param parameters  the default parameter values loaded from {@code parameter.xml}
      */
@@ -221,7 +233,7 @@ public abstract class Series {
     
     /**
      * Creates agent populations.
-     * 
+     *
      * @param populationsBox  the list of population setup dictionaries
      * @param populationDefaults  the dictionary of default population parameters
      * @param populationConversions  the dictionary of population parameter conversions
@@ -232,7 +244,7 @@ public abstract class Series {
     
     /**
      * Creates environment molecules.
-     * 
+     *
      * @param moleculesBox  the list of molecule setup dictionaries
      * @param moleculeDefaults  the dictionary of default molecule parameters
      */
@@ -241,7 +253,7 @@ public abstract class Series {
     
     /**
      * Creates selected helpers.
-     * 
+     *
      * @param helpersBox  the list of helper dictionaries
      * @param helperDefaults  the dictionary of default helper parameters
      */
@@ -250,7 +262,7 @@ public abstract class Series {
     
     /**
      * Creates selected components.
-     * 
+     *
      * @param componentsBox  the list of component dictionaries
      * @param componentDefaults  the dictionary of default component parameters
      */
@@ -259,7 +271,7 @@ public abstract class Series {
     
     /**
      * Parses parameter values based on default value.
-     * 
+     *
      * @param box  the parameter map
      * @param parameter  the parameter name
      * @param defaultParameter  the default parameter value
@@ -285,7 +297,7 @@ public abstract class Series {
      * Conversion string is in the form of {@code D^N} where {@code D} is either
      * {@code DS} or {@code DT} and {@code N} is an integer exponent.
      * The {@code ^N} is not required if N = 1.
-     * 
+     *
      * @param convert  the conversion string
      * @param ds  the spatial conversion factor
      * @param dt  the temporal conversion factor
@@ -325,20 +337,20 @@ public abstract class Series {
     
     /**
      * Gets the class name for the simulation.
-     * 
+     *
      * @return  the simulation class
      */
     protected abstract String getSimClass();
     
     /**
      * Gets the class name for the visualization.
-     * 
+     *
      * @return  the visualization class
      */
     protected abstract String getVisClass();
     
     /** Calls {@code runSim} for each random seed.
-     * 
+     *
      * @throws Exception  if the simulation constructor cannot be instantiated
      */
     public void runSims() throws Exception {
@@ -364,7 +376,7 @@ public abstract class Series {
     
     /**
      * Iterates through each tick of the simulation.
-     * 
+     *
      * @param state  the simulation state instance
      * @param seed  the random seed
      */
@@ -395,7 +407,7 @@ public abstract class Series {
     
     /**
      * Creates controller for visualization.
-     * 
+     *
      * @throws Exception  if the visualization constructor cannot be instantiated
      */
     public void runVis() throws Exception {

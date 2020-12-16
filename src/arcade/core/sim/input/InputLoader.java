@@ -45,7 +45,7 @@ public class InputLoader extends DefaultHandler {
     
     /**
      * Loads the given XML file into a {@link arcade.core.util.Box}.
-     * 
+     *
      * @param xml  the XML file
      * @return  the box containing the parsed XML
      */
@@ -56,7 +56,7 @@ public class InputLoader extends DefaultHandler {
     
     /**
      * Loads the given XML file into given {@link arcade.core.util.Box}.
-     * 
+     *
      * @param xml  the XML file
      * @param loadBox  the box to load into
      * @return  the box containing the parsed XML
@@ -73,7 +73,7 @@ public class InputLoader extends DefaultHandler {
      * Called at the start of an XML element.
      * <p>
      * Iterates through each attribute and adds to the box.
-     * 
+     *
      * @param uri  the namespace URI
      * @param lName  the local name
      * @param qName  the qualified name

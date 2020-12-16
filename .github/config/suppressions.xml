@@ -15,6 +15,7 @@
     <suppress checks="JavadocVariable" files="test/*" />
     <suppress checks="JavadocVariable" files="/vis/*" />
     <suppress checks="MissingJavadocMethod" files="test/*" />
+    <suppress checks="MissingJavadocType" files="test/*" />
 
     <!-- Checks for naming conventions -->
     <suppress checks="MethodName" files="test/*" />

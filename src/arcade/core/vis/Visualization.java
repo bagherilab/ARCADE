@@ -6,7 +6,7 @@ import sim.display.GUIState;
 import sim.engine.SimState;
 import sim.portrayal.Inspector;
 
-/** 
+/**
  * Extension of {@code GUIState} wrapper of simulations for visualization.
  * <p>
  * {@code Visualization} organizes the visualization into {@link arcade.core.vis.Panel}
@@ -24,14 +24,14 @@ public abstract class Visualization extends GUIState {
     
     /**
      * Creates a {@code Visualization} for the given simulation.
-     * 
+     *
      * @param state  the simulation state instance
      */
     protected Visualization(SimState state) { super(state); }
     
     /**
      * Sets the inspector to get state property methods.
-     * 
+     *
      * @return  the MASON simulation state
      */
     @Override
@@ -39,7 +39,7 @@ public abstract class Visualization extends GUIState {
     
     /**
      * Remove the model inspector.
-     * 
+     *
      * @return  a {@code null} inspector
      */
     @Override
@@ -47,21 +47,21 @@ public abstract class Visualization extends GUIState {
     
     /**
      * Creates panels for the visualization.
-     * 
+     *
      * @return  the list of panels
      */
     protected abstract Panel[] createPanels();
     
     /**
      * Creates drawers for the visualization.
-     * 
+     *
      * @return  the list of drawers
      */
     protected abstract Drawer[] createDrawers();
     
     /**
      * Creates a bounding box for panels.
-     * 
+     *
      * @param x  the x position of the bounding box
      * @param y  the y position of the bounding box
      * @param h  the horizontal size of the bounding box
@@ -83,7 +83,7 @@ public abstract class Visualization extends GUIState {
     
     /**
      * Loads a visualization from the given simulation.
-     * 
+     *
      * @param state  the MASON simulation state
      */
     @Override
@@ -105,7 +105,7 @@ public abstract class Visualization extends GUIState {
     
     /**
      * Initializes the visualization.
-     * 
+     *
      * @param control  the controller
      */
     @Override

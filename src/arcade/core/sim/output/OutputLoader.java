@@ -15,6 +15,19 @@ import arcade.core.sim.Simulation;
 import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
+/**
+ * Custom loader for deserializing objects from JSON.
+ * <p>
+ * The loader is associated with an implementation-specific {@code Gson} instance
+ * that defines deserialization of implementation-specific classes.
+ * The associated {@link arcade.core.sim.Series} instance provides any static
+ * series-specific information needed for loading.
+ * The equipped {@link arcade.core.sim.Simulation} instance is called to get the
+ * random seed (if needed) to select the correct files to load.
+ * The tag {@code (#)} in the load path is replaced with the random seed of the
+ * simulation instance.
+ */
+
 public abstract class OutputLoader {
     /** Logger for {@code OutputLoader}. */
     private static final Logger LOGGER = Logger.getLogger(OutputLoader.class.getName());
@@ -42,7 +55,7 @@ public abstract class OutputLoader {
     
     /**
      * Creates an {@code OutputLoader} for the series.
-     * 
+     *
      * @param series  the simulation series
      */
     public OutputLoader(Series series) {
@@ -52,14 +65,14 @@ public abstract class OutputLoader {
     
     /**
      * Creates a {@code Gson} instance for deserializing objects.
-     * 
+     *
      * @return  a {@code Gson} instance
      */
     protected abstract Gson makeGSON();
     
     /**
      * Equips the given {@link arcade.core.sim.Simulation} instance to the loader.
-     * 
+     *
      * @param sim  the simulation instance
      */
     public void equip(Simulation sim) {
@@ -71,7 +84,7 @@ public abstract class OutputLoader {
     
     /**
      * Loads the JSON for a list of {@link CellContainer} objects.
-     * 
+     *
      * @return  a list of {@link CellContainer} objects
      */
     public ArrayList<CellContainer> loadCells() {
@@ -80,7 +93,7 @@ public abstract class OutputLoader {
     
     /**
      * Loads the JSON for a list of {@link LocationContainer} objects.
-     * 
+     *
      * @return  a list of {@link LocationContainer} objects
      */
     public ArrayList<LocationContainer> loadLocations() {
@@ -89,7 +102,7 @@ public abstract class OutputLoader {
     
     /**
      * Reads the contents of the given file path.
-     * 
+     *
      * @param filepath  the path for the file
      * @return  the contents of the path, {@code null} if unable to read
      */

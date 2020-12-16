@@ -68,7 +68,7 @@ public class InputParser {
     
     /**
      * Creates a command line {@code InputParser} object.
-     * 
+     *
       * @param options  the map of command line options
      */
     public InputParser(Box options) {
@@ -117,7 +117,7 @@ public class InputParser {
                 if (cmd.shortFlag != null) { shortToCommand.put(cmd.shortFlag, cmd); }
                 if (cmd.longFlag != null) { longToCommand.put(cmd.longFlag, cmd); }
             } else {
-              positionCommands.add(cmd);
+                positionCommands.add(cmd);
             }
         }
         
@@ -154,7 +154,7 @@ public class InputParser {
         
         /**
          * Creates a {@code Command} object of a given type.
-         * 
+         *
          * @param id  the unique id of the command
          * @param type  the command type
          */
@@ -163,6 +163,11 @@ public class InputParser {
             this.type = type;
         }
         
+        /**
+         * Formats command as a string.
+         *
+         * @return  a string representation of the command
+         */
         public String toString() {
             return "\t" + id.toUpperCase() + "\n"
                 + (help == null ? "" : String.format(format, "[help]", help))
@@ -174,7 +179,7 @@ public class InputParser {
     
     /**
      * Parse the given arguments into a dictionary.
-     * 
+     *
      * @param args  the list of arguments from command line
      * @return  a dictionary of parsed commands
      */
@@ -208,7 +213,7 @@ public class InputParser {
     
     /**
      * Parses a list of arguments.
-     * 
+     *
      * @param args  the list of arguments
      */
     void parseArguments(String[] args) {
@@ -233,7 +238,7 @@ public class InputParser {
     
     /**
      * Parses a flagged (either option or switch) argument.
-     * 
+     *
      * @param args  the argument contents
      * @param index  the argument index
      * @param cmd  the command object
@@ -241,16 +246,16 @@ public class InputParser {
      */
     int parseFlaggedArgument(String[] args, int index, Command cmd) {
         if (cmd.type == SWITCH) {
-          parsed.put(cmd.id, "");
+            parsed.put(cmd.id, "");
         } else {
-          parsed.put(cmd.id, args[++index]);
+            parsed.put(cmd.id, args[++index]);
         }
         return ++index;
     }
     
     /**
      * Parses a position argument.
-     * 
+     *
      * @param args  the argument contents
      * @param index  the argument index
      * @return  the next argument index
@@ -261,10 +266,15 @@ public class InputParser {
         return ++index;
     }
     
+    /**
+     * Formats parser as a string.
+     *
+     * @return  a string representation of the parser
+     */
     public String toString() {
         StringBuilder s = new StringBuilder();
         for (Command cmd : allCommands) {
-          s.append(cmd.toString());
+            s.append(cmd.toString());
         }
         return s.toString();
     }

@@ -13,6 +13,17 @@ import sim.engine.Steppable;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 
+/**
+ * Custom saver for serializing objects to JSON.
+ * <p>
+ * The saver is associated with an implementation-specific {@code Gson} instance
+ * that defines serialization of implementation-specific classes.
+ * The associated {@link arcade.core.sim.Series} instance is used to save static
+ * series-specific information.
+ * The equipped {@link arcade.core.sim.Simulation} instance is called to get the
+ * cells/locations that are saved at a given tick.
+ */
+
 public abstract class OutputSaver implements Steppable {
     /** Logger for {@code OutputSaver}. */
     private static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
@@ -31,7 +42,7 @@ public abstract class OutputSaver implements Steppable {
     
     /**
      * Creates an {@code OutputSaver} for the series.
-     * 
+     *
      * @param series  the simulation series
      */
     public OutputSaver(Series series) {
@@ -41,14 +52,14 @@ public abstract class OutputSaver implements Steppable {
     
     /**
      * Creates a {@code Gson} instance for serializing objects.
-     * 
+     *
      * @return  a {@code Gson} instance
      */
     protected abstract Gson makeGSON();
     
     /**
      * Equips the given {@link arcade.core.sim.Simulation} instance to the saver.
-     * 
+     *
      * @param sim  the simulation instance
      */
     public void equip(Simulation sim) {
@@ -66,7 +77,7 @@ public abstract class OutputSaver implements Steppable {
     
     /**
      * Save a list of {@link arcade.core.agent.cell.CellContainer} objects to a JSON.
-     * 
+     *
      * @param tick  the simulation tick
      */
     public void saveCells(int tick) {
@@ -76,7 +87,7 @@ public abstract class OutputSaver implements Steppable {
     
     /**
      * Save a list of {@link arcade.core.env.loc.LocationContainer} objects to a JSON.
-     * 
+     *
      * @param tick  the simulation tick
      */
     public void saveLocations(int tick) {
@@ -86,7 +97,7 @@ public abstract class OutputSaver implements Steppable {
     
     /**
      * Steps through cell rules.
-     * 
+     *
      * @param simstate  the MASON simulation state
      */
     @Override
@@ -98,7 +109,7 @@ public abstract class OutputSaver implements Steppable {
     
     /**
      * Schedules the saver to take snapshots at the given interval.
-     * 
+     *
      * @param schedule  the simulation schedule
      * @param interval  the interval (in ticks) between snapshots
      */
@@ -108,7 +119,7 @@ public abstract class OutputSaver implements Steppable {
     
     /**
      * Writes the contents to the given file path.
-     * 
+     *
      * @param filepath  the path for the file
      * @param contents  the contents of the file
      */
@@ -142,7 +153,7 @@ public abstract class OutputSaver implements Steppable {
      *     <li>Converting {@code [\n A,\n B\n ]} to {@code [ A, B ]}</li>
      *     <li>Converting {@code [\n A,\n B,\n C\n ]} to {@code [ A, B, C ]}</li>
      * </ul>
-     * 
+     *
      * @param string  the string to format
      * @return  the formatted string
      */
