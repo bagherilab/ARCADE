@@ -11,6 +11,29 @@ import arcade.core.util.Utilities;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 
+/**
+ * Abstract implementation of {@link Location} for potts models.
+ * <p>
+ * {@code PottsLocation} objects manage the a list of associated {@link Voxel}
+ * objects that comprise the location.
+ * These voxels are represented as an array in the {@link arcade.potts.sim.Potts}
+ * layer and the two representations are kept in sync.
+ * <p>
+ * Concrete implementations of {@code PottsLocation} manage the dimensionality
+ * of the voxels.
+ * <p>
+ * {@code PottsLocation} also provides several general static methods for
+ * manipulating voxel lists:
+ * <ul>
+ *     <li><strong>Split</strong> voxel list along a given direction</li>
+ *     <li><strong>Connect</strong> voxels to ensure that each list contains
+ *     connected voxels</li>
+ *     <li><strong>Balance</strong> voxels between two lists to ensure they have
+ *     a similar number of voxels</li>
+ *     <li><strong>Check</strong> voxels for connectedness</li>
+ * </ul>
+ */
+
 public abstract class PottsLocation implements Location {
     /** Difference between split voxel numbers. */
     private static final int BALANCE_DIFFERENCE = 2;
@@ -26,7 +49,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Creates a {@code PottsLocation} for a list of voxels.
-     * 
+     *
      * @param voxels  the list of voxels
      */
     public PottsLocation(ArrayList<Voxel> voxels) {
@@ -37,7 +60,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets all voxels.
-     * 
+     *
      * @return  the list of voxels.
      */
     public ArrayList<Voxel> getVoxels() { return new ArrayList<>(voxels); }
@@ -59,7 +82,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Adds a voxel at the given coordinates.
-     * 
+     *
      * @param x  the x coordinate
      * @param y  the y coordinate
      * @param z  the z coordinate
@@ -75,7 +98,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Adds a voxel at the given coordinates for given region.
-     * 
+     *
      * @param region  the voxel region
      * @param x  the x coordinate
      * @param y  the y coordinate
@@ -85,7 +108,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Removes the voxel at the given coordinates.
-     * 
+     *
      * @param x  the x coordinate
      * @param y  the y coordinate
      * @param z  the z coordinate
@@ -101,7 +124,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Removes the voxel at the given coordinates for given region.
-     * 
+     *
      * @param region  the voxel region
      * @param x  the x coordinate
      * @param y  the y coordinate
@@ -111,7 +134,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Assigns the voxel at the given coordinates to the given region.
-     * 
+     *
      * @param region  the voxel region
      * @param voxel  the voxel to assign
      */
@@ -119,7 +142,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Clears all voxel lists and arrays.
-     * 
+     *
      * @param ids  the potts array for ids
      * @param regions  the potts array for regions
      */
@@ -130,7 +153,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Updates the array for the location.
-     * 
+     *
      * @param id  the location id
      * @param ids  the potts array for ids
      * @param regions  the potts array for regions
@@ -147,7 +170,7 @@ public abstract class PottsLocation implements Location {
      * be balanced in size.
      * One of the splits is assigned to the current location and the other is
      * returned.
-     * 
+     *
      * @param random  the seeded random number generator
      * @return  a location with the split voxels
      */
@@ -177,7 +200,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets the voxel at the center of the location.
-     * 
+     *
      * @return  the center voxel, returns {@code null} if there are no voxels
      */
     public Voxel getCenter() {
@@ -187,7 +210,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets the x coordinate of the voxel at the center of the location.
-     * 
+     *
      * @return  the x coordinate
      */
     int getCenterX() {
@@ -197,7 +220,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets the y coordinate of the voxel at the center of the location.
-     * 
+     *
      * @return  the y coordinate
      */
     int getCenterY() {
@@ -207,7 +230,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets the z coordinate of the voxel at the center of the location.
-     * 
+     *
      * @return  the z coordinate
      */
     int getCenterZ() {
@@ -217,7 +240,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Makes a new {@code PottsLocation} with the given voxels.
-     * 
+     *
      * @param voxels  the list of voxels
      * @return  a new {@code PottsLocation}
      */
@@ -225,7 +248,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Converts volume to surface area.
-     * 
+     *
      * @param volume  the volume (in voxels)
      * @return  the surface area (in voxels)
      */
@@ -233,14 +256,14 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Calculates surface of location.
-     * 
+     *
      * @return  the surface
      */
     abstract int calculateSurface();
     
     /**
      * Calculates the local change in surface of the location.
-     * 
+     *
      * @param voxel  the voxel the update is centered in
      * @return  the change in surface
      */
@@ -248,7 +271,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets list of neighbors of a given voxel.
-     * 
+     *
      * @param focus  the focus voxel
      * @return  the list of neighbor voxels
      */
@@ -256,14 +279,14 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Calculates diameters in each direction.
-     * 
+     *
      * @return  the map of direction to diameter
      */
     abstract HashMap<Direction, Integer> getDiameters();
     
     /**
      * Selects the slice direction for a given minimum diameter direction.
-     * 
+     *
      * @param direction  the direction of the minimum diameter
      * @param diameters  the list of diameters
      * @return  the slice direction
@@ -272,7 +295,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Selects specified number of voxels from a focus voxel.
-     * 
+     *
      * @param focus  the focus voxel
      * @param n  the number of voxels to select
      * @return  the list of selected voxels
@@ -281,7 +304,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets the direction of the slice.
-     * 
+     *
      * @param random  the seeded random number generator
      * @return  the direction of the slice
      */
@@ -317,7 +340,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Separates the voxels in the list between this location and a new location.
-     * 
+     *
      * @param voxelsA  the list of voxels for this location
      * @param voxelsB  the list of voxels for the split location
      * @param random  the seeded random number generator
@@ -334,7 +357,7 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Splits the voxels in the location along a given direction.
-     * 
+     *
      * @param direction  the direction of the slice
      * @param voxels  the list of voxels
      * @param voxelsA  the container list for the first half of the split
@@ -475,7 +498,7 @@ public abstract class PottsLocation implements Location {
      * <p>
      * Checks that the voxels in each split are connected.
      * If not, then move the unconnected voxels into the other split.
-     * 
+     *
      * @param voxelsA  the list for the first half of the split
      * @param voxelsB  the list for the second half of the split
      * @param location  the location instance
@@ -514,7 +537,7 @@ public abstract class PottsLocation implements Location {
      * For small split sizes, there may not be a valid split that is both
      * connected and within the difference; in these cases, connectedness is
      * prioritized and the splits are returned not balanced.
-     * 
+     *
      * @param voxelsA  the list for the first half of the split
      * @param voxelsB  the list for the second half of the split
      * @param location  the location instance
@@ -594,7 +617,7 @@ public abstract class PottsLocation implements Location {
      * returned.
      * <p>
      * Some voxel lists may have more than one unconnected section.
-     * 
+     *
      * @param voxels  the list of voxels
      * @param location  the location instance
      * @param random  the seeded random number generator

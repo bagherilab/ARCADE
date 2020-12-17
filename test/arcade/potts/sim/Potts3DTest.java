@@ -511,7 +511,7 @@ public class Potts3DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR ZERO (0) NEIGHBORS
-     * 
+     *
      * If there are zero neighbors, then the voxel is never connected.
     ------------------------------------------------------------------------- */
     
@@ -538,9 +538,9 @@ public class Potts3DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR ONE (1) NEIGHBOR
-     * 
+     *
      * The neighbor can be located on each face of the cube (6 options).
-     * 
+     *
      * If there is only one neighbor, the voxel is always connected.
     ------------------------------------------------------------------------- */
     
@@ -572,12 +572,12 @@ public class Potts3DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR TWO (2) NEIGHBORS
-     * 
+     *
      * The two neighbors can be either adjacent in the same plane (3 planes x 4
      * rotations = 12 options) or opposite in the same plane (3 options).
-     * 
+     *
      * If there are two opposite neighbors, the voxel is never connected.
-     * 
+     *
      * If there are two adjacent neighbors, the voxel is connected if there is
      * a link in the shared corner.
     ------------------------------------------------------------------------- */
@@ -752,15 +752,15 @@ public class Potts3DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR THREE (3) NEIGHBORS
-     * 
+     *
      * The three neighbors can be either in the same plane (3 planes x 4
      * rotations = 12 options) or positioned along corners (8 options).
-     * 
+     *
      * For the plane neighbors, there can be up to 2 links:
      *      0 links | 1 combo   | unconnected
      *      1 link  | 2 combos  | unconnected
      *      2 links | 1 combo   | connected
-     * 
+     *
      * For the corner neighbors, there can be up to 3 links:
      *      0 links | 1 combo   | unconnected
      *      1 link  | 3 combos  | unconnected
@@ -1078,18 +1078,18 @@ public class Potts3DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR FOUR (4) NEIGHBORS
-     * 
+     *
      * The four neighbors can be either in the same plane (3 options) or
      * positioned with two along an axis and two in the plane normal (3 axis
      * x 4 rotations = 12 options).
-     * 
+     *
      * For the plane neighbors, there can be up to 4 links:
      *      0 links | 1 combo   | unconnected
      *      1 link  | 4 combos  | unconnected
      *      2 links | 6 combos  | unconnected
      *      3 links | 4 combos  | connected
      *      4 links | 1 combo   | connected
-     * 
+     *
      * For the axis neighbors, there can be up to 5 links:
      *      0 links | 1 combo   | unconnected
      *      1 link  | 5 combos  | unconnected
@@ -1641,10 +1641,10 @@ public class Potts3DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR FIVE (5) NEIGHBORS
-     * 
+     *
      * The five neighbors are positioned such that only one face is missing a
      * neighbor (6 options).
-     * 
+     *
      * There can be up to 8 links:
      *       0 links | 1 combo   | unconnected
      *       1 link  | 8 combos  | unconnected
@@ -1942,7 +1942,7 @@ public class Potts3DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR SIX (6) NEIGHBORS
-     * 
+     *
      * All six possible neighbor positions are occupied. The connectivity
      * depends on the ID of the voxel. Only ID = 0 is considered connected;
      * all other ID values are unconnected.

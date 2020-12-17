@@ -69,7 +69,7 @@ public class PottsColorMaps {
     
     /**
      * Creates {@code ColorMaps} for the given series.
-     * 
+     *
      * @param series  the simulation series
      */
     PottsColorMaps(Series series) {

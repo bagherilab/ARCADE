@@ -6,6 +6,10 @@ import arcade.core.sim.Simulation;
 import arcade.core.vis.*;
 import static arcade.potts.vis.PottsColorMaps.*;
 
+/**
+ * Extension of {@link Visualization} for potts models.
+ */
+
 public final class PottsVisualization extends Visualization {
     /** Maximum horizontal size of panel. */
     static final int MAX_HORIZONTAL = 600;
@@ -31,6 +35,11 @@ public final class PottsVisualization extends Visualization {
     /** Vertical size of the panels. */
     final int vertical;
     
+    /**
+     * Creates a {@link Visualization} for potts simulations.
+     *
+     * @param sim  the simulation instance
+     */
     public PottsVisualization(Simulation sim) {
         super((SimState) sim);
         
@@ -74,6 +83,11 @@ public final class PottsVisualization extends Visualization {
         }
     }
     
+    /**
+     * Creates drawers for visualizing 2D simulations.
+     *
+     * @return  a list of {@link Drawer} instances
+     */
     Drawer[] create2DDrawers() {
         int h = horizontal / 2;
         int v = vertical / 2;
@@ -115,6 +129,11 @@ public final class PottsVisualization extends Visualization {
         };
     }
     
+    /**
+     * Creates drawers for visualizing 3D simulations.
+     *
+     * @return  a list of {@link Drawer} instances
+     */
     Drawer[] create3DDrawers() {
         int h = horizontal / 2;
         int v = vertical / 2;

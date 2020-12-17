@@ -8,13 +8,17 @@ import arcade.core.util.MiniBox;
 import static arcade.core.util.Box.KEY_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
+/**
+ * Simulation manager for {@link PottsSimulation} instances.
+ */
+
 public final class PottsSeries extends Series {
     /** Map of potts settings. */
     public MiniBox potts;
     
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
-     * 
+     *
      * @param setupDicts  the map of attribute to value for single instance tags
      * @param setupLists  the map of attribute to value for multiple instance tags
      * @param parameters  the default parameter values loaded from {@code parameter.xml}
@@ -38,7 +42,7 @@ public final class PottsSeries extends Series {
     
     /**
      * Initializes series simulation, agents, and environment.
-     * 
+     *
      * @param setupLists  the map of attribute to value for multiple instance tags
      * @param parameters  the default parameter values loaded from {@code parameter.xml}
      */
@@ -73,7 +77,7 @@ public final class PottsSeries extends Series {
     
     /**
      * Calculates model sizing parameters.
-     * 
+     *
      * @param pottsBox  the potts setup dictionary
      * @param pottsDefaults  the dictionary of default potts parameters
      */

@@ -38,13 +38,13 @@ public class PottsLocationTest {
         
         /*
          * Lattice site shape:
-         * 
+         *
          *     x x x x
          *     x     x
          *     x
-         * 
+         *
          * Each list is a subset of the shape:
-         * 
+         *
          *  (A)         (B)
          *  x x . .     . . x x
          *  x     .     .     x

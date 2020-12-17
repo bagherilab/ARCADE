@@ -11,8 +11,14 @@ import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Term;
 
 /**
- * Container class for loading a {@link PottsCell}.
+ * Implementation of {@link CellContainer} for {@link PottsCell} agents.
+ * <p>
+ * The container can be instantiated for cells with or without regions and
+ * with or without target sizes.
+ * Cell parameters, adhesion, lambdas, and critical sizing is drawn from the
+ * associated {@link PottsCellFactory} instance.
  */
+
 public final class PottsCellContainer implements CellContainer {
     /** Unique cell container ID. */
     public final int id;
@@ -52,7 +58,7 @@ public final class PottsCellContainer implements CellContainer {
      * <p>
      * The default state is proliferative (phase G1) and age is 0.
      * The container does not have any regions or targets.
-     * 
+     *
      * @param id  the cell ID
      * @param pop  the cell population index
      * @param voxels  the cell size (in voxels)
@@ -67,7 +73,7 @@ public final class PottsCellContainer implements CellContainer {
      * <p>
      * The default state is proliferative (phase G1) and age is 0.
      * The container does not have any targets.
-     * 
+     *
      * @param id  the cell ID
      * @param pop  the cell population index
      * @param voxels  the cell size (in voxels)
@@ -82,7 +88,7 @@ public final class PottsCellContainer implements CellContainer {
      * Creates a {@code PottsCellContainer} instance.
      * <p>
      * The container does not have any regions.
-     * 
+     *
      * @param id  the cell ID
      * @param pop  the cell population index
      * @param age  the cell age
@@ -99,7 +105,7 @@ public final class PottsCellContainer implements CellContainer {
     
     /**
      * Creates a {@code PottsCellContainer} instance.
-     * 
+     *
      * @param id  the cell ID
      * @param pop  the cell population index
      * @param age  the cell age
@@ -138,6 +144,13 @@ public final class PottsCellContainer implements CellContainer {
         return convert((PottsCellFactory) factory, location);
     }
     
+    /**
+     * Converts the cell container into a {@link PottsCell}.
+     *
+     * @param factory  the cell factory instance
+     * @param location  the cell location
+     * @return  a {@link PottsCell} instance
+     */
     private Cell convert(PottsCellFactory factory, Location location) {
         // Get copies of critical, lambda, and adhesion values.
         MiniBox parameters = factory.popToParameters.get(pop);

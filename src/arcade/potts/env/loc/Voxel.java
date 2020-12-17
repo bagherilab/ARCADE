@@ -2,6 +2,13 @@ package arcade.potts.env.loc;
 
 import java.util.Comparator;
 
+/**
+ * Representation of a voxel for locations.
+ * <p>
+ * Each voxel is defined by (x, y, z) coordinates.
+ * Two voxels objects are considered equal if they have matching (x, y, z) coordinates.
+ */
+
 public final class Voxel {
     /** Comparator for voxels. */
     public static final Comparator<Voxel> VOXEL_COMPARATOR = (v1, v2) -> v1.z != v2.z
@@ -19,7 +26,7 @@ public final class Voxel {
     
     /**
      * Creates a {@code Voxel} at the given coordinates.
-     * 
+     *
      * @param x  the x coordinate
      * @param y  the y coordinate
      * @param z  the z coordinate
@@ -32,14 +39,14 @@ public final class Voxel {
     
     /**
      * Gets hash based on (x, y, z) coordinates.
-     * 
+     *
      * @return  the hash
      */
     public int hashCode() { return x + (y << 8) + (z << 16); }
     
     /**
      * Checks if two locations have the same (x, y, z) coordinates.
-     * 
+     *
      * @param obj  the voxel to compare
      * @return  {@code true} if voxels have the same coordinates, {@code false} otherwise
      */
@@ -51,7 +58,7 @@ public final class Voxel {
     
     /**
      * Returns voxel as string.
-     * 
+     *
      * @return  a string
      */
     public String toString() {

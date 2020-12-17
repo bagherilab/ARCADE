@@ -13,6 +13,15 @@ import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Term;
 
+/**
+ * Implementation of {@link CellFactory} for {@link PottsCell} agents.
+ * <p>
+ * For a given {@link Series}, the factory parses out parameter values into a
+ * series of maps from population to the parameter values.
+ * These maps are then combined with a {@link PottsCellContainer} to instantiate
+ * a {@link PottsCell} agent.
+ */
+
 public final class PottsCellFactory implements CellFactory {
     /** Map of population to critical values. */
     HashMap<Integer, EnumMap<Term, Double>> popToCriticals;
@@ -76,6 +85,13 @@ public final class PottsCellFactory implements CellFactory {
         }
     }
     
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Population sizes are determined from the given series.
+     * The list of loaded containers is filtered by population code and population
+     * size so that extra containers are discarded.
+     */
     @Override
     public void loadCells(Series series) {
         // Load cells.
@@ -100,6 +116,13 @@ public final class PottsCellFactory implements CellFactory {
         }
     }
     
+    /**
+     * {@inheritDoc}
+     * <p>
+     * For each population specified in the given series, containers are created
+     * until the population size is met.
+     * Containers are assigned regions if they exist.
+     */
     @Override
     public void createCells(Series series) {
         int id = 1;
@@ -140,7 +163,7 @@ public final class PottsCellFactory implements CellFactory {
     
     /**
      * Parses the population settings into maps from population to parameter value.
-     * 
+     *
      * @param series  the simulation series
      */
     void parseValues(Series series) {

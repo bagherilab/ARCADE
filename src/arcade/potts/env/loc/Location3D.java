@@ -5,6 +5,14 @@ import java.util.HashMap;
 import static arcade.potts.sim.Potts3D.*;
 import static arcade.potts.util.PottsEnums.Direction;
 
+/**
+ * Static location methods for 3D.
+ * <p>
+ * Interface defines generalized 3D voxel methods that can be applied for both
+ * {@link PottsLocation} objects (without regions) and {@link PottsLocations}
+ * objects (with regions).
+ */
+
 public interface Location3D {
     /** Multiplier for calculating surface area from volume. */
     double SURFACE_VOLUME_MULTIPLIER = Math.cbrt(36 * Math.PI) * 2;
@@ -24,7 +32,7 @@ public interface Location3D {
     
     /**
      * Gets list of neighbors of a given voxel.
-     * 
+     *
      * @param focus  the focus voxel
      * @return  the list of neighbor voxels
      */
@@ -39,7 +47,7 @@ public interface Location3D {
     
     /**
      * Converts volume to surface area.
-     * 
+     *
      * @param volume  the volume (in voxels)
      * @return  the surface area (in voxels)
      */
@@ -49,7 +57,7 @@ public interface Location3D {
     
     /**
      * Calculates surface of location.
-     * 
+     *
      * @param voxels  the list of voxels
      * @return  the surface
      */
@@ -68,7 +76,7 @@ public interface Location3D {
     
     /**
      * Calculates the local change in surface of the location.
-     * 
+     *
      * @param voxels  the list of voxels
      * @param voxel  the voxel the update is centered in
      * @return  the change in surface
@@ -90,7 +98,7 @@ public interface Location3D {
     
     /**
      * Calculates diameters in each direction.
-     * 
+     *
      * @param voxels  the list of voxels
      * @param focus  the focus voxel
      * @return  the map of direction to diameter
@@ -168,7 +176,7 @@ public interface Location3D {
     
     /**
      * Selects the slice direction for a given minimum diameter direction.
-     * 
+     *
      * @param direction  the direction of the minimum diameter
      * @param diameters  the list of diameters
      * @return  the slice direction
@@ -209,7 +217,7 @@ public interface Location3D {
     
     /**
      * Selects specified number of voxels from a focus voxel.
-     * 
+     *
      * @param voxels  the list of voxels
      * @param focus  the focus voxel
      * @param n  the number of voxels to select

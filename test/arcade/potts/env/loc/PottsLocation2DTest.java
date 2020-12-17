@@ -32,13 +32,13 @@ public class PottsLocation2DTest {
     public static void setupLists() {
         /*
          * Lattice site shape:
-         * 
+         *
          *     x x x x
          *     x   x x
          *     x     x x
-         * 
+         *
          * Each list is a subset of the shape:
-         * 
+         *
          *  (A)         (B)         (C)        (A) + (C)   (B) + (C)   (A) + (B)
          *  x x . .     . . x x     . . . .     x x . .     . . x x     x x x x
          *  x   . .     .   . x     .   x .     x   x .     .   x x     x   . x

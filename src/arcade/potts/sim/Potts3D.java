@@ -4,6 +4,10 @@ import java.util.HashSet;
 import arcade.potts.agent.cell.PottsCell;
 import static arcade.core.util.Enums.Region;
 
+/**
+ * Extension of {@link Potts} for 3D.
+ */
+
 public final class Potts3D extends Potts {
     /** Number of neighbors. */
     public static final int NUMBER_NEIGHBORS = 6;
@@ -34,7 +38,7 @@ public final class Potts3D extends Potts {
     
     /**
      * Creates a cellular {@code Potts} model in 3D.
-     * 
+     *
      * @param series  the simulation series
      */
     public Potts3D(PottsSeries series) { super(series); }
@@ -189,6 +193,12 @@ public final class Potts3D extends Potts {
         }
     }
     
+    /**
+     * Determines simple connectivity for a position with two neighbors.
+     *
+     * @param array  the local neighborhood array
+     * @return  {@code true} if simply connected, {@code false} otherwise
+     */
     private boolean getConnectivityTwoNeighbors(boolean[][][] array) {
         if (array[1][1][0] && array[1][1][2]) {
             // Check for opposites N/S
@@ -227,6 +237,12 @@ public final class Potts3D extends Potts {
         }
     }
     
+    /**
+     * Determines simple connectivity for a position with three neighbors.
+     *
+     * @param array  the local neighborhood array
+     * @return  {@code true} if simply connected, {@code false} otherwise
+     */
     private boolean getConnectivityThreeNeighbors(boolean[][][] array) {
         for (int i = 0; i < NUMBER_PLANE; i++) {
             // XY plane
@@ -284,6 +300,12 @@ public final class Potts3D extends Potts {
         return false;
     }
     
+    /**
+     * Determines simple connectivity for a position with four neighbors.
+     *
+     * @param array  the local neighborhood array
+     * @return  {@code true} if simply connected, {@code false} otherwise
+     */
     private boolean getConnectivityFourNeighbors(boolean[][][] array) {
         if (!array[0][1][1] && !array[2][1][1]) {
             // Check for XY plane
@@ -379,6 +401,12 @@ public final class Potts3D extends Potts {
         }
     }
     
+    /**
+     * Determines simple connectivity for a position with five neighbors.
+     *
+     * @param array  the local neighborhood array
+     * @return  {@code true} if simply connected, {@code false} otherwise
+     */
     private boolean getConnectivityFiveNeighbors(boolean[][][] array) {
         boolean[] plane = new boolean[NUMBER_PLANE];
         boolean[] corner = new boolean[NUMBER_PLANE];

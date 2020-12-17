@@ -9,6 +9,10 @@ import arcade.potts.sim.input.PottsInputBuilder;
 import arcade.potts.sim.output.PottsOutputLoader;
 import arcade.potts.sim.output.PottsOutputSaver;
 
+/**
+ * Implementation of ARCADE for potts models.
+ */
+
 public final class PottsARCADE extends ARCADE {
     /**
      * ARCADE model with potts.

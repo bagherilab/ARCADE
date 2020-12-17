@@ -10,6 +10,24 @@ import arcade.core.env.loc.LocationContainer;
 import arcade.core.util.Utilities;
 import static arcade.core.util.Enums.Region;
 
+/**
+ * Abstract extension of {@link PottsLocation} for regions.
+ * <p>
+ * {@code PottsLocations} objects manage an additional map of region to
+ * {@link PottsLocation} objects that manages the specific subsets of voxels
+ * for each region.
+ * <p>
+ * Concrete implementations of {@code PottsLocations} manage the dimensionality
+ * of the voxels.
+ * <p>
+ * {@code PottsLocations} also provides several additional general static methods
+ * for manipulating voxel lists needed for regions:
+ * <ul>
+ *     <li><strong>Assign</strong> voxels in lists to regions</li>
+ *     <li><strong>Select</strong> voxels to assign based on distance</li>
+ * </ul>
+ */
+
 public abstract class PottsLocations extends PottsLocation {
     /** Maximum number of iterations for balancing. */
     private static final int MAX_ITERATIONS = 100;
@@ -19,7 +37,7 @@ public abstract class PottsLocations extends PottsLocation {
     
     /**
      * Creates a {@code PottsLocations} for a list of voxels.
-     * 
+     *
      * @param voxels  the list of voxels
      */
     public PottsLocations(ArrayList<Voxel> voxels) {
@@ -144,7 +162,7 @@ public abstract class PottsLocations extends PottsLocation {
     
     /**
      * Makes a new {@code PottsLocations} with the given voxels.
-     * 
+     *
      * @param voxels  the list of voxels
      * @return  a new {@code PottsLocations}
      */
@@ -154,7 +172,7 @@ public abstract class PottsLocations extends PottsLocation {
      * Separates the voxels in the list between this location and a new location.
      * <p>
      * Regions are re-assigned between the two splits.
-     * 
+     *
      * @param voxelsA  the list of voxels for this location
      * @param voxelsB  the list of voxels for the split location
      * @param random  the seeded random number generator
@@ -197,7 +215,7 @@ public abstract class PottsLocations extends PottsLocation {
     
     /**
      * Assigns regions to voxels based on given fractions.
-     * 
+     *
      * @param location  the location containing voxels to assign
      * @param fractions  the region fractions
      * @param random  the seeded random number generator
@@ -227,7 +245,7 @@ public abstract class PottsLocations extends PottsLocation {
     
     /**
      * Selects voxels to assign based on distance from given center.
-     * 
+     *
      * @param location  the location containing voxels to assign
      * @param center  the center voxel
      * @param region  the region to assign

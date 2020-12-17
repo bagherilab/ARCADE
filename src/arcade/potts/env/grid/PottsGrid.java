@@ -4,6 +4,14 @@ import java.util.HashMap;
 import sim.util.Bag;
 import arcade.core.env.grid.Grid;
 
+/**
+ * Implementation of {@link Grid} for potts models.
+ * <p>
+ * {@code PottsGrid} uses the cell id to map to agents.
+ * Id 0 is reserved for a {@code null} object representing non-cell voxels
+ * in the potts layer.
+ */
+
 public final class PottsGrid implements Grid {
     /** Map of ID to object. */
     final HashMap<Integer, Object> objects;

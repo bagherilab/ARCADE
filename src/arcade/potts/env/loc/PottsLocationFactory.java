@@ -11,6 +11,16 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Utilities;
 import static arcade.core.util.Enums.Region;
 
+/**
+ * Implementation of {@link LocationFactory} for {@link PottsLocation} objects.
+ * <p>
+ * For a given {@link Series}, the factory uses its associated random number
+ * generator for shuffling voxel lists.
+ * The voxel lists a {@link PottsLocationContainer} are combined with a
+ * {@link arcade.potts.agent.cell.PottsCellContainer} to instantiate a
+ * {@link PottsLocation} object.
+ */
+
 public abstract class PottsLocationFactory implements LocationFactory {
     /** Random number generator instance. */
     MersenneTwisterFast random;
@@ -42,6 +52,11 @@ public abstract class PottsLocationFactory implements LocationFactory {
         }
     }
     
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Loaded locations are mapped by their id.
+     */
     @Override
     public void loadLocations(Series series) {
         // Load locations.
@@ -54,6 +69,16 @@ public abstract class PottsLocationFactory implements LocationFactory {
         }
     }
     
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The potts layer is subdivided into a grid of voxel sets.
+     * Each of these sets is used to create a location container.
+     * Note that these sets contain more voxels than required for instantiating
+     * a location; voxels are selected from the center outward until the required
+     * number of voxels (defined by a cell container) is selected.
+     * Containers are assigned regions if they exist.
+     */
     @Override
     public void createLocations(Series series) {
         int m = 0;
@@ -101,7 +126,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
     
     /**
      * Converts volume to voxels per square side.
-     * 
+     *
      * @param volume  the target volume
      * @return  the voxels per side
      */
@@ -109,7 +134,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
     
     /**
      * Gets list of neighbors of a given voxel.
-     * 
+     *
      * @param voxel  the voxel
      * @return  the list of neighbor voxels
      */
@@ -117,7 +142,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
     
     /**
      * Selects specified number of voxels from a focus voxel.
-     * 
+     *
      * @param voxels  the list of voxels to select from
      * @param focus  the focus voxel
      * @param n  the number of voxels to select
@@ -127,7 +152,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
     
     /**
      * Gets all possible voxels within given range.
-     * 
+     *
      * @param m  the location range
      * @param focus  the focus voxel
      * @return  the list of possible voxels
@@ -136,7 +161,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
     
     /**
      * Gets all centers for the given range.
-     * 
+     *
      * @param length  the array length
      * @param width  the array width
      * @param height  the array height
@@ -147,7 +172,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
     
     /**
      * Increases the number of voxels by adding from a given list of voxels.
-     * 
+     *
      * @param allVoxels  the list of all possible voxels
      * @param voxels  the list of selected voxels
      * @param target  the target number of voxels
@@ -177,7 +202,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
     
     /**
      * Decreases the number of voxels by removing from the given list of voxels.
-     * 
+     *
      * @param voxels  the list of selected voxels
      * @param target  the target number of voxels
      */

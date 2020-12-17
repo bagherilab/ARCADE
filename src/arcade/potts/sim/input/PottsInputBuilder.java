@@ -10,6 +10,10 @@ import arcade.potts.sim.PottsSeries;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
+/**
+ * Custom builder for potts-specific simulation setup XMLs.
+ */
+
 public final class PottsInputBuilder extends InputBuilder {
     public PottsInputBuilder() { super(); }
     
@@ -19,7 +23,7 @@ public final class PottsInputBuilder extends InputBuilder {
      * Attributes are added to the last entry in the list of dictionaries.
      * One of the attributes must be "id" which is used as the id for the entry.
      * Attributes "tag" and "target" are concatenated to the id as tag/id:target.
-     * 
+     *
      * @param list  the list the box is in
      * @param tag  the entry tag
      * @param atts  the attributes to add

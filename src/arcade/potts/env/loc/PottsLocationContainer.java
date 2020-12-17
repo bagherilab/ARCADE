@@ -8,8 +8,15 @@ import arcade.potts.agent.cell.PottsCellContainer;
 import static arcade.core.util.Enums.Region;
 
 /**
- * Container class for loading a {@link PottsLocation}.
+ * Implementation of {@link LocationContainer} for {@link PottsLocation} objects.
+ * <p>
+ * The container can be instantiated for locations with or without regions.
+ * The voxels available in a container are not necessarily all used when
+ * instantiating a {@link Location} instance.
+ * Instead, the number of voxels is selected based on the associated
+ * {@link PottsCellContainer} and {@link PottsLocationFactory} instance.
  */
+
 public final class PottsLocationContainer implements LocationContainer {
     /** Unique location container ID. */
     public final int id;
@@ -27,7 +34,7 @@ public final class PottsLocationContainer implements LocationContainer {
      * Creates a {@code PottsLocationContainer} instance.
      * <p>
      * The container does not have any regions.
-     * 
+     *
      * @param id  the location ID
      * @param center  the location center
      * @param voxels  the list of voxels
@@ -38,7 +45,7 @@ public final class PottsLocationContainer implements LocationContainer {
     
     /**
      * Creates a {@code PottsLocationContainer} instance.
-     * 
+     *
      * @param id  the location ID
      * @param center  the location center
      * @param voxels  the list of voxels
@@ -60,6 +67,13 @@ public final class PottsLocationContainer implements LocationContainer {
         return convert((PottsLocationFactory) factory, (PottsCellContainer) cell);
     }
     
+    /**
+     * Converts the location container into a {@link PottsLocation}.
+     *
+     * @param factory  the cell factory instance
+     * @param cell  the cell container
+     * @return  a {@link PottsLocation} instance
+     */
     private Location convert(PottsLocationFactory factory, PottsCellContainer cell) {
         // Set 3D and parse cell container.
         boolean is3D = (factory instanceof PottsLocationFactory3D);

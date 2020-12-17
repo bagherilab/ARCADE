@@ -19,6 +19,10 @@ import arcade.potts.env.grid.PottsGrid;
 import arcade.potts.env.loc.PottsLocationFactory;
 import static arcade.potts.util.PottsEnums.Ordering;
 
+/**
+ * Abstract implementation for potts {@link Simulation} instances.
+ */
+
 public abstract class PottsSimulation extends SimState implements Simulation {
     /** {@link arcade.core.sim.Series} object containing this simulation. */
     final PottsSeries series;
@@ -37,7 +41,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     
     /**
      * Simulation instance for a {@link arcade.core.sim.Series} for given random seed.
-     * 
+     *
      * @param seed  the random seed for random number generator
      * @param series  the simulation series
      */
@@ -136,11 +140,14 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     
     /**
      * Creates the {@link arcade.potts.sim.Potts} object for the simulation.
-     * 
+     *
      * @return  a {@link arcade.potts.sim.Potts} object
      */
     abstract Potts makePotts();
     
+    /**
+     * Sets up the potts layer for the simulation.
+     */
     public final void setupPotts() {
         potts = makePotts();
         schedule.scheduleRepeating(1, Ordering.POTTS.ordinal(), potts);
@@ -148,14 +155,14 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     
     /**
      * Creates a factory for locations.
-     * 
+     *
      * @return  a {@link arcade.core.env.loc.Location} factory
      */
     abstract PottsLocationFactory makeLocationFactory();
     
     /**
      * Creates a factory for cells.
-     * 
+     *
      * @return  a {@link arcade.core.agent.cell.Cell} factory
      */
     abstract PottsCellFactory makeCellFactory();
@@ -219,7 +226,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     
     /**
      * Runs output methods.
-     * 
+     *
      * @param isScheduled  {@code true} if the output should be scheduled, {@code false} otherwise
      */
     public void doOutput(boolean isScheduled) {

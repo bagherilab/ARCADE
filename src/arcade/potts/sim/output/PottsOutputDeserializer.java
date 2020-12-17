@@ -19,11 +19,32 @@ import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
 
+/**
+ * Container class for potts-specific object deserializers.
+ * <p>
+ * Deserializers include:
+ * <ul>
+ *     <li>{@link PottsCellDeserializer} for deserializing a
+ *     {@link PottsCellContainer} instance</li>
+ *     <li>{@link PottsLocationDeserializer} for deserializing a
+ *     {@link PottsLocationContainer} instance</li>
+ *     <li>{@link VoxelDeserializer} for deserializing a {@link Voxel} instance</li>
+ * </ul>
+ */
+
 public final class PottsOutputDeserializer {
+    /**
+     * Hidden utility class constructor.
+     */
     protected PottsOutputDeserializer() {
         throw new UnsupportedOperationException();
     }
     
+    /**
+     * Creates a {@code Gson} with generic and implementation-specific adaptors.
+     *
+     * @return  a {@code Gson} instance
+     */
     static Gson makeGSON() {
         GsonBuilder gsonBuilder = OutputDeserializer.makeGSONBuilder();
         gsonBuilder.registerTypeAdapter(PottsCellContainer.class,
@@ -34,6 +55,9 @@ public final class PottsOutputDeserializer {
         return gsonBuilder.create();
     }
     
+    /**
+     * Deserializer for {@link PottsCellContainer} objects.
+     */
     static class PottsCellDeserializer implements JsonDeserializer<PottsCellContainer> {
         @Override
         public PottsCellContainer deserialize(JsonElement json, Type typeOfT,
@@ -86,6 +110,9 @@ public final class PottsOutputDeserializer {
         }
     }
     
+    /**
+     * Deserializer for {@link PottsLocationContainer} objects.
+     */
     static class PottsLocationDeserializer implements JsonDeserializer<PottsLocationContainer> {
         @Override
         public PottsLocationContainer deserialize(JsonElement json, Type typeOfT,
@@ -129,6 +156,9 @@ public final class PottsOutputDeserializer {
         }
     }
     
+    /**
+     * Deserializer for {@link Voxel} objects.
+     */
     static class VoxelDeserializer implements JsonDeserializer<Voxel> {
         @Override
         public Voxel deserialize(JsonElement json, Type typeOfT,

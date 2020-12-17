@@ -11,7 +11,8 @@ import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 
 /**
- * Container for a series of {@link Simulation} objects, differing only in random seed.
+ * Abstract simulation manager for {@link Simulation} objects, differing only in
+ * random seed.
  * <p>
  * The class is instantiated by parsing an XML document specifying model setup.
  * Constructors for the {@link Simulation} objects are built, but not called to

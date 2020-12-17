@@ -18,11 +18,31 @@ import arcade.potts.sim.PottsSeries;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
+/**
+ * Container class for potts-specific object serializers.
+ * <p>
+ * Generic serializers include:
+ * <ul>
+ *     <li>{@link PottsSeriesSerializer} for serializing {@link PottsSeries} settings</li>
+ *     <li>{@link PottsCellSerializer} for serializing {@link PottsCellContainer}</li>
+ *     <li>{@link PottsLocationSerializer} for serializing {@link PottsLocationContainer}</li>
+ *     <li>{@link VoxelSerializer} for serializing {@link Voxel} instances</li>
+ * </ul>
+ */
+
 public final class PottsOutputSerializer {
+    /**
+     * Hidden utility class constructor.
+     */
     protected PottsOutputSerializer() {
         throw new UnsupportedOperationException();
     }
     
+    /**
+     * Creates a {@code Gson} with generic and implementation-specific adaptors.
+     *
+     * @return  a {@code Gson} instance
+     */
     static Gson makeGSON() {
         GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();
         gsonBuilder.registerTypeAdapter(PottsSeries.class,
@@ -36,6 +56,21 @@ public final class PottsOutputSerializer {
         return gsonBuilder.create();
     }
     
+    /**
+     * Serializer for {@link PottsSeries} objects.
+     * <p>
+     * The object is first serialized using the generic {@link Series} and
+     * pott-specific contents are then appended:
+     * <pre>
+     *     ...
+     *     "potts": {
+     *         "(key)" : (value),
+     *         "(key)" : (value),
+     *         ...
+     *     }
+     *     ...
+     * </pre>
+     */
     static class PottsSeriesSerializer implements JsonSerializer<PottsSeries> {
         @Override
         public JsonElement serialize(PottsSeries src, Type typeOfSrc,
@@ -50,6 +85,32 @@ public final class PottsOutputSerializer {
         }
     }
     
+    /**
+     * Serializer for {@link PottsCellContainer} objects.
+     * <p>
+     * The container object is formatted as:
+     * <pre>
+     *     {
+     *         "id": (id),
+     *         "pop": (pop),
+     *         "age": (age),
+     *         "state": (state),
+     *         "phase": (phase),
+     *         "voxels": (voxels),
+     *         "targets": [(target volume), (target surface)],
+     *         "regions": [
+     *             {
+     *                 "region": (region name),
+     *                 "voxels": (region voxels),
+     *                 "targets": [(target region volume), (target region surface)]
+     *             },
+     *             ...
+     *         ]
+     *     }
+     * </pre>
+     * <p>
+     * If there are no regions, the regions array is not included.
+     */
     static class PottsCellSerializer implements JsonSerializer<PottsCellContainer> {
         @Override
         public JsonElement serialize(PottsCellContainer src, Type typeOfSrc,
@@ -90,6 +151,31 @@ public final class PottsOutputSerializer {
         }
     }
     
+    /**
+     * Serializer for {@link PottsLocationContainer} objects.
+     * <p>
+     * The container object is formatted as:
+     * <pre>
+     *     {
+     *         "id": (id),
+     *         "center": (center voxel),
+     *         "location": [
+     *             {
+     *                 "region": (region name),
+     *                 "voxels": [
+     *                     (region voxel),
+     *                     (region voxel),
+     *                     ...
+     *                 ]
+     *             },
+     *             ...
+     *         ]
+     *     }
+     * </pre>
+     * <p>
+     * If there are no regions, all voxels are listed as one region with the
+     * "UNDEFINED" region name.
+     */
     static class PottsLocationSerializer implements JsonSerializer<PottsLocationContainer> {
         @Override
         public JsonElement serialize(PottsLocationContainer src, Type typeOfSrc,
@@ -135,6 +221,14 @@ public final class PottsOutputSerializer {
         }
     }
     
+    /**
+     * Serializer for {@link Voxel} objects.
+     * <p>
+     * The voxel object is formatted as:
+     * <pre>
+     *     [(x), (y), (z)]
+     * </pre>
+     */
     static class VoxelSerializer implements JsonSerializer<Voxel> {
         @Override
         public JsonElement serialize(Voxel src, Type typeOfSrc,

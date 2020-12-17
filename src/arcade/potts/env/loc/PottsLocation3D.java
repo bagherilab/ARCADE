@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import static arcade.potts.util.PottsEnums.Direction;
 
+/**
+ * Concrete implementation of {@link PottsLocation} for 3D.
+ */
+
 public final class PottsLocation3D extends PottsLocation implements Location3D {
     /**
      * Creates a 3D {@link PottsLocation} for a list of voxels.
-     * 
+     *
      * @param voxels  the list of voxels
      */
     public PottsLocation3D(ArrayList<Voxel> voxels) { super(voxels); }

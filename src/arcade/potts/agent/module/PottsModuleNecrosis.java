@@ -4,6 +4,10 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.potts.agent.cell.PottsCell;
 
+/**
+ * Extension of {@link PottsModule} for necrosis.
+ */
+
 public class PottsModuleNecrosis extends PottsModule {
     public PottsModuleNecrosis(PottsCell cell) { super(cell); }
     

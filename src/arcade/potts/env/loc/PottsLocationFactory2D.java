@@ -2,6 +2,10 @@ package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 
+/**
+ * Concrete implementation of {@link PottsLocationFactory} for 2D.
+ */
+
 public final class PottsLocationFactory2D extends PottsLocationFactory {
     public PottsLocationFactory2D() { super(); }
     

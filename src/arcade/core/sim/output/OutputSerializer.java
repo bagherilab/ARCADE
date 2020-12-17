@@ -24,10 +24,8 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  * <ul>
  *     <li>{@link SeriesSerializer} for serializing {@link Series} settings</li>
  *     <li>{@link MiniBoxSerializer} for serializing {@link MiniBox} objects</li>
- *     <li>{@link CellListSerializer} for serializing a list of
- *     {@link CellContainer} instances</li>
- *     <li>{@link LocationListSerializer} for serializing a list of
- *     {@link LocationContainer} instances</li>
+ *     <li>{@link CellListSerializer} for serializing a list of {@link CellContainer}</li>
+ *     <li>{@link LocationListSerializer} for serializing a list of {@link LocationContainer}</li>
  * </ul>
  */
 
@@ -168,9 +166,9 @@ public final class OutputSerializer {
      * The series object is formatted as:
      * <pre>
      *     [
-     *          (serialized cell container),
-     *          (serialized cell container),
-     *          ...
+     *         (serialized cell container),
+     *         (serialized cell container),
+     *         ...
      *     ]
      * </pre>
      */
@@ -196,9 +194,9 @@ public final class OutputSerializer {
      * The series object is formatted as:
      * <pre>
      *     [
-     *          (serialized location container),
-     *          (serialized location container),
-     *          ...
+     *         (serialized location container),
+     *         (serialized location container),
+     *         ...
      *     ]
      * </pre>
      */

@@ -5,6 +5,14 @@ import java.util.HashMap;
 import static arcade.potts.sim.Potts2D.*;
 import static arcade.potts.util.PottsEnums.Direction;
 
+/**
+ * Static location methods for 2D.
+ * <p>
+ * Interface defines generalized 2D voxel methods that can be applied for both
+ * {@link PottsLocation} objects (without regions) and {@link PottsLocations}
+ * objects (with regions).
+ */
+
 public interface Location2D {
     /** Multiplier for calculating surface area from volume. */
     double SURFACE_VOLUME_MULTIPLIER = 2 * Math.sqrt(Math.PI) * 1.5;
@@ -19,7 +27,7 @@ public interface Location2D {
     
     /**
      * Gets list of neighbors of a given voxel.
-     * 
+     *
      * @param focus  the focus voxel
      * @return  the list of neighbor voxels
      */
@@ -34,7 +42,7 @@ public interface Location2D {
     
     /**
      * Converts volume to surface area.
-     * 
+     *
      * @param volume  the volume (in voxels)
      * @return  the surface area (in voxels)
      */
@@ -44,7 +52,7 @@ public interface Location2D {
     
     /**
      * Calculates surface of location.
-     * 
+     *
      * @param voxels  the list of voxels
      * @return  the surface
      */
@@ -63,7 +71,7 @@ public interface Location2D {
     
     /**
      * Calculates the local change in surface of the location.
-     * 
+     *
      * @param voxels  the list of voxels
      * @param voxel  the voxel the update is centered in
      * @return  the change in surface
@@ -85,7 +93,7 @@ public interface Location2D {
     
     /**
      * Calculates diameters in each direction.
-     * 
+     *
      * @param voxels  the list of voxels
      * @param focus  the focus voxel
      * @return  the map of direction to diameter
@@ -152,7 +160,7 @@ public interface Location2D {
     
     /**
      * Selects the slice direction for a given minimum diameter direction.
-     * 
+     *
      * @param direction  the direction of the minimum diameter
      * @param diameters  the list of diameters
      * @return  the slice direction
@@ -169,7 +177,7 @@ public interface Location2D {
     
     /**
      * Selects specified number of voxels from a focus voxel.
-     * 
+     *
      * @param voxels  the list of voxels
      * @param focus  the focus voxel
      * @param n  the number of voxels to select

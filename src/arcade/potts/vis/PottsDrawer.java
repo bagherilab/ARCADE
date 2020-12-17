@@ -25,17 +25,42 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import static arcade.core.util.Enums.Region;
 
+/**
+ * Container for potts-specific {@link Drawer} classes.
+ */
+
 public abstract class PottsDrawer extends Drawer {
     DoubleGrid2D array;
     Network graph;
     Continuous2D field;
     
+    /**
+     * Creates a {@link Drawer} for potts simulations.
+     *
+     * @param panel  the panel the drawer is attached to
+     * @param name  the name of the drawer
+     * @param length  the length of array (x direction)
+     * @param width  the width of array (y direction)
+     * @param depth  the depth of array (z direction)
+     * @param map  the color map for the array
+     * @param bounds  the size of the drawer within the panel
+     */
     PottsDrawer(Panel panel, String name,
             int length, int width, int depth,
             ColorMap map, Rectangle2D.Double bounds) {
         super(panel, name, length, width, depth, map, bounds);
     }
     
+    /**
+     * Creates a {@link Drawer} for potts simulations.
+     *
+     * @param panel  the panel the drawer is attached to
+     * @param name  the name of the drawer
+     * @param length  the length of array (x direction)
+     * @param width  the width of array (y direction)
+     * @param depth  the depth of array (z direction)
+     * @param bounds  the size of the drawer within the panel
+     */
     PottsDrawer(Panel panel, String name,
             int length, int width, int depth, Rectangle2D.Double bounds) {
         super(panel, name, length, width, depth, null, bounds);
@@ -79,6 +104,9 @@ public abstract class PottsDrawer extends Drawer {
         }
     }
     
+    /**
+     * Wrapper for MASON class that changes modifies edge color.
+     */
     private static class SimpleEdgePortrayal2DGridWrapper extends SimpleEdgePortrayal2D {
         private final Color color = new Color(0, 0, 0);
         
@@ -99,6 +127,17 @@ public abstract class PottsDrawer extends Drawer {
         }
     }
     
+    /**
+     * Adds edges to graph.
+     *
+     * @param field  the field to add nodes to
+     * @param graph  the graph to add edges to
+     * @param weight  the edge weight
+     * @param x1  the x position of the from node
+     * @param y1  the y position of the from node
+     * @param x2  the x position of the to node
+     * @param y2  the y position of the to node
+     */
     private static void add(Continuous2D field, Network graph, int weight,
                             int x1, int y1, int x2, int y2) {
         Double2D a = new Double2D(x1, y1);
@@ -112,6 +151,16 @@ public abstract class PottsDrawer extends Drawer {
     static final int PLANE_X = 1;
     static final int PLANE_Y = 2;
     
+    /**
+     * Gets 2D slice of a 3D array.
+     *
+     * @param array  the array to slice
+     * @param plane  the plane to slice along
+     * @param length  the length of array (x direction)
+     * @param width  the width of array (y direction)
+     * @param height  the height of array (z direction)
+     * @return  a slice of the array
+     */
     static int[][] getSlice(int[][][] array, int plane, int length, int width, int height) {
         switch (plane) {
             case PLANE_X:
@@ -135,6 +184,9 @@ public abstract class PottsDrawer extends Drawer {
         }
     }
     
+    /**
+     * Extension of {@link PottsDrawer} for drawing cells.
+     */
     public static class PottsCells extends PottsDrawer {
         private static final int DRAW_CYTOPLASM = -1;
         private static final int DRAW_NUCLEUS = -2;
@@ -150,6 +202,17 @@ public abstract class PottsDrawer extends Drawer {
         private final int code;
         private final int plane;
         
+        /**
+         * Creates a {@link PottsDrawer} for drawing cells.
+         *
+         * @param panel  the panel the drawer is attached to
+         * @param name  the name of the drawer
+         * @param length  the length of array (x direction)
+         * @param width  the width of array (y direction)
+         * @param depth  the depth of array (z direction)
+         * @param map  the color map for the array
+         * @param bounds  the size of the drawer within the panel
+         */
         public PottsCells(Panel panel, String name,
                          int length, int width, int depth,
                          ColorMap map, Rectangle2D.Double bounds) {
@@ -252,6 +315,16 @@ public abstract class PottsDrawer extends Drawer {
             }
         }
         
+        /**
+         * Draws voxels along edges of cytoplasm.
+         *
+         * @param aa  the first dimension
+         * @param bb  the second dimension
+         * @param cc  the third dimension
+         * @param to  the target array
+         * @param ids  the array of ids
+         * @param potts  the {@link Potts} instance
+         */
         private void drawCytoplasm(int aa, int bb, int cc, double[][] to,
                                    int[][] ids, Potts potts) {
             for (int a = 0; a < aa; a++) {
@@ -301,6 +374,16 @@ public abstract class PottsDrawer extends Drawer {
             }
         }
         
+        /**
+         * Draws voxels along edges of nucleus.
+         *
+         * @param aa  the first dimension
+         * @param bb  the second dimension
+         * @param cc  the third dimension
+         * @param to  the target array
+         * @param regions  the array of regions
+         * @param potts  the {@link Potts} instance
+         */
         private void drawNucleus(int aa, int bb, int cc, double[][] to,
                                  int[][] regions, Potts potts) {
             int nucleus = Region.NUCLEUS.ordinal();
@@ -356,12 +439,25 @@ public abstract class PottsDrawer extends Drawer {
         }
     }
     
+    /**
+     * Extension of {@link PottsDrawer} for drawing outlines.
+     */
     public static class PottsGrid extends PottsDrawer {
         private final int length;
         private final int width;
         private final int height;
         private final int plane;
         
+        /**
+         * Creates a {@link PottsDrawer} for drawing outlines.
+         *
+         * @param panel  the panel the drawer is attached to
+         * @param name  the name of the drawer
+         * @param length  the length of array (x direction)
+         * @param width  the width of array (y direction)
+         * @param depth  the depth of array (z direction)
+         * @param bounds  the size of the drawer within the panel
+         */
         PottsGrid(Panel panel, String name,
                   int length, int width, int depth, Rectangle2D.Double bounds) {
             super(panel, name, length, width, depth, bounds);

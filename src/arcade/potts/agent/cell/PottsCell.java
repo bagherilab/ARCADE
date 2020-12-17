@@ -22,6 +22,26 @@ import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.potts.util.PottsEnums.Term;
 
+/**
+ * Implementation of {@link Cell} for potts models.
+ * <p>
+ * {@code PottsCell} agents exist in one of five states: quiescent, proliferative,
+ * apoptotic, necrotic, or autotic.
+ * Each state may be further divided into relevant phases.
+ * <p>
+ * General order of rules for the {@code PottsCell} step:
+ * <ul>
+ *     <li>update age</li>
+ *     <li>step state module</li>
+ * </ul>
+ * <p>
+ * Cell parameters are tracked using a map between the parameter name and value.
+ * <p>
+ * To integrate with the potts layer, {@code PottsCell} agents also contain
+ * adhesion to other cell populations, critical and target volumes and surfaces,
+ * and lambda values used for potts energy calculations.
+ */
+
 public final class PottsCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule. */
     Stoppable stopper;
@@ -85,7 +105,7 @@ public final class PottsCell implements Cell {
      * <p>
      * The default state is proliferative and age is 0.
      * The cell is created with no regions.
-     * 
+     *
      * @param id  the cell ID
      * @param pop  the cell population index
      * @param location  the {@link arcade.core.env.loc.Location} of the cell
@@ -104,7 +124,7 @@ public final class PottsCell implements Cell {
      * Creates a {@code PottsCell} agent.
      * <p>
      * The default state is proliferative and age is 0.
-     * 
+     *
      * @param id  the cell ID
      * @param pop  the cell population index
      * @param location  the {@link arcade.core.env.loc.Location} of the cell
@@ -127,7 +147,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Creates a {@code PottsCell} agent.
-     * 
+     *
      * @param id  the cell ID
      * @param pop  the cell population index
      * @param state  the cell state
@@ -259,7 +279,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Gets the lambda for the given term.
-     * 
+     *
      * @param term  the term of the Hamiltonian
      * @return  the lambda value
      */
@@ -267,7 +287,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Gets the lambda for the given term and region.
-     * 
+     *
      * @param term  the term of the Hamiltonian
      * @param region  the region
      * @return  the lambda value
@@ -280,7 +300,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Gets the adhesion to a cell of the given population.
-     * 
+     *
      * @param target  the target cell population
      * @return  the adhesion value
      */
@@ -288,7 +308,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Gets the adhesion between two regions.
-     * 
+     *
      * @param region1  the first region
      * @param region2  the second region
      * @return  the adhesion value
@@ -343,7 +363,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Initializes the potts arrays with the cell.
-     * 
+     *
      * @param ids  the {@link arcade.potts.sim.Potts} array for ids
      * @param regions  the {@link arcade.potts.sim.Potts} array for regions
      */
@@ -365,7 +385,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Resets the potts arrays with the cell.
-     * 
+     *
      * @param ids  the {@link arcade.potts.sim.Potts} array for ids
      * @param regions  the {@link arcade.potts.sim.Potts} array for regions
      */
@@ -385,7 +405,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Steps through cell rules.
-     * 
+     *
      * @param simstate  the MASON simulation state
      */
     @Override
@@ -401,7 +421,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Sets the target volume and surface for the cell.
-     * 
+     *
      * @param volume  the target volume
      * @param surface  the target surface
      */
@@ -412,7 +432,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Sets the target volume and surface for a region.
-     * 
+     *
      * @param region  the region
      * @param volume  the target volume
      * @param surface  the target surface
@@ -424,7 +444,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Updates target volume and surface area.
-     * 
+     *
      * @param rate  the rate of change
      * @param scale  the relative final size scaling
      */
@@ -456,7 +476,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Updates target volume and surface area for a region.
-     * 
+     *
      * @param region  the region
      * @param rate  the rate of change
      * @param scale  the relative final size scaling

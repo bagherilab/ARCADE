@@ -250,7 +250,7 @@ public class Potts2DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR ZERO (0) NEIGHBORS
-     * 
+     *
      * If there are zero neighbors, then the voxel is never connected.
     ------------------------------------------------------------------------- */
     
@@ -264,9 +264,9 @@ public class Potts2DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR ONE (1) NEIGHBOR
-     * 
+     *
      * The neighbor can be located on each sides of the square (4 options).
-     * 
+     *
      * If there is only one neighbor, the voxel is always connected.
     ------------------------------------------------------------------------- */
     
@@ -286,11 +286,11 @@ public class Potts2DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR TWO (2) NEIGHBORS
-     * 
+     *
      * The two neighbors can be either adjacent (4 options) or opposite (2 options).
-     * 
+     *
      * If there are two opposite neighbors, the voxel is never connected.
-     * 
+     *
      * If there are two adjacent neighbors, the voxel is connected if there is
      * a link in the shared corner.
     ------------------------------------------------------------------------- */
@@ -348,10 +348,10 @@ public class Potts2DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR THREE (3) NEIGHBORS
-     * 
+     *
      * The three neighbors are positioned such that only one side is missing a
      * neighbor (4 options).
-     * 
+     *
      * There can be up to 2 links:
      *       0 links | 1 combo   | unconnected
      *       1 link  | 2 combos  | unconnected
@@ -415,7 +415,7 @@ public class Potts2DTest {
     
     /* -------------------------------------------------------------------------
      * CONNECTIVITY FOR FOUR (4) NEIGHBORS
-     * 
+     *
      * All four possible neighbor positions are occupied. The connectivity
      * depends on the ID of the voxel. Only ID = 0 is considered connected;
      * all other ID values are unconnected.

@@ -12,6 +12,13 @@ import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
 
+/**
+ * Extension of {@link PottsModule} for proliferation.
+ * <p>
+ * During proliferation, cells grow and, once they reach a critical threshold,
+ * divide to create a new daughter cell.
+ */
+
 public abstract class PottsModuleProliferation extends PottsModule {
     /** Average duration of G1 phase (ticks). */
     final double durationG1;
@@ -54,7 +61,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
     
     /**
      * Creates a proliferation {@code Module} for the given {@link PottsCell}.
-     * 
+     *
      * @param cell  the {@link PottsCell} the module is associated with
      */
     public PottsModuleProliferation(PottsCell cell) {
@@ -81,7 +88,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
     public static final class Simple extends PottsModuleProliferation {
         /**
          * Creates a {@link PottsModuleProliferation} using simple phases.
-         * 
+         *
          * @param cell  the {@link PottsCell} the module is associated with
          */
         public Simple(PottsCell cell) { super(cell); }
@@ -94,7 +101,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
     
     /**
      * Calls the step method for the current simple phase.
-     * 
+     *
      * @param random  the random number generator
      * @param sim  the simulation instance
      */
@@ -128,7 +135,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * <p>
      * For cells arrested in G1, the transition check for checkpoint recovery
      * occurs after an average time of {@code DURATION_CHECKPOINT}.
-     * 
+     *
      * @param r  a random number
      */
     void stepG1(double r) {
@@ -176,7 +183,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * <p>
      * If cell does not have regions, then cell will transition to G2 phase after
      * an average time of {@code DURATION_S}.
-     * 
+     *
      * @param r  a random number
      */
     void stepS(double r) {
@@ -204,7 +211,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * <p>
      * For cells arrested in G2, the transition check for checkpoint recovery
      * occurs after an average time of {@code DURATION_CHECKPOINT}.
-     * 
+     *
      * @param r  a random number
      */
     void stepG2(double r) {
@@ -240,7 +247,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * Performs actions for M phase.
      * <p>
      * Cell will complete cell division after an average time of {@code DURATION_M}.
-     * 
+     *
      * @param r  a random number
      * @param random  the random number generator
      * @param sim  the simulation instance
@@ -260,7 +267,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * The cell location is split, along with any regions.
      * The new cell is created, initialized, and added to the schedule.
      * Both cells are reset remain in the proliferative state.
-     * 
+     *
      * @param random  the random number generator
      * @param sim  the simulation instance
      */

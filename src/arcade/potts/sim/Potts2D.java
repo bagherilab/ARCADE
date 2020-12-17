@@ -4,6 +4,10 @@ import java.util.HashSet;
 import arcade.potts.agent.cell.PottsCell;
 import static arcade.core.util.Enums.Region;
 
+/**
+ * Extension of {@link Potts} for 2D.
+ */
+
 public final class Potts2D extends Potts {
     /** Number of neighbors. */
     public static final int NUMBER_NEIGHBORS = 4;
@@ -22,7 +26,7 @@ public final class Potts2D extends Potts {
     
     /**
      * Creates a cellular {@code Potts} model in 2D.
-     * 
+     *
      * @param series  the simulation series
      */
     public Potts2D(PottsSeries series) { super(series); }
@@ -168,6 +172,12 @@ public final class Potts2D extends Potts {
         }
     }
     
+    /**
+     * Determines simple connectivity for a position with two neighbors.
+     *
+     * @param subarray  the local neighborhood array
+     * @return  {@code true} if simply connected, {@code false} otherwise
+     */
     private boolean getConnectivityTwoNeighbors(boolean[][] subarray) {
         if (subarray[1][2] && subarray[1][0]) {
             // Check for opposites N / S
@@ -188,6 +198,12 @@ public final class Potts2D extends Potts {
         }
     }
     
+    /**
+     * Determines simple connectivity for a position with three neighbors.
+     *
+     * @param subarray  the local neighborhood array
+     * @return  {@code true} if simply connected, {@code false} otherwise
+     */
     private boolean getConnectivityThreeNeighbors(boolean[][] subarray) {
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
             if (!subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]]) {

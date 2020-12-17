@@ -2,7 +2,22 @@ package arcade.potts.util;
 
 import ec.util.MersenneTwisterFast;
 
+/**
+ * Container class for potts-specific enums.
+ * <p>
+ * Implemented enums include:
+ * <ul>
+ *     <li>{@code Ordering} defining simulation stepping order</li>
+ *     <li>{@code Term} defining different potts energy terms</li>
+ *     <li>{@code Phase} defining phase for a given state</li>
+ *     <li>{@code Direction} defining directions in the voxel environment</li>
+ * </ul>
+ */
+
 public final class PottsEnums {
+    /**
+     * Hidden utility class constructor.
+     */
     protected PottsEnums() {
         throw new UnsupportedOperationException();
     }
@@ -53,7 +68,7 @@ public final class PottsEnums {
         
         /**
          * Randomly selects a {@code Phase}.
-         * 
+         *
          * @param rng  the random number generator
          * @return  a random {@code Phase}
          */
@@ -96,7 +111,7 @@ public final class PottsEnums {
         
         /**
          * Randomly selects a {@code Direction}.
-         * 
+         *
          * @param rng  the random number generator
          * @return  a random {@code Direction}
          */
