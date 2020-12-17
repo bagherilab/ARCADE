@@ -37,14 +37,14 @@ public class Colors implements ColorMap {
     
     /**
      * Creates {@code Colors} table.
-     * 
+     *
      * @param colors the table of colors
      */
     public Colors(Color[] colors) { this(colors, 0); }
     
     /**
      * Creates {@code Colors} table with modulo index.
-     * 
+     *
      * @param colors  the table of colors
      * @param mod  the value of modulo on index before selecting color
      */
@@ -59,7 +59,7 @@ public class Colors implements ColorMap {
     
     /**
      * Creates {@code Colors} between two values.
-     * 
+     *
      * @param minCol  the color associated with the lower bound
      * @param maxCol  the color associated with the upper bound
      * @param minVal  the value of the lower bound
@@ -71,7 +71,7 @@ public class Colors implements ColorMap {
     
     /**
      * Creates {@code Colors} between multiple values.
-     * 
+     *
      * @param colors  the array of colors associated with each bound
      * @param vals  the list of values at each bound
      */
@@ -98,7 +98,7 @@ public class Colors implements ColorMap {
     
     /**
      * Interpolates between two colors.
-     * 
+     *
      * @param minCol  the minimum color
      * @param maxCol  the maximum color
      * @param start  the starting value
@@ -139,7 +139,7 @@ public class Colors implements ColorMap {
      * Applies modulo if the {@code mod} is not zero.
      * Index is determined as (length of bins in the colormap)*(level scaled
      * between the minimum and maximum).
-     * 
+     *
      * @param level  the number value
      * @return  the color map index
      */
@@ -150,7 +150,7 @@ public class Colors implements ColorMap {
     
     /**
      * Gets the color corresponding to level.
-     * 
+     *
      * @param level  the number value
      * @return  the color
      */
@@ -162,7 +162,7 @@ public class Colors implements ColorMap {
     
     /**
      * Gets RGB corresponding to level.
-     * 
+     *
      * @param level  the number value
      * @return  the RGB value
      */
@@ -174,7 +174,7 @@ public class Colors implements ColorMap {
     
     /**
      * Gets the alpha corresponding to level.
-     * 
+     *
      * @param level  the number value
      * @return  the alpha value
      */
@@ -186,7 +186,7 @@ public class Colors implements ColorMap {
     
     /**
      * Checks if the number value is between the minimum and maximum.
-     * 
+     *
      * @param level  the number value
      * @return  {@code true} if level is valid, {@code false} otherwise
      */
@@ -195,7 +195,7 @@ public class Colors implements ColorMap {
     
     /**
      * Gets default value.
-     * 
+     *
      * @return  the default number value
      */
     @Override

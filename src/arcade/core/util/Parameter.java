@@ -37,7 +37,7 @@ public class Parameter implements Serializable {
     
     /**
      * Creates a {@code Parameter} normal distribution.
-     * 
+     *
      * @param mu  the mean of parameter normal distribution
      * @param h  the amount of heterogeneity where standard deviation sigma = h*mu
      * @param isFrac  indicates if distribution is truncated between 0 and 1
@@ -63,21 +63,21 @@ public class Parameter implements Serializable {
     
     /**
      * Gets the mean of the distribution.
-     * 
+     *
      * @return  the distribution mean
      */
     public double getMu() { return mu; }
     
     /**
      * Gets the standard deviation of the distribution.
-     * 
+     *
      * @return  the distribution standard deviation
      */
     public double getSigma() { return sigma; }
     
     /**
      * Creates a new parameter with updated mean.
-     * 
+     *
      * @param mean  the mean of the new parameter
      * @return  a parameter instance with the new mean
      */
@@ -87,7 +87,7 @@ public class Parameter implements Serializable {
     
     /**
      * Draws a double from the bounded normal distribution.
-     * 
+     *
      * @return  a double drawn from the distribution
      */
     public double nextDouble() {
@@ -96,7 +96,7 @@ public class Parameter implements Serializable {
     
     /**
      * Draws a integer from the bounded normal distribution.
-     * 
+     *
      * @return  an integer drawn from the distribution
      */
     public int nextInt() {

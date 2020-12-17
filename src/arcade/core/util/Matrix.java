@@ -25,7 +25,7 @@ public class Matrix {
         
         /**
          * Creates a value in a sparse matrix.
-         * 
+         *
          * @param i  the row index of the value
          * @param j  the column index of the value
          * @param v  the value
@@ -36,26 +36,45 @@ public class Matrix {
             this.v = v;
         }
         
+        /**
+         * Gets hash based on (i, j) indices.
+         *
+         * @return  the hash
+         */
         public final int hashCode() { return i + (j << 8); }
         
+        /**
+         * Checks if two values have the same (i, j) indices.
+         *
+         * @param obj  the value to compare
+         * @return  {@code true} if values have the same indices, {@code false} otherwise
+         */
         public final boolean equals(Object obj) {
             if (!(obj instanceof Value)) { return false; }
             Value value = (Value) obj;
             return value.i == i && value.j == j && value.v == v;
         }
         
+        /**
+         * Formats value as a string.
+         *
+         * @return  a string representation of the value
+         */
         public String toString() {
             return "(" + i + "," + j + ") = " + v;
         }
     }
     
+    /**
+     * Hidden utility class constructor.
+     */
     protected Matrix() {
         throw new UnsupportedOperationException();
     }
     
     /**
      * Converts a dense matrix representation to a sparse matrix representation.
-     * 
+     *
      * @param mat  the dense matrix representation
      * @return  the sparse matrix representation
      */
@@ -72,7 +91,7 @@ public class Matrix {
     
     /**
      * Converts a sparse matrix representation to a dense matrix representation.
-     * 
+     *
      * @param mat  the sparse matrix representation
      * @return  the dense matrix representation
      */
@@ -91,7 +110,7 @@ public class Matrix {
     
     /**
      * Inverts a upper triangular matrix.
-     * 
+     *
      * @param mat  the upper triangular matrix to invert
      * @return  the inverted matrix
      */
@@ -117,7 +136,7 @@ public class Matrix {
     
     /**
      * Inverts a lower triangular matrix.
-     * 
+     *
      * @param mat  the lower triangular matrix to invert
      * @return  the inverted matrix
      */
@@ -146,7 +165,7 @@ public class Matrix {
      * dense matrix.
      * <p>
      * Matrix L must be a square lower triangular matrix.
-     * 
+     *
      * @param mat  the matrix of coefficients
      * @param vec  the right-hand side vector
      * @return  the left-hand side vector
@@ -171,7 +190,7 @@ public class Matrix {
      * <p>
      * The matrices {@code L} and {@code U} are the square lower and upper
      * triangular matrices of the given matrix.
-     * 
+     *
      * @param mat  the matrix of coefficients
      * @return  the left-hand side matrix
      */
@@ -196,7 +215,7 @@ public class Matrix {
     /**
      * Solves the equation {@code Lx = b} using forward substitution for a
      * sparse matrix.
-     * 
+     *
      * @param mat  the matrix of coefficients
      * @param vec  the right-hand side vector
      * @return  the left-hand side vector
@@ -244,7 +263,7 @@ public class Matrix {
      * <p>
      * The matrices {@code L} and {@code U} are the square lower and upper
      * triangular matrices of the given matrix.
-     * 
+     *
      * @param mat  the matrix of coefficients
      * @return  the left-hand side matrix
      */
@@ -290,7 +309,7 @@ public class Matrix {
     
     /**
      * Gets the upper triangular of a dense matrix.
-     * 
+     *
      * @param mat  the matrix
      * @param strict  {@code true} if triangular is strict, {@code false} otherwise
      * @return  the upper triangular matrix
@@ -309,7 +328,7 @@ public class Matrix {
     
     /**
      * Gets the lower triangular of a dense matrix.
-     * 
+     *
      * @param mat  the matrix
      * @param strict  {@code true} if triangular is strict, {@code false} otherwise
      * @return  the lower triangular matrix
@@ -328,7 +347,7 @@ public class Matrix {
     
     /**
      * Gets the upper triangular of a sparse matrix.
-     * 
+     *
      * @param mat  the matrix
      * @param strict  {@code true} if triangular is strict, {@code false} otherwise
      * @return  the upper triangular matrix
@@ -344,7 +363,7 @@ public class Matrix {
     
     /**
      * Gets the lower triangular of a sparse matrix.
-     * 
+     *
      * @param mat  the matrix
      * @param strict  {@code true} if triangular is strict, {@code false} otherwise
      * @return  the lower triangular matrix
@@ -360,7 +379,7 @@ public class Matrix {
     
     /**
      * Multiplies two dense square matrices.
-     * 
+     *
      * @param matA  the first matrix
      * @param matB  the second matrix
      * @return  the product of the two matrices
@@ -380,7 +399,7 @@ public class Matrix {
     
     /**
      * Multiplies a dense square matrix and a vector.
-     * 
+     *
      * @param mat  the matrix
      * @param vec  the vector
      * @return  the product of the matrix and vector
@@ -398,7 +417,7 @@ public class Matrix {
     
     /**
      * Multiplies a sparse square matrix and a vector.
-     * 
+     *
      * @param mat  the matrix
      * @param vec  the vector
      * @return  the product of the matrix and vector
@@ -417,7 +436,7 @@ public class Matrix {
     
     /**
      * Multiplies two sparse square matrices.
-     * 
+     *
      * @param matA  the first matrix
      * @param matB  the second matrix
      * @return  the product of the two matrices
@@ -462,7 +481,7 @@ public class Matrix {
     
     /**
      * Adds two vectors.
-     * 
+     *
      * @param vecA  the first vector
      * @param vecB  the second vector
      * @return  the sum of the two vectors
@@ -478,7 +497,7 @@ public class Matrix {
     
     /**
      * Subtracts two vectors.
-     * 
+     *
      * @param vecA  the first vector
      * @param vecB  the second vector
      * @return  the difference of the two vectors
@@ -494,7 +513,7 @@ public class Matrix {
     
     /**
      * Scales the values in a dense matrix.
-     * 
+     *
      * @param mat  the matrix
      * @param scale  the value to scale by
      * @return  the scaled matrix
@@ -510,7 +529,7 @@ public class Matrix {
     
     /**
      * Scales the values in a dense vector.
-     * 
+     *
      * @param vec  the vector
      * @param scale  the value to scale by
      * @return  the scaled vector
@@ -526,7 +545,7 @@ public class Matrix {
     
     /**
      * Scales the values in a sparse matrix.
-     * 
+     *
      * @param mat  the matrix
      * @param scale  the value to scale by
      * @return  the scaled matrix
@@ -541,7 +560,7 @@ public class Matrix {
     
     /**
      * Normalizes the vector.
-     * 
+     *
      * @param vec  the vector
      * @return  the normalized vector
      */

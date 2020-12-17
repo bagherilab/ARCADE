@@ -2,7 +2,23 @@ package arcade.core.util;
 
 import ec.util.MersenneTwisterFast;
 
+/**
+ * Container class for enums.
+ * <p>
+ * Implemented enums include:
+ * <ul>
+ *     <li>{@code State} defining cell states</li>
+ *     <li>{@code Region} defining subcellular regions</li>
+ * </ul>
+ * <p>
+ * Implementations are not required to use all values of an enum but should make
+ * sure to account for unused values.
+ */
+
 public final class Enums {
+    /**
+     * Hidden utility class constructor.
+     */
     protected Enums() {
         throw new UnsupportedOperationException();
     }
@@ -29,7 +45,7 @@ public final class Enums {
         
         /**
          * Randomly selects a {@code State}.
-         * 
+         *
          * @param rng  the random number generator
          * @return  a random {@code State}
          */
@@ -51,7 +67,7 @@ public final class Enums {
         
         /**
          * Randomly selects a {@code Region}.
-         * 
+         *
          * @param rng  the random number generator
          * @return  a random {@code Region}
          */

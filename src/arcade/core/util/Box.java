@@ -5,8 +5,8 @@ import java.util.ArrayList;
 /**
  * Container that maps a key to a tag category and a series of attributes.
  * <p>
- * {@code Box} objects use two {@link arcade.core.util.MiniBox} objects to map between
- * key, tags, and attributes.
+ * {@code Box} objects use two {@link arcade.core.util.MiniBox} objects to map
+ * between key, tags, and attributes.
  * Rather than nesting the key to attribute to values, the class automatically
  * joins key and attribute into a new key.
  */
@@ -35,14 +35,14 @@ public class Box {
     
     /**
      * Gets list of keys in the box.
-     * 
+     *
      * @return  the list of keys
      */
     public ArrayList<String> getKeys() { return keys; }
     
     /**
      * Gets the value for the given key.
-     * 
+     *
      * @param key  the key
      * @return  the entry
      */
@@ -50,7 +50,7 @@ public class Box {
     
     /**
      * Gets the tag for a given key.
-     * 
+     *
      * @param key  the key
      * @return  the tag
      */
@@ -60,7 +60,7 @@ public class Box {
      * Adds tag category for a given id.
      * <p>
      * Automatically updates the list of keys.
-     * 
+     *
      * @param id  the id
      * @param tag  the tag
      */
@@ -71,7 +71,7 @@ public class Box {
     
     /**
      * Adds an attribute for the given id.
-     * 
+     *
      * @param id  the id
      * @param att  the attribute name
      * @param val  the attribute value
@@ -83,7 +83,7 @@ public class Box {
     
     /**
      * Adds a value for a given id.
-     * 
+     *
      * @param id  the id
      * @param val  the value
      */
@@ -95,7 +95,7 @@ public class Box {
     
     /**
      * Gets a mapping from attribute name to value for a given id.
-     * 
+     *
      * @param id  the id
      * @return  a map of attribute names to values
      */
@@ -110,7 +110,7 @@ public class Box {
     
     /**
      * Gets a mapping from id to value for untagged entries.
-     * 
+     *
      * @return  a map of id to value
      */
     public MiniBox getIdVal() {
@@ -124,7 +124,7 @@ public class Box {
     
     /**
      * Gets a mapping from id to value of "value" attribute for a given tag.
-     * 
+     *
      * @param tag  the tag
      * @return  the map of id to value
      */
@@ -132,7 +132,7 @@ public class Box {
     
     /**
      * Gets a mapping from id to selected attribute value for a given tag.
-     * 
+     *
      * @param tag  the tag
      * @param att  the attribute name
      * @return  a map of id to selected attribute value
@@ -150,7 +150,7 @@ public class Box {
     
     /**
      * Filters box by entries matching the given tag.
-     * 
+     *
      * @param tag  the tag
      * @return  a box containing filtered entries
      */
@@ -172,7 +172,7 @@ public class Box {
     
     /**
      * Filters box by entries matching the given attribute.
-     * 
+     *
      * @param att  the attribute
      * @return  a box containing filtered entries
      */
@@ -200,7 +200,7 @@ public class Box {
     
     /**
      * Compares two {@code Box} instances.
-     * 
+     *
      * @param box  the {@code Box} to compare to
      * @return  {@code true} if both boxes have the same entries, {@code false} otherwise
      */
@@ -210,7 +210,7 @@ public class Box {
     
     /**
      * Formats the {@code Box} as a string.
-     * 
+     *
      * @return  the string
      */
     public String toString() {

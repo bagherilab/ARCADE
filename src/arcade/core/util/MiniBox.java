@@ -35,14 +35,14 @@ public class MiniBox {
     
     /**
      * Gets list of keys in the box.
-     * 
+     *
      * @return  the list of keys
      */
     public ArrayList<String> getKeys() { return keys; }
     
     /**
      * Gets the value for the given key.
-     * 
+     *
      * @param id  the key
      * @return  the value
      */
@@ -50,7 +50,7 @@ public class MiniBox {
     
     /**
      * Gets the value for given key converted to an integer.
-     * 
+     *
      * @param id  the key
      * @return  the value
      */
@@ -61,7 +61,7 @@ public class MiniBox {
     
     /**
      * Gets the value for given key converted to a double.
-     * 
+     *
      * @param id  the key
      * @return  the value
      */
@@ -72,7 +72,7 @@ public class MiniBox {
     
     /**
      * Checks if the given key exists.
-     * 
+     *
      * @param id  the key
      * @return  {@code true} if the key exists, {@code false} otherwise
      */
@@ -80,7 +80,7 @@ public class MiniBox {
     
     /**
      * Adds a key and integer value pair to the map.
-     * 
+     *
      * @param id  the key
      * @param val  the value
      */
@@ -88,7 +88,7 @@ public class MiniBox {
     
     /**
      * Adds a key and double value pair to the map.
-     * 
+     *
      * @param id  the key
      * @param val  the value
      */
@@ -96,7 +96,7 @@ public class MiniBox {
     
     /**
      * Adds a key and value pair to the map.
-     * 
+     *
      * @param id  the key
      * @param val  the value
      */
@@ -111,7 +111,7 @@ public class MiniBox {
      * Entries in the form "key = value" where key = code/subkey can be filtered.
      * The returned box contains all entries in the form "subkey = value"
      * for all entries where the code matches the given code.
-     * 
+     *
      * @param code  the code to filter by
      * @return  the filtered box
      */
@@ -128,7 +128,7 @@ public class MiniBox {
     
     /**
      * Compares two {@code MiniBox} instances.
-     * 
+     *
      * @param box  the {@code MiniBox} to compare to
      * @return  {@code true} if both boxes have the same entries, {@code false} otherwise
      */
@@ -152,7 +152,7 @@ public class MiniBox {
     
     /**
      * Formats the {@code MiniBox} as a string.
-     * 
+     *
      * @return  the string
      */
     public String toString() {

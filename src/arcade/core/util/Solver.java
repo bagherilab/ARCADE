@@ -52,7 +52,7 @@ public class Solver {
     public interface Equations {
         /**
          * Applies equations to inputs.
-         * 
+         *
          * @param t  the time step
          * @param y  the array of inputs
          * @return  the array of outputs
@@ -64,7 +64,7 @@ public class Solver {
     public interface Function {
         /**
          * Applies function to input.
-         * 
+         *
          * @param x  the input value
          * @return  the output value
          */
@@ -80,7 +80,7 @@ public class Solver {
     
     /**
      * Solves a system of ODEs using forward Euler.
-     * 
+     *
      * @param eq  the system of equations
      * @param t0  the initial time
      * @param y0  the array of initial values
@@ -112,7 +112,7 @@ public class Solver {
     
     /**
      * Solves a system of ODEs using classic Runge-Kutta.
-     * 
+     *
      * @param eq  the system of equations
      * @param t0  the initial time
      * @param y0  the array of initial values
@@ -169,7 +169,7 @@ public class Solver {
     
     /**
      * Solves a system of ODEs using adaptive timestep Cash-Karp.
-     * 
+     *
      * @param eq  the system of equations
      * @param t0  the initial time
      * @param y0  the array of initial values
@@ -261,7 +261,7 @@ public class Solver {
      * Solves a linear system of equations using successive over-relaxation.
      * <p>
      * Based on matrix size, the algorithm with use a dense or sparse approach.
-     * 
+     *
      * @param mat  the matrix of coefficients
      * @param vec  the right-hand side vector
      * @param x0  the initial guess for the left-hand side vector
@@ -278,7 +278,7 @@ public class Solver {
     
     /**
      * Solves linear system of equations using SOR with dense matrix representation.
-     * 
+     *
      * @param mat  the matrix of coefficients
      * @param vec  the right-hand side vector
      * @param x0  the initial guess for the left-hand side vector
@@ -316,7 +316,7 @@ public class Solver {
     
     /**
      * Solves linear system of equations using SOR with sparse matrix representation.
-     * 
+     *
      * @param mat  the matrix of coefficients
      * @param vec  the right-hand side vector
      * @param x0  the initial guess for the left-hand side vector
@@ -361,7 +361,7 @@ public class Solver {
      * Root is found by repeatedly bisecting the interval and selecting the
      * interval in which the function changes sign.
      * If no root is found, the simulation will exit.
-     * 
+     *
      * @param func  the function
      * @param a  the lower bound on the interval
      * @param b  the upper bound on the interval
