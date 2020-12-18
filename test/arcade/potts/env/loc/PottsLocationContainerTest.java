@@ -9,7 +9,7 @@ import arcade.core.env.loc.Location;
 import arcade.potts.agent.cell.PottsCellContainer;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.env.loc.PottsLocationFactoryTest.PottsLocationFactoryMock;
 

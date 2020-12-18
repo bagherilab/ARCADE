@@ -9,12 +9,12 @@ import java.util.Random;
 import org.junit.rules.TemporaryFolder;
 import ec.util.MersenneTwisterFast;
 
-public final class TestUtilities {
+public final class ARCADETestUtilities {
     public static final double EPSILON = 1E-10;
     
     public static final MersenneTwisterFast RANDOM = new MersenneTwisterFast((long) (Math.random() * 1000));
     
-    protected TestUtilities() {
+    protected ARCADETestUtilities() {
         throw new UnsupportedOperationException();
     }
     

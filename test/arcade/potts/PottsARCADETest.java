@@ -11,7 +11,7 @@ import arcade.potts.sim.output.PottsOutputLoader;
 import arcade.potts.sim.output.PottsOutputSaver;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.core.ARCADETestUtilities.*;
 
 public class PottsARCADETest {
     @Rule

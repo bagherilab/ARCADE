@@ -19,7 +19,7 @@ import arcade.potts.env.loc.PottsLocationContainer;
 import arcade.potts.env.loc.Voxel;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;

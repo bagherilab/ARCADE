@@ -11,7 +11,7 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.agent.module.PottsModuleApoptosis.*;
 import static arcade.potts.util.PottsEnums.Phase;

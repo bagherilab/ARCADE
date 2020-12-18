@@ -17,7 +17,7 @@ import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.core.ARCADETestUtilities.*;
 
 public class ARCADETest {
     @Rule

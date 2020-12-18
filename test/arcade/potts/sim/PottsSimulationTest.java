@@ -24,7 +24,7 @@ import arcade.potts.env.loc.PottsLocationFactory;
 import arcade.potts.env.loc.Voxel;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.SEED_OFFSET;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Ordering;

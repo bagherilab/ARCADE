@@ -8,7 +8,7 @@ import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.env.loc.PottsLocationTest.*;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;

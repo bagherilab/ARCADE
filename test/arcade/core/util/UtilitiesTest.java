@@ -5,7 +5,7 @@ import java.util.Comparator;
 import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Utilities.*;
 
 public class UtilitiesTest {

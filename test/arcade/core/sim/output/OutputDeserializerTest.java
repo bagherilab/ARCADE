@@ -17,7 +17,7 @@ import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.LocationContainer;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.output.OutputDeserializer.*;
 
 public class OutputDeserializerTest {

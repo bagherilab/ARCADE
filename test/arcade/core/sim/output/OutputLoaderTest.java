@@ -14,7 +14,7 @@ import arcade.core.env.loc.LocationContainer;
 import arcade.core.sim.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Simulation.*;
 
 public class OutputLoaderTest {

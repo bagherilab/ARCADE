@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static arcade.core.TestUtilities.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class MiniBoxTest {
