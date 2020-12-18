@@ -16,12 +16,12 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.EPSILON;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsTest {
+    private static final double EPSILON = 1E-10;
     private static final double TEMPERATURE = 10;
     private static final double LV = random();
     private static final double LS = random();

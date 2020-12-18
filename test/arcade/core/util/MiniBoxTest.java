@@ -9,6 +9,7 @@ import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class MiniBoxTest {
+    private static final double EPSILON = 1E-10;
     private static final int NUMBER_KEYS = 10;
     
     @Test

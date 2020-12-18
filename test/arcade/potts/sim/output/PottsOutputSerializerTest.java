@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.internal.bind.TreeTypeAdapter;
 import com.google.gson.reflect.TypeToken;
+import ec.util.MersenneTwisterFast;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.loc.PottsLocationContainer;
@@ -25,6 +26,8 @@ import static arcade.potts.sim.output.PottsOutputSerializer.*;
 import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsOutputSerializerTest {
+    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomIntBetween(1, 1000));
+    
     static final JsonSerializationContext LOCATION_CONTEXT = new JsonSerializationContext() {
         @Override
         public JsonElement serialize(Object src) {

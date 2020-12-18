@@ -12,6 +12,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.internal.bind.TreeTypeAdapter;
 import com.google.gson.reflect.TypeToken;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.LocationContainer;
 import arcade.potts.agent.cell.PottsCellContainer;
@@ -27,6 +28,9 @@ import static arcade.potts.sim.output.PottsOutputDeserializer.*;
 import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsOutputDeserializerTest {
+    private static final double EPSILON = 1E-10;
+    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
+    
     static final JsonDeserializationContext CELL_CONTEXT = new JsonDeserializationContext() {
         @Override
         public <T> T deserialize(JsonElement json, Type typeOfT)

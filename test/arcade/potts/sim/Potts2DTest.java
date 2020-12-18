@@ -7,11 +7,11 @@ import arcade.core.env.grid.Grid;
 import arcade.potts.agent.cell.PottsCell;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.EPSILON;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
 
 public class Potts2DTest {
+    private static final double EPSILON = 1E-10;
     static final int REGION_DEFAULT = Region.DEFAULT.ordinal();
     static final int REGION_NUCLEUS = Region.NUCLEUS.ordinal();
     static PottsCell[] cells;

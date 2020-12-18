@@ -5,10 +5,11 @@ import java.util.Comparator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import static arcade.core.TestUtilities.EPSILON;
 import static arcade.core.util.Matrix.*;
 
 public class MatrixTest {
+    private static final double EPSILON = 1E-10;
+    
     private static final double[][] A1D = new double[][] {
         {  1,  2,  3,  4,  5 },
         {  6,  7,  8,  9, 10 },

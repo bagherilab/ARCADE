@@ -13,11 +13,11 @@ import arcade.core.util.MiniBox;
 import arcade.potts.vis.PottsVisualization;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.EPSILON;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class PottsSeriesTest {
+    private static final double EPSILON = 1E-10;
     private static final double DS = (Math.random() * 10) + 1;
     private static final double DT = Math.random() + 0.5;
     private static final Box PARAMETERS = new Box();

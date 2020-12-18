@@ -9,6 +9,8 @@ import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Utilities.*;
 
 public class UtilitiesTest {
+    private static final double EPSILON = 1E-10;
+    
     @Test(expected = UnsupportedOperationException.class)
     public void constructor_called_throwsException() {
         Utilities utilities = new Utilities();

@@ -18,10 +18,10 @@ import arcade.core.util.MiniBox;
 import arcade.core.vis.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.TestUtilities.EPSILON;
 import static arcade.core.sim.Series.SEED_OFFSET;
 
 public class SeriesTest {
+    private static final double EPSILON = 1E-10;
     private static final double DS = (Math.random() * 10) + 1;
     private static final double DT = Math.random() + 0.5;
     private static final Box PARAMETERS = new Box();

@@ -20,6 +20,7 @@ import static arcade.potts.agent.module.PottsModuleProliferation.*;
 import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsModuleProliferationSimpleTest {
+    private static final double EPSILON = 1E-10;
     private static final double R = 1.0;
     static MersenneTwisterFast random;
     static PottsSimulation simMock;

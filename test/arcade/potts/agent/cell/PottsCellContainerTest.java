@@ -3,6 +3,7 @@ package arcade.potts.agent.cell;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import org.junit.Test;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
@@ -18,6 +19,9 @@ import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsCellContainerTest {
+    private static final double EPSILON = 1E-10;
+    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
+    
     @Test
     public void constructor_noRegionsNoTargets_setsFields() {
         int id = randomIntBetween(1, 10);

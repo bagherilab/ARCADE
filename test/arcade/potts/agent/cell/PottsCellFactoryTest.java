@@ -22,6 +22,8 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsCellFactoryTest {
+    private static final double EPSILON = 1E-10;
+    
     static Series createSeries(int[] init, int[] volumes) {
         Series series = mock(Series.class);
         series.populations = new HashMap<>();

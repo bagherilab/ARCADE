@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import sim.engine.Schedule;
 import sim.engine.Stoppable;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.module.*;
 import arcade.core.env.loc.*;
 import arcade.core.util.MiniBox;
@@ -29,7 +30,9 @@ import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsCellTest {
+    private static final double EPSILON = 1E-10;
     private static final double VOLUME_SURFACE_RATIO = Math.random();
+    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
     static double lambdaVolume;
     static double lambdaSurface;
     static double adhesionTo0;
