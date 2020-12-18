@@ -3,7 +3,7 @@ plugins {
     id "jacoco"
 }
 
-version = "2.3"
+version = "3.0"
 sourceCompatibility = 1.8
 
 repositories {
