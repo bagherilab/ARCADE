@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -79,7 +80,8 @@ public class ARCADETest {
     @Test
     public void loadCommands_called_loadsBox() throws IOException, SAXException {
         File file = folder.newFile("command.xml");
-        write(file, "<commands><switch id=\"MOCK\" /></commands>");
+        FileUtils.writeStringToFile(file,
+                "<commands><switch id=\"MOCK\" /></commands>", "UTF-8");
         
         ARCADE arcade = new MockARCADE();
         Box commands = arcade.loadCommands();
@@ -91,7 +93,8 @@ public class ARCADETest {
     @Test
     public void loadParameters_called_loadsBox() throws IOException, SAXException {
         File file = folder.newFile("parameter.xml");
-        write(file, "<parameter><mockparameter id=\"MOCK\" value=\"MOCK_VALUE\" /></parameter>");
+        FileUtils.writeStringToFile(file,
+                "<parameter><mockparameter id=\"MOCK\" value=\"MOCK_VALUE\" /></parameter>", "UTF-8");
         
         ARCADE arcade = new MockARCADE();
         Box parameters = arcade.loadParameters();

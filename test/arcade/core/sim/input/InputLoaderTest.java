@@ -2,6 +2,7 @@ package arcade.core.sim.input;
 
 import java.io.File;
 import java.io.IOException;
+import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -10,7 +11,6 @@ import org.xml.sax.SAXException;
 import arcade.core.util.Box;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
@@ -33,7 +33,7 @@ public class InputLoaderTest {
     @Test
     public void load_validInput_createsBox() throws IOException, SAXException {
         File file = folder.newFile("load_validInput_createsBox.xml");
-        write(file, "<tag></tag>");
+        FileUtils.writeStringToFile(file, "<tag></tag>", "UTF-8");
         
         InputLoader loader = new InputLoader();
         loader.load(file.getAbsolutePath());
@@ -43,7 +43,7 @@ public class InputLoaderTest {
     @Test
     public void load_validInputGivenBox_usesBox() throws IOException, SAXException {
         File file = folder.newFile("load_validInput_createsBox.xml");
-        write(file, "<tag></tag>");
+        FileUtils.writeStringToFile(file, "<tag></tag>", "UTF-8");
         
         InputLoader loader = new InputLoader();
         Box box = new Box();
@@ -55,7 +55,7 @@ public class InputLoaderTest {
     @Test
     public void load_validInputNoContents_loadsBox() throws IOException, SAXException {
         File file = folder.newFile("load_validInputNoContents_loadsBox.xml");
-        write(file, "<tag></tag>");
+        FileUtils.writeStringToFile(file, "<tag></tag>", "UTF-8");
         
         InputLoader loader = new InputLoader();
         Box box = loader.load(file.getAbsolutePath());
@@ -66,7 +66,7 @@ public class InputLoaderTest {
     @Test
     public void load_validInputNoContentsGivenBox_updatesBox() throws IOException, SAXException {
         File file = folder.newFile("load_validInputNoContentsGivenBox_updatesBox.xml");
-        write(file, "<tag></tag>");
+        FileUtils.writeStringToFile(file, "<tag></tag>", "UTF-8");
         
         InputLoader loader = new InputLoader();
         Box box = new Box();
@@ -79,10 +79,10 @@ public class InputLoaderTest {
     @Test
     public void load_validInputWithContents_loadsBox() throws IOException, SAXException {
         File file = folder.newFile("load_validInputWithContents_loadsBox.xml");
-        write(file, "<tag>"
+        FileUtils.writeStringToFile(file, "<tag>"
                 + "<tag1 id=\"id1\" att1=\"value11\" att2=\"value12\" />"
                 + "<tag2 id=\"id2\" att1=\"value21\" att2=\"value22\" />"
-                + "</tag>");
+                + "</tag>", "UTF-8");
         
         InputLoader loader = new InputLoader();
         Box box = loader.load(file.getAbsolutePath());
@@ -101,10 +101,10 @@ public class InputLoaderTest {
     @Test
     public void load_validInputWithContentsGivenBox_updatesBox() throws IOException, SAXException {
         File file = folder.newFile("load_validInputWithContents_loadsBox.xml");
-        write(file, "<tag>"
+        FileUtils.writeStringToFile(file, "<tag>"
                 + "<tag1 id=\"id1\" att1=\"value11\" att2=\"value12\" />"
                 + "<tag2 id=\"id2\" att1=\"value21\" att2=\"value22\" />"
-                + "</tag>");
+                + "</tag>", "UTF-8");
         
         InputLoader loader = new InputLoader();
         Box box = new Box();

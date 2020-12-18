@@ -30,7 +30,7 @@ import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Ordering;
 
 public class PottsSimulationTest {
-    static final long RANDOM_SEED = (long) (Math.random() * 1000);
+    static final long RANDOM_SEED = randomSeed();
     private static final int TOTAL_LOCATIONS = 6;
     static Series seriesZeroPop;
     static Series seriesOnePop;
@@ -39,8 +39,6 @@ public class PottsSimulationTest {
     static Series seriesNullLocation;
     static Series seriesNullBoth;
     
-    static double random() { return Math.random() * 100; }
-    
     static Series createSeries(int[] pops, String[] keys) {
         Series series = mock(PottsSeries.class);
         HashMap<String, MiniBox> populations = new HashMap<>();
@@ -48,11 +46,11 @@ public class PottsSimulationTest {
         for (int i = 0; i < pops.length; i++) {
             MiniBox population = new MiniBox();
             population.put("CODE", pops[i]);
-            population.put("ADHESION:*", random());
+            population.put("ADHESION:*", randomDoubleBetween(0, 100));
             populations.put(keys[i], population);
             
             for (String key : keys) {
-                population.put("ADHESION" + TARGET_SEPARATOR + key, random());
+                population.put("ADHESION" + TARGET_SEPARATOR + key, randomDoubleBetween(0, 100));
             }
         }
         
@@ -564,7 +562,7 @@ public class PottsSimulationTest {
         sim.series.saver = saver;
         sim.schedule = schedule;
         
-        int interval = (int) (random() * 100);
+        int interval = randomIntBetween(1, 100);
         doReturn(interval).when(series).getInterval();
         
         sim.doOutput(true);
@@ -583,7 +581,7 @@ public class PottsSimulationTest {
         sim.series.saver = saver;
         sim.schedule = schedule;
         
-        double time = random();
+        double time = randomDoubleBetween(1, 100);
         doReturn(time).when(sim.schedule).getTime();
         
         sim.doOutput(false);

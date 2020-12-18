@@ -7,6 +7,7 @@ import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 
 public class PottsLocations2DTest {
@@ -50,7 +51,7 @@ public class PottsLocations2DTest {
         loc.locations.put(Region.UNDEFINED, new PottsLocation2D(new ArrayList<>()));
         
         int n = 10;
-        int f = (int) (Math.random() * 10 * 0.9) + 1; // between 1 and 9, inclusive
+        int f = randomIntBetween(1, 9);
         
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {

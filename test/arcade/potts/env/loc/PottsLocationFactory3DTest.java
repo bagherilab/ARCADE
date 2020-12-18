@@ -7,6 +7,7 @@ import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public class PottsLocationFactory3DTest {
@@ -60,10 +61,10 @@ public class PottsLocationFactory3DTest {
     public void getPossible_givenSize_createsList() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
         
-        int x = (int) (Math.random() * 10);
-        int y = (int) (Math.random() * 10);
-        int z = (int) (Math.random() * 10);
-        int n = ((int) (Math.random() * 10) * 2) + 1;
+        int x = randomIntBetween(0, 10);
+        int y = randomIntBetween(0, 10);
+        int z = randomIntBetween(0, 10);
+        int n = randomIntBetween(0, 10) * 2 + 1;
         
         ArrayList<Voxel> list = factory.getPossible(new Voxel(x, y, z), n);
         assertEquals(n * n * n, list.size());

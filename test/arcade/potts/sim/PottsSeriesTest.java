@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Random;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import arcade.core.sim.Series;
@@ -13,13 +12,14 @@ import arcade.core.util.MiniBox;
 import arcade.potts.vis.PottsVisualization;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class PottsSeriesTest {
     private static final double EPSILON = 1E-10;
-    private static final double DS = (Math.random() * 10) + 1;
-    private static final double DT = Math.random() + 0.5;
+    private static final double DS = randomDoubleBetween(1, 10);
+    private static final double DT = randomDoubleBetween(0.5, 2);
     private static final Box PARAMETERS = new Box();
     
     private static final String REGION_ID_1 = randomString().toUpperCase();
@@ -35,9 +35,9 @@ public class PottsSeriesTest {
     };
     
     private static final double[] POTTS_PARAMETER_VALUES = new double[] {
-            randomInt(),
-            randomInt(),
-            randomInt()
+            randomIntBetween(1, 100),
+            randomIntBetween(1, 100),
+            randomIntBetween(1, 100),
     };
     
     private static final int POTTS_PARAMETER_COUNT = POTTS_PARAMETER_NAMES.length;
@@ -60,21 +60,21 @@ public class PottsSeriesTest {
     };
     
     private static final double[] POPULATION_PARAMETER_VALUES = new double[] {
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
-            randomDouble(),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
+            randomDoubleBetween(1, 100),
     };
     
     private static final String POPULATION_ID_1 = randomString();
@@ -83,17 +83,6 @@ public class PottsSeriesTest {
     
     private static final MiniBox POTTS = new MiniBox();
     private static final MiniBox POPULATION = new MiniBox();
-    
-    static int randomInt() { return (int) (Math.random() * 100) + 1; }
-    
-    static double randomDouble() { return Math.random() * 100; }
-    
-    static String randomString() {
-        return new Random().ints(65, 91)
-                .limit(5)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
     
     @BeforeClass
     public static void setupParameters() {
@@ -190,8 +179,8 @@ public class PottsSeriesTest {
             for (String pottsParameter2 : POTTS_PARAMETER_NAMES) {
                 Box potts = new Box();
                 
-                double value = randomDouble();
-                double scale = randomDouble();
+                double value = randomDoubleBetween(1, 100);
+                double scale = randomDoubleBetween(1, 100);
                 potts.addAtt(pottsParameter1, "value", "" + value);
                 potts.addTag(pottsParameter1, "PARAMETER");
                 potts.addAtt(pottsParameter2, "scale", "" + scale);
@@ -364,8 +353,8 @@ public class PottsSeriesTest {
                 Box[] boxes = new Box[] { new Box() };
                 boxes[0].add("id", POPULATION_ID_1);
                 
-                double value = randomDouble();
-                double scale = randomDouble();
+                double value = randomDoubleBetween(1, 100);
+                double scale = randomDoubleBetween(1, 100);
                 boxes[0].addAtt(populationParameter1, "value", "" + value);
                 boxes[0].addTag(populationParameter1, "PARAMETER");
                 boxes[0].addAtt(populationParameter2, "scale", "" + scale);
@@ -411,8 +400,8 @@ public class PottsSeriesTest {
                 boxes[1].add("id", POPULATION_ID_2);
                 boxes[2].add("id", POPULATION_ID_3);
                 
-                double value = randomDouble();
-                double scale = randomDouble();
+                double value = randomDoubleBetween(1, 100);
+                double scale = randomDoubleBetween(1, 100);
                 boxes[1].addAtt(populationParameter1, "value", "" + value);
                 boxes[1].addTag(populationParameter1, "PARAMETER");
                 boxes[1].addAtt(populationParameter2, "scale", "" + scale);
@@ -441,7 +430,7 @@ public class PottsSeriesTest {
         Box[] boxes = new Box[] { new Box() };
         boxes[0].add("id", POPULATION_ID_1);
         
-        String adhesion = "" + randomDouble();
+        String adhesion = "" + randomDoubleBetween(1, 100);
         boxes[0].addAtt("ADHESION", "value", adhesion);
         boxes[0].addTag("ADHESION", "PARAMETER");
         
@@ -460,12 +449,12 @@ public class PottsSeriesTest {
                 Box[] boxes = new Box[] { new Box() };
                 boxes[0].add("id", POPULATION_ID_1);
                 
-                double adhesion = randomDouble();
+                double adhesion = randomDoubleBetween(1, 100);
                 boxes[0].addAtt("ADHESION", "value", "" + adhesion);
                 boxes[0].addTag("ADHESION", "PARAMETER");
                 
-                double value = randomDouble();
-                double scale = randomDouble();
+                double value = randomDoubleBetween(1, 100);
+                double scale = randomDoubleBetween(1, 100);
                 boxes[0].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "value", "" + value);
                 boxes[0].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "PARAMETER");
                 boxes[0].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "scale", "" + scale);
@@ -491,7 +480,7 @@ public class PottsSeriesTest {
         boxes[1].add("id", POPULATION_ID_2);
         boxes[2].add("id", POPULATION_ID_3);
         
-        String adhesion = "" + randomDouble();
+        String adhesion = "" + randomDoubleBetween(1, 100);
         boxes[1].addAtt("ADHESION", "value", adhesion);
         boxes[1].addTag("ADHESION", "PARAMETER");
         
@@ -523,12 +512,12 @@ public class PottsSeriesTest {
                 boxes[0].add("id", POPULATION_ID_1);
                 boxes[1].add("id", POPULATION_ID_2);
                 
-                double adhesion = randomDouble();
+                double adhesion = randomDoubleBetween(1, 100);
                 boxes[1].addAtt("ADHESION", "value", "" + adhesion);
                 boxes[1].addTag("ADHESION", "PARAMETER");
                 
-                double value = randomDouble();
-                double scale = randomDouble();
+                double value = randomDoubleBetween(1, 100);
+                double scale = randomDoubleBetween(1, 100);
                 boxes[1].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "value", "" + value);
                 boxes[1].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "PARAMETER");
                 boxes[1].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "scale", "" + scale);
@@ -583,8 +572,8 @@ public class PottsSeriesTest {
                 boxes[0].addAtt(REGION_ID_1, "fraction", "0");
                 boxes[0].addAtt(REGION_ID_2, "fraction", "0");
                 
-                double value = randomDouble();
-                double scale = randomDouble();
+                double value = randomDoubleBetween(1, 100);
+                double scale = randomDoubleBetween(1, 100);
                 String key = REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR;
                 boxes[0].addAtt(key + modifiedRegion1, "value", "" + value);
                 boxes[0].addTag(key + modifiedRegion1, "PARAMETER");
@@ -610,7 +599,7 @@ public class PottsSeriesTest {
     @Test
     public void updatePopulation_withConversionOnePop_convertsValue() {
         MiniBox conversion = new MiniBox();
-        int i = (int) (Math.random() * POPULATION_PARAMETER_NAMES.length);
+        int i = randomIntBetween(0, POPULATION_PARAMETER_NAMES.length);
         String convertedParameter = POPULATION_PARAMETER_NAMES[i];
         conversion.put(convertedParameter, "DS");
         
@@ -629,7 +618,7 @@ public class PottsSeriesTest {
     @Test
     public void updatePopulation_withConversionMultiplePops_convertsValue() {
         MiniBox conversion = new MiniBox();
-        int i = (int) (Math.random() * POPULATION_PARAMETER_NAMES.length);
+        int i = randomIntBetween(0, POPULATION_PARAMETER_NAMES.length);
         String convertedParameter = POPULATION_PARAMETER_NAMES[i];
         conversion.put(convertedParameter, "DS");
         

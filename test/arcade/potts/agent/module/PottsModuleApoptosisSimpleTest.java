@@ -18,6 +18,7 @@ import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsModuleApoptosisSimpleTest {
     private static final double EPSILON = 1E-10;
+    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
     private static final double R = 1.0;
     static MersenneTwisterFast random;
     static PottsSimulation simMock;
@@ -45,7 +46,7 @@ public class PottsModuleApoptosisSimpleTest {
     @Test
     public void constructor_setsParameters() {
         PottsCell cell = mock(PottsCell.class);
-        when(cell.getParameters()).thenReturn(parameters);
+        doReturn(parameters).when(cell).getParameters();
         PottsModuleApoptosis module = new PottsModuleApoptosis.Simple(cell);
         
         assertEquals(parameters.getDouble("apoptosis/DURATION_EARLY"), module.durationEarly, EPSILON);
@@ -55,7 +56,7 @@ public class PottsModuleApoptosisSimpleTest {
     @Test
     public void constructor_calculatesParameters() {
         PottsCell cell = mock(PottsCell.class);
-        when(cell.getParameters()).thenReturn(parameters);
+        doReturn(parameters).when(cell).getParameters();
         PottsModuleApoptosis module = new PottsModuleApoptosis.Simple(cell);
         
         double durationEarly = parameters.getDouble("apoptosis/DURATION_EARLY");
@@ -75,7 +76,7 @@ public class PottsModuleApoptosisSimpleTest {
     
     @Test
     public void setPhase_givenValue_setsValue() {
-        Phase phase = Phase.values()[(int) (Math.random() * Phase.values().length)];
+        Phase phase = Phase.random(RANDOM);
         PottsModuleApoptosis module = new PottsModuleApoptosis.Simple(cellMock);
         module.setPhase(phase);
         assertEquals(phase, module.phase);
@@ -116,7 +117,7 @@ public class PottsModuleApoptosisSimpleTest {
     public void stepEarly_anyTransitionRegions_updatesCell() {
         for (int i = 0; i < 10; i++) {
             PottsCell cell = mock(PottsCell.class);
-            when(cell.getParameters()).thenReturn(parameters);
+            doReturn(parameters).when(cell).getParameters();
             doReturn(true).when(cell).hasRegions();
             
             PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
@@ -133,7 +134,7 @@ public class PottsModuleApoptosisSimpleTest {
     public void stepEarly_anyTransitionNoRegions_updatesCell() {
         for (int i = 0; i < 10; i++) {
             PottsCell cell = mock(PottsCell.class);
-            when(cell.getParameters()).thenReturn(parameters);
+            doReturn(parameters).when(cell).getParameters();
             
             PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
             module.phase = Phase.APOPTOTIC_EARLY;
@@ -148,7 +149,7 @@ public class PottsModuleApoptosisSimpleTest {
     @Test
     public void stepEarly_noTransition_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
-        when(cell.getParameters()).thenReturn(parameters);
+        doReturn(parameters).when(cell).getParameters();
         
         PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
         module.phase = Phase.APOPTOTIC_EARLY;
@@ -160,7 +161,7 @@ public class PottsModuleApoptosisSimpleTest {
     @Test
     public void stepEarly_withTransition_updatesPhase() {
         PottsCell cell = mock(PottsCell.class);
-        when(cell.getParameters()).thenReturn(parameters);
+        doReturn(parameters).when(cell).getParameters();
         
         PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
         module.phase = Phase.APOPTOTIC_EARLY;
@@ -173,7 +174,7 @@ public class PottsModuleApoptosisSimpleTest {
     public void stepLate_anyTransitionRegions_updatesCell() {
         for (int i = 0; i < 10; i++) {
             PottsCell cell = mock(PottsCell.class);
-            when(cell.getParameters()).thenReturn(parameters);
+            doReturn(parameters).when(cell).getParameters();
             doReturn(true).when(cell).hasRegions();
             
             PottsLocation location = mock(PottsLocation.class);
@@ -195,7 +196,7 @@ public class PottsModuleApoptosisSimpleTest {
     public void stepLate_anyTransitionNoRegions_updatesCell() {
         for (int i = 0; i < 10; i++) {
             PottsCell cell = mock(PottsCell.class);
-            when(cell.getParameters()).thenReturn(parameters);
+            doReturn(parameters).when(cell).getParameters();
             
             PottsLocation location = mock(PottsLocation.class);
             doReturn(location).when(cell).getLocation();
@@ -215,7 +216,7 @@ public class PottsModuleApoptosisSimpleTest {
     @Test
     public void stepLate_noTransitionProbability_doesNothing() {
         PottsCell cell = mock(PottsCell.class);
-        when(cell.getParameters()).thenReturn(parameters);
+        doReturn(parameters).when(cell).getParameters();
         
         PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
         doNothing().when(module).removeCell(simMock);
@@ -229,7 +230,7 @@ public class PottsModuleApoptosisSimpleTest {
     @Test
     public void stepLate_withTransitionProbability_updatesPhase() {
         PottsCell cell = mock(PottsCell.class);
-        when(cell.getParameters()).thenReturn(parameters);
+        doReturn(parameters).when(cell).getParameters();
         
         PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
         doNothing().when(module).removeCell(simMock);
@@ -243,9 +244,9 @@ public class PottsModuleApoptosisSimpleTest {
     @Test
     public void stepLate_noTransitionSize_doesNothing() {
         PottsCell cell = mock(PottsCell.class);
-        when(cell.getParameters()).thenReturn(parameters);
+        doReturn(parameters).when(cell).getParameters();
         
-        double volume = Math.random() * 100;
+        double volume = randomDoubleBetween(0, 100);
         when(cell.getVolume()).thenReturn((int) (volume * APOPTOSIS_CHECKPOINT) + 1);
         when(cell.getCriticalVolume()).thenReturn(volume);
         
@@ -261,9 +262,9 @@ public class PottsModuleApoptosisSimpleTest {
     @Test
     public void stepLate_withTransitionSize_updatesPhase() {
         PottsCell cell = mock(PottsCell.class);
-        when(cell.getParameters()).thenReturn(parameters);
+        doReturn(parameters).when(cell).getParameters();
         
-        double volume = Math.random() * 100;
+        double volume = randomDoubleBetween(0, 100);
         when(cell.getVolume()).thenReturn((int) (volume * APOPTOSIS_CHECKPOINT) - 1);
         when(cell.getCriticalVolume()).thenReturn(volume);
         
@@ -288,7 +289,7 @@ public class PottsModuleApoptosisSimpleTest {
         Grid grid = mock(Grid.class);
         PottsSimulation sim = mock(PottsSimulation.class);
         
-        int id = (int) (Math.random() * 100) + 1;
+        int id = randomIntBetween(1, 100);
         doReturn(potts).when(sim).getPotts();
         doReturn(id).when(cell).getID();
         doReturn(grid).when(sim).getGrid();

@@ -28,7 +28,7 @@ public class PottsLocationsTest {
     static ArrayList<Voxel> voxelListA;
     static ArrayList<Voxel> voxelListB;
     static ArrayList<Voxel> voxelListAB;
-    static final int LOCATIONS_SURFACE = (int) (Math.random() * 100);
+    static final int LOCATIONS_SURFACE = randomIntBetween(0, 100);
     
     @BeforeClass
     public static void setupMocks() {

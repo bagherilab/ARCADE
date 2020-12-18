@@ -1,6 +1,7 @@
 package arcade.potts;
 
 import java.io.File;
+import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -11,9 +12,18 @@ import arcade.potts.sim.output.PottsOutputLoader;
 import arcade.potts.sim.output.PottsOutputSaver;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.ARCADETestUtilities.*;
 
 public class PottsARCADETest {
+    static final String SETUP_TEMPLATE = "<set path=\"###/\">"
+            + "<series name=\"***\" ticks=\"1\" interval=\"1\" height=\"1\" start=\"0\" end=\"0\">"
+            + "</series></set>";
+    
+    static String makeSetup(TemporaryFolder folder, String name) {
+        return SETUP_TEMPLATE
+                .replace("###", folder.getRoot().getAbsolutePath())
+                .replace("***", name);
+    }
+    
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
     
@@ -21,14 +31,14 @@ public class PottsARCADETest {
     public void main_noVis_savesFiles() throws Exception {
         String name = "main_noVis_savesFiles";
         File setupFile = folder.newFile("setup.xml");
-        write(setupFile, makeSetup(folder, name));
+        FileUtils.writeStringToFile(setupFile, makeSetup(folder, name), "UTF-8");
         
         String[] args = new String[] { "potts", setupFile.getPath() };
         ARCADE.main(args);
-    
+        
         File mainOutput = new File(folder.getRoot() + "/" + name + ".json");
         assertTrue(mainOutput.exists());
-    
+        
         String[] timepoints = new String[] { "0000_000000", "0000_000001" };
         for (String tp : timepoints) {
             File cellOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".CELLS.json");
@@ -42,10 +52,10 @@ public class PottsARCADETest {
     public void main_withVis_savesNothing() throws Exception {
         String name = "main_withVis_savesNothing";
         File setupFile = folder.newFile("setup.xml");
-        write(setupFile, makeSetup(folder, name));
-    
+        FileUtils.writeStringToFile(setupFile, makeSetup(folder, name), "UTF-8");
+        
         System.setProperty("java.awt.headless", "true");
-    
+        
         String[] args = new String[] { "potts", setupFile.getPath(), "--vis" };
         ARCADE.main(args);
         

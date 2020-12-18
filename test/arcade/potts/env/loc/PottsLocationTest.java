@@ -15,7 +15,7 @@ import static arcade.potts.util.PottsEnums.Direction;
 public class PottsLocationTest {
     static MersenneTwisterFast randomDoubleZero;
     static MersenneTwisterFast randomDoubleOne;
-    static final int LOCATION_SURFACE = (int) (Math.random() * 100);
+    static final int LOCATION_SURFACE = randomIntBetween(0, 100);
     static ArrayList<Voxel> voxelListForAddRemove;
     static ArrayList<Voxel> voxelListA;
     static ArrayList<Voxel> voxelListB;
@@ -139,7 +139,7 @@ public class PottsLocationTest {
     public void getVoxels_hasVoxels_returnsList() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
-        int n = (int) (Math.random() * 100) + 1;
+        int n = randomIntBetween(1, 100);
         for (int i = 0; i < n; i++) {
             voxels.add(new Voxel(i, i, i));
         }

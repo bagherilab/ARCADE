@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.env.loc.Location2D.SURFACE_VOLUME_MULTIPLIER;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
@@ -106,14 +107,14 @@ public class Location2DTest {
     @Test
     public void convertVolume_givenLocationValue_calculatesValue() {
         PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
-        double volume = Math.random() * 100;
+        double volume = randomDoubleBetween(0, 100);
         assertEquals(SURFACE_VOLUME_MULTIPLIER * Math.sqrt(volume), loc.convertVolume(volume), EPSILON);
     }
     
     @Test
     public void convertVolume_givenLocationsValue_calculatesValue() {
         PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
-        double volume = Math.random() * 100;
+        double volume = randomDoubleBetween(0, 100);
         assertEquals(SURFACE_VOLUME_MULTIPLIER * Math.sqrt(volume), loc.convertVolume(volume), EPSILON);
     }
     
@@ -278,7 +279,7 @@ public class Location2DTest {
             for (int j = 0; j < n; j++) {
                 if (i == n / 2 && j == n / 2) {
                     voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0));
-                } else if (Math.random() < 0.5) {
+                } else if (randomDoubleBetween(0, 1) < 0.5) {
                     voxelsA.add(new Voxel(i - n / 2, j - n / 2, 0));
                 } else {
                     voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0));
@@ -308,7 +309,7 @@ public class Location2DTest {
             for (int j = 0; j < n; j++) {
                 if (i == n / 2 && j == n / 2) {
                     voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0));
-                } else if (Math.random() < 0.5) {
+                } else if (randomDoubleBetween(0, 1) < 0.5) {
                     voxelsA.add(new Voxel(i - n / 2, j - n / 2, 0));
                 } else {
                     voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0));
@@ -333,7 +334,7 @@ public class Location2DTest {
             for (int j = 0; j < n; j++) {
                 if (i == n / 2 && j == n / 2) {
                     voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0));
-                } else if (Math.random() < 0.5) {
+                } else if (randomDoubleBetween(0, 1) < 0.5) {
                     voxelsA.add(new Voxel(i - n / 2, j - n / 2, 0));
                 } else {
                     voxelsB.add(new Voxel(i - n / 2, j - n / 2, 0));

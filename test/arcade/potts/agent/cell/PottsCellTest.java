@@ -31,7 +31,7 @@ import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsCellTest {
     private static final double EPSILON = 1E-10;
-    private static final double VOLUME_SURFACE_RATIO = Math.random();
+    private static final double VOLUME_SURFACE_RATIO = randomDoubleBetween(0, 10);
     private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
     static double lambdaVolume;
     static double lambdaSurface;
@@ -49,8 +49,8 @@ public class PottsCellTest {
     static int locationSurface;
     static EnumMap<Region, Integer> locationRegionVolumes;
     static EnumMap<Region, Integer> locationRegionSurfaces;
-    static int cellID = (int) (Math.random() * 10) + 1;
-    static int cellPop = (int) (Math.random() * 10) + 1;
+    static int cellID = randomIntBetween(1, 10);
+    static int cellPop = randomIntBetween(1, 10);
     static PottsCell cellDefault;
     static PottsCell cellWithRegions;
     static PottsCell cellWithoutRegions;
@@ -63,13 +63,13 @@ public class PottsCellTest {
         parametersMock = mock(MiniBox.class);
         
         // Random lambda values.
-        lambdaVolume = Math.random();
-        lambdaSurface = Math.random();
+        lambdaVolume = randomDoubleBetween(0, 10);
+        lambdaSurface = randomDoubleBetween(0, 10);
         
         // Random adhesion values.
-        adhesionTo0 = Math.random();
-        adhesionTo1 = Math.random();
-        adhesionTo2 = Math.random();
+        adhesionTo0 = randomDoubleBetween(0, 10);
+        adhesionTo1 = randomDoubleBetween(0, 10);
+        adhesionTo2 = randomDoubleBetween(0, 10);
         
         locationMock = mock(PottsLocation.class);
         regionList = EnumSet.of(Region.DEFAULT, Region.NUCLEUS);
@@ -86,8 +86,8 @@ public class PottsCellTest {
         
         // Random volumes and surfaces for regions.
         for (Region region : regionList) {
-            locationRegionVolumes.put(region, (int) (Math.random() * 100));
-            locationRegionSurfaces.put(region, (int) (Math.random() * 100));
+            locationRegionVolumes.put(region, randomIntBetween(0, 100));
+            locationRegionSurfaces.put(region, randomIntBetween(0, 100));
             
             when(locationMock.getVolume(region)).thenReturn(locationRegionVolumes.get(region));
             when(locationMock.getSurface(region)).thenReturn(locationRegionSurfaces.get(region));
@@ -120,8 +120,8 @@ public class PottsCellTest {
         lambdasRegionMock = new EnumMap<>(Region.class);
         for (Region region : regionList) {
             EnumMap<Term, Double> lambdasRegionTerms = new EnumMap<>(Term.class);
-            lambdasRegionTerms.put(Term.VOLUME, Math.random() * 100);
-            lambdasRegionTerms.put(Term.SURFACE, Math.random() * 100);
+            lambdasRegionTerms.put(Term.VOLUME, randomDoubleBetween(0, 100));
+            lambdasRegionTerms.put(Term.SURFACE, randomDoubleBetween(0, 100));
             lambdasRegionMock.put(region, lambdasRegionTerms);
         }
         
@@ -132,7 +132,7 @@ public class PottsCellTest {
         for (Region region : regionList) {
             EnumMap<Region, Double> adhesionRegionTarget = new EnumMap<>(Region.class);
             for (Region target : regionList) {
-                adhesionRegionTarget.put(target, Math.random() * 100);
+                adhesionRegionTarget.put(target, randomDoubleBetween(0, 100));
             }
             adhesionRegionMock.put(region, adhesionRegionTarget);
         }
@@ -169,7 +169,7 @@ public class PottsCellTest {
     
     @Test
     public void getPop_valueAssigned_returnsValue() {
-        int pop = (int) (Math.random() * 100);
+        int pop = randomIntBetween(0, 100);
         PottsCell cell = make(cellID, pop, false);
         assertEquals(pop, cell.getPop());
     }
@@ -194,7 +194,7 @@ public class PottsCellTest {
     
     @Test
     public void getAge_valueAssigned_returnsValue() {
-        int cellAge = (int) (Math.random() * 100);
+        int cellAge = randomIntBetween(0, 100);
         PottsCell cell = new PottsCell(cellID, 0, State.QUIESCENT, cellAge, locationMock,
                 false, parametersMock, adhesionMock, criticalsMock, lambdasMock, null, null, null);
         assertEquals(cellAge, cell.getAge());
@@ -634,7 +634,7 @@ public class PottsCellTest {
     
     @Test
     public void make_noRegions_setsFields() {
-        int n = (int) (Math.random() * 10) + 2;
+        int n = randomIntBetween(2, 10);
         EnumMap<Term, Double> criticals = new EnumMap<>(Term.class);
         EnumMap<Term, Double> lambdas = new EnumMap<>(Term.class);
         double[] adhesion = new double[n];
@@ -659,7 +659,7 @@ public class PottsCellTest {
     
     @Test
     public void make_hasRegions_setsFields() {
-        int n = (int) (Math.random() * 10) + 2;
+        int n = randomIntBetween(2, 10);
         EnumMap<Term, Double> criticals = new EnumMap<>(Term.class);
         EnumMap<Term, Double> lambdas = new EnumMap<>(Term.class);
         double[] adhesion = new double[n];
@@ -671,7 +671,7 @@ public class PottsCellTest {
         EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = new EnumMap<>(Region.class);
         
         for (int i = 0; i < n; i++) {
-            adhesion[i] = Math.random();
+            adhesion[i] = randomDoubleBetween(0, 10);
         }
         
         for (Region region : Region.values()) {
@@ -744,8 +744,8 @@ public class PottsCellTest {
     
     @Test
     public void initialize_withoutRegions_updatesTargets() {
-        int volume = (int) (Math.random() * 100);
-        int surface = (int) (Math.random() * 100);
+        int volume = randomIntBetween(0, 100);
+        int surface = randomIntBetween(0, 100);
         PottsLocation location = mock(PottsLocation.class);
         when(location.getVolume()).thenReturn(volume);
         when(location.getSurface()).thenReturn(surface);
@@ -761,10 +761,10 @@ public class PottsCellTest {
     
     @Test
     public void initialize_withRegions_updatesTargets() {
-        int volume1 = (int) (Math.random() * 100);
-        int volume2 = (int) (Math.random() * 100);
-        int surface1 = (int) (Math.random() * 100);
-        int surface2 = (int) (Math.random() * 100);
+        int volume1 = randomIntBetween(0, 100);
+        int volume2 = randomIntBetween(0, 100);
+        int surface1 = randomIntBetween(0, 100);
+        int surface2 = randomIntBetween(0, 100);
         Location location = mock(PottsLocation.class);
         when(location.getVolume()).thenReturn(volume1 + volume2);
         when(location.getSurface()).thenReturn(surface1 + surface2);
@@ -789,14 +789,14 @@ public class PottsCellTest {
     
     @Test
     public void initialize_targetsSetWithoutRegions_doesNothing() {
-        int volume = (int) (Math.random() * 100);
-        int surface = (int) (Math.random() * 100);
+        int volume = randomIntBetween(0, 100);
+        int surface = randomIntBetween(0, 100);
         Location location = mock(PottsLocation.class);
         when(location.getVolume()).thenReturn(volume);
         when(location.getSurface()).thenReturn(surface);
         
-        int targetVolume = (int) (Math.random() * 100) + 1;
-        int targetSurface = (int) (Math.random() * 100) + 1;
+        int targetVolume = randomIntBetween(1, 100);
+        int targetSurface = randomIntBetween(1, 100);
         
         PottsCell cell = make(cellID, cellPop, location, false);
         cell.setTargets(targetVolume, targetSurface);
@@ -810,10 +810,10 @@ public class PottsCellTest {
     
     @Test
     public void initialize_targetsSetWithRegions_updatesTargets() {
-        int volume1 = (int) (Math.random() * 100);
-        int volume2 = (int) (Math.random() * 100);
-        int surface1 = (int) (Math.random() * 100);
-        int surface2 = (int) (Math.random() * 100);
+        int volume1 = randomIntBetween(0, 100);
+        int volume2 = randomIntBetween(0, 100);
+        int surface1 = randomIntBetween(0, 100);
+        int surface2 = randomIntBetween(0, 100);
         Location location = mock(PottsLocation.class);
         when(location.getVolume()).thenReturn(volume1 + volume2);
         when(location.getSurface()).thenReturn(surface1 + surface2);
@@ -823,12 +823,12 @@ public class PottsCellTest {
         when(location.getSurface(Region.NUCLEUS)).thenReturn(surface2);
         when(location.getRegions()).thenReturn(regionList);
         
-        int targetVolume = (int) (Math.random() * 100) + 1;
-        int targetSurface = (int) (Math.random() * 100) + 1;
-        int targetRegionVolume1 = (int) (Math.random() * 100) + 1;
-        int targetRegionSurface1 = (int) (Math.random() * 100) + 1;
-        int targetRegionVolume2 = (int) (Math.random() * 100) + 1;
-        int targetRegionSurface2 = (int) (Math.random() * 100) + 1;
+        int targetVolume = randomIntBetween(1, 100);
+        int targetSurface = randomIntBetween(1, 100);
+        int targetRegionVolume1 = randomIntBetween(1, 100);
+        int targetRegionSurface1 = randomIntBetween(1, 100);
+        int targetRegionVolume2 = randomIntBetween(1, 100);
+        int targetRegionSurface2 = randomIntBetween(1, 100);
         
         PottsCell cell = make(cellID, 1, location, true);
         cell.setTargets(targetVolume, targetSurface);
@@ -848,21 +848,21 @@ public class PottsCellTest {
     
     @Test
     public void initialize_targetsMixed_updatesTargets() {
-        int volume = (int) (Math.random() * 100);
-        int surface = (int) (Math.random() * 100);
+        int volume = randomIntBetween(0, 100);
+        int surface = randomIntBetween(0, 100);
         Location location = mock(PottsLocation.class);
         when(location.getVolume()).thenReturn(volume);
         when(location.getSurface()).thenReturn(surface);
         
         PottsCell cell1 = make(cellID, cellPop, location, false);
-        cell1.setTargets(0, (int) (Math.random() * 100));
+        cell1.setTargets(0, randomIntBetween(0, 100));
         cell1.initialize(new int[1][3][3], null);
         
         assertEquals(volume, cell1.getTargetVolume(), EPSILON);
         assertEquals(surface, cell1.getTargetSurface(), EPSILON);
         
         PottsCell cell2 = make(cellID, cellPop, location, false);
-        cell2.setTargets((int) (Math.random() * 100), 0);
+        cell2.setTargets(randomIntBetween(0, 100), 0);
         cell2.initialize(new int[1][3][3], null);
         
         assertEquals(volume, cell2.getTargetVolume(), EPSILON);
@@ -897,7 +897,7 @@ public class PottsCellTest {
     public void reset_withoutRegions_updatesTargets() {
         PottsCell cell = make(cellID, cellPop, false);
         cell.initialize(new int[1][3][3], new int[1][3][3]);
-        cell.updateTarget(Math.random(), Math.random());
+        cell.updateTarget(randomDoubleBetween(0, 10), randomDoubleBetween(0, 10));
         cell.reset(new int[1][3][3], null);
         
         assertEquals(locationVolume, cell.getTargetVolume(), EPSILON);
@@ -910,8 +910,8 @@ public class PottsCellTest {
     public void reset_withRegions_updatesTargets() {
         PottsCell cell = make(cellID, 1, true);
         cell.initialize(new int[1][3][3], new int[1][3][3]);
-        cell.updateTarget(Region.DEFAULT, Math.random(), Math.random());
-        cell.updateTarget(Region.NUCLEUS, Math.random(), Math.random());
+        cell.updateTarget(Region.DEFAULT, randomDoubleBetween(0, 10), randomDoubleBetween(0, 10));
+        cell.updateTarget(Region.NUCLEUS, randomDoubleBetween(0, 10), randomDoubleBetween(0, 10));
         cell.reset(new int[1][3][3], new int[1][3][3]);
         
         assertEquals(locationVolume, cell.getTargetVolume(), EPSILON);
@@ -934,8 +934,8 @@ public class PottsCellTest {
     
     @Test
     public void setTargets_noRegions_updateValues() {
-        double targetVolume = Math.random();
-        double targetSurface = Math.random();
+        double targetVolume = randomDoubleBetween(0, 10);
+        double targetSurface = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, cellPop, false);
         cell.setTargets(targetVolume, targetSurface);
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
@@ -944,8 +944,8 @@ public class PottsCellTest {
     
     @Test
     public void setTargets_withRegions_updateValues() {
-        double targetVolume = Math.random();
-        double targetSurface = Math.random();
+        double targetVolume = randomDoubleBetween(0, 10);
+        double targetSurface = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, 1, true);
         cell.setTargets(Region.NUCLEUS, targetVolume, targetSurface);
         
@@ -959,7 +959,7 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_scaleTwoNoRegion_updatesValues() {
-        double rate = Math.random();
+        double rate = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, cellPop, false);
         cell.initialize(null, null);
         cell.updateTarget(rate, 2);
@@ -973,7 +973,7 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_scaleTwoWithRegions_updatesValues() {
-        double rate = Math.random();
+        double rate = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, 1, true);
         cell.initialize(null, null);
         cell.updateTarget(rate, 2);
@@ -994,7 +994,7 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_scaleZeroNoRegion_updatesValues() {
-        double rate = Math.random();
+        double rate = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, cellPop, false);
         cell.initialize(null, null);
         cell.updateTarget(rate, 0);
@@ -1008,7 +1008,7 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_scaleZeroWithRegion_updatesValues() {
-        double rate = Math.random();
+        double rate = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, 1, true);
         cell.initialize(null, null);
         cell.updateTarget(rate, 0);
@@ -1029,8 +1029,8 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_scaleTwoNoRegionModified_updatesValues() {
-        double rate = Math.random();
-        double delta = Math.random();
+        double rate = randomDoubleBetween(0, 10);
+        double delta = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, cellPop, false);
         cell.initialize(null, null);
         cell.updateTarget(rate + delta, 2);
@@ -1045,8 +1045,8 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_scaleTwoWithRegionsModified_updatesValues() {
-        double rate = Math.random();
-        double delta = Math.random();
+        double rate = randomDoubleBetween(0, 10);
+        double delta = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, 1, true);
         cell.initialize(null, null);
         cell.updateTarget(rate + delta, 2);
@@ -1068,8 +1068,8 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_scaleZeroNoRegionModified_updatesValues() {
-        double rate = Math.random();
-        double delta = Math.random();
+        double rate = randomDoubleBetween(0, 10);
+        double delta = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, cellPop, false);
         cell.initialize(null, null);
         cell.updateTarget(rate + delta, 0);
@@ -1084,8 +1084,8 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_scaleZeroWithRegionModified_updatesValues() {
-        double rate = Math.random() + 1;
-        double delta = Math.random() + 1;
+        double rate = randomDoubleBetween(1, 10);
+        double delta = randomDoubleBetween(1, 10);
         PottsCell cell = make(cellID, 1, true);
         cell.initialize(null, null);
         cell.updateTarget(rate + delta, 0);
@@ -1107,7 +1107,7 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_regionScaleTwoWithRegion_updatesValues() {
-        double rate = Math.random();
+        double rate = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, 0, true);
         cell.initialize(null, null);
         cell.updateTarget(Region.DEFAULT, rate, 2);
@@ -1129,7 +1129,7 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_regionScaleZeroWithRegion_updatesValues() {
-        double rate = Math.random();
+        double rate = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, 0, true);
         cell.initialize(null, null);
         cell.updateTarget(Region.DEFAULT, rate, 0);
@@ -1151,8 +1151,8 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_regionScaleTwoWithRegionModified_updatesValues() {
-        double rate = Math.random();
-        double delta = Math.random();
+        double rate = randomDoubleBetween(0, 10);
+        double delta = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, 0, true);
         cell.initialize(null, null);
         cell.updateTarget(Region.DEFAULT, rate + delta, 2);
@@ -1175,8 +1175,8 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_regionScaleZeroWithRegionModified_updatesValues() {
-        double rate = Math.random();
-        double delta = Math.random();
+        double rate = randomDoubleBetween(0, 10);
+        double delta = randomDoubleBetween(0, 10);
         PottsCell cell = make(cellID, 0, true);
         cell.initialize(null, null);
         cell.updateTarget(Region.DEFAULT, rate + delta, 0);

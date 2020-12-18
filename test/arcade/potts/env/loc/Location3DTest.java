@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.env.loc.Location3D.SURFACE_VOLUME_MULTIPLIER;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
@@ -196,14 +197,14 @@ public class Location3DTest {
     @Test
     public void convertVolume_givenLocationValue_calculatesValue() {
         PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
-        double volume = Math.random() * 100;
+        double volume = randomDoubleBetween(0, 100);
         assertEquals(SURFACE_VOLUME_MULTIPLIER * Math.pow(volume, 2. / 3), loc.convertVolume(volume), EPSILON);
     }
     
     @Test
     public void convertVolume_givenLocationsValue_calculatesValue() {
         PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-        double volume = Math.random() * 100;
+        double volume = randomDoubleBetween(0, 100);
         assertEquals(SURFACE_VOLUME_MULTIPLIER * Math.pow(volume, 2. / 3), loc.convertVolume(volume), EPSILON);
     }
     
@@ -645,7 +646,7 @@ public class Location3DTest {
                 for (int j = 0; j < n; j++) {
                     if (i == n / 2 && j == n / 2 && k == n / 2) {
                         voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
-                    } else if (Math.random() < 0.5) {
+                    } else if (randomDoubleBetween(0, 1) < 0.5) {
                         voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
                     } else {
                         voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
@@ -677,7 +678,7 @@ public class Location3DTest {
                 for (int j = 0; j < n; j++) {
                     if (i == n / 2 && j == n / 2 && k == n / 2) {
                         voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
-                    } else if (Math.random() < 0.5) {
+                    } else if (randomDoubleBetween(0, 1) < 0.5) {
                         voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
                     } else {
                         voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
@@ -704,7 +705,7 @@ public class Location3DTest {
                 for (int j = 0; j < n; j++) {
                     if (i == n / 2 && j == n / 2 && k == n / 2) {
                         voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
-                    } else if (Math.random() < 0.5) {
+                    } else if (randomDoubleBetween(0, 1) < 0.5) {
                         voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));
                     } else {
                         voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - n / 2));

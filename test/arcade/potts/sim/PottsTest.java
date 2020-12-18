@@ -16,6 +16,7 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Term;
@@ -23,15 +24,15 @@ import static arcade.potts.util.PottsEnums.Term;
 public class PottsTest {
     private static final double EPSILON = 1E-10;
     private static final double TEMPERATURE = 10;
-    private static final double LV = random();
-    private static final double LS = random();
-    private static final double REGION_LV = random();
-    private static final double REGION_LS = random();
-    private static final double R = Math.random();
+    private static final double LV = randomDoubleBetween(0, 10);
+    private static final double LS = randomDoubleBetween(0, 10);
+    private static final double REGION_LV = randomDoubleBetween(0, 10);
+    private static final double REGION_LS = randomDoubleBetween(0, 10);
+    private static final double R = randomDoubleBetween(0, 1);
     private static final double R_PLUS = Math.exp(-3 / TEMPERATURE) + EPSILON;
     private static final double R_MINUS = Math.exp(-3 / TEMPERATURE) - EPSILON;
-    private static final double[] ADHESION_ID = { 0, Math.random() * 100, Math.random() * 100 };
-    private static final double[] ADHESION_REGION = { 0, Math.random() * 100, Math.random() * 100 };
+    private static final double[] ADHESION_ID = { 0, randomDoubleBetween(0, 10), randomDoubleBetween(0, 10) };
+    private static final double[] ADHESION_REGION = { 0, randomDoubleBetween(0, 10), randomDoubleBetween(0, 10) };
     static final double[][] ADHESIONS = new double[][] {
             { Double.NaN, Double.NaN, Double.NaN },
             { 1, 2, 3 },
@@ -44,8 +45,6 @@ public class PottsTest {
     Cell[] cells;
     Location[] locations;
     PottsMock potts;
-    
-    public static double random() { return Math.random() * 100; }
     
     @Before
     public void setupGrid() {
@@ -300,8 +299,8 @@ public class PottsTest {
     
     @Test
     public void Potts_2D_assignsValues() {
-        int length = (int) (Math.random() * 100) + 1;
-        int width = (int) (Math.random() * 100) + 1;
+        int length = randomIntBetween(1, 100);
+        int width = randomIntBetween(1, 100);
         PottsSeries series = makeSeries(length + 2, width + 2, 1);
         PottsMock pottsMock = new PottsMock(series);
         
@@ -319,8 +318,8 @@ public class PottsTest {
     
     @Test
     public void Potts_3D_assignsValues() {
-        int length = (int) (Math.random() * 100) + 1;
-        int width = (int) (Math.random() * 100) + 1;
+        int length = randomIntBetween(1, 100);
+        int width = randomIntBetween(1, 100);
         PottsSeries series = makeSeries(length + 2, width + 2, 4);
         PottsMock pottsMock = new PottsMock(series);
         
@@ -338,11 +337,11 @@ public class PottsTest {
     
     @Test
     public void Potts_givenSeries_setsFields() {
-        int length = (int) (Math.random() * 100) + 1;
-        int width = (int) (Math.random() * 100) + 1;
-        int height = (int) (Math.random() * 100) + 2;
-        int temperature = (int) (Math.random() * 100) + 1;
-        int mcs = (int) (Math.random() * 100);
+        int length = randomIntBetween(1, 100);
+        int width = randomIntBetween(1, 100);
+        int height = randomIntBetween(2, 100);
+        int temperature = randomIntBetween(1, 100);
+        int mcs = (int) (randomDoubleBetween(0, 10));
         
         PottsSeries series = makeSeries(length, width, height);
         series.potts = new MiniBox();
@@ -406,8 +405,8 @@ public class PottsTest {
         SimState simstate = mock(SimState.class);
         simstate.random = random;
         
-        int length = (int) (Math.random() * 10) + 3;
-        int width = (int) (Math.random() * 10) + 3;
+        int length = randomIntBetween(3, 10);
+        int width = randomIntBetween(3, 10);
         
         PottsSeries series = makeSeries(length, width, 1);
         PottsMock spy = spy(new PottsMock(series));
@@ -430,9 +429,9 @@ public class PottsTest {
         SimState simstate = mock(SimState.class);
         simstate.random = random;
         
-        int length = (int) (Math.random() * 10) + 3;
-        int width = (int) (Math.random() * 10) + 3;
-        int height = (int) (Math.random() * 10) + 4;
+        int length = randomIntBetween(3, 10);
+        int width = randomIntBetween(3, 10);
+        int height = randomIntBetween(4, 10);
         
         PottsSeries series = makeSeries(length, width, height);
         
@@ -648,8 +647,8 @@ public class PottsTest {
     
     @Test
     public void change_zeros_callsMethods() {
-        int id1 = (int) random();
-        int id2 = (int) random();
+        int id1 = randomIntBetween(1, 10);
+        int id2 = randomIntBetween(1, 10);
         PottsMock spy = makeChangeMock(id1, id2, 0, false);
         spy.change(id1, id2, 0, 0, 0, 1);
         verify(spy).getDeltaAdhesion(id1, id2, 0, 0, 0);
@@ -866,8 +865,8 @@ public class PottsTest {
     
     @Test
     public void change_zerosRegions_callsMethods() {
-        int region1 = (int) random();
-        int region2 = (int) random();
+        int region1 = randomIntBetween(1, 10);
+        int region2 = randomIntBetween(1, 10);
         PottsMock spy = makeChangeMock(region1, region2, 0);
         spy.change(1, region1, region2, 0, 0, 0, 1);
         verify(spy).getDeltaAdhesion(1, region1, region2, 0, 0, 0);

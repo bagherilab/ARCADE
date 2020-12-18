@@ -2,7 +2,6 @@ package arcade.core.sim;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sim.display.GUIState;
@@ -18,41 +17,26 @@ import arcade.core.util.MiniBox;
 import arcade.core.vis.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.SEED_OFFSET;
 
 public class SeriesTest {
     private static final double EPSILON = 1E-10;
-    private static final double DS = (Math.random() * 10) + 1;
-    private static final double DT = Math.random() + 0.5;
+    private static final double DS = randomDoubleBetween(1, 10);
+    private static final double DT = randomDoubleBetween(0.5, 2);
     private static final Box PARAMETERS = new Box();
     private static final String TEST_NAME = "DEFAULT_NAME";
     private static final String TEST_PATH = "/default/path/";
-    private static final int DEFAULT_START_SEED = randomInt();
-    private static final int DEFAULT_END_SEED = randomInt();
-    private static final int DEFAULT_TICKS = randomInt();
-    private static final int DEFAULT_INTERVAL = randomInt();
-    private static final int DEFAULT_LENGTH = randomInt();
-    private static final int DEFAULT_WIDTH = randomInt();
-    private static final int DEFAULT_HEIGHT = randomOdd();
+    private static final int DEFAULT_START_SEED = randomIntBetween(1, 100);
+    private static final int DEFAULT_END_SEED = randomIntBetween(1, 100);
+    private static final int DEFAULT_TICKS = randomIntBetween(1, 100);
+    private static final int DEFAULT_INTERVAL = randomIntBetween(1, 100);
+    private static final int DEFAULT_LENGTH = randomIntBetween(1, 100);
+    private static final int DEFAULT_WIDTH = randomIntBetween(1, 100);
+    private static final int DEFAULT_HEIGHT = randomIntBetween(0, 100) * 2 + 1;
     private static final String SIM_CONSTRUCTOR_CLASS = SimulationMock.class.getName();
     private static final String VIS_CONSTRUCTOR_CLASS = VisualizationMock.class.getName();
-    
     private static final HashMap<String, ArrayList<Box>> SETUP_LISTS_MOCK = mock(HashMap.class);
-    
-    static int randomInt() { return (int) (Math.random() * 100) + 1; }
-    
-    static double randomDouble() { return Math.random() * 100; }
-    
-    static int randomEven() { return (int) (Math.random() * 100) * 2; }
-    
-    static int randomOdd() { return (int) (Math.random() * 100) * 2 + 1; }
-    
-    static String randomString() {
-        return new Random().ints(65, 91)
-                .limit(5)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
     
     @BeforeClass
     public static void setupParameters() {
@@ -204,8 +188,8 @@ public class SeriesTest {
     
     @Test
     public void constructor_seedGiven_usesGiven() {
-        int startSeed = randomInt();
-        int endSeed = startSeed + randomInt();
+        int startSeed = randomIntBetween(1, 100);
+        int endSeed = startSeed + randomIntBetween(1, 100);
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("start", startSeed);
         setupDicts.get("series").put("end", endSeed);
@@ -225,7 +209,7 @@ public class SeriesTest {
     
     @Test
     public void constructor_ticksGiven_usesGiven() {
-        int ticks = randomInt();
+        int ticks = randomIntBetween(1, 100);
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("ticks", ticks);
         Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
@@ -243,7 +227,7 @@ public class SeriesTest {
     
     @Test
     public void constructor_intervalGiven_usesGiven() {
-        int interval = randomInt();
+        int interval = randomIntBetween(1, 100);
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("interval", interval);
         Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
@@ -277,9 +261,9 @@ public class SeriesTest {
     
     @Test
     public void constructor_oneSizeGivenOdd_updatesSizes() {
-        int length = randomOdd();
-        int width = randomOdd();
-        int height = randomOdd();
+        int length = randomIntBetween(0, 100) * 2 + 1;
+        int width = randomIntBetween(0, 100) * 2 + 1;
+        int height = randomIntBetween(0, 100) * 2 + 1;
         
         HashMap<String, MiniBox> setupDicts;
         Series series;
@@ -308,9 +292,9 @@ public class SeriesTest {
     
     @Test
     public void constructor_twoSizesGivenOdd_updatesSizes() {
-        int length = randomOdd();
-        int width = randomOdd();
-        int height = randomOdd();
+        int length = randomIntBetween(0, 100) * 2 + 1;
+        int width = randomIntBetween(0, 100) * 2 + 1;
+        int height = randomIntBetween(0, 100) * 2 + 1;
         
         HashMap<String, MiniBox> setupDicts;
         Series series;
@@ -342,9 +326,9 @@ public class SeriesTest {
     
     @Test
     public void constructor_allSizesGivenOdd_updatesSizes() {
-        int length = randomOdd();
-        int width = randomOdd();
-        int height = randomOdd();
+        int length = randomIntBetween(0, 100) * 2 + 1;
+        int width = randomIntBetween(0, 100) * 2 + 1;
+        int height = randomIntBetween(0, 100) * 2 + 1;
         
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
@@ -359,9 +343,9 @@ public class SeriesTest {
     
     @Test
     public void constructor_oneSizeGivenEven_updatesSizes() {
-        int length = randomEven();
-        int width = randomEven();
-        int height = randomEven();
+        int length = randomIntBetween(0, 100) * 2;
+        int width = randomIntBetween(0, 100) * 2;
+        int height = randomIntBetween(0, 100) * 2;
         
         HashMap<String, MiniBox> setupDicts;
         Series series;
@@ -390,9 +374,9 @@ public class SeriesTest {
     
     @Test
     public void constructor_twoSizesGivenEven_updatesSizes() {
-        int length = randomEven();
-        int width = randomEven();
-        int height = randomEven();
+        int length = randomIntBetween(0, 100) * 2;
+        int width = randomIntBetween(0, 100) * 2;
+        int height = randomIntBetween(0, 100) * 2;
         
         HashMap<String, MiniBox> setupDicts;
         Series series;
@@ -424,9 +408,9 @@ public class SeriesTest {
     
     @Test
     public void constructor_allSizesGivenEven_updatesSizes() {
-        int length = randomEven();
-        int width = randomEven();
-        int height = randomEven();
+        int length = randomIntBetween(0, 100) * 2;
+        int width = randomIntBetween(0, 100) * 2;
+        int height = randomIntBetween(0, 100) * 2;
         
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
@@ -449,7 +433,7 @@ public class SeriesTest {
     
     @Test
     public void constructor_dsGiven_usesGiven() {
-        double ds = randomDouble();
+        double ds = randomDoubleBetween(0, 100);
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("ds", ds);
         Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
@@ -467,7 +451,7 @@ public class SeriesTest {
     
     @Test
     public void constructor_dtGiven_usesGiven() {
-        double dt = randomDouble();
+        double dt = randomDoubleBetween(0, 100);
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("dt", dt);
         Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
@@ -531,7 +515,7 @@ public class SeriesTest {
     public void parseParameter_noValueNoScaling_usesDefault() {
         MiniBox box = new MiniBox();
         String parameter = randomString();
-        double defaultParameter = randomDouble();
+        double defaultParameter = randomDoubleBetween(0, 100);
         MiniBox values = new MiniBox();
         MiniBox scales = new MiniBox();
         Series.parseParameter(box, parameter, "" + defaultParameter, values, scales);
@@ -542,11 +526,11 @@ public class SeriesTest {
     public void parseParameter_withValueOnly_usesDefault() {
         MiniBox box = new MiniBox();
         String parameter = randomString();
-        double defaultParameter = randomDouble();
+        double defaultParameter = randomDoubleBetween(0, 100);
         MiniBox values = new MiniBox();
         MiniBox scales = new MiniBox();
         
-        double parameterValue = randomDouble();
+        double parameterValue = randomDoubleBetween(0, 100);
         values.put(parameter, parameterValue);
         
         Series.parseParameter(box, parameter, "" + defaultParameter, values, scales);
@@ -557,11 +541,11 @@ public class SeriesTest {
     public void parseParameter_withScaleOnly_usesDefault() {
         MiniBox box = new MiniBox();
         String parameter = randomString();
-        double defaultParameter = randomDouble();
+        double defaultParameter = randomDoubleBetween(0, 100);
         MiniBox values = new MiniBox();
         MiniBox scales = new MiniBox();
         
-        double parameterScale = randomDouble();
+        double parameterScale = randomDoubleBetween(0, 100);
         scales.put(parameter, parameterScale);
         
         Series.parseParameter(box, parameter, "" + defaultParameter, values, scales);
@@ -572,14 +556,14 @@ public class SeriesTest {
     public void parseParameter_valueAndScale_usesDefault() {
         MiniBox box = new MiniBox();
         String parameter = randomString();
-        double defaultParameter = randomDouble();
+        double defaultParameter = randomDoubleBetween(0, 100);
         MiniBox values = new MiniBox();
         MiniBox scales = new MiniBox();
         
-        double parameterValue = randomDouble();
+        double parameterValue = randomDoubleBetween(0, 100);
         values.put(parameter, parameterValue);
         
-        double parameterScale = randomDouble();
+        double parameterScale = randomDoubleBetween(0, 100);
         scales.put(parameter, parameterScale);
         
         Series.parseParameter(box, parameter, "" + defaultParameter, values, scales);
@@ -599,14 +583,14 @@ public class SeriesTest {
     
     @Test
     public void parseConversion_positiveExponent_returnsValue() {
-        int n = randomInt();
+        int n = randomIntBetween(1, 100);
         assertEquals(Math.pow(DS, n), Series.parseConversion("DS^" + n, DS, DT), EPSILON);
         assertEquals(Math.pow(DT, n), Series.parseConversion("DT^" + n, DS, DT), EPSILON);
     }
     
     @Test
     public void parseConversion_negativeExponent_returnsValue() {
-        int n = randomInt();
+        int n = randomIntBetween(1, 100);
         assertEquals(Math.pow(DS, -n), Series.parseConversion("DS^-" + n, DS, DT), EPSILON);
         assertEquals(Math.pow(DT, -n), Series.parseConversion("DT^-" + n, DS, DT), EPSILON);
     }
@@ -677,7 +661,7 @@ public class SeriesTest {
     @Test
     public void runSim_repeatingStep_callsMethods() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        int ticks = randomInt();
+        int ticks = randomIntBetween(1, 100);
         setupDicts.get("series").put("ticks", ticks);
         Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false));
         
@@ -685,7 +669,7 @@ public class SeriesTest {
         state.schedule = spy(new Schedule());
         state.schedule.scheduleRepeating((Steppable) simState -> { }, 1);
         
-        series.runSim(state, randomInt());
+        series.runSim(state, randomIntBetween(1, 100));
         
         verify(state).start();
         verify(state).finish();
@@ -696,7 +680,7 @@ public class SeriesTest {
     @Test
     public void runSim_singleStep_callsMethodsOnce() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        int ticks = randomInt();
+        int ticks = randomIntBetween(1, 100);
         setupDicts.get("series").put("ticks", ticks + 1);
         Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false));
         
@@ -704,7 +688,7 @@ public class SeriesTest {
         state.schedule = spy(new Schedule());
         state.schedule.scheduleOnce(ticks - 1, (Steppable) simState -> { });
         
-        series.runSim(state, randomInt());
+        series.runSim(state, randomIntBetween(1, 100));
         
         verify(state).start();
         verify(state).finish();

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.stream.IntStream;
+import org.apache.commons.io.FileUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -59,7 +60,7 @@ public class InputBuilderTest {
     @Test
     public void build_validInput_createsEmpty() throws IOException, SAXException {
         File file = folder.newFile("build_validInput_createsEmpty.xml");
-        write(file, "<set />");
+        FileUtils.writeStringToFile(file, "<set />", "UTF-8");
         
         InputBuilder builder = new InputBuilderMock();
         ArrayList<Series> series = builder.build(file.getAbsolutePath());
@@ -70,7 +71,7 @@ public class InputBuilderTest {
     @Test
     public void build_validInput_createsList() throws IOException, SAXException {
         File file = folder.newFile("build_validInput_createsList.xml");
-        write(file, "<set />");
+        FileUtils.writeStringToFile(file, "<set />", "UTF-8");
         
         InputBuilder builder = new InputBuilderMock();
         builder.build(file.getAbsolutePath());

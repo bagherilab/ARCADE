@@ -1,7 +1,6 @@
 package arcade.core.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Container class for dense and sparse matrix representations.
