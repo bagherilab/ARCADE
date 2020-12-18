@@ -49,7 +49,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void constructor_setsParameters() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         PottsModuleProliferation module = new PottsModuleProliferation.Simple(cell);
         
         assertEquals(parameters.getDouble("proliferation/DURATION_G1"), module.durationG1, EPSILON);
@@ -63,7 +63,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void constructor_calculatesParameters() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         PottsModuleProliferation module = new PottsModuleProliferation.Simple(cell);
         
         double durationG1 = parameters.getDouble("proliferation/DURATION_G1");
@@ -153,7 +153,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG1_withStateChange_callsMethods() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_G1;
@@ -168,7 +168,7 @@ public class PottsModuleProliferationSimpleTest {
     public void stepG1_withoutStateChange_updatesCell() {
         for (int i = 0; i < 10; i++) {
             PottsCell cell = mock(PottsCell.class);
-            doReturn(parameters).when(cell).getParameters();
+            when(cell.getParameters()).thenReturn(parameters);
             
             PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
             module.phase = Phase.PROLIFERATIVE_G1;
@@ -181,7 +181,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG1_noTransitionPhaseNotArrested_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_G1;
@@ -195,7 +195,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG1_withTransitionPhaseNotArrested_updatesPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         
@@ -216,7 +216,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG1_noTransitionPhaseArrested_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         
@@ -237,7 +237,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG1_withTransitionPhaseArrested_updatesPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         
@@ -258,7 +258,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void checkpointG1_checkpointPassed_updatesState() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         double volume = Math.random() * 100;
         when(cell.getVolume()).thenReturn((int) (volume * GROWTH_CHECKPOINT_G1) + 1);
@@ -275,7 +275,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void checkpointG1_checkpointNotPassed_updatesState() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         double volume = Math.random() * 100;
         when(cell.getVolume()).thenReturn((int) (volume * GROWTH_CHECKPOINT_G1) - 1);
@@ -293,7 +293,7 @@ public class PottsModuleProliferationSimpleTest {
     public void stepS_anyTransitionRegions_updatesCell() {
         for (int i = 0; i < 10; i++) {
             PottsCell cell = mock(PottsCell.class);
-            doReturn(parameters).when(cell).getParameters();
+            when(cell.getParameters()).thenReturn(parameters);
             doReturn(true).when(cell).hasRegions();
             
             PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
@@ -307,7 +307,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepS_noTransitionRegions_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         doReturn(true).when(cell).hasRegions();
         
         double volume = Math.random() * 100;
@@ -324,7 +324,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepS_withTransitionRegions_updatesPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         doReturn(true).when(cell).hasRegions();
         
         double volume = Math.random() * 100;
@@ -341,7 +341,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepS_noTransitionNoRegions_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_S;
@@ -353,7 +353,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepS_withTransitionNoRegions_updatesPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_S;
@@ -366,7 +366,7 @@ public class PottsModuleProliferationSimpleTest {
     public void stepG2_anyTransition_updatesCell() {
         for (int i = 0; i < 10; i++) {
             PottsCell cell = mock(PottsCell.class);
-            doReturn(parameters).when(cell).getParameters();
+            when(cell.getParameters()).thenReturn(parameters);
             
             PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
             module.phase = Phase.PROLIFERATIVE_G2;
@@ -379,7 +379,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG2_noTransitionPhaseNotArrested_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
@@ -393,7 +393,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG2_withTransitionPhaseNotArrested_updatesPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
@@ -407,7 +407,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG2_noTransitionPhaseArrested_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
@@ -421,7 +421,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepG2_withTransitionPhaseArrested_updatesPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_G2;
@@ -435,7 +435,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void checkpointG2_checkpointPassed_updatesState() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         double volume = Math.random() * 100;
         when(cell.getVolume()).thenReturn((int) (volume * GROWTH_CHECKPOINT_G2) + 1);
@@ -452,7 +452,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void checkpointG2_checkpointNotPassed_updatesState() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         double volume = Math.random() * 100;
         when(cell.getVolume()).thenReturn((int) (volume * GROWTH_CHECKPOINT_G2) - 1);
@@ -469,7 +469,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepM_noTransition_doesNothing() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         doNothing().when(module).addCell(random, simMock);
@@ -483,7 +483,7 @@ public class PottsModuleProliferationSimpleTest {
     @Test
     public void stepM_withTransition_updatesPhase() {
         PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
+        when(cell.getParameters()).thenReturn(parameters);
         
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         doNothing().when(module).addCell(random, simMock);

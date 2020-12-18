@@ -381,7 +381,7 @@ public final class Graph {
      * <p>
      * The node tracks its corresponding position in the lattice.
      */
-    public abstract static class Node implements Comparable {
+    public abstract static class Node implements Comparable<Node> {
         /** Coordinate in x direction. */
         protected int x;
         
@@ -427,14 +427,13 @@ public final class Graph {
         /**
          * Compares a node to this node.
          *
-         * @param object  the node to compare
+         * @param node  the node to compare
          * @return  zero if the x and y coordinates are equal, otherwise the
          *          the result of integer comparison for x and y
          */
-        public int compareTo(Object object) {
-            Node comp = (Node) object;
-            int xComp = Integer.compare(x, comp.getX());
-            int yComp = Integer.compare(y, comp.getY());
+        public int compareTo(Node node) {
+            int xComp = Integer.compare(x, node.getX());
+            int yComp = Integer.compare(y, node.getY());
             
             if (xComp == 0) {
                 return yComp;

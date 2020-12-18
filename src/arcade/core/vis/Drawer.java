@@ -20,7 +20,7 @@ public abstract class Drawer implements Steppable {
     protected final Portrayal port;
     
     /** Name of drawing. */
-    protected String name;
+    protected final String name;
     
     /** Color map for drawing. */
     protected final ColorMap map;

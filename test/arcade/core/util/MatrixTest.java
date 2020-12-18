@@ -366,33 +366,33 @@ public class MatrixTest {
     
     @Test
     public void forwardSubstitution_denseGivenLower_solvesEquation() {
-        double[] mulitplyInvertA1B1 = multiply(invertLower(A1D), B1D);
+        double[] multiplyInvertA1B1 = multiply(invertLower(A1D), B1D);
         double[] forwardSubstitutionA1B1 = forwardSubstitution(A1D, B1D);
-        assertArrayEquals(mulitplyInvertA1B1, forwardSubstitutionA1B1, EPSILON);
+        assertArrayEquals(multiplyInvertA1B1, forwardSubstitutionA1B1, EPSILON);
     }
     
     @Test
     public void forwardSubstitution_denseGivenCoefficients_solvesEquation() {
-        double[][] mulitplyInvertA1 = multiply(invertLower(A1D), getUpper(A1D, true));
+        double[][] multiplyInvertA1 = multiply(invertLower(A1D), getUpper(A1D, true));
         double[][] forwardSubstitutionA1 = forwardSubstitution(A1D);
-        for (int i = 0; i < mulitplyInvertA1.length; i++) {
-            assertArrayEquals(mulitplyInvertA1[i], forwardSubstitutionA1[i], EPSILON);
+        for (int i = 0; i < multiplyInvertA1.length; i++) {
+            assertArrayEquals(multiplyInvertA1[i], forwardSubstitutionA1[i], EPSILON);
         }
     }
     
     @Test
     public void forwardSubstitution_sparseGivenLower_solvesEquation() {
-        double[] mulitplyInvertA1B1 = multiply(invertLower(A1D), B1D);
+        double[] multiplyInvertA1B1 = multiply(invertLower(A1D), B1D);
         double[] forwardSubstitutionA1B1 = forwardSubstitution(A1S, B1D);
-        assertArrayEquals(mulitplyInvertA1B1, forwardSubstitutionA1B1, EPSILON);
+        assertArrayEquals(multiplyInvertA1B1, forwardSubstitutionA1B1, EPSILON);
     }
     
     @Test
     public void forwardSubstitution_sparseGivenCoefficients_solvesEquation() {
-        double[][] mulitplyInvertA1 = multiply(invertLower(A1D), getUpper(A1D, true));
+        double[][] multiplyInvertA1 = multiply(invertLower(A1D), getUpper(A1D, true));
         double[][] forwardSubstitutionA1 = toDense(forwardSubstitution(A1S));
-        for (int i = 0; i < mulitplyInvertA1.length; i++) {
-            assertArrayEquals(mulitplyInvertA1[i], forwardSubstitutionA1[i], EPSILON);
+        for (int i = 0; i < multiplyInvertA1.length; i++) {
+            assertArrayEquals(multiplyInvertA1[i], forwardSubstitutionA1[i], EPSILON);
         }
     }
 }

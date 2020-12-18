@@ -105,7 +105,7 @@ public class Colors implements ColorMap {
      * @param end  the ending value
      */
     private void interpColors(Color minCol, Color maxCol, int start, int end) {
-        int n = (end > BINS ? BINS : end) - start;
+        int n = (Math.min(end, BINS)) - start;
         int r;
         int g;
         int b;
@@ -145,7 +145,7 @@ public class Colors implements ColorMap {
      */
     private int getIndex(double level) {
         int index = (int) (len * (((mod == 0 ? level : level % mod) - min) / (max - min)));
-        return index < 0 ? 0 : index >= len ? len : index;
+        return index < 0 ? 0 : Math.min(index, len);
     }
     
     /**

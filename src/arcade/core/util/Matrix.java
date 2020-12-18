@@ -221,9 +221,8 @@ public class Matrix {
      * @return  the left-hand side vector
      */
     public static double[] forwardSubstitution(ArrayList<Value> mat, double[] vec) {
-        Collections.sort(mat, (v1, v2) ->
-            (v1.i == v2.i ? Integer.compare(v1.j, v2.j) : (v1.i > v2.i ? 1 : -1))
-        );
+        mat.sort((v1, v2) ->
+                (v1.i == v2.i ? Integer.compare(v1.j, v2.j) : (v1.i > v2.i ? 1 : -1)));
         
         int n = vec.length;
         double[] subbed = new double[n];
@@ -453,9 +452,8 @@ public class Matrix {
         }
         
         // Sort products.
-        Collections.sort(products, (v1, v2) ->
-            (v1.i == v2.i ? Integer.compare(v1.j, v2.j) : (v1.i > v2.i ? 1 : -1))
-        );
+        products.sort((v1, v2) ->
+                (v1.i == v2.i ? Integer.compare(v1.j, v2.j) : (v1.i > v2.i ? 1 : -1)));
         
         int i = 0;
         int j = 0;

@@ -20,8 +20,8 @@ public class VoxelTest {
         int z = (int) (Math.random() * 100);
         Voxel voxel1 = new Voxel(x, y, z);
         Voxel voxel2 = new Voxel(x, y, z);
-        assertTrue(voxel1.equals(voxel2));
-        assertTrue(voxel2.equals(voxel1));
+        assertEquals(voxel1, voxel2);
+        assertEquals(voxel2, voxel1);
     }
     
     @Test
@@ -31,8 +31,8 @@ public class VoxelTest {
         int z = (int) (Math.random() * 100);
         Voxel voxel1 = new Voxel(x, y, z);
         Voxel voxel2 = new Voxel(x, y, z + 1);
-        assertFalse(voxel1.equals(voxel2));
-        assertFalse(voxel2.equals(voxel1));
+        assertNotEquals(voxel1, voxel2);
+        assertNotEquals(voxel2, voxel1);
     }
     
     @Test
@@ -42,7 +42,7 @@ public class VoxelTest {
         int z = (int) (Math.random() * 100);
         Voxel voxel = new Voxel(x, y, z);
         Object object = x;
-        assertFalse(voxel.equals(object));
+        assertNotEquals(voxel, object);
     }
     
     @Test

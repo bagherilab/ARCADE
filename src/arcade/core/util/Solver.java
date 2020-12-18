@@ -193,7 +193,7 @@ public class Solver {
         double[] y6 = y0.clone();
         double[] w = new double[n];
         double err;
-        double maxerr;
+        double maxErr;
         double tol;
         
         while (t < tf && steps < MAX_STEPS) {
@@ -232,7 +232,7 @@ public class Solver {
             }
             
             dydt = eq.dydt(t + 7 * h / 8.0, w);
-            maxerr = 0.0;
+            maxErr = 0.0;
             for (int i = 0; i < n; i++) {
                 k6[i] = h * dydt[i];
                 y5[i] = y[i] + 2825.0 * k1[i] / 27648.0 + 18575.0 * k3[i] / 48384.0
@@ -241,14 +241,14 @@ public class Solver {
                     + 125.0 * k4[i] / 594.0  + 512.0 * k6[i] / 1771.0;
                 err = Math.abs(y6[i] - y5[i]);
                 tol = Math.abs(y5[i]) * ERROR + EPSILON;
-                maxerr = Math.max(maxerr, err / tol);
+                maxErr = Math.max(maxErr, err / tol);
             }
             
-            if (maxerr > 1) { // reduce step size with max 10-fold reduction
-                h *= Math.max(0.1, SAFETY * Math.pow(maxerr, -0.25));
+            if (maxErr > 1) { // reduce step size with max 10-fold reduction
+                h *= Math.max(0.1, SAFETY * Math.pow(maxErr, -0.25));
             } else { // increase step size with max 5-fold increase
                 t += h;
-                h *= Math.min(5.0, Math.max(SAFETY * Math.pow(maxerr, -0.2), 1.0));
+                h *= Math.min(5.0, Math.max(SAFETY * Math.pow(maxErr, -0.2), 1.0));
                 h = (t + h > tf ? tf - t : h);
                 y = y5.clone();
             }

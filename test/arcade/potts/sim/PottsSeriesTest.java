@@ -221,11 +221,11 @@ public class PottsSeriesTest {
         populations.addAll(Arrays.asList(boxes));
         
         try {
-            Field dsField = Series.class.getDeclaredField("DS");
+            Field dsField = Series.class.getDeclaredField("ds");
             dsField.setAccessible(true);
             dsField.setDouble(series, DS);
             
-            Field dtField = Series.class.getDeclaredField("DT");
+            Field dtField = Series.class.getDeclaredField("dt");
             dtField.setAccessible(true);
             dtField.setDouble(series, DT);
         } catch (Exception ignored) { }
@@ -657,7 +657,7 @@ public class PottsSeriesTest {
         PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
         
         try {
-            Field field = Series.class.getDeclaredField("_height");
+            Field field = Series.class.getDeclaredField("height");
             field.setAccessible(true);
             field.setInt(series, 1);
         } catch (Exception ignored) { }

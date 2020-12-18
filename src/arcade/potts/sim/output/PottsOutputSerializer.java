@@ -60,7 +60,7 @@ public final class PottsOutputSerializer {
      * Serializer for {@link PottsSeries} objects.
      * <p>
      * The object is first serialized using the generic {@link Series} and
-     * pott-specific contents are then appended:
+     * potts-specific contents are then appended:
      * <pre>
      *     ...
      *     "potts": {

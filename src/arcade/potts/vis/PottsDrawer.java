@@ -164,21 +164,21 @@ public abstract class PottsDrawer extends Drawer {
     static int[][] getSlice(int[][][] array, int plane, int length, int width, int height) {
         switch (plane) {
             case PLANE_X:
-                int[][] planex = new int[height][width];
+                int[][] planeX = new int[height][width];
                 for (int k = 0; k < height; k++) {
                     for (int j = 0; j < width; j++) {
-                        planex[k][j] = array[k][(length - 1) / 2][j];
+                        planeX[k][j] = array[k][(length - 1) / 2][j];
                     }
                 }
-                return planex;
+                return planeX;
             case PLANE_Y:
-                int[][] planey = new int[length][height];
+                int[][] planeY = new int[length][height];
                 for (int k = 0; k < height; k++) {
                     for (int i = 0; i < length; i++) {
-                        planey[i][k] = array[k][i][(width - 1) / 2];
+                        planeY[i][k] = array[k][i][(width - 1) / 2];
                     }
                 }
-                return planey;
+                return planeY;
             default: case PLANE_Z:
                 return array[(height - 1) / 2];
         }
