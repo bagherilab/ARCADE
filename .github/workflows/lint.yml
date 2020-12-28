@@ -3,7 +3,7 @@ name: lint
 on: [push]
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,3 +20,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: github-check
         checkstyle_config: .github/config/checks.xml
+        fail_on_error: true

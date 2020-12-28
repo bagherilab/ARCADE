@@ -5,10 +5,10 @@
     "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
 <suppressions>
-	<!-- Checks that a package-info.java file exists for each package -->
-	<suppress checks="JavadocPackage" files="test/*" />
+    <!-- Checks that a package-info.java file exists for each package -->
+    <suppress checks="JavadocPackage" files="test/*" />
 
-	<!-- Checks for size violations -->
+    <!-- Checks for size violations -->
     <suppress checks="LineLength" files="test/*" id="LineLength" />
 
     <!-- Checks for Javadoc comments -->
@@ -22,4 +22,4 @@
 
     <!-- Checks for class design-->
     <suppress checks="VisibilityModifier" files="/sim/*" />
-</suppressions> 
+</suppressions>
