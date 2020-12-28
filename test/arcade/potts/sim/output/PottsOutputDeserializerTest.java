@@ -61,14 +61,20 @@ public class PottsOutputDeserializerTest {
     };
     
     public static void checkAdaptors(Gson gson) {
-        TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() { };
+        TypeToken<CellContainer> cell = new TypeToken<CellContainer>() { };
         assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
+        
+        TypeToken<PottsCellContainer> pottsCell = new TypeToken<PottsCellContainer>() { };
+        assertSame(gson.getAdapter(pottsCell).getClass(), TreeTypeAdapter.class);
         
         TypeToken<Voxel> voxel = new TypeToken<Voxel>() { };
         assertSame(gson.getAdapter(voxel).getClass(), TreeTypeAdapter.class);
         
-        TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() { };
+        TypeToken<LocationContainer> location = new TypeToken<LocationContainer>() { };
         assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
+    
+        TypeToken<PottsLocationContainer> pottsLocation = new TypeToken<PottsLocationContainer>() { };
+        assertSame(gson.getAdapter(pottsLocation).getClass(), TreeTypeAdapter.class);
     }
     
     @Test(expected = UnsupportedOperationException.class)

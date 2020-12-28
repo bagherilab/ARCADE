@@ -84,6 +84,7 @@ public abstract class ARCADE {
      */
     public static void main(String[] args) throws Exception {
         updateLogger();
+        logger = Logger.getLogger(ARCADE.class.getName());
         
         // Check that arguments includes at least one entry.
         if (args.length == 0) {
@@ -237,8 +238,8 @@ public abstract class ARCADE {
      */
     public static void updateLogger() {
         // Setup logger.
-        logger = Logger.getLogger(ARCADE.class.getName());
-        logger.setUseParentHandlers(false);
+        Logger classLogger = Logger.getLogger("arcade");
+        classLogger.setUseParentHandlers(false);
         
         // Change logger display format.
         ConsoleHandler handler = new ConsoleHandler();
@@ -256,6 +257,6 @@ public abstract class ARCADE {
             }
         });
         
-        logger.addHandler(handler);
+        classLogger.addHandler(handler);
     }
 }

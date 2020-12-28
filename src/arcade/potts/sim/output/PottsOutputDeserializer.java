@@ -11,6 +11,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.loc.LocationContainer;
 import arcade.core.sim.output.OutputDeserializer;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.loc.PottsLocationContainer;
@@ -47,8 +49,12 @@ public final class PottsOutputDeserializer {
      */
     static Gson makeGSON() {
         GsonBuilder gsonBuilder = OutputDeserializer.makeGSONBuilder();
+        gsonBuilder.registerTypeAdapter(CellContainer.class,
+                new PottsCellDeserializer());
         gsonBuilder.registerTypeAdapter(PottsCellContainer.class,
                 new PottsCellDeserializer());
+        gsonBuilder.registerTypeAdapter(LocationContainer.class,
+                new PottsLocationDeserializer());
         gsonBuilder.registerTypeAdapter(PottsLocationContainer.class,
                 new PottsLocationDeserializer());
         gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelDeserializer());
