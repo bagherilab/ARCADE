@@ -66,7 +66,7 @@ public class PottsLocationContainerTest {
         int n = 100;
         for (int i = 1; i < n; i++) {
             Voxel center = new Voxel(0, 0, 0);
-            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n);
+            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n, n);
             PottsCellContainer cellContainer = new PottsCellContainer(0, 0, i);
             PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, null);
             
@@ -81,7 +81,7 @@ public class PottsLocationContainerTest {
         int n = 100;
         for (int i = 2; i < n; i++) {
             Voxel center = new Voxel(-1, 0, 0);
-            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n);
+            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n, n);
             PottsCellContainer cellContainer = new PottsCellContainer(0, 0, i);
             PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, null);
             
@@ -96,7 +96,7 @@ public class PottsLocationContainerTest {
         int n = 100;
         for (int i = 2; i < n; i++) {
             Voxel center = new Voxel(1, 0, 0);
-            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n);
+            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n, n);
             PottsCellContainer cellContainer = new PottsCellContainer(0, 0, i);
             PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, null);
             
@@ -111,7 +111,7 @@ public class PottsLocationContainerTest {
         int n = 100;
         for (int i = 0; i < n; i++) {
             Voxel center = new Voxel(0, 0, 0);
-            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n);
+            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n, n);
             
             EnumMap<Region, ArrayList<Voxel>> regionVoxelMap = new EnumMap<>(Region.class);
             regionVoxelMap.put(Region.DEFAULT, voxels);
@@ -136,7 +136,7 @@ public class PottsLocationContainerTest {
         int n = 100;
         for (int i = 0; i < n - 1; i++) {
             Voxel center = new Voxel(-1, 0, 0);
-            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n);
+            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n, n);
             
             EnumMap<Region, ArrayList<Voxel>> regionVoxelMap = new EnumMap<>(Region.class);
             regionVoxelMap.put(Region.DEFAULT, voxels);
@@ -161,7 +161,7 @@ public class PottsLocationContainerTest {
         int n = 100;
         for (int i = 0; i < n - 1; i++) {
             Voxel center = new Voxel(1, 0, 0);
-            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n);
+            ArrayList<Voxel> voxels = FACTORY.getPossible(center, n, n);
             
             EnumMap<Region, ArrayList<Voxel>> regionVoxelMap = new EnumMap<>(Region.class);
             regionVoxelMap.put(Region.DEFAULT, voxels);

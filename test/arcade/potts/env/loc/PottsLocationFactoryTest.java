@@ -72,7 +72,7 @@ public class PottsLocationFactoryTest {
         }
         
         @Override
-        ArrayList<Voxel> getPossible(Voxel focus, int m) {
+        ArrayList<Voxel> getPossible(Voxel focus, int height, int m) {
             ArrayList<Voxel> possible = new ArrayList<>();
             for (int i = 0; i < m; i++) {
                 possible.add(new Voxel(i, 0, 0));

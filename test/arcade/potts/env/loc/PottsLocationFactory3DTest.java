@@ -53,7 +53,7 @@ public class PottsLocationFactory3DTest {
     @Test
     public void getPossible_givenZero_createsEmpty() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> list = factory.getPossible(new Voxel(0, 0, 0), 0);
+        ArrayList<Voxel> list = factory.getPossible(new Voxel(0, 0, 0), 0, 0);
         assertEquals(0, list.size());
     }
     
@@ -64,9 +64,9 @@ public class PottsLocationFactory3DTest {
         int x = randomIntBetween(0, 10);
         int y = randomIntBetween(0, 10);
         int z = randomIntBetween(0, 10);
-        int n = randomIntBetween(0, 10) * 2 + 1;
+        int n = randomIntBetween(0, 10) * 2 + 3;
         
-        ArrayList<Voxel> list = factory.getPossible(new Voxel(x, y, z), n);
+        ArrayList<Voxel> list = factory.getPossible(new Voxel(x, y, z), n + 2, n);
         assertEquals(n * n * n, list.size());
         
         for (Voxel voxel : list) {
@@ -76,6 +76,29 @@ public class PottsLocationFactory3DTest {
             assertTrue(voxel.y > y - (n - 1) / 2 - 1);
             assertTrue(voxel.z < z + (n - 1) / 2 + 1);
             assertTrue(voxel.z > z - (n - 1) / 2 - 1);
+        }
+    }
+    
+    @Test
+    public void getPossible_givenHeight_createsList() {
+        PottsLocationFactory3D factory = new PottsLocationFactory3D();
+        
+        int x = randomIntBetween(0, 10);
+        int y = randomIntBetween(0, 10);
+        int z = randomIntBetween(0, 10);
+        int height = randomIntBetween(0, 10) * 2 + 3;
+        int n = height + 2;
+        
+        ArrayList<Voxel> list = factory.getPossible(new Voxel(x, y, z), height, n);
+        assertEquals(n * n * (height - 2), list.size());
+        
+        for (Voxel voxel : list) {
+            assertTrue(voxel.x < x + (n - 1) / 2 + 1);
+            assertTrue(voxel.x > x - (n - 1) / 2 - 1);
+            assertTrue(voxel.y < y + (n - 1) / 2 + 1);
+            assertTrue(voxel.y > y - (n - 1) / 2 - 1);
+            assertTrue(voxel.z < (height - 1));
+            assertTrue(voxel.z > 0);
         }
     }
     
@@ -235,6 +258,166 @@ public class PottsLocationFactory3DTest {
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(3, 3, 3));
         expected.add(new Voxel(8, 3, 3));
+        
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
+    public void getCenters_threeHeightEqualSize_createsCenters() {
+        PottsLocationFactory3D factory = new PottsLocationFactory3D();
+        ArrayList<Voxel> centers = factory.getCenters(8, 8, 3, 3);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(2, 2, 1));
+        expected.add(new Voxel(2, 5, 1));
+        expected.add(new Voxel(5, 2, 1));
+        expected.add(new Voxel(5, 5, 1));
+    
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+    
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
+    public void getCenters_fiveHeightUnderSize_createsCenters() {
+        PottsLocationFactory3D factory = new PottsLocationFactory3D();
+        ArrayList<Voxel> centers = factory.getCenters(8, 8, 5, 3);
+    
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(2, 2, 2));
+        expected.add(new Voxel(2, 5, 2));
+        expected.add(new Voxel(5, 2, 2));
+        expected.add(new Voxel(5, 5, 2));
+    
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+    
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
+    public void getCenters_fiveHeightEqualSize_createsCenters() {
+        PottsLocationFactory3D factory = new PottsLocationFactory3D();
+        ArrayList<Voxel> centers = factory.getCenters(12, 12, 5, 5);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(3, 3, 2));
+        expected.add(new Voxel(3, 8, 2));
+        expected.add(new Voxel(8, 3, 2));
+        expected.add(new Voxel(8, 8, 2));
+        
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
+    public void getCenters_fiveHeightOverSize_createsCenters() {
+        PottsLocationFactory3D factory = new PottsLocationFactory3D();
+        ArrayList<Voxel> centers = factory.getCenters(16, 16, 5, 7);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(4, 4, 2));
+        expected.add(new Voxel(4, 11, 2));
+        expected.add(new Voxel(11, 4, 2));
+        expected.add(new Voxel(11, 11, 2));
+        
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
+    public void getCenters_sevenHeightValidSize_createsCenters() {
+        PottsLocationFactory3D factory = new PottsLocationFactory3D();
+        ArrayList<Voxel> centers = factory.getCenters(8, 8, 7, 3);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(2, 2, 2));
+        expected.add(new Voxel(2, 5, 2));
+        expected.add(new Voxel(5, 2, 2));
+        expected.add(new Voxel(5, 5, 2));
+        
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
+    public void getCenters_sevenHeightUnderSize_createsCenters() {
+        PottsLocationFactory3D factory = new PottsLocationFactory3D();
+        ArrayList<Voxel> centers = factory.getCenters(12, 12, 7, 5);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(3, 3, 3));
+        expected.add(new Voxel(3, 8, 3));
+        expected.add(new Voxel(8, 3, 3));
+        expected.add(new Voxel(8, 8, 3));
+        
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
+    public void getCenters_sevenHeightEqualSize_createsCenters() {
+        PottsLocationFactory3D factory = new PottsLocationFactory3D();
+        ArrayList<Voxel> centers = factory.getCenters(16, 16, 7, 7);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(4, 4, 3));
+        expected.add(new Voxel(4, 11, 3));
+        expected.add(new Voxel(11, 4, 3));
+        expected.add(new Voxel(11, 11, 3));
+        
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
+    public void getCenters_sevenHeightOverSize_createsCenters() {
+        PottsLocationFactory3D factory = new PottsLocationFactory3D();
+        ArrayList<Voxel> centers = factory.getCenters(20, 20, 7, 9);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(5, 5, 3));
+        expected.add(new Voxel(5, 14, 3));
+        expected.add(new Voxel(14, 5, 3));
+        expected.add(new Voxel(14, 14, 3));
         
         centers.sort(VOXEL_COMPARATOR);
         expected.sort(VOXEL_COMPARATOR);

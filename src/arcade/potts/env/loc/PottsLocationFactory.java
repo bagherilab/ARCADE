@@ -106,7 +106,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
         // Create containers for each center.
         int id = 1;
         for (Voxel center : centers) {
-            ArrayList<Voxel> voxels = getPossible(center, m);
+            ArrayList<Voxel> voxels = getPossible(center, series.height, m);
             
             // Add regions (if they exist).
             EnumMap<Region, ArrayList<Voxel>> regions = null;
@@ -114,7 +114,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
                 regions = new EnumMap<>(Region.class);
                 for (String regionKey : regionKeys) {
                     Region region = Region.valueOf(regionKey);
-                    regions.put(region, getPossible(center, m - 2));
+                    regions.put(region, getPossible(center, series.height, m - 2));
                 }
             }
             
@@ -153,11 +153,12 @@ public abstract class PottsLocationFactory implements LocationFactory {
     /**
      * Gets all possible voxels within given range.
      *
-     * @param m  the location range
      * @param focus  the focus voxel
+     * @param height  the array height
+     * @param m  the location range
      * @return  the list of possible voxels
      */
-    abstract ArrayList<Voxel> getPossible(Voxel focus, int m);
+    abstract ArrayList<Voxel> getPossible(Voxel focus, int height, int m);
     
     /**
      * Gets all centers for the given range.

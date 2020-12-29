@@ -53,7 +53,7 @@ public class PottsLocationFactory2DTest {
     @Test
     public void getPossible_givenZero_createsEmpty() {
         PottsLocationFactory2D factory = new PottsLocationFactory2D();
-        ArrayList<Voxel> list = factory.getPossible(new Voxel(0, 0, 0), 0);
+        ArrayList<Voxel> list = factory.getPossible(new Voxel(0, 0, 0), 0, 0);
         assertEquals(0, list.size());
     }
     
@@ -66,7 +66,7 @@ public class PottsLocationFactory2DTest {
         int z = randomIntBetween(0, 10);
         int n = randomIntBetween(0, 10) * 2 + 1;
         
-        ArrayList<Voxel> list = factory.getPossible(new Voxel(x, y, z), n);
+        ArrayList<Voxel> list = factory.getPossible(new Voxel(x, y, z), n, n);
         assertEquals(n * n, list.size());
         
         for (Voxel voxel : list) {
