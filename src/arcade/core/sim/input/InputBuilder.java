@@ -60,6 +60,9 @@ public abstract class InputBuilder implements ContentHandler {
     /** Map of setup lists of dictionaries. */
     public HashMap<String, ArrayList<Box>> setupLists;
     
+    /** Simulation output file path. */
+    public String path;
+    
     /** Container for default parameter values. */
     public Box parameters;
     

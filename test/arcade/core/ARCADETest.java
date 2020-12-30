@@ -26,6 +26,8 @@ public class ARCADETest {
     
     private static final String XML = randomString();
     
+    private static final String PATH = randomString();
+    
     @BeforeClass
     public static void setFields() { ARCADE.logger = mock(Logger.class); }
     
@@ -131,6 +133,7 @@ public class ARCADETest {
         Box parameters = new Box();
         MiniBox settings = new MiniBox();
         settings.put("XML", XML);
+        settings.put("PATH", PATH);
         
         ARCADE arcade = new MockARCADE();
         ArrayList<Series> series = arcade.buildSeries(parameters, settings);
@@ -144,6 +147,7 @@ public class ARCADETest {
         Box parameters = new Box();
         MiniBox settings = new MiniBox();
         settings.put("XML", XML);
+        settings.put("PATH", PATH);
         settings.put("VIS", "");
         
         ARCADE arcade = new MockARCADE();

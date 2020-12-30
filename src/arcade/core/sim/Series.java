@@ -98,12 +98,13 @@ public abstract class Series {
      *
      * @param setupDicts  the map of attribute to value for single instance tags
      * @param setupLists  the map of attribute to value for multiple instance tags
+     * @param path  the path for simulation output
      * @param parameters  the default parameter values loaded from {@code parameter.xml}
      * @param isVis  {@code true} if run with visualization, {@code false} otherwise
      */
     public Series(HashMap<String, MiniBox> setupDicts,
                   HashMap<String, ArrayList<Box>> setupLists,
-                  Box parameters, boolean isVis) {
+                  String path, Box parameters, boolean isVis) {
         MiniBox set = setupDicts.get("set");
         MiniBox series = setupDicts.get("series");
         MiniBox defaults = parameters.getIdValForTag("DEFAULT");
@@ -112,7 +113,7 @@ public abstract class Series {
         
         // Set name and prefix.
         this.name = series.get("name");
-        this.prefix = set.get("path") + (set.contains("prefix") ? set.get("prefix") : "") + name;
+        this.prefix = path + (set.contains("prefix") ? set.get("prefix") : "") + name;
         
         // Set random seeds.
         this.startSeed = (series.contains("start")

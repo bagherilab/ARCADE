@@ -14,14 +14,10 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class PottsARCADETest {
-    static final String SETUP_TEMPLATE = "<set path=\"###/\">"
-            + "<series name=\"***\" ticks=\"1\" interval=\"1\" height=\"1\" start=\"0\" end=\"0\">"
-            + "</series></set>";
-    
-    static String makeSetup(TemporaryFolder folder, String name) {
-        return SETUP_TEMPLATE
-                .replace("###", folder.getRoot().getAbsolutePath())
-                .replace("***", name);
+    static String makeSetup(String name) {
+        return "<set>"
+                + "<series name=\"" + name + "\" ticks=\"1\" interval=\"1\" height=\"1\" start=\"0\" end=\"0\">"
+                + "</series></set>";
     }
     
     @Rule
@@ -31,9 +27,9 @@ public class PottsARCADETest {
     public void main_noVis_savesFiles() throws Exception {
         String name = "main_noVis_savesFiles";
         File setupFile = folder.newFile("setup.xml");
-        FileUtils.writeStringToFile(setupFile, makeSetup(folder, name), "UTF-8");
+        FileUtils.writeStringToFile(setupFile, makeSetup(name), "UTF-8");
         
-        String[] args = new String[] { "potts", setupFile.getPath() };
+        String[] args = new String[] { "potts", setupFile.getPath(), folder.getRoot().getAbsolutePath() };
         ARCADE.main(args);
         
         File mainOutput = new File(folder.getRoot() + "/" + name + ".json");
@@ -52,11 +48,11 @@ public class PottsARCADETest {
     public void main_withVis_savesNothing() throws Exception {
         String name = "main_withVis_savesNothing";
         File setupFile = folder.newFile("setup.xml");
-        FileUtils.writeStringToFile(setupFile, makeSetup(folder, name), "UTF-8");
+        FileUtils.writeStringToFile(setupFile, makeSetup(name), "UTF-8");
         
         System.setProperty("java.awt.headless", "true");
         
-        String[] args = new String[] { "potts", setupFile.getPath(), "--vis" };
+        String[] args = new String[] { "potts", setupFile.getPath(), folder.getRoot().getAbsolutePath(), "--vis" };
         ARCADE.main(args);
         
         File mainOutput = new File(folder.getRoot() + "/" + name + ".json");

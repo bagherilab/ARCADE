@@ -179,11 +179,14 @@ public abstract class ARCADE {
     ArrayList<Series> buildSeries(Box parameters, MiniBox settings)
             throws IOException, SAXException {
         String xml = settings.get("XML");
+        String path = settings.get("PATH");
         boolean isVis = settings.contains("VIS");
         
         InputBuilder builder = this.getBuilder();
+        builder.path = path.endsWith("/") ? path : (path + "/");
         builder.parameters = parameters;
         builder.isVis = isVis;
+        
         return builder.build(xml);
     }
     

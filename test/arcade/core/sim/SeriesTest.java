@@ -131,8 +131,8 @@ public class SeriesTest {
         
         SeriesMock(HashMap<String, MiniBox> setupDicts,
                           HashMap<String, ArrayList<Box>> setupLists,
-                          Box parameters, boolean isVis) {
-            super(setupDicts, setupLists, parameters, isVis);
+                          String path, Box parameters, boolean isVis) {
+            super(setupDicts, setupLists, path, parameters, isVis);
         }
         
         @Override
@@ -161,7 +161,7 @@ public class SeriesTest {
     @Test
     public void constructor_noPrefix_updatesNames() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(TEST_NAME, series.getName());
         assertEquals(TEST_PATH + TEST_NAME, series.getPrefix());
@@ -171,7 +171,7 @@ public class SeriesTest {
     public void constructor_givenPrefix_updatesNames() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("set").put("prefix", "PREFIX_");
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(TEST_NAME, series.getName());
         assertEquals(TEST_PATH + "PREFIX_" + TEST_NAME, series.getPrefix());
@@ -180,7 +180,7 @@ public class SeriesTest {
     @Test
     public void constructor_seedsNotGiven_usesDefaults() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(DEFAULT_START_SEED, series.getStartSeed());
         assertEquals(DEFAULT_END_SEED, series.getEndSeed());
@@ -193,7 +193,7 @@ public class SeriesTest {
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("start", startSeed);
         setupDicts.get("series").put("end", endSeed);
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(startSeed, series.getStartSeed());
         assertEquals(endSeed, series.getEndSeed());
@@ -202,7 +202,7 @@ public class SeriesTest {
     @Test
     public void constructor_ticksNotGiven_usesDefault() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(DEFAULT_TICKS, series.getTicks());
     }
@@ -212,7 +212,7 @@ public class SeriesTest {
         int ticks = randomIntBetween(1, 100);
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("ticks", ticks);
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(ticks, series.getTicks());
     }
@@ -220,7 +220,7 @@ public class SeriesTest {
     @Test
     public void constructor_intervalNotGiven_usesDefault() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(DEFAULT_INTERVAL, series.getInterval());
     }
@@ -230,7 +230,7 @@ public class SeriesTest {
         int interval = randomIntBetween(1, 100);
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("interval", interval);
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(interval, series.getInterval());
     }
@@ -238,21 +238,21 @@ public class SeriesTest {
     @Test
     public void constructor_withoutVis_updatesField() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertFalse(series.isVis);
     }
     
     @Test
     public void constructor_withVis_updatesField() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, true);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, true);
         assertTrue(series.isVis);
     }
     
     @Test
     public void constructor_sizesNotGiven_usesDefaults() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false));
+        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
         
         assertEquals(DEFAULT_LENGTH, series.length);
         assertEquals(DEFAULT_WIDTH, series.width);
@@ -270,21 +270,21 @@ public class SeriesTest {
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(length, series.length);
         assertEquals(DEFAULT_WIDTH, series.width);
         assertEquals(DEFAULT_HEIGHT, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("width", width);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(DEFAULT_LENGTH, series.length);
         assertEquals(width, series.width);
         assertEquals(DEFAULT_HEIGHT, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("height", height);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(DEFAULT_LENGTH, series.length);
         assertEquals(DEFAULT_WIDTH, series.width);
         assertEquals(height, series.height);
@@ -302,7 +302,7 @@ public class SeriesTest {
         setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
         setupDicts.get("series").put("width", width);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(length, series.length);
         assertEquals(width, series.width);
         assertEquals(DEFAULT_HEIGHT, series.height);
@@ -310,7 +310,7 @@ public class SeriesTest {
         setupDicts = makeDicts();
         setupDicts.get("series").put("width", width);
         setupDicts.get("series").put("height", height);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(DEFAULT_LENGTH, series.length);
         assertEquals(width, series.width);
         assertEquals(height, series.height);
@@ -318,7 +318,7 @@ public class SeriesTest {
         setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
         setupDicts.get("series").put("height", height);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(length, series.length);
         assertEquals(DEFAULT_WIDTH, series.width);
         assertEquals(height, series.height);
@@ -334,7 +334,7 @@ public class SeriesTest {
         setupDicts.get("series").put("length", length);
         setupDicts.get("series").put("width", width);
         setupDicts.get("series").put("height", height);
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(length, series.length);
         assertEquals(width, series.width);
@@ -352,21 +352,21 @@ public class SeriesTest {
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(length, series.length);
         assertEquals(DEFAULT_WIDTH, series.width);
         assertEquals(DEFAULT_HEIGHT, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("width", width);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(DEFAULT_LENGTH, series.length);
         assertEquals(width, series.width);
         assertEquals(DEFAULT_HEIGHT, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("height", height);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(DEFAULT_LENGTH, series.length);
         assertEquals(DEFAULT_WIDTH, series.width);
         assertEquals(height, series.height);
@@ -384,7 +384,7 @@ public class SeriesTest {
         setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
         setupDicts.get("series").put("width", width);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(length, series.length);
         assertEquals(width, series.width);
         assertEquals(DEFAULT_HEIGHT, series.height);
@@ -392,7 +392,7 @@ public class SeriesTest {
         setupDicts = makeDicts();
         setupDicts.get("series").put("width", width);
         setupDicts.get("series").put("height", height);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(DEFAULT_LENGTH, series.length);
         assertEquals(width, series.width);
         assertEquals(height, series.height);
@@ -400,7 +400,7 @@ public class SeriesTest {
         setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
         setupDicts.get("series").put("height", height);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         assertEquals(length, series.length);
         assertEquals(DEFAULT_WIDTH, series.width);
         assertEquals(height, series.height);
@@ -416,7 +416,7 @@ public class SeriesTest {
         setupDicts.get("series").put("length", length);
         setupDicts.get("series").put("width", width);
         setupDicts.get("series").put("height", height);
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(length, series.length);
         assertEquals(width, series.width);
@@ -426,7 +426,7 @@ public class SeriesTest {
     @Test
     public void constructor_dsNotGiven_usesDefault() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(DS, series.ds, EPSILON);
     }
@@ -436,7 +436,7 @@ public class SeriesTest {
         double ds = randomDoubleBetween(0, 100);
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("ds", ds);
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(ds, series.ds, EPSILON);
     }
@@ -444,7 +444,7 @@ public class SeriesTest {
     @Test
     public void constructor_dtNotGiven_usesDefault() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(DT, series.dt, EPSILON);
     }
@@ -454,7 +454,7 @@ public class SeriesTest {
         double dt = randomDoubleBetween(0, 100);
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("dt", dt);
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         
         assertEquals(dt, series.dt, EPSILON);
     }
@@ -597,7 +597,7 @@ public class SeriesTest {
     
     @Test
     public void makeConstructors_validClasses_createsConstructors() {
-        Series series = new SeriesMock(makeDicts(), SETUP_LISTS_MOCK, PARAMETERS, false);
+        Series series = new SeriesMock(makeDicts(), SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         series.makeConstructors();
         assertEquals(SIM_CONSTRUCTOR_CLASS, series.simCons.getName());
         assertEquals(VIS_CONSTRUCTOR_CLASS, series.visCons.getName());
@@ -605,7 +605,7 @@ public class SeriesTest {
     
     @Test
     public void makeConstructors_invalidSim_skipsSeries() {
-        SeriesMock series = new SeriesMock(makeDicts(), SETUP_LISTS_MOCK, PARAMETERS, false);
+        SeriesMock series = new SeriesMock(makeDicts(), SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         series.invalidSim = true;
         series.makeConstructors();
         assertTrue(series.isSkipped);
@@ -613,7 +613,7 @@ public class SeriesTest {
     
     @Test
     public void makeConstructors_invalidVis_skipsSeries() {
-        SeriesMock series = new SeriesMock(makeDicts(), SETUP_LISTS_MOCK, PARAMETERS, false);
+        SeriesMock series = new SeriesMock(makeDicts(), SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         series.invalidVis = true;
         series.makeConstructors();
         assertTrue(series.isSkipped);
@@ -621,7 +621,7 @@ public class SeriesTest {
     
     @Test
     public void makeConstructors_invalidClasses_skipsSeries() {
-        SeriesMock series = new SeriesMock(makeDicts(), SETUP_LISTS_MOCK, PARAMETERS, false);
+        SeriesMock series = new SeriesMock(makeDicts(), SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
         series.invalidSim = true;
         series.invalidVis = true;
         series.makeConstructors();
@@ -644,7 +644,7 @@ public class SeriesTest {
             HashMap<String, MiniBox> setupDicts = makeDicts();
             setupDicts.get("series").put("start", start[i]);
             setupDicts.get("series").put("end", end[i]);
-            Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false));
+            Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
             doNothing().when(series).runSim(any(SimState.class), any(int.class));
             
             series.simCons = spy(series.simCons);
@@ -663,7 +663,7 @@ public class SeriesTest {
         HashMap<String, MiniBox> setupDicts = makeDicts();
         int ticks = randomIntBetween(1, 100);
         setupDicts.get("series").put("ticks", ticks);
-        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false));
+        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
         
         SimState state = mock(SimState.class);
         state.schedule = spy(new Schedule());
@@ -682,7 +682,7 @@ public class SeriesTest {
         HashMap<String, MiniBox> setupDicts = makeDicts();
         int ticks = randomIntBetween(1, 100);
         setupDicts.get("series").put("ticks", ticks + 1);
-        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false));
+        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
         
         SimState state = mock(SimState.class);
         state.schedule = spy(new Schedule());
@@ -699,7 +699,7 @@ public class SeriesTest {
     @Test
     public void runVis_fromConstructors_callsMethods() throws Exception {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false));
+        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
         
         series.simCons = spy(series.simCons);
         series.visCons = spy(series.visCons);
@@ -722,7 +722,7 @@ public class SeriesTest {
     @Test
     public void runVis_headlessFalse_callsMethods() throws Exception {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false));
+        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
         
         series.simCons = spy(series.simCons);
         series.visCons = spy(series.visCons);
@@ -745,7 +745,7 @@ public class SeriesTest {
     @Test
     public void runVis_headlessTrue_doesNothing() throws Exception {
         HashMap<String, MiniBox> setupDicts = makeDicts();
-        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false));
+        Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
         
         series.simCons = spy(series.simCons);
         series.visCons = spy(series.visCons);

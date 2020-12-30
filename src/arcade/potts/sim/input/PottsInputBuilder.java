@@ -102,7 +102,7 @@ public final class PottsInputBuilder extends InputBuilder {
         
         switch (name) {
             case "series":
-                series.add(new PottsSeries(setupDicts, setupLists, parameters, isVis));
+                series.add(new PottsSeries(setupDicts, setupLists, path, parameters, isVis));
                 MiniBox set = setupDicts.get("set");
                 setupDicts = new HashMap<>();
                 setupLists = new HashMap<>();
