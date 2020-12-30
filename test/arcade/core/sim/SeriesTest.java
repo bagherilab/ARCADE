@@ -33,7 +33,7 @@ public class SeriesTest {
     private static final int DEFAULT_INTERVAL = randomIntBetween(1, 100);
     private static final int DEFAULT_LENGTH = randomIntBetween(1, 100);
     private static final int DEFAULT_WIDTH = randomIntBetween(1, 100);
-    private static final int DEFAULT_HEIGHT = randomIntBetween(0, 100) * 2 + 1;
+    private static final int DEFAULT_HEIGHT = randomIntBetween(1, 100);
     private static final String SIM_CONSTRUCTOR_CLASS = SimulationMock.class.getName();
     private static final String VIS_CONSTRUCTOR_CLASS = VisualizationMock.class.getName();
     private static final HashMap<String, ArrayList<Box>> SETUP_LISTS_MOCK = mock(HashMap.class);
@@ -369,7 +369,7 @@ public class SeriesTest {
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
         assertEquals(DEFAULT_LENGTH, series.length);
         assertEquals(DEFAULT_WIDTH, series.width);
-        assertEquals(height + 1, series.height);
+        assertEquals(height, series.height);
     }
     
     @Test
@@ -395,7 +395,7 @@ public class SeriesTest {
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
         assertEquals(DEFAULT_LENGTH, series.length);
         assertEquals(width, series.width);
-        assertEquals(height + 1, series.height);
+        assertEquals(height, series.height);
         
         setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
@@ -403,7 +403,7 @@ public class SeriesTest {
         series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, PARAMETERS, false);
         assertEquals(length, series.length);
         assertEquals(DEFAULT_WIDTH, series.width);
-        assertEquals(height + 1, series.height);
+        assertEquals(height, series.height);
     }
     
     @Test
@@ -420,7 +420,7 @@ public class SeriesTest {
         
         assertEquals(length, series.length);
         assertEquals(width, series.width);
-        assertEquals(height + 1, series.height);
+        assertEquals(height, series.height);
     }
     
     @Test

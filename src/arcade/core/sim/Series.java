@@ -137,10 +137,9 @@ public abstract class Series {
         this.width = (series.contains("width")
                 ? series.getInt("width")
                 : defaults.getInt("WIDTH"));
-        int h = (series.contains("height")
+        this.height = (series.contains("height")
                 ? series.getInt("height")
                 : defaults.getInt("HEIGHT"));
-        this.height = ((h & 1) == 1 ? h : h + 1); // enforce odd
         
         // Set conversion factors.
         this.ds = (series.contains("ds")

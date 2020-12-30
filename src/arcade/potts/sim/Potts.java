@@ -43,6 +43,9 @@ public abstract class Potts implements Steppable {
     /** Effective cell temperature. */
     final double temperature;
     
+    /** {@code true} if potts is single layer, {@code false} otherwise. */
+    final boolean isSingle;
+    
     /** {@code true} if cells have regions, {@code false} otherwise. */
     final boolean hasRegions;
     
@@ -77,6 +80,9 @@ public abstract class Potts implements Steppable {
         // Get temperature.
         temperature = series.potts.getDouble("TEMPERATURE");
         
+        // Check if potts is a single layer.
+        isSingle = series.height == 1;
+        
         // Check if there are regions.
         hasRegions = series.populations.values().stream()
                 .map(e -> e.filter("(REGION)").getKeys().size())
@@ -100,7 +106,7 @@ public abstract class Potts implements Steppable {
             // Get random coordinate for candidate.
             x = random.nextInt(length) + 1;
             y = random.nextInt(width) + 1;
-            z = (height == 1 ? 0 : random.nextInt(height) + 1);
+            z = (isSingle ? 0 : random.nextInt(height) + 1);
             r = random.nextDouble();
             
             // Check if cell has regions.
