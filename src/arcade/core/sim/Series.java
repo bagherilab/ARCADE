@@ -396,7 +396,7 @@ public abstract class Series {
             tick = state.schedule.getTime();
             
             if (tick >= checkpoint) {
-                LOGGER.info(String.format("simulation [ %s | %s ] tick %6d ( %4.2f %% )",
+                LOGGER.info(String.format("simulation [ %s | %04d ] tick %6d ( %4.2f %% )",
                         name, seed, (int) tick, (100 * tick / ticks)));
                 checkpoint += delta;
             }
