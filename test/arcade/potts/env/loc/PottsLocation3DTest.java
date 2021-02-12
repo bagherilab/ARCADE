@@ -42,15 +42,15 @@ public class PottsLocation3DTest {
          *  (A)         (B)         (C)        (A) + (C)   (B) + (C)   (A) + (B)
          *  x x . .     . . . .     . . . .     x x . .     . . . .     x x . .
          *  .   . .     .   . .     .   x .     .   x .     .   x .     .   . .
-         *  .     . .   .     . .   .     . x   .     . x   .     . x   .     .
+         *  .     . .   .     . .   .     . x   .     . x   .     . x   .     . .
          *
          *  x x . .     . . x x     . . . .     x x . .     . . x x     x x x x
          *  x   . .     .   . x     .   x .     x   x .     .   x x     x   . x
-         *  x     . .   .     . .   .     x x   x     x x   .     x x   x     .
+         *  x     . .   .     . .   .     x x   x     x x   .     x x   x     . .
          *
          *  . . . .     . . . .     . . . .     . . . .     . . . .     . . . .
          *  .   . .     .   . x     .   . .     .   . .     .   . x     .   . x
-         *  x     . .   .     x .   .     . .   x     . .   .     x .   x     x
+         *  x     . .   .     x x   .     . .   x     . .   .     x x   x     x x
          */
         
         voxelListA = new ArrayList<>();
@@ -68,6 +68,7 @@ public class PottsLocation3DTest {
         voxelListB.add(new Voxel(3, 1, 1));
         voxelListB.add(new Voxel(3, 1, 2));
         voxelListB.add(new Voxel(3, 2, 2));
+        voxelListB.add(new Voxel(4, 2, 2));
         
         voxelListC = new ArrayList<>();
         voxelListC.add(new Voxel(2, 1, 1));
@@ -247,12 +248,7 @@ public class PottsLocation3DTest {
         PottsLocation3D split = (PottsLocation3D) loc.split(randomDoubleZero);
         
         ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListA);
-        locVoxels.remove(new Voxel(1, 0, 0));
-        locVoxels.remove(new Voxel(1, 0, 1));
-        
         ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListB);
-        splitVoxels.add(new Voxel(1, 0, 0));
-        splitVoxels.add(new Voxel(1, 0, 1));
         
         locVoxels.sort(VOXEL_COMPARATOR);
         loc.voxels.sort(VOXEL_COMPARATOR);

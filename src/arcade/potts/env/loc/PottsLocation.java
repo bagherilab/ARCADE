@@ -35,8 +35,8 @@ import static arcade.potts.util.PottsEnums.Direction;
  */
 
 public abstract class PottsLocation implements Location {
-    /** Difference between split voxel numbers. */
-    private static final int BALANCE_DIFFERENCE = 2;
+    /** Relative difference between split voxel numbers. */
+    private static final double BALANCE_DIFFERENCE = 0.05;
     
     /** List of voxels for the location. */
     final ArrayList<Voxel> voxels;
@@ -548,7 +548,7 @@ public abstract class PottsLocation implements Location {
         int nA = voxelsA.size();
         int nB = voxelsB.size();
         
-        while (Math.abs(nA - nB) > BALANCE_DIFFERENCE) {
+        while (Math.abs(nA - nB) > Math.ceil((nA + nB) * BALANCE_DIFFERENCE)) {
             ArrayList<Voxel> fromVoxels;
             ArrayList<Voxel> toVoxels;
             
