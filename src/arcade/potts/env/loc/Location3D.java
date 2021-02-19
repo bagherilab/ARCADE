@@ -15,7 +15,7 @@ import static arcade.potts.util.PottsEnums.Direction;
 
 public interface Location3D {
     /** Multiplier for calculating surface area from volume. */
-    double SURFACE_VOLUME_MULTIPLIER = Math.cbrt(36 * Math.PI) * 2;
+    double SURFACE_VOLUME_MULTIPLIER = Math.cbrt(36 * Math.PI) * 3;
     
     /** List of valid 3D directions. */
     Direction[] DIRECTIONS = new Direction[] {
