@@ -351,4 +351,43 @@ public class PottsLocationFactory2DTest {
         assertEquals(3, voxels.size());
         assertTrue(expected.containsAll(voxels));
     }
+    
+    @Test
+    public void decrease_unconnectedTarget_updatesList() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        
+        voxels.add(new Voxel(0, 0, 0));
+        voxels.add(new Voxel(1, 0, 0));
+        voxels.add(new Voxel(-1, 0, 0));
+        voxels.add(new Voxel(0, -1, 0));
+        voxels.add(new Voxel(0, 1, 0));
+        voxels.add(new Voxel(1, 1, 0));
+        voxels.add(new Voxel(-1, -1, 0));
+        voxels.add(new Voxel(1, -1, 0));
+        voxels.add(new Voxel(-1, 1, 0));
+        
+        FACTORY.decrease(voxels, 7);
+        
+        int[][] corners = new int[][] {
+                { -1, -1 },
+                { 1, -1 },
+                { 1, 1 },
+                { -1, 1 },
+        };
+        
+        int[][] sides = new int[][] {
+                { 0, -1 },
+                { 1, 0 },
+                { 0, 1 },
+                { -1, 0 },
+        };
+        
+        for (int i = 0; i < corners.length; i++) {
+            if (voxels.contains(new Voxel(corners[i][0], corners[i][1], 0))) {
+                boolean checkA = voxels.contains(new Voxel(sides[i][0], sides[i][1], 0));
+                boolean checkB = voxels.contains(new Voxel(sides[(i + 1) % 4][0], sides[(i + 1) % 4][1], 0));
+                assertTrue(checkA || checkB);
+            }
+        }
+    }
 }

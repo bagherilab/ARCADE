@@ -224,8 +224,40 @@ public abstract class PottsLocationFactory implements LocationFactory {
         // Remove random neighbors until target size is reached.
         ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
         Utilities.shuffleList(neighborsShuffled, random);
+        int index = 0;
+        
         for (int i = 0; i < size - target; i++) {
-            voxels.remove(neighborsShuffled.get(i));
+            // Check candidate. Do not remove a candidate if it has a neighbor
+            // that has only one neighbor (i.e. the candidate is the only connection)
+            Voxel candidate = neighborsShuffled.get(index);
+            
+            // Get neighbors of candidate.
+            ArrayList<Voxel> candidateNeighbors = new ArrayList<>();
+            for (Voxel neighbor : getNeighbors(candidate)) {
+                if (voxels.contains(neighbor)) {
+                    candidateNeighbors.add(neighbor);
+                }
+            }
+            
+            // Check neighbors of neighbor list.
+            boolean valid = true;
+            for (Voxel neighbor : candidateNeighbors) {
+                int count = getNeighbors(neighbor).stream()
+                        .mapToInt(v -> voxels.contains(v) ? 1 : 0)
+                        .sum();
+                
+                if (count == 1) {
+                    valid = false;
+                    break;
+                }
+            }
+            
+            index++;
+            if (valid || target == 1) {
+                voxels.remove(candidate);
+            } else {
+                i--;
+            }
         }
     }
 }
