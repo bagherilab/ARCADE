@@ -118,19 +118,20 @@ public class Potts2DTest {
     @Test
     public void getAdhesion_validIDs_calculatesValue() {
         assertEquals(ADHESIONS[1][0] * 5 + ADHESIONS[2][0] * 2,
-                potts.getAdhesion(0, 2, 2, 0), EPSILON);
+                potts.getAdhesion(0, 2, 2, 0) * Potts2D.NEIGHBORHOOD_SIZE, EPSILON);
         assertEquals(ADHESIONS[1][0] + adhesion(1, 2) * 2 + ADHESIONS[1][1] * 2,
-                potts.getAdhesion(1, 2, 2, 0), EPSILON);
+                potts.getAdhesion(1, 2, 2, 0) * Potts2D.NEIGHBORHOOD_SIZE, EPSILON);
         assertEquals(ADHESIONS[2][0] * 1 + adhesion(1, 2) * 5,
-                potts.getAdhesion(2, 2, 2, 0), EPSILON);
+                potts.getAdhesion(2, 2, 2, 0) * Potts2D.NEIGHBORHOOD_SIZE, EPSILON);
         assertEquals(ADHESIONS[1][0] + adhesion(1, 2) * 2 + ADHESIONS[1][1] * 3,
-                potts.getAdhesion(3, 2, 2, 0), EPSILON);
+                potts.getAdhesion(3, 2, 2, 0) * Potts2D.NEIGHBORHOOD_SIZE, EPSILON);
     }
     
     @Test
     public void getAdhesion_validRegions_calculateValue() {
         double adhesion = subadhesion(Region.DEFAULT, Region.NUCLEUS);
-        assertEquals(adhesion, potts.getAdhesion(1, REGION_DEFAULT, 1, 2, 0), EPSILON);
+        assertEquals(adhesion / Potts2D.NEIGHBORHOOD_SIZE,
+                potts.getAdhesion(1, REGION_DEFAULT, 1, 2, 0), EPSILON);
         assertEquals(0, potts.getAdhesion(1, REGION_NUCLEUS, 2, 2, 0), EPSILON);
     }
     

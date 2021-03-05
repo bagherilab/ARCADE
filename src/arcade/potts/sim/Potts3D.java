@@ -12,6 +12,9 @@ public final class Potts3D extends Potts {
     /** Number of neighbors. */
     public static final int NUMBER_NEIGHBORS = 6;
     
+    /** Neighborhood size. */
+    public static final int NEIGHBORHOOD_SIZE = (3 * 3 * 3) - 1;
+    
     /** List of x direction movements (N, E, S, W, U, D). */
     public static final int[] MOVES_X = { 0, 1, 0, -1, 0, 0 };
     
@@ -65,7 +68,7 @@ public final class Potts3D extends Potts {
             }
         }
         
-        return h;
+        return h / NEIGHBORHOOD_SIZE;
     }
     
     @Override
@@ -86,7 +89,7 @@ public final class Potts3D extends Potts {
             }
         }
         
-        return h;
+        return h / NEIGHBORHOOD_SIZE;
     }
     
     @Override
