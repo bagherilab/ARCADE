@@ -38,7 +38,7 @@ public interface Location {
      * Gets the volume of the location for a given region.
      *
      * @param region  the voxel region
-     * @return  the location volume (in voxels)
+     * @return  the location region volume (in voxels)
      */
     int getVolume(Region region);
     
@@ -53,7 +53,7 @@ public interface Location {
      * Gets the surface area of the location for a given region.
      *
      * @param region  the voxel region
-     * @return  the location surface area (in voxels)
+     * @return  the location region surface area (in voxels)
      */
     int getSurface(Region region);
 }

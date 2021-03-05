@@ -93,59 +93,14 @@ public interface Cell extends Steppable {
      * Gets the cell volume (in voxels) for a region.
      *
      * @param region  the region
-     * @return  the cell volume
+     * @return  the cell region volume
      */
     int getVolume(Region region);
     
     /**
-     * Gets the cell surface (in voxels).
-     *
-     * @return  the cell surface
-     */
-    int getSurface();
-    
-    /**
-     * Gets the cell surface (in voxels) for a region.
-     *
-     * @param region  the region
-     * @return  the cell surface
-     */
-    int getSurface(Region region);
-    
-    /**
-     * Gets the target volume (in voxels).
-     *
-     * @return  the target volume
-     */
-    double getTargetVolume();
-    
-    /**
-     * Gets the target volume (in voxels) for a region.
-     *
-     * @param region  the region
-     * @return  the target volume
-     */
-    double getTargetVolume(Region region);
-    
-    /**
-     * Gets the target surface (in voxels).
-     *
-     * @return  the target surface
-     */
-    double getTargetSurface();
-    
-    /**
-     * Gets the target surface (in voxels) for a region.
-     *
-     * @param region  the region
-     * @return  the target surface
-     */
-    double getTargetSurface(Region region);
-    
-    /**
      * Gets the critical volume (in voxels).
      *
-     * @return  the target volume
+     * @return  the critical volume
      */
     double getCriticalVolume();
     
@@ -153,24 +108,9 @@ public interface Cell extends Steppable {
      * Gets the critical volume (in voxels) for a region.
      *
      * @param region  the region
-     * @return  the target volume
+     * @return  the critical region volume
      */
     double getCriticalVolume(Region region);
-    
-    /**
-     * Gets the critical surface (in voxels).
-     *
-     * @return  the target surface
-     */
-    double getCriticalSurface();
-    
-    /**
-     * Gets the critical surface (in voxels) for a region.
-     *
-     * @param region  the region
-     * @return  the target surface
-     */
-    double getCriticalSurface(Region region);
     
     /**
      * Sets the cell state.

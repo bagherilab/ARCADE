@@ -231,26 +231,53 @@ public final class PottsCell implements Cell {
     @Override
     public int getVolume(Region region) { return (hasRegions ? location.getVolume(region) : 0); }
     
-    @Override
+    /**
+     * Gets the cell surface (in voxels).
+     *
+     * @return  the cell surface
+     */
     public int getSurface() { return location.getSurface(); }
     
-    @Override
+    /**
+     * Gets the cell surface (in voxels) for a region.
+     *
+     * @param region  the region
+     * @return  the cell region surface
+     */
     public int getSurface(Region region) { return (hasRegions ? location.getSurface(region) : 0); }
     
-    @Override
+    /**
+     * Gets the target volume (in voxels).
+     *
+     * @return  the target volume
+     */
     public double getTargetVolume() { return targetVolume; }
     
-    @Override
+    /**
+     * Gets the target volume (in voxels) for a region.
+     *
+     * @param region  the region
+     * @return  the target region volume
+     */
     public double getTargetVolume(Region region) {
         return (hasRegions && targetRegionVolumes.containsKey(region)
                 ? targetRegionVolumes.get(region)
                 : 0);
     }
     
-    @Override
+    /**
+     * Gets the target surface (in voxels).
+     *
+     * @return  the target surface
+     */
     public double getTargetSurface() { return targetSurface; }
     
-    @Override
+    /**
+     * Gets the target surface (in voxels) for a region.
+     *
+     * @param region  the region
+     * @return  the target region surface
+     */
     public double getTargetSurface(Region region) {
         return (hasRegions && targetRegionSurfaces.containsKey(region)
                 ? targetRegionSurfaces.get(region)
@@ -267,10 +294,19 @@ public final class PottsCell implements Cell {
                 : 0);
     }
     
-    @Override
+    /**
+     * Gets the critical surface (in voxels).
+     *
+     * @return  the critical surface
+     */
     public double getCriticalSurface() { return criticals.get(Term.SURFACE); }
     
-    @Override
+    /**
+     * Gets the critical surface (in voxels) for a region.
+     *
+     * @param region  the region
+     * @return  the critical surface
+     */
     public double getCriticalSurface(Region region) {
         return (hasRegions && criticalsRegion.containsKey(region)
                 ? criticalsRegion.get(region).get(Term.SURFACE)
