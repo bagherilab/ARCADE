@@ -76,8 +76,7 @@ public interface Location2D {
      * @return  the height
      */
     static int calculateHeight(ArrayList<Voxel> voxels) {
-        // TODO
-        return 0;
+        return (voxels.size() > 0 ? 1 : 0);
     }
     
     /**
@@ -110,8 +109,7 @@ public interface Location2D {
      * @return  the change in height
      */
     static int updateHeight(ArrayList<Voxel> voxels, Voxel voxel) {
-        // TODO
-        return 0;
+        return (voxels.size() == 0 ? 1 : 0);
     }
     
     /**

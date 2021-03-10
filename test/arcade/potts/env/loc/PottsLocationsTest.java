@@ -17,7 +17,7 @@ import static arcade.potts.util.PottsEnums.Direction;
 public class PottsLocationsTest {
     static MersenneTwisterFast randomDoubleZero;
     static MersenneTwisterFast randomDoubleOne;
-    static ArrayList<Voxel> voxelListForVolumeSurface;
+    static ArrayList<Voxel> voxelListForVolumeSurfaceHeight;
     static ArrayList<Voxel> voxelListForMultipleRegionsA;
     static ArrayList<Voxel> voxelListForMultipleRegionsB;
     static ArrayList<Voxel> voxelListForMultipleRegions;
@@ -29,6 +29,7 @@ public class PottsLocationsTest {
     static ArrayList<Voxel> voxelListB;
     static ArrayList<Voxel> voxelListAB;
     static final int LOCATIONS_SURFACE = randomIntBetween(0, 100);
+    static final int LOCATIONS_HEIGHT = randomIntBetween(0, 100);
     
     @BeforeClass
     public static void setupMocks() {
@@ -41,8 +42,8 @@ public class PottsLocationsTest {
     
     @BeforeClass
     public static void setupLists() {
-        voxelListForVolumeSurface = new ArrayList<>();
-        voxelListForVolumeSurface.add(new Voxel(0, 0, 0));
+        voxelListForVolumeSurfaceHeight = new ArrayList<>();
+        voxelListForVolumeSurfaceHeight.add(new Voxel(0, 0, 0));
         
         voxelListForMultipleRegionsA = new ArrayList<>();
         voxelListForMultipleRegionsA.add(new Voxel(0, 0, 0));
@@ -103,9 +104,15 @@ public class PottsLocationsTest {
         
         @Override
         int calculateSurface() { return LOCATIONS_SURFACE; }
+    
+        @Override
+        int calculateHeight() { return LOCATIONS_HEIGHT; }
         
         @Override
         int updateSurface(Voxel voxel) { return 1; }
+    
+        @Override
+        int updateHeight(Voxel voxel) { return 2; }
         
         @Override
         ArrayList<Voxel> getNeighbors(Voxel voxel) {
@@ -175,14 +182,14 @@ public class PottsLocationsTest {
     
     @Test
     public void getVolume_validRegion_returnsValue() {
-        PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurface);
+        PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
         assertEquals(1, loc.getVolume());
         assertEquals(1, loc.getVolume(Region.DEFAULT));
     }
     
     @Test
     public void getVolume_invalidRegion_returnsZero() {
-        PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurface);
+        PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
         assertEquals(0, loc.getVolume(null));
     }
     
@@ -197,14 +204,14 @@ public class PottsLocationsTest {
     
     @Test
     public void getSurface_validRegion_returnsValue() {
-        PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurface);
+        PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
         assertEquals(LOCATIONS_SURFACE, loc.getSurface());
         assertEquals(LOCATION_SURFACE, loc.getSurface(Region.DEFAULT));
     }
     
     @Test
     public void getSurface_invalidRegion_returnsZero() {
-        PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurface);
+        PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
         assertEquals(0, loc.getSurface(null));
     }
     
@@ -215,6 +222,28 @@ public class PottsLocationsTest {
         assertEquals(LOCATIONS_SURFACE + 1, loc.getSurface());
         assertEquals(LOCATION_SURFACE, loc.getSurface(Region.DEFAULT));
         assertEquals(LOCATION_SURFACE + 1, loc.getSurface(Region.UNDEFINED));
+    }
+    
+    @Test
+    public void getHeight_validRegion_returnsValue() {
+        PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
+        assertEquals(LOCATIONS_HEIGHT, loc.getHeight());
+        assertEquals(LOCATION_HEIGHT, loc.getHeight(Region.DEFAULT));
+    }
+    
+    @Test
+    public void getHeight_invalidRegion_returnsZero() {
+        PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
+        assertEquals(0, loc.getHeight(null));
+    }
+    
+    @Test
+    public void getHeight_multipleRegions_returnsValue() {
+        PottsLocationsMock loc = new PottsLocationsMock(voxelListForMultipleRegions);
+        loc.add(Region.UNDEFINED, 1, 1, 0);
+        assertEquals(LOCATIONS_HEIGHT + 2, loc.getHeight());
+        assertEquals(LOCATION_HEIGHT, loc.getHeight(Region.DEFAULT));
+        assertEquals(LOCATION_HEIGHT + 2, loc.getHeight(Region.UNDEFINED));
     }
     
     @Test

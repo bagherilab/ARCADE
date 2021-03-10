@@ -209,71 +209,87 @@ public class Location3DTest {
     }
     
     @Test
-    public void calculateSurface_validID_calculatesValue() {
-        ArrayList<Voxel> voxels = new ArrayList<>();
-        PottsLocation3D loc = new PottsLocation3D(voxels);
-        
-        // 1 voxel
-        loc.add(1, 1, 0);
-        assertEquals(6, loc.calculateSurface());
-        
-        // 2 voxels
-        loc.add(1, 1, 1);
-        assertEquals(10, loc.calculateSurface());
-        
-        // 3 voxels
-        loc.add(1, 2, 0);
-        assertEquals(14, loc.calculateSurface());
-        
-        // 4 voxels
-        loc.add(2, 1, 1);
-        assertEquals(18, loc.calculateSurface());
+    public void calculateSurface_emptyList_returnsZero() {
+        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        assertEquals(0, loc.calculateSurface());
     }
     
     @Test
-    public void updateSurface_validVoxels_calculatesValue() {
-        ArrayList<Voxel> voxels = new ArrayList<>();
-        PottsLocation3D loc = new PottsLocation3D(voxels);
-        Voxel voxel = new Voxel(1, 1, 0);
+    public void calculateSurface_validVoxels_returnsValue() {
+        int[] surfaces = new int[] { 6, 10, 14, 18 };
+        int[][][] voxelLists = new int[][][] {
+                { { 1, 1, 0 } },
+                { { 1, 1, 0 }, { 1, 1, 1 } },
+                { { 1, 1, 0 }, { 1, 1, 1 }, { 1, 2, 0 } },
+                { { 1, 1, 0 }, { 1, 1, 1 }, { 1, 2, 0 }, { 2, 1, 1 } },
+        };
         
-        // 0 voxels
-        voxels.clear();
-        loc.add(1, 1, 0);
-        assertEquals(6, loc.updateSurface(voxel));
+        for (int i = 0; i < surfaces.length; i++) {
+            ArrayList<Voxel> voxels = new ArrayList<>();
+            for (int[] v : voxelLists[i]) {
+                voxels.add(new Voxel(v[0], v[1], v[2]));
+            }
+            PottsLocation3D loc = new PottsLocation3D(voxels);
+            assertEquals(surfaces[i], loc.calculateSurface());
+        }
+    }
+    
+    @Test
+    public void calculateHeight_emptyList_returnsZero() {
+        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        assertEquals(0, loc.calculateHeight());
+    }
+    
+    @Test
+    public void calculateHeight_validVoxels_returnsValue() {
+        int[] heights = new int[] { 1, 2, 3, 5 };
+        int[][][] voxelLists = new int[][][] {
+                { { 1, 1, 0 } },
+                { { 1, 1, 0 }, { 1, 1, 1 } },
+                { { 1, 1, 0 }, { 1, 1, 1 }, { 1, 1, 2 } },
+                { { 1, 1, 0 }, { 1, 1, 1 }, { 1, 1, 2 }, { 1, 1, 4 } },
+        };
         
-        // 1 voxel
-        voxels.clear();
-        voxels.add(new Voxel(1, 1, 1));
-        loc = new PottsLocation3D(voxels);
-        loc.add(1, 1, 0);
-        assertEquals(4, loc.updateSurface(voxel));
-        
-        // 2 voxels
-        voxels.clear();
-        voxels.add(new Voxel(1, 1, 1));
-        voxels.add(new Voxel(1, 0, 1));
-        loc = new PottsLocation3D(voxels);
-        loc.add(1, 1, 0);
-        assertEquals(4, loc.updateSurface(voxel));
-        
-        // 3 voxels
-        voxels.clear();
-        voxels.add(new Voxel(1, 1, 1));
-        voxels.add(new Voxel(1, 0, 1));
-        voxels.add(new Voxel(1, 0, 0));
-        loc = new PottsLocation3D(voxels);
-        loc.add(1, 1, 0);
-        assertEquals(2, loc.updateSurface(voxel));
-        
-        // 4 voxels
-        voxels.clear();
-        voxels.add(new Voxel(1, 1, 1));
-        voxels.add(new Voxel(1, 0, 0));
-        voxels.add(new Voxel(1, 0, 0));
-        voxels.add(new Voxel(1, 2, 0));
-        loc = new PottsLocation3D(voxels);
-        loc.add(1, 1, 0);
-        assertEquals(0, loc.updateSurface(voxel));
+        for (int i = 0; i < heights.length; i++) {
+            ArrayList<Voxel> voxels = new ArrayList<>();
+            for (int[] v : voxelLists[i]) {
+                voxels.add(new Voxel(v[0], v[1], v[2]));
+            }
+            PottsLocation3D loc = new PottsLocation3D(voxels);
+            assertEquals(heights[i], loc.calculateHeight());
+        }
+    }
+    
+    @Test
+    public void updateSurface_emptyList_returnsValue() {
+        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        assertEquals(6, loc.updateSurface(new Voxel(1, 1, 0)));
+    }
+    
+    @Test
+    public void updateSurface_validVoxels_returnsValue() {
+        int[] surfaces = new int[] { 4, 4, 2, 0 };
+        int[][][] voxelLists = new int[][][] {
+                { { 1, 1, 1 } },
+                { { 1, 1, 1 }, { 1, 0, 1 } },
+                { { 1, 1, 1 }, { 1, 0, 1 }, { 1, 0, 0 } },
+                { { 1, 1, 1 }, { 1, 0, 1 }, { 1, 0, 0 }, { 1, 2, 0 } },
+        };
+    
+        for (int i = 0; i < surfaces.length; i++) {
+            ArrayList<Voxel> voxels = new ArrayList<>();
+            for (int[] v : voxelLists[i]) {
+                voxels.add(new Voxel(v[0], v[1], v[2]));
+            }
+            PottsLocation3D loc = new PottsLocation3D(voxels);
+            assertEquals(surfaces[i], loc.updateSurface(new Voxel(1, 1, 0)));
+        }
+    }
+    
+    @Test
+    public void updateHeight_emptyList_returnsOne() {
+        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        assertEquals(1, loc.updateHeight(new Voxel(1, 1, 0)));
     }
     
     @Test

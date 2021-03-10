@@ -2,6 +2,7 @@ package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.OptionalInt;
 import static arcade.potts.sim.Potts3D.*;
 import static arcade.potts.util.PottsEnums.Direction;
 
@@ -81,8 +82,10 @@ public interface Location3D {
      * @return  the height
      */
     static int calculateHeight(ArrayList<Voxel> voxels) {
-        // TODO
-        return 0;
+        if (voxels.size() == 0) { return 0; }
+        OptionalInt max = voxels.stream().mapToInt(voxel -> voxel.z).max();
+        OptionalInt min = voxels.stream().mapToInt(voxel -> voxel.z).min();
+        return max.getAsInt() - min.getAsInt() + 1;
     }
     
     /**

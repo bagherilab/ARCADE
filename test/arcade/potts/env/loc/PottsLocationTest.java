@@ -16,6 +16,7 @@ public class PottsLocationTest {
     static MersenneTwisterFast randomDoubleZero;
     static MersenneTwisterFast randomDoubleOne;
     static final int LOCATION_SURFACE = randomIntBetween(0, 100);
+    static final int LOCATION_HEIGHT = randomIntBetween(0, 100);
     static ArrayList<Voxel> voxelListForAddRemove;
     static ArrayList<Voxel> voxelListA;
     static ArrayList<Voxel> voxelListB;
@@ -77,9 +78,15 @@ public class PottsLocationTest {
         
         @Override
         int calculateSurface() { return LOCATION_SURFACE; }
+    
+        @Override
+        int calculateHeight() { return LOCATION_HEIGHT; }
         
         @Override
         int updateSurface(Voxel voxel) { return 1; }
+    
+        @Override
+        int updateHeight(Voxel voxel) { return 2; }
         
         @Override
         ArrayList<Voxel> getNeighbors(Voxel voxel) {
@@ -197,6 +204,26 @@ public class PottsLocationTest {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         loc.add(0, 0, 0);
         assertEquals(LOCATION_SURFACE + 1, loc.getSurface(Region.DEFAULT));
+    }
+    
+    @Test
+    public void getHeight_hasVoxels_returnsValue() {
+        PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
+        loc.add(0, 0, 0);
+        assertEquals(LOCATION_HEIGHT + 2, loc.getHeight());
+    }
+    
+    @Test
+    public void getHeight_noVoxels_returnsValue() {
+        PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
+        assertEquals(LOCATION_HEIGHT, loc.getHeight());
+    }
+    
+    @Test
+    public void getHeight_givenRegion_returnsValue() {
+        PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
+        loc.add(0, 0, 0);
+        assertEquals(LOCATION_HEIGHT + 2, loc.getHeight(Region.DEFAULT));
     }
     
     @Test

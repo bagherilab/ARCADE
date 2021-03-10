@@ -119,71 +119,105 @@ public class Location2DTest {
     }
     
     @Test
-    public void calculateSurface_validID_calculatesValue() {
-        ArrayList<Voxel> voxels = new ArrayList<>();
-        PottsLocation2D loc = new PottsLocation2D(voxels);
-        
-        // 1 voxel
-        loc.add(1, 1, 0);
-        assertEquals(4, loc.calculateSurface());
-        
-        // 2 voxels
-        loc.add(2, 1, 0);
-        assertEquals(6, loc.calculateSurface());
-        
-        // 3 voxels
-        loc.add(1, 2, 0);
-        assertEquals(8, loc.calculateSurface());
-        
-        // 4 voxels
-        loc.add(2, 2, 0);
-        assertEquals(8, loc.calculateSurface());
+    public void calculateSurface_emptyList_returnsZero() {
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+        assertEquals(0, loc.calculateSurface());
     }
     
     @Test
-    public void updateSurface_validVoxels_calculatesValue() {
-        ArrayList<Voxel> voxels = new ArrayList<>();
-        PottsLocation2D loc = new PottsLocation2D(voxels);
-        Voxel voxel = new Voxel(1, 1, 0);
+    public void calculateSurface_validVoxels_returnsValue() {
+        int[] surfaces = new int[] { 4, 6, 8, 8 };
+        int[][][] voxelLists = new int[][][] {
+                { { 1, 1, 0 } },
+                { { 1, 1, 0 }, { 2, 1, 0 } },
+                { { 1, 1, 0 }, { 2, 1, 0 }, { 1, 2, 0 } },
+                { { 1, 1, 0 }, { 2, 1, 0 }, { 1, 2, 0 }, { 2, 2, 0 } },
+        };
         
-        // 0 voxels
-        voxels.clear();
-        loc.add(1, 1, 0);
-        assertEquals(4, loc.updateSurface(voxel));
+        for (int i = 0; i < surfaces.length; i++) {
+            ArrayList<Voxel> voxels = new ArrayList<>();
+            for (int[] v : voxelLists[i]) {
+                voxels.add(new Voxel(v[0], v[1], v[2]));
+            }
+            PottsLocation2D loc = new PottsLocation2D(voxels);
+            assertEquals(surfaces[i], loc.calculateSurface());
+        }
+    }
+    
+    @Test
+    public void calculateHeight_emptyList_returnsZero() {
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+        assertEquals(0, loc.calculateHeight());
+    }
+    
+    @Test
+    public void calculateHeight_validVoxels_returnsOne() {
+        int[][][] voxelLists = new int[][][] {
+                { { 1, 1, 0 } },
+                { { 1, 1, 0 }, { 2, 1, 0 } },
+                { { 1, 1, 0 }, { 2, 1, 0 }, { 1, 2, 0 } },
+                { { 1, 1, 0 }, { 2, 1, 0 }, { 1, 2, 0 }, { 2, 2, 0 } },
+        };
+    
+        for (int[][] voxelList : voxelLists) {
+            ArrayList<Voxel> voxels = new ArrayList<>();
+            for (int[] v : voxelList) {
+                voxels.add(new Voxel(v[0], v[1], v[2]));
+            }
+            PottsLocation2D loc = new PottsLocation2D(voxels);
+            assertEquals(1, loc.calculateHeight());
+        }
+    }
+    
+    @Test
+    public void updateSurface_emptyList_returnsValue() {
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+        assertEquals(4, loc.updateSurface(new Voxel(1, 1, 0)));
+    }
+    
+    @Test
+    public void updateSurface_validVoxels_returnsValue() {
+        int[] surfaces = new int[] { 2, 0, -2, -4 };
+        int[][][] voxelLists = new int[][][] {
+                { { 0, 1, 0 } },
+                { { 0, 1, 0 }, { 1, 0, 0 } },
+                { { 0, 1, 0 }, { 1, 0, 0 }, { 2, 1, 0 } },
+                { { 0, 1, 0 }, { 1, 0, 0 }, { 2, 1, 0 }, { 1, 2, 0 } },
+        };
         
-        // 1 voxel
-        voxels.clear();
-        voxels.add(new Voxel(0, 1, 0));
-        loc = new PottsLocation2D(voxels);
-        loc.add(1, 1, 0);
-        assertEquals(2, loc.updateSurface(voxel));
-        
-        // 2 voxels
-        voxels.clear();
-        voxels.add(new Voxel(0, 1, 0));
-        voxels.add(new Voxel(1, 0, 0));
-        loc = new PottsLocation2D(voxels);
-        loc.add(1, 1, 0);
-        assertEquals(0, loc.updateSurface(voxel));
-        
-        // 3 voxels
-        voxels.clear();
-        voxels.add(new Voxel(0, 1, 0));
-        voxels.add(new Voxel(1, 0, 0));
-        voxels.add(new Voxel(2, 1, 0));
-        loc = new PottsLocation2D(voxels);
-        loc.add(1, 1, 0);
-        assertEquals(-2, loc.updateSurface(voxel));
-        
-        // 4 voxels
-        voxels.clear();
-        voxels.add(new Voxel(0, 1, 0));
-        voxels.add(new Voxel(1, 0, 0));
-        voxels.add(new Voxel(2, 1, 0));
-        voxels.add(new Voxel(1, 2, 0));
-        loc = new PottsLocation2D(voxels);
-        loc.add(1, 1, 0);
-        assertEquals(-4, loc.updateSurface(voxel));
+        for (int i = 0; i < surfaces.length; i++) {
+            ArrayList<Voxel> voxels = new ArrayList<>();
+            for (int[] v : voxelLists[i]) {
+                voxels.add(new Voxel(v[0], v[1], v[2]));
+            }
+            PottsLocation2D loc = new PottsLocation2D(voxels);
+            assertEquals(surfaces[i], loc.updateSurface(new Voxel(1, 1, 0)));
+        }
+    }
+    
+    @Test
+    public void updateHeight_emptyList_returnsOne() {
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+        assertEquals(1, loc.updateHeight(new Voxel(1, 1, 0)));
+    }
+    
+    @Test
+    public void updateHeight_validVoxels_returnsZero() {
+        int[][][] voxelLists = new int[][][] {
+                { { 0, 1, 0 } },
+                { { 0, 1, 0 }, { 1, 0, 0 } },
+                { { 0, 1, 0 }, { 1, 0, 0 }, { 2, 1, 0 } },
+                { { 0, 1, 0 }, { 1, 0, 0 }, { 2, 1, 0 }, { 1, 2, 0 } },
+        };
+    
+        for (int[][] voxelList : voxelLists) {
+            ArrayList<Voxel> voxels = new ArrayList<>();
+            for (int[] v : voxelList) {
+                voxels.add(new Voxel(v[0], v[1], v[2]));
+            }
+            PottsLocation2D loc = new PottsLocation2D(voxels);
+            assertEquals(0, loc.updateHeight(new Voxel(1, 1, 0)));
+        }
     }
     
     @Test
