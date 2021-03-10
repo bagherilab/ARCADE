@@ -43,8 +43,18 @@ public final class PottsLocations2D extends PottsLocations implements Location2D
     }
     
     @Override
+    int calculateHeight() {
+        return Location2D.calculateHeight(voxels);
+    }
+    
+    @Override
     int updateSurface(Voxel voxel) {
         return Location2D.updateSurface(voxels, voxel);
+    }
+    
+    @Override
+    int updateHeight(Voxel voxel) {
+        return Location2D.updateHeight(voxels, voxel);
     }
     
     @Override

@@ -56,4 +56,19 @@ public interface Location {
      * @return  the location region surface area (in voxels)
      */
     int getSurface(Region region);
+    
+    /**
+     * Gets the height of the location.
+     *
+     * @return  the location height (in voxels)
+     */
+    int getHeight();
+    
+    /**
+     * Gets the height of the location for a given region.
+     *
+     * @param region  the voxel region
+     * @return  the location height (in voxels)
+     */
+    int getHeight(Region region);
 }

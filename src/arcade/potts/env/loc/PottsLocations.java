@@ -62,6 +62,11 @@ public abstract class PottsLocations extends PottsLocation {
     }
     
     @Override
+    public int getHeight(Region region) {
+        return (locations.containsKey(region) ? locations.get(region).height : 0);
+    }
+    
+    @Override
     public void add(int x, int y, int z) {
         super.add(x, y, z);
         locations.get(Region.DEFAULT).add(x, y, z);

@@ -41,10 +41,20 @@ public final class PottsLocations3D extends PottsLocations implements Location3D
     int calculateSurface() {
         return Location3D.calculateSurface(voxels);
     }
+   
+    @Override
+    int calculateHeight() {
+        return Location3D.calculateHeight(voxels);
+    }
     
     @Override
     int updateSurface(Voxel voxel) {
         return Location3D.updateSurface(voxels, voxel);
+    }
+    
+    @Override
+    int updateHeight(Voxel voxel) {
+        return Location3D.updateHeight(voxels, voxel);
     }
     
     @Override

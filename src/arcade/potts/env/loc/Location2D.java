@@ -70,6 +70,17 @@ public interface Location2D {
     }
     
     /**
+     * Calculates height of location (z axis).
+     *
+     * @param voxels  the list of voxels
+     * @return  the height
+     */
+    static int calculateHeight(ArrayList<Voxel> voxels) {
+        // TODO
+        return 0;
+    }
+    
+    /**
      * Calculates the local change in surface of the location.
      *
      * @param voxels  the list of voxels
@@ -89,6 +100,18 @@ public interface Location2D {
         }
         
         return change;
+    }
+    
+    /**
+     * Calculates the local change in height of the location.
+     *
+     * @param voxels  the list of voxels
+     * @param voxel  the voxel the update is centered in
+     * @return  the change in height
+     */
+    static int updateHeight(ArrayList<Voxel> voxels, Voxel voxel) {
+        // TODO
+        return 0;
     }
     
     /**

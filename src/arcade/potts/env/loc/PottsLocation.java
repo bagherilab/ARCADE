@@ -47,6 +47,9 @@ public abstract class PottsLocation implements Location {
     /** Location surface. */
     int surface;
     
+    /** Location height. */
+    int height;
+    
     /**
      * Creates a {@code PottsLocation} for a list of voxels.
      *
@@ -56,6 +59,7 @@ public abstract class PottsLocation implements Location {
         this.voxels = new ArrayList<>(voxels);
         this.volume = voxels.size();
         this.surface = calculateSurface();
+        this.height = calculateHeight();
     }
     
     /**
@@ -80,6 +84,12 @@ public abstract class PottsLocation implements Location {
     @Override
     public int getSurface(Region region) { return getSurface(); }
     
+    @Override
+    public final int getHeight() { return height; }
+    
+    @Override
+    public int getHeight(Region region) { return getHeight(); }
+    
     /**
      * Adds a voxel at the given coordinates.
      *
@@ -93,6 +103,7 @@ public abstract class PottsLocation implements Location {
             voxels.add(voxel);
             volume++;
             surface += updateSurface(voxel);
+            height += updateHeight(voxel);
         }
     }
     
@@ -119,6 +130,7 @@ public abstract class PottsLocation implements Location {
             voxels.remove(voxel);
             volume--;
             surface -= updateSurface(voxel);
+            height -= updateHeight(voxel);
         }
     }
     
@@ -268,6 +280,21 @@ public abstract class PottsLocation implements Location {
      * @return  the change in surface
      */
     abstract int updateSurface(Voxel voxel);
+    
+    /**
+     * Calculates height of location.
+     *
+     * @return  the height
+     */
+    abstract int calculateHeight();
+    
+    /**
+     * Calculates the local change in height of the location.
+     *
+     * @param voxel  the voxel the update is centered in
+     * @return  the change in height
+     */
+    abstract int updateHeight(Voxel voxel);
     
     /**
      * Gets list of neighbors of a given voxel.
