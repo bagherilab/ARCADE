@@ -37,7 +37,10 @@ public final class PottsEnums {
         VOLUME,
         
         /** Code for surface term. */
-        SURFACE
+        SURFACE,
+        
+        /** Code for height term. */
+        HEIGHT
     }
     
     /** Module phase codes. */

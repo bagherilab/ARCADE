@@ -46,8 +46,10 @@ public class PottsCellTest {
     static EnumMap<Region, EnumMap<Region, Double>> adhesionRegionMock;
     static Location locationMock;
     static int locationVolume;
+    static int locationHeight;
     static int locationSurface;
     static EnumMap<Region, Integer> locationRegionVolumes;
+    static EnumMap<Region, Integer> locationRegionHeights;
     static EnumMap<Region, Integer> locationRegionSurfaces;
     static int cellID = randomIntBetween(1, 10);
     static int cellPop = randomIntBetween(1, 10);
@@ -82,25 +84,31 @@ public class PottsCellTest {
         when(((PottsLocation) locationMock).convertVolume(anyDouble())).thenAnswer(answer);
         
         locationRegionVolumes = new EnumMap<>(Region.class);
+        locationRegionHeights = new EnumMap<>(Region.class);
         locationRegionSurfaces = new EnumMap<>(Region.class);
         
         // Random volumes and surfaces for regions.
         for (Region region : regionList) {
             locationRegionVolumes.put(region, randomIntBetween(0, 100));
+            locationRegionHeights.put(region, randomIntBetween(0, 100));
             locationRegionSurfaces.put(region, randomIntBetween(0, 100));
             
             when(locationMock.getVolume(region)).thenReturn(locationRegionVolumes.get(region));
+            when(locationMock.getHeight(region)).thenReturn(locationRegionHeights.get(region));
             when(locationMock.getSurface(region)).thenReturn(locationRegionSurfaces.get(region));
             
             locationVolume += locationRegionVolumes.get(region);
+            locationHeight += locationRegionHeights.get(region);
             locationSurface += locationRegionSurfaces.get(region);
         }
         
         when(locationMock.getVolume()).thenReturn(locationVolume);
+        when(locationMock.getHeight()).thenReturn(locationHeight);
         when(locationMock.getSurface()).thenReturn(locationSurface);
         
         criticalsMock = new EnumMap<>(Term.class);
         criticalsMock.put(Term.VOLUME, (double) locationVolume);
+        criticalsMock.put(Term.HEIGHT, (double) locationHeight);
         criticalsMock.put(Term.SURFACE, (double) locationSurface);
         
         // Region criticals.
@@ -108,6 +116,7 @@ public class PottsCellTest {
         for (Region region : regionList) {
             EnumMap<Term, Double> criticalsRegionTerms = new EnumMap<>(Term.class);
             criticalsRegionTerms.put(Term.VOLUME, (double) locationRegionVolumes.get(region));
+            criticalsRegionTerms.put(Term.HEIGHT, (double) locationRegionHeights.get(region));
             criticalsRegionTerms.put(Term.SURFACE, (double) locationRegionSurfaces.get(region));
             criticalsRegionMock.put(region, criticalsRegionTerms);
         }
@@ -246,6 +255,30 @@ public class PottsCellTest {
     public void getVolume_noRegions_returnsZero() {
         for (Region region : regionList) {
             assertEquals(0, cellWithoutRegions.getVolume(region));
+        }
+    }
+    
+    @Test
+    public void getHeight_defaultConstructor_returnsValue() {
+        assertEquals(locationHeight, cellDefault.getHeight());
+    }
+    
+    @Test
+    public void getHeight_validRegions_returnsValue() {
+        for (Region region : regionList) {
+            assertEquals((int) locationRegionHeights.get(region), cellWithRegions.getHeight(region));
+        }
+    }
+    
+    @Test
+    public void getHeight_nullRegion_returnsZero() {
+        assertEquals(0, cellWithRegions.getHeight(null));
+    }
+    
+    @Test
+    public void getHeight_noRegions_returnsZero() {
+        for (Region region : regionList) {
+            assertEquals(0, cellWithoutRegions.getHeight(region));
         }
     }
     
@@ -441,6 +474,63 @@ public class PottsCellTest {
         cell.initialize(null, null);
         for (Region region : regionList) {
             assertEquals(0, cell.getCriticalVolume(region), EPSILON);
+        }
+    }
+    
+    @Test
+    public void getCriticalHeight_beforeInitialize_returnsValue() {
+        assertEquals(locationHeight, cellDefault.getCriticalHeight(), EPSILON);
+    }
+    
+    @Test
+    public void getCriticalHeight_beforeInitializeValidRegion_returnsValue() {
+        for (Region region : regionList) {
+            assertEquals(locationRegionHeights.get(region), cellWithRegions.getCriticalHeight(region), EPSILON);
+        }
+    }
+    
+    @Test
+    public void getCriticalHeight_beforeInitializeInvalidRegion_returnsZero() {
+        assertEquals(0, cellWithRegions.getCriticalHeight(null), EPSILON);
+        assertEquals(0, cellWithRegions.getCriticalHeight(Region.UNDEFINED), EPSILON);
+    }
+    
+    @Test
+    public void getCriticalHeight_beforeInitializeNoRegions_returnsZero() {
+        for (Region region : regionList) {
+            assertEquals(0, cellWithoutRegions.getCriticalHeight(region), EPSILON);
+        }
+    }
+    
+    @Test
+    public void getCriticalHeight_afterInitialize_returnsValue() {
+        PottsCell cell = make(cellID, cellPop, false);
+        cell.initialize(null, null);
+        assertEquals(locationHeight, cell.getCriticalHeight(), EPSILON);
+    }
+    
+    @Test
+    public void getCriticalHeight_afterInitializeValidRegion_returnsValue() {
+        PottsCell cell = make(cellID, 1, true);
+        cell.initialize(null, null);
+        for (Region region : regionList) {
+            assertEquals(locationRegionHeights.get(region), cell.getCriticalHeight(region), EPSILON);
+        }
+    }
+    
+    @Test
+    public void getCriticalHeight_afterInitializeInvalidRegion_returnsZero() {
+        PottsCell cell = make(cellID, 1, true);
+        cell.initialize(null, null);
+        assertEquals(0, cell.getCriticalHeight(null), EPSILON);
+    }
+    
+    @Test
+    public void getCriticalHeight_afterInitializeNoRegion_returnsZero() {
+        PottsCell cell = make(cellID, 1, false);
+        cell.initialize(null, null);
+        for (Region region : regionList) {
+            assertEquals(0, cell.getCriticalHeight(region), EPSILON);
         }
     }
     

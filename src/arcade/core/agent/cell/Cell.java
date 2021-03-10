@@ -98,6 +98,21 @@ public interface Cell extends Steppable {
     int getVolume(Region region);
     
     /**
+     * Gets the cell height (in voxels).
+     *
+     * @return  the cell height
+     */
+    int getHeight();
+    
+    /**
+     * Gets the cell height (in voxels) for a region.
+     *
+     * @param region  the region
+     * @return  the cell region height
+     */
+    int getHeight(Region region);
+    
+    /**
      * Gets the critical volume (in voxels).
      *
      * @return  the critical volume
@@ -111,6 +126,21 @@ public interface Cell extends Steppable {
      * @return  the critical region volume
      */
     double getCriticalVolume(Region region);
+    
+    /**
+     * Gets the critical height (in voxels).
+     *
+     * @return  the critical height
+     */
+    double getCriticalHeight();
+    
+    /**
+     * Gets the critical height (in voxels) for a region.
+     *
+     * @param region  the region
+     * @return  the critical region height
+     */
+    double getCriticalHeight(Region region);
     
     /**
      * Sets the cell state.

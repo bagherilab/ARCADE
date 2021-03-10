@@ -231,6 +231,12 @@ public final class PottsCell implements Cell {
     @Override
     public int getVolume(Region region) { return (hasRegions ? location.getVolume(region) : 0); }
     
+    @Override
+    public int getHeight() { return location.getHeight(); }
+    
+    @Override
+    public int getHeight(Region region) { return (hasRegions ? location.getHeight(region) : 0); }
+    
     /**
      * Gets the cell surface (in voxels).
      *
@@ -291,6 +297,16 @@ public final class PottsCell implements Cell {
     public double getCriticalVolume(Region region) {
         return (hasRegions && criticalsRegion.containsKey(region)
                 ? criticalsRegion.get(region).get(Term.VOLUME)
+                : 0);
+    }
+    
+    @Override
+    public double getCriticalHeight() { return criticals.get(Term.HEIGHT); }
+    
+    @Override
+    public double getCriticalHeight(Region region) {
+        return (hasRegions && criticalsRegion.containsKey(region)
+                ? criticalsRegion.get(region).get(Term.HEIGHT)
                 : 0);
     }
     
