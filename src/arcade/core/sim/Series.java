@@ -297,6 +297,7 @@ public abstract class Series {
      * <p>
      * Conversion string is in the form of {@code D^N} where {@code D} is either
      * {@code DS} or {@code DT} and {@code N} is an integer exponent.
+     * Multiple terms can be chained in the form {@code D^N1.D^N2}.
      * The {@code ^N} is not required if N = 1.
      *
      * @param convert  the conversion string
@@ -305,10 +306,15 @@ public abstract class Series {
      * @return  the updated conversion factor
      */
     protected static double parseConversion(String convert, double ds, double dt) {
-        String[] split = convert.replace(" ", "").split("\\^");
-        double v = (split[0].equals("DS") ? ds : (split[0].equals("DT") ? dt : 1));
-        int n = (split.length == 2 ? Integer.parseInt(split[1]) : 1);
-        return Math.pow(v, n);
+        double value = 1;
+        String[] split = convert.split("\\.");
+        for (String s : split) {
+            String[] subsplit = s.replace(" ", "").split("\\^");
+            double v = (subsplit[0].equals("DS") ? ds : (subsplit[0].equals("DT") ? dt : 1));
+            int n = (subsplit.length == 2 ? Integer.parseInt(subsplit[1]) : 1);
+            value *= Math.pow(v, n);
+        }
+        return value;
     }
     
     /**

@@ -4,8 +4,8 @@
     <potts id="MCS" value="1" description="number of MCS steps per simulation tick" />
     
     <!-- default parameters for populations -->
-    <population id="LAMBDA_VOLUME" value="1" />
-    <population id="LAMBDA_SURFACE" value="1" />
+    <population id="LAMBDA_VOLUME" value="1" conversion="DS^3.DT^-1" />
+    <population id="LAMBDA_SURFACE" value="1" conversion="DS^2.DT^-1" />
     <population id="CRITICAL_VOLUME" value="2000" units="um^3" conversion="DS^-3" />
     <population id="CRITICAL_SURFACE" value="1000" units="um^2" conversion="DS^-2" />
     <population id="ADHESION" value="1" />
@@ -19,8 +19,8 @@
     <!-- nucleus region parameters -->
     <population.region region="NUCLEUS" id="CRITICAL_VOLUME" value="600" units="um^3" conversion="DS^-3" />
     <population.region region="NUCLEUS" id="CRITICAL_SURFACE" value="300" units="um^2" conversion="DS^-2" />
-    <population.region region="NUCLEUS" id="LAMBDA_VOLUME" value="1" />
-    <population.region region="NUCLEUS" id="LAMBDA_SURFACE" value="1" />
+    <population.region region="NUCLEUS" id="LAMBDA_VOLUME" value="1" conversion="DS^3.DT^-1" />
+    <population.region region="NUCLEUS" id="LAMBDA_SURFACE" value="1" conversion="DS^2.DT^-1" />
     <population.region region="NUCLEUS" id="ADHESION" target="DEFAULT" value="1" />
     <population.region region="NUCLEUS" id="ADHESION" target="NUCLEUS" value="1" />
     

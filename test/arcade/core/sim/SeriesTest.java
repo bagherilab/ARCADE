@@ -1,6 +1,7 @@
 package arcade.core.sim;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -593,6 +594,26 @@ public class SeriesTest {
         int n = randomIntBetween(1, 100);
         assertEquals(Math.pow(DS, -n), Series.parseConversion("DS^-" + n, DS, DT), EPSILON);
         assertEquals(Math.pow(DT, -n), Series.parseConversion("DT^-" + n, DS, DT), EPSILON);
+    }
+    
+    @Test
+    public void parseConversion_multipleTerms_returnsValue() {
+        int n = randomIntBetween(1, 3);
+        int m = randomIntBetween(3, 5);
+        String ds = String.join(".", Collections.nCopies(m, "DS^" + n));
+        String dt = String.join(".", Collections.nCopies(m, "DT^" + n));
+        assertEquals(Math.pow(DS, n * m), Series.parseConversion(ds, DS, DT), EPSILON);
+        assertEquals(Math.pow(DT, n * m), Series.parseConversion(dt, DS, DT), EPSILON);
+    }
+    
+    @Test
+    public void parseConversion_mixedTerms_returnsValue() {
+        int n1 = randomIntBetween(1, 3);
+        int n2 = randomIntBetween(3, 5);
+        String dsdt = String.format("DS^%d.DT^%d", n1, n2);
+        String dtds = String.format("DT^%d.DS^%d", n1, n2);
+        assertEquals(Math.pow(DS, n1) * Math.pow(DT, n2), Series.parseConversion(dsdt, DS, DT), EPSILON);
+        assertEquals(Math.pow(DT, n1) * Math.pow(DS, n2), Series.parseConversion(dtds, DS, DT), EPSILON);
     }
     
     @Test
