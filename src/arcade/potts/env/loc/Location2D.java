@@ -109,7 +109,9 @@ public interface Location2D {
      * @return  the change in height
      */
     static int updateHeight(ArrayList<Voxel> voxels, Voxel voxel) {
-        return (voxels.size() == 0 ? 1 : 0);
+        boolean addToEmpty = voxels.size() == 0;
+        boolean removeToEmpty = voxels.size() == 1 && voxels.contains(voxel);
+        return (addToEmpty || removeToEmpty ? 1 : 0);
     }
     
     /**
