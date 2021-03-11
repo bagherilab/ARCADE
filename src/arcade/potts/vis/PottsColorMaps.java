@@ -65,7 +65,7 @@ public class PottsColorMaps {
     
     final Colors mapVolume;
     
-    final Colors mapSurface;
+    final Colors mapHeight;
     
     /**
      * Creates {@code ColorMaps} for the given series.
@@ -103,14 +103,14 @@ public class PottsColorMaps {
                 }
         );
         
-        double surface = 0;
+        double height = 0;
         for (MiniBox box : series.populations.values()) {
-            if (box.getDouble("CRITICAL_SURFACE") > surface) {
-                surface = box.getDouble("CRITICAL_SURFACE");
+            if (box.getDouble("CRITICAL_HEIGHT") > height) {
+                height = box.getDouble("CRITICAL_HEIGHT");
             }
         }
         
-        mapSurface = new Colors(
+        mapHeight = new Colors(
                 new Color[]{
                         new Color(0, 0, 0),
                         new Color(251, 230, 197),
@@ -123,13 +123,13 @@ public class PottsColorMaps {
                 },
                 new double[] {
                         0,
-                        1. / 7 * surface,
-                        2. / 7 * surface,
-                        3. / 7 * surface,
-                        4. / 7 * surface,
-                        5. / 7 * surface,
-                        6. / 7 * surface,
-                        7. / 7 * surface
+                        1. / 7 * height * 4,
+                        2. / 7 * height * 4,
+                        3. / 7 * height * 4,
+                        4. / 7 * height * 4,
+                        5. / 7 * height * 4,
+                        6. / 7 * height * 4,
+                        7. / 7 * height * 4
                 }
         );
     }

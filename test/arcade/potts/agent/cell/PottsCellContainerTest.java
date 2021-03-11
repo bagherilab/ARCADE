@@ -165,7 +165,7 @@ public class PottsCellContainerTest {
         assertEquals(parameters, cell.getParameters());
         assertEquals(cellPhase, ((PottsModule) cell.getModule()).getPhase());
         assertEquals(criticals.get(Term.VOLUME), cell.getCriticalVolume(), EPSILON);
-        assertEquals(criticals.get(Term.SURFACE), cell.getCriticalSurface(), EPSILON);
+        assertEquals(criticals.get(Term.HEIGHT), cell.getCriticalHeight(), EPSILON);
         assertEquals(lambdas.get(Term.VOLUME), cell.getLambda(Term.VOLUME), EPSILON);
         assertEquals(lambdas.get(Term.SURFACE), cell.getLambda(Term.SURFACE), EPSILON);
         assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
@@ -222,7 +222,7 @@ public class PottsCellContainerTest {
         assertEquals(parameters, cell.getParameters());
         assertEquals(cellPhase, ((PottsModule) cell.getModule()).getPhase());
         assertEquals(criticals.get(Term.VOLUME), cell.getCriticalVolume(), EPSILON);
-        assertEquals(criticals.get(Term.SURFACE), cell.getCriticalSurface(), EPSILON);
+        assertEquals(criticals.get(Term.HEIGHT), cell.getCriticalHeight(), EPSILON);
         assertEquals(lambdas.get(Term.VOLUME), cell.getLambda(Term.VOLUME), EPSILON);
         assertEquals(lambdas.get(Term.SURFACE), cell.getLambda(Term.SURFACE), EPSILON);
         assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
@@ -235,7 +235,7 @@ public class PottsCellContainerTest {
             EnumMap<Term, Double> lambdaTerms = lambdasRegion.get(region);
             
             assertEquals(criticalTerms.get(Term.VOLUME), cell.getCriticalVolume(region), EPSILON);
-            assertEquals(criticalTerms.get(Term.SURFACE), cell.getCriticalSurface(region), EPSILON);
+            assertEquals(criticalTerms.get(Term.HEIGHT), cell.getCriticalHeight(region), EPSILON);
             assertEquals(lambdaTerms.get(Term.VOLUME), cell.getLambda(Term.VOLUME, region), EPSILON);
             assertEquals(lambdaTerms.get(Term.SURFACE), cell.getLambda(Term.SURFACE, region), EPSILON);
             assertEquals(0, cell.getTargetVolume(region), EPSILON);

@@ -195,7 +195,7 @@ public abstract class PottsDrawer extends Drawer {
         private static final int DRAW_POPULATION = 2;
         private static final int DRAW_STATE = 3;
         private static final int DRAW_VOLUME = 4;
-        private static final int DRAW_SURFACE = 5;
+        private static final int DRAW_HEIGHT = 5;
         
         private final int length;
         private final int width;
@@ -231,7 +231,7 @@ public abstract class PottsDrawer extends Drawer {
                 case "state": code = DRAW_STATE; break;
                 case "population": code = DRAW_POPULATION; break;
                 case "volume": code = DRAW_VOLUME; break;
-                case "surface": code = DRAW_SURFACE; break;
+                case "height": code = DRAW_HEIGHT; break;
                 default: code = 0;
             }
             
@@ -300,8 +300,8 @@ public abstract class PottsDrawer extends Drawer {
                         case DRAW_VOLUME:
                             to[a][b] = cell == null ? 0 : cell.getVolume();
                             break;
-                        case DRAW_SURFACE:
-                            to[a][b] = cell == null ? 0 : ((PottsCell) cell).getSurface();
+                        case DRAW_HEIGHT:
+                            to[a][b] = cell == null ? 0 : ((PottsCell) cell).getHeight();
                             break;
                         default:
                             break;

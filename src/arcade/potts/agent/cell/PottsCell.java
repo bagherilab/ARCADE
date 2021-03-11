@@ -311,25 +311,6 @@ public final class PottsCell implements Cell {
     }
     
     /**
-     * Gets the critical surface (in voxels).
-     *
-     * @return  the critical surface
-     */
-    public double getCriticalSurface() { return criticals.get(Term.SURFACE); }
-    
-    /**
-     * Gets the critical surface (in voxels) for a region.
-     *
-     * @param region  the region
-     * @return  the critical surface
-     */
-    public double getCriticalSurface(Region region) {
-        return (hasRegions && criticalsRegion.containsKey(region)
-                ? criticalsRegion.get(region).get(Term.SURFACE)
-                : 0);
-    }
-    
-    /**
      * Gets the lambda for the given term.
      *
      * @param term  the term of the Hamiltonian
@@ -445,13 +426,14 @@ public final class PottsCell implements Cell {
         location.update(id, ids, regions);
         
         targetVolume = criticals.get(Term.VOLUME);
-        targetSurface = criticals.get(Term.SURFACE);
+        targetSurface = location.convertVolume(targetVolume);
         
         if (!hasRegions) { return; }
         
         for (Region region : location.getRegions()) {
-            targetRegionVolumes.put(region, criticalsRegion.get(region).get(Term.VOLUME));
-            targetRegionSurfaces.put(region, criticalsRegion.get(region).get(Term.SURFACE));
+            EnumMap<Term, Double> regionTerms = criticalsRegion.get(region);
+            targetRegionVolumes.put(region, regionTerms.get(Term.VOLUME));
+            targetRegionSurfaces.put(region, location.convertVolume(regionTerms.get(Term.VOLUME)));
         }
     }
     

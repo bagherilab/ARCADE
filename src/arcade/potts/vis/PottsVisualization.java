@@ -106,8 +106,8 @@ public final class PottsVisualization extends Visualization {
                         length, width, height, MAP_POPULATION, getBox(h, 0, h, v)),
                 new PottsDrawer.PottsCells(panels[1], "agents:volume",
                         length, width, height, maps.mapVolume, getBox(0, v, h, v)),
-                new PottsDrawer.PottsCells(panels[1], "agents:surface",
-                        length, width, height, maps.mapSurface, getBox(h, v, h, v)),
+                new PottsDrawer.PottsCells(panels[1], "agents:height",
+                        length, width, height, maps.mapHeight, getBox(h, v, h, v)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay",
                         length, width, height, MAP_OVERLAY, getBox(0, 0, h, v)),
@@ -165,8 +165,8 @@ public final class PottsVisualization extends Visualization {
                         length, width, height, MAP_POPULATION, getBox(h, 0, hh, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:volume:z",
                         length, width, height, maps.mapVolume, getBox(0, v, hh, vv)),
-                new PottsDrawer.PottsCells(panels[1], "agents:surface:z",
-                        length, width, height, maps.mapSurface, getBox(h, v, hh, vv)),
+                new PottsDrawer.PottsCells(panels[1], "agents:height:z",
+                        length, width, height, maps.mapHeight, getBox(h, v, hh, vv)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:z",
                         length, width, height, MAP_OVERLAY, getBox(0, 0, hh, vv)),
@@ -192,8 +192,8 @@ public final class PottsVisualization extends Visualization {
                         length, width, height, MAP_POPULATION, getBox(h + hh, 0, hx, vv)),
                 new PottsDrawer.PottsCells(panels[1], "agents:volume:x",
                         length, width, height, maps.mapVolume, getBox(hh, v, hx, vv)),
-                new PottsDrawer.PottsCells(panels[1], "agents:surface:x",
-                        length, width, height, maps.mapSurface, getBox(h + hh, v, hx, vv)),
+                new PottsDrawer.PottsCells(panels[1], "agents:height:x",
+                        length, width, height, maps.mapHeight, getBox(h + hh, v, hx, vv)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:x",
                         length, width, height, MAP_OVERLAY, getBox(hh, 0, hx, vv)),
@@ -219,8 +219,8 @@ public final class PottsVisualization extends Visualization {
                         length, width, height, MAP_POPULATION, getBox(h, vv, hh, vx)),
                 new PottsDrawer.PottsCells(panels[1], "agents:volume:y",
                         length, width, height, maps.mapVolume, getBox(0, v + vv, hh, vx)),
-                new PottsDrawer.PottsCells(panels[1], "agents:surface:y",
-                        length, width, height, maps.mapSurface, getBox(h, v + vv, hh, vx)),
+                new PottsDrawer.PottsCells(panels[1], "agents:height:y",
+                        length, width, height, maps.mapHeight, getBox(h, v + vv, hh, vx)),
                 
                 new PottsDrawer.PottsCells(panels[1], "agents:overlay:y",
                         length, width, height, MAP_OVERLAY, getBox(0, vv, hh, vx)),

@@ -535,63 +535,6 @@ public class PottsCellTest {
     }
     
     @Test
-    public void getCriticalSurface_beforeInitialize_returnsZero() {
-        assertEquals(locationSurface, cellDefault.getCriticalSurface(), EPSILON);
-    }
-    
-    @Test
-    public void getCriticalSurface_beforeInitializeValidRegion_returnsZero() {
-        for (Region region : regionList) {
-            assertEquals(locationRegionSurfaces.get(region), cellWithRegions.getCriticalSurface(region), EPSILON);
-        }
-    }
-    
-    @Test
-    public void getCriticalSurface_beforeInitializeInvalidRegion_returnsZero() {
-        assertEquals(0, cellWithRegions.getCriticalSurface(null), EPSILON);
-        assertEquals(0, cellWithRegions.getCriticalSurface(Region.UNDEFINED), EPSILON);
-    }
-    
-    @Test
-    public void getCriticalSurface_beforeInitializeNoRegions_returnsZero() {
-        for (Region region : regionList) {
-            assertEquals(0, cellWithoutRegions.getCriticalSurface(region), EPSILON);
-        }
-    }
-    
-    @Test
-    public void getCriticalSurface_afterInitialize_returnsValue() {
-        PottsCell cell = make(cellID, cellPop, false);
-        cell.initialize(null, null);
-        assertEquals(locationSurface, cell.getCriticalSurface(), EPSILON);
-    }
-    
-    @Test
-    public void getCriticalSurface_afterInitializeValidRegion_returnsValue() {
-        PottsCell cell = make(cellID, 1, true);
-        cell.initialize(null, null);
-        for (Region region : regionList) {
-            assertEquals(locationRegionSurfaces.get(region), cell.getCriticalSurface(region), EPSILON);
-        }
-    }
-    
-    @Test
-    public void getCriticalSurface_afterInitializeInvalidRegion_returnsZero() {
-        PottsCell cell = make(cellID, 1, true);
-        cell.initialize(null, null);
-        assertEquals(0, cell.getCriticalSurface(null), EPSILON);
-    }
-    
-    @Test
-    public void getCriticalSurface_afterInitializeNoRegion_returnsZero() {
-        PottsCell cell = make(cellID, 1, false);
-        cell.initialize(null, null);
-        for (Region region : regionList) {
-            assertEquals(0, cell.getCriticalSurface(region), EPSILON);
-        }
-    }
-    
-    @Test
     public void getLambda_givenTerm_returnsValue() {
         assertEquals(lambdaVolume, cellDefault.getLambda(Term.VOLUME), EPSILON);
         assertEquals(lambdaSurface, cellDefault.getLambda(Term.SURFACE), EPSILON);
@@ -991,7 +934,7 @@ public class PottsCellTest {
         cell.reset(new int[1][3][3], null);
         
         assertEquals(locationVolume, cell.getTargetVolume(), EPSILON);
-        assertEquals(locationSurface, cell.getTargetSurface(), EPSILON);
+        assertEquals(locationVolume * VOLUME_SURFACE_RATIO, cell.getTargetSurface(), EPSILON);
         assertEquals(0, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         assertEquals(0, cell.getTargetSurface(Region.DEFAULT), EPSILON);
     }
@@ -1005,11 +948,15 @@ public class PottsCellTest {
         cell.reset(new int[1][3][3], new int[1][3][3]);
         
         assertEquals(locationVolume, cell.getTargetVolume(), EPSILON);
-        assertEquals(locationSurface, cell.getTargetSurface(), EPSILON);
-        assertEquals(locationRegionVolumes.get(Region.DEFAULT), cell.getTargetVolume(Region.DEFAULT), EPSILON);
-        assertEquals(locationRegionSurfaces.get(Region.DEFAULT), cell.getTargetSurface(Region.DEFAULT), EPSILON);
-        assertEquals(locationRegionVolumes.get(Region.NUCLEUS), cell.getTargetVolume(Region.NUCLEUS), EPSILON);
-        assertEquals(locationRegionSurfaces.get(Region.NUCLEUS), cell.getTargetSurface(Region.NUCLEUS), EPSILON);
+        assertEquals(locationVolume * VOLUME_SURFACE_RATIO, cell.getTargetSurface(), EPSILON);
+        
+        double volumeDefault = locationRegionVolumes.get(Region.DEFAULT);
+        assertEquals(volumeDefault, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+        assertEquals(volumeDefault * VOLUME_SURFACE_RATIO, cell.getTargetSurface(Region.DEFAULT), EPSILON);
+        
+        double volumeNucleus = locationRegionVolumes.get(Region.NUCLEUS);
+        assertEquals(volumeNucleus, cell.getTargetVolume(Region.NUCLEUS), EPSILON);
+        assertEquals(volumeNucleus * VOLUME_SURFACE_RATIO, cell.getTargetSurface(Region.NUCLEUS), EPSILON);
     }
     
     @Test
