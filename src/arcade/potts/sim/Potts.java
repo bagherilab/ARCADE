@@ -141,10 +141,12 @@ public abstract class Potts implements Steppable {
      * @param r  a random number
      */
     void flip(int sourceID, int targetID, int x, int y, int z, double r) {
+        boolean zero = ids[z][x][y] == 0;
+        
         // Check connectivity of source.
         if (sourceID > 0) {
             boolean[][][] neighborhood = getNeighborhood(sourceID, x, y, z);
-            boolean candidateConnected = getConnectivity(neighborhood, ids[z][x][y] == 0);
+            boolean candidateConnected = getConnectivity(neighborhood, zero);
             if (!candidateConnected) { return; }
             
             // Check connectivity of regions.
@@ -158,7 +160,7 @@ public abstract class Potts implements Steppable {
         // Check connectivity of target.
         if (targetID > 0) {
             boolean[][][] neighborhood = getNeighborhood(targetID, x, y, z);
-            boolean targetConnected = getConnectivity(neighborhood, ids[z][x][y] == 0);
+            boolean targetConnected = getConnectivity(neighborhood, zero);
             if (!targetConnected) { return; }
             
             // Check connectivity of regions.
@@ -223,17 +225,19 @@ public abstract class Potts implements Steppable {
      * @param r  a random number
      */
     void flip(int id, int sourceRegion, int targetRegion, int x, int y, int z, double r) {
+        boolean zero = regions[z][x][y] == Region.DEFAULT.ordinal();
+        
         // Check connectivity of source.
         if (sourceRegion > Region.DEFAULT.ordinal()) {
             boolean[][][] neighborhood = getNeighborhood(id, sourceRegion, x, y, z);
-            boolean candidateConnected = getConnectivity(neighborhood, false);
+            boolean candidateConnected = getConnectivity(neighborhood, zero);
             if (!candidateConnected) { return; }
         }
         
         // Check connectivity of target.
         if (targetRegion > Region.DEFAULT.ordinal()) {
             boolean[][][] neighborhood = getNeighborhood(id, targetRegion, x, y, z);
-            boolean targetConnected = getConnectivity(neighborhood, false);
+            boolean targetConnected = getConnectivity(neighborhood, zero);
             if (!targetConnected) { return; }
         }
         

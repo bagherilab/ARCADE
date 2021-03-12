@@ -646,6 +646,38 @@ public class PottsTest {
     }
     
     @Test
+    public void flip_connectedSourceZeroFalse_returns() {
+        PottsMock spy = makeFlipMock();
+        spy.ids[0][0][0] = 1;
+        spy.flip(1, 0, 0, 0, 0, R);
+        verify(spy).getConnectivity(any(), eq(false));
+    }
+    
+    @Test
+    public void flip_connectedSourceZeroTrue_completes() {
+        PottsMock spy = makeFlipMock();
+        spy.ids[0][0][0] = 0;
+        spy.flip(1, 0, 0, 0, 0, R);
+        verify(spy).getConnectivity(any(), eq(true));
+    }
+    
+    @Test
+    public void flip_connectedTargetZeroFalse_returns() {
+        PottsMock spy = makeFlipMock();
+        spy.ids[0][0][0] = 1;
+        spy.flip(0, 1, 0, 0, 0, R);
+        verify(spy).getConnectivity(any(), eq(false));
+    }
+    
+    @Test
+    public void flip_connectedTargetZeroTrue_completes() {
+        PottsMock spy = makeFlipMock();
+        spy.ids[0][0][0] = 0;
+        spy.flip(0, 1, 0, 0, 0, R);
+        verify(spy).getConnectivity(any(), eq(true));
+    }
+    
+    @Test
     public void change_zeros_callsMethods() {
         int id1 = randomIntBetween(1, 10);
         int id2 = randomIntBetween(1, 10);
@@ -861,6 +893,38 @@ public class PottsTest {
         spy.flip(1, Region.UNDEFINED.ordinal(), Region.NUCLEUS.ordinal(), 1, 1, 0, R);
         verify(spy).getNeighborhood(1, Region.NUCLEUS.ordinal(), 1, 1, 0);
         verify(spy).change(anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), eq(R));
+    }
+    
+    @Test
+    public void flip_connectedSourceRegionZeroFalse_returns() {
+        PottsMock spy = makeFlipMock();
+        spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
+        spy.flip(1, Region.NUCLEUS.ordinal(), Region.UNDEFINED.ordinal(), 0, 0, 0, R);
+        verify(spy).getConnectivity(any(), eq(false));
+    }
+    
+    @Test
+    public void flip_connectedSourceRegionZeroTrue_completes() {
+        PottsMock spy = makeFlipMock();
+        spy.regions[0][0][0] = Region.DEFAULT.ordinal();
+        spy.flip(1, Region.NUCLEUS.ordinal(), Region.UNDEFINED.ordinal(), 0, 0, 0, R);
+        verify(spy).getConnectivity(any(), eq(true));
+    }
+    
+    @Test
+    public void flip_connectedTargetRegionZeroFalse_returns() {
+        PottsMock spy = makeFlipMock();
+        spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
+        spy.flip(1, Region.NUCLEUS.ordinal(), Region.UNDEFINED.ordinal(), 0, 0, 0, R);
+        verify(spy).getConnectivity(any(), eq(false));
+    }
+    
+    @Test
+    public void flip_connectedTargetRegionZeroTrue_completes() {
+        PottsMock spy = makeFlipMock();
+        spy.regions[0][0][0] = Region.DEFAULT.ordinal();
+        spy.flip(1, Region.NUCLEUS.ordinal(), Region.UNDEFINED.ordinal(), 0, 0, 0, R);
+        verify(spy).getConnectivity(any(), eq(true));
     }
     
     @Test
