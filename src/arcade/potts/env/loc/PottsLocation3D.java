@@ -27,8 +27,8 @@ public final class PottsLocation3D extends PottsLocation implements Location3D {
     }
     
     @Override
-    public double convertVolume(double volume) {
-        return Location3D.convertVolume(volume);
+    public double convertSurface(double volume, double height) {
+        return Location3D.convertSurface(volume, height);
     }
     
     @Override

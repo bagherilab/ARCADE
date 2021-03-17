@@ -74,7 +74,7 @@ public class PottsLocationTest {
         PottsLocation makeLocation(ArrayList<Voxel> voxels) { return new PottsLocationMock(voxels); }
         
         @Override
-        public double convertVolume(double volume) { return 0; }
+        public double convertSurface(double volume, double height) { return 0; }
         
         @Override
         int calculateSurface() { return LOCATION_SURFACE; }

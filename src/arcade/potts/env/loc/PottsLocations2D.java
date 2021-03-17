@@ -33,8 +33,8 @@ public final class PottsLocations2D extends PottsLocations implements Location2D
     }
     
     @Override
-    public double convertVolume(double volume) {
-        return Location2D.convertVolume(volume);
+    public double convertSurface(double volume, double height) {
+        return Location2D.convertSurface(volume, height);
     }
     
     @Override
