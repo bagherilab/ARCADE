@@ -425,15 +425,18 @@ public final class PottsCell implements Cell {
     public void reset(int[][][] ids, int[][][] regions) {
         location.update(id, ids, regions);
         
+        double height = criticals.get(Term.HEIGHT);
         targetVolume = criticals.get(Term.VOLUME);
-        targetSurface = location.convertVolume(targetVolume);
+        targetSurface = location.convertSurface(targetVolume, height);
         
         if (!hasRegions) { return; }
         
         for (Region region : location.getRegions()) {
             EnumMap<Term, Double> regionTerms = criticalsRegion.get(region);
-            targetRegionVolumes.put(region, regionTerms.get(Term.VOLUME));
-            targetRegionSurfaces.put(region, location.convertVolume(regionTerms.get(Term.VOLUME)));
+            double regionHeight = regionTerms.get(Term.HEIGHT);
+            double regionVolume = regionTerms.get(Term.VOLUME);
+            targetRegionVolumes.put(region, regionVolume);
+            targetRegionSurfaces.put(region, location.convertSurface(regionVolume, regionHeight));
         }
     }
     
@@ -484,6 +487,7 @@ public final class PottsCell implements Cell {
      */
     public void updateTarget(double rate, double scale) {
         double volume = getVolume();
+        
         if (hasRegions) {
             double update = targetRegionVolumes.get(Region.DEFAULT) - targetVolume;
             targetRegionVolumes.put(Region.DEFAULT, update);
@@ -498,12 +502,15 @@ public final class PottsCell implements Cell {
             targetVolume = oldTargetVolume;
         }
         
-        targetSurface = location.convertVolume(targetVolume);
+        double criticalHeight = criticals.get(Term.HEIGHT);
+        targetSurface = location.convertSurface(targetVolume, criticalHeight);
         
         if (hasRegions) {
             double updateVolume = targetRegionVolumes.get(Region.DEFAULT) + targetVolume;
             targetRegionVolumes.put(Region.DEFAULT, updateVolume);
-            double updateSurface = location.convertVolume(targetRegionVolumes.get(Region.DEFAULT));
+            
+            double criticalRegionHeight = criticalsRegion.get(Region.DEFAULT).get(Term.HEIGHT);
+            double updateSurface = location.convertSurface(updateVolume, criticalRegionHeight);
             targetRegionSurfaces.put(Region.DEFAULT, updateSurface);
         }
     }
