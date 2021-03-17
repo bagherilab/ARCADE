@@ -7,7 +7,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
-import static arcade.potts.env.loc.Location3D.SURFACE_VOLUME_MULTIPLIER;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.util.PottsEnums.Direction;
 
@@ -16,6 +15,23 @@ public class Location3DTest {
     static ArrayList<Voxel> voxelListForDiametersXY;
     static ArrayList<Voxel> voxelListForDiametersYZ;
     static ArrayList<Voxel> voxelListForDiametersZX;
+    private static final int[][] VOLUME_SURFACE = new int[][] {
+            { 9, 1, 23 },
+            { 119, 2, 174 },
+            { 425, 3, 419 },
+            { 1031, 4, 765 },
+            { 2017, 5, 1201 },
+            { 3551, 6, 1760 },
+            { 5661, 7, 2407 },
+            { 8471, 8, 3153 },
+            { 12085, 9, 4001 },
+            { 16615, 10, 4952 },
+            { 22141, 11, 6001 },
+            { 28819, 12, 7160 },
+            { 36573, 13, 8393 },
+            { 45891, 14, 9775 },
+            { 56309, 15, 11203 }
+    };
     
     @BeforeClass
     public static void setupLists() {
@@ -195,17 +211,19 @@ public class Location3DTest {
     }
     
     @Test
-    public void convertVolume_givenLocationValue_calculatesValue() {
+    public void convertSurface_givenLocationValue_calculatesValue() {
         PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
-        double volume = randomDoubleBetween(0, 100);
-        assertEquals(SURFACE_VOLUME_MULTIPLIER * Math.pow(volume, 2. / 3), loc.convertVolume(volume), EPSILON);
+        for (int[] sv : VOLUME_SURFACE) {
+            assertEquals(sv[2], loc.convertSurface(sv[0], sv[1]), EPSILON);
+        }
     }
     
     @Test
-    public void convertVolume_givenLocationsValue_calculatesValue() {
+    public void convertSurface_givenLocationsValue_calculatesValue() {
         PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-        double volume = randomDoubleBetween(0, 100);
-        assertEquals(SURFACE_VOLUME_MULTIPLIER * Math.pow(volume, 2. / 3), loc.convertVolume(volume), EPSILON);
+        for (int[] sv : VOLUME_SURFACE) {
+            assertEquals(sv[2], loc.convertSurface(sv[0], sv[1]), EPSILON);
+        }
     }
     
     @Test

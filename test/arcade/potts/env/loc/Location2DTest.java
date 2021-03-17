@@ -7,13 +7,44 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
-import static arcade.potts.env.loc.Location2D.SURFACE_VOLUME_MULTIPLIER;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.util.PottsEnums.Direction;
 
 public class Location2DTest {
     private static final double EPSILON = 1E-10;
     static ArrayList<Voxel> voxelListForDiameters;
+    private static final int[][] VOLUME_SURFACE = new int[][] {
+            { 1, 4 },
+            { 9, 12 },
+            { 25, 21 },
+            { 45, 29 },
+            { 69, 36 },
+            { 109, 45 },
+            { 145, 52 },
+            { 193, 61 },
+            { 249, 69 },
+            { 305, 77 },
+            { 373, 85 },
+            { 437, 92 },
+            { 517, 100 },
+            { 609, 109 },
+            { 697, 117 },
+            { 793, 124 },
+            { 889, 132 },
+            { 1005, 140 },
+            { 1125, 149 },
+            { 1245, 157 },
+            { 1369, 164 },
+            { 1513, 173 },
+            { 1649, 181 },
+            { 1789, 188 },
+            { 1941, 196 },
+            { 2109, 205 },
+            { 2285, 213 },
+            { 2449, 221 },
+            { 2617, 228 },
+            { 2809, 237 }
+    };
     
     @BeforeClass
     public static void setupLists() {
@@ -105,17 +136,19 @@ public class Location2DTest {
     }
     
     @Test
-    public void convertVolume_givenLocationValue_calculatesValue() {
+    public void convertSurface_givenLocationValue_calculatesValue() {
         PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
-        double volume = randomDoubleBetween(0, 100);
-        assertEquals(SURFACE_VOLUME_MULTIPLIER * Math.sqrt(volume), loc.convertVolume(volume), EPSILON);
+        for (int[] sv : VOLUME_SURFACE) {
+            assertEquals(sv[1], loc.convertSurface(sv[0], 1), EPSILON);
+        }
     }
     
     @Test
-    public void convertVolume_givenLocationsValue_calculatesValue() {
+    public void convertSurface_givenLocationsValue_calculatesValue() {
         PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
-        double volume = randomDoubleBetween(0, 100);
-        assertEquals(SURFACE_VOLUME_MULTIPLIER * Math.sqrt(volume), loc.convertVolume(volume), EPSILON);
+        for (int[] sv : VOLUME_SURFACE) {
+            assertEquals(sv[1], loc.convertSurface(sv[0], 1), EPSILON);
+        }
     }
     
     @Test

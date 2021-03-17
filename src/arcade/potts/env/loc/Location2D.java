@@ -14,8 +14,14 @@ import static arcade.potts.util.PottsEnums.Direction;
  */
 
 public interface Location2D {
-    /** Multiplier for calculating surface area from volume. */
-    double SURFACE_VOLUME_MULTIPLIER = 2 * Math.sqrt(Math.PI) * 1.5;
+    /** Equation power for surface area conversion. */
+    double EQUATION_PARAMETER_N = 0.53312428;
+    
+    /** Equation coefficient for surface area conversion. */
+    double EQUATION_PARAMETER_A = 0.7137145;
+    
+    /** Equation offset for surface area conversion. */
+    double EQUATION_PARAMETER_B = -0.95549169;
     
     /** List of valid 2D directions. */
     Direction[] DIRECTIONS = new Direction[] {
@@ -24,6 +30,16 @@ public interface Location2D {
             Direction.POSITIVE_XY,
             Direction.NEGATIVE_XY
     };
+    
+    /**
+     * Calculate correction factor for surface area conversion.
+     *
+     * @param volume  the volume (in voxels)
+     * @return  the correction factor
+     */
+    static double getCorrection(double volume) {
+        return EQUATION_PARAMETER_A * Math.pow(volume, EQUATION_PARAMETER_N) + EQUATION_PARAMETER_B;
+    }
     
     /**
      * Gets list of neighbors of a given voxel.
@@ -41,13 +57,16 @@ public interface Location2D {
     }
     
     /**
-     * Converts volume to surface area.
+     * Converts volume and height to surface area.
      *
      * @param volume  the volume (in voxels)
+     * @param height  the height (in voxels)
      * @return  the surface area (in voxels)
      */
-    static double convertVolume(double volume) {
-        return SURFACE_VOLUME_MULTIPLIER * Math.sqrt(volume);
+    static double convertSurface(double volume, double height) {
+        double surface = 2 * Math.sqrt(Math.PI) * Math.sqrt(volume);
+        double correction = getCorrection(volume);
+        return Math.ceil(surface + correction);
     }
     
     /**
