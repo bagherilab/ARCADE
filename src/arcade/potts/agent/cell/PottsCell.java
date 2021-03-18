@@ -489,12 +489,13 @@ public final class PottsCell implements Cell {
         double volume = getVolume();
         
         if (hasRegions) {
-            double update = targetRegionVolumes.get(Region.DEFAULT) - targetVolume;
-            targetRegionVolumes.put(Region.DEFAULT, update);
+            double updateVolume = targetRegionVolumes.get(Region.DEFAULT) - targetVolume;
+            targetRegionVolumes.put(Region.DEFAULT, updateVolume);
         }
         
         double oldTargetVolume = targetVolume;
-        targetVolume = volume + rate * (scale * criticals.get(Term.VOLUME) - volume);
+        double criticalVolume = criticals.get(Term.VOLUME);
+        targetVolume = volume + rate * (scale * criticalVolume - volume);
         
         // Ensure that target volume increases or decreases monotonically.
         if ((scale > 1 && targetVolume < oldTargetVolume)
@@ -526,20 +527,24 @@ public final class PottsCell implements Cell {
         double regionVolume = getVolume(region);
         targetVolume -= targetRegionVolumes.get(region);
         
+        double criticalRegionVolume = criticalsRegion.get(region).get(Term.VOLUME);
+        double criticalRegionHeight = criticalsRegion.get(region).get(Term.HEIGHT);
+        
         double oldTargetRegionVolume = targetRegionVolumes.get(region);
-        double update = scale * criticalsRegion.get(region).get(Term.VOLUME) - regionVolume;
-        targetRegionVolumes.put(region, regionVolume + rate * update);
+        double updateVolume = regionVolume + rate * (scale * criticalRegionVolume - regionVolume);
         
         // Ensure that target volume increases or decreases monotonically.
-        if ((scale > 1 && targetRegionVolumes.get(region) < oldTargetRegionVolume)
-                || (scale < 1 && targetRegionVolumes.get(region) > oldTargetRegionVolume)) {
-            targetRegionVolumes.put(region, oldTargetRegionVolume);
+        if ((scale > 1 && updateVolume < oldTargetRegionVolume)
+                || (scale < 1 && updateVolume > oldTargetRegionVolume)) {
+            updateVolume = oldTargetRegionVolume;
         }
         
-        targetRegionSurfaces.put(region, location.convertVolume(targetRegionVolumes.get(region)));
+        targetRegionVolumes.put(region, updateVolume);
+        double updateSurface = location.convertSurface(updateVolume, criticalRegionHeight);
+        targetRegionSurfaces.put(region, updateSurface);
         
         targetVolume += targetRegionVolumes.get(region);
-        targetSurface = location.convertVolume(targetVolume);
+        targetSurface = location.convertSurface(targetVolume, criticals.get(Term.HEIGHT));
     }
     
     @Override

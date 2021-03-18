@@ -31,7 +31,6 @@ import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsCellTest {
     private static final double EPSILON = 1E-10;
-    private static final double VOLUME_SURFACE_RATIO = randomDoubleBetween(0, 10);
     private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
     static double lambdaVolume;
     static double lambdaSurface;
@@ -1156,14 +1155,14 @@ public class PottsCellTest {
         double targetRegionVolume = locationRegionVolume + rate * (locationRegionVolume);
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
-        double targetRegionSurface = VOLUME_SURFACE_RATIO * targetRegionVolume;
+        double targetRegionSurface = locationRegionHeights.get(Region.DEFAULT) * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
         double criticalRegionVolume = criticalsRegionMock.get(Region.DEFAULT).get(Term.VOLUME);
         double targetVolume = criticalsMock.get(Term.VOLUME) - criticalRegionVolume + targetRegionVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = VOLUME_SURFACE_RATIO * targetVolume;
+        double targetSurface = locationHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
@@ -1178,14 +1177,14 @@ public class PottsCellTest {
         double targetRegionVolume = locationRegionVolume + rate * (-locationRegionVolume);
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
-        double targetRegionSurface = VOLUME_SURFACE_RATIO * targetRegionVolume;
+        double targetRegionSurface = locationRegionHeights.get(Region.DEFAULT) * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
         double criticalRegionVolume = criticalsRegionMock.get(Region.DEFAULT).get(Term.VOLUME);
         double targetVolume = criticalsMock.get(Term.VOLUME) - criticalRegionVolume + targetRegionVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = VOLUME_SURFACE_RATIO * targetVolume;
+        double targetSurface = locationHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
@@ -1202,14 +1201,14 @@ public class PottsCellTest {
         double targetRegionVolume = locationRegionVolume + (rate + delta) * locationRegionVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
-        double targetRegionSurface = VOLUME_SURFACE_RATIO * targetRegionVolume;
+        double targetRegionSurface = locationRegionHeights.get(Region.DEFAULT) * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
         double criticalRegionVolume = criticalsRegionMock.get(Region.DEFAULT).get(Term.VOLUME);
         double targetVolume = criticalsMock.get(Term.VOLUME) - criticalRegionVolume + targetRegionVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = VOLUME_SURFACE_RATIO * targetVolume;
+        double targetSurface = locationHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
@@ -1226,14 +1225,14 @@ public class PottsCellTest {
         double targetRegionVolume = locationRegionVolume + (rate + delta) * (-locationRegionVolume);
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
-        double targetRegionSurface = VOLUME_SURFACE_RATIO * targetRegionVolume;
+        double targetRegionSurface = locationRegionHeights.get(Region.DEFAULT) * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
         double criticalRegionVolume = criticalsRegionMock.get(Region.DEFAULT).get(Term.VOLUME);
         double targetVolume = criticalsMock.get(Term.VOLUME) - criticalRegionVolume + targetRegionVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = VOLUME_SURFACE_RATIO * targetVolume;
+        double targetSurface = locationHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
