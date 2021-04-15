@@ -7,7 +7,7 @@ case ${SIMULATION_TYPE} in
 		OUTPUT_FILE_PATH="${BATCH_WORKING_URL}outputs/"
 
 		# Get copy of the input file
-		INPUT_FILE_NAME="input_${FILE_SET_NAME}_${AWS_BATCH_JOB_ARRAY_INDEX:-0}.xml"
+		INPUT_FILE_NAME="${FILE_SET_NAME}_${AWS_BATCH_JOB_ARRAY_INDEX:-0}.xml"
 		aws s3 cp $INPUT_FILE_PATH$INPUT_FILE_NAME input/input.xml
 	;;
 	LOCAL)
@@ -16,7 +16,7 @@ case ${SIMULATION_TYPE} in
 		OUTPUT_FILE_PATH="/mnt/outputs/"
 
 		# Get copy of the input file
-		INPUT_FILE_NAME="input_${FILE_SET_NAME}_${JOB_ARRAY_INDEX}.xml"
+		INPUT_FILE_NAME="${FILE_SET_NAME}_${JOB_ARRAY_INDEX}.xml"
 		cp $INPUT_FILE_PATH$INPUT_FILE_NAME input/input.xml
 	;;
 esac
