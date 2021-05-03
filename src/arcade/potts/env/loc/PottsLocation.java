@@ -597,6 +597,9 @@ public abstract class PottsLocation implements Location {
                 }
             }
             
+            // If one list is empty, add all voxels in other list as neighbors.
+            if (toVoxels.size() == 0) { neighborSet.addAll(fromVoxels); }
+            
             ArrayList<Voxel> neighborList = new ArrayList<>(neighborSet);
             Utilities.shuffleList(neighborList, random);
             

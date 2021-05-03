@@ -224,6 +224,17 @@ public class PottsLocation2DTest {
     }
     
     @Test
+    public void balanceVoxels_emptyList_updatesLists() {
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
+        ArrayList<Voxel> voxelsA = new ArrayList<>(voxelListAB);
+        ArrayList<Voxel> voxelsB = new ArrayList<>();
+        
+        PottsLocation.balanceVoxels(voxelsA, voxelsB, loc, randomDoubleZero);
+        assertTrue(voxelsA.size() != 0);
+        assertTrue(voxelsB.size() != 0);
+    }
+    
+    @Test
     public void split_balanceableLocationRandomZero_returnsList() {
         PottsLocation2D loc = new PottsLocation2D(voxelListAB);
         PottsLocation2D split = (PottsLocation2D) loc.split(randomDoubleZero);
