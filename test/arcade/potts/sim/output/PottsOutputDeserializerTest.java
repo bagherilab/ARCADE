@@ -93,6 +93,7 @@ public class PottsOutputDeserializerTest {
         PottsCellDeserializer deserializer = new PottsCellDeserializer();
         
         int id = randomIntBetween(1, 100);
+        int parent = randomIntBetween(1, 100);
         int pop = randomIntBetween(1, 100);
         int age = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
@@ -103,6 +104,7 @@ public class PottsOutputDeserializerTest {
         
         String string = "{"
                 + "\"id\": " + id
+                + ",\"parent\": " + parent
                 + ",\"pop\": " + pop
                 + ",\"age\": " + age
                 + ",\"state\":\"" + state.name() + "\""
@@ -115,6 +117,7 @@ public class PottsOutputDeserializerTest {
         PottsCellContainer object = deserializer.deserialize(json, PottsCellContainer.class, CELL_CONTEXT);
         
         assertEquals(id, object.id);
+        assertEquals(parent, object.parent);
         assertEquals(pop, object.pop);
         assertEquals(age, object.age);
         assertEquals(state, object.state);
@@ -132,6 +135,7 @@ public class PottsOutputDeserializerTest {
         PottsCellDeserializer deserializer = new PottsCellDeserializer();
         
         int id = randomIntBetween(1, 100);
+        int parent = randomIntBetween(1, 100);
         int pop = randomIntBetween(1, 100);
         int age = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
@@ -151,6 +155,7 @@ public class PottsOutputDeserializerTest {
         
         String string = "{"
                 + "\"id\": " + id
+                + ",\"parent\": " + parent
                 + ",\"pop\": " + pop
                 + ",\"age\": " + age
                 + ",\"state\":\"" + state.name() + "\""
@@ -173,6 +178,7 @@ public class PottsOutputDeserializerTest {
         PottsCellContainer object = deserializer.deserialize(json, PottsCellContainer.class, CELL_CONTEXT);
         
         assertEquals(id, object.id);
+        assertEquals(parent, object.parent);
         assertEquals(pop, object.pop);
         assertEquals(age, object.age);
         assertEquals(state, object.state);

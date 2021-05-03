@@ -23,6 +23,9 @@ public final class PottsCellContainer implements CellContainer {
     /** Unique cell container ID. */
     public final int id;
     
+    /** Cell parent ID. */
+    public final int parent;
+    
     /** Cell population index. */
     public final int pop;
     
@@ -64,7 +67,7 @@ public final class PottsCellContainer implements CellContainer {
      * @param voxels  the cell size (in voxels)
      */
     public PottsCellContainer(int id, int pop, int voxels) {
-        this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
+        this(id, 0, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
                 null, 0, 0, null, null);
     }
     
@@ -80,7 +83,7 @@ public final class PottsCellContainer implements CellContainer {
      * @param regionVoxels  the cell region sizes (in voxels)
      */
     public PottsCellContainer(int id, int pop, int voxels, EnumMap<Region, Integer> regionVoxels) {
-        this(id, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
+        this(id, 0, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
                 regionVoxels, 0, 0, null, null);
     }
     
@@ -90,6 +93,7 @@ public final class PottsCellContainer implements CellContainer {
      * The container does not have any regions.
      *
      * @param id  the cell ID
+     * @param parent  the parent ID
      * @param pop  the cell population index
      * @param age  the cell age
      * @param state  the cell state
@@ -98,15 +102,18 @@ public final class PottsCellContainer implements CellContainer {
      * @param targetVolume  the target volume
      * @param targetSurface  the target surface
      */
-    public PottsCellContainer(int id, int pop, int age, State state, Phase phase,
-                              int voxels, double targetVolume, double targetSurface) {
-        this(id, pop, age, state, phase, voxels, null, targetVolume, targetSurface, null, null);
+    public PottsCellContainer(int id, int parent, int pop, int age,
+                              State state, Phase phase, int voxels,
+                              double targetVolume, double targetSurface) {
+        this(id, parent, pop, age, state, phase, voxels,
+                null, targetVolume, targetSurface, null, null);
     }
     
     /**
      * Creates a {@code PottsCellContainer} instance.
      *
      * @param id  the cell ID
+     * @param parent  the parent ID
      * @param pop  the cell population index
      * @param age  the cell age
      * @param state  the cell state
@@ -118,12 +125,14 @@ public final class PottsCellContainer implements CellContainer {
      * @param regionTargetVolume  the target region volumes
      * @param regionTargetSurface  the target surface volumes
      */
-    public PottsCellContainer(int id, int pop, int age, State state, Phase phase, int voxels,
+    public PottsCellContainer(int id, int parent, int pop, int age,
+                              State state, Phase phase, int voxels,
                               EnumMap<Region, Integer> regionVoxels,
                               double targetVolume, double targetSurface,
                               EnumMap<Region, Double> regionTargetVolume,
                               EnumMap<Region, Double> regionTargetSurface) {
         this.id = id;
+        this.parent = parent;
         this.pop = pop;
         this.age = age;
         this.state = state;
@@ -177,10 +186,10 @@ public final class PottsCellContainer implements CellContainer {
                         factory.popToRegionAdhesion.get(pop).get(region).clone());
             }
             
-            cell = new PottsCell(id, pop, state, age, location, true, parameters, adhesion,
+            cell = new PottsCell(id, parent, pop, state, age, location, true, parameters, adhesion,
                     criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
         } else {
-            cell = new PottsCell(id, pop, state, age, location, false, parameters, adhesion,
+            cell = new PottsCell(id, parent, pop, state, age, location, false, parameters, adhesion,
                     criticals, lambdas, null, null, null);
         }
         

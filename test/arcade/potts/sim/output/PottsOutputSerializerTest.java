@@ -119,6 +119,7 @@ public class PottsOutputSerializerTest {
         PottsCellSerializer serializer = new PottsCellSerializer();
         
         int id = randomIntBetween(1, 100);
+        int parent = randomIntBetween(1, 100);
         int pop = randomIntBetween(1, 100);
         int age = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
@@ -127,11 +128,12 @@ public class PottsOutputSerializerTest {
         int targetVolume = randomIntBetween(1, 100);
         int targetSurface = randomIntBetween(1, 100);
         
-        PottsCellContainer cellContainer = new PottsCellContainer(id, pop, age, state, phase, voxels,
+        PottsCellContainer cellContainer = new PottsCellContainer(id, parent, pop, age, state, phase, voxels,
                 null, targetVolume, targetSurface, null, null);
         
         String expected = "{"
                 + "\"id\":" + id + ","
+                + "\"parent\":" + parent + ","
                 + "\"pop\":" + pop + ","
                 + "\"age\":" + age + ","
                 + "\"state\":\"" + state.name() + "\","
@@ -149,6 +151,7 @@ public class PottsOutputSerializerTest {
         PottsCellSerializer serializer = new PottsCellSerializer();
         
         int id = randomIntBetween(1, 100);
+        int parent = randomIntBetween(1, 100);
         int pop = randomIntBetween(1, 100);
         int age = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
@@ -178,11 +181,12 @@ public class PottsOutputSerializerTest {
         regionTargetSurface.put(region1, (double) targetRegionSurface1);
         regionTargetSurface.put(region2, (double) targetRegionSurface2);
         
-        PottsCellContainer cellContainer = new PottsCellContainer(id, pop, age, state, phase, voxels,
+        PottsCellContainer cellContainer = new PottsCellContainer(id, parent, pop, age, state, phase, voxels,
                 regionVoxels, targetVolume, targetSurface, regionTargetVolume, regionTargetSurface);
         
         String expected = "{"
                 + "\"id\":" + id + ","
+                + "\"parent\":" + parent + ","
                 + "\"pop\":" + pop + ","
                 + "\"age\":" + age + ","
                 + "\"state\":\"" + state.name() + "\","

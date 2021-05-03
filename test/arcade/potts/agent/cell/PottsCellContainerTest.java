@@ -30,6 +30,7 @@ public class PottsCellContainerTest {
         PottsCellContainer cellContainer = new PottsCellContainer(id, pop, voxels);
         
         assertEquals(id, cellContainer.id);
+        assertEquals(0, cellContainer.parent);
         assertEquals(pop, cellContainer.pop);
         assertEquals(0, cellContainer.age);
         assertEquals(State.PROLIFERATIVE, cellContainer.state);
@@ -52,6 +53,7 @@ public class PottsCellContainerTest {
         PottsCellContainer cellContainer = new PottsCellContainer(id, pop, voxels, regionVoxels);
         
         assertEquals(id, cellContainer.id);
+        assertEquals(0, cellContainer.parent);
         assertEquals(pop, cellContainer.pop);
         assertEquals(0, cellContainer.age);
         assertEquals(State.PROLIFERATIVE, cellContainer.state);
@@ -67,6 +69,7 @@ public class PottsCellContainerTest {
     @Test
     public void constructor_noRegionsWithTargets_setsFields() {
         int id = randomIntBetween(1, 10);
+        int parent = randomIntBetween(1, 10);
         int pop = randomIntBetween(1, 10);
         int age = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
@@ -75,10 +78,11 @@ public class PottsCellContainerTest {
         double targetVolume = randomDoubleBetween(0, 100);
         double targetSurface = randomDoubleBetween(0, 100);
         
-        PottsCellContainer cellContainer = new PottsCellContainer(id, pop, age,
+        PottsCellContainer cellContainer = new PottsCellContainer(id, parent, pop, age,
                 state, phase, voxels, targetVolume, targetSurface);
         
         assertEquals(id, cellContainer.id);
+        assertEquals(parent, cellContainer.parent);
         assertEquals(pop, cellContainer.pop);
         assertEquals(age, cellContainer.age);
         assertEquals(state, cellContainer.state);
@@ -94,6 +98,7 @@ public class PottsCellContainerTest {
     @Test
     public void constructor_withRegionsWithTargets_setsFields() {
         int id = randomIntBetween(1, 10);
+        int parent = randomIntBetween(1, 10);
         int pop = randomIntBetween(1, 10);
         int age = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
@@ -105,11 +110,12 @@ public class PottsCellContainerTest {
         EnumMap<Region, Double> regionTargetVolume = new EnumMap<>(Region.class);
         EnumMap<Region, Double> regionTargetSurface = new EnumMap<>(Region.class);
                 
-        PottsCellContainer cellContainer = new PottsCellContainer(id, pop, age,
+        PottsCellContainer cellContainer = new PottsCellContainer(id, parent, pop, age,
                 state, phase, voxels, regionVoxels, targetVolume, targetSurface,
                 regionTargetVolume, regionTargetSurface);
         
         assertEquals(id, cellContainer.id);
+        assertEquals(parent, cellContainer.parent);
         assertEquals(pop, cellContainer.pop);
         assertEquals(age, cellContainer.age);
         assertEquals(state, cellContainer.state);
@@ -135,6 +141,7 @@ public class PottsCellContainerTest {
         PottsCellFactory factory = new PottsCellFactory();
         
         int cellID = randomIntBetween(1, 10);
+        int cellParent = randomIntBetween(1, 10);
         int cellPop = randomIntBetween(1, 10);
         int cellAge = randomIntBetween(1, 100);
         State cellState = State.random(RANDOM);
@@ -153,12 +160,13 @@ public class PottsCellContainerTest {
         factory.popToParameters.put(cellPop, parameters);
         factory.popToRegions.put(cellPop, false);
         
-        PottsCellContainer container = new PottsCellContainer(cellID, cellPop, cellAge,
+        PottsCellContainer container = new PottsCellContainer(cellID, cellParent, cellPop, cellAge,
                 cellState, cellPhase, 0, null, 0, 0, null, null);
         PottsCell cell = (PottsCell) container.convert(factory, location);
         
         assertEquals(location, cell.getLocation());
         assertEquals(cellID, cell.getID());
+        assertEquals(cellParent, cell.getParent());
         assertEquals(cellPop, cell.getPop());
         assertEquals(cellAge, cell.getAge());
         assertEquals(cellState, cell.getState());
@@ -180,6 +188,7 @@ public class PottsCellContainerTest {
         PottsCellFactory factory = new PottsCellFactory();
         
         int cellID = randomIntBetween(1, 10);
+        int cellParent = randomIntBetween(1, 10);
         int cellPop = randomIntBetween(1, 10);
         int cellAge = randomIntBetween(1, 100);
         State cellState = State.random(RANDOM);
@@ -210,12 +219,13 @@ public class PottsCellContainerTest {
         
         factory.popToRegions.put(cellPop, true);
         
-        PottsCellContainer container = new PottsCellContainer(cellID, cellPop, cellAge,
+        PottsCellContainer container = new PottsCellContainer(cellID, cellParent, cellPop, cellAge,
                 cellState, cellPhase, 0, null, 0, 0, null, null);
         PottsCell cell = (PottsCell) container.convert(factory, location);
         
         assertEquals(location, cell.getLocation());
         assertEquals(cellID, cell.getID());
+        assertEquals(cellParent, cell.getParent());
         assertEquals(cellPop, cell.getPop());
         assertEquals(cellAge, cell.getAge());
         assertEquals(cellState, cell.getState());
@@ -261,7 +271,7 @@ public class PottsCellContainerTest {
         factory.popToAdhesion.put(1, new double[2]);
         factory.popToRegions.put(1, false);
         
-        PottsCellContainer container = new PottsCellContainer(1, 1, 0,
+        PottsCellContainer container = new PottsCellContainer(1, 0, 1, 0,
                 State.UNDEFINED, Phase.UNDEFINED, 0, targetVolume, targetSurface);
         PottsCell cell = (PottsCell) container.convert(factory, location);
         
@@ -301,7 +311,7 @@ public class PottsCellContainerTest {
             targetRegionSurfaces.put(region, randomDoubleBetween(1, 100));
         }
         
-        PottsCellContainer container = new PottsCellContainer(1, 1, 0,
+        PottsCellContainer container = new PottsCellContainer(1, 0, 1, 0,
                 State.UNDEFINED, Phase.UNDEFINED, 0, null,
                 targetVolume, targetSurface, targetRegionVolumes, targetRegionSurfaces);
         PottsCell cell = (PottsCell) container.convert(factory, location);
@@ -347,7 +357,7 @@ public class PottsCellContainerTest {
             targetRegionSurfaces.put(region, randomDoubleBetween(1, 100));
         }
         
-        PottsCellContainer container1 = new PottsCellContainer(1, 1, 0,
+        PottsCellContainer container1 = new PottsCellContainer(1, 0, 1, 0,
                 State.UNDEFINED, Phase.UNDEFINED, 0, null,
                 targetVolume, targetSurface, targetRegionVolumes, null);
         PottsCell cell1 = (PottsCell) container1.convert(factory, location);
@@ -360,7 +370,7 @@ public class PottsCellContainerTest {
             assertEquals(0, cell1.getTargetSurface(region),  EPSILON);
         }
         
-        PottsCellContainer container2 = new PottsCellContainer(1, 1, 0,
+        PottsCellContainer container2 = new PottsCellContainer(1, 0, 1, 0,
                 State.UNDEFINED, Phase.UNDEFINED, 0, null,
                 targetVolume, targetSurface, null, targetRegionSurfaces);
         PottsCell cell2 = (PottsCell) container2.convert(factory, location);

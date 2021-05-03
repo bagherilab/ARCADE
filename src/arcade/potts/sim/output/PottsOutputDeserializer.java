@@ -72,6 +72,7 @@ public final class PottsOutputDeserializer {
             JsonObject jsonObject = json.getAsJsonObject();
             
             int id = jsonObject.get("id").getAsInt();
+            int parent = jsonObject.get("parent").getAsInt();
             int pop = jsonObject.get("pop").getAsInt();
             int age = jsonObject.get("age").getAsInt();
             int voxels = jsonObject.get("voxels").getAsInt();
@@ -104,10 +105,10 @@ public final class PottsOutputDeserializer {
             
             PottsCellContainer cell;
             if (regions.size() == 0) {
-                cell = new PottsCellContainer(id, pop, age, state, phase,
+                cell = new PottsCellContainer(id, parent, pop, age, state, phase,
                         voxels, targetVolume, targetSurface);
             } else {
-                cell = new PottsCellContainer(id, pop, age, state, phase,
+                cell = new PottsCellContainer(id, parent, pop, age, state, phase,
                         voxels, regions, targetVolume, targetSurface,
                         targetRegionVolumes, targetRegionSurfaces);
             }

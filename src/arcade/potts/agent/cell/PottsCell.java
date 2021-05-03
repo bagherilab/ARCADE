@@ -52,6 +52,9 @@ public final class PottsCell implements Cell {
     /** Unique cell ID. */
     final int id;
     
+    /** Cell parent ID. */
+    final int parent;
+    
     /** Cell population index. */
     final int pop;
     
@@ -107,6 +110,7 @@ public final class PottsCell implements Cell {
      * The cell is created with no regions.
      *
      * @param id  the cell ID
+     * @param parent  the parent ID
      * @param pop  the cell population index
      * @param location  the {@link arcade.core.env.loc.Location} of the cell
      * @param parameters  the dictionary of parameters
@@ -114,9 +118,10 @@ public final class PottsCell implements Cell {
      * @param criticals  the map of critical values
      * @param lambdas  the map of lambda multipliers
      */
-    public PottsCell(int id, int pop, Location location, MiniBox parameters, double[] adhesion,
+    public PottsCell(int id, int parent, int pop, Location location,
+                     MiniBox parameters, double[] adhesion,
                      EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas) {
-        this(id, pop, State.PROLIFERATIVE, 0, location, false, parameters, adhesion,
+        this(id, parent, pop, State.PROLIFERATIVE, 0, location, false, parameters, adhesion,
                 criticals, lambdas, null, null, null);
     }
     
@@ -126,6 +131,7 @@ public final class PottsCell implements Cell {
      * The default state is proliferative and age is 0.
      *
      * @param id  the cell ID
+     * @param parent  the parent ID
      * @param pop  the cell population index
      * @param location  the {@link arcade.core.env.loc.Location} of the cell
      * @param parameters  the dictionary of parameters
@@ -136,12 +142,13 @@ public final class PottsCell implements Cell {
      * @param lambdasRegion  the map of lambda multipliers for regions
      * @param adhesionRegion  the map of adhesion values for regions
      */
-    public PottsCell(int id, int pop, Location location, MiniBox parameters, double[] adhesion,
+    public PottsCell(int id, int parent, int pop, Location location,
+                     MiniBox parameters, double[] adhesion,
                      EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas,
                      EnumMap<Region, EnumMap<Term, Double>> criticalsRegion,
                      EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
                      EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
-        this(id, pop, State.PROLIFERATIVE, 0, location, true, parameters, adhesion,
+        this(id, parent, pop, State.PROLIFERATIVE, 0, location, true, parameters, adhesion,
                 criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
     }
     
@@ -149,6 +156,7 @@ public final class PottsCell implements Cell {
      * Creates a {@code PottsCell} agent.
      *
      * @param id  the cell ID
+     * @param parent  the parent ID
      * @param pop  the cell population index
      * @param state  the cell state
      * @param age  the cell age (in ticks)
@@ -162,13 +170,14 @@ public final class PottsCell implements Cell {
      * @param lambdasRegion  the map of lambda multipliers for regions
      * @param adhesionRegion  the map of adhesion values for regions
      */
-    public PottsCell(int id, int pop, State state, int age, Location location,
+    public PottsCell(int id, int parent, int pop, State state, int age, Location location,
                      boolean hasRegions, MiniBox parameters, double[] adhesion,
                      EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas,
                      EnumMap<Region, EnumMap<Term, Double>> criticalsRegion,
                      EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
                      EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
         this.id = id;
+        this.parent = parent;
         this.pop = pop;
         this.age = age;
         this.hasRegions = hasRegions;
@@ -203,6 +212,9 @@ public final class PottsCell implements Cell {
     
     @Override
     public int getID() { return id; }
+    
+    @Override
+    public int getParent() { return parent; }
     
     @Override
     public int getPop() { return pop; }
@@ -358,8 +370,9 @@ public final class PottsCell implements Cell {
     
     @Override
     public PottsCell make(int newID, State newState, Location newLocation) {
-        return new PottsCell(newID, pop, newState, 0, newLocation, hasRegions, parameters, adhesion,
-                criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
+        return new PottsCell(newID, id, pop, newState, 0, newLocation,
+                hasRegions, parameters, adhesion, criticals, lambdas,
+                criticalsRegion, lambdasRegion, adhesionRegion);
     }
     
     @Override
@@ -555,11 +568,11 @@ public final class PottsCell implements Cell {
                 regionVolumes.put(region, location.getVolume(region));
             }
             
-            return new PottsCellContainer(id, pop, age, state,
+            return new PottsCellContainer(id, parent, pop, age, state,
                     ((PottsModule) module).getPhase(), getVolume(), regionVolumes,
                     targetVolume, targetSurface, targetRegionVolumes, targetRegionSurfaces);
         } else {
-            return new PottsCellContainer(id, pop, age, state,
+            return new PottsCellContainer(id, parent, pop, age, state,
                     ((PottsModule) module).getPhase(), getVolume(),
                     targetVolume, targetSurface);
         }

@@ -34,6 +34,13 @@ public interface Cell extends Steppable {
     int getID();
     
     /**
+     * Gets the cell parent ID.
+     *
+     * @return  the parent ID
+     */
+    int getParent();
+    
+    /**
      * Gets the cell population index.
      *
      * @return  the cell population

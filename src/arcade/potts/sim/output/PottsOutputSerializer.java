@@ -118,6 +118,7 @@ public final class PottsOutputSerializer {
             JsonObject json = new JsonObject();
             
             json.addProperty("id", src.id);
+            json.addProperty("parent", src.parent);
             json.addProperty("pop", src.pop);
             json.addProperty("age", src.age);
             json.addProperty("state", src.state.name());
