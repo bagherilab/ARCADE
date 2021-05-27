@@ -97,10 +97,6 @@ public final class OutputSerializer {
      * The series object is formatted as:
      * <pre>
      *     {
-     *         "seeds": {
-     *             "start": (start seed),
-     *             "end": (end seed)
-     *         },
      *         "conversions": {
      *             "DS": (ds),
      *             "DT": (dt)
@@ -127,11 +123,6 @@ public final class OutputSerializer {
         public JsonElement serialize(Series src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonObject json = new JsonObject();
-            
-            JsonObject seeds = new JsonObject();
-            seeds.addProperty("start", src.getStartSeed());
-            seeds.addProperty("end", src.getEndSeed());
-            json.add("seeds", seeds);
             
             JsonObject conversions = new JsonObject();
             conversions.addProperty("DS", src.ds);

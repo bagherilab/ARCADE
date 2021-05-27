@@ -105,11 +105,6 @@ public class OutputSerializerTest {
         SeriesSerializer serializer = new SeriesSerializer();
         Series series = mock(Series.class);
         
-        int start = randomIntBetween(0, 100);
-        int end = randomIntBetween(0, 100);
-        doReturn(start).when(series).getStartSeed();
-        doReturn(end).when(series).getEndSeed();
-        
         double ds = randomDoubleBetween(0, 100);
         double dt = randomDoubleBetween(0, 100);
         
@@ -176,10 +171,6 @@ public class OutputSerializerTest {
         };
         
         String expected = "{"
-                + "\"seeds\":{"
-                + "\"start\":" + start + ","
-                + "\"end\":" + end
-                + "},"
                 + "\"conversions\":{"
                 + "\"DS\":" + ds + ","
                 + "\"DT\":" + dt
