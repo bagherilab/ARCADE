@@ -4,6 +4,7 @@ import sim.engine.SimState;
 import arcade.sim.Simulation;
 import arcade.env.lat.Lattice;
 import arcade.env.loc.Location;
+import arcade.util.MiniBox;
 
 /** 
  * Implementation of {@link arcade.env.comp.Component} for generating concentrations.
@@ -16,7 +17,7 @@ import arcade.env.loc.Location;
  * updates the actual environment lattice with the change.
  * {@code Generator} objects are independent of geometry.
  * 
- * @version 2.3.8
+ * @version 2.3.9
  * @since   2.3
  */
 
@@ -55,9 +56,9 @@ public class Generator implements Component {
 	 * 
 	 * @param sim  the simulation instance
 	 * @param lat  the lattice of concentrations to be generated
-	 * @param code  the molecule code
+	 * @param molecule  the molecule parameters
 	 */
-	public Generator(Simulation sim, Lattice lat, int code) {
+	public Generator(Simulation sim, Lattice lat, MiniBox molecule) {
 		// Get sizing.
 		LENGTH = lat.getLength();
 		WIDTH = lat.getWidth();
@@ -73,7 +74,7 @@ public class Generator implements Component {
 		
 		// Equip to sites.
 		Sites sites = (Sites)sim.getEnvironment("sites").getComponent("sites");
-		sites.equip(sim, code, latDelta, latCurr, latPrev);
+		sites.equip(molecule, latDelta, latCurr, latPrev);
 	}
 	
 	/**

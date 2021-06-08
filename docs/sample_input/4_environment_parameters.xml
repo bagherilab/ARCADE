@@ -16,8 +16,8 @@
         </agents>
         <environment>
             <globals>
-                <global id="CONC_GLUC" value="0" />
-                <global id="CONC_OXY" value="0" />
+                <global id="CONCENTRATION_GLUCOSE" value="0" />
+                <global id="CONCENTRATION_OXYGEN" value="0" />
             </globals>
         </environment>
     </series>
@@ -38,7 +38,7 @@
         </agents>
         <environment>
             <globals>
-                <global id="CONC_OXY" value="0" />
+                <global id="CONCENTRATION_OXYGEN" value="0" />
             </globals>
         </environment>
     </series>
@@ -59,7 +59,7 @@
         </agents>
         <environment>
             <globals>
-                <global id="CONC_GLUC" value="0" />
+                <global id="CONCENTRATION_GLUCOSE" value="0" />
             </globals>
         </environment>
     </series>

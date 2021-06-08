@@ -118,7 +118,7 @@ implements <a href="Lattice.html" title="interface in arcade.env.lat">Lattice</a
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.3.7</dd>
+<dd>2.3.8</dd>
 </dl>
 </section>
 <section class="summary">
@@ -235,9 +235,9 @@ double&nbsp;val)</code></th>
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#addComponent(arcade.sim.Simulation,int,int)">addComponent</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
-int&nbsp;code,
-int&nbsp;type)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#addComponent(arcade.sim.Simulation,int,arcade.util.MiniBox)">addComponent</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
+int&nbsp;type,
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</code></th>
 <td class="colLast">
 <div class="block">Adds a component to the lattice.</div>
 </td>
@@ -301,8 +301,8 @@ double&nbsp;inc)</code></th>
 </tr>
 <tr class="rowColor" id="i9">
 <td class="colFirst"><code>(package private) abstract <a href="../comp/Component.html" title="interface in arcade.env.comp">Component</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeDiffuser(arcade.sim.Simulation,int)">makeDiffuser</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
-int&nbsp;code)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeDiffuser(arcade.sim.Simulation,arcade.util.MiniBox)">makeDiffuser</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</code></th>
 <td class="colLast">
 <div class="block">Makes a diffuser <a href="../comp/Component.html" title="interface in arcade.env.comp"><code>Component</code></a> for the lattice.</div>
 </td>
@@ -544,14 +544,14 @@ double&nbsp;val)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="makeDiffuser(arcade.sim.Simulation,int)">makeDiffuser</a></h3>
+<h3><a id="makeDiffuser(arcade.sim.Simulation,arcade.util.MiniBox)">makeDiffuser</a></h3>
 <div class="memberSignature"><span class="modifiers">abstract</span>&nbsp;<span class="returnType"><a href="../comp/Component.html" title="interface in arcade.env.comp">Component</a></span>&nbsp;<span class="memberName">makeDiffuser</span>&#8203;(<span class="arguments"><a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
-int&nbsp;code)</span></div>
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</span></div>
 <div class="block">Makes a diffuser <a href="../comp/Component.html" title="interface in arcade.env.comp"><code>Component</code></a> for the lattice.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sim</code> - the simulation instance</dd>
-<dd><code>code</code> - the molecule code</dd>
+<dd><code>molecule</code> - the molecule parameters</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a diffuser component</dd>
 </dl>
@@ -683,19 +683,19 @@ double&nbsp;val)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="addComponent(arcade.sim.Simulation,int,int)">addComponent</a></h3>
+<h3><a id="addComponent(arcade.sim.Simulation,int,arcade.util.MiniBox)">addComponent</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">addComponent</span>&#8203;(<span class="arguments"><a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
-int&nbsp;code,
-int&nbsp;type)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="Lattice.html#addComponent(arcade.sim.Simulation,int,int)">Lattice</a></code></span></div>
+int&nbsp;type,
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="Lattice.html#addComponent(arcade.sim.Simulation,int,arcade.util.MiniBox)">Lattice</a></code></span></div>
 <div class="block">Adds a component to the lattice.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="Lattice.html#addComponent(arcade.sim.Simulation,int,int)">addComponent</a></code>&nbsp;in interface&nbsp;<code><a href="Lattice.html" title="interface in arcade.env.lat">Lattice</a></code></dd>
+<dd><code><a href="Lattice.html#addComponent(arcade.sim.Simulation,int,arcade.util.MiniBox)">addComponent</a></code>&nbsp;in interface&nbsp;<code><a href="Lattice.html" title="interface in arcade.env.lat">Lattice</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sim</code> - the simulation instance</dd>
-<dd><code>code</code> - the molecule code</dd>
 <dd><code>type</code> - the component type</dd>
+<dd><code>molecule</code> - the molecule parameters</dd>
 </dl>
 </section>
 </li>

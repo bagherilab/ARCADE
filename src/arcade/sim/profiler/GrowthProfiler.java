@@ -28,7 +28,7 @@ import arcade.agent.cell.*;
  *         method of {@link arcade.agent.cell.Cell})</li>
  * </ul>
  * 
- * @version 2.3.6
+ * @version 2.3.7
  * @since   2.0
  */
 
@@ -68,8 +68,8 @@ public class GrowthProfiler extends Profiler {
 	public void scheduleProfiler(Simulation sim, Series series, String seed) {
 		((SimState)sim).schedule.scheduleRepeating(1, Simulation.ORDERING_PROFILER, this, INTERVAL);
 		FILE_PATH = series.getPrefix() + seed + SUFFIX + ".json";
-		SPAN = sim.getSpanLocations();
-		LOCATIONS = sim.getLocations(series._radius, series._height);
+		SPAN = sim.getRepresentation().getSpanLocations();
+		LOCATIONS = sim.getRepresentation().getLocations(series._radius, series._height);
 		timepoints = "";
 	}
 	

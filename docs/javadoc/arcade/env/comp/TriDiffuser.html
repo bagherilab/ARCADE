@@ -112,7 +112,7 @@ extends <a href="Diffuser.html" title="class in arcade.env.comp">Diffuser</a></p
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.3.3</dd>
+<dd>2.3.4</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../serialized-form.html#arcade.env.comp.TriDiffuser">Serialized Form</a></dd>
 </dl>
@@ -182,9 +182,9 @@ extends <a href="Diffuser.html" title="class in arcade.env.comp">Diffuser</a></p
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(arcade.sim.Simulation,arcade.env.lat.Lattice,int)">TriDiffuser</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(arcade.sim.Simulation,arcade.env.lat.Lattice,arcade.util.MiniBox)">TriDiffuser</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
 <a href="../lat/Lattice.html" title="interface in arcade.env.lat">Lattice</a>&nbsp;lat,
-int&nbsp;code)</code></th>
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</code></th>
 <td class="colLast">
 <div class="block">Creates a <a href="Diffuser.html" title="class in arcade.env.comp"><code>Diffuser</code></a> for triangular lattices.</div>
 </td>
@@ -278,10 +278,10 @@ double[][]&nbsp;field)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(arcade.sim.Simulation,arcade.env.lat.Lattice,int)">TriDiffuser</a></h3>
+<h3><a id="&lt;init&gt;(arcade.sim.Simulation,arcade.env.lat.Lattice,arcade.util.MiniBox)">TriDiffuser</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">TriDiffuser</span>&#8203;(<span class="arguments"><a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
 <a href="../lat/Lattice.html" title="interface in arcade.env.lat">Lattice</a>&nbsp;lat,
-int&nbsp;code)</span></div>
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</span></div>
 <div class="block">Creates a <a href="Diffuser.html" title="class in arcade.env.comp"><code>Diffuser</code></a> for triangular lattices.
  <p>
  Constructor calculates rate and multipliers for diffusion on the
@@ -295,7 +295,7 @@ int&nbsp;code)</span></div>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sim</code> - the simulation instance</dd>
 <dd><code>lat</code> - the lattice of concentrations to be diffused</dd>
-<dd><code>code</code> - the molecule code</dd>
+<dd><code>molecule</code> - the molecule parameters</dd>
 </dl>
 </section>
 </li>

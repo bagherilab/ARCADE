@@ -26,7 +26,7 @@ import arcade.util.Parameter;
  *        for each cell</li>
  * </ul>
  * 
- * @version 2.3.4
+ * @version 2.3.5
  * @since   2.3
  */
 
@@ -71,7 +71,7 @@ public class ParameterProfiler extends Profiler {
 			"ACCURACY", "AFFINITY", "DEATH_AGE_AVG", "DIVISION_POTENTIAL",
 			"META_PREF", "MIGRA_THRESHOLD" };
 		PARAM_TYPES =  new boolean[] { true, true, true, true, true, true, false, false, true, true };
-		LOCATIONS = sim.getLocations(series._radius, series._height);
+		LOCATIONS = sim.getRepresentation().getLocations(series._radius, series._height);
 		timepoints = "";
 	}
 	

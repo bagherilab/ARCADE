@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":9,"i1":9,"i2":9};
+<script type="text/javascript">var data = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":9,"i5":9,"i6":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -104,12 +104,14 @@ extends java.lang.Object</pre>
      <li><em>forward Euler</em>: first-order method for ODEs</li>
      <li><em>classic Runge–Kutta (RK4)</em>: fourth-order method for ODEs</li>
      <li><em>Cash–Karp</em>: adaptive step size method for ODEs</li>
+     <li><em>successive over-relaxation (SOR)</em>: variant of the Gauss–Seidel
+     method for solving a linear system of equations</li>
  </ul></div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.2.X</dd>
+<dd>2.3.8</dd>
 </dl>
 </section>
 <section class="summary">
@@ -138,6 +140,13 @@ extends java.lang.Object</pre>
 <div class="block">Defines ODE equations for numerical solvers.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static interface&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="Solver.Function.html" title="interface in arcade.util">Solver.Function</a></span></code></th>
+<td class="colLast">
+<div class="block">Defines a continuous function.</div>
+</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -162,16 +171,44 @@ extends java.lang.Object</pre>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>private static double</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DELTA">DELTA</a></span></code></th>
+<td class="colLast">
+<div class="block">Convergence delta for bisection method</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private static double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#EPSILON">EPSILON</a></span></code></th>
 <td class="colLast">
 <div class="block">Epsilon value for Cash-Karp</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>private static double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ERROR">ERROR</a></span></code></th>
 <td class="colLast">
 <div class="block">Error tolerance for Cash-Karp</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private static java.util.logging.Logger</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#LOGGER">LOGGER</a></span></code></th>
+<td class="colLast">
+<div class="block">Logger for <code>Solver</code></div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private static int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MATRIX_THRESHOLD">MATRIX_THRESHOLD</a></span></code></th>
+<td class="colLast">
+<div class="block">Matrix size threshold for dense representation</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private static int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MAX_ITERS">MAX_ITERS</a></span></code></th>
+<td class="colLast">
+<div class="block">Maximum number of iterations</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -183,9 +220,23 @@ extends java.lang.Object</pre>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>private static double</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#OMEGA">OMEGA</a></span></code></th>
+<td class="colLast">
+<div class="block">Relaxation factor for SOR</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private static double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SAFETY">SAFETY</a></span></code></th>
 <td class="colLast">
 <div class="block">Safety value for Cash-Karp</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private static double</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#TOLERANCE">TOLERANCE</a></span></code></th>
+<td class="colLast">
+<div class="block">Error tolerance for SOR</div>
 </td>
 </tr>
 </tbody>
@@ -237,6 +288,15 @@ extends java.lang.Object</pre>
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
+<td class="colFirst"><code>static double</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#bisection(arcade.util.Solver.Function,double,double)">bisection</a></span>&#8203;(<a href="Solver.Function.html" title="interface in arcade.util">Solver.Function</a>&nbsp;func,
+double&nbsp;a,
+double&nbsp;b)</code></th>
+<td class="colLast">
+<div class="block">Finds root using bisection method.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i1">
 <td class="colFirst"><code>static double[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#cashKarp(arcade.util.Solver.Equations,double,double%5B%5D,double,double)">cashKarp</a></span>&#8203;(<a href="Solver.Equations.html" title="interface in arcade.util">Solver.Equations</a>&nbsp;eq,
 double&nbsp;t0,
@@ -247,7 +307,16 @@ double&nbsp;h)</code></th>
 <div class="block">Solves a system of ODEs using adaptive timestep Cash-Karp.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="altColor" id="i2">
+<td class="colFirst"><code>private static double[]</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#denseSOR(double%5B%5D%5B%5D,double%5B%5D,double%5B%5D)">denseSOR</a></span>&#8203;(double[][]&nbsp;A,
+double[]&nbsp;b,
+double[]&nbsp;x0)</code></th>
+<td class="colLast">
+<div class="block">Solves linear system of equations using SOR with dense matrix representation.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code>static double[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#euler(arcade.util.Solver.Equations,double,double%5B%5D,double,double)">euler</a></span>&#8203;(<a href="Solver.Equations.html" title="interface in arcade.util">Solver.Equations</a>&nbsp;eq,
 double&nbsp;t0,
@@ -258,7 +327,7 @@ double&nbsp;h)</code></th>
 <div class="block">Solves a system of ODEs using forward Euler.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code>static double[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#rungeKutta(arcade.util.Solver.Equations,double,double%5B%5D,double,double)">rungeKutta</a></span>&#8203;(<a href="Solver.Equations.html" title="interface in arcade.util">Solver.Equations</a>&nbsp;eq,
 double&nbsp;t0,
@@ -267,6 +336,24 @@ double&nbsp;tf,
 double&nbsp;h)</code></th>
 <td class="colLast">
 <div class="block">Solves a system of ODEs using classic Runge-Kutta.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i5">
+<td class="colFirst"><code>static double[]</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#SOR(double%5B%5D%5B%5D,double%5B%5D,double%5B%5D)">SOR</a></span>&#8203;(double[][]&nbsp;A,
+double[]&nbsp;b,
+double[]&nbsp;x0)</code></th>
+<td class="colLast">
+<div class="block">Solves a linear system of equations using successive over-relaxation.</div>
+</td>
+</tr>
+<tr class="altColor" id="i6">
+<td class="colFirst"><code>private static double[]</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#sparseSOR(double%5B%5D%5B%5D,double%5B%5D,double%5B%5D)">sparseSOR</a></span>&#8203;(double[][]&nbsp;A,
+double[]&nbsp;b,
+double[]&nbsp;x0)</code></th>
+<td class="colLast">
+<div class="block">Solves linear system of equations using SOR with sparse matrix representation.</div>
 </td>
 </tr>
 </tbody>
@@ -291,6 +378,13 @@ double&nbsp;h)</code></th>
 </a>
 <h2>Field Details</h2>
 <ul class="blockList">
+<li class="blockList">
+<section class="detail">
+<h3><a id="LOGGER">LOGGER</a></h3>
+<div class="memberSignature"><span class="modifiers">private static</span>&nbsp;<span class="returnType">java.util.logging.Logger</span>&nbsp;<span class="memberName">LOGGER</span></div>
+<div class="block">Logger for <code>Solver</code></div>
+</section>
+</li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="ERROR">ERROR</a></h3>
@@ -332,6 +426,61 @@ double&nbsp;h)</code></th>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../constant-values.html#arcade.util.Solver.SAFETY">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="OMEGA">OMEGA</a></h3>
+<div class="memberSignature"><span class="modifiers">private static final</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">OMEGA</span></div>
+<div class="block">Relaxation factor for SOR</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../constant-values.html#arcade.util.Solver.OMEGA">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="MAX_ITERS">MAX_ITERS</a></h3>
+<div class="memberSignature"><span class="modifiers">private static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">MAX_ITERS</span></div>
+<div class="block">Maximum number of iterations</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../constant-values.html#arcade.util.Solver.MAX_ITERS">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="TOLERANCE">TOLERANCE</a></h3>
+<div class="memberSignature"><span class="modifiers">private static final</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">TOLERANCE</span></div>
+<div class="block">Error tolerance for SOR</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../constant-values.html#arcade.util.Solver.TOLERANCE">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="DELTA">DELTA</a></h3>
+<div class="memberSignature"><span class="modifiers">private static final</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">DELTA</span></div>
+<div class="block">Convergence delta for bisection method</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../constant-values.html#arcade.util.Solver.DELTA">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="MATRIX_THRESHOLD">MATRIX_THRESHOLD</a></h3>
+<div class="memberSignature"><span class="modifiers">private static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">MATRIX_THRESHOLD</span></div>
+<div class="block">Matrix size threshold for dense representation</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../constant-values.html#arcade.util.Solver.MATRIX_THRESHOLD">Constant Field Values</a></dd>
 </dl>
 </section>
 </li>
@@ -421,6 +570,80 @@ double&nbsp;h)</span></div>
 <dd><code>h</code> - the time step</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the array of final values</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="SOR(double[][],double[],double[])">SOR</a></h3>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">double[]</span>&nbsp;<span class="memberName">SOR</span>&#8203;(<span class="arguments">double[][]&nbsp;A,
+double[]&nbsp;b,
+double[]&nbsp;x0)</span></div>
+<div class="block">Solves a linear system of equations using successive over-relaxation.
+ <p>
+ Based on matrix size, the algorithm with use a dense or sparse approach.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>A</code> - the matrix of coefficients</dd>
+<dd><code>b</code> - the right-hand side vector</dd>
+<dd><code>x0</code> - the initial guess for the left-hand side vector</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the vector of final values</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="denseSOR(double[][],double[],double[])">denseSOR</a></h3>
+<div class="memberSignature"><span class="modifiers">private static</span>&nbsp;<span class="returnType">double[]</span>&nbsp;<span class="memberName">denseSOR</span>&#8203;(<span class="arguments">double[][]&nbsp;A,
+double[]&nbsp;b,
+double[]&nbsp;x0)</span></div>
+<div class="block">Solves linear system of equations using SOR with dense matrix representation.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>A</code> - the matrix of coefficients</dd>
+<dd><code>b</code> - the right-hand side vector</dd>
+<dd><code>x0</code> - the initial guess for the left-hand side vector</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the vector of final values</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="sparseSOR(double[][],double[],double[])">sparseSOR</a></h3>
+<div class="memberSignature"><span class="modifiers">private static</span>&nbsp;<span class="returnType">double[]</span>&nbsp;<span class="memberName">sparseSOR</span>&#8203;(<span class="arguments">double[][]&nbsp;A,
+double[]&nbsp;b,
+double[]&nbsp;x0)</span></div>
+<div class="block">Solves linear system of equations using SOR with sparse matrix representation.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>A</code> - the matrix of coefficients</dd>
+<dd><code>b</code> - the right-hand side vector</dd>
+<dd><code>x0</code> - the initial guess for the left-hand side vector</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the vector of final values</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="bisection(arcade.util.Solver.Function,double,double)">bisection</a></h3>
+<div class="memberSignature"><span class="modifiers">public static</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">bisection</span>&#8203;(<span class="arguments"><a href="Solver.Function.html" title="interface in arcade.util">Solver.Function</a>&nbsp;func,
+double&nbsp;a,
+double&nbsp;b)</span></div>
+<div class="block">Finds root using bisection method.
+ <p>
+ Root is found by repeatedly bisecting the interval and selecting the
+ interval in which the function changes sign.
+ If no root is found, the simulation will exit.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>func</code> - the function</dd>
+<dd><code>a</code> - the lower bound on the interval</dd>
+<dd><code>b</code> - the upper bound on the interval</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the root of the function</dd>
 </dl>
 </section>
 </li>

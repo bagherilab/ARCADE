@@ -6,7 +6,9 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.JFrame;
 import sim.display.Controller;
 import sim.display.Display2D;
+import sim.display3d.Display3D;
 import sim.portrayal.FieldPortrayal2D;
+import sim.portrayal3d.Portrayal3D;
 
 /** 
  * Wrapper for JFrame windows containing visualizations.
@@ -114,5 +116,50 @@ public abstract class Panel {
 			display.reset();
 			display.repaint();
 		}
+	}
+	
+	/**
+	 * Extension of {@link arcade.vis.Panel} for 3D display.
+	 * <p>
+	 * {@code Panel3D} uses the {@code Display3D} class from the
+	 * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
+	 */
+	public static class Panel3D extends Panel {
+		/** Display object for 3D */
+		final Display3D display;
+		
+		/**
+		 * Creates a {@link arcade.vis.Panel} for 3D display.
+		 *
+		 * @param title  the title of the panel
+		 * @param x  the x position of the panel in pixels
+		 * @param y  the y position of the panel in pixels
+		 * @param w  the width of the panel in pixels
+		 * @param h  the height of the panel in pixels
+		 * @param vis  the visualization instance
+		 */
+		public Panel3D(String title, int x, int y, int w, int h, Visualization vis) {
+			display = new Display3D(w, h, vis);
+			frame = display.createFrame();
+			setup(title, x, y);
+		}
+		
+		public void attach(Drawer drawer, String name, Rectangle2D.Double bounds) {
+			Portrayal3D port = (Portrayal3D)(drawer.getPortrayal());
+			display.attach(port, name);
+		}
+		
+		public void reset() {
+			display.createSceneGraph();
+			display.reset();
+		}
+		
+		/**
+		 * Attaches portrayal to display.
+		 * 
+		 * @param port  the portrayal
+		 * @param name  the name of the portrayal
+		 */
+		public void decorate(Portrayal3D port, String name) { display.attach(port, name); }
 	}
 }

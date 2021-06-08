@@ -113,7 +113,7 @@ extends <a href="EnvLattice.html" title="class in arcade.env.lat">EnvLattice</a>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.3.10</dd>
+<dd>2.3.11</dd>
 </dl>
 </section>
 <section class="summary">
@@ -190,8 +190,8 @@ double&nbsp;val)</code></th>
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code><a href="../comp/Component.html" title="interface in arcade.env.comp">Component</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeDiffuser(arcade.sim.Simulation,int)">makeDiffuser</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
-int&nbsp;code)</code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeDiffuser(arcade.sim.Simulation,arcade.util.MiniBox)">makeDiffuser</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</code></th>
 <td class="colLast">
 <div class="block">Makes a diffuser <a href="../comp/Component.html" title="interface in arcade.env.comp"><code>Component</code></a> for the lattice.</div>
 </td>
@@ -204,7 +204,7 @@ int&nbsp;code)</code></th>
 <h3>Methods inherited from class&nbsp;arcade.env.lat.<a href="EnvLattice.html" title="class in arcade.env.lat">EnvLattice</a></h3>
 <a id="methods.inherited.from.class.arcade.env.lat.EnvLattice">
 <!--   -->
-</a><code><a href="EnvLattice.html#addComponent(arcade.sim.Simulation,int,int)">addComponent</a>, <a href="EnvLattice.html#getAverageVal(arcade.env.loc.Location)">getAverageVal</a>, <a href="EnvLattice.html#getComponent(java.lang.String)">getComponent</a>, <a href="EnvLattice.html#getDepth()">getDepth</a>, <a href="EnvLattice.html#getField()">getField</a>, <a href="EnvLattice.html#getLength()">getLength</a>, <a href="EnvLattice.html#getTotalVal(arcade.env.loc.Location)">getTotalVal</a>, <a href="EnvLattice.html#getWidth()">getWidth</a>, <a href="EnvLattice.html#incrementVal(arcade.env.loc.Location,double)">incrementVal</a>, <a href="EnvLattice.html#setComponent(java.lang.String,arcade.env.comp.Component)">setComponent</a>, <a href="EnvLattice.html#setField(double%5B%5D%5B%5D%5B%5D)">setField</a>, <a href="EnvLattice.html#setField(double%5B%5D%5B%5D,int)">setField</a>, <a href="EnvLattice.html#setTo(double)">setTo</a>, <a href="EnvLattice.html#setVal(arcade.env.loc.Location,double)">setVal</a>, <a href="EnvLattice.html#toJSON(arcade.env.loc.Location%5B%5D%5B%5D)">toJSON</a>, <a href="EnvLattice.html#updateVal(arcade.env.loc.Location,double)">updateVal</a></code></div>
+</a><code><a href="EnvLattice.html#addComponent(arcade.sim.Simulation,int,arcade.util.MiniBox)">addComponent</a>, <a href="EnvLattice.html#getAverageVal(arcade.env.loc.Location)">getAverageVal</a>, <a href="EnvLattice.html#getComponent(java.lang.String)">getComponent</a>, <a href="EnvLattice.html#getDepth()">getDepth</a>, <a href="EnvLattice.html#getField()">getField</a>, <a href="EnvLattice.html#getLength()">getLength</a>, <a href="EnvLattice.html#getTotalVal(arcade.env.loc.Location)">getTotalVal</a>, <a href="EnvLattice.html#getWidth()">getWidth</a>, <a href="EnvLattice.html#incrementVal(arcade.env.loc.Location,double)">incrementVal</a>, <a href="EnvLattice.html#setComponent(java.lang.String,arcade.env.comp.Component)">setComponent</a>, <a href="EnvLattice.html#setField(double%5B%5D%5B%5D%5B%5D)">setField</a>, <a href="EnvLattice.html#setField(double%5B%5D%5B%5D,int)">setField</a>, <a href="EnvLattice.html#setTo(double)">setTo</a>, <a href="EnvLattice.html#setVal(arcade.env.loc.Location,double)">setVal</a>, <a href="EnvLattice.html#toJSON(arcade.env.loc.Location%5B%5D%5B%5D)">toJSON</a>, <a href="EnvLattice.html#updateVal(arcade.env.loc.Location,double)">updateVal</a></code></div>
 <div class="inheritedList">
 <h3>Methods inherited from class&nbsp;java.lang.Object</h3>
 <a id="methods.inherited.from.class.java.lang.Object">
@@ -268,17 +268,17 @@ double&nbsp;val)</span></div>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="makeDiffuser(arcade.sim.Simulation,int)">makeDiffuser</a></h3>
+<h3><a id="makeDiffuser(arcade.sim.Simulation,arcade.util.MiniBox)">makeDiffuser</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../comp/Component.html" title="interface in arcade.env.comp">Component</a></span>&nbsp;<span class="memberName">makeDiffuser</span>&#8203;(<span class="arguments"><a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
-int&nbsp;code)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="EnvLattice.html#makeDiffuser(arcade.sim.Simulation,int)">EnvLattice</a></code></span></div>
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="EnvLattice.html#makeDiffuser(arcade.sim.Simulation,arcade.util.MiniBox)">EnvLattice</a></code></span></div>
 <div class="block">Makes a diffuser <a href="../comp/Component.html" title="interface in arcade.env.comp"><code>Component</code></a> for the lattice.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="EnvLattice.html#makeDiffuser(arcade.sim.Simulation,int)">makeDiffuser</a></code>&nbsp;in class&nbsp;<code><a href="EnvLattice.html" title="class in arcade.env.lat">EnvLattice</a></code></dd>
+<dd><code><a href="EnvLattice.html#makeDiffuser(arcade.sim.Simulation,arcade.util.MiniBox)">makeDiffuser</a></code>&nbsp;in class&nbsp;<code><a href="EnvLattice.html" title="class in arcade.env.lat">EnvLattice</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sim</code> - the simulation instance</dd>
-<dd><code>code</code> - the molecule code</dd>
+<dd><code>molecule</code> - the molecule parameters</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>a diffuser component</dd>
 </dl>

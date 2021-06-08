@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -112,7 +112,7 @@ extends java.lang.Object</pre>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.2.X</dd>
+<dd>2.3.X</dd>
 </dl>
 </section>
 <section class="summary">
@@ -135,20 +135,27 @@ extends java.lang.Object</pre>
 </thead>
 <tbody>
 <tr class="altColor">
+<td class="colFirst"><code>java.util.ArrayList&lt;<a href="checkpoint/Checkpoint.html" title="class in arcade.sim.checkpoint">Checkpoint</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_checkpoints">_checkpoints</a></span></code></th>
+<td class="colLast">
+<div class="block">List of series <a href="checkpoint/Checkpoint.html" title="class in arcade.sim.checkpoint"><code>Checkpoint</code></a> objects</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) java.util.ArrayList&lt;<a href="../env/comp/Component.html" title="interface in arcade.env.comp">Component</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_components">_components</a></span></code></th>
 <td class="colLast">
 <div class="block">List of series <a href="../env/comp/Component.html" title="interface in arcade.env.comp"><code>Component</code></a> objects</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_height">_height</a></span></code></th>
 <td class="colLast">
 <div class="block">Height of the simulation (odd number)</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_heightBounds">_heightBounds</a></span></code></th>
 <td class="colLast">
@@ -156,130 +163,137 @@ extends java.lang.Object</pre>
  HEIGHT + MARGIN otherwise)</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) java.util.ArrayList&lt;<a href="../agent/helper/Helper.html" title="interface in arcade.agent.helper">Helper</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_helpers">_helpers</a></span></code></th>
 <td class="colLast">
 <div class="block">List of series <a href="../agent/helper/Helper.html" title="interface in arcade.agent.helper"><code>Helper</code></a> objects</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_init">_init</a></span></code></th>
 <td class="colLast">
 <div class="block">Radius to which cells are initialized, may be <code>FULL_INIT</code></div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_margin">_margin</a></span></code></th>
 <td class="colLast">
 <div class="block">Margin between agents and environment (even number)</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) <a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_popBoxes">_popBoxes</a></span></code></th>
 <td class="colLast">
 <div class="block">List of modules for each population</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) java.lang.reflect.Constructor&lt;?&gt;[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_popCons">_popCons</a></span></code></th>
 <td class="colLast">
 <div class="block">List of constructors for each population</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) int[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_popCounts">_popCounts</a></span></code></th>
 <td class="colLast">
 <div class="block">List of number of initial cells in each population</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) double[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_popFrac">_popFrac</a></span></code></th>
 <td class="colLast">
 <div class="block">List of population fractions</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_pops">_pops</a></span></code></th>
 <td class="colLast">
 <div class="block">Number of cell populations</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>java.util.ArrayList&lt;<a href="profiler/Profiler.html" title="class in arcade.sim.profiler">Profiler</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_profilers">_profilers</a></span></code></th>
 <td class="colLast">
 <div class="block">List of series <a href="profiler/Profiler.html" title="class in arcade.sim.profiler"><code>Profiler</code></a> objects</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_radius">_radius</a></span></code></th>
 <td class="colLast">
 <div class="block">Radius of the simulation (even number)</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_radiusBounds">_radiusBounds</a></span></code></th>
 <td class="colLast">
 <div class="block">Overall radius of the simulation (equal to RADIUS + MARGIN)</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>private java.util.ArrayList&lt;java.lang.String[]&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#adjustments">adjustments</a></span></code></th>
 <td class="colLast">
 <div class="block">List of changes to population parameter values</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>private int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#days">days</a></span></code></th>
 <td class="colLast">
 <div class="block">Simulation length in days</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>private java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#DNEFormat">DNEFormat</a></span></code></th>
 <td class="colLast">
 <div class="block">Format for does not exist logging</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>private int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#endSeed">endSeed</a></span></code></th>
 <td class="colLast">
 <div class="block">Random seed of the last simulation in the series</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>private static java.text.DecimalFormat</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#f">f</a></span></code></th>
 <td class="colLast">
 <div class="block">Format for console output of simulation time</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#FULL_INIT">FULL_INIT</a></span></code></th>
 <td class="colLast">
 <div class="block">Placeholder integer for initialization of agents at all locations</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>private <a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#globalParams">globalParams</a></span></code></th>
 <td class="colLast">
 <div class="block">Dictionary of global parameter values</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#hasGraph">hasGraph</a></span></code></th>
+<td class="colLast">
+<div class="block"><code>true</code> if simulation uses graph sites, <code>false</code> otherwise</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -346,27 +360,34 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>(package private) int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#specOffset">specOffset</a></span></code></th>
+<td class="colLast">
+<div class="block">Specification offset</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>private int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#startSeed">startSeed</a></span></code></th>
 <td class="colLast">
 <div class="block">Random seed of the first simulation in the series</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>private int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#steps">steps</a></span></code></th>
 <td class="colLast">
 <div class="block">Simulation length in ticks (minutes)</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>private <a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>[]</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#variableParams">variableParams</a></span></code></th>
 <td class="colLast">
 <div class="block">List of dictionaries of parameter values for each population</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>private java.lang.reflect.Constructor&lt;?&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#visCons">visCons</a></span></code></th>
 <td class="colLast">
@@ -472,34 +493,41 @@ java.lang.String&nbsp;key)</code></th>
 </td>
 </tr>
 <tr class="altColor" id="i6">
+<td class="colFirst"><code><a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getParams(java.lang.String)">getParams</a></span>&#8203;(java.lang.String&nbsp;code)</code></th>
+<td class="colLast">
+<div class="block">Gets the parameters filtered by the given code.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getPrefix()">getPrefix</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the prefix for the series, including file path.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#helpersToJSON()">helpersToJSON</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Generates a JSON string summarizing the helpers in the <code>Series</code>.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeConstructor(arcade.util.MiniBox)">makeConstructor</a></span>&#8203;(<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;simulation)</code></th>
 <td class="colLast">
 <div class="block">Uses reflections to build constructors for simulation (and visualization).</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="altColor" id="i10">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#paramsToJSON()">paramsToJSON</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Generates a JSON string summarizing the <code>Series</code> parameters.</div>
 </td>
 </tr>
-<tr class="altColor" id="i10">
+<tr class="rowColor" id="i11">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runSim(sim.engine.SimState,java.lang.String)">runSim</a></span>&#8203;(sim.engine.SimState&nbsp;state,
 java.lang.String&nbsp;seed)</code></th>
@@ -507,21 +535,21 @@ java.lang.String&nbsp;seed)</code></th>
 <div class="block">Iterates through each step (tick) of the simulation.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i11">
+<tr class="altColor" id="i12">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runSims()">runSims</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Calls <code>runSim</code> for each random seed.</div>
 </td>
 </tr>
-<tr class="altColor" id="i12">
+<tr class="rowColor" id="i13">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#runVis()">runVis</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Creates controller for visualization.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i13">
+<tr class="altColor" id="i14">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toString()">toString</a></span>()</code></th>
 <td class="colLast">
@@ -529,14 +557,21 @@ java.lang.String&nbsp;seed)</code></th>
  <code>Series</code>.</div>
 </td>
 </tr>
-<tr class="altColor" id="i14">
+<tr class="rowColor" id="i15">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateAgents(arcade.util.MiniBox)">updateAgents</a></span>&#8203;(<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;agents)</code></th>
 <td class="colLast">
 <div class="block">Updates agent initialization.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i15">
+<tr class="altColor" id="i16">
+<td class="colFirst"><code>private void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateCheckpoints(java.util.ArrayList)">updateCheckpoints</a></span>&#8203;(java.util.ArrayList&lt;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;&nbsp;checkpoints)</code></th>
+<td class="colLast">
+<div class="block">Creates instances of selected checkpoints.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i17">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateComponents(java.util.ArrayList,arcade.util.Box,java.util.ArrayList)">updateComponents</a></span>&#8203;(java.util.ArrayList&lt;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;&nbsp;components,
 <a href="../util/Box.html" title="class in arcade.util">Box</a>&nbsp;parameters,
@@ -545,7 +580,14 @@ java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" tit
 <div class="block">Creates instances of selected components.</div>
 </td>
 </tr>
-<tr class="altColor" id="i16">
+<tr class="altColor" id="i18">
+<td class="colFirst"><code>private void</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateEnvironment(arcade.util.MiniBox)">updateEnvironment</a></span>&#8203;(<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;environment)</code></th>
+<td class="colLast">
+<div class="block">Updates environment initialization.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i19">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateGlobals(java.util.ArrayList,arcade.util.Box)">updateGlobals</a></span>&#8203;(java.util.ArrayList&lt;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;&nbsp;globals,
 <a href="../util/Box.html" title="class in arcade.util">Box</a>&nbsp;parameters)</code></th>
@@ -553,7 +595,7 @@ java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" tit
 <div class="block">Updates values of non-population-specific parameters.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i17">
+<tr class="altColor" id="i20">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateHelpers(java.util.ArrayList,arcade.util.Box,java.util.ArrayList)">updateHelpers</a></span>&#8203;(java.util.ArrayList&lt;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;&nbsp;helpers,
 <a href="../util/Box.html" title="class in arcade.util">Box</a>&nbsp;parameters,
@@ -562,7 +604,7 @@ java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" tit
 <div class="block">Creates instances of selected helpers.</div>
 </td>
 </tr>
-<tr class="altColor" id="i18">
+<tr class="rowColor" id="i21">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updatePopulations(java.util.ArrayList,java.util.ArrayList)">updatePopulations</a></span>&#8203;(java.util.ArrayList&lt;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;&nbsp;populations,
 java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;&gt;&nbsp;modules)</code></th>
@@ -570,14 +612,14 @@ java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" tit
 <div class="block">Creates agent population constructors.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i19">
+<tr class="altColor" id="i22">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateProfilers(java.util.ArrayList)">updateProfilers</a></span>&#8203;(java.util.ArrayList&lt;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;&nbsp;profilers)</code></th>
 <td class="colLast">
 <div class="block">Creates instances of selected profilers.</div>
 </td>
 </tr>
-<tr class="altColor" id="i20">
+<tr class="rowColor" id="i23">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateSizing(arcade.util.MiniBox,arcade.util.MiniBox)">updateSizing</a></span>&#8203;(<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;simulation,
 <a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;defaults)</code></th>
@@ -585,7 +627,7 @@ java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" tit
 <div class="block">Calculates model sizing parameters.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i21">
+<tr class="altColor" id="i24">
 <td class="colFirst"><code>private void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateVariables(java.util.ArrayList,arcade.util.Box)">updateVariables</a></span>&#8203;(java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;&gt;&nbsp;variables,
 <a href="../util/Box.html" title="class in arcade.util">Box</a>&nbsp;parameters)</code></th>
@@ -700,6 +742,13 @@ java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" tit
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="hasGraph">hasGraph</a></h3>
+<div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">hasGraph</span></div>
+<div class="block"><code>true</code> if simulation uses graph sites, <code>false</code> otherwise</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="name">name</a></h3>
 <div class="memberSignature"><span class="modifiers">private final</span>&nbsp;<span class="returnType">java.lang.String</span>&nbsp;<span class="memberName">name</span></div>
 <div class="block">Name of the simulation</div>
@@ -806,6 +855,13 @@ java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" tit
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="specOffset">specOffset</a></h3>
+<div class="memberSignature"><span class="returnType">int</span>&nbsp;<span class="memberName">specOffset</span></div>
+<div class="block">Specification offset</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="_popCons">_popCons</a></h3>
 <div class="memberSignature"><span class="returnType">java.lang.reflect.Constructor&lt;?&gt;[]</span>&nbsp;<span class="memberName">_popCons</span></div>
 <div class="block">List of constructors for each population</div>
@@ -872,6 +928,13 @@ java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" tit
 <h3><a id="_profilers">_profilers</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">java.util.ArrayList&lt;<a href="profiler/Profiler.html" title="class in arcade.sim.profiler">Profiler</a>&gt;</span>&nbsp;<span class="memberName">_profilers</span></div>
 <div class="block">List of series <a href="profiler/Profiler.html" title="class in arcade.sim.profiler"><code>Profiler</code></a> objects</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="_checkpoints">_checkpoints</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">java.util.ArrayList&lt;<a href="checkpoint/Checkpoint.html" title="class in arcade.sim.checkpoint">Checkpoint</a>&gt;</span>&nbsp;<span class="memberName">_checkpoints</span></div>
+<div class="block">List of series <a href="checkpoint/Checkpoint.html" title="class in arcade.sim.checkpoint"><code>Checkpoint</code></a> objects</div>
 </section>
 </li>
 </ul>
@@ -963,6 +1026,19 @@ java.lang.String&nbsp;key)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="getParams(java.lang.String)">getParams</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a></span>&nbsp;<span class="memberName">getParams</span>&#8203;(<span class="arguments">java.lang.String&nbsp;code)</span></div>
+<div class="block">Gets the parameters filtered by the given code.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>code</code> - the code to filter parameters by.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the filtered parameter dictionary</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="extractList(java.util.HashMap,java.lang.String,int)">extractList</a></h3>
 <div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;&gt;</span>&nbsp;<span class="memberName">extractList</span>&#8203;(<span class="arguments">java.util.HashMap&lt;java.lang.String,&#8203;java.util.ArrayList&lt;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;&gt;&nbsp;setupLists,
 java.lang.String&nbsp;key,
@@ -999,6 +1075,17 @@ int&nbsp;n)</span></div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>agents</code> - the agent setup dictionary</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="updateEnvironment(arcade.util.MiniBox)">updateEnvironment</a></h3>
+<div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">updateEnvironment</span>&#8203;(<span class="arguments"><a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;environment)</span></div>
+<div class="block">Updates environment initialization.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>environment</code> - the environment setup dictionary</dd>
 </dl>
 </section>
 </li>
@@ -1079,6 +1166,17 @@ java.util.ArrayList&lt;java.util.ArrayList&lt;<a href="../util/MiniBox.html" tit
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>profilers</code> - the list of profiler dictionaries</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="updateCheckpoints(java.util.ArrayList)">updateCheckpoints</a></h3>
+<div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">updateCheckpoints</span>&#8203;(<span class="arguments">java.util.ArrayList&lt;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;&nbsp;checkpoints)</span></div>
+<div class="block">Creates instances of selected checkpoints.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>checkpoints</code> - the list of checkpoint dictionaries</dd>
 </dl>
 </section>
 </li>

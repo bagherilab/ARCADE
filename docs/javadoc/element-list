@@ -8,6 +8,7 @@ arcade.env.lat
 arcade.env.loc
 arcade.gui
 arcade.sim
+arcade.sim.checkpoint
 arcade.sim.profiler
 arcade.util
 arcade.vis

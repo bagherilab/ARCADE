@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import sim.engine.SimState;
 import arcade.sim.Simulation;
 import arcade.env.lat.Lattice;
+import arcade.util.MiniBox;
 
 /** 
  * Implementation of {@link arcade.env.comp.Component} for generator sites.
@@ -14,7 +15,7 @@ import arcade.env.lat.Lattice;
  * {@link arcade.env.comp.Site} objects, which map the molecule code to the
  * correct environment lattices.
  * 
- * @version 2.3.8
+ * @version 2.3.9
  * @since   2.3
  */
 
@@ -42,13 +43,12 @@ public abstract class Sites implements Component {
 	/**
 	 * Equips a molecule to the sites.
 	 * 
-	 * @param sim  the simulation instance
-	 * @param code  the molecule code
+	 * @param molecule  the molecule parameters
 	 * @param delta  the array holding changes in concentration
 	 * @param current  the array holding current concentration values
 	 * @param previous  the array holding previous concentration values
 	 */
-	abstract void equip(Simulation sim, int code, double[][][] delta, double[][][] current, double[][][] previous);
+	abstract void equip(MiniBox molecule, double[][][] delta, double[][][] current, double[][][] previous);
 	
 	/**
 	 * Creates sites.

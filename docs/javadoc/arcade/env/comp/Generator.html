@@ -115,7 +115,7 @@ implements <a href="Component.html" title="interface in arcade.env.comp">Compone
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.3</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.3.8</dd>
+<dd>2.3.9</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../serialized-form.html#arcade.env.comp.Generator">Serialized Form</a></dd>
 </dl>
@@ -215,9 +215,9 @@ implements <a href="Component.html" title="interface in arcade.env.comp">Compone
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(arcade.sim.Simulation,arcade.env.lat.Lattice,int)">Generator</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(arcade.sim.Simulation,arcade.env.lat.Lattice,arcade.util.MiniBox)">Generator</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
 <a href="../lat/Lattice.html" title="interface in arcade.env.lat">Lattice</a>&nbsp;lat,
-int&nbsp;code)</code></th>
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</code></th>
 <td class="colLast">
 <div class="block">Creates a <code>Generator</code> for the given molecule.</div>
 </td>
@@ -383,10 +383,10 @@ int&nbsp;code)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(arcade.sim.Simulation,arcade.env.lat.Lattice,int)">Generator</a></h3>
+<h3><a id="&lt;init&gt;(arcade.sim.Simulation,arcade.env.lat.Lattice,arcade.util.MiniBox)">Generator</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">Generator</span>&#8203;(<span class="arguments"><a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
 <a href="../lat/Lattice.html" title="interface in arcade.env.lat">Lattice</a>&nbsp;lat,
-int&nbsp;code)</span></div>
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</span></div>
 <div class="block">Creates a <code>Generator</code> for the given molecule.
  <p>
  Constructor assigns the given lattice to the "current" array, assigns the
@@ -400,7 +400,7 @@ int&nbsp;code)</span></div>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sim</code> - the simulation instance</dd>
 <dd><code>lat</code> - the lattice of concentrations to be generated</dd>
-<dd><code>code</code> - the molecule code</dd>
+<dd><code>molecule</code> - the molecule parameters</dd>
 </dl>
 </section>
 </li>

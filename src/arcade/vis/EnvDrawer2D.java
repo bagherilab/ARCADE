@@ -8,6 +8,7 @@ import sim.portrayal.grid.FastValueGridPortrayal2D;
 import sim.portrayal.grid.ValueGridPortrayal2D;
 import sim.util.gui.ColorMap;
 import arcade.sim.Simulation;
+import arcade.env.comp.*;
 
 /**
  * {@link arcade.vis.Drawer} for environment lattices in 2D.
@@ -15,7 +16,7 @@ import arcade.sim.Simulation;
  * {@code EnvDrawer2D} copies values in a {@link arcade.env.lat.Lattice} array
  * into a 2D array representation.
  *
- * @version 2.3.4
+ * @version 2.3.X
  * @since   2.2
  */
 
@@ -33,7 +34,7 @@ public abstract class EnvDrawer2D extends Drawer {
 	String key;
 	
 	/**
-	 * Creates a {@link arcade.vis.Drawer} for drawing environment lattices.
+	 * Creates a {@link arcade.vis.Drawer} for drawing 2D environment lattices.
 	 * 
 	 * @param panel  the panel the drawer is attached to
 	 * @param name  the name of the drawer
@@ -61,38 +62,6 @@ public abstract class EnvDrawer2D extends Drawer {
 		port.setField(array);
 		port.setMap(map);
 		return port;
-	}
-	
-	/** {@link arcade.vis.EnvDrawer2D} for drawing rectangular grid. */
-	public static class Rectangular extends EnvDrawer2D {
-		/** Serialization version identifier */
-		private static final long serialVersionUID = 0;
-		
-		/**
-		 * Creates a {@code Rectangular} environment drawer.
-		 * 
-		 * @param panel  the panel the drawer is attached to
-		 * @param name  the name of the drawer
-		 * @param length  the length of array (x direction)
-		 * @param width  the width of array (y direction)
-		 * @param depth  the depth of array (z direction)
-		 * @param map  the color map for the array
-		 * @param bounds  the size of the drawer within the panel
-		 */
-		public Rectangular(Panel panel, String name,
-				int length, int width, int depth,
-				ColorMap map, Rectangle2D.Double bounds) {
-			super(panel, name, length, width, depth, map, bounds);
-		}
-		
-		/**
-		 * Steps the drawer to populate rectangular array.
-		 */
-		public void step(SimState state) {
-			Simulation sim = (Simulation)state;
-			if (key == null) { array.field = sim.getEnvironment(name).getField()[k]; }
-			else if (name.equals("sites")) { array.field = sim.getEnvironment(key).getComponent("generator").getField()[k]; }
-		}
 	}
 	
 	/** {@link arcade.vis.EnvDrawer2D} for drawing triangular grid. */
@@ -138,6 +107,18 @@ public abstract class EnvDrawer2D extends Drawer {
 			
 			if (key == null) { _from = sim.getEnvironment(name).getField()[k]; }
 			else if (name.equals("sites")) { _from = sim.getEnvironment(key).getComponent("generator").getField()[k]; }
+			else if (key.equals("damage")) {
+				Component comp = sim.getEnvironment("sites").getComponent("sites");
+				if (comp instanceof SourceSites) {
+					SourceSites sites = (SourceSites)comp;
+					_from = sites.getDamage()[k];
+				}
+				else if (comp instanceof PatternSites) {
+					PatternSites sites = (PatternSites)comp;
+					_from = sites.getDamage()[k];
+				}
+				else { return; }
+			}
 			
 			Drawer.toTriangular(_to, _from, LENGTH, WIDTH);
 		}

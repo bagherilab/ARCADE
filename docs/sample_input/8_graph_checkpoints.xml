@@ -1,0 +1,78 @@
+<set prefix="8_graph_checkpoints_" path="/path/to/output/">
+    <series name="A" days="1">
+        <simulation type="growth">
+            <checkpoints>
+                <checkpoint type="graph" class="save" name="8_graph_checkpoints" path="/path/to/checkpoints/" day="0" />
+            </checkpoints>
+        </simulation>
+        <agents initialization="1">
+            <populations>
+                <population type="C" fraction="1.0" />
+            </populations>
+        </agents>
+        <environment>
+            <components>
+                <component type="sites" class="graph" complexity="simple">
+                    <specifications>
+                        <specification id="GRAPH_LAYOUT" value="L" />
+                        <specification id="ROOTS_LEFT" value="20A80" />
+                        <specification id="ROOTS_RIGHT" value="80V80" />
+                        <specification id="ROOTS_TOP" value="x" />
+                        <specification id="ROOTS_BOTTOM" value="x" />
+                    </specifications>
+                </component>
+            </components>
+        </environment>
+    </series>
+    <series name="B" days="1">
+        <simulation type="growth">
+            <checkpoints>
+                <checkpoint type="graph" class="load" name="8_graph_checkpoints" path="/path/to/checkpoints/" day="0" />
+            </checkpoints>
+        </simulation>
+        <agents initialization="1">
+            <populations>
+                <population type="C" fraction="1.0" />
+            </populations>
+        </agents>
+        <environment>
+            <components>
+                <component type="sites" class="graph" complexity="simple">
+                    <specifications>
+                        <specification id="GRAPH_LAYOUT" value="(L)" />
+                        <specification id="ROOTS_LEFT" value="20A80" />
+                        <specification id="ROOTS_RIGHT" value="80V80" />
+                        <specification id="ROOTS_TOP" value="x" />
+                        <specification id="ROOTS_BOTTOM" value="x" />
+                    </specifications>
+                </component>
+            </components>
+        </environment>
+    </series>
+    <series name="C" days="1">
+        <simulation type="growth">
+            <checkpoints>
+                <checkpoint type="graph" class="load" name="8_graph_checkpoints" path="/path/to/checkpoints/" day="0" />
+            </checkpoints>
+        </simulation>
+        <agents initialization="5">
+            <populations>
+                <population type="C" fraction="0.5" />
+                <population type="H" fraction="0.5" />
+            </populations>
+        </agents>
+        <environment>
+            <components>
+                <component type="sites" class="graph" complexity="complex">
+                    <specifications>
+                        <specification id="GRAPH_LAYOUT" value="(L)" />
+                        <specification id="ROOTS_LEFT" value="20A80" />
+                        <specification id="ROOTS_RIGHT" value="80V80" />
+                        <specification id="ROOTS_TOP" value="x" />
+                        <specification id="ROOTS_BOTTOM" value="x" />
+                    </specifications>
+                </component>
+            </components>
+        </environment>
+    </series>
+</set>

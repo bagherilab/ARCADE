@@ -1,7 +1,7 @@
 {
 	"seed": 6,
 	"config": {
-		"class": "arcade.sim.HexGrowthSim",
+		"class": "arcade.sim.GrowthSimulation$Hexagonal",
 		"days": 2,
 		"size": { "radius": 4, "height": 1, "margin": 2 },
 		"init": 4,
@@ -12,21 +12,33 @@
 	"helpers": [
 	],
 	"components": [
-		{ "type": "SITE", "class": "source" }
+		{ "type": "SITE", "class": "source", 
+			"specs": { 
+				"X_SPACING" : "*", 
+				"Y_SPACING" : "*", 
+				"Z_SPACING" : "*", 
+				"SOURCE_DAMAGE" : 0
+			}
+		}
 	],
 	"parameters": {
 		"globals": {
-			"DIFF_TGFA": 51.8,
-			"DIFF_GLUC": 39.0,
-			"DIFF_OXY": 2000.0,
-			"CONC_TGFA": 150.0,
-			"CONC_GLUC": 0.005,
-			"CONC_OXY": 100.0,
-			"OXY_SOLU_TISSUE": 1.31E-6
+			"DIFFUSIVITY_TGFA": 51.8,
+			"DIFFUSIVITY_GLUCOSE": 39.0,
+			"DIFFUSIVITY_OXYGEN": 2000.0,
+			"CONCENTRATION_TGFA": 150.0,
+			"CONCENTRATION_GLUCOSE": 0.005,
+			"CONCENTRATION_OXYGEN": 100.0,
+			"PERMEABILITY_GLUCOSE": 0.5,
+			"PERMEABILITY_OXYGEN": 500.0,
+			"OXY_SOLU_TISSUE": 1.31E-6,
+			"OXY_SOLU_PLASMA": 1.38E-6
 		},
 		"pops": {
 			"DEATH_AGE_AVG": [120960.0],
 			"DEATH_AGE_RANGE": [10080.0],
+			"CELL_AGE_MIN": [0.0],
+			"CELL_AGE_MAX": [120960.0],
 			"DEATH_TIME": [1080.0],
 			"MIGRA_RATE": [0.24],
 			"SYNTHESIS_TIME": [637.0],

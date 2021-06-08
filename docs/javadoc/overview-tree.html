@@ -77,6 +77,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li><a href="arcade/env/loc/package-tree.html">arcade.env.loc</a>, </li>
 <li><a href="arcade/gui/package-tree.html">arcade.gui</a>, </li>
 <li><a href="arcade/sim/package-tree.html">arcade.sim</a>, </li>
+<li><a href="arcade/sim/checkpoint/package-tree.html">arcade.sim.checkpoint</a>, </li>
 <li><a href="arcade/sim/profiler/package-tree.html">arcade.sim.profiler</a>, </li>
 <li><a href="arcade/util/package-tree.html">arcade.util</a>, </li>
 <li><a href="arcade/vis/package-tree.html">arcade.vis</a></li>
@@ -95,6 +96,16 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </li>
 <li class="circle">arcade.gui.<a href="arcade/gui/ARCADE.html" title="class in arcade.gui"><span class="typeNameLink">ARCADE</span></a> (implements java.awt.event.ActionListener)</li>
 <li class="circle">arcade.util.<a href="arcade/util/Box.html" title="class in arcade.util"><span class="typeNameLink">Box</span></a></li>
+<li class="circle">arcade.sim.checkpoint.<a href="arcade/sim/checkpoint/Checkpoint.html" title="class in arcade.sim.checkpoint"><span class="typeNameLink">Checkpoint</span></a>
+<ul>
+<li class="circle">arcade.sim.checkpoint.<a href="arcade/sim/checkpoint/GraphCheckpoint.html" title="class in arcade.sim.checkpoint"><span class="typeNameLink">GraphCheckpoint</span></a>
+<ul>
+<li class="circle">arcade.sim.checkpoint.<a href="arcade/sim/checkpoint/GraphCheckpoint.Load.html" title="class in arcade.sim.checkpoint"><span class="typeNameLink">GraphCheckpoint.Load</span></a></li>
+<li class="circle">arcade.sim.checkpoint.<a href="arcade/sim/checkpoint/GraphCheckpoint.Save.html" title="class in arcade.sim.checkpoint"><span class="typeNameLink">GraphCheckpoint.Save</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="circle">arcade.vis.<a href="arcade/vis/ColorMaps.html" title="class in arcade.vis"><span class="typeNameLink">ColorMaps</span></a></li>
 <li class="circle">arcade.util.<a href="arcade/util/Colors.html" title="class in arcade.util"><span class="typeNameLink">Colors</span></a> (implements sim.util.gui.ColorMap)</li>
 <li class="circle">arcade.agent.helper.<a href="arcade/agent/helper/ConvertHelper.html" title="class in arcade.agent.helper"><span class="typeNameLink">ConvertHelper</span></a> (implements arcade.agent.helper.<a href="arcade/agent/helper/Helper.html" title="interface in arcade.agent.helper">Helper</a>)</li>
@@ -103,6 +114,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li class="circle">arcade.util.<a href="arcade/util/Loader.html" title="class in arcade.util"><span class="typeNameLink">Loader</span></a></li>
 </ul>
 </li>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/DegradeComponent.html" title="class in arcade.env.comp"><span class="typeNameLink">DegradeComponent</span></a> (implements arcade.env.comp.<a href="arcade/env/comp/Component.html" title="interface in arcade.env.comp">Component</a>)</li>
 <li class="circle">arcade.env.comp.<a href="arcade/env/comp/Diffuser.html" title="class in arcade.env.comp"><span class="typeNameLink">Diffuser</span></a> (implements arcade.env.comp.<a href="arcade/env/comp/Component.html" title="interface in arcade.env.comp">Component</a>)
 <ul>
 <li class="circle">arcade.env.comp.<a href="arcade/env/comp/TriDiffuser.html" title="class in arcade.env.comp"><span class="typeNameLink">TriDiffuser</span></a></li>
@@ -112,20 +124,22 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <ul>
 <li class="circle">arcade.vis.<a href="arcade/vis/AgentDrawer2D.html" title="class in arcade.vis"><span class="typeNameLink">AgentDrawer2D</span></a>
 <ul>
-<li class="circle">arcade.vis.<a href="arcade/vis/AgentDrawer2D.DoubleRectangular.html" title="class in arcade.vis"><span class="typeNameLink">AgentDrawer2D.DoubleRectangular</span></a></li>
-<li class="circle">arcade.vis.<a href="arcade/vis/AgentDrawer2D.IntRectangular.html" title="class in arcade.vis"><span class="typeNameLink">AgentDrawer2D.IntRectangular</span></a></li>
-<li class="circle">arcade.vis.<a href="arcade/vis/AgentDrawer2D.IntTriangular.html" title="class in arcade.vis"><span class="typeNameLink">AgentDrawer2D.IntTriangular</span></a></li>
+<li class="circle">arcade.vis.<a href="arcade/vis/AgentDrawer2D.Hexagonal.html" title="class in arcade.vis"><span class="typeNameLink">AgentDrawer2D.Hexagonal</span></a></li>
 </ul>
 </li>
 <li class="circle">arcade.vis.<a href="arcade/vis/AuxDrawer2D.html" title="class in arcade.vis"><span class="typeNameLink">AuxDrawer2D</span></a>
 <ul>
+<li class="circle">arcade.vis.<a href="arcade/vis/AuxDrawer2D.Graph.html" title="class in arcade.vis"><span class="typeNameLink">AuxDrawer2D.Graph</span></a>
+<ul>
+<li class="circle">arcade.vis.<a href="arcade/vis/AuxDrawer2D.TriGraph.html" title="class in arcade.vis"><span class="typeNameLink">AuxDrawer2D.TriGraph</span></a></li>
+</ul>
+</li>
 <li class="circle">arcade.vis.<a href="arcade/vis/AuxDrawer2D.Label.html" title="class in arcade.vis"><span class="typeNameLink">AuxDrawer2D.Label</span></a></li>
 <li class="circle">arcade.vis.<a href="arcade/vis/AuxDrawer2D.TriGrid.html" title="class in arcade.vis"><span class="typeNameLink">AuxDrawer2D.TriGrid</span></a></li>
 </ul>
 </li>
 <li class="circle">arcade.vis.<a href="arcade/vis/EnvDrawer2D.html" title="class in arcade.vis"><span class="typeNameLink">EnvDrawer2D</span></a>
 <ul>
-<li class="circle">arcade.vis.<a href="arcade/vis/EnvDrawer2D.Rectangular.html" title="class in arcade.vis"><span class="typeNameLink">EnvDrawer2D.Rectangular</span></a></li>
 <li class="circle">arcade.vis.<a href="arcade/vis/EnvDrawer2D.Triangular.html" title="class in arcade.vis"><span class="typeNameLink">EnvDrawer2D.Triangular</span></a></li>
 </ul>
 </li>
@@ -140,7 +154,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <ul>
 <li class="circle">sim.portrayal.FieldPortrayal2D (implements sim.portrayal.Portrayal2D)
 <ul>
-<li class="circle">arcade.vis.<a href="arcade/vis/AuxDrawer2D.FieldPortrayal2DWrapper.html" title="class in arcade.vis"><span class="typeNameLink">AuxDrawer2D.FieldPortrayal2DWrapper</span></a></li>
+<li class="circle">arcade.vis.<a href="arcade/vis/AuxDrawer2D.LabelFieldPortrayal2D.html" title="class in arcade.vis"><span class="typeNameLink">AuxDrawer2D.LabelFieldPortrayal2D</span></a></li>
 </ul>
 </li>
 </ul>
@@ -151,19 +165,39 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </ul>
 </li>
 <li class="circle">arcade.env.comp.<a href="arcade/env/comp/Generator.html" title="class in arcade.env.comp"><span class="typeNameLink">Generator</span></a> (implements arcade.env.comp.<a href="arcade/env/comp/Component.html" title="interface in arcade.env.comp">Component</a>)</li>
+<li class="circle">arcade.util.<a href="arcade/util/Graph.html" title="class in arcade.util"><span class="typeNameLink">Graph</span></a> (implements java.io.Serializable)</li>
+<li class="circle">arcade.util.<a href="arcade/util/Graph.Edge.html" title="class in arcade.util"><span class="typeNameLink">Graph.Edge</span></a> (implements java.io.Serializable)
+<ul>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/GraphSites.SiteEdge.html" title="class in arcade.env.comp"><span class="typeNameLink">GraphSites.SiteEdge</span></a></li>
+</ul>
+</li>
+<li class="circle">arcade.util.<a href="arcade/util/Graph.Node.html" title="class in arcade.util"><span class="typeNameLink">Graph.Node</span></a> (implements java.lang.Comparable&lt;T&gt;, java.io.Serializable)
+<ul>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/GraphSites.SiteNode.html" title="class in arcade.env.comp"><span class="typeNameLink">GraphSites.SiteNode</span></a></li>
+</ul>
+</li>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/GraphSites.Root.html" title="class in arcade.env.comp"><span class="typeNameLink">GraphSites.Root</span></a></li>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/GraphSitesUtilities.html" title="class in arcade.env.comp"><span class="typeNameLink">GraphSitesUtilities</span></a></li>
 <li class="circle">sim.display.GUIState
 <ul>
 <li class="circle">arcade.vis.<a href="arcade/vis/Visualization.html" title="class in arcade.vis"><span class="typeNameLink">Visualization</span></a>
 <ul>
-<li class="circle">arcade.vis.<a href="arcade/vis/HexVis2D.html" title="class in arcade.vis"><span class="typeNameLink">HexVis2D</span></a></li>
+<li class="circle">arcade.vis.<a href="arcade/vis/GrowthVisualization2D.html" title="class in arcade.vis"><span class="typeNameLink">GrowthVisualization2D</span></a>
+<ul>
+<li class="circle">arcade.vis.<a href="arcade/vis/GrowthVisualization2D.Hexagonal.html" title="class in arcade.vis"><span class="typeNameLink">GrowthVisualization2D.Hexagonal</span></a></li>
 </ul>
 </li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="circle">arcade.sim.<a href="arcade/sim/HexagonalRepresentation.html" title="class in arcade.sim"><span class="typeNameLink">HexagonalRepresentation</span></a> (implements arcade.sim.<a href="arcade/sim/Simulation.Representation.html" title="interface in arcade.sim">Simulation.Representation</a>)</li>
 <li class="circle">arcade.env.loc.<a href="arcade/env/loc/HexLocation.html" title="class in arcade.env.loc"><span class="typeNameLink">HexLocation</span></a> (implements arcade.env.loc.<a href="arcade/env/loc/Location.html" title="interface in arcade.env.loc">Location</a>)</li>
 <li class="circle">arcade.agent.helper.<a href="arcade/agent/helper/InsertHelper.html" title="class in arcade.agent.helper"><span class="typeNameLink">InsertHelper</span></a> (implements arcade.agent.helper.<a href="arcade/agent/helper/Helper.html" title="interface in arcade.agent.helper">Helper</a>)</li>
 <li class="circle">arcade.<a href="arcade/Main.html" title="class in arcade"><span class="typeNameLink">Main</span></a></li>
 <li class="circle">arcade.<a href="arcade/Main.Handler.html" title="class in arcade"><span class="typeNameLink">Main.Handler</span></a> (implements org.xml.sax.ContentHandler)</li>
+<li class="circle">arcade.util.<a href="arcade/util/Matrix.html" title="class in arcade.util"><span class="typeNameLink">Matrix</span></a></li>
+<li class="circle">arcade.util.<a href="arcade/util/Matrix.Value.html" title="class in arcade.util"><span class="typeNameLink">Matrix.Value</span></a></li>
 <li class="circle">arcade.agent.module.<a href="arcade/agent/module/Metabolism.html" title="class in arcade.agent.module"><span class="typeNameLink">Metabolism</span></a> (implements arcade.agent.module.<a href="arcade/agent/module/Module.html" title="interface in arcade.agent.module">Module</a>)
 <ul>
 <li class="circle">arcade.agent.module.<a href="arcade/agent/module/MetabolismComplex.html" title="class in arcade.agent.module"><span class="typeNameLink">MetabolismComplex</span></a></li>
@@ -181,6 +215,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li class="circle">arcade.vis.<a href="arcade/vis/Panel.html" title="class in arcade.vis"><span class="typeNameLink">Panel</span></a>
 <ul>
 <li class="circle">arcade.vis.<a href="arcade/vis/Panel.Panel2D.html" title="class in arcade.vis"><span class="typeNameLink">Panel.Panel2D</span></a></li>
+<li class="circle">arcade.vis.<a href="arcade/vis/Panel.Panel3D.html" title="class in arcade.vis"><span class="typeNameLink">Panel.Panel3D</span></a></li>
 </ul>
 </li>
 <li class="circle">arcade.util.<a href="arcade/util/Parameter.html" title="class in arcade.util"><span class="typeNameLink">Parameter</span></a> (implements java.io.Serializable)</li>
@@ -188,10 +223,12 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <li class="circle">arcade.util.<a href="arcade/util/Parser.Command.html" title="class in arcade.util"><span class="typeNameLink">Parser.Command</span></a></li>
 <li class="circle">arcade.sim.profiler.<a href="arcade/sim/profiler/Profiler.html" title="class in arcade.sim.profiler"><span class="typeNameLink">Profiler</span></a> (implements sim.engine.Steppable)
 <ul>
+<li class="circle">arcade.sim.profiler.<a href="arcade/sim/profiler/GraphProfiler.html" title="class in arcade.sim.profiler"><span class="typeNameLink">GraphProfiler</span></a></li>
 <li class="circle">arcade.sim.profiler.<a href="arcade/sim/profiler/GrowthProfiler.html" title="class in arcade.sim.profiler"><span class="typeNameLink">GrowthProfiler</span></a></li>
 <li class="circle">arcade.sim.profiler.<a href="arcade/sim/profiler/ParameterProfiler.html" title="class in arcade.sim.profiler"><span class="typeNameLink">ParameterProfiler</span></a></li>
 </ul>
 </li>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/RemodelComponent.html" title="class in arcade.env.comp"><span class="typeNameLink">RemodelComponent</span></a> (implements arcade.env.comp.<a href="arcade/env/comp/Component.html" title="interface in arcade.env.comp">Component</a>)</li>
 <li class="circle">arcade.sim.<a href="arcade/sim/Series.html" title="class in arcade.sim"><span class="typeNameLink">Series</span></a></li>
 <li class="circle">arcade.agent.module.<a href="arcade/agent/module/Signaling.html" title="class in arcade.agent.module"><span class="typeNameLink">Signaling</span></a> (implements arcade.agent.module.<a href="arcade/agent/module/Module.html" title="interface in arcade.agent.module">Module</a>)
 <ul>
@@ -203,8 +240,14 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </li>
 <li class="circle">sim.portrayal.SimplePortrayal2D (implements sim.portrayal.Portrayal2D, java.io.Serializable)
 <ul>
+<li class="circle">sim.portrayal.simple.AbstractShapePortrayal2D
+<ul>
+<li class="circle">arcade.vis.<a href="arcade/vis/AuxDrawer2D.OvalPortrayal2DWrapper.html" title="class in arcade.vis"><span class="typeNameLink">AuxDrawer2D.OvalPortrayal2DWrapper</span></a></li>
+</ul>
+</li>
 <li class="circle">sim.portrayal.network.SimpleEdgePortrayal2D
 <ul>
+<li class="circle">arcade.vis.<a href="arcade/vis/AuxDrawer2D.SimpleEdgePortrayal2DEdgeWrapper.html" title="class in arcade.vis"><span class="typeNameLink">AuxDrawer2D.SimpleEdgePortrayal2DEdgeWrapper</span></a></li>
 <li class="circle">arcade.vis.<a href="arcade/vis/AuxDrawer2D.SimpleEdgePortrayal2DGridWrapper.html" title="class in arcade.vis"><span class="typeNameLink">AuxDrawer2D.SimpleEdgePortrayal2DGridWrapper</span></a></li>
 </ul>
 </li>
@@ -214,18 +257,35 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <ul>
 <li class="circle">arcade.sim.<a href="arcade/sim/GrowthSimulation.html" title="class in arcade.sim"><span class="typeNameLink">GrowthSimulation</span></a> (implements arcade.sim.<a href="arcade/sim/Simulation.html" title="interface in arcade.sim">Simulation</a>)
 <ul>
-<li class="circle">arcade.sim.<a href="arcade/sim/HexGrowthSim.html" title="class in arcade.sim"><span class="typeNameLink">HexGrowthSim</span></a></li>
+<li class="circle">arcade.sim.<a href="arcade/sim/GrowthSimulation.Hexagonal.html" title="class in arcade.sim"><span class="typeNameLink">GrowthSimulation.Hexagonal</span></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="circle">arcade.env.comp.<a href="arcade/env/comp/Site.html" title="class in arcade.env.comp"><span class="typeNameLink">Site</span></a>
 <ul>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/GraphSites.GraphSite.html" title="class in arcade.env.comp"><span class="typeNameLink">GraphSites.GraphSite</span></a></li>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/PatternSites.PatternSite.html" title="class in arcade.env.comp"><span class="typeNameLink">PatternSites.PatternSite</span></a></li>
 <li class="circle">arcade.env.comp.<a href="arcade/env/comp/SourceSites.SourceSite.html" title="class in arcade.env.comp"><span class="typeNameLink">SourceSites.SourceSite</span></a></li>
 </ul>
 </li>
 <li class="circle">arcade.env.comp.<a href="arcade/env/comp/Sites.html" title="class in arcade.env.comp"><span class="typeNameLink">Sites</span></a> (implements arcade.env.comp.<a href="arcade/env/comp/Component.html" title="interface in arcade.env.comp">Component</a>)
 <ul>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/GraphSites.html" title="class in arcade.env.comp"><span class="typeNameLink">GraphSites</span></a>
+<ul>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/TriGraphSites.html" title="class in arcade.env.comp"><span class="typeNameLink">TriGraphSites</span></a>
+<ul>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/TriGraphSites.Complex.html" title="class in arcade.env.comp"><span class="typeNameLink">TriGraphSites.Complex</span></a></li>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/TriGraphSites.Simple.html" title="class in arcade.env.comp"><span class="typeNameLink">TriGraphSites.Simple</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/PatternSites.html" title="class in arcade.env.comp"><span class="typeNameLink">PatternSites</span></a>
+<ul>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/TriPatternSites.html" title="class in arcade.env.comp"><span class="typeNameLink">TriPatternSites</span></a></li>
+</ul>
+</li>
 <li class="circle">arcade.env.comp.<a href="arcade/env/comp/SourceSites.html" title="class in arcade.env.comp"><span class="typeNameLink">SourceSites</span></a></li>
 </ul>
 </li>
@@ -258,6 +318,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <section class="hierarchy">
 <h2 title="Interface Hierarchy">Interface Hierarchy</h2>
 <ul>
+<li class="circle">arcade.util.<a href="arcade/util/Graph.Filter.html" title="interface in arcade.util"><span class="typeNameLink">Graph.Filter</span></a></li>
 <li class="circle">arcade.env.grid.<a href="arcade/env/grid/Grid.html" title="interface in arcade.env.grid"><span class="typeNameLink">Grid</span></a></li>
 <li class="circle">arcade.env.lat.<a href="arcade/env/lat/Lattice.html" title="interface in arcade.env.lat"><span class="typeNameLink">Lattice</span></a></li>
 <li class="circle">java.io.Serializable
@@ -274,7 +335,23 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </ul>
 </li>
 <li class="circle">arcade.sim.<a href="arcade/sim/Simulation.html" title="interface in arcade.sim"><span class="typeNameLink">Simulation</span></a></li>
+<li class="circle">arcade.sim.<a href="arcade/sim/Simulation.Representation.html" title="interface in arcade.sim"><span class="typeNameLink">Simulation.Representation</span></a></li>
 <li class="circle">arcade.util.<a href="arcade/util/Solver.Equations.html" title="interface in arcade.util"><span class="typeNameLink">Solver.Equations</span></a></li>
+<li class="circle">arcade.util.<a href="arcade/util/Solver.Function.html" title="interface in arcade.util"><span class="typeNameLink">Solver.Function</span></a></li>
+</ul>
+</section>
+<section class="hierarchy">
+<h2 title="Enum Hierarchy">Enum Hierarchy</h2>
+<ul>
+<li class="circle">java.lang.Object
+<ul>
+<li class="circle">java.lang.Enum&lt;E&gt; (implements java.lang.Comparable&lt;T&gt;, java.lang.constant.Constable, java.io.Serializable)
+<ul>
+<li class="circle">arcade.env.comp.<a href="arcade/env/comp/GraphSites.Border.html" title="enum in arcade.env.comp"><span class="typeNameLink">GraphSites.Border</span></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </section>
 </div>

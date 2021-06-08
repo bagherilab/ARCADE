@@ -100,7 +100,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dl>
 <dl>
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="SourceSites.html" title="class in arcade.env.comp">SourceSites</a></code></dd>
+<dd><code><a href="GraphSites.html" title="class in arcade.env.comp">GraphSites</a></code>, <code><a href="PatternSites.html" title="class in arcade.env.comp">PatternSites</a></code>, <code><a href="SourceSites.html" title="class in arcade.env.comp">SourceSites</a></code></dd>
 </dl>
 <hr>
 <pre>public abstract class <span class="typeNameLabel">Sites</span>
@@ -117,7 +117,7 @@ implements <a href="Component.html" title="interface in arcade.env.comp">Compone
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.3</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.3.8</dd>
+<dd>2.3.9</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../serialized-form.html#arcade.env.comp.Sites">Serialized Form</a></dd>
 </dl>
@@ -238,8 +238,7 @@ implements <a href="Component.html" title="interface in arcade.env.comp">Compone
 <tbody>
 <tr class="altColor" id="i0">
 <td class="colFirst"><code>(package private) abstract void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#equip(arcade.sim.Simulation,int,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D)">equip</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
-int&nbsp;code,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#equip(arcade.util.MiniBox,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D)">equip</a></span>&#8203;(<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule,
 double[][][]&nbsp;delta,
 double[][][]&nbsp;current,
 double[][][]&nbsp;previous)</code></th>
@@ -388,17 +387,15 @@ double[][][]&nbsp;previous)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="equip(arcade.sim.Simulation,int,double[][][],double[][][],double[][][])">equip</a></h3>
-<div class="memberSignature"><span class="modifiers">abstract</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">equip</span>&#8203;(<span class="arguments"><a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
-int&nbsp;code,
+<h3><a id="equip(arcade.util.MiniBox,double[][][],double[][][],double[][][])">equip</a></h3>
+<div class="memberSignature"><span class="modifiers">abstract</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">equip</span>&#8203;(<span class="arguments"><a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule,
 double[][][]&nbsp;delta,
 double[][][]&nbsp;current,
 double[][][]&nbsp;previous)</span></div>
 <div class="block">Equips a molecule to the sites.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>sim</code> - the simulation instance</dd>
-<dd><code>code</code> - the molecule code</dd>
+<dd><code>molecule</code> - the molecule parameters</dd>
 <dd><code>delta</code> - the array holding changes in concentration</dd>
 <dd><code>current</code> - the array holding current concentration values</dd>
 <dd><code>previous</code> - the array holding previous concentration values</dd>

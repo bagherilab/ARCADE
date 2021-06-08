@@ -198,6 +198,7 @@ public class HexLocation implements Location {
 	public double calcPerimeter(double f) {
 		return f*6*HEX_SIDE + (f == 1 ? 0 : 2*HEX_SIDE);
 	}
+	
 	/**
 	 * Updates hexagonal and triangular locations based on given {@code Location}.
 	 * 

@@ -3,6 +3,7 @@ package arcade.env.lat;
 import arcade.sim.Simulation;
 import arcade.env.loc.Location;
 import arcade.env.comp.Component;
+import arcade.util.MiniBox;
 
 /** 
  * A {@code Lattice} represents the environment for molecules.
@@ -12,7 +13,7 @@ import arcade.env.comp.Component;
  * {@code Lattice} objects are associated with {@link arcade.env.comp.Component}
  * objects that control changes in the values in the array (such as diffusion).
  * 
- * @version 2.3.2
+ * @version 2.3.3
  * @since   2.2
  */
 
@@ -136,10 +137,10 @@ public interface Lattice {
 	 * Adds a component to the lattice. 
 	 * 
 	 * @param sim  the simulation instance
-	 * @param code  the molecule code
 	 * @param type  the component type
+	 * @param molecule  the molecule parameters
 	 */
-	void addComponent(Simulation sim, int code, int type);
+	void addComponent(Simulation sim, int type, MiniBox molecule);
 	
 	/**
 	 * Represents object as a JSON entry.

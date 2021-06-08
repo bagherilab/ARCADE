@@ -14,8 +14,11 @@ import sim.field.network.Network;
 import sim.field.continuous.Continuous2D;
 import arcade.sim.Simulation;
 import arcade.env.comp.Component;
+import arcade.env.comp.GraphSites;
+import arcade.env.comp.GraphSites.*;
 import arcade.env.loc.*;
 import sim.util.*;
+import arcade.util.Graph.*;
 import arcade.util.Colors;
 
 /**
@@ -24,19 +27,30 @@ import arcade.util.Colors;
  * {@code AuxDrawer2D} uses alternative portrayals such as network and text,
  * instead of the value grid portrayals used in {@link arcade.vis.AgentDrawer2D}
  * and {@link arcade.vis.EnvDrawer2D}.
- * Networks are composed of edges and nodes, which is useful for drawing
- * grids.
+ * Networks are composed of edges and nodes, which is useful for drawing grids.
  * Text portrayals are used to add labels.
  * Additional <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a>
  * portrayals can be added.
- * 
- * @version 2.2.X
+ *
+ * @version 2.3.X
  * @since   2.3
  */
 
 public abstract class AuxDrawer2D extends Drawer {
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 0;
+	
+	/** Code for drawing vessel radius */
+	private static final int DRAW_RADIUS = 0;
+	
+	/** Code for drawing shear stress */
+	private static final int DRAW_SHEAR = 1;
+	
+	/** Code for drawing flow rate */
+	private static final int DRAW_FLOW = 2;
+	
+	/** Code for drawing wall thickness */
+	private static final int DRAW_WALL = 3;
 	
 	/** Graph holding edges */
 	Network graph;
@@ -65,20 +79,54 @@ public abstract class AuxDrawer2D extends Drawer {
 		
 		switch(name) {
 			case "label":
-				return new FieldPortrayal2DWrapper(length, width, "", 12);
+				return new LabelFieldPortrayal2D(length, width, "", 12);
 			case "grid":
 				SimpleEdgePortrayal2D sep = new SimpleEdgePortrayal2DGridWrapper();
 				NetworkPortrayal2D gridPort = new NetworkPortrayal2D();
 				gridPort.setField(new SpatialNetwork2D(field, graph));
 				gridPort.setPortrayalForAll(sep);
 				return gridPort;
+			case "edges:wall":
+				NetworkPortrayal2D edgeWallPort = new NetworkPortrayal2D();
+				sep = new SimpleEdgePortrayal2DEdgeWrapper(DRAW_WALL);
+				sep.setShape(SimpleEdgePortrayal2D.SHAPE_LINE_ROUND_ENDS);
+				edgeWallPort.setField(new SpatialNetwork2D(field, graph));
+				edgeWallPort.setPortrayalForAll(sep);
+				return edgeWallPort;
+			case "edges:radius":
+				NetworkPortrayal2D edgeRadiusPort = new NetworkPortrayal2D();
+				sep = new SimpleEdgePortrayal2DEdgeWrapper(DRAW_RADIUS);
+				sep.setShape(SimpleEdgePortrayal2D.SHAPE_LINE_ROUND_ENDS);
+				edgeRadiusPort.setField(new SpatialNetwork2D(field, graph));
+				edgeRadiusPort.setPortrayalForAll(sep);
+				return edgeRadiusPort;
+			case "edges:shear":
+				NetworkPortrayal2D edgeShearPort = new NetworkPortrayal2D();
+				sep = new SimpleEdgePortrayal2DEdgeWrapper(DRAW_SHEAR);
+				sep.setShape(SimpleEdgePortrayal2D.SHAPE_LINE_ROUND_ENDS);
+				edgeShearPort.setField(new SpatialNetwork2D(field, graph));
+				edgeShearPort.setPortrayalForAll(sep);
+				return edgeShearPort;
+			case "edges:flow":
+				NetworkPortrayal2D edgeFlowPort = new NetworkPortrayal2D();
+				sep = new SimpleEdgePortrayal2DEdgeWrapper(DRAW_FLOW);
+				sep.setShape(SimpleEdgePortrayal2D.SHAPE_TRIANGLE);
+				edgeFlowPort.setField(new SpatialNetwork2D(field, graph));
+				edgeFlowPort.setPortrayalForAll(sep);
+				return edgeFlowPort;
+			case "nodes":
+				ContinuousPortrayal2D nodePort = new ContinuousPortrayal2D();
+				nodePort.setField(field);
+				OvalPortrayal2DWrapper op = new OvalPortrayal2DWrapper();
+				nodePort.setPortrayalForAll(op);
+				return nodePort;
 		}
 		
 		return null;
 	}
 	
 	/** Wrapper for MASON class that changes font style. */
-	private static class FieldPortrayal2DWrapper extends FieldPortrayal2D {
+	private static class LabelFieldPortrayal2D extends FieldPortrayal2D {
 		/** General font size */
 		static final int FONT_SIZE = 12;
 		
@@ -102,10 +150,10 @@ public abstract class AuxDrawer2D extends Drawer {
 		 * 
 		 * @param xoffset  the offset in x direction
 		 * @param yoffset  the offset in y direction
-		 * @param string  the text to draw 
+		 * @param string  the text to draw
 		 * @param fontSize  the size of font in points
 		 */
-		FieldPortrayal2DWrapper(int xoffset, int yoffset, String string, int fontSize) {
+		LabelFieldPortrayal2D(int xoffset, int yoffset, String string, int fontSize) {
 			super();
 			this.string = string;
 			this.xoffset = xoffset/100.0;
@@ -164,12 +212,160 @@ public abstract class AuxDrawer2D extends Drawer {
 		
 		/**
 		 * Gets the weight of an edge.
-		 * 
+		 *
 		 * @return  the edge weight
 		 */
 		protected double getPositiveWeight(Object object, EdgeDrawInfo2D info) {
 			sim.field.network.Edge edge = (sim.field.network.Edge)object;
 			return (Integer)edge.getInfo();
+		}
+	}
+	
+	/** Wrapper for MASON class that changes edge colors based on weight */
+	private static class SimpleEdgePortrayal2DEdgeWrapper extends SimpleEdgePortrayal2D {
+		/** Drawing code */
+		private int draw;
+		
+		/** Colors for vessel radius */
+		private final Colors RADIUS = new Colors(new Color[] {
+			new Color(255,0,0),
+			new Color(180,0,0),
+			new Color(130,0,130),
+			new Color(0,0,180),
+			new Color(0,0,255),
+		}, new double[] { -20, -10, 0, 10, 20 });
+		
+		/** Colors for wall thickness */
+		private final Colors WALL = new Colors(new Color[] {
+				new Color(0,100,0),
+				new Color(0,255,0),
+				new Color(255,255,0)
+		}, new double[] { 0, 5, 10 });
+		
+		/** Colors for shear stress */
+		private final Colors SHEAR = new Colors(new Color[] {
+				new Color(100,100,100),
+				new Color(255,255,255),
+		}, new double[] { 0, 5 });
+		
+		/** Colors for flow rate */
+		private final Colors FLOW = new Colors(new Color[] {
+				new Color(0,255,255),
+				new Color(255,255,255),
+				new Color(253,212,158),
+				new Color(253,187,132),
+				new Color(252,141,89),
+				new Color(239,101,72),
+				new Color(215,48,31),
+				new Color(153,0,0)
+		}, new double[] { 0, 1, 5E6, 1E7, 5E7, 1E8, 5E8, 1E9 } );
+		
+		/**
+		 * Creates {@code SimpleEdgePortrayal2D} wrapper with specific weight coloring.
+		 * 
+		 * @param draw  the drawing code
+		 */
+		SimpleEdgePortrayal2DEdgeWrapper(int draw) { super(); this.draw = draw; }
+		
+		/**
+		 * Gets color of edge based on drawing code.
+		 * 
+		 * @return  the edge weight
+		 */
+		protected double getPositiveWeight(Object object, EdgeDrawInfo2D info) {
+			sim.field.network.Edge edge = (sim.field.network.Edge)object;
+			SiteEdge ei = (SiteEdge)(edge.getInfo());
+			switch (draw) {
+				case DRAW_RADIUS:
+					return ei.radius/50.0 + 0.1;
+				case DRAW_SHEAR:
+					return 0.3;
+				case DRAW_FLOW:
+					return (ei.isPerfused ? 0.3 : 0.1);
+				case DRAW_WALL:
+					return (ei.radius + ei.wall*2)/50.0 + 0.1;
+			}
+			return 0;
+		}
+		
+		/**
+		 * Draws the edge.
+		 */
+		public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
+			sim.field.network.Edge edge = (sim.field.network.Edge)object;
+			SiteEdge ei = (SiteEdge)(edge.getInfo());
+			
+			switch (draw) {
+				case DRAW_WALL:
+					fromPaint = WALL.getColor(ei.wall);
+					if (ei.wall <= 0.5) { fromPaint = new Color(255,255,255); }
+					break;
+				case DRAW_RADIUS:
+					fromPaint = RADIUS.getColor(ei.radius*Math.signum(ei.type));
+					break;
+				case DRAW_SHEAR:
+					fromPaint = SHEAR.getColor(ei.shear);
+					break;
+				case DRAW_FLOW:
+					fromPaint = FLOW.getColor(ei.flow);
+					if (!ei.isPerfused) { fromPaint = new Color(100,100,100); }
+					break;
+			}
+			
+			toPaint = fromPaint;
+			super.draw(object, graphics, info);
+			
+		}
+	}
+	
+	/** Wrapper for MASON class that change node colors */
+	private static class OvalPortrayal2DWrapper extends AbstractShapePortrayal2D {
+		/** Node portrayal scaling */
+		private final static double scale = 0.5;
+		
+		/** Colors for nodes */
+		private final Colors COLORS = new Colors(new Color[] {
+				new Color(255,255,255),
+				new Color(253,212,158),
+				new Color(253,187,132),
+				new Color(252,141,89),
+				new Color(239,101,72),
+				new Color(215,48,31),
+				new Color(153,0,0)
+		}, new double[] { 0, 10, 20, 30, 40, 50, 60 } );
+		
+		/**
+		 * Creates {@code AbstractShapePortrayal2D} wrapper.
+		 */
+		OvalPortrayal2DWrapper() { super(); }
+		
+		/**
+		 * Draws the node.
+		 */
+		public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
+			graphics.setPaint(new Color(255,255,255));
+			SiteNode node = (SiteNode)object;
+			
+			if (node.isRoot) {
+				graphics.setPaint(new Color(255,255,0));
+				Rectangle2D.Double draw = info.draw;
+				double s = Math.min(draw.width, draw.height)/scale;
+				final int x = (int)(draw.x - s/2.0);
+				final int y = (int)(draw.y - s/2.0);
+				int w = (int)(s);
+				int h = (int)(s);
+				graphics.fillOval(x - 1, y - 1, w + 2, h + 2);
+			}
+			graphics.setPaint(COLORS.getColor(node.pressure));
+			if (node.pressure <= 0) {  graphics.setPaint(new Color(0,255,255)); }
+			
+			Rectangle2D.Double draw = info.draw;
+			double s = Math.min(draw.width, draw.height)/scale;
+			final int x = (int)(draw.x - s/2.0);
+			final int y = (int)(draw.y - s/2.0);
+			int w = (int)(s);
+			int h = (int)(s);
+			graphics.fillOval(x, y, w, h);
 		}
 	}
 	
@@ -211,7 +407,7 @@ public abstract class AuxDrawer2D extends Drawer {
 		 * <p>
 		 * Length and width of the drawer are expanded from the given length and
 		 * width of the simulation.
-		 *
+		 * 
 		 * @param panel  the panel the drawer is attached to
 		 * @param name  the name of the drawer
 		 * @param length  the length of array (x direction)
@@ -261,7 +457,7 @@ public abstract class AuxDrawer2D extends Drawer {
 			
 			// Draw hexagonal agent locations.
 			int radius = sim.getSeries()._radius;
-			ArrayList<Location> locs = sim.getLocations(radius, 1);
+			ArrayList<Location> locs = sim.getRepresentation().getLocations(radius, 1);
 			for (Location loc : locs) {
 				int[] xy = loc.getLatLocation();
 				for (int i = 0; i < 6; i++) {
@@ -311,6 +507,92 @@ public abstract class AuxDrawer2D extends Drawer {
 		}
 	}
 	
+	/** {@link arcade.vis.AuxDrawer2D} for drawing a graph. */
+	abstract static class Graph extends AuxDrawer2D {
+		/** Serialization version identifier */
+		private static final long serialVersionUID = 0;
+		
+		/** Length of the lattice (x direction) */
+		private final int LENGTH;
+		
+		/** Width of the lattice (y direction) */
+		private final int WIDTH;
+		
+		/**
+		 * Creates a {@code Graph} drawer.
+		 *
+		 * @param panel  the panel the drawer is attached to
+		 * @param name  the name of the drawer
+		 * @param length  the length of array (x direction)
+		 * @param width  the width of array (y direction)
+		 * @param depth  the depth of array (z direction)
+		 * @param bounds  the size of the drawer within the panel
+		 */
+		Graph(Panel panel, String name,
+				int length, int width, int depth, Rectangle2D.Double bounds) {
+			super(panel, name, length, width, depth, bounds);
+			LENGTH = length + getOffset();
+			WIDTH = width;
+			field.width = LENGTH;
+			field.height = WIDTH;
+		}
+		
+		/**
+		 * Gets the graph lattice offset.
+		 * 
+		 * @return  the offset
+		 */
+		abstract int getOffset();
+		
+		/**
+		 * Steps the drawer to draw the graph.
+		 */
+		public void step(SimState state) {
+			Simulation sim = (Simulation)state;
+			Component comp = sim.getEnvironment("sites").getComponent("sites");
+			
+			// Exit if sites is not a graph.
+			if (!(comp instanceof GraphSites)) { return; }
+			
+			field.clear();
+			graph.clear();
+			
+			// Iterate through all edges in the sites bag.
+			Bag bag  = ((GraphSites)comp).getGraph().getAllEdges();
+			for (Object obj : bag) {
+				Edge e = (Edge)obj;
+				Node from = e.getFrom();
+				Node to = e.getTo();
+				field.setObjectLocation(from, new Double2D(from.getX(), from.getY()));
+				field.setObjectLocation(to, new Double2D(to.getX(), to.getY()));
+				graph.addEdge(from, to, e);
+			}
+		}
+	}
+	
+	/** {@link arcade.vis.AuxDrawer2D.Graph} for drawing a triangular graph. */
+	public static class TriGraph extends Graph {
+		/** Serialization version identifier */
+		private static final long serialVersionUID = 0;
+		
+		/**
+		 * Creates a {@code Graph} drawer for a triangular graph.
+		 *
+		 * @param panel  the panel the drawer is attached to
+		 * @param name  the name of the drawer
+		 * @param length  the length of array (x direction)
+		 * @param width  the width of array (y direction)
+		 * @param depth  the depth of array (z direction)
+		 * @param bounds  the size of the drawer within the panel
+		 */
+		TriGraph(Panel panel, String name,
+				int length, int width, int depth, Rectangle2D.Double bounds) {
+			super(panel, name, length, width, depth, bounds);
+		}
+		
+		public int getOffset() { return 1; }
+	}
+	
 	/** {@link arcade.vis.AuxDrawer2D} for adding a label to a panel. */
 	public static class Label extends AuxDrawer2D {
 		/** Serialization version identifier */
@@ -337,7 +619,7 @@ public abstract class AuxDrawer2D extends Drawer {
 			this.string = string;
 			this.time = time;
 			
-			FieldPortrayal2DWrapper port = (FieldPortrayal2DWrapper)this.getPortrayal();
+			LabelFieldPortrayal2D port = (LabelFieldPortrayal2D)this.getPortrayal();
 			if (time) { port.fontSize = 20; }
 		}
 		
@@ -347,7 +629,7 @@ public abstract class AuxDrawer2D extends Drawer {
 		 * @param state  the MASON simulation state
 		 */
 		public void step(SimState state) {
-			FieldPortrayal2DWrapper port = (FieldPortrayal2DWrapper)this.getPortrayal();
+			LabelFieldPortrayal2D port = (LabelFieldPortrayal2D)this.getPortrayal();
 			if (time) {
 				double steps = state.schedule.getTime();
 				int days = (int)Math.floor(steps/60/24);

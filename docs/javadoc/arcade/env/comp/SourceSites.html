@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -103,16 +103,36 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <hr>
 <pre>public class <span class="typeNameLabel">SourceSites</span>
 extends <a href="Sites.html" title="class in arcade.env.comp">Sites</a></pre>
-<div class="block">Extension of <a href="Sites.html" title="class in arcade.env.comp"><code>Sites</code></a> for constant source sites.
+<div class="block">Extension of <a href="Sites.html" title="class in arcade.env.comp"><code>Sites</code></a> for source sites.
  <p>
- Each index in the lattice is a site, representing a constant source.
+ Each index in the lattice can be assigned as a site, depending on the initial
+ spacings in the x direction (length, <code>X_SPACING</code>), y direction (width,
+ <code>Y_SPACING</code>), and z direction (depth, <code>Z_SPACING</code>).
+ Each spacing can be defined as:
+ <ul>
+     <li><code>*</code> = all indices in the lattice</li>
+     <li><code>x</code> or <code>X</code> = no indices in the lattice</li>
+     <li><code>*:INC</code> = all indices in the lattice incremented by INC
+         (i = 0, INC, 2*INC, ... , n*INC) where n*INC &le; lattice size</li>
+     <li><code>INDEX</code> = only index INDEX</li>
+     <li><code>MIN:MAX</code> = all indices between MIN and MAX, inclusive</li>
+     <li><code>MIN:INC:MAX</code> = all indices between MIN and MAX incremented
+         by INC (i = MIN, MIN + INC, MIN + 2*INC, ... , MIN + n*INC) where
+         MIN + n*INC &le; MAX</li>
+ </ul>
+ <p>
+ Setting all spacings to <code>*</code> creates a constant source.
+ Setting any spacings to <code>x</code> removes all sites.
+ <p>
  The amount of concentration added to each index is the difference between
- the concentration at the index and the source concentration of the molecule.</div>
+ the concentration at the index and the source concentration of the molecule.
+ Sites can be damaged by setting the <code>SOURCE_DAMAGE</code> parameter, which
+ reduces the amount of concentration added at each index.</div>
 <dl>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.3</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.2.X</dd>
+<dd>2.3.15</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../serialized-form.html#arcade.env.comp.SourceSites">Serialized Form</a></dd>
 </dl>
@@ -137,7 +157,7 @@ extends <a href="Sites.html" title="class in arcade.env.comp">Sites</a></pre>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>private class&nbsp;</code></td>
+<td class="colFirst"><code>(package private) class&nbsp;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="SourceSites.SourceSite.html" title="class in arcade.env.comp">SourceSites.SourceSite</a></span></code></th>
 <td class="colLast">
 <div class="block">Extension of <a href="Site.html" title="class in arcade.env.comp"><code>Site</code></a> for <a href="SourceSites.html" title="class in arcade.env.comp"><code>SourceSites</code></a>.</div>
@@ -166,10 +186,66 @@ extends <a href="Sites.html" title="class in arcade.env.comp">Sites</a></pre>
 </thead>
 <tbody>
 <tr class="altColor">
+<td class="colFirst"><code>private double</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#_damage">_damage</a></span></code></th>
+<td class="colLast">
+<div class="block">Damage scaling parameter</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#calcDamage">calcDamage</a></span></code></th>
+<td class="colLast">
+<div class="block"><code>true</code> if damage is calculated, <code>false</code> otherwise</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private double[][][]</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#damageSingle">damageSingle</a></span></code></th>
+<td class="colLast">
+<div class="block">Array of damage instances</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private double[][][]</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#damageValues">damageValues</a></span></code></th>
+<td class="colLast">
+<div class="block">Array of damage value multipliers</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>private static long</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#serialVersionUID">serialVersionUID</a></span></code></th>
 <td class="colLast">
 <div class="block">Serialization version identifier</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private <a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#specs">specs</a></span></code></th>
+<td class="colLast">
+<div class="block">Dictionary of specifications</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private java.lang.String[]</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#xSites">xSites</a></span></code></th>
+<td class="colLast">
+<div class="block">Spacing of sites in x direction</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>private java.lang.String[]</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#ySites">ySites</a></span></code></th>
+<td class="colLast">
+<div class="block">Spacing of sites in y direction</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>private java.lang.String[]</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#zSites">zSites</a></span></code></th>
+<td class="colLast">
+<div class="block">Spacing of sites in z direction</div>
 </td>
 </tr>
 </tbody>
@@ -204,9 +280,9 @@ extends <a href="Sites.html" title="class in arcade.env.comp">Sites</a></pre>
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E()">SourceSites</a></span>()</code></th>
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(arcade.util.MiniBox)">SourceSites</a></span>&#8203;(<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;component)</code></th>
 <td class="colLast">
-<div class="block">Creates <a href="Sites.html" title="class in arcade.env.comp"><code>Sites</code></a> object with constant source sites.</div>
+<div class="block">Creates a <a href="Sites.html" title="class in arcade.env.comp"><code>Sites</code></a> object with source sites.</div>
 </td>
 </tr>
 </tbody>
@@ -233,9 +309,16 @@ extends <a href="Sites.html" title="class in arcade.env.comp">Sites</a></pre>
 </thead>
 <tbody>
 <tr class="altColor" id="i0">
+<td class="colFirst"><code>private boolean</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#checkSource(java.lang.String%5B%5D,int)">checkSource</a></span>&#8203;(java.lang.String[]&nbsp;sites,
+int&nbsp;v)</code></th>
+<td class="colLast">
+<div class="block">Checks if a given index is a valid source site.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i1">
 <td class="colFirst"><code>void</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#equip(arcade.sim.Simulation,int,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D)">equip</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
-int&nbsp;code,
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#equip(arcade.util.MiniBox,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D)">equip</a></span>&#8203;(<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule,
 double[][][]&nbsp;delta,
 double[][][]&nbsp;current,
 double[][][]&nbsp;previous)</code></th>
@@ -243,33 +326,40 @@ double[][][]&nbsp;previous)</code></th>
 <div class="block">Equips a molecule to the sites.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i1">
+<tr class="altColor" id="i2">
+<td class="colFirst"><code>double[][][]</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDamage()">getDamage</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Gets the damage array.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#makeSites(arcade.sim.Simulation)">makeSites</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim)</code></th>
 <td class="colLast">
 <div class="block">Creates sites.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#step(sim.engine.SimState)">step</a></span>&#8203;(sim.engine.SimState&nbsp;state)</code></th>
 <td class="colLast">
-<div class="block">Steps through array and assigns source sites.</div>
+<div class="block">Steps through the lattice for each molecule to calculate generation.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toJSON()">toJSON</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Represents object as a JSON entry.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toString()">toString</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#updateComponent(arcade.sim.Simulation,arcade.env.loc.Location,arcade.env.loc.Location)">updateComponent</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
 <a href="../loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;oldLoc,
@@ -316,6 +406,62 @@ double[][][]&nbsp;previous)</code></th>
 </dl>
 </section>
 </li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="damageSingle">damageSingle</a></h3>
+<div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">double[][][]</span>&nbsp;<span class="memberName">damageSingle</span></div>
+<div class="block">Array of damage instances</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="damageValues">damageValues</a></h3>
+<div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">double[][][]</span>&nbsp;<span class="memberName">damageValues</span></div>
+<div class="block">Array of damage value multipliers</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="_damage">_damage</a></h3>
+<div class="memberSignature"><span class="modifiers">private final</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">_damage</span></div>
+<div class="block">Damage scaling parameter</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="xSites">xSites</a></h3>
+<div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">java.lang.String[]</span>&nbsp;<span class="memberName">xSites</span></div>
+<div class="block">Spacing of sites in x direction</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="ySites">ySites</a></h3>
+<div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">java.lang.String[]</span>&nbsp;<span class="memberName">ySites</span></div>
+<div class="block">Spacing of sites in y direction</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="zSites">zSites</a></h3>
+<div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">java.lang.String[]</span>&nbsp;<span class="memberName">zSites</span></div>
+<div class="block">Spacing of sites in z direction</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="calcDamage">calcDamage</a></h3>
+<div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">calcDamage</span></div>
+<div class="block"><code>true</code> if damage is calculated, <code>false</code> otherwise</div>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="specs">specs</a></h3>
+<div class="memberSignature"><span class="modifiers">private final</span>&nbsp;<span class="returnType"><a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a></span>&nbsp;<span class="memberName">specs</span></div>
+<div class="block">Dictionary of specifications</div>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -328,9 +474,21 @@ double[][][]&nbsp;previous)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;()">SourceSites</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SourceSites</span>()</div>
-<div class="block">Creates <a href="Sites.html" title="class in arcade.env.comp"><code>Sites</code></a> object with constant source sites.</div>
+<h3><a id="&lt;init&gt;(arcade.util.MiniBox)">SourceSites</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="memberName">SourceSites</span>&#8203;(<span class="arguments"><a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;component)</span></div>
+<div class="block">Creates a <a href="Sites.html" title="class in arcade.env.comp"><code>Sites</code></a> object with source sites.
+ <p>
+ Specifications include:
+ <ul>
+     <li><code>X_SPACING</code> = spacing of sites in x direction</li>
+     <li><code>Y_SPACING</code> = spacing of sites in y direction</li>
+     <li><code>Z_SPACING</code> = spacing of sites in z direction</li>
+     <li><code>SOURCE_DAMAGE</code> = source site damage scaling</li>
+ </ul></div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>component</code> - the parsed component attributes</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -347,8 +505,11 @@ double[][][]&nbsp;previous)</code></th>
 <section class="detail">
 <h3><a id="makeSites(arcade.sim.Simulation)">makeSites</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">makeSites</span>&#8203;(<span class="arguments"><a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="Sites.html#makeSites(arcade.sim.Simulation)">Sites</a></code></span></div>
-<div class="block">Creates sites.</div>
+<div class="block">Creates sites.
+ <p>
+ Iterates through each index in the lattice and assigns it as a site or 
+ not, depending on the specified spacings.
+ Initial damage array is set to 1.0 (no damage).</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
 <dd><code><a href="Sites.html#makeSites(arcade.sim.Simulation)">makeSites</a></code>&nbsp;in class&nbsp;<code><a href="Sites.html" title="class in arcade.env.comp">Sites</a></code></dd>
@@ -359,9 +520,20 @@ double[][][]&nbsp;previous)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="getDamage()">getDamage</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">double[][][]</span>&nbsp;<span class="memberName">getDamage</span>()</div>
+<div class="block">Gets the damage array.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the array of damage values</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="step(sim.engine.SimState)">step</a></h3>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">step</span>&#8203;(<span class="arguments">sim.engine.SimState&nbsp;state)</span></div>
-<div class="block">Steps through array and assigns source sites.</div>
+<div class="block">Steps through the lattice for each molecule to calculate generation.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>state</code> - the MASON simulation state</dd>
@@ -374,8 +546,9 @@ double[][][]&nbsp;previous)</code></th>
 <div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">updateComponent</span>&#8203;(<span class="arguments"><a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
 <a href="../loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;oldLoc,
 <a href="../loc/Location.html" title="interface in arcade.env.loc">Location</a>&nbsp;newLoc)</span></div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="Component.html#updateComponent(arcade.sim.Simulation,arcade.env.loc.Location,arcade.env.loc.Location)">Component</a></code></span></div>
-<div class="block">Updates the component with old and new locations.</div>
+<div class="block">Updates the component with old and new locations.
+ <p>
+ Damage increases for movement into and out of a location.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sim</code> - the simulation instance</dd>
@@ -386,9 +559,8 @@ double[][][]&nbsp;previous)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="equip(arcade.sim.Simulation,int,double[][][],double[][][],double[][][])">equip</a></h3>
-<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">equip</span>&#8203;(<span class="arguments"><a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
-int&nbsp;code,
+<h3><a id="equip(arcade.util.MiniBox,double[][][],double[][][],double[][][])">equip</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">void</span>&nbsp;<span class="memberName">equip</span>&#8203;(<span class="arguments"><a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule,
 double[][][]&nbsp;delta,
 double[][][]&nbsp;current,
 double[][][]&nbsp;previous)</span></div>
@@ -396,17 +568,31 @@ double[][][]&nbsp;previous)</span></div>
  <p>
  For each molecule, the following parameters are required:
  <ul>
-     <li>Source concentration</li>
+     <li><code>CONCENTRATION</code> = source concentration of molecule</li>
  </ul></div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="Sites.html#equip(arcade.sim.Simulation,int,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D)">equip</a></code>&nbsp;in class&nbsp;<code><a href="Sites.html" title="class in arcade.env.comp">Sites</a></code></dd>
+<dd><code><a href="Sites.html#equip(arcade.util.MiniBox,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D,double%5B%5D%5B%5D%5B%5D)">equip</a></code>&nbsp;in class&nbsp;<code><a href="Sites.html" title="class in arcade.env.comp">Sites</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>sim</code> - the simulation instance</dd>
-<dd><code>code</code> - the molecule code</dd>
+<dd><code>molecule</code> - the molecule parameters</dd>
 <dd><code>delta</code> - the array holding changes in concentration</dd>
 <dd><code>current</code> - the array holding current concentration values</dd>
 <dd><code>previous</code> - the array holding previous concentration values</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="checkSource(java.lang.String[],int)">checkSource</a></h3>
+<div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">boolean</span>&nbsp;<span class="memberName">checkSource</span>&#8203;(<span class="arguments">java.lang.String[]&nbsp;sites,
+int&nbsp;v)</span></div>
+<div class="block">Checks if a given index is a valid source site.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>sites</code> - the site spacing</dd>
+<dd><code>v</code> - the index</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd><code>true</code> if the index is valid, <code>false</code> otherwise</dd>
 </dl>
 </section>
 </li>
@@ -420,7 +606,12 @@ double[][][]&nbsp;previous)</span></div>
  <pre>
      {
          "type": "SITE",
-         "class": "source"
+         "class": "source",
+         "specs" : {
+             "SPEC_NAME": spec value,
+             "SPEC_NAME": spec value,
+             ...
+         }
      }
  </pre></div>
 <dl>

@@ -2,6 +2,7 @@ package arcade.env.comp;
 
 import arcade.sim.Simulation;
 import arcade.env.lat.Lattice;
+import arcade.util.MiniBox;
 
 /** 
  * Extension of {@link arcade.env.comp.Diffuser} for triangular lattice.
@@ -10,7 +11,7 @@ import arcade.env.lat.Lattice;
  * on the row and column, where the top left of the 2D array at coordinate
  * (0,0) is a triangle pointing down.
  * 
- * @version 2.3.3
+ * @version 2.3.4
  * @since   2.0
  */
 
@@ -34,10 +35,10 @@ public class TriDiffuser extends Diffuser {
 	 * 
 	 * @param sim  the simulation instance
 	 * @param lat  the lattice of concentrations to be diffused
-	 * @param code  the molecule code
+	 * @param molecule  the molecule parameters
 	 */
-	public TriDiffuser(Simulation sim, Lattice lat, int code) {
-		super(sim, lat, code);
+	public TriDiffuser(Simulation sim, Lattice lat, MiniBox molecule) {
+		super(sim, lat, molecule);
 		
 		// Calculate dimensionless rate and various multipliers.
 		_rate = (4*_diff)/(3*_ds*_ds);

@@ -2,45 +2,48 @@
 
 __Agent-based Representation of Cells And Dynamic Environments__
 
-- [File structure](#file-structure)
-- [Running the code](#running-the-code)
-- [Setup file structure](#setup-file-structure)
-- [`<simulation>` tags](#simulation-tags)
-    + [`<profilers>`](#profilers)
-- [`<agents>` tags](#agents-tags)
-    + [`<populations>`](#populations)
-    + [`<helpers>`](#helpers)
-- [`<environment>` tags](#environment-tags)
-    + [`<globals>`](#globals)
+- **[Code structure overview](#code-structure-overview)**
+- **[Building from source](#building-from-source)**
+- **[Running the code](#running-the-code)**
+- **[Setup file structure](#setup-file-structure)**
+    - [`<simulation>` tags](#simulation-tags)
+        - [`<profilers>`](#profilers)
+        - [`<checkpoints>`](#checkpoints)
+    - [`<agents>` tags](#agents-tags)
+        - [`<populations>`](#populations)
+        - [`<helpers>`](#helpers)
+    - [`<environment>` tags](#environment-tags)
+        - [`<globals>`](#globals)
+        - [`<components>`](#components)
 
----
+## Code structure overview
 
-## File structure
-
-The contents of this directory include:
-
-	README.md
-	LICENSE
-	arcade.jar
-	src/
-	docs/
-
-The `arcade.jar` is a compiled jar of the source code, with the required library [MASON](https://cs.gmu.edu/~eclab/projects/mason/) included.
+`arcade.jar` is a compiled jar of the model, with the required library [MASON](https://cs.gmu.edu/~eclab/projects/mason/) included.
 
 The `src/` directory contains all source files for the model.
 
-The `docs/` directory contains class documentation (`javadoc`), sample input XML files (`sample_input`), sample output JSON files (`sample_output`), and the setup files used for the manuscript. There is also a `README` file in the `docs/` directory with more details on the sample input and output files.
+The `docs/` directory contains class documentation (`javadoc`), sample input XML files (`sample_input`), and sample output JSON files (`sample_output`). There is also a `README` file in the `docs/` directory with more details on the sample input and output files.
 
-If modifying source code or compiling from source, we suggest also including the following directories:
+## Building from source
 
-	lib/
-	bin/
+The model can be built from source using Gradle. The included  `build.gradle` uses a `lib/` directory with the following libraries:
 
-The `lib` directory should hold the `mason.jar` library (version 19 or later) and any additional libraries that you may need.
+- `mason.19.jar`
+- `vecmath.jar`
+- `j3dcore.jar`
+- `j3dutils.jar`
 
-The `bin` directory holds the compiled code.
+To build, use:
 
----
+```bash
+$ ./gradlew build
+```
+
+Documentation can be regenerated using:
+
+```bash
+$ ./gradlew javadoc
+```
 
 ## Running the code
 
@@ -49,7 +52,7 @@ The model can be run directly through command line or through a GUI interface, a
 When using command line, first navigate to the directory holding this file. Then:
 
 ```bash
-java -jar arcade.jar XML [(-v|--vis)]
+$ java -jar arcade.jar XML [(-v|--vis)]
 
 
     XML
@@ -62,18 +65,16 @@ java -jar arcade.jar XML [(-v|--vis)]
 For example, to run the model with setup file `setup.xml` with visualization:
 
 ```bash
-java -jar arcade.jar /path/to/setup.xml --vis
+$ java -jar arcade.jar /path/to/setup.xml --vis
 ```
 
 You can also double click the `arcade.jar` file, which will open up a GUI dialog for selecting the setup file and running simulations. This dialog is also opened if a setup file is not provided to the command line:
 
 ```bash
-java -jar arcade.jar
+$ java -jar arcade.jar
 ```
 
 Note that running the model with visualization (either directly from the `arcade.jar` or using the `--vis` flag) is significantly slower than without visualization.
-
----
 
 ## Setup file structure
 
@@ -110,7 +111,7 @@ A simulation __series__ is a group of simulations that only differ in the random
 - `[end]` = (integer) ending seed (default = `1`)
 - `days` = (integer) number of days for each simulation
 
-The __simulation__ tag describes the size and type of the simulation. Nested tags include various profilers for the simulation.
+The __simulation__ tag describes the size and type of the simulation. Nested tags include various profilers and checkpointing for the simulation.
 
 - `type` = simulation type (only `growth` is currently supported)
 - `[radius]` = (integer) radius of simulation (default = `34`)
@@ -123,13 +124,11 @@ The __agents__ tag describes the agents initialization. Nested tags include defi
     + use `0` for no cells
     + use `FULL` to seed up to the `RADIUS` of the simulation
 
-The __environment__ tag describes the environment. Nested tags include environment parameters.
+The __environment__ tag describes the environment. Nested tags include environment parameters and components.
 
----
+### `<simulation>` tags
 
-## `<simulation>` tags
-
-### `<profilers>`
+#### `<profilers>`
 
 __Profilers__ save the simulation state to `.json` files at the selected interval. Different profilers will save different types of information. These are not used when the model is run with visualization.
 
@@ -137,23 +136,40 @@ __Profilers__ save the simulation state to `.json` files at the selected interva
 <profilers>
     <profiler type="growth" interval="INTERVAL" suffix="SUFFIX" />
     <profiler type="parameter" interval="INTERVAL" suffix="SUFFIX" />
+    <profiler type="graph" interval="INTERVAL" suffix="SUFFIX" />
     ...
 </profilers>
 ```
 
-- __growth__ saves a profile of cell state (including volume and cycle length)
-and a span of concentrations at the given `interval`
+- __growth__ saves a profile of cell state (including volume and cycle length) and a span of concentrations at the given `interval`
     + `interval` = (integer) minutes between each profile
     + `[suffix]` = appended to the output file name before the extension
 - __parameter__ saves a profile of cell parameters at the given `interval`
     + `interval` = (integer) minutes between each profile
     + `[suffix]` = appended to the output file name before the extension
+- __graph__ saves a profile of the vascular graph (nodes, edges, and hemodynamic properties) at the given `interval`
+    + `interval` = (integer) minutes between each profile
+    + `[suffix]` = appended to the output file name before the extension
 
----
+#### `<checkpoints>`
 
-## `<agents>` tags
+__Checkpoints__ save certain parts of the simulation to a `.checkpoint` file, which can later be loaded. These are included when the model is run with visualization, although the seed may not match. They can either be class `SAVE` or `LOAD`, depending on if the checkpoint is being saved from or loaded to the simulation.
 
-### `<populations>`
+```xml
+<checkpoints>
+    <checkpoint type="graph" class="CLASS" name="NAME" path="PATH" day="DAY" />
+    ...
+</checkpoints>
+```
+
+- __graph__ saves a checkpoint of the graph structure OR loads a checkpoint of the graph structure (only use with the __sites__ / __graph__ component)
+    + `name` = name of the checkpoint file
+    + `path` = path to the checkpoint file directory
+    + `[day]` = (integer) day that the checkpoint is to be saved (graph checkpoints can only be loaded when the simulation is initialized, so `day = 0`)
+
+### `<agents>` tags
+
+#### `<populations>`
 
 __Populations__ define the cell populations included in the simulation. Within each __population__, you can optionally define __variables__ and __modules__.
 
@@ -189,7 +205,7 @@ The __module__ tag lists the cell modules. When undefined, complex metabolism an
 - `type` = module type, currently support for `metabolism` and `signaling`
 - `version` = version of the module (`C` = complex, `M` = medium, `S` = simple, `R` = random)
 
-### `<helpers>`
+#### `<helpers>`
 
 __Helpers__ define the various helper agents included in the simulation. Depending on the type, different attributes are required.
 
@@ -213,11 +229,9 @@ __Helpers__ define the various helper agents included in the simulation. Dependi
     + `bounds` = (number) fraction of total simulation radius to remove cells
     + `delay` = (integer) minutes before wound occurs
 
----
+### `<environment>` tags
 
-## `<environment>` tags
-
-### `<globals>`
+#### `<globals>`
 
 __Globals__ define environment parameters that are changed, analogous to the population-specific variables. Note that some global parameters may only apply to certain components. Unless modified, default values are used for global parameters. Either or both `value` and `scale` attributes can be applied, with `value` applied first.
 
@@ -231,3 +245,35 @@ __Globals__ define environment parameters that are changed, analogous to the pop
 - `id` = name of the parameter to be modified
 - `[value]` = (number) new value for the parameter
 - `[scale]` = (number) scale value of the parameter
+
+#### `<components>`
+
+__Components__ define various environmental components included in the simulation. If a `sites` type component is not specified, the default is a constant source environment.
+
+All components have specifications (shown below only for the __sites__ / __source__ component). If not specified for a given component, default values are used.
+
+```xml
+<components>
+    <component type="sites" class="source">
+        <specifications>
+            <specification id="SPECIFICATION_NAME" value="VALUE" />
+            ...
+        </specifications>
+    </component>
+    <component type="sites" class="pattern" />
+    <component type="sites" class="graph" complexity="COMPLEXITY" />
+    <component type="remodel" interval="INTERVAL" />
+    <component type="degrade" interval="INTERVAL" />
+    ...
+<components>
+```
+
+- __sites__ / __source__ uses source-based sites, with specifications for the spacing of sites in the x, y, and z directions, as well as any damage scaling
+- __sites__ / __pattern__ uses pattern-based sites, with specifications for hemodynamic factor weighting, relative contribution of the hemodynamic factors, and damage scaling
+- __sites__ / __graph__ uses graph-based sites, with specifications for layout type (default `*` matches the layout of __sites__ / __pattern__) and locations of roots
+    + `[complexity]` = if `simple`, the graph sites will use simplified hemodynamics (analogous to the methods used by __sites__ / __source__ and __sites__ / __pattern__ without factors), otherwise, the graph sites use exact hemodynamic calculations
+    + note that graph sites is not designed for 3D simulations and will only be grown in the 2D plane for simulations where `HEIGHT` > 1
+- __degrade__ degrades the cell wall of vessels located where there are non-healthy (`H`) cell agents (only use with __sites__ / __graph__)
+    + `interval` = (integer) minutes between degradation
+- __remodel__ remodels the cell wall and vessel radius based on hemodynamic properties (only use with __sites__ / __graph__)
+    + `interval` = (integer) minutes between remodeling

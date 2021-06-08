@@ -1,6 +1,7 @@
 package arcade.sim;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
 import ec.util.MersenneTwisterFast;
@@ -8,13 +9,14 @@ import arcade.env.lat.Lattice;
 import arcade.env.loc.Location;
 import arcade.util.Parameter;
 import arcade.env.grid.Grid;
+import arcade.util.MiniBox;
 
 /** 
  * A {@code Simulation} object sets up the agents and environments for a simulation.
  * <p>
  * A {@code Simulation} consists of stepping the model for a given random seed.
  * At the start, agents and environments are added the instance and scheduled.
- * Any additional steppables, such as profilers, are also scheduled.
+ * Any additional steppables, such as profilers and checkpoints, are also scheduled.
  * <p>
  * A {@code Simulation} should also extend {@code SimState} from the
  * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
@@ -22,17 +24,11 @@ import arcade.env.grid.Grid;
  * {@code Simulation} interface ensures the model can interact with other
  * interfaces and classes in the package.
  * 
- * @version 2.3.6
+ * @version 2.3.8
  * @since   2.2
  */
 
 public interface Simulation {
-	/** Names of molecules corresponding to ID number */
-	String[] MOL_NAMES = new String[] { "GLUC", "OXY", "TGFA" };
-	
-	/** Number of molecules with IDs */
-	int NUM_MOLS = MOL_NAMES.length;
-	
 	/** ID for glucose */
 	int MOL_GLUCOSE = 0;
 	
@@ -71,6 +67,13 @@ public interface Simulation {
 	 * @return  the {@link arcade.env.lat.Lattice} object
 	 */
 	Lattice getEnvironment(String key);
+	
+	/**
+	 * Gets the map of molecule names and parameters.
+	 * 
+	 * @return  the map of molecule name to parameters
+	 */
+	HashMap<String, MiniBox> getMolecules();
 	
 	/**
 	 * Sets up the environment using lattices for the simulation.
@@ -159,35 +162,63 @@ public interface Simulation {
 	int getSeed();
 	
 	/**
-	 * Gets a list of all locations in the simulation within the given bounds.
+	 * Gets the {@link arcade.sim.Simulation.Representation} object for the current
+	 * simulation.
 	 * 
-	 * @param radius  the bound on the radius
-	 * @param height  the bound on the height
-	 * @return  a list of locations   
+	 * @return  the {@link arcade.sim.Simulation.Representation} instance
 	 */
-	ArrayList<Location> getLocations(int radius, int height);
+	Representation getRepresentation();
 	
 	/**
-	 * Gets a list of initialization locations for the given bounds.
-	 * 
-	 * @param radius the bound on the initialization radius
-	 * @return  a list of locations
+	 * A {@code Representation} object defines the simulation representation.
 	 */
-	ArrayList<Location> getInitLocations(int radius);
-	
-	/**
-	 * Gets the lattice coordinates that span the environment.
-	 * 
-	 * @return  an array of coordinates
-	 */
-	Location[][][] getSpanLocations();
-	
-	/**
-	 * Gets the center location of the simulation.
-	 * 
-	 * @return  the center locations
-	 */
-	Location getCenterLocation();
+	interface Representation {
+		/**
+		 * Gets a new instance of a {@link arcade.env.grid.Grid} for agents.
+		 *
+		 * @return  a {@link arcade.env.grid.Grid} instance
+		 */
+		Grid getNewGrid();
+		
+		/**
+		 * Gets a new instance of a {@link arcade.env.lat.Lattice} for the environment.
+		 *
+		 * @param val  the initial value in the array
+		 * @return  a {@link arcade.env.lat.Lattice} instance
+		 */
+		 Lattice getNewLattice(double val);
+		
+		/**
+		 * Gets a list of all locations in the simulation within the given bounds.
+		 *
+		 * @param radius  the bound on the radius
+		 * @param height  the bound on the height
+		 * @return  a list of locations   
+		 */
+		ArrayList<Location> getLocations(int radius, int height);
+		
+		/**
+		 * Gets a list of initialization locations for the given bounds.
+		 *
+		 * @param radius the bound on the initialization radius
+		 * @return  a list of locations
+		 */
+		ArrayList<Location> getInitLocations(int radius);
+		
+		/**
+		 * Gets the lattice coordinates that span the environment.
+		 *
+		 * @return  an array of coordinates
+		 */
+		Location[][][] getSpanLocations();
+		
+		/**
+		 * Gets the center location of the simulation.
+		 *
+		 * @return  the center locations
+		 */
+		Location getCenterLocation();
+	}
 	
 	/**
 	 * Shuffles the given list using a seeded random number generator.

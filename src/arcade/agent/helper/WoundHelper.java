@@ -17,7 +17,7 @@ import arcade.util.MiniBox;
  * radius from the center of the simulation.
  * Quiescent cells bordering the wound are set to neutral state.
  * 
- * @version 2.3.3
+ * @version 2.3.4
  * @since   2.2
  */
 
@@ -70,7 +70,7 @@ public class WoundHelper implements Helper {
 		Cell c;
 		
 		// Remove all agents in wound area.
-		locs = sim.getLocations(radius, sim.getSeries()._height);
+		locs = sim.getRepresentation().getLocations(radius, sim.getSeries()._height);
 		for (Location loc : locs) {
 			Bag bag = new Bag(grid.getObjectsAtLocation(loc));
 			
@@ -89,7 +89,7 @@ public class WoundHelper implements Helper {
 		}
 		
 		// Bring agents along edge out of quiescence.
-		locs = sim.getLocations(radius + 1, sim.getSeries()._height);
+		locs = sim.getRepresentation().getLocations(radius + 1, sim.getSeries()._height);
 		for (Location loc : locs) {
 			Bag bag = new Bag(grid.getObjectsAtLocation(loc));
 			

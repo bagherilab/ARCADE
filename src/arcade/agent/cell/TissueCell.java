@@ -418,7 +418,7 @@ public abstract class TissueCell implements Cell {
 		int r = c.getLocation().getRadius();
 		double accuracy = c.getParams().get("ACCURACY").getMu();
 		double affinity = c.getParams().get("AFFINITY").getMu();
-		double maxVal = sim.getSeries().getParam("CONC_GLUC")*c.getLocation().getMax();
+		double maxVal = sim.getMolecules().get("GLUCOSE").getDouble("CONCENTRATION")*c.getLocation().getMax();
 		int[] inds = new int[3];
 		double[] scores = new double[3];
 		
@@ -457,14 +457,14 @@ public abstract class TissueCell implements Cell {
 	 * <p>
 	 * The JSON is formatted as:
 	 * <pre>
-	 *     [ code , pop, type, position, volume, [ list, of, cycle, lengths, ... ] ]
+	 *     [ code, pop, type, position, volume, [ list, of, cycle, lengths, ... ] ]
 	 * </pre>
 	 */
 	public String toJSON() {
 		String cycles = "";
 		for (Object c : cycle) { cycles += (double)c + ","; }
 		return "[" + code + "," + pop + "," + type + ","
-			+ location.getPosition() + "," + String.format("%.2f", volume)
+				+ location.getPosition() + "," + String.format("%.2f", volume)
 			+ ",[" + cycles.replaceFirst(",$","") + "]]";
 	}
 }

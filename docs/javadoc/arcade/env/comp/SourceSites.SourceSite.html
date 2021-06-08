@@ -95,7 +95,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dd><a href="SourceSites.html" title="class in arcade.env.comp">SourceSites</a></dd>
 </dl>
 <hr>
-<pre>private class <span class="typeNameLabel">SourceSites.SourceSite</span>
+<pre>class <span class="typeNameLabel">SourceSites.SourceSite</span>
 extends <a href="Site.html" title="class in arcade.env.comp">Site</a></pre>
 <div class="block">Extension of <a href="Site.html" title="class in arcade.env.comp"><code>Site</code></a> for <a href="SourceSites.html" title="class in arcade.env.comp"><code>SourceSites</code></a>.
  <p>
@@ -121,9 +121,11 @@ extends <a href="Site.html" title="class in arcade.env.comp">Site</a></pre>
 </thead>
 <tbody>
 <tr class="altColor">
-<td class="colFirst"><code>private double</code></td>
+<td class="colFirst"><code>(package private) double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#conc">conc</a></span></code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Concentration of molecule</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -159,7 +161,9 @@ double[][][]&nbsp;delta,
 double[][][]&nbsp;current,
 double[][][]&nbsp;previous,
 double&nbsp;conc)</code></th>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">Creates a <code>SourceSite</code> for the given molecule.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -193,7 +197,8 @@ double&nbsp;conc)</code></th>
 <li class="blockList">
 <section class="detail">
 <h3><a id="conc">conc</a></h3>
-<div class="memberSignature"><span class="modifiers">private</span>&nbsp;<span class="returnType">double</span>&nbsp;<span class="memberName">conc</span></div>
+<div class="memberSignature"><span class="returnType">double</span>&nbsp;<span class="memberName">conc</span></div>
+<div class="block">Concentration of molecule</div>
 </section>
 </li>
 </ul>
@@ -214,6 +219,15 @@ double[][][]&nbsp;delta,
 double[][][]&nbsp;current,
 double[][][]&nbsp;previous,
 double&nbsp;conc)</span></div>
+<div class="block">Creates a <code>SourceSite</code> for the given molecule.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>code</code> - the molecule code</dd>
+<dd><code>delta</code> - the array holding change in concentration</dd>
+<dd><code>current</code> - the array holding current concentrations for current tick</dd>
+<dd><code>previous</code> - the array holding previous concentrations for previous tick</dd>
+<dd><code>conc</code> - the source concentration of the molecule</dd>
+</dl>
 </section>
 </li>
 </ul>

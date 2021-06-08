@@ -2,6 +2,7 @@ package arcade.env.lat;
 
 import arcade.sim.Simulation;
 import arcade.env.comp.*;
+import arcade.util.MiniBox;
 
 /** 
  * Extension of {@link arcade.env.lat.EnvLattice} for triangular lattice.
@@ -11,7 +12,7 @@ import arcade.env.comp.*;
  * Triangular grid locations have (x,y) coordinates, but additionally have are
  * "up" or "down" facing.
  * 
- * @version 2.3.10
+ * @version 2.3.11
  * @since   2.0
  */
 
@@ -38,7 +39,7 @@ public class TriEnvLat extends EnvLattice {
 		super(length, width, depth, val);
 	}
 	
-	public Component makeDiffuser(Simulation sim, int code) {
-		return new TriDiffuser(sim, this, code);
+	public Component makeDiffuser(Simulation sim, MiniBox molecule) {
+		return new TriDiffuser(sim, this, molecule);
 	}
 }

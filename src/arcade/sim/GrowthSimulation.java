@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import sim.engine.*;
 import sim.util.distribution.*;
 import arcade.sim.profiler.Profiler;
+import arcade.sim.checkpoint.Checkpoint;
 import arcade.agent.cell.Cell;
 import arcade.agent.helper.Helper;
 import arcade.env.grid.Grid;
@@ -22,6 +23,8 @@ import arcade.util.MiniBox;
  * <ul>
  *     <li>Schedules any {@link arcade.sim.profiler.Profiler} steppables for the
  *     simulation</li>
+ *     <li>Schedules any {@link arcade.sim.checkpoint.Checkpoint} steppables for
+ *     the simulation</li>
  *     <li>Creates distributions of cell lifespan, age, volume, and
  *     parameters</li>
  *     <li>Schedules any {@link arcade.agent.helper.Helper} steppables for the
@@ -38,7 +41,7 @@ import arcade.util.MiniBox;
  * <p>
  * {@code GrowthSimulation} does not specify grid or lattice geometry.
  * 
- * @version 2.2.X
+ * @version 2.3.X
  * @since   2.2
  */
 
@@ -52,11 +55,17 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
 	/** Random generator seed for this simulation */
 	private final int seed;
 	
+	/** Representation object for this simulation */
+	Representation representation;
+	
 	/** {@link arcade.env.grid.Grid} containing the agents in the simulation */
 	private Grid agents;
 	
 	/** Map of {@link arcade.env.lat.Lattice} objects in the simulation */
 	private Map<String, Lattice> environments;
+	
+	/** Map of molecule objects */
+	private HashMap<String, MiniBox> allMolecules;
 	
 	/** List of maps of parameter names and {@link arcade.util.Parameter} objects */
 	private ArrayList<HashMap<String, Parameter>> allParams;
@@ -90,23 +99,26 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
 	public Map<String, Parameter> getParams(int pop) { return allParams.get(pop); }
 	public Grid getAgents() { return agents; }
 	public Lattice getEnvironment(String key) { return environments.get(key); }
+	public HashMap<String, MiniBox> getMolecules() { return allMolecules; }
 	public Series getSeries() { return series; }
 	public int getSeed() { return seed; }
+	public Representation getRepresentation() { return representation; }
 	
 	/**
-	 * Gets a new instance of a {@link arcade.env.grid.Grid} for agents.
-	 * 
-	 * @return  a {@link arcade.env.grid.Grid} instance
+	 * Extension of {@link arcade.sim.GrowthSimulation} for hexagonal geometry.
 	 */
-	abstract Grid getNewGrid();
-	
-	/**
-	 * Gets a new instance of a {@link arcade.env.lat.Lattice} for the environment.
-	 * 
-	 * @param val  the initial value in the array
-	 * @return  a {@link arcade.env.lat.Lattice} instance
-	 */
-	abstract Lattice getNewLattice(double val);
+	public static class Hexagonal extends GrowthSimulation {
+		/**
+		 * Creates a hexagonal {@link arcade.sim.GrowthSimulation}.
+		 * 
+		 * @param seed  the random seed for random number generator
+		 * @param series  the simulation series
+		 */
+		public Hexagonal(long seed, Series series) {
+			super(seed, series);
+			representation = new HexagonalRepresentation(series);
+		}
+	}
 	
 	/**
 	 * Called at the start of a simulation to set up the simulation.
@@ -114,9 +126,10 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
 	public void start() { 
 		super.start();
 		
-		// Schedule all profilers.
+		// Schedule all profilers and checkpoints.
 		String seedName = (seed < 10 ? "0" : "") + seed;
 		for (Profiler p : series._profilers) { p.scheduleProfiler(this, series, seedName); }
+		for (Checkpoint c : series._checkpoints) { c.scheduleCheckpoint(this, series, seedName); }
 		
 		// Create distributions for death, volume, and age for each population.
 		int n = series._pops;
@@ -129,7 +142,8 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
 				series.getParam(i, "DEATH_AGE_RANGE"), this.random);
 			volDist[i] = new Normal(series.getParam(i, "CELL_VOL_AVG"),
 				series.getParam(i, "CELL_VOL_RANGE"), this.random);
-			ageDist[i] = new Uniform(0, series.getParam(i, "DEATH_AGE_AVG"), this.random);
+			ageDist[i] = new Uniform(series.getParam(i, "CELL_AGE_MIN"),
+				series.getParam(i, "CELL_AGE_MAX"), this.random);
 		}
 		
 		// List of cell parameters.
@@ -151,6 +165,17 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
 			}
 			
 			allParams.add(params);
+		}
+		
+		// Create molecules.
+		allMolecules = new HashMap<>();
+		String[] moleculeList = new String[] { "GLUCOSE", "OXYGEN", "TGFA" };
+		int[] moleculeCodes = new int[] { MOL_GLUCOSE, MOL_OXYGEN, MOL_TGFA };
+		for (int m = 0; m < moleculeList.length; m++) {
+			String molecule = moleculeList[m];
+			MiniBox box = series.getParams(molecule);
+			box.put("code", moleculeCodes[m]);
+			allMolecules.put(molecule, box);
 		}
 		
 		// Schedule all helpers.
@@ -186,27 +211,27 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
 		environments = new HashMap<>();
 		
 		// Add sites.
-		Lattice sites = getNewLattice(0);
+		Lattice sites = representation.getNewLattice(0);
 		environments.put("sites", sites);
 		
 		// Schedule components.
 		for (Component c : series._components) { c.scheduleComponent(this); }
 		
 		// Add glucose to environment (diffused and generated).
-		Lattice glucose = getNewLattice(0);
-		glucose.addComponent(this, MOL_GLUCOSE, Lattice.DIFFUSED);
-		glucose.addComponent(this, MOL_GLUCOSE, Lattice.GENERATED);
+		Lattice glucose = representation.getNewLattice(0);
+		glucose.addComponent(this, Lattice.DIFFUSED, allMolecules.get("GLUCOSE"));
+		glucose.addComponent(this, Lattice.GENERATED, allMolecules.get("GLUCOSE"));
 		environments.put("glucose", glucose);
 		
 		// Add oxygen to environment (diffused and generated).
-		Lattice oxygen = getNewLattice(0);
-		oxygen.addComponent(this, MOL_OXYGEN, Lattice.DIFFUSED);
-		oxygen.addComponent(this, MOL_OXYGEN, Lattice.GENERATED);
+		Lattice oxygen = representation.getNewLattice(0);
+		oxygen.addComponent(this, Lattice.DIFFUSED, allMolecules.get("OXYGEN"));
+		oxygen.addComponent(this, Lattice.GENERATED, allMolecules.get("OXYGEN"));
 		environments.put("oxygen", oxygen);
 		
 		// Add tgfa to environment (diffused).
-		Lattice tgfa = getNewLattice(series.getParam("CONC_TGFA"));
-		tgfa.addComponent(this, MOL_TGFA, Lattice.DIFFUSED);
+		Lattice tgfa = representation.getNewLattice(allMolecules.get("TGFA").getDouble("CONCENTRATION"));
+		tgfa.addComponent(this, Lattice.DIFFUSED, allMolecules.get("TGFA"));
 		environments.put("tgfa", tgfa);
 	}
 	
@@ -219,12 +244,12 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
 	 * defined by the {@link arcade.sim.Series}.
 	 */
 	public void setupAgents() {
-		agents = getNewGrid();
+		agents = representation.getNewGrid();
 		
 		if (series._init == 0) { return; }
 		
 		// Get locations for cells.
-		ArrayList<Location> locations = getInitLocations(series._init);
+		ArrayList<Location> locations = representation.getInitLocations(series._init);
 		Simulation.shuffle(locations, this.random);
 		
 		// Calculate the bounds for percentages.

@@ -27,7 +27,7 @@ import arcade.util.*;
  * is run.
  * Otherwise, all valid {@code Series} are run.
  *
- * @version 2.2.X
+ * @version 2.3.3
  * @since   2.0
  */
 
@@ -141,6 +141,9 @@ public class Main {
 	 *                 &#60;profilers&#62;
 	 *                     &#60;profiler /&#62;
 	 *                 &#60;/profilers&#62;
+	 *                 &#60;checkpoints&#62;
+	 *                     &#60;checkpoint /&#62;
+	 *                 &#60;/checkpoints&#62;
 	 *             &#60;/simulation&#62;
 	 *             &#60;agents&#62;
 	 *                 &#60;populations&#62;
@@ -162,6 +165,9 @@ public class Main {
 	 *                 &#60;globals&#62;
 	 *                     &#60;global /&#62;
 	 *                 &#60;/globals&#62;
+	 *                 &#60;components&#62;
+	 *                     &#60;component /&#62;
+	 *                 &#60;/components&#62;
 	 *             &#60;/environment&#62;
 	 *         &#60;/series&#62;
 	 *         ...
@@ -213,12 +219,12 @@ public class Main {
 					setupDicts.put(name, box);
 					logging += "\n" + box.toString() + "\n";
 					break;
-				case "profilers": case "populations":
-				case "helpers": case "globals":
+				case "profilers": case "checkpoints": case "populations":
+				case "helpers": case "globals": case "components":
 					setupLists.put(name, new ArrayList<>());
 					break;
-				case "profiler": case "population":
-				case "helper": case "global":
+				case "profiler": case "checkpoint": case "population":
+				case "helper": case "global": case "component":
 					setupLists.get(name + "s").add(box);
 					logging += "\n" + box.toString() + "\n";
 					break;

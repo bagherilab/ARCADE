@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":6,"i15":6,"i16":1,"i17":1};
+<script type="text/javascript">var data = {"i0":6,"i1":6,"i2":6,"i3":6,"i4":6,"i5":6,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":6,"i12":6,"i13":6,"i14":1,"i15":1};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -54,7 +54,7 @@ loadScripts(document, 'script');</script>
 <div>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested.class.summary">Nested</a>&nbsp;|&nbsp;</li>
 <li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
@@ -93,7 +93,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <section class="description">
 <dl>
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="GrowthSimulation.html" title="class in arcade.sim">GrowthSimulation</a></code>, <code><a href="HexGrowthSim.html" title="class in arcade.sim">HexGrowthSim</a></code></dd>
+<dd><code><a href="GrowthSimulation.html" title="class in arcade.sim">GrowthSimulation</a></code>, <code><a href="GrowthSimulation.Hexagonal.html" title="class in arcade.sim">GrowthSimulation.Hexagonal</a></code></dd>
 </dl>
 <hr>
 <pre>public interface <span class="typeNameLabel">Simulation</span></pre>
@@ -101,7 +101,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
  <p>
  A <code>Simulation</code> consists of stepping the model for a given random seed.
  At the start, agents and environments are added the instance and scheduled.
- Any additional steppables, such as profilers, are also scheduled.
+ Any additional steppables, such as profilers and checkpoints, are also scheduled.
  <p>
  A <code>Simulation</code> should also extend <code>SimState</code> from the
  <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
@@ -112,11 +112,40 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.3.6</dd>
+<dd>2.3.8</dd>
 </dl>
 </section>
 <section class="summary">
 <ul class="blockList">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li class="blockList">
+<section class="nestedClassSummary"><a id="nested.class.summary">
+<!--   -->
+</a>
+<h2>Nested Class Summary</h2>
+<div class="memberSummary">
+<table>
+<caption><span>Nested Classes</span><span class="tabEnd">&nbsp;</span></caption>
+<thead>
+<tr>
+<th class="colFirst" scope="col">Modifier and Type</th>
+<th class="colSecond" scope="col">Interface</th>
+<th class="colLast" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="altColor">
+<td class="colFirst"><code>static interface&nbsp;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="Simulation.Representation.html" title="interface in arcade.sim">Simulation.Representation</a></span></code></th>
+<td class="colLast">
+<div class="block">A <code>Representation</code> object defines the simulation representation.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</li>
 <!-- =========== FIELD SUMMARY =========== -->
 <li class="blockList">
 <section class="fieldSummary"><a id="field.summary">
@@ -142,31 +171,17 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>static java.lang.String[]</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MOL_NAMES">MOL_NAMES</a></span></code></th>
-<td class="colLast">
-<div class="block">Names of molecules corresponding to ID number</div>
-</td>
-</tr>
-<tr class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MOL_OXYGEN">MOL_OXYGEN</a></span></code></th>
 <td class="colLast">
 <div class="block">ID for oxygen</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#MOL_TGFA">MOL_TGFA</a></span></code></th>
 <td class="colLast">
 <div class="block">ID for TGFa molecule</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static int</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#NUM_MOLS">NUM_MOLS</a></span></code></th>
-<td class="colLast">
-<div class="block">Number of molecules with IDs</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -235,13 +250,6 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </td>
 </tr>
 <tr class="rowColor" id="i1">
-<td class="colFirst"><code><a href="../env/loc/Location.html" title="interface in arcade.env.loc">Location</a></code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getCenterLocation()">getCenterLocation</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Gets the center location of the simulation.</div>
-</td>
-</tr>
-<tr class="altColor" id="i2">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDeathProb(int,int)">getDeathProb</a></span>&#8203;(int&nbsp;pop,
 int&nbsp;age)</code></th>
@@ -249,99 +257,92 @@ int&nbsp;age)</code></th>
 <div class="block">Gets the probability of death drawn from a distribution.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i2">
 <td class="colFirst"><code><a href="../env/lat/Lattice.html" title="interface in arcade.env.lat">Lattice</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getEnvironment(java.lang.String)">getEnvironment</a></span>&#8203;(java.lang.String&nbsp;key)</code></th>
 <td class="colLast">
 <div class="block">Gets the <a href="../env/lat/Lattice.html" title="interface in arcade.env.lat"><code>Lattice</code></a> object for a given key.</div>
 </td>
 </tr>
+<tr class="rowColor" id="i3">
+<td class="colFirst"><code>java.util.HashMap&lt;java.lang.String,&#8203;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getMolecules()">getMolecules</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Gets the map of molecule names and parameters.</div>
+</td>
+</tr>
 <tr class="altColor" id="i4">
-<td class="colFirst"><code>java.util.ArrayList&lt;<a href="../env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getInitLocations(int)">getInitLocations</a></span>&#8203;(int&nbsp;radius)</code></th>
-<td class="colLast">
-<div class="block">Gets a list of initialization locations for the given bounds.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i5">
-<td class="colFirst"><code>java.util.ArrayList&lt;<a href="../env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&gt;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getLocations(int,int)">getLocations</a></span>&#8203;(int&nbsp;radius,
-int&nbsp;height)</code></th>
-<td class="colLast">
-<div class="block">Gets a list of all locations in the simulation within the given bounds.</div>
-</td>
-</tr>
-<tr class="altColor" id="i6">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getNextAge(int)">getNextAge</a></span>&#8203;(int&nbsp;pop)</code></th>
 <td class="colLast">
 <div class="block">Gets a cell age (in minutes) drawn from a distribution.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getNextVolume(int)">getNextVolume</a></span>&#8203;(int&nbsp;pop)</code></th>
 <td class="colLast">
 <div class="block">Gets a cell volume drawn from a distribution.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>java.util.Map&lt;java.lang.String,&#8203;<a href="../util/Parameter.html" title="class in arcade.util">Parameter</a>&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getParams(int)">getParams</a></span>&#8203;(int&nbsp;pop)</code></th>
 <td class="colLast">
 <div class="block">Gets the parameter set for a given cell population.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRandom()">getRandom</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets a random number from a seeded random number generator.</div>
 </td>
 </tr>
-<tr class="altColor" id="i10">
+<tr class="altColor" id="i8">
+<td class="colFirst"><code><a href="Simulation.Representation.html" title="interface in arcade.sim">Simulation.Representation</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getRepresentation()">getRepresentation</a></span>()</code></th>
+<td class="colLast">
+<div class="block">Gets the <a href="Simulation.Representation.html" title="interface in arcade.sim"><code>Simulation.Representation</code></a> object for the current
+ simulation.</div>
+</td>
+</tr>
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSeed()">getSeed</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the random number generator seed.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i11">
+<tr class="altColor" id="i10">
 <td class="colFirst"><code><a href="Series.html" title="class in arcade.sim">Series</a></code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSeries()">getSeries</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the <a href="Series.html" title="class in arcade.sim"><code>Series</code></a> object for the current simulation.</div>
 </td>
 </tr>
-<tr class="altColor" id="i12">
-<td class="colFirst"><code><a href="../env/loc/Location.html" title="interface in arcade.env.loc">Location</a>[][][]</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getSpanLocations()">getSpanLocations</a></span>()</code></th>
-<td class="colLast">
-<div class="block">Gets the lattice coordinates that span the environment.</div>
-</td>
-</tr>
-<tr class="rowColor" id="i13">
+<tr class="rowColor" id="i11">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getTime()">getTime</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets the simulation time (in minutes) from the underlying schedule.</div>
 </td>
 </tr>
-<tr class="altColor" id="i14">
+<tr class="altColor" id="i12">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setupAgents()">setupAgents</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Sets up the agent in the grid for the simulation.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i15">
+<tr class="rowColor" id="i13">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#setupEnvironment()">setupEnvironment</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Sets up the environment using lattices for the simulation.</div>
 </td>
 </tr>
-<tr class="altColor" id="i16">
+<tr class="altColor" id="i14">
 <td class="colFirst"><code>static void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#shuffle(java.util.ArrayList,ec.util.MersenneTwisterFast)">shuffle</a></span>&#8203;(java.util.ArrayList&lt;?&gt;&nbsp;list,
 ec.util.MersenneTwisterFast&nbsp;rng)</code></th>
@@ -349,7 +350,7 @@ ec.util.MersenneTwisterFast&nbsp;rng)</code></th>
 <div class="block">Shuffles the given list using a seeded random number generator.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i17">
+<tr class="rowColor" id="i15">
 <td class="colFirst"><code>static void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#swap(java.lang.Object%5B%5D,int,int)">swap</a></span>&#8203;(java.lang.Object[]&nbsp;arr,
 int&nbsp;i,
@@ -375,20 +376,6 @@ int&nbsp;j)</code></th>
 </a>
 <h2>Field Details</h2>
 <ul class="blockList">
-<li class="blockList">
-<section class="detail">
-<h3><a id="MOL_NAMES">MOL_NAMES</a></h3>
-<div class="memberSignature"><span class="modifiers">static final</span>&nbsp;<span class="returnType">java.lang.String[]</span>&nbsp;<span class="memberName">MOL_NAMES</span></div>
-<div class="block">Names of molecules corresponding to ID number</div>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="NUM_MOLS">NUM_MOLS</a></h3>
-<div class="memberSignature"><span class="modifiers">static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">NUM_MOLS</span></div>
-<div class="block">Number of molecules with IDs</div>
-</section>
-</li>
 <li class="blockList">
 <section class="detail">
 <h3><a id="MOL_GLUCOSE">MOL_GLUCOSE</a></h3>
@@ -508,6 +495,17 @@ int&nbsp;j)</code></th>
 <dd><code>key</code> - the name of the lattice</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the <a href="../env/lat/Lattice.html" title="interface in arcade.env.lat"><code>Lattice</code></a> object</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="getMolecules()">getMolecules</a></h3>
+<div class="memberSignature"><span class="returnType">java.util.HashMap&lt;java.lang.String,&#8203;<a href="../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&gt;</span>&nbsp;<span class="memberName">getMolecules</span>()</div>
+<div class="block">Gets the map of molecule names and parameters.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the map of molecule name to parameters</dd>
 </dl>
 </section>
 </li>
@@ -640,51 +638,13 @@ int&nbsp;age)</span></div>
 </li>
 <li class="blockList">
 <section class="detail">
-<h3><a id="getLocations(int,int)">getLocations</a></h3>
-<div class="memberSignature"><span class="returnType">java.util.ArrayList&lt;<a href="../env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&gt;</span>&nbsp;<span class="memberName">getLocations</span>&#8203;(<span class="arguments">int&nbsp;radius,
-int&nbsp;height)</span></div>
-<div class="block">Gets a list of all locations in the simulation within the given bounds.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>radius</code> - the bound on the radius</dd>
-<dd><code>height</code> - the bound on the height</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>a list of locations</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="getInitLocations(int)">getInitLocations</a></h3>
-<div class="memberSignature"><span class="returnType">java.util.ArrayList&lt;<a href="../env/loc/Location.html" title="interface in arcade.env.loc">Location</a>&gt;</span>&nbsp;<span class="memberName">getInitLocations</span>&#8203;(<span class="arguments">int&nbsp;radius)</span></div>
-<div class="block">Gets a list of initialization locations for the given bounds.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>radius</code> - the bound on the initialization radius</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>a list of locations</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="getSpanLocations()">getSpanLocations</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="../env/loc/Location.html" title="interface in arcade.env.loc">Location</a>[][][]</span>&nbsp;<span class="memberName">getSpanLocations</span>()</div>
-<div class="block">Gets the lattice coordinates that span the environment.</div>
+<h3><a id="getRepresentation()">getRepresentation</a></h3>
+<div class="memberSignature"><span class="returnType"><a href="Simulation.Representation.html" title="interface in arcade.sim">Simulation.Representation</a></span>&nbsp;<span class="memberName">getRepresentation</span>()</div>
+<div class="block">Gets the <a href="Simulation.Representation.html" title="interface in arcade.sim"><code>Simulation.Representation</code></a> object for the current
+ simulation.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>an array of coordinates</dd>
-</dl>
-</section>
-</li>
-<li class="blockList">
-<section class="detail">
-<h3><a id="getCenterLocation()">getCenterLocation</a></h3>
-<div class="memberSignature"><span class="returnType"><a href="../env/loc/Location.html" title="interface in arcade.env.loc">Location</a></span>&nbsp;<span class="memberName">getCenterLocation</span>()</div>
-<div class="block">Gets the center location of the simulation.</div>
-<dl>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the center locations</dd>
+<dd>the <a href="Simulation.Representation.html" title="interface in arcade.sim"><code>Simulation.Representation</code></a> instance</dd>
 </dl>
 </section>
 </li>
@@ -751,7 +711,7 @@ int&nbsp;j)</span></div>
 <div>
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested.class.summary">Nested</a>&nbsp;|&nbsp;</li>
 <li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>

@@ -6,6 +6,7 @@ import arcade.env.comp.Generator;
 import arcade.env.comp.Component;
 import arcade.env.loc.Location;
 import arcade.sim.Simulation;
+import arcade.util.MiniBox;
 
 /** 
  * Implementation of {@link arcade.env.lat.Lattice} using for loop array iteration.
@@ -17,7 +18,7 @@ import arcade.sim.Simulation;
  *     <li><em>Generator</em> for adding concentrations into the array</li>
  * </ul>
  *
- * @version 2.3.7
+ * @version 2.3.8
  * @since   2.2
  */
 
@@ -65,10 +66,10 @@ public abstract class EnvLattice implements Lattice {
 	 * Makes a diffuser {@link arcade.env.comp.Component} for the lattice.
 	 * 
 	 * @param sim  the simulation instance
-	 * @param code  the molecule code
+	 * @param molecule  the molecule parameters
 	 * @return  a diffuser component
 	 */
-	abstract Component makeDiffuser(Simulation sim, int code);
+	abstract Component makeDiffuser(Simulation sim, MiniBox molecule);
 	
 	public void setField(double[][] vals, int index) {
 		for (int i = 0; i < vals.length; i++) { field[index][i] = vals[i].clone(); }
@@ -114,15 +115,15 @@ public abstract class EnvLattice implements Lattice {
 		for (int[] i : loc.getLatLocations()) { field[z][i[0]][i[1]] = val; }
 	}
 	
-	public void addComponent(Simulation sim, int code, int type) {
+	public void addComponent(Simulation sim, int type, MiniBox molecule) {
 		switch (type) {
 			case DIFFUSED:
-				Component diffuser = makeDiffuser(sim, code);
+				Component diffuser = makeDiffuser(sim, molecule);
 				components.put("diffuser", diffuser);
 				diffuser.scheduleComponent(sim);
 				break;
 			case GENERATED:
-				Component generator = new Generator(sim, this, code);
+				Component generator = new Generator(sim, this, molecule);
 				components.put("generator", generator);
 				generator.scheduleComponent(sim);
 				break;

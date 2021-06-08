@@ -119,7 +119,7 @@ implements <a href="Component.html" title="interface in arcade.env.comp">Compone
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.3.9</dd>
+<dd>2.3.11</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../../serialized-form.html#arcade.env.comp.Diffuser">Serialized Form</a></dd>
 </dl>
@@ -303,9 +303,9 @@ implements <a href="Component.html" title="interface in arcade.env.comp">Compone
 </thead>
 <tbody>
 <tr class="altColor">
-<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(arcade.sim.Simulation,arcade.env.lat.Lattice,int)">Diffuser</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
+<th class="colConstructorName" scope="row"><code><span class="memberNameLink"><a href="#%3Cinit%3E(arcade.sim.Simulation,arcade.env.lat.Lattice,arcade.util.MiniBox)">Diffuser</a></span>&#8203;(<a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
 <a href="../lat/Lattice.html" title="interface in arcade.env.lat">Lattice</a>&nbsp;lat,
-int&nbsp;code)</code></th>
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</code></th>
 <td class="colLast">
 <div class="block">Creates a <code>Diffuser</code> for the given molecule.</div>
 </td>
@@ -564,10 +564,10 @@ double[][]&nbsp;field)</code></th>
 <ul class="blockList">
 <li class="blockList">
 <section class="detail">
-<h3><a id="&lt;init&gt;(arcade.sim.Simulation,arcade.env.lat.Lattice,int)">Diffuser</a></h3>
+<h3><a id="&lt;init&gt;(arcade.sim.Simulation,arcade.env.lat.Lattice,arcade.util.MiniBox)">Diffuser</a></h3>
 <div class="memberSignature"><span class="memberName">Diffuser</span>&#8203;(<span class="arguments"><a href="../../sim/Simulation.html" title="interface in arcade.sim">Simulation</a>&nbsp;sim,
 <a href="../lat/Lattice.html" title="interface in arcade.env.lat">Lattice</a>&nbsp;lat,
-int&nbsp;code)</span></div>
+<a href="../../util/MiniBox.html" title="class in arcade.util">MiniBox</a>&nbsp;molecule)</span></div>
 <div class="block">Creates a <code>Diffuser</code> for the given molecule.
  <p>
  Diffusion parameters are pulled based on the molecule code.
@@ -578,7 +578,7 @@ int&nbsp;code)</span></div>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>sim</code> - the simulation instance</dd>
 <dd><code>lat</code> - the lattice of concentrations to be diffused</dd>
-<dd><code>code</code> - the molecule code</dd>
+<dd><code>molecule</code> - the molecule parameters</dd>
 </dl>
 </section>
 </li>

@@ -9,7 +9,7 @@ import arcade.util.Colors;
  * <p>
  * Uses {@link arcade.util.Colors} to define mappings.
  * 
- * @version 2.3.4
+ * @version 2.3.6
  * @since   2.3
  */
 
@@ -48,8 +48,8 @@ class ColorMaps {
 	/** Color map for sites */
 	static final Colors MAP_SITES = new Colors(new Color[] {
 		new Color(0,0,0,0),
-		new Color(80,80,80),
-		new Color(120,120,120),
+		new Color(230,230,230),
+		new Color(250,250,250),
 	}, 3);
 	
 	/** Color map (unused) */
@@ -64,6 +64,12 @@ class ColorMaps {
 		new Color(84,31,63),
 		new Color(0,0,0),
 	}, new double[] { 1, 7/8.0, 6/8.0, 5/8.0, 4/8.0, 3/8.0, 2/8.0, 1/8.0, 0 } );
+	
+	/** Color map for damage */
+	public static final Colors MAP_DAMAGE = new Colors(new Color[] {
+			new Color(0, 0, 0, 255),
+			new Color(0, 0, 0, 0),
+	}, new double[] { 0, 1 });
 	
 	/** Color map for cell age */
 	final Colors MAP_AGE;
@@ -92,7 +98,7 @@ class ColorMaps {
 		double age = series.getParam(0, "DEATH_AGE_AVG");
 		MAP_AGE = new Colors(new Color(0,0,0,0), new Color(0,0,0,180), 0, age);
 		
-		double gluc = series.getParam("CONC_GLUC");
+		double gluc = series.getParam("CONCENTRATION_GLUCOSE");
 		MAP_GLUC = new Colors(new Color[] {
 				new Color(254,235,226),
 				new Color(251,180,185),
@@ -102,7 +108,7 @@ class ColorMaps {
 				new Color(0,0,0)
 		}, new double[] { gluc, 0.8*gluc, 0.6*gluc, 0.4*gluc, 0.2*gluc, 0 });
 		
-		double oxy = series.getParam("CONC_OXY");
+		double oxy = series.getParam("CONCENTRATION_OXYGEN");
 		MAP_OXY = new Colors(new Color[] {
 				new Color(255,255,204),
 				new Color(161,218,180),
@@ -112,7 +118,7 @@ class ColorMaps {
 				new Color(0,0,0)
 		}, new double[] { oxy, 0.8*oxy, 0.6*oxy, 0.4*oxy, 0.2*oxy, 0 });
 		
-		double tgfa = series.getParam("CONC_TGFA");
+		double tgfa = series.getParam("CONCENTRATION_TGFA");
 		MAP_TGF = new Colors(new Color[] {
 				new Color(254,240,217),
 				new Color(253,204,138),

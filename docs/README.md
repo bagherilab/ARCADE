@@ -2,23 +2,21 @@
 
 __Agent-based Representation of Cells And Dynamic Environments__
 
-- [Class documentation](#class-documentation)
-- [Sample input and output](#sample-input-and-output)
+- **[Class documentation](#class-documentation)**
+- **[Sample input and output](#sample-input-and-output)**
     + [`0. no agents`](#0-no-agents)
     + [`1. healthy cells`](#1-healthy-cells)
     + [`2. random seeds`](#2-random-seeds)
     + [`3. multiple populations`](#3-multiple-populations)
     + [`4. environment parameters`](#4-environment-parameters)
     + [`5. colony growth`](#5-colony-growth)
-- [Setup files](#setup-files)
-
----
+    + [`6. nutrient sources`](#6-nutrient-sources)
+    + [`7. vascular layouts`](#7-vascular-layouts)
+    + [`8. graph checkponts`](#8-graph-checkpoint)
 
 ## Class documentation
 
 The `javadoc` directory contains documentation for all classes. To view, open the `javadoc/index.html` file in a web browser.
-
----
 
 ## Sample input and output
 
@@ -38,9 +36,9 @@ When running this with visualization, it will take time to generate the visualiz
 
 `1_healthy_cells.xml` includes one population of healthy cells seeded at the full radius, with the radius and margin changed from the default values to 4 and 2, respectively. The simulation is run for 2 days.
 
-`1_healthy_cells_00.json` is the output of the growth profiler. The profiler takes profiles at intervals of 720 ticks (720 minutes) for four total timepoints over the 2 day simulation. The `init` value of `-1` indicates cell were initialized at the full radius.
+`1_healthy_cells_00.json` is the output of the growth profiler. The profiler takes profiles at intervals of 720 ticks (720 minutes) for five total timepoints over the 2 day simulation. The `init` value of `-1` indicates cell were initialized at the full radius.
 
-- Note that an initialization of 4 (`initialization="4"`) gives the same results
+Note that an initialization of 4 (`initialization="4"`) gives the same results.
 
 ### 2. random seeds
 
@@ -65,7 +63,7 @@ The `"pops"` list under `"parameters"` lists the parameter values specific to ea
 
 `4_environment_parameters.xml` simulates a cell population in an environment under three conditions: (i) no glucose or oxygen, (ii) no glucose but with oxygen, and (iii) no oxygen but with glucose. All three simulation series are included in the same simulation set. The population parameter of `NECRO_FRAC` is set to zero, indicating that all cells become apoptotic rather than necrotic (and are therefore removed from the simulation).
 
-`4_environment_parameters_NO_GLUC_NO_OXY_00.json` is the output for no glucose or oxygen. Under `"globals"` in the `"parameters"` list, both `CONC_GLUC` and `CONC_OXY` are set to 0. In the `"timepoints"` list, at `time = "1.5"`, there are no longer any cells remaining (the `"cells"` list is empty).
+`4_environment_parameters_NO_GLUC_NO_OXY_00.json` is the output for no glucose or oxygen. Under `"globals"` in the `"parameters"` list, both `CONCENTRATION_GLUCOSE` and `CONCENTRATION_OXYGEN` are set to 0. In the `"timepoints"` list, at `time = "1.5"`, there are no longer any cells remaining (the `"cells"` list is empty).
 
 `4_environment_parameters_NO_GLUC_00.json` is the output for no glucose but with oxygen. Here cells use autophagy to convert cell mass into glucose and are able to survive for a longer period of time. The number of cell decreases over time and the average cell volumes decrease from around 2200 at `time = "0.0"` to around 1100 `time = "11.5"`. After `time = "11.5"`, no cells remain.
 
@@ -81,29 +79,36 @@ The `"pops"` list under `"parameters"` lists the parameter values specific to ea
 
 `5_colony_growth_CONVERTED_00.json` is the output for converting the center cell into a different population. At `time = "0.0"` and `time = "0.5"`, there are only healthy cells (population 0). At time `time = "1.0"`,  the cell at the center coordinate `[0,0,0,0]` is converted to population 1.
 
----
+### 6. nutrient sources
 
-## Setup files
+`6_nutrient_sources.xml` simulates cell growth with different source patterns: (i) sources only on the top half of the environment, (ii) stripes of sources, and (iii) evenly distributed grid sources. All simulations are otherwise identical.
 
-The `setup_files` directory contains setup files for the simulations described in the manuscript [Agent-based models predict emergent behavior of heterogeneous cell populations in dynamic microenvironments](https://www.frontiersin.org/articles/10.3389/fbioe.2020.00249/).
+Running with visualization (`-v` or `--vis` flags in command line, or the _vis_ option in the GUI) will display the locations of the nutrient sources (remember that only the first simulation series in a setup file is loaded by the visualization; move the other series into the first position in the setup file to visualize them).
 
-Simulations with * used modified code.
+`6_nutrient_sources_TOP.json` is the output for nutrient sources in the top of half of the environment. On average, nutrient concentrations (the `"molecules"` object under each time point lists average concentrations of each molecule at each radius from the center of the simulation) are near source concentrations due to diffusion with glucose at 85% of source (4.230 umol/cm^3) at `time = "2.0"`.
 
-- Figure 2
-    + `DEFAULT_colony.xml`
-    + `DEFAULT_tissue.xml`
-    + `DEFAULT_random.xml` *
-- Figure 3
-    + `MODULE_COMPLEXITY.xml`
-    + `MODULE_COMPLEXITY_both.xml` *
-    + `MODULE_COMPLEXITY_metabolism.xml` *
-    + `MODULE_COMPLEXITY_signaling.xml` *
-- Figure 4
-    + `PARAMETER_SENSITIVITY.xml`
-    + `GROWTH_CONTEXT_colony.xml`
-    + `GROWTH_CONTEXT_tissue.xml`
-- Figure 5
-    + `CELL_COMPETITION.xml`
-- Figure 6
-    + `POPULATION_HETEROGENEITY_colony.xml`
-    + `POPULATION_HETEROGENEITY_tissue.xml`
+`6_nutrient_sources_LINES.json` is the output for nutrient sources in lines. This layout introduces larger distances between cells and sources, resulting in lower concentrations with glucose at 68% of source (3.392 umol/cm^3) at `time = "2.0"`).
+
+`6_nutrient_sources_GRID.json` is the output for nutrient sources located in a sparse grid. This option has the lowest concentrations with glucose at 29% of source (1.431 umol/cm^3) at `time = "2.0"`.
+
+### 7. vascular layouts
+
+`7_vascular_layouts.xml` demonstrates two different vascular layouts grown from root: (i) one arterial and one venous root in a "line" (`L`) layout and (ii) two arterial and two venous roots in a "single" (`S`) layout.
+
+Running with visualization (`-v` or `--vis` flags in command line, or the _vis_ option in the GUI) will display the edges of the vascular graph (remember that only the first simulation series in a setup file is loaded by the visualization; move the other series into the first position in the setup file to visualize them) along with relevant hemodynamic properties.
+
+Running the simulations with different seeds will generate different layouts as the growth process from the roots is stochastic.
+
+`7_vascular_layouts_L11.GRAPH.json` and `7_vascular_layouts_S22.GRAPH.json` are the outputs of the graph profiler. The profiler takes profiles at intervals of 720 ticks (720 minutes) for three total timepoints over the 1 day simulation. Unlike the growth profiler, each timepoint now contains information about the vascular graph (nodes, edges, and hemodynamic properties) rather than cell agents. More than one profiler can be assigned to a simulation series.
+
+### 8. graph checkpoints
+
+`8_graph_checkpoints.xml` demonstrates graph checkpointing.
+
+The first simulation series `A` in the set creates a checkpoint of the vascular graph `8_graph_checkpoints_00.checkpoint` after it is generated before running the rest of the simulation (this simulation will take longer than previous examples). The checkpoint contains the serialized version of the graph, which can then be loaded into other simulations.
+
+The second simulation series `B` then loads the graph checkpoint into the simulation, which matches `A` except for the graph checkpoint. The simulation time for `B` is faster than for `A` by eliminating the time needed to generate the graph; there is less "lag" before the simulation starts.
+
+The third simulation series `C` also loads the graph checkpoint, but with a different initialization of cells and using complex hemodynamics (this simulation will take the longest). Checkpoints enable multiple simulations to utilize the same graph under different initial conditions so that the model does not need to repeat the graph generation process.
+
+Both `B` and `C` use parentheses around the `GRAPH_LAYOUT` value to indicate that the graph is will be loaded from a checkpoint so the model does not generate it again.

@@ -19,7 +19,7 @@ import arcade.util.MiniBox;
  * simulation and convert it to a cell agent of the new population by removing
  * the old cell and creating a new cell with the same age and volume. 
  *
- * @version 2.3.5
+ * @version 2.3.6
  * @since   2.2
  */
 
@@ -76,7 +76,7 @@ public class ConvertHelper implements Helper {
 	 */
 	public void step(SimState state) {
 		Simulation sim = (Simulation)state;
-		Location loc = sim.getCenterLocation();
+		Location loc = sim.getRepresentation().getCenterLocation();
 		Bag bag = sim.getAgents().getObjectsAtLocation(loc);
 		double vol = sim.getNextVolume(pop);
 		int age = 0;

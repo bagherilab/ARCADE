@@ -18,7 +18,7 @@ import arcade.util.MiniBox;
  * populations into locations within the specified radius from the center of the
  * simulation.
  * 
- * @version 2.3.6
+ * @version 2.3.7
  * @since   2.2
  */
 
@@ -94,7 +94,7 @@ public class InsertHelper implements Helper {
 	public void step(SimState state) {
 		Simulation sim = (Simulation)state;
 		Grid agents = sim.getAgents();
-		ArrayList<Location> locs = sim.getInitLocations(radius);
+		ArrayList<Location> locs = sim.getRepresentation().getInitLocations(radius);
 		Simulation.shuffle(locs, state.random);
 		
 		// Clear pop counts.

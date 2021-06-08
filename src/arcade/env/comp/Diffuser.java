@@ -4,6 +4,7 @@ import sim.engine.SimState;
 import arcade.sim.Simulation;
 import arcade.env.lat.Lattice;
 import arcade.env.loc.Location;
+import arcade.util.MiniBox;
 
 /**
  * Implementation of {@link arcade.env.comp.Component} for diffusion.
@@ -16,7 +17,7 @@ import arcade.env.loc.Location;
  * adjust the multipliers for both the finite difference approximation and the
  * pseudo-steady state approximation.
  *
- * @version 2.3.9
+ * @version 2.3.11
  * @since   2.2
  */
 
@@ -88,9 +89,9 @@ public abstract class Diffuser implements Component {
 	 * 
 	 * @param sim  the simulation instance
 	 * @param lat  the lattice of concentrations to be diffused
-	 * @param code  the molecule code
+	 * @param molecule  the molecule parameters
 	 */
-	Diffuser(Simulation sim, Lattice lat, int code) {
+	Diffuser(Simulation sim, Lattice lat, MiniBox molecule) {
 		// Get sizing.
 		LENGTH = lat.getLength();
 		WIDTH = lat.getWidth();
@@ -101,9 +102,9 @@ public abstract class Diffuser implements Component {
 		this.latNew = new double[DEPTH][LENGTH][WIDTH];
 		
 		// Get diffusion parameters.
-		_diff = sim.getSeries().getParam("DIFF_" + Simulation.MOL_NAMES[code]);
-		_ds = sim.getCenterLocation().getLatSize();
-		_dz = sim.getCenterLocation().getHeight();
+		_diff = molecule.getDouble("DIFFUSIVITY");
+		_ds = sim.getRepresentation().getCenterLocation().getLatSize();
+		_dz = sim.getRepresentation().getCenterLocation().getHeight();
 		
 		// Set up border arrays for up and down (z direction).
 		UP = new byte[DEPTH];

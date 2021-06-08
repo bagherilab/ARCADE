@@ -102,7 +102,7 @@ $('.navPadding').css('padding-top', $('.fixedNav').css("height"));
 </dl>
 <dl>
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="AgentDrawer2D.DoubleRectangular.html" title="class in arcade.vis">AgentDrawer2D.DoubleRectangular</a></code>, <code><a href="AgentDrawer2D.IntRectangular.html" title="class in arcade.vis">AgentDrawer2D.IntRectangular</a></code>, <code><a href="AgentDrawer2D.IntTriangular.html" title="class in arcade.vis">AgentDrawer2D.IntTriangular</a></code></dd>
+<dd><code><a href="AgentDrawer2D.Hexagonal.html" title="class in arcade.vis">AgentDrawer2D.Hexagonal</a></code></dd>
 </dl>
 <hr>
 <pre>public abstract class <span class="typeNameLabel">AgentDrawer2D</span>
@@ -117,7 +117,7 @@ extends <a href="Drawer.html" title="class in arcade.vis">Drawer</a></pre>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.2</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.3.2</dd>
+<dd>2.3.X</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><a href="../../serialized-form.html#arcade.vis.AgentDrawer2D">Serialized Form</a></dd>
 </dl>
@@ -143,23 +143,9 @@ extends <a href="Drawer.html" title="class in arcade.vis">Drawer</a></pre>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="AgentDrawer2D.DoubleRectangular.html" title="class in arcade.vis">AgentDrawer2D.DoubleRectangular</a></span></code></th>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="AgentDrawer2D.Hexagonal.html" title="class in arcade.vis">AgentDrawer2D.Hexagonal</a></span></code></th>
 <td class="colLast">
-<div class="block"><a href="AgentDrawer2D.html" title="class in arcade.vis"><code>AgentDrawer2D</code></a> for drawing rectangular grid of doubles.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="AgentDrawer2D.IntRectangular.html" title="class in arcade.vis">AgentDrawer2D.IntRectangular</a></span></code></th>
-<td class="colLast">
-<div class="block"><a href="AgentDrawer2D.html" title="class in arcade.vis"><code>AgentDrawer2D</code></a> for drawing rectangular grid of integers.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static class&nbsp;</code></td>
-<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="AgentDrawer2D.IntTriangular.html" title="class in arcade.vis">AgentDrawer2D.IntTriangular</a></span></code></th>
-<td class="colLast">
-<div class="block"><a href="AgentDrawer2D.html" title="class in arcade.vis"><code>AgentDrawer2D</code></a> for drawing triangular grid of integers.</div>
+<div class="block"><a href="AgentDrawer2D.html" title="class in arcade.vis"><code>AgentDrawer2D</code></a> for drawing hexagonal agents</div>
 </td>
 </tr>
 </tbody>
@@ -189,6 +175,34 @@ extends <a href="Drawer.html" title="class in arcade.vis">Drawer</a></pre>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#array">array</a></span></code></th>
 <td class="colLast">
 <div class="block">Array of values</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GRID_DOUBLE">GRID_DOUBLE</a></span></code></th>
+<td class="colLast">
+<div class="block">Code for double grid drawing</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#GRID_INTEGER">GRID_INTEGER</a></span></code></th>
+<td class="colLast">
+<div class="block">Code for integer grid drawing</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#LATTICE_DOUBLE">LATTICE_DOUBLE</a></span></code></th>
+<td class="colLast">
+<div class="block">Code for double lattice drawing</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>static int</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#LATTICE_INTEGER">LATTICE_INTEGER</a></span></code></th>
+<td class="colLast">
+<div class="block">Code for integer lattice drawing</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -240,7 +254,7 @@ int&nbsp;depth,
 sim.util.gui.ColorMap&nbsp;map,
 java.awt.geom.Rectangle2D.Double&nbsp;bounds)</code></th>
 <td class="colLast">
-<div class="block">Creates a <a href="Drawer.html" title="class in arcade.vis"><code>Drawer</code></a> for drawing agent grids.</div>
+<div class="block">Creates a <a href="Drawer.html" title="class in arcade.vis"><code>Drawer</code></a> for drawing 2D agent grids.</div>
 </td>
 </tr>
 </tbody>
@@ -318,6 +332,50 @@ java.awt.geom.Rectangle2D.Double&nbsp;bounds)</code></th>
 </li>
 <li class="blockList">
 <section class="detail">
+<h3><a id="GRID_INTEGER">GRID_INTEGER</a></h3>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">GRID_INTEGER</span></div>
+<div class="block">Code for integer grid drawing</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../constant-values.html#arcade.vis.AgentDrawer2D.GRID_INTEGER">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="GRID_DOUBLE">GRID_DOUBLE</a></h3>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">GRID_DOUBLE</span></div>
+<div class="block">Code for double grid drawing</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../constant-values.html#arcade.vis.AgentDrawer2D.GRID_DOUBLE">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="LATTICE_INTEGER">LATTICE_INTEGER</a></h3>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">LATTICE_INTEGER</span></div>
+<div class="block">Code for integer lattice drawing</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../constant-values.html#arcade.vis.AgentDrawer2D.LATTICE_INTEGER">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="LATTICE_DOUBLE">LATTICE_DOUBLE</a></h3>
+<div class="memberSignature"><span class="modifiers">public static final</span>&nbsp;<span class="returnType">int</span>&nbsp;<span class="memberName">LATTICE_DOUBLE</span></div>
+<div class="block">Code for double lattice drawing</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../constant-values.html#arcade.vis.AgentDrawer2D.LATTICE_DOUBLE">Constant Field Values</a></dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
 <h3><a id="array">array</a></h3>
 <div class="memberSignature"><span class="returnType">sim.field.grid.DoubleGrid2D</span>&nbsp;<span class="memberName">array</span></div>
 <div class="block">Array of values</div>
@@ -350,7 +408,7 @@ int&nbsp;width,
 int&nbsp;depth,
 sim.util.gui.ColorMap&nbsp;map,
 java.awt.geom.Rectangle2D.Double&nbsp;bounds)</span></div>
-<div class="block">Creates a <a href="Drawer.html" title="class in arcade.vis"><code>Drawer</code></a> for drawing agent grids.</div>
+<div class="block">Creates a <a href="Drawer.html" title="class in arcade.vis"><code>Drawer</code></a> for drawing 2D agent grids.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>panel</code> - the panel the drawer is attached to</dd>

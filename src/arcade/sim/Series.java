@@ -10,6 +10,7 @@ import sim.display.GUIState;
 import arcade.agent.helper.*;
 import arcade.env.comp.*;
 import arcade.sim.profiler.*;
+import arcade.sim.checkpoint.*;
 import arcade.util.*;
 
 /** 
@@ -25,7 +26,7 @@ import arcade.util.*;
  * {@link arcade.sim.Simulation} objects are passed their parent {@code Series}
  * object and have access to fields with the "_" prefix.
  *
- * @version 2.2.X
+ * @version 2.3.X
  * @since   2.2
  */
 
@@ -56,6 +57,9 @@ public class Series {
 	
 	/** {@code true} if simulation is run with visualization, {@code false} otherwise */
 	private boolean single;
+	
+	/** {@code true} if simulation uses graph sites, {@code false} otherwise */
+	private boolean hasGraph;
 	
 	/** Name of the simulation */
 	private final String name;
@@ -105,6 +109,9 @@ public class Series {
 	/** Number of cell populations */
 	int _pops;
 	
+	/** Specification offset */
+	int specOffset;
+	
 	/** List of constructors for each population */
 	Constructor<?>[] _popCons;
 	
@@ -134,6 +141,9 @@ public class Series {
 	
 	/** List of series {@link arcade.sim.profiler.Profiler} objects */
 	public ArrayList<Profiler> _profilers;
+	
+	/** List of series {@link arcade.sim.checkpoint.Checkpoint} objects */
+	public ArrayList<Checkpoint> _checkpoints;
 	
 	/**
 	 * Creates a {@code Series} object given setup information parsed from XML.
@@ -167,6 +177,7 @@ public class Series {
 		MiniBox agents = setupDicts.get("agents");
 		MiniBox environment = setupDicts.get("environment");
 		updateAgents(agents);
+		updateEnvironment(environment);
 		
 		// Update populations.
 		ArrayList<MiniBox> populations = setupLists.get("populations");
@@ -186,6 +197,7 @@ public class Series {
 		ArrayList<MiniBox> components = setupLists.get("components");
 		int _helps = (helpers == null ? 0 : helpers.size());
 		int _comps = (components == null ? 0 : components.size());
+		specOffset = _helps;
 		ArrayList<ArrayList<MiniBox>> specifications = extractList(setupLists, "specifications", _helps + _comps);
 		updateHelpers(helpers, parameters, specifications);
 		updateComponents(components, parameters, specifications);
@@ -193,6 +205,10 @@ public class Series {
 		// Add profilers.
 		ArrayList<MiniBox> profilers = setupLists.get("profilers");
 		updateProfilers(profilers);
+		
+		// Add checkpoints.
+		ArrayList<MiniBox> checkpoints = setupLists.get("checkpoints");
+		updateCheckpoints(checkpoints);
 		
 		// Make constructors for simulation and visualization.
 		makeConstructor(simulation);
@@ -232,6 +248,14 @@ public class Series {
 		return variableParams[pop].getDouble(key);
 	}
 	
+	/**
+	 * Gets the parameters filtered by the given code.
+	 * 
+	 * @param code  the code to filter parameters by.
+	 * @return  the filtered parameter dictionary
+	 */
+	public MiniBox getParams(String code) { return globalParams.filter(code); }
+
 	/**
 	 * Extracts dictionaries for given key.
 	 * 
@@ -297,6 +321,13 @@ public class Series {
 	}
 	
 	/**
+	 * Updates environment initialization.
+	 * 
+	 * @param environment  the environment setup dictionary
+	 */
+	private void updateEnvironment(MiniBox environment) { }
+	
+	/**
 	 * Creates agent population constructors.
 	 * 
 	 * @param populations  the list of population setup dictionaries
@@ -357,7 +388,17 @@ public class Series {
 			// Create constructor by compiling class name.
 			try {
 				Class<?> c = Class.forName("arcade.agent.cell.Tissue" + type + "Cell");
-				_popCons[i] = c.getConstructors()[0];
+				
+				for (Constructor<?> cons : c.getConstructors()) {
+					Class<?>[] parameters = cons.getParameterTypes();
+					if (parameters.length == 7) { _popCons[i] = cons; }
+				}
+				
+				if (_popCons[i] == null) {
+					LOGGER.warning("No valid constructor for " + c);
+					skip = true;
+				}
+				
 				_popFrac[i] = ratio;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -480,7 +521,76 @@ public class Series {
 	 */
 	private void updateComponents(ArrayList<MiniBox> components, Box parameters, ArrayList<ArrayList<MiniBox>> specifications) {
 		_components = new ArrayList<>();
-		_components.add(new SourceSites());
+		if (components == null) {
+			MiniBox minibox = new MiniBox();
+			minibox.put("X_SPACING", "*");
+			minibox.put("Y_SPACING", "*");
+			minibox.put("Z_SPACING", "*");
+			minibox.put("SOURCE_DAMAGE", 0);
+			_components.add(new SourceSites(minibox));
+			return;
+		}
+		
+		Box defaults = parameters.filterBoxByTag("SPECIFICATION.COMPONENT");
+		int i = specOffset;
+		
+		String componentFormat = "adding %s component to [ %s ]";
+		
+		for (MiniBox c : components) {
+			// Get default component specifications.
+			Box specs = defaults.filterBoxByAtt("type", c.get("type"));
+			if (c.contains("class")) { specs = specs.filterBoxByAtt("class", c.get("class")); }
+			
+			// Add default specifications to component.
+			for (String key : specs.getKeys()) { c.put(key, specs.getValue(key));  }
+			
+			// Update specifications.
+			for (MiniBox box : specifications.get(i)) { c.put(box.get("id"), box.get("value")); }
+			
+			switch (c.get("type").toLowerCase()) {
+				case "sites":
+					String site = c.get("class");
+					switch (site) {
+						case "source":
+							_components.add(new SourceSites(c));
+							LOGGER.info(String.format(componentFormat, "SITE [ source ]", name));
+							break;
+						case "pattern":
+							_components.add(new TriPatternSites(c));
+							LOGGER.info(String.format(componentFormat, "SITE [ pattern ]", name));
+							break;
+						case "graph":
+							String complexity = c.get("complexity");
+							
+							if (complexity == null || !complexity.equals("simple")) {
+								_components.add(new TriGraphSites.Complex(c));
+							} else {
+								_components.add(new TriGraphSites.Simple(c));
+							}
+							hasGraph = true;
+							LOGGER.info(String.format(componentFormat, "SITE [ graph ]", name));
+							break;
+						default:
+							LOGGER.info("component class for [ " + c.get("type") + " ] must be SOURCE, PATTERN, or GRAPH");
+							skip = true;
+							break;
+					}
+					break;
+				case "degrade":
+					_components.add(new DegradeComponent(c));
+					LOGGER.info(String.format(componentFormat, "DEGRADE", name));
+					break;
+				case "remodel":
+					_components.add(new RemodelComponent(c));
+					LOGGER.info(String.format(componentFormat, "REMODEL", name));
+					break;
+				default:
+					LOGGER.warning(String.format(DNEFormat, "component", c.get("type")));
+					skip = true;
+			}
+			
+			i++;
+		}
 	}
 	
 	/**
@@ -492,27 +602,67 @@ public class Series {
 		_profilers = new ArrayList<>();
 		if (profilers == null) { return; }
 		
-		int i;
-		String suffix;
-		
 		String profilerFormat = "adding %s profiler to [ %s ]";
 		
 		for (MiniBox p : profilers) {
+			int i = p.getInt("interval");
+			String suffix = (p.contains("suffix") ? p.get("suffix") : "");
+			
 			switch (p.get("type").toLowerCase()) {
 				case "growth":
-					i = p.getInt("interval");
-					suffix = (p.contains("suffix") ? p.get("suffix") : "");
 					_profilers.add(new GrowthProfiler(i, suffix));
 					LOGGER.info(String.format(profilerFormat, "GROWTH", name));
 					break;
 				case "parameter":
-					i = p.getInt("interval");
-					suffix = (p.contains("suffix") ? p.get("suffix") : "");
 					_profilers.add(new ParameterProfiler(i, suffix));
 					LOGGER.info(String.format(profilerFormat, "PARAMETER", name));
 					break;
+				case "graph":
+					if (!hasGraph) {
+						LOGGER.warning("GRAPH profiler can only be used with graph sites component");
+						break;
+					}
+					
+					_profilers.add(new GraphProfiler(i, suffix));
+					LOGGER.info(String.format(profilerFormat, "GRAPH", name));
+					break;
 				default:
 					LOGGER.warning(String.format(DNEFormat, "profiler", p.get("type")));
+					skip = true;
+			}
+		}
+	}
+	
+	/**
+	 * Creates instances of selected checkpoints.
+	 * 
+	 * @param checkpoints  the list of checkpoint dictionaries
+	 */
+	private void updateCheckpoints(ArrayList<MiniBox> checkpoints) {
+		_checkpoints = new ArrayList<>();
+		if (checkpoints == null) { return; }
+		
+		String checkpointFormat = "checkpoint class for [ %s ] must be SAVE or LOAD";
+		
+		for (MiniBox c : checkpoints) {
+			String prefix = c.get("path") + c.get("name");
+			int tick = (c.contains("day") ? c.getInt("day")*60*24 : 0);
+			
+			switch (c.get("type").toLowerCase()) {
+				case "graph":
+					if (!hasGraph) {
+						LOGGER.warning("GRAPH checkpoint can only be used with graph sites component");
+						break;
+					}
+					
+					switch (c.get("class").toLowerCase()) {
+						case "save": _checkpoints.add(new GraphCheckpoint.Save(prefix, tick)); break;
+						case "load": _checkpoints.add(new GraphCheckpoint.Load(prefix)); break;
+						default: LOGGER.info(String.format(checkpointFormat, c.get("type")));
+					}
+					break;
+				default:
+					LOGGER.warning(String.format(DNEFormat, "checkpoint", c.get("type")));
 					skip = true;
 			}
 		}
@@ -525,16 +675,18 @@ public class Series {
 	 */
 	private void makeConstructor(MiniBox simulation) {
 		String type = simulation.get("type").toLowerCase();
-		if (!type.equals("growth")) {
-			LOGGER.warning("simulation type [ " + type + " ] not supported");
-			skip = true;
-			return;
-		}
-		type = type.substring(0, 1).toUpperCase() + type.substring(1);
+		String simClass, visClass;
 		
-		// Select appropriate simulation class.
-		String simClass = "arcade.sim.Hex" + type + "Sim";
-		String visClass = "arcade.vis.Hex" + "Vis2D";
+		switch (type) {
+			case "growth":
+				simClass = "arcade.sim.GrowthSimulation$Hexagonal";
+				visClass = "arcade.vis.GrowthVisualization2D$Hexagonal";
+				break;
+			default:
+				LOGGER.warning("simulation type [ " + type + " ] not supported");
+				skip = true;
+				return;
+		}
 		
 		// Create constructor for simulation class.
 		try {
@@ -542,7 +694,7 @@ public class Series {
 			simCons = c.getConstructor(long.class, Series.class);
 		} catch (Exception e) { e.printStackTrace(); }
 		
-		// Create constructor.
+		// Create constructor for visualization class.
 		try {
 			Class<?> c = Class.forName(visClass);
 			visCons = c.getConstructor(Simulation.class);
@@ -645,6 +797,9 @@ public class Series {
 	public String helpersToJSON() {
 		String help = "";
 		for (Helper helper : _helpers) { help += "\t\t" + helper.toJSON() + ",\n"; }
+		help = help.replace("\n\t\"", "\n\t\t\t\t\"");
+		help = help.replace("\"specs\"", "\n\t\t\t\"specs\"");
+		help = help.replace("} },", "\t\t\t}\n\t\t},");
 		return help.replaceFirst(",$","");
 	}
 	
@@ -656,6 +811,9 @@ public class Series {
 	public String componentsToJSON() {
 		String comp = "";
 		for (Component component : _components) { comp += "\t\t" + component.toJSON() + ",\n"; }
+		comp = comp.replace("\n\t\"", "\n\t\t\t\t\"");
+		comp = comp.replace("\"specs\"", "\n\t\t\t\"specs\"");
+		comp = comp.replace("} },", "\t\t\t}\n\t\t},");
 		return comp.replaceFirst(",$","");
 	}
 	

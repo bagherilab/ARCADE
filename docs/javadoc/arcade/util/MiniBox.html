@@ -19,7 +19,7 @@
 <script type="text/javascript" src="../../script-dir/jquery-ui.js"></script>
 </head>
 <body class="class-declaration">
-<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -105,7 +105,7 @@ extends java.lang.Object</pre>
 <dt><span class="simpleTagLabel">Since:</span></dt>
 <dd>2.0</dd>
 <dt><span class="simpleTagLabel">Version:</span></dt>
-<dd>2.3.0</dd>
+<dd>2.3.2</dd>
 </dl>
 </section>
 <section class="summary">
@@ -199,41 +199,48 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="rowColor" id="i1">
+<td class="colFirst"><code><a href="MiniBox.html" title="class in arcade.util">MiniBox</a></code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#filter(java.lang.String)">filter</a></span>&#8203;(java.lang.String&nbsp;code)</code></th>
+<td class="colLast">
+<div class="block">Filters map by the given code.</div>
+</td>
+</tr>
+<tr class="altColor" id="i2">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#get(java.lang.String)">get</a></span>&#8203;(java.lang.String&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Gets the value for the given key.</div>
 </td>
 </tr>
-<tr class="altColor" id="i2">
+<tr class="rowColor" id="i3">
 <td class="colFirst"><code>boolean</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getBoolean(java.lang.String)">getBoolean</a></span>&#8203;(java.lang.String&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Gets the value for given key converted to a boolean.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i3">
+<tr class="altColor" id="i4">
 <td class="colFirst"><code>double</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getDouble(java.lang.String)">getDouble</a></span>&#8203;(java.lang.String&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Gets the value for given key converted to a double.</div>
 </td>
 </tr>
-<tr class="altColor" id="i4">
+<tr class="rowColor" id="i5">
 <td class="colFirst"><code>int</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getInt(java.lang.String)">getInt</a></span>&#8203;(java.lang.String&nbsp;id)</code></th>
 <td class="colLast">
 <div class="block">Gets the value for given key converted to an integer.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i5">
+<tr class="altColor" id="i6">
 <td class="colFirst"><code>java.util.ArrayList&lt;java.lang.String&gt;</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#getKeys()">getKeys</a></span>()</code></th>
 <td class="colLast">
 <div class="block">Gets all keys in the dictionary.</div>
 </td>
 </tr>
-<tr class="altColor" id="i6">
+<tr class="rowColor" id="i7">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#put(java.lang.String,double)">put</a></span>&#8203;(java.lang.String&nbsp;id,
 double&nbsp;val)</code></th>
@@ -241,7 +248,7 @@ double&nbsp;val)</code></th>
 <div class="block">Adds a key and double value pair to the map.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i7">
+<tr class="altColor" id="i8">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#put(java.lang.String,int)">put</a></span>&#8203;(java.lang.String&nbsp;id,
 int&nbsp;val)</code></th>
@@ -249,7 +256,7 @@ int&nbsp;val)</code></th>
 <div class="block">Adds a key and integer value pair to the map.</div>
 </td>
 </tr>
-<tr class="altColor" id="i8">
+<tr class="rowColor" id="i9">
 <td class="colFirst"><code>void</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#put(java.lang.String,java.lang.String)">put</a></span>&#8203;(java.lang.String&nbsp;id,
 java.lang.String&nbsp;val)</code></th>
@@ -257,7 +264,12 @@ java.lang.String&nbsp;val)</code></th>
 <div class="block">Adds a key and value pair to the map.</div>
 </td>
 </tr>
-<tr class="rowColor" id="i9">
+<tr class="altColor" id="i10">
+<td class="colFirst"><code>java.lang.String</code></td>
+<th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toJSON()">toJSON</a></span>()</code></th>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor" id="i11">
 <td class="colFirst"><code>java.lang.String</code></td>
 <th class="colSecond" scope="row"><code><span class="memberNameLink"><a href="#toString()">toString</a></span>()</code></th>
 <td class="colLast">&nbsp;</td>
@@ -438,6 +450,25 @@ java.lang.String&nbsp;val)</span></div>
 <dd><code>id</code> - the key</dd>
 <dd><code>val</code> - the value</dd>
 </dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="filter(java.lang.String)">filter</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType"><a href="MiniBox.html" title="class in arcade.util">MiniBox</a></span>&nbsp;<span class="memberName">filter</span>&#8203;(<span class="arguments">java.lang.String&nbsp;code)</span></div>
+<div class="block">Filters map by the given code.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>code</code> - the code to filter by</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the filtered container</dd>
+</dl>
+</section>
+</li>
+<li class="blockList">
+<section class="detail">
+<h3><a id="toJSON()">toJSON</a></h3>
+<div class="memberSignature"><span class="modifiers">public</span>&nbsp;<span class="returnType">java.lang.String</span>&nbsp;<span class="memberName">toJSON</span>()</div>
 </section>
 </li>
 <li class="blockList">

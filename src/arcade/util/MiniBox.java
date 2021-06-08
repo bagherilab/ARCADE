@@ -2,6 +2,7 @@ package arcade.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 /**
  * Container that maps a key to a value.
@@ -9,7 +10,7 @@ import java.util.HashMap;
  * {@code MiniBox} objects are dictionaries that use a String to String hashmap.
  * Utility methods are provided to return the contents as specific types.
  *
- * @version 2.3.0
+ * @version 2.3.2
  * @since   2.0
  */
 
@@ -100,6 +101,34 @@ public class MiniBox {
 	public void put(String id, String val) {
 		if (!keys.contains(id)) { keys.add(id); }
 		contents.put(id, val);
+	}
+	
+	/**
+	 * Filters map by the given code.
+	 * 
+	 * @param code  the code to filter by
+	 * @return  the filtered container
+	 */
+	public MiniBox filter(String code) {
+		MiniBox results = new MiniBox();
+		for (String key : keys) {
+			String[] split = key.split("_");
+			if (split.length == 2 && split[1].equals(code)) { results.put(split[0], contents.get(key)); }
+		}
+		return results;
+	}
+	
+	public String toJSON() {
+		Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+		
+		String s = "";
+		for (String key : keys) {
+			String value = contents.get(key);
+			boolean isNumber = pattern.matcher(value).matches();
+			if (isNumber) { s += String.format("\t\"%s\" : %s, \n", key, value); }
+			else { s += String.format("\t\"%s\" : \"%s\", \n", key, value); }
+		}
+		return "{ \n" + s.replaceFirst(", $","") + "}";
 	}
 	
 	public String toString() {

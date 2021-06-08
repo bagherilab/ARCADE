@@ -96,7 +96,7 @@ public class ARCADE implements ActionListener {
 		labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
 		labelPanel.setBorder(new EmptyBorder(10, 0, 20, 0));
 		
-		JLabel titleLabel = new JLabel("<html><b><font size=+10>ARCADE</font></b> v2.2</html>");
+		JLabel titleLabel = new JLabel("<html><b><font size=+10>ARCADE</font></b> v2.3</html>");
 		labelPanel.add(titleLabel);
 		
 		JLabel nameLabel = new JLabel("<html><b>Agent-based Representation of Cells And Dynamic Environments</b></html>");
