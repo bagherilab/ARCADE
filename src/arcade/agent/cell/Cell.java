@@ -162,11 +162,18 @@ public interface Cell extends Steppable {
 	void setType(int type);
 	
 	/**
-	 * Gets the age of the cell (in minutes)
+	 * Gets the age of the cell (in minutes).
 	 * 
 	 * @return  the cell age
 	 */
 	int getAge();
+	
+	/**
+	 * Sets the age of the cell (in minutes).
+	 *
+	 * @param age  the target cell age
+	 */
+	void setAge(int age);
 	
 	/**
 	 * Gets the current volume of the cell.

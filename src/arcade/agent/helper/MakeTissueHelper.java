@@ -137,6 +137,7 @@ public class MakeTissueHelper extends TissueHelper {
 					// cell. Set parent type back to neutral.
 					c.divisions--;
 					((TissueCell)cNew).divisions = c.divisions;
+					cNew.setAge(c.getAge());
 					c.setType(Cell.TYPE_NEUTRAL);
 					c.setFlag(Cell.IS_PROLIFERATING, false);
 					if (c.helper == this) { c.helper = null; }
