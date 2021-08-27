@@ -121,6 +121,7 @@ public final class PottsOutputSerializer {
             json.addProperty("parent", src.parent);
             json.addProperty("pop", src.pop);
             json.addProperty("age", src.age);
+            json.addProperty("divisions", src.divisions);
             json.addProperty("state", src.state.name());
             json.addProperty("phase", src.phase.name());
             json.addProperty("voxels", src.voxels);

@@ -64,6 +64,9 @@ public final class PottsCell implements Cell {
     /** Cell age (in ticks). */
     private int age;
     
+    /** Number of divisions. */
+    private int divisions;
+    
     /** {@code true} if the cell has regions, {@code false} otherwise. */
     private final boolean hasRegions;
     
@@ -111,6 +114,7 @@ public final class PottsCell implements Cell {
      * @param pop  the cell population index
      * @param state  the cell state
      * @param age  the cell age (in ticks)
+     * @param divisions  the number of cell divisions
      * @param location  the {@link arcade.core.env.loc.Location} of the cell
      * @param hasRegions  {@code true} if the cell has regions, {@code false} otherwise
      * @param parameters  the dictionary of parameters
@@ -121,8 +125,8 @@ public final class PottsCell implements Cell {
      * @param lambdasRegion  the map of lambda multipliers for regions
      * @param adhesionRegion  the map of adhesion values for regions
      */
-    public PottsCell(int id, int parent, int pop, State state, int age, Location location,
-                     boolean hasRegions, MiniBox parameters, double[] adhesion,
+    public PottsCell(int id, int parent, int pop, State state, int age, int divisions,
+                     Location location, boolean hasRegions, MiniBox parameters, double[] adhesion,
                      EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas,
                      EnumMap<Region, EnumMap<Term, Double>> criticalsRegion,
                      EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
@@ -131,6 +135,7 @@ public final class PottsCell implements Cell {
         this.parent = parent;
         this.pop = pop;
         this.age = age;
+        this.divisions = divisions;
         this.hasRegions = hasRegions;
         this.location = (PottsLocation) location;
         this.parameters = parameters;
@@ -175,6 +180,9 @@ public final class PottsCell implements Cell {
     
     @Override
     public int getAge() { return age; }
+    
+    @Override
+    public int getDivisions() { return divisions; }
     
     @Override
     public boolean hasRegions() { return hasRegions; }
@@ -321,7 +329,8 @@ public final class PottsCell implements Cell {
     
     @Override
     public PottsCell make(int newID, State newState, Location newLocation) {
-        return new PottsCell(newID, id, pop, newState, age, newLocation,
+        divisions++;
+        return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,
                 hasRegions, parameters, adhesion, criticals, lambdas,
                 criticalsRegion, lambdasRegion, adhesionRegion);
     }
@@ -519,11 +528,11 @@ public final class PottsCell implements Cell {
                 regionVolumes.put(region, location.getVolume(region));
             }
             
-            return new PottsCellContainer(id, parent, pop, age, state,
+            return new PottsCellContainer(id, parent, pop, age, divisions, state,
                     ((PottsModule) module).getPhase(), getVolume(), regionVolumes,
                     targetVolume, targetSurface, targetRegionVolumes, targetRegionSurfaces);
         } else {
-            return new PottsCellContainer(id, parent, pop, age, state,
+            return new PottsCellContainer(id, parent, pop, age, divisions, state,
                     ((PottsModule) module).getPhase(), getVolume(),
                     targetVolume, targetSurface);
         }

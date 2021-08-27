@@ -122,20 +122,22 @@ public class PottsOutputSerializerTest {
         int parent = randomIntBetween(1, 100);
         int pop = randomIntBetween(1, 100);
         int age = randomIntBetween(1, 100);
+        int divisions = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
         int voxels = randomIntBetween(1, 100);
         int targetVolume = randomIntBetween(1, 100);
         int targetSurface = randomIntBetween(1, 100);
         
-        PottsCellContainer cellContainer = new PottsCellContainer(id, parent, pop, age, state, phase, voxels,
-                null, targetVolume, targetSurface, null, null);
+        PottsCellContainer cellContainer = new PottsCellContainer(id, parent, pop, age, divisions,
+                state, phase, voxels, null, targetVolume, targetSurface, null, null);
         
         String expected = "{"
                 + "\"id\":" + id + ","
                 + "\"parent\":" + parent + ","
                 + "\"pop\":" + pop + ","
                 + "\"age\":" + age + ","
+                + "\"divisions\":" + divisions + ","
                 + "\"state\":\"" + state.name() + "\","
                 + "\"phase\":\"" + phase.name() + "\","
                 + "\"voxels\":" + voxels + ","
@@ -154,6 +156,7 @@ public class PottsOutputSerializerTest {
         int parent = randomIntBetween(1, 100);
         int pop = randomIntBetween(1, 100);
         int age = randomIntBetween(1, 100);
+        int divisions = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
         int voxels = randomIntBetween(1, 100);
@@ -181,14 +184,16 @@ public class PottsOutputSerializerTest {
         regionTargetSurface.put(region1, (double) targetRegionSurface1);
         regionTargetSurface.put(region2, (double) targetRegionSurface2);
         
-        PottsCellContainer cellContainer = new PottsCellContainer(id, parent, pop, age, state, phase, voxels,
-                regionVoxels, targetVolume, targetSurface, regionTargetVolume, regionTargetSurface);
+        PottsCellContainer cellContainer = new PottsCellContainer(id, parent, pop, age, divisions,
+                state, phase, voxels, regionVoxels, targetVolume, targetSurface,
+                regionTargetVolume, regionTargetSurface);
         
         String expected = "{"
                 + "\"id\":" + id + ","
                 + "\"parent\":" + parent + ","
                 + "\"pop\":" + pop + ","
                 + "\"age\":" + age + ","
+                + "\"divisions\":" + divisions + ","
                 + "\"state\":\"" + state.name() + "\","
                 + "\"phase\":\"" + phase.name() + "\","
                 + "\"voxels\":" + voxels + ","

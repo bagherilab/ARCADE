@@ -32,6 +32,9 @@ public final class PottsCellContainer implements CellContainer {
     /** Cell age (in ticks). */
     public final int age;
     
+    /** Number of divisions. */
+    public final int divisions;
+    
     /** Cell state. */
     public final State state;
     
@@ -65,10 +68,11 @@ public final class PottsCellContainer implements CellContainer {
      * @param id  the cell ID
      * @param pop  the cell population index
      * @param age  the cell age
+     * @param divisions  the number of cell divisions
      * @param voxels  the cell size (in voxels)
      */
-    public PottsCellContainer(int id, int pop, int age, int voxels) {
-        this(id, 0, pop, age, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
+    public PottsCellContainer(int id, int pop, int age, int divisions, int voxels) {
+        this(id, 0, pop, age, divisions, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
                 null, 0, 0, null, null);
     }
     
@@ -81,12 +85,13 @@ public final class PottsCellContainer implements CellContainer {
      * @param id  the cell ID
      * @param pop  the cell population index
      * @param age  the cell age
+     * @param divisions  the number of cell divisions
      * @param voxels  the cell size (in voxels)
      * @param regionVoxels  the cell region sizes (in voxels)
      */
-    public PottsCellContainer(int id, int pop, int age, int voxels,
+    public PottsCellContainer(int id, int pop, int age, int divisions, int voxels,
                               EnumMap<Region, Integer> regionVoxels) {
-        this(id, 0, pop, age, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
+        this(id, 0, pop, age, divisions, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
                 regionVoxels, 0, 0, null, null);
     }
     
@@ -99,16 +104,17 @@ public final class PottsCellContainer implements CellContainer {
      * @param parent  the parent ID
      * @param pop  the cell population index
      * @param age  the cell age
+     * @param divisions  the number of cell divisions
      * @param state  the cell state
      * @param phase  the cell phase
      * @param voxels  the cell size (in voxels)
      * @param targetVolume  the target volume
      * @param targetSurface  the target surface
      */
-    public PottsCellContainer(int id, int parent, int pop, int age,
+    public PottsCellContainer(int id, int parent, int pop, int age, int divisions,
                               State state, Phase phase, int voxels,
                               double targetVolume, double targetSurface) {
-        this(id, parent, pop, age, state, phase, voxels,
+        this(id, parent, pop, age, divisions, state, phase, voxels,
                 null, targetVolume, targetSurface, null, null);
     }
     
@@ -119,6 +125,7 @@ public final class PottsCellContainer implements CellContainer {
      * @param parent  the parent ID
      * @param pop  the cell population index
      * @param age  the cell age
+     * @param divisions  the number of cell divisions
      * @param state  the cell state
      * @param phase  the cell phase
      * @param voxels  the cell size (in voxels)
@@ -128,7 +135,7 @@ public final class PottsCellContainer implements CellContainer {
      * @param regionTargetVolume  the target region volumes
      * @param regionTargetSurface  the target surface volumes
      */
-    public PottsCellContainer(int id, int parent, int pop, int age,
+    public PottsCellContainer(int id, int parent, int pop, int age, int divisions,
                               State state, Phase phase, int voxels,
                               EnumMap<Region, Integer> regionVoxels,
                               double targetVolume, double targetSurface,
@@ -138,6 +145,7 @@ public final class PottsCellContainer implements CellContainer {
         this.parent = parent;
         this.pop = pop;
         this.age = age;
+        this.divisions = divisions;
         this.state = state;
         this.phase = phase;
         this.voxels = voxels;
@@ -189,11 +197,13 @@ public final class PottsCellContainer implements CellContainer {
                         factory.popToRegionAdhesion.get(pop).get(region).clone());
             }
             
-            cell = new PottsCell(id, parent, pop, state, age, location, true, parameters, adhesion,
-                    criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
+            cell = new PottsCell(id, parent, pop, state, age, divisions,
+                    location, true, parameters, adhesion, criticals, lambdas,
+                    criticalsRegion, lambdasRegion, adhesionRegion);
         } else {
-            cell = new PottsCell(id, parent, pop, state, age, location, false, parameters, adhesion,
-                    criticals, lambdas, null, null, null);
+            cell = new PottsCell(id, parent, pop, state, age, divisions,
+                    location, false, parameters, adhesion, criticals, lambdas,
+                    null, null, null);
         }
         
         // Update cell targets.

@@ -96,6 +96,7 @@ public class PottsOutputDeserializerTest {
         int parent = randomIntBetween(1, 100);
         int pop = randomIntBetween(1, 100);
         int age = randomIntBetween(1, 100);
+        int divisions = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
         int voxels = randomIntBetween(1, 100);
@@ -107,6 +108,7 @@ public class PottsOutputDeserializerTest {
                 + ",\"parent\": " + parent
                 + ",\"pop\": " + pop
                 + ",\"age\": " + age
+                + ",\"divisions\": " + divisions
                 + ",\"state\":\"" + state.name() + "\""
                 + ",\"phase\":\"" + phase.name() + "\""
                 + ",\"voxels\": " + voxels
@@ -120,6 +122,7 @@ public class PottsOutputDeserializerTest {
         assertEquals(parent, object.parent);
         assertEquals(pop, object.pop);
         assertEquals(age, object.age);
+        assertEquals(divisions, object.divisions);
         assertEquals(state, object.state);
         assertEquals(phase, object.phase);
         assertEquals(voxels, object.voxels);
@@ -138,6 +141,7 @@ public class PottsOutputDeserializerTest {
         int parent = randomIntBetween(1, 100);
         int pop = randomIntBetween(1, 100);
         int age = randomIntBetween(1, 100);
+        int divisions = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
         int voxels = randomIntBetween(1, 100);
@@ -158,6 +162,7 @@ public class PottsOutputDeserializerTest {
                 + ",\"parent\": " + parent
                 + ",\"pop\": " + pop
                 + ",\"age\": " + age
+                + ",\"divisions\": " + divisions
                 + ",\"state\":\"" + state.name() + "\""
                 + ",\"phase\": \"" + phase.name() + "\""
                 + ",\"voxels\": " + voxels
@@ -181,6 +186,7 @@ public class PottsOutputDeserializerTest {
         assertEquals(parent, object.parent);
         assertEquals(pop, object.pop);
         assertEquals(age, object.age);
+        assertEquals(divisions, object.divisions);
         assertEquals(state, object.state);
         assertEquals(phase, object.phase);
         assertEquals(voxels, object.voxels);

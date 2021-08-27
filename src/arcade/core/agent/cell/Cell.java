@@ -62,6 +62,13 @@ public interface Cell extends Steppable {
     int getAge();
     
     /**
+     * Gets the cell divisions.
+     *
+     * @return  the number of divisions
+     */
+    int getDivisions();
+    
+    /**
      * Checks if the cell has regions.
      *
      * @return  {@code true} if the cell has regions, {@code false} otherwise

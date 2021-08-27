@@ -54,6 +54,7 @@ public class PottsCellTest {
     static int cellParent = randomIntBetween(1, 10);
     static int cellPop = randomIntBetween(1, 10);
     static int cellAge = randomIntBetween(1, 1000);
+    static int cellDivisions = randomIntBetween(1, 100);
     static State cellState = State.random(RANDOM);
     static PottsCell cellDefault;
     static PottsCell cellWithRegions;
@@ -149,13 +150,13 @@ public class PottsCellTest {
             adhesionRegionMock.put(region, adhesionRegionTarget);
         }
         
-        cellDefault = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge,
+        cellDefault = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                 locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
                 null, null, null);
-        cellWithRegions = new PottsCell(cellID, cellParent, 1, cellState, cellAge,
+        cellWithRegions = new PottsCell(cellID, cellParent, 1, cellState, cellAge, cellDivisions,
                 locationMock, true, parametersMock, adhesionMock, criticalsMock, lambdasMock,
                 criticalsRegionMock, lambdasRegionMock, adhesionRegionMock);
-        cellWithoutRegions = new PottsCell(cellID, cellParent, 1, cellState, cellAge,
+        cellWithoutRegions = new PottsCell(cellID, cellParent, 1, cellState, cellAge, cellDivisions,
                 locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
                 null, null, null);
     }
@@ -166,11 +167,11 @@ public class PottsCellTest {
     
     static PottsCell make(Location location, boolean regions) {
         if (!regions) {
-            return new PottsCell(cellID, cellParent, cellPop, cellState, cellAge,
+            return new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                     location, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
                     null, null, null);
         } else {
-            return new PottsCell(cellID, cellParent, cellPop, cellState, cellAge,
+            return new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                     location, true, parametersMock, adhesionMock, criticalsMock, lambdasMock,
                     criticalsRegionMock, lambdasRegionMock, adhesionRegionMock);
         }
@@ -189,7 +190,7 @@ public class PottsCellTest {
     @Test
     public void getParent_valueAssigned_returnsValue() {
         int parent = randomIntBetween(0, 100);
-        PottsCell cell = new PottsCell(cellID, parent, cellPop, cellState, cellAge,
+        PottsCell cell = new PottsCell(cellID, parent, cellPop, cellState, cellAge, cellDivisions,
                 locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
                 null, null, null);
         assertEquals(parent, cell.getParent());
@@ -203,7 +204,7 @@ public class PottsCellTest {
     @Test
     public void getPop_valueAssigned_returnsValue() {
         int pop = randomIntBetween(0, 100);
-        PottsCell cell = new PottsCell(cellID, cellParent, pop, cellState, cellAge,
+        PottsCell cell = new PottsCell(cellID, cellParent, pop, cellState, cellAge, cellDivisions,
                 locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
                 null, null, null);
         assertEquals(pop, cell.getPop());
@@ -217,7 +218,7 @@ public class PottsCellTest {
     @Test
     public void getState_valueAssigned_returnsValue() {
         State state = State.random(RANDOM);
-        PottsCell cell = new PottsCell(cellID, cellParent, cellPop, state, cellAge,
+        PottsCell cell = new PottsCell(cellID, cellParent, cellPop, state, cellAge, cellDivisions,
                 locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
                 null, null, null);
         assertEquals(state, cell.getState());
@@ -231,10 +232,24 @@ public class PottsCellTest {
     @Test
     public void getAge_valueAssigned_returnsValue() {
         int age = randomIntBetween(0, 100);
-        PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, age,
+        PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, age, cellDivisions,
                 locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
                 null, null, null);
         assertEquals(age, cell.getAge());
+    }
+    
+    @Test
+    public void getDivisions_defaultConstructor_returnsValue() {
+        assertEquals(cellDivisions, cellDefault.getDivisions());
+    }
+    
+    @Test
+    public void getDivisions_valueAssigned_returnsValue() {
+        int divisions = randomIntBetween(0, 100);
+        PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, divisions,
+                locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
+                null, null, null);
+        assertEquals(divisions, cell.getDivisions());
     }
     
     @Test
@@ -703,7 +718,7 @@ public class PottsCellTest {
         Location location1 = mock(PottsLocation.class);
         Location location2 = mock(PottsLocation.class);
         
-        PottsCell cell1 = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge,
+        PottsCell cell1 = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                 location1, false, parameters, adhesion, criticals, lambdas,
                 null, null, null);
         PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
@@ -712,6 +727,8 @@ public class PottsCellTest {
         assertEquals(cellID, cell2.parent);
         assertEquals(cellPop, cell2.pop);
         assertEquals(cellAge, cell2.getAge());
+        assertEquals(cellDivisions + 1, cell1.getDivisions());
+        assertEquals(cellDivisions + 1, cell2.getDivisions());
         assertFalse(cell2.hasRegions());
         assertEquals(location2, cell2.getLocation());
         assertEquals(cell2.parameters, parameters);
@@ -747,7 +764,7 @@ public class PottsCellTest {
         doReturn(allRegions).when(location1).getRegions();
         doReturn(allRegions).when(location2).getRegions();
         
-        PottsCell cell1 = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge,
+        PottsCell cell1 = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                 location1, true, parameters, adhesion, criticals, lambdas,
                 criticalsRegion, lambdasRegion, adhesionRegion);
         PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
@@ -756,6 +773,8 @@ public class PottsCellTest {
         assertEquals(cellID, cell2.parent);
         assertEquals(cellPop, cell2.pop);
         assertEquals(cellAge, cell2.getAge());
+        assertEquals(cellDivisions + 1, cell1.getDivisions());
+        assertEquals(cellDivisions + 1, cell2.getDivisions());
         assertTrue(cell2.hasRegions());
         assertEquals(location2, cell2.getLocation());
         assertEquals(cell2.parameters, parameters);
@@ -1277,6 +1296,7 @@ public class PottsCellTest {
         int parent = randomIntBetween(1, 10);
         int pop = randomIntBetween(1, 10);
         int age = randomIntBetween(1, 100);
+        int divisions = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
         EnumMap<Term, Double> criticals = makeEnumMap();
@@ -1286,7 +1306,7 @@ public class PottsCellTest {
                 randomDoubleBetween(0, 10)
         };
         
-        PottsCell cell = new PottsCell(id, parent, pop, state, age, location,
+        PottsCell cell = new PottsCell(id, parent, pop, state, age, divisions, location,
                 false, parameters, adhesion, criticals, lambdas, null, null, null);
         ((PottsModule) cell.getModule()).setPhase(phase);
         
@@ -1303,6 +1323,7 @@ public class PottsCellTest {
         assertEquals(parent, container.parent);
         assertEquals(pop, container.pop);
         assertEquals(age, container.age);
+        assertEquals(divisions, container.divisions);
         assertEquals(state, container.state);
         assertEquals(phase, container.phase);
         assertEquals(voxels, container.voxels);
@@ -1322,6 +1343,7 @@ public class PottsCellTest {
         int parent = randomIntBetween(1, 10);
         int pop = randomIntBetween(1, 10);
         int age = randomIntBetween(1, 100);
+        int divisions = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
         EnumMap<Term, Double> criticals = makeEnumMap();
@@ -1338,7 +1360,7 @@ public class PottsCellTest {
         EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = makeEnumMapRegion(regions);
         EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = makeEnumMapTarget(regions);
         
-        PottsCell cell = new PottsCell(id, parent, pop, state, age, location, true,
+        PottsCell cell = new PottsCell(id, parent, pop, state, age, divisions, location, true,
                 parameters, adhesion, criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
         ((PottsModule) cell.getModule()).setPhase(phase);
         
@@ -1372,6 +1394,7 @@ public class PottsCellTest {
         assertEquals(parent, container.parent);
         assertEquals(pop, container.pop);
         assertEquals(age, container.age);
+        assertEquals(divisions, container.divisions);
         assertEquals(state, container.state);
         assertEquals(phase, container.phase);
         assertEquals(voxels, container.voxels);
