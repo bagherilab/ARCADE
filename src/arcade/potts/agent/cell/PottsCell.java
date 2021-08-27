@@ -105,55 +105,6 @@ public final class PottsCell implements Cell {
     
     /**
      * Creates a {@code PottsCell} agent.
-     * <p>
-     * The default state is proliferative and age is 0.
-     * The cell is created with no regions.
-     *
-     * @param id  the cell ID
-     * @param parent  the parent ID
-     * @param pop  the cell population index
-     * @param location  the {@link arcade.core.env.loc.Location} of the cell
-     * @param parameters  the dictionary of parameters
-     * @param adhesion  the list of adhesion values
-     * @param criticals  the map of critical values
-     * @param lambdas  the map of lambda multipliers
-     */
-    public PottsCell(int id, int parent, int pop, Location location,
-                     MiniBox parameters, double[] adhesion,
-                     EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas) {
-        this(id, parent, pop, State.PROLIFERATIVE, 0, location, false, parameters, adhesion,
-                criticals, lambdas, null, null, null);
-    }
-    
-    /**
-     * Creates a {@code PottsCell} agent.
-     * <p>
-     * The default state is proliferative and age is 0.
-     *
-     * @param id  the cell ID
-     * @param parent  the parent ID
-     * @param pop  the cell population index
-     * @param location  the {@link arcade.core.env.loc.Location} of the cell
-     * @param parameters  the dictionary of parameters
-     * @param adhesion  the list of adhesion values
-     * @param criticals  the map of critical values
-     * @param lambdas  the map of lambda multipliers
-     * @param criticalsRegion  the map of critical values for regions
-     * @param lambdasRegion  the map of lambda multipliers for regions
-     * @param adhesionRegion  the map of adhesion values for regions
-     */
-    public PottsCell(int id, int parent, int pop, Location location,
-                     MiniBox parameters, double[] adhesion,
-                     EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas,
-                     EnumMap<Region, EnumMap<Term, Double>> criticalsRegion,
-                     EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
-                     EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
-        this(id, parent, pop, State.PROLIFERATIVE, 0, location, true, parameters, adhesion,
-                criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
-    }
-    
-    /**
-     * Creates a {@code PottsCell} agent.
      *
      * @param id  the cell ID
      * @param parent  the parent ID
@@ -370,7 +321,7 @@ public final class PottsCell implements Cell {
     
     @Override
     public PottsCell make(int newID, State newState, Location newLocation) {
-        return new PottsCell(newID, id, pop, newState, 0, newLocation,
+        return new PottsCell(newID, id, pop, newState, age, newLocation,
                 hasRegions, parameters, adhesion, criticals, lambdas,
                 criticalsRegion, lambdasRegion, adhesionRegion);
     }

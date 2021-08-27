@@ -153,7 +153,7 @@ public final class PottsCellFactory implements CellFactory {
             }
             
             for (int i = 0; i < n; i++) {
-                PottsCellContainer cont = new PottsCellContainer(id, pop, voxels, regionVoxels);
+                PottsCellContainer cont = new PottsCellContainer(id, pop, 0, voxels, regionVoxels);
                 cells.put(id, cont);
                 popToIDs.get(cont.pop).add(cont.id);
                 id++;

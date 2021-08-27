@@ -275,12 +275,12 @@ public class PottsCellFactoryTest {
         ArrayList<PottsCellContainer> containers = new ArrayList<>();
         
         for (int i = 0; i < n; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1, 10));
+            PottsCellContainer container = new PottsCellContainer(i, 1, 0, randomIntBetween(1, 10));
             containers.add(container);
         }
         
         for (int i = n; i < n + m; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 2, randomIntBetween(1, 10));
+            PottsCellContainer container = new PottsCellContainer(i, 2, 0, randomIntBetween(1, 10));
             containers.add(container);
         }
         
@@ -326,7 +326,7 @@ public class PottsCellFactoryTest {
         ArrayList<PottsCellContainer> containers = new ArrayList<>();
         
         for (int i = 0; i < n; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1, 10));
+            PottsCellContainer container = new PottsCellContainer(i, 1, 0, randomIntBetween(1, 10));
             containers.add(container);
         }
         
@@ -358,12 +358,12 @@ public class PottsCellFactoryTest {
         ArrayList<PottsCellContainer> containers = new ArrayList<>();
         
         for (int i = 0; i < n; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 1, randomIntBetween(1, 10));
+            PottsCellContainer container = new PottsCellContainer(i, 1, 0, randomIntBetween(1, 10));
             containers.add(container);
         }
         
         for (int i = n; i < n + m; i++) {
-            PottsCellContainer container = new PottsCellContainer(i, 2, randomIntBetween(1, 10));
+            PottsCellContainer container = new PottsCellContainer(i, 2, 0, randomIntBetween(1, 10));
             containers.add(container);
         }
         

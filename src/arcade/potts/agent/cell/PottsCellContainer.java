@@ -59,31 +59,34 @@ public final class PottsCellContainer implements CellContainer {
     /**
      * Creates a {@code PottsCellContainer} instance.
      * <p>
-     * The default state is proliferative (phase G1) and age is 0.
+     * The default state is proliferative (phase G1).
      * The container does not have any regions or targets.
      *
      * @param id  the cell ID
      * @param pop  the cell population index
+     * @param age  the cell age
      * @param voxels  the cell size (in voxels)
      */
-    public PottsCellContainer(int id, int pop, int voxels) {
-        this(id, 0, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
+    public PottsCellContainer(int id, int pop, int age, int voxels) {
+        this(id, 0, pop, age, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
                 null, 0, 0, null, null);
     }
     
     /**
      * Creates a {@code PottsCellContainer} instance.
      * <p>
-     * The default state is proliferative (phase G1) and age is 0.
+     * The default state is proliferative (phase G1).
      * The container does not have any targets.
      *
      * @param id  the cell ID
      * @param pop  the cell population index
+     * @param age  the cell age
      * @param voxels  the cell size (in voxels)
      * @param regionVoxels  the cell region sizes (in voxels)
      */
-    public PottsCellContainer(int id, int pop, int voxels, EnumMap<Region, Integer> regionVoxels) {
-        this(id, 0, pop, 0, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
+    public PottsCellContainer(int id, int pop, int age, int voxels,
+                              EnumMap<Region, Integer> regionVoxels) {
+        this(id, 0, pop, age, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
                 regionVoxels, 0, 0, null, null);
     }
     

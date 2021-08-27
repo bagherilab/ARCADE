@@ -22,7 +22,7 @@ import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.SEED_OFFSET;
 
 public class SeriesTest {
-    private static final double EPSILON = 1E-10;
+    private static final double EPSILON = 1E-8;
     private static final double DS = randomDoubleBetween(1, 10);
     private static final double DT = randomDoubleBetween(0.5, 2);
     private static final Box PARAMETERS = new Box();

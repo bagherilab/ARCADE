@@ -25,14 +25,15 @@ public class PottsCellContainerTest {
     public void constructor_noRegionsNoTargets_setsFields() {
         int id = randomIntBetween(1, 10);
         int pop = randomIntBetween(1, 10);
+        int age = randomIntBetween(1, 10);
         int voxels = randomIntBetween(1, 100);
         
-        PottsCellContainer cellContainer = new PottsCellContainer(id, pop, voxels);
+        PottsCellContainer cellContainer = new PottsCellContainer(id, pop, age, voxels);
         
         assertEquals(id, cellContainer.id);
         assertEquals(0, cellContainer.parent);
         assertEquals(pop, cellContainer.pop);
-        assertEquals(0, cellContainer.age);
+        assertEquals(age, cellContainer.age);
         assertEquals(State.PROLIFERATIVE, cellContainer.state);
         assertEquals(Phase.PROLIFERATIVE_G1, cellContainer.phase);
         assertEquals(voxels, cellContainer.voxels);
@@ -47,15 +48,16 @@ public class PottsCellContainerTest {
     public void constructor_withRegionsNoTargets_setsFields() {
         int id = randomIntBetween(1, 10);
         int pop = randomIntBetween(1, 10);
+        int age = randomIntBetween(1, 10);
         int voxels = randomIntBetween(1, 100);
         EnumMap<Region, Integer> regionVoxels = new EnumMap<>(Region.class);
         
-        PottsCellContainer cellContainer = new PottsCellContainer(id, pop, voxels, regionVoxels);
+        PottsCellContainer cellContainer = new PottsCellContainer(id, pop, age, voxels, regionVoxels);
         
         assertEquals(id, cellContainer.id);
         assertEquals(0, cellContainer.parent);
         assertEquals(pop, cellContainer.pop);
-        assertEquals(0, cellContainer.age);
+        assertEquals(age, cellContainer.age);
         assertEquals(State.PROLIFERATIVE, cellContainer.state);
         assertEquals(Phase.PROLIFERATIVE_G1, cellContainer.phase);
         assertEquals(voxels, cellContainer.voxels);
@@ -131,7 +133,7 @@ public class PottsCellContainerTest {
     @Test
     public void getID_called_returnsValue() {
         int id = randomIntBetween(1, 10);
-        PottsCellContainer cellContainer = new PottsCellContainer(id, 0, 0);
+        PottsCellContainer cellContainer = new PottsCellContainer(id, 0, 0, 0);
         assertEquals(id, cellContainer.getID());
     }
     
