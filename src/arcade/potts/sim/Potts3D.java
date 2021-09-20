@@ -47,6 +47,16 @@ public final class Potts3D extends Potts {
     public Potts3D(PottsSeries series) { super(series); }
     
     @Override
+    protected double getSteps(double ds, double dt) {
+        double n = 0.35081918;
+        double a = 0.17640932;
+        double b = 0.46832658;
+        double volume = 1000 / Math.pow(ds, 3);
+        double nds = a * Math.pow(volume, n) + b;
+        return dt * nds;
+    }
+    
+    @Override
     double getAdhesion(int id, int x, int y, int z) {
         double h = 0;
         PottsCell a = getCell(id);

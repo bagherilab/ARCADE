@@ -7,6 +7,7 @@ import arcade.core.env.grid.Grid;
 import arcade.potts.agent.cell.PottsCell;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
 
@@ -18,6 +19,38 @@ public class Potts2DTest {
     PottsSeries seriesMock = makeSeries();
     Potts2D pottsMock = new Potts2D(seriesMock);
     static Potts2D potts;
+    private static final double[][] AREA_MCS = new double[][] {
+            { 1, 0.684264 },
+            { 9, 1.250141 },
+            { 25, 1.832145 },
+            { 45, 2.336746 },
+            { 69, 2.813512 },
+            { 109, 3.455416 },
+            { 145, 3.940575 },
+            { 193, 4.504452 },
+            { 249, 5.082439 },
+            { 305, 5.600604 },
+            { 373, 6.171579 },
+            { 437, 6.664704 },
+            { 517, 7.234542 },
+            { 609, 7.839643 },
+            { 697, 8.378478 },
+            { 793, 8.930187 },
+            { 889, 9.450617 },
+            { 1005, 10.044628 },
+            { 1125, 10.625359 },
+            { 1245, 11.176999 },
+            { 1369, 11.720781 },
+            { 1513, 12.323346 },
+            { 1649, 12.867588 },
+            { 1789, 13.405737 },
+            { 1941, 13.967562 },
+            { 2109, 14.564444 },
+            { 2285, 15.165712 },
+            { 2449, 15.706243 },
+            { 2617, 16.242202 },
+            { 2809, 16.834856 },
+    };
     
     @BeforeClass
     public static void setupGrid() {
@@ -113,6 +146,18 @@ public class Potts2DTest {
         }
         
         return rotated;
+    }
+    
+    @Test
+    public void getSteps_givenArea_calculatesValue() {
+        double epsilon = 1E-5;
+        for (double[] mcs : AREA_MCS) {
+            double dt = randomDoubleBetween(1, 10);
+            double ds = Math.cbrt(1000 / mcs[0]);
+            PottsSeries series = makeSeries(1, 1, 1, ds, dt);
+            Potts2D potts2D = new Potts2D(series);
+            assertEquals(dt * mcs[1], potts2D.getSteps(ds, dt), epsilon);
+        }
     }
     
     @Test

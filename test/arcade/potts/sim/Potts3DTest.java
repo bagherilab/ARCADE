@@ -7,6 +7,7 @@ import arcade.core.env.grid.Grid;
 import arcade.potts.agent.cell.PottsCell;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
 
@@ -18,6 +19,23 @@ public class Potts3DTest {
     PottsSeries seriesMock = makeSeries();
     Potts3D pottsMock = new Potts3D(seriesMock);
     static Potts3D potts;
+    private static final double[][] VOLUME_MCS = new double[][]{
+            { 9, 0.849645 },
+            { 119, 1.411656 },
+            { 425, 1.942711 },
+            { 1031, 2.480338 },
+            { 2017, 3.014428 },
+            { 3551, 3.573262 },
+            { 5661, 4.125187 },
+            { 8471, 4.680598 },
+            { 12085, 5.239794 },
+            { 16615, 5.803567 },
+            { 22141, 6.368979 },
+            { 28819, 6.940683 },
+            { 36573, 7.504974 },
+            { 45891, 8.088151 },
+            { 56309, 8.655148 },
+    };
     
     enum Axis { X_AXIS, Y_AXIS, Z_AXIS }
     
@@ -61,14 +79,11 @@ public class Potts3DTest {
         potts = new Potts3D(series);
         potts.grid = grid;
         
+        int[] zeros = { 0, 0, 0, 0, 0, 0 };
+        int[][] allZeros = { zeros, zeros, zeros, zeros, zeros };
+        
         potts.ids = new int[][][] {
-                {
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                },
+                allZeros,
                 {
                         { 0, 0, 0, 0, 0, 0 },
                         { 0, 0, 1, 0, 3, 0 },
@@ -90,26 +105,14 @@ public class Potts3DTest {
                         { 0, 2, 2, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0 },
                 },
-                {
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                }
+                allZeros
         };
         
         int d = REGION_DEFAULT;
         int n = REGION_NUCLEUS;
         
         potts.regions = new int[][][] {
-                {
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                },
+                allZeros,
                 {
                         { 0, 0, 0, 0, 0, 0 },
                         { 0, 0, d, 0, d, 0 },
@@ -131,13 +134,7 @@ public class Potts3DTest {
                         { 0, d, d, 0, 0, 0 },
                         { 0, 0, 0, 0, 0, 0 },
                 },
-                {
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                        { 0, 0, 0, 0, 0, 0 },
-                }
+                allZeros
         };
     }
     
@@ -235,6 +232,18 @@ public class Potts3DTest {
     }
     
     @Test
+    public void getSteps_givenVolume_calculatesValue() {
+        double epsilon = 1E-5;
+        for (double[] mcs : VOLUME_MCS) {
+            double dt = randomDoubleBetween(1, 10);
+            double ds = Math.cbrt(1000 / mcs[0]);
+            PottsSeries series = makeSeries(1, 1, 1, ds, dt);
+            Potts3D potts3D = new Potts3D(series);
+            assertEquals(dt * mcs[1], potts3D.getSteps(ds, dt), epsilon);
+        }
+    }
+    
+    @Test
     public void getAdhesion_validIDs_calculatesValue() {
         assertEquals(ADHESIONS[1][0] * 11 + ADHESIONS[2][0] * 6,
                 potts.getAdhesion(0, 2, 2, 2) * Potts3D.NEIGHBORHOOD_SIZE, EPSILON);
@@ -271,7 +280,7 @@ public class Potts3DTest {
         boolean[][][] array1 = potts.getNeighborhood(1, 2, 2, 2);
         assertArrayEquals(new boolean[] { false,  true, false }, array1[0][0]);
         assertArrayEquals(new boolean[] { false,  true, false }, array1[0][1]);
-        assertArrayEquals(new boolean[] { false,  false, false }, array1[0][2]);
+        assertArrayEquals(new boolean[] { false, false, false }, array1[0][2]);
         assertArrayEquals(new boolean[] {  true,  true, false }, array1[1][0]);
         assertArrayEquals(new boolean[] {  true,  true, false }, array1[1][1]);
         assertArrayEquals(new boolean[] { false, false, false }, array1[1][2]);
@@ -307,7 +316,7 @@ public class Potts3DTest {
         boolean[][][] array1 = potts.getNeighborhood(1, REGION_DEFAULT, 2, 2, 2);
         assertArrayEquals(new boolean[] { false,  true, false }, array1[0][0]);
         assertArrayEquals(new boolean[] { false,  true, false }, array1[0][1]);
-        assertArrayEquals(new boolean[] { false,  false, false }, array1[0][2]);
+        assertArrayEquals(new boolean[] { false, false, false }, array1[0][2]);
         assertArrayEquals(new boolean[] {  true,  true, false }, array1[1][0]);
         assertArrayEquals(new boolean[] { false, false, false }, array1[1][1]);
         assertArrayEquals(new boolean[] { false, false, false }, array1[1][2]);
@@ -1699,7 +1708,6 @@ public class Potts3DTest {
             { 0, 3, 5, 6 },
             { 0, 3, 4, 5 },
             { 0, 3, 6, 7 },
-            
             { 1, 2, 4, 7 },
             { 1, 2, 5, 6 },
             { 1, 2, 4, 6 },
@@ -1713,7 +1721,6 @@ public class Potts3DTest {
             // 2 plane, 2 corner
             { 0, 3, 4, 6 },
             { 0, 3, 5, 7 },
-            
             { 1, 2, 4, 5 },
             { 1, 2, 6, 7 },
     };

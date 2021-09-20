@@ -74,8 +74,9 @@ public abstract class Potts implements Steppable {
         height = (series.height == 1 ? 1 : series.height - 2);
         
         // Number of Monte Carlo steps
+        double dsdt = getSteps(series.ds, series.dt);
         double mcs = series.potts.getDouble("MCS");
-        steps = (int) (mcs * length * width * height);
+        steps = (int) (dsdt * mcs * length * width * height);
         
         // Get temperature.
         temperature = series.potts.getDouble("TEMPERATURE");
@@ -278,6 +279,15 @@ public abstract class Potts implements Steppable {
             ((PottsLocation) c.getLocation()).add(Region.values()[targetRegion], x, y, z);
         }
     }
+    
+    /**
+     * Calculate MCS multiplier for temporal and spatial scaling.
+     *
+     * @param ds  the spatial scaling
+     * @param dt  the temporal scaling
+     * @return  the MCS multiplier
+     */
+    abstract double getSteps(double ds, double dt);
     
     /**
      * Gets the {@link arcade.core.agent.cell.Cell} object for the given id.

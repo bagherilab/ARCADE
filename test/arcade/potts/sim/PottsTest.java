@@ -129,6 +129,9 @@ public class PottsTest {
         PottsMock(PottsSeries series) { super(series); }
         
         @Override
+        double getSteps(double ds, double dt) { return ds * dt; }
+        
+        @Override
         double getAdhesion(int id, int x, int y, int z) { return ADHESION_ID[id]; }
         
         @Override
@@ -200,6 +203,10 @@ public class PottsTest {
     }
     
     static PottsSeries makeSeries(int length, int width, int height) {
+       return makeSeries(length, width, height, 1, 1);
+    }
+    
+    static PottsSeries makeSeries(int length, int width, int height, double ds, double dt) {
         PottsSeries series = makeSeries();
         
         try {
@@ -214,6 +221,14 @@ public class PottsTest {
             Field heightField = Series.class.getDeclaredField("height");
             heightField.setAccessible(true);
             heightField.setInt(series, height);
+            
+            Field dsField = Series.class.getDeclaredField("ds");
+            dsField.setAccessible(true);
+            dsField.setDouble(series, ds);
+    
+            Field dtField = Series.class.getDeclaredField("dt");
+            dtField.setAccessible(true);
+            dtField.setDouble(series, dt);
         } catch (Exception ignored) { }
         
         return series;
@@ -342,15 +357,17 @@ public class PottsTest {
         int height = randomIntBetween(2, 100);
         int temperature = randomIntBetween(1, 100);
         double mcs = randomDoubleBetween(0, 10);
+        double ds = randomDoubleBetween(1, 10);
+        double dt = randomDoubleBetween(1, 10);
         
-        PottsSeries series = makeSeries(length, width, height);
+        PottsSeries series = makeSeries(length, width, height, ds, dt);
         series.potts = new MiniBox();
         series.potts.put("TEMPERATURE", temperature);
         series.potts.put("MCS", mcs);
         
         PottsMock pottsMock = new PottsMock(series);
         
-        assertEquals((int) (mcs * (length - 2) * (width - 2) * (height - 2)), pottsMock.steps);
+        assertEquals((int) (ds * dt * mcs * (length - 2) * (width - 2) * (height - 2)), pottsMock.steps);
         assertEquals(temperature, pottsMock.temperature, EPSILON);
     }
     
