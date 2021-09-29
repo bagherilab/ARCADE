@@ -59,7 +59,7 @@ public abstract class GraphCheckpoint extends Checkpoint {
 	 * The graph object is set as the graph for the {@link arcade.env.comp.GraphSites}
 	 * component and edges are linked.
 	 */
-	public static class Load extends CellCheckpoint {
+	public static class Load extends GraphCheckpoint {
 		/** Prefix for file name */
 		private final String PREFIX;
 		
