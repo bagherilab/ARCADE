@@ -45,6 +45,9 @@ public abstract class PottsModuleProliferation extends PottsModule {
     /** Steps for M phase (steps/ticks). */
     final int stepsM;
     
+    /** Overall growth rate for cell (voxels/tick). */
+    final double cellGrowthRate;
+    
     /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
     
@@ -72,8 +75,9 @@ public abstract class PottsModuleProliferation extends PottsModule {
         stepsS = parameters.getInt("proliferation/STEPS_S");
         stepsG2 = parameters.getInt("proliferation/STEPS_G2");
         stepsM = parameters.getInt("proliferation/STEPS_M");
+        cellGrowthRate = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
-    
+        
         poissonFactory = Poisson::new;
     }
     
@@ -160,7 +164,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
         }
         
         // Increase size of cell.
-        // TODO: add increase size of cell.
+        cell.updateTarget(cellGrowthRate, 2);
         
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateG1, random);
@@ -179,7 +183,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      */
     void stepS(MersenneTwisterFast random) {
         // Increase size of cell.
-        // TODO: add increase size of cell.
+        cell.updateTarget(cellGrowthRate, 2);
         // TODO: add increase size of nucleus.
         
         // Check for phase transition.
@@ -205,7 +209,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
         }
         
         // Increase size of cell.
-        // TODO: add increase size of cell.
+        cell.updateTarget(cellGrowthRate, 2);
         
         // Check for phase transition.
         // TODO: add cell size check

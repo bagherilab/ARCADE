@@ -54,6 +54,7 @@ public class PottsModuleProliferationSimpleTest {
         parameters.put("proliferation/STEPS_S", randomIntBetween(1, 100));
         parameters.put("proliferation/STEPS_G2", randomIntBetween(1, 100));
         parameters.put("proliferation/STEPS_M", randomIntBetween(1, 100));
+        parameters.put("proliferation/CELL_GROWTH_RATE", randomDoubleBetween(1, 100));
         parameters.put("proliferation/BASAL_APOPTOSIS_RATE", randomDoubleBetween(0, 0.5));
     }
     
@@ -71,6 +72,7 @@ public class PottsModuleProliferationSimpleTest {
         assertEquals(parameters.getInt("proliferation/STEPS_S"), module.stepsS);
         assertEquals(parameters.getInt("proliferation/STEPS_G2"), module.stepsG2);
         assertEquals(parameters.getInt("proliferation/STEPS_M"), module.stepsM);
+        assertEquals(parameters.getDouble("proliferation/CELL_GROWTH_RATE"), module.cellGrowthRate, EPSILON);
         assertEquals(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE"), module.basalApoptosisRate, EPSILON);
     }
     
@@ -247,6 +249,24 @@ public class PottsModuleProliferationSimpleTest {
     }
     
     @Test
+    public void stepG1_anyTransition_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepG1(random);
+        module.currentSteps = 0;
+        module.stepG1(random);
+        
+        verify(cell, times(2)).updateTarget(module.cellGrowthRate, 2);
+    }
+    
+    @Test
     public void stepS_withTransition_updatesPhase() {
         int steps = randomIntBetween(1, parameters.getInt("proliferation/STEPS_S"));
         PottsCell cell = mock(PottsCell.class);
@@ -288,6 +308,24 @@ public class PottsModuleProliferationSimpleTest {
     }
     
     @Test
+    public void stepS_anyTransition_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepS(random);
+        module.currentSteps = 0;
+        module.stepS(random);
+        
+        verify(cell, times(2)).updateTarget(module.cellGrowthRate, 2);
+    }
+    
+    @Test
     public void stepG2_withStateChange_callsMethods() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
@@ -326,6 +364,24 @@ public class PottsModuleProliferationSimpleTest {
         verify(cell, never()).setState(State.APOPTOTIC);
         verify(poissonFactory).createPoisson(module.rateG2, random);
         verify(module).setPhase(any(Phase.class));
+    }
+    
+    @Test
+    public void stepG2_anyTransition_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepG2(random);
+        module.currentSteps = 0;
+        module.stepG2(random);
+        
+        verify(cell, times(2)).updateTarget(module.cellGrowthRate, 2);
     }
     
     @Test

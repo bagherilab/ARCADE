@@ -454,26 +454,30 @@ public final class PottsCell implements Cell {
     
     /**
      * Updates target volume and surface area.
+     * When scale is greater than one, volume increases by given rate.
+     * When scale is less than one, volume decreases by given rate.
+     * If scale is one, sizes are not changed.
      *
      * @param rate  the rate of change
      * @param scale  the relative final size scaling
      */
     public void updateTarget(double rate, double scale) {
-        double volume = getVolume();
+        if (scale == 1) { return; }
         
         if (hasRegions) {
+            if (scale < 1) { rate = Math.min(rate, targetRegionVolumes.get(Region.DEFAULT)); }
             double updateVolume = targetRegionVolumes.get(Region.DEFAULT) - targetVolume;
             targetRegionVolumes.put(Region.DEFAULT, updateVolume);
         }
         
-        double oldTargetVolume = targetVolume;
         double criticalVolume = criticals.get(Term.VOLUME);
-        targetVolume = volume + rate * (scale * criticalVolume - volume);
         
-        // Ensure that target volume increases or decreases monotonically.
-        if ((scale > 1 && targetVolume < oldTargetVolume)
-                || (scale < 1 && targetVolume > oldTargetVolume)) {
-            targetVolume = oldTargetVolume;
+        if (scale > 1) {
+            targetVolume += rate;
+            targetVolume = Math.min(targetVolume, scale * criticalVolume);
+        } else {
+            targetVolume -= rate;
+            targetVolume = Math.max(targetVolume, scale * criticalVolume);
         }
         
         double criticalHeight = criticals.get(Term.HEIGHT);
@@ -497,19 +501,21 @@ public final class PottsCell implements Cell {
      * @param scale  the relative final size scaling
      */
     public void updateTarget(Region region, double rate, double scale) {
-        double regionVolume = getVolume(region);
+        if (scale == 1) { return; }
+        
         targetVolume -= targetRegionVolumes.get(region);
         
         double criticalRegionVolume = criticalsRegion.get(region).get(Term.VOLUME);
         double criticalRegionHeight = criticalsRegion.get(region).get(Term.HEIGHT);
         
-        double oldTargetRegionVolume = targetRegionVolumes.get(region);
-        double updateVolume = regionVolume + rate * (scale * criticalRegionVolume - regionVolume);
+        double updateVolume = targetRegionVolumes.get(region);
         
-        // Ensure that target volume increases or decreases monotonically.
-        if ((scale > 1 && updateVolume < oldTargetRegionVolume)
-                || (scale < 1 && updateVolume > oldTargetRegionVolume)) {
-            updateVolume = oldTargetRegionVolume;
+        if (scale > 1) {
+            updateVolume += rate;
+            updateVolume = Math.min(updateVolume, scale * criticalRegionVolume);
+        } else {
+            updateVolume -= rate;
+            updateVolume = Math.max(updateVolume, scale * criticalRegionVolume);
         }
         
         targetRegionVolumes.put(region, updateVolume);
