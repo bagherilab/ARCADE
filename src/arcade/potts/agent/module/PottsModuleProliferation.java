@@ -1,5 +1,6 @@
 package arcade.potts.agent.module;
 
+import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.loc.Location;
 import arcade.core.sim.Simulation;
@@ -20,44 +21,38 @@ import static arcade.potts.util.PottsEnums.Phase;
  */
 
 public abstract class PottsModuleProliferation extends PottsModule {
-    /** Average duration of G1 phase (ticks). */
-    final double durationG1;
-    
-    /** Average duration of S phase (ticks). */
-    final double durationS;
-    
-    /** Average duration of G2 phase (ticks). */
-    final double durationG2;
-    
-    /** Average duration of M phase (ticks). */
-    final double durationM;
-    
-    /** Average duration for checkpoint recovery (ticks). */
-    final double durationCheckpoint;
-    
-    /** Cell growth rate for phase G1 (ticks^-1). */
+    /** Event rate for G1 phase (steps/ticks). */
     final double rateG1;
     
-    /** Nucleus growth rate for phase S (ticks^-1). */
+    /** Event rate for S phase (steps/ticks). */
     final double rateS;
     
-    /** Cell growth rate for phase G2 (ticks^-1). */
+    /** Event rate for G2 phase (steps/ticks). */
     final double rateG2;
     
-    /** Ratio of critical volume for G1 growth checkpoint. */
-    static final double GROWTH_CHECKPOINT_G1 = 2 * 0.95;
+    /** Event rate for M phase (steps/ticks). */
+    final double rateM;
     
-    /** Ratio of critical volume for S nucleus checkpoint. */
-    static final double GROWTH_CHECKPOINT_S = 2 * 0.99;
+    /** Steps for G1 phase (steps/ticks). */
+    final int stepsG1;
     
-    /** Ratio of critical volume for G2 growth checkpoint. */
-    static final double GROWTH_CHECKPOINT_G2 = 2 * 0.99;
+    /** Steps for S phase (steps/ticks). */
+    final int stepsS;
+    
+    /** Steps for G2 phase (steps/ticks). */
+    final int stepsG2;
+    
+    /** Steps for M phase (steps/ticks). */
+    final int stepsM;
     
     /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
     
-    /** {@code true} if cell is arrested in a phase, {@code false} otherwise. */
-    boolean isArrested;
+    /** Tracker for number of steps for current phase. */
+    int currentSteps;
+    
+    /** Poisson factory for module. */
+    PoissonFactory poissonFactory;
     
     /**
      * Creates a proliferation {@code Module} for the given {@link PottsCell}.
@@ -66,20 +61,20 @@ public abstract class PottsModuleProliferation extends PottsModule {
      */
     public PottsModuleProliferation(PottsCell cell) {
         super(cell);
-        this.phase = Phase.PROLIFERATIVE_G1;
+        setPhase(Phase.PROLIFERATIVE_G1);
         
         MiniBox parameters = cell.getParameters();
-        
-        durationG1 = parameters.getDouble("proliferation/DURATION_G1");
-        durationS = parameters.getDouble("proliferation/DURATION_S");
-        durationG2 = parameters.getDouble("proliferation/DURATION_G2");
-        durationM = parameters.getDouble("proliferation/DURATION_M");
-        durationCheckpoint = parameters.getDouble("proliferation/DURATION_CHECKPOINT");
+        rateG1 = parameters.getDouble("proliferation/RATE_G1");
+        rateS = parameters.getDouble("proliferation/RATE_S");
+        rateG2 = parameters.getDouble("proliferation/RATE_G2");
+        rateM = parameters.getDouble("proliferation/RATE_M");
+        stepsG1 = parameters.getInt("proliferation/STEPS_G1");
+        stepsS = parameters.getInt("proliferation/STEPS_S");
+        stepsG2 = parameters.getInt("proliferation/STEPS_G2");
+        stepsM = parameters.getInt("proliferation/STEPS_M");
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
-        
-        rateG1 = -Math.log(0.05) / durationG1;
-        rateS = -Math.log(0.01) / durationS;
-        rateG2 = -Math.log(0.01) / durationG2;
+    
+        poissonFactory = Poisson::new;
     }
     
     /**
@@ -100,26 +95,48 @@ public abstract class PottsModuleProliferation extends PottsModule {
     }
     
     /**
+     * A {@code PoissonFactory} object instantiates Poisson distributions.
+     */
+    interface PoissonFactory {
+        /**
+         * Creates instance of Poisson.
+         *
+         * @param lambda  the Poisson distribution lambda
+         * @param random  the random number generator
+         * @return  a Poisson distribution instance
+         */
+        Poisson createPoisson(double lambda, MersenneTwisterFast random);
+    }
+    
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Resets the steps counter to zero.
+     */
+    public void setPhase(Phase phase) {
+        super.setPhase(phase);
+        currentSteps = 0;
+    }
+    
+    /**
      * Calls the step method for the current simple phase.
      *
      * @param random  the random number generator
      * @param sim  the simulation instance
      */
     public void simpleStep(MersenneTwisterFast random, Simulation sim) {
-        double r = random.nextDouble();
-        
         switch (phase) {
             case PROLIFERATIVE_G1:
-                stepG1(r);
+                stepG1(random);
                 break;
             case PROLIFERATIVE_S:
-                stepS(r);
+                stepS(random);
                 break;
             case PROLIFERATIVE_G2:
-                stepG2(r);
+                stepG2(random);
                 break;
             case PROLIFERATIVE_M:
-                stepM(r, random, sim);
+                stepM(random, sim);
                 break;
             default:
                 break;
@@ -130,134 +147,89 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * Performs actions for G1 phase.
      * <p>
      * Cell increases in size toward a target of twice its critical size.
-     * Cell will transition to S phase after an average time of {@code DURATION_G1}.
-     * Between G1 and S phase, cell must pass a checkpoint.
-     * <p>
-     * For cells arrested in G1, the transition check for checkpoint recovery
-     * occurs after an average time of {@code DURATION_CHECKPOINT}.
+     * Cell will transition to S phase after completing {@code STEPS_G1} steps
+     * at an average rate of {@code RATE_G1}.
      *
-     * @param r  a random number
+     * @param random  the random number generator
      */
-    void stepG1(double r) {
+    void stepG1(MersenneTwisterFast random) {
         // Random chance of apoptosis.
-        if (r < basalApoptosisRate) {
+        if (random.nextDouble() < basalApoptosisRate) {
             cell.setState(State.APOPTOTIC);
             return;
         }
         
         // Increase size of cell.
-        cell.updateTarget(rateG1, 2);
+        // TODO: add increase size of cell.
         
-        // Check for transition to S phase.
-        double p = 1.0 / (isArrested ? durationCheckpoint : durationG1);
-        if (r < p) { checkpointG1(); }
-    }
-    
-    /**
-     * Checkpoints transition between G1 and S phase.
-     * <p>
-     * Checkpoints include:
-     * <ul>
-     *     <li><strong>Cell growth</strong>: cell size must be at least
-     *     {@code GROWTH_CHECKPOINT_G1} times the critical size</li>
-     * </ul>
-     * <p>
-     * Cells that do not pass the cell growth checkpoint become arrested.
-     */
-    void checkpointG1() {
-        if (cell.getVolume() >= GROWTH_CHECKPOINT_G1 * cell.getCriticalVolume()) {
-            phase = Phase.PROLIFERATIVE_S;
-            isArrested = false;
-        } else {
-            isArrested = true;
-        }
+        // Check for phase transition.
+        Poisson poisson = poissonFactory.createPoisson(rateG1, random);
+        currentSteps += poisson.nextInt();
+        if (currentSteps >= stepsG1) { setPhase(Phase.PROLIFERATIVE_S); }
     }
     
     /**
      * Performs actions for S phase.
      * <p>
-     * Cell increases its nuclear size toward a target of twice its critical
-     * nuclear size.
-     * Cell will transition to G1 phase once nucleus is at least
-     * {@code GROWTH_CHECKPOINT_S} times the critical nucleus size.
-     * <p>
-     * If cell does not have regions, then cell will transition to G2 phase after
-     * an average time of {@code DURATION_S}.
+     * Cell increases in size toward a target of twice its critical size.
+     * Cell will transition to S phase after completing {@code STEPS_S} steps
+     * at an average rate of {@code RATE_S}.
      *
-     * @param r  a random number
+     * @param random  the random number generator
      */
-    void stepS(double r) {
-        if (cell.hasRegions()) {
-            // Increase size of nucleus.
-            cell.updateTarget(Region.NUCLEUS, rateS, 2);
-            
-            // Check for transition to G2 phase.
-            if (cell.getVolume(Region.NUCLEUS)
-                    > GROWTH_CHECKPOINT_S * cell.getCriticalVolume(Region.NUCLEUS)) {
-                phase = Phase.PROLIFERATIVE_G2;
-            }
-        } else {
-            double p = 1.0 / durationS;
-            if (r < p) { phase = Phase.PROLIFERATIVE_G2; }
-        }
+    void stepS(MersenneTwisterFast random) {
+        // Increase size of cell.
+        // TODO: add increase size of cell.
+        // TODO: add increase size of nucleus.
+        
+        // Check for phase transition.
+        Poisson poisson = poissonFactory.createPoisson(rateS, random);
+        currentSteps += poisson.nextInt();
+        if (currentSteps >= stepsS) { setPhase(Phase.PROLIFERATIVE_G2); }
     }
     
     /**
      * Performs actions for G2 phase.
      * <p>
-     * Cell continue to increase size toward a target of twice its critical size.
-     * Cell will transition to M phase after an average time of {@code DURATION_G2}.
-     * Between G2 and M phase, cell must pass a checkpoint.
-     * <p>
-     * For cells arrested in G2, the transition check for checkpoint recovery
-     * occurs after an average time of {@code DURATION_CHECKPOINT}.
+     * Cell increases in size toward a target of twice its critical size.
+     * Cell will transition to S phase after completing {@code STEPS_G2} steps
+     * at an average rate of {@code RATE_G2}.
      *
-     * @param r  a random number
+     * @param random  the random number generator
      */
-    void stepG2(double r) {
-        // Increase size of cell.
-        cell.updateTarget(rateG2, 2);
-        
-        // Check for transition to M phase.
-        double p = 1.0 / (isArrested ? durationCheckpoint : durationG2);
-        if (r < p) { checkpointG2(); }
-    }
-    
-    /**
-     * Checkpoints transition between G2 and M phase.
-     * <p>
-     * Checkpoints include:
-     * <ul>
-     *     <li><strong>Cell growth</strong>: cell size must be at least
-     *     {@code GROWTH_CHECKPOINT_G2} times the critical size</li>
-     * </ul>
-     * <p>
-     * Cells that do not pass the cell growth checkpoint become arrested.
-     */
-    void checkpointG2() {
-        if (cell.getVolume() >= GROWTH_CHECKPOINT_G2 * cell.getCriticalVolume()) {
-            phase = Phase.PROLIFERATIVE_M;
-            isArrested = false;
-        } else {
-            isArrested = true;
+    void stepG2(MersenneTwisterFast random) {
+        // Random chance of apoptosis.
+        if (random.nextDouble() < basalApoptosisRate) {
+            cell.setState(State.APOPTOTIC);
+            return;
         }
+        
+        // Increase size of cell.
+        // TODO: add increase size of cell.
+        
+        // Check for phase transition.
+        // TODO: add cell size check
+        Poisson poisson = poissonFactory.createPoisson(rateG2, random);
+        currentSteps += poisson.nextInt();
+        if (currentSteps >= stepsG2) { setPhase(Phase.PROLIFERATIVE_M); }
     }
     
     /**
      * Performs actions for M phase.
      * <p>
-     * Cell will complete cell division after an average time of {@code DURATION_M}.
+     * Cell will complete cell division after completing {@code STEPS_M} steps
+     * at an average rate of {@code RATE_M}.
      *
-     * @param r  a random number
      * @param random  the random number generator
      * @param sim  the simulation instance
      */
-    void stepM(double r, MersenneTwisterFast random, Simulation sim) {
-        // Check for completion of M phase.
-        double p = 1.0 / durationM;
-        if (r < p) {
+    void stepM(MersenneTwisterFast random, Simulation sim) {
+        // Check for phase transition.
+        Poisson poisson = poissonFactory.createPoisson(rateM, random);
+        currentSteps += poisson.nextInt();
+        if (currentSteps >= stepsM) {
             addCell(random, sim);
-            phase = Phase.PROLIFERATIVE_G1;
+            setPhase(Phase.PROLIFERATIVE_G1);
         }
     }
     

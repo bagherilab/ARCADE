@@ -25,11 +25,14 @@
     <population.region region="NUCLEUS" id="ADHESION" target="NUCLEUS" value="1" />
     
     <!-- proliferation module parameters -->
-    <population.module module="proliferation" id="DURATION_G1" value="11" units="hours" conversion="DT^-1" description="duration of proliferative G1 phase" />
-    <population.module module="proliferation" id="DURATION_S" value="8" units="hours" conversion="DT^-1" description="duration of proliferative S phase" />
-    <population.module module="proliferation" id="DURATION_G2" value="4" units="hours" conversion="DT^-1" description="duration of proliferative G2 phase" />
-    <population.module module="proliferation" id="DURATION_M" value="1" units="hours" conversion="DT^-1" description="duration of proliferative M phase" />
-    <population.module module="proliferation" id="DURATION_CHECKPOINT" value="1" units="hours" conversion="DT^-1" description="average duration for checkpoint recovery" />
+    <population.module module="proliferation" id="RATE_G1" value="8.33" units="steps/hour" conversion="DT" description="rate of events in proliferative G1 phase" />
+    <population.module module="proliferation" id="RATE_S" value="4.35" units="steps/hour" conversion="DT" description="rate of events in proliferative S phase" />
+    <population.module module="proliferation" id="RATE_G2" value="0.752" units="steps/hour" conversion="DT" description="rate of events in proliferative G2 phase" />
+    <population.module module="proliferation" id="RATE_M" value="28" units="steps/hour" conversion="DT" description="rate of events in proliferative M phase" />
+    <population.module module="proliferation" id="STEPS_G1" value="17" units="steps" description="characteristic steps in proliferative G1 phase" />
+    <population.module module="proliferation" id="STEPS_S" value="43" units="steps" description="characteristic steps in proliferative S phase" />
+    <population.module module="proliferation" id="STEPS_G2" value="3" units="steps" description="characteristic steps in proliferative G2 phase" />
+    <population.module module="proliferation" id="STEPS_M" value="14" units="steps" description="characteristic steps in proliferative M phase" />
     <population.module module="proliferation" id="BASAL_APOPTOSIS_RATE" value="0.00127128" units="hours^-1" conversion="DT" description="basal rate of apoptosis" />
     
     <!-- apoptosis module parameters -->
