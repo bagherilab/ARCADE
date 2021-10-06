@@ -21,7 +21,9 @@ public class PottsModuleApoptosisSimpleTest {
     private static final double EPSILON = 1E-10;
     private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
     private static final double R = 1.0;
+    private static final int N = 0;
     static MersenneTwisterFast random;
+    static Poisson poissonMock;
     static PottsSimulation simMock;
     static PottsCell cellMock;
     static MiniBox parameters;
@@ -30,6 +32,9 @@ public class PottsModuleApoptosisSimpleTest {
     public static void setupMocks() {
         random = mock(MersenneTwisterFast.class);
         doReturn(R).when(random).nextDouble();
+    
+        poissonMock = mock(Poisson.class);
+        doReturn(N).when(poissonMock).nextInt();
         
         simMock = mock(PottsSimulation.class);
         when(simMock.getPotts()).thenReturn(mock(Potts.class));
@@ -161,6 +166,24 @@ public class PottsModuleApoptosisSimpleTest {
     }
     
     @Test
+    public void stepEarly_anyTransition_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepEarly(random);
+        module.currentSteps = 0;
+        module.stepEarly(random);
+        
+        verify(cell, times(2)).updateTarget(module.waterLossRate, 0.99);
+    }
+    
+    @Test
     public void stepLate_withTransition_updatesPhase() {
         int steps = randomIntBetween(1, parameters.getInt("apoptosis/STEPS_LATE"));
         PottsCell cell = mock(PottsCell.class);
@@ -203,6 +226,25 @@ public class PottsModuleApoptosisSimpleTest {
         verify(module, never()).removeCell(simMock);
         verify(module, never()).setPhase(any(Phase.class));
         assertEquals(Phase.APOPTOTIC_LATE, module.phase);
+    }
+    
+    @Test
+    public void stepLate_anyTransition_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
+        doNothing().when(module).removeCell(simMock);
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepLate(random, simMock);
+        module.currentSteps = 0;
+        module.stepLate(random, simMock);
+        
+        verify(cell, times(2)).updateTarget(module.cytoBlebbingRate, 0.25);
     }
     
     @Test

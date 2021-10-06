@@ -31,6 +31,12 @@ public abstract class PottsModuleApoptosis extends PottsModule {
     /** Steps for late apoptosis (steps). */
     final int stepsLate;
     
+    /** Rate of cytoplasmic water loss (voxels/tick). */
+    final double waterLossRate;
+    
+    /** Rate of cytoplasmic blebbing (voxels/tick). */
+    final double cytoBlebbingRate;
+    
     /**
      * Creates an apoptosis {@code Module} for the given {@link PottsCell}.
      *
@@ -45,6 +51,8 @@ public abstract class PottsModuleApoptosis extends PottsModule {
         rateLate = parameters.getDouble("apoptosis/RATE_LATE");
         stepsEarly = parameters.getInt("apoptosis/STEPS_EARLY");
         stepsLate = parameters.getInt("apoptosis/STEPS_LATE");
+        waterLossRate = parameters.getDouble("apoptosis/WATER_LOSS_RATE");
+        cytoBlebbingRate = parameters.getDouble("apoptosis/CYTOPLASMIC_BLEBBING_RATE");
     }
     
     /**
@@ -93,7 +101,9 @@ public abstract class PottsModuleApoptosis extends PottsModule {
      * @param random  the random number generator
      */
     void stepEarly(MersenneTwisterFast random) {
-        // TODO: add decrease in cell volume.
+        // Decrease size of cell.
+        cell.updateTarget(waterLossRate, 0.99);
+        
         // TODO: add decrease size in nuclear volume.
         
         // Check for phase transition.
@@ -115,7 +125,9 @@ public abstract class PottsModuleApoptosis extends PottsModule {
      * @param sim  the simulation instance
      */
     void stepLate(MersenneTwisterFast random, Simulation sim) {
-        // TODO: add decrease in cell volume.
+        // Decrease size of cell.
+        cell.updateTarget(cytoBlebbingRate, 0.25);
+        
         // TODO: add decrease size in nuclear volume.
         
         // Check for completion of late phase.

@@ -118,9 +118,12 @@ public abstract class PottsModuleProliferation extends PottsModule {
     /**
      * Performs actions for G1 phase.
      * <p>
-     * Cell increases in size toward a target of twice its critical size.
+     * Cell increases in size toward a target of twice its critical size at a
+     * rate of {@code CELL_GROWTH_RATE}.
      * Cell will transition to S phase after completing {@code STEPS_G1} steps
      * at an average rate of {@code RATE_G1}.
+     * At each tick, cell may randomly apoptosis at a basal rate of
+     * {@code BASAL_APOPTOSIS_RATE}.
      *
      * @param random  the random number generator
      */
@@ -143,7 +146,8 @@ public abstract class PottsModuleProliferation extends PottsModule {
     /**
      * Performs actions for S phase.
      * <p>
-     * Cell increases in size toward a target of twice its critical size.
+     * Cell increases in size toward a target of twice its critical size at a
+     * rate of {@code CELL_GROWTH_RATE}.
      * Cell will transition to G2 phase after completing {@code STEPS_S} steps
      * at an average rate of {@code RATE_S}.
      *
@@ -163,9 +167,12 @@ public abstract class PottsModuleProliferation extends PottsModule {
     /**
      * Performs actions for G2 phase.
      * <p>
-     * Cell increases in size toward a target of twice its critical size.
+     * Cell increases in size toward a target of twice its critical size at a
+     * rate of {@code CELL_GROWTH_RATE}.
      * Cell will transition to M phase after completing {@code STEPS_G2} steps
      * at an average rate of {@code RATE_G2}.
+     * At each tick, cell may randomly apoptosis at a basal rate of
+     * {@code BASAL_APOPTOSIS_RATE}.
      *
      * @param random  the random number generator
      */
