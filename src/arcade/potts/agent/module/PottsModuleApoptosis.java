@@ -1,5 +1,6 @@
 package arcade.potts.agent.module;
 
+import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
@@ -18,26 +19,17 @@ import static arcade.potts.util.PottsEnums.Phase;
  */
 
 public abstract class PottsModuleApoptosis extends PottsModule {
-    /** Average duration of early apoptosis (ticks). */
-    final double durationEarly;
+    /** Event rate for early apoptosis (steps/tick). */
+    final double rateEarly;
     
-    /** Average duration of late apoptosis (ticks). */
-    final double durationLate;
+    /** Event rate for late apoptosis (steps/tick). */
+    final double rateLate;
     
-    /** Cytoplasm water loss rate for early apoptosis (ticks^-1). */
-    final double rateCytoplasmLoss;
+    /** Steps for early apoptosis (steps). */
+    final int stepsEarly;
     
-    /** Nucleus pyknosis rate for early apoptosis (ticks^-1). */
-    final double rateNucleusPyknosis;
-    
-    /** Cytoplasm blebbing rate for late apoptosis (ticks^-1). */
-    final double rateCytoplasmBlebbing;
-    
-    /** Nucleus fragmentation rate for late apoptosis (ticks^-1). */
-    final double rateNucleusFragmentation;
-    
-    /** Ratio of critical volume for apoptosis. */
-    static final double APOPTOSIS_CHECKPOINT = 0.1;
+    /** Steps for late apoptosis (steps). */
+    final int stepsLate;
     
     /**
      * Creates an apoptosis {@code Module} for the given {@link PottsCell}.
@@ -46,17 +38,13 @@ public abstract class PottsModuleApoptosis extends PottsModule {
      */
     public PottsModuleApoptosis(PottsCell cell) {
         super(cell);
-        this.phase = Phase.APOPTOTIC_EARLY;
+        setPhase(Phase.APOPTOTIC_EARLY);
         
         MiniBox parameters = cell.getParameters();
-        
-        durationEarly = parameters.getDouble("apoptosis/DURATION_EARLY");
-        durationLate = parameters.getDouble("apoptosis/DURATION_LATE");
-        
-        rateCytoplasmLoss = -Math.log(0.05) / durationEarly;
-        rateNucleusPyknosis = -Math.log(0.01) / durationEarly;
-        rateCytoplasmBlebbing = -Math.log(0.01) / durationLate;
-        rateNucleusFragmentation = -Math.log(0.01) / durationLate;
+        rateEarly = parameters.getDouble("apoptosis/RATE_EARLY");
+        rateLate = parameters.getDouble("apoptosis/RATE_LATE");
+        stepsEarly = parameters.getInt("apoptosis/STEPS_EARLY");
+        stepsLate = parameters.getInt("apoptosis/STEPS_LATE");
     }
     
     /**
@@ -83,14 +71,12 @@ public abstract class PottsModuleApoptosis extends PottsModule {
      * @param sim  the simulation instance
      */
     public void simpleStep(MersenneTwisterFast random, Simulation sim) {
-        double r = random.nextDouble();
-        
         switch (phase) {
             case APOPTOTIC_EARLY:
-                stepEarly(r);
+                stepEarly(random);
                 break;
             case APOPTOTIC_LATE:
-                stepLate(r, sim);
+                stepLate(random, sim);
                 break;
             default:
                 break;
@@ -101,27 +87,19 @@ public abstract class PottsModuleApoptosis extends PottsModule {
      * Performs actions for early apoptosis phase.
      * <p>
      * Cell decreases in size due to cytoplasmic water loss and nuclear pyknosis.
-     * Cell will transition to late apoptosis phase after an average time of
-     * {@code DURATION_EARLY_APOPTOSIS}.
+     * Cell will transition to late apoptosis after completing {@code STEPS_EARLY}
+     * steps at an average rate of {@code RATE_EARLY}.
      *
-     * @param r  a random number
+     * @param random  the random number generator
      */
-    void stepEarly(double r) {
-        if (cell.hasRegions()) {
-            // Cytoplasmic water loss.
-            cell.updateTarget(Region.DEFAULT, rateCytoplasmLoss, 0.5);
-            
-            // Pyknosis of nucleus.
-            cell.updateTarget(Region.NUCLEUS, rateNucleusPyknosis, 0.5);
-        } else {
-            cell.updateTarget(rateCytoplasmLoss, 0.5);
-        }
+    void stepEarly(MersenneTwisterFast random) {
+        // TODO: add decrease in cell volume.
+        // TODO: add decrease size in nuclear volume.
         
-        // Check for transition to late phase.
-        double p = 1.0 / durationEarly;
-        if (r < p) {
-            phase = Phase.APOPTOTIC_LATE;
-        }
+        // Check for phase transition.
+        Poisson poisson = poissonFactory.createPoisson(rateEarly, random);
+        currentSteps += poisson.nextInt();
+        if (currentSteps >= stepsEarly) { setPhase(Phase.APOPTOTIC_LATE); }
     }
     
     /**
@@ -129,31 +107,23 @@ public abstract class PottsModuleApoptosis extends PottsModule {
      * <p>
      * Cell continues to decrease in size due to cytoplasm blebbing and nuclear
      * fragmentation.
-     * Cell completes late apoptosis after an average time of
-     * {@code DURATION_LATE_APOPTOSIS} or if the total cell volume falls below
-     * a threshold of {@code APOPTOSIS_CHECKPOINT} times the critical size.
-     * <p>
-     * The cell is cleared and removed from the schedule.
+     * Cell will complete apoptosis after completing {@code STEPS_LATE} steps
+     * at an average rate of {@code RATE_LATE} or if the total cell volume falls
+     * below a threshold of {@code APOPTOSIS_CHECKPOINT} times the critical size.
      *
-     * @param r  a random number
+     * @param random  the random number generator
      * @param sim  the simulation instance
      */
-    void stepLate(double r, Simulation sim) {
-        if (cell.hasRegions()) {
-            // Cytoplasm blebbing.
-            cell.updateTarget(Region.DEFAULT, rateCytoplasmBlebbing, 0);
-            
-            // Nuclear fragmentation.
-            cell.updateTarget(Region.NUCLEUS, rateNucleusFragmentation, 0);
-        } else {
-            cell.updateTarget(rateCytoplasmBlebbing, 0);
-        }
+    void stepLate(MersenneTwisterFast random, Simulation sim) {
+        // TODO: add decrease in cell volume.
+        // TODO: add decrease size in nuclear volume.
         
         // Check for completion of late phase.
-        double p = 1.0 / durationLate;
-        if (r < p || cell.getVolume() < APOPTOSIS_CHECKPOINT * cell.getCriticalVolume()) {
+        Poisson poisson = poissonFactory.createPoisson(rateLate, random);
+        currentSteps += poisson.nextInt();
+        if (currentSteps >= stepsLate) {
             removeCell(sim);
-            phase = Phase.APOPTOSED;
+            setPhase(Phase.APOPTOSED);
         }
     }
     

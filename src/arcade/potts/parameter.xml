@@ -34,8 +34,11 @@
     <population.module module="proliferation" id="STEPS_G2" value="3" units="steps" description="characteristic steps in proliferative G2 phase" />
     <population.module module="proliferation" id="STEPS_M" value="14" units="steps" description="characteristic steps in proliferative M phase" />
     <population.module module="proliferation" id="BASAL_APOPTOSIS_RATE" value="0.00127128" units="hours^-1" conversion="DT" description="basal rate of apoptosis" />
+    <population.module module="proliferation" id="CELL_GROWTH_RATE" value="60" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of apoptosis" />
     
     <!-- apoptosis module parameters -->
-    <population.module module="apoptosis" id="DURATION_EARLY" value="3" units="hours" conversion="DT^-1" description="duration of early apoptosis phase" />
-    <population.module module="apoptosis" id="DURATION_LATE" value="5.6" units="hours" conversion="DT^-1" description="duration of late apoptosis phase" />
+    <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />
+    <population.module module="apoptosis" id="RATE_LATE" value="1.8" units="steps/hour" conversion="DT" description="rate of events in late apoptosis phase" />
+    <population.module module="apoptosis" id="STEPS_EARLY" value="12" units="steps" description="characteristic steps in early apoptosis phase" />
+    <population.module module="apoptosis" id="STEPS_LATE" value="10" units="steps" description="characteristic steps in late apoptosis phase" />
 </parameters>

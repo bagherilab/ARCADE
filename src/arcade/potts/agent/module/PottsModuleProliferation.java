@@ -21,28 +21,28 @@ import static arcade.potts.util.PottsEnums.Phase;
  */
 
 public abstract class PottsModuleProliferation extends PottsModule {
-    /** Event rate for G1 phase (steps/ticks). */
+    /** Event rate for G1 phase (steps/tick). */
     final double rateG1;
     
-    /** Event rate for S phase (steps/ticks). */
+    /** Event rate for S phase (steps/tick). */
     final double rateS;
     
-    /** Event rate for G2 phase (steps/ticks). */
+    /** Event rate for G2 phase (steps/tick). */
     final double rateG2;
     
-    /** Event rate for M phase (steps/ticks). */
+    /** Event rate for M phase (steps/tick). */
     final double rateM;
     
-    /** Steps for G1 phase (steps/ticks). */
+    /** Steps for G1 phase (steps). */
     final int stepsG1;
     
-    /** Steps for S phase (steps/ticks). */
+    /** Steps for S phase (steps). */
     final int stepsS;
     
-    /** Steps for G2 phase (steps/ticks). */
+    /** Steps for G2 phase (steps). */
     final int stepsG2;
     
-    /** Steps for M phase (steps/ticks). */
+    /** Steps for M phase (steps). */
     final int stepsM;
     
     /** Overall growth rate for cell (voxels/tick). */
@@ -50,12 +50,6 @@ public abstract class PottsModuleProliferation extends PottsModule {
     
     /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
-    
-    /** Tracker for number of steps for current phase. */
-    int currentSteps;
-    
-    /** Poisson factory for module. */
-    PoissonFactory poissonFactory;
     
     /**
      * Creates a proliferation {@code Module} for the given {@link PottsCell}.
@@ -77,8 +71,6 @@ public abstract class PottsModuleProliferation extends PottsModule {
         stepsM = parameters.getInt("proliferation/STEPS_M");
         cellGrowthRate = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
-        
-        poissonFactory = Poisson::new;
     }
     
     /**
@@ -96,30 +88,6 @@ public abstract class PottsModuleProliferation extends PottsModule {
         public void step(MersenneTwisterFast random, Simulation sim) {
             super.simpleStep(random, sim);
         }
-    }
-    
-    /**
-     * A {@code PoissonFactory} object instantiates Poisson distributions.
-     */
-    interface PoissonFactory {
-        /**
-         * Creates instance of Poisson.
-         *
-         * @param lambda  the Poisson distribution lambda
-         * @param random  the random number generator
-         * @return  a Poisson distribution instance
-         */
-        Poisson createPoisson(double lambda, MersenneTwisterFast random);
-    }
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Resets the steps counter to zero.
-     */
-    public void setPhase(Phase phase) {
-        super.setPhase(phase);
-        currentSteps = 0;
     }
     
     /**
@@ -176,7 +144,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * Performs actions for S phase.
      * <p>
      * Cell increases in size toward a target of twice its critical size.
-     * Cell will transition to S phase after completing {@code STEPS_S} steps
+     * Cell will transition to G2 phase after completing {@code STEPS_S} steps
      * at an average rate of {@code RATE_S}.
      *
      * @param random  the random number generator
@@ -196,7 +164,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * Performs actions for G2 phase.
      * <p>
      * Cell increases in size toward a target of twice its critical size.
-     * Cell will transition to S phase after completing {@code STEPS_G2} steps
+     * Cell will transition to M phase after completing {@code STEPS_G2} steps
      * at an average rate of {@code RATE_G2}.
      *
      * @param random  the random number generator

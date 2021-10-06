@@ -34,13 +34,13 @@ public class PottsModuleProliferationSimpleTest {
     public static void setupMocks() {
         random = mock(MersenneTwisterFast.class);
         doReturn(R).when(random).nextDouble();
-    
+        
         poissonMock = mock(Poisson.class);
         doReturn(N).when(poissonMock).nextInt();
         
         simMock = mock(PottsSimulation.class);
-        cellMock = mock(PottsCell.class);
         
+        cellMock = mock(PottsCell.class);
         MiniBox box = mock(MiniBox.class);
         doReturn(0.).when(box).getDouble(anyString());
         doReturn(box).when(cellMock).getParameters();
@@ -367,24 +367,6 @@ public class PottsModuleProliferationSimpleTest {
     }
     
     @Test
-    public void stepG2_anyTransition_updatesCell() {
-        PottsCell cell = mock(PottsCell.class);
-        doReturn(parameters).when(cell).getParameters();
-        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
-        
-        PoissonFactory poissonFactory = mock(PoissonFactory.class);
-        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
-        module.poissonFactory = poissonFactory;
-        
-        module.currentSteps = Integer.MAX_VALUE;
-        module.stepG2(random);
-        module.currentSteps = 0;
-        module.stepG2(random);
-        
-        verify(cell, times(2)).updateTarget(module.cellGrowthRate, 2);
-    }
-    
-    @Test
     public void stepG2_withTransition_updatesPhase() {
         int steps = randomIntBetween(1, parameters.getInt("proliferation/STEPS_G2"));
         PottsCell cell = mock(PottsCell.class);
@@ -423,6 +405,24 @@ public class PottsModuleProliferationSimpleTest {
         
         verify(module, never()).setPhase(any(Phase.class));
         assertEquals(Phase.PROLIFERATIVE_G2, module.phase);
+    }
+    
+    @Test
+    public void stepG2_anyTransition_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepG2(random);
+        module.currentSteps = 0;
+        module.stepG2(random);
+        
+        verify(cell, times(2)).updateTarget(module.cellGrowthRate, 2);
     }
     
     @Test
