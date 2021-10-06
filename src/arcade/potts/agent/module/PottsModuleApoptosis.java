@@ -19,6 +19,12 @@ import static arcade.potts.util.PottsEnums.Phase;
  */
 
 public abstract class PottsModuleApoptosis extends PottsModule {
+    /** Ratio of critical volume for early apoptosis size checkpoint. */
+    static final double EARLY_SIZE_CHECKPOINT = 0.99;
+    
+    /** Ratio of critical volume for late apoptosis size checkpoint. */
+    static final double LATE_SIZE_CHECKPOINT = 0.25;
+    
     /** Event rate for early apoptosis (steps/tick). */
     final double rateEarly;
     
@@ -102,7 +108,7 @@ public abstract class PottsModuleApoptosis extends PottsModule {
      */
     void stepEarly(MersenneTwisterFast random) {
         // Decrease size of cell.
-        cell.updateTarget(waterLossRate, 0.99);
+        cell.updateTarget(waterLossRate, EARLY_SIZE_CHECKPOINT);
         
         // TODO: add decrease size in nuclear volume.
         
@@ -120,20 +126,22 @@ public abstract class PottsModuleApoptosis extends PottsModule {
      * Cell will complete apoptosis after completing {@code STEPS_LATE} steps
      * at an average rate of {@code RATE_LATE} or if the total cell volume falls
      * below a threshold of {@code APOPTOSIS_CHECKPOINT} times the critical size.
+     * Cell must be less than {@code LATE_SIZE_CHECKPOINT} times the critical size.
      *
      * @param random  the random number generator
      * @param sim  the simulation instance
      */
     void stepLate(MersenneTwisterFast random, Simulation sim) {
         // Decrease size of cell.
-        cell.updateTarget(cytoBlebbingRate, 0.25);
+        cell.updateTarget(cytoBlebbingRate, LATE_SIZE_CHECKPOINT);
         
         // TODO: add decrease size in nuclear volume.
         
         // Check for completion of late phase.
         Poisson poisson = poissonFactory.createPoisson(rateLate, random);
         currentSteps += poisson.nextInt();
-        if (currentSteps >= stepsLate) {
+        if (cell.getVolume() <= LATE_SIZE_CHECKPOINT * cell.getCriticalVolume()
+                && currentSteps >= stepsLate) {
             removeCell(sim);
             setPhase(Phase.APOPTOSED);
         }

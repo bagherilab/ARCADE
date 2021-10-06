@@ -21,6 +21,9 @@ import static arcade.potts.util.PottsEnums.Phase;
  */
 
 public abstract class PottsModuleProliferation extends PottsModule {
+    /** Ratio of critical volume for size checkpoint. */
+    static final double SIZE_CHECKPOINT = 2 * 0.95;
+    
     /** Event rate for G1 phase (steps/tick). */
     final double rateG1;
     
@@ -187,7 +190,6 @@ public abstract class PottsModuleProliferation extends PottsModule {
         cell.updateTarget(cellGrowthRate, 2);
         
         // Check for phase transition.
-        // TODO: add cell size check
         Poisson poisson = poissonFactory.createPoisson(rateG2, random);
         currentSteps += poisson.nextInt();
         if (currentSteps >= stepsG2) { setPhase(Phase.PROLIFERATIVE_M); }
@@ -196,17 +198,24 @@ public abstract class PottsModuleProliferation extends PottsModule {
     /**
      * Performs actions for M phase.
      * <p>
+     * Cell increases in size toward a target of twice its critical size at a
+     * rate of {@code CELL_GROWTH_RATE}.
      * Cell will complete cell division after completing {@code STEPS_M} steps
      * at an average rate of {@code RATE_M}.
+     * Cell must be greater than {@code SIZE_CHECKPOINT} times the critical size.
      *
      * @param random  the random number generator
      * @param sim  the simulation instance
      */
     void stepM(MersenneTwisterFast random, Simulation sim) {
+        // Increase size of cell.
+        cell.updateTarget(cellGrowthRate, 2);
+        
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateM, random);
         currentSteps += poisson.nextInt();
-        if (currentSteps >= stepsM) {
+        if (cell.getVolume() >= SIZE_CHECKPOINT * cell.getCriticalVolume()
+                && currentSteps >= stepsM) {
             addCell(random, sim);
             setPhase(Phase.PROLIFERATIVE_G1);
         }

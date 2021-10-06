@@ -426,10 +426,14 @@ public class PottsModuleProliferationSimpleTest {
     }
     
     @Test
-    public void stepM_withTransition_updatesPhase() {
+    public void stepM_withTransitionNotArrested_updatesPhase() {
         int steps = randomIntBetween(1, parameters.getInt("proliferation/STEPS_M"));
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
+        double volume = randomDoubleBetween(0, 100);
+        doReturn((int) (volume * SIZE_CHECKPOINT) + 1).when(cell).getVolume();
+        doReturn(volume).when(cell).getCriticalVolume();
+        
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_M;
         module.currentSteps = module.stepsM - steps;
@@ -449,9 +453,13 @@ public class PottsModuleProliferationSimpleTest {
     }
     
     @Test
-    public void stepM_withoutTransition_maintainsPhase() {
+    public void stepM_withoutTransitionNotArrested_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
+        double volume = randomDoubleBetween(0, 100);
+        doReturn((int) (volume * SIZE_CHECKPOINT) + 1).when(cell).getVolume();
+        doReturn(volume).when(cell).getCriticalVolume();
+        
         PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
         module.phase = Phase.PROLIFERATIVE_M;
         module.currentSteps = module.stepsM;
@@ -468,6 +476,78 @@ public class PottsModuleProliferationSimpleTest {
         verify(module, never()).addCell(random, simMock);
         verify(module, never()).setPhase(any(Phase.class));
         assertEquals(Phase.PROLIFERATIVE_M, module.phase);
+    }
+    
+    @Test
+    public void stepM_withTransitionArrested_maintainsPhase() {
+        int steps = randomIntBetween(1, parameters.getInt("proliferation/STEPS_M"));
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        double volume = randomDoubleBetween(0, 100);
+        doReturn((int) (volume * SIZE_CHECKPOINT) - 1).when(cell).getVolume();
+        doReturn(volume).when(cell).getCriticalVolume();
+        
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
+        module.phase = Phase.PROLIFERATIVE_M;
+        module.currentSteps = module.stepsM - steps;
+        doNothing().when(module).addCell(random, simMock);
+        
+        Poisson poisson = mock(Poisson.class);
+        doReturn(steps).when(poisson).nextInt();
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poisson).when(poissonFactory).createPoisson(eq(module.rateM), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.stepM(random, simMock);
+    
+        verify(module, never()).addCell(random, simMock);
+        verify(module, never()).setPhase(any(Phase.class));
+        assertEquals(Phase.PROLIFERATIVE_M, module.phase);
+    }
+    
+    @Test
+    public void stepM_withoutTransitionArrested_maintainPhase() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        double volume = randomDoubleBetween(0, 100);
+        doReturn((int) (volume * SIZE_CHECKPOINT) - 1).when(cell).getVolume();
+        doReturn(volume).when(cell).getCriticalVolume();
+        
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
+        module.phase = Phase.PROLIFERATIVE_M;
+        module.currentSteps = module.stepsM;
+        doNothing().when(module).addCell(random, simMock);
+        
+        Poisson poisson = mock(Poisson.class);
+        doReturn(-1).when(poisson).nextInt();
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poisson).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.stepM(random, simMock);
+    
+        verify(module, never()).addCell(random, simMock);
+        verify(module, never()).setPhase(any(Phase.class));
+        assertEquals(Phase.PROLIFERATIVE_M, module.phase);
+    }
+    
+    @Test
+    public void stepM_anyTransition_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        PottsModuleProliferation module = spy(new PottsModuleProliferation.Simple(cell));
+        doNothing().when(module).addCell(random, simMock);
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepM(random, simMock);
+        module.currentSteps = 0;
+        module.stepM(random, simMock);
+        
+        verify(cell, times(2)).updateTarget(module.cellGrowthRate, 2);
     }
     
     @Test
