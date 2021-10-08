@@ -19,7 +19,8 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 public class PottsLocationFactoryTest {
     final MersenneTwisterFast random = mock(MersenneTwisterFast.class);
     
-    static Series createSeries(int length, int width, int height, double[] volumes) {
+    static Series createSeries(int length, int width, int height,
+                               double[] volumes, double[] heights) {
         Series series = mock(Series.class);
         series.populations = new HashMap<>();
         
@@ -42,6 +43,7 @@ public class PottsLocationFactoryTest {
             MiniBox box = new MiniBox();
             box.put("CODE", pop);
             box.put("CRITICAL_VOLUME", volumes[i]);
+            box.put("CRITICAL_HEIGHT", heights[i]);
             series.populations.put("pop" + pop, box);
         }
         
@@ -50,9 +52,6 @@ public class PottsLocationFactoryTest {
     
     static class PottsLocationFactoryMock extends PottsLocationFactory {
         PottsLocationFactoryMock() { super(); }
-        
-        @Override
-        int convert(double volume) { return (int) (volume + 1); }
         
         @Override
         ArrayList<Voxel> getNeighbors(Voxel voxel) {
@@ -72,21 +71,23 @@ public class PottsLocationFactoryTest {
         }
         
         @Override
-        ArrayList<Voxel> getPossible(Voxel focus, int height, int m) {
+        ArrayList<Voxel> getPossible(Voxel focus, int s, int h) {
             ArrayList<Voxel> possible = new ArrayList<>();
-            for (int i = 0; i < m; i++) {
-                possible.add(new Voxel(i, 0, 0));
+            for (int ij = 0; ij < s; ij++) {
+                for (int k = 0; k < h; k++) {
+                    possible.add(new Voxel(ij, ij, k));
+                }
             }
             return possible;
         }
         
         @Override
-        ArrayList<Voxel> getCenters(int length, int width, int height, int m) {
+        ArrayList<Voxel> getCenters(int length, int width, int height, int s, int h) {
             ArrayList<Voxel> centers = new ArrayList<>();
             for (int i = 0; i < length; i++) {
                 for (int j = 0; j < width; j++) {
                     for (int k = 0; k < height; k++) {
-                        centers.add(new Voxel(i + m, j + m, k + m));
+                        centers.add(new Voxel(i + s, j + s, k + h));
                     }
                 }
             }
@@ -186,7 +187,7 @@ public class PottsLocationFactoryTest {
     
     @Test
     public void createLocations_noPopulation_createsEmpty() {
-        Series series = createSeries(0, 0, 0, new double[] { });
+        Series series = createSeries(0, 0, 0, new double[] { }, new double[] { });
         
         PottsLocationFactoryMock factory = new PottsLocationFactoryMock();
         factory.createLocations(series);
@@ -195,124 +196,201 @@ public class PottsLocationFactoryTest {
     }
     
     @Test
-    public void createLocations_onePopulationNoRegions_createsList() {
+    public void createLocations_noRegions_createsList() {
         int length = randomIntBetween(1, 10);
         int width = randomIntBetween(1, 10);
         int height = randomIntBetween(1, 10);
-        int volume = randomIntBetween(1, 100);
-        Series series = createSeries(length, width, height, new double[] { volume });
+        int s = randomIntBetween(1, 10);
+        int h = randomIntBetween(1, 10);
+        Series series = createSeries(length, width, height, new double[] { 0 }, new double[] { 0 });
         
-        PottsLocationFactoryMock factory = new PottsLocationFactoryMock();
+        PottsLocationFactoryMock factory = spy(new PottsLocationFactoryMock());
         factory.random = random;
+        doReturn(h).when(factory).getVoxelsPerHeight(series);
+        doReturn(s).when(factory).getVoxelsPerSide(series, h);
         factory.createLocations(series);
         
         assertEquals(length * width * height, factory.locations.values().size());
         for (PottsLocationContainer container : factory.locations.values()) {
-            assertTrue(container.center.x <= length + volume + 3);
-            assertTrue(container.center.x >= volume + 3);
-            assertTrue(container.center.y <= width + volume + 3);
-            assertTrue(container.center.y >= volume + 3);
-            assertTrue(container.center.z <= height + volume + 3);
-            assertTrue(container.center.z >= volume + 3);
-            assertEquals(volume + 3, container.allVoxels.size());
+            assertTrue(container.center.x <= length + s);
+            assertTrue(container.center.x >= s);
+            assertTrue(container.center.y <= width + s);
+            assertTrue(container.center.y >= s);
+            assertTrue(container.center.z <= height + h);
+            assertTrue(container.center.z >= h);
+            assertEquals(s * h, container.allVoxels.size());
         }
     }
     
     @Test
-    public void createLocations_onePopulationWithRegions_createsList() {
+    public void createLocations_withRegions_createsList() {
         int length = randomIntBetween(1, 10);
         int width = randomIntBetween(1, 10);
         int height = randomIntBetween(1, 10);
-        int volume = randomIntBetween(1, 100);
-        Series series = createSeries(length, width, height, new double[] { volume });
+        int s = randomIntBetween(1, 10);
+        int h = randomIntBetween(1, 10);
+        int padding = 2;
+        Series series = createSeries(length, width, height, new double[] { 0 }, new double[] { 0 });
         
         series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.0);
         series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", 0.0);
         
-        PottsLocationFactoryMock factory = new PottsLocationFactoryMock();
+        PottsLocationFactoryMock factory = spy(new PottsLocationFactoryMock());
         factory.random = random;
+        doReturn(h).when(factory).getVoxelsPerHeight(series);
+        doReturn(s).when(factory).getVoxelsPerSide(series, h);
         factory.createLocations(series);
         
         assertEquals(length * width * height, factory.locations.values().size());
         for (PottsLocationContainer container : factory.locations.values()) {
-            assertTrue(container.center.x <= length + volume + 3);
-            assertTrue(container.center.x >= volume + 3);
-            assertTrue(container.center.y <= width + volume + 3);
-            assertTrue(container.center.y >= volume + 3);
-            assertTrue(container.center.z <= height + volume + 3);
-            assertTrue(container.center.z >= volume + 3);
-            assertEquals(volume + 3, container.allVoxels.size());
+            assertTrue(container.center.x <= length + s);
+            assertTrue(container.center.x >= s);
+            assertTrue(container.center.y <= width + s);
+            assertTrue(container.center.y >= s);
+            assertTrue(container.center.z <= height + h);
+            assertTrue(container.center.z >= h);
+            assertEquals(s * h, container.allVoxels.size());
             assertEquals(2, container.regions.size());
+            assertEquals((s - padding) * h, container.regions.get(Region.DEFAULT).size());
+            assertEquals((s - padding) * h, container.regions.get(Region.NUCLEUS).size());
             
-            ArrayList<Voxel> regionVoxels = new ArrayList<>(container.allVoxels);
-            regionVoxels.remove(new Voxel(volume + 2, 0, 0));
-            regionVoxels.remove(new Voxel(volume + 1, 0, 0));
-            
-            assertEquals(regionVoxels, container.regions.get(Region.DEFAULT));
-            assertEquals(regionVoxels, container.regions.get(Region.NUCLEUS));
+            for (Voxel voxel : container.regions.get(Region.DEFAULT)) {
+                assertTrue(voxel.x <= s - padding);
+                assertTrue(voxel.x >= 0);
+                assertTrue(voxel.y <= s - padding);
+                assertTrue(voxel.y >= 0);
+                assertTrue(voxel.z <= h);
+                assertTrue(voxel.z >= 0);
+            }
+    
+            for (Voxel voxel : container.regions.get(Region.NUCLEUS)) {
+                assertTrue(voxel.x <= s - padding);
+                assertTrue(voxel.x >= 0);
+                assertTrue(voxel.y <= s - padding);
+                assertTrue(voxel.y >= 0);
+                assertTrue(voxel.z <= h);
+                assertTrue(voxel.z >= 0);
+            }
         }
     }
     
     @Test
-    public void createLocations_multiplePopulationsNoRegions_createsList() {
-        int length = randomIntBetween(1, 10);
-        int width = randomIntBetween(1, 10);
-        int height = randomIntBetween(1, 10);
-        int volume1 = randomIntBetween(1, 100);
-        int volume2 = volume1 + randomIntBetween(1, 100);
-        int volume3 = volume1 - randomIntBetween(1, 100);
-        Series series = createSeries(length, width, height, new double[] { volume1, volume2, volume3 });
-        
-        PottsLocationFactoryMock factory = new PottsLocationFactoryMock();
-        factory.random = random;
-        factory.createLocations(series);
-        
-        assertEquals(length * width * height, factory.locations.values().size());
-        for (PottsLocationContainer container : factory.locations.values()) {
-            assertTrue(container.center.x <= length + volume2 + 3);
-            assertTrue(container.center.x >= volume2 + 3);
-            assertTrue(container.center.y <= width + volume2 + 3);
-            assertTrue(container.center.y >= volume2 + 3);
-            assertTrue(container.center.z <= height + volume2 + 3);
-            assertTrue(container.center.z >= volume2 + 3);
-            assertEquals(volume2 + 3, container.allVoxels.size());
-        }
+    public void convert_exactOddSides_calculateValue() {
+        PottsLocationFactory factory = new PottsLocationFactoryMock();
+        int h = randomIntBetween(2, 10);
+        assertEquals(1, factory.convert(1 * 1 * h, h));
+        assertEquals(3, factory.convert(3 * 3 * h, h));
+        assertEquals(5, factory.convert(5 * 5 * h, h));
+        assertEquals(7, factory.convert(7 * 7 * h, h));
     }
     
     @Test
-    public void createLocations_multiplePopulationsWithRegions_createsList() {
-        int length = randomIntBetween(1, 10);
-        int width = randomIntBetween(1, 10);
-        int height = randomIntBetween(1, 10);
-        int volume1 = randomIntBetween(1, 100);
-        int volume2 = volume1 + randomIntBetween(1, 100);
-        int volume3 = volume1 - randomIntBetween(1, 100);
-        Series series = createSeries(length, width, height, new double[] { volume1, volume2, volume3 });
+    public void convert_exactEvenSides_calculateValue() {
+        PottsLocationFactory factory = new PottsLocationFactoryMock();
+        int h = randomIntBetween(2, 10);
+        assertEquals(3, factory.convert(2 * 2 * h, h));
+        assertEquals(5, factory.convert(4 * 4 * h, h));
+        assertEquals(7, factory.convert(6 * 6 * h, h));
+        assertEquals(9, factory.convert(8 * 8 * h, h));
+    }
+    
+    @Test
+    public void convert_inexactOddSides_calculateValue() {
+        PottsLocationFactory factory = new PottsLocationFactoryMock();
+        int h = randomIntBetween(2, 10);
+        assertEquals(3, factory.convert(1 * 1 * h + 1, h));
+        assertEquals(5, factory.convert(3 * 3 * h + 1, h));
+        assertEquals(7, factory.convert(5 * 5 * h + 1, h));
+        assertEquals(9, factory.convert(7 * 7 * h + 1, h));
+    }
+    
+    @Test
+    public void convert_inexactEvenSides_calculateValue() {
+        PottsLocationFactory factory = new PottsLocationFactoryMock();
+        int h = randomIntBetween(2, 10);
+        assertEquals(3, factory.convert(2 * 2 * h - 1, h));
+        assertEquals(5, factory.convert(4 * 4 * h - 1, h));
+        assertEquals(7, factory.convert(6 * 6 * h - 1, h));
+        assertEquals(9, factory.convert(8 * 8 * h - 1, h));
+    }
+    
+    @Test
+    public void getVoxelsPerHeight_minimumHeight_returnsOne() {
+        int n = randomIntBetween(3, 10);
+        double[] heights = new double[n];
+        int seriesHeight = 0;
         
-        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.0);
-        series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", 0.0);
+        Series series = createSeries(0, 0, seriesHeight, new double[n], heights);
+        PottsLocationFactory factory = new PottsLocationFactoryMock();
+        int h = factory.getVoxelsPerHeight(series);
         
-        PottsLocationFactoryMock factory = new PottsLocationFactoryMock();
-        factory.random = random;
-        factory.createLocations(series);
+        assertEquals(1, h);
+    }
+    
+    @Test
+    public void getVoxelsPerHeight_cellHeight_returnsValue() {
+        int n = randomIntBetween(3, 10);
+        double[] heights = new double[n];
+        int seriesHeight = 100 * n + 2;
+        int maxHeight = 0;
         
-        assertEquals(length * width * height, factory.locations.values().size());
-        for (PottsLocationContainer container : factory.locations.values()) {
-            assertTrue(container.center.x <= length + volume2 + 3);
-            assertTrue(container.center.x >= volume2 + 3);
-            assertTrue(container.center.y <= width + volume2 + 3);
-            assertTrue(container.center.y >= volume2 + 3);
-            assertTrue(container.center.z <= height + volume2 + 3);
-            assertTrue(container.center.z >= volume2 + 3);
-            assertEquals(volume2 + 3, container.allVoxels.size());
-            assertEquals(2, container.regions.size());
-            
-            ArrayList<Voxel> regionVoxels = new ArrayList<>(container.allVoxels);
-            regionVoxels.remove(new Voxel(volume2 + 2, 0, 0));
-            regionVoxels.remove(new Voxel(volume2 + 1, 0, 0));
-            
-            assertEquals(regionVoxels, container.regions.get(Region.DEFAULT));
-            assertEquals(regionVoxels, container.regions.get(Region.NUCLEUS));
+        for (int i = 0; i < n; i++) {
+            heights[i] = randomIntBetween(1, 100);
+            maxHeight = (int) Math.max(maxHeight, heights[i]);
         }
+        
+        Series series = createSeries(0, 0, seriesHeight, new double[n], heights);
+        PottsLocationFactory factory = new PottsLocationFactoryMock();
+        int h = factory.getVoxelsPerHeight(series);
+        
+        assertEquals(maxHeight, h);
+    }
+    
+    @Test
+    public void getVoxelsPerHeight_seriesHeight_returnsValue() {
+        int n = randomIntBetween(3, 10);
+        double[] heights = new double[n];
+        int padding = 2;
+        int seriesHeight = randomIntBetween(3, 10) + padding;
+        
+        for (int i = 0; i < n; i++) {
+            heights[i] = randomIntBetween(seriesHeight + 1, 100);
+        }
+        
+        Series series = createSeries(0, 0, seriesHeight, new double[n], heights);
+        PottsLocationFactory factory = new PottsLocationFactoryMock();
+        int h = factory.getVoxelsPerHeight(series);
+        
+        assertEquals(seriesHeight - padding, h);
+    }
+    
+    @Test
+    public void getVoxelsPerSide_noPopulations_returnsZero() {
+        Series series = createSeries(0, 0, 0, new double[0], new double[0]);
+        PottsLocationFactory factory = new PottsLocationFactoryMock();
+        int s = factory.getVoxelsPerSide(series, 0);
+        
+        assertEquals(0, s);
+    }
+    
+    @Test
+    public void getVoxelsPerSide_cellSize_returnsValue() {
+        int h = randomIntBetween(3, 10);
+        int n = randomIntBetween(3, 10);
+        double[] volumes = new double[n];
+        int padding = 2;
+        int maxVolume = 0;
+        
+        for (int i = 0; i < n; i++) {
+            int v = randomIntBetween(2, 10) * 2 + 1;
+            volumes[i] = v * v * h;
+            maxVolume = Math.max(maxVolume, v);
+        }
+        
+        Series series = createSeries(0, 0, 0, volumes, new double[n]);
+        PottsLocationFactory factory = new PottsLocationFactoryMock();
+        int s = factory.getVoxelsPerSide(series, h);
+        
+        assertEquals(maxVolume + padding, s);
     }
 }

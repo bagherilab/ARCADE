@@ -10,12 +10,6 @@ public final class PottsLocationFactory3D extends PottsLocationFactory {
     public PottsLocationFactory3D() { super(); }
     
     @Override
-    int convert(double volume) {
-        int cbrt = (int) Math.ceil(Math.cbrt(volume));
-        return cbrt + (cbrt % 2 == 0 ? 1 : 0);
-    }
-    
-    @Override
     ArrayList<Voxel> getNeighbors(Voxel focus) {
         return Location3D.getNeighbors(focus);
     }
@@ -26,31 +20,16 @@ public final class PottsLocationFactory3D extends PottsLocationFactory {
     }
     
     @Override
-    ArrayList<Voxel> getPossible(Voxel focus, int height, int m) {
+    ArrayList<Voxel> getPossible(Voxel focus, int s, int h) {
         ArrayList<Voxel> voxels = new ArrayList<>();
         
-        if (height - 2 < m) {
-            for (int i = 0; i < m; i++) {
-                for (int j = 0; j < m; j++) {
-                    for (int k = 1; k < height - 1; k++) {
-                        voxels.add(new Voxel(
-                                focus.x + i - (m - 1) / 2,
-                                focus.y + j - (m - 1) / 2,
-                                k));
-                    }
-                }
-            }
-            
-            return voxels;
-        }
-        
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < m; j++) {
-                for (int k = 0; k < m; k++) {
+        for (int i = 0; i < s; i++) {
+            for (int j = 0; j < s; j++) {
+                for (int k = 0; k < h; k++) {
                     voxels.add(new Voxel(
-                            focus.x + i - (m - 1) / 2,
-                            focus.y + j - (m - 1) / 2,
-                            focus.z + k - (m - 1) / 2));
+                            focus.x + i - (s - 1) / 2,
+                            focus.y + j - (s - 1) / 2,
+                            focus.z + k - (h - 1) / 2));
                 }
             }
         }
@@ -59,30 +38,15 @@ public final class PottsLocationFactory3D extends PottsLocationFactory {
     }
     
     @Override
-    ArrayList<Voxel> getCenters(int length, int width, int height, int m) {
+    ArrayList<Voxel> getCenters(int length, int width, int height, int s, int h) {
         ArrayList<Voxel> centers = new ArrayList<>();
-    
-        // Special case "quasi-3D" where length, width >> height. Uses
-        // the middle layer in the z direction as the center z coordinate.
-        if (height - 2 < m) {
-            for (int i = 0; i < (length - 2) / m; i++) {
-                for (int j = 0; j < (width - 2) / m; j++) {
-                    int cx = i * m + (m + 1) / 2;
-                    int cy = j * m + (m + 1) / 2;
-                    int cz = (height - 1) / 2;
-                    centers.add(new Voxel(cx, cy, cz));
-                }
-            }
-            
-            return centers;
-        }
         
-        for (int i = 0; i < (length - 2) / m; i++) {
-            for (int j = 0; j < (width - 2) / m; j++) {
-                for (int k = 0; k < (height - 2) / m; k++) {
-                    int cx = i * m + (m + 1) / 2;
-                    int cy = j * m + (m + 1) / 2;
-                    int cz = k * m + (m + 1) / 2;
+        for (int i = 0; i < (length - 2) / s; i++) {
+            for (int j = 0; j < (width - 2) / s; j++) {
+                for (int k = 0; k < (height - 2) / h; k++) {
+                    int cx = i * s + (s + 1) / 2;
+                    int cy = j * s + (s + 1) / 2;
+                    int cz = k * h + (h + 1) / 2;
                     centers.add(new Voxel(cx, cy, cz));
                 }
             }

@@ -281,13 +281,13 @@ public interface Location3D {
      */
     static ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) {
         ArrayList<Voxel> selected = new ArrayList<>();
-        double r = Math.cbrt((3 * n) / (4 * Math.PI));
+        double h = calculateHeight(voxels);
+        double r = Math.sqrt(n / h / Math.PI);
         
         // Select voxels within given radius.
         for (Voxel voxel : voxels) {
             double d = Math.sqrt(Math.pow(focus.x - voxel.x, 2)
-                    + Math.pow(focus.y - voxel.y, 2)
-                    + Math.pow(focus.z - voxel.z, 2));
+                    + Math.pow(focus.y - voxel.y, 2));
             if (d < r) { selected.add(voxel); }
         }
         
