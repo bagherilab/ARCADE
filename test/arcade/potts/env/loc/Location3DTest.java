@@ -371,51 +371,11 @@ public class Location3DTest {
     }
     
     @Test
-    public void getSlice_givenLocationYZPlane_returnsValue() {
+    public void getSlice_givenLocationPlane_returnsValue() {
         PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
-        
-        HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.ZX_PLANE, 1);
-        diametersA.put(Direction.XY_PLANE, 2);
-        
-        HashMap<Direction, Integer> diametersB = new HashMap<>();
-        diametersB.put(Direction.XY_PLANE, 1);
-        diametersB.put(Direction.ZX_PLANE, 2);
-        
-        assertEquals(Direction.XY_PLANE, loc.getSlice(Direction.YZ_PLANE, diametersA));
-        assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.YZ_PLANE, diametersB));
-    }
-    
-    @Test
-    public void getSlice_givenLocationZXPlane_returnsValue() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
-        
-        HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.XY_PLANE, 1);
-        diametersA.put(Direction.YZ_PLANE, 2);
-        
-        HashMap<Direction, Integer> diametersB = new HashMap<>();
-        diametersB.put(Direction.YZ_PLANE, 1);
-        diametersB.put(Direction.XY_PLANE, 2);
-        
-        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.ZX_PLANE, diametersA));
-        assertEquals(Direction.XY_PLANE, loc.getSlice(Direction.ZX_PLANE, diametersB));
-    }
-    
-    @Test
-    public void getSlice_givenLocationXYPlane_returnsValue() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
-        
-        HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.YZ_PLANE, 1);
-        diametersA.put(Direction.ZX_PLANE, 2);
-        
-        HashMap<Direction, Integer> diametersB = new HashMap<>();
-        diametersB.put(Direction.ZX_PLANE, 1);
-        diametersB.put(Direction.YZ_PLANE, 2);
-        
-        assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.XY_PLANE, diametersA));
-        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.XY_PLANE, diametersB));
+        assertEquals(Direction.XY_PLANE, loc.getSlice(Direction.XY_PLANE, null));
+        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.YZ_PLANE, null));
+        assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.ZX_PLANE, null));
     }
     
     @Test
@@ -423,12 +383,12 @@ public class Location3DTest {
         PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
         
         HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.NEGATIVE_XY, 1);
+        diametersA.put(Direction.POSITIVE_XY, 1);
         diametersA.put(Direction.XY_PLANE, 2);
         
         HashMap<Direction, Integer> diametersB = new HashMap<>();
         diametersB.put(Direction.XY_PLANE, 1);
-        diametersB.put(Direction.NEGATIVE_XY, 2);
+        diametersB.put(Direction.POSITIVE_XY, 2);
         
         assertEquals(Direction.XY_PLANE, loc.getSlice(Direction.POSITIVE_XY, diametersA));
         assertEquals(Direction.NEGATIVE_XY, loc.getSlice(Direction.POSITIVE_XY, diametersB));
@@ -439,12 +399,12 @@ public class Location3DTest {
         PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
         
         HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.POSITIVE_XY, 1);
+        diametersA.put(Direction.NEGATIVE_XY, 1);
         diametersA.put(Direction.XY_PLANE, 2);
         
         HashMap<Direction, Integer> diametersB = new HashMap<>();
         diametersB.put(Direction.XY_PLANE, 1);
-        diametersB.put(Direction.POSITIVE_XY, 2);
+        diametersB.put(Direction.NEGATIVE_XY, 2);
         
         assertEquals(Direction.XY_PLANE, loc.getSlice(Direction.NEGATIVE_XY, diametersA));
         assertEquals(Direction.POSITIVE_XY, loc.getSlice(Direction.NEGATIVE_XY, diametersB));
@@ -455,12 +415,12 @@ public class Location3DTest {
         PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
         
         HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.NEGATIVE_YZ, 1);
+        diametersA.put(Direction.POSITIVE_YZ, 1);
         diametersA.put(Direction.YZ_PLANE, 2);
         
         HashMap<Direction, Integer> diametersB = new HashMap<>();
         diametersB.put(Direction.YZ_PLANE, 1);
-        diametersB.put(Direction.NEGATIVE_YZ, 2);
+        diametersB.put(Direction.POSITIVE_YZ, 2);
         
         assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.POSITIVE_YZ, diametersA));
         assertEquals(Direction.NEGATIVE_YZ, loc.getSlice(Direction.POSITIVE_YZ, diametersB));
@@ -471,12 +431,12 @@ public class Location3DTest {
         PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
         
         HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.POSITIVE_YZ, 1);
+        diametersA.put(Direction.NEGATIVE_YZ, 1);
         diametersA.put(Direction.YZ_PLANE, 2);
         
         HashMap<Direction, Integer> diametersB = new HashMap<>();
         diametersB.put(Direction.YZ_PLANE, 1);
-        diametersB.put(Direction.POSITIVE_YZ, 2);
+        diametersB.put(Direction.NEGATIVE_YZ, 2);
         
         assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.NEGATIVE_YZ, diametersA));
         assertEquals(Direction.POSITIVE_YZ, loc.getSlice(Direction.NEGATIVE_YZ, diametersB));
@@ -487,12 +447,12 @@ public class Location3DTest {
         PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
         
         HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.NEGATIVE_ZX, 1);
+        diametersA.put(Direction.POSITIVE_ZX, 1);
         diametersA.put(Direction.ZX_PLANE, 2);
         
         HashMap<Direction, Integer> diametersB = new HashMap<>();
         diametersB.put(Direction.ZX_PLANE, 1);
-        diametersB.put(Direction.NEGATIVE_ZX, 2);
+        diametersB.put(Direction.POSITIVE_ZX, 2);
         
         assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.POSITIVE_ZX, diametersA));
         assertEquals(Direction.NEGATIVE_ZX, loc.getSlice(Direction.POSITIVE_ZX, diametersB));
@@ -503,83 +463,27 @@ public class Location3DTest {
         PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
         
         HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.POSITIVE_ZX, 1);
+        diametersA.put(Direction.NEGATIVE_ZX, 1);
         diametersA.put(Direction.ZX_PLANE, 2);
         
         HashMap<Direction, Integer> diametersB = new HashMap<>();
         diametersB.put(Direction.ZX_PLANE, 1);
-        diametersB.put(Direction.POSITIVE_ZX, 2);
+        diametersB.put(Direction.NEGATIVE_ZX, 2);
         
         assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.NEGATIVE_ZX, diametersA));
         assertEquals(Direction.POSITIVE_ZX, loc.getSlice(Direction.NEGATIVE_ZX, diametersB));
     }
     
     @Test
-    public void getSlice_givenLocationsYZPlane_returnsValue() {
+    public void getSlice_givenLocationsPlane_returnsValue() {
         PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-        
-        HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.ZX_PLANE, 1);
-        diametersA.put(Direction.XY_PLANE, 2);
-        
-        HashMap<Direction, Integer> diametersB = new HashMap<>();
-        diametersB.put(Direction.XY_PLANE, 1);
-        diametersB.put(Direction.ZX_PLANE, 2);
-        
-        assertEquals(Direction.XY_PLANE, loc.getSlice(Direction.YZ_PLANE, diametersA));
-        assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.YZ_PLANE, diametersB));
-    }
-    
-    @Test
-    public void getSlice_givenLocationsZXPlane_returnsValue() {
-        PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-        
-        HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.XY_PLANE, 1);
-        diametersA.put(Direction.YZ_PLANE, 2);
-        
-        HashMap<Direction, Integer> diametersB = new HashMap<>();
-        diametersB.put(Direction.YZ_PLANE, 1);
-        diametersB.put(Direction.XY_PLANE, 2);
-        
-        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.ZX_PLANE, diametersA));
-        assertEquals(Direction.XY_PLANE, loc.getSlice(Direction.ZX_PLANE, diametersB));
-    }
-    
-    @Test
-    public void getSlice_givenLocationsXYPlane_returnsValue() {
-        PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-        
-        HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.YZ_PLANE, 1);
-        diametersA.put(Direction.ZX_PLANE, 2);
-        
-        HashMap<Direction, Integer> diametersB = new HashMap<>();
-        diametersB.put(Direction.ZX_PLANE, 1);
-        diametersB.put(Direction.YZ_PLANE, 2);
-        
-        assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.XY_PLANE, diametersA));
-        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.XY_PLANE, diametersB));
+        assertEquals(Direction.XY_PLANE, loc.getSlice(Direction.XY_PLANE, null));
+        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.YZ_PLANE, null));
+        assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.ZX_PLANE, null));
     }
     
     @Test
     public void getSlice_givenLocationsPositiveXY_returnsValue() {
-        PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-        
-        HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.NEGATIVE_XY, 1);
-        diametersA.put(Direction.XY_PLANE, 2);
-        
-        HashMap<Direction, Integer> diametersB = new HashMap<>();
-        diametersB.put(Direction.XY_PLANE, 1);
-        diametersB.put(Direction.NEGATIVE_XY, 2);
-        
-        assertEquals(Direction.XY_PLANE, loc.getSlice(Direction.POSITIVE_XY, diametersA));
-        assertEquals(Direction.NEGATIVE_XY, loc.getSlice(Direction.POSITIVE_XY, diametersB));
-    }
-    
-    @Test
-    public void getSlice_givenLocationsNegativeXY_returnsValue() {
         PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
         
         HashMap<Direction, Integer> diametersA = new HashMap<>();
@@ -590,28 +494,28 @@ public class Location3DTest {
         diametersB.put(Direction.XY_PLANE, 1);
         diametersB.put(Direction.POSITIVE_XY, 2);
         
+        assertEquals(Direction.XY_PLANE, loc.getSlice(Direction.POSITIVE_XY, diametersA));
+        assertEquals(Direction.NEGATIVE_XY, loc.getSlice(Direction.POSITIVE_XY, diametersB));
+    }
+    
+    @Test
+    public void getSlice_givenLocationsNegativeXY_returnsValue() {
+        PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
+        
+        HashMap<Direction, Integer> diametersA = new HashMap<>();
+        diametersA.put(Direction.NEGATIVE_XY, 1);
+        diametersA.put(Direction.XY_PLANE, 2);
+        
+        HashMap<Direction, Integer> diametersB = new HashMap<>();
+        diametersB.put(Direction.XY_PLANE, 1);
+        diametersB.put(Direction.NEGATIVE_XY, 2);
+        
         assertEquals(Direction.XY_PLANE, loc.getSlice(Direction.NEGATIVE_XY, diametersA));
         assertEquals(Direction.POSITIVE_XY, loc.getSlice(Direction.NEGATIVE_XY, diametersB));
     }
     
     @Test
     public void getSlice_givenLocationsPositiveYZ_returnsValue() {
-        PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-        
-        HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.NEGATIVE_YZ, 1);
-        diametersA.put(Direction.YZ_PLANE, 2);
-        
-        HashMap<Direction, Integer> diametersB = new HashMap<>();
-        diametersB.put(Direction.YZ_PLANE, 1);
-        diametersB.put(Direction.NEGATIVE_YZ, 2);
-        
-        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.POSITIVE_YZ, diametersA));
-        assertEquals(Direction.NEGATIVE_YZ, loc.getSlice(Direction.POSITIVE_YZ, diametersB));
-    }
-    
-    @Test
-    public void getSlice_givenLocationsNegativeYZ_returnsValue() {
         PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
         
         HashMap<Direction, Integer> diametersA = new HashMap<>();
@@ -622,6 +526,22 @@ public class Location3DTest {
         diametersB.put(Direction.YZ_PLANE, 1);
         diametersB.put(Direction.POSITIVE_YZ, 2);
         
+        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.POSITIVE_YZ, diametersA));
+        assertEquals(Direction.NEGATIVE_YZ, loc.getSlice(Direction.POSITIVE_YZ, diametersB));
+    }
+    
+    @Test
+    public void getSlice_givenLocationsNegativeYZ_returnsValue() {
+        PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
+        
+        HashMap<Direction, Integer> diametersA = new HashMap<>();
+        diametersA.put(Direction.NEGATIVE_YZ, 1);
+        diametersA.put(Direction.YZ_PLANE, 2);
+        
+        HashMap<Direction, Integer> diametersB = new HashMap<>();
+        diametersB.put(Direction.YZ_PLANE, 1);
+        diametersB.put(Direction.NEGATIVE_YZ, 2);
+        
         assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.NEGATIVE_YZ, diametersA));
         assertEquals(Direction.POSITIVE_YZ, loc.getSlice(Direction.NEGATIVE_YZ, diametersB));
     }
@@ -631,12 +551,12 @@ public class Location3DTest {
         PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
         
         HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.NEGATIVE_ZX, 1);
+        diametersA.put(Direction.POSITIVE_ZX, 1);
         diametersA.put(Direction.ZX_PLANE, 2);
         
         HashMap<Direction, Integer> diametersB = new HashMap<>();
         diametersB.put(Direction.ZX_PLANE, 1);
-        diametersB.put(Direction.NEGATIVE_ZX, 2);
+        diametersB.put(Direction.POSITIVE_ZX, 2);
         
         assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.POSITIVE_ZX, diametersA));
         assertEquals(Direction.NEGATIVE_ZX, loc.getSlice(Direction.POSITIVE_ZX, diametersB));
@@ -647,12 +567,12 @@ public class Location3DTest {
         PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
         
         HashMap<Direction, Integer> diametersA = new HashMap<>();
-        diametersA.put(Direction.POSITIVE_ZX, 1);
+        diametersA.put(Direction.NEGATIVE_ZX, 1);
         diametersA.put(Direction.ZX_PLANE, 2);
         
         HashMap<Direction, Integer> diametersB = new HashMap<>();
         diametersB.put(Direction.ZX_PLANE, 1);
-        diametersB.put(Direction.POSITIVE_ZX, 2);
+        diametersB.put(Direction.NEGATIVE_ZX, 2);
         
         assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.NEGATIVE_ZX, diametersA));
         assertEquals(Direction.POSITIVE_ZX, loc.getSlice(Direction.NEGATIVE_ZX, diametersB));

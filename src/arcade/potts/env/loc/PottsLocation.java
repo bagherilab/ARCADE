@@ -313,7 +313,7 @@ public abstract class PottsLocation implements Location {
     abstract HashMap<Direction, Integer> getDiameters();
     
     /**
-     * Selects the slice direction for a given minimum diameter direction.
+     * Selects the slice direction for a given maximum diameter direction.
      *
      * @param direction  the direction of the minimum diameter
      * @param diameters  the list of diameters
@@ -342,16 +342,16 @@ public abstract class PottsLocation implements Location {
         
         // Determine minimum diameter.
         int diameter;
-        int minimumDiameter = Integer.MAX_VALUE;
+        int maximumDiameter = 0;
         for (Direction direction : Direction.values()) {
-            diameter = diameters.getOrDefault(direction, Integer.MAX_VALUE);
-            if (diameter < minimumDiameter) { minimumDiameter = diameter; }
+            diameter = diameters.getOrDefault(direction, 0);
+            if (diameter > maximumDiameter) { maximumDiameter = diameter; }
         }
         
-        // Find all directions with the minimum diameter.
+        // Find all directions with the maximum diameter.
         for (Direction direction : Direction.values()) {
-            diameter = diameters.getOrDefault(direction, Integer.MAX_VALUE);
-            if (diameter == minimumDiameter) { directions.add(direction); }
+            diameter = diameters.getOrDefault(direction, 0);
+            if (diameter == maximumDiameter) { directions.add(direction); }
         }
         
         // Randomly select one direction with the minimum diameter.
@@ -437,7 +437,7 @@ public abstract class PottsLocation implements Location {
                         }
                     }
                     break;
-                case POSITIVE_XY:
+                case NEGATIVE_XY:
                     if (voxel.x - center.x > center.y - voxel.y) {
                         voxelsA.add(voxel);
                     } else if (voxel.x - center.x < center.y - voxel.y) {
@@ -450,7 +450,7 @@ public abstract class PottsLocation implements Location {
                         }
                     }
                     break;
-                case NEGATIVE_XY:
+                case POSITIVE_XY:
                     if (voxel.x - center.x > voxel.y - center.y) {
                         voxelsA.add(voxel);
                     } else if (voxel.x - center.x < voxel.y - center.y) {
@@ -463,7 +463,7 @@ public abstract class PottsLocation implements Location {
                         }
                     }
                     break;
-                case POSITIVE_YZ:
+                case NEGATIVE_YZ:
                     if (voxel.y - center.y > center.z - voxel.z) {
                         voxelsA.add(voxel);
                     } else if (voxel.y - center.y < center.z - voxel.z) {
@@ -476,7 +476,7 @@ public abstract class PottsLocation implements Location {
                         }
                     }
                     break;
-                case NEGATIVE_YZ:
+                case POSITIVE_YZ:
                     if (voxel.y - center.y > voxel.z - center.z) {
                         voxelsA.add(voxel);
                     } else if (voxel.y - center.y < voxel.z - center.z) {
@@ -489,7 +489,7 @@ public abstract class PottsLocation implements Location {
                         }
                     }
                     break;
-                case POSITIVE_ZX:
+                case NEGATIVE_ZX:
                     if (voxel.z - center.z > center.x - voxel.x) {
                         voxelsA.add(voxel);
                     } else if (voxel.z - center.z < center.x - voxel.x) {
@@ -502,7 +502,7 @@ public abstract class PottsLocation implements Location {
                         }
                     }
                     break;
-                case NEGATIVE_ZX:
+                case POSITIVE_ZX:
                     if (voxel.z - center.z > voxel.x - center.x) {
                         voxelsA.add(voxel);
                     } else if (voxel.z - center.z < voxel.x - center.x) {

@@ -73,9 +73,11 @@ public class PottsLocationFactoryTest {
         @Override
         ArrayList<Voxel> getPossible(Voxel focus, int s, int h) {
             ArrayList<Voxel> possible = new ArrayList<>();
-            for (int ij = 0; ij < s; ij++) {
-                for (int k = 0; k < h; k++) {
-                    possible.add(new Voxel(ij, ij, k));
+            for (int i = 0; i < s; i++) {
+                for (int j = 0; j < s; j++) {
+                    for (int k = 0; k < h; k++) {
+                        possible.add(new Voxel(i, j, k));
+                    }
                 }
             }
             return possible;
@@ -218,7 +220,7 @@ public class PottsLocationFactoryTest {
             assertTrue(container.center.y >= s);
             assertTrue(container.center.z <= height + h);
             assertTrue(container.center.z >= h);
-            assertEquals(s * h, container.allVoxels.size());
+            assertEquals(s * s * h, container.allVoxels.size());
         }
     }
     
@@ -227,7 +229,7 @@ public class PottsLocationFactoryTest {
         int length = randomIntBetween(1, 10);
         int width = randomIntBetween(1, 10);
         int height = randomIntBetween(1, 10);
-        int s = randomIntBetween(1, 10);
+        int s = randomIntBetween(3, 10);
         int h = randomIntBetween(1, 10);
         int padding = 2;
         Series series = createSeries(length, width, height, new double[] { 0 }, new double[] { 0 });
@@ -249,10 +251,10 @@ public class PottsLocationFactoryTest {
             assertTrue(container.center.y >= s);
             assertTrue(container.center.z <= height + h);
             assertTrue(container.center.z >= h);
-            assertEquals(s * h, container.allVoxels.size());
+            assertEquals(s * s * h, container.allVoxels.size());
             assertEquals(2, container.regions.size());
-            assertEquals((s - padding) * h, container.regions.get(Region.DEFAULT).size());
-            assertEquals((s - padding) * h, container.regions.get(Region.NUCLEUS).size());
+            assertEquals((s - padding) * (s - padding) * h, container.regions.get(Region.DEFAULT).size());
+            assertEquals((s - padding) * (s - padding) * h, container.regions.get(Region.NUCLEUS).size());
             
             for (Voxel voxel : container.regions.get(Region.DEFAULT)) {
                 assertTrue(voxel.x <= s - padding);

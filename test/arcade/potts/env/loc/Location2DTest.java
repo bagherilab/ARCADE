@@ -290,8 +290,8 @@ public class Location2DTest {
     @Test
     public void getSlice_givenLocation_returnsValue() {
         PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
-        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.ZX_PLANE, null));
-        assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.YZ_PLANE, null));
+        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.YZ_PLANE, null));
+        assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.ZX_PLANE, null));
         assertEquals(Direction.POSITIVE_XY, loc.getSlice(Direction.NEGATIVE_XY, null));
         assertEquals(Direction.NEGATIVE_XY, loc.getSlice(Direction.POSITIVE_XY, null));
     }
@@ -299,8 +299,8 @@ public class Location2DTest {
     @Test
     public void getSlice_givenLocations_returnsValue() {
         PottsLocations2D loc = new PottsLocations2D(new ArrayList<>());
-        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.ZX_PLANE, null));
-        assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.YZ_PLANE, null));
+        assertEquals(Direction.YZ_PLANE, loc.getSlice(Direction.YZ_PLANE, null));
+        assertEquals(Direction.ZX_PLANE, loc.getSlice(Direction.ZX_PLANE, null));
         assertEquals(Direction.POSITIVE_XY, loc.getSlice(Direction.NEGATIVE_XY, null));
         assertEquals(Direction.NEGATIVE_XY, loc.getSlice(Direction.POSITIVE_XY, null));
     }

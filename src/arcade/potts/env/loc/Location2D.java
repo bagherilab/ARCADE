@@ -28,7 +28,7 @@ public interface Location2D {
             Direction.YZ_PLANE,
             Direction.ZX_PLANE,
             Direction.POSITIVE_XY,
-            Direction.NEGATIVE_XY
+            Direction.NEGATIVE_XY,
     };
     
     /**
@@ -209,8 +209,8 @@ public interface Location2D {
      */
     static Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) {
         switch (direction) {
-            case YZ_PLANE: return Direction.ZX_PLANE;
-            case ZX_PLANE: return Direction.YZ_PLANE;
+            case YZ_PLANE: return Direction.YZ_PLANE;
+            case ZX_PLANE: return Direction.ZX_PLANE;
             case POSITIVE_XY: return Direction.NEGATIVE_XY;
             case NEGATIVE_XY: return Direction.POSITIVE_XY;
             default: return null;
