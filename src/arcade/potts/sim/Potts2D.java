@@ -13,7 +13,7 @@ public final class Potts2D extends Potts {
     public static final int NUMBER_NEIGHBORS = 4;
     
     /** Neighborhood size. */
-    public static final int NEIGHBORHOOD_SIZE = (2 * 2 * 2) - 1;
+    public static final int NEIGHBORHOOD_SIZE = (3 * 3) - 1;
     
     /** List of x direction movements (N, E, S, W). */
     public static final int[] MOVES_X = { 0, 1, 0, -1 };
