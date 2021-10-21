@@ -16,13 +16,13 @@ import static arcade.potts.util.PottsEnums.Direction;
 
 public interface Location3D {
     /** Equation power for surface area conversion. */
-    double EQUATION_PARAMETER_N = 0.66880553;
+    double EQUATION_PARAMETER_N = 0.50931200;
     
     /** Equation coefficient for surface area conversion. */
-    double EQUATION_PARAMETER_A = 3.70912871;
+    double EQUATION_PARAMETER_A = 0.79295247;
     
     /** Equation offset for surface area conversion. */
-    double EQUATION_PARAMETER_B = -6.82145792;
+    double EQUATION_PARAMETER_B = -1.54292969;
     
     /** List of valid 3D directions. */
     Direction[] DIRECTIONS = new Direction[] {
@@ -43,8 +43,8 @@ public interface Location3D {
      * @param volume  the volume (in voxels)
      * @return  the correction factor
      */
-    static double getCorrection(double volume) {
-        return EQUATION_PARAMETER_A * Math.pow(volume, EQUATION_PARAMETER_N) + EQUATION_PARAMETER_B;
+    static double getCorrection(double volume, double height) {
+        return EQUATION_PARAMETER_A * Math.pow(volume * height, EQUATION_PARAMETER_N) + EQUATION_PARAMETER_B;
     }
     
     /**
@@ -70,8 +70,8 @@ public interface Location3D {
      * @return  the surface area (in voxels)
      */
     static double convertSurface(double volume, double height) {
-        double surface = (3 * volume) / (2 * height);
-        double correction = getCorrection(volume);
+        double surface = 2 * volume / height + 2 * Math.sqrt(Math.PI) * Math.sqrt(volume * height);
+        double correction = getCorrection(volume, height);
         return Math.ceil(surface + correction);
     }
     

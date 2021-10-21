@@ -43,7 +43,7 @@ public class Location2DTest {
             { 2285, 213 },
             { 2449, 221 },
             { 2617, 228 },
-            { 2809, 237 }
+            { 2809, 237 },
     };
     
     @BeforeClass
