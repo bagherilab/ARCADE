@@ -19,6 +19,8 @@ import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.sim.Potts.REFERENCE_HEIGHT;
+import static arcade.potts.sim.Potts.REFERENCE_VOLUME;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsTest {
@@ -129,7 +131,13 @@ public class PottsTest {
         PottsMock(PottsSeries series) { super(series); }
         
         @Override
-        double getSteps(double ds, double dt) { return ds * dt; }
+        double getRatio(double volume, double height) {
+            if (volume == REFERENCE_VOLUME && height == REFERENCE_HEIGHT) {
+                return 1;
+            } else {
+                return volume * height;
+            }
+        }
         
         @Override
         double getAdhesion(int id, int x, int y, int z) { return ADHESION_ID[id]; }
@@ -357,8 +365,9 @@ public class PottsTest {
         int height = randomIntBetween(2, 100);
         int temperature = randomIntBetween(1, 100);
         double mcs = randomDoubleBetween(0, 10);
-        double ds = randomDoubleBetween(1, 10);
-        double dt = randomDoubleBetween(1, 10);
+        double ds = randomDoubleBetween(2, 10);
+        double dt = randomDoubleBetween(2, 10);
+        double dsdt = (REFERENCE_VOLUME / ds / ds / ds) * (REFERENCE_HEIGHT / ds) * dt;
         
         PottsSeries series = makeSeries(length, width, height, ds, dt);
         series.potts = new MiniBox();
@@ -367,7 +376,7 @@ public class PottsTest {
         
         PottsMock pottsMock = new PottsMock(series);
         
-        assertEquals((int) (ds * dt * mcs * (length - 2) * (width - 2) * (height - 2)), pottsMock.steps);
+        assertEquals((int) (dsdt * mcs * (length - 2) * (width - 2) * (height - 2)), pottsMock.steps);
         assertEquals(temperature, pottsMock.temperature, EPSILON);
     }
     

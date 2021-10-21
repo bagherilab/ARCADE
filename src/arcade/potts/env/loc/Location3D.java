@@ -41,10 +41,12 @@ public interface Location3D {
      * Calculate correction factor for surface area conversion.
      *
      * @param volume  the volume (in voxels)
+     * @param height  the height (in voxels)
      * @return  the correction factor
      */
     static double getCorrection(double volume, double height) {
-        return EQUATION_PARAMETER_A * Math.pow(volume * height, EQUATION_PARAMETER_N) + EQUATION_PARAMETER_B;
+        double vh = volume * height;
+        return EQUATION_PARAMETER_A * Math.pow(vh, EQUATION_PARAMETER_N) + EQUATION_PARAMETER_B;
     }
     
     /**

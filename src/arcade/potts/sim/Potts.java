@@ -28,6 +28,12 @@ import static arcade.potts.util.PottsEnums.Term;
  */
 
 public abstract class Potts implements Steppable {
+    /** Volume of reference cell for calculating steps (in um^3). */
+    static final double REFERENCE_VOLUME = 1000;
+    
+    /** Height of reference cell for calculating steps (in um). */
+    static final double REFERENCE_HEIGHT = 5;
+    
     /** Length (x direction) of potts array. */
     final int length;
     
@@ -281,13 +287,26 @@ public abstract class Potts implements Steppable {
     }
     
     /**
+     * Calculates the ratio of voxels with at least one non-self neighbor.
+     *
+     * @param volume  the cell volume
+     * @param height  the cell height
+     * @return  the ratio of total voxels to flippable voxels
+     */
+    abstract double getRatio(double volume, double height);
+    
+    /**
      * Calculate MCS multiplier for temporal and spatial scaling.
      *
      * @param ds  the spatial scaling
      * @param dt  the temporal scaling
      * @return  the MCS multiplier
      */
-    abstract double getSteps(double ds, double dt);
+    double getSteps(double ds, double dt) {
+        double volume = REFERENCE_VOLUME / Math.pow(ds, 3);
+        double height = REFERENCE_HEIGHT / ds;
+        return dt * getRatio(volume, height);
+    }
     
     /**
      * Gets the {@link arcade.core.agent.cell.Cell} object for the given id.

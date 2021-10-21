@@ -35,13 +35,11 @@ public final class Potts2D extends Potts {
     public Potts2D(PottsSeries series) { super(series); }
     
     @Override
-    protected double getSteps(double ds, double dt) {
+    double getRatio(double volume, double height) {
         double n = 0.51934344;
         double a = 0.26563830;
         double b = 0.41862610;
-        double volume = 1000 / Math.pow(ds, 3);
-        double nds = a * Math.pow(volume, n) + b;
-        return dt * nds;
+        return a * Math.pow(volume, n) + b;
     }
     
     @Override
