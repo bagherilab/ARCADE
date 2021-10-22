@@ -1,8 +1,9 @@
 package arcade.potts.sim;
 
 import java.util.HashSet;
-import arcade.potts.agent.cell.PottsCell;
-import static arcade.core.util.Enums.Region;
+import arcade.potts.sim.hamiltonian.AdhesionHamiltonian3D;
+import arcade.potts.sim.hamiltonian.SurfaceHamiltonian3D;
+import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 
 /**
  * Extension of {@link Potts} for 3D.
@@ -11,9 +12,6 @@ import static arcade.core.util.Enums.Region;
 public final class Potts3D extends Potts {
     /** Number of neighbors. */
     public static final int NUMBER_NEIGHBORS = 6;
-    
-    /** Neighborhood size. */
-    public static final int NEIGHBORHOOD_SIZE = (3 * 3 * 3) - 1;
     
     /** List of x direction movements (N, E, S, W, U, D). */
     public static final int[] MOVES_X = { 0, 1, 0, -1, 0, 0 };
@@ -44,7 +42,14 @@ public final class Potts3D extends Potts {
      *
      * @param series  the simulation series
      */
-    public Potts3D(PottsSeries series) { super(series); }
+    public Potts3D(PottsSeries series) {
+        super(series);
+        
+        // Add hamiltonian terms.
+        hamiltonian.add(new AdhesionHamiltonian3D(this));
+        hamiltonian.add(new VolumeHamiltonian(this));
+        hamiltonian.add(new SurfaceHamiltonian3D(this));
+    }
     
     @Override
     double getRatio(double volume, double height) {
@@ -53,111 +58,6 @@ public final class Potts3D extends Potts {
         double a = 0.46793100;
         double b = -0.49919490;
         return Math.max(a * Math.pow(volume, n) * Math.pow(height, m) + b, 1);
-    }
-    
-    @Override
-    double getAdhesion(int id, int x, int y, int z) {
-        double h = 0;
-        PottsCell a = getCell(id);
-        
-        for (int k = z - 1; k <= z + 1; k++) {
-            for (int i = x - 1; i <= x + 1; i++) {
-                for (int j = y - 1; j <= y + 1; j++) {
-                    if (!(k == z && i == x && j == y) && ids[k][i][j] != id) {
-                        PottsCell b = getCell(ids[k][i][j]);
-                        if (a == null) {
-                            h += b.getAdhesion(0);
-                        }  else if (b == null) {
-                            h += a.getAdhesion(0);
-                        } else {
-                            h += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop())) / 2.0;
-                        }
-                    }
-                }
-            }
-        }
-        
-        return h / NEIGHBORHOOD_SIZE;
-    }
-    
-    @Override
-    double getAdhesion(int id, int t, int x, int y, int z) {
-        double h = 0;
-        PottsCell c = getCell(id);
-        Region region = Region.values()[t];
-        
-        for (int k = z - 1; k <= z + 1; k++) {
-            for (int i = x - 1; i <= x + 1; i++) {
-                for (int j = y - 1; j <= y + 1; j++) {
-                    Region xyz = Region.values()[regions[k][i][j]];
-                    if (!(k == z && i == x && j == y) && ids[k][i][j] == id && region != xyz
-                            && xyz != Region.UNDEFINED && xyz != Region.DEFAULT) {
-                        h += (c.getAdhesion(region, xyz) + c.getAdhesion(xyz, region)) / 2.0;
-                    }
-                }
-            }
-        }
-        
-        return h / NEIGHBORHOOD_SIZE;
-    }
-    
-    @Override
-    int[] calculateChange(int sourceID, int targetID, int x, int y, int z) {
-        int beforeSource = 0;
-        int afterSource = 0;
-        int beforeTarget = 0;
-        int afterTarget = 0;
-        
-        // Iterate through each neighbor.
-        for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            int neighbor = ids[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
-            
-            if (neighbor != sourceID) {
-                beforeSource++;
-                if (neighbor == targetID) { beforeTarget++; }
-            }
-            
-            if (neighbor != targetID) {
-                afterTarget++;
-                if (neighbor == sourceID) { afterSource++; }
-            }
-        }
-        
-        // Save changes to surface.
-        int sourceSurfaceChange = afterSource - beforeSource;
-        int targetSurfaceChange = afterTarget - beforeTarget;
-        
-        return new int[] { sourceSurfaceChange, targetSurfaceChange };
-    }
-    
-    @Override
-    int[] calculateChange(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
-        int beforeSource = 0;
-        int afterSource = 0;
-        int beforeTarget = 0;
-        int afterTarget = 0;
-        
-        // Iterate through each neighbor.
-        for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            int neighborID = ids[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
-            int neighborRegion = regions[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
-            
-            if (neighborRegion != sourceRegion || neighborID != id) {
-                beforeSource++;
-                if (neighborRegion == targetRegion && neighborID == id) { beforeTarget++; }
-            }
-            
-            if (neighborRegion != targetRegion || neighborID != id) {
-                afterTarget++;
-                if (neighborRegion == sourceRegion && neighborID == id) { afterSource++; }
-            }
-        }
-        
-        // Save changes to surface.
-        int sourceSurfaceChange = afterSource - beforeSource;
-        int targetSurfaceChange = afterTarget - beforeTarget;
-        
-        return new int[] { sourceSurfaceChange, targetSurfaceChange };
     }
     
     @Override
