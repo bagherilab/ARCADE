@@ -140,26 +140,6 @@ public class PottsTest {
         }
         
         @Override
-        double getAdhesion(int id, int x, int y, int z) { return ADHESION_ID[id]; }
-        
-        @Override
-        double getAdhesion(int id, int region, int x, int y, int z) { return ADHESION_REGION[region]; }
-        
-        @Override
-        int[] calculateChange(int sourceID, int targetID, int x, int y, int z) {
-            return new int[] { (sourceID == 1 ? 1 : -1), (targetID == 1 ? 1 : -1) };
-        }
-        
-        @Override
-        int[] calculateChange(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
-            if (sourceRegion == Region.DEFAULT.ordinal()) {
-                return new int[] { 2, 2 };
-            } else {
-                return new int[] { -3, -3 };
-            }
-        }
-        
-        @Override
         boolean[][][] getNeighborhood(int id, int x, int y, int z) {
             return new boolean[][][] { { { x != 0 } } };
         }
@@ -190,16 +170,6 @@ public class PottsTest {
             }
             return set;
         }
-    }
-    
-    public static double adhesion(int a, int b) {
-        return (ADHESIONS[a][b] + ADHESIONS[b][a]) / 2;
-    }
-    
-    public static double subadhesion(Region a, Region b) {
-        int aa = a.ordinal() - 1;
-        int bb = b.ordinal() - 1;
-        return (SUBADHESIONS[aa][bb] + SUBADHESIONS[bb][aa]) / 2;
     }
     
     static PottsSeries makeSeries() {
@@ -321,7 +291,7 @@ public class PottsTest {
     }
     
     @Test
-    public void Potts_2D_assignsValues() {
+    public void constructor_2D_assignsValues() {
         int length = randomIntBetween(1, 100);
         int width = randomIntBetween(1, 100);
         PottsSeries series = makeSeries(length + 2, width + 2, 1);
@@ -340,7 +310,7 @@ public class PottsTest {
     }
     
     @Test
-    public void Potts_3D_assignsValues() {
+    public void constructor_3D_assignsValues() {
         int length = randomIntBetween(1, 100);
         int width = randomIntBetween(1, 100);
         PottsSeries series = makeSeries(length + 2, width + 2, 4);
@@ -359,7 +329,7 @@ public class PottsTest {
     }
     
     @Test
-    public void Potts_givenSeries_setsFields() {
+    public void constructor_givenSeries_setsFields() {
         int length = randomIntBetween(1, 100);
         int width = randomIntBetween(1, 100);
         int height = randomIntBetween(2, 100);
@@ -381,7 +351,7 @@ public class PottsTest {
     }
     
     @Test
-    public void Potts_noPopulations_setsFalse() {
+    public void constructor_noPopulations_setsFalse() {
         PottsSeries series = makeSeries(0, 0, 0);
         series.populations = new HashMap<>();
         
@@ -390,7 +360,7 @@ public class PottsTest {
     }
     
     @Test
-    public void Potts_noRegions_setsFalse() {
+    public void constructor_noRegions_setsFalse() {
         PottsSeries series = makeSeries(0, 0, 0);
         series.populations = new HashMap<>();
         
@@ -407,7 +377,7 @@ public class PottsTest {
     }
     
     @Test
-    public void Potts_withRegions_setsTrue() {
+    public void constructor_withRegions_setsTrue() {
         PottsSeries series = makeSeries(0, 0, 0);
         series.populations = new HashMap<>();
         
@@ -993,124 +963,6 @@ public class PottsTest {
         assertEquals(Region.NUCLEUS.ordinal(), spy.regions[0][0][0]);
         verify(((PottsLocation) ((Cell) grid.getObjectAt(1)).getLocation())).remove(Region.DEFAULT, 0, 0, 0);
         verify(((PottsLocation) ((Cell) grid.getObjectAt(1)).getLocation())).add(Region.NUCLEUS, 0, 0, 0);
-    }
-
-    @Test
-    public void getDeltaAdhesion_validIDs_calculatesValue() {
-        assertEquals(ADHESION_ID[1] - ADHESION_ID[2], potts.getDeltaAdhesion(2, 1, 0, 0, 0), EPSILON);
-        assertEquals(ADHESION_ID[2] - ADHESION_ID[1], potts.getDeltaAdhesion(1, 2, 0, 0, 0), EPSILON);
-    }
-    
-    @Test
-    public void getDeltaAdhesion_validRegions_calculatesValue() {
-        assertEquals(ADHESION_REGION[1] - ADHESION_REGION[2], potts.getDeltaAdhesion(1, 2, 1, 0, 0, 0), EPSILON);
-        assertEquals(ADHESION_REGION[2] - ADHESION_REGION[1], potts.getDeltaAdhesion(1, 1, 2, 0, 0, 0), EPSILON);
-    }
-    
-    @Test
-    public void getVolume_validIDsNotZero_calculatesValue() {
-        assertEquals(LV * Math.pow(4 - 2, 2), potts.getVolume(1, 0), EPSILON);
-        assertEquals(LV * Math.pow(4 - 2 + 1, 2), potts.getVolume(1, 1), EPSILON);
-        assertEquals(LV * Math.pow(4 - 2 - 1, 2), potts.getVolume(1, -1), EPSILON);
-    }
-    
-    @Test
-    public void getVolume_validRegionsNotZero_calculatesValue() {
-        assertEquals(REGION_LV * Math.pow(1 - 2, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), 0), EPSILON);
-        assertEquals(REGION_LV * Math.pow(1 - 2 + 1, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), 1), EPSILON);
-        assertEquals(REGION_LV * Math.pow(1 - 2 - 1, 2), potts.getVolume(1, Region.NUCLEUS.ordinal(), -1), EPSILON);
-    }
-    
-    @Test
-    public void getVolume_zeroID_returnsZero() {
-        assertEquals(0, potts.getVolume(0, 1), EPSILON);
-        assertEquals(0, potts.getVolume(0, 0), EPSILON);
-        assertEquals(0, potts.getVolume(0, -1), EPSILON);
-    }
-    
-    @Test
-    public void getVolume_defaultRegion_returnsZero() {
-        assertEquals(0, potts.getVolume(0, Region.DEFAULT.ordinal(), 1), EPSILON);
-        assertEquals(0, potts.getVolume(0, Region.DEFAULT.ordinal(), 0), EPSILON);
-        assertEquals(0, potts.getVolume(0, Region.DEFAULT.ordinal(), -1), EPSILON);
-        assertEquals(0, potts.getVolume(1, Region.DEFAULT.ordinal(), 1), EPSILON);
-        assertEquals(0, potts.getVolume(1, Region.DEFAULT.ordinal(), 0), EPSILON);
-        assertEquals(0, potts.getVolume(1, Region.DEFAULT.ordinal(), -1), EPSILON);
-    }
-    
-    @Test
-    public void getDeltaVolume_validIDs_calculatesValue() {
-        double cell1 = Math.pow(4 - 2, 2);
-        double cell1plus1 = Math.pow(4 - 2 + 1, 2);
-        double cell1minus1 = Math.pow(4 - 2 - 1, 2);
-        double cell2 = Math.pow(2 - 3, 2);
-        double cell2plus1 = Math.pow(2 - 3 + 1, 2);
-        double cell2minus1 = Math.pow(2 - 3 - 1, 2);
-        assertEquals(LV * (cell1minus1 - cell1 + cell2plus1 - cell2), potts.getDeltaVolume(1, 2), EPSILON);
-        assertEquals(LV * (cell2minus1 - cell2 + cell1plus1 - cell1), potts.getDeltaVolume(2, 1), EPSILON);
-    }
-    
-    @Test
-    public void getDeltaVolume_validRegions_calculatesValue() {
-        double subcell2 = Math.pow(1 - 2, 2);
-        double subcell2plus1 = Math.pow(1 - 2 + 1, 2);
-        double subcell2minus1 = Math.pow(1 - 2 - 1, 2);
-        assertEquals(REGION_LV * (subcell2plus1 - subcell2),
-                potts.getDeltaVolume(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal()), EPSILON);
-        assertEquals(REGION_LV * (subcell2minus1 - subcell2),
-                potts.getDeltaVolume(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal()), EPSILON);
-    }
-    
-    @Test
-    public void getSurface_validIDsNotZero_calculatesValue() {
-        assertEquals(LS * Math.pow(8 - 10, 2), potts.getSurface(1, 0), EPSILON);
-        assertEquals(LS * Math.pow(8 - 10 + 1, 2), potts.getSurface(1, 1), EPSILON);
-        assertEquals(LS * Math.pow(8 - 10 - 1, 2), potts.getSurface(1, -1), EPSILON);
-    }
-    
-    @Test
-    public void getSurface_validRegionsNotZero_calculatesValue() {
-        assertEquals(REGION_LS * Math.pow(4 - 5, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), 0), EPSILON);
-        assertEquals(REGION_LS * Math.pow(4 - 5 + 1, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), 1), EPSILON);
-        assertEquals(REGION_LS * Math.pow(4 - 5 - 1, 2), potts.getSurface(1, Region.NUCLEUS.ordinal(), -1), EPSILON);
-    }
-    
-    @Test
-    public void getSurface_zeroID_returnsZero() {
-        assertEquals(0, potts.getSurface(0, 1), EPSILON);
-        assertEquals(0, potts.getSurface(0, 0), EPSILON);
-        assertEquals(0, potts.getSurface(0, -1), EPSILON);
-    }
-    
-    @Test
-    public void getSurface_defaultRegion_returnsZero() {
-        assertEquals(0, potts.getSurface(0, Region.DEFAULT.ordinal(), 1), EPSILON);
-        assertEquals(0, potts.getSurface(0, Region.DEFAULT.ordinal(), 0), EPSILON);
-        assertEquals(0, potts.getSurface(0, Region.DEFAULT.ordinal(), -1), EPSILON);
-        assertEquals(0, potts.getSurface(1, Region.DEFAULT.ordinal(), 1), EPSILON);
-        assertEquals(0, potts.getSurface(1, Region.DEFAULT.ordinal(), 0), EPSILON);
-        assertEquals(0, potts.getSurface(1, Region.DEFAULT.ordinal(), -1), EPSILON);
-    }
-    
-    @Test
-    public void getDeltaSurface_validIDs_calculatesValue() {
-        double cell1 = Math.pow(8 - 10, 2);
-        double cell1plus1 = Math.pow(8 - 10 + 1, 2);
-        double cell2 = Math.pow(6 - 10, 2);
-        double cell2minus1 = Math.pow(6 - 10 - 1, 2);
-        assertEquals(LS * (cell1plus1 - cell1 + cell2minus1 - cell2), potts.getDeltaSurface(1, 2, 0, 0, 0), EPSILON);
-        assertEquals(LS * (cell2minus1 - cell2 + cell1plus1 - cell1), potts.getDeltaSurface(2, 1, 0, 0, 0), EPSILON);
-    }
-    
-    @Test
-    public void getDeltaSurface_validRegions_calculatesValue() {
-        double subcell2 = Math.pow(4 - 5, 2);
-        double subcell2minus3 = Math.pow(4 - 5 - 3, 2);
-        double subcell2plus2 = Math.pow(4 - 5 + 2, 2);
-        assertEquals(REGION_LS * (subcell2minus3 - subcell2),
-                potts.getDeltaSurface(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 0, 0, 0), EPSILON);
-        assertEquals(REGION_LS * (subcell2plus2 - subcell2),
-                potts.getDeltaSurface(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0), EPSILON);
     }
     
     @Test

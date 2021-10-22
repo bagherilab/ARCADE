@@ -3,21 +3,11 @@ package arcade.potts.sim;
 import java.util.HashSet;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import arcade.core.env.grid.Grid;
-import arcade.potts.agent.cell.PottsCell;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
 
 public class Potts2DTest {
-    private static final double EPSILON = 1E-10;
-    static final int REGION_DEFAULT = Region.DEFAULT.ordinal();
-    static final int REGION_NUCLEUS = Region.NUCLEUS.ordinal();
-    static PottsCell[] cells;
-    PottsSeries seriesMock = makeSeries();
-    Potts2D pottsMock = new Potts2D(seriesMock);
     static Potts2D potts;
     private static final double[][] AREA_MCS = new double[][] {
             {    1, 0.6842640 }, {    9, 1.2501410 }, {   25, 1.8321450 },
@@ -35,42 +25,7 @@ public class Potts2DTest {
     @BeforeClass
     public static void setupGrid() {
         PottsSeries series = makeSeries();
-        Grid grid = mock(Grid.class);
-        
-        // Population for each cell domain.
-        int[] pops = new int[] { 1, 2, 1 };
-        
-        int nCells = 3;
-        int nSubcells = 2;
-        cells = new PottsCell[nCells + 1];
-        
-        for (int i = 0; i < nCells; i++) {
-            PottsCell c = mock(PottsCell.class);
-            when(c.getPop()).thenReturn(pops[i]);
-            
-            // Assign adhesion values for cells.
-            for (int j = 0; j < nCells; j++) {
-                when(c.getAdhesion(j)).thenReturn(ADHESIONS[pops[i]][j]);
-            }
-            
-            // Assign adhesion values for subcellular domain.
-            for (int j = 0; j < nSubcells; j++) {
-                for (int k = 0; k < nSubcells; k++) {
-                    Region region1 = Region.values()[j + 1];
-                    Region region2 = Region.values()[k + 1];
-                    when(c.getAdhesion(region1, region2)).thenReturn(SUBADHESIONS[k][j]);
-                }
-            }
-            
-            when(grid.getObjectAt(i + 1)).thenReturn(c);
-            cells[i + 1] = c;
-        }
-        
-        when(grid.getObjectAt(0)).thenReturn(null);
-        cells[0] = null;
-        
         potts = new Potts2D(series);
-        potts.grid = grid;
         
         potts.ids = new int[][][] {
                 {
@@ -82,8 +37,8 @@ public class Potts2DTest {
                 }
         };
         
-        int d = REGION_DEFAULT;
-        int n = REGION_NUCLEUS;
+        int d = Region.DEFAULT.ordinal();
+        int n = Region.NUCLEUS.ordinal();
         
         potts.regions = new int[][][] {
                 {
@@ -140,38 +95,6 @@ public class Potts2DTest {
     }
     
     @Test
-    public void getAdhesion_validIDs_calculatesValue() {
-        assertEquals(ADHESIONS[1][0] * 5 + ADHESIONS[2][0] * 2,
-                potts.getAdhesion(0, 2, 2, 0) * Potts2D.NEIGHBORHOOD_SIZE, EPSILON);
-        assertEquals(ADHESIONS[1][0] + adhesion(1, 2) * 2 + ADHESIONS[1][1] * 2,
-                potts.getAdhesion(1, 2, 2, 0) * Potts2D.NEIGHBORHOOD_SIZE, EPSILON);
-        assertEquals(ADHESIONS[2][0] * 1 + adhesion(1, 2) * 5,
-                potts.getAdhesion(2, 2, 2, 0) * Potts2D.NEIGHBORHOOD_SIZE, EPSILON);
-        assertEquals(ADHESIONS[1][0] + adhesion(1, 2) * 2 + ADHESIONS[1][1] * 3,
-                potts.getAdhesion(3, 2, 2, 0) * Potts2D.NEIGHBORHOOD_SIZE, EPSILON);
-    }
-    
-    @Test
-    public void getAdhesion_validRegions_calculateValue() {
-        double adhesion = subadhesion(Region.DEFAULT, Region.NUCLEUS);
-        assertEquals(adhesion / Potts2D.NEIGHBORHOOD_SIZE,
-                potts.getAdhesion(1, REGION_DEFAULT, 1, 2, 0), EPSILON);
-        assertEquals(0, potts.getAdhesion(1, REGION_NUCLEUS, 2, 2, 0), EPSILON);
-    }
-    
-    @Test
-    public void calculateChange_validIDs_calculatesValue() {
-        assertArrayEquals(new int[] { 0, 2 }, potts.calculateChange(1, 2, 2, 2, 0));
-        assertArrayEquals(new int[] { 0, 2 }, potts.calculateChange(1, 3, 2, 2, 0));
-    }
-    
-    @Test
-    public void calculateChange_validRegions_calculatesValue() {
-        assertArrayEquals(new int[] { -4, 2 }, potts.calculateChange(1, REGION_NUCLEUS, REGION_DEFAULT, 2, 2, 0));
-        assertArrayEquals(new int[] { -2, 2 }, potts.calculateChange(1, REGION_DEFAULT, REGION_NUCLEUS, 2, 1, 0));
-    }
-    
-    @Test
     public void getNeighborhood_givenID_createsArray() {
         boolean[][][] array1 = potts.getNeighborhood(1, 2, 2, 0);
         assertArrayEquals(new boolean[] {  true,  true, false }, array1[0][0]);
@@ -191,12 +114,12 @@ public class Potts2DTest {
     
     @Test
     public void getNeighborhood_givenRegion_createsArray() {
-        boolean[][][] array1 = potts.getNeighborhood(1, REGION_DEFAULT, 2, 2, 0);
+        boolean[][][] array1 = potts.getNeighborhood(1, Region.DEFAULT.ordinal(), 2, 2, 0);
         assertArrayEquals(new boolean[] {  true,  true, false }, array1[0][0]);
         assertArrayEquals(new boolean[] { false, false, false }, array1[0][1]);
         assertArrayEquals(new boolean[] { false, false, false }, array1[0][2]);
         
-        boolean[][][] array2 = potts.getNeighborhood(1, REGION_NUCLEUS, 2, 2, 0);
+        boolean[][][] array2 = potts.getNeighborhood(1, Region.NUCLEUS.ordinal(), 2, 2, 0);
         assertArrayEquals(new boolean[] { false, false, false }, array2[0][0]);
         assertArrayEquals(new boolean[] { false,  true, false }, array2[0][1]);
         assertArrayEquals(new boolean[] { false, false, false }, array2[0][2]);
@@ -209,6 +132,8 @@ public class Potts2DTest {
     
     @Test
     public void getUniqueIDs_validVoxel_returnsList() {
+        PottsSeries series = makeSeries();
+        Potts2D pottsMock = new Potts2D(series);
         HashSet<Integer> unique = new HashSet<>();
         
         unique.add(1);
@@ -239,6 +164,8 @@ public class Potts2DTest {
     
     @Test
     public void getUniqueRegions_validVoxel_returnsList() {
+        PottsSeries series = makeSeries();
+        Potts2D pottsMock = new Potts2D(series);
         HashSet<Integer> unique = new HashSet<>();
         
         assertEquals(unique, checkUniqueRegion(pottsMock,
