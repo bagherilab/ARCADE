@@ -38,10 +38,10 @@ public class PottsCellTest {
     static double adhesionTo0;
     static double adhesionTo1;
     static double adhesionTo2;
-    static EnumMap<Term, Double> criticalsMock;
     static EnumMap<Term, Double> lambdasMock;
     static double[] adhesionMock;
-    static EnumMap<Region, EnumMap<Term, Double>> criticalsRegionMock;
+    static EnumMap<Region, Double> criticalVolumesRegionMock;
+    static EnumMap<Region, Double> criticalHeightsRegionMock;
     static EnumMap<Region, EnumMap<Term, Double>> lambdasRegionMock;
     static EnumMap<Region, EnumMap<Region, Double>> adhesionRegionMock;
     static Location locationMock;
@@ -56,6 +56,8 @@ public class PottsCellTest {
     static int cellPop = randomIntBetween(1, 10);
     static int cellAge = randomIntBetween(1, 1000);
     static int cellDivisions = randomIntBetween(1, 100);
+    static double cellCriticalVolume = randomDoubleBetween(10, 100);
+    static double cellCriticalHeight = randomDoubleBetween(10, 100);
     static State cellState = State.random(RANDOM);
     static PottsCell cellDefault;
     static PottsCell cellWithRegions;
@@ -111,19 +113,12 @@ public class PottsCellTest {
         when(locationMock.getHeight()).thenReturn(locationHeight);
         when(locationMock.getSurface()).thenReturn(locationSurface);
         
-        criticalsMock = new EnumMap<>(Term.class);
-        criticalsMock.put(Term.VOLUME, (double) locationVolume);
-        criticalsMock.put(Term.HEIGHT, (double) locationHeight);
-        criticalsMock.put(Term.SURFACE, (double) locationSurface);
-        
         // Region criticals.
-        criticalsRegionMock = new EnumMap<>(Region.class);
+        criticalVolumesRegionMock = new EnumMap<>(Region.class);
+        criticalHeightsRegionMock = new EnumMap<>(Region.class);
         for (Region region : regionList) {
-            EnumMap<Term, Double> criticalsRegionTerms = new EnumMap<>(Term.class);
-            criticalsRegionTerms.put(Term.VOLUME, (double) locationRegionVolumes.get(region));
-            criticalsRegionTerms.put(Term.HEIGHT, (double) locationRegionHeights.get(region));
-            criticalsRegionTerms.put(Term.SURFACE, (double) locationRegionSurfaces.get(region));
-            criticalsRegionMock.put(region, criticalsRegionTerms);
+            criticalVolumesRegionMock.put(region, (double) locationRegionVolumes.get(region));
+            criticalHeightsRegionMock.put(region, (double) locationRegionHeights.get(region));
         }
         
         lambdasMock = new EnumMap<>(Term.class);
@@ -152,14 +147,16 @@ public class PottsCellTest {
         }
         
         cellDefault = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
-                null, null, null);
+                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                lambdasMock, adhesionMock, null, null, null, null);
         cellWithRegions = new PottsCell(cellID, cellParent, 1, cellState, cellAge, cellDivisions,
-                locationMock, true, parametersMock, adhesionMock, criticalsMock, lambdasMock,
-                criticalsRegionMock, lambdasRegionMock, adhesionRegionMock);
+                locationMock, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                lambdasMock, adhesionMock, criticalVolumesRegionMock, criticalHeightsRegionMock,
+                lambdasRegionMock, adhesionRegionMock);
         cellWithoutRegions = new PottsCell(cellID, cellParent, 1, cellState, cellAge, cellDivisions,
-                locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
-                null, null, null);
+                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                lambdasMock, adhesionMock, criticalVolumesRegionMock, criticalHeightsRegionMock,
+                lambdasRegionMock, adhesionRegionMock);
     }
     
     static PottsCell make(boolean regions) {
@@ -169,12 +166,13 @@ public class PottsCellTest {
     static PottsCell make(Location location, boolean regions) {
         if (!regions) {
             return new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                    location, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
-                    null, null, null);
+                    location, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                    lambdasMock, adhesionMock, null, null, null, null);
         } else {
             return new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                    location, true, parametersMock, adhesionMock, criticalsMock, lambdasMock,
-                    criticalsRegionMock, lambdasRegionMock, adhesionRegionMock);
+                    location, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                    lambdasMock, adhesionMock, criticalVolumesRegionMock, criticalHeightsRegionMock,
+                    lambdasRegionMock, adhesionRegionMock);
         }
     }
     
@@ -192,8 +190,8 @@ public class PottsCellTest {
     public void getParent_valueAssigned_returnsValue() {
         int parent = randomIntBetween(0, 100);
         PottsCell cell = new PottsCell(cellID, parent, cellPop, cellState, cellAge, cellDivisions,
-                locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
-                null, null, null);
+                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                lambdasMock, adhesionMock, null, null, null, null);
         assertEquals(parent, cell.getParent());
     }
     
@@ -206,8 +204,8 @@ public class PottsCellTest {
     public void getPop_valueAssigned_returnsValue() {
         int pop = randomIntBetween(0, 100);
         PottsCell cell = new PottsCell(cellID, cellParent, pop, cellState, cellAge, cellDivisions,
-                locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
-                null, null, null);
+                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                lambdasMock, adhesionMock, null, null, null, null);
         assertEquals(pop, cell.getPop());
     }
     
@@ -220,8 +218,8 @@ public class PottsCellTest {
     public void getState_valueAssigned_returnsValue() {
         State state = State.random(RANDOM);
         PottsCell cell = new PottsCell(cellID, cellParent, cellPop, state, cellAge, cellDivisions,
-                locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
-                null, null, null);
+                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                lambdasMock, adhesionMock, null, null, null, null);
         assertEquals(state, cell.getState());
     }
     
@@ -234,8 +232,8 @@ public class PottsCellTest {
     public void getAge_valueAssigned_returnsValue() {
         int age = randomIntBetween(0, 100);
         PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, age, cellDivisions,
-                locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
-                null, null, null);
+                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                lambdasMock, adhesionMock, null, null, null, null);
         assertEquals(age, cell.getAge());
     }
     
@@ -248,8 +246,8 @@ public class PottsCellTest {
     public void getDivisions_valueAssigned_returnsValue() {
         int divisions = randomIntBetween(0, 100);
         PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, divisions,
-                locationMock, false, parametersMock, adhesionMock, criticalsMock, lambdasMock,
-                null, null, null);
+                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                lambdasMock, adhesionMock, null, null, null, null);
         assertEquals(divisions, cell.getDivisions());
     }
     
@@ -466,7 +464,7 @@ public class PottsCellTest {
     
     @Test
     public void getCriticalVolume_beforeInitialize_returnsValue() {
-        assertEquals(locationVolume, cellDefault.getCriticalVolume(), EPSILON);
+        assertEquals(cellCriticalVolume, cellDefault.getCriticalVolume(), EPSILON);
     }
     
     @Test
@@ -493,7 +491,7 @@ public class PottsCellTest {
     public void getCriticalVolume_afterInitialize_returnsValue() {
         PottsCell cell = make(false);
         cell.initialize(null, null);
-        assertEquals(locationVolume, cell.getCriticalVolume(), EPSILON);
+        assertEquals(cellCriticalVolume, cell.getCriticalVolume(), EPSILON);
     }
     
     @Test
@@ -523,7 +521,7 @@ public class PottsCellTest {
     
     @Test
     public void getCriticalHeight_beforeInitialize_returnsValue() {
-        assertEquals(locationHeight, cellDefault.getCriticalHeight(), EPSILON);
+        assertEquals(cellCriticalHeight, cellDefault.getCriticalHeight(), EPSILON);
     }
     
     @Test
@@ -550,7 +548,7 @@ public class PottsCellTest {
     public void getCriticalHeight_afterInitialize_returnsValue() {
         PottsCell cell = make(false);
         cell.initialize(null, null);
-        assertEquals(locationHeight, cell.getCriticalHeight(), EPSILON);
+        assertEquals(cellCriticalHeight, cell.getCriticalHeight(), EPSILON);
     }
     
     @Test
@@ -712,7 +710,8 @@ public class PottsCellTest {
     @Test
     public void make_noRegions_setsFields() {
         int n = randomIntBetween(2, 10);
-        EnumMap<Term, Double> criticals = new EnumMap<>(Term.class);
+        double criticalVolume = randomDoubleBetween(10, 100);
+        double criticalHeight = randomDoubleBetween(10, 100);
         EnumMap<Term, Double> lambdas = new EnumMap<>(Term.class);
         double[] adhesion = new double[n];
         MiniBox parameters = mock(MiniBox.class);
@@ -720,8 +719,8 @@ public class PottsCellTest {
         Location location2 = mock(PottsLocation.class);
         
         PottsCell cell1 = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                location1, false, parameters, adhesion, criticals, lambdas,
-                null, null, null);
+                location1, false, parameters, criticalVolume, criticalHeight,
+                lambdas, adhesion, null, null, null, null);
         PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
         
         assertEquals(cellID + 1, cell2.id);
@@ -733,21 +732,24 @@ public class PottsCellTest {
         assertFalse(cell2.hasRegions());
         assertEquals(location2, cell2.getLocation());
         assertEquals(cell2.parameters, parameters);
-        assertEquals(cell2.criticals, criticals);
-        assertEquals(cell2.lambdas, lambdas);
-        assertArrayEquals(cell2.adhesion, adhesion, EPSILON);
+        assertEquals(criticalVolume, cell2.getCriticalVolume(), EPSILON);
+        assertEquals(criticalHeight, cell2.getCriticalHeight(), EPSILON);
+        assertEquals(lambdas, cell2.lambdas);
+        assertArrayEquals(adhesion, cell2.adhesion, EPSILON);
     }
     
     @Test
     public void make_hasRegions_setsFields() {
         int n = randomIntBetween(2, 10);
-        EnumMap<Term, Double> criticals = new EnumMap<>(Term.class);
+        double criticalVolume = randomDoubleBetween(10, 100);
+        double criticalHeight = randomDoubleBetween(10, 100);
         EnumMap<Term, Double> lambdas = new EnumMap<>(Term.class);
         double[] adhesion = new double[n];
         MiniBox parameters = mock(MiniBox.class);
         Location location1 = mock(PottsLocation.class);
         Location location2 = mock(PottsLocation.class);
-        EnumMap<Region, EnumMap<Term, Double>> criticalsRegion = new EnumMap<>(Region.class);
+        EnumMap<Region, Double> criticalVolumesRegion = new EnumMap<>(Region.class);
+        EnumMap<Region, Double> criticalHeightsRegion = new EnumMap<>(Region.class);
         EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = new EnumMap<>(Region.class);
         EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = new EnumMap<>(Region.class);
         
@@ -756,7 +758,8 @@ public class PottsCellTest {
         }
         
         for (Region region : Region.values()) {
-            criticalsRegion.put(region, new EnumMap<>(Term.class));
+            criticalVolumesRegion.put(region, randomDoubleBetween(10, 100));
+            criticalHeightsRegion.put(region, randomDoubleBetween(10, 100));
             lambdasRegion.put(region, new EnumMap<>(Term.class));
             adhesionRegion.put(region, new EnumMap<>(Region.class));
         }
@@ -766,8 +769,9 @@ public class PottsCellTest {
         doReturn(allRegions).when(location2).getRegions();
         
         PottsCell cell1 = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                location1, true, parameters, adhesion, criticals, lambdas,
-                criticalsRegion, lambdasRegion, adhesionRegion);
+                location1, true, parameters, criticalVolume, criticalHeight,
+                lambdas, adhesion, criticalVolumesRegion, criticalHeightsRegion,
+                lambdasRegion, adhesionRegion);
         PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
         
         assertEquals(cellID + 1, cell2.id);
@@ -779,12 +783,16 @@ public class PottsCellTest {
         assertTrue(cell2.hasRegions());
         assertEquals(location2, cell2.getLocation());
         assertEquals(cell2.parameters, parameters);
-        assertEquals(cell2.criticals, criticals);
-        assertEquals(cell2.lambdas, lambdas);
-        assertArrayEquals(cell2.adhesion, adhesion, EPSILON);
-        assertEquals(cell2.criticalsRegion, criticalsRegion);
-        assertEquals(cell2.lambdasRegion, lambdasRegion);
-        assertEquals(cell2.adhesionRegion, adhesionRegion);
+        assertEquals(criticalVolume, cell2.getCriticalVolume(), EPSILON);
+        assertEquals(criticalHeight, cell2.getCriticalHeight(), EPSILON);
+        assertEquals(lambdas, cell2.lambdas);
+        assertArrayEquals(adhesion, cell2.adhesion, EPSILON);
+        assertEquals(lambdasRegion, cell2.lambdasRegion);
+        assertEquals(adhesionRegion, cell2.adhesionRegion);
+        for (Region region : Region.values()) {
+            assertEquals(criticalVolumesRegion.get(region), cell2.getCriticalVolume(region), EPSILON);
+            assertEquals(criticalHeightsRegion.get(region), cell2.getCriticalHeight(region), EPSILON);
+        }
     }
     
     @Test
@@ -985,8 +993,8 @@ public class PottsCellTest {
         cell.updateTarget(randomDoubleBetween(0, 10), randomDoubleBetween(0, 10));
         cell.reset(new int[1][3][3], null);
         
-        assertEquals(locationVolume, cell.getTargetVolume(), EPSILON);
-        assertEquals(locationVolume * locationHeight, cell.getTargetSurface(), EPSILON);
+        assertEquals(cellCriticalVolume, cell.getTargetVolume(), EPSILON);
+        assertEquals(cellCriticalVolume * cellCriticalHeight, cell.getTargetSurface(), EPSILON);
         assertEquals(0, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         assertEquals(0, cell.getTargetSurface(Region.DEFAULT), EPSILON);
     }
@@ -999,16 +1007,16 @@ public class PottsCellTest {
         cell.updateTarget(Region.NUCLEUS, randomDoubleBetween(0, 10), randomDoubleBetween(0, 10));
         cell.reset(new int[1][3][3], new int[1][3][3]);
         
-        assertEquals(locationVolume, cell.getTargetVolume(), EPSILON);
-        assertEquals(locationVolume * locationHeight, cell.getTargetSurface(), EPSILON);
+        assertEquals(cellCriticalVolume, cell.getTargetVolume(), EPSILON);
+        assertEquals(cellCriticalVolume * cellCriticalHeight, cell.getTargetSurface(), EPSILON);
         
-        double volumeDefault = locationRegionVolumes.get(Region.DEFAULT);
-        double heightDefault = locationRegionHeights.get(Region.DEFAULT);
+        double volumeDefault = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double heightDefault = criticalHeightsRegionMock.get(Region.DEFAULT);
         assertEquals(volumeDefault, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         assertEquals(volumeDefault * heightDefault, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
-        double volumeNucleus = locationRegionVolumes.get(Region.NUCLEUS);
-        double heightNucleus = locationRegionHeights.get(Region.NUCLEUS);
+        double volumeNucleus = criticalVolumesRegionMock.get(Region.NUCLEUS);
+        double heightNucleus = criticalHeightsRegionMock.get(Region.NUCLEUS);
         assertEquals(volumeNucleus, cell.getTargetVolume(Region.NUCLEUS), EPSILON);
         assertEquals(volumeNucleus * heightNucleus, cell.getTargetSurface(Region.NUCLEUS), EPSILON);
     }
@@ -1064,135 +1072,138 @@ public class PottsCellTest {
     @Test
     public void updateTarget_increaseScaleNoRegion_updatesValues() {
         double scale = randomDoubleBetween(1 + OFFSET, 2);
-        double rate = randomDoubleBetween(0, scale - 1) * locationVolume;
+        double rate = randomDoubleBetween(0, scale - 1) * cellCriticalVolume;
         
         PottsCell cell = make(false);
-        cell.initialize(null, null);
+        cell.reset(null, null);
         cell.updateTarget(rate, scale);
         
-        double targetVolume = locationVolume + rate;
+        double targetVolume = cellCriticalVolume + rate;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = locationHeight * targetVolume;
+        double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
     @Test
     public void updateTarget_increaseScaleNoRegionWithThreshold_updatesValues() {
         double scale = randomDoubleBetween(1 + OFFSET, 2);
-        double rate = randomDoubleBetween(scale - 1, scale) * locationVolume;
+        double rate = randomDoubleBetween(scale - 1, scale) * cellCriticalVolume;
         
         PottsCell cell = make(false);
-        cell.initialize(null, null);
+        cell.reset(null, null);
         cell.updateTarget(rate, scale);
         
-        double targetVolume = scale * locationVolume;
+        double targetVolume = scale * cellCriticalVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = locationHeight * targetVolume;
+        double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
     @Test
     public void updateTarget_increaseScaleWithRegions_updatesValues() {
         double scale = randomDoubleBetween(1 + OFFSET, 2);
-        double rate = randomDoubleBetween(0, scale - 1) * locationVolume;
+        double rate = randomDoubleBetween(0, scale - 1) * cellCriticalVolume;
         
         PottsCell cell = make(true);
-        cell.initialize(null, null);
+        cell.reset(null, null);
         cell.updateTarget(rate, scale);
         
-        double targetVolume = locationVolume + rate;
+        double targetVolume = cellCriticalVolume + rate;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = locationHeight * targetVolume;
+        double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
         
-        double criticalRegionVolume = criticalsRegionMock.get(Region.DEFAULT).get(Term.VOLUME);
-        double targetRegionVolume = criticalRegionVolume - criticalsMock.get(Term.VOLUME) + targetVolume;
+        double criticalRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double targetRegionVolume = criticalRegionVolume - cellCriticalVolume + targetVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
-        double targetRegionSurface = locationRegionHeights.get(Region.DEFAULT) * targetRegionVolume;
+        double criticalRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
+        double targetRegionSurface = criticalRegionHeight * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
     }
     
     @Test
     public void updateTarget_decreaseScaleNoRegion_updatesValues() {
         double scale = randomDoubleBetween(0, 1 - OFFSET);
-        double rate = randomDoubleBetween(0, 1 - scale) * locationVolume;
+        double rate = randomDoubleBetween(0, 1 - scale) * cellCriticalVolume;
         
         PottsCell cell = make(false);
-        cell.initialize(null, null);
+        cell.reset(null, null);
         cell.updateTarget(rate, scale);
         
-        double targetVolume = locationVolume - rate;
+        double targetVolume = cellCriticalVolume - rate;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = locationHeight * targetVolume;
+        double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
     @Test
     public void updateTarget_decreaseScaleNoRegionWithThreshold_updatesValues() {
         double scale = randomDoubleBetween(0, 1 - OFFSET);
-        double rate = randomDoubleBetween(1 - scale, 2 - scale) * locationVolume;
+        double rate = randomDoubleBetween(1 - scale, 2 - scale) * cellCriticalVolume;
         
         PottsCell cell = make(false);
-        cell.initialize(null, null);
+        cell.reset(null, null);
         cell.updateTarget(rate, scale);
         
-        double targetVolume = scale * locationVolume;
+        double targetVolume = scale * cellCriticalVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = locationHeight * targetVolume;
+        double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
     @Test
     public void updateTarget_decreaseScaleWithRegion_updatesValues() {
         double scale = randomDoubleBetween(0, 1 - OFFSET);
-        double rate = randomDoubleBetween(0, 1 - scale) * locationVolume;
+        double rate = randomDoubleBetween(0, 1 - scale) * cellCriticalVolume;
         rate = Math.min(rate, locationRegionVolumes.get(Region.DEFAULT));
         
         PottsCell cell = make(true);
-        cell.initialize(null, null);
+        cell.reset(null, null);
         cell.updateTarget(rate, scale);
         
-        double targetVolume = locationVolume - rate;
+        double targetVolume = cellCriticalVolume - rate;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = locationHeight * targetVolume;
+        double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
         
-        double criticalRegionVolume = criticalsRegionMock.get(Region.DEFAULT).get(Term.VOLUME);
-        double targetRegionVolume = criticalRegionVolume - criticalsMock.get(Term.VOLUME) + targetVolume;
+        double criticalRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double targetRegionVolume = criticalRegionVolume - cellCriticalVolume + targetVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
-
-        double targetRegionSurface = locationRegionHeights.get(Region.DEFAULT) * targetRegionVolume;
+        
+        double criticalRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
+        double targetRegionSurface = criticalRegionHeight * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
     }
     
     @Test
     public void updateTarget_decreaseScaleWithRegionWithThreshold_updatesRate() {
-        double threshold = criticalsRegionMock.get(Region.DEFAULT).get(Term.VOLUME);
-        double scale = randomDoubleBetween(0, 1 - threshold / locationVolume);
-        double rate = randomDoubleBetween(threshold, (1 - scale) * locationVolume);
+        double threshold = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double scale = randomDoubleBetween(0, 1 - threshold / cellCriticalVolume);
+        double rate = randomDoubleBetween(threshold, (1 - scale) * cellCriticalVolume);
         
         PottsCell cell = make(true);
-        cell.initialize(null, null);
+        cell.reset(null, null);
         cell.updateTarget(rate, scale);
         
-        double targetVolume = locationVolume - threshold;
+        double targetVolume = cellCriticalVolume - threshold;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = locationHeight * targetVolume;
+        double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
         
-        double criticalRegionVolume = criticalsRegionMock.get(Region.DEFAULT).get(Term.VOLUME);
-        double targetRegionVolume = criticalRegionVolume - criticalsMock.get(Term.VOLUME) + targetVolume;
+        double criticalRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double targetRegionVolume = criticalRegionVolume - cellCriticalVolume + targetVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
-        double targetRegionSurface = locationRegionHeights.get(Region.DEFAULT) * targetRegionVolume;
+        double criticalRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
+        double targetRegionSurface = criticalRegionHeight * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
     }
     
@@ -1211,93 +1222,97 @@ public class PottsCellTest {
     
     @Test
     public void updateTarget_regionIncreaseScale_updatesValues() {
-        double locationRegionVolume = locationRegionVolumes.get(Region.DEFAULT);
+        double locationRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double locationRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
         double scale = randomDoubleBetween(1 + OFFSET, 2);
         double rate = randomDoubleBetween(0, scale - 1) * locationRegionVolume;
         
         PottsCell cell = make(true);
-        cell.initialize(null, null);
+        cell.reset(null, null);
         cell.updateTarget(Region.DEFAULT, rate, scale);
         
         double targetRegionVolume = locationRegionVolume + rate;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
-        double targetRegionSurface = locationRegionHeights.get(Region.DEFAULT) * targetRegionVolume;
+        double targetRegionSurface = locationRegionHeight * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
-        double targetVolume = locationVolume + rate;
+        double targetVolume = cellCriticalVolume + rate;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = locationHeight * targetVolume;
+        double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
     @Test
     public void updateTarget_regionIncreaseScaleWithThreshold_updatesValues() {
-        double locationRegionVolume = locationRegionVolumes.get(Region.DEFAULT);
+        double locationRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double locationRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
         double scale = randomDoubleBetween(1 + OFFSET, 2);
         double rate = randomDoubleBetween(scale - 1, scale) * locationRegionVolume;
         
         PottsCell cell = make(true);
-        cell.initialize(null, null);
+        cell.reset(null, null);
         cell.updateTarget(Region.DEFAULT, rate, scale);
         
         double targetRegionVolume = scale * locationRegionVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
-        double targetRegionSurface = locationRegionHeights.get(Region.DEFAULT) * targetRegionVolume;
+        double targetRegionSurface = locationRegionHeight * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
-        double targetVolume = locationVolume - locationRegionVolume + targetRegionVolume;
+        double targetVolume = cellCriticalVolume - locationRegionVolume + targetRegionVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = locationHeight * targetVolume;
+        double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
     @Test
     public void updateTarget_regionDecreaseScale_updatesValues() {
-        double locationRegionVolume = locationRegionVolumes.get(Region.DEFAULT);
+        double locationRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double locationRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
         double scale = randomDoubleBetween(0, 1 - OFFSET);
         double rate = randomDoubleBetween(0, 1 - scale) * locationRegionVolume;
         
         PottsCell cell = make(true);
-        cell.initialize(null, null);
+        cell.reset(null, null);
         cell.updateTarget(Region.DEFAULT, rate, scale);
         
         double targetRegionVolume = locationRegionVolume - rate;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
-        double targetRegionSurface = locationRegionHeights.get(Region.DEFAULT) * targetRegionVolume;
+        double targetRegionSurface = locationRegionHeight * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
-        double targetVolume = locationVolume - rate;
+        double targetVolume = cellCriticalVolume - rate;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = locationHeight * targetVolume;
+        double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
     @Test
     public void updateTarget_regionDecreaseScaleWithThreshold_updatesValues() {
-        double locationRegionVolume = locationRegionVolumes.get(Region.DEFAULT);
+        double locationRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double locationRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
         double scale = randomDoubleBetween(0, 1 - OFFSET);
         double rate = randomDoubleBetween(1 - scale, 2 - scale) * locationRegionVolume;
         
         PottsCell cell = make(true);
-        cell.initialize(null, null);
+        cell.reset(null, null);
         cell.updateTarget(Region.DEFAULT, rate, scale);
         
         double targetRegionVolume = scale * locationRegionVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
-        double targetRegionSurface = locationRegionHeights.get(Region.DEFAULT) * targetRegionVolume;
+        double targetRegionSurface = locationRegionHeight * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
-        double targetVolume = locationVolume - locationRegionVolume + targetRegionVolume;
+        double targetVolume = cellCriticalVolume - locationRegionVolume + targetRegionVolume;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
-        double targetSurface = locationHeight * targetVolume;
+        double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
@@ -1313,15 +1328,17 @@ public class PottsCellTest {
         int divisions = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
-        EnumMap<Term, Double> criticals = makeEnumMap();
-        EnumMap<Term, Double> lambdas = makeEnumMap();
+        double criticalVolume = randomDoubleBetween(10, 100);
+        double criticalHeight = randomDoubleBetween(10, 100);
+        EnumMap<Term, Double> lambdas = makeTermEnumMap();
         double[] adhesion = new double[] {
                 randomDoubleBetween(0, 10),
                 randomDoubleBetween(0, 10)
         };
         
         PottsCell cell = new PottsCell(id, parent, pop, state, age, divisions, location,
-                false, parameters, adhesion, criticals, lambdas, null, null, null);
+                false, parameters, criticalVolume, criticalHeight,
+                lambdas, adhesion, null, null, null, null);
         ((PottsModule) cell.getModule()).setPhase(phase);
         
         int voxels = randomIntBetween(1, 100);
@@ -1360,8 +1377,9 @@ public class PottsCellTest {
         int divisions = randomIntBetween(1, 100);
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
-        EnumMap<Term, Double> criticals = makeEnumMap();
-        EnumMap<Term, Double> lambdas = makeEnumMap();
+        double criticalVolume = randomDoubleBetween(10, 100);
+        double criticalHeight = randomDoubleBetween(10, 100);
+        EnumMap<Term, Double> lambdas = makeTermEnumMap();
         double[] adhesion = new double[] {
                 randomDoubleBetween(0, 10),
                 randomDoubleBetween(0, 10)
@@ -1370,12 +1388,15 @@ public class PottsCellTest {
         EnumSet<Region> regions = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
         doReturn(regions).when(location).getRegions();
         
-        EnumMap<Region, EnumMap<Term, Double>> criticalsRegion = makeEnumMapRegion(regions);
+        EnumMap<Region, Double> criticalVolumesRegion = makeRegionEnumMap();
+        EnumMap<Region, Double> criticalHeightsRegion = makeRegionEnumMap();
         EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = makeEnumMapRegion(regions);
         EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = makeEnumMapTarget(regions);
         
         PottsCell cell = new PottsCell(id, parent, pop, state, age, divisions, location, true,
-                parameters, adhesion, criticals, lambdas, criticalsRegion, lambdasRegion, adhesionRegion);
+                parameters, criticalVolume, criticalHeight,
+                lambdas, adhesion, criticalVolumesRegion, criticalHeightsRegion,
+                lambdasRegion, adhesionRegion);
         ((PottsModule) cell.getModule()).setPhase(phase);
         
         int voxels = randomIntBetween(1, 100);

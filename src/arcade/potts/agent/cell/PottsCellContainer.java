@@ -174,7 +174,8 @@ public final class PottsCellContainer implements CellContainer {
     private Cell convert(PottsCellFactory factory, Location location) {
         // Get copies of critical, lambda, and adhesion values.
         MiniBox parameters = factory.popToParameters.get(pop);
-        EnumMap<Term, Double> criticals = factory.popToCriticals.get(pop).clone();
+        double criticalVolume = factory.popToCriticalVolumes.get(pop);
+        double criticalHeight = factory.popToCriticalHeights.get(pop);
         EnumMap<Term, Double> lambdas = factory.popToLambdas.get(pop).clone();
         double[] adhesion = factory.popToAdhesion.get(pop).clone();
         
@@ -183,14 +184,17 @@ public final class PottsCellContainer implements CellContainer {
         
         if (factory.popToRegions.get(pop)) {
             // Initialize region arrays.
-            EnumMap<Region, EnumMap<Term, Double>> criticalsRegion = new EnumMap<>(Region.class);
+            EnumMap<Region, Double> criticalRegionVolumes = new EnumMap<>(Region.class);
+            EnumMap<Region, Double> criticalRegionHeights = new EnumMap<>(Region.class);
             EnumMap<Region, EnumMap<Term, Double>> lambdasRegion = new EnumMap<>(Region.class);
             EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = new EnumMap<>(Region.class);
             
             // Get copies of critical, lambda, and adhesion values.
             for (Region region : location.getRegions()) {
-                criticalsRegion.put(region,
-                        factory.popToRegionCriticals.get(pop).get(region).clone());
+                criticalRegionVolumes.put(region,
+                        factory.popToRegionCriticalVolumes.get(pop).get(region));
+                criticalRegionHeights.put(region,
+                        factory.popToRegionCriticalHeights.get(pop).get(region));
                 lambdasRegion.put(region,
                         factory.popToRegionLambdas.get(pop).get(region).clone());
                 adhesionRegion.put(region,
@@ -198,12 +202,13 @@ public final class PottsCellContainer implements CellContainer {
             }
             
             cell = new PottsCell(id, parent, pop, state, age, divisions,
-                    location, true, parameters, adhesion, criticals, lambdas,
-                    criticalsRegion, lambdasRegion, adhesionRegion);
+                    location, true, parameters, criticalVolume, criticalHeight,
+                    lambdas, adhesion, criticalRegionVolumes, criticalRegionHeights,
+                    lambdasRegion, adhesionRegion);
         } else {
             cell = new PottsCell(id, parent, pop, state, age, divisions,
-                    location, false, parameters, adhesion, criticals, lambdas,
-                    null, null, null);
+                    location, false, parameters, criticalVolume, criticalHeight,
+                    lambdas, adhesion, null, null, null, null);
         }
         
         // Update cell targets.

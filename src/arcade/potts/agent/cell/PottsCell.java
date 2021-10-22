@@ -82,11 +82,17 @@ public final class PottsCell implements Cell {
     /** Target region cell surfaces (in voxels). */
     private final EnumMap<Region, Double> targetRegionSurfaces;
     
-    /** Critical values for cell (in voxels). */
-    final EnumMap<Term, Double> criticals;
+    /** Critical volume for cell (in voxels). */
+    private final double criticalVolume;
     
-    /** Critical values for cell (in voxels) by region. */
-    final EnumMap<Region, EnumMap<Term, Double>> criticalsRegion;
+    /** Critical volumes for cell (in voxels) by region. */
+    private final EnumMap<Region, Double> criticalRegionVolumes;
+    
+    /** Critical height for cell (in voxels). */
+    private final double criticalHeight;
+    
+    /** Critical heights for cell (in voxels) by region. */
+    private final EnumMap<Region, Double> criticalRegionHeights;
     
     /** Lambda parameters for cell. */
     final EnumMap<Term, Double> lambdas;
@@ -118,17 +124,21 @@ public final class PottsCell implements Cell {
      * @param location  the {@link arcade.core.env.loc.Location} of the cell
      * @param hasRegions  {@code true} if the cell has regions, {@code false} otherwise
      * @param parameters  the dictionary of parameters
-     * @param adhesion  the list of adhesion values
-     * @param criticals  the map of critical values
+     * @param criticalVolume  the critical cell volume (in voxels)
+     * @param criticalHeight  the critical cell height (in voxels)
      * @param lambdas  the map of lambda multipliers
-     * @param criticalsRegion  the map of critical values for regions
+     * @param adhesion  the list of adhesion values
+     * @param criticalRegionVolumes  the map of critical volumes for regions
+     * @param criticalRegionHeights  the map of critical heights for regions
      * @param lambdasRegion  the map of lambda multipliers for regions
      * @param adhesionRegion  the map of adhesion values for regions
      */
     public PottsCell(int id, int parent, int pop, State state, int age, int divisions,
-                     Location location, boolean hasRegions, MiniBox parameters, double[] adhesion,
-                     EnumMap<Term, Double> criticals, EnumMap<Term, Double> lambdas,
-                     EnumMap<Region, EnumMap<Term, Double>> criticalsRegion,
+                     Location location, boolean hasRegions, MiniBox parameters,
+                     double criticalVolume, double criticalHeight,
+                     EnumMap<Term, Double> lambdas, double[] adhesion,
+                     EnumMap<Region, Double> criticalRegionVolumes,
+                     EnumMap<Region, Double> criticalRegionHeights,
                      EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
                      EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
         this.id = id;
@@ -139,26 +149,28 @@ public final class PottsCell implements Cell {
         this.hasRegions = hasRegions;
         this.location = (PottsLocation) location;
         this.parameters = parameters;
-        this.criticals = criticals.clone();
+        this.criticalVolume = criticalVolume;
+        this.criticalHeight = criticalHeight;
         this.lambdas = lambdas.clone();
         this.adhesion = adhesion.clone();
         
         setState(state);
         
         if (hasRegions) {
-            this.criticalsRegion = new EnumMap<>(Region.class);
+            this.criticalRegionVolumes = criticalRegionVolumes.clone();
+            this.criticalRegionHeights = criticalRegionHeights.clone();
             this.lambdasRegion = new EnumMap<>(Region.class);
             this.adhesionRegion = new EnumMap<>(Region.class);
             this.targetRegionVolumes = new EnumMap<>(Region.class);
             this.targetRegionSurfaces = new EnumMap<>(Region.class);
             
             for (Region region : location.getRegions()) {
-                this.criticalsRegion.put(region, criticalsRegion.get(region).clone());
                 this.lambdasRegion.put(region, lambdasRegion.get(region).clone());
                 this.adhesionRegion.put(region, adhesionRegion.get(region).clone());
             }
         } else {
-            this.criticalsRegion = null;
+            this.criticalRegionVolumes = null;
+            this.criticalRegionHeights = null;
             this.lambdasRegion = null;
             this.adhesionRegion = null;
             this.targetRegionVolumes = null;
@@ -262,22 +274,22 @@ public final class PottsCell implements Cell {
     }
     
     @Override
-    public double getCriticalVolume() { return criticals.get(Term.VOLUME); }
+    public double getCriticalVolume() { return criticalVolume; }
     
     @Override
     public double getCriticalVolume(Region region) {
-        return (hasRegions && criticalsRegion.containsKey(region)
-                ? criticalsRegion.get(region).get(Term.VOLUME)
+        return (hasRegions && criticalRegionVolumes.containsKey(region)
+                ? criticalRegionVolumes.get(region)
                 : 0);
     }
     
     @Override
-    public double getCriticalHeight() { return criticals.get(Term.HEIGHT); }
+    public double getCriticalHeight() { return criticalHeight; }
     
     @Override
     public double getCriticalHeight(Region region) {
-        return (hasRegions && criticalsRegion.containsKey(region)
-                ? criticalsRegion.get(region).get(Term.HEIGHT)
+        return (hasRegions && criticalRegionHeights.containsKey(region)
+                ? criticalRegionHeights.get(region)
                 : 0);
     }
     
@@ -331,8 +343,9 @@ public final class PottsCell implements Cell {
     public PottsCell make(int newID, State newState, Location newLocation) {
         divisions++;
         return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,
-                hasRegions, parameters, adhesion, criticals, lambdas,
-                criticalsRegion, lambdasRegion, adhesionRegion);
+                hasRegions, parameters, criticalVolume, criticalHeight,
+                lambdas, adhesion, criticalRegionVolumes, criticalRegionHeights,
+                lambdasRegion, adhesionRegion);
     }
     
     @Override
@@ -398,16 +411,14 @@ public final class PottsCell implements Cell {
     public void reset(int[][][] ids, int[][][] regions) {
         location.update(id, ids, regions);
         
-        double height = criticals.get(Term.HEIGHT);
-        targetVolume = criticals.get(Term.VOLUME);
-        targetSurface = location.convertSurface(targetVolume, height);
+        targetVolume = criticalVolume;
+        targetSurface = location.convertSurface(targetVolume, criticalHeight);
         
         if (!hasRegions) { return; }
         
         for (Region region : location.getRegions()) {
-            EnumMap<Term, Double> regionTerms = criticalsRegion.get(region);
-            double regionHeight = regionTerms.get(Term.HEIGHT);
-            double regionVolume = regionTerms.get(Term.VOLUME);
+            double regionHeight = criticalRegionHeights.get(region);
+            double regionVolume = criticalRegionVolumes.get(region);
             targetRegionVolumes.put(region, regionVolume);
             targetRegionSurfaces.put(region, location.convertSurface(regionVolume, regionHeight));
         }
@@ -470,8 +481,6 @@ public final class PottsCell implements Cell {
             targetRegionVolumes.put(Region.DEFAULT, updateVolume);
         }
         
-        double criticalVolume = criticals.get(Term.VOLUME);
-        
         if (scale > 1) {
             targetVolume += rate;
             targetVolume = Math.min(targetVolume, scale * criticalVolume);
@@ -480,14 +489,13 @@ public final class PottsCell implements Cell {
             targetVolume = Math.max(targetVolume, scale * criticalVolume);
         }
         
-        double criticalHeight = criticals.get(Term.HEIGHT);
         targetSurface = location.convertSurface(targetVolume, criticalHeight);
         
         if (hasRegions) {
             double updateVolume = targetRegionVolumes.get(Region.DEFAULT) + targetVolume;
             targetRegionVolumes.put(Region.DEFAULT, updateVolume);
             
-            double criticalRegionHeight = criticalsRegion.get(Region.DEFAULT).get(Term.HEIGHT);
+            double criticalRegionHeight = criticalRegionHeights.get(Region.DEFAULT);
             double updateSurface = location.convertSurface(updateVolume, criticalRegionHeight);
             targetRegionSurfaces.put(Region.DEFAULT, updateSurface);
         }
@@ -505,8 +513,8 @@ public final class PottsCell implements Cell {
         
         targetVolume -= targetRegionVolumes.get(region);
         
-        double criticalRegionVolume = criticalsRegion.get(region).get(Term.VOLUME);
-        double criticalRegionHeight = criticalsRegion.get(region).get(Term.HEIGHT);
+        double criticalRegionVolume = criticalRegionVolumes.get(region);
+        double criticalRegionHeight = criticalRegionHeights.get(region);
         
         double updateVolume = targetRegionVolumes.get(region);
         
@@ -523,7 +531,7 @@ public final class PottsCell implements Cell {
         targetRegionSurfaces.put(region, updateSurface);
         
         targetVolume += targetRegionVolumes.get(region);
-        targetSurface = location.convertSurface(targetVolume, criticals.get(Term.HEIGHT));
+        targetSurface = location.convertSurface(targetVolume, criticalHeight);
     }
     
     @Override
