@@ -164,12 +164,14 @@ public class PottsCellContainerTest {
                 randomDoubleBetween(0, 10),
                 randomDoubleBetween(0, 10)
         };
+        double substrate = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
         
         factory.popToCriticalVolumes.put(cellPop, criticalVolume);
         factory.popToCriticalHeights.put(cellPop, criticalHeight);
         factory.popToLambdas.put(cellPop, lambdas);
         factory.popToAdhesion.put(cellPop, adhesion);
+        factory.popToSubstrate.put(cellPop, substrate);
         factory.popToParameters.put(cellPop, parameters);
         factory.popToRegions.put(cellPop, false);
         
@@ -192,6 +194,7 @@ public class PottsCellContainerTest {
         assertEquals(lambdas.get(Term.SURFACE), cell.getLambda(Term.SURFACE), EPSILON);
         assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
         assertEquals(adhesion[1], cell.getAdhesion(1), EPSILON);
+        assertEquals(substrate, cell.getSubstrate(), EPSILON);
         assertEquals(0, cell.getTargetVolume(), EPSILON);
         assertEquals(0, cell.getTargetSurface(), EPSILON);
     }
@@ -215,6 +218,7 @@ public class PottsCellContainerTest {
                 randomDoubleBetween(0, 10),
                 randomDoubleBetween(0, 10)
         };
+        double substrate = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
         
         EnumSet<Region> regionList = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
@@ -229,6 +233,7 @@ public class PottsCellContainerTest {
         factory.popToCriticalHeights.put(cellPop, criticalHeight);
         factory.popToLambdas.put(cellPop, lambdas);
         factory.popToAdhesion.put(cellPop, adhesion);
+        factory.popToSubstrate.put(cellPop, substrate);
         factory.popToParameters.put(cellPop, parameters);
         
         factory.popToRegionCriticalVolumes.put(cellPop, criticalVolumesRegion);
@@ -257,6 +262,7 @@ public class PottsCellContainerTest {
         assertEquals(lambdas.get(Term.SURFACE), cell.getLambda(Term.SURFACE), EPSILON);
         assertEquals(adhesion[0], cell.getAdhesion(0), EPSILON);
         assertEquals(adhesion[1], cell.getAdhesion(1), EPSILON);
+        assertEquals(substrate, cell.getSubstrate(), EPSILON);
         assertEquals(0, cell.getTargetVolume(), EPSILON);
         assertEquals(0, cell.getTargetSurface(), EPSILON);
         
@@ -291,6 +297,7 @@ public class PottsCellContainerTest {
         factory.popToCriticalHeights.put(1, randomDoubleBetween(1, 10));
         factory.popToLambdas.put(1, makeTermEnumMap());
         factory.popToAdhesion.put(1, new double[2]);
+        factory.popToSubstrate.put(1, randomDoubleBetween(1, 10));
         factory.popToRegions.put(1, false);
         
         PottsCellContainer container = new PottsCellContainer(1, 0, 1, 0, 0,
@@ -313,6 +320,7 @@ public class PottsCellContainerTest {
         factory.popToCriticalHeights.put(1, randomDoubleBetween(1, 10));
         factory.popToLambdas.put(1, makeTermEnumMap());
         factory.popToAdhesion.put(1, new double[2]);
+        factory.popToSubstrate.put(1, randomDoubleBetween(1, 10));
         factory.popToRegions.put(1, true);
         
         EnumSet<Region> regionList = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
@@ -360,6 +368,7 @@ public class PottsCellContainerTest {
         factory.popToCriticalHeights.put(1, randomDoubleBetween(1, 10));
         factory.popToLambdas.put(1, makeTermEnumMap());
         factory.popToAdhesion.put(1, new double[2]);
+        factory.popToSubstrate.put(1, randomDoubleBetween(1, 10));
         factory.popToRegions.put(1, true);
         
         EnumSet<Region> regionList = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);

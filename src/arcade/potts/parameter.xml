@@ -4,11 +4,12 @@
     <potts id="MCS" value="1" description="number of MCS steps per simulation tick" />
     
     <!-- default parameters for populations -->
-    <population id="LAMBDA_VOLUME" value="0.1" conversion="DS^3.DT^-1" />
-    <population id="LAMBDA_SURFACE" value="0.01" conversion="DS^2.DT^-1" />
+    <population id="LAMBDA_VOLUME" value="5" convesion="DS^3.DT^-1" />
+    <population id="LAMBDA_SURFACE" value="2" coversion="DS^2.DT^-1" />
     <population id="CRITICAL_VOLUME" value="1000" units="um^3" conversion="DS^-3" />
     <population id="CRITICAL_HEIGHT" value="5" units="um" conversion="DS^-1" />
-    <population id="ADHESION" value="1" />
+    <population id="ADHESION" value="10" />
+    <population id="SUBSTRATE" value="2" />
     
     <!-- default region parameters -->
     <population.region region="DEFAULT" id="LAMBDA_VOLUME" value="1" conversion="DS^3.DT^-1" />

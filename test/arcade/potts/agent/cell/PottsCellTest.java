@@ -59,6 +59,7 @@ public class PottsCellTest {
     static double cellCriticalVolume = randomDoubleBetween(10, 100);
     static double cellCriticalHeight = randomDoubleBetween(10, 100);
     static State cellState = State.random(RANDOM);
+    static double cellSubstrate = randomDoubleBetween(10, 100);
     static PottsCell cellDefault;
     static PottsCell cellWithRegions;
     static PottsCell cellWithoutRegions;
@@ -148,14 +149,14 @@ public class PottsCellTest {
         
         cellDefault = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                 locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                lambdasMock, adhesionMock, null, null, null, null);
+                lambdasMock, adhesionMock, cellSubstrate, null, null, null, null);
         cellWithRegions = new PottsCell(cellID, cellParent, 1, cellState, cellAge, cellDivisions,
                 locationMock, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                lambdasMock, adhesionMock, criticalVolumesRegionMock, criticalHeightsRegionMock,
+                lambdasMock, adhesionMock, cellSubstrate, criticalVolumesRegionMock, criticalHeightsRegionMock,
                 lambdasRegionMock, adhesionRegionMock);
         cellWithoutRegions = new PottsCell(cellID, cellParent, 1, cellState, cellAge, cellDivisions,
                 locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                lambdasMock, adhesionMock, criticalVolumesRegionMock, criticalHeightsRegionMock,
+                lambdasMock, adhesionMock, cellSubstrate, criticalVolumesRegionMock, criticalHeightsRegionMock,
                 lambdasRegionMock, adhesionRegionMock);
     }
     
@@ -167,11 +168,12 @@ public class PottsCellTest {
         if (!regions) {
             return new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                     location, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                    lambdasMock, adhesionMock, null, null, null, null);
+                    lambdasMock, adhesionMock, cellSubstrate, null, null, null, null);
         } else {
             return new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                     location, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                    lambdasMock, adhesionMock, criticalVolumesRegionMock, criticalHeightsRegionMock,
+                    lambdasMock, adhesionMock, cellSubstrate,
+                    criticalVolumesRegionMock, criticalHeightsRegionMock,
                     lambdasRegionMock, adhesionRegionMock);
         }
     }
@@ -191,7 +193,7 @@ public class PottsCellTest {
         int parent = randomIntBetween(0, 100);
         PottsCell cell = new PottsCell(cellID, parent, cellPop, cellState, cellAge, cellDivisions,
                 locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                lambdasMock, adhesionMock, null, null, null, null);
+                lambdasMock, adhesionMock, cellSubstrate, null, null, null, null);
         assertEquals(parent, cell.getParent());
     }
     
@@ -205,7 +207,7 @@ public class PottsCellTest {
         int pop = randomIntBetween(0, 100);
         PottsCell cell = new PottsCell(cellID, cellParent, pop, cellState, cellAge, cellDivisions,
                 locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                lambdasMock, adhesionMock, null, null, null, null);
+                lambdasMock, adhesionMock, cellSubstrate, null, null, null, null);
         assertEquals(pop, cell.getPop());
     }
     
@@ -219,7 +221,7 @@ public class PottsCellTest {
         State state = State.random(RANDOM);
         PottsCell cell = new PottsCell(cellID, cellParent, cellPop, state, cellAge, cellDivisions,
                 locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                lambdasMock, adhesionMock, null, null, null, null);
+                lambdasMock, adhesionMock, cellSubstrate, null, null, null, null);
         assertEquals(state, cell.getState());
     }
     
@@ -233,7 +235,7 @@ public class PottsCellTest {
         int age = randomIntBetween(0, 100);
         PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, age, cellDivisions,
                 locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                lambdasMock, adhesionMock, null, null, null, null);
+                lambdasMock, adhesionMock, cellSubstrate, null, null, null, null);
         assertEquals(age, cell.getAge());
     }
     
@@ -247,7 +249,7 @@ public class PottsCellTest {
         int divisions = randomIntBetween(0, 100);
         PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, divisions,
                 locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                lambdasMock, adhesionMock, null, null, null, null);
+                lambdasMock, adhesionMock, cellSubstrate, null, null, null, null);
         assertEquals(divisions, cell.getDivisions());
     }
     
@@ -653,6 +655,20 @@ public class PottsCellTest {
     }
     
     @Test
+    public void getSubstrate_defaultConstructor_returnsValue() {
+        assertEquals(cellSubstrate, cellDefault.getSubstrate(), EPSILON);
+    }
+    
+    @Test
+    public void getSubstrate_valueAssigned_returnsValue() {
+        double substrate = randomDoubleBetween(10, 100);
+        PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                lambdasMock, adhesionMock, substrate, null, null, null, null);
+        assertEquals(substrate, cell.getSubstrate(), EPSILON);
+    }
+    
+    @Test
     public void setState_givenState_assignsValue() {
         PottsCell cell = make(false);
         
@@ -714,13 +730,14 @@ public class PottsCellTest {
         double criticalHeight = randomDoubleBetween(10, 100);
         EnumMap<Term, Double> lambdas = new EnumMap<>(Term.class);
         double[] adhesion = new double[n];
+        double substrate = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
         Location location1 = mock(PottsLocation.class);
         Location location2 = mock(PottsLocation.class);
         
         PottsCell cell1 = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                 location1, false, parameters, criticalVolume, criticalHeight,
-                lambdas, adhesion, null, null, null, null);
+                lambdas, adhesion, substrate, null, null, null, null);
         PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
         
         assertEquals(cellID + 1, cell2.id);
@@ -736,6 +753,7 @@ public class PottsCellTest {
         assertEquals(criticalHeight, cell2.getCriticalHeight(), EPSILON);
         assertEquals(lambdas, cell2.lambdas);
         assertArrayEquals(adhesion, cell2.adhesion, EPSILON);
+        assertEquals(substrate, cell2.substrate, EPSILON);
     }
     
     @Test
@@ -745,6 +763,7 @@ public class PottsCellTest {
         double criticalHeight = randomDoubleBetween(10, 100);
         EnumMap<Term, Double> lambdas = new EnumMap<>(Term.class);
         double[] adhesion = new double[n];
+        double substrate = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
         Location location1 = mock(PottsLocation.class);
         Location location2 = mock(PottsLocation.class);
@@ -770,7 +789,7 @@ public class PottsCellTest {
         
         PottsCell cell1 = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                 location1, true, parameters, criticalVolume, criticalHeight,
-                lambdas, adhesion, criticalVolumesRegion, criticalHeightsRegion,
+                lambdas, adhesion, substrate, criticalVolumesRegion, criticalHeightsRegion,
                 lambdasRegion, adhesionRegion);
         PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
         
@@ -787,6 +806,7 @@ public class PottsCellTest {
         assertEquals(criticalHeight, cell2.getCriticalHeight(), EPSILON);
         assertEquals(lambdas, cell2.lambdas);
         assertArrayEquals(adhesion, cell2.adhesion, EPSILON);
+        assertEquals(substrate, cell2.substrate, EPSILON);
         assertEquals(lambdasRegion, cell2.lambdasRegion);
         assertEquals(adhesionRegion, cell2.adhesionRegion);
         for (Region region : Region.values()) {
@@ -1335,10 +1355,11 @@ public class PottsCellTest {
                 randomDoubleBetween(0, 10),
                 randomDoubleBetween(0, 10)
         };
+        double substrate = randomDoubleBetween(10, 100);
         
         PottsCell cell = new PottsCell(id, parent, pop, state, age, divisions, location,
                 false, parameters, criticalVolume, criticalHeight,
-                lambdas, adhesion, null, null, null, null);
+                lambdas, adhesion, substrate, null, null, null, null);
         ((PottsModule) cell.getModule()).setPhase(phase);
         
         int voxels = randomIntBetween(1, 100);
@@ -1384,6 +1405,7 @@ public class PottsCellTest {
                 randomDoubleBetween(0, 10),
                 randomDoubleBetween(0, 10)
         };
+        double substrate = randomDoubleBetween(10, 100);
         
         EnumSet<Region> regions = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
         doReturn(regions).when(location).getRegions();
@@ -1395,7 +1417,7 @@ public class PottsCellTest {
         
         PottsCell cell = new PottsCell(id, parent, pop, state, age, divisions, location, true,
                 parameters, criticalVolume, criticalHeight,
-                lambdas, adhesion, criticalVolumesRegion, criticalHeightsRegion,
+                lambdas, adhesion, substrate, criticalVolumesRegion, criticalHeightsRegion,
                 lambdasRegion, adhesionRegion);
         ((PottsModule) cell.getModule()).setPhase(phase);
         

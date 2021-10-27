@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian3D;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
+import arcade.potts.sim.hamiltonian.SubstrateHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian3D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 import static org.junit.Assert.*;
@@ -224,6 +225,7 @@ public class Potts3DTest {
         expected.add(AdhesionHamiltonian3D.class);
         expected.add(VolumeHamiltonian.class);
         expected.add(SurfaceHamiltonian3D.class);
+        expected.add(SubstrateHamiltonian.class);
         
         Object[] classes = potts3D.hamiltonian.stream().map(Hamiltonian::getClass).toArray();
         List<Object> returned = Arrays.asList(classes);

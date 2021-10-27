@@ -35,6 +35,9 @@ public final class PottsCellFactory implements CellFactory {
     /** Map of population to adhesion values. */
     HashMap<Integer, double[]> popToAdhesion;
     
+    /** Map of population to substrate adhesion values. */
+    HashMap<Integer, Double> popToSubstrate;
+    
     /** Map of population to parameters. */
     HashMap<Integer, MiniBox> popToParameters;
     
@@ -68,6 +71,7 @@ public final class PottsCellFactory implements CellFactory {
         popToCriticalHeights = new HashMap<>();
         popToLambdas = new HashMap<>();
         popToAdhesion = new HashMap<>();
+        popToSubstrate = new HashMap<>();
         popToParameters = new HashMap<>();
         popToRegions = new HashMap<>();
         popToRegionCriticalVolumes = new HashMap<>();
@@ -202,7 +206,10 @@ public final class PottsCellFactory implements CellFactory {
                         population.getDouble("ADHESION" + TARGET_SEPARATOR + p);
             }
             
+            double substrate = population.getDouble("SUBSTRATE");
+            
             popToAdhesion.put(pop, adhesion);
+            popToSubstrate.put(pop, substrate);
             popToRegions.put(pop, false);
             
             // Get regions (if they exist).

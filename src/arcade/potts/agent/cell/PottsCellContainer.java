@@ -178,6 +178,7 @@ public final class PottsCellContainer implements CellContainer {
         double criticalHeight = factory.popToCriticalHeights.get(pop);
         EnumMap<Term, Double> lambdas = factory.popToLambdas.get(pop).clone();
         double[] adhesion = factory.popToAdhesion.get(pop).clone();
+        double substrate = factory.popToSubstrate.get(pop);
         
         // Make cell.
         PottsCell cell;
@@ -203,12 +204,12 @@ public final class PottsCellContainer implements CellContainer {
             
             cell = new PottsCell(id, parent, pop, state, age, divisions,
                     location, true, parameters, criticalVolume, criticalHeight,
-                    lambdas, adhesion, criticalRegionVolumes, criticalRegionHeights,
+                    lambdas, adhesion, substrate, criticalRegionVolumes, criticalRegionHeights,
                     lambdasRegion, adhesionRegion);
         } else {
             cell = new PottsCell(id, parent, pop, state, age, divisions,
                     location, false, parameters, criticalVolume, criticalHeight,
-                    lambdas, adhesion, null, null, null, null);
+                    lambdas, adhesion, substrate, null, null, null, null);
         }
         
         // Update cell targets.

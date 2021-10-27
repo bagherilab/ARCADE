@@ -103,6 +103,9 @@ public final class PottsCell implements Cell {
     /** Adhesion values for cell. */
     final double[] adhesion;
     
+    /** Substrate adhesion for cell. */
+    final double substrate;
+    
     /** Adhesion values for cell by region. */
     final EnumMap<Region, EnumMap<Region, Double>> adhesionRegion;
     
@@ -128,6 +131,7 @@ public final class PottsCell implements Cell {
      * @param criticalHeight  the critical cell height (in voxels)
      * @param lambdas  the map of lambda multipliers
      * @param adhesion  the list of adhesion values
+     * @param substrate  the adhesion to substrate
      * @param criticalRegionVolumes  the map of critical volumes for regions
      * @param criticalRegionHeights  the map of critical heights for regions
      * @param lambdasRegion  the map of lambda multipliers for regions
@@ -136,7 +140,7 @@ public final class PottsCell implements Cell {
     public PottsCell(int id, int parent, int pop, State state, int age, int divisions,
                      Location location, boolean hasRegions, MiniBox parameters,
                      double criticalVolume, double criticalHeight,
-                     EnumMap<Term, Double> lambdas, double[] adhesion,
+                     EnumMap<Term, Double> lambdas, double[] adhesion, double substrate,
                      EnumMap<Region, Double> criticalRegionVolumes,
                      EnumMap<Region, Double> criticalRegionHeights,
                      EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
@@ -153,6 +157,7 @@ public final class PottsCell implements Cell {
         this.criticalHeight = criticalHeight;
         this.lambdas = lambdas.clone();
         this.adhesion = adhesion.clone();
+        this.substrate = substrate;
         
         setState(state);
         
@@ -336,6 +341,13 @@ public final class PottsCell implements Cell {
                 : Double.NaN);
     }
     
+    /**
+     * Gets the substrate adhesion.
+     *
+     * @return  the substrate adhesion value.
+     */
+    public double getSubstrate() { return substrate; }
+    
     @Override
     public void stop() { stopper.stop(); }
     
@@ -344,7 +356,7 @@ public final class PottsCell implements Cell {
         divisions++;
         return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,
                 hasRegions, parameters, criticalVolume, criticalHeight,
-                lambdas, adhesion, criticalRegionVolumes, criticalRegionHeights,
+                lambdas, adhesion, substrate, criticalRegionVolumes, criticalRegionHeights,
                 lambdasRegion, adhesionRegion);
     }
     

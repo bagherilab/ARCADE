@@ -2,6 +2,7 @@ package arcade.potts.sim;
 
 import java.util.HashSet;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian3D;
+import arcade.potts.sim.hamiltonian.SubstrateHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian3D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 
@@ -49,6 +50,7 @@ public final class Potts3D extends Potts {
         hamiltonian.add(new AdhesionHamiltonian3D(this));
         hamiltonian.add(new VolumeHamiltonian(this));
         hamiltonian.add(new SurfaceHamiltonian3D(this));
+        hamiltonian.add(new SubstrateHamiltonian(this));
     }
     
     @Override

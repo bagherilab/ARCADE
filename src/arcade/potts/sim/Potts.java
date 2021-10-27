@@ -36,13 +36,13 @@ public abstract class Potts implements Steppable {
     static final double REFERENCE_HEIGHT = 5;
     
     /** Length (x direction) of potts array. */
-    final int length;
+    public final int length;
     
     /** Width (y direction) of potts array. */
-    final int width;
+    public final int width;
     
     /** Depth (z direction) of potts array. */
-    final int height;
+    public final int height;
     
     /** Number of steps in Monte Carlo Step. */
     final int steps;
