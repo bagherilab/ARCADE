@@ -3,7 +3,6 @@ package arcade.potts.sim;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
-import org.junit.Before;
 import org.junit.Test;
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
@@ -14,6 +13,7 @@ import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
+import arcade.potts.sim.hamiltonian.Hamiltonian;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -21,111 +21,13 @@ import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.sim.Potts.REFERENCE_HEIGHT;
 import static arcade.potts.sim.Potts.REFERENCE_VOLUME;
-import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsTest {
     private static final double EPSILON = 1E-10;
     private static final double TEMPERATURE = 10;
-    private static final double LV = randomDoubleBetween(0, 10);
-    private static final double LS = randomDoubleBetween(0, 10);
-    private static final double REGION_LV = randomDoubleBetween(0, 10);
-    private static final double REGION_LS = randomDoubleBetween(0, 10);
     private static final double R = randomDoubleBetween(0, 1);
     private static final double R_PLUS = Math.exp(-3 / TEMPERATURE) + EPSILON;
     private static final double R_MINUS = Math.exp(-3 / TEMPERATURE) - EPSILON;
-    private static final double[] ADHESION_ID = { 0, randomDoubleBetween(0, 10), randomDoubleBetween(0, 10) };
-    private static final double[] ADHESION_REGION = { 0, randomDoubleBetween(0, 10), randomDoubleBetween(0, 10) };
-    static final double[][] ADHESIONS = new double[][] {
-            { Double.NaN, Double.NaN, Double.NaN },
-            { 1, 2, 3 },
-            { 4, 5, 6 }
-    };
-    static final double[][] SUBADHESIONS = new double[][] {
-            { Double.NaN, 1 },
-            { 2, Double.NaN, },
-    };
-    Cell[] cells;
-    Location[] locations;
-    PottsMock potts;
-    
-    @Before
-    public void setupGrid() {
-        Grid grid = mock(Grid.class);
-        
-        // Volumes and surfaces for each cell domain.
-        int[] volumes = new int[] { 4, 2, 4 };
-        double[] targetVolumes = new double[] { 2, 3, 3 };
-        int[] surfaces = new int[] { 8, 6, 8 };
-        double[] targetSurfaces = new double[] { 10, 10, 8 };
-        
-        // Volumes and surfaces for each cell domain region.
-        int[][] subvolumes = new int[][] { { 3, 1 }, { 2, 0 }, { 1, 1 } };
-        double[] targetSubvolumes = new double[] { 2, 2 };
-        int[][] subsurfaces = new int[][] { { 6, 4 }, { 6, 0 }, { 4, 0 } };
-        double[] targetSubsurfaces = new double[] { 8, 5 };
-        
-        int nCells = 3;
-        
-        cells = new Cell[nCells + 1];
-        locations = new Location[nCells + 1];
-        
-        for (int i = 0; i < nCells; i++) {
-            PottsCell c = mock(PottsCell.class);
-            Location loc = mock(Location.class);
-            
-            // Assign volumes for the cell domain.
-            doReturn(volumes[i]).when(c).getVolume();
-            doReturn(targetVolumes[i]).when(c).getTargetVolume();
-            
-            // Assign surfaces for the cell domain.
-            doReturn(surfaces[i]).when(c).getSurface();
-            doReturn(targetSurfaces[i]).when(c).getTargetSurface();
-            
-            // Assign lambda values for cell domain.
-            doReturn(LV).when(c).getLambda(Term.VOLUME);
-            doReturn(LS).when(c).getLambda(Term.SURFACE);
-            
-            // Assign volumes for cell regions.
-            doReturn(subvolumes[i][0]).when(c).getVolume(Region.DEFAULT);
-            doReturn(subvolumes[i][1]).when(c).getVolume(Region.NUCLEUS);
-            doReturn(targetSubvolumes[0]).when(c).getTargetVolume(Region.DEFAULT);
-            doReturn(targetSubvolumes[1]).when(c).getTargetVolume(Region.NUCLEUS);
-            
-            // Assign surfaces for cell regions.
-            doReturn(subsurfaces[i][0]).when(c).getSurface(Region.DEFAULT);
-            doReturn(subsurfaces[i][1]).when(c).getSurface(Region.NUCLEUS);
-            doReturn(targetSubsurfaces[0]).when(c).getTargetSurface(Region.DEFAULT);
-            doReturn(targetSubsurfaces[1]).when(c).getTargetSurface(Region.NUCLEUS);
-            
-            // Assign lambda values for cell regions.
-            doReturn(REGION_LV).when(c).getLambda(Term.VOLUME, Region.DEFAULT);
-            doReturn(REGION_LV).when(c).getLambda(Term.VOLUME, Region.NUCLEUS);
-            doReturn(REGION_LS).when(c).getLambda(Term.SURFACE, Region.DEFAULT);
-            doReturn(REGION_LS).when(c).getLambda(Term.SURFACE, Region.NUCLEUS);
-            
-            when(grid.getObjectAt(i + 1)).thenReturn(c);
-            cells[i + 1] = c;
-            locations[i + 1] = loc;
-        }
-        
-        when(grid.getObjectAt(0)).thenReturn(null);
-        cells[0] = null;
-        
-        HashMap<String, MiniBox> populations = new HashMap<>();
-        populations.put("A", new MiniBox());
-        populations.put("B", new MiniBox());
-        
-        populations.get("B").put("REGION / region", "0.0");
-        
-        PottsSeries series = mock(PottsSeries.class);
-        series.potts = mock(MiniBox.class);
-        series.populations = populations;
-        doReturn(TEMPERATURE).when(series.potts).getDouble("TEMPERATURE");
-        doReturn(1).when(series.potts).getInt("MCS");
-        
-        potts = new PottsMock(series);
-        potts.grid = grid;
-    }
     
     static class PottsMock extends Potts {
         PottsMock(PottsSeries series) { super(series); }
@@ -203,7 +105,7 @@ public class PottsTest {
             Field dsField = Series.class.getDeclaredField("ds");
             dsField.setAccessible(true);
             dsField.setDouble(series, ds);
-    
+            
             Field dtField = Series.class.getDeclaredField("dt");
             dtField.setAccessible(true);
             dtField.setDouble(series, dt);
@@ -226,7 +128,7 @@ public class PottsTest {
         return spy;
     }
     
-    static PottsMock makeChangeMock(int source, int target, double values, boolean hasRegions) {
+    static PottsMock makeChangeMock(int source, int target, double[] values, boolean hasRegions) {
         Grid grid = mock(Grid.class);
         PottsSeries series = makeSeries(3, 3, 1);
         PottsMock spy = spy(new PottsMock(series));
@@ -242,9 +144,11 @@ public class PottsTest {
             tempField.setDouble(spy, TEMPERATURE);
         } catch (Exception ignored) { }
         
-        doReturn(values).when(spy).getDeltaAdhesion(source, target, 0, 0, 0);
-        doReturn(values).when(spy).getDeltaVolume(source, target);
-        doReturn(values).when(spy).getDeltaSurface(source, target, 0, 0, 0);
+        for (double v : values) {
+            Hamiltonian hamiltonian = mock(Hamiltonian.class);
+            doReturn(v).when(hamiltonian).getDelta(source, target, 0, 0, 0);
+            spy.hamiltonian.add(hamiltonian);
+        }
         
         if (source != 0) {
             Cell cellSource = mock(PottsCell.class);
@@ -265,7 +169,7 @@ public class PottsTest {
         return spy;
     }
     
-    static PottsMock makeChangeMock(int source, int target, double values) {
+    static PottsMock makeChangeMock(int source, int target, double[] values) {
         Grid grid = mock(Grid.class);
         PottsSeries series = makeSeries(3, 3, 1);
         PottsMock spy = spy(new PottsMock(series));
@@ -277,9 +181,11 @@ public class PottsTest {
             tempField.setDouble(spy, TEMPERATURE);
         } catch (Exception ignored) { }
         
-        doReturn(values).when(spy).getDeltaAdhesion(1, source, target, 0, 0, 0);
-        doReturn(values).when(spy).getDeltaVolume(1, source, target);
-        doReturn(values).when(spy).getDeltaSurface(1, source, target, 0, 0, 0);
+        for (double v : values) {
+            Hamiltonian hamiltonian = mock(Hamiltonian.class);
+            doReturn(v).when(hamiltonian).getDelta(1, source, target, 0, 0, 0);
+            spy.hamiltonian.add(hamiltonian);
+        }
         
         Cell cellSource = mock(PottsCell.class);
         Location locationSource = mock(PottsLocation.class);
@@ -677,16 +583,17 @@ public class PottsTest {
     public void change_zeros_callsMethods() {
         int id1 = randomIntBetween(1, 10);
         int id2 = randomIntBetween(1, 10);
-        PottsMock spy = makeChangeMock(id1, id2, 0, false);
+        PottsMock spy = makeChangeMock(id1, id2, new double[] { 0, 0, 0 }, false);
         spy.change(id1, id2, 0, 0, 0, 1);
-        verify(spy).getDeltaAdhesion(id1, id2, 0, 0, 0);
-        verify(spy).getDeltaVolume(id1, id2);
-        verify(spy).getDeltaSurface(id1, id2, 0, 0, 0);
+        
+        for (Hamiltonian h : spy.hamiltonian) {
+            verify(h).getDelta(id1, id2, 0, 0, 0);
+        }
     }
     
     @Test
     public void change_negativeEnergyZeroSourceNonzeroTargetRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(0, 1, -1, true);
+        PottsMock spy = makeChangeMock(0, 1, new double[] { 1, -1, -1 }, true);
         spy.ids[0][0][0] = 0;
         spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         spy.change(0, 1, 0, 0, 0, 0);
@@ -697,7 +604,7 @@ public class PottsTest {
     
     @Test
     public void change_negativeEnergyNonzeroSourceZeroTargetRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(1, 0, -1, true);
+        PottsMock spy = makeChangeMock(1, 0, new double[] { 1, -1, -1 }, true);
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         spy.change(1, 0, 0, 0, 0, 0);
@@ -708,7 +615,7 @@ public class PottsTest {
     
     @Test
     public void change_negativeEnergyNonzeroSourceNonzeroTargetRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(1, 2, -1, true);
+        PottsMock spy = makeChangeMock(1, 2, new double[] { 1, -1, -1 }, true);
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         spy.change(1, 2, 0, 0, 0, 0);
@@ -720,7 +627,7 @@ public class PottsTest {
     
     @Test
     public void change_positiveEnergyZeroSourceNonzeroTargetRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(0, 1, 1, true);
+        PottsMock spy = makeChangeMock(0, 1, new double[] { -1, 1, 3 }, true);
         spy.ids[0][0][0] = 0;
         spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         
@@ -738,7 +645,7 @@ public class PottsTest {
     
     @Test
     public void change_positiveEnergyNonzeroSourceZeroTargetRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(1, 0, 1, true);
+        PottsMock spy = makeChangeMock(1, 0, new double[] { -1, 1, 3 }, true);
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         
@@ -755,7 +662,7 @@ public class PottsTest {
     
     @Test
     public void change_positiveEnergyNonzeroSourceNonzeroTargetRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(1, 2, 1, true);
+        PottsMock spy = makeChangeMock(1, 2, new double[] { -1, 1, 3 }, true);
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         
@@ -774,7 +681,7 @@ public class PottsTest {
     
     @Test
     public void change_negativeEnergyZeroSourceNonzeroTargetNoRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(0, 1, -1, false);
+        PottsMock spy = makeChangeMock(0, 1, new double[] { 1, -1, -1 }, false);
         spy.ids[0][0][0] = 0;
         spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         spy.change(0, 1, 0, 0, 0, 0);
@@ -785,7 +692,7 @@ public class PottsTest {
     
     @Test
     public void change_negativeEnergyNonzeroSourceZeroTargetNoRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(1, 0, -1, false);
+        PottsMock spy = makeChangeMock(1, 0, new double[] { 1, -1, -1 }, false);
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         spy.change(1, 0, 0, 0, 0, 0);
@@ -796,7 +703,7 @@ public class PottsTest {
     
     @Test
     public void change_negativeEnergyNonzeroSourceNonzeroTargetNoRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(1, 2, -1, false);
+        PottsMock spy = makeChangeMock(1, 2, new double[] { 1, -1, -1 }, false);
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         spy.change(1, 2, 0, 0, 0, 0);
@@ -808,7 +715,7 @@ public class PottsTest {
     
     @Test
     public void change_positiveEnergyZeroSourceNonzeroTargetNoRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(0, 1, 1, false);
+        PottsMock spy = makeChangeMock(0, 1, new double[] { -1, 1, 3 }, false);
         spy.ids[0][0][0] = 0;
         spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         
@@ -825,7 +732,7 @@ public class PottsTest {
     
     @Test
     public void change_positiveEnergyNonzeroSourceZeroTargetNoRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(1, 0, 1, false);
+        PottsMock spy = makeChangeMock(1, 0, new double[] { -1, 1, 3 }, false);
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         
@@ -842,7 +749,7 @@ public class PottsTest {
     
     @Test
     public void change_positiveEnergyNonzeroSourceNonzeroTargetNoRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(1, 2, 1, false);
+        PottsMock spy = makeChangeMock(1, 2, new double[] { -1, 1, 3 }, false);
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.UNDEFINED.ordinal();
         
@@ -927,16 +834,16 @@ public class PottsTest {
     public void change_zerosRegions_callsMethods() {
         int region1 = randomIntBetween(1, 10);
         int region2 = randomIntBetween(1, 10);
-        PottsMock spy = makeChangeMock(region1, region2, 0);
+        PottsMock spy = makeChangeMock(region1, region2, new double[] { 0, 0, 0 });
         spy.change(1, region1, region2, 0, 0, 0, 1);
-        verify(spy).getDeltaAdhesion(1, region1, region2, 0, 0, 0);
-        verify(spy).getDeltaVolume(1, region1, region2);
-        verify(spy).getDeltaSurface(1, region1, region2, 0, 0, 0);
+        for (Hamiltonian h : spy.hamiltonian) {
+            verify(h).getDelta(1, region1, region2, 0, 0, 0);
+        }
     }
     
     @Test
     public void change_negativeEnergyRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), -1);
+        PottsMock spy = makeChangeMock(Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), new double[] { 1, -1, -1 });
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         Grid grid = spy.grid;
@@ -949,7 +856,7 @@ public class PottsTest {
     
     @Test
     public void change_positiveEnergyRegions_updatesFields() {
-        PottsMock spy = makeChangeMock(Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 1);
+        PottsMock spy = makeChangeMock(Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), new double[] { -1, 1, 3 });
         spy.ids[0][0][0] = 1;
         spy.regions[0][0][0] = Region.DEFAULT.ordinal();
         Grid grid = spy.grid;
@@ -967,13 +874,34 @@ public class PottsTest {
     
     @Test
     public void getCell_validID_returnsObject() {
-        assertEquals(cells[1], potts.getCell(1));
-        assertEquals(cells[2], potts.getCell(2));
-        assertEquals(cells[3], potts.getCell(3));
+        PottsSeries series = makeSeries(1, 1, 1);
+        PottsMock potts = new PottsMock(series);
+    
+        Grid grid = mock(Grid.class);
+        potts.grid = grid;
+        
+        int n = randomIntBetween(3, 10);
+        Cell[] cells = new Cell[n];
+        for (int i = 0; i < n; i++) {
+            PottsCell c = mock(PottsCell.class);
+            when(grid.getObjectAt(i + 1)).thenReturn(c);
+            cells[i] = c;
+        }
+        
+        assertEquals(cells[0], potts.getCell(1));
+        assertEquals(cells[1], potts.getCell(2));
+        assertEquals(cells[2], potts.getCell(3));
     }
     
     @Test
     public void getCell_invalidID_returnsNull() {
+        PottsSeries series = makeSeries(1, 1, 1);
+        PottsMock potts = new PottsMock(series);
+        
+        Grid grid = mock(Grid.class);
+        potts.grid = grid;
+        when(grid.getObjectAt(0)).thenReturn(null);
+        
         assertNull(potts.getCell(0));
         assertNull(potts.getCell(-1));
     }

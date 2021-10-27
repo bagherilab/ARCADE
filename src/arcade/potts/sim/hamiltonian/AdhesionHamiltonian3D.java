@@ -31,7 +31,7 @@ public class AdhesionHamiltonian3D extends AdhesionHamiltonian {
                         PottsCell b = potts.getCell(potts.ids[k][i][j]);
                         if (a == null) {
                             h += b.getAdhesion(0);
-                        }  else if (b == null) {
+                        } else if (b == null) {
                             h += a.getAdhesion(0);
                         } else {
                             h += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop())) / 2.0;

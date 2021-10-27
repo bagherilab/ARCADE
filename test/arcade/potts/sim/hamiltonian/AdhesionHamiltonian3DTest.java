@@ -157,7 +157,7 @@ public class AdhesionHamiltonian3DTest {
         AdhesionHamiltonian3D ah = new AdhesionHamiltonian3D(potts);
         
         int aa = REGION_DEFAULT - 1;
-        int bb = REGION_DEFAULT - 1;
+        int bb = REGION_NUCLEUS - 1;
         double subadhesion = (SUBADHESIONS[aa][bb] + SUBADHESIONS[bb][aa]) / 2;
         
         assertEquals(subadhesion / NEIGHBORHOOD_SIZE, ah.getAdhesion(1, REGION_DEFAULT, 1, 2, 2), EPSILON);

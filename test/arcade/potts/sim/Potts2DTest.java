@@ -1,8 +1,15 @@
 package arcade.potts.sim;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import arcade.potts.sim.hamiltonian.AdhesionHamiltonian2D;
+import arcade.potts.sim.hamiltonian.Hamiltonian;
+import arcade.potts.sim.hamiltonian.SurfaceHamiltonian2D;
+import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 import static org.junit.Assert.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
@@ -81,6 +88,24 @@ public class Potts2DTest {
         }
         
         return rotated;
+    }
+    
+    @Test
+    public void constructor_called_setsTerms() {
+        PottsSeries series = makeSeries(1, 1, 1, 1, 1);
+        Potts2D potts2D = new Potts2D(series);
+        
+        ArrayList<Object> expected = new ArrayList<>();
+        expected.add(AdhesionHamiltonian2D.class);
+        expected.add(VolumeHamiltonian.class);
+        expected.add(SurfaceHamiltonian2D.class);
+        
+        Object[] classes = potts2D.hamiltonian.stream().map(Hamiltonian::getClass).toArray();
+        List<Object> returned = Arrays.asList(classes);
+        
+        assertEquals(expected.size(), returned.size());
+        assertTrue(expected.containsAll(returned));
+        assertTrue(returned.containsAll(expected));
     }
     
     @Test
