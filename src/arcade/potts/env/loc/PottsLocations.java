@@ -130,10 +130,12 @@ public abstract class PottsLocations extends PottsLocation {
         locations.get(region).voxels.add(voxel);
         locations.get(region).volume++;
         locations.get(region).surface += locations.get(region).updateSurface(voxel);
+        locations.get(region).height += locations.get(region).updateHeight(voxel);
         
         locations.get(oldRegion).voxels.remove(voxel);
         locations.get(oldRegion).volume--;
         locations.get(oldRegion).surface -= locations.get(oldRegion).updateSurface(voxel);
+        locations.get(oldRegion).height -= locations.get(oldRegion).updateHeight(voxel);
     }
     
     @Override

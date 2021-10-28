@@ -50,6 +50,15 @@ public abstract class PottsLocation implements Location {
     /** Location height. */
     int height;
     
+    /** X position of center. */
+    double cx;
+    
+    /** Y position of center. */
+    double cy;
+    
+    /** Z position of center. */
+    double cz;
+    
     /**
      * Creates a {@code PottsLocation} for a list of voxels.
      *
@@ -60,6 +69,7 @@ public abstract class PottsLocation implements Location {
         this.volume = voxels.size();
         this.surface = calculateSurface();
         this.height = calculateHeight();
+        calculateCenter();
     }
     
     /**
@@ -104,6 +114,7 @@ public abstract class PottsLocation implements Location {
             volume++;
             surface += updateSurface(voxel);
             height += updateHeight(voxel);
+            updateCenter(x, y, z, 1);
         }
     }
     
@@ -131,6 +142,7 @@ public abstract class PottsLocation implements Location {
             volume--;
             surface -= updateSurface(voxel);
             height -= updateHeight(voxel);
+            updateCenter(x, y, z, -1);
         }
     }
     
@@ -217,37 +229,47 @@ public abstract class PottsLocation implements Location {
      */
     public Voxel getCenter() {
         if (voxels.size() == 0) { return null; }
-        return new Voxel(getCenterX(), getCenterY(), getCenterZ());
+        
+        int x = (int) Math.round(cx);
+        int y = (int) Math.round(cy);
+        int z = (int) Math.round(cz);
+        
+        return new Voxel(x, y, z);
     }
     
     /**
-     * Gets the x coordinate of the voxel at the center of the location.
-     *
-     * @return  the x coordinate
+     * Calculates the exact center of the location.
      */
-    int getCenterX() {
-        double x = voxels.stream().mapToDouble(voxel -> voxel.x).sum();
-        return (int) Math.round(x / voxels.size());
+    void calculateCenter() {
+        if (voxels.size() == 0) {
+            cx = 0;
+            cy = 0;
+            cx = 0;
+        } else {
+            cx = voxels.stream().mapToDouble(voxel -> voxel.x).sum() / voxels.size();
+            cy = voxels.stream().mapToDouble(voxel -> voxel.y).sum() / voxels.size();
+            cz = voxels.stream().mapToDouble(voxel -> voxel.z).sum() / voxels.size();
+        }
     }
     
     /**
-     * Gets the y coordinate of the voxel at the center of the location.
+     * Updates the centroid of the location.
      *
-     * @return  the y coordinate
+     * @param x  the x position of the changed voxel
+     * @param y  the y position of the changed voxel
+     * @param z  the z position of the changed voxel
+     * @param change  the direction of change (add = +1, remove = -1)
      */
-    int getCenterY() {
-        double y = voxels.stream().mapToDouble(voxel -> voxel.y).sum();
-        return (int) Math.round(y / voxels.size());
-    }
-    
-    /**
-     * Gets the z coordinate of the voxel at the center of the location.
-     *
-     * @return  the z coordinate
-     */
-    int getCenterZ() {
-        double z = voxels.stream().mapToDouble(voxel -> voxel.z).sum();
-        return (int) Math.round(z / voxels.size());
+    void updateCenter(int x, int y, int z, int change) {
+        if (voxels.size() == 0) {
+            cx = 0;
+            cy = 0;
+            cz = 0;
+        } else {
+            cx = (cx * (volume - change) + change * x) / volume;
+            cy = (cy * (volume - change) + change * y) / volume;
+            cz = (cz * (volume - change) + change * z) / volume;
+        }
     }
     
     /**
