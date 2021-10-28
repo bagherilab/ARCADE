@@ -12,7 +12,7 @@ public class SubstrateHamiltonian implements Hamiltonian {
     final Potts potts;
     
     /** Grid tracking substrate values. */
-    public final int[][] substrate;
+    final int[][] substrate;
     
     /**
      * Creates the substrate energy term for the {@code Potts} Hamiltonian.
@@ -33,7 +33,7 @@ public class SubstrateHamiltonian implements Hamiltonian {
      * @param width  the width (y direction) of potts array
      * @return  the substrate array
      */
-    int[][] createSubstrate(int length, int width) {
+    private int[][] createSubstrate(int length, int width) {
         int[][] arr = new int[length][width];
         
         for (int i = 0; i < length; i++) {
@@ -89,12 +89,10 @@ public class SubstrateHamiltonian implements Hamiltonian {
         
         if (a == null || z != 1) { return 0; }
         
-        int s = 0;
+        double s = 0;
         for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
-                if (!(i == x && j == y)) {
-                    s += -substrate[i][j] * a.getSubstrate();
-                }
+                s += -substrate[i][j] * a.getSubstrate();
             }
         }
         
