@@ -8,10 +8,8 @@ import java.util.Set;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
-import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
-import static arcade.potts.util.PottsEnums.Term;
 
 /**
  * Implementation of {@link CellFactory} for {@link PottsCell} agents.
@@ -29,15 +27,6 @@ public final class PottsCellFactory implements CellFactory {
     /** Map of population to critical heights. */
     HashMap<Integer, Double> popToCriticalHeights;
     
-    /** Map of population to lambda values. */
-    HashMap<Integer, EnumMap<Term, Double>> popToLambdas;
-    
-    /** Map of population to adhesion values. */
-    HashMap<Integer, double[]> popToAdhesion;
-    
-    /** Map of population to substrate adhesion values. */
-    HashMap<Integer, Double> popToSubstrate;
-    
     /** Map of population to parameters. */
     HashMap<Integer, MiniBox> popToParameters;
     
@@ -49,12 +38,6 @@ public final class PottsCellFactory implements CellFactory {
     
     /** Map of population to region critical heights. */
     HashMap<Integer, EnumMap<Region, Double>> popToRegionCriticalHeights;
-    
-    /** Map of population to region lambda values. */
-    HashMap<Integer, EnumMap<Region, EnumMap<Term, Double>>> popToRegionLambdas;
-    
-    /** Map of population to region adhesion values. */
-    HashMap<Integer, EnumMap<Region, EnumMap<Region, Double>>> popToRegionAdhesion;
     
     /** Map of population to list of ids. */
     public final HashMap<Integer, HashSet<Integer>> popToIDs;
@@ -69,15 +52,10 @@ public final class PottsCellFactory implements CellFactory {
         cells = new HashMap<>();
         popToCriticalVolumes = new HashMap<>();
         popToCriticalHeights = new HashMap<>();
-        popToLambdas = new HashMap<>();
-        popToAdhesion = new HashMap<>();
-        popToSubstrate = new HashMap<>();
         popToParameters = new HashMap<>();
         popToRegions = new HashMap<>();
         popToRegionCriticalVolumes = new HashMap<>();
         popToRegionCriticalHeights = new HashMap<>();
-        popToRegionLambdas = new HashMap<>();
-        popToRegionAdhesion = new HashMap<>();
         popToIDs = new HashMap<>();
     }
     
@@ -85,7 +63,7 @@ public final class PottsCellFactory implements CellFactory {
      * {@inheritDoc}
      * <p>
      * Regardless of loader, the population settings are parsed to get critical,
-     * lambda, and adhesion values used for instantiating cells.
+     * values used for instantiating cells.
      */
     @Override
     public void initialize(Series series) {
@@ -191,25 +169,6 @@ public final class PottsCellFactory implements CellFactory {
             popToCriticalVolumes.put(pop, population.getDouble("CRITICAL_VOLUME"));
             popToCriticalHeights.put(pop, population.getDouble("CRITICAL_HEIGHT"));
             
-            // Get lambda values.
-            EnumMap<Term, Double> lambdas = new EnumMap<>(Term.class);
-            for (Term term : Term.values()) {
-                lambdas.put(term, population.getDouble("LAMBDA_" + term.name()));
-            }
-            popToLambdas.put(pop, lambdas);
-            
-            // Get adhesion values.
-            double[] adhesion = new double[keySet.size() + 1];
-            adhesion[0] = population.getDouble("ADHESION" + TARGET_SEPARATOR + "*");
-            for (String p : keySet) {
-                adhesion[series.populations.get(p).getInt("CODE")] =
-                        population.getDouble("ADHESION" + TARGET_SEPARATOR + p);
-            }
-            
-            double substrate = population.getDouble("SUBSTRATE");
-            
-            popToAdhesion.put(pop, adhesion);
-            popToSubstrate.put(pop, substrate);
             popToRegions.put(pop, false);
             
             // Get regions (if they exist).
@@ -220,8 +179,6 @@ public final class PottsCellFactory implements CellFactory {
                 popToRegions.put(pop, true);
                 EnumMap<Region, Double> criticalVolumesReg = new EnumMap<>(Region.class);
                 EnumMap<Region, Double> criticalHeightsReg = new EnumMap<>(Region.class);
-                EnumMap<Region, EnumMap<Term, Double>> lambdasReg = new EnumMap<>(Region.class);
-                EnumMap<Region, EnumMap<Region, Double>> adhesionsReg = new EnumMap<>(Region.class);
                 
                 for (String regionKey : regionKeys) {
                     MiniBox popRegion = population.filter(regionKey);
@@ -229,29 +186,10 @@ public final class PottsCellFactory implements CellFactory {
                     
                     criticalVolumesReg.put(region, popRegion.getDouble("CRITICAL_VOLUME"));
                     criticalHeightsReg.put(region, popRegion.getDouble("CRITICAL_HEIGHT"));
-                    
-                    // Iterate through terms to get lambda values for region.
-                    EnumMap<Term, Double> lambdaRegionTerms = new EnumMap<>(Term.class);
-                    for (Term term : Term.values()) {
-                        lambdaRegionTerms.put(term, popRegion.getDouble("LAMBDA_" + term.name()));
-                    }
-                    lambdasReg.put(region, lambdaRegionTerms);
-                    
-                    // Iterate through regions to get adhesion values.
-                    EnumMap<Region, Double> adhesionRegionValues = new EnumMap<>(Region.class);
-                    
-                    for (String targetKey : regionKeys) {
-                        adhesionRegionValues.put(Region.valueOf(targetKey),
-                                popRegion.getDouble("ADHESION" + TARGET_SEPARATOR + targetKey));
-                    }
-                    
-                    adhesionsReg.put(region, adhesionRegionValues);
                 }
                 
                 popToRegionCriticalVolumes.put(pop, criticalVolumesReg);
                 popToRegionCriticalHeights.put(pop, criticalHeightsReg);
-                popToRegionLambdas.put(pop, lambdasReg);
-                popToRegionAdhesion.put(pop, adhesionsReg);
             }
         }
     }

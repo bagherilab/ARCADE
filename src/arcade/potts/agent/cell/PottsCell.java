@@ -20,7 +20,6 @@ import arcade.potts.env.loc.PottsLocation;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Ordering;
-import static arcade.potts.util.PottsEnums.Term;
 
 /**
  * Implementation of {@link Cell} for potts models.
@@ -37,9 +36,10 @@ import static arcade.potts.util.PottsEnums.Term;
  * <p>
  * Cell parameters are tracked using a map between the parameter name and value.
  * <p>
- * To integrate with the potts layer, {@code PottsCell} agents also contain
- * adhesion to other cell populations, critical and target volumes and surfaces,
- * and lambda values used for potts energy calculations.
+ * To integrate with the Potts layer, {@code PottsCell} agents also contain
+ * critical and target volumes and surfaces.
+ * Additional parameters specific to each term in the Hamiltonian are tracked
+ * by the specific Hamiltonian class instance.
  */
 
 public final class PottsCell implements Cell {
@@ -94,21 +94,6 @@ public final class PottsCell implements Cell {
     /** Critical heights for cell (in voxels) by region. */
     private final EnumMap<Region, Double> criticalRegionHeights;
     
-    /** Lambda parameters for cell. */
-    final EnumMap<Term, Double> lambdas;
-    
-    /** Lambda parameters for cell by region. */
-    final EnumMap<Region, EnumMap<Term, Double>> lambdasRegion;
-    
-    /** Adhesion values for cell. */
-    final double[] adhesion;
-    
-    /** Substrate adhesion for cell. */
-    final double substrate;
-    
-    /** Adhesion values for cell by region. */
-    final EnumMap<Region, EnumMap<Region, Double>> adhesionRegion;
-    
     /** Cell state module. */
     protected Module module;
     
@@ -129,22 +114,14 @@ public final class PottsCell implements Cell {
      * @param parameters  the dictionary of parameters
      * @param criticalVolume  the critical cell volume (in voxels)
      * @param criticalHeight  the critical cell height (in voxels)
-     * @param lambdas  the map of lambda multipliers
-     * @param adhesion  the list of adhesion values
-     * @param substrate  the adhesion to substrate
      * @param criticalRegionVolumes  the map of critical volumes for regions
      * @param criticalRegionHeights  the map of critical heights for regions
-     * @param lambdasRegion  the map of lambda multipliers for regions
-     * @param adhesionRegion  the map of adhesion values for regions
      */
     public PottsCell(int id, int parent, int pop, State state, int age, int divisions,
                      Location location, boolean hasRegions, MiniBox parameters,
                      double criticalVolume, double criticalHeight,
-                     EnumMap<Term, Double> lambdas, double[] adhesion, double substrate,
                      EnumMap<Region, Double> criticalRegionVolumes,
-                     EnumMap<Region, Double> criticalRegionHeights,
-                     EnumMap<Region, EnumMap<Term, Double>> lambdasRegion,
-                     EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
+                     EnumMap<Region, Double> criticalRegionHeights) {
         this.id = id;
         this.parent = parent;
         this.pop = pop;
@@ -155,29 +132,17 @@ public final class PottsCell implements Cell {
         this.parameters = parameters;
         this.criticalVolume = criticalVolume;
         this.criticalHeight = criticalHeight;
-        this.lambdas = lambdas.clone();
-        this.adhesion = adhesion.clone();
-        this.substrate = substrate;
         
         setState(state);
         
         if (hasRegions) {
             this.criticalRegionVolumes = criticalRegionVolumes.clone();
             this.criticalRegionHeights = criticalRegionHeights.clone();
-            this.lambdasRegion = new EnumMap<>(Region.class);
-            this.adhesionRegion = new EnumMap<>(Region.class);
             this.targetRegionVolumes = new EnumMap<>(Region.class);
             this.targetRegionSurfaces = new EnumMap<>(Region.class);
-            
-            for (Region region : location.getRegions()) {
-                this.lambdasRegion.put(region, lambdasRegion.get(region).clone());
-                this.adhesionRegion.put(region, adhesionRegion.get(region).clone());
-            }
         } else {
             this.criticalRegionVolumes = null;
             this.criticalRegionHeights = null;
-            this.lambdasRegion = null;
-            this.adhesionRegion = null;
             this.targetRegionVolumes = null;
             this.targetRegionSurfaces = null;
         }
@@ -298,56 +263,6 @@ public final class PottsCell implements Cell {
                 : 0);
     }
     
-    /**
-     * Gets the lambda for the given term.
-     *
-     * @param term  the term of the Hamiltonian
-     * @return  the lambda value
-     */
-    public double getLambda(Term term) { return lambdas.get(term); }
-    
-    /**
-     * Gets the lambda for the given term and region.
-     *
-     * @param term  the term of the Hamiltonian
-     * @param region  the region
-     * @return  the lambda value
-     */
-    public double getLambda(Term term, Region region) {
-        return (hasRegions && lambdasRegion.containsKey(region)
-                ? lambdasRegion.get(region).get(term)
-                : Double.NaN);
-    }
-    
-    /**
-     * Gets the adhesion to a cell of the given population.
-     *
-     * @param target  the target cell population
-     * @return  the adhesion value
-     */
-    public double getAdhesion(int target) { return adhesion[target]; }
-    
-    /**
-     * Gets the adhesion between two regions.
-     *
-     * @param region1  the first region
-     * @param region2  the second region
-     * @return  the adhesion value
-     */
-    public double getAdhesion(Region region1, Region region2) {
-        return (hasRegions && adhesionRegion.containsKey(region1)
-                    && adhesionRegion.containsKey(region2)
-                ? adhesionRegion.get(region1).get(region2)
-                : Double.NaN);
-    }
-    
-    /**
-     * Gets the substrate adhesion.
-     *
-     * @return  the substrate adhesion value.
-     */
-    public double getSubstrate() { return substrate; }
-    
     @Override
     public void stop() { stopper.stop(); }
     
@@ -356,8 +271,7 @@ public final class PottsCell implements Cell {
         divisions++;
         return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,
                 hasRegions, parameters, criticalVolume, criticalHeight,
-                lambdas, adhesion, substrate, criticalRegionVolumes, criticalRegionHeights,
-                lambdasRegion, adhesionRegion);
+                criticalRegionVolumes, criticalRegionHeights);
     }
     
     @Override
