@@ -33,11 +33,17 @@ public final class PottsEnums {
     
     /** Potts energy terms. */
     public enum Term {
+        /** Code for adhesion term. */
+        ADHESION,
+        
         /** Code for volume term. */
         VOLUME,
         
         /** Code for surface term. */
         SURFACE,
+        
+        /** Code for substrate term. */
+        SUBSTRATE,
     }
     
     /** Module phase codes. */

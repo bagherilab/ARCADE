@@ -2,6 +2,7 @@ package arcade.potts.sim.hamiltonian;
 
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
 
 /**
  * Implementation of {@link Hamiltonian} for substrate energy.
@@ -18,12 +19,23 @@ public class SubstrateHamiltonian implements Hamiltonian {
      * Creates the substrate energy term for the {@code Potts} Hamiltonian.
      *
      * @param potts  the associated Potts instance
+     * @param series  the associated Series instance
      */
-    public SubstrateHamiltonian(Potts potts) {
+    public SubstrateHamiltonian(Potts potts, PottsSeries series) {
         this.potts = potts;
         
         // Initialize substrate array.
         this.substrate = createSubstrate(potts.length + 2, potts.width + 2);
+    }
+    
+    @Override
+    public void register(PottsCell cell) {
+        // TODO write method body
+    }
+    
+    @Override
+    public void deregister(PottsCell cell) {
+        // TODO write method body
     }
     
     /**
@@ -92,7 +104,7 @@ public class SubstrateHamiltonian implements Hamiltonian {
         double s = 0;
         for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
-                s += -substrate[i][j] * a.getSubstrate();
+                s += -substrate[i][j] * 0; // TODO get substrate value from config
             }
         }
         

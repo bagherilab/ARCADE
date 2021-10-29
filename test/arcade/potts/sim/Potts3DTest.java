@@ -1,9 +1,6 @@
 package arcade.potts.sim;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian3D;
@@ -14,6 +11,7 @@ import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 import static org.junit.Assert.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
+import static arcade.potts.util.PottsEnums.Term;
 
 public class Potts3DTest {
     static Potts3D potts;
@@ -217,22 +215,37 @@ public class Potts3DTest {
     }
     
     @Test
-    public void constructor_called_setsTerms() {
+    public void getHamiltonian_validTerm_instantiatesObject() {
         PottsSeries series = makeSeries(1, 1, 1, 1, 1);
         Potts3D potts3D = new Potts3D(series);
         
-        ArrayList<Object> expected = new ArrayList<>();
-        expected.add(AdhesionHamiltonian3D.class);
-        expected.add(VolumeHamiltonian.class);
-        expected.add(SurfaceHamiltonian3D.class);
-        expected.add(SubstrateHamiltonian.class);
+        Hamiltonian h;
         
-        Object[] classes = potts3D.hamiltonian.stream().map(Hamiltonian::getClass).toArray();
-        List<Object> returned = Arrays.asList(classes);
+        h = potts3D.getHamiltonian(Term.ADHESION, series);
+        assertTrue(h instanceof AdhesionHamiltonian3D);
         
-        assertEquals(expected.size(), returned.size());
-        assertTrue(expected.containsAll(returned));
-        assertTrue(returned.containsAll(expected));
+        h = potts3D.getHamiltonian(Term.VOLUME, series);
+        assertTrue(h instanceof VolumeHamiltonian);
+        
+        h = potts3D.getHamiltonian(Term.SURFACE, series);
+        assertTrue(h instanceof SurfaceHamiltonian3D);
+        
+        h = potts3D.getHamiltonian(Term.SUBSTRATE, series);
+        assertTrue(h instanceof SubstrateHamiltonian);
+        
+        h = potts3D.getHamiltonian(Term.UNDEFINED, series);
+        assertTrue(h instanceof SubstrateHamiltonian);
+    }
+    
+    @Test
+    public void getHamiltonian_invalidTerm_returnsNull() {
+        PottsSeries series = makeSeries(1, 1, 1, 1, 1);
+        Potts3D potts3D = new Potts3D(series);
+        
+        Hamiltonian h;
+        
+        h = potts3D.getHamiltonian(Term.UNDEFINED, series);
+        assertNull(h);
     }
     
     @Test

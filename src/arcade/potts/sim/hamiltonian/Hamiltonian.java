@@ -1,5 +1,7 @@
 package arcade.potts.sim.hamiltonian;
 
+import arcade.potts.agent.cell.PottsCell;
+
 /**
  * A {@code Hamiltonian} object represents a term in the CPM Hamiltonian equation.
  * <p>
@@ -10,6 +12,20 @@ package arcade.potts.sim.hamiltonian;
  */
 
 public interface Hamiltonian {
+    /**
+     * Register the configuration for the cell instance.
+     *
+     * @param cell  the cell instance
+     */
+    void register(PottsCell cell);
+    
+    /**
+     * Deregister the configuration for the cell instance.
+     *
+     * @param cell  the cell instance
+     */
+    void deregister(PottsCell cell);
+    
     /**
      * Gets change in energy.
      *

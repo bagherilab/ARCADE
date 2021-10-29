@@ -1,6 +1,8 @@
 package arcade.potts.sim.hamiltonian;
 
+import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
 
 /**
  * Implementation of {@link Hamiltonian} for adhesion energy.
@@ -14,8 +16,21 @@ public abstract class AdhesionHamiltonian implements Hamiltonian {
      * Creates the adhesion energy term for the {@code Potts} Hamiltonian.
      *
      * @param potts  the associated Potts instance
+     * @param series  the associated Series instance
      */
-    public AdhesionHamiltonian(Potts potts) { this.potts = potts; }
+    public AdhesionHamiltonian(Potts potts, PottsSeries series) {
+        this.potts = potts;
+    }
+    
+    @Override
+    public void register(PottsCell cell) {
+        // TODO write method body
+    }
+    
+    @Override
+    public void deregister(PottsCell cell) {
+        // TODO write method body
+    }
     
     /**
      * {@inheritDoc}

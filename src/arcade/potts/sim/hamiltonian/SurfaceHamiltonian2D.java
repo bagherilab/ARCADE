@@ -1,6 +1,7 @@
 package arcade.potts.sim.hamiltonian;
 
 import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
 import static arcade.potts.sim.Potts2D.MOVES_X;
 import static arcade.potts.sim.Potts2D.MOVES_Y;
 import static arcade.potts.sim.Potts2D.NUMBER_NEIGHBORS;
@@ -14,8 +15,9 @@ public class SurfaceHamiltonian2D extends SurfaceHamiltonian {
      * Creates the surface energy term for the {@code Potts} Hamiltonian in 2D.
      *
      * @param potts  the associated Potts instance
+     * @param series  the associated Series instance
      */
-    public SurfaceHamiltonian2D(Potts potts) { super(potts); }
+    public SurfaceHamiltonian2D(Potts potts, PottsSeries series) { super(potts, series); }
     
     @Override
     int[] calculateChange(int sourceID, int targetID, int x, int y, int z) {

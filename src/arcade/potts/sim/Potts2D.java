@@ -1,9 +1,11 @@
 package arcade.potts.sim;
 
 import java.util.HashSet;
+import arcade.potts.sim.hamiltonian.Hamiltonian;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian2D;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian2D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
+import static arcade.potts.util.PottsEnums.Term;
 
 /**
  * Extension of {@link Potts} for 2D.
@@ -30,13 +32,20 @@ public final class Potts2D extends Potts {
      *
      * @param series  the simulation series
      */
-    public Potts2D(PottsSeries series) {
-        super(series);
-        
-        // Add hamiltonian terms.
-        hamiltonian.add(new AdhesionHamiltonian2D(this));
-        hamiltonian.add(new VolumeHamiltonian(this));
-        hamiltonian.add(new SurfaceHamiltonian2D(this));
+    public Potts2D(PottsSeries series) { super(series); }
+    
+    @Override
+    Hamiltonian getHamiltonian(Term term, PottsSeries series) {
+        switch (term) {
+            case ADHESION:
+                return new AdhesionHamiltonian2D(this, series);
+            case VOLUME:
+                return new VolumeHamiltonian(this, series);
+            case SURFACE:
+                return new SurfaceHamiltonian2D(this, series);
+            default:
+                return null;
+        }
     }
     
     @Override

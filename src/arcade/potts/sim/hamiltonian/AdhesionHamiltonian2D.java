@@ -2,6 +2,7 @@ package arcade.potts.sim.hamiltonian;
 
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
 import static arcade.core.util.Enums.Region;
 
 /**
@@ -16,8 +17,9 @@ public class AdhesionHamiltonian2D extends AdhesionHamiltonian {
      * Creates the adhesion energy term for the {@code Potts} Hamiltonian in 2D.
      *
      * @param potts  the associated Potts instance
+     * @param series  the associated Series instance
      */
-    public AdhesionHamiltonian2D(Potts potts) { super(potts); }
+    public AdhesionHamiltonian2D(Potts potts, PottsSeries series) { super(potts, series); }
     
     @Override
     double getAdhesion(int id, int x, int y, int z) {
@@ -29,11 +31,11 @@ public class AdhesionHamiltonian2D extends AdhesionHamiltonian {
                 if (!(i == x && j == y) && potts.ids[z][i][j] != id) {
                     PottsCell b = potts.getCell(potts.ids[z][i][j]);
                     if (a == null) {
-                        h += b.getAdhesion(0);
+                        h += 0; // TODO get adhesion of B:0 from config
                     } else if (b == null) {
-                        h += a.getAdhesion(0);
+                        h += 0; // TODO get adhesion of A:0 from config
                     } else {
-                        h += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop())) / 2.0;
+                        h += 0; // TODO get adhesion of A:B from config
                     }
                 }
             }
@@ -53,7 +55,7 @@ public class AdhesionHamiltonian2D extends AdhesionHamiltonian {
                 Region xy = Region.values()[potts.regions[z][i][j]];
                 if (!(i == x && j == y) && potts.ids[z][i][j] == id && xy != region
                         && xy != Region.UNDEFINED && xy != Region.DEFAULT) {
-                    h += (c.getAdhesion(region, xy) + c.getAdhesion(xy, region)) / 2.0;
+                    h += 0; // TODO get adhesion of regions from substrate
                 }
             }
         }

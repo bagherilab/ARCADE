@@ -2,8 +2,8 @@ package arcade.potts.sim.hamiltonian;
 
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
 import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Term;
 
 /**
  * Implementation of {@link Hamiltonian} for surface energy.
@@ -17,8 +17,21 @@ public abstract class SurfaceHamiltonian implements Hamiltonian {
      * Creates the surface energy term for the {@code Potts} Hamiltonian.
      *
      * @param potts  the associated Potts instance
+     * @param series  the associated Series instance
      */
-    public SurfaceHamiltonian(Potts potts) { this.potts = potts; }
+    public SurfaceHamiltonian(Potts potts, PottsSeries series) {
+        this.potts = potts;
+    }
+    
+    @Override
+    public void register(PottsCell cell) {
+        // TODO write method body
+    }
+    
+    @Override
+    public void deregister(PottsCell cell) {
+        // TODO write method body
+    }
     
     /**
      * {@inheritDoc}
@@ -89,7 +102,7 @@ public abstract class SurfaceHamiltonian implements Hamiltonian {
         PottsCell c = potts.getCell(id);
         double surface = c.getSurface();
         double targetSurface = c.getTargetSurface();
-        double lambda = c.getLambda(Term.SURFACE);
+        double lambda = 0; // TODO get lambda from config
         return lambda * Math.pow((surface - targetSurface + change), 2);
     }
     
@@ -107,7 +120,7 @@ public abstract class SurfaceHamiltonian implements Hamiltonian {
         PottsCell c = potts.getCell(id);
         double surface = c.getSurface(region);
         double targetSurface = c.getTargetSurface(region);
-        double lambda = c.getLambda(Term.SURFACE, region);
+        double lambda = 0;// TODO get region lambda from config
         return lambda * Math.pow((surface - targetSurface + change), 2);
     }
 }

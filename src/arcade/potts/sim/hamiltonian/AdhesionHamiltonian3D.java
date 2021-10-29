@@ -2,6 +2,7 @@ package arcade.potts.sim.hamiltonian;
 
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
 import static arcade.core.util.Enums.Region;
 
 /**
@@ -16,8 +17,9 @@ public class AdhesionHamiltonian3D extends AdhesionHamiltonian {
      * Creates the adhesion energy term for the {@code Potts} Hamiltonian in 3D.
      *
      * @param potts  the associated Potts instance
+     * @param series  the associated Series instance
      */
-    public AdhesionHamiltonian3D(Potts potts) { super(potts); }
+    public AdhesionHamiltonian3D(Potts potts, PottsSeries series) { super(potts, series); }
     
     @Override
     double getAdhesion(int id, int x, int y, int z) {
@@ -30,11 +32,11 @@ public class AdhesionHamiltonian3D extends AdhesionHamiltonian {
                     if (!(k == z && i == x && j == y) && potts.ids[k][i][j] != id) {
                         PottsCell b = potts.getCell(potts.ids[k][i][j]);
                         if (a == null) {
-                            h += b.getAdhesion(0);
+                            h += 0; // TODO get adhesion of B:0 from config
                         } else if (b == null) {
-                            h += a.getAdhesion(0);
+                            h += 0; // TODO get adhesion of A:0 from config
                         } else {
-                            h += (a.getAdhesion(b.getPop()) + b.getAdhesion(a.getPop())) / 2.0;
+                            h += 0; // TODO get adhesion of A:B from config
                         }
                     }
                 }
@@ -56,7 +58,7 @@ public class AdhesionHamiltonian3D extends AdhesionHamiltonian {
                     Region xyz = Region.values()[potts.regions[k][i][j]];
                     if (!(k == z && i == x && j == y) && potts.ids[k][i][j] == id && region != xyz
                             && xyz != Region.UNDEFINED && xyz != Region.DEFAULT) {
-                        h += (c.getAdhesion(region, xyz) + c.getAdhesion(xyz, region)) / 2.0;
+                        h += 0; // TODO get adhesion of regions from substrate
                     }
                 }
             }

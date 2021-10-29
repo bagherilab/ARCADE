@@ -1,6 +1,7 @@
 package arcade.potts.sim;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import org.junit.Test;
@@ -21,6 +22,7 @@ import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.sim.Potts.REFERENCE_HEIGHT;
 import static arcade.potts.sim.Potts.REFERENCE_VOLUME;
+import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsTest {
     private static final double EPSILON = 1E-10;
@@ -31,6 +33,11 @@ public class PottsTest {
     
     static class PottsMock extends Potts {
         PottsMock(PottsSeries series) { super(series); }
+        
+        @Override
+        Hamiltonian getHamiltonian(Term term, PottsSeries series) {
+            return mock(Hamiltonian.class);
+        }
         
         @Override
         double getRatio(double volume, double height) {
@@ -88,6 +95,7 @@ public class PottsTest {
     
     static PottsSeries makeSeries(int length, int width, int height, double ds, double dt) {
         PottsSeries series = makeSeries();
+        series.terms = new ArrayList<>();
         
         try {
             Field lengthField = Series.class.getDeclaredField("length");
@@ -299,6 +307,72 @@ public class PottsTest {
         
         PottsMock pottsMock = new PottsMock(series);
         assertTrue(pottsMock.hasRegions);
+    }
+    
+    @Test
+    public void constructor_withoutTerms_createEmpty() {
+        PottsSeries series = makeSeries(0, 0, 0);
+        PottsMock pottsMock = spy(new PottsMock(series));
+        assertNotNull(pottsMock.hamiltonian);
+        assertEquals(0, pottsMock.hamiltonian.size());
+    }
+    
+    @Test
+    public void constructor_withTerms_createsList() {
+        PottsSeries series = makeSeries(0, 0, 0);
+        
+        int n = randomIntBetween(3, 10);
+        ArrayList<Term> terms = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            terms.add(mock(Term.class));
+        }
+        
+        series.terms = terms;
+        PottsMock pottsMock = spy(new PottsMock(series));
+        
+        assertEquals(n, pottsMock.hamiltonian.size());
+    }
+    
+    @Test
+    public void register_called_callsMethods() {
+        PottsSeries series = makeSeries(0, 0, 0);
+        PottsMock pottsMock = new PottsMock(series);
+        ArrayList<Hamiltonian> hamiltonian = new ArrayList<>();
+        
+        int n = randomIntBetween(3, 10);
+        for (int i = 0; i < n; i++) {
+            Hamiltonian h = mock(Hamiltonian.class);
+            pottsMock.hamiltonian.add(h);
+            hamiltonian.add(h);
+        }
+        
+        PottsCell cell = mock(PottsCell.class);
+        pottsMock.register(cell);
+        
+        for (int i = 0; i < n; i++) {
+            verify(hamiltonian.get(i)).register(cell);
+        }
+    }
+    
+    @Test
+    public void deregister_called_callsMethods() {
+        PottsSeries series = makeSeries(0, 0, 0);
+        PottsMock pottsMock = new PottsMock(series);
+        ArrayList<Hamiltonian> hamiltonian = new ArrayList<>();
+        
+        int n = randomIntBetween(3, 10);
+        for (int i = 0; i < n; i++) {
+            Hamiltonian h = mock(Hamiltonian.class);
+            pottsMock.hamiltonian.add(h);
+            hamiltonian.add(h);
+        }
+        
+        PottsCell cell = mock(PottsCell.class);
+        pottsMock.deregister(cell);
+        
+        for (int i = 0; i < n; i++) {
+            verify(hamiltonian.get(i)).deregister(cell);
+        }
     }
     
     @Test

@@ -2,8 +2,8 @@ package arcade.potts.sim.hamiltonian;
 
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
 import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Term;
 
 /**
  * Implementation of {@link Hamiltonian} for volume energy.
@@ -17,8 +17,21 @@ public class VolumeHamiltonian implements Hamiltonian {
      * Creates the volume energy term for the {@code Potts} Hamiltonian.
      *
      * @param potts  the associated Potts instance
+     * @param series  the associated Series instance
      */
-    public VolumeHamiltonian(Potts potts) { this.potts = potts; }
+    public VolumeHamiltonian(Potts potts, PottsSeries series) {
+            this.potts = potts;
+        }
+    
+    @Override
+    public void register(PottsCell cell) {
+        // TODO write method body
+    }
+
+    @Override
+    public void deregister(PottsCell cell) {
+        // TODO write method body
+    }
     
     /**
      * {@inheritDoc}
@@ -50,7 +63,6 @@ public class VolumeHamiltonian implements Hamiltonian {
         return target + source;
     }
     
-    
     /**
      * Gets volume energy for a given change in volume.
      *
@@ -63,7 +75,7 @@ public class VolumeHamiltonian implements Hamiltonian {
         PottsCell c = potts.getCell(id);
         double volume = c.getVolume();
         double targetVolume = c.getTargetVolume();
-        double lambda = c.getLambda(Term.VOLUME);
+        double lambda = 0; // TODO get lambda from config
         return lambda * Math.pow((volume - targetVolume + change), 2);
     }
     
@@ -81,7 +93,7 @@ public class VolumeHamiltonian implements Hamiltonian {
         PottsCell c = potts.getCell(id);
         double volume = c.getVolume(region);
         double targetVolume = c.getTargetVolume(region);
-        double lambda = c.getLambda(Term.VOLUME, region);
+        double lambda = 0; // TODO get region lambda from config
         return lambda * Math.pow((volume - targetVolume + change), 2);
     }
 }

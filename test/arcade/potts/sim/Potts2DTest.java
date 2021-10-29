@@ -1,9 +1,6 @@
 package arcade.potts.sim;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian2D;
@@ -13,6 +10,7 @@ import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 import static org.junit.Assert.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
+import static arcade.potts.util.PottsEnums.Term;
 
 public class Potts2DTest {
     static Potts2D potts;
@@ -91,21 +89,37 @@ public class Potts2DTest {
     }
     
     @Test
-    public void constructor_called_setsTerms() {
+    public void getHamiltonian_validTerm_instantiatesObject() {
         PottsSeries series = makeSeries(1, 1, 1, 1, 1);
         Potts2D potts2D = new Potts2D(series);
         
-        ArrayList<Object> expected = new ArrayList<>();
-        expected.add(AdhesionHamiltonian2D.class);
-        expected.add(VolumeHamiltonian.class);
-        expected.add(SurfaceHamiltonian2D.class);
+        Hamiltonian h;
         
-        Object[] classes = potts2D.hamiltonian.stream().map(Hamiltonian::getClass).toArray();
-        List<Object> returned = Arrays.asList(classes);
+        h = potts2D.getHamiltonian(Term.ADHESION, series);
+        assertTrue(h instanceof AdhesionHamiltonian2D);
         
-        assertEquals(expected.size(), returned.size());
-        assertTrue(expected.containsAll(returned));
-        assertTrue(returned.containsAll(expected));
+        h = potts2D.getHamiltonian(Term.VOLUME, series);
+        assertTrue(h instanceof VolumeHamiltonian);
+        
+        h = potts2D.getHamiltonian(Term.SURFACE, series);
+        assertTrue(h instanceof SurfaceHamiltonian2D);
+    
+        h = potts2D.getHamiltonian(Term.SUBSTRATE, series);
+        assertNull(h);
+    }
+    
+    @Test
+    public void getHamiltonian_invalidTerm_returnsNull() {
+        PottsSeries series = makeSeries(1, 1, 1, 1, 1);
+        Potts2D potts2D = new Potts2D(series);
+        
+        Hamiltonian h;
+        
+        h = potts2D.getHamiltonian(Term.SUBSTRATE, series);
+        assertNull(h);
+    
+        h = potts2D.getHamiltonian(Term.UNDEFINED, series);
+        assertNull(h);
     }
     
     @Test

@@ -10,6 +10,7 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
 import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Term;
 
 /**
  * Cellular Potts Model (CPM) implementation.
@@ -101,7 +102,40 @@ public abstract class Potts implements Steppable {
         
         // Initialize hamiltonian list.
         hamiltonian = new ArrayList<>();
+        series.terms.stream()
+                .map(term -> getHamiltonian(term, series))
+                .forEach(h -> hamiltonian.add(h));
     }
+    
+    /**
+     * Registers the cell to all Hamiltonian term instances.
+     * 
+     * @param cell  the cell instance
+     */
+    public void register(PottsCell cell) {
+        for (Hamiltonian h : hamiltonian) {
+            h.register(cell);
+        }
+    }
+    
+    /**
+     * Deregisters the cell from all Hamiltonian term instances.
+     *
+     * @param cell  the cell instance
+     */
+    public void deregister(PottsCell cell) {
+        for (Hamiltonian h : hamiltonian) {
+            h.deregister(cell);
+        }
+    }
+    
+    /**
+     * Gets instance of selected Hamiltonian term.
+     * 
+     * @param term  the Hamiltonian term
+     * @return  the Hamiltonian instance
+     */
+    abstract Hamiltonian getHamiltonian(Term term, PottsSeries series);
     
     /**
      * Steps through array updates for Monte Carlo step.
