@@ -234,7 +234,7 @@ public class Potts3DTest {
         assertTrue(h instanceof SubstrateHamiltonian);
         
         h = potts3D.getHamiltonian(Term.UNDEFINED, series);
-        assertTrue(h instanceof SubstrateHamiltonian);
+        assertNull(h);
     }
     
     @Test

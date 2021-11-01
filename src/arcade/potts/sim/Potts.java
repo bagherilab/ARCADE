@@ -102,9 +102,11 @@ public abstract class Potts implements Steppable {
         
         // Initialize hamiltonian list.
         hamiltonian = new ArrayList<>();
-        series.terms.stream()
-                .map(term -> getHamiltonian(term, series))
-                .forEach(h -> hamiltonian.add(h));
+        if (series.terms != null) {
+            series.terms.stream()
+                    .map(term -> getHamiltonian(term, series))
+                    .forEach(h -> hamiltonian.add(h));
+        }
     }
     
     /**

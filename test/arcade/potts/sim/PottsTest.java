@@ -36,7 +36,9 @@ public class PottsTest {
         
         @Override
         Hamiltonian getHamiltonian(Term term, PottsSeries series) {
-            return mock(Hamiltonian.class);
+            Hamiltonian hamiltonian = mock(Hamiltonian.class);
+            doReturn(term.name()).when(hamiltonian).toString();
+            return hamiltonian;
         }
         
         @Override
@@ -324,13 +326,19 @@ public class PottsTest {
         int n = randomIntBetween(3, 10);
         ArrayList<Term> terms = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            terms.add(mock(Term.class));
+            Term term = mock(Term.class);
+            doReturn("term" + i).when(term).name();
+            terms.add(term);
         }
         
         series.terms = terms;
         PottsMock pottsMock = spy(new PottsMock(series));
         
         assertEquals(n, pottsMock.hamiltonian.size());
+        for (int i = 0; i < n; i++) {
+            String termName = terms.get(i).name();
+            assertEquals(termName, pottsMock.hamiltonian.get(i).toString());
+        }
     }
     
     @Test
