@@ -321,6 +321,46 @@ public class BoxTest {
     }
     
     @Test
+    public void filterBox_noTags_returnsEmpty() {
+        Box box = new Box();
+        
+        String id1 = randomString();
+        String id2 = randomString();
+        
+        String tag1 = randomString();
+        String tag2 = randomString();
+        
+        box.addTag(id1, tag2);
+        box.addTag(id2, tag2);
+        
+        HashSet<String> filtered = box.filterTags(tag1);
+        
+        assertEquals(0, filtered.size());
+    }
+    
+    @Test
+    public void filterBox_withTags_returnsLists() {
+        Box box = new Box();
+        
+        String id1 = randomString();
+        String id2 = randomString();
+        String id3 = randomString();
+        
+        String tag1 = randomString();
+        String tag2 = randomString();
+        
+        box.addTag(id1, tag1);
+        box.addTag(id2, tag2);
+        box.addTag(id3, tag2);
+        
+        HashSet<String> filtered = box.filterTags(tag2);
+        
+        assertEquals(2, filtered.size());
+        assertTrue(filtered.contains(id2));
+        assertTrue(filtered.contains(id3));
+    }
+    
+    @Test
     public void filterBoxByTag_invalidTag_returnsEmpty() {
            Box box = new Box();
            

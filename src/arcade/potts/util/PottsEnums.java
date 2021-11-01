@@ -33,6 +33,9 @@ public final class PottsEnums {
     
     /** Potts energy terms. */
     public enum Term {
+        /** Code for undefined term. */
+        UNDEFINED,
+        
         /** Code for adhesion term. */
         ADHESION,
         
@@ -44,6 +47,19 @@ public final class PottsEnums {
         
         /** Code for substrate term. */
         SUBSTRATE,
+        
+        /** Code for persistence term. */
+        PERSISTENCE;
+        
+        /**
+         * Randomly selects a {@code Term}.
+         *
+         * @param rng  the random number generator
+         * @return  a random {@code Term}
+         */
+        public static Term random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
     }
     
     /** Module phase codes. */

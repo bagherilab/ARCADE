@@ -7,6 +7,7 @@ import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import static arcade.core.util.Box.KEY_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.util.PottsEnums.Term;
 
 /**
  * Simulation manager for {@link PottsSimulation} instances.
@@ -15,6 +16,9 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 public final class PottsSeries extends Series {
     /** Map of potts settings. */
     public MiniBox potts;
+    
+    /** List of Hamiltonian terms. */
+    public ArrayList<Term> terms;
     
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
@@ -49,11 +53,6 @@ public final class PottsSeries extends Series {
      */
     @Override
     protected void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters) {
-        // Initialize potts.
-        MiniBox pottsDefaults = parameters.getIdValForTag("POTTS");
-        ArrayList<Box> pottsBox = setupLists.get("potts");
-        updatePotts(pottsBox, pottsDefaults);
-        
         // Initialize populations.
         MiniBox populationDefaults = parameters.getIdValForTag("POPULATION");
         MiniBox populationConversions = parameters.getIdValForTagAtt("POPULATION", "conversion");
@@ -74,6 +73,12 @@ public final class PottsSeries extends Series {
         MiniBox componentDefaults = parameters.getIdValForTag("COMPONENT");
         ArrayList<Box> componentsBox = setupLists.get("components");
         updateComponents(componentsBox, componentDefaults);
+        
+        // Initialize potts.
+        MiniBox pottsDefaults = parameters.getIdValForTag("POTTS");
+        MiniBox pottsConversions = parameters.getIdValForTagAtt("POTTS", "conversion");
+        ArrayList<Box> pottsBox = setupLists.get("potts");
+        updatePotts(pottsBox, pottsDefaults, pottsConversions);
     }
     
     /**
@@ -82,7 +87,8 @@ public final class PottsSeries extends Series {
      * @param pottsBox  the potts setup dictionary
      * @param pottsDefaults  the dictionary of default potts parameters
      */
-    void updatePotts(ArrayList<Box> pottsBox, MiniBox pottsDefaults) {
+    void updatePotts(ArrayList<Box> pottsBox, MiniBox pottsDefaults,
+                     MiniBox pottsConversions) {
         this.potts = new MiniBox();
         
         Box box = new Box();
@@ -100,6 +106,48 @@ public final class PottsSeries extends Series {
         for (String parameter : pottsDefaults.getKeys()) {
             parseParameter(this.potts, parameter, pottsDefaults.get(parameter),
                     parameterValues, parameterScales);
+            
+            if (parameter.contains(TAG_SEPARATOR)) {
+                for (String pop : populations.keySet()) {
+                    parseParameter(this.potts, parameter + TARGET_SEPARATOR + pop,
+                            this.potts.get(parameter), parameterValues, parameterScales);
+                }
+            }
+        }
+        
+        // Add adhesion values for each population and media (*). Values
+        // are set as equal to the default (or adjusted) value, before
+        // any specific values or scaling is applied.
+        for (String source : populations.keySet()) {
+            String adhesion = "adhesion/ADHESION" + TARGET_SEPARATOR + source;
+            parseParameter(this.potts, adhesion + TARGET_SEPARATOR + "*",
+                    this.potts.get(adhesion), parameterValues, parameterScales);
+            
+            for (String target : populations.keySet()) {
+                parseParameter(this.potts, adhesion + TARGET_SEPARATOR + target,
+                        this.potts.get(adhesion), parameterValues, parameterScales);
+            }
+        }
+        
+        // TODO parse region parameters
+        
+        // Apply conversion factors.
+        for (String convert : pottsConversions.getKeys()) {
+            double conversion = parseConversion(pottsConversions.get(convert), ds, dt);
+            this.potts.put(convert, this.potts.getDouble(convert) * conversion);
+            
+            if (convert.contains(TAG_SEPARATOR)) {
+                for (String pop : populations.keySet()) {
+                    String convertPop = convert + TARGET_SEPARATOR + pop;
+                    this.potts.put(convertPop, this.potts.getDouble(convertPop) * conversion);
+                }
+            }
+        }
+        
+        // Get list of terms.
+        this.terms = new ArrayList<>();
+        for (String term : box.filterTags("TERM")) {
+            terms.add(Term.valueOf(term.toUpperCase()));
         }
     }
     
@@ -108,13 +156,6 @@ public final class PottsSeries extends Series {
                                      MiniBox populationConversions) {
         this.populations = new HashMap<>();
         if (populationsBox == null) { return; }
-        
-        // Get list of all populations (plus * indicating media).
-        String[] pops = new String[populationsBox.size() + 1];
-        pops[0] = "*";
-        for (int i = 0; i < populationsBox.size(); i++) {
-            pops[i + 1] = populationsBox.get(i).getValue("id");
-        }
         
         // Assign codes to each population.
         int code = 1;
@@ -143,14 +184,6 @@ public final class PottsSeries extends Series {
             for (String parameter : populationDefaults.getKeys()) {
                 parseParameter(population, parameter, populationDefaults.get(parameter),
                         parameterValues, parameterScales);
-            }
-            
-            // Add adhesion values for each population and media (*). Values
-            // are set as equal to the default (or adjusted) value, before
-            // any specific values or scaling is applied.
-            for (String target : pops) {
-                parseParameter(population, "ADHESION" + TARGET_SEPARATOR + target,
-                        population.get("ADHESION"), parameterValues, parameterScales);
             }
             
             // Get list of regions.

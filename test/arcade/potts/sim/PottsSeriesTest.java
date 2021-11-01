@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import ec.util.MersenneTwisterFast;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import arcade.core.sim.Series;
@@ -15,10 +16,11 @@ import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsSeriesTest {
     private static final double EPSILON = 1E-10;
-    private static final double DS = randomDoubleBetween(1, 10);
+    private static final double DS = randomDoubleBetween(2, 10);
     private static final double DT = randomDoubleBetween(0.5, 2);
     private static final Box PARAMETERS = new Box();
     
@@ -28,13 +30,32 @@ public class PottsSeriesTest {
     private static final String MODULE_ID_1 = randomString().toLowerCase();
     private static final String MODULE_ID_2 = randomString().toLowerCase();
     
+    private static final String TERM_ID_1 = randomString().toLowerCase();
+    private static final String TERM_ID_2 = randomString().toLowerCase();
+    
+    private static final String TERM_ADHESION_PARAMETER = "adhesion" + TAG_SEPARATOR + "ADHESION";
+    
     private static final String[] POTTS_PARAMETER_NAMES = new String[] {
+            TERM_ADHESION_PARAMETER,
             "POTTS_PARAMETER_1",
             "POTTS_PARAMETER_2",
-            "POTTS_PARAMETER_3"
+            "POTTS_PARAMETER_3",
+            TERM_ID_1 + TAG_SEPARATOR + "TERM_PARAMETER_11",
+            TERM_ID_1 + TAG_SEPARATOR + "TERM_PARAMETER_12",
+            TERM_ID_2 + TAG_SEPARATOR + "TERM_PARAMETER_21",
+    };
+    
+    private static final String[] POTTS_PARAMETER_TERM_NAMES = new String[] {
+            POTTS_PARAMETER_NAMES[4],
+            POTTS_PARAMETER_NAMES[5],
+            POTTS_PARAMETER_NAMES[6],
     };
     
     private static final double[] POTTS_PARAMETER_VALUES = new double[] {
+            randomIntBetween(1, 100),
+            randomIntBetween(1, 100),
+            randomIntBetween(1, 100),
+            randomIntBetween(1, 100),
             randomIntBetween(1, 100),
             randomIntBetween(1, 100),
             randomIntBetween(1, 100),
@@ -43,7 +64,6 @@ public class PottsSeriesTest {
     private static final int POTTS_PARAMETER_COUNT = POTTS_PARAMETER_NAMES.length;
     
     private static final String[] POPULATION_PARAMETER_NAMES = new String[] {
-            "ADHESION",
             "POPULATION_PARAMETER_1",
             "POPULATION_PARAMETER_2",
             MODULE_ID_1 + TAG_SEPARATOR + "MODULE_PARAMETER_11",
@@ -53,19 +73,9 @@ public class PottsSeriesTest {
             REGION_ID_1 + TAG_SEPARATOR + "POPULATION_PARAMETER_2",
             REGION_ID_2 + TAG_SEPARATOR + "POPULATION_PARAMETER_1",
             REGION_ID_2 + TAG_SEPARATOR + "POPULATION_PARAMETER_2",
-            REGION_ID_1 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + REGION_ID_1,
-            REGION_ID_1 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + REGION_ID_2,
-            REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + REGION_ID_1,
-            REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + REGION_ID_2,
     };
     
     private static final double[] POPULATION_PARAMETER_VALUES = new double[] {
-            randomDoubleBetween(1, 100),
-            randomDoubleBetween(1, 100),
-            randomDoubleBetween(1, 100),
-            randomDoubleBetween(1, 100),
-            randomDoubleBetween(1, 100),
-            randomDoubleBetween(1, 100),
             randomDoubleBetween(1, 100),
             randomDoubleBetween(1, 100),
             randomDoubleBetween(1, 100),
@@ -80,6 +90,12 @@ public class PottsSeriesTest {
     private static final String POPULATION_ID_1 = randomString();
     private static final String POPULATION_ID_2 = randomString();
     private static final String POPULATION_ID_3 = randomString();
+    
+    private static final String[] POPULATION_KEYS = new String[] {
+            POPULATION_ID_1,
+            POPULATION_ID_2,
+            POPULATION_ID_3,
+    };
     
     private static final MiniBox POTTS = new MiniBox();
     private static final MiniBox POPULATION = new MiniBox();
@@ -109,7 +125,7 @@ public class PottsSeriesTest {
         }
         MiniBox population = PARAMETERS.getIdValForTag("POPULATION");
         for (String key : population.getKeys()) {
-            POPULATION.put(key, potts.get(key));
+            POPULATION.put(key, population.get(key));
         }
     }
     
@@ -132,7 +148,7 @@ public class PottsSeriesTest {
         series.initialize(setupLists, PARAMETERS);
         
         ArrayList<Box> potts = setupLists.get("potts");
-        verify(series).updatePotts(eq(potts), any(MiniBox.class));
+        verify(series).updatePotts(eq(potts), any(MiniBox.class), any(MiniBox.class));
         
         ArrayList<Box> populations = setupLists.get("populations");
         verify(series).updatePopulations(eq(populations), any(MiniBox.class), any(MiniBox.class));
@@ -148,18 +164,39 @@ public class PottsSeriesTest {
     }
     
     private PottsSeries makeSeriesForPotts(Box box) {
+        return makeSeriesForPotts(box, new MiniBox());
+    }
+    
+    private PottsSeries makeSeriesForPotts(Box box, MiniBox conversion) {
         HashMap<String, ArrayList<Box>> setupLists = makeLists();
         PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
         ArrayList<Box> potts = setupLists.get("potts");
         potts.add(box);
-        series.updatePotts(potts, POTTS);
+        
+        series.populations = new HashMap<>();
+        for (String population : POPULATION_KEYS) {
+            series.populations.put(population, new MiniBox());
+        }
+        
+        try {
+            Field dsField = Series.class.getDeclaredField("ds");
+            dsField.setAccessible(true);
+            dsField.setDouble(series, DS);
+            
+            Field dtField = Series.class.getDeclaredField("dt");
+            dtField.setAccessible(true);
+            dtField.setDouble(series, DT);
+        } catch (Exception ignored) { }
+        
+        series.updatePotts(potts, POTTS, conversion);
         return series;
     }
     
     @Test
     public void updatePotts_noSetting_createsBox() {
         PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
-        series.updatePotts(null, POTTS);
+        series.populations = new HashMap<>();
+        series.updatePotts(null, POTTS, new MiniBox());
         assertNotNull(series.potts);
     }
     
@@ -197,6 +234,214 @@ public class PottsSeriesTest {
                 }
             }
         }
+    }
+    
+    @Test
+    public void updatePotts_noParameters_assignsTargets() {
+        PottsSeries series = makeSeriesForPotts(null);
+        MiniBox box = series.potts;
+        
+        for (String pop : POPULATION_KEYS) {
+            for (String parameter : POTTS_PARAMETER_TERM_NAMES) {
+                assertEquals(POTTS.get(parameter), box.get(parameter + TARGET_SEPARATOR + pop));
+            }
+        }
+    }
+    
+    @Test
+    public void updatePotts_givenParameters_assignsTargets() {
+        for (String pottsParameter1 : POTTS_PARAMETER_TERM_NAMES) {
+            for (String pottsParameter2 : POTTS_PARAMETER_TERM_NAMES) {
+                Box potts = new Box();
+                
+                double value = randomDoubleBetween(1, 100);
+                double scale = randomDoubleBetween(1, 100);
+                potts.addAtt(pottsParameter1, "value", "" + value);
+                potts.addTag(pottsParameter1, "PARAMETER");
+                potts.addAtt(pottsParameter2, "scale", "" + scale);
+                potts.addTag(pottsParameter2, "PARAMETER");
+                
+                PottsSeries series = makeSeriesForPotts(potts);
+                MiniBox box = series.potts;
+                
+                for (String parameter : POTTS_PARAMETER_TERM_NAMES) {
+                    double expected = POTTS.getDouble(parameter);
+                    if (parameter.equals(pottsParameter1)) { expected = value; }
+                    if (parameter.equals(pottsParameter2)) { expected *= scale; }
+                    
+                    for (String pop : POPULATION_KEYS) {
+                        assertEquals(expected, box.getDouble(parameter + TARGET_SEPARATOR + pop), EPSILON);
+                    }
+                }
+            }
+        }
+    }
+    
+    @Test
+    public void updatePotts_givenPopulationParameters_updatesValues() {
+        for (String pottsParameter1 : POTTS_PARAMETER_TERM_NAMES) {
+            for (String pottsParameter2 : POTTS_PARAMETER_TERM_NAMES) {
+                for (String pottsPop1 : POPULATION_KEYS) {
+                    for (String pottsPop2 : POPULATION_KEYS) {
+                        Box potts = new Box();
+                        double value = randomDoubleBetween(1, 100);
+                        double scale = randomDoubleBetween(1, 100);
+                        potts.addAtt(pottsParameter1 + TARGET_SEPARATOR + pottsPop1, "value", "" + value);
+                        potts.addTag(pottsParameter1 + TARGET_SEPARATOR + pottsPop1, "PARAMETER");
+                        potts.addAtt(pottsParameter2 + TARGET_SEPARATOR + pottsPop2, "scale", "" + scale);
+                        potts.addTag(pottsParameter2 + TARGET_SEPARATOR + pottsPop2, "PARAMETER");
+                        
+                        PottsSeries series = makeSeriesForPotts(potts);
+                        MiniBox box = series.potts;
+                        
+                        for (String parameter : POTTS_PARAMETER_TERM_NAMES) {
+                            for (String pop : POPULATION_KEYS) {
+                                double expected = POTTS.getDouble(parameter);
+                                
+                                if (parameter.equals(pottsParameter1) && pop.equals(pottsPop1)) {
+                                    expected = value;
+                                }
+                                if (parameter.equals(pottsParameter2) && pop.equals(pottsPop2)) {
+                                    expected *= scale;
+                                }
+                                
+                                assertEquals(POTTS.getDouble(parameter), box.getDouble(parameter), EPSILON);
+                                assertEquals(expected, box.getDouble(parameter + TARGET_SEPARATOR + pop), EPSILON);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    @Test
+    public void updatePotts_withConversion_convertsValue() {
+        MiniBox conversion = new MiniBox();
+        String convertedParameter = POTTS_PARAMETER_NAMES[1];
+        conversion.put(convertedParameter, "DT");
+        
+        Box potts = new Box();
+        PottsSeries series = makeSeriesForPotts(potts, conversion);
+        MiniBox box = series.potts;
+        
+        for (String parameter : POTTS_PARAMETER_NAMES) {
+            double expected = POTTS.getDouble(parameter);
+            if (parameter.equals(convertedParameter)) { expected *= DT; }
+            assertEquals(expected, box.getDouble(parameter), EPSILON);
+        }
+    }
+    
+    @Test
+    public void updatePotts_withTermConversion_convertsValue() {
+        MiniBox conversion = new MiniBox();
+        int i = randomIntBetween(0, POTTS_PARAMETER_TERM_NAMES.length);
+        String convertedParameter = POTTS_PARAMETER_TERM_NAMES[i];
+        conversion.put(convertedParameter, "DT");
+        
+        Box potts = new Box();
+        PottsSeries series = makeSeriesForPotts(potts, conversion);
+        MiniBox box = series.potts;
+        
+        for (String pop : POPULATION_KEYS) {
+            for (String parameter : POTTS_PARAMETER_TERM_NAMES) {
+                double expected = POTTS.getDouble(parameter);
+                if (parameter.equals(convertedParameter)) { expected *= DT; }
+                assertEquals(expected, box.getDouble(parameter + TARGET_SEPARATOR + pop), EPSILON);
+            }
+        }
+    }
+    
+    @Test
+    public void updatePotts_noAdhesion_usesDefaults() {
+        PottsSeries series = makeSeriesForPotts(null);
+        MiniBox box = series.potts;
+        double adhesion = POTTS.getDouble(TERM_ADHESION_PARAMETER);
+        
+        assertEquals(adhesion, box.getDouble(TERM_ADHESION_PARAMETER), EPSILON);
+        
+        for (String source : POPULATION_KEYS) {
+            String adhesionSource = TERM_ADHESION_PARAMETER + TARGET_SEPARATOR + source;
+            assertEquals(adhesion, box.getDouble(adhesionSource), EPSILON);
+            assertEquals(adhesion, box.getDouble(adhesionSource + TARGET_SEPARATOR + "*"), EPSILON);
+            
+            for (String target : POPULATION_KEYS) {
+                String adhesionTarget = adhesionSource + TARGET_SEPARATOR + target;
+                assertEquals(adhesion, box.getDouble(adhesionTarget), EPSILON);
+            }
+        }
+    }
+    
+    @Test
+    public void updatePotts_givenAdhesion_updateValues() {
+        String[] pops = new String[POPULATION_KEYS.length + 1];
+        System.arraycopy(POPULATION_KEYS, 0, pops, 0, POPULATION_KEYS.length);
+        pops[POPULATION_KEYS.length] = "*";
+        
+        for (String pop1 : pops) {
+            for (String pop2 : pops) {
+                Box potts = new Box();
+                
+                double value = randomDoubleBetween(1, 100);
+                double scale = randomDoubleBetween(1, 100);
+                potts.addAtt(TERM_ADHESION_PARAMETER + TARGET_SEPARATOR + pop1, "value", "" + value);
+                potts.addTag(TERM_ADHESION_PARAMETER + TARGET_SEPARATOR + pop1, "PARAMETER");
+                potts.addAtt(TERM_ADHESION_PARAMETER + TARGET_SEPARATOR
+                        + pop1 + TARGET_SEPARATOR + pop2, "scale", "" + scale);
+                potts.addTag(TERM_ADHESION_PARAMETER + TARGET_SEPARATOR
+                        + pop1 + TARGET_SEPARATOR + pop2, "PARAMETER");
+                
+                PottsSeries series = makeSeriesForPotts(potts);
+                MiniBox box = series.potts;
+                
+                for (String source : POPULATION_KEYS) {
+                    double expected1 = POTTS.getDouble(TERM_ADHESION_PARAMETER);
+                    if (source.equals(pop1)) { expected1 = value; }
+                    String adhesionSource = TERM_ADHESION_PARAMETER + TARGET_SEPARATOR + source;
+                    assertEquals(expected1, box.getDouble(adhesionSource), EPSILON);
+                    
+                    for (String target : pops) {
+                        double expected2 = expected1;
+                        if (source.equals(pop1) && target.equals(pop2)) { expected2 *= scale; }
+                        String adhesionTarget = adhesionSource + TARGET_SEPARATOR + target;
+                        assertEquals(expected2, box.getDouble(adhesionTarget), EPSILON);
+                    }
+                }
+            }
+        }
+    }
+    
+    @Test
+    public void updatePotts_noTerms_createsList() {
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        series.populations = new HashMap<>();
+        series.updatePotts(null, POTTS, new MiniBox());
+        assertNotNull(series.terms);
+    }
+    
+    @Test
+    public void updatePotts_withTerms_createsList() {
+        HashMap<String, ArrayList<Box>> setupLists = makeLists();
+        PottsSeries series = mock(PottsSeries.class, CALLS_REAL_METHODS);
+        series.populations = new HashMap<>();
+        ArrayList<Box> potts = setupLists.get("potts");
+        
+        Box box = new Box();
+        potts.add(box);
+        
+        MersenneTwisterFast random = new MersenneTwisterFast();
+        Term term1 = Term.random(random);
+        Term term2 = Term.random(random);
+        
+        box.addTag(term1.name(), "TERM");
+        box.addTag(term2.name(), "TERM");
+        
+        series.updatePotts(potts, POTTS, new MiniBox());
+        
+        int n = (term1.equals(term2) ? 1 : 2);
+        assertEquals(n, series.terms.size());
+        assertTrue(series.terms.contains(term1));
+        assertTrue(series.terms.contains(term2));
     }
     
     private PottsSeries makeSeriesForPopulation(Box[] boxes) {
@@ -420,177 +665,6 @@ public class PottsSeriesTest {
                     if (parameter.equals(populationParameter1)) { expected = value; }
                     if (parameter.equals(populationParameter2)) { expected *= scale; }
                     assertEquals(expected, box2.getDouble(parameter), EPSILON);
-                }
-            }
-        }
-    }
-    
-    @Test
-    public void updatePopulation_noAdhesionOnePop_usesDefaults() {
-        Box[] boxes = new Box[] { new Box() };
-        boxes[0].add("id", POPULATION_ID_1);
-        
-        String adhesion = "" + randomDoubleBetween(1, 100);
-        boxes[0].addAtt("ADHESION", "value", adhesion);
-        boxes[0].addTag("ADHESION", "PARAMETER");
-        
-        PottsSeries series = makeSeriesForPopulation(boxes);
-        MiniBox box = series.populations.get(POPULATION_ID_1);
-        
-        assertEquals(adhesion, box.get("ADHESION:*"));
-        assertEquals(adhesion, box.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_1));
-    }
-    
-    @Test
-    public void updatePopulation_givenAdhesionOnePop_updatesValues() {
-        String[] pops = new String[] { "*", POPULATION_ID_1 };
-        for (String modifiedPop1 : pops) {
-            for (String modifiedPop2 : pops) {
-                Box[] boxes = new Box[] { new Box() };
-                boxes[0].add("id", POPULATION_ID_1);
-                
-                double adhesion = randomDoubleBetween(1, 100);
-                boxes[0].addAtt("ADHESION", "value", "" + adhesion);
-                boxes[0].addTag("ADHESION", "PARAMETER");
-                
-                double value = randomDoubleBetween(1, 100);
-                double scale = randomDoubleBetween(1, 100);
-                boxes[0].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "value", "" + value);
-                boxes[0].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "PARAMETER");
-                boxes[0].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "scale", "" + scale);
-                boxes[0].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "PARAMETER");
-                
-                PottsSeries series = makeSeriesForPopulation(boxes);
-                MiniBox box = series.populations.get(POPULATION_ID_1);
-                
-                for (String pop : pops) {
-                    double expected = adhesion;
-                    if (pop.equals(modifiedPop1)) { expected = value; }
-                    if (pop.equals(modifiedPop2)) { expected *= scale; }
-                    assertEquals(expected, box.getDouble("ADHESION" + TARGET_SEPARATOR + pop), EPSILON);
-                }
-            }
-        }
-    }
-    
-    @Test
-    public void updatePopulation_noAdhesionMultiplePops_usesDefaults() {
-        Box[] boxes = new Box[] { new Box(), new Box(), new Box() };
-        boxes[0].add("id", POPULATION_ID_1);
-        boxes[1].add("id", POPULATION_ID_2);
-        boxes[2].add("id", POPULATION_ID_3);
-        
-        String adhesion = "" + randomDoubleBetween(1, 100);
-        boxes[1].addAtt("ADHESION", "value", adhesion);
-        boxes[1].addTag("ADHESION", "PARAMETER");
-        
-        PottsSeries series = makeSeriesForPopulation(boxes);
-        MiniBox box1 = series.populations.get(POPULATION_ID_1);
-        MiniBox box2 = series.populations.get(POPULATION_ID_2);
-        MiniBox box3 = series.populations.get(POPULATION_ID_3);
-        
-        assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION:*"));
-        assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_1));
-        assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_2));
-        assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_3));
-        assertEquals(adhesion, box2.get("ADHESION:*"));
-        assertEquals(adhesion, box2.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_1));
-        assertEquals(adhesion, box2.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_2));
-        assertEquals(adhesion, box2.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_3));
-        assertEquals(POPULATION.get("ADHESION"), box3.get("ADHESION:*"));
-        assertEquals(POPULATION.get("ADHESION"), box3.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_1));
-        assertEquals(POPULATION.get("ADHESION"), box3.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_2));
-        assertEquals(POPULATION.get("ADHESION"), box3.get("ADHESION" + TARGET_SEPARATOR + POPULATION_ID_3));
-    }
-    
-    @Test
-    public void updatePopulation_givenAdhesionMultiplePops_updatesValues() {
-        String[] pops = new String[] { "*", POPULATION_ID_1, POPULATION_ID_2 };
-        for (String modifiedPop1 : pops) {
-            for (String modifiedPop2 : pops) {
-                Box[] boxes = new Box[] { new Box(), new Box() };
-                boxes[0].add("id", POPULATION_ID_1);
-                boxes[1].add("id", POPULATION_ID_2);
-                
-                double adhesion = randomDoubleBetween(1, 100);
-                boxes[1].addAtt("ADHESION", "value", "" + adhesion);
-                boxes[1].addTag("ADHESION", "PARAMETER");
-                
-                double value = randomDoubleBetween(1, 100);
-                double scale = randomDoubleBetween(1, 100);
-                boxes[1].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "value", "" + value);
-                boxes[1].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop1, "PARAMETER");
-                boxes[1].addAtt("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "scale", "" + scale);
-                boxes[1].addTag("ADHESION" + TARGET_SEPARATOR + modifiedPop2, "PARAMETER");
-                
-                PottsSeries series = makeSeriesForPopulation(boxes);
-                MiniBox box1 = series.populations.get(POPULATION_ID_1);
-                MiniBox box2 = series.populations.get(POPULATION_ID_2);
-                
-                for (String pop : pops) {
-                    assertEquals(POPULATION.get("ADHESION"), box1.get("ADHESION" + TARGET_SEPARATOR + pop));
-                    
-                    double expected = adhesion;
-                    if (pop.equals(modifiedPop1)) { expected = value; }
-                    if (pop.equals(modifiedPop2)) { expected *= scale; }
-                    assertEquals(expected, box2.getDouble("ADHESION" + TARGET_SEPARATOR + pop), EPSILON);
-                }
-            }
-        }
-    }
-    
-    @Test
-    public void updatePopulation_noAdhesionWithRegions_usesDefaults() {
-        String[] regions = new String[] { REGION_ID_1, REGION_ID_2 };
-        Box[] boxes = new Box[] { new Box() };
-        boxes[0].add("id", POPULATION_ID_1);
-        boxes[0].addTag(REGION_ID_1, "REGION");
-        boxes[0].addTag(REGION_ID_2, "REGION");
-        boxes[0].addAtt(REGION_ID_1, "fraction", "0");
-        boxes[0].addAtt(REGION_ID_2, "fraction", "0");
-        
-        PottsSeries series = makeSeriesForPopulation(boxes);
-        MiniBox box = series.populations.get(POPULATION_ID_1);
-        
-        for (String region : regions) {
-            for (String target : regions) {
-                String name = region + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target;
-                assertEquals(POPULATION.get(name), box.get(name));
-            }
-        }
-    }
-    
-    @Test
-    public void updatePopulation_givenAdhesionWithRegions_updateValues() {
-        String[] regions = new String[] { REGION_ID_1, REGION_ID_2 };
-        for (String modifiedRegion1 : regions) {
-            for (String modifiedRegion2 : regions) {
-                Box[] boxes = new Box[] { new Box() };
-                boxes[0].add("id", POPULATION_ID_1);
-                boxes[0].addTag(REGION_ID_1, "REGION");
-                boxes[0].addTag(REGION_ID_2, "REGION");
-                boxes[0].addAtt(REGION_ID_1, "fraction", "0");
-                boxes[0].addAtt(REGION_ID_2, "fraction", "0");
-                
-                double value = randomDoubleBetween(1, 100);
-                double scale = randomDoubleBetween(1, 100);
-                String key = REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR;
-                boxes[0].addAtt(key + modifiedRegion1, "value", "" + value);
-                boxes[0].addTag(key + modifiedRegion1, "PARAMETER");
-                boxes[0].addAtt(key + modifiedRegion2, "scale", "" + scale);
-                boxes[0].addTag(key + modifiedRegion2, "PARAMETER");
-                
-                PottsSeries series = makeSeriesForPopulation(boxes);
-                MiniBox box = series.populations.get(POPULATION_ID_1);
-                
-                for (String target : regions) {
-                    String name1 = REGION_ID_1 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target;
-                    String name2 = REGION_ID_2 + TAG_SEPARATOR + "ADHESION" + TARGET_SEPARATOR + target;
-                    assertEquals(POPULATION.getDouble(name1), box.getDouble(name1), EPSILON);
-                    double expected = POPULATION.getDouble(name2);
-                    if (target.equals(modifiedRegion1)) { expected = value; }
-                    if (target.equals(modifiedRegion2)) { expected *= scale; }
-                    assertEquals(expected, box.getDouble(name2), EPSILON);
                 }
             }
         }

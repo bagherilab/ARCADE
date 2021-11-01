@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsEnumTest {
     @Test(expected = UnsupportedOperationException.class)
@@ -33,6 +34,27 @@ public class PottsEnumTest {
         
         // Compare resulting sets.
         EnumSet<Phase> enumSetRandom = EnumSet.copyOf(enumRandom);
+        assertEquals(enumSet, enumSetRandom);
+    }
+    
+    @Test
+    public void Term_random_returnsTerm() {
+        // Create set of all values.
+        EnumSet<Term> enumSet = EnumSet.allOf(Term.class);
+        enumSet.remove(Term.UNDEFINED);
+        
+        // Create set of all random values.
+        ArrayList<Term> enumRandom = new ArrayList<>();
+        
+        int n = Direction.values().length - 1;
+        for (int i = 0; i < n; i++) {
+            MersenneTwisterFast rng = mock(MersenneTwisterFast.class);
+            doReturn(i).when(rng).nextInt(n);
+            enumRandom.add(Term.random(rng));
+        }
+        
+        // Compare resulting sets.
+        EnumSet<Term> enumSetRandom = EnumSet.copyOf(enumRandom);
         assertEquals(enumSet, enumSetRandom);
     }
     

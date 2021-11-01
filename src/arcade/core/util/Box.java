@@ -1,6 +1,7 @@
 package arcade.core.util;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Container that maps a key to a tag category and a series of attributes.
@@ -145,6 +146,25 @@ public class Box {
                 result.put(split[0], idToVal.get(key));
             }
         }
+        return result;
+    }
+    
+    
+    /**
+     * Filters box for entries matching the given tag.
+     *
+     * @param tag  the tag
+     * @return  a list of unique entries
+     */
+    public HashSet<String> filterTags(String tag) {
+        HashSet<String> result = new HashSet<>();
+        
+        for (String key : idToTag.getKeys()) {
+            if (idToTag.get(key).equals(tag)) {
+                result.add(key);
+            }
+        }
+        
         return result;
     }
     
