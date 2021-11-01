@@ -67,7 +67,7 @@ public class PottsInputBuilderTest {
     }
     
     @Test
-    public void updateBox_noTagsNoTarget_updatesContainer() {
+    public void updateBox_noTags_updatesContainer() {
         int nLists = randomIntBetween(1, 10);
         int nAtts = randomIntBetween(1, 10);
         String id = randomString();
@@ -87,7 +87,7 @@ public class PottsInputBuilderTest {
     }
     
     @Test
-    public void updateBox_withRegionTagNoTarget_updatesContainer() {
+    public void updateBox_withRegionTagOnly_updatesContainer() {
         int nLists = randomIntBetween(1, 10);
         int nAtts = randomIntBetween(1, 10);
         String id = randomString();
@@ -111,7 +111,7 @@ public class PottsInputBuilderTest {
     }
     
     @Test
-    public void updateBox_withModuleTagNoTarget_updatesContainer() {
+    public void updateBox_withModuleTagOnly_updatesContainer() {
         int nLists = randomIntBetween(1, 10);
         int nAtts = randomIntBetween(1, 10);
         String id = randomString();
@@ -135,7 +135,59 @@ public class PottsInputBuilderTest {
     }
     
     @Test
-    public void updateBox_withRegionModuleTagsNoTarget_updatesContainer() {
+    public void updateBox_withTermTagOnly_updatesContainer() {
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
+        String id = randomString();
+        String term = randomString();
+        
+        PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
+        builder.setupLists = makeSetupLists(nLists);
+        
+        Attributes attributes = makeAttributesMock(nAtts + 2);
+        doReturn("id").when(attributes).getQName(nAtts);
+        doReturn(id).when(attributes).getValue(nAtts);
+        doReturn(id).when(attributes).getValue("id");
+        doReturn("term").when(attributes).getQName(nAtts + 1);
+        doReturn(term.toUpperCase()).when(attributes).getValue(nAtts + 1);
+        doReturn(term.toUpperCase()).when(attributes).getValue("term");
+        
+        builder.updateBox(LIST_NAME, TAG_NAME, attributes);
+        
+        Box expected = makeExpected(term.toLowerCase() + TAG_SEPARATOR + id, nAtts);
+        assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(nLists - 1)));
+    }
+    
+    @Test
+    public void updateBox_withTarget_updatesContainer() {
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
+        String id = randomString();
+        String term = randomString();
+        String target = randomString();
+        
+        PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
+        builder.setupLists = makeSetupLists(nLists);
+        
+        Attributes attributes = makeAttributesMock(nAtts + 2);
+        doReturn("id").when(attributes).getQName(nAtts);
+        doReturn(id).when(attributes).getValue(nAtts);
+        doReturn(id).when(attributes).getValue("id");
+        doReturn("term").when(attributes).getQName(nAtts + 1);
+        doReturn(term.toUpperCase()).when(attributes).getValue(nAtts + 1);
+        doReturn(term.toUpperCase()).when(attributes).getValue("term");
+        doReturn("target").when(attributes).getQName(nAtts + 2);
+        doReturn(target).when(attributes).getValue(nAtts + 2);
+        doReturn(target).when(attributes).getValue("target");
+        
+        builder.updateBox(LIST_NAME, TAG_NAME, attributes);
+        
+        Box expected = makeExpected(term.toLowerCase() + TAG_SEPARATOR + id + TARGET_SEPARATOR + target, nAtts);
+        assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(nLists - 1)));
+    }
+    
+    @Test
+    public void updateBox_withRegionAndModule_doesNothing() {
         int nLists = randomIntBetween(1, 10);
         int nAtts = randomIntBetween(1, 10);
         String id = randomString();
@@ -163,36 +215,12 @@ public class PottsInputBuilderTest {
     }
     
     @Test
-    public void updateBox_noTagWithTarget_updatesContainer() {
-        int nLists = randomIntBetween(1, 10);
-        int nAtts = randomIntBetween(1, 10);
-        String id = randomString();
-        String target = randomString();
-        
-        PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
-        builder.setupLists = makeSetupLists(nLists);
-        
-        Attributes attributes = makeAttributesMock(nAtts + 2);
-        doReturn("id").when(attributes).getQName(nAtts);
-        doReturn(id).when(attributes).getValue(nAtts);
-        doReturn(id).when(attributes).getValue("id");
-        doReturn("target").when(attributes).getQName(nAtts + 1);
-        doReturn(target).when(attributes).getValue(nAtts + 1);
-        doReturn(target).when(attributes).getValue("target");
-        
-        builder.updateBox(LIST_NAME, TAG_NAME, attributes);
-        
-        Box expected = makeExpected(id + TARGET_SEPARATOR + target, nAtts);
-        assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(nLists - 1)));
-    }
-    
-    @Test
-    public void updateBox_withRegionTagWithTarget_updatesContainer() {
+    public void updateBox_withRegionAndTerm_doesNothing() {
         int nLists = randomIntBetween(1, 10);
         int nAtts = randomIntBetween(1, 10);
         String id = randomString();
         String region = randomString();
-        String target = randomString();
+        String term = randomString();
         
         PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
         builder.setupLists = makeSetupLists(nLists);
@@ -201,72 +229,72 @@ public class PottsInputBuilderTest {
         doReturn("id").when(attributes).getQName(nAtts);
         doReturn(id).when(attributes).getValue(nAtts);
         doReturn(id).when(attributes).getValue("id");
-        doReturn("target").when(attributes).getQName(nAtts + 1);
-        doReturn(target).when(attributes).getValue(nAtts + 1);
-        doReturn(target).when(attributes).getValue("target");
-        doReturn("region").when(attributes).getQName(nAtts + 2);
-        doReturn(region.toLowerCase()).when(attributes).getValue(nAtts + 2);
-        doReturn(region.toLowerCase()).when(attributes).getValue("region");
-        
-        builder.updateBox(LIST_NAME, TAG_NAME, attributes);
-        
-        Box expected = makeExpected(region.toUpperCase() + TAG_SEPARATOR + id + TARGET_SEPARATOR + target, nAtts);
-        assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(nLists - 1)));
-    }
-    
-    @Test
-    public void updateBox_withModuleTagWithTarget_updatesContainer() {
-        int nLists = randomIntBetween(1, 10);
-        int nAtts = randomIntBetween(1, 10);
-        String id = randomString();
-        String module = randomString();
-        String target = randomString();
-        
-        PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
-        builder.setupLists = makeSetupLists(nLists);
-        
-        Attributes attributes = makeAttributesMock(nAtts + 3);
-        doReturn("id").when(attributes).getQName(nAtts);
-        doReturn(id).when(attributes).getValue(nAtts);
-        doReturn(id).when(attributes).getValue("id");
-        doReturn("target").when(attributes).getQName(nAtts + 1);
-        doReturn(target).when(attributes).getValue(nAtts + 1);
-        doReturn(target).when(attributes).getValue("target");
-        doReturn("module").when(attributes).getQName(nAtts + 2);
-        doReturn(module.toUpperCase()).when(attributes).getValue(nAtts + 2);
-        doReturn(module.toUpperCase()).when(attributes).getValue("module");
-        
-        builder.updateBox(LIST_NAME, TAG_NAME, attributes);
-        
-        Box expected = makeExpected(module.toLowerCase() + TAG_SEPARATOR + id + TARGET_SEPARATOR + target, nAtts);
-        assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(nLists - 1)));
-    }
-    
-    @Test
-    public void updateBox_withRegionModuleTagsWithTarget_updatesContainer() {
-        int nLists = randomIntBetween(1, 10);
-        int nAtts = randomIntBetween(1, 10);
-        String id = randomString();
-        String region = randomString();
-        String module = randomString();
-        String target = randomString();
-        
-        PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
-        builder.setupLists = makeSetupLists(nLists);
-        
-        Attributes attributes = makeAttributesMock(nAtts + 3);
-        doReturn("id").when(attributes).getQName(nAtts);
-        doReturn(id).when(attributes).getValue(nAtts);
-        doReturn(id).when(attributes).getValue("id");
-        doReturn("target").when(attributes).getQName(nAtts + 1);
-        doReturn(target).when(attributes).getValue(nAtts + 1);
-        doReturn(target).when(attributes).getValue("target");
-        doReturn("region").when(attributes).getQName(nAtts + 2);
-        doReturn(region).when(attributes).getValue(nAtts + 2);
+        doReturn("region").when(attributes).getQName(nAtts + 1);
+        doReturn(region).when(attributes).getValue(nAtts + 1);
         doReturn(region).when(attributes).getValue("region");
-        doReturn("module").when(attributes).getQName(nAtts + 3);
-        doReturn(module).when(attributes).getValue(nAtts + 3);
+        doReturn("term").when(attributes).getQName(nAtts + 2);
+        doReturn(term).when(attributes).getValue(nAtts + 2);
+        doReturn(term).when(attributes).getValue("term");
+        
+        builder.updateBox(LIST_NAME, TAG_NAME, attributes);
+        
+        Box expected = new Box();
+        assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(nLists - 1)));
+    }
+    
+    @Test
+    public void updateBox_withModuleAndTerm_doesNothing() {
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
+        String id = randomString();
+        String module = randomString();
+        String term = randomString();
+        
+        PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
+        builder.setupLists = makeSetupLists(nLists);
+        
+        Attributes attributes = makeAttributesMock(nAtts + 3);
+        doReturn("id").when(attributes).getQName(nAtts);
+        doReturn(id).when(attributes).getValue(nAtts);
+        doReturn(id).when(attributes).getValue("id");
+        doReturn("module").when(attributes).getQName(nAtts + 1);
+        doReturn(module).when(attributes).getValue(nAtts + 1);
         doReturn(module).when(attributes).getValue("module");
+        doReturn("term").when(attributes).getQName(nAtts + 2);
+        doReturn(term).when(attributes).getValue(nAtts + 2);
+        doReturn(term).when(attributes).getValue("term");
+        
+        builder.updateBox(LIST_NAME, TAG_NAME, attributes);
+        
+        Box expected = new Box();
+        assertTrue(expected.compare(builder.setupLists.get(LIST_NAME + "s").get(nLists - 1)));
+    }
+    
+    @Test
+    public void updateBox_withRegionModuleAndTerm_doesNothing() {
+        int nLists = randomIntBetween(1, 10);
+        int nAtts = randomIntBetween(1, 10);
+        String id = randomString();
+        String region = randomString();
+        String module = randomString();
+        String term = randomString();
+        
+        PottsInputBuilder builder = mock(PottsInputBuilder.class, CALLS_REAL_METHODS);
+        builder.setupLists = makeSetupLists(nLists);
+        
+        Attributes attributes = makeAttributesMock(nAtts + 4);
+        doReturn("id").when(attributes).getQName(nAtts);
+        doReturn(id).when(attributes).getValue(nAtts);
+        doReturn(id).when(attributes).getValue("id");
+        doReturn("region").when(attributes).getQName(nAtts + 1);
+        doReturn(region).when(attributes).getValue(nAtts + 1);
+        doReturn(region).when(attributes).getValue("region");
+        doReturn("module").when(attributes).getQName(nAtts + 2);
+        doReturn(module).when(attributes).getValue(nAtts + 2);
+        doReturn(module).when(attributes).getValue("module");
+        doReturn("term").when(attributes).getQName(nAtts + 3);
+        doReturn(term).when(attributes).getValue(nAtts + 3);
+        doReturn(term).when(attributes).getValue("term");
         
         builder.updateBox(LIST_NAME, TAG_NAME, attributes);
         

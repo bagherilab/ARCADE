@@ -38,12 +38,19 @@ public final class PottsInputBuilder extends InputBuilder {
         String region;
         String module;
         String target;
+        String term;
         
         if (numAtts > 0) {
-            // If both region and module tags are included, the entry is invalid.
-            if (atts.getValue("region") != null && atts.getValue("module") != null) { return; }
+            // Entry can have at most one of the following tags: region, module, term.
+            boolean hasRegion = atts.getValue("region") != null;
+            boolean hasModule = atts.getValue("module") != null;
+            boolean hasTerm = atts.getValue("term") != null;
+            if (hasRegion ^ hasModule ? hasTerm : hasRegion) { return; }
             
-            // Get any tags (module or region) or target.
+            // Get any tags (module or region or term) or target.
+            term = (atts.getValue("term") == null
+                    ? ""
+                    : atts.getValue("term").toLowerCase() + TAG_SEPARATOR);
             region = (atts.getValue("region") == null
                     ? ""
                     : atts.getValue("region").toUpperCase() + TAG_SEPARATOR);
@@ -55,13 +62,13 @@ public final class PottsInputBuilder extends InputBuilder {
                     : TARGET_SEPARATOR + atts.getValue("target"));
             
             // Create id by combining tags (module or region), id, and target.
-            id = region + module + atts.getValue("id") + target;
+            id = region + module + term + atts.getValue("id") + target;
             box.addTag(id, tag.toUpperCase());
             
             for (int i = 0; i < numAtts; i++) {
                 String name = atts.getQName(i);
                 switch (name) {
-                    case "id": case "region": case "module": case "target": break;
+                    case "id": case "region": case "module": case "target": case "term": break;
                     default: box.addAtt(id, name, atts.getValue(i));
                 }
             }
