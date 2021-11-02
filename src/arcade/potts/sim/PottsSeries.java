@@ -86,6 +86,7 @@ public final class PottsSeries extends Series {
      *
      * @param pottsBox  the potts setup dictionary
      * @param pottsDefaults  the dictionary of default potts parameters
+     * @param pottsConversions  the dictionary of potts parameter conversions
      */
     void updatePotts(ArrayList<Box> pottsBox, MiniBox pottsDefaults,
                      MiniBox pottsConversions) {

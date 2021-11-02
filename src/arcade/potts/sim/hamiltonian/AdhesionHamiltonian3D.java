@@ -1,6 +1,5 @@
 package arcade.potts.sim.hamiltonian;
 
-import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
 import static arcade.core.util.Enums.Region;
@@ -16,27 +15,28 @@ public class AdhesionHamiltonian3D extends AdhesionHamiltonian {
     /**
      * Creates the adhesion energy term for the {@code Potts} Hamiltonian in 3D.
      *
-     * @param potts  the associated Potts instance
      * @param series  the associated Series instance
+     * @param potts  the associated Potts instance
      */
-    public AdhesionHamiltonian3D(Potts potts, PottsSeries series) { super(potts, series); }
+    public AdhesionHamiltonian3D(PottsSeries series, Potts potts) { super(series, potts); }
     
     @Override
     double getAdhesion(int id, int x, int y, int z) {
         double h = 0;
-        PottsCell a = potts.getCell(id);
+        AdhesionHamiltonianConfig a = configs.get(id);
         
         for (int k = z - 1; k <= z + 1; k++) {
             for (int i = x - 1; i <= x + 1; i++) {
                 for (int j = y - 1; j <= y + 1; j++) {
-                    if (!(k == z && i == x && j == y) && potts.ids[k][i][j] != id) {
-                        PottsCell b = potts.getCell(potts.ids[k][i][j]);
+                    if (!(k == z && i == x && j == y) && ids[k][i][j] != id) {
+                        AdhesionHamiltonianConfig b = configs.get(ids[k][i][j]);
                         if (a == null) {
-                            h += 0; // TODO get adhesion of B:0 from config
+                            h += b.getAdhesion(0);
                         } else if (b == null) {
-                            h += 0; // TODO get adhesion of A:0 from config
+                            h += a.getAdhesion(0);
                         } else {
-                            h += 0; // TODO get adhesion of A:B from config
+                            h += (a.getAdhesion(b.cell.getPop())
+                                    + b.getAdhesion(a.cell.getPop())) / 2.0;
                         }
                     }
                 }
@@ -49,16 +49,16 @@ public class AdhesionHamiltonian3D extends AdhesionHamiltonian {
     @Override
     double getAdhesion(int id, int t, int x, int y, int z) {
         double h = 0;
-        PottsCell c = potts.getCell(id);
+        AdhesionHamiltonianConfig c = configs.get(id);
         Region region = Region.values()[t];
         
         for (int k = z - 1; k <= z + 1; k++) {
             for (int i = x - 1; i <= x + 1; i++) {
                 for (int j = y - 1; j <= y + 1; j++) {
-                    Region xyz = Region.values()[potts.regions[k][i][j]];
-                    if (!(k == z && i == x && j == y) && potts.ids[k][i][j] == id && region != xyz
+                    Region xyz = Region.values()[regions[k][i][j]];
+                    if (!(k == z && i == x && j == y) && ids[k][i][j] == id && region != xyz
                             && xyz != Region.UNDEFINED && xyz != Region.DEFAULT) {
-                        h += 0; // TODO get adhesion of regions from substrate
+                        h += (c.getAdhesion(region, xyz) + c.getAdhesion(xyz, region)) / 2.0;
                     }
                 }
             }

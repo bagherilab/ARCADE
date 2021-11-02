@@ -111,7 +111,7 @@ public abstract class Potts implements Steppable {
     
     /**
      * Registers the cell to all Hamiltonian term instances.
-     * 
+     *
      * @param cell  the cell instance
      */
     public void register(PottsCell cell) {
@@ -133,8 +133,9 @@ public abstract class Potts implements Steppable {
     
     /**
      * Gets instance of selected Hamiltonian term.
-     * 
+     *
      * @param term  the Hamiltonian term
+     * @param series  the simulation series
      * @return  the Hamiltonian instance
      */
     abstract Hamiltonian getHamiltonian(Term term, PottsSeries series);

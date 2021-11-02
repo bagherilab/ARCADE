@@ -38,8 +38,9 @@ public class VolumeHamiltonian implements Hamiltonian {
     
     @Override
     public void register(PottsCell cell) {
-        double lambda = popToLambda.get(cell.getPop());
-        EnumMap<Region, Double> lambdasRegion = popToLambdasRegion.get(cell.getPop());
+        int pop = cell.getPop();
+        double lambda = popToLambda.get(pop);
+        EnumMap<Region, Double> lambdasRegion = popToLambdasRegion.get(pop);
         VolumeHamiltonianConfig config = new VolumeHamiltonianConfig(cell, lambda, lambdasRegion);
         configs.put(cell.getID(), config);
     }
@@ -133,10 +134,13 @@ public class VolumeHamiltonian implements Hamiltonian {
             popToLambda.put(pop, lambda);
             
             MiniBox regionBox = population.filter("(REGION)");
-            ArrayList<String> regionKeys = regionBox.getKeys();
+            ArrayList<Region> regionKeys = new ArrayList<>();
+            regionBox.getKeys().forEach(s -> regionKeys.add(Region.valueOf(s)));
+            
+            // Get lambda values for regions.
             if (regionKeys.size() > 0) {
                 EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
-                for (Region region : Region.values()) {
+                for (Region region : regionKeys) {
                     double lambdaRegion = parameters.getDouble("volume/LAMBDA_"
                             + region.name() + TARGET_SEPARATOR + key);
                     lambdasRegion.put(region, lambdaRegion);
