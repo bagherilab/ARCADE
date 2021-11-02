@@ -1,8 +1,13 @@
 package arcade.potts.sim.hamiltonian;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Set;
+import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
+import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.Enums.Region;
 
 /**
@@ -10,27 +15,38 @@ import static arcade.core.util.Enums.Region;
  */
 
 public class VolumeHamiltonian implements Hamiltonian {
-    /** Potts instance. */
-    final Potts potts;
+    /** Map of hamiltonian config objects. */
+    final HashMap<Integer, VolumeHamiltonianConfig> configs;
+    
+    /** Map of population to lambda values. */
+    final HashMap<Integer, Double> popToLambda;
+    
+    /** Map of population to lambda values for regions. */
+    final HashMap<Integer, EnumMap<Region, Double>> popToLambdasRegion;
     
     /**
      * Creates the volume energy term for the {@code Potts} Hamiltonian.
      *
-     * @param potts  the associated Potts instance
      * @param series  the associated Series instance
      */
-    public VolumeHamiltonian(Potts potts, PottsSeries series) {
-            this.potts = potts;
-        }
+    public VolumeHamiltonian(PottsSeries series) {
+        configs = new HashMap<>();
+        popToLambda = new HashMap<>();
+        popToLambdasRegion = new HashMap<>();
+        initialize(series);
+    }
     
     @Override
     public void register(PottsCell cell) {
-        // TODO write method body
+        double lambda = popToLambda.get(cell.getPop());
+        EnumMap<Region, Double> lambdasRegion = popToLambdasRegion.get(cell.getPop());
+        VolumeHamiltonianConfig config = new VolumeHamiltonianConfig(cell, lambda, lambdasRegion);
+        configs.put(cell.getID(), config);
     }
-
+    
     @Override
     public void deregister(PottsCell cell) {
-        // TODO write method body
+        configs.remove(cell.getID());
     }
     
     /**
@@ -72,10 +88,10 @@ public class VolumeHamiltonian implements Hamiltonian {
      */
     double getVolume(int id, int change) {
         if (id == 0) { return 0; }
-        PottsCell c = potts.getCell(id);
-        double volume = c.getVolume();
-        double targetVolume = c.getTargetVolume();
-        double lambda = 0; // TODO get lambda from config
+        VolumeHamiltonianConfig config = configs.get(id);
+        double volume = config.cell.getVolume();
+        double targetVolume = config.cell.getTargetVolume();
+        double lambda = config.getLambda();
         return lambda * Math.pow((volume - targetVolume + change), 2);
     }
     
@@ -90,10 +106,45 @@ public class VolumeHamiltonian implements Hamiltonian {
     double getVolume(int id, int t, int change) {
         Region region = Region.values()[t];
         if (id == 0 || region == Region.DEFAULT) { return 0; }
-        PottsCell c = potts.getCell(id);
-        double volume = c.getVolume(region);
-        double targetVolume = c.getTargetVolume(region);
-        double lambda = 0; // TODO get region lambda from config
+        VolumeHamiltonianConfig config = configs.get(id);
+        double volume = config.cell.getVolume(region);
+        double targetVolume = config.cell.getTargetVolume(region);
+        double lambda = configs.get(id).getLambda(region);
         return lambda * Math.pow((volume - targetVolume + change), 2);
+    }
+    
+    /**
+     * Initializes parameters for volume hamiltonian term.
+     *
+     * @param series  the series instance
+     */
+    void initialize(PottsSeries series) {
+        if (series.populations == null) { return; }
+        
+        Set<String> keySet = series.populations.keySet();
+        MiniBox parameters = series.potts;
+        
+        for (String key : keySet) {
+            MiniBox population = series.populations.get(key);
+            int pop = population.getInt("CODE");
+            
+            // Get lambda value.
+            double lambda = parameters.getDouble("volume/LAMBDA" + TARGET_SEPARATOR + key);
+            popToLambda.put(pop, lambda);
+            
+            MiniBox regionBox = population.filter("(REGION)");
+            ArrayList<String> regionKeys = regionBox.getKeys();
+            if (regionKeys.size() > 0) {
+                EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
+                for (Region region : Region.values()) {
+                    double lambdaRegion = parameters.getDouble("volume/LAMBDA_"
+                            + region.name() + TARGET_SEPARATOR + key);
+                    lambdasRegion.put(region, lambdaRegion);
+                }
+                popToLambdasRegion.put(pop, lambdasRegion);
+            } else {
+                popToLambdasRegion.put(pop, null);
+            }
+        }
     }
 }

@@ -129,8 +129,6 @@ public final class PottsSeries extends Series {
             }
         }
         
-        // TODO parse region parameters
-        
         // Apply conversion factors.
         for (String convert : pottsConversions.getKeys()) {
             double conversion = parseConversion(pottsConversions.get(convert), ds, dt);
