@@ -16,6 +16,7 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class VolumeHamiltonianTest {
     private static final double EPSILON = 1E-10;
+    
     @Test
     public void constructor_called_initializesMaps() {
         VolumeHamiltonian vh = new VolumeHamiltonian(mock(PottsSeries.class));
@@ -239,9 +240,12 @@ public class VolumeHamiltonianTest {
         
         vh.configs.put(1, config);
         
-        assertEquals(lambda * Math.pow(volume - targetVolume, 2), vh.getVolume(1, region.ordinal(), 0), EPSILON);
-        assertEquals(lambda * Math.pow(volume - targetVolume + 1, 2), vh.getVolume(1, region.ordinal(), 1), EPSILON);
-        assertEquals(lambda * Math.pow(volume - targetVolume - 1, 2), vh.getVolume(1, region.ordinal(), -1), EPSILON);
+        assertEquals(lambda * Math.pow(volume - targetVolume, 2),
+                vh.getVolume(1, region.ordinal(), 0), EPSILON);
+        assertEquals(lambda * Math.pow(volume - targetVolume + 1, 2),
+                vh.getVolume(1, region.ordinal(), 1), EPSILON);
+        assertEquals(lambda * Math.pow(volume - targetVolume - 1, 2),
+                vh.getVolume(1, region.ordinal(), -1), EPSILON);
     }
     
     @Test

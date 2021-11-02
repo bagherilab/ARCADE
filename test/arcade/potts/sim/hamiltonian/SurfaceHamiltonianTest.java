@@ -1,27 +1,31 @@
 package arcade.potts.sim.hamiltonian;
 
+import java.lang.reflect.Field;
+import java.util.EnumMap;
+import java.util.HashMap;
 import org.junit.Test;
+import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
+import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.Enums.Region;
-import static arcade.potts.util.PottsEnums.Term;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class SurfaceHamiltonianTest {
     private static final double EPSILON = 1E-10;
-    private static final double LAMBDA = randomDoubleBetween(0, 10);
-    private static final double REGION_LAMBDA = randomDoubleBetween(0, 10);
     
     static class SurfaceHamiltonianMock extends SurfaceHamiltonian {
-        SurfaceHamiltonianMock(Potts potts) { super(potts); }
+        SurfaceHamiltonianMock(PottsSeries series, Potts potts) { super(series, potts); }
         
         @Override
         int[] calculateChange(int sourceID, int targetID, int x, int y, int z) {
             return new int[] { (sourceID == 1 ? 1 : -1), (targetID == 1 ? 1 : -1) };
         }
-
+        
         @Override
         int[] calculateChange(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
             if (sourceRegion == Region.DEFAULT.ordinal()) {
@@ -32,107 +36,248 @@ public class SurfaceHamiltonianTest {
         }
     }
     
-    static Potts makePottsMock() {
-        Potts potts = mock(Potts.class);
-        
-        // Surfaces for each cell domain.
-        int[] surfaces = new int[] { 8, 6, 8 };
-        double[] targetSurfaces = new double[] { 10, 10, 8 };
-        
-        // Surfaces for each cell domain region.
-        int[][] subsurfaces = new int[][] { { 6, 4 }, { 6, 0 }, { 4, 0 } };
-        double[] targetSubsurfaces = new double[] { 8, 5 };
-        
-        int nCells = 3;
-        doReturn(null).when(potts).getCell(0);
-        
-        for (int i = 0; i < nCells; i++) {
-            PottsCell c = mock(PottsCell.class);
-            
-            // Assign surfaces for the cell domain.
-            doReturn(surfaces[i]).when(c).getSurface();
-            doReturn(targetSurfaces[i]).when(c).getTargetSurface();
-            
-            // Assign surfaces values for cell domain.
-            doReturn(LAMBDA).when(c).getLambda(Term.SURFACE);
-            
-            // Assign volumes for cell regions.
-            doReturn(subsurfaces[i][0]).when(c).getSurface(Region.DEFAULT);
-            doReturn(subsurfaces[i][1]).when(c).getSurface(Region.NUCLEUS);
-            doReturn(targetSubsurfaces[0]).when(c).getTargetSurface(Region.DEFAULT);
-            doReturn(targetSubsurfaces[1]).when(c).getTargetSurface(Region.NUCLEUS);
-            
-            // Assign lambda values for cell regions.
-            doReturn(REGION_LAMBDA).when(c).getLambda(Term.SURFACE, Region.DEFAULT);
-            doReturn(REGION_LAMBDA).when(c).getLambda(Term.SURFACE, Region.NUCLEUS);
-            
-            doReturn(c).when(potts).getCell(i + 1);
-        }
-        
-        return potts;
+    @Test
+    public void constructor_called_initializesMaps() {
+        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class));
+        assertNotNull(shm.configs);
+        assertNotNull(shm.popToLambda);
+        assertNotNull(shm.popToLambdasRegion);
     }
     
     @Test
-    public void constructor_called_setsObject() {
+    public void constructor_called_setsArrays() {
         Potts potts = mock(Potts.class);
-        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(potts);
-        assertEquals(potts, shm.potts);
+        int[][][] ids = new int[0][0][0];
+        int[][][] regions = new int[0][0][0];
+        potts.ids = ids;
+        potts.regions = regions;
+        
+        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(mock(PottsSeries.class), potts);
+        
+        assertSame(ids, shm.ids);
+        assertSame(regions, shm.regions);
+    }
+    
+    @Test
+    public void constructor_called_initializesParameters() {
+        PottsSeries series = mock(PottsSeries.class);
+        
+        series.potts = new MiniBox();
+        series.populations = new HashMap<>();
+        
+        String key1 = randomString();
+        int code1 = randomIntBetween(1, 10);
+        MiniBox population1 = new MiniBox();
+        population1.put("CODE", code1);
+        series.populations.put(key1, population1);
+        
+        String key2 = randomString();
+        int code2 = code1 + randomIntBetween(1, 10);
+        MiniBox population2 = new MiniBox();
+        population2.put("CODE", code2);
+        population2.put("(REGION)" + TAG_SEPARATOR + Region.DEFAULT.name(), 0);
+        population2.put("(REGION)" + TAG_SEPARATOR + Region.NUCLEUS.name(), 0);
+        series.populations.put(key2, population2);
+        
+        double lambda1 = randomDoubleBetween(1, 100);
+        double lambda2 = randomDoubleBetween(1, 100);
+        
+        series.potts.put("surface/LAMBDA" + TARGET_SEPARATOR + key1, lambda1);
+        series.potts.put("surface/LAMBDA" + TARGET_SEPARATOR + key2, lambda2);
+        
+        double lambdaNucleus = randomDoubleBetween(1, 100);
+        double lambdaDefault = randomDoubleBetween(1, 100);
+        series.potts.put("surface/LAMBDA_" + Region.DEFAULT.name() + TARGET_SEPARATOR + key2, lambdaDefault);
+        series.potts.put("surface/LAMBDA_" + Region.NUCLEUS.name() + TARGET_SEPARATOR + key2, lambdaNucleus);
+        
+        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(series, mock(Potts.class));
+        
+        assertEquals(2, shm.popToLambda.size());
+        assertTrue(shm.popToLambda.containsKey(code1));
+        assertTrue(shm.popToLambda.containsKey(code2));
+        assertEquals(lambda1, shm.popToLambda.get(code1), EPSILON);
+        assertEquals(lambda2, shm.popToLambda.get(code2), EPSILON);
+        assertNull(shm.popToLambdasRegion.get(code1));
+        assertEquals(lambdaDefault, shm.popToLambdasRegion.get(code2).get(Region.DEFAULT), EPSILON);
+        assertEquals(lambdaNucleus, shm.popToLambdasRegion.get(code2).get(Region.NUCLEUS), EPSILON);
+    }
+    
+    @Test
+    public void register_noRegions_addsConfig() {
+        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class));
+        PottsCell cell = mock(PottsCell.class);
+        
+        int id = randomIntBetween(1, 10);
+        int pop = randomIntBetween(1, 10);
+        
+        doReturn(id).when(cell).getID();
+        doReturn(pop).when(cell).getPop();
+        
+        double lambda = randomDoubleBetween(1, 100);
+        EnumMap<Region, Double> lambdasRegion = null;
+        shm.popToLambda.put(pop, lambda);
+        shm.popToLambdasRegion.put(pop, lambdasRegion);
+        
+        shm.register(cell);
+        SurfaceHamiltonianConfig config = shm.configs.get(id);
+        
+        assertNotNull(config);
+        assertEquals(cell, config.cell);
+        assertEquals(lambda, config.getLambda(), EPSILON);
+        assertEquals(Double.NaN, config.getLambda(Region.UNDEFINED), EPSILON);
+    }
+    
+    @Test
+    public void register_withRegions_addsConfig() {
+        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class));
+        PottsCell cell = mock(PottsCell.class);
+        
+        int id = randomIntBetween(1, 10);
+        int pop = randomIntBetween(1, 10);
+        
+        doReturn(id).when(cell).getID();
+        doReturn(pop).when(cell).getPop();
+        
+        double lambda = randomDoubleBetween(1, 100);
+        double lambdaNucleus = randomDoubleBetween(1, 100);
+        EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
+        lambdasRegion.put(Region.NUCLEUS, lambdaNucleus);
+        
+        shm.popToLambda.put(pop, lambda);
+        shm.popToLambdasRegion.put(pop, lambdasRegion);
+        
+        shm.register(cell);
+        SurfaceHamiltonianConfig config = shm.configs.get(id);
+        
+        assertNotNull(config);
+        assertEquals(cell, config.cell);
+        assertEquals(lambda, config.getLambda(), EPSILON);
+        assertEquals(lambdaNucleus, config.getLambda(Region.NUCLEUS), EPSILON);
+    }
+    
+    @Test
+    public void deregister_exists_removesConfig() {
+        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class));
+        PottsCell cell = mock(PottsCell.class);
+        
+        int id = randomIntBetween(1, 10);
+        doReturn(id).when(cell).getID();
+        
+        SurfaceHamiltonianConfig config = mock(SurfaceHamiltonianConfig.class);
+        shm.configs.put(id, config);
+    
+        shm.deregister(cell);
+        
+        assertFalse(shm.configs.containsKey(id));
     }
     
     @Test
     public void getDelta_validIDs_calculatesValue() {
-        Potts potts = makePottsMock();
-        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(potts);
+        SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
         
-        double cell1 = Math.pow(8 - 10, 2);
-        double cell1plus1 = Math.pow(8 - 10 + 1, 2);
-        double cell2 = Math.pow(6 - 10, 2);
-        double cell2minus1 = Math.pow(6 - 10 - 1, 2);
+        double cell1 = randomDoubleBetween(1, 100);
+        doReturn(cell1).when(shm).getSurface(1, 0);
         
-        assertEquals(LAMBDA * (cell1plus1 - cell1 + cell2minus1 - cell2), shm.getDelta(1, 2, 0, 0, 0), EPSILON);
-        assertEquals(LAMBDA * (cell2minus1 - cell2 + cell1plus1 - cell1), shm.getDelta(2, 1, 0, 0, 0), EPSILON);
+        double cell1plus1 = randomDoubleBetween(1, 100);
+        doReturn(cell1plus1).when(shm).getSurface(1, 1);
+        
+        double cell2 = randomDoubleBetween(1, 100);
+        doReturn(cell2).when(shm).getSurface(2, 0);
+        
+        double cell2minus1 = randomDoubleBetween(1, 100);
+        doReturn(cell2minus1).when(shm).getSurface(2, -1);
+        
+        assertEquals((cell1plus1 - cell1 + cell2minus1 - cell2), shm.getDelta(1, 2, 0, 0, 0), EPSILON);
+        assertEquals((cell2minus1 - cell2 + cell1plus1 - cell1), shm.getDelta(2, 1, 0, 0, 0), EPSILON);
     }
     
     @Test
     public void getDelta_validRegions_calculatesValue() {
-        Potts potts = makePottsMock();
-        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(potts);
+        SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
         
-        double subcell2 = Math.pow(4 - 5, 2);
-        double subcell2minus3 = Math.pow(4 - 5 - 3, 2);
-        double subcell2plus2 = Math.pow(4 - 5 + 2, 2);
+        double region = randomDoubleBetween(1, 100);
+        doReturn(0.0).when(shm).getSurface(1, Region.DEFAULT.ordinal(), 0);
+        doReturn(region).when(shm).getSurface(1, Region.NUCLEUS.ordinal(), 0);
         
-        assertEquals(REGION_LAMBDA * (subcell2minus3 - subcell2),
+        double regionminus3 = randomDoubleBetween(1, 100);
+        doReturn(0.0).when(shm).getSurface(1, Region.DEFAULT.ordinal(), -3);
+        doReturn(regionminus3).when(shm).getSurface(1, Region.NUCLEUS.ordinal(), -3);
+        
+        double regionplus2 = randomDoubleBetween(1, 100);
+        doReturn(0.0).when(shm).getSurface(1, Region.DEFAULT.ordinal(), 2);
+        doReturn(regionplus2).when(shm).getSurface(1, Region.NUCLEUS.ordinal(), 2);
+        
+        assertEquals((regionminus3 - region),
                 shm.getDelta(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 0, 0, 0), EPSILON);
-        assertEquals(REGION_LAMBDA * (subcell2plus2 - subcell2),
+        assertEquals((regionplus2 - region),
                 shm.getDelta(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0), EPSILON);
     }
     
     @Test
-    public void getSurface_validIDsNotZero_calculatesValue() {
-        Potts potts = makePottsMock();
-        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(potts);
+    public void getSurface_validIDs_calculatesValue() {
+        SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
         
-        assertEquals(LAMBDA * Math.pow(8 - 10, 2), shm.getSurface(1, 0), EPSILON);
-        assertEquals(LAMBDA * Math.pow(8 - 10 + 1, 2), shm.getSurface(1, 1), EPSILON);
-        assertEquals(LAMBDA * Math.pow(8 - 10 - 1, 2), shm.getSurface(1, -1), EPSILON);
+        int surface = randomIntBetween(10, 20);
+        double targetSurface = randomDoubleBetween(10, 20);
+        
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(surface).when(cell).getSurface();
+        doReturn(targetSurface).when(cell).getTargetSurface();
+        
+        SurfaceHamiltonianConfig config = mock(SurfaceHamiltonianConfig.class);
+        
+        try {
+            Field cellField = SurfaceHamiltonianConfig.class.getDeclaredField("cell");
+            cellField.setAccessible(true);
+            cellField.set(config, cell);
+        } catch (Exception ignored) { }
+        
+        double lambda = randomDoubleBetween(10, 100);
+        doReturn(lambda).when(config).getLambda();
+        
+        shm.configs.put(1, config);
+        
+        assertEquals(lambda * Math.pow(surface - targetSurface, 2), shm.getSurface(1, 0), EPSILON);
+        assertEquals(lambda * Math.pow(surface - targetSurface + 1, 2), shm.getSurface(1, 1), EPSILON);
+        assertEquals(lambda * Math.pow(surface - targetSurface - 1, 2), shm.getSurface(1, -1), EPSILON);
     }
     
     @Test
-    public void getSurface_validRegionsNotZero_calculatesValue() {
-        Potts potts = makePottsMock();
-        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(potts);
+    public void getSurface_validRegions_calculatesValue() {
+        SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
+        Region region = Region.NUCLEUS;
         
-        assertEquals(REGION_LAMBDA * Math.pow(4 - 5, 2), shm.getSurface(1, Region.NUCLEUS.ordinal(), 0), EPSILON);
-        assertEquals(REGION_LAMBDA * Math.pow(4 - 5 + 1, 2), shm.getSurface(1, Region.NUCLEUS.ordinal(), 1), EPSILON);
-        assertEquals(REGION_LAMBDA * Math.pow(4 - 5 - 1, 2), shm.getSurface(1, Region.NUCLEUS.ordinal(), -1), EPSILON);
+        int surface = randomIntBetween(10, 20);
+        double targetSurface = randomDoubleBetween(10, 20);
+        
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(surface).when(cell).getSurface(region);
+        doReturn(targetSurface).when(cell).getTargetSurface(region);
+        
+        SurfaceHamiltonianConfig config = mock(SurfaceHamiltonianConfig.class);
+        
+        try {
+            Field cellField = SurfaceHamiltonianConfig.class.getDeclaredField("cell");
+            cellField.setAccessible(true);
+            cellField.set(config, cell);
+        } catch (Exception ignored) { }
+        
+        double lambda = randomDoubleBetween(10, 100);
+        doReturn(lambda).when(config).getLambda(region);
+        
+        shm.configs.put(1, config);
+        
+        assertEquals(lambda * Math.pow(surface - targetSurface, 2),
+                shm.getSurface(1, region.ordinal(), 0), EPSILON);
+        assertEquals(lambda * Math.pow(surface - targetSurface + 1, 2),
+                shm.getSurface(1, region.ordinal(), 1), EPSILON);
+        assertEquals(lambda * Math.pow(surface - targetSurface - 1, 2),
+                shm.getSurface(1, region.ordinal(), -1), EPSILON);
     }
     
     @Test
     public void getSurface_zeroID_returnsZero() {
-        Potts potts = makePottsMock();
-        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(potts);
-        
+        SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
         assertEquals(0, shm.getSurface(0, 1), EPSILON);
         assertEquals(0, shm.getSurface(0, 0), EPSILON);
         assertEquals(0, shm.getSurface(0, -1), EPSILON);
@@ -140,9 +285,7 @@ public class SurfaceHamiltonianTest {
     
     @Test
     public void getSurface_defaultRegion_returnsZero() {
-        Potts potts = makePottsMock();
-        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(potts);
-        
+        SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
         assertEquals(0, shm.getSurface(0, Region.DEFAULT.ordinal(), 1), EPSILON);
         assertEquals(0, shm.getSurface(0, Region.DEFAULT.ordinal(), 0), EPSILON);
         assertEquals(0, shm.getSurface(0, Region.DEFAULT.ordinal(), -1), EPSILON);

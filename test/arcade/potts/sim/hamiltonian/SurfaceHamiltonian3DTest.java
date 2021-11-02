@@ -2,6 +2,7 @@ package arcade.potts.sim.hamiltonian;
 
 import org.junit.Test;
 import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.util.Enums.Region;
@@ -98,7 +99,7 @@ public class SurfaceHamiltonian3DTest {
     @Test
     public void calculateChange_validIDs_calculatesValue() {
         Potts potts = makePottsMock();
-        SurfaceHamiltonian3D sh = new SurfaceHamiltonian3D(potts);
+        SurfaceHamiltonian3D sh = new SurfaceHamiltonian3D(mock(PottsSeries.class), potts);
         
         assertArrayEquals(new int[] { 0, 2 }, sh.calculateChange(1, 2, 2, 2, 2));
         assertArrayEquals(new int[] { 0, 4 }, sh.calculateChange(1, 3, 2, 2, 2));
@@ -107,7 +108,7 @@ public class SurfaceHamiltonian3DTest {
     @Test
     public void calculateChange_validRegions_calculatesValue() {
         Potts potts = makePottsMock();
-        SurfaceHamiltonian3D sh = new SurfaceHamiltonian3D(potts);
+        SurfaceHamiltonian3D sh = new SurfaceHamiltonian3D(mock(PottsSeries.class), potts);
         
         assertArrayEquals(new int[] { -6, 2 }, sh.calculateChange(1, REGION_NUCLEUS, REGION_DEFAULT, 2, 2, 2));
         assertArrayEquals(new int[] { -4, 4 }, sh.calculateChange(1, REGION_DEFAULT, REGION_NUCLEUS, 2, 2, 1));

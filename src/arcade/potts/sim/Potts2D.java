@@ -42,7 +42,7 @@ public final class Potts2D extends Potts {
             case VOLUME:
                 return new VolumeHamiltonian(series);
             case SURFACE:
-                return new SurfaceHamiltonian2D(this, series);
+                return new SurfaceHamiltonian2D(series, this);
             default:
                 return null;
         }

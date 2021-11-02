@@ -15,10 +15,10 @@ public class SurfaceHamiltonian3D extends SurfaceHamiltonian {
     /**
      * Creates the surface energy term for the {@code Potts} Hamiltonian in 3D.
      *
-     * @param potts  the associated Potts instance
      * @param series  the associated Series instance
+     * @param potts  the associated Potts instance
      */
-    public SurfaceHamiltonian3D(Potts potts, PottsSeries series) { super(potts, series); }
+    public SurfaceHamiltonian3D(PottsSeries series, Potts potts) { super(series, potts); }
     
     @Override
     int[] calculateChange(int sourceID, int targetID, int x, int y, int z) {
@@ -29,7 +29,7 @@ public class SurfaceHamiltonian3D extends SurfaceHamiltonian {
         
         // Iterate through each neighbor.
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            int neighbor = potts.ids[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
+            int neighbor = ids[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
             
             if (neighbor != sourceID) {
                 beforeSource++;
@@ -58,8 +58,8 @@ public class SurfaceHamiltonian3D extends SurfaceHamiltonian {
         
         // Iterate through each neighbor.
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            int neighborID = potts.ids[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
-            int neighborRegion = potts.regions[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
+            int neighborID = ids[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
+            int neighborRegion = regions[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];
             
             if (neighborRegion != sourceRegion || neighborID != id) {
                 beforeSource++;

@@ -1,8 +1,14 @@
 package arcade.potts.sim.hamiltonian;
 
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Set;
+import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
+import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.Enums.Region;
 
 /**
@@ -10,27 +16,48 @@ import static arcade.core.util.Enums.Region;
  */
 
 public abstract class SurfaceHamiltonian implements Hamiltonian {
-    /** Potts instance. */
-    final Potts potts;
+    /** Map of hamiltonian config objects. */
+    final HashMap<Integer, SurfaceHamiltonianConfig> configs;
+    
+    /** Map of population to lambda values. */
+    final HashMap<Integer, Double> popToLambda;
+    
+    /** Map of population to lambda values for regions. */
+    final HashMap<Integer, EnumMap<Region, Double>> popToLambdasRegion;
+    
+    /** Potts array for ids. */
+    final int[][][] ids;
+    
+    /** Potts array for regions. */
+    final int[][][] regions;
     
     /**
      * Creates the surface energy term for the {@code Potts} Hamiltonian.
      *
-     * @param potts  the associated Potts instance
      * @param series  the associated Series instance
+     * @param potts  the associated Potts instance
      */
-    public SurfaceHamiltonian(Potts potts, PottsSeries series) {
-        this.potts = potts;
+    public SurfaceHamiltonian(PottsSeries series, Potts potts) {
+        configs = new HashMap<>();
+        popToLambda = new HashMap<>();
+        popToLambdasRegion = new HashMap<>();
+        initialize(series);
+        
+        this.ids = potts.ids;
+        this.regions = potts.regions;
     }
     
     @Override
     public void register(PottsCell cell) {
-        // TODO write method body
+        double lambda = popToLambda.get(cell.getPop());
+        EnumMap<Region, Double> lambdasRegion = popToLambdasRegion.get(cell.getPop());
+        SurfaceHamiltonianConfig config = new SurfaceHamiltonianConfig(cell, lambda, lambdasRegion);
+        configs.put(cell.getID(), config);
     }
     
     @Override
     public void deregister(PottsCell cell) {
-        // TODO write method body
+        configs.remove(cell.getID());
     }
     
     /**
@@ -99,10 +126,10 @@ public abstract class SurfaceHamiltonian implements Hamiltonian {
      */
     double getSurface(int id, int change) {
         if (id == 0) { return 0; }
-        PottsCell c = potts.getCell(id);
-        double surface = c.getSurface();
-        double targetSurface = c.getTargetSurface();
-        double lambda = 0; // TODO get lambda from config
+        SurfaceHamiltonianConfig config = configs.get(id);
+        double surface = config.cell.getSurface();
+        double targetSurface = config.cell.getTargetSurface();
+        double lambda = config.getLambda();
         return lambda * Math.pow((surface - targetSurface + change), 2);
     }
     
@@ -117,10 +144,45 @@ public abstract class SurfaceHamiltonian implements Hamiltonian {
     double getSurface(int id, int t, int change) {
         Region region = Region.values()[t];
         if (id == 0 || region == Region.DEFAULT) { return 0; }
-        PottsCell c = potts.getCell(id);
-        double surface = c.getSurface(region);
-        double targetSurface = c.getTargetSurface(region);
-        double lambda = 0;// TODO get region lambda from config
+        SurfaceHamiltonianConfig config = configs.get(id);
+        double surface = config.cell.getSurface(region);
+        double targetSurface = config.cell.getTargetSurface(region);
+        double lambda = config.getLambda(region);
         return lambda * Math.pow((surface - targetSurface + change), 2);
+    }
+    
+    /**
+     * Initializes parameters for surface hamiltonian term.
+     *
+     * @param series  the series instance
+     */
+    void initialize(PottsSeries series) {
+        if (series.populations == null) { return; }
+        
+        Set<String> keySet = series.populations.keySet();
+        MiniBox parameters = series.potts;
+        
+        for (String key : keySet) {
+            MiniBox population = series.populations.get(key);
+            int pop = population.getInt("CODE");
+            
+            // Get lambda value.
+            double lambda = parameters.getDouble("surface/LAMBDA" + TARGET_SEPARATOR + key);
+            popToLambda.put(pop, lambda);
+            
+            MiniBox regionBox = population.filter("(REGION)");
+            ArrayList<String> regionKeys = regionBox.getKeys();
+            if (regionKeys.size() > 0) {
+                EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
+                for (Region region : Region.values()) {
+                    double lambdaRegion = parameters.getDouble("surface/LAMBDA_"
+                            + region.name() + TARGET_SEPARATOR + key);
+                    lambdasRegion.put(region, lambdaRegion);
+                }
+                popToLambdasRegion.put(pop, lambdasRegion);
+            } else {
+                popToLambdasRegion.put(pop, null);
+            }
+        }
     }
 }

@@ -5,10 +5,10 @@ import arcade.core.util.Enums.Region;
 import arcade.potts.agent.cell.PottsCell;
 
 /**
- * Configuration for {@link VolumeHamiltonian} parameters.
+ * Configuration for {@link SurfaceHamiltonian} parameters.
  */
 
-class VolumeHamiltonianConfig {
+class SurfaceHamiltonianConfig {
     /** Associated {@link PottsCell} instance. */
     final PottsCell cell;
     
@@ -22,13 +22,13 @@ class VolumeHamiltonianConfig {
     final boolean hasRegions;
     
     /**
-     * Creates parameter configuration for {@code VolumeHamiltonian} class.
+     * Creates parameter configuration for {@code SurfaceHamiltonian} class.
      *
      * @param cell  the associated cell instance
      * @param lambda  the lambda multiplier
      * @param lambdasRegion  the map of lambda multiplier for regions
      */
-    VolumeHamiltonianConfig(PottsCell cell, double lambda, EnumMap<Region, Double> lambdasRegion) {
+    SurfaceHamiltonianConfig(PottsCell cell, double lambda, EnumMap<Region, Double> lambdasRegion) {
         this.cell = cell;
         this.lambda = lambda;
         this.hasRegions = (lambdasRegion != null) && (lambdasRegion.keySet().size() > 0);
