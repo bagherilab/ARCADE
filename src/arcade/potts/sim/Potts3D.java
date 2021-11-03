@@ -57,7 +57,7 @@ public final class Potts3D extends Potts {
             case SURFACE:
                 return new SurfaceHamiltonian3D(series, this);
             case SUBSTRATE:
-                return new SubstrateHamiltonian(this, series);
+                return new SubstrateHamiltonian(series, this);
             default:
                 return null;
         }

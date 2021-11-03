@@ -19,10 +19,10 @@ public abstract class AdhesionHamiltonian implements Hamiltonian {
     /** Map of hamiltonian config objects. */
     final HashMap<Integer, AdhesionHamiltonianConfig> configs;
     
-    /** Map of population to lambda values. */
+    /** Map of population to adhesion values. */
     final HashMap<Integer, double[]> popToAdhesion;
     
-    /** Map of population to lambda values for regions. */
+    /** Map of population to adhesion values for regions. */
     final HashMap<Integer, EnumMap<Region, EnumMap<Region, Double>>>  popToAdhesionRegion;
     
     /** Potts array for ids. */

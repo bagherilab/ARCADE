@@ -1,60 +1,53 @@
 package arcade.potts.sim.hamiltonian;
 
+import java.util.HashMap;
+import java.util.Set;
+import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
+import static arcade.core.sim.Series.TARGET_SEPARATOR;
 
 /**
  * Implementation of {@link Hamiltonian} for substrate energy.
  */
 
 public class SubstrateHamiltonian implements Hamiltonian {
-    /** Potts instance. */
-    final Potts potts;
+    /** Map of hamiltonian config objects. */
+    final HashMap<Integer, SubstrateHamiltonianConfig> configs;
+    
+    /** Map of population to substrate adhesion values. */
+    final HashMap<Integer, Double> popToSubstrate;
     
     /** Grid tracking substrate values. */
-    final int[][] substrate;
+    final int[][] substrates;
     
     /**
      * Creates the substrate energy term for the {@code Potts} Hamiltonian.
      *
-     * @param potts  the associated Potts instance
      * @param series  the associated Series instance
+     * @param potts  the associated Potts instance
      */
-    public SubstrateHamiltonian(Potts potts, PottsSeries series) {
-        this.potts = potts;
+    public SubstrateHamiltonian(PottsSeries series, Potts potts) {
+        configs = new HashMap<>();
+        popToSubstrate = new HashMap<>();
+        initialize(series);
         
-        // Initialize substrate array.
-        this.substrate = createSubstrate(potts.length + 2, potts.width + 2);
+        // Create substrate array.
+        substrates = createSubstrate(potts.length + 2, potts.width + 2);
     }
     
     @Override
     public void register(PottsCell cell) {
-        // TODO write method body
+        int pop = cell.getPop();
+        double substrate = popToSubstrate.get(pop);
+        SubstrateHamiltonianConfig config = new SubstrateHamiltonianConfig(substrate);
+        configs.put(cell.getID(), config);
     }
     
     @Override
     public void deregister(PottsCell cell) {
-        // TODO write method body
-    }
-    
-    /**
-     * Creates array representing substrate.
-     *
-     * @param length  the length (x direction) of potts array
-     * @param width  the width (y direction) of potts array
-     * @return  the substrate array
-     */
-    private int[][] createSubstrate(int length, int width) {
-        int[][] arr = new int[length][width];
-        
-        for (int i = 0; i < length; i++) {
-            for (int j = 0; j < width; j++) {
-                arr[i][j] = 1;
-            }
-        }
-        
-        return arr;
+        configs.remove(cell.getID());
     }
     
     /**
@@ -97,17 +90,58 @@ public class SubstrateHamiltonian implements Hamiltonian {
      * @return  the energy
      */
     double getSubstrate(int id, int x, int y, int z) {
-        PottsCell a = potts.getCell(id);
+        if (id <= 0 || z != 1) { return 0; }
         
-        if (a == null || z != 1) { return 0; }
+        SubstrateHamiltonianConfig config = configs.get(id);
         
         double s = 0;
         for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
-                s += -substrate[i][j] * 0; // TODO get substrate value from config
+                s += -substrates[i][j] * config.getSubstrate();
             }
         }
         
         return s;
     }
+    
+    /**
+     * Initializes parameters for substrate hamiltonian term.
+     *
+     * @param series  the series instance
+     */
+    void initialize(PottsSeries series) {
+        if (series.populations == null) { return; }
+        
+        Set<String> keySet = series.populations.keySet();
+        MiniBox parameters = series.potts;
+        
+        for (String key : keySet) {
+            MiniBox population = series.populations.get(key);
+            int pop = population.getInt("CODE");
+            
+            // Get substrate adhesion value.
+            double substrate = parameters.getDouble("substrate/ADHESION" + TARGET_SEPARATOR + key);
+            popToSubstrate.put(pop, substrate);
+        }
+    }
+    
+    /**
+     * Creates array representing substrate.
+     *
+     * @param length  the length (x direction) of potts array
+     * @param width  the width (y direction) of potts array
+     * @return  the substrate array
+     */
+    int[][] createSubstrate(int length, int width) {
+        int[][] arr = new int[length][width];
+        
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < width; j++) {
+                arr[i][j] = 1;
+            }
+        }
+        
+        return arr;
+    }
+    
 }
