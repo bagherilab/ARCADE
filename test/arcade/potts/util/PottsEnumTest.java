@@ -46,7 +46,7 @@ public class PottsEnumTest {
         // Create set of all random values.
         ArrayList<Term> enumRandom = new ArrayList<>();
         
-        int n = Direction.values().length - 1;
+        int n = Term.values().length - 1;
         for (int i = 0; i < n; i++) {
             MersenneTwisterFast rng = mock(MersenneTwisterFast.class);
             doReturn(i).when(rng).nextInt(n);
