@@ -1,29 +1,41 @@
 <parameters>
     <!-- default parameters for potts -->
-    <potts id="TEMPERATURE" value="10" />
+    <potts id="TEMPERATURE" value="10" description="Boltzmann temperature" />
     <potts id="MCS" value="1" description="number of MCS steps per simulation tick" />
     
+    <!-- adhesion term parameters -->
+    <potts.term term="adhesion" id="ADHESION" value="10" />
+    <potts.term term="adhesion" id="ADHESION_DEFAULT" value="10" />
+    <potts.term term="adhesion" id="ADHESION_NUCLEUS" value="10" />
+    
+    <!-- volume term parameters -->
+    <potts.term term="volume" id="LAMBDA" value="5" />
+    <potts.term term="volume" id="LAMBDA_DEFAULT" value="5" />
+    <potts.term term="volume" id="LAMBDA_NUCLEUS" value="5" />
+    
+    <!-- surface term parameters -->
+    <potts.term term="surface" id="LAMBDA" value="2" />
+    <potts.term term="surface" id="LAMBDA_DEFAULT" value="2" />
+    <potts.term term="surface" id="LAMBDA_NUCLEUS" value="2" />
+    
+    <!-- substrate term parameters -->
+    <potts.term term="substrate" id="ADHESION" value = "2" />
+    
+    <!-- persistence term parameters -->
+    <potts.term term="persistence" id="LAMBDA" value="0.1" />
+    <potts.term term="persistence" id="DECAY" value="0.05" />
+    
     <!-- default parameters for populations -->
-    <population id="LAMBDA_VOLUME" value="5" convesion="DS^3.DT^-1" />
-    <population id="LAMBDA_SURFACE" value="2" coversion="DS^2.DT^-1" />
     <population id="CRITICAL_VOLUME" value="1000" units="um^3" conversion="DS^-3" />
     <population id="CRITICAL_HEIGHT" value="5" units="um" conversion="DS^-1" />
-    <population id="ADHESION" value="10" />
-    <population id="SUBSTRATE" value="2" />
     
     <!-- default region parameters -->
-    <population.region region="DEFAULT" id="LAMBDA_VOLUME" value="1" conversion="DS^3.DT^-1" />
-    <population.region region="DEFAULT" id="LAMBDA_SURFACE" value="1" conversion="DS^2.DT^-1" />
-    <population.region region="DEFAULT" id="ADHESION" target="DEFAULT" value="1" />
-    <population.region region="DEFAULT" id="ADHESION" target="NUCLEUS" value="1" />
+    <population.region region="DEFAULT" id="CRITICAL_VOLUME" value="1000" units="um^3" conversion="DS^-3" />
+    <population.region region="DEFAULT" id="CRITICAL_HEIGHT" value="5" units="um" conversion="DS^-1" />
     
     <!-- nucleus region parameters -->
     <population.region region="NUCLEUS" id="CRITICAL_VOLUME" value="500" units="um^3" conversion="DS^-3" />
     <population.region region="NUCLEUS" id="CRITICAL_HEIGHT" value="5" units="um" conversion="DS^-1" />
-    <population.region region="NUCLEUS" id="LAMBDA_VOLUME" value="1" conversion="DS^3.DT^-1" />
-    <population.region region="NUCLEUS" id="LAMBDA_SURFACE" value="1" conversion="DS^2.DT^-1" />
-    <population.region region="NUCLEUS" id="ADHESION" target="DEFAULT" value="1" />
-    <population.region region="NUCLEUS" id="ADHESION" target="NUCLEUS" value="1" />
     
     <!-- proliferation module parameters -->
     <population.module module="proliferation" id="RATE_G1" value="8.33" units="steps/hour" conversion="DT" description="rate of events in proliferative G1 phase" />
