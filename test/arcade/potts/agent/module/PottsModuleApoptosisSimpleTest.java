@@ -334,6 +334,7 @@ public class PottsModuleApoptosisSimpleTest {
         
         verify(location).clear(potts.ids, potts.regions);
         verify(grid).removeObject(id);
+        verify(potts).deregister(cell);
         verify(cell).stop();
     }
 }

@@ -200,6 +200,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
                 
                 // Add, initialize, and schedule the cell.
                 grid.addObject(i, cell);
+                potts.register(cell);
                 cell.initialize(potts.ids, potts.regions);
                 cell.schedule(schedule);
                 

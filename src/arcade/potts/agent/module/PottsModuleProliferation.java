@@ -226,7 +226,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
      * <p>
      * The cell location is split, along with any regions.
      * The new cell is created, initialized, and added to the schedule.
-     * Both cells are reset remain in the proliferative state.
+     * Both cells are reset and remain in the proliferative state.
      *
      * @param random  the random number generator
      * @param sim  the simulation instance
@@ -244,6 +244,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
         int newID = sim.getID();
         PottsCell newCell = cell.make(newID, State.PROLIFERATIVE, newLocation);
         sim.getGrid().addObject(newID, newCell);
+        potts.register(newCell);
         newCell.reset(potts.ids, potts.regions);
         newCell.schedule(sim.getSchedule());
     }

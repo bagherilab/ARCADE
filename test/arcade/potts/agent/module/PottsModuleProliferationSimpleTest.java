@@ -587,6 +587,7 @@ public class PottsModuleProliferationSimpleTest {
         verify(cell).reset(potts.ids, potts.regions);
         verify(newCell).reset(potts.ids, potts.regions);
         verify(grid).addObject(id, newCell);
+        verify(potts).register(newCell);
         verify(newCell).schedule(schedule);
     }
 }

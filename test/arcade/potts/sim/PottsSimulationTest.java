@@ -491,6 +491,7 @@ public class PottsSimulationTest {
         for (Object obj : sim.grid.getAllObjects()) {
             verify((PottsCell) obj).initialize(sim.potts.ids, sim.potts.regions);
             verify((Cell) obj).schedule(sim.schedule);
+            verify(sim.potts).register((PottsCell) obj);
         }
     }
     
@@ -522,6 +523,7 @@ public class PottsSimulationTest {
         for (Object obj : sim.grid.getAllObjects()) {
             verify((PottsCell) obj).initialize(sim.potts.ids, sim.potts.regions);
             verify((PottsCell) obj).schedule(sim.schedule);
+            verify(sim.potts).register((PottsCell) obj);
         }
     }
     
