@@ -14,9 +14,8 @@ public class VolumeHamiltonianConfigTest {
     @Test
     public void constructor_noRegions_setsFields() {
         PottsCell cell = mock(PottsCell.class);
-        double lambda = randomDoubleBetween(1, 100);
         
-        VolumeHamiltonianConfig vhc = new VolumeHamiltonianConfig(cell, lambda, null);
+        VolumeHamiltonianConfig vhc = new VolumeHamiltonianConfig(cell, 0, null);
         assertEquals(cell, vhc.cell);
         assertFalse(vhc.hasRegions);
     }
@@ -24,10 +23,9 @@ public class VolumeHamiltonianConfigTest {
     @Test
     public void constructor_emptyRegions_setsFields() {
         PottsCell cell = mock(PottsCell.class);
-        double lambda = randomDoubleBetween(1, 100);
         EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
         
-        VolumeHamiltonianConfig vhc = new VolumeHamiltonianConfig(cell, lambda, lambdasRegion);
+        VolumeHamiltonianConfig vhc = new VolumeHamiltonianConfig(cell, 0, lambdasRegion);
         assertEquals(cell, vhc.cell);
         assertFalse(vhc.hasRegions);
     }
@@ -35,11 +33,10 @@ public class VolumeHamiltonianConfigTest {
     @Test
     public void constructor_hasRegions_setsFields() {
         PottsCell cell = mock(PottsCell.class);
-        double lambda = randomDoubleBetween(1, 100);
         EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
         lambdasRegion.put(Region.UNDEFINED, randomDoubleBetween(1, 100));
         
-        VolumeHamiltonianConfig vhc = new VolumeHamiltonianConfig(cell, lambda, lambdasRegion);
+        VolumeHamiltonianConfig vhc = new VolumeHamiltonianConfig(cell, 0, lambdasRegion);
         assertEquals(cell, vhc.cell);
         assertTrue(vhc.hasRegions);
     }

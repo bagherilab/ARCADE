@@ -3,6 +3,7 @@ package arcade.potts.sim;
 import java.util.HashSet;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian3D;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
+import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
 import arcade.potts.sim.hamiltonian.SubstrateHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian3D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
@@ -58,6 +59,8 @@ public final class Potts3D extends Potts {
                 return new SurfaceHamiltonian3D(series, this);
             case SUBSTRATE:
                 return new SubstrateHamiltonian(series, this);
+            case PERSISTENCE:
+                return new PersistenceHamiltonian(series);
             default:
                 return null;
         }

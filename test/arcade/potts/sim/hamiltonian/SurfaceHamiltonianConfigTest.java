@@ -14,9 +14,8 @@ public class SurfaceHamiltonianConfigTest {
     @Test
     public void constructor_noRegions_setsFields() {
         PottsCell cell = mock(PottsCell.class);
-        double lambda = randomDoubleBetween(1, 100);
         
-        SurfaceHamiltonianConfig shc = new SurfaceHamiltonianConfig(cell, lambda, null);
+        SurfaceHamiltonianConfig shc = new SurfaceHamiltonianConfig(cell, 0, null);
         assertEquals(cell, shc.cell);
         assertFalse(shc.hasRegions);
     }
@@ -24,10 +23,9 @@ public class SurfaceHamiltonianConfigTest {
     @Test
     public void constructor_emptyRegions_setsFields() {
         PottsCell cell = mock(PottsCell.class);
-        double lambda = randomDoubleBetween(1, 100);
         EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
         
-        SurfaceHamiltonianConfig shc = new SurfaceHamiltonianConfig(cell, lambda, lambdasRegion);
+        SurfaceHamiltonianConfig shc = new SurfaceHamiltonianConfig(cell, 0, lambdasRegion);
         assertEquals(cell, shc.cell);
         assertFalse(shc.hasRegions);
     }
@@ -35,11 +33,10 @@ public class SurfaceHamiltonianConfigTest {
     @Test
     public void constructor_hasRegions_setsFields() {
         PottsCell cell = mock(PottsCell.class);
-        double lambda = randomDoubleBetween(1, 100);
         EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
         lambdasRegion.put(Region.UNDEFINED, randomDoubleBetween(1, 100));
         
-        SurfaceHamiltonianConfig shc = new SurfaceHamiltonianConfig(cell, lambda, lambdasRegion);
+        SurfaceHamiltonianConfig shc = new SurfaceHamiltonianConfig(cell, 0, lambdasRegion);
         assertEquals(cell, shc.cell);
         assertTrue(shc.hasRegions);
     }

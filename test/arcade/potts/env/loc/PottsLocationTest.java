@@ -537,6 +537,34 @@ public class PottsLocationTest {
     }
     
     @Test
+    public void getCentroid_hasVoxels_returnsArray() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 1, 1));
+        voxels.add(new Voxel(1, 1, 2));
+        voxels.add(new Voxel(2, 2, 2));
+        voxels.add(new Voxel(2, 2, 2));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        
+        double[] centroid = loc.getCentroid();
+        
+        assertEquals(1.25, centroid[0], EPSILON);
+        assertEquals(1.5, centroid[1], EPSILON);
+        assertEquals(1.75, centroid[2], EPSILON);
+    }
+    
+    @Test
+    public void getCentroid_noVoxels_returnsZeros() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        
+        double[] centroid = loc.getCentroid();
+        
+        assertEquals(0, centroid[0], EPSILON);
+        assertEquals(0, centroid[1], EPSILON);
+        assertEquals(0, centroid[2], EPSILON);
+    }
+    
+    @Test
     public void getDirection_oneMaximumDiameter_returnsValue() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);

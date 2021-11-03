@@ -568,4 +568,31 @@ public class Matrix {
         }
         return Math.sqrt(sum);
     }
+    
+    /**
+     * Calculates dot product of two vectors.
+     *
+     * @param vecA  the first matrix
+     * @param vecB  the second matrix
+     * @return  the dot product of the two vectors
+     */
+    public static double dot(double[] vecA, double[] vecB) {
+        double sum = 0;
+        for (int i = 0; i < vecA.length; i++) {
+            sum += vecA[i] * vecB[i];
+        }
+        return sum;
+    }
+    
+    /**
+     * Converts the vector to a unit vector.
+     *
+     * @param vec  the vector to convert
+     */
+    public static void unit(double[] vec) {
+        double norm = normalize(vec);
+        for (int i = 0; i < vec.length; i++) {
+            vec[i] /= norm;
+        }
+    }
 }

@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian2D;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
+import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian2D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 import static org.junit.Assert.*;
@@ -103,6 +104,9 @@ public class Potts2DTest {
         
         h = potts2D.getHamiltonian(Term.SURFACE, series);
         assertTrue(h instanceof SurfaceHamiltonian2D);
+    
+        h = potts2D.getHamiltonian(Term.PERSISTENCE, series);
+        assertTrue(h instanceof PersistenceHamiltonian);
     
         h = potts2D.getHamiltonian(Term.SUBSTRATE, series);
         assertNull(h);
