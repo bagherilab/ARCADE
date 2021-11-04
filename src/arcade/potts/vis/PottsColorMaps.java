@@ -83,13 +83,13 @@ public class PottsColorMaps {
         mapVolume = new Colors(
                 new Color[]{
                         new Color(0, 0, 0),
-                        new Color(251, 230, 197),
-                        new Color(245, 186, 152),
-                        new Color(238, 138, 130),
-                        new Color(220, 113, 118),
-                        new Color(200, 88, 108),
-                        new Color(156, 63, 93),
                         new Color(112, 40, 74),
+                        new Color(156, 63, 93),
+                        new Color(200, 88, 108),
+                        new Color(220, 113, 118),
+                        new Color(238, 138, 130),
+                        new Color(245, 186, 152),
+                        new Color(251, 230, 197),
                 },
                 new double[] {
                         0,

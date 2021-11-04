@@ -20,7 +20,6 @@ import sim.util.gui.ColorMap;
 import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
 import arcade.core.vis.*;
-import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
@@ -301,7 +300,7 @@ public abstract class PottsDrawer extends Drawer {
                             to[a][b] = cell == null ? 0 : cell.getVolume();
                             break;
                         case DRAW_HEIGHT:
-                            to[a][b] = cell == null ? 0 : ((PottsCell) cell).getHeight();
+                            to[a][b] = cell == null ? 0 : cell.getHeight();
                             break;
                         default:
                             break;
