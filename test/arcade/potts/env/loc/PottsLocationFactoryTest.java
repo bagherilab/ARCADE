@@ -349,6 +349,25 @@ public class PottsLocationFactoryTest {
     }
     
     @Test
+    public void getVoxelsPerHeight_fractionalHeight_returnsValue() {
+        int n = randomIntBetween(3, 10);
+        double[] heights = new double[n];
+        int seriesHeight = 100 * n + 2;
+        int maxHeight = 0;
+        
+        for (int i = 0; i < n; i++) {
+            heights[i] = randomDoubleBetween(1, 100);
+            maxHeight = (int) Math.max(maxHeight, Math.ceil(heights[i]));
+        }
+        
+        Series series = createSeries(0, 0, seriesHeight, new double[n], heights);
+        PottsLocationFactory factory = new PottsLocationFactoryMock();
+        int h = factory.getVoxelsPerHeight(series);
+        
+        assertEquals(maxHeight, h);
+    }
+    
+    @Test
     public void getVoxelsPerHeight_seriesHeight_returnsValue() {
         int n = randomIntBetween(3, 10);
         double[] heights = new double[n];
@@ -376,16 +395,16 @@ public class PottsLocationFactoryTest {
     }
     
     @Test
-    public void getVoxelsPerSide_cellSize_returnsValue() {
+    public void getVoxelsPerSide_noPadding_returnsValue() {
         int h = randomIntBetween(3, 10);
         int n = randomIntBetween(3, 10);
         double[] volumes = new double[n];
-        int padding = 2;
+        int padding = 0;
         int maxVolume = 0;
         
         for (int i = 0; i < n; i++) {
-            int v = randomIntBetween(2, 10) * 2 + 1;
-            volumes[i] = v * v * h;
+            int v = (randomIntBetween(2, 10) * 2 + 1);
+            volumes[i] = v * v * h / 2.0;
             maxVolume = Math.max(maxVolume, v);
         }
         
@@ -394,5 +413,36 @@ public class PottsLocationFactoryTest {
         int s = factory.getVoxelsPerSide(series, h);
         
         assertEquals(maxVolume + padding, s);
+    }
+    
+    @Test
+    public void getVoxelsPerSide_withPadding_returnsValue() {
+        int h = randomIntBetween(3, 10);
+        int n = randomIntBetween(3, 10);
+        double[] volumes = new double[n];
+        int[] paddings = new int[n];
+        int maxVolume = 0;
+        
+        for (int i = 0; i < n; i++) {
+            int v = (randomIntBetween(2, 10) * 2 + 1);
+            volumes[i] = v * v * h / 2.0;
+            
+            int p = randomIntBetween(2, 10);
+            paddings[i] = p;
+            maxVolume = Math.max(maxVolume, v + p);
+        }
+        
+        Series series = createSeries(0, 0, 0, volumes, new double[n]);
+        
+        for (int i = 0; i < n; i++) {
+            int pop = i + 1;
+            MiniBox box = series.populations.get("pop" + pop);
+            box.put("PADDING", paddings[i]);
+        }
+        
+        PottsLocationFactory factory = new PottsLocationFactoryMock();
+        int s = factory.getVoxelsPerSide(series, h);
+        
+        assertEquals(maxVolume, s);
     }
 }

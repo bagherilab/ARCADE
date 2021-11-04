@@ -545,6 +545,46 @@ public class PottsSeriesTest {
     }
     
     @Test
+    public void updatePopulation_givenValidPadding_setsValue() {
+        String[] fractions = new String[] { "0", "10", "1E2" };
+        String[] paddings = new String[] { "0", "10", "1E2" };
+        int[] values = new int[] { 0, 10, 100 };
+    
+        for (int i = 0; i < fractions.length; i++) {
+            for (int j = 0; j < paddings.length; j++) {
+                Box[] boxes = new Box[]{new Box()};
+                boxes[0].add("id", POPULATION_ID_1);
+                boxes[0].add("init", fractions[i] + ":" + paddings[j]);
+                PottsSeries series = makeSeriesForPopulation(boxes);
+                
+                MiniBox box = series.populations.get(POPULATION_ID_1);
+                assertEquals(values[i], box.getInt("INIT"));
+                assertEquals(values[j], box.getInt("PADDING"));
+            }
+        }
+    }
+    
+    @Test
+    public void updatePopulation_givenInvalidPadding_setsZero() {
+        String[] fractions = new String[] { "0", "10", "1E2" };
+        String[] paddings = new String[] { "1.1", "-1" };
+        int[] values = new int[] { 0, 10, 100 };
+        
+        for (int i = 0; i < fractions.length; i++) {
+            for (String padding : paddings) {
+                Box[] boxes = new Box[]{new Box()};
+                boxes[0].add("id", POPULATION_ID_1);
+                boxes[0].add("init", fractions[i] + ":" + padding);
+                PottsSeries series = makeSeriesForPopulation(boxes);
+                
+                MiniBox box = series.populations.get(POPULATION_ID_1);
+                assertEquals(values[i], box.getInt("INIT"));
+                assertEquals(0, box.getInt("PADDING"));
+            }
+        }
+    }
+    
+    @Test
     public void updatePopulation_withRegionsValidFraction_setsTags() {
         String[] fractions = new String[] { "0", "0.", "0.0", ".0", "0.5", "0.67", "1", "1.", "1.0" };
         double[] values = new double[] { 0, 0, 0, 0, 0.5, 0.67, 1, 1, 1 };

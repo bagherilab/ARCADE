@@ -11,6 +11,21 @@ public class BoxTest {
     private static final int NUMBER_KEYS = 10;
     
     @Test
+    public void contains_doesContainKey_returnsTrue() {
+        Box box = new Box();
+        String key = randomString();
+        box.add(key, randomString());
+        assertTrue(box.contains(key));
+    }
+    
+    @Test
+    public void contains_doesNotContainKey_returnsFalse() {
+        Box box = new Box();
+        String key = randomString();
+        assertFalse(box.contains(key));
+    }
+    
+    @Test
     public void getKeys_noKeys_returnsEmpty() {
         Box box = new Box();
         assertEquals(new ArrayList<>(), box.getKeys());

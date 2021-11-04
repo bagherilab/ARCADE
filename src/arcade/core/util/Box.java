@@ -35,6 +35,14 @@ public class Box {
     }
     
     /**
+     * Checks if the given key exists.
+     *
+     * @param id  the key
+     * @return  {@code true} if the key exists, {@code false} otherwise
+     */
+    public boolean contains(String id) { return keys.contains(id); }
+    
+    /**
      * Gets list of keys in the box.
      *
      * @return  the list of keys

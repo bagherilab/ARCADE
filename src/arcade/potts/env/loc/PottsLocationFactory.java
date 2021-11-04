@@ -1,6 +1,7 @@
 package arcade.potts.env.loc;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,6 +90,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
         // Get center voxels.
         ArrayList<Voxel> centers = getCenters(series.length, series.width, series.height, s, h);
         Utilities.shuffleList(centers, random);
+        centers.sort(Comparator.comparingInt(v -> v.z));
         
         // Get regions (if they exist).
         HashSet<String> regionKeys = new HashSet<>();
@@ -143,7 +145,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
         
         for (MiniBox population : series.populations.values()) {
             double criticalHeight = population.getDouble("CRITICAL_HEIGHT");
-            int voxelsPerHeight = (int) (Math.min(series.height - 2, criticalHeight));
+            int voxelsPerHeight = (int) (Math.min(series.height - 2, Math.ceil(criticalHeight)));
             if (voxelsPerHeight > h) {
                 h = voxelsPerHeight;
             }
@@ -166,7 +168,8 @@ public abstract class PottsLocationFactory implements LocationFactory {
         
         for (MiniBox population : series.populations.values()) {
             double criticalVolume = population.getDouble("CRITICAL_VOLUME");
-            int voxelsPerSide = convert(criticalVolume, h) + 2;
+            int padding = population.getInt("PADDING");
+            int voxelsPerSide = convert(2 * criticalVolume, h) + padding;
             if (voxelsPerSide > s) {
                 s = voxelsPerSide;
             }

@@ -169,6 +169,17 @@ public final class PottsSeries extends Series {
             this.populations.put(id, population);
             
             // Add population init if given. If not given or invalid, set to zero.
+            if (p.contains("init") && p.getValue("init").contains(":")) {
+                String[] initString = p.getValue("init").split(":");
+                
+                p.add("init", initString[0]);
+                p.add("padding", initString[1]);
+                
+                int padding = (isValidNumber(p, "padding")
+                        ? (int) Double.parseDouble(p.getValue("padding")) : 0);
+                population.put("PADDING", padding);
+            }
+            
             int init = (isValidNumber(p, "init")
                     ? (int) Double.parseDouble(p.getValue("init")) : 0);
             population.put("INIT", init);
