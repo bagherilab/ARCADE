@@ -11,6 +11,9 @@ class PersistenceHamiltonianConfig {
     /** Default migration unit vector. */
     static final double[] DEFAULT_UNIT_VECTOR = new double[] { 0, 0, -1 };
     
+    /** Default z axis displacement. */
+    static final double DEFAULT_Z_DISPLACEMENT = -0.5;
+    
     /** Associated {@link PottsLocation} instance. */
     final PottsLocation location;
     
@@ -76,7 +79,7 @@ class PersistenceHamiltonianConfig {
             // Update target.
             vector[0] = (1 - decay) * vector[0] + decay * displacement[0];
             vector[1] = (1 - decay) * vector[1] + decay * displacement[1];
-            vector[2] = (1 - decay) * vector[2] + decay * displacement[2];
+            vector[2] = DEFAULT_Z_DISPLACEMENT;
             
             // Convert to unit vector.
             Matrix.unit(vector);
