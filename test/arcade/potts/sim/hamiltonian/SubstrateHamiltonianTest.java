@@ -76,6 +76,11 @@ public class SubstrateHamiltonianTest {
         series.potts.put("substrate/ADHESION" + TARGET_SEPARATOR + key1, substrate1);
         series.potts.put("substrate/ADHESION" + TARGET_SEPARATOR + key2, substrate2);
         
+        double power = randomDoubleBetween(1, 10);
+        double heightThreshold = Math.exp(Math.log(SubstrateHamiltonian.THRESHOLD_FRACTION) / power);
+        
+        series.potts.put("substrate/HEIGHT_THRESHOLD", heightThreshold);
+        
         SubstrateHamiltonian sh = new SubstrateHamiltonian(series, mock(Potts.class));
         
         assertEquals(2, sh.popToSubstrate.size());
@@ -83,6 +88,7 @@ public class SubstrateHamiltonianTest {
         assertTrue(sh.popToSubstrate.containsKey(code2));
         assertEquals(substrate1, sh.popToSubstrate.get(code1), EPSILON);
         assertEquals(substrate2, sh.popToSubstrate.get(code2), EPSILON);
+        assertEquals(power, sh.power, EPSILON);
     }
     
     @Test
@@ -163,7 +169,10 @@ public class SubstrateHamiltonianTest {
             widthField.setInt(potts, 3);
         } catch (Exception ignored) { }
         
+        double power = randomDoubleBetween(1, 10);
+        
         SubstrateHamiltonian sh = new SubstrateHamiltonian(mock(PottsSeries.class), potts);
+        sh.power = power;
         
         SubstrateHamiltonianConfig config = mock(SubstrateHamiltonianConfig.class);
         double substrate = randomDoubleBetween(10, 20);
@@ -171,7 +180,10 @@ public class SubstrateHamiltonianTest {
         
         sh.configs.put(1, config);
         
-        assertEquals(substrate * -9, sh.getSubstrate(1, 1, 1, 1), EPSILON);
+        double scale = -9. / SubstrateHamiltonian.NUMBER_NEIGHBORS;
+        assertEquals(scale * substrate, sh.getSubstrate(1, 1, 1, 1), EPSILON);
+        assertEquals(scale * substrate * Math.pow(2, power), sh.getSubstrate(1, 1, 1, 2), EPSILON);
+        assertEquals(scale * substrate * Math.pow(10, power), sh.getSubstrate(1, 1, 1, 10), EPSILON);
     }
     
     @Test
@@ -179,12 +191,5 @@ public class SubstrateHamiltonianTest {
         SubstrateHamiltonian sh = new SubstrateHamiltonian(mock(PottsSeries.class), mock(Potts.class));
         assertEquals(0, sh.getSubstrate(0, 1, 1, 1), EPSILON);
         assertEquals(0, sh.getSubstrate(-1, 1, 1, 1), EPSILON);
-    }
-    
-    @Test
-    public void getSubstrate_invalidPosition_returnsZero() {
-        SubstrateHamiltonian sh = new SubstrateHamiltonian(mock(PottsSeries.class), mock(Potts.class));
-        assertEquals(0, sh.getSubstrate(1, 1, 1, 2), EPSILON);
-        assertEquals(0, sh.getSubstrate(1, 1, 1, 0), EPSILON);
     }
 }

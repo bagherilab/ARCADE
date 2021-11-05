@@ -48,12 +48,16 @@ public class PersistenceHamiltonianTest {
         
         series.potts.put("persistence/LAMBDA" + TARGET_SEPARATOR + key1, lambda1);
         series.potts.put("persistence/LAMBDA" + TARGET_SEPARATOR + key2, lambda2);
-    
+        
         double decay1 = randomDoubleBetween(1, 100);
         double decay2 = randomDoubleBetween(1, 100);
-    
+        
         series.potts.put("persistence/DECAY" + TARGET_SEPARATOR + key1, decay1);
         series.potts.put("persistence/DECAY" + TARGET_SEPARATOR + key2, decay2);
+        
+        double volumeThreshold = randomDoubleBetween(1, 10);
+        
+        series.potts.put("persistence/VOLUME_THRESHOLD", volumeThreshold);
         
         PersistenceHamiltonian ph = new PersistenceHamiltonian(series);
         
@@ -66,6 +70,7 @@ public class PersistenceHamiltonianTest {
         assertTrue(ph.popToDecay.containsKey(code2));
         assertEquals(decay1, ph.popToDecay.get(code1), EPSILON);
         assertEquals(decay2, ph.popToDecay.get(code2), EPSILON);
+        assertEquals(volumeThreshold, ph.threshold, EPSILON);
     }
     
     @Test
@@ -83,9 +88,12 @@ public class PersistenceHamiltonianTest {
         
         double lambda = randomDoubleBetween(1, 100);
         ph.popToLambda.put(pop, lambda);
-    
+        
         double decay = randomDoubleBetween(1, 100);
         ph.popToDecay.put(pop, decay);
+        
+        double threshold = randomDoubleBetween(1, 100);
+        ph.threshold = threshold;
         
         ph.register(cell);
         PersistenceHamiltonianConfig config = ph.configs.get(id);
@@ -94,6 +102,7 @@ public class PersistenceHamiltonianTest {
         assertEquals(location, config.location);
         assertEquals(lambda, config.getLambda(), EPSILON);
         assertEquals(decay, config.getDecay(), EPSILON);
+        assertEquals(threshold, config.threshold, EPSILON);
     }
     
     @Test

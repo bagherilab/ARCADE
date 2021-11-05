@@ -11,9 +11,6 @@ class PersistenceHamiltonianConfig {
     /** Default migration unit vector. */
     static final double[] DEFAULT_UNIT_VECTOR = new double[] { 0, 0, -1 };
     
-    /** Default z axis displacement. */
-    static final double DEFAULT_Z_DISPLACEMENT = -0.5;
-    
     /** Associated {@link PottsLocation} instance. */
     final PottsLocation location;
     
@@ -22,6 +19,9 @@ class PersistenceHamiltonianConfig {
     
     /** Vector decay fraction for location. */
     private final double decay;
+    
+    /** Volume threshold for scaling vector in z direction. */
+    final double threshold;
     
     /** Movement target vector. */
     final double[] vector;
@@ -38,11 +38,14 @@ class PersistenceHamiltonianConfig {
      * @param location  the associated location instance
      * @param lambda  the lambda multiplier
      * @param decay  the decay fraction
+     * @param threshold  the volume threshold
      */
-    PersistenceHamiltonianConfig(PottsLocation location, double lambda, double decay) {
+    PersistenceHamiltonianConfig(PottsLocation location, double lambda,
+                                 double decay, double threshold) {
         this.location = location;
         this.lambda = lambda;
         this.decay = decay;
+        this.threshold = threshold;
         this.vector = DEFAULT_UNIT_VECTOR.clone();
         this.displacement = new double[] { 0, 0, 0 };
         this.volumeCheck = location.getVolume();
@@ -79,7 +82,7 @@ class PersistenceHamiltonianConfig {
             // Update target.
             vector[0] = (1 - decay) * vector[0] + decay * displacement[0];
             vector[1] = (1 - decay) * vector[1] + decay * displacement[1];
-            vector[2] = DEFAULT_Z_DISPLACEMENT;
+            vector[2] = - volumeCheck / threshold;
             
             // Convert to unit vector.
             Matrix.unit(vector);

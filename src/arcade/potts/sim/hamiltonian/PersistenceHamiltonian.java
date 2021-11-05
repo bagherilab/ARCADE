@@ -23,6 +23,9 @@ public class PersistenceHamiltonian implements Hamiltonian {
     /** Map of population to decay values. */
     final HashMap<Integer, Double> popToDecay;
     
+    /** Volume threshold for scaling vector in z direction. */
+    double threshold;
+    
     /**
      * Creates the persistence energy term for the {@code Potts} Hamiltonian.
      *
@@ -41,7 +44,8 @@ public class PersistenceHamiltonian implements Hamiltonian {
         double lambda = popToLambda.get(pop);
         double decay = popToDecay.get(pop);
         PottsLocation loc = (PottsLocation) cell.getLocation();
-        PersistenceHamiltonianConfig config = new PersistenceHamiltonianConfig(loc, lambda, decay);
+        PersistenceHamiltonianConfig config = new PersistenceHamiltonianConfig(loc,
+                lambda, decay, threshold);
         configs.put(cell.getID(), config);
     }
     
@@ -123,5 +127,8 @@ public class PersistenceHamiltonian implements Hamiltonian {
             double substrate = parameters.getDouble("persistence/DECAY" + TARGET_SEPARATOR + key);
             popToDecay.put(pop, substrate);
         }
+    
+        // Set term parameters.
+        threshold = parameters.getDouble("persistence/VOLUME_THRESHOLD");
     }
 }

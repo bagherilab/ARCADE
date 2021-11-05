@@ -13,6 +13,12 @@ import static arcade.core.sim.Series.TARGET_SEPARATOR;
  */
 
 public class SubstrateHamiltonian implements Hamiltonian {
+    /** Number of neighbors considered for substrate adhesion. */
+    static final int NUMBER_NEIGHBORS = 9;
+    
+    /** Scaling at threshold height. */
+    static final double THRESHOLD_FRACTION = 0.001;
+    
     /** Map of hamiltonian config objects. */
     final HashMap<Integer, SubstrateHamiltonianConfig> configs;
     
@@ -21,6 +27,9 @@ public class SubstrateHamiltonian implements Hamiltonian {
     
     /** Grid tracking substrate values. */
     final int[][] substrates;
+    
+    /** Power for scaling substrate energy. */
+    double power;
     
     /**
      * Creates the substrate energy term for the {@code Potts} Hamiltonian.
@@ -90,7 +99,7 @@ public class SubstrateHamiltonian implements Hamiltonian {
      * @return  the energy
      */
     double getSubstrate(int id, int x, int y, int z) {
-        if (id <= 0 || z != 1) { return 0; }
+        if (id <= 0) { return 0; }
         
         SubstrateHamiltonianConfig config = configs.get(id);
         
@@ -100,6 +109,8 @@ public class SubstrateHamiltonian implements Hamiltonian {
                 s += -substrates[i][j] * config.getSubstrate();
             }
         }
+        
+        s = Math.pow(z, power) * s / NUMBER_NEIGHBORS;
         
         return s;
     }
@@ -123,6 +134,10 @@ public class SubstrateHamiltonian implements Hamiltonian {
             double substrate = parameters.getDouble("substrate/ADHESION" + TARGET_SEPARATOR + key);
             popToSubstrate.put(pop, substrate);
         }
+        
+        // Set term parameters.
+        double thresholdHeight = parameters.getDouble("substrate/HEIGHT_THRESHOLD");
+        power = Math.log(THRESHOLD_FRACTION) / Math.log(thresholdHeight);
     }
     
     /**
