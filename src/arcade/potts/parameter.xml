@@ -9,22 +9,22 @@
     <potts.term term="adhesion" id="ADHESION_NUCLEUS" value="10" />
     
     <!-- volume term parameters -->
-    <potts.term term="volume" id="LAMBDA" value="5" conversion="DS^3.DT^-1" />
-    <potts.term term="volume" id="LAMBDA_DEFAULT" value="5" conversion="DS^3.DT^-1" />
-    <potts.term term="volume" id="LAMBDA_NUCLEUS" value="5" conversion="DS^3.DT^-1" />
+    <potts.term term="volume" id="LAMBDA" value="5" />
+    <potts.term term="volume" id="LAMBDA_DEFAULT" value="5" />
+    <potts.term term="volume" id="LAMBDA_NUCLEUS" value="5" />
     
     <!-- surface term parameters -->
-    <potts.term term="surface" id="LAMBDA" value="2" conversion="DS^2.DT^-1" />
-    <potts.term term="surface" id="LAMBDA_DEFAULT" value="2" conversion="DS^2.DT^-1" />
-    <potts.term term="surface" id="LAMBDA_NUCLEUS" value="2" conversion="DS^2.DT^-1" />
+    <potts.term term="surface" id="LAMBDA" value="2" />
+    <potts.term term="surface" id="LAMBDA_DEFAULT" value="2" />
+    <potts.term term="surface" id="LAMBDA_NUCLEUS" value="2" />
     
     <!-- substrate term parameters -->
-    <potts.term term="substrate" id="HEIGHT_THRESHOLD" value="5" units="um" conversion="DS^-1" />
+    <potts.term term="substrate" id="HEIGHT_THRESHOLD" value="6" units="um" conversion="DS^-1" />
     <potts.term term="substrate" id="ADHESION" value="100" />
     
     <!-- persistence term parameters -->
     <potts.term term="persistence" id="VOLUME_THRESHOLD" value="2000" units="um^3" conversion="DS^-3" />
-    <potts.term term="persistence" id="LAMBDA" value="1" />
+    <potts.term term="persistence" id="LAMBDA" value="1" conversion="DS^-2" />
     <potts.term term="persistence" id="DECAY" value="0.05" />
     
     <!-- default parameters for populations -->
