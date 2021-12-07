@@ -82,7 +82,7 @@ class PersistenceHamiltonianConfig {
             // Update target.
             vector[0] = (1 - decay) * vector[0] + decay * displacement[0];
             vector[1] = (1 - decay) * vector[1] + decay * displacement[1];
-            vector[2] = - volumeCheck / threshold;
+            vector[2] = -volumeCheck / threshold;
             
             // Convert to unit vector.
             Matrix.unit(vector);

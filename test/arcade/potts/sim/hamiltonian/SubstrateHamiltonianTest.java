@@ -169,7 +169,7 @@ public class SubstrateHamiltonianTest {
             widthField.setInt(potts, 3);
         } catch (Exception ignored) { }
         
-        double power = randomDoubleBetween(1, 10);
+        double power = randomDoubleBetween(1, 5);
         
         SubstrateHamiltonian sh = new SubstrateHamiltonian(mock(PottsSeries.class), potts);
         sh.power = power;

@@ -104,7 +104,7 @@ public class PottsLocationsTest {
         
         @Override
         int calculateSurface() { return LOCATIONS_SURFACE; }
-    
+        
         @Override
         int calculateHeight() { return LOCATIONS_HEIGHT; }
         

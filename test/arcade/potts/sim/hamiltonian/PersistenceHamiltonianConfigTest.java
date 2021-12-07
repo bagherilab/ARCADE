@@ -93,7 +93,7 @@ public class PersistenceHamiltonianConfigTest {
         double[] expected = new double[] {
                 (1 - decay) * defaultVector[0] + decay * dx,
                 (1 - decay) * defaultVector[1] + decay * dy,
-                - newVolume / threshold,
+                -newVolume / threshold,
         };
         
         double norm = Math.sqrt(expected[0] * expected[0] + expected[1] * expected[1] + expected[2] * expected[2]);

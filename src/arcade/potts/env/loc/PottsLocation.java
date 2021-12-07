@@ -414,6 +414,8 @@ public abstract class PottsLocation implements Location {
         voxels.addAll(voxelsA);
         volume = voxels.size();
         surface = calculateSurface();
+        height = calculateHeight();
+        calculateCenter();
         return makeLocation(voxelsB);
     }
     

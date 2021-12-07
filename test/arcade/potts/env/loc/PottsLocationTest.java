@@ -80,10 +80,10 @@ public class PottsLocationTest {
         public double convertSurface(double volume, double height) { return 0; }
         
         @Override
-        int calculateSurface() { return LOCATION_SURFACE; }
+        int calculateSurface() { return surface + LOCATION_SURFACE; }
     
         @Override
-        int calculateHeight() { return LOCATION_HEIGHT; }
+        int calculateHeight() { return height + LOCATION_HEIGHT; }
         
         @Override
         int updateSurface(Voxel voxel) { return DELTA_SURFACE; }
@@ -1068,16 +1068,36 @@ public class PottsLocationTest {
     public void separateVoxels_validLists_updatesVolumes() {
         PottsLocationMock loc = new PottsLocationMock(voxelListAB);
         PottsLocation split = (PottsLocation) loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
-        assertEquals(4, loc.volume);
-        assertEquals(3, split.volume);
+        assertEquals(voxelListA.size(), loc.volume);
+        assertEquals(voxelListB.size(), split.volume);
     }
     
     @Test
     public void separateVoxels_validLists_updatesSurfaces() {
         PottsLocationMock loc = new PottsLocationMock(voxelListAB);
         PottsLocation split = (PottsLocation) loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
-        assertEquals(LOCATION_SURFACE, loc.surface);
+        assertEquals(LOCATION_SURFACE + LOCATION_SURFACE, loc.surface);
         assertEquals(LOCATION_SURFACE, split.surface);
+    }
+    
+    @Test
+    public void separateVoxels_validLists_updatesHeights() {
+        PottsLocationMock loc = new PottsLocationMock(voxelListAB);
+        PottsLocation split = (PottsLocation) loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
+        assertEquals(LOCATION_HEIGHT + LOCATION_HEIGHT, loc.height);
+        assertEquals(LOCATION_HEIGHT, split.height);
+    }
+    
+    @Test
+    public void separateVoxels_validLists_updatesCenter() {
+        PottsLocationMock loc = new PottsLocationMock(voxelListAB);
+        PottsLocation split = (PottsLocation) loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
+        assertEquals(1. / 4, loc.cx, EPSILON);
+        assertEquals(3. / 4, loc.cy, EPSILON);
+        assertEquals(4. / 4, loc.cz, EPSILON);
+        assertEquals(8. / 3, split.cx, EPSILON);
+        assertEquals(1. / 3, split.cy, EPSILON);
+        assertEquals(3. / 3, split.cz, EPSILON);
     }
     
     @Test
