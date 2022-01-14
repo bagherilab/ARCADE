@@ -250,6 +250,19 @@ public abstract class PottsLocation implements Location {
     }
     
     /**
+     * Gets the centroid of the location for the region.
+     * <p>
+     * Note that centroid positions may not be integer values.
+     * If a specific center voxel is needed, use {@code getCenter()} instead.
+     *
+     * @param region  the voxel region
+     * @return  the location centroid
+     */
+    public double[] getCentroid(Region region) {
+        return getCentroid();
+    }
+    
+    /**
      * Calculates the exact center of the location.
      */
     void calculateCenter() {

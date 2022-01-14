@@ -521,12 +521,12 @@ public class PottsLocationTest {
         voxels.add(new Voxel(0, 1, 1));
         voxels.add(new Voxel(1, 1, 2));
         voxels.add(new Voxel(2, 2, 2));
-        voxels.add(new Voxel(2, 2, 2));
+        voxels.add(new Voxel(2, 3, 3));
         PottsLocationMock loc = new PottsLocationMock(voxels);
         
-        assertEquals(1.25, loc.cx, EPSILON);
-        assertEquals(1.5, loc.cy, EPSILON);
-        assertEquals(1.75, loc.cz, EPSILON);
+        assertEquals(5 / 4., loc.cx, EPSILON);
+        assertEquals(7 / 4., loc.cy, EPSILON);
+        assertEquals(8 / 4., loc.cz, EPSILON);
         assertEquals(new Voxel(1, 2, 2), loc.getCenter());
     }
     
@@ -542,14 +542,14 @@ public class PottsLocationTest {
         voxels.add(new Voxel(0, 1, 1));
         voxels.add(new Voxel(1, 1, 2));
         voxels.add(new Voxel(2, 2, 2));
-        voxels.add(new Voxel(2, 2, 2));
+        voxels.add(new Voxel(2, 3, 3));
         PottsLocationMock loc = new PottsLocationMock(voxels);
         
         double[] centroid = loc.getCentroid();
         
-        assertEquals(1.25, centroid[0], EPSILON);
-        assertEquals(1.5, centroid[1], EPSILON);
-        assertEquals(1.75, centroid[2], EPSILON);
+        assertEquals(5 / 4., centroid[0], EPSILON);
+        assertEquals(7 / 4., centroid[1], EPSILON);
+        assertEquals(8 / 4., centroid[2], EPSILON);
     }
     
     @Test
@@ -558,6 +558,34 @@ public class PottsLocationTest {
         PottsLocationMock loc = new PottsLocationMock(voxels);
         
         double[] centroid = loc.getCentroid();
+        
+        assertEquals(0, centroid[0], EPSILON);
+        assertEquals(0, centroid[1], EPSILON);
+        assertEquals(0, centroid[2], EPSILON);
+    }
+    
+    @Test
+    public void getCentroid_hasVoxelsWithRegion_returnsArray() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 1, 1));
+        voxels.add(new Voxel(1, 1, 2));
+        voxels.add(new Voxel(2, 2, 2));
+        voxels.add(new Voxel(2, 3, 3));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        
+        double[] centroid = loc.getCentroid(Region.DEFAULT);
+        
+        assertEquals(5 / 4., centroid[0], EPSILON);
+        assertEquals(7 / 4., centroid[1], EPSILON);
+        assertEquals(8 / 4., centroid[2], EPSILON);
+    }
+    
+    @Test
+    public void getCentroid_noVoxelsWithRegion_returnsZeros() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        
+        double[] centroid = loc.getCentroid(Region.DEFAULT);
         
         assertEquals(0, centroid[0], EPSILON);
         assertEquals(0, centroid[1], EPSILON);

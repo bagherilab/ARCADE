@@ -131,11 +131,13 @@ public abstract class PottsLocations extends PottsLocation {
         locations.get(region).volume++;
         locations.get(region).surface += locations.get(region).updateSurface(voxel);
         locations.get(region).height += locations.get(region).updateHeight(voxel);
+        locations.get(region).updateCenter(voxel.x, voxel.y, voxel.z, 1);
         
         locations.get(oldRegion).voxels.remove(voxel);
         locations.get(oldRegion).volume--;
         locations.get(oldRegion).surface -= locations.get(oldRegion).updateSurface(voxel);
         locations.get(oldRegion).height -= locations.get(oldRegion).updateHeight(voxel);
+        locations.get(oldRegion).updateCenter(voxel.x, voxel.y, voxel.z, -1);
     }
     
     @Override
@@ -165,6 +167,11 @@ public abstract class PottsLocations extends PottsLocation {
             regions.put(region, locations.get(region).voxels);
         }
         return new PottsLocationContainer(id, getCenter(), voxels, regions);
+    }
+    
+    @Override
+    public double[] getCentroid(Region region) {
+        return (locations.containsKey(region) ? locations.get(region).getCentroid() : null);
     }
     
     /**

@@ -15,6 +15,7 @@ import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.util.PottsEnums.Direction;
 
 public class PottsLocationsTest {
+    private static final double EPSILON = 1E-10;
     static MersenneTwisterFast randomDoubleZero;
     static MersenneTwisterFast randomDoubleOne;
     static ArrayList<Voxel> voxelListForVolumeSurfaceHeight;
@@ -562,6 +563,27 @@ public class PottsLocationsTest {
     }
     
     @Test
+    public void assign_existingVoxelDifferentRegion_updatesCenters() {
+        PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
+        location.add(Region.DEFAULT, 1, 2, 3);
+        location.add(Region.DEFAULT, 4, 5, 6);
+        location.add(Region.UNDEFINED, 7, 8, 9);
+        location.assign(Region.UNDEFINED, new Voxel(4, 5, 6));
+        
+        assertEquals(12 / 3., location.cx, EPSILON);
+        assertEquals(15 / 3., location.cy, EPSILON);
+        assertEquals(18 / 3., location.cz, EPSILON);
+        
+        assertEquals(1, location.locations.get(Region.DEFAULT).cx, EPSILON);
+        assertEquals(2, location.locations.get(Region.DEFAULT).cy, EPSILON);
+        assertEquals(3, location.locations.get(Region.DEFAULT).cz, EPSILON);
+        
+        assertEquals(11 / 2., location.locations.get(Region.UNDEFINED).cx, EPSILON);
+        assertEquals(13 / 2., location.locations.get(Region.UNDEFINED).cy, EPSILON);
+        assertEquals(15 / 2., location.locations.get(Region.UNDEFINED).cz, EPSILON);
+    }
+    
+    @Test
     public void assign_existingVoxelNewRegion_updatesRegions() {
         PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
         ArrayList<Voxel> voxelDefault = new ArrayList<>();
@@ -603,6 +625,26 @@ public class PottsLocationsTest {
         
         assertEquals(LOCATION_HEIGHT, location.locations.get(Region.DEFAULT).height);
         assertEquals(LOCATION_HEIGHT + DELTA_HEIGHT, location.locations.get(Region.UNDEFINED).height);
+    }
+    
+    @Test
+    public void assign_existingVoxelNewRegion_updatesCenters() {
+        PottsLocationsMock location = new PottsLocationsMock(new ArrayList<>());
+        location.add(Region.DEFAULT, 1, 2, 3);
+        location.add(Region.DEFAULT, 4, 5, 6);
+        location.assign(Region.UNDEFINED, new Voxel(1, 2, 3));
+        
+        assertEquals(5 / 2., location.cx, EPSILON);
+        assertEquals(7 / 2., location.cy, EPSILON);
+        assertEquals(9 / 2., location.cz, EPSILON);
+        
+        assertEquals(4, location.locations.get(Region.DEFAULT).cx, EPSILON);
+        assertEquals(5, location.locations.get(Region.DEFAULT).cy, EPSILON);
+        assertEquals(6, location.locations.get(Region.DEFAULT).cz, EPSILON);
+        
+        assertEquals(1, location.locations.get(Region.UNDEFINED).cx, EPSILON);
+        assertEquals(2, location.locations.get(Region.UNDEFINED).cy, EPSILON);
+        assertEquals(3, location.locations.get(Region.UNDEFINED).cz, EPSILON);
     }
     
     @Test
@@ -691,6 +733,49 @@ public class PottsLocationsTest {
         assertEquals(new Voxel(n, n, 0), container.center);
         assertEquals(voxels, container.allVoxels);
         assertEquals(regions, container.regions);
+    }
+    
+    @Test
+    public void getCentroid_validRegion_returnsArray() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 1, 1));
+        voxels.add(new Voxel(1, 1, 2));
+        voxels.add(new Voxel(2, 2, 2));
+        voxels.add(new Voxel(2, 3, 3));
+        PottsLocationsMock loc = new PottsLocationsMock(voxels);
+        
+        double[] centroid = loc.getCentroid(Region.DEFAULT);
+        
+        assertEquals(5 / 4., centroid[0], EPSILON);
+        assertEquals(7 / 4., centroid[1], EPSILON);
+        assertEquals(8 / 4., centroid[2], EPSILON);
+    }
+    
+    @Test
+    public void getCentroid_invalidRegion_returnsNull() {
+        PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
+        assertNull(loc.getCentroid(null));
+    }
+    
+    @Test
+    public void getCentroid_multipleRegions_returnsValue() {
+        PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
+        loc.add(Region.DEFAULT, 0, 1, 1);
+        loc.add(Region.UNDEFINED, 1, 1, 2);
+        loc.add(Region.UNDEFINED, 2, 2, 2);
+        loc.add(Region.UNDEFINED, 2, 3, 3);
+        
+        double[] centroidDefault = loc.getCentroid(Region.DEFAULT);
+        
+        assertEquals(0, centroidDefault[0], EPSILON);
+        assertEquals(1, centroidDefault[1], EPSILON);
+        assertEquals(1, centroidDefault[2], EPSILON);
+        
+        double[] centroidUndefined = loc.getCentroid(Region.UNDEFINED);
+        
+        assertEquals(5 / 3., centroidUndefined[0], EPSILON);
+        assertEquals(6 / 3., centroidUndefined[1], EPSILON);
+        assertEquals(7 / 3., centroidUndefined[2], EPSILON);
     }
     
     @Test
