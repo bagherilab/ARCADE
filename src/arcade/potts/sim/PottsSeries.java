@@ -130,6 +130,20 @@ public final class PottsSeries extends Series {
             }
         }
         
+        // Add adhesion values for each population that has regions.
+        for (String pop : populations.keySet()) {
+            ArrayList<String> regions = populations.get(pop).filter("(REGION)").getKeys();
+            
+            for (String source : regions) {
+                String adhesion = "adhesion/ADHESION_" + source + TARGET_SEPARATOR + pop;
+                
+                for (String target : regions) {
+                    parseParameter(this.potts, adhesion + TARGET_SEPARATOR + target,
+                            this.potts.get(adhesion), parameterValues, parameterScales);
+                }
+            }
+        }
+        
         // Apply conversion factors.
         for (String convert : pottsConversions.getKeys()) {
             double conversion = parseConversion(pottsConversions.get(convert), ds, dt);
