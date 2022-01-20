@@ -73,8 +73,6 @@ public class VolumeHamiltonianConfigTest {
         VolumeHamiltonianConfig vhc = new VolumeHamiltonianConfig(null, lambda, lambdasRegion);
         
         assertEquals(Double.NaN, vhc.getLambda(null), EPSILON);
-        assertEquals(Double.NaN, vhc.getLambda(null), EPSILON);
-        assertEquals(Double.NaN, vhc.getLambda(Region.UNDEFINED), EPSILON);
         assertEquals(Double.NaN, vhc.getLambda(Region.UNDEFINED), EPSILON);
     }
     

@@ -1,47 +1,113 @@
 package arcade.potts.sim.hamiltonian;
 
+import java.util.EnumMap;
 import org.junit.Test;
 import arcade.potts.env.loc.PottsLocation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
+import static arcade.core.util.Enums.Region;
 
 public class PersistenceHamiltonianConfigTest {
     private static final double EPSILON = 1E-10;
     
     @Test
-    public void constructor_called_setsFields() {
+    public void constructor_noRegions_setsFields() {
         PottsLocation location = mock(PottsLocation.class);
-        double threshold = randomDoubleBetween(1, 100);
-        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, 0, threshold);
+        
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, 0, 0);
         assertEquals(location, phc.location);
         assertNotNull(phc.vector);
         assertNotNull(phc.displacement);
-        assertEquals(threshold, phc.threshold, EPSILON);
+        assertFalse(phc.hasRegions);
+    }
+    
+    @Test
+    public void constructor_emptyRegions_setsFields() {
+        PottsLocation location = mock(PottsLocation.class);
+        EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
+        
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, lambdasRegion, 0, 0);
+        assertEquals(location, phc.location);
+        assertNotNull(phc.vector);
+        assertNotNull(phc.displacement);
+        assertFalse(phc.hasRegions);
+    }
+    
+    @Test
+    public void constructor_hasRegions_setsFields() {
+        PottsLocation location = mock(PottsLocation.class);
+        EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
+        lambdasRegion.put(Region.UNDEFINED, randomDoubleBetween(1, 100));
+        
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, lambdasRegion, 0, 0);
+        assertEquals(location, phc.location);
+        assertNotNull(phc.vector);
+        assertNotNull(phc.displacement);
+        assertTrue(phc.hasRegions);
     }
     
     @Test
     public void constructor_called_initializesVectors() {
         PottsLocation location = mock(PottsLocation.class);
-        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, 0, 0);
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, 0, 0);
         assertNotSame(PersistenceHamiltonianConfig.DEFAULT_UNIT_VECTOR, phc.vector);
         assertArrayEquals(PersistenceHamiltonianConfig.DEFAULT_UNIT_VECTOR, phc.vector, EPSILON);
         assertArrayEquals(new double[] { 0, 0, 0 }, phc.displacement, EPSILON);
     }
     
     @Test
-    public void getLambda_called_returnsValue() {
+    public void getLambda_noRegion_returnsValue() {
         PottsLocation location = mock(PottsLocation.class);
         double lambda = randomDoubleBetween(1, 100);
-        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, lambda, 0, 0);
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, lambda, null, 0, 0);
         assertEquals(lambda, phc.getLambda(), EPSILON);
+    }
+    
+    @Test
+    public void getLambda_validRegions_returnsValue() {
+        PottsLocation location = mock(PottsLocation.class);
+        double lambda = randomDoubleBetween(1, 100);
+        
+        EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
+        lambdasRegion.put(Region.DEFAULT, randomDoubleBetween(0, 100));
+        lambdasRegion.put(Region.NUCLEUS, randomDoubleBetween(0, 100));
+        
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, lambda, lambdasRegion, 0, 0);
+        
+        assertEquals(lambdasRegion.get(Region.DEFAULT), phc.getLambda(Region.DEFAULT), EPSILON);
+        assertEquals(lambdasRegion.get(Region.NUCLEUS), phc.getLambda(Region.NUCLEUS), EPSILON);
+    }
+    
+    @Test
+    public void getLambda_invalidRegions_returnsNaN() {
+        PottsLocation location = mock(PottsLocation.class);
+        double lambda = randomDoubleBetween(1, 100);
+        
+        EnumMap<Region, Double> lambdasRegion = new EnumMap<>(Region.class);
+        lambdasRegion.put(Region.DEFAULT, randomDoubleBetween(0, 100));
+        lambdasRegion.put(Region.NUCLEUS, randomDoubleBetween(0, 100));
+        
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, lambda, lambdasRegion, 0, 0);
+        
+        assertEquals(Double.NaN, phc.getLambda(null), EPSILON);
+        assertEquals(Double.NaN, phc.getLambda(Region.UNDEFINED), EPSILON);
+    }
+    
+    @Test
+    public void getLambda_nullRegion_returnsNaN() {
+        PottsLocation location = mock(PottsLocation.class);
+        double lambda = randomDoubleBetween(1, 100);
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, lambda, null, 0, 0);
+        assertEquals(Double.NaN, phc.getLambda(Region.DEFAULT), EPSILON);
+        assertEquals(Double.NaN, phc.getLambda(Region.NUCLEUS), EPSILON);
     }
     
     @Test
     public void getDecay_called_returnsValue() {
         PottsLocation location = mock(PottsLocation.class);
         double decay = randomDoubleBetween(1, 100);
-        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, decay, 0);
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, decay, 0);
         assertEquals(decay, phc.getDecay(), EPSILON);
     }
     
@@ -50,9 +116,9 @@ public class PersistenceHamiltonianConfigTest {
         PottsLocation location = mock(PottsLocation.class);
         int volume = randomIntBetween(10, 100);
         doReturn(volume).when(location).getVolume();
-    
+        
         double decay = randomDoubleBetween(0, 1);
-        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, decay, 0);
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, decay, 0);
         
         double dx = randomDoubleBetween(1, 10);
         double dy = randomDoubleBetween(1, 10);
@@ -74,7 +140,7 @@ public class PersistenceHamiltonianConfigTest {
         
         double decay = randomDoubleBetween(0, 1);
         double threshold = randomDoubleBetween(1, 100);
-        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, decay, threshold);
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, decay, threshold);
         
         int newVolume = volume + randomIntBetween(1, 10);
         doReturn(newVolume).when(location).getVolume();
@@ -107,7 +173,7 @@ public class PersistenceHamiltonianConfigTest {
     
     @Test
     public void getDisplacement_called_returnsVector() {
-        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(mock(PottsLocation.class), 0, 0, 0);
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(mock(PottsLocation.class), 0, null, 0, 0);
         double[] expected = new double[] {
                 randomDoubleBetween(1, 100),
                 randomDoubleBetween(1, 100),
@@ -133,7 +199,7 @@ public class PersistenceHamiltonianConfigTest {
         doReturn(volume).when(location).getVolume();
         doReturn(centroid).when(location).getCentroid();
         
-        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, 0, 0);
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, 0, 0);
         
         int x = randomIntBetween(1, 10);
         int y = randomIntBetween(1, 10);
@@ -171,7 +237,7 @@ public class PersistenceHamiltonianConfigTest {
         doReturn(volume).when(location).getVolume();
         doReturn(centroid).when(location).getCentroid();
         
-        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, 0, 0);
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, 0, 0);
         
         int x = randomIntBetween(1, 10);
         int y = randomIntBetween(1, 10);

@@ -1,5 +1,7 @@
 package arcade.potts.sim.hamiltonian;
 
+import java.util.EnumMap;
+import arcade.core.util.Enums.Region;
 import arcade.core.util.Matrix;
 import arcade.potts.env.loc.PottsLocation;
 
@@ -17,8 +19,14 @@ class PersistenceHamiltonianConfig {
     /** Lambda multiplier for cell. */
     private final double lambda;
     
+    /** Lambda multipliers for cell by region. */
+    private final EnumMap<Region, Double> lambdasRegion;
+    
     /** Vector decay fraction for location. */
     private final double decay;
+    
+    /** {@code true} if the cell has regions, {@code false} otherwise. */
+    final boolean hasRegions;
     
     /** Volume threshold for scaling vector in z direction. */
     final double threshold;
@@ -29,7 +37,7 @@ class PersistenceHamiltonianConfig {
     /** Displacement vector. */
     final double[] displacement;
     
-    /** Location volume used to change if location has changed. */
+    /** Location volume used to check if location has changed. */
     private int volumeCheck;
     
     /**
@@ -37,10 +45,12 @@ class PersistenceHamiltonianConfig {
      *
      * @param location  the associated location instance
      * @param lambda  the lambda multiplier
+     * @param lambdasRegion  the map of lambda multiplier for regions
      * @param decay  the decay fraction
      * @param threshold  the volume threshold
      */
     PersistenceHamiltonianConfig(PottsLocation location, double lambda,
+                                 EnumMap<Region, Double> lambdasRegion,
                                  double decay, double threshold) {
         this.location = location;
         this.lambda = lambda;
@@ -49,6 +59,16 @@ class PersistenceHamiltonianConfig {
         this.vector = DEFAULT_UNIT_VECTOR.clone();
         this.displacement = new double[] { 0, 0, 0 };
         this.volumeCheck = location.getVolume();
+        this.hasRegions = (lambdasRegion != null) && (lambdasRegion.keySet().size() > 0);
+        
+        if (hasRegions) {
+            this.lambdasRegion = new EnumMap<>(Region.class);
+            for (Region region : lambdasRegion.keySet()) {
+                this.lambdasRegion.put(region, lambdasRegion.get(region));
+            }
+        } else {
+            this.lambdasRegion = null;
+        }
     }
     
     /**
@@ -57,6 +77,18 @@ class PersistenceHamiltonianConfig {
      * @return  the lambda value
      */
     public double getLambda() { return lambda; }
+    
+    /**
+     * Gets the lambda value for the region.
+     *
+     * @param region  the region
+     * @return  the lambda value
+     */
+    public double getLambda(Region region) {
+        return (hasRegions && lambdasRegion.containsKey(region)
+                ? lambdasRegion.get(region)
+                : Double.NaN);
+    }
     
     /**
      * Gets the decay value.

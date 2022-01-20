@@ -73,8 +73,6 @@ public class SurfaceHamiltonianConfigTest {
         SurfaceHamiltonianConfig shc = new SurfaceHamiltonianConfig(null, lambda, lambdasRegion);
         
         assertEquals(Double.NaN, shc.getLambda(null), EPSILON);
-        assertEquals(Double.NaN, shc.getLambda(null), EPSILON);
-        assertEquals(Double.NaN, shc.getLambda(Region.UNDEFINED), EPSILON);
         assertEquals(Double.NaN, shc.getLambda(Region.UNDEFINED), EPSILON);
     }
     

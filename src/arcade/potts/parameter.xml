@@ -25,6 +25,8 @@
     <!-- persistence term parameters -->
     <potts.term term="persistence" id="VOLUME_THRESHOLD" value="2000" units="um^3" conversion="DS^-3" />
     <potts.term term="persistence" id="LAMBDA" value="1" conversion="DS^-2" />
+    <potts.term term="persistence" id="LAMBDA_DEFAULT" value="1" conversion="DS^-2" />
+    <potts.term term="persistence" id="LAMBDA_NUCLEUS" value="1" conversion="DS^-2" />
     <potts.term term="persistence" id="DECAY" value="0.05" />
     
     <!-- default parameters for populations -->
