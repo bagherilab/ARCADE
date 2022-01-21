@@ -124,23 +124,17 @@ class PersistenceHamiltonianConfig {
     }
     
     /**
-     * Gets the displacement unit vector for the location.
-     *
-     * @return  the displacement unit vector
-     */
-    public double[] getDisplacement() {
-        return displacement;
-    }
-    
-    /**
-     * Updates the displacement of the center.
+     * Gets the updated displacement of the center.
+     * <p>
+     * Displacement vector is stored until this method is called again.
      *
      * @param x  the x position of the changed voxel
      * @param y  the y position of the changed voxel
      * @param z  the z position of the changed voxel
      * @param change  the direction of change (add = +1, remove = -1)
+     * @return  the displacement unit vector
      */
-    public void updateDisplacement(int x, int y, int z, int change) {
+    public double[] getDisplacement(int x, int y, int z, int change) {
         // Get updated volume and current centroid.
         double volume = location.getVolume() + change;
         double[] centroid = location.getCentroid();
@@ -152,5 +146,36 @@ class PersistenceHamiltonianConfig {
         
         // Convert displacement to unit vector.
         Matrix.unit(displacement);
+        
+        return displacement;
+    }
+    
+    /**
+     * Gets the updated displacement of the center of a region.
+     * <p>
+     * Calling this method does not update the stored displacement vector.
+     *
+     * @param x  the x position of the changed voxel
+     * @param y  the y position of the changed voxel
+     * @param z  the z position of the changed voxel
+     * @param change  the direction of change (add = +1, remove = -1)
+     * @param region  the region
+     * @return  the displacement unit vector
+     */
+    public double[] getDisplacement(int x, int y, int z, int change, Region region) {
+        // Get updated volume and current centroid for region.
+        double volume = location.getVolume(region) + change;
+        double[] centroid = location.getCentroid(region);
+        
+        // Calculate displacement.
+        double[] disp = new double[3];
+        disp[0] = (change * (x - centroid[0])) / volume;
+        disp[1] = (change * (y - centroid[1])) / volume;
+        disp[2] = (change * (z - centroid[2])) / volume;
+        
+        // Convert displacement to unit vector.
+        Matrix.unit(disp);
+        
+        return disp;
     }
 }

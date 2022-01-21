@@ -172,22 +172,7 @@ public class PersistenceHamiltonianConfigTest {
     }
     
     @Test
-    public void getDisplacement_called_returnsVector() {
-        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(mock(PottsLocation.class), 0, null, 0, 0);
-        double[] expected = new double[] {
-                randomDoubleBetween(1, 100),
-                randomDoubleBetween(1, 100),
-                randomDoubleBetween(1, 100),
-        };
-        phc.displacement[0] = expected[0];
-        phc.displacement[1] = expected[1];
-        phc.displacement[2] = expected[2];
-        
-        assertArrayEquals(expected, phc.getDisplacement(), EPSILON);
-    }
-    
-    @Test
-    public void updateDisplacement_voxelAdded_updatesVector() {
+    public void getDisplacement_voxelAdded_updatesVector() {
         PottsLocation location = mock(PottsLocation.class);
         int volume = randomIntBetween(10, 100);
         double[] centroid = new double[] {
@@ -205,7 +190,7 @@ public class PersistenceHamiltonianConfigTest {
         int y = randomIntBetween(1, 10);
         int z = randomIntBetween(1, 10);
         
-        phc.updateDisplacement(x, y, z, 1);
+        phc.getDisplacement(x, y, z, 1);
         
         double[] expected = new double[] {
                 (x - centroid[0]) / (volume + 1),
@@ -219,13 +204,11 @@ public class PersistenceHamiltonianConfigTest {
         expected[1] /= norm;
         expected[2] /= norm;
         
-        assertEquals(expected[0], phc.displacement[0], EPSILON);
-        assertEquals(expected[1], phc.displacement[1], EPSILON);
-        assertEquals(expected[2], phc.displacement[2], EPSILON);
+        assertArrayEquals(expected, phc.displacement, EPSILON);
     }
     
     @Test
-    public void updateDisplacement_voxelRemoved_updatesVector() {
+    public void getDisplacement_voxelRemoved_updatesVector() {
         PottsLocation location = mock(PottsLocation.class);
         int volume = randomIntBetween(10, 100);
         double[] centroid = new double[] {
@@ -243,7 +226,7 @@ public class PersistenceHamiltonianConfigTest {
         int y = randomIntBetween(1, 10);
         int z = randomIntBetween(1, 10);
         
-        phc.updateDisplacement(x, y, z, -1);
+        phc.getDisplacement(x, y, z, -1);
         
         double[] expected = new double[] {
                 (centroid[0] - x) / (volume - 1),
@@ -257,8 +240,102 @@ public class PersistenceHamiltonianConfigTest {
         expected[1] /= norm;
         expected[2] /= norm;
         
-        assertEquals(expected[0], phc.displacement[0], EPSILON);
-        assertEquals(expected[1], phc.displacement[1], EPSILON);
-        assertEquals(expected[2], phc.displacement[2], EPSILON);
+        assertArrayEquals(expected, phc.displacement, EPSILON);
+    }
+    
+    @Test
+    public void getDisplacement_voxelAddedRegion_returnsVector() {
+        PottsLocation location = mock(PottsLocation.class);
+        int volume = randomIntBetween(10, 100);
+        double[] centroid = new double[] {
+                randomDoubleBetween(1, 100),
+                randomDoubleBetween(1, 100),
+                randomDoubleBetween(1, 100),
+        };
+        
+        Region region = Region.NUCLEUS;
+        doReturn(volume).when(location).getVolume(region);
+        doReturn(centroid).when(location).getCentroid(region);
+        
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, 0, 0);
+        
+        double[] displacement = new double[] {
+            randomDoubleBetween(1, 10),
+            randomDoubleBetween(1, 10),
+            randomDoubleBetween(1, 10),
+        };
+        
+        phc.displacement[0] = displacement[0];
+        phc.displacement[1] = displacement[1];
+        phc.displacement[2] = displacement[2];
+        
+        int x = randomIntBetween(1, 10);
+        int y = randomIntBetween(1, 10);
+        int z = randomIntBetween(1, 10);
+        
+        double[] regionDisplacement = phc.getDisplacement(x, y, z, 1, region);
+        
+        double[] expected = new double[] {
+                (x - centroid[0]) / (volume + 1),
+                (y - centroid[1]) / (volume + 1),
+                (z - centroid[2]) / (volume + 1),
+        };
+        
+        double norm = Math.sqrt(expected[0] * expected[0] + expected[1] * expected[1] + expected[2] * expected[2]);
+        
+        expected[0] /= norm;
+        expected[1] /= norm;
+        expected[2] /= norm;
+        
+        assertArrayEquals(expected, regionDisplacement, EPSILON);
+        assertArrayEquals(displacement, phc.displacement, EPSILON);
+    }
+    
+    @Test
+    public void getDisplacement_voxelRemovedRegion_returnsVector() {
+        PottsLocation location = mock(PottsLocation.class);
+        int volume = randomIntBetween(10, 100);
+        double[] centroid = new double[] {
+                randomDoubleBetween(1, 100),
+                randomDoubleBetween(1, 100),
+                randomDoubleBetween(1, 100),
+        };
+        
+        Region region = Region.NUCLEUS;
+        doReturn(volume).when(location).getVolume(region);
+        doReturn(centroid).when(location).getCentroid(region);
+        
+        PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, 0, 0);
+        
+        double[] displacement = new double[] {
+                randomDoubleBetween(1, 10),
+                randomDoubleBetween(1, 10),
+                randomDoubleBetween(1, 10),
+        };
+        
+        phc.displacement[0] = displacement[0];
+        phc.displacement[1] = displacement[1];
+        phc.displacement[2] = displacement[2];
+        
+        int x = randomIntBetween(1, 10);
+        int y = randomIntBetween(1, 10);
+        int z = randomIntBetween(1, 10);
+        
+        double[] regionDisplacement = phc.getDisplacement(x, y, z, -1, region);
+        
+        double[] expected = new double[] {
+                (centroid[0] - x) / (volume - 1),
+                (centroid[1] - y) / (volume - 1),
+                (centroid[2] - z) / (volume - 1),
+        };
+        
+        double norm = Math.sqrt(expected[0] * expected[0] + expected[1] * expected[1] + expected[2] * expected[2]);
+        
+        expected[0] /= norm;
+        expected[1] /= norm;
+        expected[2] /= norm;
+        
+        assertArrayEquals(expected, regionDisplacement, EPSILON);
+        assertArrayEquals(displacement, phc.displacement, EPSILON);
     }
 }
