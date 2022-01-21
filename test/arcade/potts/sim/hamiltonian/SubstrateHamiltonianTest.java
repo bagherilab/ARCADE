@@ -131,21 +131,22 @@ public class SubstrateHamiltonianTest {
     @Test
     public void getDelta_validIDs_calculatesValue() {
         SubstrateHamiltonian sh = spy(new SubstrateHamiltonian(mock(PottsSeries.class), mock(Potts.class)));
+        int id1 = randomIntBetween(1, 100);
+        int id2 = id1 + randomIntBetween(1, 10);
         
         double substrate1 = randomDoubleBetween(10, 100);
-        doReturn(substrate1).when(sh).getSubstrate(1, 0, 0, 0);
+        doReturn(substrate1).when(sh).getSubstrate(id1, 0, 0, 0);
         
         double substrate2 = randomDoubleBetween(10, 100);
-        doReturn(substrate2).when(sh).getSubstrate(2, 0, 0, 0);
+        doReturn(substrate2).when(sh).getSubstrate(id2, 0, 0, 0);
         
-        assertEquals(substrate2 - substrate1, sh.getDelta(1, 2, 0, 0, 0), EPSILON);
-        assertEquals(substrate1 - substrate2, sh.getDelta(2, 1, 0, 0, 0), EPSILON);
+        assertEquals(substrate2 - substrate1, sh.getDelta(id1, id2, 0, 0, 0), EPSILON);
+        assertEquals(substrate1 - substrate2, sh.getDelta(id2, id1, 0, 0, 0), EPSILON);
     }
     
     @Test
     public void getDelta_validRegions_returnsZero() {
         SubstrateHamiltonian sh = spy(new SubstrateHamiltonian(mock(PottsSeries.class), mock(Potts.class)));
-        
         int id = randomIntBetween(1, 100);
         
         double delta1 = sh.getDelta(id, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0);
@@ -158,6 +159,7 @@ public class SubstrateHamiltonianTest {
     @Test
     public void getSubstrate_validID_returnsValue() {
         Potts potts = mock(Potts.class);
+        int id = randomIntBetween(1, 100);
         
         try {
             Field lengthField = Potts.class.getDeclaredField("length");
@@ -178,12 +180,12 @@ public class SubstrateHamiltonianTest {
         double substrate = randomDoubleBetween(10, 20);
         doReturn(substrate).when(config).getSubstrate();
         
-        sh.configs.put(1, config);
+        sh.configs.put(id, config);
         
         double scale = -9. / SubstrateHamiltonian.NUMBER_NEIGHBORS;
-        assertEquals(scale * substrate, sh.getSubstrate(1, 1, 1, 1), EPSILON);
-        assertEquals(scale * substrate * Math.pow(2, power), sh.getSubstrate(1, 1, 1, 2), EPSILON);
-        assertEquals(scale * substrate * Math.pow(10, power), sh.getSubstrate(1, 1, 1, 10), EPSILON);
+        assertEquals(scale * substrate, sh.getSubstrate(id, 1, 1, 1), EPSILON);
+        assertEquals(scale * substrate * Math.pow(2, power), sh.getSubstrate(id, 1, 1, 2), EPSILON);
+        assertEquals(scale * substrate * Math.pow(10, power), sh.getSubstrate(id, 1, 1, 10), EPSILON);
     }
     
     @Test

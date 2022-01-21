@@ -23,7 +23,7 @@ public class SurfaceHamiltonianTest {
         
         @Override
         int[] calculateChange(int sourceID, int targetID, int x, int y, int z) {
-            return new int[] { (sourceID == 1 ? 1 : -1), (targetID == 1 ? 1 : -1) };
+            return new int[] { (targetID > sourceID ? 1 : -1), (sourceID > targetID ? 1 : -1) };
         }
         
         @Override
@@ -174,48 +174,52 @@ public class SurfaceHamiltonianTest {
     @Test
     public void getDelta_validIDs_calculatesValue() {
         SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
+        int id1 = randomIntBetween(1, 100);
+        int id2 = id1 + randomIntBetween(1, 10);
         
         double cell1 = randomDoubleBetween(1, 100);
-        doReturn(cell1).when(shm).getSurface(1, 0);
+        doReturn(cell1).when(shm).getSurface(id1, 0);
         
         double cell1plus1 = randomDoubleBetween(1, 100);
-        doReturn(cell1plus1).when(shm).getSurface(1, 1);
+        doReturn(cell1plus1).when(shm).getSurface(id1, 1);
         
         double cell2 = randomDoubleBetween(1, 100);
-        doReturn(cell2).when(shm).getSurface(2, 0);
+        doReturn(cell2).when(shm).getSurface(id2, 0);
         
         double cell2minus1 = randomDoubleBetween(1, 100);
-        doReturn(cell2minus1).when(shm).getSurface(2, -1);
+        doReturn(cell2minus1).when(shm).getSurface(id2, -1);
         
-        assertEquals((cell1plus1 - cell1 + cell2minus1 - cell2), shm.getDelta(1, 2, 0, 0, 0), EPSILON);
-        assertEquals((cell2minus1 - cell2 + cell1plus1 - cell1), shm.getDelta(2, 1, 0, 0, 0), EPSILON);
+        assertEquals((cell1plus1 - cell1 + cell2minus1 - cell2), shm.getDelta(id1, id2, 0, 0, 0), EPSILON);
+        assertEquals((cell2minus1 - cell2 + cell1plus1 - cell1), shm.getDelta(id2, id1, 0, 0, 0), EPSILON);
     }
     
     @Test
     public void getDelta_validRegions_calculatesValue() {
         SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
+        int id = randomIntBetween(1, 100);
         
         double region = randomDoubleBetween(1, 100);
-        doReturn(0.0).when(shm).getSurface(1, Region.DEFAULT.ordinal(), 0);
-        doReturn(region).when(shm).getSurface(1, Region.NUCLEUS.ordinal(), 0);
+        doReturn(0.0).when(shm).getSurface(id, Region.DEFAULT.ordinal(), 0);
+        doReturn(region).when(shm).getSurface(id, Region.NUCLEUS.ordinal(), 0);
         
         double regionminus3 = randomDoubleBetween(1, 100);
-        doReturn(0.0).when(shm).getSurface(1, Region.DEFAULT.ordinal(), -3);
-        doReturn(regionminus3).when(shm).getSurface(1, Region.NUCLEUS.ordinal(), -3);
+        doReturn(0.0).when(shm).getSurface(id, Region.DEFAULT.ordinal(), -3);
+        doReturn(regionminus3).when(shm).getSurface(id, Region.NUCLEUS.ordinal(), -3);
         
         double regionplus2 = randomDoubleBetween(1, 100);
-        doReturn(0.0).when(shm).getSurface(1, Region.DEFAULT.ordinal(), 2);
-        doReturn(regionplus2).when(shm).getSurface(1, Region.NUCLEUS.ordinal(), 2);
+        doReturn(0.0).when(shm).getSurface(id, Region.DEFAULT.ordinal(), 2);
+        doReturn(regionplus2).when(shm).getSurface(id, Region.NUCLEUS.ordinal(), 2);
         
         assertEquals((regionminus3 - region),
-                shm.getDelta(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 0, 0, 0), EPSILON);
+                shm.getDelta(id, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 0, 0, 0), EPSILON);
         assertEquals((regionplus2 - region),
-                shm.getDelta(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0), EPSILON);
+                shm.getDelta(id, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0), EPSILON);
     }
     
     @Test
     public void getSurface_validIDs_calculatesValue() {
         SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
+        int id = randomIntBetween(1, 100);
         
         int surface = randomIntBetween(10, 20);
         double targetSurface = randomDoubleBetween(10, 20);
@@ -235,16 +239,17 @@ public class SurfaceHamiltonianTest {
         double lambda = randomDoubleBetween(10, 100);
         doReturn(lambda).when(config).getLambda();
         
-        shm.configs.put(1, config);
+        shm.configs.put(id, config);
         
-        assertEquals(lambda * Math.pow(surface - targetSurface, 2), shm.getSurface(1, 0), EPSILON);
-        assertEquals(lambda * Math.pow(surface - targetSurface + 1, 2), shm.getSurface(1, 1), EPSILON);
-        assertEquals(lambda * Math.pow(surface - targetSurface - 1, 2), shm.getSurface(1, -1), EPSILON);
+        assertEquals(lambda * Math.pow(surface - targetSurface, 2), shm.getSurface(id, 0), EPSILON);
+        assertEquals(lambda * Math.pow(surface - targetSurface + 1, 2), shm.getSurface(id, 1), EPSILON);
+        assertEquals(lambda * Math.pow(surface - targetSurface - 1, 2), shm.getSurface(id, -1), EPSILON);
     }
     
     @Test
     public void getSurface_validRegions_calculatesValue() {
         SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
+        int id = randomIntBetween(1, 100);
         Region region = Region.NUCLEUS;
         
         int surface = randomIntBetween(10, 20);
@@ -265,14 +270,14 @@ public class SurfaceHamiltonianTest {
         double lambda = randomDoubleBetween(10, 100);
         doReturn(lambda).when(config).getLambda(region);
         
-        shm.configs.put(1, config);
+        shm.configs.put(id, config);
         
         assertEquals(lambda * Math.pow(surface - targetSurface, 2),
-                shm.getSurface(1, region.ordinal(), 0), EPSILON);
+                shm.getSurface(id, region.ordinal(), 0), EPSILON);
         assertEquals(lambda * Math.pow(surface - targetSurface + 1, 2),
-                shm.getSurface(1, region.ordinal(), 1), EPSILON);
+                shm.getSurface(id, region.ordinal(), 1), EPSILON);
         assertEquals(lambda * Math.pow(surface - targetSurface - 1, 2),
-                shm.getSurface(1, region.ordinal(), -1), EPSILON);
+                shm.getSurface(id, region.ordinal(), -1), EPSILON);
     }
     
     @Test
@@ -286,11 +291,12 @@ public class SurfaceHamiltonianTest {
     @Test
     public void getSurface_defaultRegion_returnsZero() {
         SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
+        int id = randomIntBetween(1, 100);
         assertEquals(0, shm.getSurface(0, Region.DEFAULT.ordinal(), 1), EPSILON);
         assertEquals(0, shm.getSurface(0, Region.DEFAULT.ordinal(), 0), EPSILON);
         assertEquals(0, shm.getSurface(0, Region.DEFAULT.ordinal(), -1), EPSILON);
-        assertEquals(0, shm.getSurface(1, Region.DEFAULT.ordinal(), 1), EPSILON);
-        assertEquals(0, shm.getSurface(1, Region.DEFAULT.ordinal(), 0), EPSILON);
-        assertEquals(0, shm.getSurface(1, Region.DEFAULT.ordinal(), -1), EPSILON);
+        assertEquals(0, shm.getSurface(id, Region.DEFAULT.ordinal(), 1), EPSILON);
+        assertEquals(0, shm.getSurface(id, Region.DEFAULT.ordinal(), 0), EPSILON);
+        assertEquals(0, shm.getSurface(id, Region.DEFAULT.ordinal(), -1), EPSILON);
     }
 }

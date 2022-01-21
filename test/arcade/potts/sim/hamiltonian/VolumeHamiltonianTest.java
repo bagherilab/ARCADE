@@ -141,54 +141,58 @@ public class VolumeHamiltonianTest {
     @Test
     public void getDelta_validIDs_calculatesValue() {
         VolumeHamiltonian vh = spy(new VolumeHamiltonian(mock(PottsSeries.class)));
+        int id1 = randomIntBetween(1, 100);
+        int id2 = id1 + randomIntBetween(1, 10);
         
         double cell1 = randomDoubleBetween(1, 100);
-        doReturn(cell1).when(vh).getVolume(1, 0);
+        doReturn(cell1).when(vh).getVolume(id1, 0);
         
         double cell1plus1 = randomDoubleBetween(1, 100);
-        doReturn(cell1plus1).when(vh).getVolume(1, 1);
+        doReturn(cell1plus1).when(vh).getVolume(id1, 1);
         
         double cell1minus1 = randomDoubleBetween(1, 100);
-        doReturn(cell1minus1).when(vh).getVolume(1, -1);
+        doReturn(cell1minus1).when(vh).getVolume(id1, -1);
         
         double cell2 = randomDoubleBetween(1, 100);
-        doReturn(cell2).when(vh).getVolume(2, 0);
+        doReturn(cell2).when(vh).getVolume(id2, 0);
         
         double cell2plus1 = randomDoubleBetween(1, 100);
-        doReturn(cell2plus1).when(vh).getVolume(2, 1);
+        doReturn(cell2plus1).when(vh).getVolume(id2, 1);
         
         double cell2minus1 = randomDoubleBetween(1, 100);
-        doReturn(cell2minus1).when(vh).getVolume(2, -1);
+        doReturn(cell2minus1).when(vh).getVolume(id2, -1);
         
-        assertEquals((cell1minus1 - cell1 + cell2plus1 - cell2), vh.getDelta(1, 2, 0, 0, 0), EPSILON);
-        assertEquals((cell2minus1 - cell2 + cell1plus1 - cell1), vh.getDelta(2, 1, 0, 0, 0), EPSILON);
+        assertEquals((cell1minus1 - cell1 + cell2plus1 - cell2), vh.getDelta(id1, id2, 0, 0, 0), EPSILON);
+        assertEquals((cell2minus1 - cell2 + cell1plus1 - cell1), vh.getDelta(id2, id1, 0, 0, 0), EPSILON);
     }
     
     @Test
     public void getDelta_validRegions_calculatesValue() {
         VolumeHamiltonian vh = spy(new VolumeHamiltonian(mock(PottsSeries.class)));
+        int id = randomIntBetween(1, 100);
         
         double region = randomDoubleBetween(1, 100);
-        doReturn(0.0).when(vh).getVolume(1, Region.DEFAULT.ordinal(), 0);
-        doReturn(region).when(vh).getVolume(1, Region.NUCLEUS.ordinal(), 0);
+        doReturn(0.0).when(vh).getVolume(id, Region.DEFAULT.ordinal(), 0);
+        doReturn(region).when(vh).getVolume(id, Region.NUCLEUS.ordinal(), 0);
         
         double regionplus1 = randomDoubleBetween(1, 100);
-        doReturn(0.0).when(vh).getVolume(1, Region.DEFAULT.ordinal(), 1);
-        doReturn(regionplus1).when(vh).getVolume(1, Region.NUCLEUS.ordinal(), 1);
+        doReturn(0.0).when(vh).getVolume(id, Region.DEFAULT.ordinal(), 1);
+        doReturn(regionplus1).when(vh).getVolume(id, Region.NUCLEUS.ordinal(), 1);
         
         double regionminus1 = randomDoubleBetween(1, 100);
-        doReturn(0.0).when(vh).getVolume(1, Region.DEFAULT.ordinal(), -1);
-        doReturn(regionminus1).when(vh).getVolume(1, Region.NUCLEUS.ordinal(), -1);
+        doReturn(0.0).when(vh).getVolume(id, Region.DEFAULT.ordinal(), -1);
+        doReturn(regionminus1).when(vh).getVolume(id, Region.NUCLEUS.ordinal(), -1);
         
         assertEquals((regionplus1 - region),
-                vh.getDelta(1, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0), EPSILON);
+                vh.getDelta(id, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0), EPSILON);
         assertEquals((regionminus1 - region),
-                vh.getDelta(1, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 0, 0, 0), EPSILON);
+                vh.getDelta(id, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 0, 0, 0), EPSILON);
     }
     
     @Test
     public void getVolume_validID_calculatesValue() {
         VolumeHamiltonian vh = new VolumeHamiltonian(mock(PottsSeries.class));
+        int id = randomIntBetween(1, 100);
         
         int volume = randomIntBetween(10, 20);
         double targetVolume = randomDoubleBetween(10, 20);
@@ -208,16 +212,17 @@ public class VolumeHamiltonianTest {
         double lambda = randomDoubleBetween(10, 100);
         doReturn(lambda).when(config).getLambda();
         
-        vh.configs.put(1, config);
+        vh.configs.put(id, config);
         
-        assertEquals(lambda * Math.pow(volume - targetVolume, 2), vh.getVolume(1, 0), EPSILON);
-        assertEquals(lambda * Math.pow(volume - targetVolume + 1, 2), vh.getVolume(1, 1), EPSILON);
-        assertEquals(lambda * Math.pow(volume - targetVolume - 1, 2), vh.getVolume(1, -1), EPSILON);
+        assertEquals(lambda * Math.pow(volume - targetVolume, 2), vh.getVolume(id, 0), EPSILON);
+        assertEquals(lambda * Math.pow(volume - targetVolume + 1, 2), vh.getVolume(id, 1), EPSILON);
+        assertEquals(lambda * Math.pow(volume - targetVolume - 1, 2), vh.getVolume(id, -1), EPSILON);
     }
     
     @Test
     public void getVolume_validRegions_calculatesValue() {
         VolumeHamiltonian vh = new VolumeHamiltonian(mock(PottsSeries.class));
+        int id = randomIntBetween(1, 100);
         Region region = Region.NUCLEUS;
         
         int volume = randomIntBetween(10, 20);
@@ -238,14 +243,14 @@ public class VolumeHamiltonianTest {
         double lambda = randomDoubleBetween(10, 100);
         doReturn(lambda).when(config).getLambda(region);
         
-        vh.configs.put(1, config);
+        vh.configs.put(id, config);
         
         assertEquals(lambda * Math.pow(volume - targetVolume, 2),
-                vh.getVolume(1, region.ordinal(), 0), EPSILON);
+                vh.getVolume(id, region.ordinal(), 0), EPSILON);
         assertEquals(lambda * Math.pow(volume - targetVolume + 1, 2),
-                vh.getVolume(1, region.ordinal(), 1), EPSILON);
+                vh.getVolume(id, region.ordinal(), 1), EPSILON);
         assertEquals(lambda * Math.pow(volume - targetVolume - 1, 2),
-                vh.getVolume(1, region.ordinal(), -1), EPSILON);
+                vh.getVolume(id, region.ordinal(), -1), EPSILON);
     }
     
     @Test
@@ -259,11 +264,12 @@ public class VolumeHamiltonianTest {
     @Test
     public void getVolume_defaultRegion_returnsZero() {
         VolumeHamiltonian vh = new VolumeHamiltonian(mock(PottsSeries.class));
+        int id = randomIntBetween(1, 100);
         assertEquals(0, vh.getVolume(0, Region.DEFAULT.ordinal(), 1), EPSILON);
         assertEquals(0, vh.getVolume(0, Region.DEFAULT.ordinal(), 0), EPSILON);
         assertEquals(0, vh.getVolume(0, Region.DEFAULT.ordinal(), -1), EPSILON);
-        assertEquals(0, vh.getVolume(1, Region.DEFAULT.ordinal(), 1), EPSILON);
-        assertEquals(0, vh.getVolume(1, Region.DEFAULT.ordinal(), 0), EPSILON);
-        assertEquals(0, vh.getVolume(1, Region.DEFAULT.ordinal(), -1), EPSILON);
+        assertEquals(0, vh.getVolume(id, Region.DEFAULT.ordinal(), 1), EPSILON);
+        assertEquals(0, vh.getVolume(id, Region.DEFAULT.ordinal(), 0), EPSILON);
+        assertEquals(0, vh.getVolume(id, Region.DEFAULT.ordinal(), -1), EPSILON);
     }
 }
