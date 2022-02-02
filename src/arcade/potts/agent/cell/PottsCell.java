@@ -429,20 +429,28 @@ public final class PottsCell implements Cell {
     
     /**
      * Updates target volume and surface area for a region.
+     * If the region is the DEFAULT region, then updates are the same as for a
+     * cell without regions.
      *
      * @param region  the region
      * @param rate  the rate of change
      * @param scale  the relative final size scaling
      */
     public void updateTarget(Region region, double rate, double scale) {
-        if (scale == 1) { return; }
+        if (!hasRegions || scale == 1) { return; }
         
-        targetVolume -= targetRegionVolumes.get(region);
+        if (region == Region.DEFAULT) {
+            updateTarget(rate, scale);
+            return;
+        }
         
         double criticalRegionVolume = criticalRegionVolumes.get(region);
         double criticalRegionHeight = criticalRegionHeights.get(region);
         
         double updateVolume = targetRegionVolumes.get(region);
+        
+        double preUpdateVolume = targetRegionVolumes.get(Region.DEFAULT) + updateVolume;
+        targetRegionVolumes.put(Region.DEFAULT, preUpdateVolume);
         
         if (scale > 1) {
             updateVolume += rate;
@@ -456,8 +464,12 @@ public final class PottsCell implements Cell {
         double updateSurface = location.convertSurface(updateVolume, criticalRegionHeight);
         targetRegionSurfaces.put(region, updateSurface);
         
-        targetVolume += targetRegionVolumes.get(region);
-        targetSurface = location.convertSurface(targetVolume, criticalHeight);
+        double postUpdateVolume = targetRegionVolumes.get(Region.DEFAULT) - updateVolume;
+        targetRegionVolumes.put(Region.DEFAULT, postUpdateVolume);
+        
+        double defaultRegionHeight = criticalRegionHeights.get(Region.DEFAULT);
+        double postUpdateSurface = location.convertSurface(postUpdateVolume, defaultRegionHeight);
+        targetRegionSurfaces.put(Region.DEFAULT, postUpdateSurface);
     }
     
     @Override

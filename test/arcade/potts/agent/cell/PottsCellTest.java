@@ -1076,99 +1076,150 @@ public class PottsCellTest {
     }
     
     @Test
-    public void updateTarget_regionIncreaseScale_updatesValues() {
-        double locationRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
-        double locationRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
+    public void updateTarget_regionNoRegion_doesNothing() {
+        double scale = randomDoubleBetween(1, 10);
+        double rate = randomDoubleBetween(0, 100);
+        
+        PottsCell cell = make(false);
+        cell.initialize(null, null);
+        cell.updateTarget(Region.DEFAULT, rate, scale);
+        
+        assertEquals(0, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+        assertEquals(0, cell.getTargetSurface(Region.DEFAULT), EPSILON);
+    }
+    
+    @Test
+    public void updateTarget_regionIncreaseScaleWithDefault_updatesValues() {
         double scale = randomDoubleBetween(1 + OFFSET, 2);
-        double rate = randomDoubleBetween(0, scale - 1) * locationRegionVolume;
+        double rate = randomDoubleBetween(0, scale - 1) * cellCriticalVolume;
         
         PottsCell cell = make(true);
         cell.reset(null, null);
         cell.updateTarget(Region.DEFAULT, rate, scale);
-        
-        double targetRegionVolume = locationRegionVolume + rate;
-        assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
-        
-        double targetRegionSurface = locationRegionHeight * targetRegionVolume;
-        assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
         double targetVolume = cellCriticalVolume + rate;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
         double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
-    }
-    
-    @Test
-    public void updateTarget_regionIncreaseScaleWithThreshold_updatesValues() {
-        double locationRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
-        double locationRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
-        double scale = randomDoubleBetween(1 + OFFSET, 2);
-        double rate = randomDoubleBetween(scale - 1, scale) * locationRegionVolume;
         
-        PottsCell cell = make(true);
-        cell.reset(null, null);
-        cell.updateTarget(Region.DEFAULT, rate, scale);
-        
-        double targetRegionVolume = scale * locationRegionVolume;
+        double criticalRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double targetRegionVolume = criticalRegionVolume - cellCriticalVolume + targetVolume;
         assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
         
-        double targetRegionSurface = locationRegionHeight * targetRegionVolume;
+        double criticalRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
+        double targetRegionSurface = criticalRegionHeight * targetRegionVolume;
         assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
-        
-        double targetVolume = cellCriticalVolume - locationRegionVolume + targetRegionVolume;
-        assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
-        
-        double targetSurface = cellCriticalHeight * targetVolume;
-        assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
     }
     
     @Test
-    public void updateTarget_regionDecreaseScale_updatesValues() {
-        double locationRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
-        double locationRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
+    public void updateTarget_regionDecreaseScaleWithDefault_updatesValues() {
         double scale = randomDoubleBetween(0, 1 - OFFSET);
-        double rate = randomDoubleBetween(0, 1 - scale) * locationRegionVolume;
+        double rate = randomDoubleBetween(0, 1 - scale) * cellCriticalVolume;
+        rate = Math.min(rate, locationRegionVolumes.get(Region.DEFAULT));
         
         PottsCell cell = make(true);
         cell.reset(null, null);
         cell.updateTarget(Region.DEFAULT, rate, scale);
-        
-        double targetRegionVolume = locationRegionVolume - rate;
-        assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
-        
-        double targetRegionSurface = locationRegionHeight * targetRegionVolume;
-        assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
         
         double targetVolume = cellCriticalVolume - rate;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
         double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
+        
+        double criticalRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double targetRegionVolume = criticalRegionVolume - cellCriticalVolume + targetVolume;
+        assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+        
+        double criticalRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
+        double targetRegionSurface = criticalRegionHeight * targetRegionVolume;
+        assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
     }
     
     @Test
-    public void updateTarget_regionDecreaseScaleWithThreshold_updatesValues() {
-        double locationRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
-        double locationRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
-        double scale = randomDoubleBetween(0, 1 - OFFSET);
-        double rate = randomDoubleBetween(1 - scale, 2 - scale) * locationRegionVolume;
+    public void updateTarget_regionDecreaseScaleWithDefaultWithThreshold_updatesRate() {
+        double threshold = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double scale = randomDoubleBetween(0, 1 - threshold / cellCriticalVolume);
+        double rate = randomDoubleBetween(threshold, (1 - scale) * cellCriticalVolume);
         
         PottsCell cell = make(true);
         cell.reset(null, null);
         cell.updateTarget(Region.DEFAULT, rate, scale);
         
-        double targetRegionVolume = scale * locationRegionVolume;
-        assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
-        
-        double targetRegionSurface = locationRegionHeight * targetRegionVolume;
-        assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
-        
-        double targetVolume = cellCriticalVolume - locationRegionVolume + targetRegionVolume;
+        double targetVolume = cellCriticalVolume - threshold;
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         
         double targetSurface = cellCriticalHeight * targetVolume;
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
+        
+        double criticalRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double targetRegionVolume = criticalRegionVolume - cellCriticalVolume + targetVolume;
+        assertEquals(targetRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+        
+        double criticalRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
+        double targetRegionSurface = criticalRegionHeight * targetRegionVolume;
+        assertEquals(targetRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
+    }
+    
+    @Test
+    public void updateTarget_regionIncreaseScale_updatesValues() {
+        double criticalRegionVolume = criticalVolumesRegionMock.get(Region.NUCLEUS);
+        double criticalRegionHeight = criticalHeightsRegionMock.get(Region.NUCLEUS);
+        
+        double scale = randomDoubleBetween(1 + OFFSET, 2);
+        double rate = randomDoubleBetween(0, scale - 1) * criticalRegionVolume;
+        rate = Math.min(rate, locationRegionVolumes.get(Region.DEFAULT));
+        
+        PottsCell cell = make(true);
+        cell.reset(null, null);
+        cell.updateTarget(Region.NUCLEUS, rate, scale);
+        
+        double targetRegionVolume = criticalRegionVolume + rate;
+        assertEquals(targetRegionVolume, cell.getTargetVolume(Region.NUCLEUS), EPSILON);
+        
+        double targetRegionSurface = criticalRegionHeight * targetRegionVolume;
+        assertEquals(targetRegionSurface, cell.getTargetSurface(Region.NUCLEUS), EPSILON);
+        
+        double defaultRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double updatedDefaultRegionVolume = defaultRegionVolume + criticalRegionVolume - targetRegionVolume;
+        assertEquals(updatedDefaultRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+        
+        double defaultRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
+        double updatedDefaultRegionSurface = defaultRegionHeight * updatedDefaultRegionVolume;
+        assertEquals(updatedDefaultRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
+    }
+    
+    @Test
+    public void updateTarget_regionIncreaseScaleWithThreshold_updatesRate() {
+        // TODO
+    }
+    
+    @Test
+    public void updateTarget_regionDecreaseScale_updatesValues() {
+        double criticalRegionVolume = criticalVolumesRegionMock.get(Region.NUCLEUS);
+        double criticalRegionHeight = criticalHeightsRegionMock.get(Region.NUCLEUS);
+        
+        double scale = randomDoubleBetween(0, 1 - OFFSET);
+        double rate = randomDoubleBetween(0, 1 - scale) * criticalRegionVolume;
+        
+        PottsCell cell = make(true);
+        cell.reset(null, null);
+        cell.updateTarget(Region.NUCLEUS, rate, scale);
+        
+        double targetRegionVolume = criticalRegionVolume - rate;
+        assertEquals(targetRegionVolume, cell.getTargetVolume(Region.NUCLEUS), EPSILON);
+        
+        double targetRegionSurface = criticalRegionHeight * targetRegionVolume;
+        assertEquals(targetRegionSurface, cell.getTargetSurface(Region.NUCLEUS), EPSILON);
+        
+        double defaultRegionVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
+        double updatedDefaultRegionVolume = defaultRegionVolume + criticalRegionVolume - targetRegionVolume;
+        assertEquals(updatedDefaultRegionVolume, cell.getTargetVolume(Region.DEFAULT), EPSILON);
+        
+        double defaultRegionHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
+        double updatedDefaultRegionSurface = defaultRegionHeight * updatedDefaultRegionVolume;
+        assertEquals(updatedDefaultRegionSurface, cell.getTargetSurface(Region.DEFAULT), EPSILON);
     }
     
     @Test
