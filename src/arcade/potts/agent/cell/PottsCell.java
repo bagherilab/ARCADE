@@ -444,6 +444,8 @@ public final class PottsCell implements Cell {
             return;
         }
         
+        if (scale > 1) { rate = Math.min(rate, targetRegionVolumes.get(Region.DEFAULT)); }
+        
         double criticalRegionVolume = criticalRegionVolumes.get(region);
         double criticalRegionHeight = criticalRegionHeights.get(region);
         
