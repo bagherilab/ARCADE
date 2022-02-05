@@ -2,7 +2,6 @@ package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
@@ -11,12 +10,7 @@ import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public class PottsLocationFactory2DTest {
-    static final PottsLocationFactory2D FACTORY = mock(PottsLocationFactory2D.class, CALLS_REAL_METHODS);
-    
-    @BeforeClass
-    public static void setupMocks() {
-        FACTORY.random = mock(MersenneTwisterFast.class);
-    }
+    static final MersenneTwisterFast RANDOM = mock(MersenneTwisterFast.class);
     
     @Test
     public void getPossible_givenZero_createsEmpty() {
@@ -213,7 +207,7 @@ public class PottsLocationFactory2DTest {
         }
         
         voxels.add(new Voxel(0, 0, 0));
-        FACTORY.increase(allVoxels, voxels, 5);
+        PottsLocationFactory2D.increase(allVoxels, voxels, 5, RANDOM);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(0, 0, 0));
@@ -241,7 +235,7 @@ public class PottsLocationFactory2DTest {
         }
         
         voxels.add(new Voxel(0, 0, 0));
-        FACTORY.increase(allVoxels, voxels, 4);
+        PottsLocationFactory2D.increase(allVoxels, voxels, 4, RANDOM);
         
         HashSet<Voxel> expected = new HashSet<>();
         expected.add(new Voxel(0, 0, 0));
@@ -265,7 +259,7 @@ public class PottsLocationFactory2DTest {
         }
         
         voxels.add(new Voxel(0, 0, 0));
-        FACTORY.increase(allVoxels, voxels, 5);
+        PottsLocationFactory2D.increase(allVoxels, voxels, 5, RANDOM);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(0, 0, 0));
@@ -287,7 +281,7 @@ public class PottsLocationFactory2DTest {
         voxels.add(new Voxel(-1, 0, 0));
         voxels.add(new Voxel(0, -1, 0));
         voxels.add(new Voxel(0, 1, 0));
-        FACTORY.decrease(voxels, 1);
+        PottsLocationFactory2D.decrease(voxels, 1, RANDOM);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(0, 0, 0));
@@ -307,7 +301,7 @@ public class PottsLocationFactory2DTest {
         voxels.add(new Voxel(-1, 0, 0));
         voxels.add(new Voxel(0, -1, 0));
         voxels.add(new Voxel(0, 1, 0));
-        FACTORY.decrease(voxels, 3);
+        PottsLocationFactory2D.decrease(voxels, 3, RANDOM);
         
         HashSet<Voxel> expected = new HashSet<>();
         expected.add(new Voxel(0, 0, 0));
@@ -334,7 +328,7 @@ public class PottsLocationFactory2DTest {
         voxels.add(new Voxel(1, -1, 0));
         voxels.add(new Voxel(-1, 1, 0));
         
-        FACTORY.decrease(voxels, 7);
+        PottsLocationFactory2D.decrease(voxels, 7, RANDOM);
         
         int[][] corners = new int[][] {
                 { -1, -1 },

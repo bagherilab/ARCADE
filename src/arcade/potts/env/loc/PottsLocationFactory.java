@@ -23,6 +23,16 @@ import static arcade.core.util.Enums.Region;
  */
 
 public abstract class PottsLocationFactory implements LocationFactory {
+    /** List of valid (x, y, z) moves. */
+    static final int[][] VALID_MOVES = {
+            { -1,  0,  0 },
+            {  1,  0,  0 },
+            {  0, -1,  0 },
+            {  0,  1,  0 },
+            {  0,  0, -1 },
+            {  0,  0,  1 }
+    };
+    
     /** Random number generator instance. */
     MersenneTwisterFast random;
     
@@ -179,14 +189,6 @@ public abstract class PottsLocationFactory implements LocationFactory {
     }
     
     /**
-     * Gets list of neighbors of a given voxel.
-     *
-     * @param voxel  the voxel
-     * @return  the list of neighbor voxels
-     */
-    abstract ArrayList<Voxel> getNeighbors(Voxel voxel);
-    
-    /**
      * Selects specified number of voxels from a focus voxel.
      *
      * @param voxels  the list of voxels to select from
@@ -219,19 +221,36 @@ public abstract class PottsLocationFactory implements LocationFactory {
     abstract ArrayList<Voxel> getCenters(int length, int width, int height, int s, int h);
     
     /**
+     * Gets list of valid voxels around a given voxel.
+     *
+     * @param voxel  the voxel
+     * @return  the list of valid voxels
+     */
+    static ArrayList<Voxel> getValid(Voxel voxel)  {
+        ArrayList<Voxel> valid = new ArrayList<>();
+        for (int[] moves : VALID_MOVES) {
+            Voxel v = new Voxel(voxel.x + moves[0], voxel.y + moves[1], voxel.z + moves[2]);
+            valid.add(v);
+        }
+        return valid;
+    }
+    
+    /**
      * Increases the number of voxels by adding from a given list of voxels.
      *
      * @param allVoxels  the list of all possible voxels
      * @param voxels  the list of selected voxels
      * @param target  the target number of voxels
+     * @param random  the seeded random number generator
      */
-    void increase(ArrayList<Voxel> allVoxels, ArrayList<Voxel> voxels, int target) {
+    static void increase(ArrayList<Voxel> allVoxels, ArrayList<Voxel> voxels, int target,
+                         MersenneTwisterFast random) {
         int size = voxels.size();
         HashSet<Voxel> neighbors = new HashSet<>();
         
         // Get neighbors.
         for (Voxel voxel : voxels) {
-            ArrayList<Voxel> allNeighbors = getNeighbors(voxel);
+            ArrayList<Voxel> allNeighbors = getValid(voxel);
             for (Voxel neighbor : allNeighbors) {
                 if (allVoxels.contains(neighbor) && !voxels.contains(neighbor)) {
                     neighbors.add(neighbor);
@@ -253,14 +272,15 @@ public abstract class PottsLocationFactory implements LocationFactory {
      *
      * @param voxels  the list of selected voxels
      * @param target  the target number of voxels
+     * @param random  the seeded random number generator
      */
-    void decrease(ArrayList<Voxel> voxels, int target) {
+    static void decrease(ArrayList<Voxel> voxels, int target, MersenneTwisterFast random) {
         int size = voxels.size();
         ArrayList<Voxel> neighbors = new ArrayList<>();
         
         // Get neighbors.
         for (Voxel voxel : voxels) {
-            ArrayList<Voxel> allNeighbors = getNeighbors(voxel);
+            ArrayList<Voxel> allNeighbors = getValid(voxel);
             for (Voxel neighbor : allNeighbors) {
                 if (voxels.contains(neighbor)) { continue; }
                 neighbors.add(voxel);
@@ -280,7 +300,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
             
             // Get neighbors of candidate.
             ArrayList<Voxel> candidateNeighbors = new ArrayList<>();
-            for (Voxel neighbor : getNeighbors(candidate)) {
+            for (Voxel neighbor : getValid(candidate)) {
                 if (voxels.contains(neighbor)) {
                     candidateNeighbors.add(neighbor);
                 }
@@ -289,7 +309,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
             // Check neighbors of neighbor list.
             boolean valid = true;
             for (Voxel neighbor : candidateNeighbors) {
-                int count = getNeighbors(neighbor).stream()
+                int count = getValid(neighbor).stream()
                         .mapToInt(v -> voxels.contains(v) ? 1 : 0)
                         .sum();
                 

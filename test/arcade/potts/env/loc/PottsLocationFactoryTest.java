@@ -54,14 +54,6 @@ public class PottsLocationFactoryTest {
         PottsLocationFactoryMock() { super(); }
         
         @Override
-        ArrayList<Voxel> getNeighbors(Voxel voxel) {
-            ArrayList<Voxel> neighbors = new ArrayList<>();
-            neighbors.add(new Voxel(voxel.x - 1, 0, 0));
-            neighbors.add(new Voxel(voxel.x + 1, 0, 0));
-            return neighbors;
-        }
-        
-        @Override
         ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) {
             ArrayList<Voxel> selected = new ArrayList<>();
             for (int i = 0; i < n + focus.x; i++) {

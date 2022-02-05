@@ -10,11 +10,6 @@ public final class PottsLocationFactory3D extends PottsLocationFactory {
     public PottsLocationFactory3D() { super(); }
     
     @Override
-    ArrayList<Voxel> getNeighbors(Voxel focus) {
-        return Location3D.getNeighbors(focus);
-    }
-    
-    @Override
     ArrayList<Voxel> getSelected(ArrayList<Voxel> voxels, Voxel focus, double n) {
         return Location3D.getSelected(voxels, focus, n);
     }
