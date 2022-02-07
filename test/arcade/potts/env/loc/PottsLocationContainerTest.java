@@ -23,6 +23,9 @@ public class PottsLocationContainerTest {
         FACTORY.random = mock(MersenneTwisterFast.class);
         FACTORY_2D.random = mock(MersenneTwisterFast.class);
         FACTORY_3D.random = mock(MersenneTwisterFast.class);
+        
+        doAnswer(invocation -> (int)invocation.getArgument(0) - 1)
+                .when(FACTORY.random).nextInt(anyInt());
     }
     
     @Test

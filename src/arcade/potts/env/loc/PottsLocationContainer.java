@@ -90,9 +90,9 @@ public final class PottsLocationContainer implements LocationContainer {
         // Add or remove voxels to reach target number.
         int size = voxels.size();
         if (size < target) {
-            factory.increase(allVoxels, voxels, target);
+            PottsLocationFactory.increase(allVoxels, voxels, target, factory.random);
         } else if (size > target) {
-            factory.decrease(voxels, target);
+            PottsLocationFactory.decrease(voxels, target, factory.random);
         }
         
         // Make location.
@@ -115,9 +115,9 @@ public final class PottsLocationContainer implements LocationContainer {
                 // Add or remove region voxels to reach target number.
                 int regSize = regVoxels.size();
                 if (regSize < regTarget) {
-                    factory.increase(allRegVoxels, regVoxels, regTarget);
+                    PottsLocationFactory.increase(allRegVoxels, regVoxels, regTarget, factory.random);
                 } else if (regSize > regTarget) {
-                    factory.decrease(regVoxels, regTarget);
+                    PottsLocationFactory.decrease(regVoxels, regTarget, factory.random);
                 }
                 
                 // Assign regions.

@@ -61,7 +61,7 @@ public class PottsLocations2DTest {
         
         EnumMap<Region, Double> fractions = new EnumMap<>(Region.class);
         fractions.put(Region.DEFAULT, f / 10.0);
-        fractions.put(Region.UNDEFINED, 1 - f / 10.0);
+        fractions.put(Region.UNDEFINED, (10 - f) / 10.0);
         PottsLocations.assignVoxels(loc, fractions, randomDoubleZero);
         
         assertEquals(n * n, loc.voxels.size());
@@ -70,8 +70,9 @@ public class PottsLocations2DTest {
         
         int sizeDefault = loc.locations.get(Region.DEFAULT).voxels.size();
         int sizeAdditional = loc.locations.get(Region.UNDEFINED).voxels.size();
-        assertTrue((sizeDefault < f * n + 1) && (sizeDefault >= f * n - 1));
-        assertTrue((sizeAdditional <= (10 - f) * n + 1) && (sizeAdditional > (10 - f) * n - 1));
+        
+        assertEquals(f * n, sizeDefault);
+        assertEquals((10 - f) * n, sizeAdditional);
     }
     
     @Test
