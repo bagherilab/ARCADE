@@ -14,7 +14,7 @@ import arcade.potts.agent.module.PottsModule;
 import arcade.potts.agent.module.PottsModuleApoptosis;
 import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
-import arcade.potts.agent.module.PottsModuleProliferation;
+import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.loc.PottsLocation;
 import static arcade.core.util.Enums.Region;
@@ -283,7 +283,7 @@ public final class PottsCell implements Cell {
                 module = new PottsModuleQuiescence(this);
                 break;
             case PROLIFERATIVE:
-                module = new PottsModuleProliferation.Simple(this);
+                module = new PottsModuleProliferationSimple(this);
                 break;
             case APOPTOTIC:
                 module = new PottsModuleApoptosis.Simple(this);
