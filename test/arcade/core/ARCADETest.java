@@ -156,6 +156,20 @@ public class ARCADETest {
         assertEquals(1, series.size());
         assertTrue(series.get(0).isVis);
     }
+    
+    @Test
+    public void buildSeries_withPathSeparator_returnsList() throws IOException, SAXException {
+        Box parameters = new Box();
+        MiniBox settings = new MiniBox();
+        settings.put("XML", XML);
+        settings.put("PATH", PATH + "/");
+        
+        ARCADE arcade = new MockARCADE();
+        ArrayList<Series> series = arcade.buildSeries(parameters, settings);
+        
+        assertEquals(1, series.size());
+        assertFalse(series.get(0).isVis);
+    }
    
     @Test
     public void runSeries_noVis_runsSim() throws Exception {
