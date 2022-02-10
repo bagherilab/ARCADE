@@ -165,6 +165,35 @@ public abstract class PottsLocation implements Location {
     public void assign(Region region, Voxel voxel) { }
     
     /**
+     * Finds the closest voxel that exists in the location.
+     * 
+     * @param voxel  the starting voxel
+     * @return  the closest voxel or the starting voxel if it exists
+     */
+    public Voxel adjust(Voxel voxel) {
+        if (voxels.contains(voxel)) { return voxel; }
+        
+        int x = voxel.x;
+        int y = voxel.y;
+        int z = voxel.z;
+        
+        double minimumDistance = Double.MAX_VALUE;
+        
+        for (Voxel v : voxels) {
+            double distance = Math.sqrt(Math.pow(v.x - x, 2)
+                    + Math.pow(v.y - y, 2)
+                    + Math.pow(v.z - z, 2));
+            
+            if (distance < minimumDistance) {
+                minimumDistance = distance;
+                voxel = v;
+            }
+        }
+        
+        return voxel;
+    }
+    
+    /**
      * Clears all voxel lists and arrays.
      *
      * @param ids  the potts array for ids
@@ -224,6 +253,10 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Gets the voxel at the center of the location.
+     * <p>
+     * The center voxel is not guaranteed to exist in the location.
+     * If the center voxel must exist, use {@code adjust()} to get the closest
+     * voxel that exists.
      *
      * @return  the center voxel, returns {@code null} if there are no voxels
      */

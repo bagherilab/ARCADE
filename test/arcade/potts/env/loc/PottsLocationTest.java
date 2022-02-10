@@ -488,6 +488,33 @@ public class PottsLocationTest {
     }
     
     @Test
+    public void adjust_voxelExists_returnsVoxel() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 0, 0));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        
+        Voxel voxel = new Voxel(0, 0, 0);
+        Voxel adjusted = loc.adjust(voxel);
+        
+        assertEquals(voxel, adjusted);
+    }
+    
+    @Test
+    public void adjust_voxelDoesNotExist_returnsClosestVoxel() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 1, 2));
+        voxels.add(new Voxel(0, 2, 3));
+        voxels.add(new Voxel(2, 1, 0));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        
+        Voxel voxel = new Voxel(1, 2, 3);
+        Voxel adjusted = loc.adjust(voxel);
+        Voxel expected = new Voxel(0, 2, 3);
+        
+        assertEquals(expected, adjusted);
+    }
+    
+    @Test
     public void clear_hasVoxels_updatesArray() {
         PottsLocationMock loc = new PottsLocationMock(voxelListForAddRemove);
         int[][][] array = new int[][][] { { { 1, 0, 0 }, { 1, 0, 0 } } };
