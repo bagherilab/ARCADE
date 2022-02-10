@@ -2,6 +2,7 @@ package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.*;
 import arcade.potts.agent.cell.PottsCellContainer;
@@ -97,6 +98,7 @@ public final class PottsLocationContainer implements LocationContainer {
         
         // Make location.
         PottsLocation location;
+        MersenneTwisterFast random = factory.random;
         
         // Add regions.
         if (cell.regionVoxels != null) {
@@ -115,9 +117,9 @@ public final class PottsLocationContainer implements LocationContainer {
                 // Add or remove region voxels to reach target number.
                 int regSize = regVoxels.size();
                 if (regSize < regTarget) {
-                    PottsLocationFactory.increase(allRegVoxels, regVoxels, regTarget, factory.random);
+                    PottsLocationFactory.increase(allRegVoxels, regVoxels, regTarget, random);
                 } else if (regSize > regTarget) {
-                    PottsLocationFactory.decrease(regVoxels, regTarget, factory.random);
+                    PottsLocationFactory.decrease(regVoxels, regTarget, random);
                 }
                 
                 // Assign regions.

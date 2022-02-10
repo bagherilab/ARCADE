@@ -488,6 +488,13 @@ public class PottsLocationTest {
     }
     
     @Test
+    public void distribute_anyTarget_doesNothing() {
+        PottsLocationMock loc = new PottsLocationMock(voxelListForAddRemove);
+        loc.distribute(Region.DEFAULT, 1, randomDoubleOne);
+        assertEquals(voxelListForAddRemove, loc.voxels);
+    }
+    
+    @Test
     public void adjust_voxelExists_returnsVoxel() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         voxels.add(new Voxel(0, 0, 0));

@@ -3,11 +3,9 @@ package arcade.potts.env.loc;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.loc.Location;
 import arcade.core.env.loc.LocationContainer;
-import arcade.core.util.Utilities;
 import static arcade.core.util.Enums.Region;
 
 /**
@@ -141,6 +139,43 @@ public abstract class PottsLocations extends PottsLocation {
     }
     
     @Override
+    public void distribute(Region region, int target, MersenneTwisterFast random) {
+        if (region == Region.DEFAULT) { return; }
+        
+        PottsLocation defaultLocation = locations.get(Region.DEFAULT);
+        PottsLocation regionLocation = locations.get(region);
+        ArrayList<Voxel> regionVoxels = new ArrayList<>(regionLocation.voxels);
+        
+        // Select assignment center from the region voxels, if it exists,
+        // otherwise from default voxels.
+        Voxel center;
+        if (regionVoxels.size() == 0) {
+            center = defaultLocation.adjust(defaultLocation.getCenter());
+        } else {
+            center = regionLocation.adjust(regionLocation.getCenter());
+            for (Voxel voxel : regionVoxels) {
+                assign(Region.DEFAULT, voxel);
+            }
+        }
+        
+        // Select voxels and make sure they are connected. Remove any that
+        // are not connected.
+        ArrayList<Voxel> selected = getSelected(center, target);
+        checkVoxels(selected, this, random, true);
+        
+        // Add or remove voxels to hit the target number.
+        int currentSize = selected.size();
+        if (currentSize < target) {
+            PottsLocationFactory.increase(voxels, selected, target, random);
+        } else if (currentSize > target) {
+            PottsLocationFactory.decrease(selected, target, random);
+        }
+        
+        // Reassign selected voxels.
+        selected.forEach(voxel -> assign(region, voxel));
+    }
+    
+    @Override
     public void clear(int[][][] ids, int[][][] regions) {
         for (Voxel voxel : voxels) {
             ids[voxel.z][voxel.x][voxel.y] = 0;
@@ -197,11 +232,12 @@ public abstract class PottsLocations extends PottsLocation {
                             MersenneTwisterFast random) {
         PottsLocations splitLocation = makeLocations(voxelsB);
         EnumMap<Region, Double> fractions = new EnumMap<>(Region.class);
+        int total = voxels.size();
         
         // Update voxels in current location.
         for (Region region : locations.keySet()) {
             // Track fraction of voxels for each region.
-            fractions.put(region, (double) locations.get(region).voxels.size() / voxels.size());
+            fractions.put(region, (double) locations.get(region).voxels.size() / total);
             
             // Assign to default region if in current split (A), otherwise remove
             // because it is in the new split (B).
@@ -221,95 +257,19 @@ public abstract class PottsLocations extends PottsLocation {
         }
         
         // Assign voxel regions.
-        assignVoxels(this, fractions, random);
-        assignVoxels(splitLocation, fractions, random);
-        
-        return splitLocation;
-    }
-    
-    /**
-     * Assigns regions to voxels based on given fractions.
-     *
-     * @param location  the location containing voxels to assign
-     * @param fractions  the region fractions
-     * @param random  the seeded random number generator
-     */
-    static void assignVoxels(PottsLocations location, EnumMap<Region, Double> fractions,
-                             MersenneTwisterFast random) {
-        ArrayList<Voxel> defaultVoxels = location.locations.get(Region.DEFAULT).voxels;
-        
-        for (Region region : location.locations.keySet()) {
+        for (Region region : locations.keySet()) {
             // No assignment for default regions.
             if (region == Region.DEFAULT) { continue; }
             
-            // Get approximate number of voxels to assign.
-            double n = fractions.get(region) * location.volume;
+            // Get target number of voxels to assign for current split.
+            int target = (int) (fractions.get(region) * this.volume);
+            this.distribute(region, target, random);
             
-            // Select assignment center. If the center voxel doesn't exist,
-            // then select random voxel.
-            Voxel center = location.locations.get(Region.DEFAULT).getCenter();
-            if (!defaultVoxels.contains(center)) {
-                center = defaultVoxels.get(random.nextInt(defaultVoxels.size()));
-            }
-            
-            // Select voxels to region.
-            selectVoxels(location, center, region, defaultVoxels, n, random);
-        }
-    }
-    
-    /**
-     * Selects voxels to assign based on distance from given center.
-     *
-     * @param location  the location containing voxels to assign
-     * @param center  the center voxel
-     * @param region  the region to assign
-     * @param voxels  the list of available voxels to assign
-     * @param n  the target number of voxels to assign
-     * @param random  the seeded random number generator
-     */
-    static void selectVoxels(PottsLocations location, Voxel center, Region region,
-                             ArrayList<Voxel> voxels, double n, MersenneTwisterFast random) {
-        ArrayList<Voxel> selected = location.getSelected(center, n);
-        
-        // Check that selected voxels are connected (remove any that are not).
-        checkVoxels(selected, location, random, true);
-        
-        int currentSize = selected.size();
-        int iter = 0;
-        
-        // Add additional voxels if selected voxels is less than target number.
-        while (currentSize < n && iter < MAX_ITERATIONS) {
-            HashSet<Voxel> neighbors = new HashSet<>();
-            
-            // Get all valid connected neighbor voxels.
-            for (Voxel voxel : selected) {
-                ArrayList<Voxel> allNeighbors = location.getNeighbors(voxel);
-                for (Voxel neighbor : allNeighbors) {
-                    if (voxels.contains(neighbor) && !selected.contains(neighbor)) {
-                        neighbors.add(neighbor);
-                    }
-                }
-            }
-            
-            // Add in random neighbors until target size is reached. If the number
-            // of neighbors is less than the different between the current and
-            // target sizes, then add all neighbors.
-            if (neighbors.size() < n - currentSize) {
-                selected.addAll(neighbors);
-            } else {
-                ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
-                Utilities.shuffleList(neighborsShuffled, random);
-                for (int i = 0; i < n - currentSize; i++) {
-                    selected.add(neighborsShuffled.get(i));
-                }
-            }
-            
-            // Update iteration and current selected size.
-            iter++;
-            currentSize = selected.size();
+            // Get target number of voxels to assign for new split.
+            int splitTarget = (int) (fractions.get(region) * splitLocation.volume);
+            splitLocation.distribute(region, splitTarget, random);
         }
         
-        // Reassign selected voxels.
-        selected.forEach(voxel -> location.assign(region, voxel));
+        return splitLocation;
     }
 }

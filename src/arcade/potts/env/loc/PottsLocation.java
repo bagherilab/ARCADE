@@ -165,8 +165,17 @@ public abstract class PottsLocation implements Location {
     public void assign(Region region, Voxel voxel) { }
     
     /**
+     * Assigns target number of voxels to given region.
+     *
+     * @param region  the region to assign
+     * @param target  the target number of voxels to assign
+     * @param random  the seeded random number generator
+     */
+    public void distribute(Region region, int target, MersenneTwisterFast random) { }
+    
+    /**
      * Finds the closest voxel that exists in the location.
-     * 
+     *
      * @param voxel  the starting voxel
      * @return  the closest voxel or the starting voxel if it exists
      */

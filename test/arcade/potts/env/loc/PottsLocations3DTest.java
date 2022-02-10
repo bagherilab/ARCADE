@@ -1,13 +1,11 @@
 package arcade.potts.env.loc;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 
 public class PottsLocations3DTest {
@@ -46,58 +44,64 @@ public class PottsLocations3DTest {
     }
     
     @Test
-    public void assignVoxels_randomFraction_updatesRegions() {
-        PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-        loc.locations.put(Region.UNDEFINED, new PottsLocation3D(new ArrayList<>()));
+    public void assignVoxels_defaultVoxelsOnly_updatesLists() {
+        int[] targets = new int[] { 14, 15, 16 };
         
-        int n = 10;
-        int f = randomIntBetween(1, 9);
-        
-        for (int k = 0; k < n; k++) {
+        for (int target : targets) {
+            PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
+            loc.locations.put(Region.NUCLEUS, new PottsLocations3D(new ArrayList<>()));
+            
+            int n = 3;
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    loc.add(i, j, k);
+                    for (int k = 0; k < n; k++) {
+                        loc.add(i, j, k);
+                    }
                 }
             }
+            
+            loc.distribute(Region.NUCLEUS, target, randomDoubleZero);
+            
+            assertEquals(n * n * n, loc.voxels.size());
+            assertEquals(n * n * n, loc.locations.get(Region.DEFAULT).voxels.size()
+                    + loc.locations.get(Region.NUCLEUS).voxels.size());
+            
+            int sizeDefault = loc.locations.get(Region.DEFAULT).voxels.size();
+            int sizeRegion = loc.locations.get(Region.NUCLEUS).voxels.size();
+            
+            assertEquals(n * n  * n - target, sizeDefault);
+            assertEquals(target, sizeRegion);
         }
-        
-        EnumMap<Region, Double> fractions = new EnumMap<>(Region.class);
-        fractions.put(Region.DEFAULT, f / 10.0);
-        fractions.put(Region.UNDEFINED, (10 - f) / 10.0);
-        PottsLocations.assignVoxels(loc, fractions, randomDoubleZero);
-        
-        assertEquals(n * n * n, loc.voxels.size());
-        assertEquals(n * n * n, loc.locations.get(Region.DEFAULT).voxels.size()
-                + loc.locations.get(Region.UNDEFINED).voxels.size());
-        
-        int sizeDefault = loc.locations.get(Region.DEFAULT).voxels.size();
-        int sizeAdditional = loc.locations.get(Region.UNDEFINED).voxels.size();
-        
-        assertEquals(f * n * n, sizeDefault);
-        assertEquals((10 - f) * n * n, sizeAdditional);
     }
     
     @Test
-    public void assignVoxels_noCenterVoxel_updatesRegions() {
-        PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-        loc.locations.put(Region.UNDEFINED, new PottsLocation2D(new ArrayList<>()));
+    public void assignVoxels_includesRegionVoxels_updatesLists() {
+        int[] targets = new int[] { 14, 15, 16 };
         
-        loc.add(Region.DEFAULT, 0, 0, 0);
-        loc.add(Region.DEFAULT, 1, 0, 0);
-        loc.add(Region.DEFAULT, 2, 0, 1);
-        loc.add(Region.DEFAULT, 0, 1, 2);
-        loc.add(Region.DEFAULT, 0, 2, 0);
-        
-        MersenneTwisterFast randomMock = mock(MersenneTwisterFast.class);
-        when(randomMock.nextInt(5)).thenReturn(0);
-        
-        EnumMap<Region, Double> fractions = new EnumMap<>(Region.class);
-        fractions.put(Region.DEFAULT, 0.8);
-        fractions.put(Region.UNDEFINED, 0.2);
-        PottsLocations.assignVoxels(loc, fractions, randomMock);
-        
-        assertEquals(4, loc.locations.get(Region.DEFAULT).voxels.size());
-        assertEquals(1, loc.locations.get(Region.UNDEFINED).voxels.size());
-        assertEquals(new Voxel(0, 0, 0), loc.locations.get(Region.UNDEFINED).voxels.get(0));
+        for (int target : targets) {
+            PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
+            loc.locations.put(Region.NUCLEUS, new PottsLocations3D(new ArrayList<>()));
+            
+            int n = 3;
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    for (int k = 0; k < n; k++) {
+                        loc.add(Region.NUCLEUS, i, j, k);
+                    }
+                }
+            }
+            
+            loc.distribute(Region.NUCLEUS, target, randomDoubleZero);
+            
+            assertEquals(n * n * n, loc.voxels.size());
+            assertEquals(n * n * n, loc.locations.get(Region.DEFAULT).voxels.size()
+                    + loc.locations.get(Region.NUCLEUS).voxels.size());
+            
+            int sizeDefault = loc.locations.get(Region.DEFAULT).voxels.size();
+            int sizeRegion = loc.locations.get(Region.NUCLEUS).voxels.size();
+            
+            assertEquals(n * n * n - target, sizeDefault);
+            assertEquals(target, sizeRegion);
+        }
     }
 }

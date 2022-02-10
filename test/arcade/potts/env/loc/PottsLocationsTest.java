@@ -160,7 +160,11 @@ public class PottsLocationsTest {
         }
         
         @Override
-        ArrayList<Voxel> getSelected(Voxel center, double n) { return new ArrayList<>(); }
+        ArrayList<Voxel> getSelected(Voxel center, double n) {
+            ArrayList<Voxel> selected = new ArrayList<>();
+            selected.add(center);
+            return selected;
+        }
     }
     
     @Test
@@ -665,6 +669,28 @@ public class PottsLocationsTest {
     }
     
     @Test
+    public void distribute_defaultRegion_doesNothing() {
+        PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
+        
+        for (Voxel v : voxelListForMultipleRegions) {
+            loc.add(Region.UNDEFINED, v.x, v.y, v.z);
+        }
+        
+        int target = randomIntBetween(1, voxelListForMultipleRegions.size());
+        loc.distribute(Region.DEFAULT, target, randomDoubleZero);
+        
+        ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListForMultipleRegions);
+        ArrayList<Voxel> defaultVoxels = new ArrayList<>(loc.locations.get(Region.DEFAULT).voxels);
+        ArrayList<Voxel> regionVoxels = new ArrayList<>(loc.locations.get(Region.UNDEFINED).voxels);
+        
+        locVoxels.sort(VOXEL_COMPARATOR);
+        regionVoxels.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(locVoxels, regionVoxels);
+        assertEquals(0, defaultVoxels.size());
+    }
+    
+    @Test
     public void clear_hasVoxels_updatesArray() {
         PottsLocationsMock location = new PottsLocationsMock(voxelListForAddRemove);
         int[][][] ids = new int[][][] { { { 1, 0, 0 }, { 1, 0, 0 } } };
@@ -801,7 +827,6 @@ public class PottsLocationsTest {
         PottsLocations split = (PottsLocations) loc.separateVoxels(voxelListA, voxelListB, randomDoubleZero);
         assertEquals(4, loc.volume);
         assertEquals(3, split.volume);
-        
     }
     
     @Test
@@ -844,5 +869,10 @@ public class PottsLocationsTest {
         assertEquals(splitVoxels, split.voxels);
         assertEquals(locVoxels, locRegionVoxels);
         assertEquals(splitVoxels, splitRegionVoxels);
+        
+        assertEquals(2, loc.locations.get(Region.DEFAULT).voxels.size());
+        assertEquals(2, loc.locations.get(Region.UNDEFINED).voxels.size());
+        assertEquals(2, split.locations.get(Region.DEFAULT).voxels.size());
+        assertEquals(2, split.locations.get(Region.DEFAULT).voxels.size());
     }
 }
