@@ -6,10 +6,13 @@ import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.loc.PottsLocations;
+import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
+import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
 import static arcade.potts.agent.module.PottsModule.PoissonFactory;
 import static arcade.potts.agent.module.PottsModuleProliferationSimple.*;
@@ -23,6 +26,7 @@ public class PottsModuleProliferationSimpleTest {
     static Poisson poissonMock;
     static PottsSimulation simMock;
     static MiniBox parameters;
+    static Potts pottsMock;
     
     @BeforeClass
     public static void setupMocks() {
@@ -31,8 +35,11 @@ public class PottsModuleProliferationSimpleTest {
         
         poissonMock = mock(Poisson.class);
         doReturn(N).when(poissonMock).nextInt();
+    
+        pottsMock = mock(Potts.class);
         
         simMock = mock(PottsSimulation.class);
+        doReturn(pottsMock).when(simMock).getPotts();
         
         parameters = new MiniBox();
         parameters.put("proliferation/RATE_G1", randomDoubleBetween(1, 10));
@@ -44,7 +51,9 @@ public class PottsModuleProliferationSimpleTest {
         parameters.put("proliferation/STEPS_G2", randomIntBetween(1, 100));
         parameters.put("proliferation/STEPS_M", randomIntBetween(1, 100));
         parameters.put("proliferation/CELL_GROWTH_RATE", randomDoubleBetween(1, 100));
+        parameters.put("proliferation/NUCLEAR_GROWTH_RATE", randomDoubleBetween(1, 100));
         parameters.put("proliferation/BASAL_APOPTOSIS_RATE", randomDoubleBetween(0, 0.5));
+        parameters.put("proliferation/NUCLEUS_CONDENSATION_FRACTION", randomDoubleBetween(0.25, 0.75));
     }
     
     @Test
@@ -62,7 +71,10 @@ public class PottsModuleProliferationSimpleTest {
         assertEquals(parameters.getInt("proliferation/STEPS_G2"), module.stepsG2);
         assertEquals(parameters.getInt("proliferation/STEPS_M"), module.stepsM);
         assertEquals(parameters.getDouble("proliferation/CELL_GROWTH_RATE"), module.cellGrowthRate, EPSILON);
+        assertEquals(parameters.getDouble("proliferation/NUCLEUS_GROWTH_RATE"), module.nucleusGrowthRate, EPSILON);
         assertEquals(parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE"), module.basalApoptosisRate, EPSILON);
+        assertEquals(parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION"),
+                module.nucleusCondFraction, EPSILON);
     }
     
     @Test
@@ -166,6 +178,54 @@ public class PottsModuleProliferationSimpleTest {
     }
     
     @Test
+    public void stepG1_anyTransitionWithRegionOverThreshold_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        doReturn(true).when(cell).hasRegions();
+        
+        int criticalVolume = randomIntBetween(100, 1000);
+        doReturn((double) criticalVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
+        doReturn(criticalVolume + 1).when(cell).getVolume(Region.NUCLEUS);
+        
+        PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepG1(random);
+        module.currentSteps = 0;
+        module.stepG1(random);
+        
+        verify(cell, times(2)).updateTarget(Region.NUCLEUS, module.nucleusGrowthRate, 2);
+    }
+    
+    @Test
+    public void stepG1_anyTransitionWithRegionUnderThreshold_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        doReturn(true).when(cell).hasRegions();
+        
+        int criticalVolume = randomIntBetween(100, 1000);
+        doReturn((double) criticalVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
+        doReturn(criticalVolume - 1).when(cell).getVolume(Region.NUCLEUS);
+        
+        PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepG1(random);
+        module.currentSteps = 0;
+        module.stepG1(random);
+    
+        verify(cell, never()).updateTarget(eq(Region.NUCLEUS), anyDouble(), anyDouble());
+    }
+    
+    @Test
     public void stepS_withTransition_updatesPhase() {
         int steps = randomIntBetween(1, parameters.getInt("proliferation/STEPS_S"));
         PottsCell cell = mock(PottsCell.class);
@@ -222,6 +282,25 @@ public class PottsModuleProliferationSimpleTest {
         module.stepS(random);
         
         verify(cell, times(2)).updateTarget(module.cellGrowthRate, 2);
+    }
+    
+    @Test
+    public void stepS_anyTransitionWithRegion_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        doReturn(true).when(cell).hasRegions();
+        PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepS(random);
+        module.currentSteps = 0;
+        module.stepS(random);
+        
+        verify(cell, times(2)).updateTarget(Region.NUCLEUS, module.nucleusGrowthRate, 2);
     }
     
     @Test
@@ -322,6 +401,25 @@ public class PottsModuleProliferationSimpleTest {
         module.stepG2(random);
         
         verify(cell, times(2)).updateTarget(module.cellGrowthRate, 2);
+    }
+    
+    @Test
+    public void stepG2_anyTransitionWithRegion_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        doReturn(true).when(cell).hasRegions();
+        PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepG2(random);
+        module.currentSteps = 0;
+        module.stepG2(random);
+        
+        verify(cell, times(2)).updateTarget(Region.NUCLEUS, module.nucleusGrowthRate, 2);
     }
     
     @Test
@@ -447,5 +545,87 @@ public class PottsModuleProliferationSimpleTest {
         module.stepM(random, simMock);
         
         verify(cell, times(2)).updateTarget(module.cellGrowthRate, 2);
+    }
+    
+    @Test
+    public void stepM_withRegionOverThreshold_doesNotUpdateCell() {
+        PottsCell cell = mock(PottsCell.class);
+        int cellID = randomIntBetween(1, 10);
+        doReturn(cellID).when(cell).getID();
+        doReturn(parameters).when(cell).getParameters();
+        doReturn(true).when(cell).hasRegions();
+        
+        int criticalVolume = randomIntBetween(100, 1000);
+        doReturn((double) criticalVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
+        doReturn(criticalVolume - 1).when(cell).getVolume(Region.NUCLEUS);
+        
+        PottsLocations loc = mock(PottsLocations.class);
+        doReturn(loc).when(cell).getLocation();
+        
+        int[][][] ids = new int[0][0][0];
+        int[][][] regions = new int[0][0][0];
+        pottsMock.ids = ids;
+        pottsMock.regions = regions;
+        
+        PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
+        doNothing().when(module).addCell(random, simMock);
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepM(random, simMock);
+        module.currentSteps = 0;
+        module.stepM(random, simMock);
+        
+        double nucleusCondFraction = parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION");
+        int target = (int) (nucleusCondFraction * criticalVolume);
+        
+        verify(loc, never()).distribute(Region.NUCLEUS, target, random);
+        verify(loc, never()).update(cellID, ids, regions);
+        verify(cell, never()).setTargets(eq(Region.DEFAULT), anyDouble(), anyDouble());
+        verify(cell, never()).setTargets(eq(Region.NUCLEUS), anyDouble(), anyDouble());
+    }
+    
+    @Test
+    public void stepM_withRegionUnderThreshold_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        int cellID = randomIntBetween(1, 10);
+        doReturn(cellID).when(cell).getID();
+        doReturn(parameters).when(cell).getParameters();
+        doReturn(true).when(cell).hasRegions();
+        
+        int criticalVolume = randomIntBetween(100, 1000);
+        doReturn((double) criticalVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
+        doReturn(criticalVolume + 1).when(cell).getVolume(Region.NUCLEUS);
+        
+        PottsLocations loc = mock(PottsLocations.class);
+        doReturn(loc).when(cell).getLocation();
+        
+        int[][][] ids = new int[0][0][0];
+        int[][][] regions = new int[0][0][0];
+        pottsMock.ids = ids;
+        pottsMock.regions = regions;
+        
+        PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
+        doNothing().when(module).addCell(random, simMock);
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepM(random, simMock);
+        module.currentSteps = 0;
+        module.stepM(random, simMock);
+        
+        double nucleusCondFraction = parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION");
+        int target = (int) (nucleusCondFraction * criticalVolume);
+        
+        verify(loc, times(2)).distribute(Region.NUCLEUS, target, random);
+        verify(loc, times(2)).update(cellID, ids, regions);
+        verify(cell, times(2)).setTargets(eq(Region.DEFAULT), anyDouble(), anyDouble());
+        verify(cell, times(2)).setTargets(eq(Region.NUCLEUS), anyDouble(), anyDouble());
     }
 }

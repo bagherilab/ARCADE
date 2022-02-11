@@ -23,10 +23,10 @@
     <potts.term term="substrate" id="ADHESION" value="100" />
     
     <!-- persistence term parameters -->
-    <potts.term term="persistence" id="VOLUME_THRESHOLD" value="2000" units="um^3" conversion="DS^-3" />
+    <potts.term term="persistence" id="VOLUME_THRESHOLD" value="4000" units="um^3" conversion="DS^-3" />
     <potts.term term="persistence" id="LAMBDA" value="1" conversion="DS^-2" />
     <potts.term term="persistence" id="LAMBDA_DEFAULT" value="1" conversion="DS^-2" />
-    <potts.term term="persistence" id="LAMBDA_NUCLEUS" value="1" conversion="DS^-2" />
+    <potts.term term="persistence" id="LAMBDA_NUCLEUS" value="0.5" conversion="DS^-2" />
     <potts.term term="persistence" id="DECAY" value="0.05" />
     
     <!-- default parameters for populations -->
@@ -52,6 +52,8 @@
     <population.module module="proliferation" id="STEPS_M" value="14" units="steps" description="characteristic steps in proliferative M phase" />
     <population.module module="proliferation" id="CELL_GROWTH_RATE" value="60" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of cell growth" />
     <population.module module="proliferation" id="BASAL_APOPTOSIS_RATE" value="0.00127128" units="hours^-1" conversion="DT" description="basal rate of apoptosis" />
+    <population.module module="proliferation" id="NUCLEUS_GROWTH_RATE" value="40" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nucleus growth" />
+    <population.module module="proliferation" id="NUCLEUS_CONDENSATION_FRACTION" value="0.5" description="fraction of nuclear volume when condensed" />
     
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="RATE_EARLY" value="4" units="steps/hour" conversion="DT" description="rate of events in early apoptosis phase" />

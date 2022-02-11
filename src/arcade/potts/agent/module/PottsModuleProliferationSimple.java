@@ -5,14 +5,15 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.loc.PottsLocations;
+import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSimulation;
+import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
 
 /**
- * Extension of {@link PottsModule} for proliferation.
- * <p>
- * During proliferation, cells grow and, once they reach a critical threshold,
- * divide to create a new daughter cell.
+ * Extension of {@link PottsModuleProliferation} with simple Poisson transitions.
  */
 
 public class PottsModuleProliferationSimple extends PottsModuleProliferation {
@@ -46,8 +47,14 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
     /** Overall growth rate for cell (voxels/tick). */
     final double cellGrowthRate;
     
+    /** Overall growth rate for nucleus (voxels/tick). */
+    final double nucleusGrowthRate;
+    
     /** Basal rate of apoptosis (ticks^-1). */
     final double basalApoptosisRate;
+    
+    /** Fraction of nuclear volume when condensed. */
+    final double nucleusCondFraction;
     
     /**
      * Creates a proliferation {@code Module} for the given {@link PottsCell}.
@@ -67,7 +74,9 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         stepsG2 = parameters.getInt("proliferation/STEPS_G2");
         stepsM = parameters.getInt("proliferation/STEPS_M");
         cellGrowthRate = parameters.getDouble("proliferation/CELL_GROWTH_RATE");
+        nucleusGrowthRate = parameters.getDouble("proliferation/NUCLEUS_GROWTH_RATE");
         basalApoptosisRate = parameters.getDouble("proliferation/BASAL_APOPTOSIS_RATE");
+        nucleusCondFraction = parameters.getDouble("proliferation/NUCLEUS_CONDENSATION_FRACTION");
     }
     
     /**
@@ -80,6 +89,7 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
      * At each tick, cell may randomly apoptosis at a basal rate of
      * {@code BASAL_APOPTOSIS_RATE}.
      */
+    @Override
     void stepG1(MersenneTwisterFast random) {
         // Random chance of apoptosis.
         if (random.nextDouble() < basalApoptosisRate) {
@@ -89,6 +99,12 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, 2);
+    
+        // Increase size of nucleus (if cell has regions).
+        if (cell.hasRegions()
+                && cell.getVolume(Region.NUCLEUS) > cell.getCriticalVolume(Region.NUCLEUS)) {
+            cell.updateTarget(Region.NUCLEUS, nucleusGrowthRate, 2);
+        }
         
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateG1, random);
@@ -109,6 +125,11 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, 2);
         
+        // Increase size of nucleus (if cell has regions).
+        if (cell.hasRegions()) {
+            cell.updateTarget(Region.NUCLEUS, nucleusGrowthRate, 2);
+        }
+        
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateS, random);
         currentSteps += poisson.nextInt();
@@ -125,6 +146,7 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
      * At each tick, cell may randomly apoptosis at a basal rate of
      * {@code BASAL_APOPTOSIS_RATE}.
      */
+    @Override
     void stepG2(MersenneTwisterFast random) {
         // Random chance of apoptosis.
         if (random.nextDouble() < basalApoptosisRate) {
@@ -134,6 +156,11 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, 2);
+        
+        // Increase size of nucleus (if cell has regions).
+        if (cell.hasRegions()) {
+            cell.updateTarget(Region.NUCLEUS, nucleusGrowthRate, 2);
+        }
         
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateG2, random);
@@ -150,9 +177,30 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
      * at an average rate of {@code RATE_M}.
      * Cell must be greater than {@code SIZE_CHECKPOINT} times the critical size.
      */
+    @Override
     void stepM(MersenneTwisterFast random, Simulation sim) {
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, 2);
+        
+        // Update size of nucleus (if cell has regions).
+        if (cell.hasRegions()) {
+            double regionVolume = cell.getVolume(Region.NUCLEUS);
+            double criticalVolume = cell.getCriticalVolume(Region.NUCLEUS);
+            
+            if (regionVolume > criticalVolume) {
+                int target = (int) (nucleusCondFraction * criticalVolume);
+                
+                Potts potts = ((PottsSimulation) sim).getPotts();
+                PottsLocations location = (PottsLocations) cell.getLocation();
+                location.distribute(Region.NUCLEUS, target, random);
+                location.update(cell.getID(), potts.ids, potts.regions);
+                
+                cell.setTargets(Region.DEFAULT, cell.getVolume(Region.DEFAULT),
+                        cell.getSurface(Region.DEFAULT));
+                cell.setTargets(Region.NUCLEUS, cell.getVolume(Region.NUCLEUS),
+                        cell.getSurface(Region.NUCLEUS));
+            }
+        }
         
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateM, random);

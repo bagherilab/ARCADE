@@ -15,7 +15,7 @@ import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.Enums.Region;
 
 public class SubstrateHamiltonianTest {
-    private static final double EPSILON = 1E-10;
+    private static final double EPSILON = 1E-5;
     
     @Test
     public void constructor_called_initializesMaps() {
