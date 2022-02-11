@@ -165,7 +165,10 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateG2, random);
         currentSteps += poisson.nextInt();
-        if (currentSteps >= stepsG2) { setPhase(Phase.PROLIFERATIVE_M); }
+        if (cell.getVolume() >= SIZE_CHECKPOINT * cell.getCriticalVolume()
+                && currentSteps >= stepsG2) {
+            setPhase(Phase.PROLIFERATIVE_M);
+        }
     }
     
     /**
@@ -205,8 +208,7 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateM, random);
         currentSteps += poisson.nextInt();
-        if (cell.getVolume() >= SIZE_CHECKPOINT * cell.getCriticalVolume()
-                && currentSteps >= stepsM) {
+        if (currentSteps >= stepsM) {
             addCell(random, sim);
             setPhase(Phase.PROLIFERATIVE_G1);
         }
