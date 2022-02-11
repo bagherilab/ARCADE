@@ -57,7 +57,7 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
     final double nucleusCondFraction;
     
     /**
-     * Creates a proliferation {@code Module} for the given {@link PottsCell}.
+     * Creates a simple proliferation {@code Module} for the given {@link PottsCell}.
      *
      * @param cell  the {@link PottsCell} the module is associated with
      */

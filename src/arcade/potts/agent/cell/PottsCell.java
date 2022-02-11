@@ -11,7 +11,7 @@ import arcade.core.env.loc.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
-import arcade.potts.agent.module.PottsModuleApoptosis;
+import arcade.potts.agent.module.PottsModuleApoptosisSimple;
 import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationSimple;
@@ -286,7 +286,7 @@ public final class PottsCell implements Cell {
                 module = new PottsModuleProliferationSimple(this);
                 break;
             case APOPTOTIC:
-                module = new PottsModuleApoptosis.Simple(this);
+                module = new PottsModuleApoptosisSimple(this);
                 break;
             case NECROTIC:
                 module = new PottsModuleNecrosis(this);

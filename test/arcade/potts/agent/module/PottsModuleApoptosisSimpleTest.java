@@ -7,19 +7,17 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.env.loc.PottsLocation;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
-import static arcade.potts.agent.module.PottsModuleApoptosis.*;
+import static arcade.potts.agent.module.PottsModuleApoptosisSimple.*;
 import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsModuleApoptosisSimpleTest {
     private static final double EPSILON = 1E-10;
-    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
     private static final double R = 1.0;
     private static final int N = 0;
     static MersenneTwisterFast random;
@@ -32,7 +30,7 @@ public class PottsModuleApoptosisSimpleTest {
     public static void setupMocks() {
         random = mock(MersenneTwisterFast.class);
         doReturn(R).when(random).nextDouble();
-    
+        
         poissonMock = mock(Poisson.class);
         doReturn(N).when(poissonMock).nextInt();
         
@@ -56,7 +54,7 @@ public class PottsModuleApoptosisSimpleTest {
     public void constructor_setsParameters() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleApoptosis module = new PottsModuleApoptosis.Simple(cell);
+        PottsModuleApoptosisSimple module = new PottsModuleApoptosisSimple(cell);
         
         assertEquals(parameters.getDouble("apoptosis/RATE_EARLY"), module.rateEarly, EPSILON);
         assertEquals(parameters.getDouble("apoptosis/RATE_LATE"), module.rateLate, EPSILON);
@@ -65,71 +63,11 @@ public class PottsModuleApoptosisSimpleTest {
     }
     
     @Test
-    public void constructor_initializesFactory() {
-        PottsModuleApoptosis module = new PottsModuleApoptosis.Simple(cellMock);
-        assertNotNull(module.poissonFactory);
-    }
-    
-    @Test
-    public void getPhase_defaultConstructor_returnsValue() {
-        PottsModuleApoptosis module = new PottsModuleApoptosis.Simple(cellMock);
-        assertEquals(Phase.APOPTOTIC_EARLY, module.getPhase());
-    }
-    
-    @Test
-    public void setPhase_givenValue_setsValue() {
-        Phase phase = Phase.random(RANDOM);
-        PottsModuleApoptosis module = new PottsModuleApoptosis.Simple(cellMock);
-        module.setPhase(phase);
-        assertEquals(phase, module.phase);
-    }
-    
-    @Test
-    public void setPhase_givenValue_resetsSteps() {
-        Phase phase = Phase.random(RANDOM);
-        PottsModuleApoptosis module = new PottsModuleApoptosis.Simple(cellMock);
-        module.currentSteps = randomIntBetween(1, 10);
-        module.setPhase(phase);
-        assertEquals(0, module.currentSteps);
-    }
-    
-    @Test
-    public void step_givenPhaseEarly_callsMethod() {
-        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cellMock));
-        module.phase = Phase.APOPTOTIC_EARLY;
-        
-        module.step(random, simMock);
-        verify(module).stepEarly(random);
-        verify(module, never()).stepLate(random, simMock);
-    }
-    
-    @Test
-    public void step_givenPhaseLate_callsMethod() {
-        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cellMock));
-        doNothing().when(module).removeCell(simMock);
-        module.phase = Phase.APOPTOTIC_LATE;
-        
-        module.step(random, simMock);
-        verify(module).stepLate(random, simMock);
-        verify(module, never()).stepEarly(random);
-    }
-    
-    @Test
-    public void step_invalidPhase_doesNothing() {
-        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cellMock));
-        module.phase = Phase.UNDEFINED;
-        
-        module.step(random, simMock);
-        verify(module, never()).stepLate(random, simMock);
-        verify(module, never()).stepEarly(random);
-    }
-    
-    @Test
     public void stepEarly_withTransition_updatesPhase() {
         int steps = randomIntBetween(1, parameters.getInt("apoptosis/STEPS_EARLY"));
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
+        PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
         module.phase = Phase.APOPTOTIC_EARLY;
         module.currentSteps = module.stepsEarly - steps;
         
@@ -149,7 +87,7 @@ public class PottsModuleApoptosisSimpleTest {
     public void stepEarly_withoutTransition_maintainsPhase() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
+        PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
         module.phase = Phase.APOPTOTIC_EARLY;
         module.currentSteps = module.stepsEarly;
         
@@ -169,7 +107,7 @@ public class PottsModuleApoptosisSimpleTest {
     public void stepEarly_anyTransition_updatesCell() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
+        PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
         
         PoissonFactory poissonFactory = mock(PoissonFactory.class);
         doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
@@ -192,7 +130,7 @@ public class PottsModuleApoptosisSimpleTest {
         doReturn((int) (volume * LATE_SIZE_CHECKPOINT) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
-        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
+        PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
         module.phase = Phase.APOPTOTIC_LATE;
         module.currentSteps = module.stepsLate - steps;
         doNothing().when(module).removeCell(simMock);
@@ -218,7 +156,7 @@ public class PottsModuleApoptosisSimpleTest {
         doReturn((int) (volume * LATE_SIZE_CHECKPOINT) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
-        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
+        PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
         module.phase = Phase.APOPTOTIC_LATE;
         module.currentSteps = module.stepsLate;
         doNothing().when(module).removeCell(simMock);
@@ -245,7 +183,7 @@ public class PottsModuleApoptosisSimpleTest {
         doReturn((int) (volume * LATE_SIZE_CHECKPOINT) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
-        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
+        PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
         module.phase = Phase.APOPTOTIC_LATE;
         module.currentSteps = module.stepsLate - steps;
         doNothing().when(module).removeCell(simMock);
@@ -257,7 +195,7 @@ public class PottsModuleApoptosisSimpleTest {
         module.poissonFactory = poissonFactory;
         
         module.stepLate(random, simMock);
-    
+        
         verify(module, never()).removeCell(simMock);
         verify(module, never()).setPhase(any(Phase.class));
         assertEquals(Phase.APOPTOTIC_LATE, module.phase);
@@ -271,7 +209,7 @@ public class PottsModuleApoptosisSimpleTest {
         doReturn((int) (volume * LATE_SIZE_CHECKPOINT) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
-        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
+        PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
         module.phase = Phase.APOPTOTIC_LATE;
         module.currentSteps = module.stepsLate;
         doNothing().when(module).removeCell(simMock);
@@ -293,7 +231,7 @@ public class PottsModuleApoptosisSimpleTest {
     public void stepLate_anyTransition_updatesCell() {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
-        PottsModuleApoptosis module = spy(new PottsModuleApoptosis.Simple(cell));
+        PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
         doNothing().when(module).removeCell(simMock);
         
         PoissonFactory poissonFactory = mock(PoissonFactory.class);
@@ -306,35 +244,5 @@ public class PottsModuleApoptosisSimpleTest {
         module.stepLate(random, simMock);
         
         verify(cell, times(2)).updateTarget(module.cytoBlebbingRate, LATE_SIZE_CHECKPOINT);
-    }
-    
-    @Test
-    public void removeCell_called_removeObject() {
-        PottsCell cell = mock(PottsCell.class);
-        MiniBox box = mock(MiniBox.class);
-        doReturn(0.).when(box).getDouble(anyString());
-        doReturn(box).when(cell).getParameters();
-        
-        PottsLocation location = mock(PottsLocation.class);
-        Potts potts = mock(Potts.class);
-        Grid grid = mock(Grid.class);
-        PottsSimulation sim = mock(PottsSimulation.class);
-        
-        int id = randomIntBetween(1, 100);
-        doReturn(potts).when(sim).getPotts();
-        doReturn(id).when(cell).getID();
-        doReturn(grid).when(sim).getGrid();
-        doReturn(location).when(cell).getLocation();
-        
-        potts.ids = new int[][][] { { { } } };
-        potts.regions = new int[][][] { { { } } };
-        
-        PottsModuleApoptosis module = new PottsModuleApoptosis.Simple(cell);
-        module.removeCell(sim);
-        
-        verify(location).clear(potts.ids, potts.regions);
-        verify(grid).removeObject(id);
-        verify(potts).deregister(cell);
-        verify(cell).stop();
     }
 }
