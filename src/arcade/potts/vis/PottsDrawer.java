@@ -34,6 +34,12 @@ public abstract class PottsDrawer extends Drawer {
     Network graph;
     Continuous2D field;
     
+    /** Planes for visualization. */
+    enum Plane { Z, X, Y }
+    
+    /** View options. */
+    enum View { CYTOPLASM, NUCLEUS, OVERLAY, STATE, POPULATION, VOLUME, HEIGHT }
+    
     /**
      * Creates a {@link Drawer} for potts simulations.
      *
@@ -45,9 +51,8 @@ public abstract class PottsDrawer extends Drawer {
      * @param map  the color map for the array
      * @param bounds  the size of the drawer within the panel
      */
-    PottsDrawer(Panel panel, String name,
-            int length, int width, int depth,
-            ColorMap map, Rectangle2D.Double bounds) {
+    PottsDrawer(Panel panel, String name, int length, int width, int depth,
+                ColorMap map, Rectangle2D.Double bounds) {
         super(panel, name, length, width, depth, map, bounds);
     }
     
@@ -61,8 +66,8 @@ public abstract class PottsDrawer extends Drawer {
      * @param depth  the depth of array (z direction)
      * @param bounds  the size of the drawer within the panel
      */
-    PottsDrawer(Panel panel, String name,
-            int length, int width, int depth, Rectangle2D.Double bounds) {
+    PottsDrawer(Panel panel, String name, int length, int width, int depth,
+                Rectangle2D.Double bounds) {
         super(panel, name, length, width, depth, null, bounds);
     }
     
@@ -80,17 +85,16 @@ public abstract class PottsDrawer extends Drawer {
                 gridPort.setPortrayalForAll(sep);
                 return gridPort;
             case "agents":
-                String plane = "";
-                if (split.length == 3) { plane = split[2]; }
+                Plane plane = (split.length == 3 ? Plane.valueOf(split[2]) : Plane.Z);
                 
                 switch (plane) {
-                    case "x":
+                    case X:
                         array = new DoubleGrid2D(height, width, map.defaultValue());
                         break;
-                    case "y":
+                    case Y:
                         array = new DoubleGrid2D(length, height, map.defaultValue());
                         break;
-                    case "z": default:
+                    case Z: default:
                         array = new DoubleGrid2D(length, width, map.defaultValue());
                         break;
                 }
@@ -105,7 +109,7 @@ public abstract class PottsDrawer extends Drawer {
     }
     
     /**
-     * Wrapper for MASON class that changes modifies edge color.
+     * Wrapper for MASON class that modifies edge color.
      */
     private static class SimpleEdgePortrayal2DGridWrapper extends SimpleEdgePortrayal2D {
         private final Color color = new Color(0, 0, 0);
@@ -124,6 +128,78 @@ public abstract class PottsDrawer extends Drawer {
         protected double getPositiveWeight(Object object, EdgeDrawInfo2D info) {
             sim.field.network.Edge edge = (sim.field.network.Edge) object;
             return (Integer) edge.getInfo();
+        }
+    }
+    
+    /**
+     * Transposes the array for the given plane.
+     *
+     * @param array  the array to transpose
+     * @param plane  the plane
+     * @return  the transposed array
+     */
+    private static int[][][] transpose(int[][][] array, Plane plane) {
+        int height = array.length;
+        int length = array[0].length;
+        int width = array[0][0].length;
+        
+        switch (plane) {
+            case X:
+                int[][][] xarr = new int[length][height][width];
+                for (int k = 0; k < height; k++) {
+                    for (int i = 0; i < length; i++) {
+                        for (int j = 0; j < width; j++) {
+                            xarr[i][k][j] = array[k][i][j];
+                        }
+                    }
+                }
+                return xarr;
+            case Y:
+                int[][][] yarr = new int[width][length][height];
+                for (int k = 0; k < height; k++) {
+                    for (int i = 0; i < length; i++) {
+                        for (int j = 0; j < width; j++) {
+                            yarr[j][i][k] = array[k][i][j];
+                        }
+                    }
+                }
+                return yarr;
+            case Z: default:
+                return array;
+        }
+    }
+    
+    /**
+     * Gets slice of a array for the given plane.
+     *
+     * @param array  the array to slice
+     * @param plane  the plane to slice along
+     * @return  a slice of the array
+     */
+    private static int[][] slice(int[][][] array, Plane plane) {
+        int height = array.length;
+        int length = array[0].length;
+        int width = array[0][0].length;
+        
+        switch (plane) {
+            case X:
+                int[][] planeX = new int[height][width];
+                for (int k = 0; k < height; k++) {
+                    for (int j = 0; j < width; j++) {
+                        planeX[k][j] = array[k][(length - 1) / 2][j];
+                    }
+                }
+                return planeX;
+            case Y:
+                int[][] planeY = new int[length][height];
+                for (int k = 0; k < height; k++) {
+                    for (int i = 0; i < length; i++) {
+                        planeY[i][k] = array[k][i][(width - 1) / 2];
+                    }
+                }
+                return planeY;
+            default: case Z:
+                return array[(height - 1) / 2];
         }
     }
     
@@ -147,60 +223,12 @@ public abstract class PottsDrawer extends Drawer {
         graph.addEdge(a, b, weight);
     }
     
-    static final int PLANE_Z = 0;
-    static final int PLANE_X = 1;
-    static final int PLANE_Y = 2;
-    
-    /**
-     * Gets 2D slice of a 3D array.
-     *
-     * @param array  the array to slice
-     * @param plane  the plane to slice along
-     * @param length  the length of array (x direction)
-     * @param width  the width of array (y direction)
-     * @param height  the height of array (z direction)
-     * @return  a slice of the array
-     */
-    static int[][] getSlice(int[][][] array, int plane, int length, int width, int height) {
-        switch (plane) {
-            case PLANE_X:
-                int[][] planeX = new int[height][width];
-                for (int k = 0; k < height; k++) {
-                    for (int j = 0; j < width; j++) {
-                        planeX[k][j] = array[k][(length - 1) / 2][j];
-                    }
-                }
-                return planeX;
-            case PLANE_Y:
-                int[][] planeY = new int[length][height];
-                for (int k = 0; k < height; k++) {
-                    for (int i = 0; i < length; i++) {
-                        planeY[i][k] = array[k][i][(width - 1) / 2];
-                    }
-                }
-                return planeY;
-            default: case PLANE_Z:
-                return array[(height - 1) / 2];
-        }
-    }
-    
     /**
      * Extension of {@link PottsDrawer} for drawing cells.
      */
     public static class PottsCells extends PottsDrawer {
-        private static final int DRAW_CYTOPLASM = -1;
-        private static final int DRAW_NUCLEUS = -2;
-        private static final int DRAW_OVERLAY = 1;
-        private static final int DRAW_POPULATION = 2;
-        private static final int DRAW_STATE = 3;
-        private static final int DRAW_VOLUME = 4;
-        private static final int DRAW_HEIGHT = 5;
-        
-        private final int length;
-        private final int width;
-        private final int height;
-        private final int code;
-        private final int plane;
+        private final View view;
+        private final Plane plane;
         
         /**
          * Creates a {@link PottsDrawer} for drawing cells.
@@ -217,32 +245,9 @@ public abstract class PottsDrawer extends Drawer {
                          int length, int width, int depth,
                          ColorMap map, Rectangle2D.Double bounds) {
             super(panel, name, length, width, depth, map, bounds);
-            this.length = length;
-            this.width = width;
-            this.height = depth;
-            
             String[] split = name.split(":");
-            
-            switch (split[1]) {
-                case "cytoplasm": code = DRAW_CYTOPLASM; break;
-                case "nucleus": code = DRAW_NUCLEUS; break;
-                case "overlay": code = DRAW_OVERLAY; break;
-                case "state": code = DRAW_STATE; break;
-                case "population": code = DRAW_POPULATION; break;
-                case "volume": code = DRAW_VOLUME; break;
-                case "height": code = DRAW_HEIGHT; break;
-                default: code = 0;
-            }
-            
-            if (split.length == 3) {
-                switch (split[2]) {
-                    case "x": plane = PLANE_X; break;
-                    case "y": plane = PLANE_Y; break;
-                    case "z":  default: plane = PLANE_Z;
-                }
-            } else {
-                plane = PLANE_Z;
-            }
+            view = View.valueOf(split[1]);
+            plane = (split.length == 3 ? Plane.valueOf(split[2]) : Plane.Z);
         }
         
         @Override
@@ -250,126 +255,87 @@ public abstract class PottsDrawer extends Drawer {
             PottsSimulation sim = (PottsSimulation) state;
             Grid grid = sim.getGrid();
             Potts potts = sim.getPotts();
-            Cell cell;
             
-            double[][] to = array.field;
-            int[][] ids = getSlice(potts.ids, plane, length, width, height);
-            int[][] regions = getSlice(potts.regions, plane, length, width, height);
+            double[][] arr = array.field;
             
-            int aa;
-            int bb;
-            int cc;
-            switch (plane) {
-                case PLANE_X:
-                    aa = height;
-                    bb = width;
-                    cc = length;
+            int[][][] ids = transpose(potts.ids, plane);
+            int[][][] regions = transpose(potts.regions, plane);
+            int index = (ids.length - 1) / 2;
+            
+            switch (view) {
+                case CYTOPLASM:
+                    drawCytoplasm(arr, ids);
                     break;
-                case PLANE_Y:
-                    aa = length;
-                    bb = height;
-                    cc = width;
+                case NUCLEUS:
+                    drawNucleus(arr, ids, regions);
                     break;
-                default: case PLANE_Z:
-                    aa = length;
-                    bb = width;
-                    cc = height;
+                case STATE: case POPULATION: case VOLUME: case HEIGHT:
+                    drawSlice(arr, ids[index], grid);
+                    break;
+                case OVERLAY:
+                    drawOverlay(arr, regions[index]);
+                default:
+                    break;
             }
+        }
+        
+        /**
+         * Counts the number of non-target values in the 3x3 neighborhood.
+         *
+         * @param arr  the array of values
+         * @param target  the target value
+         * @param a  the position along the first axis
+         * @param b  the position along the second axis
+         * @return  the count of matching neighbors
+         */
+        private int count(int[][] arr, int target, int a, int b) {
+            int n = 9;
             
-            for (int a = 0; a < aa; a++) {
-                for (int b = 0; b < bb; b++) {
-                    if (ids[a][b] == 0) {
-                        cell = null;
-                    } else {
-                        cell = (Cell) grid.getObjectAt(ids[a][b]);
-                    }
-                    
-                    switch (code) {
-                        case DRAW_OVERLAY:
-                            to[a][b] = (regions[a][b] > 0 ? regions[a][b] - 1 : 0);
-                            break;
-                        case DRAW_POPULATION:
-                            to[a][b] = cell == null ? 0 : cell.getPop();
-                            break;
-                        case DRAW_STATE:
-                            to[a][b] = cell == null
-                                    ? 0
-                                    : ((PottsModule) cell.getModule()).getPhase().ordinal();
-                            break;
-                        case DRAW_VOLUME:
-                            to[a][b] = cell == null ? 0 : cell.getVolume();
-                            break;
-                        case DRAW_HEIGHT:
-                            to[a][b] = cell == null ? 0 : cell.getHeight();
-                            break;
-                        default:
-                            break;
-                    }
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    n -= (arr[a + i - 1][b + j - 1] == target ? 1 : 0);
                 }
             }
             
-            if (code == DRAW_CYTOPLASM) {
-                drawCytoplasm(aa, bb, cc, to, ids, potts);
-            } else if (code == DRAW_NUCLEUS) {
-                drawNucleus(aa, bb, cc, to, regions, potts);
-            }
+            return n;
         }
         
         /**
          * Draws voxels along edges of cytoplasm.
          *
-         * @param aa  the first dimension
-         * @param bb  the second dimension
-         * @param cc  the third dimension
-         * @param to  the target array
+         * @param arr  the target array
          * @param ids  the array of ids
-         * @param potts  the {@link Potts} instance
          */
-        private void drawCytoplasm(int aa, int bb, int cc, double[][] to,
-                                   int[][] ids, Potts potts) {
-            for (int a = 0; a < aa; a++) {
-                for (int b = 0; b < bb; b++) {
+        private void drawCytoplasm(double[][] arr, int[][][] ids) {
+            double normalize = 0;
+            
+            int cc = ids.length;
+            int aa = ids[0].length;
+            int bb = ids[0][0].length;
+            
+            for (int a = 1; a < aa - 1; a++) {
+                for (int b = 1; b < bb - 1; b++) {
+                    arr[a][b] = 0;
+                    
                     if (height == 1) {
-                        to[a][b] = ids[a][b] > 0 ? 0.75 : 0;
+                        int id = ids[0][a][b];
+                        if (id == 0) { continue; }
+                        arr[a][b] += count(ids[0], id, a, b);
                     } else {
-                        to[a][b] = 0;
-                        for (int c = 0; c < cc; c++) {
-                            int id;
-                    
-                            switch (plane) {
-                                case PLANE_X:
-                                    id = potts.ids[a][c][b];
-                                    break;
-                                case PLANE_Y:
-                                    id = potts.ids[b][a][c];
-                                    break;
-                                default: case PLANE_Z:
-                                    id = potts.ids[c][a][b];
-                            }
-                    
-                            to[a][b] += (id > 0 ? 1. / cc : 0);
-                    
-                            switch (plane) {
-                                case PLANE_X:
-                                    if (id != 0 && c > 0 && c < cc - 1
-                                            && potts.ids[a][c + 1][b] == id
-                                            && potts.ids[a][c - 1][b] == id
-                                    ) { to[a][b] -= 1. / cc; }
-                                    break;
-                                case PLANE_Y:
-                                    if (id != 0 && c > 0 && c < cc - 1
-                                            && potts.ids[b][a][c + 1] == id
-                                            && potts.ids[b][a][c - 1] == id
-                                    ) { to[a][b] -= 1. / cc; }
-                                    break;
-                                default: case PLANE_Z:
-                                    if (id != 0 && c > 0 && c < cc - 1
-                                            && potts.ids[c + 1][a][b] == id
-                                            && potts.ids[c - 1][a][b] == id
-                                    ) { to[a][b] -= 1. / cc; }
-                            }
+                        for (int c = 1; c < cc - 1; c++) {
+                            int id  = ids[c][a][b];
+                            if (id == 0) { continue; }
+                            arr[a][b] += count(ids[c], id, a, b);
                         }
                     }
+                    
+                    normalize = Math.max(normalize, arr[a][b]);
+                }
+            }
+            
+            for (int a = 1; a < aa - 1; a++) {
+                for (int b = 1; b < bb - 1; b++) {
+                    arr[a][b] /= normalize;
                 }
             }
         }
@@ -377,62 +343,99 @@ public abstract class PottsDrawer extends Drawer {
         /**
          * Draws voxels along edges of nucleus.
          *
-         * @param aa  the first dimension
-         * @param bb  the second dimension
-         * @param cc  the third dimension
-         * @param to  the target array
+         * @param arr  the target array
+         * @param ids  the array of ids
          * @param regions  the array of regions
-         * @param potts  the {@link Potts} instance
          */
-        private void drawNucleus(int aa, int bb, int cc, double[][] to,
-                                 int[][] regions, Potts potts) {
+        private void drawNucleus(double[][] arr, int[][][] ids, int[][][] regions) {
+            double normalize = 0;
             int nucleus = Region.NUCLEUS.ordinal();
-            for (int a = 0; a < aa; a++) {
-                for (int b = 0; b < bb; b++) {
+            
+            int cc = ids.length;
+            int aa = ids[0].length;
+            int bb = ids[0][0].length;
+            
+            for (int a = 1; a < aa - 1; a++) {
+                for (int b = 1; b < bb - 1; b++) {
+                    arr[a][b] = 0;
+                    
                     if (height == 1) {
-                        to[a][b] = (regions[a][b] == nucleus ? 0.75 : 0);
+                        int id = ids[0][a][b];
+                        int region = regions[0][a][b];
+                        if (id == 0 || region != nucleus) { continue; }
+                        arr[a][b] += count(regions[0], region, a, b);
                     } else {
-                        to[a][b] = 0;
-                        for (int c = 0; c < cc; c++) {
-                            int id;
-                            int region;
-                    
-                            switch (plane) {
-                                case PLANE_X:
-                                    id = potts.ids[a][c][b];
-                                    region = potts.regions[a][c][b];
-                                    break;
-                                case PLANE_Y:
-                                    id = potts.ids[b][a][c];
-                                    region = potts.regions[b][a][c];
-                                    break;
-                                default: case PLANE_Z:
-                                    id = potts.ids[c][a][b];
-                                    region = potts.regions[c][a][b];
-                            }
-                    
-                            to[a][b] += (region == Region.NUCLEUS.ordinal() ? 1. / cc : 0);
-                    
-                            switch (plane) {
-                                case PLANE_X:
-                                    if (id != 0 && c > 0 && c < cc - 1
-                                            && potts.regions[a][c + 1][b] == nucleus
-                                            && potts.regions[a][c - 1][b] == nucleus
-                                    ) { to[a][b] -= 1. / cc; }
-                                    break;
-                                case PLANE_Y:
-                                    if (id != 0 && c > 0 && c < cc - 1
-                                            && potts.regions[b][a][c + 1] == nucleus
-                                            && potts.regions[b][a][c - 1] == nucleus
-                                    ) { to[a][b] -= 1. / cc; }
-                                    break;
-                                default: case PLANE_Z:
-                                    if (id != 0 && c > 0 && c < cc - 1
-                                            && potts.regions[c + 1][a][b] == nucleus
-                                            && potts.regions[c - 1][a][b] == nucleus
-                                    ) { to[a][b] -= 1. / cc; }
-                            }
+                        for (int c = 1; c < cc - 1; c++) {
+                            int id  = ids[c][a][b];
+                            int region = regions[c][a][b];
+                            if (id == 0 || region != nucleus) { continue; }
+                            arr[a][b] += count(regions[c], region, a, b);
                         }
+                    }
+                    
+                    normalize = Math.max(normalize, arr[a][b]);
+                }
+            }
+            
+            for (int a = 1; a < aa - 1; a++) {
+                for (int b = 1; b < bb - 1; b++) {
+                    arr[a][b] /= normalize;
+                }
+            }
+        }
+    
+        /**
+         * Draws voxels for region overlay.
+         *
+         * @param arr  the target array
+         * @param regions  the array of regions
+         */
+        private void drawOverlay(double[][] arr, int[][] regions) {
+            int aa = arr.length;
+            int bb = arr[0].length;
+        
+            for (int a = 1; a < aa - 1; a++) {
+                for (int b = 1; b < bb - 1; b++) {
+                    arr[a][b] = (regions[a][b] > 0 ? regions[a][b] - 1 : 0);
+                }
+            }
+        }
+        
+        /**
+         * Draws voxels for given slice and view type.
+         *
+         * @param arr  the target array
+         * @param ids  the array of ids
+         * @param grid  the grid for cell objects
+         */
+        private void drawSlice(double[][] arr, int[][] ids, Grid grid) {
+            int aa = arr.length;
+            int bb = arr[0].length;
+            
+            for (int a = 1; a < aa - 1; a++) {
+                for (int b = 1; b < bb - 1; b++) {
+                    arr[a][b] = 0;
+                    
+                    if (ids[a][b] == 0) { continue; }
+                    
+                    Cell cell = (Cell) grid.getObjectAt(ids[a][b]);
+                    
+                    switch (view) {
+                        case STATE:
+                            int state = ((PottsModule) cell.getModule()).getPhase().ordinal();
+                            arr[a][b] = state;
+                            break;
+                        case POPULATION:
+                            arr[a][b] = cell.getPop();
+                            break;
+                        case VOLUME:
+                            arr[a][b] = cell.getVolume();
+                            break;
+                        case HEIGHT:
+                            arr[a][b] = cell.getHeight();
+                            break;
+                        default:
+                            break;
                     }
                 }
             }
@@ -443,10 +446,7 @@ public abstract class PottsDrawer extends Drawer {
      * Extension of {@link PottsDrawer} for drawing outlines.
      */
     public static class PottsGrid extends PottsDrawer {
-        private final int length;
-        private final int width;
-        private final int height;
-        private final int plane;
+        private final Plane plane;
         
         /**
          * Creates a {@link PottsDrawer} for drawing outlines.
@@ -461,32 +461,19 @@ public abstract class PottsDrawer extends Drawer {
         PottsGrid(Panel panel, String name,
                   int length, int width, int depth, Rectangle2D.Double bounds) {
             super(panel, name, length, width, depth, bounds);
-            this.length = length;
-            this.width = width;
-            this.height = depth;
-            
             String[] split = name.split(":");
-            
-            if (split.length == 2) {
-                switch (split[1]) {
-                    case "x": plane = PLANE_X; break;
-                    case "y": plane = PLANE_Y; break;
-                    case "z":  default: plane = PLANE_Z;
-                }
-            } else {
-                plane = PLANE_Z;
-            }
+            plane = (split.length == 2 ? Plane.valueOf(split[1]) : Plane.Z);
             
             switch (plane) {
-                case PLANE_X:
-                    field.width = height;
+                case X:
+                    field.width = depth;
                     field.height = width;
                     break;
-                case PLANE_Y:
+                case Y:
                     field.width = length;
-                    field.height = height;
+                    field.height = depth;
                     break;
-                default: case PLANE_Z:
+                default: case Z:
                     field.width = length;
                     field.height = width;
             }
@@ -498,30 +485,17 @@ public abstract class PottsDrawer extends Drawer {
             field.clear();
             graph.clear();
             
-            int[][] ids = getSlice(sim.getPotts().ids, plane, length, width, height);
+            int[][] arr = slice(sim.getPotts().ids, plane);
             
-            int aa;
-            int bb;
-            switch (plane) {
-                case PLANE_X:
-                    aa = height;
-                    bb = width;
-                    break;
-                case PLANE_Y:
-                    aa = length;
-                    bb = height;
-                    break;
-                default: case PLANE_Z:
-                    aa = length;
-                    bb = width;
-            }
+            int aa = arr.length;
+            int bb = arr[0].length;
             
-            for (int a = 0; a < aa - 1; a++) {
-                for (int b = 0; b < bb - 1; b++) {
-                    if (ids[a][b] != ids[a][b + 1]) {
+            for (int a = 1; a < aa - 1; a++) {
+                for (int b = 1; b < bb - 1; b++) {
+                    if (arr[a][b] != arr[a][b + 1]) {
                         add(field, graph, 1, a, b + 1, a + 1, b + 1);
                     }
-                    if (ids[a][b] != ids[a + 1][b]) {
+                    if (arr[a][b] != arr[a + 1][b]) {
                         add(field, graph, 1, a + 1, b, a + 1, b + 1);
                     }
                 }
