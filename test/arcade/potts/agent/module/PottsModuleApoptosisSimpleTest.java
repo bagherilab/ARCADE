@@ -122,6 +122,25 @@ public class PottsModuleApoptosisSimpleTest {
     }
     
     @Test
+    public void stepEarly_anyTransitionWithRegion_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        doReturn(true).when(cell).hasRegions();
+        PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepEarly(random);
+        module.currentSteps = 0;
+        module.stepEarly(random);
+        
+        verify(cell, times(2)).updateTarget(Region.NUCLEUS, module.nucleusPyknosisRate, EARLY_SIZE_CHECKPOINT);
+    }
+    
+    @Test
     public void stepLate_withTransitionNotArrested_updatesPhase() {
         int steps = randomIntBetween(1, parameters.getInt("apoptosis/STEPS_LATE"));
         PottsCell cell = mock(PottsCell.class);
@@ -244,5 +263,25 @@ public class PottsModuleApoptosisSimpleTest {
         module.stepLate(random, simMock);
         
         verify(cell, times(2)).updateTarget(module.cytoBlebbingRate, LATE_SIZE_CHECKPOINT);
+    }
+    
+    @Test
+    public void stepLate_anyTransitionWithRegion_updatesCell() {
+        PottsCell cell = mock(PottsCell.class);
+        doReturn(parameters).when(cell).getParameters();
+        doReturn(true).when(cell).hasRegions();
+        PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
+        doNothing().when(module).removeCell(simMock);
+        
+        PoissonFactory poissonFactory = mock(PoissonFactory.class);
+        doReturn(poissonMock).when(poissonFactory).createPoisson(anyDouble(), eq(random));
+        module.poissonFactory = poissonFactory;
+        
+        module.currentSteps = Integer.MAX_VALUE;
+        module.stepLate(random, simMock);
+        module.currentSteps = 0;
+        module.stepLate(random, simMock);
+        
+        verify(cell, times(2)).updateTarget(Region.NUCLEUS, module.nucleusFragmentationRate, 0);
     }
 }

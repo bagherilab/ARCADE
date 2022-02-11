@@ -37,6 +37,12 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
     /** Rate of cytoplasmic blebbing (voxels/tick). */
     final double cytoBlebbingRate;
     
+    /** Rate of nuclear pyknosis (voxels/tick). */
+    final double nucleusPyknosisRate;
+    
+    /** Rate of nuclear fragmentation (voxels/tick). */
+    final double nucleusFragmentationRate;
+    
     /**
      * Creates a simple apoptosis {@code Module} for the given {@link PottsCell}.
      *
@@ -52,6 +58,8 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
         stepsLate = parameters.getInt("apoptosis/STEPS_LATE");
         waterLossRate = parameters.getDouble("apoptosis/WATER_LOSS_RATE");
         cytoBlebbingRate = parameters.getDouble("apoptosis/CYTOPLASMIC_BLEBBING_RATE");
+        nucleusPyknosisRate = parameters.getDouble("apoptosis/NUCLEUS_PYKNOSIS_RATE");
+        nucleusFragmentationRate = parameters.getDouble("apoptosis/NUCLEUS_FRAGMENTATION_RATE");
     }
     
     /**
@@ -66,7 +74,10 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
         // Decrease size of cell.
         cell.updateTarget(waterLossRate, EARLY_SIZE_CHECKPOINT);
         
-        // TODO: add decrease size in nuclear volume.
+        // Decrease size of nucleus (if cell has regions).
+        if (cell.hasRegions()) {
+            cell.updateTarget(Region.NUCLEUS, nucleusPyknosisRate, EARLY_SIZE_CHECKPOINT);
+        }
         
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateEarly, random);
@@ -89,7 +100,10 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
         // Decrease size of cell.
         cell.updateTarget(cytoBlebbingRate, LATE_SIZE_CHECKPOINT);
         
-        // TODO: add decrease size in nuclear volume.
+        // Decrease size of nucleus (if cell has regions).
+        if (cell.hasRegions()) {
+            cell.updateTarget(Region.NUCLEUS, nucleusFragmentationRate, 0);
+        }
         
         // Check for completion of late phase.
         Poisson poisson = poissonFactory.createPoisson(rateLate, random);

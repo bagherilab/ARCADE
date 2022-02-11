@@ -62,4 +62,6 @@
     <population.module module="apoptosis" id="STEPS_LATE" value="10" units="steps" description="characteristic steps in late apoptosis phase" />
     <population.module module="apoptosis" id="WATER_LOSS_RATE" value="250" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of cytoplasmic water loss" />
     <population.module module="apoptosis" id="CYTOPLASMIC_BLEBBING_RATE" value="400" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of cytoplasmic blebbing" />
+    <population.module module="apoptosis" id="NUCLEUS_PYKNOSIS_RATE" value="125" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nuclear pyknosis" />
+    <population.module module="apoptosis" id="NUCLEUS_FRAGMENTATION_RATE" value="200" units="um^3/hour" conversion="DS^-3.DT" description="basal rate of nuclear fragmentation" />
 </parameters>
