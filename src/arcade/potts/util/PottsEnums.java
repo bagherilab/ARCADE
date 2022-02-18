@@ -45,6 +45,9 @@ public final class PottsEnums {
         /** Code for surface term. */
         SURFACE,
         
+        /** Code for height term. */
+        HEIGHT,
+        
         /** Code for substrate term. */
         SUBSTRATE,
         
