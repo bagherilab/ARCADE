@@ -2,6 +2,7 @@ package arcade.potts.sim.hamiltonian;
 
 import java.util.EnumMap;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.loc.PottsLocation;
 import static arcade.core.util.Enums.Region;
 
 /**
@@ -11,6 +12,9 @@ import static arcade.core.util.Enums.Region;
 class HeightHamiltonianConfig {
     /** Associated {@link PottsCell} instance. */
     final PottsCell cell;
+    
+    /** Associated {@link PottsLocation} instance. */
+    final PottsLocation location;
     
     /** Lambda multiplier for cell. */
     private final double lambda;
@@ -30,6 +34,7 @@ class HeightHamiltonianConfig {
      */
     HeightHamiltonianConfig(PottsCell cell, double lambda, EnumMap<Region, Double> lambdasRegion) {
         this.cell = cell;
+        this.location = (PottsLocation) cell.getLocation();
         this.lambda = lambda;
         this.hasRegions = (lambdasRegion != null) && (lambdasRegion.keySet().size() > 0);
         

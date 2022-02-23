@@ -58,7 +58,7 @@ public class HeightHamiltonian implements Hamiltonian {
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
         return 0;
     }
-
+    
     /**
      * {@inheritDoc}
      * <p>
@@ -66,6 +66,40 @@ public class HeightHamiltonian implements Hamiltonian {
     @Override
     public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
        return 0;
+    }
+    
+    /**
+     * Gets height energy for a given change in height.
+     *
+     * @param id  the voxel id
+     * @param change  the change in volume
+     * @return  the energy
+     */
+    double getHeight(int id, int change) {
+        if (id == 0) { return 0; }
+        HeightHamiltonianConfig config = configs.get(id);
+        double height = config.cell.getHeight();
+        double targetHeight = config.cell.getCriticalHeight();
+        double lambda = config.getLambda();
+        return lambda * Math.pow((height - targetHeight + change), 2);
+    }
+    
+    /**
+     * Gets height energy for a given change in height for region.
+     *
+     * @param id  the voxel id
+     * @param t  the voxel region
+     * @param change  the change in height
+     * @return  the energy
+     */
+    double getHeight(int id, int t, int change) {
+        Region region = Region.values()[t];
+        if (id == 0 || region == Region.DEFAULT) { return 0; }
+        HeightHamiltonianConfig config = configs.get(id);
+        double height = config.cell.getHeight(region);
+        double targetHeight = config.cell.getCriticalHeight(region);
+        double lambda = config.getLambda(region);
+        return lambda * Math.pow((height - targetHeight + change), 2);
     }
     
     /**
