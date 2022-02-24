@@ -97,44 +97,44 @@ public interface Cell extends Steppable {
     MiniBox getParameters();
     
     /**
-     * Gets the cell volume (in voxels).
+     * Gets the cell volume.
      *
      * @return  the cell volume
      */
-    int getVolume();
+    double getVolume();
     
     /**
-     * Gets the cell volume (in voxels) for a region.
+     * Gets the cell volume for a region.
      *
      * @param region  the region
      * @return  the cell region volume
      */
-    int getVolume(Region region);
+    double getVolume(Region region);
     
     /**
-     * Gets the cell height (in voxels).
+     * Gets the cell height.
      *
      * @return  the cell height
      */
-    int getHeight();
+    double getHeight();
     
     /**
-     * Gets the cell height (in voxels) for a region.
+     * Gets the cell height for a region.
      *
      * @param region  the region
      * @return  the cell region height
      */
-    int getHeight(Region region);
+    double getHeight(Region region);
     
     /**
-     * Gets the critical volume (in voxels).
+     * Gets the critical volume.
      *
      * @return  the critical volume
      */
     double getCriticalVolume();
     
     /**
-     * Gets the critical volume (in voxels) for a region.
+     * Gets the critical volume for a region.
      *
      * @param region  the region
      * @return  the critical region volume
@@ -142,14 +142,14 @@ public interface Cell extends Steppable {
     double getCriticalVolume(Region region);
     
     /**
-     * Gets the critical height (in voxels).
+     * Gets the critical height.
      *
      * @return  the critical height
      */
     double getCriticalHeight();
     
     /**
-     * Gets the critical height (in voxels) for a region.
+     * Gets the critical height for a region.
      *
      * @param region  the region
      * @return  the critical region height

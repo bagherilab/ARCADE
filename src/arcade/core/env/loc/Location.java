@@ -30,45 +30,45 @@ public interface Location {
     /**
      * Gets the volume of the location.
      *
-     * @return  the location volume (in voxels)
+     * @return  the location volume
      */
-    int getVolume();
+    double getVolume();
     
     /**
      * Gets the volume of the location for a given region.
      *
-     * @param region  the voxel region
-     * @return  the location region volume (in voxels)
+     * @param region  the region
+     * @return  the location region volume
      */
-    int getVolume(Region region);
+    double getVolume(Region region);
     
     /**
      * Gets the surface area of the location.
      *
-     * @return  the location surface area (in voxels)
+     * @return  the location surface area
      */
-    int getSurface();
+    double getSurface();
     
     /**
      * Gets the surface area of the location for a given region.
      *
-     * @param region  the voxel region
-     * @return  the location region surface area (in voxels)
+     * @param region  the region
+     * @return  the location region surface area
      */
-    int getSurface(Region region);
+    double getSurface(Region region);
     
     /**
      * Gets the height of the location.
      *
-     * @return  the location height (in voxels)
+     * @return  the location height
      */
-    int getHeight();
+    double getHeight();
     
     /**
      * Gets the height of the location for a given region.
      *
-     * @param region  the voxel region
-     * @return  the location height (in voxels)
+     * @param region  the region
+     * @return  the location height
      */
-    int getHeight(Region region);
+    double getHeight(Region region);
 }
