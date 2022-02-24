@@ -202,60 +202,60 @@ public class PottsLocationTest {
     public void getVolume_hasVoxels_returnsValue() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         loc.add(0, 0, 0);
-        assertEquals(1, loc.getVolume());
+        assertEquals(1, (int) loc.getVolume());
     }
     
     @Test
     public void getVolume_noVoxels_returnsValue() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
-        assertEquals(0, loc.getVolume());
+        assertEquals(0, (int) loc.getVolume());
     }
     
     @Test
     public void getVolume_givenRegion_returnsValue() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         loc.add(0, 0, 0);
-        assertEquals(1, loc.getVolume(Region.DEFAULT));
+        assertEquals(1, (int) loc.getVolume(Region.DEFAULT));
     }
     
     @Test
     public void getSurface_hasVoxels_returnsValue() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         loc.add(0, 0, 0);
-        assertEquals(LOCATION_SURFACE + DELTA_SURFACE, loc.getSurface());
+        assertEquals(LOCATION_SURFACE + DELTA_SURFACE, (int) loc.getSurface());
     }
     
     @Test
     public void getSurface_noVoxels_returnsValue() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
-        assertEquals(LOCATION_SURFACE, loc.getSurface());
+        assertEquals(LOCATION_SURFACE, (int) loc.getSurface());
     }
     
     @Test
     public void getSurface_givenRegion_returnsValue() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         loc.add(0, 0, 0);
-        assertEquals(LOCATION_SURFACE + DELTA_SURFACE, loc.getSurface(Region.DEFAULT));
+        assertEquals(LOCATION_SURFACE + DELTA_SURFACE, (int) loc.getSurface(Region.DEFAULT));
     }
     
     @Test
     public void getHeight_hasVoxels_returnsValue() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         loc.add(0, 0, 0);
-        assertEquals(LOCATION_HEIGHT + DELTA_HEIGHT, loc.getHeight());
+        assertEquals(LOCATION_HEIGHT + DELTA_HEIGHT, (int) loc.getHeight());
     }
     
     @Test
     public void getHeight_noVoxels_returnsValue() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
-        assertEquals(LOCATION_HEIGHT, loc.getHeight());
+        assertEquals(LOCATION_HEIGHT, (int) loc.getHeight());
     }
     
     @Test
     public void getHeight_givenRegion_returnsValue() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         loc.add(0, 0, 0);
-        assertEquals(LOCATION_HEIGHT + DELTA_HEIGHT, loc.getHeight(Region.DEFAULT));
+        assertEquals(LOCATION_HEIGHT + DELTA_HEIGHT, (int) loc.getHeight(Region.DEFAULT));
     }
     
     @Test

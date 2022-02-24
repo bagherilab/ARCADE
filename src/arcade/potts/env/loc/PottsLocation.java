@@ -83,22 +83,22 @@ public abstract class PottsLocation implements Location {
     public EnumSet<Region> getRegions() { return null; }
     
     @Override
-    public final int getVolume() { return volume; }
+    public final double getVolume() { return volume; }
     
     @Override
-    public int getVolume(Region region) { return getVolume(); }
+    public double getVolume(Region region) { return getVolume(); }
     
     @Override
-    public final int getSurface() { return surface; }
+    public final double getSurface() { return surface; }
     
     @Override
-    public int getSurface(Region region) { return getSurface(); }
+    public double getSurface(Region region) { return getSurface(); }
     
     @Override
-    public final int getHeight() { return height; }
+    public final double getHeight() { return height; }
     
     @Override
-    public int getHeight(Region region) { return getHeight(); }
+    public double getHeight(Region region) { return getHeight(); }
     
     /**
      * Adds a voxel at the given coordinates.

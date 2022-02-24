@@ -58,7 +58,7 @@ class PersistenceHamiltonianConfig {
         this.threshold = threshold;
         this.vector = DEFAULT_UNIT_VECTOR.clone();
         this.displacement = new double[] { 0, 0, 0 };
-        this.volumeCheck = location.getVolume();
+        this.volumeCheck = (int) location.getVolume();
         this.hasRegions = (lambdasRegion != null) && (lambdasRegion.keySet().size() > 0);
         
         if (hasRegions) {
@@ -107,9 +107,9 @@ class PersistenceHamiltonianConfig {
      * @return  the direction unit vector
      */
     public double[] getVector() {
-        if (location.getVolume() != volumeCheck) {
+        if ((int) location.getVolume() != volumeCheck) {
             // Update tracked volume to new location volume.
-            volumeCheck = location.getVolume();
+            volumeCheck = (int) location.getVolume();
             
             // Update target.
             vector[0] = (1 - decay) * vector[0] + decay * displacement[0];

@@ -179,23 +179,23 @@ public final class PottsCell implements Cell {
     public MiniBox getParameters() { return parameters; }
     
     @Override
-    public int getVolume() { return location.getVolume(); }
+    public double getVolume() { return location.getVolume(); }
     
     @Override
-    public int getVolume(Region region) { return (hasRegions ? location.getVolume(region) : 0); }
+    public double getVolume(Region region) { return (hasRegions ? location.getVolume(region) : 0); }
     
     @Override
-    public int getHeight() { return location.getHeight(); }
+    public double getHeight() { return location.getHeight(); }
     
     @Override
-    public int getHeight(Region region) { return (hasRegions ? location.getHeight(region) : 0); }
+    public double getHeight(Region region) { return (hasRegions ? location.getHeight(region) : 0); }
     
     /**
      * Gets the cell surface (in voxels).
      *
      * @return  the cell surface
      */
-    public int getSurface() { return location.getSurface(); }
+    public double getSurface() { return location.getSurface(); }
     
     /**
      * Gets the cell surface (in voxels) for a region.
@@ -203,7 +203,7 @@ public final class PottsCell implements Cell {
      * @param region  the region
      * @return  the cell region surface
      */
-    public int getSurface(Region region) { return (hasRegions ? location.getSurface(region) : 0); }
+    public double getSurface(Region region) { return (hasRegions ? location.getSurface(region) : 0); }
     
     /**
      * Gets the target volume (in voxels).
@@ -479,15 +479,15 @@ public final class PottsCell implements Cell {
         if (hasRegions) {
             EnumMap<Region, Integer> regionVolumes = new EnumMap<>(Region.class);
             for (Region region : location.getRegions()) {
-                regionVolumes.put(region, location.getVolume(region));
+                regionVolumes.put(region, (int) location.getVolume(region));
             }
             
             return new PottsCellContainer(id, parent, pop, age, divisions, state,
-                    ((PottsModule) module).getPhase(), getVolume(), regionVolumes,
+                    ((PottsModule) module).getPhase(), (int) getVolume(), regionVolumes,
                     targetVolume, targetSurface, targetRegionVolumes, targetRegionSurfaces);
         } else {
             return new PottsCellContainer(id, parent, pop, age, divisions, state,
-                    ((PottsModule) module).getPhase(), getVolume(),
+                    ((PottsModule) module).getPhase(), (int) getVolume(),
                     targetVolume, targetSurface);
         }
     }

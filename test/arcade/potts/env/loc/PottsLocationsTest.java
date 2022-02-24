@@ -188,67 +188,67 @@ public class PottsLocationsTest {
     @Test
     public void getVolume_validRegion_returnsValue() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
-        assertEquals(1, loc.getVolume());
-        assertEquals(1, loc.getVolume(Region.DEFAULT));
+        assertEquals(1, (int) loc.getVolume());
+        assertEquals(1, (int) loc.getVolume(Region.DEFAULT));
     }
     
     @Test
     public void getVolume_invalidRegion_returnsZero() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
-        assertEquals(0, loc.getVolume(null));
+        assertEquals(0, (int) loc.getVolume(null));
     }
     
     @Test
     public void getVolume_multipleRegions_returnsValue() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForMultipleRegions);
         loc.add(Region.UNDEFINED, 1, 1, 0);
-        assertEquals(9, loc.getVolume());
-        assertEquals(8, loc.getVolume(Region.DEFAULT));
-        assertEquals(1, loc.getVolume(Region.UNDEFINED));
+        assertEquals(9, (int) loc.getVolume());
+        assertEquals(8, (int) loc.getVolume(Region.DEFAULT));
+        assertEquals(1, (int) loc.getVolume(Region.UNDEFINED));
     }
     
     @Test
     public void getSurface_validRegion_returnsValue() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
-        assertEquals(LOCATIONS_SURFACE, loc.getSurface());
-        assertEquals(LOCATION_SURFACE, loc.getSurface(Region.DEFAULT));
+        assertEquals(LOCATIONS_SURFACE, (int) loc.getSurface());
+        assertEquals(LOCATION_SURFACE, (int) loc.getSurface(Region.DEFAULT));
     }
     
     @Test
     public void getSurface_invalidRegion_returnsZero() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
-        assertEquals(0, loc.getSurface(null));
+        assertEquals(0, (int) loc.getSurface(null));
     }
     
     @Test
     public void getSurface_multipleRegions_returnsValue() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForMultipleRegions);
         loc.add(Region.UNDEFINED, 1, 1, 0);
-        assertEquals(LOCATIONS_SURFACE + DELTA_SURFACE, loc.getSurface());
-        assertEquals(LOCATION_SURFACE, loc.getSurface(Region.DEFAULT));
-        assertEquals(LOCATION_SURFACE + DELTA_SURFACE, loc.getSurface(Region.UNDEFINED));
+        assertEquals(LOCATIONS_SURFACE + DELTA_SURFACE, (int) loc.getSurface());
+        assertEquals(LOCATION_SURFACE, (int) loc.getSurface(Region.DEFAULT));
+        assertEquals(LOCATION_SURFACE + DELTA_SURFACE, (int) loc.getSurface(Region.UNDEFINED));
     }
     
     @Test
     public void getHeight_validRegion_returnsValue() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
-        assertEquals(LOCATIONS_HEIGHT, loc.getHeight());
-        assertEquals(LOCATION_HEIGHT, loc.getHeight(Region.DEFAULT));
+        assertEquals(LOCATIONS_HEIGHT, (int) loc.getHeight());
+        assertEquals(LOCATION_HEIGHT, (int) loc.getHeight(Region.DEFAULT));
     }
     
     @Test
     public void getHeight_invalidRegion_returnsZero() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForVolumeSurfaceHeight);
-        assertEquals(0, loc.getHeight(null));
+        assertEquals(0, (int) loc.getHeight(null));
     }
     
     @Test
     public void getHeight_multipleRegions_returnsValue() {
         PottsLocationsMock loc = new PottsLocationsMock(voxelListForMultipleRegions);
         loc.add(Region.UNDEFINED, 1, 1, 0);
-        assertEquals(LOCATIONS_HEIGHT + DELTA_HEIGHT, loc.getHeight());
-        assertEquals(LOCATION_HEIGHT, loc.getHeight(Region.DEFAULT));
-        assertEquals(LOCATION_HEIGHT + DELTA_HEIGHT, loc.getHeight(Region.UNDEFINED));
+        assertEquals(LOCATIONS_HEIGHT + DELTA_HEIGHT, (int) loc.getHeight());
+        assertEquals(LOCATION_HEIGHT, (int) loc.getHeight(Region.DEFAULT));
+        assertEquals(LOCATION_HEIGHT + DELTA_HEIGHT, (int) loc.getHeight(Region.UNDEFINED));
     }
     
     @Test

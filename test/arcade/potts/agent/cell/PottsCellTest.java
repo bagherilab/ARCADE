@@ -80,18 +80,18 @@ public class PottsCellTest {
             locationRegionHeights.put(region, randomIntBetween(10, 20));
             locationRegionSurfaces.put(region, randomIntBetween(10, 20));
             
-            when(locationMock.getVolume(region)).thenReturn(locationRegionVolumes.get(region));
-            when(locationMock.getHeight(region)).thenReturn(locationRegionHeights.get(region));
-            when(locationMock.getSurface(region)).thenReturn(locationRegionSurfaces.get(region));
+            when(locationMock.getVolume(region)).thenReturn((double) locationRegionVolumes.get(region));
+            when(locationMock.getHeight(region)).thenReturn((double) locationRegionHeights.get(region));
+            when(locationMock.getSurface(region)).thenReturn((double) locationRegionSurfaces.get(region));
             
             locationVolume += locationRegionVolumes.get(region);
             locationHeight += locationRegionHeights.get(region);
             locationSurface += locationRegionSurfaces.get(region);
         }
         
-        when(locationMock.getVolume()).thenReturn(locationVolume);
-        when(locationMock.getHeight()).thenReturn(locationHeight);
-        when(locationMock.getSurface()).thenReturn(locationSurface);
+        when(locationMock.getVolume()).thenReturn((double) locationVolume);
+        when(locationMock.getHeight()).thenReturn((double) locationHeight);
+        when(locationMock.getSurface()).thenReturn((double) locationSurface);
         
         // Region criticals.
         criticalVolumesRegionMock = new EnumMap<>(Region.class);
@@ -230,73 +230,73 @@ public class PottsCellTest {
     
     @Test
     public void getVolume_defaultConstructor_returnsValue() {
-        assertEquals(locationVolume, cellDefault.getVolume());
+        assertEquals(locationVolume, (int) cellDefault.getVolume());
     }
     
     @Test
     public void getVolume_validRegions_returnsValue() {
         for (Region region : regionList) {
-            assertEquals((int) locationRegionVolumes.get(region), cellWithRegions.getVolume(region));
+            assertEquals((int) locationRegionVolumes.get(region), (int) cellWithRegions.getVolume(region));
         }
     }
     
     @Test
     public void getVolume_nullRegion_returnsZero() {
-        assertEquals(0, cellWithRegions.getVolume(null));
+        assertEquals(0, (int) cellWithRegions.getVolume(null));
     }
     
     @Test
     public void getVolume_noRegions_returnsZero() {
         for (Region region : regionList) {
-            assertEquals(0, cellWithoutRegions.getVolume(region));
+            assertEquals(0, (int) cellWithoutRegions.getVolume(region));
         }
     }
     
     @Test
     public void getHeight_defaultConstructor_returnsValue() {
-        assertEquals(locationHeight, cellDefault.getHeight());
+        assertEquals(locationHeight, (int) cellDefault.getHeight());
     }
     
     @Test
     public void getHeight_validRegions_returnsValue() {
         for (Region region : regionList) {
-            assertEquals((int) locationRegionHeights.get(region), cellWithRegions.getHeight(region));
+            assertEquals((int) locationRegionHeights.get(region), (int) cellWithRegions.getHeight(region));
         }
     }
     
     @Test
     public void getHeight_nullRegion_returnsZero() {
-        assertEquals(0, cellWithRegions.getHeight(null));
+        assertEquals(0, (int) cellWithRegions.getHeight(null));
     }
     
     @Test
     public void getHeight_noRegions_returnsZero() {
         for (Region region : regionList) {
-            assertEquals(0, cellWithoutRegions.getHeight(region));
+            assertEquals(0, (int) cellWithoutRegions.getHeight(region));
         }
     }
     
     @Test
     public void getSurface_defaultConstructor_returnsValue() {
-        assertEquals(locationSurface, cellDefault.getSurface());
+        assertEquals(locationSurface, (int) cellDefault.getSurface());
     }
     
     @Test
     public void getSurface_validRegions_returnsValue() {
         for (Region region : regionList) {
-            assertEquals((int) locationRegionSurfaces.get(region), cellWithRegions.getSurface(region));
+            assertEquals((int) locationRegionSurfaces.get(region), (int) cellWithRegions.getSurface(region));
         }
     }
     
     @Test
     public void getSurface_nullRegion_returnsZero() {
-        assertEquals(0, cellWithRegions.getSurface(null));
+        assertEquals(0, (int) cellWithRegions.getSurface(null));
     }
     
     @Test
     public void getSurface_noRegions_returnsZero() {
         for (Region region : regionList) {
-            assertEquals(0, cellWithoutRegions.getSurface(region));
+            assertEquals(0, (int) cellWithoutRegions.getSurface(region));
         }
     }
     
@@ -695,8 +695,8 @@ public class PottsCellTest {
         int volume = randomIntBetween(0, 100);
         int surface = randomIntBetween(0, 100);
         PottsLocation location = mock(PottsLocation.class);
-        when(location.getVolume()).thenReturn(volume);
-        when(location.getSurface()).thenReturn(surface);
+        when(location.getVolume()).thenReturn((double) volume);
+        when(location.getSurface()).thenReturn((double) surface);
         
         PottsCell cell = make(location, false);
         cell.initialize(new int[1][3][3], null);
@@ -714,12 +714,12 @@ public class PottsCellTest {
         int surface1 = randomIntBetween(0, 100);
         int surface2 = randomIntBetween(0, 100);
         Location location = mock(PottsLocation.class);
-        when(location.getVolume()).thenReturn(volume1 + volume2);
-        when(location.getSurface()).thenReturn(surface1 + surface2);
-        when(location.getVolume(Region.DEFAULT)).thenReturn(volume1);
-        when(location.getSurface(Region.DEFAULT)).thenReturn(surface1);
-        when(location.getVolume(Region.NUCLEUS)).thenReturn(volume2);
-        when(location.getSurface(Region.NUCLEUS)).thenReturn(surface2);
+        when(location.getVolume()).thenReturn((double) (volume1 + volume2));
+        when(location.getSurface()).thenReturn((double) (surface1 + surface2));
+        when(location.getVolume(Region.DEFAULT)).thenReturn((double) volume1);
+        when(location.getSurface(Region.DEFAULT)).thenReturn((double) surface1);
+        when(location.getVolume(Region.NUCLEUS)).thenReturn((double) volume2);
+        when(location.getSurface(Region.NUCLEUS)).thenReturn((double) surface2);
         when(location.getRegions()).thenReturn(regionList);
         
         PottsCell cell = make(location, true);
@@ -740,8 +740,8 @@ public class PottsCellTest {
         int volume = randomIntBetween(0, 100);
         int surface = randomIntBetween(0, 100);
         Location location = mock(PottsLocation.class);
-        when(location.getVolume()).thenReturn(volume);
-        when(location.getSurface()).thenReturn(surface);
+        when(location.getVolume()).thenReturn((double) volume);
+        when(location.getSurface()).thenReturn((double) surface);
         
         int targetVolume = randomIntBetween(1, 100);
         int targetSurface = randomIntBetween(1, 100);
@@ -763,12 +763,12 @@ public class PottsCellTest {
         int surface1 = randomIntBetween(0, 100);
         int surface2 = randomIntBetween(0, 100);
         Location location = mock(PottsLocation.class);
-        when(location.getVolume()).thenReturn(volume1 + volume2);
-        when(location.getSurface()).thenReturn(surface1 + surface2);
-        when(location.getVolume(Region.DEFAULT)).thenReturn(volume1);
-        when(location.getSurface(Region.DEFAULT)).thenReturn(surface1);
-        when(location.getVolume(Region.NUCLEUS)).thenReturn(volume2);
-        when(location.getSurface(Region.NUCLEUS)).thenReturn(surface2);
+        when(location.getVolume()).thenReturn((double) (volume1 + volume2));
+        when(location.getSurface()).thenReturn((double) (surface1 + surface2));
+        when(location.getVolume(Region.DEFAULT)).thenReturn((double) volume1);
+        when(location.getSurface(Region.DEFAULT)).thenReturn((double) surface1);
+        when(location.getVolume(Region.NUCLEUS)).thenReturn((double) volume2);
+        when(location.getSurface(Region.NUCLEUS)).thenReturn((double) surface2);
         when(location.getRegions()).thenReturn(regionList);
         
         int targetVolume = randomIntBetween(1, 100);
@@ -799,8 +799,8 @@ public class PottsCellTest {
         int volume = randomIntBetween(0, 100);
         int surface = randomIntBetween(0, 100);
         Location location = mock(PottsLocation.class);
-        when(location.getVolume()).thenReturn(volume);
-        when(location.getSurface()).thenReturn(surface);
+        when(location.getVolume()).thenReturn((double) volume);
+        when(location.getSurface()).thenReturn((double) surface);
         
         PottsCell cell1 = make(location, false);
         cell1.setTargets(0, randomIntBetween(0, 100));
@@ -1169,7 +1169,7 @@ public class PottsCellTest {
         ((PottsModule) cell.getModule()).setPhase(phase);
         
         int voxels = randomIntBetween(1, 100);
-        doReturn(voxels).when(location).getVolume();
+        doReturn((double) voxels).when(location).getVolume();
         
         int targetVolume = randomIntBetween(1, 100);
         int targetSurface = randomIntBetween(1, 100);
@@ -1219,13 +1219,13 @@ public class PottsCellTest {
         ((PottsModule) cell.getModule()).setPhase(phase);
         
         int voxels = randomIntBetween(1, 100);
-        doReturn(voxels).when(location).getVolume();
+        doReturn((double) voxels).when(location).getVolume();
         
         EnumMap<Region, Integer> regionVoxels = new EnumMap<>(Region.class);
         for (Region region : regions) {
             int value = randomIntBetween(1, 100);
             regionVoxels.put(region, value);
-            doReturn(value).when(location).getVolume(region);
+            doReturn((double) value).when(location).getVolume(region);
         }
         
         int targetVolume = randomIntBetween(1, 100);

@@ -115,7 +115,7 @@ public class PersistenceHamiltonianConfigTest {
     public void getVector_noChange_returnsVector() {
         PottsLocation location = mock(PottsLocation.class);
         int volume = randomIntBetween(10, 100);
-        doReturn(volume).when(location).getVolume();
+        doReturn((double) volume).when(location).getVolume();
         
         double decay = randomDoubleBetween(0, 1);
         PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, decay, 0);
@@ -136,14 +136,14 @@ public class PersistenceHamiltonianConfigTest {
     public void getVector_locationChanged_returnsVector() {
         PottsLocation location = mock(PottsLocation.class);
         int volume = randomIntBetween(10, 100);
-        doReturn(volume).when(location).getVolume();
+        doReturn((double) volume).when(location).getVolume();
         
         double decay = randomDoubleBetween(0, 1);
         double threshold = randomDoubleBetween(1, 100);
         PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, decay, threshold);
         
         int newVolume = volume + randomIntBetween(1, 10);
-        doReturn(newVolume).when(location).getVolume();
+        doReturn((double) newVolume).when(location).getVolume();
         
         double dx = randomDoubleBetween(1, 10);
         double dy = randomDoubleBetween(1, 10);
@@ -181,7 +181,7 @@ public class PersistenceHamiltonianConfigTest {
                 randomDoubleBetween(1, 100),
         };
         
-        doReturn(volume).when(location).getVolume();
+        doReturn((double) volume).when(location).getVolume();
         doReturn(centroid).when(location).getCentroid();
         
         PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, 0, 0);
@@ -217,7 +217,7 @@ public class PersistenceHamiltonianConfigTest {
                 randomDoubleBetween(1, 100),
         };
         
-        doReturn(volume).when(location).getVolume();
+        doReturn((double) volume).when(location).getVolume();
         doReturn(centroid).when(location).getCentroid();
         
         PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, 0, 0);
@@ -254,7 +254,7 @@ public class PersistenceHamiltonianConfigTest {
         };
         
         Region region = Region.NUCLEUS;
-        doReturn(volume).when(location).getVolume(region);
+        doReturn((double) volume).when(location).getVolume(region);
         doReturn(centroid).when(location).getCentroid(region);
         
         PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, 0, 0);
@@ -302,7 +302,7 @@ public class PersistenceHamiltonianConfigTest {
         };
         
         Region region = Region.NUCLEUS;
-        doReturn(volume).when(location).getVolume(region);
+        doReturn((double) volume).when(location).getVolume(region);
         doReturn(centroid).when(location).getCentroid(region);
         
         PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, 0, 0);

@@ -50,17 +50,17 @@ public abstract class PottsLocations extends PottsLocation {
     public EnumSet<Region> getRegions() { return EnumSet.copyOf(locations.keySet()); }
     
     @Override
-    public int getVolume(Region region) {
+    public double getVolume(Region region) {
         return (locations.containsKey(region) ? locations.get(region).volume : 0);
     }
     
     @Override
-    public int getSurface(Region region) {
+    public double getSurface(Region region) {
         return (locations.containsKey(region) ? locations.get(region).surface : 0);
     }
     
     @Override
-    public int getHeight(Region region) {
+    public double getHeight(Region region) {
         return (locations.containsKey(region) ? locations.get(region).height : 0);
     }
     
