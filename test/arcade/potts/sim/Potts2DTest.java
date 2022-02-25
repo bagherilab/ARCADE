@@ -121,7 +121,10 @@ public class Potts2DTest {
         
         h = potts2D.getHamiltonian(Term.SUBSTRATE, series);
         assertNull(h);
-    
+        
+        h = potts2D.getHamiltonian(Term.HEIGHT, series);
+        assertNull(h);
+        
         h = potts2D.getHamiltonian(Term.UNDEFINED, series);
         assertNull(h);
     }

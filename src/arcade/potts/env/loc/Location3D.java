@@ -144,13 +144,10 @@ public interface Location3D {
         
         OptionalInt max = voxels.stream().filter(v -> !v.equals(voxel)).mapToInt(v -> v.z).max();
         OptionalInt min = voxels.stream().filter(v -> !v.equals(voxel)).mapToInt(v -> v.z).min();
-    
-        if (voxel.z > max.getAsInt()) {
-            return voxel.z - max.getAsInt();
-        } else if (voxel.z < min.getAsInt()) {
-            return min.getAsInt() - voxel.z;
-        }
-    
+        
+        if (voxel.z > max.getAsInt()) { return voxel.z - max.getAsInt(); }
+        if (voxel.z < min.getAsInt()) { return min.getAsInt() - voxel.z; }
+        
         return 0;
     }
     

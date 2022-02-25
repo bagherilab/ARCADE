@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.stream.Collectors;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.loc.Location3D;
+import arcade.potts.env.loc.Voxel;
 import arcade.potts.sim.PottsSeries;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.Enums.Region;
@@ -53,53 +56,86 @@ public class HeightHamiltonian implements Hamiltonian {
     /**
      * {@inheritDoc}
      * <p>
+     * Height energy is calculated by taking the difference in target and proposed
+     * height for the given ID.
+     * Change in height energy is taken as the difference in differences of height
+     * energies for the source and target IDs when a voxel is removed or added.
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
-        return 0;
+        Voxel voxel = new Voxel(x, y, z);
+        double source = getHeight(sourceID, voxel, -1) - getHeight(sourceID, voxel, 0);
+        double target = getHeight(targetID, voxel, 1) - getHeight(targetID, voxel, 0);
+        return target + source;
     }
     
     /**
      * {@inheritDoc}
      * <p>
+     * Height energy is calculated by taking the difference in target and proposed
+     * height for the given region.
+     * Change in height energy is taken as the difference in differences of height
+     * energies for the source and target regions when a voxel is removed or added.
      */
     @Override
     public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
-       return 0;
+        Voxel voxel = new Voxel(x, y, z);
+        double source = getHeight(id, voxel, sourceRegion, -1)
+                - getHeight(id, voxel, sourceRegion, 0);
+        double target = getHeight(id, voxel, targetRegion, 1)
+                - getHeight(id, voxel, targetRegion, 0);
+        return target + source;
     }
     
     /**
      * Gets height energy for a given change in height.
      *
      * @param id  the voxel id
-     * @param change  the change in volume
+     * @param voxel  the changed voxel
+     * @param change  the change in height
      * @return  the energy
      */
-    double getHeight(int id, int change) {
+    double getHeight(int id, Voxel voxel, int change) {
         if (id == 0) { return 0; }
+        
         HeightHamiltonianConfig config = configs.get(id);
-        double height = config.cell.getHeight();
+        ArrayList<Voxel> voxels = (ArrayList<Voxel>) config.location.getVoxels().stream()
+                .filter(v -> v.x == voxel.x && v.y == voxel.y)
+                .collect(Collectors.toList());
+        
+        double height = Location3D.calculateHeight(voxels);
         double targetHeight = config.cell.getCriticalHeight();
+        double changeHeight = (change == 0 ? 0 : change * Location3D.updateHeight(voxels, voxel));
         double lambda = config.getLambda();
-        return lambda * Math.pow((height - targetHeight + change), 2);
+        
+        return lambda * Math.pow((height - targetHeight + changeHeight), 2);
     }
     
     /**
      * Gets height energy for a given change in height for region.
      *
      * @param id  the voxel id
+     * @param voxel  the changed voxel
      * @param t  the voxel region
      * @param change  the change in height
      * @return  the energy
      */
-    double getHeight(int id, int t, int change) {
+    double getHeight(int id, Voxel voxel, int t, double change) {
         Region region = Region.values()[t];
+        
         if (id == 0 || region == Region.DEFAULT) { return 0; }
+        
         HeightHamiltonianConfig config = configs.get(id);
-        double height = config.cell.getHeight(region);
+        ArrayList<Voxel> voxels = (ArrayList<Voxel>) config.location.getVoxels(region).stream()
+                .filter(v -> v.x == voxel.x && v.y == voxel.y)
+                .collect(Collectors.toList());
+        
+        double height = Location3D.calculateHeight(voxels);
         double targetHeight = config.cell.getCriticalHeight(region);
+        double changeHeight = (change == 0 ? 0 : change * Location3D.updateHeight(voxels, voxel));
         double lambda = config.getLambda(region);
-        return lambda * Math.pow((height - targetHeight + change), 2);
+        
+        return lambda * Math.pow((height - targetHeight + changeHeight), 2);
     }
     
     /**

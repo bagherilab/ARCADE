@@ -90,6 +90,9 @@ public interface Location2D {
     
     /**
      * Calculates height of location (z axis).
+     * <p>
+     * Height is always one if there is as least one voxel in the list of voxels.
+     * Otherwise, height is zero.
      *
      * @param voxels  the list of voxels
      * @return  the height

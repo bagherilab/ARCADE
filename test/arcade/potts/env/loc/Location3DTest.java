@@ -772,7 +772,7 @@ public class Location3DTest {
     
     @Test
     public void updateHeight_voxelAdded_returnsValue() {
-        int[] heights = new int[] { 1, 0, 1, 1, 2, 2, 0, 0, 0 };
+        int[] heights = new int[] { 1, 0, 1, 1, 2, 2, 0, 0, 0, 3 };
         int[][][] voxelLists = new int[][][] {
                 { },
                 { { 0, 0, 2 } },
@@ -783,6 +783,7 @@ public class Location3DTest {
                 { { 0, 0, 2 }, { 0, 0, 3 } },
                 { { 0, 0, 2 }, { 0, 0, 1 } },
                 { { 0, 0, 1 }, { 0, 0, 2 }, { 0, 0, 3 } },
+                { { 0, 0, 5 }, { 0, 0, 6 } },
         };
         
         for (int i = 0; i < heights.length; i++) {
@@ -797,7 +798,7 @@ public class Location3DTest {
     
     @Test
     public void updateHeight_voxelRemoved_returnsValue() {
-        int[] heights = new int[] { 1, 0, 1, 1, 2, 2, 0, 0, 0 };
+        int[] heights = new int[] { 1, 0, 1, 1, 2, 2, 0, 0, 0, 3 };
         int[][][] voxelLists = new int[][][] {
                 { { 1, 1, 2 } },
                 { { 1, 1, 2 }, { 0, 0, 2 } },
@@ -808,6 +809,7 @@ public class Location3DTest {
                 { { 1, 1, 2 }, { 0, 0, 2 }, { 0, 0, 3 } },
                 { { 1, 1, 2 }, { 0, 0, 2 }, { 0, 0, 1 } },
                 { { 1, 1, 2 }, { 0, 0, 1 }, { 0, 0, 2 }, { 0, 0, 3 } },
+                { { 1, 1, 2 }, { 0, 0, 5 }, { 0, 0, 6 } },
         };
         
         for (int i = 0; i < heights.length; i++) {
