@@ -168,6 +168,37 @@ public class PottsLocationsTest {
     }
     
     @Test
+    public void getVoxels_invalidRegion_returnsEmpty() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        
+        int n = randomIntBetween(1, 100);
+        for (int i = 0; i < n; i++) {
+            voxels.add(new Voxel(i, i, i));
+        }
+        
+        PottsLocationsMock loc = new PottsLocationsMock(voxels);
+        assertEquals(0, loc.getVoxels(Region.NUCLEUS).size());
+    }
+    
+    @Test
+    public void getVoxels_validRegion_returnsEmpty() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        
+        int n = randomIntBetween(1, 100);
+        for (int i = 0; i < n; i++) {
+            voxels.add(new Voxel(i, i, i));
+        }
+        
+        PottsLocationsMock loc = new PottsLocationsMock(voxels);
+        ArrayList<Voxel> voxelList = loc.getVoxels(Region.DEFAULT);
+        
+        assertNotSame(loc.voxels, voxelList);
+        voxelList.sort(VOXEL_COMPARATOR);
+        voxels.sort(VOXEL_COMPARATOR);
+        assertEquals(voxels, voxelList);
+    }
+    
+    @Test
     public void getRegions_regionsNotAssigned_returnsOne() {
         PottsLocationsMock loc = new PottsLocationsMock(new ArrayList<>());
         assertEquals(1, loc.getRegions().size());

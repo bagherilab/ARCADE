@@ -193,6 +193,25 @@ public class PottsLocationTest {
     }
     
     @Test
+    public void getVoxels_noVoxelsRegion_returnsEmpty() {
+        PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
+        assertEquals(0, loc.getVoxels(Region.DEFAULT).size());
+    }
+    
+    @Test
+    public void getVoxels_hasVoxelsRegion_returnsEmpty() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        
+        int n = randomIntBetween(1, 100);
+        for (int i = 0; i < n; i++) {
+            voxels.add(new Voxel(i, i, i));
+        }
+        
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        assertEquals(0, loc.getVoxels(Region.DEFAULT).size());
+    }
+    
+    @Test
     public void getRegions_noRegions_returnsNull() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         assertNull(loc.getRegions());

@@ -27,9 +27,6 @@ import static arcade.core.util.Enums.Region;
  */
 
 public abstract class PottsLocations extends PottsLocation {
-    /** Maximum number of iterations for balancing. */
-    private static final int MAX_ITERATIONS = 100;
-    
     /** Map of region to location. */
     protected EnumMap<Region, PottsLocation> locations;
     
@@ -44,6 +41,13 @@ public abstract class PottsLocations extends PottsLocation {
         
         ArrayList<Voxel> voxelCopy = new ArrayList<>(voxels);
         locations.put(Region.DEFAULT, makeLocation(voxelCopy));
+    }
+    
+    @Override
+    public ArrayList<Voxel> getVoxels(Region region) {
+        return (locations.containsKey(region)
+                ? new ArrayList<>(locations.get(region).voxels)
+                : new ArrayList<>());
     }
     
     @Override

@@ -75,9 +75,17 @@ public abstract class PottsLocation implements Location {
     /**
      * Gets all voxels.
      *
-     * @return  the list of voxels.
+     * @return  the list of voxels
      */
     public ArrayList<Voxel> getVoxels() { return new ArrayList<>(voxels); }
+    
+    /**
+     * Gets all voxels for a region.
+     *
+     * @param region  the region
+     * @return  the list of reqion voxels
+     */
+    public ArrayList<Voxel> getVoxels(Region region) { return new ArrayList<>(); }
     
     @Override
     public EnumSet<Region> getRegions() { return null; }
