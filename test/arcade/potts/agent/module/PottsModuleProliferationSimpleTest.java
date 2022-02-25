@@ -185,7 +185,7 @@ public class PottsModuleProliferationSimpleTest {
         
         int criticalVolume = randomIntBetween(100, 1000);
         doReturn((double) criticalVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
-        doReturn(criticalVolume + 1).when(cell).getVolume(Region.NUCLEUS);
+        doReturn((double) criticalVolume + 1).when(cell).getVolume(Region.NUCLEUS);
         
         PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
         
@@ -209,7 +209,7 @@ public class PottsModuleProliferationSimpleTest {
         
         int criticalVolume = randomIntBetween(100, 1000);
         doReturn((double) criticalVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
-        doReturn(criticalVolume - 1).when(cell).getVolume(Region.NUCLEUS);
+        doReturn((double) criticalVolume - 1).when(cell).getVolume(Region.NUCLEUS);
         
         PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
         
@@ -350,7 +350,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((int) (volume * SIZE_CHECKPOINT) + 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
@@ -374,7 +374,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((int) (volume * SIZE_CHECKPOINT) + 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
@@ -399,7 +399,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((int) (volume * SIZE_CHECKPOINT) - 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
@@ -423,7 +423,7 @@ public class PottsModuleProliferationSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((int) (volume * SIZE_CHECKPOINT) - 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleProliferationSimple module = spy(new PottsModuleProliferationSimple(cell));
@@ -553,7 +553,7 @@ public class PottsModuleProliferationSimpleTest {
         
         int criticalVolume = randomIntBetween(100, 1000);
         doReturn((double) criticalVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
-        doReturn(criticalVolume - 1).when(cell).getVolume(Region.NUCLEUS);
+        doReturn((double) criticalVolume - 1).when(cell).getVolume(Region.NUCLEUS);
         
         PottsLocations loc = mock(PottsLocations.class);
         doReturn(loc).when(cell).getLocation();
@@ -594,7 +594,7 @@ public class PottsModuleProliferationSimpleTest {
         
         int criticalVolume = randomIntBetween(100, 1000);
         doReturn((double) criticalVolume).when(cell).getCriticalVolume(Region.NUCLEUS);
-        doReturn(criticalVolume + 1).when(cell).getVolume(Region.NUCLEUS);
+        doReturn((double) criticalVolume + 1).when(cell).getVolume(Region.NUCLEUS);
         
         PottsLocations loc = mock(PottsLocations.class);
         doReturn(loc).when(cell).getLocation();

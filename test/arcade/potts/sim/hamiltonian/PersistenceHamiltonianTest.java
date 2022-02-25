@@ -223,7 +223,7 @@ public class PersistenceHamiltonianTest {
         
         PottsLocation location = mock(PottsLocation.class);
         int surface = randomIntBetween(1, 100);
-        doReturn(surface).when(location).getSurface();
+        doReturn((double) surface).when(location).getSurface();
         
         PersistenceHamiltonianConfig config = mock(PersistenceHamiltonianConfig.class);
         
@@ -272,7 +272,7 @@ public class PersistenceHamiltonianTest {
         PottsLocation location = mock(PottsLocation.class);
         Region region = Region.NUCLEUS;
         int surface = randomIntBetween(1, 100);
-        doReturn(surface).when(location).getSurface(region);
+        doReturn((double) surface).when(location).getSurface(region);
         
         PersistenceHamiltonianConfig config = mock(PersistenceHamiltonianConfig.class);
     

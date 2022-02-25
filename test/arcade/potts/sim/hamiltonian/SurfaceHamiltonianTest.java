@@ -225,7 +225,7 @@ public class SurfaceHamiltonianTest {
         double targetSurface = randomDoubleBetween(10, 20);
         
         PottsCell cell = mock(PottsCell.class);
-        doReturn(surface).when(cell).getSurface();
+        doReturn((double) surface).when(cell).getSurface();
         doReturn(targetSurface).when(cell).getTargetSurface();
         
         SurfaceHamiltonianConfig config = mock(SurfaceHamiltonianConfig.class);
@@ -256,7 +256,7 @@ public class SurfaceHamiltonianTest {
         double targetSurface = randomDoubleBetween(10, 20);
         
         PottsCell cell = mock(PottsCell.class);
-        doReturn(surface).when(cell).getSurface(region);
+        doReturn((double) surface).when(cell).getSurface(region);
         doReturn(targetSurface).when(cell).getTargetSurface(region);
         
         SurfaceHamiltonianConfig config = mock(SurfaceHamiltonianConfig.class);

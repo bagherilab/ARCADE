@@ -182,13 +182,17 @@ public final class PottsCell implements Cell {
     public double getVolume() { return location.getVolume(); }
     
     @Override
-    public double getVolume(Region region) { return (hasRegions ? location.getVolume(region) : 0); }
+    public double getVolume(Region region) {
+        return (hasRegions ? location.getVolume(region) : 0);
+    }
     
     @Override
     public double getHeight() { return location.getHeight(); }
     
     @Override
-    public double getHeight(Region region) { return (hasRegions ? location.getHeight(region) : 0); }
+    public double getHeight(Region region) {
+        return (hasRegions ? location.getHeight(region) : 0);
+    }
     
     /**
      * Gets the cell surface (in voxels).
@@ -203,7 +207,9 @@ public final class PottsCell implements Cell {
      * @param region  the region
      * @return  the cell region surface
      */
-    public double getSurface(Region region) { return (hasRegions ? location.getSurface(region) : 0); }
+    public double getSurface(Region region) {
+        return (hasRegions ? location.getSurface(region) : 0);
+    }
     
     /**
      * Gets the target volume (in voxels).

@@ -146,7 +146,7 @@ public class PottsModuleApoptosisSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((int) (volume * LATE_SIZE_CHECKPOINT) - 1).when(cell).getVolume();
+        doReturn((volume * LATE_SIZE_CHECKPOINT) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
@@ -172,7 +172,7 @@ public class PottsModuleApoptosisSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((int) (volume * LATE_SIZE_CHECKPOINT) - 1).when(cell).getVolume();
+        doReturn((volume * LATE_SIZE_CHECKPOINT) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
@@ -199,7 +199,7 @@ public class PottsModuleApoptosisSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((int) (volume * LATE_SIZE_CHECKPOINT) + 1).when(cell).getVolume();
+        doReturn((volume * LATE_SIZE_CHECKPOINT) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
@@ -225,7 +225,7 @@ public class PottsModuleApoptosisSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((int) (volume * LATE_SIZE_CHECKPOINT) + 1).when(cell).getVolume();
+        doReturn((volume * LATE_SIZE_CHECKPOINT) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));

@@ -198,7 +198,7 @@ public class VolumeHamiltonianTest {
         double targetVolume = randomDoubleBetween(10, 20);
         
         PottsCell cell = mock(PottsCell.class);
-        doReturn(volume).when(cell).getVolume();
+        doReturn((double) volume).when(cell).getVolume();
         doReturn(targetVolume).when(cell).getTargetVolume();
         
         VolumeHamiltonianConfig config = mock(VolumeHamiltonianConfig.class);
@@ -229,7 +229,7 @@ public class VolumeHamiltonianTest {
         double targetVolume = randomDoubleBetween(10, 20);
         
         PottsCell cell = mock(PottsCell.class);
-        doReturn(volume).when(cell).getVolume(region);
+        doReturn((double) volume).when(cell).getVolume(region);
         doReturn(targetVolume).when(cell).getTargetVolume(region);
         
         VolumeHamiltonianConfig config = mock(VolumeHamiltonianConfig.class);
