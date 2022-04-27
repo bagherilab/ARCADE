@@ -19,14 +19,36 @@ import sim.portrayal3d.Portrayal3D;
  * by {@link arcade.vis.Drawer} objects.
  * The {@link arcade.vis.Visualization} creates all {@code Panel} objects, then
  * attaches {@link arcade.vis.Drawer} objects to their assigned {@code Panel}.
+ * {@code Panel} uses the {@code Display2D} class from the
+ * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
  * 
  * @version 2.3.0
  * @since   2.2
  */
 
-public abstract class Panel {
+public class Panel {
 	/** Frame for panel */
 	JFrame frame;
+	
+	/** Display object for 2D */
+	final Display2D display;
+	
+	/**
+	 * Creates a {@link arcade.vis.Panel} for display.
+	 *
+	 * @param title  the title of the panel
+	 * @param x  the x position of the panel in pixels
+	 * @param y  the y position of the panel in pixels
+	 * @param w  the width of the panel in pixels
+	 * @param h  the height of the panel in pixels
+	 * @param vis  the visualization instance
+	 */
+	public Panel(String title, int x, int y, int w, int h, Visualization vis) {
+		display = new Display2D(w, h, vis);
+		display.setBackdrop(Color.black);
+		frame = display.createFrame();
+		setup(title, x, y);
+	}
 	
 	/**
 	 * Gets the frame.
@@ -42,12 +64,19 @@ public abstract class Panel {
 	 * @param name  the name of the drawer
 	 * @param bounds  the bounds for the drawing
 	 */
-	abstract void attach(Drawer drawer, String name, Rectangle2D.Double bounds);
+	public void attach(Drawer drawer, String name, Rectangle2D.Double bounds) {
+		FieldPortrayal2D port = (FieldPortrayal2D)(drawer.getPortrayal());
+		if (bounds == null) { display.attach(port, name); }
+		else { display.attach(port, name, bounds); }
+	}
 	
 	/**
 	 * Resets the panel.
 	 */
-	abstract void reset();
+	public void reset() {
+		display.reset();
+		display.repaint();
+	}
 	
 	/**
 	 * Sets up the title and location of the frame.
@@ -77,44 +106,5 @@ public abstract class Panel {
 	 */
 	public void register(Controller controller) {
 		controller.registerFrame(frame);
-	}
-	
-	/**
-	 * Extension of {@link arcade.vis.Panel} for 2D display.
-	 * <p>
-	 * {@code Panel2D} uses the {@code Display2D} class from the
-	 * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
-	 */
-	public static class Panel2D extends Panel {
-		/** Display object for 2D */
-		final Display2D display;
-		
-		/**
-		 * Creates a {@link arcade.vis.Panel} for 2D display.
-		 * 
-		 * @param title  the title of the panel
-		 * @param x  the x position of the panel in pixels
-		 * @param y  the y position of the panel in pixels
-		 * @param w  the width of the panel in pixels
-		 * @param h  the height of the panel in pixels
-		 * @param vis  the visualization instance
-		 */
-		public Panel2D(String title, int x, int y, int w, int h, Visualization vis) {
-			display = new Display2D(w, h, vis);
-			display.setBackdrop(Color.black);
-			frame = display.createFrame();
-			setup(title, x, y);
-		}
-		
-		public void attach(Drawer drawer, String name, Rectangle2D.Double bounds) {
-			FieldPortrayal2D port = (FieldPortrayal2D)(drawer.getPortrayal());
-			if (bounds == null) { display.attach(port, name); }
-			else { display.attach(port, name, bounds); }
-		}
-		
-		public void reset() {
-			display.reset();
-			display.repaint();
-		}
 	}
 }

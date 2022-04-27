@@ -206,9 +206,9 @@ public abstract class GrowthVisualization2D extends Visualization {
 	
 	public Panel[] createPanels() {
 		return new Panel[]{
-				new Panel.Panel2D("[2D] Agents", 10, 10, 400, 400, this),
-				new Panel.Panel2D("[2D] Environment", 440, 10, 600, 600, this),
-				new Panel.Panel2D("[2D] Auxiliary", 10, 500, 400, 400, this),
+				new Panel("[2D] Agents", 10, 10, 400, 400, this),
+				new Panel("[2D] Environment", 440, 10, 600, 600, this),
+				new Panel("[2D] Auxiliary", 10, 500, 400, 400, this),
 		};
 	}
 }
