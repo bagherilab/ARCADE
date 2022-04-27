@@ -458,7 +458,7 @@ public abstract class TissueCell implements Cell {
 	 * <p>
 	 * The JSON is formatted as:
 	 * <pre>
-	 *     [ code, pop, type, position, volume, age, [ list, of, cycle, lengths, ... ] ]
+	 *     [ code, pop, type, position, volume, [ list, of, cycle, lengths, ... ] ]
 	 * </pre>
 	 */
 	public String toJSON() {
