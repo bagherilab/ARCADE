@@ -1,10 +1,11 @@
 package arcade.vis;
 
-import javax.media.j3d.Transform3D;
+import java.awt.geom.Rectangle2D;
 import sim.engine.*;
-import sim.field.grid.DoubleGrid3D;
+import sim.field.grid.DoubleGrid2D;
 import sim.portrayal.Portrayal;
-import sim.portrayal3d.grid.ValueGridPortrayal3D;
+import sim.portrayal.grid.FastValueGridPortrayal2D;
+import sim.portrayal.grid.ValueGridPortrayal2D;
 import sim.util.gui.ColorMap;
 import arcade.sim.Simulation;
 
@@ -12,10 +13,10 @@ import arcade.sim.Simulation;
  * {@link arcade.vis.Drawer} for environment lattices in 3D.
  * <p>
  * {@code EnvDrawer3D} copies values in a {@link arcade.env.lat.Lattice} array
- * into a 3D array representation.
+ * into a 2D array representation by averaging across the z direction.
  * 
- * @version 2.3.0
- * @since   2.2
+ * @version 2.4.0
+ * @since   2.4
  */
 
 public abstract class EnvDrawer3D extends Drawer {
@@ -23,7 +24,7 @@ public abstract class EnvDrawer3D extends Drawer {
 	private static final long serialVersionUID = 0;
 	
 	/** Array of values */
-	DoubleGrid3D array;
+	DoubleGrid2D array;
 	
 	/**
 	 * Creates a {@link arcade.vis.Drawer} for drawing 3D environment lattices.
@@ -34,32 +35,84 @@ public abstract class EnvDrawer3D extends Drawer {
 	 * @param width  the width of array (y direction)
 	 * @param depth  the depth of array (z direction)
 	 * @param map  the color map for the array
-	 * @param transform  the bounding box transform 
+	 * @param bounds  the size of the drawer within the panel
 	 */
 	EnvDrawer3D(Panel panel, String name,
-			int length, int width, int depth,
-			ColorMap map, Transform3D transform) {
-		super(panel, name, length, width, depth, map, null);
-		if (transform != null) { ((ValueGridPortrayal3D)port).setTransform(transform); }
+				int length, int width, int depth,
+				ColorMap map, Rectangle2D.Double bounds) {
+		super(panel, name, length, width, depth, map, bounds);
 	}
 	
 	public Portrayal makePort() {
-		ValueGridPortrayal3D port = new ValueGridPortrayal3D();
-		array = new DoubleGrid3D(length, width, depth, map.defaultValue());
+		ValueGridPortrayal2D port = new FastValueGridPortrayal2D();
+		array = new DoubleGrid2D(length, width, map.defaultValue());
 		port.setField(array);
 		port.setMap(map);
 		return port;
 	}
 	
-	public Portrayal getPortrayal() { return port; }
-	
-	/** {@link arcade.vis.EnvDrawer3D} for drawing cubic environment */
-	public static class Cubic extends EnvDrawer3D {
+	/** {@link arcade.vis.EnvDrawer3D} for drawing rectangular grid. */
+	public static class Rectangular extends EnvDrawer3D {
 		/** Serialization version identifier */
 		private static final long serialVersionUID = 0;
 		
+		/** Height of the lattice (z direction) */
+		private final int HEIGHT;
+		
 		/**
-		 * Creates a {@code Cubic} environment drawer.
+		 * Creates a {@code Rectangular} environment drawer.
+		 *
+		 * @param panel  the panel the drawer is attached to
+		 * @param name  the name of the drawer
+		 * @param length  the length of array (x direction)
+		 * @param width  the width of array (y direction)
+		 * @param depth  the depth of array (z direction)
+		 * @param map  the color map for the array
+		 * @param bounds  the size of the drawer within the panel
+		 */
+		public Rectangular(Panel panel, String name,
+						   int length, int width, int depth,
+						   ColorMap map, Rectangle2D.Double bounds) {
+			super(panel, name, length, width, depth, map, bounds);
+			HEIGHT = depth;
+		}
+		
+		/**
+		 * Steps the drawer to populate rectangular array.
+		 */
+		public void step(SimState state) {
+			Simulation sim = (Simulation)state;
+			array.setTo(0);
+			
+			for (double[][] layer : sim.getEnvironment(name).getField()) {
+				for (int i = 0; i < layer.length; i++) {
+					for (int j = 0; j < layer[i].length; j++) {
+						array.field[i][j] += layer[i][j] / HEIGHT;
+					}
+				}
+			}
+		}
+	}
+	
+	/** {@link arcade.vis.EnvDrawer3D} for drawing triangular grid. */
+	public static class Triangular extends EnvDrawer3D {
+		/** Serialization version identifier */
+		private static final long serialVersionUID = 0;
+		
+		/** Length of the lattice (x direction) */
+		private final int LENGTH;
+		
+		/** Width of the lattice (y direction) */
+		private final int WIDTH;
+		
+		/** Height of the lattice (z direction) */
+		private final int HEIGHT;
+		
+		/**
+		 * Creates a {@code Triangular} environment drawer.
+		 * <p>
+		 * Length and width of the drawer are expanded from the given length and
+		 * width of the simulation so each index can be drawn as a 3x3 triangle.
 		 * 
 		 * @param panel  the panel the drawer is attached to
 		 * @param name  the name of the drawer
@@ -67,30 +120,35 @@ public abstract class EnvDrawer3D extends Drawer {
 		 * @param width  the width of array (y direction)
 		 * @param depth  the depth of array (z direction)
 		 * @param map  the color map for the array
-		 * @param transform  the bounding box transform
+		 * @param bounds  the size of the drawer within the panel
 		 */
-		public Cubic(Panel panel, String name,
-				int length, int width, int depth,
-				ColorMap map, Transform3D transform) {
-			super(panel, name, length, width, depth, map, transform);
+		public Triangular(Panel panel, String name,
+						  int length, int width, int depth,
+						  ColorMap map, Rectangle2D.Double bounds) {
+			super(panel, name, 3*length + 2, 3*width, depth, map, bounds);
+			LENGTH = length;
+			WIDTH = width;
+			HEIGHT = depth;
 		}
 		
 		/**
-		 * Steps the drawer to create cube for each coordinate.
+		 * Steps the drawer to populate triangular array.
 		 */
 		public void step(SimState state) {
 			Simulation sim = (Simulation)state;
-			double[][][] _from = sim.getEnvironment(name).getField();
-			double[][][] _to = array.field;
-			int i, j, k;
+			array.setTo(0);
+			double[][] _to = array.field;
+			double[][] _from = new double[_to.length][_to[0].length];
 			
-			for (k = 0; k < depth; k++) {
-				for (i = 0; i < length; i++) {
-					for (j = 0; j < width; j++) {
-						_to[i][width - j - 1][k] = _from[k][i][j];
+			for (double[][] layer : sim.getEnvironment(name).getField()) {
+				for (int i = 0; i < layer.length; i++) {
+					for (int j = 0; j < layer[i].length; j++) {
+						_from[i][j] += layer[i][j] / HEIGHT;
 					}
 				}
 			}
+			
+			Drawer.toTriangular(_to, _from, LENGTH, WIDTH);
 		}
 	}
 }

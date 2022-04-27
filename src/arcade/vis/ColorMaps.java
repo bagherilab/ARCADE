@@ -52,8 +52,8 @@ class ColorMaps {
 		new Color(250,250,250),
 	}, 3);
 	
-	/** Color map (unused) */
-	public static final Colors MAP_MULT = new Colors(new Color[] {
+	/** Color map for density */
+	public static final Colors MAP_DENSITY = new Colors(new Color[] {
 		new Color(255,255,255),
 		new Color(237,229,207),
 		new Color(224,194,162),
