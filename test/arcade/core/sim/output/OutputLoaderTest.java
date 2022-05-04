@@ -115,7 +115,7 @@ public class OutputLoaderTest {
         folder.newFile(String.format("equip_loadBothWithSeed_loadsSeed_%04d.CELLS.json", seed));
         folder.newFile(String.format("equip_loadBothWithSeed_loadsSeed_%04d.LOCATIONS.json", seed));
         
-        String prefix = folder.getRoot().getAbsolutePath() + "/equip_loadBothWithSeed_loadsSeed_(#)";
+        String prefix = folder.getRoot().getAbsolutePath() + "/equip_loadBothWithSeed_loadsSeed_[#]";
         OutputLoader loader = new OutputLoaderMock(series);
         loader.prefix = prefix;
         loader.loadCells = true;

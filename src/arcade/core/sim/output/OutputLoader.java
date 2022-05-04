@@ -24,7 +24,7 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  * series-specific information needed for loading.
  * The equipped {@link arcade.core.sim.Simulation} instance is called to get the
  * random seed (if needed) to select the correct files to load.
- * The tag {@code (#)} in the load path is replaced with the random seed of the
+ * The tag {@code [#]} in the load path is replaced with the random seed of the
  * simulation instance.
  */
 
@@ -77,7 +77,7 @@ public abstract class OutputLoader {
      */
     public void equip(Simulation sim) {
         String seed = String.format("%04d", sim.getSeed());
-        String path = prefix.replace("(#)", seed);
+        String path = prefix.replace("[#]", seed);
         if (loadCells) { this.cellJson = read(path + ".CELLS.json"); }
         if (loadLocations) {  this.locationJson = read(path + ".LOCATIONS.json"); }
     }
