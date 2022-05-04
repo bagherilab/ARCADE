@@ -5,57 +5,48 @@ case ${SIMULATION_TYPE} in
 		# Set input and output file paths
 		INPUT_FILE_PATH="${BATCH_WORKING_URL}inputs/"
 		OUTPUT_FILE_PATH="${BATCH_WORKING_URL}outputs/"
+		INIT_FILE_PATH="${BATCH_WORKING_URL}inits/"
 
 		# Get copy of the input file
 		INPUT_FILE_NAME="${FILE_SET_NAME}_${AWS_BATCH_JOB_ARRAY_INDEX:-0}.xml"
 		aws s3 cp $INPUT_FILE_PATH$INPUT_FILE_NAME input/input.xml
 
-		# Extract bucket name
-		BUCKET_NAME="${BATCH_WORKING_URL/'s3://'/""}"
-		BUCKET_NAME=(${BUCKET_NAME//'/'/ })
-		BUCKET_NAME=${BUCKET_NAME[0]}
-
-		# Get copy of cell file (if it exists)
-		INPUT_FILE_CELLS_NAME="${FILE_SET_NAME}_${AWS_BATCH_JOB_ARRAY_INDEX:-0}.CELLS.json"
-		INPUT_FILE_CELLS_KEY=$INPUT_FILE_PATH$INPUT_FILE_CELLS_NAME
-		INPUT_FILE_CELLS_KEY="${INPUT_FILE_CELLS_KEY/'s3://'${BUCKET_NAME}'/'/""}"
-		CELL_FILE_EXISTS=$(aws s3api head-object --bucket $BUCKET_NAME --key $INPUT_FILE_CELLS_KEY > /dev/null 2>&1; echo $?)
-		if [ "$CELL_FILE_EXISTS" = 0 ]; then
-		    LOAD_CELLS=true]
-		    aws s3 cp $INPUT_FILE_PATH$INPUT_FILE_CELLS_NAME input/input.CELLS.json
+		# Get copies of .CELL initialization files (if they exist)
+		INIT_CELL_FILES=$(aws s3 sync ${INIT_FILE_PATH} init/ --exclude="*" --include="*.CELLS.json" --dryrun)
+		if test -n "$INIT_CELL_FILES"; then
+			LOAD_CELLS=true
+			aws s3 cp $INIT_FILE_PATH init/ --recursive --exclude="*" --include="*.CELLS.json"
 		fi
 
-		# Get copy of location file (if it exists)
-		INPUT_FILE_LOCATIONS_NAME="${FILE_SET_NAME}_${AWS_BATCH_JOB_ARRAY_INDEX:-0}.LOCATIONS.json"
-		INPUT_FILE_LOCATIONS_KEY=$INPUT_FILE_PATH$INPUT_FILE_LOCATIONS_NAME
-		INPUT_FILE_LOCATIONS_KEY="${INPUT_FILE_LOCATIONS_KEY/'s3://'${BUCKET_NAME}'/'/""}"
-		LOCATION_FILE_EXISTS=$(aws s3api head-object --bucket $BUCKET_NAME --key $INPUT_FILE_LOCATIONS_KEY > /dev/null 2>&1; echo $?)
-		if [ "$LOCATION_FILE_EXISTS" = 0 ]; then
-		    LOAD_LOCATIONS=true]
-		    aws s3 cp $INPUT_FILE_PATH$INPUT_FILE_LOCATIONS_NAME input/input.LOCATIONS.json
+		# Get copies of .LOCATION initialization files (if they exist)
+		INIT_LOCATION_FILES=$(aws s3 sync ${INIT_FILE_PATH} init/ --exclude="*" --include="*.LOCATIONS.json" --dryrun)
+		if test -n "$INIT_LOCATION_FILES"; then
+			LOAD_LOCATIONS=true
+			aws s3 cp $INIT_FILE_PATH init/ --recursive --exclude="*" --include="*.LOCATIONS.json"
 		fi
 	;;
 	LOCAL)
-		# Set input and output file paths
+		# Set input, output, and init file paths
 		INPUT_FILE_PATH="/mnt/inputs/"
 		OUTPUT_FILE_PATH="/mnt/outputs/"
+		INIT_FILE_PATH="/mnt/inits/"
 
 		# Get copy of the input file
 		INPUT_FILE_NAME="${FILE_SET_NAME}_${JOB_ARRAY_INDEX}.xml"
 		cp $INPUT_FILE_PATH$INPUT_FILE_NAME input/input.xml
 
-		# Get copy of cell file (if it exists)
-		INPUT_FILE_CELLS_NAME="${FILE_SET_NAME}_${JOB_ARRAY_INDEX}.CELLS.json"
-		if [ -f "$INPUT_FILE_PATH$INPUT_FILE_CELLS_NAME" ]; then
+		# Get copies of .CELL initialization files (if they exist)
+		INIT_CELL_FILES=$(find ${INIT_FILE_PATH} -name '*.CELLS.json' -print -quit)
+		if test -n "$INIT_CELL_FILES"; then
 			LOAD_CELLS=true
-			cp $INPUT_FILE_PATH$INPUT_FILE_CELLS_NAME input/input.CELLS.json
+			cp ${INIT_FILE_PATH}*.CELLS.json init/
 		fi
 
-		# Get copy of location file (if it exists)
-		INPUT_FILE_LOCATIONS_NAME="${FILE_SET_NAME}_${JOB_ARRAY_INDEX}.LOCATIONS.json"
-		if [ -f "$INPUT_FILE_PATH$INPUT_FILE_LOCATIONS_NAME" ]; then
+		# Get copies of .LOCATION initialization files (if they exist)
+		INIT_LOCATION_FILES=$(find ${INIT_FILE_PATH} -name '*.LOCATIONS.json' -print -quit)
+		if test -n "$INIT_LOCATION_FILES"; then
 			LOAD_LOCATIONS=true
-			cp $INPUT_FILE_PATH$INPUT_FILE_LOCATIONS_NAME input/input.LOCATIONS.json
+			cp ${INIT_FILE_PATH}*.LOCATIONS.json init/
 		fi
 	;;
 esac
@@ -63,7 +54,7 @@ esac
 # Set load command flags.
 LOAD_COMMAND=""
 if [ "$LOAD_CELLS" = true ] || [ "$LOAD_LOCATIONS" = true ]; then
-    LOAD_COMMAND+="--loadpath input/input"
+    LOAD_COMMAND+="--loadpath init/${FILE_SET_NAME}_[#]"
 fi
 if [ "$LOAD_CELLS" = true ]; then
     LOAD_COMMAND+=" --cells"
@@ -73,7 +64,7 @@ if [ "$LOAD_LOCATIONS" = true ]; then
 fi
 
 # Run the jar
-java -jar arcade-3.0.jar potts input/input.xml output/ $LOAD_COMMAND
+java -jar arcade.jar potts input/input.xml output/ $LOAD_COMMAND
 EXIT_CODE=$?
 
 # Save output files
