@@ -7,7 +7,7 @@ version = "3.0"
 sourceCompatibility = 1.8
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 sourceSets {
@@ -56,7 +56,13 @@ jacocoTestReport {
                 "arcade/core/util/Solver*",
                 "arcade/core/util/Parameter*",
                 "arcade/core/util/Colors*",
-                "arcade/potts/vis/*"
+                "arcade/potts/vis/*",
+                "arcade/agent/*",
+                "arcade/env/*",
+                "arcade/vis/*",
+                "arcade/util/*",
+                "arcade/sim/*",
+                "arcade/gui/*"
             ])
         })
     }
