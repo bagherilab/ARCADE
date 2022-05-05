@@ -49,7 +49,7 @@ public class PottsLocations3DTest {
         
         for (int target : targets) {
             PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-            loc.locations.put(Region.NUCLEUS, new PottsLocations3D(new ArrayList<>()));
+            loc.locations.put(Region.NUCLEUS, new PottsLocation3D(new ArrayList<>()));
             
             int n = 3;
             for (int i = 0; i < n; i++) {
@@ -80,7 +80,7 @@ public class PottsLocations3DTest {
         
         for (int target : targets) {
             PottsLocations3D loc = new PottsLocations3D(new ArrayList<>());
-            loc.locations.put(Region.NUCLEUS, new PottsLocations3D(new ArrayList<>()));
+            loc.locations.put(Region.NUCLEUS, new PottsLocation3D(new ArrayList<>()));
             
             int n = 3;
             for (int i = 0; i < n; i++) {

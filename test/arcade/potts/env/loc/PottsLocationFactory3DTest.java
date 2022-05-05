@@ -497,6 +497,7 @@ public class PottsLocationFactory3DTest {
         expected.add(new Voxel(0, 0, -1));
         
         assertEquals(4, voxels.size());
+        assertTrue(expected.contains(new Voxel(0, 0, 0)));
         assertTrue(expected.containsAll(voxels));
     }
     
@@ -549,5 +550,30 @@ public class PottsLocationFactory3DTest {
                 assertTrue(checkA || checkB);
             }
         }
+    }
+    
+    @Test
+    public void decrease_invalidTarget_updatesList() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        
+        voxels.add(new Voxel(2, 0, 1));
+        voxels.add(new Voxel(1, 0, 1));
+        voxels.add(new Voxel(0, 0, 1));
+        voxels.add(new Voxel(0, 0, 0));
+        voxels.add(new Voxel(0, 0, -1));
+        voxels.add(new Voxel(1, 0, -1));
+        voxels.add(new Voxel(2, 0, -1));
+        PottsLocationFactory3D.decrease(voxels, 3, RANDOM);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(2, 0, 1));
+        expected.add(new Voxel(1, 0, 1));
+        expected.add(new Voxel(1, 0, -1));
+        expected.add(new Voxel(2, 0, -1));
+        
+        voxels.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(expected, voxels);
     }
 }

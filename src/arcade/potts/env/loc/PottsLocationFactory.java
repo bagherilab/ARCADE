@@ -276,29 +276,26 @@ public abstract class PottsLocationFactory implements LocationFactory {
      */
     static void decrease(ArrayList<Voxel> voxels, int target, MersenneTwisterFast random) {
         int size = voxels.size();
-        ArrayList<Voxel> neighbors = new ArrayList<>();
         
-        // Get neighbors.
-        for (Voxel voxel : voxels) {
-            ArrayList<Voxel> allNeighbors = getValid(voxel);
-            for (Voxel neighbor : allNeighbors) {
-                if (voxels.contains(neighbor)) { continue; }
-                neighbors.add(voxel);
-                break;
-            }
-        }
-        
-        // Remove random neighbors until target size is reached.
-        ArrayList<Voxel> neighborsShuffled = new ArrayList<>(neighbors);
-        Utilities.shuffleList(neighborsShuffled, random);
+        // Remove random voxels until target size is reached.
+        ArrayList<Voxel> voxelsShuffled = new ArrayList<>(voxels);
+        Utilities.shuffleList(voxelsShuffled, random);
         int index = 0;
         
         for (int i = 0; i < size - target; i++) {
+            // Return if there are no remaining neighbors to remove.
+            if (index == voxelsShuffled.size()) { return; }
+            
+            Voxel candidate = voxelsShuffled.get(index++);
+            
+            // Always remove if the target number of voxels is one.
+            if (target == 1) {
+                voxels.remove(candidate);
+                continue;
+            }
+            
             // Check candidate. Do not remove a candidate if it has a neighbor
             // that has only one neighbor (i.e. the candidate is the only connection)
-            Voxel candidate = neighborsShuffled.get(index);
-            
-            // Get neighbors of candidate.
             ArrayList<Voxel> candidateNeighbors = new ArrayList<>();
             for (Voxel neighbor : getValid(candidate)) {
                 if (voxels.contains(neighbor)) {
@@ -319,8 +316,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
                 }
             }
             
-            index++;
-            if (valid || target == 1) {
+            if (valid) {
                 voxels.remove(candidate);
             } else {
                 i--;
