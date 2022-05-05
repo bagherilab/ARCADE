@@ -43,7 +43,7 @@
     <population.region region="DEFAULT" id="CRITICAL_HEIGHT" value="5" units="um" conversion="DS^-1" />
     
     <!-- nucleus region parameters -->
-    <population.region region="NUCLEUS" id="CRITICAL_VOLUME" value="500" units="um^3" conversion="DS^-3" />
+    <population.region region="NUCLEUS" id="CRITICAL_VOLUME" value="300" units="um^3" conversion="DS^-3" />
     <population.region region="NUCLEUS" id="CRITICAL_HEIGHT" value="5" units="um" conversion="DS^-1" />
     
     <!-- proliferation module parameters -->
