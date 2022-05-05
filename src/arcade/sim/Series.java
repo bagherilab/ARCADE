@@ -163,11 +163,12 @@ public class Series {
 	 * @param setupDicts  the map of attribute to value for single instance tags
 	 * @param setupLists  the map of attribute to value for multiple instance tags
 	 * @param parameters  the default parameter values loaded from {@code parameter.xml}
+	 * @param view  indicates the visualization view
 	 * @param vis  indicates if simulations are to be run with visualization
 	 */
 	public Series(HashMap<String, MiniBox> setupDicts,
 				  HashMap<String, ArrayList<MiniBox>> setupLists,
-				  Box parameters, boolean vis) {
+				  Box parameters, String view, boolean vis) {
 		// Overall setup.
 		MiniBox set = setupDicts.get("set");
 		MiniBox series = setupDicts.get("series");
@@ -223,7 +224,7 @@ public class Series {
 		updateCheckpoints(checkpoints);
 		
 		// Make constructors for simulation and visualization.
-		makeConstructor(simulation);
+		makeConstructor(simulation, view);
 	}
 	
 	/**
@@ -707,8 +708,15 @@ public class Series {
 	 * Uses reflections to build constructors for simulation (and visualization).
 	 * 
 	 * @param simulation  the simulation setup dictionary
+	 * @param view  the visualization view   
 	 */
-	private void makeConstructor(MiniBox simulation) {
+	private void makeConstructor(MiniBox simulation, String view) {
+		if (!view.equals("2D") && !view.equals("3D")) {
+			LOGGER.warning("view [ " + view + " ] must be 2D or 3D");
+			skip = true;
+			return;
+		}
+		
 		String type = simulation.get("type").toLowerCase();
 		String simClass, visClass;
 		
