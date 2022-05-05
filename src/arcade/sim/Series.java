@@ -576,6 +576,14 @@ public class Series {
 							break;
 					}
 					break;
+				case "pulse":
+					_components.add(new PulseComponent(c));
+					LOGGER.info(String.format(componentFormat, "PULSE", name));
+					break;
+				case "cycle":
+					_components.add(new CycleComponent(c));
+					LOGGER.info(String.format(componentFormat, "CYCLE", name));
+					break;
 				case "degrade":
 					_components.add(new DegradeComponent(c));
 					LOGGER.info(String.format(componentFormat, "DEGRADE", name));
