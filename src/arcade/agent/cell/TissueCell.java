@@ -457,14 +457,14 @@ public abstract class TissueCell implements Cell {
 	 * <p>
 	 * The JSON is formatted as:
 	 * <pre>
-	 *     [ code, pop, type, position, volume, [ list, of, cycle, lengths, ... ] ]
+	 *     [ code, pop, type, position, volume, age, [ list, of, cycle, lengths, ... ] ]
 	 * </pre>
 	 */
 	public String toJSON() {
 		String cycles = "";
 		for (Object c : cycle) { cycles += (double)c + ","; }
-		return "[" + code + "," + pop + "," + type + ","
-				+ location.getPosition() + "," + String.format("%.2f", volume)
+		return "[" + code + "," + pop + "," + type + "," + location.getPosition() 
+			+ "," + String.format("%.2f", volume) + "," + String.format("%d", age) 
 			+ ",[" + cycles.replaceFirst(",$","") + "]]";
 	}
 }
