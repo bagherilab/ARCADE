@@ -156,17 +156,20 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, 2);
+        boolean sizeCheck = cell.getVolume() >= SIZE_CHECKPOINT * cell.getCriticalVolume();
         
         // Increase size of nucleus (if cell has regions).
+        boolean sizeRegionCheck = true;
         if (cell.hasRegions()) {
             cell.updateTarget(Region.NUCLEUS, nucleusGrowthRate, 2);
+            sizeRegionCheck = cell.getVolume(Region.NUCLEUS)
+                    >= SIZE_CHECKPOINT * cell.getCriticalVolume(Region.NUCLEUS);
         }
         
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateG2, random);
         currentSteps += poisson.nextInt();
-        if (cell.getVolume() >= SIZE_CHECKPOINT * cell.getCriticalVolume()
-                && currentSteps >= stepsG2) {
+        if (currentSteps >= stepsG2 && sizeCheck && sizeRegionCheck) {
             setPhase(Phase.PROLIFERATIVE_M);
         }
     }
