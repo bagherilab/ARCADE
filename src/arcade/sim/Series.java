@@ -685,6 +685,13 @@ public class Series {
 			int tick = (c.contains("day") ? c.getInt("day")*60*24 : 0);
 			
 			switch (c.get("type").toLowerCase()) {
+				case "cells":
+					switch (c.get("class").toLowerCase()) {
+						case "save": _checkpoints.add(new CellCheckpoint.Save(prefix, tick)); break;
+						case "load": _checkpoints.add(new CellCheckpoint.Load(prefix, tick)); break;
+						default: LOGGER.info(String.format(checkpointFormat, c.get("type")));
+					}
+					break;
 				case "graph":
 					if (!hasGraph) {
 						LOGGER.warning("GRAPH checkpoint can only be used with graph sites component");
