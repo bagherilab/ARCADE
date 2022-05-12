@@ -179,7 +179,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         
         // Initialize factories.
         locationFactory.initialize(series, random);
-        cellFactory.initialize(series);
+        cellFactory.initialize(series, random);
         
         // Iterate through each population to create agents.
         for (MiniBox population : series.populations.values()) {

@@ -5,6 +5,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
@@ -21,6 +22,9 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
  */
 
 public final class PottsCellFactory implements CellFactory {
+    /** Random number generator instance. */
+    MersenneTwisterFast random;
+    
     /** Map of population to critical volumes. */
     HashMap<Integer, Double> popToCriticalVolumes;
     
@@ -66,7 +70,8 @@ public final class PottsCellFactory implements CellFactory {
      * values used for instantiating cells.
      */
     @Override
-    public void initialize(Series series) {
+    public void initialize(Series series, MersenneTwisterFast random) {
+        this.random = random;
         parseValues(series);
         if (series.loader != null && series.loader.loadCells) {
             loadCells(series);

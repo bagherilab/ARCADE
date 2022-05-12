@@ -1,5 +1,6 @@
 package arcade.core.agent.cell;
 
+import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
 
 /**
@@ -17,8 +18,9 @@ public interface CellFactory {
      * Initializes the factory for the given series.
      *
      * @param series  the simulation series
+     * @param random  the random number generator
      */
-    void initialize(Series series);
+    void initialize(Series series, MersenneTwisterFast random);
     
     /**
      * Loads cell containers into the factory container.
