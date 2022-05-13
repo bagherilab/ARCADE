@@ -12,10 +12,9 @@ import static arcade.potts.util.PottsEnums.Phase;
 /**
  * Implementation of {@link CellContainer} for {@link PottsCell} agents.
  * <p>
- * The container can be instantiated for cells with or without regions and
- * with or without target sizes.
- * Cell parameters and critical sizing are drawn from the associated
- * {@link PottsCellFactory} instance.
+ * The container can be instantiated for cells with or without regions.
+ * Cell parameters are drawn from the associated {@link PottsCellFactory}
+ * instance for the given population.
  */
 
 public final class PottsCellContainer implements CellContainer {
@@ -46,53 +45,17 @@ public final class PottsCellContainer implements CellContainer {
     /** Cell region sizes (in voxels). */
     public final EnumMap<Region, Integer> regionVoxels;
     
-    /** Target cell volume (in voxels). */
-    public final double targetVolume;
+    /** Critical cell volume (in voxels). */
+    public final double criticalVolume;
     
-    /** Target cell surface (in voxels). */
-    public final double targetSurface;
+    /** Critical cell height (in voxels). */
+    public final double criticalHeight;
     
-    /** Target region cell volumes (in voxels). */
-    public final EnumMap<Region, Double> regionTargetVolume;
+    /** Critical region cell volumes (in voxels). */
+    public final EnumMap<Region, Double> criticalRegionVolumes;
     
-    /** Target region cell surfaces (in voxels). */
-    public final EnumMap<Region, Double> regionTargetSurface;
-    
-    /**
-     * Creates a {@code PottsCellContainer} instance.
-     * <p>
-     * The default state is proliferative (phase G1).
-     * The container does not have any regions or targets.
-     *
-     * @param id  the cell ID
-     * @param pop  the cell population index
-     * @param age  the cell age
-     * @param divisions  the number of cell divisions
-     * @param voxels  the cell size (in voxels)
-     */
-    public PottsCellContainer(int id, int pop, int age, int divisions, int voxels) {
-        this(id, 0, pop, age, divisions, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
-                null, 0, 0, null, null);
-    }
-    
-    /**
-     * Creates a {@code PottsCellContainer} instance.
-     * <p>
-     * The default state is proliferative (phase G1).
-     * The container does not have any targets.
-     *
-     * @param id  the cell ID
-     * @param pop  the cell population index
-     * @param age  the cell age
-     * @param divisions  the number of cell divisions
-     * @param voxels  the cell size (in voxels)
-     * @param regionVoxels  the cell region sizes (in voxels)
-     */
-    public PottsCellContainer(int id, int pop, int age, int divisions, int voxels,
-                              EnumMap<Region, Integer> regionVoxels) {
-        this(id, 0, pop, age, divisions, State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels,
-                regionVoxels, 0, 0, null, null);
-    }
+    /** Critical region cell heights (in voxels). */
+    public final EnumMap<Region, Double> criticalRegionHeights;
     
     /**
      * Creates a {@code PottsCellContainer} instance.
@@ -107,14 +70,14 @@ public final class PottsCellContainer implements CellContainer {
      * @param state  the cell state
      * @param phase  the cell phase
      * @param voxels  the cell size (in voxels)
-     * @param targetVolume  the target volume
-     * @param targetSurface  the target surface
+     * @param criticalVolume  the critical volume
+     * @param criticalHeight  the critical height
      */
     public PottsCellContainer(int id, int parent, int pop, int age, int divisions,
                               State state, Phase phase, int voxels,
-                              double targetVolume, double targetSurface) {
+                              double criticalVolume, double criticalHeight) {
         this(id, parent, pop, age, divisions, state, phase, voxels,
-                null, targetVolume, targetSurface, null, null);
+                null, criticalVolume, criticalHeight, null, null);
     }
     
     /**
@@ -129,17 +92,17 @@ public final class PottsCellContainer implements CellContainer {
      * @param phase  the cell phase
      * @param voxels  the cell size (in voxels)
      * @param regionVoxels  the cell region sizes (in voxels)
-     * @param targetVolume  the target volume
-     * @param targetSurface  the target surface
-     * @param regionTargetVolume  the target region volumes
-     * @param regionTargetSurface  the target surface volumes
+     * @param criticalVolume  the critical volume
+     * @param criticalHeight  the critical height
+     * @param criticalRegionVolumes  the critical region volumes
+     * @param criticalRegionHeights  the critical surface heights
      */
     public PottsCellContainer(int id, int parent, int pop, int age, int divisions,
                               State state, Phase phase, int voxels,
                               EnumMap<Region, Integer> regionVoxels,
-                              double targetVolume, double targetSurface,
-                              EnumMap<Region, Double> regionTargetVolume,
-                              EnumMap<Region, Double> regionTargetSurface) {
+                              double criticalVolume, double criticalHeight,
+                              EnumMap<Region, Double> criticalRegionVolumes,
+                              EnumMap<Region, Double> criticalRegionHeights) {
         this.id = id;
         this.parent = parent;
         this.pop = pop;
@@ -149,10 +112,10 @@ public final class PottsCellContainer implements CellContainer {
         this.phase = phase;
         this.voxels = voxels;
         this.regionVoxels = regionVoxels;
-        this.targetVolume = targetVolume;
-        this.targetSurface = targetSurface;
-        this.regionTargetVolume = regionTargetVolume;
-        this.regionTargetSurface = regionTargetSurface;
+        this.criticalVolume = criticalVolume;
+        this.criticalHeight = criticalHeight;
+        this.criticalRegionVolumes = criticalRegionVolumes;
+        this.criticalRegionHeights = criticalRegionHeights;
     }
     
     @Override
@@ -171,27 +134,13 @@ public final class PottsCellContainer implements CellContainer {
      * @return  a {@link PottsCell} instance
      */
     private Cell convert(PottsCellFactory factory, Location location) {
-        // Get copies of critical values.
+        // Get parameters for the cell population.
         MiniBox parameters = factory.popToParameters.get(pop);
-        double criticalVolume = factory.popToCriticalVolumes.get(pop);
-        double criticalHeight = factory.popToCriticalHeights.get(pop);
         
         // Make cell.
         PottsCell cell;
         
         if (factory.popToRegions.get(pop)) {
-            // Initialize region arrays.
-            EnumMap<Region, Double> criticalRegionVolumes = new EnumMap<>(Region.class);
-            EnumMap<Region, Double> criticalRegionHeights = new EnumMap<>(Region.class);
-            
-            // Get copies of critical values.
-            for (Region region : location.getRegions()) {
-                criticalRegionVolumes.put(region,
-                        factory.popToRegionCriticalVolumes.get(pop).get(region));
-                criticalRegionHeights.put(region,
-                        factory.popToRegionCriticalHeights.get(pop).get(region));
-            }
-            
             cell = new PottsCell(id, parent, pop, state, age, divisions,
                     location, true, parameters, criticalVolume, criticalHeight,
                     criticalRegionVolumes, criticalRegionHeights);
@@ -199,16 +148,6 @@ public final class PottsCellContainer implements CellContainer {
             cell = new PottsCell(id, parent, pop, state, age, divisions,
                     location, false, parameters, criticalVolume, criticalHeight,
                     null, null);
-        }
-        
-        // Update cell targets.
-        cell.setTargets(targetVolume, targetSurface);
-        if (regionTargetVolume != null && regionTargetSurface != null) {
-            for (Region region : location.getRegions()) {
-                cell.setTargets(region,
-                        regionTargetVolume.get(region),
-                        regionTargetSurface.get(region));
-            }
         }
         
         // Update cell module.

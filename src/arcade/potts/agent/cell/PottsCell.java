@@ -321,16 +321,14 @@ public final class PottsCell implements Cell {
     public void initialize(int[][][] ids, int[][][] regions) {
         location.update(id, ids, regions);
         
-        if (targetVolume != 0 && targetSurface != 0) { return; }
-        
         targetVolume = location.getVolume();
         targetSurface = location.getSurface();
         
         if (!hasRegions) { return; }
         
         for (Region region : location.getRegions()) {
-            targetRegionVolumes.put(region, (double) location.getVolume(region));
-            targetRegionSurfaces.put(region, (double) location.getSurface(region));
+            targetRegionVolumes.put(region, location.getVolume(region));
+            targetRegionSurfaces.put(region, location.getSurface(region));
         }
     }
     
@@ -490,11 +488,11 @@ public final class PottsCell implements Cell {
             
             return new PottsCellContainer(id, parent, pop, age, divisions, state,
                     ((PottsModule) module).getPhase(), (int) getVolume(), regionVolumes,
-                    targetVolume, targetSurface, targetRegionVolumes, targetRegionSurfaces);
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
         } else {
             return new PottsCellContainer(id, parent, pop, age, divisions, state,
                     ((PottsModule) module).getPhase(), (int) getVolume(),
-                    targetVolume, targetSurface);
+                    criticalVolume, criticalHeight);
         }
     }
 }

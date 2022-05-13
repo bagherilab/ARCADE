@@ -81,13 +81,13 @@ public final class PottsOutputDeserializer {
             State state = State.valueOf(jsonObject.get("state").getAsString());
             Phase phase = Phase.valueOf(jsonObject.get("phase").getAsString());
             
-            JsonArray targets = jsonObject.get("targets").getAsJsonArray();
-            double targetVolume = targets.get(0).getAsDouble();
-            double targetSurface = targets.get(1).getAsDouble();
+            JsonArray criticals = jsonObject.get("criticals").getAsJsonArray();
+            double criticalVolume = criticals.get(0).getAsDouble();
+            double criticalHeight = criticals.get(1).getAsDouble();
             
             EnumMap<Region, Integer> regions = new EnumMap<>(Region.class);
-            EnumMap<Region, Double> targetRegionVolumes = new EnumMap<>(Region.class);
-            EnumMap<Region, Double> targetRegionSurfaces = new EnumMap<>(Region.class);
+            EnumMap<Region, Double> criticalRegionVolumes = new EnumMap<>(Region.class);
+            EnumMap<Region, Double> criticalRegionHeights = new EnumMap<>(Region.class);
             
             if (jsonObject.has("regions")) {
                 JsonArray jsonArray = jsonObject.getAsJsonArray("regions");
@@ -96,9 +96,9 @@ public final class PottsOutputDeserializer {
                     Region region = Region.valueOf(regionObject.get("region").getAsString());
                     int regionVoxels = regionObject.get("voxels").getAsInt();
                     
-                    JsonArray regionTargets = regionObject.get("targets").getAsJsonArray();
-                    targetRegionVolumes.put(region, regionTargets.get(0).getAsDouble());
-                    targetRegionSurfaces.put(region, regionTargets.get(1).getAsDouble());
+                    JsonArray regionCriticals = regionObject.get("criticals").getAsJsonArray();
+                    criticalRegionVolumes.put(region, regionCriticals.get(0).getAsDouble());
+                    criticalRegionHeights.put(region, regionCriticals.get(1).getAsDouble());
                     
                     regions.put(region, regionVoxels);
                 }
@@ -107,11 +107,11 @@ public final class PottsOutputDeserializer {
             PottsCellContainer cell;
             if (regions.size() == 0) {
                 cell = new PottsCellContainer(id, parent, pop, age, divisions, state, phase,
-                        voxels, targetVolume, targetSurface);
+                        voxels, criticalVolume, criticalHeight);
             } else {
                 cell = new PottsCellContainer(id, parent, pop, age, divisions, state, phase,
-                        voxels, regions, targetVolume, targetSurface,
-                        targetRegionVolumes, targetRegionSurfaces);
+                        voxels, regions, criticalVolume, criticalHeight,
+                        criticalRegionVolumes, criticalRegionHeights);
             }
             
             return cell;

@@ -97,12 +97,12 @@ public final class PottsOutputSerializer {
      *         "state": (state),
      *         "phase": (phase),
      *         "voxels": (voxels),
-     *         "targets": [(target volume), (target surface)],
+     *         "criticals": [(critical volume), (critical height)],
      *         "regions": [
      *             {
      *                 "region": (region name),
      *                 "voxels": (region voxels),
-     *                 "targets": [(target region volume), (target region surface)]
+     *                 "criticals": [(critical region volume), (critical region height)]
      *             },
      *             ...
      *         ]
@@ -126,10 +126,10 @@ public final class PottsOutputSerializer {
             json.addProperty("phase", src.phase.name());
             json.addProperty("voxels", src.voxels);
             
-            JsonArray targets = new JsonArray();
-            targets.add((int) (100 * src.targetVolume) / 100.0);
-            targets.add((int) (100 * src.targetSurface) / 100.0);
-            json.add("targets", targets);
+            JsonArray criticals = new JsonArray();
+            criticals.add((int) (100 * src.criticalVolume) / 100.0);
+            criticals.add((int) (100 * src.criticalHeight) / 100.0);
+            json.add("criticals", criticals);
             
             if (src.regionVoxels != null) {
                 JsonArray regions = new JsonArray();
@@ -138,10 +138,10 @@ public final class PottsOutputSerializer {
                     regionObject.addProperty("region", region.name());
                     regionObject.addProperty("voxels", src.regionVoxels.get(region));
                     
-                    JsonArray regionTargets = new JsonArray();
-                    regionTargets.add((int) (100 * src.regionTargetVolume.get(region)) / 100.0);
-                    regionTargets.add((int) (100 * src.regionTargetSurface.get(region)) / 100.0);
-                    regionObject.add("targets", regionTargets);
+                    JsonArray regionCriticals = new JsonArray();
+                    regionCriticals.add((int) (100 * src.criticalRegionVolumes.get(region)) / 100.0);
+                    regionCriticals.add((int) (100 * src.criticalRegionHeights.get(region)) / 100.0);
+                    regionObject.add("criticals", regionCriticals);
                     
                     regions.add(regionObject);
                 }
