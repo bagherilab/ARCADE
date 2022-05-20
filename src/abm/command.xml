@@ -1,5 +1,0 @@
-<commands>
-    <position id="XML" help="Absolute path to simulation series setup XML" />
-    <switch id="VIS" short="v" long="vis" help="Run simulation with visualization overhead" />
-    <option id="VIEW" long="view" default="2D" help="Select GUI view (3D requires extra libraries)" />
-</commands>
