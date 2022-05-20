@@ -1,0 +1,9 @@
+<commands>
+    <position id="ARCADE" help="ARCADE type" />
+    <position id="XML" help="Absolute path to setup XML" />
+    <position id="PATH" help="Absolute path for snapshot JSON" />
+    <switch id="VIS" short="v" long="vis" help="Run with visualization overhead" />
+    <option id="LOADPATH" long="loadpath" help="Path prefix for loaded files" />
+    <switch id="LOADCELLS" short="c" long="cells" help="Load the .CELLS file" />
+    <switch id="LOADLOCATIONS" short="l" long="locations" help="Load the .LOCATIONS file" />
+</commands>

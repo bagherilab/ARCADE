@@ -1,0 +1,90 @@
+plugins {
+    id "java"
+    id "jacoco"
+}
+
+version = "3.0"
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java { srcDirs "src/" }
+        resources { srcDirs "src/" }
+    }
+
+    test {
+        java { srcDirs "test/" }
+        resources { srcDirs "test/" }
+    }
+}
+
+dependencies {
+    implementation "fr.irit.smac.thirdparty.edu.gmu.cs:mason:18"
+    implementation "com.formdev:flatlaf:0.36"
+    implementation "com.google.code.gson:gson:2.8.6"
+    runtimeOnly group: 'javax.media', name: 'jmf', version: '2.1.1e'
+    testImplementation "org.mockito:mockito-core:2.23.+"
+    testImplementation "org.mockito:mockito-inline:2.23.+"
+    testImplementation "junit:junit:4.12"
+    testImplementation "commons-io:commons-io:2.8.0"
+}
+
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.compileClasspath
+    destinationDir = file("docs/javadoc")
+    title = ""
+    options.memberLevel = JavadocMemberLevel.PRIVATE
+    options.setNoTimestamp(true)
+    options.setVersion(true)
+    options.setNoDeprecated(true)
+    options.setSplitIndex(true)
+}
+
+jacocoTestReport {
+    afterEvaluate {
+        classDirectories.from = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                "arcade/core/gui/*",
+                "arcade/core/vis/*",
+                "arcade/core/util/Graph*",
+                "arcade/core/util/Matrix*",
+                "arcade/core/util/Solver*",
+                "arcade/core/util/Parameter*",
+                "arcade/core/util/Colors*",
+                "arcade/potts/vis/*",
+                "arcade/agent/*",
+                "arcade/env/*",
+                "arcade/vis/*",
+                "arcade/util/*",
+                "arcade/sim/*",
+                "arcade/gui/*"
+            ])
+        })
+    }
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+jar {
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    manifest {
+        attributes["Main-Class"] = "arcade.core.ARCADE"
+    }
+}
+
+task copyJar(type: Copy) {
+    from jar
+    into project.projectDir
+}
+
+build.dependsOn copyJar
+
+test.finalizedBy jacocoTestReport
