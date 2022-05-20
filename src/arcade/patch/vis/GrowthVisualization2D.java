@@ -1,4 +1,4 @@
-package arcade.vis;
+package arcade.patch.vis;
 
 import sim.engine.*;
 import arcade.sim.Simulation;

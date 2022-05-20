@@ -1,4 +1,4 @@
-package arcade.env.comp;
+package arcade.patch.env.comp;
 
 import sim.engine.SimState;
 import arcade.sim.Simulation;

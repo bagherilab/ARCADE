@@ -1,4 +1,4 @@
-package arcade.vis;
+package arcade.patch.vis;
 
 import java.awt.*;
 import arcade.sim.Series;

@@ -1,4 +1,4 @@
-package arcade.env.comp;
+package arcade.patch.env.comp;
 
 /**
  * Specification of molecular details for {@link arcade.env.comp.Sites}.

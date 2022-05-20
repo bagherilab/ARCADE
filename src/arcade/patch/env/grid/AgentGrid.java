@@ -1,4 +1,4 @@
-package arcade.env.grid;
+package arcade.patch.env.grid;
 
 import sim.util.Bag;
 import java.util.Map;

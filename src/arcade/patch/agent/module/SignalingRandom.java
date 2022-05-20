@@ -1,4 +1,4 @@
-package arcade.agent.module;
+package arcade.patch.agent.module;
 
 import arcade.agent.cell.Cell;
 import arcade.sim.Series;

@@ -1,4 +1,4 @@
-package arcade.env.lat;
+package arcade.patch.env.lat;
 
 import arcade.sim.Simulation;
 import arcade.env.comp.*;

@@ -1,4 +1,4 @@
-package arcade.sim.profiler;
+package arcade.patch.sim.profiler;
 
 import sim.engine.*;
 import arcade.sim.*;

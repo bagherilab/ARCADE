@@ -1,4 +1,4 @@
-package arcade.sim.profiler;
+package arcade.patch.sim.profiler;
 
 import java.util.Map;
 import java.util.ArrayList;

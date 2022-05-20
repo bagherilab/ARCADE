@@ -1,4 +1,4 @@
-package arcade.sim;
+package arcade.patch.sim;
 
 import java.util.ArrayList;
 import arcade.sim.Simulation.Representation;
