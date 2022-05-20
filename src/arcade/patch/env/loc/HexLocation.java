@@ -30,9 +30,6 @@ import sim.util.Bag;
  * Simulations with {@code HEIGHT} &#62; 1 must have a {@code MARGIN} &#62; 0,
  * otherwise the offset location coordinates will be associated with lattice
  * coordinates that are out of bounds of the array.
- *
- * @version 2.3.2
- * @since   2.0
  */
 
 public class HexLocation implements Location {

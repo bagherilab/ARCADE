@@ -31,9 +31,6 @@ import arcade.util.MiniBox;
  * the concentration at the index and the source concentration of the molecule.
  * Sites can be damaged by setting the {@code SOURCE_DAMAGE} parameter, which
  * reduces the amount of concentration added at each index.
- * 
- * @version 2.3.15
- * @since   2.3
  */
 
 public class SourceSites extends Sites {

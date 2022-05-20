@@ -17,9 +17,6 @@ import static arcade.vis.ColorMaps.*;
  *     <li><em>auxiliary</em> shows additional views including volume, density,
  *     and energy deficit at locations and the distribution of cell populations</li>
  * </ul>
- * 
- * @version 2.3.14
- * @since   2.2
  */
 
 public abstract class GrowthVisualization2D extends Visualization {

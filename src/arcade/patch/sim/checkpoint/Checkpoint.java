@@ -11,9 +11,6 @@ import arcade.sim.Series;
  * Checkpoints do not save the entire simulation state; instead, it saves 
  * subsets that can then be loaded into simulations under different conditions.
  * Checkpoints should (and can) only be loaded at the beginning of the simulation.
- * 
- * @version 2.3.1
- * @since   2.3
  */
 
 public abstract class Checkpoint {

@@ -10,9 +10,6 @@ import arcade.util.MiniBox;
  * {@code TriDiffuser} also check if the triangle is pointed up or down based
  * on the row and column, where the top left of the 2D array at coordinate
  * (0,0) is a triangle pointing down.
- * 
- * @version 2.3.4
- * @since   2.0
  */
 
 public class TriDiffuser extends Diffuser {

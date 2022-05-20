@@ -17,9 +17,6 @@ import arcade.util.MiniBox;
  * At each time point, the amount of concentration is set equal to a fraction
  * of the initial concentration, determined by a smoothed sawtooth function.
  * The cycle repeats every day, with three peaks per day.
- *
- * @version 2.3.0
- * @since   2.3
  */
 
 public class CycleComponent implements Component {

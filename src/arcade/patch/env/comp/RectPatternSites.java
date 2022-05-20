@@ -21,9 +21,6 @@ import arcade.util.MiniBox;
  *    | 2 | 2 | 2 | 2 | 1 |   |
  *    -------------------------
  * </pre>
- *
- * @version 2.3.13
- * @since   2.3
  */
 
 public class RectPatternSites extends PatternSites {

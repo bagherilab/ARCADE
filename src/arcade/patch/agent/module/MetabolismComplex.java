@@ -30,9 +30,6 @@ import arcade.agent.cell.Cell;
  * </ul>
  * <p>
  * Internal pyruvate is removed through conversion to lactate.
- * 
- * @version 2.3.3
- * @since   2.0
  */
 
 public class MetabolismComplex extends Metabolism {

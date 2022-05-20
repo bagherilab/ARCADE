@@ -15,9 +15,6 @@ import arcade.env.comp.*;
  * <p>
  * {@code EnvDrawer2D} copies values in a {@link arcade.env.lat.Lattice} array
  * into a 2D array representation.
- *
- * @version 2.3.5
- * @since   2.2
  */
 
 public abstract class EnvDrawer2D extends Drawer {

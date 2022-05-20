@@ -15,9 +15,6 @@ import arcade.util.Solver.Equations;
  * Migratory flag is set based on fold change in active PLCg.
  * Derived from {@link arcade.agent.module.SignalingComplex} with simplified
  * transcription/translation.
- * 
- * @version 2.3.3
- * @since   2.0
  */
 
 public class SignalingMedium extends Signaling {

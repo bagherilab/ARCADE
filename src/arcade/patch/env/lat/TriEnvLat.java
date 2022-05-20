@@ -11,9 +11,6 @@ import arcade.util.MiniBox;
  * grid.
  * Triangular grid locations have (x,y) coordinates, but additionally have are
  * "up" or "down" facing.
- * 
- * @version 2.3.11
- * @since   2.0
  */
 
 public class TriEnvLat extends EnvLattice {

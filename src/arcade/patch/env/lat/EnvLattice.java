@@ -17,9 +17,6 @@ import arcade.util.MiniBox;
  *     <li><em>Diffuser</em> for diffusion of molecules on the array</li>
  *     <li><em>Generator</em> for adding concentrations into the array</li>
  * </ul>
- *
- * @version 2.3.8
- * @since   2.2
  */
 
 public abstract class EnvLattice implements Lattice {

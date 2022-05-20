@@ -9,9 +9,6 @@ import arcade.util.Graph.*;
 
 /**
  * Extension of {@code Checkpoint} for saving graphs.
- * 
- * @version 2.3.1
- * @since   2.3
  */
 
 public abstract class GraphCheckpoint extends Checkpoint {

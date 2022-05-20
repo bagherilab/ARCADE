@@ -11,9 +11,6 @@ import java.io.Serializable;
 
 /**
  * Extension of {@code Checkpoint} for cell agents.
- * 
- * @version 2.3.2
- * @since   2.3
  */
 
 public abstract class CellCheckpoint extends Checkpoint {

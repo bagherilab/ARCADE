@@ -14,9 +14,6 @@ import arcade.util.Solver.Equations;
  * the cytoplasm.
  * Migratory flag is set based on fold change in active PLCg.
  * Derived from {@link arcade.agent.module.SignalingMedium} using minimal components.
- *
- * @version 2.3.3
- * @since   2.2
  */
 
 public class SignalingSimple extends Signaling {

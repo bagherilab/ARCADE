@@ -27,9 +27,6 @@ import arcade.agent.cell.Cell;
  *     <li>cell has negative energy levels indicating insufficient nutrients</li>
  *     <li>cell is above critical mass for maintenance</li>
  * </ul>
- * 
- * @version 2.3.4
- * @since   2.2
  */
 
 public class MetabolismMedium extends Metabolism {

@@ -14,9 +14,6 @@ import static arcade.vis.ColorMaps.*;
  *     <li><em>environment</em> shows the concentrations of the molecules
  *     averaged across z</li>
  * </ul>
- * 
- * @version 2.4.0
- * @since   2.4
  */
 
 public abstract class GrowthVisualization3D extends Visualization {

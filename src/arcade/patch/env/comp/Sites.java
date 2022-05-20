@@ -14,9 +14,6 @@ import arcade.util.MiniBox;
  * Multiple molecules generated from the same sites are tracked by a list of
  * {@link arcade.env.comp.Site} objects, which map the molecule code to the
  * correct environment lattices.
- * 
- * @version 2.3.9
- * @since   2.3
  */
 
 public abstract class Sites implements Component {

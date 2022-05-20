@@ -10,9 +10,6 @@ import arcade.env.loc.Location;
  * <p>
  * The {@code Signaling} module can be used for networks comprising a system of
  * ODEs.
- * 
- * @version 2.3.0
- * @since   2.2
  */
 
 public abstract class Signaling implements Module {

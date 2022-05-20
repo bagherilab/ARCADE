@@ -11,9 +11,6 @@ import arcade.agent.cell.TissueCell;
  * The {@link arcade.agent.cell.TissueCell} agent calls the {@code scheduleHelper}
  * method of {@code TissueHelper} to add the behavior to the schedule to be
  * stepped.
- * 
- * @version 2.3.2
- * @since   2.2
  */
 
 public abstract class TissueHelper implements Helper {

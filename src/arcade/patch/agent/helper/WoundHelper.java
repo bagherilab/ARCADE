@@ -16,9 +16,6 @@ import arcade.util.MiniBox;
  * The {@code WoundHelper} will remove all cell agents within the specified
  * radius from the center of the simulation.
  * Quiescent cells bordering the wound are set to neutral state.
- * 
- * @version 2.3.4
- * @since   2.2
  */
 
 public class WoundHelper implements Helper {

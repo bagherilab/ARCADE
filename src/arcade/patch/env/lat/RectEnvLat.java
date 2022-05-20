@@ -9,9 +9,6 @@ import arcade.util.MiniBox;
  * <p>
  * {@code RectEnvLat} uses the {@link RectDiffuser} for diffusion on a rectangular
  * grid.
- *
- * @version 2.3.12
- * @since   2.3
  */
 
 public class RectEnvLat extends EnvLattice {

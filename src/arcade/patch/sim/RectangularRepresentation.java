@@ -15,9 +15,6 @@ import arcade.env.loc.*;
  * The rectangular locations are defined in the (x, y, z) coordinate space such
  * that (0,0,0) is the rectangle in the center of the simulation (for the grid)
  * and the left rectangle of the center slice (for the lattices).
- * 
- * @version 2.3.13
- * @since   2.3
  */
 
 public class RectangularRepresentation implements Representation {

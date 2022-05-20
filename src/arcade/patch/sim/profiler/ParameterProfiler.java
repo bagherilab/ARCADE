@@ -25,9 +25,6 @@ import arcade.util.Parameter;
  *        timepoint contains lists of cell locations and parameter values
  *        for each cell</li>
  * </ul>
- * 
- * @version 2.3.5
- * @since   2.3
  */
 
 public class ParameterProfiler extends Profiler {

@@ -17,9 +17,6 @@ import arcade.util.MiniBox;
  * The {@code InsertHelper} will insert a mixture of the cell from the specified
  * populations into locations within the specified radius from the center of the
  * simulation.
- * 
- * @version 2.3.7
- * @since   2.2
  */
 
 public class InsertHelper implements Helper {

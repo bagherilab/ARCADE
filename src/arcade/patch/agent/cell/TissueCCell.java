@@ -17,9 +17,6 @@ import arcade.util.MiniBox;
  *     <li>If cell is quiescent, they may exit out of quiescence into neutral
  *     if there is space in their neighborhood</li>
  * </ul>
- * 
- * @version 2.2.7
- * @since   2.2
  */
 
 public class TissueCCell extends TissueHCell {

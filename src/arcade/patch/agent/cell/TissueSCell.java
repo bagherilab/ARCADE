@@ -18,9 +18,6 @@ import arcade.util.MiniBox;
  *     ({@code TissueSCell}) or a cancerous cell ({@code TissueCCell})</li>
  *     <li>No division limit</li>
  * </ul>
- *
- * @version 2.2.8
- * @since   2.2
  */
 
 public class TissueSCell extends TissueCCell {

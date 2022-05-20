@@ -22,9 +22,6 @@ import arcade.util.Graph;
  *     <li><strong>{@code timepoints}</strong>: list of timepoints, where each
  *        timepoint contains lists of edges and nodes in the graph</li>
  * </ul>
- * 
- * @version 2.3.3
- * @since   2.3
  */
 
 public class GraphProfiler extends Profiler {

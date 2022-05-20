@@ -8,9 +8,6 @@ import sim.util.Bag;
  * <p>
  * Each rectangular location has four positions.
  * Uses {@link arcade.env.loc.RectLocation} as {@link arcade.env.loc.Location} object.
- *
- * @version 2.3.2
- * @since   2.3
  */
 
 public class RectAgentGrid extends AgentGrid {

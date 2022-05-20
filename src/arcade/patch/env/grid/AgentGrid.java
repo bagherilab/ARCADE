@@ -13,9 +13,6 @@ import arcade.env.loc.Location;
  * Methods are written to work regardless of the underlying geometry.
  * An array of boolean flags indicates if positions within a location are
  * occupied.
- *
- * @version 2.3.0
- * @since   2.2
  */
 
 public abstract class AgentGrid implements Grid {

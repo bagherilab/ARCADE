@@ -23,9 +23,6 @@ import static arcade.env.comp.GraphSitesUtilities.*;
  * Edges that are below a minimum wall thickness or radius are removed from the
  * graph.
  * All hemodynamic properties are recalculated at the end of the step.
- *
- * @version 2.3.9
- * @since   2.3
  */
 
 public class RemodelComponent implements Component {

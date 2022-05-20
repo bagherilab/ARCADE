@@ -13,9 +13,6 @@ import arcade.env.loc.Location;
  * {@code MakeTissueHelper} is repeatedly stepped from its creation until either
  * the cell is no longer able to proliferate or it has successfully doubled in
  * size and is able to create a new cell object.
- * 
- * @version 2.3.7
- * @since   2.2
  */
 
 public class MakeTissueHelper extends TissueHelper {

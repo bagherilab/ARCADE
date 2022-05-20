@@ -26,9 +26,6 @@ import arcade.util.*;
  * If the VIS flag is used, only the first {@link arcade.sim.Series} in the array
  * is run.
  * Otherwise, all valid {@code Series} are run.
- *
- * @version 2.3.3
- * @since   2.0
  */
 
 public class Main {

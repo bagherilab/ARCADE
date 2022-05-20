@@ -40,9 +40,6 @@ import arcade.util.MiniBox;
  * </ul>
  * <p>
  * {@code GrowthSimulation} does not specify grid or lattice geometry.
- * 
- * @version 2.3.20
- * @since   2.2
  */
 
 public abstract class GrowthSimulation extends SimState implements Simulation {

@@ -19,9 +19,6 @@ import arcade.util.Solver.Equations;
  * agent-based  tumor model: Simulating gene-protein interaction profiles, cell
  * phenotypes and multicellular patterns in brain cancer. <em>Journal of
  * Theoretical Biology</em>, 244(1), 96-107.
- * 
- * @version 2.3.3
- * @since   2.0
  */
 
 public class SignalingComplex extends Signaling {

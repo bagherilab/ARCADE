@@ -18,9 +18,6 @@ import arcade.util.MiniBox;
  * The {@code ConvertHelper} will select one cell located at the center of the
  * simulation and convert it to a cell agent of the new population by removing
  * the old cell and creating a new cell with the same age and volume. 
- *
- * @version 2.3.6
- * @since   2.2
  */
 
 public class ConvertHelper implements Helper {

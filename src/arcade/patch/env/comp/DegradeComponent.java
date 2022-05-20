@@ -24,9 +24,6 @@ import static arcade.env.comp.GraphSitesUtilities.*;
  * At the end of a step, if no edges have been removed from the graph, then only
  * the stresses in the graph are recalculated.
  * Otherwise, all hemodynamic properties are recalculated.
- *
- * @version 2.3.8
- * @since   2.3
  */
 
 public class DegradeComponent implements Component {

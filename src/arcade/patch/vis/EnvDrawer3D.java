@@ -14,9 +14,6 @@ import arcade.sim.Simulation;
  * <p>
  * {@code EnvDrawer3D} copies values in a {@link arcade.env.lat.Lattice} array
  * into a 2D array representation by averaging across the z direction.
- * 
- * @version 2.4.0
- * @since   2.4
  */
 
 public abstract class EnvDrawer3D extends Drawer {

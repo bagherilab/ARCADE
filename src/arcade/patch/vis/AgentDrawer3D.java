@@ -15,9 +15,6 @@ import arcade.agent.cell.Cell;
  * <p>
  * {@code AgentDrawer3D} converts agents in a {@link arcade.env.grid.Grid} into
  * a 2D array representation by calculating density in the z direction.
- *
- * @version 2.4.0
- * @since   2.4
  */
 
 public abstract class AgentDrawer3D extends Drawer {

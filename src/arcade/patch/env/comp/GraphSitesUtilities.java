@@ -12,9 +12,6 @@ import static arcade.util.Graph.*;
 
 /**
  * Container class for utility functions used by {@link arcade.env.comp.GraphSites}.
- *
- * @version 2.3.21
- * @since   2.3
  */
 
 abstract class GraphSitesUtilities {

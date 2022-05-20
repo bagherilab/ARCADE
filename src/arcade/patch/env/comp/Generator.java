@@ -16,9 +16,6 @@ import arcade.util.MiniBox;
  * containing the change in concentration is updated first, before {@code Generator}
  * updates the actual environment lattice with the change.
  * {@code Generator} objects are independent of geometry.
- * 
- * @version 2.3.9
- * @since   2.3
  */
 
 public class Generator implements Component {

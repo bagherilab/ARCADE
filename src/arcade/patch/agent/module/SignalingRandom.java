@@ -8,9 +8,6 @@ import arcade.sim.Simulation;
  * Extension of {@link arcade.agent.module.Signaling} for random signaling.
  * <p>
  * {@code SignalingRandom} simply randomly sets the migratory flag.
- * 
- * @version 2.2.1
- * @since   2.2
  */
 
 public class SignalingRandom extends Signaling {

@@ -44,9 +44,6 @@ import static arcade.env.comp.GraphSitesUtilities.*;
  *     spanning {@code #} percent (second number) across the environment in
  *     the direction normal to the side</li>
  * </ul>
- * 
- * @version 2.3.70
- * @since   2.3
  */
 
 public abstract class GraphSites extends Sites {

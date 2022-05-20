@@ -38,9 +38,6 @@ import static arcade.env.comp.GraphSitesUtilities.*;
  *     <li>top border = down right, down left</li>
  *     <li>bottom border = up right, up left</li>
  * </ul>
- *
- * @version 2.3.35
- * @since   2.3
  */
 
 public abstract class TriGraphSites extends GraphSites {

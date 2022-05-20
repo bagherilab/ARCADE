@@ -27,9 +27,6 @@ import arcade.agent.cell.*;
  *         cell locations (cell properties implemented by the {@code toJSON}
  *         method of {@link arcade.agent.cell.Cell})</li>
  * </ul>
- * 
- * @version 2.3.7
- * @since   2.0
  */
 
 public class GrowthProfiler extends Profiler {

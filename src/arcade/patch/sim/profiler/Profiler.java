@@ -13,9 +13,6 @@ import arcade.sim.Simulation;
  * if it does not exist.
  * If the file already exists, contents will be appended to the contents of the
  * file (rather than overwriting the file).
- * 
- * @version 2.3.0
- * @since   2.3
  */
 
 public abstract class Profiler implements Steppable {

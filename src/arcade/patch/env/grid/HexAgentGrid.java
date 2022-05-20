@@ -8,9 +8,6 @@ import sim.util.Bag;
  * <p>
  * Each hexagon location has six positions.
  * Uses {@link arcade.env.loc.HexLocation} as {@link arcade.env.loc.Location} object.
- *
- * @version 2.3.0
- * @since   2.0
  */
 
 public class HexAgentGrid extends AgentGrid {

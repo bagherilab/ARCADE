@@ -20,9 +20,6 @@ import arcade.util.MiniBox;
  * or otherwise removed from the environment.
  * At the specified pulse interval ({@code PULSE_INTERVAL}), a "pulse" of media
  * is introduced, updating the total amount of molecule available.
- * 
- * @version 2.3.0
- * @since   2.3
  */
 
 public class PulseComponent implements Component {

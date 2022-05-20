@@ -15,9 +15,6 @@ import arcade.util.MiniBox;
  * <p>
  * {@code TissueHCell} agents can be created by either passing in a
  * {@link arcade.util.MiniBox} with module versions or the parent cell.
- *
- * @version 2.2.9
- * @since   2.2
  */
 
 public class TissueHCell extends TissueCell {

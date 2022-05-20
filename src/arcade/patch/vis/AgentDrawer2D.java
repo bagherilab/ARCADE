@@ -17,9 +17,6 @@ import arcade.agent.cell.Cell;
  * a 2D array representation.
  * The array values are the value of a selected property (such as cell type or
  * cell population).
- *
- * @version 2.3.3
- * @since   2.2
  */
 
 public abstract class AgentDrawer2D extends Drawer {

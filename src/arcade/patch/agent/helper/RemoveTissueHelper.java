@@ -13,9 +13,6 @@ import arcade.agent.cell.TissueCell;
  * corresponding to the length of apoptosis has passed.
  * The {@code RemoveTissueHelper} will remove the cell from simulation and
  * induce one of the quiescent neighboring cells to proliferate.
- * 
- * @version 2.3.2
- * @since   2.2
  */
 
 public class RemoveTissueHelper extends TissueHelper {

@@ -25,9 +25,6 @@ import arcade.env.loc.Location;
  * and oxidative phosphorylation are provided.
  * Glucose and oxygen are numbered constants, codes may be added for additional
  * molecules.
- * 
- * @version 2.3.6
- * @since   2.2
  */
 
 public abstract class Metabolism implements Module {

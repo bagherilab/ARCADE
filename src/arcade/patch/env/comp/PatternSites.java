@@ -25,9 +25,6 @@ import arcade.util.MiniBox;
  * <p>
  * Sites can be damaged by setting the {@code PATTERN_DAMAGE} parameter, which
  * also reduces the amount of concentration added at each index.
- *
- * @version 2.3.20
- * @since   2.3
  */
 
 public abstract class PatternSites extends Sites {

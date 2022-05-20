@@ -31,9 +31,6 @@ import arcade.util.Colors;
  * Text portrayals are used to add labels.
  * Additional <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a>
  * portrayals can be added.
- *
- * @version 2.3.11
- * @since   2.3
  */
 
 public abstract class AuxDrawer2D extends Drawer {

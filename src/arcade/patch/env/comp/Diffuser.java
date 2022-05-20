@@ -16,9 +16,6 @@ import arcade.util.MiniBox;
  * Methods extending {@code Diffuser} for a specific geometry will need to
  * adjust the multipliers for both the finite difference approximation and the
  * pseudo-steady state approximation.
- *
- * @version 2.3.11
- * @since   2.2
  */
 
 public abstract class Diffuser implements Component {

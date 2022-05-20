@@ -27,9 +27,6 @@ import arcade.util.MiniBox;
  *    /   \ / 1 \ /   \ /   \ /   \
  *    -----------------------------
  * </pre>
- * 
- * @version 2.3.12
- * @since   2.0
  */
 
 public class TriPatternSites extends PatternSites {

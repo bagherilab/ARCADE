@@ -14,9 +14,6 @@ import arcade.env.loc.Location;
  * The {@code MoveTissueHelper} will move the cell from one location to another
  * based on best location as determined by the {@code getBestLocation} method in
  * {@link arcade.agent.cell.TissueCell}.
- * 
- * @version 2.3.6
- * @since   2.2
  */
 
 public class MoveTissueHelper extends TissueHelper {

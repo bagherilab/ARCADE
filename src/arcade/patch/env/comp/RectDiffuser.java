@@ -6,9 +6,6 @@ import arcade.util.MiniBox;
 
 /**
  * Extension of {@link arcade.env.comp.Diffuser} for rectangular lattice.
- * 
- * @version 2.3.5
- * @since   2.3
  */
 
 public class RectDiffuser extends Diffuser {

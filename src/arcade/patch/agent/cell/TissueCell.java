@@ -37,9 +37,6 @@ import arcade.agent.helper.*;
  * {@link arcade.util.Parameter} object.
  * Daughter cell parameter values are drawn from a distribution centered on the
  * parent cell parameter with the specified amount of heterogeneity.
- * 
- * @version 2.3.9
- * @since   2.2
  */
 
 public abstract class TissueCell implements Cell {

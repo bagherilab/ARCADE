@@ -8,9 +8,6 @@ import arcade.util.Colors;
  * Container class for commonly used color maps.
  * <p>
  * Uses {@link arcade.util.Colors} to define mappings.
- * 
- * @version 2.3.6
- * @since   2.3
  */
 
 class ColorMaps {

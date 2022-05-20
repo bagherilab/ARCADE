@@ -15,9 +15,6 @@ import arcade.agent.cell.Cell;
  * <p>
  * {@code MetabolismRandom} will increase cell mass (using random fraction of
  * internal glucose) if cell is dividing and less than double in size.
- *
- * @version 2.3.4
- * @since   2.2
  */
 
 public class MetabolismRandom extends Metabolism {

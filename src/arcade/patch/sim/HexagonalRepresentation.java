@@ -17,9 +17,6 @@ import arcade.env.loc.*;
  * (0,0,0) is the triangle in the top left of the center slice of the simulation.
  * Because environment radius is guaranteed to be even, the top left triangle of
  * the corresponding triangular lattices is always pointed down.
- *
- * @version 2.3.10
- * @since   2.0
  */
 
 public class HexagonalRepresentation implements Representation {

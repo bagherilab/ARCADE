@@ -6,9 +6,6 @@ package arcade.env.comp;
  * A {@code Site} contains the correct set of environment lattices for a given
  * molecule.
  * Molecule codes are defined in {@link arcade.sim.Simulation}.
- * 
- * @version 2.3.0
- * @since 2.3
  */
 
 abstract class Site {
