@@ -6,18 +6,18 @@ import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
 
 /**
- * Extension of {@link arcade.agent.module.Metabolism} for random metabolism.
+ * Extension of {@link arcade.agent.module.PatchModuleMetabolism} for random metabolism.
  * <p>
- * {@code MetabolismRandom} will uptake a random fraction of glucose and oxygen
+ * {@code PatchModuleMetabolismRandom} will uptake a random fraction of glucose and oxygen
  * from the environment.
  * Oxygen is converted to ATP through oxidative phosphorylation and some random
  * fraction of glucose is converted to ATP through glycolysis.
  * <p>
- * {@code MetabolismRandom} will increase cell mass (using random fraction of
+ * {@code PatchModuleMetabolismRandom} will increase cell mass (using random fraction of
  * internal glucose) if cell is dividing and less than double in size.
  */
 
-public class MetabolismRandom extends Metabolism {
+public class PatchModuleMetabolismRandom extends PatchModuleMetabolism {
     /** Minimum glucose uptake */
     private static final double GLUC_UPTAKE_MIN = 0.005;
     
@@ -49,14 +49,14 @@ public class MetabolismRandom extends Metabolism {
     private final double CELL_VOL_AVG;
     
     /**
-     * Creates a random {@link arcade.agent.module.Metabolism} module.
+     * Creates a random {@link arcade.agent.module.PatchModuleMetabolism} module.
      * <p>
      * Module only has internal glucose.
      *
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    public MetabolismRandom(Cell c, Simulation sim) {
+    public PatchModuleMetabolismRandom(Cell c, Simulation sim) {
         super(c, sim);
         
         // Initial internal concentrations.
@@ -73,7 +73,7 @@ public class MetabolismRandom extends Metabolism {
         this.CELL_VOL_AVG = series.getParam(pop, "CELL_VOL_AVG");
     }
     
-    public void stepMetabolismModule(Simulation sim) {
+    public void stepPatchModuleMetabolismModule(Simulation sim) {
         double glucInt = intAmts[GLUCOSE]; // [fmol]
         double glucExt = extAmts[GLUCOSE]; // [fmol]
         double oxyExt = extAmts[OXYGEN];   // [fmol]
@@ -134,7 +134,7 @@ public class MetabolismRandom extends Metabolism {
     }
     
     public void updateModule(Module mod, double f) {
-        MetabolismRandom metabolism = (MetabolismRandom)mod;
+        PatchModuleMetabolismRandom metabolism = (PatchModuleMetabolismRandom)mod;
         
         // Update daughter cell metabolism as fraction of parent.
         this.energy = metabolism.energy*f;

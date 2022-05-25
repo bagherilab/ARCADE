@@ -6,9 +6,9 @@ import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
 
 /**
- * Extension of {@link arcade.agent.module.Metabolism} for medium metabolism.
+ * Extension of {@link arcade.agent.module.PatchModuleMetabolism} for medium metabolism.
  * <p>
- * {@code MetabolismMedium} does not use a pyruvate intermediate and glucose
+ * {@code PatchModuleMetabolismMedium} does not use a pyruvate intermediate and glucose
  * uptake is based on cell volume.
  * Metabolic preference between glycolysis and oxidative phosphorylation is
  * controlled by the {@code META_PREF} parameter.
@@ -16,20 +16,20 @@ import arcade.agent.cell.Cell;
  * energetic requirements through the oxidative phosphorylation pathway given
  * the specified metabolic preference.
  * <p>
- * {@code MetabolismMedium} will increase cell mass (using specified fraction of
+ * {@code PatchModuleMetabolismMedium} will increase cell mass (using specified fraction of
  * internal glucose) if:
  * <ul>
  *     <li>cell is dividing and less than double in size</li>
  *     <li>cell is below critical mass for maintenance</li>
  * </ul>
- * {@code MetabolismMedium} will decrease cell mass if:
+ * {@code PatchModuleMetabolismMedium} will decrease cell mass if:
  * <ul>
  *     <li>cell has negative energy levels indicating insufficient nutrients</li>
  *     <li>cell is above critical mass for maintenance</li>
  * </ul>
  */
 
-public class MetabolismMedium extends Metabolism {
+public class PatchModuleMetabolismMedium extends PatchModuleMetabolism {
     /** Metabolic preference for glycolysis over oxidative phosphorylation */
     private final double META_PREF;
     
@@ -49,7 +49,7 @@ public class MetabolismMedium extends Metabolism {
     private final int ATP_PER_GLUCOSE;
     
     /**
-     * Creates a medium {@link arcade.agent.module.Metabolism} module.
+     * Creates a medium {@link arcade.agent.module.PatchModuleMetabolism} module.
      * <p>
      * Module only has internal glucose.
      * Metabolic preference ({@code META_PREF}) parameter is drawn from a
@@ -59,7 +59,7 @@ public class MetabolismMedium extends Metabolism {
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    public MetabolismMedium(Cell c, Simulation sim) {
+    public PatchModuleMetabolismMedium(Cell c, Simulation sim) {
         super(c, sim);
         
         // Initial internal concentrations.
@@ -85,7 +85,7 @@ public class MetabolismMedium extends Metabolism {
             (1 - META_PREF)*ENERGY_FROM_OXPHOS*PYRU_PER_GLUC);
     }
     
-    public void stepMetabolismModule(Simulation sim) {
+    public void stepPatchModuleMetabolismModule(Simulation sim) {
         double glucInt = intAmts[GLUCOSE]; // [fmol]
         double glucExt = extAmts[GLUCOSE]; // [fmol]
         double oxyExt = extAmts[OXYGEN];   // [fmol]
@@ -165,7 +165,7 @@ public class MetabolismMedium extends Metabolism {
     }
     
     public void updateModule(Module mod, double f) {
-        MetabolismMedium metabolism = (MetabolismMedium)mod;
+        PatchModuleMetabolismMedium metabolism = (PatchModuleMetabolismMedium)mod;
         
         // Update daughter cell metabolism as fraction of parent.
         this.energy = metabolism.energy*f;

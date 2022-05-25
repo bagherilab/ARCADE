@@ -6,9 +6,9 @@ import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
 
 /** 
- * Extension of {@link arcade.agent.module.Metabolism} for complex metabolism.
+ * Extension of {@link arcade.agent.module.PatchModuleMetabolism} for complex metabolism.
  * <p>
- * {@code MetabolismComplex} explicitly includes pyruvate intermediate between
+ * {@code PatchModuleMetabolismComplex} explicitly includes pyruvate intermediate between
  * glycolysis and oxidative phosphorylation and glucose uptake is based on cell
  * surface area.
  * Metabolic preference between glycolysis and oxidative phosphorylation is
@@ -17,13 +17,13 @@ import arcade.agent.cell.Cell;
  * energetic requirements through the oxidative phosphorylation pathway given
  * the specified metabolic preference.
  * <p>
- * {@code MetabolismComplex} will increase cell mass (using specified fractions
+ * {@code PatchModuleMetabolismComplex} will increase cell mass (using specified fractions
  * of internal glucose and pyruvate) if:
  * <ul>
  *     <li>cell is dividing and less than double in size</li>
  *     <li>cell is below critical mass for maintenance</li>
  * </ul>
- * {@code MetabolismComplex} will decrease cell mass if:
+ * {@code PatchModuleMetabolismComplex} will decrease cell mass if:
  * <ul>
  *     <li>cell has negative energy levels indicating insufficient nutrients</li>
  *     <li>cell is above critical mass for maintenance</li>
@@ -32,7 +32,7 @@ import arcade.agent.cell.Cell;
  * Internal pyruvate is removed through conversion to lactate.
  */
 
-public class MetabolismComplex extends Metabolism {
+public class PatchModuleMetabolismComplex extends PatchModuleMetabolism {
     /** ID for pyruvate */
     private static final int PYRUVATE = 1;
     
@@ -58,7 +58,7 @@ public class MetabolismComplex extends Metabolism {
     private final double GLUC_UPTAKE_RATE;
     
     /**
-     * Creates a complex {@link arcade.agent.module.Metabolism} module.
+     * Creates a complex {@link arcade.agent.module.PatchModuleMetabolism} module.
      * <p>
      * Module has internal glucose and pyruvate.
      * Metabolic preference ({@code META_PREF}) parameter is drawn from a
@@ -68,7 +68,7 @@ public class MetabolismComplex extends Metabolism {
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    public MetabolismComplex(Cell c, Simulation sim) {
+    public PatchModuleMetabolismComplex(Cell c, Simulation sim) {
         super(c, sim);
         
         // Initial internal concentrations.
@@ -96,7 +96,7 @@ public class MetabolismComplex extends Metabolism {
         this.MIN_MASS = this.critMass*series.getParam(c.getPop(), "MIN_MASS_FRAC");
     }
     
-    public void stepMetabolismModule(Simulation sim) {
+    public void stepPatchModuleMetabolismModule(Simulation sim) {
         double glucInt = intAmts[GLUCOSE];  // [fmol]
         double pyruInt = intAmts[PYRUVATE]; // [fmol]
         double glucExt = extAmts[GLUCOSE];  // [fmol]
@@ -192,7 +192,7 @@ public class MetabolismComplex extends Metabolism {
     }
     
     public void updateModule(Module mod, double f) {
-        MetabolismComplex metabolism = (MetabolismComplex)mod;
+        PatchModuleMetabolismComplex metabolism = (PatchModuleMetabolismComplex)mod;
         
         // Update daughter cell metabolism as fraction of parent.
         this.energy = metabolism.energy*f;

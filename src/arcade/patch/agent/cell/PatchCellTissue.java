@@ -40,16 +40,16 @@ public class PatchCellTissue extends PatchCell {
         // Add metabolism module.
         switch (box.get("metabolism")) {
             case "RANDOM":
-                modules.put("metabolism", new MetabolismRandom(this, sim));
+                modules.put("metabolism", new PatchModuleMetabolismRandom(this, sim));
                 break;
             case "SIMPLE":
-                modules.put("metabolism", new MetabolismSimple(this, sim));
+                modules.put("metabolism", new PatchModuleMetabolismSimple(this, sim));
                 break;
             case "MEDIUM":
-                modules.put("metabolism", new MetabolismMedium(this, sim));
+                modules.put("metabolism", new PatchModuleMetabolismMedium(this, sim));
                 break;
             case "COMPLEX":
-                modules.put("metabolism", new MetabolismComplex(this, sim));
+                modules.put("metabolism", new PatchModuleMetabolismComplex(this, sim));
                 break;
         }
         

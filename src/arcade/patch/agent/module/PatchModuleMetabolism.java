@@ -10,7 +10,7 @@ import arcade.core.env.loc.Location;
 /** 
  * Implementation of {@link arcade.core.agent.module.Module} for cell metabolism.
  * <p>
- * The {@code Metabolism} module:
+ * The {@code PatchModuleMetabolism} module:
  * <ul>
  *     <li>gets available glucose and oxygen from the environment</li>
  *     <li>calculates energy consumption (in ATP) given cell size and state</li>
@@ -27,7 +27,7 @@ import arcade.core.env.loc.Location;
  * molecules.
  */
 
-public abstract class Metabolism implements Module {
+public abstract class PatchModuleMetabolism implements Module {
     /** ID for glucose */
     static final int GLUCOSE = 0;
     
@@ -113,7 +113,7 @@ public abstract class Metabolism implements Module {
     double energyReq;
     
     /**
-     * Creates a {@code Metabolism} module for the given {@link arcade.agent.cell.PatchCell}.
+     * Creates a {@code PatchModuleMetabolism} module for the given {@link arcade.agent.cell.PatchCell}.
      * <p>
      * Module parameters are specific for the cell population.
      * The module starts with energy at zero and assumes a constant ratio
@@ -122,7 +122,7 @@ public abstract class Metabolism implements Module {
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    Metabolism(Cell c, Simulation sim) {
+    PatchModuleMetabolism(Cell c, Simulation sim) {
         // Set parameters.
         pop = c.getPop();
         Series series = sim.getSeries();
@@ -156,7 +156,7 @@ public abstract class Metabolism implements Module {
      * 
      * @param sim  the simulation instance
      */
-    abstract void stepMetabolismModule(Simulation sim);
+    abstract void stepPatchModuleMetabolismModule(Simulation sim);
     
     /**
      * Gets the external amounts of glucose and oxygen.
@@ -187,7 +187,7 @@ public abstract class Metabolism implements Module {
         energyReq = energyCons - energy;
         
         // Modify energy and volume.
-        stepMetabolismModule(sim);
+        stepPatchModuleMetabolismModule(sim);
         
         // Update environment.
         sim.getEnvironment("glucose").updateVal(loc, 1.0 - upAmts[GLUCOSE]/extAmts[GLUCOSE]);

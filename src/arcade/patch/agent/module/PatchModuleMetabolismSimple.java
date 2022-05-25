@@ -6,18 +6,18 @@ import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
 
 /**
- * Extension of {@link arcade.agent.module.Metabolism} for simple metabolism.
+ * Extension of {@link arcade.agent.module.PatchModuleMetabolism} for simple metabolism.
  * <p>
- * {@code MetabolismSimple} assumes a constant glucose uptake rate and constant
+ * {@code PatchModuleMetabolismSimple} assumes a constant glucose uptake rate and constant
  * ATP production rate.
  * Ratio of ATP production that needs to be produced through glycolysis or
  * oxidative phosphorylation is controlled by the {@code META_PREF} parameter.
  * <p>
- * {@code MetabolismSimple} will increase cell mass (using specified fraction of
+ * {@code PatchModuleMetabolismSimple} will increase cell mass (using specified fraction of
  * internal glucose) if cell is dividing and less than double in size.
  */
 
-public class MetabolismSimple extends Metabolism {
+public class PatchModuleMetabolismSimple extends PatchModuleMetabolism {
     /** Average cell volume */
     private final double CELL_VOL_AVG;
     
@@ -34,7 +34,7 @@ public class MetabolismSimple extends Metabolism {
     private final double GLUC_REQ_OXPHOS;
     
     /**
-     * Creates a simple {@link arcade.agent.module.Metabolism} module.
+     * Creates a simple {@link arcade.agent.module.PatchModuleMetabolism} module.
      * <p>
      * Module only has internal glucose.
      * Metabolic preference ({@code META_PREF}) parameter is drawn from a
@@ -44,7 +44,7 @@ public class MetabolismSimple extends Metabolism {
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    public MetabolismSimple(Cell c, Simulation sim) {
+    public PatchModuleMetabolismSimple(Cell c, Simulation sim) {
         super(c, sim);
         
         // Initial internal concentrations.
@@ -70,7 +70,7 @@ public class MetabolismSimple extends Metabolism {
         this.GLUC_REQ_OXPHOS = cons_atp_production*(1 - meta_pref)/ENERGY_FROM_OXPHOS/PYRU_PER_GLUC;
     }
     
-    public void stepMetabolismModule(Simulation sim) {
+    public void stepPatchModuleMetabolismModule(Simulation sim) {
         double glucInt = intAmts[GLUCOSE]; // [fmol]
         double glucExt = extAmts[GLUCOSE]; // [fmol]
         double oxyExt = extAmts[OXYGEN];   // [fmol]
@@ -131,7 +131,7 @@ public class MetabolismSimple extends Metabolism {
     }
     
     public void updateModule(Module mod, double f) {
-        MetabolismSimple metabolism = (MetabolismSimple)mod;
+        PatchModuleMetabolismSimple metabolism = (PatchModuleMetabolismSimple)mod;
         
         // Update daughter cell metabolism as fraction of parent.
         this.energy = metabolism.energy*f;
