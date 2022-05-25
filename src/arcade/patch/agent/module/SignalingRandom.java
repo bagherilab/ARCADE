@@ -17,7 +17,7 @@ public class SignalingRandom extends Signaling {
     /**
      * Creates a random {@link arcade.agent.module.Signaling} module.
      * 
-     * @param c  the {@link arcade.agent.cell.TissueCell} the module is associated with
+     * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
     public SignalingRandom(Cell c, Simulation sim) {

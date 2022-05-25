@@ -38,9 +38,9 @@ public abstract class Signaling implements Module {
     double[] concs;
     
     /**
-     * Creates a {@code Signaling} module for the given {@link arcade.agent.cell.TissueCell}.
+     * Creates a {@code Signaling} module for the given {@link arcade.agent.cell.PatchCell}.
      *
-     * @param c  the {@link arcade.agent.cell.TissueCell} the module is associated with
+     * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
     Signaling(Cell c, Simulation sim) {

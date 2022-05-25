@@ -3,7 +3,7 @@ package arcade.patch.agent.helper;
 import sim.engine.*;
 import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
-import arcade.agent.cell.TissueCell;
+import arcade.agent.cell.PatchCell;
 import arcade.core.env.loc.Location;
 
 /**
@@ -13,7 +13,7 @@ import arcade.core.env.loc.Location;
  * corresponding to (distance to move)*(movement speed) has passed.
  * The {@code MoveTissueHelper} will move the cell from one location to another
  * based on best location as determined by the {@code getBestLocation} method in
- * {@link arcade.agent.cell.TissueCell}.
+ * {@link arcade.agent.cell.PatchCell}.
  */
 
 public class MoveTissueHelper extends TissueHelper {
@@ -25,11 +25,11 @@ public class MoveTissueHelper extends TissueHelper {
     
     /**
      * Creates a {@code MoveTissueHelper} for the given
-     * {@link arcade.agent.cell.TissueCell}.
+     * {@link arcade.agent.cell.PatchCell}.
      * 
-     * @param c  the {@link arcade.agent.cell.TissueCell} the helper is associated with
+     * @param c  the {@link arcade.agent.cell.PatchCell} the helper is associated with
      */
-    public MoveTissueHelper(Cell c) { super((TissueCell)c); }
+    public MoveTissueHelper(Cell c) { super((PatchCell)c); }
     
     public void scheduleHelper(Simulation sim) { scheduleHelper(sim, sim.getTime()); }
     
@@ -63,7 +63,7 @@ public class MoveTissueHelper extends TissueHelper {
             c.setFlag(Cell.IS_MIGRATING, false);
             
             // Find best location to move to.
-            Location newLoc = TissueCell.getBestLocation(sim, c);
+            Location newLoc = PatchCell.getBestLocation(sim, c);
             
             // Move cell if there is a location to move to and it is not the
             // same as the current location.

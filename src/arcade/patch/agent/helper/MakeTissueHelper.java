@@ -4,7 +4,7 @@ import sim.engine.*;
 import sim.util.Bag;
 import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
-import arcade.agent.cell.TissueCell;
+import arcade.agent.cell.PatchCell;
 import arcade.core.env.loc.Location;
 
 /** 
@@ -39,15 +39,15 @@ public class MakeTissueHelper extends TissueHelper {
     
     /**
      * Creates a {@code MakeTissueHelper} for the given
-     * {@link arcade.agent.cell.TissueCell}.
+     * {@link arcade.agent.cell.PatchCell}.
      * 
-     * @param c  the {@link arcade.agent.cell.TissueCell} the helper is associated with
-     * @param cNew  the new {@link arcade.agent.cell.TissueCell} to be added
+     * @param c  the {@link arcade.agent.cell.PatchCell} the helper is associated with
+     * @param cNew  the new {@link arcade.agent.cell.PatchCell} to be added
      * @param start  the tick at which the helper is created
      * @param f  the volume fraction for the daughter cell (between 0.45 and 0.55)
      */
     public MakeTissueHelper(Cell c, Cell cNew, double start, double f) {
-        super((TissueCell)c);
+        super((PatchCell)c);
         ticker = 0;
         this.start = start;
         this.f = f;
@@ -107,7 +107,7 @@ public class MakeTissueHelper extends TissueHelper {
         if (c.getType() != Cell.TYPE_PROLI) { stop(sim, false); }
         else if (currentHeight > c.getParams().get("MAX_HEIGHT").getMu()) { stop(sim, true); }
         else {
-            Location newLoc = TissueCell.getBestLocation(sim, cNew);
+            Location newLoc = PatchCell.getBestLocation(sim, cNew);
             
             if (newLoc == null) { stop(sim, true); }
             else if (c.getFlag(Cell.IS_DOUBLED)) {
@@ -133,7 +133,7 @@ public class MakeTissueHelper extends TissueHelper {
                     // Update number of divisions for parent and daughter
                     // cell. Set parent type back to neutral.
                     c.divisions--;
-                    ((TissueCell)cNew).divisions = c.divisions;
+                    ((PatchCell)cNew).divisions = c.divisions;
                     cNew.setAge(c.getAge());
                     c.setType(Cell.TYPE_NEUTRAL);
                     c.setFlag(Cell.IS_PROLIFERATING, false);

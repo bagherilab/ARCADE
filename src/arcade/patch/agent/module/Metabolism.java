@@ -113,13 +113,13 @@ public abstract class Metabolism implements Module {
     double energyReq;
     
     /**
-     * Creates a {@code Metabolism} module for the given {@link arcade.agent.cell.TissueCell}.
+     * Creates a {@code Metabolism} module for the given {@link arcade.agent.cell.PatchCell}.
      * <p>
      * Module parameters are specific for the cell population.
      * The module starts with energy at zero and assumes a constant ratio
      * between mass and volume (through density).
      * 
-     * @param c  the {@link arcade.agent.cell.TissueCell} the module is associated with
+     * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
     Metabolism(Cell c, Simulation sim) {

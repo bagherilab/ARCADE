@@ -10,19 +10,19 @@ import arcade.core.util.Parameter;
 import arcade.core.util.MiniBox;
 
 /** 
- * Extension of {@link arcade.agent.cell.TissueCell} for healthy tissue cells with
+ * Extension of {@link arcade.agent.cell.PatchCell} for healthy tissue cells with
  * selected module versions.
  * <p>
- * {@code TissueHCell} agents can be created by either passing in a
+ * {@code PatchCellTissue} agents can be created by either passing in a
  * {@link arcade.core.util.MiniBox} with module versions or the parent cell.
  */
 
-public class TissueHCell extends TissueCell {
+public class PatchCellTissue extends PatchCell {
     /** Serialization version identifier */
     private static final long serialVersionUID = 0;
     
     /**
-     * Creates a healthy {@link arcade.agent.cell.TissueCell} agent given specific
+     * Creates a healthy {@link arcade.agent.cell.PatchCell} agent given specific
      * module versions.
      * 
      * @param sim  the simulation instance
@@ -33,7 +33,7 @@ public class TissueHCell extends TissueCell {
      * @param params  the map of parameter name to {@link arcade.core.util.Parameter} objects
      * @param box  the map of module name to version
      */
-    public TissueHCell(Simulation sim, int pop, Location loc, double vol, 
+    public PatchCellTissue(Simulation sim, int pop, Location loc, double vol, 
                        int age, Map<String, Parameter> params, MiniBox box) {
         super(pop, loc, vol, age, params);
         
@@ -71,7 +71,7 @@ public class TissueHCell extends TissueCell {
     }
     
     /**
-     * Creates a healthy {@link arcade.agent.cell.TissueCell} agent given the
+     * Creates a healthy {@link arcade.agent.cell.PatchCell} agent given the
      * modules of the parent cell.
      * <p>
      * Constructor uses reflection to create constructors based on the
@@ -81,7 +81,7 @@ public class TissueHCell extends TissueCell {
      * @param parent  the parent cell
      * @param f  the fractional reduction
      */
-    public TissueHCell(Simulation sim, TissueCell parent, double f) {
+    public PatchCellTissue(Simulation sim, PatchCell parent, double f) {
         super(parent.getPop(), parent.getLocation(), parent.getCritVolume()*2*f, 0, parent.getParams());
         try {
             Map<String, Module> modules = parent.modules;
@@ -93,6 +93,6 @@ public class TissueHCell extends TissueCell {
     }
     
     public Cell newCell(Simulation sim, Cell parent, double f) {
-        return new TissueHCell(sim, (TissueCell)parent, f);
+        return new PatchCellTissue(sim, (PatchCell)parent, f);
     }
 }

@@ -56,7 +56,7 @@ public class MetabolismMedium extends Metabolism {
      * {@link arcade.core.util.Parameter} distribution and the distribution is updated
      * with the new mean.
      *
-     * @param c  the {@link arcade.agent.cell.TissueCell} the module is associated with
+     * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
     public MetabolismMedium(Cell c, Simulation sim) {

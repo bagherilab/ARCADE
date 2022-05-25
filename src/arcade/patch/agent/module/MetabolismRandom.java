@@ -53,7 +53,7 @@ public class MetabolismRandom extends Metabolism {
      * <p>
      * Module only has internal glucose.
      *
-     * @param c  the {@link arcade.agent.cell.TissueCell} the module is associated with
+     * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
     public MetabolismRandom(Cell c, Simulation sim) {

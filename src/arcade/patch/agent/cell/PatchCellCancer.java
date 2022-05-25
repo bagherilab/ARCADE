@@ -9,9 +9,9 @@ import arcade.core.util.Parameter;
 import arcade.core.util.MiniBox;
 
 /** 
- * Extension of {@link arcade.agent.cell.TissueHCell} for cancerous tissue cells.
+ * Extension of {@link arcade.agent.cell.PatchCellTissue} for cancerous tissue cells.
  * <p>
- * {@code TissueCCell} agents are modified from their superclass:
+ * {@code PatchCellCancer} agents are modified from their superclass:
  * <ul>
  *     <li>Code change to {@code CODE_C_CELL}</li>
  *     <li>If cell is quiescent, they may exit out of quiescence into neutral
@@ -19,12 +19,12 @@ import arcade.core.util.MiniBox;
  * </ul>
  */
 
-public class TissueCCell extends TissueHCell {
+public class PatchCellCancer extends PatchCellTissue {
     /** Serialization version identifier */
     private static final long serialVersionUID = 0;
     
     /**
-     * Creates a cancerous {@link arcade.agent.cell.TissueCell} agent given
+     * Creates a cancerous {@link arcade.agent.cell.PatchCell} agent given
      * specific module versions.
      * <p>
      * Changes the cell agent code to cancerous.
@@ -37,14 +37,14 @@ public class TissueCCell extends TissueHCell {
      * @param params  the map of parameter name to {@link arcade.core.util.Parameter} objects
      * @param box  the map of module name to version
      */
-    public TissueCCell(Simulation sim, int pop, Location loc, double vol,
+    public PatchCellCancer(Simulation sim, int pop, Location loc, double vol,
                        int age, Map<String, Parameter> params, MiniBox box) {
         super(sim, pop, loc, vol, age, params, box);
         code = Cell.CODE_C_CELL;
     }
     
     /**
-     * Creates a cancerous {@link arcade.agent.cell.TissueCell} agent given the
+     * Creates a cancerous {@link arcade.agent.cell.PatchCell} agent given the
      * modules of the parent cell.
      * <p>
      * Constructor uses reflection to create constructors based on the
@@ -55,7 +55,7 @@ public class TissueCCell extends TissueHCell {
      * @param parent  the parent cell
      * @param f  the fractional reduction
      */
-    public TissueCCell(Simulation sim, TissueCell parent, double f) {
+    public PatchCellCancer(Simulation sim, PatchCell parent, double f) {
         super(sim, parent, f);
         code = Cell.CODE_C_CELL;
     }
@@ -71,7 +71,7 @@ public class TissueCCell extends TissueHCell {
     }
     
     public Cell newCell(Simulation sim, Cell parent, double f) {
-        return new TissueCCell(sim, (TissueCell)parent, f);
+        return new PatchCellCancer(sim, (PatchCell)parent, f);
     }
     
     /**
@@ -84,6 +84,6 @@ public class TissueCCell extends TissueHCell {
      */
     private static void checkNeighborhood(SimState state, Cell c) {
         Simulation sim = (Simulation)state;
-        if (TissueCell.getFreeLocations(sim, c).size() > 0) { c.setType(Cell.TYPE_NEUTRAL); }
+        if (PatchCell.getFreeLocations(sim, c).size() > 0) { c.setType(Cell.TYPE_NEUTRAL); }
     }
 }

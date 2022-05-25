@@ -97,7 +97,7 @@ public class ParameterProfiler extends Profiler {
             if (bag != null) {
                 String c = "";
                 for (Object obj : bag) {
-                    TissueCell cell = (TissueCell)obj;
+                    PatchCell cell = (PatchCell)obj;
                     Map<String, Parameter> params = cell.getParams();
                     String paramList = "";
                     

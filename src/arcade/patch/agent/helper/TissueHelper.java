@@ -1,14 +1,14 @@
 package arcade.patch.agent.helper;
 
-import arcade.agent.cell.TissueCell;
+import arcade.agent.cell.PatchCell;
 
 /** 
  * Implementation of {@link arcade.core.agent.helper.Helper} for time-delayed
- * {@link arcade.agent.cell.TissueCell} behaviors.
+ * {@link arcade.agent.cell.PatchCell} behaviors.
  * <p>
  * Each {@code TissueHelper} object is associated with a specific
- * {@link arcade.agent.cell.TissueCell} agent.
- * The {@link arcade.agent.cell.TissueCell} agent calls the {@code scheduleHelper}
+ * {@link arcade.agent.cell.PatchCell} agent.
+ * The {@link arcade.agent.cell.PatchCell} agent calls the {@code scheduleHelper}
  * method of {@code TissueHelper} to add the behavior to the schedule to be
  * stepped.
  */
@@ -18,7 +18,7 @@ public abstract class TissueHelper implements Helper {
     private static final long serialVersionUID = 0;
     
     /** Cell the {@code Helper} is associated with */
-    final TissueCell c;
+    final PatchCell c;
     
     /** Tick the {@code Helper} began */
     double begin;
@@ -27,11 +27,11 @@ public abstract class TissueHelper implements Helper {
     double end;
     
     /**
-     * Creates a {@code TissueHelper} for the given {@link arcade.agent.cell.TissueCell}.
+     * Creates a {@code TissueHelper} for the given {@link arcade.agent.cell.PatchCell}.
      * 
-     * @param c  the {@link arcade.agent.cell.TissueCell} the helper is associated with
+     * @param c  the {@link arcade.agent.cell.PatchCell} the helper is associated with
      */
-    public TissueHelper(TissueCell c) { this.c = c; }
+    public TissueHelper(PatchCell c) { this.c = c; }
     
     public double getBegin() { return begin; }
     public double getEnd() { return end; }

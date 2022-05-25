@@ -8,24 +8,24 @@ import arcade.core.util.Parameter;
 import arcade.core.util.MiniBox;
 
 /**
- * Extension of {@link arcade.agent.cell.TissueCCell} for cancerous stem cells.
+ * Extension of {@link arcade.agent.cell.PatchCellCancer} for cancerous stem cells.
  * <p>
- * {@code TissueSCell} agents are modified from their superclass:
+ * {@code PatchCellCancerStem} agents are modified from their superclass:
  * <ul>
  *     <li>Code change to {@code CODE_S_CELL}</li>
  *     <li>Cells are immortal (death age set to maximum)</li>
  *     <li>Asymmetric division with probability of producing another stem cell
- *     ({@code TissueSCell}) or a cancerous cell ({@code TissueCCell})</li>
+ *     ({@code PatchCellCancerStem}) or a cancerous cell ({@code PatchCellCancer})</li>
  *     <li>No division limit</li>
  * </ul>
  */
 
-public class TissueSCell extends TissueCCell {
+public class PatchCellCancerStem extends PatchCellCancer {
     /** Serialization version identifier */
     private static final long serialVersionUID = 0;
     
     /**
-     * Creates a cancer stem cell {@link arcade.agent.cell.TissueCell} agent given
+     * Creates a cancer stem cell {@link arcade.agent.cell.PatchCell} agent given
      * specific module versions.
      * <p>
      * Changes the cell agent code to cancer stem cell and life span to the 
@@ -39,7 +39,7 @@ public class TissueSCell extends TissueCCell {
      * @param params  the map of parameter name to {@link arcade.core.util.Parameter} objects
      * @param box  the map of module name to version
      */
-    public TissueSCell(Simulation sim, int pop, Location loc, double vol, 
+    public PatchCellCancerStem(Simulation sim, int pop, Location loc, double vol, 
                        int age, Map<String, Parameter> params, MiniBox box) {
         super(sim, pop, loc, vol, age, params, box);
         code = Cell.CODE_S_CELL;
@@ -47,7 +47,7 @@ public class TissueSCell extends TissueCCell {
     }
     
     /**
-     * Creates a cancer stem cell {@link arcade.agent.cell.TissueCell} agent given
+     * Creates a cancer stem cell {@link arcade.agent.cell.PatchCell} agent given
      * the modules of the parent cell.
      * <p>
      * Constructor uses reflection to create constructors based on the
@@ -59,7 +59,7 @@ public class TissueSCell extends TissueCCell {
      * @param parent  the parent cell
      * @param f  the fractional reduction
      */
-    public TissueSCell(Simulation sim, TissueCell parent, double f) {
+    public PatchCellCancerStem(Simulation sim, PatchCell parent, double f) {
         super(sim, parent, f);
         code = Cell.CODE_S_CELL;
         deathAge = Integer.MAX_VALUE;
@@ -72,7 +72,7 @@ public class TissueSCell extends TissueCCell {
      */
     public Cell newCell(Simulation sim, Cell parent, double f) {
         return checkDivision(sim, this) ?
-            new TissueSCell(sim, (TissueCell)parent, f) : new TissueCCell(sim, (TissueCell)parent, f);
+            new PatchCellCancerStem(sim, (PatchCell)parent, f) : new PatchCellCancer(sim, (PatchCell)parent, f);
     }
     
     /**
@@ -83,7 +83,7 @@ public class TissueSCell extends TissueCCell {
      * @param c  the parent cell
      * @return  {@code true} if daughter cell is a stem cell, {@code false} otherwise
      */
-    private static boolean checkDivision(Simulation sim, TissueCell c) {
+    private static boolean checkDivision(Simulation sim, PatchCell c) {
         if (c.divisions < 1) { c.divisions++; } // update division count
         return sim.getRandom() < sim.getSeries().getParam(c.getPop(), "DIVISION_PROB"); // random value
     }

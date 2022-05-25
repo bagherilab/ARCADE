@@ -13,17 +13,17 @@ import arcade.agent.helper.*;
 /** 
  * Implementation of {@link arcade.agent.cell.Cell} for generic tissue cell.
  * <p>
- * {@code TissueCell} agents exist in one of seven states: neutral, apoptotic,
+ * {@code PatchCell} agents exist in one of seven states: neutral, apoptotic,
  * quiescent, migratory, proliferative, senescent, and necrotic.
  * The neutral state is an transition state for "undecided" cells, and does not
  * have any biological analog.
  * <p>
- * {@code TissueCell} agents have two required {@link arcade.core.agent.module.Module} 
+ * {@code PatchCell} agents have two required {@link arcade.core.agent.module.Module} 
  * types: metabolism and signaling.
  * Metabolism controls changes in cell energy and volume.
  * Signaling controls the proliferative vs. migratory decision.
  * <p>
- * General order of rules for the {@code TissueCell} step:
+ * General order of rules for the {@code PatchCell} step:
  * <ul>
  *     <li>update age</li>
  *     <li>check lifespan (possible change to apoptotic)</li>
@@ -39,7 +39,7 @@ import arcade.agent.helper.*;
  * parent cell parameter with the specified amount of heterogeneity.
  */
 
-public abstract class TissueCell implements Cell {
+public abstract class PatchCell implements Cell {
     /** Serialization version identifier */
     private static final long serialVersionUID = 0;
     
@@ -104,9 +104,9 @@ public abstract class TissueCell implements Cell {
     private final Bag cycle = new Bag();
     
     /**
-     * Creates a {@code TissueCell} agent.
+     * Creates a {@code PatchCell} agent.
      * <p>
-     * {@code TissueCell} agents are by default assigned as type = neutral and
+     * {@code PatchCell} agents are by default assigned as type = neutral and
      * code = healthy.
      * Any extending constructors should change type and/or code as needed.
      * <p>
@@ -126,7 +126,7 @@ public abstract class TissueCell implements Cell {
      * @param age  the initial age of the cell in minutes
      * @param p  the map of parameter name to {@link arcade.core.util.Parameter} objects
      */
-    public TissueCell(int pop, Location loc, double vol, int age, Map<String, Parameter> p) {
+    public PatchCell(int pop, Location loc, double vol, int age, Map<String, Parameter> p) {
         // Initialize cell agent.
         this.volume = vol;
         this.critVolume = vol;

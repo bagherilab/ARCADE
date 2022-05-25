@@ -4,7 +4,7 @@ import sim.engine.*;
 import sim.util.Bag;
 import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
-import arcade.agent.cell.TissueCell;
+import arcade.agent.cell.PatchCell;
 
 /**
  * Extension of {@link arcade.agent.helper.TissueHelper} for cell death.
@@ -24,11 +24,11 @@ public class RemoveTissueHelper extends TissueHelper {
     
     /**
      * Creates a {@code RemoveTissueHelper} for the given
-     * {@link arcade.agent.cell.TissueCell}.
+     * {@link arcade.agent.cell.PatchCell}.
      *
-     * @param c  the {@link arcade.agent.cell.TissueCell} the helper is associated with
+     * @param c  the {@link arcade.agent.cell.PatchCell} the helper is associated with
      */
-    public RemoveTissueHelper(Cell c) { super((TissueCell)c); }
+    public RemoveTissueHelper(Cell c) { super((PatchCell)c); }
     
     public void scheduleHelper(Simulation sim) { scheduleHelper(sim, sim.getTime()); }
     
@@ -63,7 +63,7 @@ public class RemoveTissueHelper extends TissueHelper {
         for (Object obj : neighbors) {
             Cell neighbor = (Cell)obj;
             if (neighbor.getType() == Cell.TYPE_QUIES) {
-                ((TissueCell)neighbor).proliferate(sim);
+                ((PatchCell)neighbor).proliferate(sim);
                 break;
             }
         }
