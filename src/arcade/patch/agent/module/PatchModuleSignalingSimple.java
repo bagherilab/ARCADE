@@ -8,15 +8,15 @@ import arcade.core.util.Solver;
 import arcade.core.util.Solver.Equations;
 
 /**
- * Extension of {@link arcade.agent.module.Signaling} for simple EGFR signaling.
+ * Extension of {@link arcade.agent.module.PatchModuleSignaling} for simple EGFR signaling.
  * <p>
- * {@code SignalingSimple} represents a 5-component signaling network spanning
+ * {@code PatchModuleSignalingSimple} represents a 5-component signaling network spanning
  * the cytoplasm.
  * Migratory flag is set based on fold change in active PLCg.
- * Derived from {@link arcade.agent.module.SignalingMedium} using minimal components.
+ * Derived from {@link arcade.agent.module.PatchModuleSignalingMedium} using minimal components.
  */
 
-public class SignalingSimple extends Signaling {
+public class PatchModuleSignalingSimple extends PatchModuleSignaling {
     /** Number of components in signaling network */
     private static final int NUM_COMPONENTS = 5;
     
@@ -75,7 +75,7 @@ public class SignalingSimple extends Signaling {
     private double current = 1.0;
     
     /**
-     * Creates a simple {@link arcade.agent.module.Signaling} module.
+     * Creates a simple {@link arcade.agent.module.PatchModuleSignaling} module.
      * <p>
      * Initial concentrations of all components in the network are assigned and
      * molecule names are added.
@@ -86,7 +86,7 @@ public class SignalingSimple extends Signaling {
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    public SignalingSimple(Cell c, Simulation sim) {
+    public PatchModuleSignalingSimple(Cell c, Simulation sim) {
         super(c, sim);
         
         // Initial concentrations, all in nM (umol/m^3). Most are zeros.
@@ -150,6 +150,6 @@ public class SignalingSimple extends Signaling {
     }
     
     public void updateModule(Module mod, double f) {
-        concs = ((SignalingSimple)mod).concs.clone();
+        concs = ((PatchModuleSignalingSimple)mod).concs.clone();
     }
 }

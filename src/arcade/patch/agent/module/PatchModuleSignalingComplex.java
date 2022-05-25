@@ -8,9 +8,9 @@ import arcade.core.util.Solver;
 import arcade.core.util.Solver.Equations;
 
 /** 
- * Extension of {@link arcade.agent.module.Signaling} for complex EGFR signaling.
+ * Extension of {@link arcade.agent.module.PatchModuleSignaling} for complex EGFR signaling.
  * <p>
- * {@code SignalingComplex} represents a 13-component signaling network spanning
+ * {@code PatchModuleSignalingComplex} represents a 13-component signaling network spanning
  * the nucleus, cytoplasm, and cell membrane.
  * Migratory flag is set based on fold change in active PLCg.
  * <p>
@@ -21,7 +21,7 @@ import arcade.core.util.Solver.Equations;
  * Theoretical Biology</em>, 244(1), 96-107.
  */
 
-public class SignalingComplex extends Signaling {
+public class PatchModuleSignalingComplex extends PatchModuleSignaling {
     /** Number of components in signaling network */
     private static final int NUM_COMPONENTS = 13;
     
@@ -170,7 +170,7 @@ public class SignalingComplex extends Signaling {
     private double current = 1.0;
     
     /**
-     * Creates a complex {@link arcade.agent.module.Signaling} module.
+     * Creates a complex {@link arcade.agent.module.PatchModuleSignaling} module.
      * <p>
      * Initial concentrations of all components in the network are assigned and
      * molecule names are added.
@@ -181,7 +181,7 @@ public class SignalingComplex extends Signaling {
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    public SignalingComplex(Cell c, Simulation sim) {
+    public PatchModuleSignalingComplex(Cell c, Simulation sim) {
         super(c, sim);
         
         // Initial concentrations, all in nM (umol/m^3). Most are zeros.
@@ -269,6 +269,6 @@ public class SignalingComplex extends Signaling {
     }
     
     public void updateModule(Module mod, double f) {
-        concs = ((SignalingComplex)mod).concs.clone();
+        concs = ((PatchModuleSignalingComplex)mod).concs.clone();
     }
 }

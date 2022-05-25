@@ -8,11 +8,11 @@ import arcade.core.env.loc.Location;
 /**
  * Implementation of {@link arcade.core.agent.module.Module} for cell signaling.
  * <p>
- * The {@code Signaling} module can be used for networks comprising a system of
+ * The {@code PatchModuleSignaling} module can be used for networks comprising a system of
  * ODEs.
  */
 
-public abstract class Signaling implements Module {
+public abstract class PatchModuleSignaling implements Module {
     /** Molecules in nM */
     static final double MOLEC_TO_NM = 1355.0;
     
@@ -38,12 +38,12 @@ public abstract class Signaling implements Module {
     double[] concs;
     
     /**
-     * Creates a {@code Signaling} module for the given {@link arcade.agent.cell.PatchCell}.
+     * Creates a {@code PatchModuleSignaling} module for the given {@link arcade.agent.cell.PatchCell}.
      *
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    Signaling(Cell c, Simulation sim) {
+    PatchModuleSignaling(Cell c, Simulation sim) {
         this.loc = c.getLocation();
         this.c = c;
         this.pop = c.getPop();

@@ -5,22 +5,22 @@ import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 
 /**
- * Extension of {@link arcade.agent.module.Signaling} for random signaling.
+ * Extension of {@link arcade.agent.module.PatchModuleSignaling} for random signaling.
  * <p>
- * {@code SignalingRandom} simply randomly sets the migratory flag.
+ * {@code PatchModuleSignalingRandom} simply randomly sets the migratory flag.
  */
 
-public class SignalingRandom extends Signaling {
+public class PatchModuleSignalingRandom extends PatchModuleSignaling {
     /** Migratory threshold */
     private final double MIGRA_PROB;
     
     /**
-     * Creates a random {@link arcade.agent.module.Signaling} module.
+     * Creates a random {@link arcade.agent.module.PatchModuleSignaling} module.
      * 
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    public SignalingRandom(Cell c, Simulation sim) {
+    public PatchModuleSignalingRandom(Cell c, Simulation sim) {
         super(c, sim);
         Series series = sim.getSeries();
         this.MIGRA_PROB = series.getParam(pop, "MIGRA_PROB");

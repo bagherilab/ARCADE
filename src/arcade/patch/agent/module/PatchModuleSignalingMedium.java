@@ -8,16 +8,16 @@ import arcade.core.util.Solver;
 import arcade.core.util.Solver.Equations;
 
 /** 
- * Extension of {@link arcade.agent.module.Signaling} for medium EGFR signaling.
+ * Extension of {@link arcade.agent.module.PatchModuleSignaling} for medium EGFR signaling.
  * <p>
- * {@code SignalingMedium} represents a 8-component signaling network spanning
+ * {@code PatchModuleSignalingMedium} represents a 8-component signaling network spanning
  * the cytoplasm and cell membrane.
  * Migratory flag is set based on fold change in active PLCg.
- * Derived from {@link arcade.agent.module.SignalingComplex} with simplified
+ * Derived from {@link arcade.agent.module.PatchModuleSignalingComplex} with simplified
  * transcription/translation.
  */
 
-public class SignalingMedium extends Signaling {
+public class PatchModuleSignalingMedium extends PatchModuleSignaling {
     /** Number of components in signaling network */
     private static final int NUM_COMPONENTS = 8;
     
@@ -109,7 +109,7 @@ public class SignalingMedium extends Signaling {
     private double current = 1.0;
     
     /**
-     * Creates a medium {@link arcade.agent.module.Signaling} module.
+     * Creates a medium {@link arcade.agent.module.PatchModuleSignaling} module.
      * <p>
      * Initial concentrations of all components in the network are assigned and
      * molecule names are added.
@@ -120,7 +120,7 @@ public class SignalingMedium extends Signaling {
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    public SignalingMedium(Cell c, Simulation sim) {
+    public PatchModuleSignalingMedium(Cell c, Simulation sim) {
         super(c, sim);
         
         // Initial concentrations, all in nM (umol/m^3). Most are zeros.
@@ -191,6 +191,6 @@ public class SignalingMedium extends Signaling {
     }
     
     public void updateModule(Module mod, double f) {
-        concs = ((SignalingMedium)mod).concs.clone();
+        concs = ((PatchModuleSignalingMedium)mod).concs.clone();
     }
 }

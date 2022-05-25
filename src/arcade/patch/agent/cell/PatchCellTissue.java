@@ -56,16 +56,16 @@ public class PatchCellTissue extends PatchCell {
         // Add signaling module.
         switch (box.get("signaling")) {
             case "RANDOM":
-                modules.put("signaling", new SignalingRandom(this, sim));
+                modules.put("signaling", new PatchModuleSignalingRandom(this, sim));
                 break;
             case "SIMPLE":
-                modules.put("signaling", new SignalingSimple(this, sim));
+                modules.put("signaling", new PatchModuleSignalingSimple(this, sim));
                 break;
             case "MEDIUM":
-                modules.put("signaling", new SignalingMedium(this, sim));
+                modules.put("signaling", new PatchModuleSignalingMedium(this, sim));
                 break;
             case "COMPLEX":
-                modules.put("signaling", new SignalingComplex(this, sim));
+                modules.put("signaling", new PatchModuleSignalingComplex(this, sim));
                 break;
         }
     }
