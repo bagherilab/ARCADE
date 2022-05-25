@@ -19,7 +19,7 @@ import arcade.core.util.MiniBox;
  * </ul>
  */
 
-public abstract class EnvLattice implements Lattice {
+public abstract class PatchLattice implements Lattice {
     /** Array containing lattice values */
     private final double[][][] field;
     
@@ -36,14 +36,14 @@ public abstract class EnvLattice implements Lattice {
     private final Map<String, Component> components;
     
     /**
-     * Creates an {@code EnvLattice} object of given array size with initial value.
+     * Creates an {@code PatchLattice} object of given array size with initial value.
      * 
      * @param length  the length of array (x direction)
      * @param width  the width of array (y direction)
      * @param depth  the depth of array (z direction)
      * @param val  the initial value of array
      */
-    EnvLattice(int length, int width, int depth, double val) {
+    PatchLattice(int length, int width, int depth, double val) {
         this.length = length;
         this.width = width;
         this.depth = depth;

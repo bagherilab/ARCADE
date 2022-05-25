@@ -55,7 +55,7 @@ public class HexagonalRepresentation implements Representation {
     public Grid getNewGrid() { return new PatchGridHex(); }
     
     public Lattice getNewLattice(double val) {
-        return new TriEnvLat(length, width, depth, val);
+        return new PatchLatticeTri(length, width, depth, val);
     }
     
     /**

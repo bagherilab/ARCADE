@@ -53,7 +53,7 @@ public class RectangularRepresentation implements Representation {
     public Grid getNewGrid() { return new PatchGridRect(); }
     
     public Lattice getNewLattice(double val) {
-        return new RectEnvLat(length, width, depth, val);
+        return new PatchLatticeRect(length, width, depth, val);
     }
     
     /**
