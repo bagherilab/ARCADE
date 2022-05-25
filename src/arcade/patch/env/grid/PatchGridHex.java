@@ -3,21 +3,21 @@ package arcade.patch.env.grid;
 import arcade.env.loc.*;
 import sim.util.Bag;
 
-/** 
- * Extension of {@link arcade.env.grid.AgentGrid} for rectangular grid.
+/**
+ * Extension of {@link arcade.env.grid.PatchGrid} for hexagonal grid.
  * <p>
- * Each rectangular location has four positions.
- * Uses {@link arcade.env.loc.RectLocation} as {@link arcade.core.env.loc.Location} object.
+ * Each hexagon location has six positions.
+ * Uses {@link arcade.env.loc.HexLocation} as {@link arcade.core.env.loc.Location} object.
  */
 
-public class RectAgentGrid extends AgentGrid {
+public class PatchGridHex extends PatchGrid {
     /** Number of positions in a location */
-    private static final int N = 4;
+    private static final int N = 6;
     
     /**
-     * Creates a rectangular {@link arcade.env.grid.AgentGrid}.
+     * Creates a hexagonal {@link arcade.env.grid.PatchGrid}.
      */
-    public RectAgentGrid() { super(); }
+    public PatchGridHex() { super(); }
     
     protected byte getFreePosition(Location loc) {
         boolean[] flags = locationToFlags.get(loc);
@@ -28,13 +28,13 @@ public class RectAgentGrid extends AgentGrid {
     
     protected Bag createObject(Location loc) {
         Bag objs = new Bag(N);
-        locationToBag.put(new RectLocation(loc), objs);
+        locationToBag.put(new HexLocation(loc), objs);
         return objs;
     }
-        
+    
     protected boolean[] createFlags(Location loc) {
         boolean[] flags = new boolean[N];
-        locationToFlags.put(new RectLocation(loc), flags);
+        locationToFlags.put(new HexLocation(loc), flags);
         return flags;
     }
 }

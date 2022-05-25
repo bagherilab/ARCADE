@@ -52,7 +52,7 @@ public class HexagonalRepresentation implements Representation {
         depth = 2*series._heightBounds - 1;
     }
     
-    public Grid getNewGrid() { return new HexAgentGrid(); }
+    public Grid getNewGrid() { return new PatchGridHex(); }
     
     public Lattice getNewLattice(double val) {
         return new TriEnvLat(length, width, depth, val);

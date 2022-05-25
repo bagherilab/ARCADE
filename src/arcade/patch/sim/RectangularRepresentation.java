@@ -50,7 +50,7 @@ public class RectangularRepresentation implements Representation {
         depth = 2*series._heightBounds - 1;
     }
     
-    public Grid getNewGrid() { return new RectAgentGrid(); }
+    public Grid getNewGrid() { return new PatchGridRect(); }
     
     public Lattice getNewLattice(double val) {
         return new RectEnvLat(length, width, depth, val);

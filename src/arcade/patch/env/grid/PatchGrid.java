@@ -9,13 +9,13 @@ import arcade.core.env.loc.Location;
  * Implementation of {@link arcade.core.env.grid.Grid} using {@link arcade.core.env.loc.Location}
  * object as hash.
  * <p>
- * {@code AgentGrid} uses the Location object to map to objects at the location.
+ * {@code PatchGrid} uses the Location object to map to objects at the location.
  * Methods are written to work regardless of the underlying geometry.
  * An array of boolean flags indicates if positions within a location are
  * occupied.
  */
 
-public abstract class AgentGrid implements Grid {
+public abstract class PatchGrid implements Grid {
     /** Collection of all objects in the grid */
     private final Bag allObjects;
     
@@ -29,9 +29,9 @@ public abstract class AgentGrid implements Grid {
     final Map<Location, boolean[]> locationToFlags;
     
     /**
-     * Creates an {@code AgentGrid} object.
+     * Creates an {@code PatchGrid} object.
      */
-    AgentGrid() {
+    PatchGrid() {
         allObjects = new Bag();
         objectToLocation = new HashMap<>();
         locationToBag = new HashMap<>();
