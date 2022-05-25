@@ -7,7 +7,7 @@ import sim.util.Bag;
  * Extension of {@link arcade.env.grid.PatchGrid} for rectangular grid.
  * <p>
  * Each rectangular location has four positions.
- * Uses {@link arcade.env.loc.RectLocation} as {@link arcade.core.env.loc.Location} object.
+ * Uses {@link arcade.env.loc.PatchLocationRect} as {@link arcade.core.env.loc.Location} object.
  */
 
 public class PatchGridRect extends PatchGrid {
@@ -28,13 +28,13 @@ public class PatchGridRect extends PatchGrid {
     
     protected Bag createObject(Location loc) {
         Bag objs = new Bag(N);
-        locationToBag.put(new RectLocation(loc), objs);
+        locationToBag.put(new PatchLocationRect(loc), objs);
         return objs;
     }
         
     protected boolean[] createFlags(Location loc) {
         boolean[] flags = new boolean[N];
-        locationToFlags.put(new RectLocation(loc), flags);
+        locationToFlags.put(new PatchLocationRect(loc), flags);
         return flags;
     }
 }

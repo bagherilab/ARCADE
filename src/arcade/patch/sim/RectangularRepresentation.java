@@ -33,7 +33,7 @@ public class RectangularRepresentation implements Representation {
     /**
      * Representation with rectangular geometry.
      * <p>
-     * Passes {@link arcade.core.sim.Series} to {@link arcade.env.loc.RectLocation} to
+     * Passes {@link arcade.core.sim.Series} to {@link arcade.env.loc.PatchLocationRect} to
      * update static configuration variables for the entire simulation.
      * Length, width, and depth of the rectangular lattice are calculated based
      * on radius and height of the rectangular grid.
@@ -42,7 +42,7 @@ public class RectangularRepresentation implements Representation {
      */
     public RectangularRepresentation(Series series) {
         this.series = series;
-        RectLocation.updateConfigs(series);
+        PatchLocationRect.updateConfigs(series);
         
         // Calculate length, width, and depth for lattice.
         length = 4*series._radiusBounds - 2;
@@ -84,7 +84,7 @@ public class RectangularRepresentation implements Representation {
      * <p>
      * Center location in rectangular grid located at (0,0,0).
      */
-    public Location getCenterLocation() { return new RectLocation(0,0,0); }
+    public Location getCenterLocation() { return new PatchLocationRect(0,0,0); }
     
     /**
      * Returns the axis-aligned locations for a given radius.
@@ -93,12 +93,12 @@ public class RectangularRepresentation implements Representation {
      * @param z  the z axis coordinate
      * @return  the list of locations
      */
-    private static RectLocation[] getLocationSet(int r, int z) {
-        return new RectLocation[] {
-            new RectLocation(0, r, z),
-            new RectLocation(0, -r, z),
-            new RectLocation(r, 0, z),
-            new RectLocation(-r, 0, z),
+    private static PatchLocationRect[] getLocationSet(int r, int z) {
+        return new PatchLocationRect[] {
+            new PatchLocationRect(0, r, z),
+            new PatchLocationRect(0, -r, z),
+            new PatchLocationRect(r, 0, z),
+            new PatchLocationRect(-r, 0, z),
         };
     }
     
@@ -120,7 +120,7 @@ public class RectangularRepresentation implements Representation {
         }
         
         ArrayList<Location> locations = new ArrayList<>();
-        RectLocation loc = new RectLocation(0,0,0);
+        PatchLocationRect loc = new PatchLocationRect(0,0,0);
         if (radius == 1) { locations.add(loc); }
         else if (radius == Series.FULL_INIT) { locations.addAll(getLocations(series._radius, series._height)); }
         else {
@@ -164,7 +164,7 @@ public class RectangularRepresentation implements Representation {
         for (int x = 1 - radius; x < radius; x++) {
             for (int y = 1 - radius; y < radius; y++) {
                 if (Math.sqrt(x*x + y*y) <= radius) {
-                    locations.add(new RectLocation(x, y, height));
+                    locations.add(new PatchLocationRect(x, y, height));
                 }
             }
         }
@@ -178,7 +178,7 @@ public class RectangularRepresentation implements Representation {
         for (int x = 1 - radius; x < radius; x++) {
             for (int y = 1 - radius; y < radius; y++) {
                 for (int z = 1 - height; z < height; z++) {
-                    locations.add(new RectLocation(x,y,z));
+                    locations.add(new PatchLocationRect(x,y,z));
                 }
             }
         }
@@ -202,7 +202,7 @@ public class RectangularRepresentation implements Representation {
         for (int x = 1 - radius; x < radius; x++) {
             for (int y = 1 - radius; y < radius; y++) {
                 if (Math.sqrt(x*x + y*y) <= radius) {
-                    locations.add(new RectLocation(x,y,0));
+                    locations.add(new PatchLocationRect(x,y,0));
                 }
             }
         }

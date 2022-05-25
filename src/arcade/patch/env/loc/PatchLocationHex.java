@@ -32,7 +32,7 @@ import sim.util.Bag;
  * coordinates that are out of bounds of the array.
  */
 
-public class HexLocation implements Location {
+public class PatchLocationHex implements Location {
     /** Size of hexagon location from side to side [um] */
     private static final double HEX_SIZE = 30.0;
     
@@ -119,22 +119,22 @@ public class HexLocation implements Location {
     };
     
     /**
-     * Creates a {@code HexLocation} object at the same coordinates as given
+     * Creates a {@code PatchLocationHex} object at the same coordinates as given
      * location.
      * 
      * @param loc  the location object
      */
-    public HexLocation(Location loc) { updateLocation(loc); }
+    public PatchLocationHex(Location loc) { updateLocation(loc); }
     
     /**
-     * Creates a {@code HexLocation} object at given coordinates.
+     * Creates a {@code PatchLocationHex} object at given coordinates.
      * 
      * @param u  the coordinate in u direction
      * @param v  the coordinate in v direction
      * @param w  the coordinate in w direction
      * @param z  the coordinate in z direction
      */
-    public HexLocation(int u, int v, int w, int z) {
+    public PatchLocationHex(int u, int v, int w, int z) {
         this.u = u;
         this.v = v;
         this.w = w;
@@ -149,7 +149,7 @@ public class HexLocation implements Location {
     public void setPosition(byte p) { this.p = p; }
     public byte getPosition() { return p; }
     public byte getOffset() { return zo; }
-    public Location getCopy() { return new HexLocation(this); }
+    public Location getCopy() { return new PatchLocationHex(this); }
     public int[] getGridLocation() { return new int[] {u, v, w}; }
     public int getGridZ() { return z; }
     public int[] getLatLocation() { return xy[0]; }
@@ -202,7 +202,7 @@ public class HexLocation implements Location {
      * @param loc  the reference location
      */
     public void updateLocation(Location loc) {
-        HexLocation hexLoc = (HexLocation)loc;
+        PatchLocationHex hexLoc = (PatchLocationHex)loc;
         u = hexLoc.u;
         v = hexLoc.v;
         w = hexLoc.w;
@@ -258,7 +258,7 @@ public class HexLocation implements Location {
         byte b;
         
         // Add current location.
-        neighbors.add(new HexLocation(u, v, w, z));
+        neighbors.add(new PatchLocationHex(u, v, w, z));
         
         // Add neighbor locations.
         for (int i = 0; i < MOVES.length; i++) {
@@ -268,7 +268,7 @@ public class HexLocation implements Location {
             
             // Add location if possible to move there.
             if ((b & check ^ b) == 0) {
-                neighbors.add(new HexLocation(
+                neighbors.add(new PatchLocationHex(
                     u + (b >> 7 & 1) - (b >> 6 & 1),
                     v + (b >> 5 & 1) - (b >> 4 & 1),
                     w + (b >> 3 & 1) - (b >> 2 & 1),
@@ -308,7 +308,7 @@ public class HexLocation implements Location {
         
         // Check if out of bounds.
         if (Math.abs(v) >= RADIUS || Math.abs(w) >= RADIUS) { return null; }
-        return new HexLocation(u, v, w, z);
+        return new PatchLocationHex(u, v, w, z);
     }
     
     /**
@@ -325,7 +325,7 @@ public class HexLocation implements Location {
      * @return  {@code true} if locations have the same grid coordinates, {@code false} otherwise
      */
     public final boolean equals(Object obj) {
-        HexLocation hexLoc = (HexLocation)obj;
+        PatchLocationHex hexLoc = (PatchLocationHex)obj;
         return hexLoc.z == z && hexLoc.u == u && hexLoc.v == v && hexLoc.w == w;
     }
     

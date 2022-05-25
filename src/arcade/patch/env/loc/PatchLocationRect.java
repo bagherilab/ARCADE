@@ -28,7 +28,7 @@ import sim.util.Bag;
  * coordinates that are out of bounds of the array.
  */
 
-public class RectLocation implements Location {
+public class PatchLocationRect implements Location {
     /** Size of rectangle location from side to side [um] */
     private static final double RECT_SIZE = 30.0;
     
@@ -109,21 +109,21 @@ public class RectLocation implements Location {
     };
     
     /**
-     * Creates a {@code RectLocation} object at the same coordinates as given
+     * Creates a {@code PatchLocationRect} object at the same coordinates as given
      * location.
      *
      * @param loc  the location object
      */
-    public RectLocation(Location loc) { updateLocation(loc); }
+    public PatchLocationRect(Location loc) { updateLocation(loc); }
     
     /**
-     * Creates a {@code RectLocation} object at given coordinates.
+     * Creates a {@code PatchLocationRect} object at given coordinates.
      *
      * @param x  the coordinate in x direction
      * @param y  the coordinate in y direction
      * @param z  the coordinate in z direction
      */
-    public RectLocation(int x, int y, int z) {
+    public PatchLocationRect(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -137,7 +137,7 @@ public class RectLocation implements Location {
     public void setPosition(byte p) { this.p = p; }
     public byte getPosition() { return p; }
     public byte getOffset() { return zo; }
-    public Location getCopy() { return new RectLocation(this); }
+    public Location getCopy() { return new PatchLocationRect(this); }
     public int[] getGridLocation() { return new int[] {x, y}; }
     public int getGridZ() { return z; }
     public int[] getLatLocation() { return ab[0]; }
@@ -190,7 +190,7 @@ public class RectLocation implements Location {
      * @param loc  the reference location
      */
     public void updateLocation(Location loc) {
-        RectLocation rectLoc = (RectLocation)loc;
+        PatchLocationRect rectLoc = (PatchLocationRect)loc;
         x = rectLoc.x;
         y = rectLoc.y;
         z = rectLoc.z;
@@ -243,7 +243,7 @@ public class RectLocation implements Location {
         byte b;
         
         // Add current location.
-        neighbors.add(new RectLocation(x, y, z));
+        neighbors.add(new PatchLocationRect(x, y, z));
         
         // Add neighbor locations.
         for (int i = 0; i < MOVES.length; i++) {
@@ -253,7 +253,7 @@ public class RectLocation implements Location {
             
             // Add location if possible to move there.
             if ((b & check ^ b) == 0) {
-                neighbors.add(new RectLocation(
+                neighbors.add(new PatchLocationRect(
                     x + (b >> 5 & 1) - (b >> 4 & 1),
                     y + (b >> 3 & 1) - (b >> 2 & 1),
                     z + (b >> 1 & 1) - (b >> 0 & 1)));
@@ -289,7 +289,7 @@ public class RectLocation implements Location {
         
         // Check if out of bounds.
         if (Math.abs(a) >= RADIUS || Math.abs(b) >= RADIUS) { return null; }
-        return new RectLocation(a, b, z);
+        return new PatchLocationRect(a, b, z);
     }
     
     /**
@@ -306,7 +306,7 @@ public class RectLocation implements Location {
      * @return  {@code true} if locations have the same grid coordinates, {@code false} otherwise
      */
     public final boolean equals(Object obj) {
-        RectLocation rectLoc = (RectLocation)obj;
+        PatchLocationRect rectLoc = (PatchLocationRect)obj;
         return rectLoc.z == z && rectLoc.y == y && rectLoc.x == x;
     }
     

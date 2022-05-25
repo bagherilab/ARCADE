@@ -35,7 +35,7 @@ public class HexagonalRepresentation implements Representation {
     /**
      * Representation with hexagonal geometry.
      * <p>
-     * Passes {@link arcade.core.sim.Series} to {@link arcade.env.loc.HexLocation} to
+     * Passes {@link arcade.core.sim.Series} to {@link arcade.env.loc.PatchLocationHex} to
      * update static configuration variables for the entire simulation.
      * Length, width, and depth of the triangular lattice are calculated based
      * on radius and height of the hexagonal grid.
@@ -44,7 +44,7 @@ public class HexagonalRepresentation implements Representation {
      */
     public HexagonalRepresentation(Series series) {
         this.series = series;
-        HexLocation.updateConfigs(series);
+        PatchLocationHex.updateConfigs(series);
         
         // Calculate length, width, and depth for lattice.
         length = 6*series._radiusBounds - 3;
@@ -86,7 +86,7 @@ public class HexagonalRepresentation implements Representation {
      * <p>
      * Center location in hexagonal grid located at (0,0,0,0).
      */
-    public Location getCenterLocation() { return new HexLocation(0,0,0,0); }
+    public Location getCenterLocation() { return new PatchLocationHex(0,0,0,0); }
     
     /**
      * Returns the axis-aligned locations for a given radius.
@@ -95,14 +95,14 @@ public class HexagonalRepresentation implements Representation {
      * @param z  the z axis coordinate
      * @return  the list of locations
      */
-    private static HexLocation[] getLocationSet(int r, int z) {
-        return new HexLocation[] {
-            new HexLocation(0, r, -r, z),
-            new HexLocation(0, -r, r, z),
-            new HexLocation(r, 0, -r, z),
-            new HexLocation(-r, 0, r, z),
-            new HexLocation(r, -r, 0, z),
-            new HexLocation(-r, r, 0, z)
+    private static PatchLocationHex[] getLocationSet(int r, int z) {
+        return new PatchLocationHex[] {
+            new PatchLocationHex(0, r, -r, z),
+            new PatchLocationHex(0, -r, r, z),
+            new PatchLocationHex(r, 0, -r, z),
+            new PatchLocationHex(-r, 0, r, z),
+            new PatchLocationHex(r, -r, 0, z),
+            new PatchLocationHex(-r, r, 0, z)
         };
     }
     
@@ -121,7 +121,7 @@ public class HexagonalRepresentation implements Representation {
         }
         
         ArrayList<Location> locations = new ArrayList<>();
-        HexLocation loc = new HexLocation(0,0,0,0);
+        PatchLocationHex loc = new PatchLocationHex(0,0,0,0);
         
         if (radius == 1) { locations.add(loc); }
         else if (radius == Series.FULL_INIT) { locations.addAll(getLocations(series._radius, series._height)); }
@@ -167,7 +167,7 @@ public class HexagonalRepresentation implements Representation {
             for (int v = 1 - radius; v < radius; v++) {
                 for (int w = 1 - radius; w < radius; w++) {
                     if (u + v + w == 0) {
-                        locations.add(new HexLocation(u,v,w,height));
+                        locations.add(new PatchLocationHex(u,v,w,height));
                     }
                 }
             }
@@ -184,7 +184,7 @@ public class HexagonalRepresentation implements Representation {
                 for (int w = 1 - radius; w < radius; w++) {
                     if (u + v + w == 0) {
                         for (int z = 1 - height; z < height; z++) {
-                            locations.add(new HexLocation(u,v,w,z));
+                            locations.add(new PatchLocationHex(u,v,w,z));
                         }
                     }
                 }

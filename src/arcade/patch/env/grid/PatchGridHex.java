@@ -7,7 +7,7 @@ import sim.util.Bag;
  * Extension of {@link arcade.env.grid.PatchGrid} for hexagonal grid.
  * <p>
  * Each hexagon location has six positions.
- * Uses {@link arcade.env.loc.HexLocation} as {@link arcade.core.env.loc.Location} object.
+ * Uses {@link arcade.env.loc.PatchLocationHex} as {@link arcade.core.env.loc.Location} object.
  */
 
 public class PatchGridHex extends PatchGrid {
@@ -28,13 +28,13 @@ public class PatchGridHex extends PatchGrid {
     
     protected Bag createObject(Location loc) {
         Bag objs = new Bag(N);
-        locationToBag.put(new HexLocation(loc), objs);
+        locationToBag.put(new PatchLocationHex(loc), objs);
         return objs;
     }
     
     protected boolean[] createFlags(Location loc) {
         boolean[] flags = new boolean[N];
-        locationToFlags.put(new HexLocation(loc), flags);
+        locationToFlags.put(new PatchLocationHex(loc), flags);
         return flags;
     }
 }
