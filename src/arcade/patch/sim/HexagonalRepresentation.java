@@ -1,13 +1,13 @@
 package arcade.patch.sim;
 
 import java.util.ArrayList;
-import arcade.sim.Simulation.Representation;
+import arcade.core.sim.Simulation.Representation;
 import arcade.env.grid.*;
 import arcade.env.lat.*;
 import arcade.env.loc.*;
 
 /** 
- * Implements {@link arcade.sim.Simulation.Representation} for hexagonal representation.
+ * Implements {@link arcade.core.sim.Simulation.Representation} for hexagonal representation.
  * <p>
  * Cell agents exist on a hexagonal grid and molecules in the environment diffuse
  * on a triangular lattice, such that each hexagon corresponds to 6 triangles.
@@ -35,7 +35,7 @@ public class HexagonalRepresentation implements Representation {
     /**
      * Representation with hexagonal geometry.
      * <p>
-     * Passes {@link arcade.sim.Series} to {@link arcade.env.loc.HexLocation} to
+     * Passes {@link arcade.core.sim.Series} to {@link arcade.env.loc.HexLocation} to
      * update static configuration variables for the entire simulation.
      * Length, width, and depth of the triangular lattice are calculated based
      * on radius and height of the hexagonal grid.

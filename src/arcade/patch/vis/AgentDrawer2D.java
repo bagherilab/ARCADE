@@ -7,13 +7,13 @@ import sim.portrayal.Portrayal;
 import sim.portrayal.grid.FastValueGridPortrayal2D;
 import sim.portrayal.grid.ValueGridPortrayal2D;
 import sim.util.gui.ColorMap;
-import arcade.sim.Simulation;
+import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
 
 /**
- * {@link arcade.vis.Drawer} for agent grids in 2D.
+ * {@link arcade.core.vis.Drawer} for agent grids in 2D.
  * <p>
- * {@code AgentDrawer2D} converts agents in a {@link arcade.env.grid.Grid} into
+ * {@code AgentDrawer2D} converts agents in a {@link arcade.core.env.grid.Grid} into
  * a 2D array representation.
  * The array values are the value of a selected property (such as cell type or
  * cell population).
@@ -42,7 +42,7 @@ public abstract class AgentDrawer2D extends Drawer {
     final String method;
     
     /**
-     * Creates a {@link arcade.vis.Drawer} for drawing 2D agent grids.
+     * Creates a {@link arcade.core.vis.Drawer} for drawing 2D agent grids.
      * 
      * @param panel  the panel the drawer is attached to
      * @param name  the name of the drawer

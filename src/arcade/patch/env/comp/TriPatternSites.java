@@ -1,6 +1,6 @@
 package arcade.patch.env.comp;
 
-import arcade.util.MiniBox;
+import arcade.core.util.MiniBox;
 
 /**
  * Extension of {@link arcade.env.comp.PatternSites} for triangular lattice.

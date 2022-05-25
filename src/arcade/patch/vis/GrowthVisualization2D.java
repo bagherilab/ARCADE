@@ -1,13 +1,13 @@
 package arcade.patch.vis;
 
 import sim.engine.*;
-import arcade.sim.Simulation;
-import arcade.sim.Series;
+import arcade.core.sim.Simulation;
+import arcade.core.sim.Series;
 import static arcade.vis.AgentDrawer2D.*;
 import static arcade.vis.ColorMaps.*;
 
 /**
- * Extension of {@link arcade.vis.Visualization} for 2D simulations.
+ * Extension of {@link arcade.core.vis.Visualization} for 2D simulations.
  * <p>
  * {@code GrowthVisualization2D} creates three panels:
  * <ul>
@@ -33,7 +33,7 @@ public abstract class GrowthVisualization2D extends Visualization {
     final ColorMaps maps;
     
     /**
-     * Creates a {@link arcade.vis.Visualization} for 2D simulations.
+     * Creates a {@link arcade.core.vis.Visualization} for 2D simulations.
      * <p>
      * Constructor creates a new {@link arcade.vis.ColorMaps} object that
      * corresponds to simulation specific ranges of cell age, cell volume, and

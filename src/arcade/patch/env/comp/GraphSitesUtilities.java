@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.HashSet;
 import sim.util.Bag;
-import arcade.util.Solver;
-import arcade.util.Graph;
+import arcade.core.util.Solver;
+import arcade.core.util.Graph;
 import arcade.util.Matrix;
 import static arcade.env.comp.GraphSites.*;
-import static arcade.util.Graph.*;
+import static arcade.core.util.Graph.*;
 
 /**
  * Container class for utility functions used by {@link arcade.env.comp.GraphSites}.

@@ -12,17 +12,17 @@ import sim.portrayal.DrawInfo2D;
 import sim.portrayal.simple.*;
 import sim.field.network.Network;
 import sim.field.continuous.Continuous2D;
-import arcade.sim.Simulation;
-import arcade.env.comp.Component;
+import arcade.core.sim.Simulation;
+import arcade.core.env.comp.Component;
 import arcade.env.comp.GraphSites;
 import arcade.env.comp.GraphSites.*;
 import arcade.env.loc.*;
 import sim.util.*;
-import arcade.util.Graph.*;
+import arcade.core.util.Graph.*;
 import arcade.util.Colors;
 
 /**
- * {@link arcade.vis.Drawer} for custom visualizations in 2D.
+ * {@link arcade.core.vis.Drawer} for custom visualizations in 2D.
  * <p>
  * {@code AuxDrawer2D} uses alternative portrayals such as network and text,
  * instead of the value grid portrayals used in {@link arcade.vis.AgentDrawer2D}
@@ -56,7 +56,7 @@ public abstract class AuxDrawer2D extends Drawer {
     Continuous2D field;
     
     /**
-     * Creates a {@link arcade.vis.Drawer} for drawing custom visualizations.
+     * Creates a {@link arcade.core.vis.Drawer} for drawing custom visualizations.
      * 
      * @param panel  the panel the drawer is attached to
      * @param name  the name of the drawer

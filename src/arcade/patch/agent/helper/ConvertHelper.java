@@ -4,14 +4,14 @@ import java.lang.reflect.Constructor;
 import java.util.Map;
 import sim.engine.SimState;
 import sim.util.Bag;
-import arcade.sim.Simulation;
-import arcade.util.Parameter;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Parameter;
 import arcade.agent.cell.Cell;
-import arcade.env.loc.Location;
-import arcade.util.MiniBox;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
 
 /** 
- * Implementation of {@link arcade.agent.helper.Helper} for converting a cell to a
+ * Implementation of {@link arcade.core.agent.helper.Helper} for converting a cell to a
  * different population.
  * <p>
  * {@code ConvertHelper} is stepped once.

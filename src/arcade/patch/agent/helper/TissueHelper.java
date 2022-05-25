@@ -3,7 +3,7 @@ package arcade.patch.agent.helper;
 import arcade.agent.cell.TissueCell;
 
 /** 
- * Implementation of {@link arcade.agent.helper.Helper} for time-delayed
+ * Implementation of {@link arcade.core.agent.helper.Helper} for time-delayed
  * {@link arcade.agent.cell.TissueCell} behaviors.
  * <p>
  * Each {@code TissueHelper} object is associated with a specific

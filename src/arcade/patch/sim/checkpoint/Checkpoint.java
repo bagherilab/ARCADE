@@ -3,7 +3,7 @@ package arcade.patch.sim.checkpoint;
 import java.io.*;
 import java.util.logging.Logger;
 import sim.engine.SimState;
-import arcade.sim.Series;
+import arcade.core.sim.Series;
 
 /**
  * A {@code Checkpoint} object saves and/or loads simulation checkpoints.

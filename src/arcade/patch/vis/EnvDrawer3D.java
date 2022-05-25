@@ -7,12 +7,12 @@ import sim.portrayal.Portrayal;
 import sim.portrayal.grid.FastValueGridPortrayal2D;
 import sim.portrayal.grid.ValueGridPortrayal2D;
 import sim.util.gui.ColorMap;
-import arcade.sim.Simulation;
+import arcade.core.sim.Simulation;
 
 /**
- * {@link arcade.vis.Drawer} for environment lattices in 3D.
+ * {@link arcade.core.vis.Drawer} for environment lattices in 3D.
  * <p>
- * {@code EnvDrawer3D} copies values in a {@link arcade.env.lat.Lattice} array
+ * {@code EnvDrawer3D} copies values in a {@link arcade.core.env.lat.Lattice} array
  * into a 2D array representation by averaging across the z direction.
  */
 
@@ -24,7 +24,7 @@ public abstract class EnvDrawer3D extends Drawer {
     DoubleGrid2D array;
     
     /**
-     * Creates a {@link arcade.vis.Drawer} for drawing 3D environment lattices.
+     * Creates a {@link arcade.core.vis.Drawer} for drawing 3D environment lattices.
      *
      * @param panel  the panel the drawer is attached to
      * @param name  the name of the drawer

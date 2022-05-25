@@ -2,10 +2,10 @@ package arcade.patch.sim.checkpoint;
 
 import sim.engine.SimState;
 import sim.util.Bag;
-import arcade.sim.Series;
-import arcade.sim.Simulation;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
-import arcade.agent.helper.Helper;
+import arcade.core.agent.helper.Helper;
 
 import java.io.Serializable;
 

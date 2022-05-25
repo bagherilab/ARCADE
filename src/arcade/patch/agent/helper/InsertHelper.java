@@ -3,14 +3,14 @@ package arcade.patch.agent.helper;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import sim.engine.SimState;
-import arcade.sim.Simulation;
+import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
-import arcade.env.grid.Grid;
-import arcade.env.loc.Location;
-import arcade.util.MiniBox;
+import arcade.core.env.grid.Grid;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
 
 /**
- * Implementation of {@link arcade.agent.helper.Helper} for inserting cell
+ * Implementation of {@link arcade.core.agent.helper.Helper} for inserting cell
  * populations.
  * <p>
  * {@code InsertHelper} is stepped once.

@@ -1,8 +1,8 @@
 package arcade.patch.env.lat;
 
-import arcade.sim.Simulation;
+import arcade.core.sim.Simulation;
 import arcade.env.comp.*;
-import arcade.util.MiniBox;
+import arcade.core.util.MiniBox;
 
 /** 
  * Extension of {@link arcade.env.lat.EnvLattice} for triangular lattice.

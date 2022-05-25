@@ -3,14 +3,14 @@ package arcade.patch.agent.helper;
 import java.util.ArrayList;
 import sim.engine.SimState;
 import sim.util.Bag;
-import arcade.sim.Simulation;
+import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
-import arcade.env.grid.Grid;
-import arcade.env.loc.Location;
-import arcade.util.MiniBox;
+import arcade.core.env.grid.Grid;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
 
 /**
- * Implementation of {@link arcade.agent.helper.Helper} for removing cell agents.
+ * Implementation of {@link arcade.core.agent.helper.Helper} for removing cell agents.
  * <p>
  * {@code WoundHelper} is stepped once.
  * The {@code WoundHelper} will remove all cell agents within the specified

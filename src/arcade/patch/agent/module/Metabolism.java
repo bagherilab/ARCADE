@@ -2,13 +2,13 @@ package arcade.patch.agent.module;
 
 import java.util.List;
 import sim.util.Bag;
-import arcade.sim.Series;
-import arcade.sim.Simulation;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
-import arcade.env.loc.Location;
+import arcade.core.env.loc.Location;
 
 /** 
- * Implementation of {@link arcade.agent.module.Module} for cell metabolism.
+ * Implementation of {@link arcade.core.agent.module.Module} for cell metabolism.
  * <p>
  * The {@code Metabolism} module:
  * <ul>

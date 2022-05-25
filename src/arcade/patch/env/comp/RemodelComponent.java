@@ -3,15 +3,15 @@ package arcade.patch.env.comp;
 import java.util.logging.Logger;
 import sim.engine.SimState;
 import sim.util.Bag;
-import arcade.sim.Simulation;
-import arcade.env.loc.Location;
+import arcade.core.sim.Simulation;
+import arcade.core.env.loc.Location;
 import arcade.env.comp.GraphSites.*;
-import arcade.util.Graph;
-import arcade.util.MiniBox;
+import arcade.core.util.Graph;
+import arcade.core.util.MiniBox;
 import static arcade.env.comp.GraphSitesUtilities.*;
 
 /**
- * Implementation of {@link arcade.env.comp.Component} for remodeling edges.
+ * Implementation of {@link arcade.core.env.comp.Component} for remodeling edges.
  * <p>
  * This component can only be used with {@link arcade.env.comp.GraphSites}.
  * The radius and wall thickness of edges are remodeled as a function of shear
@@ -62,14 +62,14 @@ public class RemodelComponent implements Component {
     /** {@link arcade.env.comp.GraphSites} object */
     private GraphSites sites;
     
-    /** {@link arcade.util.Graph} object representing the sites */
+    /** {@link arcade.core.util.Graph} object representing the sites */
     private Graph G;
     
     /** Dictionary of specifications */
     private final MiniBox specs;
     
     /**
-     * Creates a {@link arcade.env.comp.Component} object for remodeling.
+     * Creates a {@link arcade.core.env.comp.Component} object for remodeling.
      * <p>
      * Specifications include:
      * <ul>

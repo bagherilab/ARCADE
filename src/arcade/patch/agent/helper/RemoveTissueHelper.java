@@ -2,7 +2,7 @@ package arcade.patch.agent.helper;
 
 import sim.engine.*;
 import sim.util.Bag;
-import arcade.sim.Simulation;
+import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
 import arcade.agent.cell.TissueCell;
 

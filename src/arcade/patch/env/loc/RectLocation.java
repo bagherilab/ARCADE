@@ -1,15 +1,15 @@
 package arcade.patch.env.loc;
 
-import arcade.sim.Series;
+import arcade.core.sim.Series;
 import sim.util.Bag;
 
 /** 
- * Implementation of {@link arcade.env.loc.Location} for rectangular
- * {@link arcade.env.grid.Grid} to a rectangular {@link arcade.env.lat.Lattice}.
+ * Implementation of {@link arcade.core.env.loc.Location} for rectangular
+ * {@link arcade.core.env.grid.Grid} to a rectangular {@link arcade.core.env.lat.Lattice}.
  * <p>
- * {@link arcade.env.grid.Grid} coordinates are in terms of (x, y) and the
- * {@link arcade.env.lat.Lattice} coordinates are in (a, b).
- * Rectangular {@link arcade.env.lat.Lattice} positions are numbered 0 - 3, with 0
+ * {@link arcade.core.env.grid.Grid} coordinates are in terms of (x, y) and the
+ * {@link arcade.core.env.lat.Lattice} coordinates are in (a, b).
+ * Rectangular {@link arcade.core.env.lat.Lattice} positions are numbered 0 - 3, with 0
  * at the top left.
  * <pre>
  *     ---------

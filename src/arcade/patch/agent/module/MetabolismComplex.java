@@ -1,8 +1,8 @@
 package arcade.patch.agent.module;
 
 import java.util.Arrays;
-import arcade.sim.Series;
-import arcade.sim.Simulation;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
 
 /** 
@@ -62,7 +62,7 @@ public class MetabolismComplex extends Metabolism {
      * <p>
      * Module has internal glucose and pyruvate.
      * Metabolic preference ({@code META_PREF}) parameter is drawn from a
-     * {@link arcade.util.Parameter} distribution and the distribution is updated
+     * {@link arcade.core.util.Parameter} distribution and the distribution is updated
      * with the new mean.
      * 
      * @param c  the {@link arcade.agent.cell.TissueCell} the module is associated with

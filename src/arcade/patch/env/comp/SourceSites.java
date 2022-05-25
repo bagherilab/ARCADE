@@ -1,9 +1,9 @@
 package arcade.patch.env.comp;
 
 import sim.engine.SimState;
-import arcade.sim.Simulation;
-import arcade.env.loc.Location;
-import arcade.util.MiniBox;
+import arcade.core.sim.Simulation;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
 
 /** 
  * Extension of {@link arcade.env.comp.Sites} for source sites.

@@ -7,7 +7,7 @@ import sim.util.Bag;
  * Extension of {@link arcade.env.grid.AgentGrid} for hexagonal grid.
  * <p>
  * Each hexagon location has six positions.
- * Uses {@link arcade.env.loc.HexLocation} as {@link arcade.env.loc.Location} object.
+ * Uses {@link arcade.env.loc.HexLocation} as {@link arcade.core.env.loc.Location} object.
  */
 
 public class HexAgentGrid extends AgentGrid {

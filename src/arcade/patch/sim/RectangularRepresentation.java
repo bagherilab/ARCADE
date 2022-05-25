@@ -1,13 +1,13 @@
 package arcade.patch.sim;
 
 import java.util.ArrayList;
-import arcade.sim.Simulation.Representation;
+import arcade.core.sim.Simulation.Representation;
 import arcade.env.grid.*;
 import arcade.env.lat.*;
 import arcade.env.loc.*;
 
 /** 
- * Implements {@link arcade.sim.Simulation.Representation} for rectangular representation.
+ * Implements {@link arcade.core.sim.Simulation.Representation} for rectangular representation.
  * <p>
  * Cell agents exist on a rectangular grid and molecules in the environment
  * diffuse on a smaller rectangular lattice, such that each grid rectangle
@@ -33,7 +33,7 @@ public class RectangularRepresentation implements Representation {
     /**
      * Representation with rectangular geometry.
      * <p>
-     * Passes {@link arcade.sim.Series} to {@link arcade.env.loc.RectLocation} to
+     * Passes {@link arcade.core.sim.Series} to {@link arcade.env.loc.RectLocation} to
      * update static configuration variables for the entire simulation.
      * Length, width, and depth of the rectangular lattice are calculated based
      * on radius and height of the rectangular grid.

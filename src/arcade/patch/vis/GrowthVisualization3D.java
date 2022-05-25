@@ -1,12 +1,12 @@
 package arcade.patch.vis;
 
 import sim.engine.*;
-import arcade.sim.Simulation;
-import arcade.sim.Series;
+import arcade.core.sim.Simulation;
+import arcade.core.sim.Series;
 import static arcade.vis.ColorMaps.*;
 
 /** 
- * Extension of {@link arcade.vis.Visualization} for 3D simulations.
+ * Extension of {@link arcade.core.vis.Visualization} for 3D simulations.
  * <p>
  * {@code GrowthVisualization3D} creates two panels:
  * <ul>
@@ -30,7 +30,7 @@ public abstract class GrowthVisualization3D extends Visualization {
     final ColorMaps maps;
     
     /**
-     * Creates a {@link arcade.vis.Visualization} for 3D simulations.
+     * Creates a {@link arcade.core.vis.Visualization} for 3D simulations.
      *
      * @param sim  the simulation instance
      */

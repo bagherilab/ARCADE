@@ -1,8 +1,8 @@
 package arcade.patch.agent.module;
 
 import java.util.Arrays;
-import arcade.sim.Series;
-import arcade.sim.Simulation;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
 
 /**

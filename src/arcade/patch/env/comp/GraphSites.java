@@ -7,13 +7,13 @@ import java.util.regex.Pattern;
 import ec.util.MersenneTwisterFast;
 import sim.engine.SimState;
 import sim.util.Bag;
-import arcade.sim.Simulation;
-import arcade.env.loc.Location;
-import arcade.util.Graph;
-import arcade.util.Graph.*;
-import arcade.util.Solver;
-import arcade.util.Solver.Function;
-import arcade.util.MiniBox;
+import arcade.core.sim.Simulation;
+import arcade.core.env.loc.Location;
+import arcade.core.util.Graph;
+import arcade.core.util.Graph.*;
+import arcade.core.util.Solver;
+import arcade.core.util.Solver.Function;
+import arcade.core.util.MiniBox;
 import static arcade.env.comp.GraphSitesUtilities.*;
 
 /**
@@ -228,21 +228,21 @@ public abstract class GraphSites extends Sites {
     }
     
     /**
-     * Gets the {@link arcade.util.Graph} representing the sites.
+     * Gets the {@link arcade.core.util.Graph} representing the sites.
      * 
      * @return  the graph object
      */
     public Graph getGraph() { return G; }
     
     /**
-     * Sets the {@link arcade.util.Graph} representing the sites.
+     * Sets the {@link arcade.core.util.Graph} representing the sites.
      * 
      * @param graph  the graph object
      */
     public void setGraph(Graph graph) { this.G = graph; updateSpans(); }
     
     /**
-     * Creates a new {@link arcade.util.Graph} to represent sites.
+     * Creates a new {@link arcade.core.util.Graph} to represent sites.
      * 
      * @return  a graph object
      */
@@ -391,7 +391,7 @@ public abstract class GraphSites extends Sites {
     /**
      * {@inheritDoc}
      * <p>
-     * Initializes a new {@link arcade.util.Graph} object representing the graph
+     * Initializes a new {@link arcade.core.util.Graph} object representing the graph
      * sites.
      * Calls the correct method to population the graph with edges (either
      * pattern or root layout).
@@ -709,7 +709,7 @@ public abstract class GraphSites extends Sites {
     }
     
     /**
-     * Extension of {@link arcade.util.Graph.Node} for site nodes.
+     * Extension of {@link arcade.core.util.Graph.Node} for site nodes.
      * <p>
      * Node tracks additional hemodynamic properties including pressure and oxygen.
      */
@@ -733,7 +733,7 @@ public abstract class GraphSites extends Sites {
         SiteNode prev;
         
         /**
-         * Creates a {@link arcade.util.Graph.Node} for graph sites.
+         * Creates a {@link arcade.core.util.Graph.Node} for graph sites.
          *
          * @param x  the x coordinate
          * @param y  the y coordinate
@@ -766,7 +766,7 @@ public abstract class GraphSites extends Sites {
     }
     
     /**
-     * Extension of {@link arcade.util.Graph.Edge} for site edges.
+     * Extension of {@link arcade.core.util.Graph.Edge} for site edges.
      * <p>
      * Node tracks additional hemodynamic properties including radius, length,
      * wall thickness, shear stress, circumferential stress, and volumetric
@@ -825,7 +825,7 @@ public abstract class GraphSites extends Sites {
         double[] transport;
         
         /**
-         * Creates a {@link arcade.util.Graph.Edge} for graph sites.
+         * Creates a {@link arcade.core.util.Graph.Edge} for graph sites.
          *
          * @param from  the node the edge is from
          * @param to  the node the edge is to

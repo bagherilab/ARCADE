@@ -1,11 +1,11 @@
 package arcade.patch.agent.cell;
 
 import java.util.Map;
-import arcade.sim.Simulation;
-import arcade.agent.module.Module;
-import arcade.env.loc.Location;
-import arcade.util.Parameter;
-import arcade.util.MiniBox;
+import arcade.core.sim.Simulation;
+import arcade.core.agent.module.Module;
+import arcade.core.env.loc.Location;
+import arcade.core.util.Parameter;
+import arcade.core.util.MiniBox;
 
 /**
  * Extension of {@link arcade.agent.cell.TissueCCell} for cancerous stem cells.
@@ -36,7 +36,7 @@ public class TissueSCell extends TissueCCell {
      * @param loc  the location of the cell 
      * @param vol  the initial (and critical) volume of the cell
      * @param age  the initial age of the cell in minutes
-     * @param params  the map of parameter name to {@link arcade.util.Parameter} objects
+     * @param params  the map of parameter name to {@link arcade.core.util.Parameter} objects
      * @param box  the map of module name to version
      */
     public TissueSCell(Simulation sim, int pop, Location loc, double vol, 
@@ -51,7 +51,7 @@ public class TissueSCell extends TissueCCell {
      * the modules of the parent cell.
      * <p>
      * Constructor uses reflection to create constructors based on the
-     * existing {@link arcade.agent.module.Module} objects.
+     * existing {@link arcade.core.agent.module.Module} objects.
      * Changes the cell agent code to cancer stem cell and life span to the 
      * maximum integer value (i.e. cell is immortal).
      *

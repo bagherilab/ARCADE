@@ -1,13 +1,13 @@
 package arcade.patch.env.comp;
 
 import sim.engine.SimState;
-import arcade.sim.Simulation;
-import arcade.env.lat.Lattice;
-import arcade.env.loc.Location;
-import arcade.util.MiniBox;
+import arcade.core.sim.Simulation;
+import arcade.core.env.lat.Lattice;
+import arcade.core.env.loc.Location;
+import arcade.core.util.MiniBox;
 
 /**
- * Implementation of {@link arcade.env.comp.Component} for diffusion.
+ * Implementation of {@link arcade.core.env.comp.Component} for diffusion.
  * <p>
  * {@code Diffuser} calculates diffusion of concentrations using finite
  * difference approximation.

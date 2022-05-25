@@ -7,16 +7,16 @@ import sim.util.distribution.*;
 import arcade.sim.profiler.Profiler;
 import arcade.sim.checkpoint.Checkpoint;
 import arcade.agent.cell.Cell;
-import arcade.agent.helper.Helper;
-import arcade.env.grid.Grid;
-import arcade.env.lat.Lattice;
-import arcade.env.comp.Component;
-import arcade.env.loc.Location;
-import arcade.util.Parameter;
-import arcade.util.MiniBox;
+import arcade.core.agent.helper.Helper;
+import arcade.core.env.grid.Grid;
+import arcade.core.env.lat.Lattice;
+import arcade.core.env.comp.Component;
+import arcade.core.env.loc.Location;
+import arcade.core.util.Parameter;
+import arcade.core.util.MiniBox;
 
 /**
- * Implementation of {@link arcade.sim.Simulation} for cell growth in an
+ * Implementation of {@link arcade.core.sim.Simulation} for cell growth in an
  * environment containing glucose, oxygen, and TGFa.
  * <p>
  * A {@code GrowthSimulation} starts by:
@@ -27,7 +27,7 @@ import arcade.util.MiniBox;
  *     the simulation</li>
  *     <li>Creates distributions of cell lifespan, age, volume, and
  *     parameters</li>
- *     <li>Schedules any {@link arcade.agent.helper.Helper} steppables for the
+ *     <li>Schedules any {@link arcade.core.agent.helper.Helper} steppables for the
  *     simulation</li>
  *     <li>Sets up the environment by adding:
  *         <ul>
@@ -55,16 +55,16 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
     /** Representation object for this simulation */
     Representation representation;
     
-    /** {@link arcade.env.grid.Grid} containing the agents in the simulation */
+    /** {@link arcade.core.env.grid.Grid} containing the agents in the simulation */
     private Grid agents;
     
-    /** Map of {@link arcade.env.lat.Lattice} objects in the simulation */
+    /** Map of {@link arcade.core.env.lat.Lattice} objects in the simulation */
     private Map<String, Lattice> environments;
     
     /** Map of molecule objects */
     private HashMap<String, MiniBox> allMolecules;
     
-    /** List of maps of parameter names and {@link arcade.util.Parameter} objects */
+    /** List of maps of parameter names and {@link arcade.core.util.Parameter} objects */
     private ArrayList<HashMap<String, Parameter>> allParams;
     
     /** List of Normal distributions characterizing cell death */
@@ -77,7 +77,7 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
     private Uniform[] ageDist;
     
     /**
-     * Simulation instance for a {@link arcade.sim.Series} for given random seed.
+     * Simulation instance for a {@link arcade.core.sim.Series} for given random seed.
      * 
      * @param seed  the random seed for random number generator
      * @param series  the simulation series
@@ -252,9 +252,9 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
      * {@inheritDoc}
      * <p>
      * The number of agents added for each population is tracked and updates the
-     * {@link arcade.sim.Series} {@code _popCounts} array.
+     * {@link arcade.core.sim.Series} {@code _popCounts} array.
      * Cells are added by calling instances of their constructors, which are 
-     * defined by the {@link arcade.sim.Series}.
+     * defined by the {@link arcade.core.sim.Series}.
      */
     public void setupAgents() {
         agents = representation.getNewGrid();

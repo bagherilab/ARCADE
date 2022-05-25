@@ -7,7 +7,7 @@ import sim.util.Bag;
 import arcade.sim.*;
 import arcade.env.loc.*;
 import arcade.agent.cell.*;
-import arcade.util.Parameter;
+import arcade.core.util.Parameter;
 
 /** 
  * Extension of {@code Profiler} to output cell parameter values.
@@ -16,11 +16,11 @@ import arcade.util.Parameter;
  * <ul>
  *     <li><strong>{@code seed}</strong>: random seed of the simulation</li>
  *     <li><strong>{@code config}</strong>: summary of model setup from
- *         {@code toJSON} method in {@link arcade.sim.Series}</li>
+ *         {@code toJSON} method in {@link arcade.core.sim.Series}</li>
  *     <li><strong>{@code helpers}</strong>: list of
- *         {@link arcade.agent.helper.Helper} objects</li>
+ *         {@link arcade.core.agent.helper.Helper} objects</li>
  *     <li><strong>{@code components}</strong>: list of
- *         {@link arcade.env.comp.Component} objects</li>
+ *         {@link arcade.core.env.comp.Component} objects</li>
  *     <li><strong>{@code timepoints}</strong>: list of timepoints, where each
  *        timepoint contains lists of cell locations and parameter values
  *        for each cell</li>
@@ -82,7 +82,7 @@ public class ParameterProfiler extends Profiler {
     }
     
     /**
-     * Tracks cell parameters at each occupied {@link arcade.env.grid.Grid} location.
+     * Tracks cell parameters at each occupied {@link arcade.core.env.grid.Grid} location.
      *
      * @param state  the MASON simulation state
      */

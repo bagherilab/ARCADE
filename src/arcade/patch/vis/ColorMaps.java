@@ -1,7 +1,7 @@
 package arcade.patch.vis;
 
 import java.awt.*;
-import arcade.sim.Series;
+import arcade.core.sim.Series;
 import arcade.util.Colors;
 
 /**

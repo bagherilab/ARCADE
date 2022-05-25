@@ -1,16 +1,16 @@
 package arcade.patch.env.loc;
 
-import arcade.sim.Series;
+import arcade.core.sim.Series;
 import sim.util.Bag;
 
 /**
- * Implementation of {@link arcade.env.loc.Location} for hexagonal
- * {@link arcade.env.grid.Grid} to a triangular {@link arcade.env.lat.Lattice}.
+ * Implementation of {@link arcade.core.env.loc.Location} for hexagonal
+ * {@link arcade.core.env.grid.Grid} to a triangular {@link arcade.core.env.lat.Lattice}.
  * <p>
- * {@link arcade.env.grid.Grid} coordinates are in terms of (u, v, w) and the
- * {@link arcade.env.lat.Lattice} coordinates are in (x, y).
+ * {@link arcade.core.env.grid.Grid} coordinates are in terms of (u, v, w) and the
+ * {@link arcade.core.env.lat.Lattice} coordinates are in (x, y).
  * Hexagons are flat side up.
- * Triangular {@link arcade.env.lat.Lattice} positions are numbered 0 - 5, with 0
+ * Triangular {@link arcade.core.env.lat.Lattice} positions are numbered 0 - 5, with 0
  * at the top center and going clockwise around.
  * <pre>
  *      -------

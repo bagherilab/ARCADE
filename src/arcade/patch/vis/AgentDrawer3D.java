@@ -7,13 +7,13 @@ import sim.portrayal.Portrayal;
 import sim.portrayal.grid.FastValueGridPortrayal2D;
 import sim.portrayal.grid.ValueGridPortrayal2D;
 import sim.util.gui.ColorMap;
-import arcade.sim.Simulation;
+import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
 
 /**
- * {@link arcade.vis.Drawer} for agent grids in 3D.
+ * {@link arcade.core.vis.Drawer} for agent grids in 3D.
  * <p>
- * {@code AgentDrawer3D} converts agents in a {@link arcade.env.grid.Grid} into
+ * {@code AgentDrawer3D} converts agents in a {@link arcade.core.env.grid.Grid} into
  * a 2D array representation by calculating density in the z direction.
  */
 
@@ -25,7 +25,7 @@ public abstract class AgentDrawer3D extends Drawer {
     DoubleGrid2D array;
     
     /**
-     * Creates a {@link arcade.vis.Drawer} for drawing 3D agent grids.
+     * Creates a {@link arcade.core.vis.Drawer} for drawing 3D agent grids.
      *
      * @param panel  the panel the drawer is attached to
      * @param name  the name of the drawer

@@ -2,14 +2,14 @@ package arcade.patch.env.comp;
 
 import java.util.logging.Logger;
 import sim.engine.SimState;
-import arcade.sim.Simulation;
-import arcade.env.lat.Lattice;
-import arcade.env.loc.Location;
+import arcade.core.sim.Simulation;
+import arcade.core.env.lat.Lattice;
+import arcade.core.env.loc.Location;
 import arcade.env.comp.SourceSites.SourceSite;
-import arcade.util.MiniBox;
+import arcade.core.util.MiniBox;
 
 /**
- * Implementation of {@link arcade.env.comp.Component} for pulsing sources.
+ * Implementation of {@link arcade.core.env.comp.Component} for pulsing sources.
  * <p>
  * This component can only be used with {@link arcade.env.comp.SourceSites}.
  * This component affects the source concentration of the specified molecule
@@ -63,7 +63,7 @@ public class PulseComponent implements Component {
     private final MiniBox specs;
     
     /**
-     * Creates a {@link arcade.env.comp.Component} object for pulsing.
+     * Creates a {@link arcade.core.env.comp.Component} object for pulsing.
      * <p>
      * Specifications include:
      * <ul>

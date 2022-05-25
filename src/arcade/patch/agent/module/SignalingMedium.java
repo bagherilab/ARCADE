@@ -3,9 +3,9 @@ package arcade.patch.agent.module;
 import java.io.Serializable;
 import java.util.ArrayList;
 import arcade.agent.cell.Cell;
-import arcade.sim.Simulation;
-import arcade.util.Solver;
-import arcade.util.Solver.Equations;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Solver;
+import arcade.core.util.Solver.Equations;
 
 /** 
  * Extension of {@link arcade.agent.module.Signaling} for medium EGFR signaling.
@@ -114,7 +114,7 @@ public class SignalingMedium extends Signaling {
      * Initial concentrations of all components in the network are assigned and
      * molecule names are added.
      * Migratory threshold ({@code MIGRA_THRESHOLD}) parameter is drawn from a
-     * {@link arcade.util.Parameter} distribution and the distribution is updated
+     * {@link arcade.core.util.Parameter} distribution and the distribution is updated
      * with the new mean.
      *
      * @param c  the {@link arcade.agent.cell.TissueCell} the module is associated with

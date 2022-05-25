@@ -1,8 +1,8 @@
 package arcade.patch.agent.module;
 
 import arcade.agent.cell.Cell;
-import arcade.sim.Series;
-import arcade.sim.Simulation;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 
 /**
  * Extension of {@link arcade.agent.module.Signaling} for random signaling.

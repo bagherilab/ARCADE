@@ -4,7 +4,7 @@ import sim.engine.*;
 import arcade.sim.*;
 import arcade.env.comp.GraphSites;
 import arcade.env.comp.GraphSites.*;
-import arcade.util.Graph;
+import arcade.core.util.Graph;
 
 /** 
  * Extension of {@code Profiler} to output graph structure and hemodynamic
@@ -14,11 +14,11 @@ import arcade.util.Graph;
  * <ul>
  *      <li><strong>{@code seed}</strong>: random seed of the simulation</li>
  *      <li><strong>{@code config}</strong>: summary of model setup from
- *         {@code toJSON} method in {@link arcade.sim.Series}</li>
+ *         {@code toJSON} method in {@link arcade.core.sim.Series}</li>
  *     <li><strong>{@code helpers}</strong>: list of
- *         {@link arcade.agent.helper.Helper} objects</li>
+ *         {@link arcade.core.agent.helper.Helper} objects</li>
  *     <li><strong>{@code components}</strong>: list of
- *         {@link arcade.env.comp.Component} objects</li>
+ *         {@link arcade.core.env.comp.Component} objects</li>
  *     <li><strong>{@code timepoints}</strong>: list of timepoints, where each
  *        timepoint contains lists of edges and nodes in the graph</li>
  * </ul>

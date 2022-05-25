@@ -1,11 +1,11 @@
 package arcade.patch.sim.checkpoint;
 
 import sim.engine.SimState;
-import arcade.sim.Series;
-import arcade.sim.Simulation;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.env.comp.GraphSites;
-import arcade.util.Graph;
-import arcade.util.Graph.*;
+import arcade.core.util.Graph;
+import arcade.core.util.Graph.*;
 
 /**
  * Extension of {@code Checkpoint} for saving graphs.

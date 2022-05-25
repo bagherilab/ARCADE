@@ -1,8 +1,8 @@
 package arcade.patch.env.comp;
 
-import arcade.sim.Simulation;
-import arcade.env.lat.Lattice;
-import arcade.util.MiniBox;
+import arcade.core.sim.Simulation;
+import arcade.core.env.lat.Lattice;
+import arcade.core.util.MiniBox;
 
 /**
  * Extension of {@link arcade.env.comp.Diffuser} for rectangular lattice.

@@ -2,12 +2,12 @@ package arcade.patch.env.comp;
 
 import java.util.ArrayList;
 import sim.engine.SimState;
-import arcade.sim.Simulation;
-import arcade.env.lat.Lattice;
-import arcade.util.MiniBox;
+import arcade.core.sim.Simulation;
+import arcade.core.env.lat.Lattice;
+import arcade.core.util.MiniBox;
 
 /** 
- * Implementation of {@link arcade.env.comp.Component} for generator sites.
+ * Implementation of {@link arcade.core.env.comp.Component} for generator sites.
  * <p>
  * A {@code Sites} object defines the locations of sites from which molecules
  * are generated and added into the environment.

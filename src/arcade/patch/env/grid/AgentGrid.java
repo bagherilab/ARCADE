@@ -3,10 +3,10 @@ package arcade.patch.env.grid;
 import sim.util.Bag;
 import java.util.Map;
 import java.util.HashMap;
-import arcade.env.loc.Location;
+import arcade.core.env.loc.Location;
 
 /**
- * Implementation of {@link arcade.env.grid.Grid} using {@link arcade.env.loc.Location}
+ * Implementation of {@link arcade.core.env.grid.Grid} using {@link arcade.core.env.loc.Location}
  * object as hash.
  * <p>
  * {@code AgentGrid} uses the Location object to map to objects at the location.

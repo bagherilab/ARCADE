@@ -4,10 +4,10 @@ import java.util.Map;
 import java.util.HashMap;
 import sim.engine.*;
 import sim.util.Bag;
-import arcade.sim.Simulation;
-import arcade.util.Parameter;
-import arcade.env.loc.Location;
-import arcade.agent.module.Module;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Parameter;
+import arcade.core.env.loc.Location;
+import arcade.core.agent.module.Module;
 import arcade.agent.helper.*;
 
 /** 
@@ -18,7 +18,7 @@ import arcade.agent.helper.*;
  * The neutral state is an transition state for "undecided" cells, and does not
  * have any biological analog.
  * <p>
- * {@code TissueCell} agents have two required {@link arcade.agent.module.Module} 
+ * {@code TissueCell} agents have two required {@link arcade.core.agent.module.Module} 
  * types: metabolism and signaling.
  * Metabolism controls changes in cell energy and volume.
  * Signaling controls the proliferative vs. migratory decision.
@@ -34,7 +34,7 @@ import arcade.agent.helper.*;
  * </ul>
  * <p>
  * Cell parameters are tracked using a map between the parameter name and a
- * {@link arcade.util.Parameter} object.
+ * {@link arcade.core.util.Parameter} object.
  * Daughter cell parameter values are drawn from a distribution centered on the
  * parent cell parameter with the specified amount of heterogeneity.
  */
@@ -58,16 +58,16 @@ public abstract class TissueCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule */
     private Stoppable stopper;
     
-    /** {@link arcade.agent.helper.Helper} instance for this agent, may be null */
+    /** {@link arcade.core.agent.helper.Helper} instance for this agent, may be null */
     public Helper helper;
     
-    /** Current agent {@link arcade.env.loc.Location} */
+    /** Current agent {@link arcade.core.env.loc.Location} */
     private final Location location;
     
-    /** Map of module names and {@link arcade.agent.module.Module} instance */
+    /** Map of module names and {@link arcade.core.agent.module.Module} instance */
     final Map<String, Module> modules;
     
-    /** Map of parameter names and {@link arcade.util.Parameter} instances */
+    /** Map of parameter names and {@link arcade.core.util.Parameter} instances */
     final Map<String, Parameter> params;
     
     /** Agent behavior flags */
@@ -110,21 +110,21 @@ public abstract class TissueCell implements Cell {
      * code = healthy.
      * Any extending constructors should change type and/or code as needed.
      * <p>
-     * Cell parameters are drawn from {@link arcade.util.Parameter} distributions.
-     * A new map of {@link arcade.util.Parameter} objects is created using these
+     * Cell parameters are drawn from {@link arcade.core.util.Parameter} distributions.
+     * A new map of {@link arcade.core.util.Parameter} objects is created using these
      * values as the new means of the distributions.
      * This cell parameter map is used when constructing daughter cell agents,
      * so any daughter cells will draw their parameter values from the parent
      * distribution (rather than the default distribution).
      * Note that {@code META_PREF} and {@code MIGRA_THRESHOLD} are assigned to
      * the cell parameter map, but are updated separately by the
-     * {@link arcade.agent.module.Module} constructors.
+     * {@link arcade.core.agent.module.Module} constructors.
      * 
      * @param pop  the population index
      * @param loc  the location of the cell 
      * @param vol  the initial (and critical) volume of the cell
      * @param age  the initial age of the cell in minutes
-     * @param p  the map of parameter name to {@link arcade.util.Parameter} objects
+     * @param p  the map of parameter name to {@link arcade.core.util.Parameter} objects
      */
     public TissueCell(int pop, Location loc, double vol, int age, Map<String, Parameter> p) {
         // Initialize cell agent.
@@ -285,7 +285,7 @@ public abstract class TissueCell implements Cell {
     /**
      * Switches cell state to apoptotic.
      * <p>
-     * Schedules a {@link arcade.agent.helper.Helper} to remove the cell after
+     * Schedules a {@link arcade.core.agent.helper.Helper} to remove the cell after
      * a specific amount of time.
      * 
      * @param sim  the simulation instance
@@ -312,7 +312,7 @@ public abstract class TissueCell implements Cell {
     /**
      * Switches cell state to migratory.
      * <p>
-     * Schedules a {@link arcade.agent.helper.Helper} to move the cell after
+     * Schedules a {@link arcade.core.agent.helper.Helper} to move the cell after
      * a specific amount of time.
      *
      * @param sim  the simulation instance
@@ -328,7 +328,7 @@ public abstract class TissueCell implements Cell {
     /**
      * Switches cell state to proliferative.
      * <p>
-     * Schedules a {@link arcade.agent.helper.Helper} to create a daughter cell
+     * Schedules a {@link arcade.core.agent.helper.Helper} to create a daughter cell
      * once the cell doubles in volume.
      *
      * @param sim  the simulation instance

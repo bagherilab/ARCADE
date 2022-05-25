@@ -7,7 +7,7 @@ import sim.util.Bag;
  * Extension of {@link arcade.env.grid.AgentGrid} for rectangular grid.
  * <p>
  * Each rectangular location has four positions.
- * Uses {@link arcade.env.loc.RectLocation} as {@link arcade.env.loc.Location} object.
+ * Uses {@link arcade.env.loc.RectLocation} as {@link arcade.core.env.loc.Location} object.
  */
 
 public class RectAgentGrid extends AgentGrid {

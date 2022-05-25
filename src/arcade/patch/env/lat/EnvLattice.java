@@ -3,16 +3,16 @@ package arcade.patch.env.lat;
 import java.util.HashMap;
 import java.util.Map;
 import arcade.env.comp.Generator;
-import arcade.env.comp.Component;
-import arcade.env.loc.Location;
-import arcade.sim.Simulation;
-import arcade.util.MiniBox;
+import arcade.core.env.comp.Component;
+import arcade.core.env.loc.Location;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
 
 /** 
- * Implementation of {@link arcade.env.lat.Lattice} using for loop array iteration.
+ * Implementation of {@link arcade.core.env.lat.Lattice} using for loop array iteration.
  * <p>
  * Methods are written to work regardless of underlying geometry.
- * Two {@link arcade.env.comp.Component} types are defined:
+ * Two {@link arcade.core.env.comp.Component} types are defined:
  * <ul>
  *     <li><em>Diffuser</em> for diffusion of molecules on the array</li>
  *     <li><em>Generator</em> for adding concentrations into the array</li>
@@ -60,7 +60,7 @@ public abstract class EnvLattice implements Lattice {
     public int getDepth() { return depth; }
     
     /**
-     * Makes a diffuser {@link arcade.env.comp.Component} for the lattice.
+     * Makes a diffuser {@link arcade.core.env.comp.Component} for the lattice.
      * 
      * @param sim  the simulation instance
      * @param molecule  the molecule parameters

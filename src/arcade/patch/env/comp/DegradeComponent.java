@@ -4,17 +4,17 @@ import java.util.logging.Logger;
 import java.util.HashSet;
 import sim.engine.SimState;
 import sim.util.Bag;
-import arcade.sim.Simulation;
+import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
-import arcade.env.grid.Grid;
-import arcade.env.loc.Location;
+import arcade.core.env.grid.Grid;
+import arcade.core.env.loc.Location;
 import arcade.env.comp.GraphSites.*;
-import arcade.util.Graph;
-import arcade.util.MiniBox;
+import arcade.core.util.Graph;
+import arcade.core.util.MiniBox;
 import static arcade.env.comp.GraphSitesUtilities.*;
 
 /**
- * Implementation of {@link arcade.env.comp.Component} for degrading edges.
+ * Implementation of {@link arcade.core.env.comp.Component} for degrading edges.
  * <p>
  * This component can only be used with {@link arcade.env.comp.GraphSites}.
  * The wall thickness of edges that are adjacent to a location with cancerous
@@ -42,14 +42,14 @@ public class DegradeComponent implements Component {
     /** {@link arcade.env.comp.GraphSites} object */
     private GraphSites sites;
     
-    /** {@link arcade.util.Graph} object representing the sites */
+    /** {@link arcade.core.util.Graph} object representing the sites */
     private Graph G;
     
     /** Dictionary of specifications */
     private final MiniBox specs;
     
     /**
-     * Creates a {@link arcade.env.comp.Component} object for degradation.
+     * Creates a {@link arcade.core.env.comp.Component} object for degradation.
      * <p>
      * Specifications include:
      * <ul>

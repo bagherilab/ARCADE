@@ -2,13 +2,13 @@ package arcade.patch.sim.profiler;
 
 import java.io.*;
 import sim.engine.*;
-import arcade.sim.Series;
-import arcade.sim.Simulation;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 
 /**
  * A {@code Profiler} object captures simulation data and writes to a JSON file.
  * <p>
- * More than one {@code Profiler} can be scheduled for a given {@link arcade.sim.Simulation}.
+ * More than one {@code Profiler} can be scheduled for a given {@link arcade.core.sim.Simulation}.
  * When using {@code write}, the file will be created (including any directories)
  * if it does not exist.
  * If the file already exists, contents will be appended to the contents of the

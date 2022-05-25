@@ -1,12 +1,12 @@
 package arcade.patch.agent.module;
 
 import java.util.List;
-import arcade.sim.Simulation;
+import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
-import arcade.env.loc.Location;
+import arcade.core.env.loc.Location;
 
 /**
- * Implementation of {@link arcade.agent.module.Module} for cell signaling.
+ * Implementation of {@link arcade.core.agent.module.Module} for cell signaling.
  * <p>
  * The {@code Signaling} module can be used for networks comprising a system of
  * ODEs.

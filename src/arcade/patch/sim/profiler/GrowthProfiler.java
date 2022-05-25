@@ -15,11 +15,11 @@ import arcade.agent.cell.*;
  * <ul>
  *     <li><strong>{@code seed}</strong>: random seed of the simulation</li>
  *     <li><strong>{@code config}</strong>: summary of model setup from
- *         {@code toJSON} method in {@link arcade.sim.Series}</li>
+ *         {@code toJSON} method in {@link arcade.core.sim.Series}</li>
  *     <li><strong>{@code helpers}</strong>: list of
- *         {@link arcade.agent.helper.Helper} objects</li>
+ *         {@link arcade.core.agent.helper.Helper} objects</li>
  *     <li><strong>{@code components}</strong>: list of
- *         {@link arcade.env.comp.Component} objects</li>
+ *         {@link arcade.core.env.comp.Component} objects</li>
  *     <li><strong>{@code parameters}</strong>: list of parameters for the
  *         environment and all cell populations</li>
  *     <li><strong>{@code timepoints}</strong>: list of timepoints, where each
@@ -81,7 +81,7 @@ public class GrowthProfiler extends Profiler {
     }
     
     /**
-     * Tracks cell information at each occupied {@link arcade.env.grid.Grid} location
+     * Tracks cell information at each occupied {@link arcade.core.env.grid.Grid} location
      * and molecule concentrations.
      * 
      * @param state  the MASON simulation state

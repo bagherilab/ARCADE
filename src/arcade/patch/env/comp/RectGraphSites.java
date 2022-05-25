@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import sim.engine.SimState;
 import sim.util.Bag;
-import arcade.sim.Simulation;
-import arcade.util.Graph;
-import arcade.util.MiniBox;
-import static arcade.util.Graph.*;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Graph;
+import arcade.core.util.MiniBox;
+import static arcade.core.util.Graph.*;
 import static arcade.env.comp.GraphSitesUtilities.*;
 
 /**
