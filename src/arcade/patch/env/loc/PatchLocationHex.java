@@ -4,14 +4,15 @@ import arcade.core.sim.Series;
 import sim.util.Bag;
 
 /**
- * Implementation of {@link arcade.core.env.loc.Location} for hexagonal
- * {@link arcade.core.env.grid.Grid} to a triangular {@link arcade.core.env.lat.Lattice}.
+ * Concrete implementation of {@link PatchLocation} for hexagonal
+ * {@link arcade.core.env.grid.Grid} to a triangular
+ * {@link arcade.core.env.lat.Lattice}.
  * <p>
- * {@link arcade.core.env.grid.Grid} coordinates are in terms of (u, v, w) and the
- * {@link arcade.core.env.lat.Lattice} coordinates are in (x, y).
+ * {@link arcade.core.env.grid.Grid} coordinates are in terms of (u, v, w) and
+ * the {@link arcade.core.env.lat.Lattice} coordinates are in (x, y).
  * Hexagons are flat side up.
- * Triangular {@link arcade.core.env.lat.Lattice} positions are numbered 0 - 5, with 0
- * at the top center and going clockwise around.
+ * Triangular {@link arcade.core.env.lat.Lattice} positions are numbered 0 - 5,
+ * with 0 at the top center and going clockwise around.
  * <pre>
  *      -------
  *     / \ 0 / \
@@ -22,8 +23,9 @@ import sim.util.Bag;
  *      -------
  * </pre>
  * In (u, v, w) coordinates, only coordinates where u + v + w = 0 are valid.
- * For simulations with {@code HEIGHT} &#62; 0 (3D simulations), each the hexagonal
- * grid is offset in one of two directions relative to the triangular lattice.
+ * For simulations with {@code HEIGHT} &#62; 0 (3D simulations), each the
+ * hexagonal grid is offset in one of two directions relative to the triangular
+ * lattice.
  * Therefore, each cell in a location has six neighboring locations in the same
  * layer, three neighboring locations in the layer above, and three neighboring
  * locations in the layer below.
@@ -32,74 +34,53 @@ import sim.util.Bag;
  * coordinates that are out of bounds of the array.
  */
 
-public class PatchLocationHex implements Location {
-    /** Size of hexagon location from side to side [um] */
+public final class PatchLocationHex extends PatchLocation {
+    /** Size of hexagon patch from side to side [um]. */
     private static final double HEX_SIZE = 30.0;
     
-    /** Height of hexagon location [um] */
+    /** Size of the hexagon patch side [um] */
+    private static final double HEX_SIDE = HEX_SIZE / Math.sqrt(3.0);
+    
+    /** Height of hexagon patch [um]. */
     private static final double HEX_HEIGHT = 8.7;
     
-    /** Area of hexagon location [um<sup>2</sup>] */
-    private static final double HEX_AREA = 3.0/2.0/Math.sqrt(3.0)*HEX_SIZE*HEX_SIZE;
+    /** Perimeter of hexagon patch [um]. */
+    private static final double HEX_PERIMETER = 6 * HEX_SIDE;
     
-    /** Volume of hexagon location [um<sup>3</sup>] */
-    private static final double HEX_VOL = HEX_AREA*HEX_HEIGHT;
+    /** Area of hexagon patch [um<sup>2</sup>]. */
+    private static final double HEX_AREA = 3.0 / 2.0 / Math.sqrt(3.0) * HEX_SIZE * HEX_SIZE;
     
-    /** Size of the hexagon location side [um] */
-    private static final double HEX_SIDE = HEX_SIZE/Math.sqrt(3.0);
+    /** Surface area of hexagon patch [um<sup>2</sup>]. */
+    private static final double HEX_SURFACE = 2 * HEX_AREA + HEX_HEIGHT * HEX_PERIMETER;
+    
+    /** Volume of hexagon patch [um<sup>3</sup>]. */
+    private static final double HEX_VOLUME = HEX_AREA * HEX_HEIGHT;
     
     /** Ratio of hexagon location height to size */
     private static final double HEX_RATIO = HEX_HEIGHT/HEX_SIZE;
     
-    /** Size of the triangle position [um] */
+    /** Size of the triangle position [um]. */
     private static final double TRI_SIZE = HEX_SIDE;
     
-    /** Radius of the simulation environment */
-    private static int RADIUS;
-    
-    /** Height of the simulation environment */
-    private static int HEIGHT;
-    
-    /** Radius and margin of the simulation environment */
-    private static int RADIUS_BOUNDS;
-    
-    /** Height and margin of the simulation environment */
-    private static int HEIGHT_BOUNDS;
-    
-    /** Offset of the z axis */
-    private static int Z_OFFSET;
-    
-    /** Hexagonal location u coordinate */
+    /** Hexagonal patch u coordinate. */
     private int u;
     
-    /** Hexagonal location v coordinate */
+    /** Hexagonal patch v coordinate. */
     private int v;
     
-    /** Hexagonal location w coordinate */
+    /** Hexagonal patch w coordinate. */
     private int w;
     
-    /** Hexagonal location z coordinate */
+    /** Hexagonal patch z coordinate. */
     private int z;
     
-    /** Triangular position coordinates */
+    /** Triangular position coordinates. */
     private int[][] xy = new int[6][2];
     
-    /** Distance from center */
-    private int r = -1;
-    
-    /** Triangular position */
-    private byte p = -1;
-    
-    /** Offset of the hexagonal grid in the z axis */
-    private byte zo;
-    
-    /** Allowable movements */
-    private byte check;
-    
-    /** Relative triangular coordinate offsets in the x direction */
+    /** Relative triangular coordinate offsets in the x direction. */
     private static final byte[] X_OFF = new byte[] {0, 1, 1, 0, -1, -1};
     
-    /** Relative triangular coordinate offsets in the y direction */
+    /** Relative triangular coordinate offsets in the y direction. */
     private static final byte[] Y_OFF = new byte[] {0, 0, 1, 1, 1, 0};
     
     /** List of relative hexagonal neighbor locations */
@@ -119,12 +100,11 @@ public class PatchLocationHex implements Location {
     };
     
     /**
-     * Creates a {@code PatchLocationHex} object at the same coordinates as given
-     * location.
+     * Creates a {@code PatchLocationHex} at the same coordinates as location.
      * 
      * @param loc  the location object
      */
-    public PatchLocationHex(Location loc) { updateLocation(loc); }
+    public PatchLocationHex(PatchLocation loc) { updateLocation(loc); }
     
     /**
      * Creates a {@code PatchLocationHex} object at given coordinates.
@@ -146,23 +126,47 @@ public class PatchLocationHex implements Location {
         calcChecks();
     }
     
-    public void setPosition(byte p) { this.p = p; }
-    public byte getPosition() { return p; }
-    public byte getOffset() { return zo; }
-    public Location getCopy() { return new PatchLocationHex(this); }
+    @Override
+    public PatchLocation getCopy() { return new PatchLocationHex(this); }
+    
+    @Override
     public int[] getGridLocation() { return new int[] {u, v, w}; }
+    
+    @Override
     public int getGridZ() { return z; }
+    
+    @Override
     public int[] getLatLocation() { return xy[0]; }
+    
+    @Override
     public int[][] getLatLocations() { return xy; }
+    
+    @Override
     public int getLatZ() { return HEIGHT_BOUNDS + z - 1; }
+    
+    @Override
     public double getGridSize() { return HEX_SIZE; }
+    
+    @Override
     public double getLatSize() { return TRI_SIZE; }
-    public double getVolume() { return HEX_VOL; }
-    public double getArea() { return HEX_AREA; }
+    
+    @Override
+    public double getVolume() { return HEX_VOLUME; }
+    
+    @Override
+    public double getSurface() { return HEX_SURFACE; }
+    
+    @Override
     public double getHeight() { return HEX_HEIGHT; }
+    
+    @Override
+    public double getArea() { return HEX_AREA; }
+    
+    @Override
     public double getRatio() { return HEX_RATIO; }
+    
+    @Override
     public int getMax() { return 6; }
-    public int getRadius() { return r; }
     
     /**
      * Updates static configuration variables.
@@ -192,8 +196,9 @@ public class PatchLocationHex implements Location {
      * If fraction is not 1 (i.e. at least two cells in the location), then two
      * additional inner segments are added.
      */
+    @Override
     public double calcPerimeter(double f) {
-        return f*6*HEX_SIDE + (f == 1 ? 0 : 2*HEX_SIDE);
+        return f * HEX_PERIMETER + (f == 1 ? 0 : 2 * HEX_SIDE);
     }
     
     /**
@@ -201,7 +206,7 @@ public class PatchLocationHex implements Location {
      * 
      * @param loc  the reference location
      */
-    public void updateLocation(Location loc) {
+    public void updateLocation(PatchLocation loc) {
         PatchLocationHex hexLoc = (PatchLocationHex)loc;
         u = hexLoc.u;
         v = hexLoc.v;
@@ -253,6 +258,7 @@ public class PatchLocationHex implements Location {
      * byte with the neighbor location byte.
      * Neighbor list includes the current location.
      */
+    @Override
     public Bag getNeighborLocations() {
         Bag neighbors = new Bag();
         byte b;
@@ -293,7 +299,8 @@ public class PatchLocationHex implements Location {
         return (byte)(shifted << 2 | right);
     }
     
-    public Location toLocation(int[] coords) {
+    @Override
+    public PatchLocation toLocation(int[] coords) {
         int z = coords[2] - HEIGHT_BOUNDS + 1;
         int zo = (byte)((Math.abs(Z_OFFSET + z))%3);
         
@@ -327,22 +334,5 @@ public class PatchLocationHex implements Location {
     public final boolean equals(Object obj) {
         PatchLocationHex hexLoc = (PatchLocationHex)obj;
         return hexLoc.z == z && hexLoc.u == u && hexLoc.v == v && hexLoc.w == w;
-    }
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The JSON is formatted as:
-     * <pre>
-     *     [ u, v, w, z ]
-     * </pre>
-     */
-    public String toJSON() {
-        return "[" + u + "," + v + "," + w + "," + z + "]";
-    }
-    
-    public String toString() {
-        return "[" + u + "," + v + "," + w + "," + z + "]"
-                + "[" + xy[0][0] + "," + xy[0][1] + "]";
     }
 }

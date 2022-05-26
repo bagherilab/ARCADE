@@ -1,64 +1,134 @@
 package arcade.patch.env.loc;
 
+import java.util.EnumSet;
 import sim.util.Bag;
-
-import java.io.Serializable;
+import arcade.core.env.loc.Location;
+import static arcade.core.util.Enums.Region;
 
 /**
- * A {@code Location} object defines agent coordinates within the environment.
+ * Abstract implementation of {@link Location} for patch models.
  * <p>
- * Each agent has a {@code Location} that identifies where they are within the
- * {@link arcade.core.env.grid.Grid} (relative to other agents) and the
+ * {@code PatchLocation} objects defines identifies where agents are within the
+ * {@link arcade.core.env.grid.Grid} (relative to other agents) and relative to
  * {@link arcade.core.env.lat.Lattice} (local molecule concentrations).
- * The term <em>location</em> is used for {@link arcade.core.env.grid.Grid} while the
- * term <em>position</em> is used for {@link arcade.core.env.lat.Lattice}.
+ * The term <em>patch</em> is used for {@link arcade.core.env.grid.Grid} while
+ * the term <em>position</em> is used for {@link arcade.core.env.lat.Lattice}.
  * <p>
- * There may be multiple <em>positions</em> within the same <em>location</em>
- * (therefore there may be more than one agent per location, but there should
- * only be one agent per location/position pair).
- * For example, in the hexagonal grid, each hexagon is a <em>location</em>.
+ * There may be multiple <em>positions</em> within the same <em>patch</em>
+ * (therefore there may be more than one agent per patch, but there should only
+ * be one agent per patch/position pair).
+ * For example, in the hexagonal grid, each hexagon is a <em>patch</em>.
  * Within each hexagon there are six corresponding triangular lattice
  * <em>positions</em>.
  * There may be multiple agents in a given hexagon, but each cell within that
  * hexagon is associated with a specific unique triangular position.
- * Therefore, there can be no more than six agents per hexagonal location.
+ * Therefore, there can be no more than six agents per hexagonal patch.
  * <p>
  * Regardless of geometry, the center of the model (both in the XY and Z
  * directions) should have {@link arcade.core.env.grid.Grid} location coordinate
  * (0,0,0) or (0,0,0,0).
- * {@link arcade.core.env.lat.Lattice} arrays cannot have negative indices, so (0,0,0)
- * is located at the top left of the 2D array and the bottom layer of the 3D
- * stack.
+ * {@link arcade.core.env.lat.Lattice} arrays cannot have negative indices, so
+ * (0,0,0) is located at the top left of the 2D array and the bottom layer of
+ * the 3D stack.
  */
 
-public interface PatchLocation extends Serializable {
+public abstract class PatchLocation implements Location {
+    /** Radius of the simulation environment. */
+    static int RADIUS;
+    
+    /** Height of the simulation environment. */
+    static int HEIGHT;
+    
+    /** Radius and margin of the simulation environment. */
+    static int RADIUS_BOUNDS;
+    
+    /** Height and margin of the simulation environment. */
+    static int HEIGHT_BOUNDS;
+    
+    /** Offset of the z axis. */
+    static int Z_OFFSET;
+    
+    /** Distance from center. */
+    int r = -1;
+    
+    /** Position index. */
+    byte p = -1;
+    
+    /** Offset of the grid in the z axis. */
+    byte zo;
+    
+    /** Allowable movements */
+    byte check;
+    
+    @Override
+    public EnumSet<Region> getRegions() { return null; }
+    
+    @Override
+    public double getVolume(Region region) { return getVolume(); }
+    
+    @Override
+    public double getSurface(Region region) { return getSurface(); }
+    
+    @Override
+    public double getHeight(Region region) { return getHeight(); }
+    
     /**
-     * Sets the position of an object within the location.
+     * Gets the area of the location.
+     *
+     * @return  the location area
+     */
+    abstract double getArea();
+    
+    /**
+     * Calculates the perimeter of a cell occupying the location.
+     *
+     * @param f  the fraction of total volume 
+     * @return  the perimeter of the cell
+     */
+    abstract double calcPerimeter(double f);
+    
+    /**
+     * Sets the position of an object within the patch.
      *
      * @param position  the object position
      */
-    void setPosition(byte position);
+    public void setPosition(byte position) { this.p = position; }
     
     /**
      * Gets the position of an object.
      *
      * @return  the object position
      */
-    byte getPosition();
+    public byte getPosition() { return p; }
+    
+    /**
+     * Gets the {@link arcade.core.env.grid.Grid} offset relative to the
+     * {@link arcade.core.env.lat.Lattice}.
+     *
+     * @return  the offset
+     */
+    public byte getOffset() { return zo; }
+    
+    /**
+     * Gets the distance of the location from the center.
+     *
+     * @return  the distance
+     */
+     public int getRadius() { return r; }
     
     /**
      * Updates the location of an object to match the given location
      *
      * @param newLoc  the new location
      */
-    void updateLocation(Location newLoc);
+    abstract void updateLocation(PatchLocation newLoc);
     
     /**
      * Gets the location of the neighbors to the current location
      *
      * @return  the list of neighbor locations
      */
-    Bag getNeighborLocations();
+    abstract Bag getNeighborLocations();
     
     /**
      * Gets the coordinates in the {@link arcade.core.env.grid.Grid}.
@@ -68,14 +138,14 @@ public interface PatchLocation extends Serializable {
      *
      * @return  the grid coordinates
      */
-    int[] getGridLocation();
+    abstract int[] getGridLocation();
     
     /**
      * Gets the z axis coordinate in the {@link arcade.core.env.grid.Grid}.
      *
      * @return  the z coordinate
      */
-    int getGridZ();
+    abstract int getGridZ();
     
     /**
      * Gets the main coordinates in the {@link arcade.core.env.lat.Lattice}.
@@ -85,21 +155,21 @@ public interface PatchLocation extends Serializable {
      *
      * @return  the lattice coordinates
      */
-    int[] getLatLocation();
+    abstract int[] getLatLocation();
     
     /** Gets all coordinates in the {@link arcade.core.env.lat.Lattice} that correspond
      * to the {@link arcade.core.env.grid.Grid} location.
      *
      * @return  the array of lattice coordinates
      */
-    int[][] getLatLocations();
+    abstract int[][] getLatLocations();
     
     /**
      * Gets the z axis coordinate in the {@link arcade.core.env.lat.Lattice}.
      *
      * @return  the z coordinate
      */
-    int getLatZ();
+    abstract int getLatZ();
     
     /**
      * Gets a new instance of the {@code Location} object.
@@ -108,80 +178,35 @@ public interface PatchLocation extends Serializable {
      *
      * @return  a copy of the {@code Location}
      */
-    Location getCopy();
+    abstract PatchLocation getCopy();
     
     /**
      * Gets the {@link arcade.core.env.grid.Grid} size in the xy plane.
      *
      * @return  the grid size
      */
-    double getGridSize();
+    abstract double getGridSize();
     
     /**
      * Gets the {@link arcade.core.env.lat.Lattice} size in the xy plane.
      *
      * @return  the lattice size
      */
-    double getLatSize();
-    
-    /**
-     * Gets the {@link arcade.core.env.grid.Grid}/{@link arcade.core.env.lat.Lattice} size in
-     * the z plane.
-     *
-     * @return  the grid/lattice height
-     */
-    double getHeight();
-    
-    /**
-     * Gets the area of the location.
-     *
-     * @return  the location area
-     */
-    double getArea();
-    
-    /**
-     * Gets the volume of the location.
-     *
-     * @return  the location volume
-     */
-    double getVolume();
-    
-    /**
-     * Gets the {@link arcade.core.env.grid.Grid} offset relative to the
-     * {@link arcade.core.env.lat.Lattice}.
-     *
-     * @return  the offset
-     */
-    byte getOffset();
-    
-    /**
-     * Calculates the perimeter of a cell occupying the location.
-     *
-     * @param f  the fraction of total volume 
-     * @return  the perimeter of the cell
-     */
-    double calcPerimeter(double f);
+    abstract double getLatSize();
     
     /**
      * Gets the ratio of the {@link arcade.core.env.grid.Grid} z to xy sizes.
      *
      * @return  the size ratio
      */
-    double getRatio();
+    abstract double getRatio();
     
     /**
      * Gets the maximum occupancy of a location.
      *
      * @return  the maximum occupancy
      */
-    int getMax();
-    
-    /**
-     * Gets the distance of the location from the center.
-     *
-     * @return  the distance
-     */
-    int getRadius();
+    abstract int getMax();
     
     /**
      * Converts {@link arcade.core.env.lat.Lattice} coordinates into a
@@ -190,12 +215,5 @@ public interface PatchLocation extends Serializable {
      * @param coords  the lattice coordinates
      * @return  the corresponding grid location
      */
-    Location toLocation(int[] coords);
-    
-    /**
-     * Represents object as a JSON entry.
-     *
-     * @return  the JSON string
-     */
-    String toJSON();
+    abstract PatchLocation toLocation(int[] coords);
 }

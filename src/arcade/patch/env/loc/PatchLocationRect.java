@@ -4,13 +4,14 @@ import arcade.core.sim.Series;
 import sim.util.Bag;
 
 /** 
- * Implementation of {@link arcade.core.env.loc.Location} for rectangular
- * {@link arcade.core.env.grid.Grid} to a rectangular {@link arcade.core.env.lat.Lattice}.
+ * Concrete implementation of {@link PatchLocation} for rectangular
+ * {@link arcade.core.env.grid.Grid} to a rectangular
+ * {@link arcade.core.env.lat.Lattice}.
  * <p>
  * {@link arcade.core.env.grid.Grid} coordinates are in terms of (x, y) and the
  * {@link arcade.core.env.lat.Lattice} coordinates are in (a, b).
- * Rectangular {@link arcade.core.env.lat.Lattice} positions are numbered 0 - 3, with 0
- * at the top left.
+ * Rectangular {@link arcade.core.env.lat.Lattice} positions are numbered 0 - 3,
+ * with 0 at the top left.
  * <pre>
  *     ---------
  *     | 0 | 1 |
@@ -18,8 +19,8 @@ import sim.util.Bag;
  *     | 2 | 3 |
  *     ---------
  * </pre>
- * For simulations with {@code HEIGHT} &#62; 0 (3D simulations), each the rectangular
- * grid is offset in relative to the rectangular lattice.
+ * For simulations with {@code HEIGHT} &#62; 0 (3D simulations), each the
+ * rectangular grid is offset in relative to the rectangular lattice.
  * Therefore, each cell in a location has four neighboring locations in the same
  * layer, four neighboring locations in the layer above, and four neighboring
  * locations in the layer below.
@@ -28,68 +29,47 @@ import sim.util.Bag;
  * coordinates that are out of bounds of the array.
  */
 
-public class PatchLocationRect implements Location {
-    /** Size of rectangle location from side to side [um] */
+public final class PatchLocationRect extends PatchLocation {
+    /** Size of rectangle patch from side to side [um]. */
     private static final double RECT_SIZE = 30.0;
     
-    /** Height of rectangle location [um] */
+    /** Height of rectangle patch [um]. */
     private static final double RECT_HEIGHT = 8.7;
     
-    /** Area of rectangle location [um<sup>2</sup>] */
-    private static final double RECT_AREA = RECT_SIZE*RECT_SIZE;
+    /** Perimeter of rectangle patch [um]. */
+    private static final double RECT_PERIMETER = 4 * RECT_SIZE;
     
-    /** Volume of rectangle location [um<sup>3</sup>] */
-    private static final double RECT_VOL = RECT_AREA*RECT_HEIGHT;
+    /** Area of rectangle patch [um<sup>2</sup>]. */
+    private static final double RECT_AREA = RECT_SIZE * RECT_SIZE;
+    
+    /** Surface area of hexagon patch [um<sup>2</sup>]. */
+    private static final double RECT_SURFACE = 2 * RECT_AREA + RECT_HEIGHT * RECT_PERIMETER;
+    
+    /** Volume of rectangle patch [um<sup>3</sup>]. */
+    private static final double RECT_VOLUME = RECT_AREA * RECT_HEIGHT;
     
     /** Ratio of rectangle location height to size */
     private static final double RECT_RATIO = RECT_HEIGHT/RECT_SIZE;
     
-    /** Size of the subrectangle position [um] */
+    /** Size of the subrectangle position [um]. */
     private static final double SUBRECT_SIZE = RECT_SIZE/2.0;
     
-    /** Radius of the simulation environment */
-    private static int RADIUS;
-    
-    /** Height of the simulation environment */
-    private static int HEIGHT;
-    
-    /** Radius and margin of the simulation environment */
-    private static int RADIUS_BOUNDS;
-    
-    /** Height and margin of the simulation environment */
-    private static int HEIGHT_BOUNDS;
-    
-    /** Offset of the z axis */
-    private static int Z_OFFSET;
-    
-    /** Rectangle location x coordinate */
+    /** Rectangle patch x coordinate. */
     private int x;
     
-    /** Rectangle location y coordinate */
+    /** Rectangle patch y coordinate. */
     private int y;
     
-    /** Rectangle location z coordinate */
+    /** Rectangle patch z coordinate. */
     private int z;
     
-    /** Subrectangular position coordinates */
+    /** Subrectangular position coordinates. */
     private int[][] ab = new int[4][2];
     
-    /** Distance from center */
-    private int r = -1;
-    
-    /** Subrectangular position */
-    private byte p = -1;
-    
-    /** Offset of the rectangular grid in the z axis */
-    private byte zo;
-    
-    /** Allowable movements */
-    private byte check;
-    
-    /** Relative subrectangular coordinate offsets in the x direction */
+    /** Relative subrectangular coordinate offsets in the x direction. */
     private static final byte[] A_OFF = new byte[] {0, 1, 0, 1};
     
-    /** Relative subrectangular coordinate offsets in the y direction */
+    /** Relative subrectangular coordinate offsets in the y direction. */
     private static final byte[] B_OFF = new byte[] {0, 0, 1, 1};
     
     /** List of relative rectangular neighbor locations */
@@ -109,12 +89,11 @@ public class PatchLocationRect implements Location {
     };
     
     /**
-     * Creates a {@code PatchLocationRect} object at the same coordinates as given
-     * location.
+     * Creates a {@code PatchLocationRect} at the same coordinates as location.
      *
      * @param loc  the location object
      */
-    public PatchLocationRect(Location loc) { updateLocation(loc); }
+    public PatchLocationRect(PatchLocation loc) { updateLocation(loc); }
     
     /**
      * Creates a {@code PatchLocationRect} object at given coordinates.
@@ -134,23 +113,47 @@ public class PatchLocationRect implements Location {
         calcChecks();
     }
     
-    public void setPosition(byte p) { this.p = p; }
-    public byte getPosition() { return p; }
-    public byte getOffset() { return zo; }
-    public Location getCopy() { return new PatchLocationRect(this); }
+    @Override
+    public PatchLocation getCopy() { return new PatchLocationRect(this); }
+    
+    @Override
     public int[] getGridLocation() { return new int[] {x, y}; }
+    
+    @Override
     public int getGridZ() { return z; }
+    
+    @Override
     public int[] getLatLocation() { return ab[0]; }
+    
+    @Override
     public int[][] getLatLocations() { return ab; }
+    
+    @Override
     public int getLatZ() { return HEIGHT_BOUNDS + z - 1; }
+    
+    @Override
     public double getGridSize() { return RECT_SIZE; }
+    
+    @Override
     public double getLatSize() { return SUBRECT_SIZE; }
-    public double getVolume() { return RECT_VOL; }
-    public double getArea() { return RECT_AREA; }
+    
+    @Override
+    public double getVolume() { return RECT_VOLUME; }
+    
+    @Override
+    public double getSurface() { return RECT_SURFACE; }
+    
+    @Override
     public double getHeight() { return RECT_HEIGHT; }
+    
+    @Override
+    public double getArea() { return RECT_AREA; }
+    
+    @Override
     public double getRatio() { return RECT_RATIO; }
+    
+    @Override
     public int getMax() { return 4; }
-    public int getRadius() { return r; }
     
     /**
      * Updates static configuration variables.
@@ -180,8 +183,9 @@ public class PatchLocationRect implements Location {
      * If fraction is not 1 (i.e. at least two cells in the location), then an
      * additional inner segment is added.
      */
+    @Override
     public double calcPerimeter(double f) {
-        return f*4*RECT_SIZE + (f == 1 ? 0 : RECT_SIZE);
+        return f * RECT_PERIMETER + (f == 1 ? 0 : RECT_SIZE);
     }
     
     /**
@@ -189,7 +193,7 @@ public class PatchLocationRect implements Location {
      *
      * @param loc  the reference location
      */
-    public void updateLocation(Location loc) {
+    public void updateLocation(PatchLocation loc) {
         PatchLocationRect rectLoc = (PatchLocationRect)loc;
         x = rectLoc.x;
         y = rectLoc.y;
@@ -238,6 +242,7 @@ public class PatchLocationRect implements Location {
      * byte with the neighbor location byte.
      * Neighbor list includes the current location.
      */
+    @Override
     public Bag getNeighborLocations() {
         Bag neighbors = new Bag();
         byte b;
@@ -259,7 +264,7 @@ public class PatchLocationRect implements Location {
                     z + (b >> 1 & 1) - (b >> 0 & 1)));
             }
         }
-
+        
         return neighbors;
     }
     
@@ -277,7 +282,8 @@ public class PatchLocationRect implements Location {
         return (byte)(shifted << 2 | right);
     }
     
-    public Location toLocation(int[] coords) {
+    @Override
+    public PatchLocation toLocation(int[] coords) {
         int z = coords[2] - HEIGHT_BOUNDS + 1;
         int zo = (byte)(Math.abs(Z_OFFSET + z)%2);
         
@@ -308,22 +314,5 @@ public class PatchLocationRect implements Location {
     public final boolean equals(Object obj) {
         PatchLocationRect rectLoc = (PatchLocationRect)obj;
         return rectLoc.z == z && rectLoc.y == y && rectLoc.x == x;
-    }
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The JSON is formatted as:
-     * <pre>
-     *     [ x, y, z ]
-     * </pre>
-     */
-    public String toJSON() {
-        return "[" + x + "," + y + "," + z + "]";
-    }
-    
-    public String toString() {
-        return "[" + x + "," + y + "," + z + "]"
-                + "[" + ab[0][0] + "," + ab[0][1] + "]";
     }
 }
