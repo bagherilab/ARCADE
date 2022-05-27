@@ -3,7 +3,9 @@ package arcade.patch.env.grid;
 import sim.util.Bag;
 import java.util.Map;
 import java.util.HashMap;
+import arcade.core.env.grid.Grid;
 import arcade.core.env.loc.Location;
+import arcade.patch.env.loc.PatchLocation;
 
 /**
  * Implementation of {@link arcade.core.env.grid.Grid} using {@link arcade.core.env.loc.Location}
@@ -20,7 +22,7 @@ public abstract class PatchGrid implements Grid {
     private final Bag allObjects;
     
     /** Map of object to locations */
-    private final Map<Object, Location> objectToLocation;
+    private final Map<Object, PatchLocation> objectToLocation;
     
     /** Map of location to bag of objects */
     final Map<Location, Bag> locationToBag;
@@ -40,6 +42,21 @@ public abstract class PatchGrid implements Grid {
     
     public Bag getAllObjects() { return allObjects; }
     
+    @Override
+    public void addObject(int id, Object obj) {
+        
+    }
+    
+    @Override
+    public void removeObject(int id) {
+        
+    }
+    
+    @Override
+    public Object getObjectAt(int id) {
+        return null;
+    }
+    
     /**
      * Gets a free position within the location.
      * 
@@ -56,7 +73,7 @@ public abstract class PatchGrid implements Grid {
      * @param loc  the location
      * @return  the empty bag
      */
-    abstract Bag createObject(Location loc);
+    abstract Bag createObject(PatchLocation loc);
     
     /**
      * Creates an empty array associated with the location.
@@ -66,14 +83,14 @@ public abstract class PatchGrid implements Grid {
      * @param loc  the location
      * @return  the empty array
      */
-    abstract boolean[] createFlags(Location loc);
+    abstract boolean[] createFlags(PatchLocation loc);
     
     /**
      * {@inheritDoc}
      * <p>
      * Uses the given location object as the hash.
      */
-    public void addObject(Object obj, Location loc) {
+    public void addObject(Object obj, PatchLocation loc) {
         allObjects.add(obj); // add to bag of all objects
         loc.setPosition(getFreePosition(loc)); // set position in hexagon
         objectToLocation.put(obj, loc); // map object to location object
@@ -85,9 +102,9 @@ public abstract class PatchGrid implements Grid {
      * <p>
      * Maintains the old llcation object as the hash.
      */
-    public void moveObject(Object obj, Location newLoc) {
+    public void moveObject(Object obj, PatchLocation newLoc) {
         // Remove object from old location.
-        Location loc = objectToLocation.get(obj);
+        PatchLocation loc = objectToLocation.get(obj);
         Bag objs = locationToBag.get(loc);
         boolean[] flags = locationToFlags.get(loc);
         objs.remove(obj);
@@ -109,7 +126,7 @@ public abstract class PatchGrid implements Grid {
      * If the location bag is now empty, also remove the bag.
      */
     public void removeObject(Object obj) {
-        Location loc = objectToLocation.remove(obj);
+        PatchLocation loc = objectToLocation.remove(obj);
         Bag objs = locationToBag.get(loc);
         boolean[] flags = locationToFlags.get(loc);
         objs.remove(obj);
@@ -142,7 +159,7 @@ public abstract class PatchGrid implements Grid {
         return b;
     }
     
-    public Bag getNeighbors(Location loc) {
+    public Bag getNeighbors(PatchLocation loc) {
         Bag neighborLocs = loc.getNeighborLocations();
         return getObjectsAtLocations(neighborLocs);
     }
@@ -158,7 +175,7 @@ public abstract class PatchGrid implements Grid {
      * @param obj  the object
      * @param loc  the location of the location
      */
-    private void setObjectMaps(Object obj, Location loc) {
+    private void setObjectMaps(Object obj, PatchLocation loc) {
         Bag objs = locationToBag.get(loc); // get object bag at location
         boolean[] flags = locationToFlags.get(loc); // get flags
         

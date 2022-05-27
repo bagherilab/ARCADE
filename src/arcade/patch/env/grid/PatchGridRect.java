@@ -1,13 +1,15 @@
 package arcade.patch.env.grid;
 
-import arcade.env.loc.*;
 import sim.util.Bag;
+import arcade.core.env.loc.Location;
+import arcade.patch.env.loc.PatchLocation;
+import arcade.patch.env.loc.PatchLocationRect;
 
 /** 
- * Extension of {@link arcade.env.grid.PatchGrid} for rectangular grid.
+ * Extension of {@link PatchGrid} for rectangular grid.
  * <p>
  * Each rectangular location has four positions.
- * Uses {@link arcade.env.loc.PatchLocationRect} as {@link arcade.core.env.loc.Location} object.
+ * Uses {@link PatchLocationRect} as {@link arcade.core.env.loc.Location} object.
  */
 
 public class PatchGridRect extends PatchGrid {
@@ -15,7 +17,7 @@ public class PatchGridRect extends PatchGrid {
     private static final int N = 4;
     
     /**
-     * Creates a rectangular {@link arcade.env.grid.PatchGrid}.
+     * Creates a rectangular {@link PatchGrid}.
      */
     public PatchGridRect() { super(); }
     
@@ -26,13 +28,13 @@ public class PatchGridRect extends PatchGrid {
         return -1;
     }
     
-    protected Bag createObject(Location loc) {
+    protected Bag createObject(PatchLocation loc) {
         Bag objs = new Bag(N);
         locationToBag.put(new PatchLocationRect(loc), objs);
         return objs;
     }
         
-    protected boolean[] createFlags(Location loc) {
+    protected boolean[] createFlags(PatchLocation loc) {
         boolean[] flags = new boolean[N];
         locationToFlags.put(new PatchLocationRect(loc), flags);
         return flags;

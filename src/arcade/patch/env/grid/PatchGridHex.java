@@ -1,13 +1,15 @@
 package arcade.patch.env.grid;
 
-import arcade.env.loc.*;
 import sim.util.Bag;
+import arcade.core.env.loc.Location;
+import arcade.patch.env.loc.PatchLocation;
+import arcade.patch.env.loc.PatchLocationHex;
 
 /**
- * Extension of {@link arcade.env.grid.PatchGrid} for hexagonal grid.
+ * Extension of {@link PatchGrid} for hexagonal grid.
  * <p>
  * Each hexagon location has six positions.
- * Uses {@link arcade.env.loc.PatchLocationHex} as {@link arcade.core.env.loc.Location} object.
+ * Uses {@link PatchLocationHex} as {@link arcade.core.env.loc.Location} object.
  */
 
 public class PatchGridHex extends PatchGrid {
@@ -15,7 +17,7 @@ public class PatchGridHex extends PatchGrid {
     private static final int N = 6;
     
     /**
-     * Creates a hexagonal {@link arcade.env.grid.PatchGrid}.
+     * Creates a hexagonal {@link PatchGrid}.
      */
     public PatchGridHex() { super(); }
     
@@ -26,13 +28,13 @@ public class PatchGridHex extends PatchGrid {
         return -1;
     }
     
-    protected Bag createObject(Location loc) {
+    protected Bag createObject(PatchLocation loc) {
         Bag objs = new Bag(N);
         locationToBag.put(new PatchLocationHex(loc), objs);
         return objs;
     }
     
-    protected boolean[] createFlags(Location loc) {
+    protected boolean[] createFlags(PatchLocation loc) {
         boolean[] flags = new boolean[N];
         locationToFlags.put(new PatchLocationHex(loc), flags);
         return flags;
