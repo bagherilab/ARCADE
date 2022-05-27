@@ -1,6 +1,7 @@
 package arcade.patch.env.loc;
 
 import sim.util.Bag;
+import arcade.core.env.loc.LocationContainer;
 import arcade.patch.sim.PatchSeries;
 
 /**
@@ -124,6 +125,11 @@ public final class PatchLocationHex extends PatchLocation {
         
         calcTriangular();
         calcChecks();
+    }
+    
+    @Override
+    public LocationContainer convert(int id) {
+        return new PatchLocationContainer(id, new int[] { u, v, w, z });
     }
     
     @Override

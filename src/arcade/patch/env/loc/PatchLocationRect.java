@@ -1,6 +1,7 @@
 package arcade.patch.env.loc;
 
 import sim.util.Bag;
+import arcade.core.env.loc.LocationContainer;
 import arcade.patch.sim.PatchSeries;
 
 /** 
@@ -111,6 +112,11 @@ public final class PatchLocationRect extends PatchLocation {
         
         calcSubrectangular();
         calcChecks();
+    }
+    
+    @Override
+    public LocationContainer convert(int id) {
+        return new PatchLocationContainer(id, new int[] { x, y, z });
     }
     
     @Override
