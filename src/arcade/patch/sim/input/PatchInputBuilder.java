@@ -8,6 +8,7 @@ import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import arcade.patch.sim.PatchSeries;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
+import static arcade.core.util.Box.KEY_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
@@ -109,6 +110,8 @@ public final class PatchInputBuilder extends InputBuilder {
         
         switch (name) {
             case "series":
+                processSizing(setupDicts.get("series"), parameters);
+                processPatch(setupDicts.get("series"), setupLists.get("patch").get(0), parameters);
                 series.add(new PatchSeries(setupDicts, setupLists, path, parameters, isVis));
                 MiniBox set = setupDicts.get("set");
                 setupDicts = new HashMap<>();
@@ -117,6 +120,70 @@ public final class PatchInputBuilder extends InputBuilder {
                 break;
             default:
                 break;
+        }
+    }
+    
+    /**
+     * Processes sizing parameter.
+     *
+     * @param series  the series parameters 
+     * @param parameters  the default parameters
+     */
+    private void processSizing(MiniBox series, Box parameters) {
+        MiniBox defaults = parameters.getIdValForTag("DEFAULT");
+        
+        // Get sizes based on default for selected dimension.
+        int radius = defaults.getInt("RADIUS");
+        int depth = defaults.getInt("DEPTH");
+        int margin = defaults.getInt("MARGIN");
+        
+        // Override sizes from specific flags.
+        if (series.contains("radius")) { radius = series.getInt("radius"); }
+        if (series.contains("depth")) { depth = series.getInt("depth"); }
+        if (series.contains("margin")) { margin = series.getInt("margin"); }
+        
+        // Enforce that RADIUS and MARGIN are even, and DEPTH is odd.
+        int radiusUpdated = ((radius & 1) == 0 ? radius : radius + 1);
+        int depthUpdated = ((depth & 1) == 1 ? depth : depth + 1);
+        int marginUpdated = ((margin & 1) == 0 ? margin : margin + 1);
+        
+        series.put("radius", radiusUpdated);
+        series.put("depth", depthUpdated);
+        series.put("margin", marginUpdated);
+    }
+    
+    /**
+     * Processes sizing based on patch geometry.
+     *
+     * @param series  the series parameters 
+     * @param patch  the patch parameters
+     * @param parameters  the default parameters
+     */
+    private void processPatch(MiniBox series, Box patch, Box parameters) {
+        MiniBox defaults = parameters.getIdValForTag("PATCH");
+        
+        int radius = series.getInt("radius");
+        int depth = series.getInt("depth");
+        int margin = series.getInt("margin");
+        
+        int radiusBounds = radius + margin;
+        int depthBounds = (depth == 1 ? 1 : depth + margin);
+        
+        series.put("radiusBounds", radiusBounds);
+        series.put("depthBounds", depthBounds);
+        
+        String key = "GEOMETRY";
+        String geometry = patch.contains(key) ? patch.getValue(key + KEY_SEPARATOR + "value") : defaults.get(key);
+        geometry = geometry.toUpperCase();
+        
+        if (geometry.equals("RECT")) {
+            series.put("length", 4 * radiusBounds - 2);
+            series.put("width", 4 * radiusBounds - 2);
+            series.put("height", 2 * depthBounds - 1);
+        } else if (geometry.equals("HEX")) {
+            series.put("length", 6 * radiusBounds - 3);
+            series.put("width", 4 * radiusBounds - 2);
+            series.put("height", 2 * depthBounds - 1);
         }
     }
 }

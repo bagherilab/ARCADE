@@ -14,6 +14,24 @@ public final class PatchSeries extends Series {
     /** Map of patch settings. */
     public MiniBox patch;
     
+    /** Radius of the simulation. */
+    public final int radius;
+    
+    /** Margin of the simulation. */
+    public final int margin;
+    
+    /** Depth of the simulation. */
+    public final int depth;
+    
+    /** Overall radius of the simulation (equal to RADIUS + MARGIN). */
+    public final int radiusBounds;
+    
+    /**
+     * Overall height of the simulation (equal to 1 if DEPTH = 1, or
+     * DEPTH + MARGIN otherwise),
+     */
+    public final int depthBounds;
+    
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
      *
@@ -27,6 +45,14 @@ public final class PatchSeries extends Series {
                        HashMap<String, ArrayList<Box>> setupLists,
                        String path, Box parameters, boolean isVis) {
         super(setupDicts, setupLists, path, parameters, isVis);
+        
+        // Set sizing.
+        MiniBox series = setupDicts.get("series");
+        this.radius = series.getInt("radius");
+        this.margin = series.getInt("margin");
+        this.depth = series.getInt("depth");
+        this.radiusBounds = series.getInt("radiusBounds");
+        this.depthBounds = series.getInt("depthBounds");
     }
     
     @Override
