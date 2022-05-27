@@ -7,6 +7,9 @@ import sim.util.gui.ColorMap;
 import arcade.core.vis.Drawer;
 import arcade.core.vis.Panel;
 import arcade.patch.env.loc.PatchLocation;
+import arcade.patch.env.loc.PatchLocationContainer;
+import arcade.patch.env.loc.PatchLocationFactory;
+import arcade.patch.env.loc.PatchLocationFactoryHex;
 import arcade.patch.sim.PatchSimulation;
 import arcade.patch.sim.PatchSeries;
 
@@ -59,6 +62,8 @@ public abstract class PatchDrawerHex extends PatchDrawer {
         /** Width of the lattice (y direction) */
         private final int WIDTH;
         
+        private ArrayList<PatchLocation> locations;
+        
         /**
          * Creates a {@code PatchGrid} drawer.
          * <p>
@@ -89,6 +94,19 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             field.clear();
             graph.clear();
             
+            if (locations == null) {
+                locations = new ArrayList<>();
+                PatchSeries series = (PatchSeries) sim.getSeries();
+                PatchLocationFactory factory = new PatchLocationFactoryHex();
+                ArrayList<int[]> coordinates = factory.getCoordinates(series.radius, series.depth);
+                
+                for (int[] coordinate : coordinates) {
+                    PatchLocationContainer container = new PatchLocationContainer(0, coordinate);
+                    PatchLocation location = (PatchLocation) container.convert(factory, null);
+                    locations.add(location);
+                }
+            }
+            
             // Draw triangular grid.
             for (int i = 0; i <= WIDTH; i++) {
                 add(field, graph, 1,
@@ -113,9 +131,7 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             }
             
             // Draw hexagonal agent locations.
-            int radius = ((PatchSeries) sim.getSeries()).radius;
-            ArrayList<PatchLocation> locs = sim.getPatches().getLocations(radius, 1);
-            for (PatchLocation loc : locs) {
+            for (PatchLocation loc : locations) {
                 int[] xy = loc.getLatLocation();
                 for (int i = 0; i < 6; i++) {
                     add(field, graph, 2,
@@ -125,8 +141,9 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             }
             
             // Draw border.
+            int radius = ((PatchSeries) sim.getSeries()).radius;
             int ind, r;
-            for (PatchLocation loc : locs) {
+            for (PatchLocation loc : locations) {
                 int[] xy = loc.getLatLocation();
                 int[] uvw = loc.getGridLocation();
                 
