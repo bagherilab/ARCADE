@@ -99,6 +99,20 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         super.finish();
     }
     
+    /**
+     * Creates a factory for locations.
+     *
+     * @return  a {@link arcade.core.env.loc.Location} factory
+     */
+    abstract PatchLocationFactory makeLocationFactory();
+    
+    /**
+     * Creates a factory for cells.
+     *
+     * @return  a {@link arcade.core.agent.cell.Cell} factory
+     */
+    abstract PatchCellFactory makeCellFactory();
+    
     @Override
     public final void setupAgents() {
         // TODO add agent setup
