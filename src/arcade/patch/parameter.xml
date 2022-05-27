@@ -1,4 +1,7 @@
 <parameters>
+    <!-- default parameters for series -->
+    <patch id="GEOMETRY" value="Hex" description="Patch geometry (hex or rect)" />
+
     <!-- default model size -->
     <default id="RADIUS" value="34" />
     <default id="HEIGHT" value="1" />

@@ -17,7 +17,7 @@ import arcade.core.sim.output.OutputLoader;
 import arcade.core.sim.output.OutputSaver;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import arcade.potts.PottsARCADE;
+import arcade.patch.PatchARCADE;
 
 /**
  * Entry point class for ARCADE simulations.
@@ -96,9 +96,9 @@ public abstract class ARCADE {
         ARCADE arcade;
         
         switch (args[0]) {
-            case "potts":
-                logger.info("running ARCADE [ potts ] simulations");
-                arcade = new PottsARCADE();
+            case "patch":
+                logger.info("running ARCADE [ patch ] simulations");
+                arcade = new PatchARCADE();
                 break;
             default:
                 logger.warning("ARCADE [ " + args[0] + " ] does not exist");

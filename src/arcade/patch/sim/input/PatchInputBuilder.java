@@ -11,7 +11,7 @@ import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
- * Custom builder for potts-specific simulation setup XMLs.
+ * Custom builder for patch-specific simulation setup XMLs.
  */
 
 public final class PatchInputBuilder extends InputBuilder {
@@ -29,7 +29,7 @@ public final class PatchInputBuilder extends InputBuilder {
      * @param atts  the attributes to add
      */
     void updateBox(String list, String tag, Attributes atts) {
-        String listName = list + (list.equals("potts") ? "" : "s");
+        String listName = list + (list.equals("patch") ? "" : "s");
         ArrayList<Box> lists = setupLists.get(listName);
         Box box = lists.get(lists.size() - 1);
         
@@ -84,7 +84,7 @@ public final class PatchInputBuilder extends InputBuilder {
                 MiniBox minibox = makeMiniBox(atts);
                 setupDicts.put(name, minibox);
                 break;
-            case "potts":
+            case "patch":
                 setupLists.put(name, new ArrayList<>());
                 setupLists.get(name).add(new Box());
                 break;
@@ -109,7 +109,7 @@ public final class PatchInputBuilder extends InputBuilder {
         
         switch (name) {
             case "series":
-                series.add(new PottsSeries(setupDicts, setupLists, path, parameters, isVis));
+                series.add(new PatchSeries(setupDicts, setupLists, path, parameters, isVis));
                 MiniBox set = setupDicts.get("set");
                 setupDicts = new HashMap<>();
                 setupLists = new HashMap<>();
