@@ -36,14 +36,14 @@ public abstract class PatchLocation implements Location {
     /** Radius of the simulation environment. */
     static int RADIUS;
     
-    /** Height of the simulation environment. */
-    static int HEIGHT;
+    /** Depth of the simulation environment. */
+    static int DEPTH;
     
     /** Radius and margin of the simulation environment. */
     static int RADIUS_BOUNDS;
     
-    /** Height and margin of the simulation environment. */
-    static int HEIGHT_BOUNDS;
+    /** Depth and margin of the simulation environment. */
+    static int DEPTH_BOUNDS;
     
     /** Offset of the z axis. */
     static int Z_OFFSET;
@@ -121,14 +121,14 @@ public abstract class PatchLocation implements Location {
      *
      * @param newLoc  the new location
      */
-    abstract void updateLocation(PatchLocation newLoc);
+    public abstract void updateLocation(PatchLocation newLoc);
     
     /**
      * Gets the location of the neighbors to the current location
      *
      * @return  the list of neighbor locations
      */
-    abstract Bag getNeighborLocations();
+    public abstract Bag getNeighborLocations();
     
     /**
      * Gets the coordinates in the {@link arcade.core.env.grid.Grid}.
@@ -138,14 +138,14 @@ public abstract class PatchLocation implements Location {
      *
      * @return  the grid coordinates
      */
-    abstract int[] getGridLocation();
+    public abstract int[] getGridLocation();
     
     /**
      * Gets the z axis coordinate in the {@link arcade.core.env.grid.Grid}.
      *
      * @return  the z coordinate
      */
-    abstract int getGridZ();
+    public abstract int getGridZ();
     
     /**
      * Gets the main coordinates in the {@link arcade.core.env.lat.Lattice}.
@@ -155,21 +155,21 @@ public abstract class PatchLocation implements Location {
      *
      * @return  the lattice coordinates
      */
-    abstract int[] getLatLocation();
+    public abstract int[] getLatLocation();
     
     /** Gets all coordinates in the {@link arcade.core.env.lat.Lattice} that correspond
      * to the {@link arcade.core.env.grid.Grid} location.
      *
      * @return  the array of lattice coordinates
      */
-    abstract int[][] getLatLocations();
+    public abstract int[][] getLatLocations();
     
     /**
      * Gets the z axis coordinate in the {@link arcade.core.env.lat.Lattice}.
      *
      * @return  the z coordinate
      */
-    abstract int getLatZ();
+    public abstract int getLatZ();
     
     /**
      * Gets a new instance of the {@code Location} object.
@@ -178,35 +178,35 @@ public abstract class PatchLocation implements Location {
      *
      * @return  a copy of the {@code Location}
      */
-    abstract PatchLocation getCopy();
+    public abstract PatchLocation getCopy();
     
     /**
      * Gets the {@link arcade.core.env.grid.Grid} size in the xy plane.
      *
      * @return  the grid size
      */
-    abstract double getGridSize();
+    public abstract double getGridSize();
     
     /**
      * Gets the {@link arcade.core.env.lat.Lattice} size in the xy plane.
      *
      * @return  the lattice size
      */
-    abstract double getLatSize();
+    public abstract double getLatSize();
     
     /**
      * Gets the ratio of the {@link arcade.core.env.grid.Grid} z to xy sizes.
      *
      * @return  the size ratio
      */
-    abstract double getRatio();
+    public abstract double getRatio();
     
     /**
      * Gets the maximum occupancy of a location.
      *
      * @return  the maximum occupancy
      */
-    abstract int getMax();
+    public abstract int getMax();
     
     /**
      * Converts {@link arcade.core.env.lat.Lattice} coordinates into a
@@ -215,5 +215,5 @@ public abstract class PatchLocation implements Location {
      * @param coords  the lattice coordinates
      * @return  the corresponding grid location
      */
-    abstract PatchLocation toLocation(int[] coords);
+    public abstract PatchLocation toLocation(int[] coords);
 }

@@ -1,7 +1,7 @@
 package arcade.patch.env.loc;
 
-import arcade.core.sim.Series;
 import sim.util.Bag;
+import arcade.patch.sim.PatchSeries;
 
 /**
  * Concrete implementation of {@link PatchLocation} for hexagonal
@@ -23,13 +23,13 @@ import sim.util.Bag;
  *      -------
  * </pre>
  * In (u, v, w) coordinates, only coordinates where u + v + w = 0 are valid.
- * For simulations with {@code HEIGHT} &#62; 0 (3D simulations), each the
+ * For simulations with {@code DEPTH} &#62; 0 (3D simulations), each the
  * hexagonal grid is offset in one of two directions relative to the triangular
  * lattice.
  * Therefore, each cell in a location has six neighboring locations in the same
  * layer, three neighboring locations in the layer above, and three neighboring
  * locations in the layer below.
- * Simulations with {@code HEIGHT} &#62; 1 must have a {@code MARGIN} &#62; 0,
+ * Simulations with {@code DEPTH} &#62; 1 must have a {@code MARGIN} &#62; 0,
  * otherwise the offset location coordinates will be associated with lattice
  * coordinates that are out of bounds of the array.
  */
@@ -42,7 +42,7 @@ public final class PatchLocationHex extends PatchLocation {
     private static final double HEX_SIDE = HEX_SIZE / Math.sqrt(3.0);
     
     /** Height of hexagon patch [um]. */
-    private static final double HEX_HEIGHT = 8.7;
+    private static final double HEX_DEPTH = 8.7;
     
     /** Perimeter of hexagon patch [um]. */
     private static final double HEX_PERIMETER = 6 * HEX_SIDE;
@@ -51,13 +51,13 @@ public final class PatchLocationHex extends PatchLocation {
     private static final double HEX_AREA = 3.0 / 2.0 / Math.sqrt(3.0) * HEX_SIZE * HEX_SIZE;
     
     /** Surface area of hexagon patch [um<sup>2</sup>]. */
-    private static final double HEX_SURFACE = 2 * HEX_AREA + HEX_HEIGHT * HEX_PERIMETER;
+    private static final double HEX_SURFACE = 2 * HEX_AREA + HEX_DEPTH * HEX_PERIMETER;
     
     /** Volume of hexagon patch [um<sup>3</sup>]. */
-    private static final double HEX_VOLUME = HEX_AREA * HEX_HEIGHT;
+    private static final double HEX_VOLUME = HEX_AREA * HEX_DEPTH;
     
     /** Ratio of hexagon location height to size */
-    private static final double HEX_RATIO = HEX_HEIGHT/HEX_SIZE;
+    private static final double HEX_RATIO = HEX_DEPTH/HEX_SIZE;
     
     /** Size of the triangle position [um]. */
     private static final double TRI_SIZE = HEX_SIDE;
@@ -142,7 +142,7 @@ public final class PatchLocationHex extends PatchLocation {
     public int[][] getLatLocations() { return xy; }
     
     @Override
-    public int getLatZ() { return HEIGHT_BOUNDS + z - 1; }
+    public int getLatZ() { return DEPTH_BOUNDS + z - 1; }
     
     @Override
     public double getGridSize() { return HEX_SIZE; }
@@ -157,7 +157,7 @@ public final class PatchLocationHex extends PatchLocation {
     public double getSurface() { return HEX_SURFACE; }
     
     @Override
-    public double getHeight() { return HEX_HEIGHT; }
+    public double getHeight() { return HEX_DEPTH; }
     
     @Override
     public double getArea() { return HEX_AREA; }
@@ -177,14 +177,14 @@ public final class PatchLocationHex extends PatchLocation {
      * 
      * @param series  the current simulation series
      */
-    public static void updateConfigs(Series series) {
-        RADIUS = series._radius;
-        HEIGHT = series._height;
-        RADIUS_BOUNDS = series._radiusBounds;
-        HEIGHT_BOUNDS = series._heightBounds;
+    public static void updateConfigs(PatchSeries series) {
+        RADIUS = series.radius;
+        DEPTH = series.depth;
+        RADIUS_BOUNDS = series.radiusBounds;
+        DEPTH_BOUNDS = series.depthBounds;
         
         // Calculate z offset for different layers of the simulation.
-        int depth = 2*series._heightBounds - 1;
+        int depth = 2*series.depthBounds - 1;
         Z_OFFSET = depth%3 - depth;
     }
     
@@ -247,8 +247,8 @@ public final class PatchLocationHex extends PatchLocation {
             (v == 1 - RADIUS ? 0 : 1 << 4) +
             (w == RADIUS - 1 ? 0 : 1 << 3) +
             (w == 1 - RADIUS ? 0 : 1 << 2) +
-            (z == HEIGHT - 1 ? 0 : 1 << 1) +
-            (z == 1 - HEIGHT ? 0 : 1 << 0));
+            (z == DEPTH - 1 ? 0 : 1 << 1) +
+            (z == 1 - DEPTH ? 0 : 1 << 0));
     }
     
     /**
@@ -301,7 +301,7 @@ public final class PatchLocationHex extends PatchLocation {
     
     @Override
     public PatchLocation toLocation(int[] coords) {
-        int z = coords[2] - HEIGHT_BOUNDS + 1;
+        int z = coords[2] - DEPTH_BOUNDS + 1;
         int zo = (byte)((Math.abs(Z_OFFSET + z))%3);
         
         // Calculate u coordinate.
