@@ -4,14 +4,17 @@ import java.util.Map;
 import java.util.HashMap;
 import sim.engine.*;
 import sim.util.Bag;
+import arcade.core.agent.cell.Cell;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Parameter;
 import arcade.core.env.loc.Location;
 import arcade.core.agent.module.Module;
-import arcade.agent.helper.*;
+import arcade.core.agent.helper.Helper;
+import arcade.patch.env.loc.PatchLocation;
+import static arcade.core.util.Enums.State;
 
 /** 
- * Implementation of {@link arcade.agent.cell.Cell} for generic tissue cell.
+ * Implementation of {@link Cell} for generic tissue cell.
  * <p>
  * {@code PatchCell} agents exist in one of seven states: neutral, apoptotic,
  * quiescent, migratory, proliferative, senescent, and necrotic.
@@ -39,15 +42,51 @@ import arcade.agent.helper.*;
  * parent cell parameter with the specified amount of heterogeneity.
  */
 
-public abstract class PatchCell implements Cell {
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 0;
+public class PatchCell implements Cell {
+    /** Stopper used to stop this agent from being stepped in the schedule. */
+    Stoppable stopper;
+    
+    /** Cell {@link arcade.core.env.loc.Location} object. */
+    private final PatchLocation location;
+    
+    /** Unique cell ID. */
+    final int id;
+    
+    /** Cell parent ID. */
+    final int parent;
+    
+    /** Cell population index. */
+    final int pop;
+    
+    /** Cell state. */
+    private State state;
+    
+    /** Cell age (in ticks). */
+    private int age;
+    
+    /** Cell energy (in fmol ATP) */
+    private double energy;
+    
+    /** Number of divisions. */
+    private int divisions;
+    
+    /** Cell volume (in um<sup>3</sup>) */
+    private double volume;
+    
+    /** Critical volume for cell (in ium<sup>3</sup>). */
+    private final double criticalVolume;
+    
+    /** Cell height (in um) */
+    private double height;
+    
+    /** Critical height for cell (in um). */
+    private final double criticalHeight;
     
     /** Fraction of necrotic cells that become apoptotic */
-    private final double NECRO_FRAC;
+    private final double necroFrac;
     
     /** Fraction of senescent cells that become apoptotic */
-    private final double SENES_FRAC;
+    private final double senesFrac;
     
     /** Energy threshold to become necrotic */
     private final double ENERGY_THRESHOLD;
@@ -55,60 +94,17 @@ public abstract class PatchCell implements Cell {
     /** {@code true} if cell is no longer stepped, {@code false} otherwise */
     private boolean isStopped = false;
     
-    /** Stopper used to stop this agent from being stepped in the schedule */
-    private Stoppable stopper;
-    
     /** {@link arcade.core.agent.helper.Helper} instance for this agent, may be null */
     public Helper helper;
-    
-    /** Current agent {@link arcade.core.env.loc.Location} */
-    private final Location location;
     
     /** Map of module names and {@link arcade.core.agent.module.Module} instance */
     final Map<String, Module> modules;
     
     /** Map of parameter names and {@link arcade.core.util.Parameter} instances */
-    final Map<String, Parameter> params;
-    
-    /** Agent behavior flags */
-    private final boolean[] flags;
-    
-    /** Cell volume (in um<sup>3</sup>) */
-    private double volume;
-    
-    /** Cell energy (in fmol ATP) */
-    private double energy;
-    
-    /** Critical cell volume the cell attempts to maintain */
-    private final double critVolume;
-    
-    /** Cell age (in minutes) */
-    private int age;
-    
-    /** Cell type (state) */
-    int type;
-    
-    /** Cell code */
-    int code;
-    
-    /** Cell population index */
-    private int pop;
-    
-    /** Cell death age in minutes */
-    double deathAge;
-    
-    /** Number of cell divisions remaining */
-    public int divisions;
-    
-    /** List of cell cycle lengths (in minutes) */
-    private final Bag cycle = new Bag();
+    final Map<String, Parameter> parameters;
     
     /**
      * Creates a {@code PatchCell} agent.
-     * <p>
-     * {@code PatchCell} agents are by default assigned as type = neutral and
-     * code = healthy.
-     * Any extending constructors should change type and/or code as needed.
      * <p>
      * Cell parameters are drawn from {@link arcade.core.util.Parameter} distributions.
      * A new map of {@link arcade.core.util.Parameter} objects is created using these
@@ -119,48 +115,46 @@ public abstract class PatchCell implements Cell {
      * Note that {@code META_PREF} and {@code MIGRA_THRESHOLD} are assigned to
      * the cell parameter map, but are updated separately by the
      * {@link arcade.core.agent.module.Module} constructors.
-     * 
-     * @param pop  the population index
-     * @param loc  the location of the cell 
-     * @param vol  the initial (and critical) volume of the cell
-     * @param age  the initial age of the cell in minutes
-     * @param p  the map of parameter name to {@link arcade.core.util.Parameter} objects
+     *
+     * @param id  the cell ID
+     * @param parent  the parent ID
+     * @param pop  the cell population index
+     * @param state  the cell state
+     * @param age  the cell age (in ticks)
+     * @param divisions  the number of cell divisions
+     * @param location  the {@link Location} of the cell
+     * @param parameters  the dictionary of parameter distributions
+     * @param volume  the cell volume
+     * @param height  the cell height
+     * @param criticalVolume  the critical cell volume
+     * @param criticalHeight  the critical cell height
      */
-    public PatchCell(int pop, Location loc, double vol, int age, Map<String, Parameter> p) {
+    public PatchCell(int id, int parent, int pop, State state, int age, int divisions,
+                     Location location, HashMap<String, Parameter> parameters,
+                     double volume, double height,
+                     double criticalVolume, double criticalHeight) {
         // Initialize cell agent.
-        this.volume = vol;
-        this.critVolume = vol;
-        this.energy = 0;
-        this.age = age;
-        this.type = TYPE_NEUTRAL;
-        this.code = CODE_H_CELL;
+        this.id = id;
+        this.parent = parent;
         this.pop = pop;
-        location = loc.getCopy();
-        modules = new HashMap<>();
-        params = new HashMap<>();
-        flags = new boolean[NUM_FLAGS];
+        this.age = age;
+        this.energy = 0;
+        this.divisions = divisions;
+        this.location = ((PatchLocation) location).getCopy();
+        this.state = state;
+        this.volume = volume;
+        this.height = height;
+        this.criticalVolume = criticalVolume;
+        this.criticalHeight = criticalHeight;
+        this.parameters = new HashMap<>();
         
         // Select parameters from given distribution
-        this.NECRO_FRAC = p.get("NECRO_FRAC").nextDouble();
-        this.SENES_FRAC = p.get("SENES_FRAC").nextDouble();
-        this.ENERGY_THRESHOLD = p.get("ENERGY_THRESHOLD").nextDouble();
-        double MAX_HEIGHT = p.get("MAX_HEIGHT").nextDouble();
-        double ACCURACY = p.get("ACCURACY").nextDouble();
-        double AFFINITY = p.get("AFFINITY").nextDouble();
-        this.deathAge = p.get("DEATH_AGE_AVG").nextDouble();
-        this.divisions = p.get("DIVISION_POTENTIAL").nextInt();
+        this.necroFrac = parameters.get("NECRO_FRAC").nextDouble();
+        this.senesFrac = parameters.get("SENES_FRAC").nextDouble();
         
         // Create parameter distributions for daughter cells.
-        params.put("NECRO_FRAC", p.get("NECRO_FRAC").update(NECRO_FRAC));
-        params.put("SENES_FRAC", p.get("SENES_FRAC").update(SENES_FRAC));
-        params.put("ENERGY_THRESHOLD", p.get("ENERGY_THRESHOLD").update(ENERGY_THRESHOLD));
-        params.put("MAX_HEIGHT", p.get("MAX_HEIGHT").update(MAX_HEIGHT));
-        params.put("ACCURACY", p.get("ACCURACY").update(ACCURACY));
-        params.put("AFFINITY", p.get("AFFINITY").update(AFFINITY));
-        params.put("DEATH_AGE_AVG", p.get("DEATH_AGE_AVG").update(deathAge));
-        params.put("DIVISION_POTENTIAL", p.get("DIVISION_POTENTIAL").update(divisions));
-        params.put("META_PREF", p.get("META_PREF"));
-        params.put("MIGRA_THRESHOLD", p.get("MIGRA_THRESHOLD"));
+        this.parameters.put("NECRO_FRAC", parameters.get("NECRO_FRAC").update(necroFrac));
+        this.parameters.put("SENES_FRAC", parameters.get("SENES_FRAC").update(senesFrac));
     }
     
     public void setStopper(Stoppable stop) { this.stopper = stop; }
