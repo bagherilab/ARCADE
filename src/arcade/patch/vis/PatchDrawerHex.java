@@ -1,11 +1,14 @@
 package arcade.patch.vis;
 
+import java.util.ArrayList;
 import java.awt.geom.Rectangle2D;
 import sim.engine.SimState;
 import sim.util.gui.ColorMap;
 import arcade.core.vis.Drawer;
 import arcade.core.vis.Panel;
+import arcade.patch.env.loc.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.sim.PatchSeries;
 
 /**
  * Container for patch-specific {@link Drawer} classes for hexagonal patches.
@@ -106,6 +109,56 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                     add(field, graph, 1,
                         (j % 2 == 0 ? i + 1 : i), j,
                         (j % 2 == 0 ? i : i + 1), j + 1);
+                }
+            }
+            
+            // Draw hexagonal agent locations.
+            int radius = ((PatchSeries) sim.getSeries()).radius;
+            ArrayList<PatchLocation> locs = sim.getPatches().getLocations(radius, 1);
+            for (PatchLocation loc : locs) {
+                int[] xy = loc.getLatLocation();
+                for (int i = 0; i < 6; i++) {
+                    add(field, graph, 2,
+                        xy[0] + OFFSETS[i][0], xy[1] + OFFSETS[i][1],
+                        xy[0] + OFFSETS[(i + 1)%6][0], xy[1] + OFFSETS[(i + 1)%6][1]);
+                }
+            }
+            
+            // Draw border.
+            int ind, r;
+            for (PatchLocation loc : locs) {
+                int[] xy = loc.getLatLocation();
+                int[] uvw = loc.getGridLocation();
+                
+                r = (int)((Math.abs(uvw[0]) + Math.abs(uvw[1]) + Math.abs(uvw[2]))/2.0) + 1;
+                
+                if (r == radius) {
+                    if (uvw[0] == radius - 1) { ind = 1; }
+                    else if (uvw[0] == 1 - radius) { ind = 4; }
+                    else if (uvw[1] == radius - 1) { ind = 5; }
+                    else if (uvw[1] == 1 - radius) { ind = 2; }
+                    else if (uvw[2] == radius - 1) { ind = 3; }
+                    else if (uvw[2] == 1 - radius) { ind = 0; }
+                    else { ind = 0; }
+                    
+                    add(field, graph, 3,
+                        xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
+                        xy[0] + OFFSETS[(ind + 1)%6][0], xy[1] + OFFSETS[(ind + 1)%6][1]);
+                    add(field, graph, 3,
+                        xy[0] + OFFSETS[(ind + 1)%6][0], xy[1] + OFFSETS[(ind + 1)%6][1],
+                        xy[0] + OFFSETS[(ind + 2)%6][0], xy[1] + OFFSETS[(ind + 2)%6][1]);
+                    
+                    if (uvw[0] == 0 || uvw[1] == 0 || uvw[2] == 0) {
+                        if (uvw[0] == 0 && uvw[1] == radius - 1) { ind = 1; }
+                        else if (uvw[0] == 0 && uvw[2] == radius - 1) { ind = 4; }
+                        else if (uvw[1] == 0 && uvw[0] == radius - 1) { ind = 0; }
+                        else if (uvw[1] == 0 && uvw[2] == radius - 1) { ind = 3; }
+                        else if (uvw[2] == 0 && uvw[0] == radius - 1) { ind = 3; }
+                        else if (uvw[2] == 0 && uvw[1] == radius - 1) { ind = 0; }
+                        add(field, graph, 3,
+                            xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
+                            xy[0] + OFFSETS[(ind + 1)%6][0], xy[1] + OFFSETS[(ind + 1)%6][1]);
+                    }
                 }
             }
         }

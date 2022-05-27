@@ -1,11 +1,14 @@
 package arcade.patch.vis;
 
+import java.util.ArrayList;
 import java.awt.geom.Rectangle2D;
 import sim.engine.SimState;
 import sim.util.gui.ColorMap;
 import arcade.core.vis.Drawer;
 import arcade.core.vis.Panel;
+import arcade.patch.env.loc.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
+import arcade.patch.sim.PatchSeries;
 
 /**
  * Container for patch-specific {@link Drawer} classes for rectangular patches.
@@ -57,7 +60,7 @@ public abstract class PatchDrawerRect extends PatchDrawer {
         private final int WIDTH;
         
         /**
-         * Creates a {@code RectGrid} drawer.
+         * Creates a {@code PatchGrid} drawer.
          *
          * @param panel  the panel the drawer is attached to
          * @param name  the name of the drawer
@@ -82,10 +85,54 @@ public abstract class PatchDrawerRect extends PatchDrawer {
             PatchSimulation sim = (PatchSimulation)state;
             field.clear();
             graph.clear();
-
+            
             // Draw rectangular grid.
             for (int i = 0; i <= WIDTH; i++) { add(field, graph, 1, 0, i, LENGTH, i); }
             for (int i = 0; i <= LENGTH; i++) { add(field, graph, 1, i, 0, i, WIDTH); }
+            
+            // Draw rectangular agent locations.
+            int radius = ((PatchSeries) sim.getSeries()).radius;
+            ArrayList<PatchLocation> locs = sim.getPatches().getLocations(radius, 1);
+            for (PatchLocation loc : locs) {
+                int[] xy = loc.getLatLocation();
+                for (int i = 0; i < 4; i++) {
+                    add(field, graph, 2,
+                        xy[0] + OFFSETS[i][0], xy[1] + OFFSETS[i][1],
+                        xy[0] + OFFSETS[(i + 1)%4][0], xy[1] + OFFSETS[(i + 1)%4][1]);
+                }
+            }
+            
+            // Draw border.
+            int ind, r;
+            for (PatchLocation loc : locs) {
+                int[] xyz = loc.getGridLocation();
+                int[] xy = loc.getLatLocation();
+                
+                r = Math.max(Math.abs(xyz[0]), Math.abs(xyz[1])) + 1;
+                
+                if (r == radius) {
+                    if (xyz[0] == radius - 1) { ind = 1; }
+                    else if (xyz[0] == 1 - radius) { ind = 3; }
+                    else if (xyz[1] == radius - 1) { ind = 2; }
+                    else if (xyz[1] == 1 - radius) { ind = 0; }
+                    else { ind = 0; }
+                    
+                    add(field, graph, 3,
+                        xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
+                        xy[0] + OFFSETS[(ind + 1)%4][0], xy[1] + OFFSETS[(ind + 1)%4][1]);
+                    
+                    if (Math.abs(xyz[0]) + 1 == r && Math.abs(xyz[1]) + 1 == r) {
+                        if (xyz[0] == radius - 1 && xyz[1] == radius - 1) { ind = 2; }
+                        else if (xyz[0] == 1 - radius && xyz[1] == radius - 1) { ind = 2; }
+                        else if (xyz[0] == radius - 1 && xyz[1] == 1 - radius) { ind = 0; }
+                        else if (xyz[0] == 1 - radius && xyz[1] == 1 - radius) { ind = 0; }
+                        
+                        add(field, graph, 3,
+                            xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
+                            xy[0] + OFFSETS[(ind + 1)%4][0], xy[1] + OFFSETS[(ind + 1)%4][1]);
+                    }
+                }
+            }
         }
     }
 }
