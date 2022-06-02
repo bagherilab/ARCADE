@@ -2,10 +2,10 @@ package arcade.potts.sim;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.Box.KEY_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Term;
 
@@ -210,17 +210,10 @@ public final class PottsSeries extends Series {
                         parameterValues, parameterScales);
             }
             
-            // Get list of regions.
-            Box regions = p.filterBoxByTag("REGION");
-            MiniBox regionFractions = regions.getIdValForTagAtt("REGION", "fraction");
-            
-            // Add region fraction, if valid.
-            for (String region : regions.getKeys()) {
-                String fraction = region + KEY_SEPARATOR + "fraction";
-                double regionFraction = (isValidFraction(regions, fraction)
-                        ? regionFractions.getDouble(region)
-                        : 0);
-                population.put("(REGION)" + TAG_SEPARATOR + region, regionFraction);
+            // Get list of regions, if valid.
+            HashSet<String> regions = p.filterTags("REGION");
+            for (String region : regions) {
+                population.put("(REGION)" + TAG_SEPARATOR + region, "");
             }
             
             // Apply conversion factors.

@@ -680,38 +680,16 @@ public class PottsSeriesTest {
     }
     
     @Test
-    public void updatePopulation_withRegionsValidFraction_setsTags() {
-        String[] fractions = new String[] { "0", "0.", "0.0", ".0", "0.5", "0.67", "1", "1.", "1.0" };
-        double[] values = new double[] { 0, 0, 0, 0, 0.5, 0.67, 1, 1, 1 };
+    public void updatePopulation_withRegions_setsTags() {
+        Box[] boxes = new Box[] { new Box() };
+        boxes[0].add("id", POPULATION_ID_1);
+        boxes[0].addTag(REGION_IDS[0], "REGION");
         
-        for (int i = 0; i < fractions.length; i++) {
-            Box[] boxes = new Box[] { new Box() };
-            boxes[0].add("id", POPULATION_ID_1);
-            boxes[0].addTag(REGION_IDS[0], "REGION");
-            boxes[0].addAtt(REGION_IDS[0], "fraction", fractions[i]);
-            PottsSeries series = makeSeriesForPopulation(boxes);
-            
-            MiniBox box = series.populations.get(POPULATION_ID_1);
-            assertEquals(values[i], box.getDouble("(REGION)" + TAG_SEPARATOR + REGION_IDS[0]), EPSILON);
-            assertFalse(box.contains("(REGION)" + TAG_SEPARATOR + REGION_IDS[1]));
-        }
-    }
-    
-    @Test
-    public void updatePopulation_withRegionsInvalidFraction_setsTags() {
-        String[] fractions = new String[] { "1.1", "2", "a", "-0.5" };
+        PottsSeries series = makeSeriesForPopulation(boxes);
+        MiniBox box = series.populations.get(POPULATION_ID_1);
         
-        for (String fraction : fractions) {
-            Box[] boxes = new Box[]{new Box()};
-            boxes[0].add("id", POPULATION_ID_1);
-            boxes[0].addTag(REGION_IDS[0], "REGION");
-            boxes[0].addAtt(REGION_IDS[0], "fraction", fraction);
-            PottsSeries series = makeSeriesForPopulation(boxes);
-            
-            MiniBox box = series.populations.get(POPULATION_ID_1);
-            assertEquals(0, box.getDouble("(REGION)" + TAG_SEPARATOR + REGION_IDS[0]), EPSILON);
-            assertFalse(box.contains("(REGION)" + TAG_SEPARATOR + REGION_IDS[1]));
-        }
+        assertEquals("", box.get("(REGION)" + TAG_SEPARATOR + REGION_IDS[0]));
+        assertFalse(box.contains("(REGION)" + TAG_SEPARATOR + REGION_IDS[1]));
     }
     
     @Test
