@@ -42,8 +42,8 @@ public class PottsLocationFactoryTest {
             int pop = i + 1;
             MiniBox box = new MiniBox();
             box.put("CODE", pop);
-            box.put("CRITICAL_VOLUME", volumes[i]);
-            box.put("CRITICAL_HEIGHT", heights[i]);
+            box.put("CRITICAL_VOLUME_MEAN", volumes[i]);
+            box.put("CRITICAL_HEIGHT_MEAN", heights[i]);
             series.populations.put("pop" + pop, box);
         }
         
