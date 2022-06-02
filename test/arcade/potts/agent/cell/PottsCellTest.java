@@ -1171,10 +1171,6 @@ public class PottsCellTest {
         int voxels = randomIntBetween(1, 100);
         doReturn((double) voxels).when(location).getVolume();
         
-        int targetVolume = randomIntBetween(1, 100);
-        int targetSurface = randomIntBetween(1, 100);
-        cell.setTargets(targetVolume, targetSurface);
-        
         PottsCellContainer container = (PottsCellContainer) cell.convert();
         
         assertEquals(id, container.id);
@@ -1186,10 +1182,10 @@ public class PottsCellTest {
         assertEquals(phase, container.phase);
         assertEquals(voxels, container.voxels);
         assertNull(container.regionVoxels);
-        assertEquals(targetVolume, container.targetVolume, EPSILON);
-        assertEquals(targetSurface, container.targetSurface, EPSILON);
-        assertNull(container.regionTargetVolume);
-        assertNull(container.regionTargetSurface);
+        assertEquals(criticalVolume, container.criticalVolume, EPSILON);
+        assertEquals(criticalHeight, container.criticalHeight, EPSILON);
+        assertNull(container.criticalRegionVolumes);
+        assertNull(container.criticalRegionHeights);
     }
     
     @Test
@@ -1210,12 +1206,12 @@ public class PottsCellTest {
         EnumSet<Region> regions = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
         doReturn(regions).when(location).getRegions();
         
-        EnumMap<Region, Double> criticalVolumesRegion = makeRegionEnumMap();
-        EnumMap<Region, Double> criticalHeightsRegion = makeRegionEnumMap();
+        EnumMap<Region, Double> criticalRegionVolumes = makeRegionEnumMap();
+        EnumMap<Region, Double> criticalRegionHeights = makeRegionEnumMap();
         
         PottsCell cell = new PottsCell(id, parent, pop, state, age, divisions, location, true,
                 parameters, criticalVolume, criticalHeight,
-                criticalVolumesRegion, criticalHeightsRegion);
+                criticalRegionVolumes, criticalRegionHeights);
         ((PottsModule) cell.getModule()).setPhase(phase);
         
         int voxels = randomIntBetween(1, 100);
@@ -1228,20 +1224,6 @@ public class PottsCellTest {
             doReturn((double) value).when(location).getVolume(region);
         }
         
-        int targetVolume = randomIntBetween(1, 100);
-        int targetSurface = randomIntBetween(1, 100);
-        cell.setTargets(targetVolume, targetSurface);
-        
-        EnumMap<Region, Integer> regionTargetVolume = new EnumMap<>(Region.class);
-        EnumMap<Region, Integer> regionTargetSurface = new EnumMap<>(Region.class);
-        for (Region region : regions) {
-            int volume = randomIntBetween(1, 100);
-            int surface = randomIntBetween(1, 100);
-            regionTargetVolume.put(region, volume);
-            regionTargetSurface.put(region, surface);
-            cell.setTargets(region, volume, surface);
-        }
-        
         PottsCellContainer container = (PottsCellContainer) cell.convert();
         
         assertEquals(id, container.id);
@@ -1252,13 +1234,13 @@ public class PottsCellTest {
         assertEquals(state, container.state);
         assertEquals(phase, container.phase);
         assertEquals(voxels, container.voxels);
-        assertEquals(targetVolume, container.targetVolume, EPSILON);
-        assertEquals(targetSurface, container.targetSurface, EPSILON);
+        assertEquals(criticalVolume, container.criticalVolume, EPSILON);
+        assertEquals(criticalHeight, container.criticalHeight, EPSILON);
         
         for (Region region : regions) {
             assertEquals(regionVoxels.get(region), container.regionVoxels.get(region));
-            assertEquals(regionTargetVolume.get(region), container.regionTargetVolume.get(region), EPSILON);
-            assertEquals(regionTargetSurface.get(region), container.regionTargetSurface.get(region), EPSILON);
+            assertEquals(criticalRegionVolumes.get(region), container.criticalRegionVolumes.get(region), EPSILON);
+            assertEquals(criticalRegionHeights.get(region), container.criticalRegionHeights.get(region), EPSILON);
         }
     }
 }

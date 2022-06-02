@@ -126,11 +126,11 @@ public class PottsOutputSerializerTest {
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
         int voxels = randomIntBetween(1, 100);
-        int targetVolume = randomIntBetween(1, 100);
-        int targetSurface = randomIntBetween(1, 100);
+        int criticalVolume = randomIntBetween(1, 100);
+        int criticalHeight = randomIntBetween(1, 100);
         
         PottsCellContainer cellContainer = new PottsCellContainer(id, parent, pop, age, divisions,
-                state, phase, voxels, null, targetVolume, targetSurface, null, null);
+                state, phase, voxels, null, criticalVolume, criticalHeight, null, null);
         
         String expected = "{"
                 + "\"id\":" + id + ","
@@ -141,7 +141,7 @@ public class PottsOutputSerializerTest {
                 + "\"state\":\"" + state.name() + "\","
                 + "\"phase\":\"" + phase.name() + "\","
                 + "\"voxels\":" + voxels + ","
-                + "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0]"
+                + "\"criticals\":[" + criticalVolume + ".0," + criticalHeight + ".0]"
                 + "}";
         
         JsonElement json = serializer.serialize(cellContainer, null, null);
@@ -160,33 +160,33 @@ public class PottsOutputSerializerTest {
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
         int voxels = randomIntBetween(1, 100);
-        int targetVolume = randomIntBetween(1, 100);
-        int targetSurface = randomIntBetween(1, 100);
+        int criticalVolume = randomIntBetween(1, 100);
+        int criticalHeight = randomIntBetween(1, 100);
         
         Region region1 = Region.DEFAULT;
         Region region2 = Region.NUCLEUS;
         int regionVoxels1 = randomIntBetween(1, 100);
         int regionVoxels2 = randomIntBetween(1, 100);
-        int targetRegionVolume1 = randomIntBetween(1, 100);
-        int targetRegionSurface1 = randomIntBetween(1, 100);
-        int targetRegionVolume2 = randomIntBetween(1, 100);
-        int targetRegionSurface2 = randomIntBetween(1, 100);
+        int criticalRegionVolume1 = randomIntBetween(1, 100);
+        int criticalRegionHeight1 = randomIntBetween(1, 100);
+        int criticalRegionVolume2 = randomIntBetween(1, 100);
+        int criticalRegionHeight2 = randomIntBetween(1, 100);
         
         EnumMap<Region, Integer> regionVoxels = new EnumMap<>(Region.class);
         regionVoxels.put(region1, regionVoxels1);
         regionVoxels.put(region2, regionVoxels2);
         
-        EnumMap<Region, Double> regionTargetVolume = new EnumMap<>(Region.class);
-        regionTargetVolume.put(region1, (double) targetRegionVolume1);
-        regionTargetVolume.put(region2, (double) targetRegionVolume2);
+        EnumMap<Region, Double> criticalRegionVolumes = new EnumMap<>(Region.class);
+        criticalRegionVolumes.put(region1, (double) criticalRegionVolume1);
+        criticalRegionVolumes.put(region2, (double) criticalRegionVolume2);
         
-        EnumMap<Region, Double> regionTargetSurface = new EnumMap<>(Region.class);
-        regionTargetSurface.put(region1, (double) targetRegionSurface1);
-        regionTargetSurface.put(region2, (double) targetRegionSurface2);
+        EnumMap<Region, Double> criticalRegionHeights = new EnumMap<>(Region.class);
+        criticalRegionHeights.put(region1, (double) criticalRegionHeight1);
+        criticalRegionHeights.put(region2, (double) criticalRegionHeight2);
         
         PottsCellContainer cellContainer = new PottsCellContainer(id, parent, pop, age, divisions,
-                state, phase, voxels, regionVoxels, targetVolume, targetSurface,
-                regionTargetVolume, regionTargetSurface);
+                state, phase, voxels, regionVoxels, criticalVolume, criticalHeight,
+                criticalRegionVolumes, criticalRegionHeights);
         
         String expected = "{"
                 + "\"id\":" + id + ","
@@ -197,15 +197,15 @@ public class PottsOutputSerializerTest {
                 + "\"state\":\"" + state.name() + "\","
                 + "\"phase\":\"" + phase.name() + "\","
                 + "\"voxels\":" + voxels + ","
-                + "\"targets\":[" + targetVolume + ".0," + targetSurface + ".0],"
+                + "\"criticals\":[" + criticalVolume + ".0," + criticalHeight + ".0],"
                 + "\"regions\":["
                 + "{\"region\":\"DEFAULT\","
                 + "\"voxels\":" + regionVoxels1 + ","
-                + "\"targets\":[" + targetRegionVolume1 + ".0," + targetRegionSurface1 + ".0]"
+                + "\"criticals\":[" + criticalRegionVolume1 + ".0," + criticalRegionHeight1 + ".0]"
                 + "},"
                 + "{\"region\":\"NUCLEUS\","
                 + "\"voxels\":" + regionVoxels2 + ","
-                + "\"targets\":[" + targetRegionVolume2 + ".0," + targetRegionSurface2 + ".0]"
+                + "\"criticals\":[" + criticalRegionVolume2 + ".0," + criticalRegionHeight2 + ".0]"
                 + "}]"
                 + "}";
         

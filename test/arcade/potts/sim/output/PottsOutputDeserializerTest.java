@@ -100,8 +100,8 @@ public class PottsOutputDeserializerTest {
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
         int voxels = randomIntBetween(1, 100);
-        int targetVolume = randomIntBetween(1, 100);
-        int targetSurface = randomIntBetween(1, 100);
+        int criticalVolume = randomIntBetween(1, 100);
+        int criticalHeight = randomIntBetween(1, 100);
         
         String string = "{"
                 + "\"id\": " + id
@@ -112,7 +112,7 @@ public class PottsOutputDeserializerTest {
                 + ",\"state\":\"" + state.name() + "\""
                 + ",\"phase\":\"" + phase.name() + "\""
                 + ",\"voxels\": " + voxels
-                + ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
+                + ",\"criticals\":[" + criticalVolume + "," + criticalHeight + "]"
                 + "}";
         
         JsonObject json = JsonParser.parseString(string).getAsJsonObject();
@@ -126,11 +126,11 @@ public class PottsOutputDeserializerTest {
         assertEquals(state, object.state);
         assertEquals(phase, object.phase);
         assertEquals(voxels, object.voxels);
-        assertEquals(targetVolume, object.targetVolume, EPSILON);
-        assertEquals(targetSurface, object.targetSurface, EPSILON);
+        assertEquals(criticalVolume, object.criticalVolume, EPSILON);
+        assertEquals(criticalHeight, object.criticalHeight, EPSILON);
         assertNull(object.regionVoxels);
-        assertNull(object.regionTargetVolume);
-        assertNull(object.regionTargetSurface);
+        assertNull(object.criticalRegionVolumes);
+        assertNull(object.criticalRegionHeights);
     }
     
     @Test
@@ -145,17 +145,17 @@ public class PottsOutputDeserializerTest {
         State state = State.random(RANDOM);
         Phase phase = Phase.random(RANDOM);
         int voxels = randomIntBetween(1, 100);
-        int targetVolume = randomIntBetween(1, 100);
-        int targetSurface = randomIntBetween(1, 100);
+        int criticalVolume = randomIntBetween(1, 100);
+        int criticalHeight = randomIntBetween(1, 100);
         
         Region region1 = Region.DEFAULT;
         Region region2 = Region.NUCLEUS;
         int regionVoxels1 = randomIntBetween(1, 100);
         int regionVoxels2 = randomIntBetween(1, 100);
-        int targetRegionVolume1 = randomIntBetween(1, 100);
-        int targetRegionSurface1 = randomIntBetween(1, 100);
-        int targetRegionVolume2 = randomIntBetween(1, 100);
-        int targetRegionSurface2 = randomIntBetween(1, 100);
+        int criticalRegionVolume1 = randomIntBetween(1, 100);
+        int criticalRegionHeight1 = randomIntBetween(1, 100);
+        int criticalRegionVolume2 = randomIntBetween(1, 100);
+        int criticalRegionHeight2 = randomIntBetween(1, 100);
         
         String string = "{"
                 + "\"id\": " + id
@@ -166,15 +166,15 @@ public class PottsOutputDeserializerTest {
                 + ",\"state\":\"" + state.name() + "\""
                 + ",\"phase\": \"" + phase.name() + "\""
                 + ",\"voxels\": " + voxels
-                + ",\"targets\":[" + targetVolume + "," + targetSurface + "]"
+                + ",\"criticals\":[" + criticalVolume + "," + criticalHeight + "]"
                 + ",\"regions\":["
                 + "{\"region\":" + region1.name()
                 + ",\"voxels\":" + regionVoxels1
-                + ",\"targets\":[" + targetRegionVolume1 + "," + targetRegionSurface1 + "]"
+                + ",\"criticals\":[" + criticalRegionVolume1 + "," + criticalRegionHeight1 + "]"
                 + "},"
                 + "{\"region\":" + region2.name()
                 + ",\"voxels\":" + regionVoxels2
-                + ",\"targets\":[" + targetRegionVolume2 + "," + targetRegionSurface2 + "]"
+                + ",\"criticals\":[" + criticalRegionVolume2 + "," + criticalRegionHeight2 + "]"
                 + "}"
                 + "]"
                 + "}";
@@ -190,14 +190,14 @@ public class PottsOutputDeserializerTest {
         assertEquals(state, object.state);
         assertEquals(phase, object.phase);
         assertEquals(voxels, object.voxels);
-        assertEquals(targetVolume, object.targetVolume, EPSILON);
-        assertEquals(targetSurface, object.targetSurface, EPSILON);
+        assertEquals(criticalVolume, object.criticalVolume, EPSILON);
+        assertEquals(criticalHeight, object.criticalHeight, EPSILON);
         assertEquals(regionVoxels1, (int) object.regionVoxels.get(region1));
         assertEquals(regionVoxels2, (int) object.regionVoxels.get(region2));
-        assertEquals(targetRegionVolume1, object.regionTargetVolume.get(region1), EPSILON);
-        assertEquals(targetRegionSurface1, object.regionTargetSurface.get(region1), EPSILON);
-        assertEquals(targetRegionVolume2, object.regionTargetVolume.get(region2), EPSILON);
-        assertEquals(targetRegionSurface2, object.regionTargetSurface.get(region2), EPSILON);
+        assertEquals(criticalRegionVolume1, object.criticalRegionVolumes.get(region1), EPSILON);
+        assertEquals(criticalRegionHeight1, object.criticalRegionHeights.get(region1), EPSILON);
+        assertEquals(criticalRegionVolume2, object.criticalRegionVolumes.get(region2), EPSILON);
+        assertEquals(criticalRegionHeight2, object.criticalRegionHeights.get(region2), EPSILON);
     }
     
     @Test
