@@ -75,8 +75,8 @@ public class PottsColorMaps {
     PottsColorMaps(Series series) {
         double volume = 0;
         for (MiniBox box : series.populations.values()) {
-            if (box.getDouble("CRITICAL_VOLUME") > volume) {
-                volume = box.getDouble("CRITICAL_VOLUME");
+            if (box.getDouble("CRITICAL_VOLUME_MEAN") > volume) {
+                volume = box.getDouble("CRITICAL_VOLUME_MEAN");
             }
         }
     
@@ -105,8 +105,8 @@ public class PottsColorMaps {
         
         double height = 0;
         for (MiniBox box : series.populations.values()) {
-            if (box.getDouble("CRITICAL_HEIGHT") > height) {
-                height = box.getDouble("CRITICAL_HEIGHT");
+            if (box.getDouble("CRITICAL_HEIGHT_MEAN") > height) {
+                height = box.getDouble("CRITICAL_HEIGHT_MEAN");
             }
         }
         
