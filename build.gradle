@@ -57,12 +57,6 @@ jacocoTestReport {
                 "arcade/core/util/Parameter*",
                 "arcade/core/util/Colors*",
                 "arcade/potts/vis/*",
-                "arcade/agent/*",
-                "arcade/env/*",
-                "arcade/vis/*",
-                "arcade/util/*",
-                "arcade/sim/*",
-                "arcade/gui/*"
             ])
         })
     }
