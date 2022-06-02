@@ -202,31 +202,31 @@ public class PottsSimulationTest {
             doAnswer(invocation -> {
                 mockCells(factory, seriesOnePop, "A", 5, 0);
                 return null;
-            }).when(factory).initialize(seriesOnePop);
+            }).when(factory).initialize(seriesOnePop, random);
             
             doAnswer(invocation -> {
                 mockCells(factory, seriesMultiPop, "B", 3, 0);
                 mockCells(factory, seriesMultiPop, "C", 1, 3);
                 mockCells(factory, seriesMultiPop, "D", 2, 4);
                 return null;
-            }).when(factory).initialize(seriesMultiPop);
+            }).when(factory).initialize(seriesMultiPop, random);
             
             doAnswer(invocation -> {
                 mockCells(factory, seriesNullCell, "A", 2, 0);
                 factory.cells.remove(2);
                 return null;
-            }).when(factory).initialize(seriesNullCell);
+            }).when(factory).initialize(seriesNullCell, random);
             
             doAnswer(invocation -> {
                 mockCells(factory, seriesNullLocation, "A", 2, 0);
                 return null;
-            }).when(factory).initialize(seriesNullLocation);
+            }).when(factory).initialize(seriesNullLocation, random);
             
             doAnswer(invocation -> {
                 mockCells(factory, seriesNullBoth, "A", 2, 0);
                 factory.cells.remove(2);
                 return null;
-            }).when(factory).initialize(seriesNullBoth);
+            }).when(factory).initialize(seriesNullBoth, random);
             
             return factory;
         }

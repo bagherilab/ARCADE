@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.IntStream;
 import org.junit.Test;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputLoader;
@@ -21,6 +22,7 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class PottsCellFactoryTest {
     private static final double EPSILON = 1E-10;
+    final MersenneTwisterFast random = mock(MersenneTwisterFast.class);
     
     static Series createSeries(int[] init, int[] volumes) {
         Series series = mock(Series.class);
@@ -54,7 +56,7 @@ public class PottsCellFactoryTest {
         doNothing().when(factory).loadCells(series);
         doNothing().when(factory).createCells(series);
         
-        factory.initialize(series);
+        factory.initialize(series, random);
         
         verify(factory).parseValues(series);
         verify(factory, never()).loadCells(series);
@@ -77,7 +79,7 @@ public class PottsCellFactoryTest {
         doNothing().when(factory).loadCells(series);
         doNothing().when(factory).createCells(series);
         
-        factory.initialize(series);
+        factory.initialize(series, random);
         
         verify(factory).parseValues(series);
         verify(factory, never()).loadCells(series);
@@ -100,7 +102,7 @@ public class PottsCellFactoryTest {
         doNothing().when(factory).loadCells(series);
         doNothing().when(factory).createCells(series);
         
-        factory.initialize(series);
+        factory.initialize(series, random);
         
         verify(factory).parseValues(series);
         verify(factory).loadCells(series);
