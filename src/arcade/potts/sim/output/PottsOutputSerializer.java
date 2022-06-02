@@ -139,8 +139,10 @@ public final class PottsOutputSerializer {
                     regionObject.addProperty("voxels", src.regionVoxels.get(region));
                     
                     JsonArray regionCriticals = new JsonArray();
-                    regionCriticals.add((int) (100 * src.criticalRegionVolumes.get(region)) / 100.0);
-                    regionCriticals.add((int) (100 * src.criticalRegionHeights.get(region)) / 100.0);
+                    double volume = (int) (100 * src.criticalRegionVolumes.get(region)) / 100.0;
+                    double height = (int) (100 * src.criticalRegionHeights.get(region)) / 100.0;
+                    regionCriticals.add(volume);
+                    regionCriticals.add(height);
                     regionObject.add("criticals", regionCriticals);
                     
                     regions.add(regionObject);
