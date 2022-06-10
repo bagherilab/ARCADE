@@ -62,6 +62,12 @@ public final class PatchOutputSerializer {
                                      JsonSerializationContext context) {
             JsonObject json = (JsonObject) context.serialize(src, Series.class);
             
+            // Add additional sizing parameters.
+            JsonObject sizes = json.get("size").getAsJsonObject();
+            sizes.addProperty("radius", src.radius);
+            sizes.addProperty("margin", src.margin);
+            sizes.addProperty("depth", src.depth);
+            
             // Add potts parameters.
             JsonElement patch = context.serialize(src.patch);
             json.add("patch", patch);
