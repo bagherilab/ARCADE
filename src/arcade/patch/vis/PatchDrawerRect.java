@@ -6,6 +6,7 @@ import sim.engine.SimState;
 import sim.util.gui.ColorMap;
 import arcade.core.vis.Drawer;
 import arcade.core.vis.Panel;
+import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.loc.PatchLocation;
 import arcade.patch.env.loc.PatchLocationContainer;
 import arcade.patch.env.loc.PatchLocationFactory;
@@ -47,6 +48,120 @@ public abstract class PatchDrawerRect extends PatchDrawer {
     PatchDrawerRect(Panel panel, String name, int length, int width, int depth,
                     Rectangle2D.Double bounds) {
         super(panel, name, length, width, depth, null, bounds);
+    }
+    
+    /**
+     * Extension of {@link PatchDrawer} for drawing hexagonal cells.
+     */
+    public static class PatchCells extends PatchDrawerHex {
+        /** Length of the lattice (x direction) */
+        private final int LENGTH;
+        
+        /** Width of the lattice (y direction) */
+        private final int WIDTH;
+        
+        /** Drawing view. */
+        private final View view;
+        
+        /**
+         * Creates a {@link PatchDrawer} for drawing hexagonal cells.
+         * <p>
+         * Length and width of the drawer are expanded from the given length and
+         * width of the simulation so each index can be drawn as a 3x3 triangle.
+         *
+         * @param panel  the panel the drawer is attached to
+         * @param name  the name of the drawer
+         * @param length  the length of array (x direction)
+         * @param width  the width of array (y direction)
+         * @param depth  the depth of array (z direction)
+         * @param map  the color map for the array
+         * @param bounds  the size of the drawer within the panel
+         */
+        public PatchCells(Panel panel, String name,
+                          int length, int width, int depth,
+                          ColorMap map, Rectangle2D.Double bounds) {
+            super(panel, name, length, width, depth, map, bounds);
+            LENGTH = length;
+            WIDTH = width;
+            String[] split = name.split(":");
+            view = View.valueOf(split[1]);
+        }
+        
+        @Override
+        public void step(SimState state) {
+            PatchSimulation sim = (PatchSimulation) state;
+            double[][] arr = array.field;
+            double[][] counter = new double[LENGTH][WIDTH];
+            
+            PatchCell cell;
+            PatchLocation location;
+            
+            switch (view) {
+                case STATE: case AGE:
+                    for (int i = 0; i < LENGTH; i++) {
+                        for (int j = 0; j < WIDTH; j++) {
+                            arr[i][j] = map.defaultValue();
+                        }
+                    }
+                    break;
+                case VOLUME: case HEIGHT: case COUNTS:
+                    array.setTo(0);
+                    break;
+                default:
+                    break;
+            }
+            
+            for (Object obj : sim.getGrid().getAllObjects()) {
+                cell = (PatchCell)obj;
+                location = (PatchLocation) cell.getLocation();
+                
+                if (location.getGridZ() == 0) {
+                    int[][] locs = location.getLatLocations();
+                    int position = location.getPosition();
+                    
+                    switch (view) {
+                        case STATE:
+                            arr[locs[position][0]][locs[position][1]] = cell.getState().ordinal();
+                            break;
+                        case AGE:
+                            arr[locs[position][0]][locs[position][1]] = cell.getAge();
+                            break;
+                        case COUNTS:
+                            for (int[] loc : locs) {
+                                arr[loc[0]][loc[1]]++;
+                            }
+                            break;
+                        case VOLUME:
+                            double volume = cell.getVolume();
+                            for (int[] loc : locs) {
+                                arr[loc[0]][loc[1]] += volume;
+                                counter[loc[0]][loc[1]]++;
+                            }
+                        case HEIGHT:
+                            double height = cell.getHeight();
+                            for (int[] loc : locs) {
+                                arr[loc[0]][loc[1]] += height;
+                                counter[loc[0]][loc[1]]++;
+                            }
+                        default:
+                            break;
+                    }
+                }
+            }
+            
+            switch (view) {
+                case VOLUME:
+                case HEIGHT:
+                    for (int i = 0; i < LENGTH; i++) {
+                        for (int j = 0; j < WIDTH; j++) {
+                            arr[i][j] /= counter[i][j];
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
     }
     
     /**

@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import sim.engine.SimState;
 import sim.field.continuous.Continuous2D;
+import sim.field.grid.DoubleGrid2D;
 import sim.field.network.Network;
 import sim.portrayal.DrawInfo2D;
 import sim.portrayal.FieldPortrayal2D;
@@ -14,6 +15,8 @@ import sim.portrayal.network.EdgeDrawInfo2D;
 import sim.portrayal.network.NetworkPortrayal2D;
 import sim.portrayal.network.SimpleEdgePortrayal2D;
 import sim.portrayal.network.SpatialNetwork2D;
+import sim.portrayal.grid.FastValueGridPortrayal2D;
+import sim.portrayal.grid.ValueGridPortrayal2D;
 import sim.util.Double2D;
 import sim.util.gui.ColorMap;
 import arcade.core.vis.Drawer;
@@ -29,6 +32,12 @@ public abstract class PatchDrawer extends Drawer {
     
     /** Field holding nodes */
     Continuous2D field;
+    
+    /** Array holding values */
+    DoubleGrid2D array;
+    
+    /** View options. */
+    enum View { STATE, AGE, VOLUME, HEIGHT, COUNTS }
 
     /**
      * Creates a {@link Drawer} for potts simulations.
@@ -73,6 +82,12 @@ public abstract class PatchDrawer extends Drawer {
                 gridPort.setField(new SpatialNetwork2D(field, graph));
                 gridPort.setPortrayalForAll(sep);
                 return gridPort;
+            case "agents":
+                array = new DoubleGrid2D(length, width, map.defaultValue());
+                ValueGridPortrayal2D valuePort = new FastValueGridPortrayal2D();
+                valuePort.setField(array);
+                valuePort.setMap(map);
+                return valuePort;
             default:
                 return null;
         }
