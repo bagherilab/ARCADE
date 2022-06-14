@@ -69,24 +69,4 @@ public abstract class Drawer implements Steppable {
      * @return  the portrayal
      */
     public abstract Portrayal makePort();
-    
-    /**
-     * Invokes the specified get method.
-     *
-     * @param method  the method name
-     * @param c  the cell object
-     * @return  the result of the get method
-     */
-    static Object getMethod(String method, Cell c) {
-        if (method.equals("getCount")) {
-            return 1.0;
-        } else {
-            try {
-                Method m = c.getClass().getMethod(method);
-                return m.invoke(c);
-            } catch (Exception e) {
-                return Integer.MIN_VALUE;
-            }
-        }
-    }
 }
