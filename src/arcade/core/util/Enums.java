@@ -34,11 +34,17 @@ public final class Enums {
         /** Code for proliferative cells. */
         PROLIFERATIVE,
         
+        /** Code for migratory cells. */
+        MIGRATORY,
+        
         /** Code for apoptotic cells. */
         APOPTOTIC,
         
         /** Code for necrotic cells. */
         NECROTIC,
+        
+        /** Code for senescent cells. */
+        SENESCENT,
         
         /** Code for autotic cells. */
         AUTOTIC;
