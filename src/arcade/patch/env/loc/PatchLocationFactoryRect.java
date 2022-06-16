@@ -17,7 +17,7 @@ public final class PatchLocationFactoryRect extends PatchLocationFactory {
     public PatchLocationFactoryRect() { super(); }
     
     @Override
-    ArrayList<int[]> getCoordinates(int radius, int depth) {
+    public ArrayList<int[]> getCoordinates(int radius, int depth) {
         ArrayList<int[]> locations = new ArrayList<>();
         
         for (int x = 1 - radius; x < radius; x++) {

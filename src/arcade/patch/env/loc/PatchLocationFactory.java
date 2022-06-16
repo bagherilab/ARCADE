@@ -86,5 +86,5 @@ public abstract class PatchLocationFactory implements LocationFactory {
      * @param depth  the bound on the depth
      * @return  a list of location coordinates
      */
-    abstract ArrayList<int[]> getCoordinates(int radius, int depth);
+    public abstract ArrayList<int[]> getCoordinates(int radius, int depth);
 }

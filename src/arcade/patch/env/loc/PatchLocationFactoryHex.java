@@ -19,9 +19,9 @@ public final class PatchLocationFactoryHex extends PatchLocationFactory {
     public PatchLocationFactoryHex() { super(); }
     
     @Override
-    ArrayList<int[]> getCoordinates(int radius, int depth) {
+    public ArrayList<int[]> getCoordinates(int radius, int depth) {
         ArrayList<int[]> locations = new ArrayList<>();
-
+        
         for (int u = 1 - radius; u < radius; u++) {
             for (int v = 1 - radius; v < radius; v++) {
                 for (int w = 1 - radius; w < radius; w++) {

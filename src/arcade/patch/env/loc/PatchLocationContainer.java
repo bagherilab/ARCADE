@@ -17,7 +17,7 @@ public final class PatchLocationContainer implements LocationContainer {
     public final int[] coordinates;
     
     /**
-     * Creates a {@code PottsLocationContainer} instance.
+     * Creates a {@code PatchLocationContainer} instance.
      * <p>
      * The container does not have any regions.
      *

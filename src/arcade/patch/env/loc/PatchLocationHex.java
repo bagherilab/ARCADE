@@ -1,6 +1,6 @@
 package arcade.patch.env.loc;
 
-import sim.util.Bag;
+import arcade.core.env.loc.Location;
 import arcade.core.env.loc.LocationContainer;
 import arcade.patch.sim.PatchSeries;
 
@@ -265,12 +265,12 @@ public final class PatchLocationHex extends PatchLocation {
      * Neighbor list includes the current location.
      */
     @Override
-    public Bag getNeighborLocations() {
-        Bag neighbors = new Bag();
+    public Location[] getNeighborLocations() {
+        Location[] neighbors = new Location[MOVES.length + 1];
         byte b;
         
         // Add current location.
-        neighbors.add(new PatchLocationHex(u, v, w, z));
+        neighbors[MOVES.length] = new PatchLocationHex(u, v, w, z);
         
         // Add neighbor locations.
         for (int i = 0; i < MOVES.length; i++) {
@@ -280,11 +280,11 @@ public final class PatchLocationHex extends PatchLocation {
             
             // Add location if possible to move there.
             if ((b & check ^ b) == 0) {
-                neighbors.add(new PatchLocationHex(
+                neighbors[i] = new PatchLocationHex(
                     u + (b >> 7 & 1) - (b >> 6 & 1),
                     v + (b >> 5 & 1) - (b >> 4 & 1),
                     w + (b >> 3 & 1) - (b >> 2 & 1),
-                    z + (b >> 1 & 1) - (b >> 0 & 1)));
+                    z + (b >> 1 & 1) - (b >> 0 & 1));
             }
         }
         

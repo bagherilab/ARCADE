@@ -51,9 +51,6 @@ public abstract class PatchLocation implements Location {
     /** Distance from center. */
     int r = -1;
     
-    /** Position index. */
-    byte p = -1;
-    
     /** Offset of the grid in the z axis. */
     byte zo;
     
@@ -88,20 +85,6 @@ public abstract class PatchLocation implements Location {
     abstract double calcPerimeter(double f);
     
     /**
-     * Sets the position of an object within the patch.
-     *
-     * @param position  the object position
-     */
-    public void setPosition(byte position) { this.p = position; }
-    
-    /**
-     * Gets the position of an object.
-     *
-     * @return  the object position
-     */
-    public byte getPosition() { return p; }
-    
-    /**
      * Gets the {@link arcade.core.env.grid.Grid} offset relative to the
      * {@link arcade.core.env.lat.Lattice}.
      *
@@ -115,7 +98,7 @@ public abstract class PatchLocation implements Location {
      * @return  the distance
      */
      public int getRadius() { return r; }
-    
+     
     /**
      * Updates the location of an object to match the given location
      *
@@ -128,7 +111,7 @@ public abstract class PatchLocation implements Location {
      *
      * @return  the list of neighbor locations
      */
-    public abstract Bag getNeighborLocations();
+    public abstract Location[] getNeighborLocations();
     
     /**
      * Gets the coordinates in the {@link arcade.core.env.grid.Grid}.
