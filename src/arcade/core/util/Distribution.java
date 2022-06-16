@@ -11,7 +11,7 @@ public class Distribution {
     /** Normal distribution. */
     private final Normal normal;
     
-    /** Values for truncated distribution. */
+    /** Values for truncated distribution bounds. */
     private final double[] bounds;
     
     /** Mean of the distribution. */
@@ -21,7 +21,7 @@ public class Distribution {
     private final double sigma;
     
     /**
-     * Creates a {@code Parameter} normal distribution.
+     * Creates a truncated normal {@code Distribution}.
      *
      * @param mu  the mean of the normal distribution
      * @param sigma  the standard deviation of the normal distribution
