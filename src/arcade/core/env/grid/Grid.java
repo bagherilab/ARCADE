@@ -1,6 +1,7 @@
 package arcade.core.env.grid;
 
 import sim.util.Bag;
+import arcade.core.env.loc.Location;
 
 /**
  * A {@code Grid} represents the environment for agents.
@@ -19,25 +20,35 @@ public interface Grid {
     Bag getAllObjects();
     
     /**
-     * Adds an object for the given id.
+     * Adds an object to the grid.
      *
-     * @param id  the object ID
-     * @param obj  the object to add to the grid
+     * @param object  the object to add to the grid
+     * @param location  the location to add the object to
      */
-    void addObject(int id, Object obj);
+    void addObject(Object object, Location location);
     
     /**
      * Removes an object from the grid.
      *
-     * @param id  the object ID
+     * @param object  the object to remove from the grid
+     * @param location  the location to remove the object from
      */
-    void removeObject(int id);
+    void removeObject(Object object, Location location);
     
     /**
-     * Gets the object at the given id.
+     * Moves an object to a new location.
      *
-     * @param id  the object ID
+     * @param object  the object to move in the grid
+     * @param fromLocation  the location to move the object from
+     * @param toLocation  the location to move the object to
+     */
+    void moveObject(Object object, Location fromLocation, Location toLocation);
+    
+    /**
+     * Gets the object at the given location.
+     *
+     * @param location  the location
      * @return  the object
      */
-    Object getObjectAt(int id);
+    Object getObjectAt(Location location);
 }
