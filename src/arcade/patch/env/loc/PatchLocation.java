@@ -1,7 +1,6 @@
 package arcade.patch.env.loc;
 
 import java.util.EnumSet;
-import sim.util.Bag;
 import arcade.core.env.loc.Location;
 import static arcade.core.util.Enums.Region;
 
@@ -35,13 +34,13 @@ import static arcade.core.util.Enums.Region;
 public abstract class PatchLocation implements Location {
     /** Radius of the simulation environment. */
     static int RADIUS;
-    
+
     /** Depth of the simulation environment. */
     static int DEPTH;
-    
+
     /** Radius and margin of the simulation environment. */
     static int RADIUS_BOUNDS;
-    
+
     /** Depth and margin of the simulation environment. */
     static int DEPTH_BOUNDS;
     
@@ -54,7 +53,7 @@ public abstract class PatchLocation implements Location {
     /** Offset of the grid in the z axis. */
     byte zo;
     
-    /** Allowable movements */
+    /** Allowable movements. */
     byte check;
     
     @Override
@@ -79,7 +78,7 @@ public abstract class PatchLocation implements Location {
     /**
      * Calculates the perimeter of a cell occupying the location.
      *
-     * @param f  the fraction of total volume 
+     * @param f  the fraction of total volume
      * @return  the perimeter of the cell
      */
     abstract double calcPerimeter(double f);
@@ -97,17 +96,17 @@ public abstract class PatchLocation implements Location {
      *
      * @return  the distance
      */
-     public int getRadius() { return r; }
+    public int getRadius() { return r; }
      
     /**
-     * Updates the location of an object to match the given location
+     * Updates the location of an object to match the given location.
      *
      * @param newLoc  the new location
      */
     public abstract void updateLocation(PatchLocation newLoc);
     
     /**
-     * Gets the location of the neighbors to the current location
+     * Gets the location of the neighbors to the current location.
      *
      * @return  the list of neighbor locations
      */

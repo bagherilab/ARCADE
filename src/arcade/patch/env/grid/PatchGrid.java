@@ -1,7 +1,7 @@
 package arcade.patch.env.grid;
 
-import sim.util.Bag;
 import java.util.HashMap;
+import sim.util.Bag;
 import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.loc.Location;
@@ -108,8 +108,11 @@ public class PatchGrid implements Grid {
      */
     public int getNumObjectsAtLocation(Location location) {
         Bag bag = getObjectsAtLocation(location);
-        if (bag == null) { return 0; }
-        else { return bag.numObjs; }
+        if (bag == null) {
+            return 0;
+        } else {
+            return bag.numObjs;
+        }
     }
     
     /**
@@ -120,8 +123,11 @@ public class PatchGrid implements Grid {
      */
     public Bag getObjectsAtLocation(Location location) {
         Bag bag = (Bag) objects.get(location.hashCode());
-        if (bag == null || bag.numObjs == 0) { return null; }
-        else { return bag; }
+        if (bag == null || bag.numObjs == 0) {
+            return null;
+        } else {
+            return bag;
+        }
     }
     
     /**
@@ -135,7 +141,9 @@ public class PatchGrid implements Grid {
         for (Location location : locations) {
             Bag temp = getObjectsAtLocation(location);
             if (temp == null) { continue; }
-            for (Object object : temp) { bag.add(object); }
+            for (Object object : temp) {
+                bag.add(object);
+            }
         }
         return bag;
     }

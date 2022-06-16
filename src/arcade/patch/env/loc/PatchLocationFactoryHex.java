@@ -37,4 +37,3 @@ public final class PatchLocationFactoryHex extends PatchLocationFactory {
         return locations;
     }
 }
-

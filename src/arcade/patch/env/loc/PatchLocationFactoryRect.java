@@ -31,4 +31,3 @@ public final class PatchLocationFactoryRect extends PatchLocationFactory {
         return locations;
     }
 }
-
