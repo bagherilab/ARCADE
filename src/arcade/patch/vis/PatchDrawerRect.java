@@ -1,6 +1,7 @@
 package arcade.patch.vis;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.awt.geom.Rectangle2D;
 import sim.engine.SimState;
 import sim.util.gui.ColorMap;
@@ -111,13 +112,19 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                     break;
             }
             
+            HashMap<Integer, Integer> positions = new HashMap<>();
+            
             for (Object obj : sim.getGrid().getAllObjects()) {
                 cell = (PatchCell)obj;
                 location = (PatchLocation) cell.getLocation();
                 
                 if (location.getGridZ() == 0) {
                     int[][] locs = location.getLatLocations();
-                    int position = location.getPosition();
+                    
+                    int hash = location.hashCode();
+                    int position = -1;
+                    if (positions.containsKey(hash)) { position = positions.get(hash); }
+                    positions.put(hash, ++position);
                     
                     switch (view) {
                         case STATE:
