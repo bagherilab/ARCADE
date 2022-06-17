@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import ec.util.MersenneTwisterFast;
 import sim.util.distribution.Normal;
 import sim.util.distribution.Uniform;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
-import arcade.core.util.Parameter;
 import static arcade.core.util.Enums.State;
 
 /**
@@ -23,28 +22,24 @@ import static arcade.core.util.Enums.State;
  */
 
 public final class PatchCellFactory implements CellFactory {
-    final static String[] PARAMETER_LIST = new String[] { "NECRO_FRAC", "SENES_FRAC" };
-    
-    final static boolean[] PARAMETER_FRACTION = new boolean[] { true, true };
-    
     /** Random number generator instance. */
     MersenneTwisterFast random;
-
+    
     /** Map of population to critical volumes. */
     HashMap<Integer, Normal> popToCriticalVolumes;
-
+    
     /** Map of population to critical heights. */
     HashMap<Integer, Normal> popToCriticalHeights;
     
     /** Map of population to ages. */
     HashMap<Integer, Uniform> popToAges;
-
+    
     /** Map of population to parameters. */
-    HashMap<Integer, HashMap<String, Parameter>> popToParameters;
-
+    HashMap<Integer, MiniBox> popToParameters;
+    
     /** Map of population to list of ids. */
     public final HashMap<Integer, HashSet<Integer>> popToIDs;
-
+    
     /** Map of id to cell. */
     public final HashMap<Integer, PatchCellContainer> cells;
     
@@ -101,7 +96,7 @@ public final class PatchCellFactory implements CellFactory {
             }
         }
     }
-
+    
     /**
      * {@inheritDoc}
      * <p>
@@ -111,7 +106,7 @@ public final class PatchCellFactory implements CellFactory {
     @Override
     public void createCells(Series series) {
         int id = 1;
-
+        
         // Create containers for each population.
         for (MiniBox population : series.populations.values()) {
             int n = population.getInt("INIT");
@@ -142,21 +137,13 @@ public final class PatchCellFactory implements CellFactory {
      */
     void parseValues(Series series) {
         Set<String> keySet = series.populations.keySet();
-
+        
         for (String key : keySet) {
             MiniBox population = series.populations.get(key);
             int pop = population.getInt("CODE");
             popToIDs.put(pop, new HashSet<>());
-    
-            HashMap<String, Parameter> parameters = new HashMap<>();
-            for (int param = 0; param < PARAMETER_LIST.length; param++) {
-                String parameter = PARAMETER_LIST[param];
-                parameters.put(parameter, new Parameter(population.getDouble(parameter),
-                        population.getDouble("HETEROGENEITY"),
-                        PARAMETER_FRACTION[param], this.random));
-            }
+            popToParameters.put(pop, series.populations.get(key));
             
-            popToParameters.put(pop, parameters);
             popToCriticalVolumes.put(pop, new Normal(population.getDouble("CELL_VOLUME_MEAN"),
                     population.getDouble("CELL_VOLUME_STDEV"), random));
             popToCriticalHeights.put(pop, new Normal(population.getDouble("CELL_HEIGHT_MEAN"),

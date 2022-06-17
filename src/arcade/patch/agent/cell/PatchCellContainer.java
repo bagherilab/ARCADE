@@ -1,11 +1,10 @@
 package arcade.patch.agent.cell;
 
-import java.util.HashMap;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
 import arcade.core.env.loc.Location;
-import arcade.core.util.Parameter;
+import arcade.core.util.MiniBox;
 import static arcade.core.util.Enums.State;
 
 /**
@@ -34,10 +33,10 @@ public final class PatchCellContainer implements CellContainer {
     /** Cell state. */
     public final State state;
     
-    /** Cell volume (in um<sup>3</sup>) */
+    /** Cell volume (in um<sup>3</sup>). */
     public final double volume;
     
-    /** Cell height (in um) */
+    /** Cell height (in um). */
     public final double height;
     
     /** Critical cell volume (in um<sup>3</sup>). */
@@ -109,7 +108,7 @@ public final class PatchCellContainer implements CellContainer {
      */
     private Cell convert(PatchCellFactory factory, Location location) {
         // Get parameters for the cell population.
-        HashMap<String, Parameter> parameters = factory.popToParameters.get(pop);
+        MiniBox parameters = factory.popToParameters.get(pop);
         
         // Make cell.
         PatchCell cell = new PatchCell(id, parent, pop, state, age, divisions,
