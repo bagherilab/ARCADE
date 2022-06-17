@@ -19,4 +19,5 @@
     <population id="HETEROGENEITY" value="0.0" description="variation in cell agent parameters" />
     <population id="SENES_FRAC" value="0.5" description="fraction senescent vs. apoptotic" />
     <population id="NECRO_FRAC" value="0.5" description="fraction necrotic vs. apoptotic" />
+    <population id="ENERGY_THRESHOLD" value="-1000.0" description="minimum energy requirement" />
 </parameters>
