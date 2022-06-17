@@ -28,7 +28,7 @@ public final class PatchSeries extends Series {
     
     /**
      * Overall height of the simulation (equal to 1 if DEPTH = 1, or
-     * DEPTH + MARGIN otherwise),
+     * DEPTH + MARGIN otherwise).
      */
     public final int depthBounds;
     

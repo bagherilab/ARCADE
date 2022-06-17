@@ -126,7 +126,7 @@ public final class PatchInputBuilder extends InputBuilder {
     /**
      * Processes sizing parameter.
      *
-     * @param series  the series parameters 
+     * @param series  the series parameters
      * @param parameters  the default parameters
      */
     private void processSizing(MiniBox series, Box parameters) {
@@ -155,7 +155,7 @@ public final class PatchInputBuilder extends InputBuilder {
     /**
      * Processes sizing based on patch geometry.
      *
-     * @param series  the series parameters 
+     * @param series  the series parameters
      * @param patch  the patch parameters
      * @param parameters  the default parameters
      */
@@ -173,7 +173,9 @@ public final class PatchInputBuilder extends InputBuilder {
         series.put("depthBounds", depthBounds);
         
         String key = "GEOMETRY";
-        String geometry = patch.contains(key) ? patch.getValue(key + KEY_SEPARATOR + "value") : defaults.get(key);
+        String geometry = patch.contains(key)
+                ? patch.getValue(key + KEY_SEPARATOR + "value")
+                : defaults.get(key);
         geometry = geometry.toUpperCase();
         
         if (geometry.equals("RECT")) {

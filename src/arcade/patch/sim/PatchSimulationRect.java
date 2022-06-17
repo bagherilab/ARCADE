@@ -11,6 +11,12 @@ import arcade.patch.env.loc.PatchLocationRect;
  */
 
 public final class PatchSimulationRect extends PatchSimulation {
+    /**
+     * Rectangular simulation instance for a {@link Series} for given random seed.
+     *
+     * @param seed  the random seed for random number generator
+     * @param series  the simulation series
+     */
     public PatchSimulationRect(long seed, Series series) {
         super(seed, series);
         PatchLocationRect.updateConfigs((PatchSeries) series);

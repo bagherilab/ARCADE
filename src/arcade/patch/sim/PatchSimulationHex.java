@@ -11,6 +11,12 @@ import arcade.patch.env.loc.PatchLocationHex;
  */
 
 public final class PatchSimulationHex extends PatchSimulation {
+    /**
+     * Hexagonal simulation instance for a {@link Series} for given random seed.
+     *
+     * @param seed  the random seed for random number generator
+     * @param series  the simulation series
+     */
     public PatchSimulationHex(long seed, Series series) {
         super(seed, series);
         PatchLocationHex.updateConfigs((PatchSeries) series);
