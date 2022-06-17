@@ -3,6 +3,7 @@ package arcade.core.agent.cell;
 import sim.engine.Schedule;
 import sim.engine.Steppable;
 import arcade.core.agent.module.Module;
+import arcade.core.agent.process.Process;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
 import static arcade.core.util.Enums.Region;
@@ -88,6 +89,14 @@ public interface Cell extends Steppable {
      * @return  the cell module
      */
     Module getModule();
+    
+    /**
+     * Gets the cell process object.
+     *
+     * @param key  the cell process key
+     * @return  the cell process
+     */
+    Process getProcess(String key);
     
     /**
      * Gets the cell population parameters.
