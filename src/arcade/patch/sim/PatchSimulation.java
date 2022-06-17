@@ -1,15 +1,22 @@
 package arcade.patch.sim;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
+import arcade.core.env.loc.Location;
 import arcade.core.env.loc.LocationContainer;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellFactory;
+import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.loc.PatchLocationFactory;
 
 /**
  * Abstract implementation for patch {@link Simulation} instances.
@@ -75,7 +82,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         
         return locationContainers;
     }
-   
+    
     @Override
     public final Grid getGrid() { return grid; }
     
@@ -89,6 +96,26 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     @Override
     public void start() {
         super.start();
+        
+        // Reset id.
+        id = 0;
+        
+        // Equip simulation to loader.
+        if (series.loader != null) {
+            series.loader.equip(this);
+        }
+        
+        setupAgents();
+        setupEnvironment();
+        
+        scheduleHelpers();
+        scheduleComponents();
+        
+        // Equip simulation to saver and schedule.
+        if (series.saver != null && !series.isVis) {
+            series.saver.equip(this);
+            doOutput(true);
+        }
     }
     
     /**
@@ -115,7 +142,42 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     
     @Override
     public final void setupAgents() {
-        // TODO add agent setup
+        // Initialize grid for agents.
+        grid = new PatchGrid();
+        
+        // Create factory for locations.
+        PatchLocationFactory locationFactory = makeLocationFactory();
+        PatchCellFactory cellFactory = makeCellFactory();
+        
+        // Initialize factories.
+        locationFactory.initialize(series, random);
+        cellFactory.initialize(series, random);
+
+        // Iterate through each population to create agents.
+        for (MiniBox population : series.populations.values()) {
+            int pop = population.getInt("CODE");
+            HashSet<Integer> ids = cellFactory.popToIDs.get(pop);
+            
+            for (int i : ids) {
+                // Get location and cell containers.
+                LocationContainer locationContainer = locationFactory.locations.get(i);
+                CellContainer cellContainer = cellFactory.cells.get(i);
+                
+                // Check that we have enough containers.
+                if (locationContainer == null || cellContainer == null) { break; }
+                
+                // Make the location and cell.
+                Location location = locationContainer.convert(locationFactory, cellContainer);
+                PatchCell cell = (PatchCell) cellContainer.convert(cellFactory, location);
+                
+                // Add and schedule the cell.
+                grid.addObject(cell, location);
+                cell.schedule(schedule);
+                
+                // Update id tracking.
+                id = Math.max(i, id);
+            }
+        }
     }
     
     @Override
