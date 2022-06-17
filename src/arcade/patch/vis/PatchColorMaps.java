@@ -15,7 +15,7 @@ class PatchColorMaps {
     /** Color map for cell state. */
     static final Colors MAP_STATE = new Colors(
             new Color[] {
-                    new Color(85,85,85),      // undefined
+                    new Color(85, 85, 85),    // undefined
                     new Color(115, 175, 72),  // quiescent
                     new Color(204, 80, 62),   // proliferative
                     new Color(29, 105, 150),  // migratory
@@ -26,15 +26,15 @@ class PatchColorMaps {
             }
     );
     
-    /** Color map for cell counts */
+    /** Color map for cell counts. */
     static final Colors MAP_COUNTS = new Colors(new Color[] {
-        new Color(0,0,0,0),
-        new Color(253,212,158),
-        new Color(253,187,132),
-        new Color(252,141,89),
-        new Color(239,101,72),
-        new Color(215,48,31),
-        new Color(153,0,0)
+        new Color(0, 0, 0, 0),
+        new Color(253, 212, 158),
+        new Color(253, 187, 132),
+        new Color(252, 141, 89),
+        new Color(239, 101, 72),
+        new Color(215, 48, 31),
+        new Color(153, 0, 0)
     });
     
     /** Color map for cell age. */
@@ -45,8 +45,6 @@ class PatchColorMaps {
     
     /** Color map for cell volume. */
     final Colors mapHeight;
-    
-    /** Color map for cell energy. */
     
     /**
      * Creates {@code ColorMaps} for the given series.
@@ -61,7 +59,7 @@ class PatchColorMaps {
             }
         }
         
-        mapAge = new Colors(new Color(0,0,0,0), new Color(0,0,0,180), 0, age);
+        mapAge = new Colors(new Color(0, 0, 0, 0), new Color(0, 0, 0, 180), 0, age);
         
         double volume = 0;
         for (MiniBox box : series.populations.values()) {

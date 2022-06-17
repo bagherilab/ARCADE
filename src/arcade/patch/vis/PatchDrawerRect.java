@@ -1,27 +1,27 @@
 package arcade.patch.vis;
 
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.awt.geom.Rectangle2D;
 import sim.engine.SimState;
 import sim.util.gui.ColorMap;
-import arcade.core.vis.Drawer;
 import arcade.core.vis.Panel;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.loc.PatchLocation;
 import arcade.patch.env.loc.PatchLocationContainer;
 import arcade.patch.env.loc.PatchLocationFactory;
 import arcade.patch.env.loc.PatchLocationFactoryRect;
-import arcade.patch.sim.PatchSimulation;
 import arcade.patch.sim.PatchSeries;
+import arcade.patch.sim.PatchSimulation;
 
 /**
- * Container for patch-specific {@link Drawer} classes for rectangular patches.
+ * Container for patch-specific {@link arcade.core.vis.Drawer} classes for
+ * rectangular patches.
  */
 
 public abstract class PatchDrawerRect extends PatchDrawer {
     /**
-     * Creates a {@link Drawer} for potts simulations.
+     * Creates a {@link PatchDrawer} for rectangular patch simulations.
      *
      * @param panel  the panel the drawer is attached to
      * @param name  the name of the drawer
@@ -37,7 +37,7 @@ public abstract class PatchDrawerRect extends PatchDrawer {
     }
     
     /**
-     * Creates a {@link Drawer} for potts simulations.
+     * Creates a {@link PatchDrawer} for rectangular patch simulations.
      *
      * @param panel  the panel the drawer is attached to
      * @param name  the name of the drawer
@@ -55,11 +55,11 @@ public abstract class PatchDrawerRect extends PatchDrawer {
      * Extension of {@link PatchDrawer} for drawing hexagonal cells.
      */
     public static class PatchCells extends PatchDrawerHex {
-        /** Length of the lattice (x direction) */
-        private final int LENGTH;
+        /** Length of the lattice (x direction). */
+        private final int length;
         
-        /** Width of the lattice (y direction) */
-        private final int WIDTH;
+        /** Width of the lattice (y direction). */
+        private final int width;
         
         /** Drawing view. */
         private final View view;
@@ -82,8 +82,8 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                           int length, int width, int depth,
                           ColorMap map, Rectangle2D.Double bounds) {
             super(panel, name, length, width, depth, map, bounds);
-            LENGTH = length;
-            WIDTH = width;
+            this.length = length;
+            this.width = width;
             String[] split = name.split(":");
             view = View.valueOf(split[1]);
         }
@@ -92,15 +92,15 @@ public abstract class PatchDrawerRect extends PatchDrawer {
         public void step(SimState state) {
             PatchSimulation sim = (PatchSimulation) state;
             double[][] arr = array.field;
-            double[][] counter = new double[LENGTH][WIDTH];
+            double[][] counter = new double[length][width];
             
             PatchCell cell;
             PatchLocation location;
             
             switch (view) {
                 case STATE: case AGE:
-                    for (int i = 0; i < LENGTH; i++) {
-                        for (int j = 0; j < WIDTH; j++) {
+                    for (int i = 0; i < length; i++) {
+                        for (int j = 0; j < width; j++) {
                             arr[i][j] = map.defaultValue();
                         }
                     }
@@ -115,7 +115,7 @@ public abstract class PatchDrawerRect extends PatchDrawer {
             HashMap<Integer, Integer> positions = new HashMap<>();
             
             for (Object obj : sim.getGrid().getAllObjects()) {
-                cell = (PatchCell)obj;
+                cell = (PatchCell) obj;
                 location = (PatchLocation) cell.getLocation();
                 
                 if (location.getGridZ() == 0) {
@@ -159,8 +159,8 @@ public abstract class PatchDrawerRect extends PatchDrawer {
             switch (view) {
                 case VOLUME:
                 case HEIGHT:
-                    for (int i = 0; i < LENGTH; i++) {
-                        for (int j = 0; j < WIDTH; j++) {
+                    for (int i = 0; i < length; i++) {
+                        for (int j = 0; j < width; j++) {
                             arr[i][j] /= counter[i][j];
                         }
                     }
@@ -175,15 +175,16 @@ public abstract class PatchDrawerRect extends PatchDrawer {
      * Extension of {@link PatchDrawer} for drawing rectangular patches.
      */
     public static class PatchGrid extends PatchDrawer {
-        /** Offsets for rectangles */
+        /** Offsets for rectangles. */
         private static final int[][] OFFSETS = { { 0, 0 }, { 2, 0 }, { 2, 2 }, { 0, 2 } };
         
-        /** Length of the lattice (x direction) */
-        private final int LENGTH;
+        /** Length of the lattice (x direction). */
+        private final int length;
         
-        /** Width of the lattice (y direction) */
-        private final int WIDTH;
-    
+        /** Width of the lattice (y direction). */
+        private final int width;
+        
+        /** List of patch locations. */
         private ArrayList<PatchLocation> locations;
         
         /**
@@ -199,17 +200,19 @@ public abstract class PatchDrawerRect extends PatchDrawer {
         PatchGrid(Panel panel, String name,
                 int length, int width, int depth, Rectangle2D.Double bounds) {
             super(panel, name, length, width, depth, bounds);
-            LENGTH = length;
-            WIDTH = width;
-            field.width = LENGTH;
-            field.height = WIDTH;
+            this.length = length;
+            this.width = width;
+            field.width = this.length;
+            field.height = this.width;
         }
         
         /**
          * Steps the drawer to draw rectangular grid.
+         *
+         * @param simstate  the MASON simulation state
          */
-        public void step(SimState state) {
-            PatchSimulation sim = (PatchSimulation)state;
+        public void step(SimState simstate) {
+            PatchSimulation sim = (PatchSimulation) simstate;
             field.clear();
             graph.clear();
             
@@ -227,8 +230,13 @@ public abstract class PatchDrawerRect extends PatchDrawer {
             }
             
             // Draw rectangular grid.
-            for (int i = 0; i <= WIDTH; i++) { add(field, graph, 1, 0, i, LENGTH, i); }
-            for (int i = 0; i <= LENGTH; i++) { add(field, graph, 1, i, 0, i, WIDTH); }
+            for (int i = 0; i <= width; i++) {
+                add(field, graph, 1, 0, i, length, i);
+            }
+            
+            for (int i = 0; i <= length; i++) {
+                add(field, graph, 1, i, 0, i, width);
+            }
             
             // Draw rectangular agent locations.
             for (PatchLocation loc : locations) {
@@ -236,13 +244,14 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                 for (int i = 0; i < 4; i++) {
                     add(field, graph, 2,
                         xy[0] + OFFSETS[i][0], xy[1] + OFFSETS[i][1],
-                        xy[0] + OFFSETS[(i + 1)%4][0], xy[1] + OFFSETS[(i + 1)%4][1]);
+                        xy[0] + OFFSETS[(i + 1) % 4][0], xy[1] + OFFSETS[(i + 1) % 4][1]);
                 }
             }
             
             // Draw border.
             int radius = ((PatchSeries) sim.getSeries()).radius;
-            int ind, r;
+            int ind;
+            int r;
             for (PatchLocation loc : locations) {
                 int[] xyz = loc.getGridLocation();
                 int[] xy = loc.getLatLocation();
@@ -250,25 +259,36 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                 r = Math.max(Math.abs(xyz[0]), Math.abs(xyz[1])) + 1;
                 
                 if (r == radius) {
-                    if (xyz[0] == radius - 1) { ind = 1; }
-                    else if (xyz[0] == 1 - radius) { ind = 3; }
-                    else if (xyz[1] == radius - 1) { ind = 2; }
-                    else if (xyz[1] == 1 - radius) { ind = 0; }
-                    else { ind = 0; }
+                    if (xyz[0] == radius - 1) {
+                        ind = 1;
+                    } else if (xyz[0] == 1 - radius) {
+                        ind = 3;
+                    } else if (xyz[1] == radius - 1) {
+                        ind = 2;
+                    } else if (xyz[1] == 1 - radius) {
+                        ind = 0;
+                    } else {
+                        ind = 0;
+                    }
                     
                     add(field, graph, 3,
                         xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
-                        xy[0] + OFFSETS[(ind + 1)%4][0], xy[1] + OFFSETS[(ind + 1)%4][1]);
+                        xy[0] + OFFSETS[(ind + 1) % 4][0], xy[1] + OFFSETS[(ind + 1) % 4][1]);
                     
                     if (Math.abs(xyz[0]) + 1 == r && Math.abs(xyz[1]) + 1 == r) {
-                        if (xyz[0] == radius - 1 && xyz[1] == radius - 1) { ind = 2; }
-                        else if (xyz[0] == 1 - radius && xyz[1] == radius - 1) { ind = 2; }
-                        else if (xyz[0] == radius - 1 && xyz[1] == 1 - radius) { ind = 0; }
-                        else if (xyz[0] == 1 - radius && xyz[1] == 1 - radius) { ind = 0; }
+                        if (xyz[0] == radius - 1 && xyz[1] == radius - 1) {
+                            ind = 2;
+                        } else if (xyz[0] == 1 - radius && xyz[1] == radius - 1) {
+                            ind = 2;
+                        } else if (xyz[0] == radius - 1 && xyz[1] == 1 - radius) {
+                            ind = 0;
+                        } else if (xyz[0] == 1 - radius && xyz[1] == 1 - radius) {
+                            ind = 0;
+                        }
                         
                         add(field, graph, 3,
                             xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
-                            xy[0] + OFFSETS[(ind + 1)%4][0], xy[1] + OFFSETS[(ind + 1)%4][1]);
+                            xy[0] + OFFSETS[(ind + 1) % 4][0], xy[1] + OFFSETS[(ind + 1) % 4][1]);
                     }
                 }
             }
