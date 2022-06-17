@@ -120,7 +120,7 @@ public final class PatchLocationHex extends PatchLocation {
         this.v = v;
         this.w = w;
         this.z = z;
-        this.zo = (byte) ((Math.abs(Z_OFFSET + z)) % 3);
+        this.zo = (byte) ((Math.abs(zOffset + z)) % 3);
         this.r = (int) ((Math.abs(u) + Math.abs(v) + Math.abs(w)) / 2.0);
         
         calcTriangular();
@@ -148,7 +148,7 @@ public final class PatchLocationHex extends PatchLocation {
     public int[][] getLatLocations() { return xy; }
     
     @Override
-    public int getLatZ() { return DEPTH_BOUNDS + z - 1; }
+    public int getLatZ() { return depthBounds + z - 1; }
     
     @Override
     public double getGridSize() { return HEX_SIZE; }
@@ -184,14 +184,14 @@ public final class PatchLocationHex extends PatchLocation {
      * @param series  the current simulation series
      */
     public static void updateConfigs(PatchSeries series) {
-        RADIUS = series.radius;
-        DEPTH = series.depth;
-        RADIUS_BOUNDS = series.radiusBounds;
-        DEPTH_BOUNDS = series.depthBounds;
+        radius = series.radius;
+        depth = series.depth;
+        radiusBounds = series.radiusBounds;
+        depthBounds = series.depthBounds;
         
         // Calculate z offset for different layers of the simulation.
         int depth = 2 * series.depthBounds - 1;
-        Z_OFFSET = depth % 3 - depth;
+        zOffset = depth % 3 - depth;
     }
     
     /**
@@ -230,8 +230,8 @@ public final class PatchLocationHex extends PatchLocation {
      */
     private void calcTriangular() {
         // Calculate coordinates of top center triangle.
-        int x = 3 * (u + RADIUS_BOUNDS) - 2 + (zo == 2 ? -1 : zo);
-        int y = (w - v) + 2 * RADIUS_BOUNDS - 2 + (zo == 0 ? 0 : 1);
+        int x = 3 * (u + radiusBounds) - 2 + (zo == 2 ? -1 : zo);
+        int y = (w - v) + 2 * radiusBounds - 2 + (zo == 0 ? 0 : 1);
         
         // Set coordinates of triangles clockwise from top center.
         for (int i = 0; i < 6; i++) {
@@ -247,14 +247,14 @@ public final class PatchLocationHex extends PatchLocation {
      */
     private void calcChecks() {
         check = (byte) (
-            (u == RADIUS - 1 ? 0 : 1 << 7)
-            + (u == 1 - RADIUS ? 0 : 1 << 6)
-            + (v == RADIUS - 1 ? 0 : 1 << 5)
-            + (v == 1 - RADIUS ? 0 : 1 << 4)
-            + (w == RADIUS - 1 ? 0 : 1 << 3)
-            + (w == 1 - RADIUS ? 0 : 1 << 2)
-            + (z == DEPTH - 1 ? 0 : 1 << 1)
-            + (z == 1 - DEPTH ? 0 : 1 << 0));
+            (u == radius - 1 ? 0 : 1 << 7)
+            + (u == 1 - radius ? 0 : 1 << 6)
+            + (v == radius - 1 ? 0 : 1 << 5)
+            + (v == 1 - radius ? 0 : 1 << 4)
+            + (w == radius - 1 ? 0 : 1 << 3)
+            + (w == 1 - radius ? 0 : 1 << 2)
+            + (z == depth - 1 ? 0 : 1 << 1)
+            + (z == 1 - depth ? 0 : 1 << 0));
     }
     
     /**
@@ -310,20 +310,31 @@ public final class PatchLocationHex extends PatchLocation {
     
     @Override
     public PatchLocation toLocation(int[] coords) {
-        int z = coords[2] - DEPTH_BOUNDS + 1;
-        int zo = (byte) ((Math.abs(Z_OFFSET + z)) % 3);
+        return toHexLocation(coords);
+    }
+    
+    /**
+     * Converts {@link arcade.core.env.lat.Lattice} coordinates into a
+     * hexagonal {@link arcade.core.env.grid.Grid} location.
+     *
+     * @param coords  the lattice coordinates
+     * @return  the corresponding hexagonal grid location
+     */
+    private static PatchLocation toHexLocation(int[] coords) {
+        int z = coords[2] - depthBounds + 1;
+        int zo = (byte) ((Math.abs(zOffset + z)) % 3);
         
         // Calculate u coordinate.
-        double uu = (coords[0] - (zo == 2 ? -1 : zo) + 2) / 3.0 - RADIUS_BOUNDS;
+        double uu = (coords[0] - (zo == 2 ? -1 : zo) + 2) / 3.0 - radiusBounds;
         int u = Math.round(Math.round(uu));
         
         // Calculate v and w coordinates based on u.
-        int vw = coords[1] - 2 * RADIUS_BOUNDS + 2 - (zo == 0 ? 0 : 1);
+        int vw = coords[1] - 2 * radiusBounds + 2 - (zo == 0 ? 0 : 1);
         int v = -(int) Math.floor((vw + u) / 2.0);
         int w = -(u + v);
         
         // Check if out of bounds.
-        if (Math.abs(v) >= RADIUS || Math.abs(w) >= RADIUS) { return null; }
+        if (Math.abs(v) >= radius || Math.abs(w) >= radius) { return null; }
         return new PatchLocationHex(u, v, w, z);
     }
     

@@ -63,12 +63,13 @@ public abstract class PatchLocationFactory implements LocationFactory {
     
     @Override
     public void createLocations(Series series) {
-        PatchSeries patchSeries = (PatchSeries) series; 
+        PatchSeries patchSeries = (PatchSeries) series;
         
         // Get all valid coordinates.
         ArrayList<int[]> coordinates = getCoordinates(patchSeries.radius, patchSeries.depth);
         Utilities.shuffleList(coordinates, random);
-        coordinates.sort(Comparator.comparingDouble(v -> Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])));
+        coordinates.sort(Comparator.comparingDouble(v ->
+                Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])));
         
         // Create containers for each coordinate.
         int id = 1;

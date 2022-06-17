@@ -107,7 +107,7 @@ public final class PatchLocationRect extends PatchLocation {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.zo = (byte) (Math.abs(Z_OFFSET + z) % 2);
+        this.zo = (byte) (Math.abs(zOffset + z) % 2);
         this.r = Math.max(Math.abs(x), Math.abs(y));
         
         calcSubrectangular();
@@ -135,7 +135,7 @@ public final class PatchLocationRect extends PatchLocation {
     public int[][] getLatLocations() { return ab; }
     
     @Override
-    public int getLatZ() { return DEPTH_BOUNDS + z - 1; }
+    public int getLatZ() { return depthBounds + z - 1; }
     
     @Override
     public double getGridSize() { return RECT_SIZE; }
@@ -171,14 +171,14 @@ public final class PatchLocationRect extends PatchLocation {
      * @param series  the current simulation series
      */
     public static void updateConfigs(PatchSeries series) {
-        RADIUS = series.radius;
-        DEPTH = series.depth;
-        RADIUS_BOUNDS = series.radiusBounds;
-        DEPTH_BOUNDS = series.depthBounds;
+        radius = series.radius;
+        depth = series.depth;
+        radiusBounds = series.radiusBounds;
+        depthBounds = series.depthBounds;
         
         // Calculate z offset for different layers in the simulation
         int depth = 2 * series.depthBounds - 1;
-        Z_OFFSET = depth % 2 - depth;
+        zOffset = depth % 2 - depth;
     }
     
     /**
@@ -216,8 +216,8 @@ public final class PatchLocationRect extends PatchLocation {
      */
     private void calcSubrectangular() {
         // Calculate coordinates of top right subrectangle.
-        int a = 2 * (x + RADIUS_BOUNDS - 1) + zo;
-        int b = 2 * (y + RADIUS_BOUNDS - 1) + zo;
+        int a = 2 * (x + radiusBounds - 1) + zo;
+        int b = 2 * (y + radiusBounds - 1) + zo;
         
         // Set coordinates of subrectangles starting with top left.
         for (int i = 0; i < 4; i++) {
@@ -233,12 +233,12 @@ public final class PatchLocationRect extends PatchLocation {
      */
     private void calcChecks() {
         check = (byte) (
-            (x == RADIUS - 1 ? 0 : 1 << 5)
-            + (x == 1 - RADIUS ? 0 : 1 << 4)
-            + (y == RADIUS - 1 ? 0 : 1 << 3)
-            + (y == 1 - RADIUS ? 0 : 1 << 2)
-            + (z == DEPTH - 1 ? 0 : 1 << 1)
-            + (z == 1 - DEPTH ? 0 : 1 << 0));
+            (x == radius - 1 ? 0 : 1 << 5)
+            + (x == 1 - radius ? 0 : 1 << 4)
+            + (y == radius - 1 ? 0 : 1 << 3)
+            + (y == 1 - radius ? 0 : 1 << 2)
+            + (z == depth - 1 ? 0 : 1 << 1)
+            + (z == 1 - depth ? 0 : 1 << 0));
     }
     
     /**
@@ -293,17 +293,28 @@ public final class PatchLocationRect extends PatchLocation {
     
     @Override
     public PatchLocation toLocation(int[] coords) {
-        int z = coords[2] - DEPTH_BOUNDS + 1;
-        int zo = (byte) (Math.abs(Z_OFFSET + z) % 2);
+        return toRectLocation(coords);
+    }
+    
+    /**
+     * Converts {@link arcade.core.env.lat.Lattice} coordinates into a
+     * hexagonal {@link arcade.core.env.grid.Grid} location.
+     *
+     * @param coords  the lattice coordinates
+     * @return  the corresponding hexagonal grid location
+     */
+    private static PatchLocation toRectLocation(int[] coords) {
+        int z = coords[2] - depthBounds + 1;
+        int zo = (byte) (Math.abs(zOffset + z) % 2);
         
         // Calculate a and b coordinates
-        double aa = (coords[0] - zo) / 2.0 + 1 - RADIUS_BOUNDS;
+        double aa = (coords[0] - zo) / 2.0 + 1 - radiusBounds;
         int a = (int) Math.floor(aa);
-        double bb = (coords[1] - zo) / 2.0 + 1 - RADIUS_BOUNDS;
+        double bb = (coords[1] - zo) / 2.0 + 1 - radiusBounds;
         int b = (int) Math.floor(bb);
         
         // Check if out of bounds.
-        if (Math.abs(a) >= RADIUS || Math.abs(b) >= RADIUS) { return null; }
+        if (Math.abs(a) >= radius || Math.abs(b) >= radius) { return null; }
         return new PatchLocationRect(a, b, z);
     }
     

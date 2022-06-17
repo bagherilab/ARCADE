@@ -22,6 +22,7 @@ public final class PatchLocationContainer implements LocationContainer {
      * The container does not have any regions.
      *
      * @param id  the location ID
+     * @param coordinates  the location coordinates
      */
     public PatchLocationContainer(int id, int[] coordinates) {
         this.id = id;
@@ -36,9 +37,11 @@ public final class PatchLocationContainer implements LocationContainer {
         PatchLocation location;
         
         if (factory instanceof PatchLocationFactoryRect) {
-            location = new PatchLocationRect(coordinates[0], coordinates[1], coordinates[2]);
+            location = new PatchLocationRect(coordinates[0], coordinates[1],
+                    coordinates[2]);
         } else {
-            location = new PatchLocationHex(coordinates[0], coordinates[1], coordinates[2], coordinates[3]);
+            location = new PatchLocationHex(coordinates[0], coordinates[1],
+                    coordinates[2], coordinates[3]);
         }
         
         return location;

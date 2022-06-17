@@ -33,19 +33,19 @@ import static arcade.core.util.Enums.Region;
 
 public abstract class PatchLocation implements Location {
     /** Radius of the simulation environment. */
-    static int RADIUS;
-
+    static int radius;
+    
     /** Depth of the simulation environment. */
-    static int DEPTH;
-
+    static int depth;
+    
     /** Radius and margin of the simulation environment. */
-    static int RADIUS_BOUNDS;
-
+    static int radiusBounds;
+    
     /** Depth and margin of the simulation environment. */
-    static int DEPTH_BOUNDS;
+    static int depthBounds;
     
     /** Offset of the z axis. */
-    static int Z_OFFSET;
+    static int zOffset;
     
     /** Distance from center. */
     int r = -1;
