@@ -45,10 +45,10 @@ public interface Grid {
     void moveObject(Object object, Location fromLocation, Location toLocation);
     
     /**
-     * Gets the object at the given location.
+     * Gets the object at the given index.
      *
-     * @param location  the location
+     * @param index  the object index
      * @return  the object
      */
-    Object getObjectAt(Location location);
+    Object getObjectAt(int index);
 }
