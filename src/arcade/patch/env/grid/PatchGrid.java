@@ -36,14 +36,14 @@ public class PatchGrid implements Grid {
     
     @Override
     public void addObject(Object object, Location location) {
-        int id = location.hashCode();
+        int index = location.hashCode();
         allObjects.add(object);
         
-        Bag bag = (Bag) objects.get(id);
+        Bag bag = (Bag) objects.get(index);
         
         if (bag == null) {
             bag = new Bag(INITIAL_CAPACITY);
-            objects.put(id, bag);
+            objects.put(index, bag);
         }
         
         bag.add(object);
@@ -51,21 +51,20 @@ public class PatchGrid implements Grid {
     
     @Override
     public void removeObject(Object object, Location location) {
-        int id = location.hashCode();
+        int index = location.hashCode();
         allObjects.remove(object);
         
-        Bag bag = (Bag) objects.get(id);
+        Bag bag = (Bag) objects.get(index);
         bag.remove(object);
         
         if (bag.numObjs == 0) {
-            objects.remove(id);
+            objects.remove(index);
         }
     }
     
     @Override
-    public Object getObjectAt(Location location) {
-        int id = location.hashCode();
-        return objects.get(id);
+    public Object getObjectAt(int index) {
+        return objects.get(index);
     }
     
     /**
