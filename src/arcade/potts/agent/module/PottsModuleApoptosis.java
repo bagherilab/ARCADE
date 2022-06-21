@@ -75,7 +75,7 @@ public abstract class PottsModuleApoptosis extends PottsModule {
         ((PottsLocation) cell.getLocation()).clear(potts.ids, potts.regions);
         
         // Remove the cell from the grid.
-        sim.getGrid().removeObject(cell.getID());
+        sim.getGrid().removeObject(cell, null);
         potts.deregister(cell);
         
         // Stop stepping the cell.

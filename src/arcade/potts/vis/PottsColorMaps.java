@@ -12,6 +12,7 @@ import arcade.core.util.MiniBox;
  */
 
 public class PottsColorMaps {
+    /** Color map for cell state. */
     static final Colors MAP_STATE = new Colors(
             new Color[]{
                     new Color(0, 0, 0),
@@ -29,6 +30,7 @@ public class PottsColorMaps {
             new double[] { 0, 1, 2, 3, 4, 5, 6, 7 }
     );
     
+    /** Color map for cell populations. */
     static final Colors MAP_POPULATION = new Colors(
             new Color[]{
                     new Color(0, 0, 0),
@@ -45,26 +47,31 @@ public class PottsColorMaps {
             new double[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
     );
     
+    /** Color map for cell region overlay. */
     public static final Colors MAP_OVERLAY = new Colors(new Color[] {
             new Color(255, 255, 255, 0),
             new Color(255, 255, 255, 50),
             new Color(255, 255, 255, 100),
     }, new double[] { 0, 1, 2 });
     
+    /** Color map for cell cytoplasm region. */
     public static final Colors MAP_CYTOPLASM = new Colors(new Color[] {
             new Color(0, 0, 0, 0),
             new Color(255, 0, 255, 50),
             new Color(255, 0, 255, 255),
     }, new double[] { 0, 0.1, 1 });
     
+    /** Color map for cell nucleus region. */
     public static final Colors MAP_NUCLEUS = new Colors(new Color[] {
             new Color(0, 0, 0, 0),
             new Color(0, 255, 255, 50),
             new Color(0, 255, 255, 255),
     }, new double[] { 0, 0.1, 1 });
     
+    /** Color map for cell volume. */
     final Colors mapVolume;
     
+    /** Color map for cell height. */
     final Colors mapHeight;
     
     /**

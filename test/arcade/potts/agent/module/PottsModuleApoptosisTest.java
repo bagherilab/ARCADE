@@ -118,7 +118,7 @@ public class PottsModuleApoptosisTest {
         module.removeCell(sim);
         
         verify(location).clear(potts.ids, potts.regions);
-        verify(grid).removeObject(id);
+        verify(grid).removeObject(cell, null);
         verify(potts).deregister(cell);
         verify(cell).stop();
     }

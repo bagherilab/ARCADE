@@ -10,6 +10,12 @@ import arcade.potts.env.loc.PottsLocationFactory3D;
  */
 
 public final class PottsSimulation3D extends PottsSimulation {
+    /**
+     * 3D simulation instance for a {@link Series} for given random seed.
+     *
+     * @param seed  the random seed for random number generator
+     * @param series  the simulation series
+     */
     public PottsSimulation3D(long seed, Series series) { super(seed, series); }
     
     @Override

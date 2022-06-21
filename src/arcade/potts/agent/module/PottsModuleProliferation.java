@@ -104,7 +104,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
         // Create and schedule new cell.
         int newID = sim.getID();
         PottsCell newCell = cell.make(newID, State.PROLIFERATIVE, newLocation);
-        sim.getGrid().addObject(newID, newCell);
+        sim.getGrid().addObject(newCell, null);
         potts.register(newCell);
         newCell.reset(potts.ids, potts.regions);
         newCell.schedule(sim.getSchedule());

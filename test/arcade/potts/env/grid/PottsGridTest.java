@@ -2,11 +2,16 @@ package arcade.potts.env.grid;
 
 import org.junit.Test;
 import sim.util.Bag;
+import arcade.core.agent.cell.Cell;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class PottsGridTest {
-    final String objectA = "A";
-    final String objectB = "B";
+    private static Cell createObjectMock(int id) {
+        Cell object = mock(Cell.class);
+        doReturn(id).when(object).getID();
+        return object;
+    }
     
     @Test
     public void getAllObjects_withoutContents_returnsEmpty() {
@@ -16,9 +21,11 @@ public class PottsGridTest {
     
     @Test
     public void getAllObjects_withContents_returnsContents() {
+        Cell objectA = createObjectMock(1);
+        Cell objectB = createObjectMock(2);
         PottsGrid grid = new PottsGrid();
-        grid.addObject(1, objectA);
-        grid.addObject(2, objectB);
+        grid.addObject(objectA, null);
+        grid.addObject(objectB, null);
         assertEquals(2, grid.getAllObjects().size());
         assertTrue(grid.getAllObjects().contains(objectA));
         assertTrue(grid.getAllObjects().contains(objectB));
@@ -26,11 +33,12 @@ public class PottsGridTest {
     
     @Test
     public void addObject_validID_updatesObject() {
+        Cell object = createObjectMock(1);
         PottsGrid grid = new PottsGrid();
-        grid.addObject(1, objectA);
+        grid.addObject(object, null);
         
         Bag allObjects = new Bag();
-        allObjects.add(objectA);
+        allObjects.add(object);
         
         assertEquals(1, grid.allObjects.size());
         assertSame(allObjects.get(0), grid.allObjects.get(0));
@@ -38,9 +46,11 @@ public class PottsGridTest {
     
     @Test
     public void addObject_existingID_doesNothing() {
+        Cell objectA = createObjectMock(1);
+        Cell objectB = createObjectMock(1);
         PottsGrid grid = new PottsGrid();
-        grid.addObject(1, objectA);
-        grid.addObject(1, objectB);
+        grid.addObject(objectA, null);
+        grid.addObject(objectB, null);
         
         Bag allObjects = new Bag();
         allObjects.add(objectA);
@@ -51,24 +61,27 @@ public class PottsGridTest {
     
     @Test
     public void addObject_zeroID_doesNothing() {
+        Cell object = createObjectMock(0);
         PottsGrid grid = new PottsGrid();
-        grid.addObject(0, objectA);
+        grid.addObject(object, null);
         assertEquals(0, grid.allObjects.size());
     }
     
     @Test
     public void addObject_nullObject_doesNothing() {
         PottsGrid grid = new PottsGrid();
-        grid.addObject(1, null);
-        assertEquals(1, grid.allObjects.size());
+        grid.addObject(null, null);
+        assertEquals(0, grid.allObjects.size());
     }
     
     @Test
     public void removeObject_existingID_updatesObject() {
+        Cell objectA = createObjectMock(1);
+        Cell objectB = createObjectMock(2);
         PottsGrid grid = new PottsGrid();
-        grid.addObject(1, objectA);
-        grid.addObject(2, objectB);
-        grid.removeObject(1);
+        grid.addObject(objectA, null);
+        grid.addObject(objectB, null);
+        grid.removeObject(objectA, null);
         
         Bag allObjects = new Bag();
         allObjects.add(objectB);
@@ -79,9 +92,11 @@ public class PottsGridTest {
     
     @Test
     public void removeObject_invalidID_doesNothing() {
+        Cell objectA = createObjectMock(1);
+        Cell objectB = createObjectMock(2);
         PottsGrid grid = new PottsGrid();
-        grid.addObject(1, objectA);
-        grid.removeObject(2);
+        grid.addObject(objectA, null);
+        grid.removeObject(objectB, null);
         
         Bag allObjects = new Bag();
         allObjects.add(objectA);
@@ -92,16 +107,19 @@ public class PottsGridTest {
     
     @Test
     public void removeObject_zeroID_doesNothing() {
+        Cell object = createObjectMock(0);
         PottsGrid grid = new PottsGrid();
-        grid.removeObject(0);
+        grid.removeObject(object, null);
         assertEquals(0, grid.allObjects.size());
     }
     
     @Test
     public void getObjectAt_validID_returnObject() {
+        Cell objectA = createObjectMock(1);
+        Cell objectB = createObjectMock(2);
         PottsGrid grid = new PottsGrid();
-        grid.addObject(1, objectA);
-        grid.addObject(2, objectB);
+        grid.addObject(objectA, null);
+        grid.addObject(objectB, null);
         
         assertSame(objectA, grid.getObjectAt(1));
         assertSame(objectB, grid.getObjectAt(2));

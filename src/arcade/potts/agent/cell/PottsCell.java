@@ -7,6 +7,7 @@ import sim.engine.Stoppable;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.module.Module;
+import arcade.core.agent.process.Process;
 import arcade.core.env.loc.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
@@ -174,6 +175,9 @@ public final class PottsCell implements Cell {
     
     @Override
     public Module getModule() { return module; }
+    
+    @Override
+    public Process getProcess(String key) { return null; }
     
     @Override
     public MiniBox getParameters() { return parameters; }

@@ -245,8 +245,8 @@ public final class PottsVisualization extends Visualization {
     @Override
     public Panel[] createPanels() {
         return new Panel[]{
-                new Panel.Panel2D("POTTS", 100, 50, horizontal, vertical, this),
-                new Panel.Panel2D("POTTS", horizontal + 120, 50, horizontal, vertical, this),
+                new Panel("[POTTS] Agents", 100, 50, horizontal, vertical, this),
+                new Panel("[POTTS] Auxiliary", horizontal + 120, 50, horizontal, vertical, this),
         };
     }
 }

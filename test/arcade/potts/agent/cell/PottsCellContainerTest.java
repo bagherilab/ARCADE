@@ -103,8 +103,8 @@ public class PottsCellContainerTest {
         int cellPop = randomIntBetween(1, 10);
         int cellAge = randomIntBetween(1, 100);
         int cellDivisions = randomIntBetween(1, 100);
-        State cellState = State.random(RANDOM);
-        Phase cellPhase = Phase.random(RANDOM);
+        State cellState = State.PROLIFERATIVE;
+        Phase cellPhase = Phase.PROLIFERATIVE_S;
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
@@ -141,8 +141,8 @@ public class PottsCellContainerTest {
         int cellPop = randomIntBetween(1, 10);
         int cellAge = randomIntBetween(1, 100);
         int cellDivisions = randomIntBetween(1, 100);
-        State cellState = State.random(RANDOM);
-        Phase cellPhase = Phase.random(RANDOM);
+        State cellState = State.PROLIFERATIVE;
+        Phase cellPhase = Phase.PROLIFERATIVE_S;
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);

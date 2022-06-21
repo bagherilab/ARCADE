@@ -30,8 +30,13 @@ import static arcade.core.util.Enums.Region;
  */
 
 public abstract class PottsDrawer extends Drawer {
+    /** Array holding values. */
     DoubleGrid2D array;
+    
+    /** Graph holding edges. */
     Network graph;
+    
+    /** Field holding nodes. */
     Continuous2D field;
     
     /** Planes for visualization. */
@@ -112,8 +117,12 @@ public abstract class PottsDrawer extends Drawer {
      * Wrapper for MASON class that modifies edge color.
      */
     private static class SimpleEdgePortrayal2DGridWrapper extends SimpleEdgePortrayal2D {
+        /** Color for edges. */
         private final Color color = new Color(0, 0, 0);
         
+        /**
+         * Creates {@code SimpleEdgePortrayal2D} wrapper with no scaling.
+         */
         SimpleEdgePortrayal2DGridWrapper() { setScaling(NEVER_SCALE); }
         
         @Override
@@ -227,7 +236,10 @@ public abstract class PottsDrawer extends Drawer {
      * Extension of {@link PottsDrawer} for drawing cells.
      */
     public static class PottsCells extends PottsDrawer {
+        /** Drawing view. */
         private final View view;
+        
+        /** Drawing plane. */
         private final Plane plane;
         
         /**
@@ -446,6 +458,7 @@ public abstract class PottsDrawer extends Drawer {
      * Extension of {@link PottsDrawer} for drawing outlines.
      */
     public static class PottsGrid extends PottsDrawer {
+        /** Drawing plane. */
         private final Plane plane;
         
         /**

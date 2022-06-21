@@ -171,7 +171,7 @@ public class PottsModuleProliferationTest {
         
         verify(cell).reset(potts.ids, potts.regions);
         verify(newCell).reset(potts.ids, potts.regions);
-        verify(grid).addObject(id, newCell);
+        verify(grid).addObject(newCell, null);
         verify(potts).register(newCell);
         verify(newCell).schedule(schedule);
     }

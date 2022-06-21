@@ -2,13 +2,15 @@ package arcade.potts.env.grid;
 
 import java.util.HashMap;
 import sim.util.Bag;
+import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
+import arcade.core.env.loc.Location;
 
 /**
  * Implementation of {@link Grid} for potts models.
  * <p>
- * {@code PottsGrid} uses the cell id to map to agents.
- * Id 0 is reserved for a {@code null} object representing non-cell voxels
+ * {@code PottsGrid} uses the cell id as the index to map to agents.
+ * Index 0 is reserved for a {@code null} object representing non-cell voxels
  * in the potts layer.
  */
 
@@ -32,21 +34,26 @@ public final class PottsGrid implements Grid {
     public Bag getAllObjects() { return allObjects; }
     
     @Override
-    public void addObject(int id, Object obj) {
-        if (objects.containsKey(id)) { return; }
-        allObjects.add(obj);
-        objects.put(id, obj);
+    public void addObject(Object object, Location location) {
+        if (object == null) { return; }
+        int index = ((Cell) object).getID();
+        if (objects.containsKey(index)) { return; }
+        allObjects.add(object);
+        objects.put(index, object);
     }
     
     @Override
-    public void removeObject(int id) {
-        Object obj = objects.get(id);
-        allObjects.remove(obj);
-        objects.remove(id);
+    public void removeObject(Object object, Location location) {
+        int index = ((Cell) object).getID();
+        allObjects.remove(object);
+        objects.remove(index);
     }
     
     @Override
-    public Object getObjectAt(int id) {
-        return objects.get(id);
+    public void moveObject(Object object, Location fromLocation, Location toLocation) { }
+    
+    @Override
+    public Object getObjectAt(int index) {
+        return objects.get(index);
     }
 }

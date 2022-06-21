@@ -48,7 +48,7 @@ public class PottsCellTest {
     static int cellDivisions = randomIntBetween(1, 100);
     static double cellCriticalVolume = randomDoubleBetween(10, 100);
     static double cellCriticalHeight = randomDoubleBetween(10, 100);
-    static State cellState = State.random(RANDOM);
+    static State cellState = State.QUIESCENT;
     static PottsCell cellDefault;
     static PottsCell cellWithRegions;
     static PottsCell cellWithoutRegions;
@@ -573,6 +573,12 @@ public class PottsCellTest {
         PottsCell cell = make(false);
         cell.setState(State.UNDEFINED);
         assertNull(cell.getModule());
+        
+        cell.setState(State.MIGRATORY);
+        assertNull(cell.getModule());
+        
+        cell.setState(State.SENESCENT);
+        assertNull(cell.getModule());
     }
     
     @Test
@@ -1076,8 +1082,8 @@ public class PottsCellTest {
         int pop = randomIntBetween(1, 10);
         int age = randomIntBetween(1, 100);
         int divisions = randomIntBetween(1, 100);
-        State state = State.random(RANDOM);
-        Phase phase = Phase.random(RANDOM);
+        State state = State.PROLIFERATIVE;
+        Phase phase = Phase.PROLIFERATIVE_S;
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         
@@ -1116,8 +1122,8 @@ public class PottsCellTest {
         int pop = randomIntBetween(1, 10);
         int age = randomIntBetween(1, 100);
         int divisions = randomIntBetween(1, 100);
-        State state = State.random(RANDOM);
-        Phase phase = Phase.random(RANDOM);
+        State state = State.PROLIFERATIVE;
+        Phase phase = Phase.PROLIFERATIVE_S;
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         
