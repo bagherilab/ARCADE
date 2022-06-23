@@ -110,15 +110,16 @@ public class PottsLocationTest {
             HashMap<Direction, Integer> diameters = new HashMap<>();
             
             if (voxels.size() == 0) {
-                diameters.put(Direction.XY_PLANE, 1);
-                diameters.put(Direction.POSITIVE_XY, 2);
-                diameters.put(Direction.NEGATIVE_ZX, 3);
+                diameters.put(Direction.XY_PLANE, 50);
+                diameters.put(Direction.POSITIVE_XY, 89);
+                diameters.put(Direction.NEGATIVE_ZX, 100);
             } else if (voxels.size() == 7) {
                 diameters.put(Direction.YZ_PLANE, 1);
             } else {
-                diameters.put(Direction.XY_PLANE, 1);
-                diameters.put(Direction.POSITIVE_XY, 1);
-                diameters.put(Direction.NEGATIVE_ZX, 1);
+                diameters.put(Direction.YZ_PLANE, 50);
+                diameters.put(Direction.XY_PLANE, 90);
+                diameters.put(Direction.POSITIVE_XY, 95);
+                diameters.put(Direction.NEGATIVE_ZX, 100);
             }
             
             return diameters;

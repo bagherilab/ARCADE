@@ -38,6 +38,9 @@ public abstract class PottsLocation implements Location {
     /** Relative difference between split voxel numbers. */
     private static final double BALANCE_DIFFERENCE = 0.05;
     
+    /** Relative padding for selecting maximum diameter. */
+    private static final double DIAMETER_RATIO = 0.9;
+    
     /** List of voxels for the location. */
     final ArrayList<Voxel> voxels;
     
@@ -448,7 +451,7 @@ public abstract class PottsLocation implements Location {
         // Find all directions with the maximum diameter.
         for (Direction direction : Direction.values()) {
             diameter = diameters.getOrDefault(direction, 0);
-            if (diameter == maximumDiameter) { directions.add(direction); }
+            if (diameter >= DIAMETER_RATIO * maximumDiameter) { directions.add(direction); }
         }
         
         // Randomly select one direction with the minimum diameter.
