@@ -11,7 +11,7 @@ import arcade.potts.env.loc.PottsLocation;
 
 class PersistenceHamiltonianConfig {
     /** Default migration unit vector. */
-    static final double[] DEFAULT_UNIT_VECTOR = new double[] { 0, 0, -1 };
+    static final double[] DEFAULT_UNIT_VECTOR = new double[] { 0, 0, 0 };
     
     /** Associated {@link PottsLocation} instance. */
     final PottsLocation location;

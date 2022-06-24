@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.EnumMap;
 import java.util.HashMap;
 import org.junit.Test;
+import arcade.core.util.Matrix;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.PottsLocation;
@@ -215,7 +216,69 @@ public class PersistenceHamiltonianTest {
         assertEquals(persistence1minus + persistence2plus, ph.getDelta(id, region1, region2, 0, 0, 0), EPSILON);
         assertEquals(persistence2minus + persistence1plus, ph.getDelta(id, region2, region1, 0, 0, 0), EPSILON);
     }
-
+    
+    @Test
+    public void getPersistence_validID_updatesVector() {
+        PersistenceHamiltonian ph = spy(new PersistenceHamiltonian(mock(PottsSeries.class)));
+        int id = randomIntBetween(1, 100);
+        
+        PottsLocation location = mock(PottsLocation.class);
+        int surface = randomIntBetween(1, 100);
+        doReturn((double) surface).when(location).getSurface();
+        int volume = randomIntBetween(1, 100);
+        doReturn((double) volume).when(location).getVolume();
+        
+        PersistenceHamiltonianConfig config = spy(new PersistenceHamiltonianConfig(
+                location, 0, null, 1, 1));
+        
+        try {
+            Field volumeField = PersistenceHamiltonianConfig.class.getDeclaredField("volumeCheck");
+            volumeField.setAccessible(true);
+            volumeField.set(config, volume + 1);
+        } catch (Exception ignored) { }
+        
+        config.vector[0] = randomDoubleBetween(1, 10);
+        config.vector[1] = randomDoubleBetween(1, 10);
+        config.vector[2] = randomDoubleBetween(1, 10);
+        
+        double[] initialDisplacement = new double[] {
+                randomDoubleBetween(1, 10),
+                randomDoubleBetween(1, 10),
+                randomDoubleBetween(1, 10),
+        };
+        
+        config.displacement[0] = initialDisplacement[0];
+        config.displacement[1] = initialDisplacement[1];
+        config.displacement[2] = initialDisplacement[2];
+        
+        double[] finalDisplacement = new double[] {
+                randomDoubleBetween(1, 10),
+                randomDoubleBetween(1, 10),
+                randomDoubleBetween(1, 10),
+        };
+        
+        doAnswer(invocation -> {
+            config.displacement[0] = finalDisplacement[0];
+            config.displacement[1] = finalDisplacement[1];
+            config.displacement[2] = finalDisplacement[2];
+            return finalDisplacement;
+        }).when(config).getDisplacement(0, 0, 0, 0);
+        ph.configs.put(id, config);
+        
+        ph.getPersistence(id, 0, 0, 0, 0);
+        
+        double[] expected = new double[] {
+                initialDisplacement[0],
+                initialDisplacement[1],
+                -volume,
+        };
+        Matrix.unit(expected);
+        
+        assertEquals(expected[0], config.vector[0], EPSILON);
+        assertEquals(expected[1], config.vector[1], EPSILON);
+        assertEquals(expected[2], config.vector[2], EPSILON);
+    }
+    
     @Test
     public void getPersistence_validID_returnsValue() {
         PersistenceHamiltonian ph = spy(new PersistenceHamiltonian(mock(PottsSeries.class)));

@@ -108,8 +108,9 @@ public class PersistenceHamiltonian implements Hamiltonian {
         if (id <= 0) { return 0; }
         
         PersistenceHamiltonianConfig config = configs.get(id);
-        double[] displacement = config.getDisplacement(x, y, z, change);
+        
         double[] vector = config.getVector();
+        double[] displacement = config.getDisplacement(x, y, z, change);
         
         double dot = Matrix.dot(vector, displacement);
         double lambda = config.getLambda();
