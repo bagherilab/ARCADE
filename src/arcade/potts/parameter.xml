@@ -4,24 +4,24 @@
     <potts id="MCS" value="1" description="number of MCS steps per simulation tick" />
     
     <!-- adhesion term parameters -->
-    <potts.term term="adhesion" id="ADHESION" value="10" />
-    <potts.term term="adhesion" id="ADHESION_DEFAULT" value="10" />
-    <potts.term term="adhesion" id="ADHESION_NUCLEUS" value="10" />
+    <potts.term term="adhesion" id="ADHESION" value="50" />
+    <potts.term term="adhesion" id="ADHESION_DEFAULT" value="50" />
+    <potts.term term="adhesion" id="ADHESION_NUCLEUS" value="50" />
     
     <!-- volume term parameters -->
-    <potts.term term="volume" id="LAMBDA" value="5" />
-    <potts.term term="volume" id="LAMBDA_DEFAULT" value="5" />
-    <potts.term term="volume" id="LAMBDA_NUCLEUS" value="5" />
+    <potts.term term="volume" id="LAMBDA" value="1" />
+    <potts.term term="volume" id="LAMBDA_DEFAULT" value="1" />
+    <potts.term term="volume" id="LAMBDA_NUCLEUS" value="1" />
     
     <!-- surface term parameters -->
-    <potts.term term="surface" id="LAMBDA" value="2" />
-    <potts.term term="surface" id="LAMBDA_DEFAULT" value="2" />
-    <potts.term term="surface" id="LAMBDA_NUCLEUS" value="2" />
+    <potts.term term="surface" id="LAMBDA" value="0.02" />
+    <potts.term term="surface" id="LAMBDA_DEFAULT" value="0.02" />
+    <potts.term term="surface" id="LAMBDA_NUCLEUS" value="0.02" />
     
     <!-- height term parameters -->
-    <potts.term term="height" id="LAMBDA" value="50" />
-    <potts.term term="height" id="LAMBDA_DEFAULT" value="5" />
-    <potts.term term="height" id="LAMBDA_NUCLEUS" value="5" />
+    <potts.term term="height" id="LAMBDA" value="1" />
+    <potts.term term="height" id="LAMBDA_DEFAULT" value="1" />
+    <potts.term term="height" id="LAMBDA_NUCLEUS" value="1" />
     
     <!-- substrate term parameters -->
     <potts.term term="substrate" id="HEIGHT_THRESHOLD" value="10" units="um" conversion="DS^-1" />
