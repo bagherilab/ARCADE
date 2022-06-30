@@ -110,7 +110,7 @@ public class VolumeHamiltonian implements Hamiltonian {
         VolumeHamiltonianConfig config = configs.get(id);
         double volume = config.cell.getVolume(region);
         double targetVolume = config.cell.getTargetVolume(region);
-        double lambda = configs.get(id).getLambda(region);
+        double lambda = config.getLambda(region);
         return lambda * Math.pow((volume - targetVolume + change), 2);
     }
     
