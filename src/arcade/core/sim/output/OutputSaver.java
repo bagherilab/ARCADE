@@ -12,6 +12,8 @@ import sim.engine.SimState;
 import sim.engine.Steppable;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
+import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
+import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
 /**
  * Custom saver for serializing objects to JSON.
@@ -82,7 +84,7 @@ public abstract class OutputSaver implements Steppable {
      */
     public void saveCells(int tick) {
         String path = prefix + String.format("_%06d.CELLS.json", tick);
-        write(path, format(gson.toJson(sim.getCells())));
+        write(path, format(gson.toJson(sim.getCells(), DEFAULT_CELL_TYPE)));
     }
     
     /**
@@ -92,7 +94,7 @@ public abstract class OutputSaver implements Steppable {
      */
     public void saveLocations(int tick) {
         String path = prefix + String.format("_%06d.LOCATIONS.json", tick);
-        write(path, format(gson.toJson(sim.getLocations())));
+        write(path, format(gson.toJson(sim.getLocations(), DEFAULT_LOCATION_TYPE)));
     }
     
     /**
