@@ -152,18 +152,22 @@ public abstract class OutputSaver implements Steppable {
      * <ul>
      *     <li>Converting {@code [\n A,\n B\n ]} to {@code [ A, B ]}</li>
      *     <li>Converting {@code [\n A,\n B,\n C\n ]} to {@code [ A, B, C ]}</li>
+     *     <li>Converting {@code [\n A,\n B,\n C,\n D\n ]} to {@code [ A, B, C, D ]}</li>
      * </ul>
      *
      * @param string  the string to format
      * @return  the formatted string
      */
     protected static String format(String string) {
-        String r1 = "\\[\\n[\\s\\t]+([\\d\\.]+),\\n[\\s\\t]+([\\d\\.]+)\\n\\s+\\]";
-        String r2 = "\\[\\n[\\s\\t]+([\\d\\.]+),\\n[\\s\\t]+([\\d\\.]+),"
-                + "\\n[\\s\\t]+([\\d\\.]+)\\n\\s+\\]";
+        String r1 = "\\[\\n[\\s\\t]+([\\-\\d\\.]+),\\n[\\s\\t]+([\\-\\d\\.]+)\\n\\s+\\]";
+        String r2 = "\\[\\n[\\s\\t]+([\\-\\d\\.]+),\\n[\\s\\t]+([\\-\\d\\.]+),"
+                + "\\n[\\s\\t]+([\\-\\d\\.]+)\\n\\s+\\]";
+        String r3 = "\\[\\n[\\s\\t]+([\\-\\d\\.]+),\\n[\\s\\t]+([\\-\\d\\.]+)"
+                + ",\\n[\\s\\t]+([\\-\\d\\.]+),\\n[\\s\\t]+([\\-\\d\\.]+)\\n\\s+\\]";
         String formatted = string;
         formatted = formatted.replaceAll(r1, "[$1, $2]");
         formatted = formatted.replaceAll(r2, "[$1, $2, $3]");
+        formatted = formatted.replaceAll(r3, "[$1, $2, $3, $4]");
         return formatted;
     }
 }
