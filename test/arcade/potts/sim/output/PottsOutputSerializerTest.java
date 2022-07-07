@@ -12,6 +12,8 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.internal.bind.TreeTypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.loc.LocationContainer;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.loc.PottsLocationContainer;
@@ -45,8 +47,14 @@ public class PottsOutputSerializerTest {
         TypeToken<PottsSeries> series = new TypeToken<PottsSeries>() { };
         assertSame(gson.getAdapter(series).getClass(), TreeTypeAdapter.class);
         
+        TypeToken<CellContainer> cellContainer = new TypeToken<CellContainer>() { };
+        assertSame(gson.getAdapter(cellContainer).getClass(), TreeTypeAdapter.class);
+        
         TypeToken<PottsCellContainer> cell = new TypeToken<PottsCellContainer>() { };
         assertSame(gson.getAdapter(cell).getClass(), TreeTypeAdapter.class);
+        
+        TypeToken<LocationContainer> locationContainer = new TypeToken<LocationContainer>() { };
+        assertSame(gson.getAdapter(locationContainer).getClass(), TreeTypeAdapter.class);
         
         TypeToken<PottsLocationContainer> location = new TypeToken<PottsLocationContainer>() { };
         assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);

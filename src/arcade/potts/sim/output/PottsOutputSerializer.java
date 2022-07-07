@@ -9,6 +9,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import arcade.core.env.loc.LocationContainer;
+import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSerializer;
 import arcade.potts.agent.cell.PottsCellContainer;
@@ -47,8 +49,12 @@ public final class PottsOutputSerializer {
         GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();
         gsonBuilder.registerTypeAdapter(PottsSeries.class,
                 new PottsSeriesSerializer());
+        gsonBuilder.registerTypeAdapter(CellContainer.class,
+                new CellSerializer());
         gsonBuilder.registerTypeAdapter(PottsCellContainer.class,
                 new PottsCellSerializer());
+        gsonBuilder.registerTypeAdapter(LocationContainer.class,
+                new LocationSerializer());
         gsonBuilder.registerTypeAdapter(PottsLocationContainer.class,
                 new PottsLocationSerializer());
         gsonBuilder.registerTypeAdapter(Voxel.class,
@@ -86,14 +92,30 @@ public final class PottsOutputSerializer {
     }
     
     /**
+     * Serializer for {@link CellContainer} objects.
+     * <p>
+     * Uses serialization for {@link PottsCellContainer}.
+     * </p>
+     */
+    static class CellSerializer implements JsonSerializer<CellContainer> {
+        @Override
+        public JsonElement serialize(CellContainer src, Type typeOfSrc,
+                                     JsonSerializationContext context) {
+            return context.serialize(src, PottsCellContainer.class);
+        }
+    }
+    
+    /**
      * Serializer for {@link PottsCellContainer} objects.
      * <p>
      * The container object is formatted as:
      * <pre>
      *     {
      *         "id": (id),
+     *         "parent": (parent),
      *         "pop": (pop),
      *         "age": (age),
+     *         "divisions": (divisions),
      *         "state": (state),
      *         "phase": (phase),
      *         "voxels": (voxels),
@@ -152,6 +174,20 @@ public final class PottsOutputSerializer {
             }
             
             return json;
+        }
+    }
+    
+    /**
+     * Serializer for {@link LocationContainer} objects.
+     * <p>
+     * Uses serialization for {@link PottsLocationContainer}.
+     * </p>
+     */
+    static class LocationSerializer implements JsonSerializer<LocationContainer> {
+        @Override
+        public JsonElement serialize(LocationContainer src, Type typeOfSrc,
+                                     JsonSerializationContext context) {
+            return context.serialize(src, PottsLocationContainer.class);
         }
     }
     

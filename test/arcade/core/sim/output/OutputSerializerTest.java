@@ -25,6 +25,7 @@ public class OutputSerializerTest {
     static final JsonSerializationContext CELL_CONTEXT = new JsonSerializationContext() {
         @Override
         public JsonElement serialize(Object src) { return null; }
+        
         @Override
         public JsonElement serialize(Object src, Type typeOfSrc) {
             JsonObject object = new JsonObject();
@@ -36,6 +37,7 @@ public class OutputSerializerTest {
     static final JsonSerializationContext LOCATION_CONTEXT = new JsonSerializationContext() {
         @Override
         public JsonElement serialize(Object src) { return null; }
+        
         @Override
         public JsonElement serialize(Object src, Type typeOfSrc) {
             JsonObject object = new JsonObject();
