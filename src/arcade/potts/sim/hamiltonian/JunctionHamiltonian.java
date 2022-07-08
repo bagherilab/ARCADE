@@ -49,11 +49,39 @@ public class JunctionHamiltonian implements Hamiltonian {
         configs.remove(cell.getID());
     }
     
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Junction energy is calculated only for the case where the source is media
+     * (id == 0) and the target is not media (id =/= 0).
+     */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
+        if (sourceID == 0 && targetID > 0) {
+            double lambda = configs.get(targetID).getLambda();
+            int neighbors = 0;
+            
+            for (int i = x - 1; i <= x + 1; i++) {
+                for (int j = y - 1; j <= y + 1; j++) {
+                    
+                    if (!(i == x && j == y) && ids[z][i][j] != 0) {
+                        neighbors += 1;
+                    }
+                }
+            }
+            
+            return lambda * neighbors;
+        }
+        
         return 0;
     }
     
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Junction energy is set to zero.
+     * Region voxels do not form junctions.
+     */
     @Override
     public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
         return 0;

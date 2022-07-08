@@ -10,6 +10,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
+import static arcade.core.util.Enums.Region;
 
 public class JunctionHamiltonianTest {
     private static final double EPSILON = 1E-5;
@@ -101,5 +102,65 @@ public class JunctionHamiltonianTest {
         jh.deregister(cell);
         
         assertFalse(jh.configs.containsKey(id));
+    }
+    
+    @Test
+    public void getDelta_validIDs_calculatesValue() {
+        int id1 = randomIntBetween(1, 100);
+        int id2 = id1 + randomIntBetween(1, 100);
+        
+        Potts potts = mock(Potts.class);
+        potts.ids = new int[][][] {
+                {
+                        { id1, id1, id1, id1 },
+                        { id1, id1, id1, id1 },
+                        { id1, id1, id1, id1 },
+                },
+                {
+                        { id2, id2, 0,   0 },
+                        { id2,   0, 0, id1 },
+                        { id2, id2, 0,   0 },
+                },
+        };
+        
+        JunctionHamiltonianConfig config = mock(JunctionHamiltonianConfig.class);
+        double lambda = randomDoubleBetween(10, 100);
+        doReturn(lambda).when(config).getLambda();
+        
+        JunctionHamiltonian jh = new JunctionHamiltonian(mock(PottsSeries.class), potts);
+        
+        jh.configs.put(id1, config);
+        
+        double delta = jh.getDelta(0, id1, 1, 2, 1);
+        assertEquals(3 * lambda, delta, EPSILON);
+    }
+    
+    @Test
+    public void getDelta_invalidIDs_returnsZeros() {
+        int id1 = randomIntBetween(1, 100);
+        int id2 = id1 + randomIntBetween(1, 100);
+        
+        JunctionHamiltonian jh = new JunctionHamiltonian(mock(PottsSeries.class), mock(Potts.class));
+        
+        double delta1 = jh.getDelta(0, 0, 0, 0, 0);
+        assertEquals(0, delta1, EPSILON);
+        
+        double delta2 = jh.getDelta(id1, 0, 0, 0, 0);
+        assertEquals(0, delta2, EPSILON);
+        
+        double delta3 = jh.getDelta(id1, id2, 0, 0, 0);
+        assertEquals(0, delta3, EPSILON);
+    }
+    
+    @Test
+    public void getDelta_validRegions_returnsZero() {
+        JunctionHamiltonian jh = new JunctionHamiltonian(mock(PottsSeries.class), mock(Potts.class));
+        int id = randomIntBetween(1, 100);
+        
+        double delta1 = jh.getDelta(id, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0);
+        assertEquals(0, delta1, EPSILON);
+        
+        double delta2 = jh.getDelta(id, Region.NUCLEUS.ordinal(), Region.DEFAULT.ordinal(), 0, 0, 0);
+        assertEquals(0, delta2, EPSILON);
     }
 }
