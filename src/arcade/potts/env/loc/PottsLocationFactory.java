@@ -124,8 +124,8 @@ public abstract class PottsLocationFactory implements LocationFactory {
                 }
             }
             
-            PottsLocationContainer cont = new PottsLocationContainer(id, center, voxels, regions);
-            locations.put(id, cont);
+            PottsLocationContainer container = new PottsLocationContainer(id, center, voxels, regions);
+            locations.put(id, container);
             id++;
         }
     }
