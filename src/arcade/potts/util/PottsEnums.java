@@ -48,6 +48,9 @@ public final class PottsEnums {
         /** Code for height term. */
         HEIGHT,
         
+        /** Code for junction term. */
+        JUNCTION,
+        
         /** Code for substrate term. */
         SUBSTRATE,
         

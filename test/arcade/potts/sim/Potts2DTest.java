@@ -107,9 +107,6 @@ public class Potts2DTest {
     
         h = potts2D.getHamiltonian(Term.PERSISTENCE, series);
         assertTrue(h instanceof PersistenceHamiltonian);
-    
-        h = potts2D.getHamiltonian(Term.SUBSTRATE, series);
-        assertNull(h);
     }
     
     @Test
@@ -123,6 +120,9 @@ public class Potts2DTest {
         assertNull(h);
         
         h = potts2D.getHamiltonian(Term.HEIGHT, series);
+        assertNull(h);
+        
+        h = potts2D.getHamiltonian(Term.JUNCTION, series);
         assertNull(h);
         
         h = potts2D.getHamiltonian(Term.UNDEFINED, series);

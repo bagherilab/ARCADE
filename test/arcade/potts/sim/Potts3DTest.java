@@ -6,6 +6,7 @@ import org.junit.Test;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian3D;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
 import arcade.potts.sim.hamiltonian.HeightHamiltonian;
+import arcade.potts.sim.hamiltonian.JunctionHamiltonian;
 import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
 import arcade.potts.sim.hamiltonian.SubstrateHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian3D;
@@ -235,14 +236,14 @@ public class Potts3DTest {
         h = potts3D.getHamiltonian(Term.HEIGHT, series);
         assertTrue(h instanceof HeightHamiltonian);
         
+        h = potts3D.getHamiltonian(Term.JUNCTION, series);
+        assertTrue(h instanceof JunctionHamiltonian);
+        
         h = potts3D.getHamiltonian(Term.SUBSTRATE, series);
         assertTrue(h instanceof SubstrateHamiltonian);
     
         h = potts3D.getHamiltonian(Term.PERSISTENCE, series);
         assertTrue(h instanceof PersistenceHamiltonian);
-        
-        h = potts3D.getHamiltonian(Term.UNDEFINED, series);
-        assertNull(h);
     }
     
     @Test
