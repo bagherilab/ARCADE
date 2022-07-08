@@ -218,7 +218,7 @@ public class SurfaceHamiltonianTest {
     
     @Test
     public void getSurface_validIDs_calculatesValue() {
-        SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
+        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class));
         int id = randomIntBetween(1, 100);
         
         int surface = randomIntBetween(10, 20);
@@ -248,7 +248,7 @@ public class SurfaceHamiltonianTest {
     
     @Test
     public void getSurface_validRegions_calculatesValue() {
-        SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
+        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class));
         int id = randomIntBetween(1, 100);
         Region region = Region.NUCLEUS;
         
@@ -282,7 +282,7 @@ public class SurfaceHamiltonianTest {
     
     @Test
     public void getSurface_zeroID_returnsZero() {
-        SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
+        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class));
         assertEquals(0, shm.getSurface(0, 1), EPSILON);
         assertEquals(0, shm.getSurface(0, 0), EPSILON);
         assertEquals(0, shm.getSurface(0, -1), EPSILON);
@@ -290,7 +290,7 @@ public class SurfaceHamiltonianTest {
     
     @Test
     public void getSurface_defaultRegion_returnsZero() {
-        SurfaceHamiltonianMock shm = spy(new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class)));
+        SurfaceHamiltonianMock shm = new SurfaceHamiltonianMock(mock(PottsSeries.class), mock(Potts.class));
         int id = randomIntBetween(1, 100);
         assertEquals(0, shm.getSurface(0, Region.DEFAULT.ordinal(), 1), EPSILON);
         assertEquals(0, shm.getSurface(0, Region.DEFAULT.ordinal(), 0), EPSILON);

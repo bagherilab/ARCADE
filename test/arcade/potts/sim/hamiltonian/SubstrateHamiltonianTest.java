@@ -146,7 +146,7 @@ public class SubstrateHamiltonianTest {
     
     @Test
     public void getDelta_validRegions_returnsZero() {
-        SubstrateHamiltonian sh = spy(new SubstrateHamiltonian(mock(PottsSeries.class), mock(Potts.class)));
+        SubstrateHamiltonian sh = new SubstrateHamiltonian(mock(PottsSeries.class), mock(Potts.class));
         int id = randomIntBetween(1, 100);
         
         double delta1 = sh.getDelta(id, Region.DEFAULT.ordinal(), Region.NUCLEUS.ordinal(), 0, 0, 0);

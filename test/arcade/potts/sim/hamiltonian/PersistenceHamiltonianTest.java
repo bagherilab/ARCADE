@@ -219,7 +219,7 @@ public class PersistenceHamiltonianTest {
     
     @Test
     public void getPersistence_validID_updatesVector() {
-        PersistenceHamiltonian ph = spy(new PersistenceHamiltonian(mock(PottsSeries.class)));
+        PersistenceHamiltonian ph = new PersistenceHamiltonian(mock(PottsSeries.class));
         int id = randomIntBetween(1, 100);
         
         PottsLocation location = mock(PottsLocation.class);
@@ -281,7 +281,7 @@ public class PersistenceHamiltonianTest {
     
     @Test
     public void getPersistence_validID_returnsValue() {
-        PersistenceHamiltonian ph = spy(new PersistenceHamiltonian(mock(PottsSeries.class)));
+        PersistenceHamiltonian ph = new PersistenceHamiltonian(mock(PottsSeries.class));
         int id = randomIntBetween(1, 100);
         
         PottsLocation location = mock(PottsLocation.class);
@@ -329,7 +329,7 @@ public class PersistenceHamiltonianTest {
     
     @Test
     public void getPersistence_validRegions_returnsValue() {
-        PersistenceHamiltonian ph = spy(new PersistenceHamiltonian(mock(PottsSeries.class)));
+        PersistenceHamiltonian ph = new PersistenceHamiltonian(mock(PottsSeries.class));
         int id = randomIntBetween(1, 100);
         
         PottsLocation location = mock(PottsLocation.class);
@@ -407,7 +407,7 @@ public class PersistenceHamiltonianTest {
     
     @Test
     public void getPersistence_defaultRegion_returnsZero() {
-        PersistenceHamiltonian ph = spy(new PersistenceHamiltonian(mock(PottsSeries.class)));
+        PersistenceHamiltonian ph = new PersistenceHamiltonian(mock(PottsSeries.class));
         int id = randomIntBetween(1, 100);
         assertEquals(0, ph.getPersistence(0, Region.DEFAULT.ordinal(), 1, 1, 1, 1), EPSILON);
         assertEquals(0, ph.getPersistence(0, Region.DEFAULT.ordinal(), 1, 1, 1, -1), EPSILON);
@@ -417,7 +417,7 @@ public class PersistenceHamiltonianTest {
     
     @Test
     public void getPersistence_invalidID_returnsZero() {
-        PersistenceHamiltonian ph = spy(new PersistenceHamiltonian(mock(PottsSeries.class)));
+        PersistenceHamiltonian ph = new PersistenceHamiltonian(mock(PottsSeries.class));
         assertEquals(0, ph.getPersistence(0, 1, 1, 1, 1), EPSILON);
         assertEquals(0, ph.getPersistence(-1, 1, 1, 1, 1), EPSILON);
         assertEquals(0, ph.getPersistence(0, 1, 1, 1, -1), EPSILON);
