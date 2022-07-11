@@ -123,6 +123,19 @@ public class PottsOutputSerializerTest {
     }
     
     @Test
+    public void serialize_forCellContainer_passesCall() {
+        CellContainer cellContainer = mock(CellContainer.class);
+        JsonSerializationContext context = mock(JsonSerializationContext.class);
+        JsonElement expected = mock(JsonElement.class);
+        doReturn(expected).when(context).serialize(cellContainer, PottsCellContainer.class);
+        
+        CellSerializer serializer = new CellSerializer();
+        JsonElement jsonElement = serializer.serialize(cellContainer, null, context);
+        
+        assertSame(expected, jsonElement);
+    }
+    
+    @Test
     public void serialize_forCellNoRegion_createsJSON() {
         PottsCellSerializer serializer = new PottsCellSerializer();
         
@@ -219,6 +232,19 @@ public class PottsOutputSerializerTest {
         
         JsonElement json = serializer.serialize(cellContainer, null, null);
         assertEquals(expected, json.toString());
+    }
+    
+    @Test
+    public void serialize_forLocationContainer_passesCall() {
+        LocationContainer locationContainer = mock(LocationContainer.class);
+        JsonSerializationContext context = mock(JsonSerializationContext.class);
+        JsonElement expected = mock(JsonElement.class);
+        doReturn(expected).when(context).serialize(locationContainer, PottsLocationContainer.class);
+    
+        LocationSerializer serializer = new LocationSerializer();
+        JsonElement jsonElement = serializer.serialize(locationContainer, null, context);
+        
+        assertSame(expected, jsonElement);
     }
     
     @Test

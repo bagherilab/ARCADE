@@ -114,6 +114,20 @@ public class PottsGridTest {
     }
     
     @Test
+    public void moveObject_anyID_doesNothing() {
+        Cell objectA = createObjectMock(1);
+        PottsGrid grid = new PottsGrid();
+        grid.addObject(objectA, null);
+        grid.moveObject(objectA, null, null);
+        
+        Bag allObjects = new Bag();
+        allObjects.add(objectA);
+        
+        assertEquals(1, grid.allObjects.size());
+        assertSame(allObjects.get(0), grid.allObjects.get(0));
+    }
+    
+    @Test
     public void getObjectAt_validID_returnObject() {
         Cell objectA = createObjectMock(1);
         Cell objectB = createObjectMock(2);

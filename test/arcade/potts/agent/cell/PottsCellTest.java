@@ -224,6 +224,12 @@ public class PottsCellTest {
     }
     
     @Test
+    public void getProcess_defaultConstructor_returnsNull() {
+        String key = randomString();
+        assertNull(cellDefault.getProcess(key));
+    }
+    
+    @Test
     public void getParameters_defaultConstructor_returnsObject() {
         assertSame(parametersMock, cellDefault.getParameters());
     }
