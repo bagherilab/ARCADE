@@ -17,6 +17,8 @@ import arcade.core.sim.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
+import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
+import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
 public class OutputSaverTest {
     @Rule
@@ -140,7 +142,7 @@ public class OutputSaverTest {
         
         Gson gson = mock(Gson.class);
         String contents = randomString();
-        doReturn(contents).when(gson).toJson(cells);
+        doReturn(contents).when(gson).toJson(cells, DEFAULT_CELL_TYPE);
         
         try {
             Field field = OutputSaver.class.getDeclaredField("gson");
@@ -152,7 +154,7 @@ public class OutputSaverTest {
         int tick = randomIntBetween(0, 10);
         
         saver.saveCells(tick);
-        verify(gson).toJson(cells);
+        verify(gson).toJson(cells, DEFAULT_CELL_TYPE);
         verify(saver).write(saver.prefix + String.format("_%06d.CELLS.json", tick), contents);
     }
     
@@ -169,7 +171,7 @@ public class OutputSaverTest {
         
         Gson gson = mock(Gson.class);
         String contents = randomString();
-        doReturn(contents).when(gson).toJson(locations);
+        doReturn(contents).when(gson).toJson(locations, DEFAULT_LOCATION_TYPE);
         
         try {
             Field field = OutputSaver.class.getDeclaredField("gson");
@@ -181,7 +183,7 @@ public class OutputSaverTest {
         int tick = randomIntBetween(0, 10);
         
         saver.saveLocations(tick);
-        verify(gson).toJson(locations);
+        verify(gson).toJson(locations, DEFAULT_LOCATION_TYPE);
         verify(saver).write(saver.prefix + String.format("_%06d.LOCATIONS.json", tick), contents);
     }
     
