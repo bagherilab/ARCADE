@@ -30,12 +30,6 @@ import static arcade.potts.util.PottsEnums.Term;
  */
 
 public abstract class Potts implements Steppable {
-    /** Volume of reference cell for calculating steps (in um^3). */
-    static final double REFERENCE_VOLUME = 1000;
-    
-    /** Height of reference cell for calculating steps (in um). */
-    static final double REFERENCE_HEIGHT = 5;
-    
     /** Length (x direction) of potts array. */
     public final int length;
     
@@ -85,9 +79,8 @@ public abstract class Potts implements Steppable {
         height = (series.height == 1 ? 1 : series.height - 2);
         
         // Number of Monte Carlo steps
-        double dsdt = getSteps(series.ds, series.dt);
         double mcs = series.potts.getDouble("MCS");
-        steps = (int) (dsdt * mcs * length * width * height);
+        steps = (int) (mcs * length * width * height);
         
         // Get temperature.
         temperature = series.potts.getDouble("TEMPERATURE");
@@ -328,28 +321,6 @@ public abstract class Potts implements Steppable {
             ((PottsLocation) c.getLocation()).remove(Region.values()[sourceRegion], x, y, z);
             ((PottsLocation) c.getLocation()).add(Region.values()[targetRegion], x, y, z);
         }
-    }
-    
-    /**
-     * Calculates the ratio of voxels with at least one non-self neighbor.
-     *
-     * @param volume  the cell volume
-     * @param height  the cell height
-     * @return  the ratio of total voxels to flippable voxels
-     */
-    abstract double getRatio(double volume, double height);
-    
-    /**
-     * Calculate MCS multiplier for temporal and spatial scaling.
-     *
-     * @param ds  the spatial scaling
-     * @param dt  the temporal scaling
-     * @return  the MCS multiplier
-     */
-    double getSteps(double ds, double dt) {
-        double referenceVolume = REFERENCE_VOLUME / Math.pow(ds, 3);
-        double referenceHeight = REFERENCE_HEIGHT / ds;
-        return dt * getRatio(referenceVolume, referenceHeight);
     }
     
     /**

@@ -130,17 +130,6 @@ public class Potts2DTest {
     }
     
     @Test
-    public void getRatio_givenArea_calculatesValue() {
-        PottsSeries series = makeSeries(1, 1, 1, 1, 1);
-        Potts2D potts2D = new Potts2D(series);
-        double epsilon = 1E-5;
-        for (double[] mcs : AREA_MCS) {
-            double dsdt = potts2D.getRatio(mcs[0], 0);
-            assertEquals(mcs[1], dsdt, epsilon);
-        }
-    }
-    
-    @Test
     public void getNeighborhood_givenID_createsArray() {
         boolean[][][] array1 = potts.getNeighborhood(1, 2, 2, 0);
         assertArrayEquals(new boolean[] {  true,  true, false }, array1[0][0]);

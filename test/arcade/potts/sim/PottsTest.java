@@ -20,8 +20,6 @@ import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
-import static arcade.potts.sim.Potts.REFERENCE_HEIGHT;
-import static arcade.potts.sim.Potts.REFERENCE_VOLUME;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsTest {
@@ -39,15 +37,6 @@ public class PottsTest {
             Hamiltonian hamiltonian = mock(Hamiltonian.class);
             doReturn(term.name()).when(hamiltonian).toString();
             return hamiltonian;
-        }
-        
-        @Override
-        double getRatio(double volume, double height) {
-            if (volume == REFERENCE_VOLUME && height == REFERENCE_HEIGHT) {
-                return 1;
-            } else {
-                return volume * height;
-            }
         }
         
         @Override
@@ -253,7 +242,6 @@ public class PottsTest {
         double mcs = randomDoubleBetween(0, 10);
         double ds = randomDoubleBetween(2, 10);
         double dt = randomDoubleBetween(2, 10);
-        double dsdt = (REFERENCE_VOLUME / ds / ds / ds) * (REFERENCE_HEIGHT / ds) * dt;
         
         PottsSeries series = makeSeries(length, width, height, ds, dt);
         series.potts = new MiniBox();
@@ -262,7 +250,7 @@ public class PottsTest {
         
         PottsMock pottsMock = new PottsMock(series);
         
-        assertEquals((int) (dsdt * mcs * (length - 2) * (width - 2) * (height - 2)), pottsMock.steps);
+        assertEquals((int) (mcs * (length - 2) * (width - 2) * (height - 2)), pottsMock.steps);
         assertEquals(temperature, pottsMock.temperature, EPSILON);
     }
     

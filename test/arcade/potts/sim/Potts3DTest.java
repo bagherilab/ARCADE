@@ -258,17 +258,6 @@ public class Potts3DTest {
     }
     
     @Test
-    public void getRatio_givenVolumeHeight_calculatesValue() {
-        PottsSeries series = makeSeries(1, 1, 1, 1, 1);
-        Potts3D potts3D = new Potts3D(series);
-        double epsilon = 1E-5;
-        for (double[] mcs : VOLUME_MCS) {
-            double dsdt = potts3D.getRatio(mcs[0], mcs[1]);
-            assertEquals(mcs[2], dsdt, epsilon);
-        }
-    }
-    
-    @Test
     public void getNeighborhood_givenID_createsArray() {
         boolean[][][] array1 = potts.getNeighborhood(1, 2, 2, 2);
         assertArrayEquals(new boolean[] { false,  true, false }, array1[0][0]);

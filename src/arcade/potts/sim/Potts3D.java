@@ -73,15 +73,6 @@ public final class Potts3D extends Potts {
     }
     
     @Override
-    double getRatio(double volume, double height) {
-        double n = 0.11225151;
-        double m = 0.48622116;
-        double a = 0.46793100;
-        double b = -0.49919490;
-        return Math.max(a * Math.pow(volume, n) * Math.pow(height, m) + b, 1);
-    }
-    
-    @Override
     boolean[][][] getNeighborhood(int id, int x, int y, int z) {
         boolean[][][] array = new boolean[3][3][3];
         for (int k = 0; k < 3; k++) {

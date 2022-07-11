@@ -52,14 +52,6 @@ public final class Potts2D extends Potts {
     }
     
     @Override
-    double getRatio(double volume, double height) {
-        double n = 0.51934344;
-        double a = 0.26563830;
-        double b = 0.41862610;
-        return a * Math.pow(volume, n) + b;
-    }
-    
-    @Override
     boolean[][][] getNeighborhood(int id, int x, int y, int z) {
         boolean[][] array = new boolean[3][3];
         for (int i = 0; i < 3; i++) {
