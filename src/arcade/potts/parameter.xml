@@ -27,15 +27,15 @@
     <potts.term term="junction" id="LAMBDA" value="1" />
     
     <!-- substrate term parameters -->
-    <potts.term term="substrate" id="HEIGHT_THRESHOLD" value="10" units="um" conversion="DS^-1" />
-    <potts.term term="substrate" id="ADHESION" value="100" />
+    <potts.term term="substrate" id="HEIGHT_THRESHOLD" value="9" units="um" conversion="DS^-1" />
+    <potts.term term="substrate" id="ADHESION" value="20" />
     
     <!-- persistence term parameters -->
-    <potts.term term="persistence" id="LAMBDA" value="1" conversion="DS^-2" />
-    <potts.term term="persistence" id="VOLUME_THRESHOLD" value="5000" units="um^3" conversion="DS^-3" />
-    <potts.term term="persistence" id="LAMBDA_DEFAULT" value="1" conversion="DS^-2" />
-    <potts.term term="persistence" id="LAMBDA_NUCLEUS" value="0.5" conversion="DS^-2" />
-    <potts.term term="persistence" id="DECAY" value="0.05" />
+    <potts.term term="persistence" id="LAMBDA" value="0.01" conversion="DS^-2" />
+    <potts.term term="persistence" id="VOLUME_THRESHOLD" value="5200" units="um^3" conversion="DS^-3" />
+    <potts.term term="persistence" id="LAMBDA_DEFAULT" value="0.01" conversion="DS^-2" />
+    <potts.term term="persistence" id="LAMBDA_NUCLEUS" value="0.01" conversion="DS^-2" />
+    <potts.term term="persistence" id="DECAY" value="0.05" units="/hour" conversion="DT" />
     
     <!-- default parameters for populations -->
     <population id="CRITICAL_VOLUME_MEAN" value="1300" units="um^3" conversion="DS^-3" />
