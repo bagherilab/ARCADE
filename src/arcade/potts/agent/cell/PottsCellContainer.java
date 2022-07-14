@@ -152,7 +152,7 @@ public final class PottsCellContainer implements CellContainer {
         
         // Update cell module.
         PottsModule module = (PottsModule) cell.getModule();
-        if (module != null) { module.setPhase(phase); }
+        module.setPhase(phase);
         
         return cell;
     }

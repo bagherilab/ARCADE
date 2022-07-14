@@ -338,7 +338,7 @@ public class PottsSeriesTest {
     @Test
     public void updatePotts_withConversion_convertsValue() {
         MiniBox conversion = new MiniBox();
-        String convertedParameter = POTTS_PARAMETER_NAMES[1];
+        String convertedParameter = POTTS_PARAMETER_NAMES[3];
         conversion.put(convertedParameter, "DT");
         
         Box potts = new Box();
