@@ -43,9 +43,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_threeSideExactEqualSize_createsCenters() {
+    public void getCenters_threeSideExactEqualSizeNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(8, 8, 8, 3, 3);
+        ArrayList<Voxel> centers = factory.getCenters(8, 8, 8, 0, 3, 3);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(2, 2, 2));
@@ -67,9 +67,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_threeSideExactUnequalSize_createsCenters() {
+    public void getCenters_threeSideExactUnequalSizeNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(11, 8, 5, 3, 3);
+        ArrayList<Voxel> centers = factory.getCenters(11, 8, 5, 0, 3, 3);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(2, 2, 2));
@@ -89,9 +89,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_threeSideInexactEqualSize_createsCenters() {
+    public void getCenters_threeSideInexactEqualSizeNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(7, 7, 7, 3, 3);
+        ArrayList<Voxel> centers = factory.getCenters(7, 7, 7, 0, 3, 3);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(2, 2, 2));
@@ -106,9 +106,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_threeSideInexactUnequalSize_createsCenters() {
+    public void getCenters_threeSideInexactUnequalSizeNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(10, 7, 13, 3, 3);
+        ArrayList<Voxel> centers = factory.getCenters(10, 7, 13, 0, 3, 3);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(2, 2, 2));
@@ -128,9 +128,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_fiveSideExactEqualSize_createsCenters() {
+    public void getCenters_fiveSideExactEqualSizeNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(12, 12, 12, 5, 5);
+        ArrayList<Voxel> centers = factory.getCenters(12, 12, 12, 0, 5, 5);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(3, 3, 3));
@@ -152,9 +152,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_fiveSideExactUnequalSize_createsCenters() {
+    public void getCenters_fiveSideExactUnequalSizeNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(17, 12, 7, 5, 5);
+        ArrayList<Voxel> centers = factory.getCenters(17, 12, 7, 0, 5, 5);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(3, 3, 3));
@@ -174,9 +174,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_fiveSideInexactEqualSize_createsCenters() {
+    public void getCenters_fiveSideInexactEqualSizeNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(11, 11, 11, 5, 5);
+        ArrayList<Voxel> centers = factory.getCenters(11, 11, 11, 0, 5, 5);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(3, 3, 3));
@@ -191,9 +191,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_fiveSideInexactUnequalSize_createsCenters() {
+    public void getCenters_fiveSideInexactUnequalSizeNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(16, 11, 9, 5, 5);
+        ArrayList<Voxel> centers = factory.getCenters(16, 11, 9, 0, 5, 5);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(3, 3, 3));
@@ -209,9 +209,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_threeHeightAllLayers_createsCenters() {
+    public void getCenters_threeHeightAllLayersNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(8, 8, 3, 3, 1);
+        ArrayList<Voxel> centers = factory.getCenters(8, 8, 3, 0, 3, 1);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(2, 2, 1));
@@ -229,9 +229,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_fiveHeightAllLayers_createsCenters() {
+    public void getCenters_fiveHeightAllLayersNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(8, 8, 5, 3, 1);
+        ArrayList<Voxel> centers = factory.getCenters(8, 8, 5, 0, 3, 1);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(2, 2, 1));
@@ -257,9 +257,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_fiveHeightUnfilledLayers_createsCenters() {
+    public void getCenters_fiveHeightUnfilledLayersNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(8, 8, 5, 3, 2);
+        ArrayList<Voxel> centers = factory.getCenters(8, 8, 5, 0, 3, 2);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(2, 2, 1));
@@ -277,9 +277,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_fiveHeightFilledLayers_createsCenters() {
+    public void getCenters_fiveHeightFilledLayersNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(8, 8, 5, 3, 3);
+        ArrayList<Voxel> centers = factory.getCenters(8, 8, 5, 0, 3, 3);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(2, 2, 2));
@@ -297,9 +297,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_sevenHeightAllLayers_createsCenters() {
+    public void getCenters_sevenHeightAllLayersNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(8, 8, 7, 3, 1);
+        ArrayList<Voxel> centers = factory.getCenters(8, 8, 7, 0, 3, 1);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         for (int i = 1; i < 6; i++) {
@@ -319,9 +319,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_sevenHeightUnfilledLayers_createsCenters() {
+    public void getCenters_sevenHeightUnfilledLayersNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(8, 8, 7, 3, 2);
+        ArrayList<Voxel> centers = factory.getCenters(8, 8, 7, 0, 3, 2);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(2, 2, 1));
@@ -343,9 +343,9 @@ public class PottsLocationFactory3DTest {
     }
     
     @Test
-    public void getCenters_sevenHeightFilledLayers_createsCenters() {
+    public void getCenters_sevenHeightFilledLayersNoMargin_createsCenters() {
         PottsLocationFactory3D factory = new PottsLocationFactory3D();
-        ArrayList<Voxel> centers = factory.getCenters(8, 8, 7, 3, 5);
+        ArrayList<Voxel> centers = factory.getCenters(8, 8, 7, 0, 3, 5);
         
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(2, 2, 3));

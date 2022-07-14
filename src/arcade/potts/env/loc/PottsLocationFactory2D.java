@@ -31,7 +31,7 @@ public final class PottsLocationFactory2D extends PottsLocationFactory {
     }
     
     @Override
-    ArrayList<Voxel> getCenters(int length, int width, int height, int s, int h) {
+    ArrayList<Voxel> getCenters(int length, int width, int height, int margin, int s, int h) {
         ArrayList<Voxel> centers = new ArrayList<>();
         
         for (int i = 0; i < (length - 2) / s; i++) {

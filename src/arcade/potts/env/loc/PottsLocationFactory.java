@@ -98,7 +98,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
         if (s == 0) { return; }
         
         // Get center voxels.
-        ArrayList<Voxel> centers = getCenters(series.length, series.width, series.height, s, h);
+        ArrayList<Voxel> centers = getCenters(series.length, series.width, series.height, series.margin, s, h);
         Utilities.shuffleList(centers, random);
         centers.sort(Comparator.comparingInt(v -> v.z));
         
@@ -215,11 +215,12 @@ public abstract class PottsLocationFactory implements LocationFactory {
      * @param length  the array length
      * @param width  the array width
      * @param height  the array height
+     * @param margin  the location margin
      * @param s  the location range per side
      * @param h  the location range per height
      * @return  the list of center voxels
      */
-    abstract ArrayList<Voxel> getCenters(int length, int width, int height, int s, int h);
+    abstract ArrayList<Voxel> getCenters(int length, int width, int height, int margin, int s, int h);
     
     /**
      * Gets list of valid voxels around a given voxel.

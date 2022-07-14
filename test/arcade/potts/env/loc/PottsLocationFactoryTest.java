@@ -21,6 +21,11 @@ public class PottsLocationFactoryTest {
     
     static Series createSeries(int length, int width, int height,
                                double[] volumes, double[] heights) {
+        return createSeries(length, width, height, 0, volumes, heights);
+    }
+    
+    static Series createSeries(int length, int width, int height, int margin,
+                               double[] volumes, double[] heights) {
         Series series = mock(Series.class);
         series.populations = new HashMap<>();
         
@@ -36,6 +41,10 @@ public class PottsLocationFactoryTest {
             Field heightField = Series.class.getDeclaredField("height");
             heightField.setAccessible(true);
             heightField.setInt(series, height);
+            
+            Field marginField = Series.class.getDeclaredField("margin");
+            marginField.setAccessible(true);
+            marginField.setInt(series, margin);
         } catch (Exception ignored) { }
         
         for (int i = 0; i < volumes.length; i++) {
@@ -76,12 +85,12 @@ public class PottsLocationFactoryTest {
         }
         
         @Override
-        ArrayList<Voxel> getCenters(int length, int width, int height, int s, int h) {
+        ArrayList<Voxel> getCenters(int length, int width, int height, int margin, int s, int h) {
             ArrayList<Voxel> centers = new ArrayList<>();
             for (int i = 0; i < length; i++) {
                 for (int j = 0; j < width; j++) {
                     for (int k = 0; k < height; k++) {
-                        centers.add(new Voxel(i + s, j + s, k + h));
+                        centers.add(new Voxel(i + s + margin, j + s + margin, k + h));
                     }
                 }
             }
@@ -194,9 +203,10 @@ public class PottsLocationFactoryTest {
         int length = randomIntBetween(1, 10);
         int width = randomIntBetween(1, 10);
         int height = randomIntBetween(1, 10);
+        int margin = randomIntBetween(1, 10);
         int s = randomIntBetween(1, 10);
         int h = randomIntBetween(1, 10);
-        Series series = createSeries(length, width, height, new double[] { 0 }, new double[] { 0 });
+        Series series = createSeries(length, width, height, margin, new double[] { 0 }, new double[] { 0 });
         
         PottsLocationFactoryMock factory = spy(new PottsLocationFactoryMock());
         factory.random = random;
@@ -206,9 +216,9 @@ public class PottsLocationFactoryTest {
         
         assertEquals(length * width * height, factory.locations.values().size());
         for (PottsLocationContainer container : factory.locations.values()) {
-            assertTrue(container.center.x <= length + s);
+            assertTrue(container.center.x <= length + s + margin);
             assertTrue(container.center.x >= s);
-            assertTrue(container.center.y <= width + s);
+            assertTrue(container.center.y <= width + s + margin);
             assertTrue(container.center.y >= s);
             assertTrue(container.center.z <= height + h);
             assertTrue(container.center.z >= h);
@@ -221,10 +231,11 @@ public class PottsLocationFactoryTest {
         int length = randomIntBetween(1, 10);
         int width = randomIntBetween(1, 10);
         int height = randomIntBetween(1, 10);
+        int margin = randomIntBetween(1, 10);
         int s = randomIntBetween(3, 10);
         int h = randomIntBetween(1, 10);
         int padding = 2;
-        Series series = createSeries(length, width, height, new double[] { 0 }, new double[] { 0 });
+        Series series = createSeries(length, width, height, margin, new double[] { 0 }, new double[] { 0 });
         
         series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "DEFAULT", 0.0);
         series.populations.get("pop1").put("(REGION)" + TAG_SEPARATOR + "NUCLEUS", 0.0);
@@ -237,9 +248,9 @@ public class PottsLocationFactoryTest {
         
         assertEquals(length * width * height, factory.locations.values().size());
         for (PottsLocationContainer container : factory.locations.values()) {
-            assertTrue(container.center.x <= length + s);
+            assertTrue(container.center.x <= length + s + margin);
             assertTrue(container.center.x >= s);
-            assertTrue(container.center.y <= width + s);
+            assertTrue(container.center.y <= width + s + margin);
             assertTrue(container.center.y >= s);
             assertTrue(container.center.z <= height + h);
             assertTrue(container.center.z >= h);
