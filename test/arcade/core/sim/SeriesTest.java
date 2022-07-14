@@ -261,10 +261,10 @@ public class SeriesTest {
     }
     
     @Test
-    public void constructor_oneSizeGivenOdd_updatesSizes() {
-        int length = randomIntBetween(0, 100) * 2 + 1;
-        int width = randomIntBetween(0, 100) * 2 + 1;
-        int height = randomIntBetween(0, 100) * 2 + 1;
+    public void constructor_oneSizeGiven_updatesSizes() {
+        int length = randomIntBetween(0, 100);
+        int width = randomIntBetween(0, 100);
+        int height = randomIntBetween(0, 100);
         
         HashMap<String, MiniBox> setupDicts;
         Series series;
@@ -292,92 +292,10 @@ public class SeriesTest {
     }
     
     @Test
-    public void constructor_twoSizesGivenOdd_updatesSizes() {
-        int length = randomIntBetween(0, 100) * 2 + 1;
-        int width = randomIntBetween(0, 100) * 2 + 1;
-        int height = randomIntBetween(0, 100) * 2 + 1;
-        
-        HashMap<String, MiniBox> setupDicts;
-        Series series;
-        
-        setupDicts = makeDicts();
-        setupDicts.get("series").put("length", length);
-        setupDicts.get("series").put("width", width);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
-        assertEquals(length, series.length);
-        assertEquals(width, series.width);
-        assertEquals(DEFAULT_HEIGHT, series.height);
-        
-        setupDicts = makeDicts();
-        setupDicts.get("series").put("width", width);
-        setupDicts.get("series").put("height", height);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
-        assertEquals(DEFAULT_LENGTH, series.length);
-        assertEquals(width, series.width);
-        assertEquals(height, series.height);
-        
-        setupDicts = makeDicts();
-        setupDicts.get("series").put("length", length);
-        setupDicts.get("series").put("height", height);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
-        assertEquals(length, series.length);
-        assertEquals(DEFAULT_WIDTH, series.width);
-        assertEquals(height, series.height);
-    }
-    
-    @Test
-    public void constructor_allSizesGivenOdd_updatesSizes() {
-        int length = randomIntBetween(0, 100) * 2 + 1;
-        int width = randomIntBetween(0, 100) * 2 + 1;
-        int height = randomIntBetween(0, 100) * 2 + 1;
-        
-        HashMap<String, MiniBox> setupDicts = makeDicts();
-        setupDicts.get("series").put("length", length);
-        setupDicts.get("series").put("width", width);
-        setupDicts.get("series").put("height", height);
-        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
-        
-        assertEquals(length, series.length);
-        assertEquals(width, series.width);
-        assertEquals(height, series.height);
-    }
-    
-    @Test
-    public void constructor_oneSizeGivenEven_updatesSizes() {
-        int length = randomIntBetween(0, 100) * 2;
-        int width = randomIntBetween(0, 100) * 2;
-        int height = randomIntBetween(0, 100) * 2;
-        
-        HashMap<String, MiniBox> setupDicts;
-        Series series;
-        
-        setupDicts = makeDicts();
-        setupDicts.get("series").put("length", length);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
-        assertEquals(length, series.length);
-        assertEquals(DEFAULT_WIDTH, series.width);
-        assertEquals(DEFAULT_HEIGHT, series.height);
-        
-        setupDicts = makeDicts();
-        setupDicts.get("series").put("width", width);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
-        assertEquals(DEFAULT_LENGTH, series.length);
-        assertEquals(width, series.width);
-        assertEquals(DEFAULT_HEIGHT, series.height);
-        
-        setupDicts = makeDicts();
-        setupDicts.get("series").put("height", height);
-        series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
-        assertEquals(DEFAULT_LENGTH, series.length);
-        assertEquals(DEFAULT_WIDTH, series.width);
-        assertEquals(height, series.height);
-    }
-    
-    @Test
-    public void constructor_twoSizesGivenEven_updatesSizes() {
-        int length = randomIntBetween(0, 100) * 2;
-        int width = randomIntBetween(0, 100) * 2;
-        int height = randomIntBetween(0, 100) * 2;
+    public void constructor_twoSizesGiven_updatesSizes() {
+        int length = randomIntBetween(0, 100);
+        int width = randomIntBetween(0, 100);
+        int height = randomIntBetween(0, 100);
         
         HashMap<String, MiniBox> setupDicts;
         Series series;
@@ -408,10 +326,10 @@ public class SeriesTest {
     }
     
     @Test
-    public void constructor_allSizesGivenEven_updatesSizes() {
-        int length = randomIntBetween(0, 100) * 2;
-        int width = randomIntBetween(0, 100) * 2;
-        int height = randomIntBetween(0, 100) * 2;
+    public void constructor_allSizesGiven_updatesSizes() {
+        int length = randomIntBetween(0, 100);
+        int width = randomIntBetween(0, 100);
+        int height = randomIntBetween(0, 100);
         
         HashMap<String, MiniBox> setupDicts = makeDicts();
         setupDicts.get("series").put("length", length);
