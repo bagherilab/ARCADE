@@ -36,11 +36,11 @@ public final class PottsLocationFactory3D extends PottsLocationFactory {
     ArrayList<Voxel> getCenters(int length, int width, int height, int margin, int s, int h) {
         ArrayList<Voxel> centers = new ArrayList<>();
         
-        for (int i = 0; i < (length - 2) / s; i++) {
-            for (int j = 0; j < (width - 2) / s; j++) {
+        for (int i = 0; i < (length - 2 - 2 * margin) / s; i++) {
+            for (int j = 0; j < (width - 2 - 2 * margin) / s; j++) {
                 for (int k = 0; k < (height - 2) / h; k++) {
-                    int cx = i * s + (s + 1) / 2;
-                    int cy = j * s + (s + 1) / 2;
+                    int cx = i * s + (s + 1) / 2 + margin;
+                    int cy = j * s + (s + 1) / 2 + margin;
                     int cz = k * h + (h + 1) / 2;
                     centers.add(new Voxel(cx, cy, cz));
                 }

@@ -118,6 +118,42 @@ public class PottsLocationFactory2DTest {
     }
     
     @Test
+    public void getCenters_threeSideExactWithMargin_createsCenters() {
+        PottsLocationFactory2D factory = new PottsLocationFactory2D();
+        ArrayList<Voxel> centers = factory.getCenters(14, 11, 1, 3, 3, 0);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(5, 5, 0));
+        expected.add(new Voxel(8, 5, 0));
+        
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
+    public void getCenters_threeSideInexactWithMargin_createsCenters() {
+        PottsLocationFactory2D factory = new PottsLocationFactory2D();
+        ArrayList<Voxel> centers = factory.getCenters(13, 10, 1, 2, 3, 0);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(4, 4, 0));
+        expected.add(new Voxel(7, 4, 0));
+        
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
     public void getCenters_fiveSideExactEqualSizeNoMargin_createsCenters() {
         PottsLocationFactory2D factory = new PottsLocationFactory2D();
         ArrayList<Voxel> centers = factory.getCenters(12, 12, 1, 0, 5, 0);
@@ -184,6 +220,46 @@ public class PottsLocationFactory2DTest {
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(3, 3, 0));
         expected.add(new Voxel(8, 3, 0));
+        
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
+    public void getCenters_fiveSideExactWithMargin_createsCenters() {
+        PottsLocationFactory2D factory = new PottsLocationFactory2D();
+        ArrayList<Voxel> centers = factory.getCenters(22, 17, 1, 5, 5, 0);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(8, 8, 0));
+        expected.add(new Voxel(13, 8, 0));
+        
+        centers.sort(VOXEL_COMPARATOR);
+        expected.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(expected.size(), centers.size());
+        for (int i = 0; i < expected.size(); i++) {
+            assertEquals(expected.get(i), centers.get(i));
+        }
+    }
+    
+    @Test
+    public void getCenters_fiveSideInexactWithMargin_createsCenters() {
+        PottsLocationFactory2D factory = new PottsLocationFactory2D();
+        ArrayList<Voxel> centers = factory.getCenters(23, 19, 1, 2, 5, 0);
+        
+        ArrayList<Voxel> expected = new ArrayList<>();
+        expected.add(new Voxel(5, 5, 0));
+        expected.add(new Voxel(10, 5, 0));
+        expected.add(new Voxel(15, 5, 0));
+        expected.add(new Voxel(5, 10, 0));
+        expected.add(new Voxel(10, 10, 0));
+        expected.add(new Voxel(15, 10, 0));
         
         centers.sort(VOXEL_COMPARATOR);
         expected.sort(VOXEL_COMPARATOR);
