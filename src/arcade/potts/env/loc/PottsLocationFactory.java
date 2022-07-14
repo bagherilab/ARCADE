@@ -92,14 +92,14 @@ public abstract class PottsLocationFactory implements LocationFactory {
      */
     @Override
     public void createLocations(Series series) {
-        int h = getVoxelsPerHeight(series);
-        int s = getVoxelsPerSide(series, h);
+        int heightRange = getVoxelsPerHeight(series);
+        int sideRange = getVoxelsPerSide(series, heightRange);
         
-        if (s == 0) { return; }
+        if (sideRange == 0) { return; }
         
         // Get center voxels.
         ArrayList<Voxel> centers = getCenters(series.length, series.width, series.height,
-                series.margin, s, h);
+                series.margin, sideRange, heightRange);
         Utilities.shuffleList(centers, random);
         centers.sort(Comparator.comparingInt(v -> v.z));
         
@@ -113,7 +113,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
         // Create containers for each center.
         int id = 1;
         for (Voxel center : centers) {
-            ArrayList<Voxel> voxels = getPossible(center, s, h);
+            ArrayList<Voxel> voxels = getPossible(center, sideRange, heightRange);
             
             // Add regions (if they exist).
             EnumMap<Region, ArrayList<Voxel>> regions = null;
@@ -121,7 +121,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
                 regions = new EnumMap<>(Region.class);
                 for (String regionKey : regionKeys) {
                     Region region = Region.valueOf(regionKey);
-                    regions.put(region, getPossible(center, s - 2, h));
+                    regions.put(region, getPossible(center, sideRange - 2, heightRange));
                 }
             }
             
@@ -153,17 +153,17 @@ public abstract class PottsLocationFactory implements LocationFactory {
      * @return  the voxel height range
      */
     int getVoxelsPerHeight(Series series) {
-        int h = 1;
+        int heightRange = 1;
         
         for (MiniBox population : series.populations.values()) {
             double criticalHeight = population.getDouble("CRITICAL_HEIGHT_MEAN");
             int voxelsPerHeight = (int) (Math.min(series.height - 2, Math.ceil(criticalHeight)));
-            if (voxelsPerHeight > h) {
-                h = voxelsPerHeight;
+            if (voxelsPerHeight > heightRange) {
+                heightRange = voxelsPerHeight;
             }
         }
         
-        return h;
+        return heightRange;
     }
     
     /**
@@ -172,22 +172,22 @@ public abstract class PottsLocationFactory implements LocationFactory {
      * series and includes a two voxel padding.
      *
      * @param series  the simulation series
-     * @param h  the voxel height range
+     * @param heightRange  the voxel height range
      * @return  the voxel sides range
      */
-    int getVoxelsPerSide(Series series, int h) {
-        int s = 0;
+    int getVoxelsPerSide(Series series, int heightRange) {
+        int sideRange = 0;
         
         for (MiniBox population : series.populations.values()) {
             double criticalVolume = population.getDouble("CRITICAL_VOLUME_MEAN");
             int padding = population.getInt("PADDING");
-            int voxelsPerSide = convert(2 * criticalVolume, h) + padding;
-            if (voxelsPerSide > s) {
-                s = voxelsPerSide;
+            int voxelsPerSide = convert(2 * criticalVolume, heightRange) + padding;
+            if (voxelsPerSide > sideRange) {
+                sideRange = voxelsPerSide;
             }
         }
         
-        return s;
+        return sideRange;
     }
     
     /**
@@ -204,11 +204,11 @@ public abstract class PottsLocationFactory implements LocationFactory {
      * Gets all possible voxels within given range.
      *
      * @param focus  the focus voxel
-     * @param s  the location range per side
-     * @param h  the location range per height
+     * @param sideRange  the location range per side
+     * @param heightRange  the location range per height
      * @return  the list of possible voxels
      */
-    abstract ArrayList<Voxel> getPossible(Voxel focus, int s, int h);
+    abstract ArrayList<Voxel> getPossible(Voxel focus, int sideRange, int heightRange);
     
     /**
      * Gets all centers for the given range.
@@ -217,12 +217,12 @@ public abstract class PottsLocationFactory implements LocationFactory {
      * @param width  the array width
      * @param height  the array height
      * @param margin  the location margin
-     * @param s  the location range per side
-     * @param h  the location range per height
+     * @param sideRange  the location range per side
+     * @param heightRange  the location range per height
      * @return  the list of center voxels
      */
-    abstract ArrayList<Voxel> getCenters(int length, int width, int height,
-                                         int margin, int s, int h);
+    abstract ArrayList<Voxel> getCenters(int length, int width, int height, int margin,
+                                         int sideRange, int heightRange);
     
     /**
      * Gets list of valid voxels around a given voxel.
