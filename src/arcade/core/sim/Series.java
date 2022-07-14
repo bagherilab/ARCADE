@@ -90,6 +90,9 @@ public abstract class Series {
     /** Height of the simulation. */
     public final int height;
     
+    /** Margin for the simulation. */
+    public final int margin;
+    
     /** Map of population settings. */
     public HashMap<String, MiniBox> populations;
     
@@ -141,6 +144,9 @@ public abstract class Series {
         this.height = (series.contains("height")
                 ? series.getInt("height")
                 : defaults.getInt("HEIGHT"));
+        this.margin = (series.contains("margin")
+                ? series.getInt("margin")
+                : defaults.getInt("MARGIN"));
         
         // Set conversion factors.
         this.ds = (series.contains("ds")

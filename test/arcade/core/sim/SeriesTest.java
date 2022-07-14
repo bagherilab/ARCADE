@@ -35,6 +35,7 @@ public class SeriesTest {
     private static final int DEFAULT_LENGTH = randomIntBetween(1, 100);
     private static final int DEFAULT_WIDTH = randomIntBetween(1, 100);
     private static final int DEFAULT_HEIGHT = randomIntBetween(1, 100);
+    private static final int DEFAULT_MARGIN = randomIntBetween(1, 100);
     private static final String SIM_CONSTRUCTOR_CLASS = SimulationMock.class.getName();
     private static final String VIS_CONSTRUCTOR_CLASS = VisualizationMock.class.getName();
     private static final HashMap<String, ArrayList<Box>> SETUP_LISTS_MOCK = mock(HashMap.class);
@@ -49,6 +50,7 @@ public class SeriesTest {
         PARAMETERS.addTag("LENGTH", "DEFAULT");
         PARAMETERS.addTag("WIDTH", "DEFAULT");
         PARAMETERS.addTag("HEIGHT", "DEFAULT");
+        PARAMETERS.addTag("MARGIN", "DEFAULT");
         PARAMETERS.addTag("DS", "DEFAULT");
         PARAMETERS.addTag("DT", "DEFAULT");
         PARAMETERS.addAtt("START_SEED", "value", "" + DEFAULT_START_SEED);
@@ -58,6 +60,7 @@ public class SeriesTest {
         PARAMETERS.addAtt("LENGTH", "value", "" + DEFAULT_LENGTH);
         PARAMETERS.addAtt("WIDTH", "value", "" + DEFAULT_WIDTH);
         PARAMETERS.addAtt("HEIGHT", "value", "" + DEFAULT_HEIGHT);
+        PARAMETERS.addAtt("MARGIN", "value", "" + DEFAULT_MARGIN);
         PARAMETERS.addAtt("DS", "value", "" + DS);
         PARAMETERS.addAtt("DT", "value", "" + DT);
     }
@@ -340,6 +343,24 @@ public class SeriesTest {
         assertEquals(length, series.length);
         assertEquals(width, series.width);
         assertEquals(height, series.height);
+    }
+    
+    @Test
+    public void constructor_marginNotGiven_usesDefault() {
+        HashMap<String, MiniBox> setupDicts = makeDicts();
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
+        
+        assertEquals(DEFAULT_MARGIN, series.margin, EPSILON);
+    }
+    
+    @Test
+    public void constructor_marginGiven_usesGiven() {
+        int margin = randomIntBetween(0, 100);
+        HashMap<String, MiniBox> setupDicts = makeDicts();
+        setupDicts.get("series").put("margin", margin);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
+        
+        assertEquals(margin, series.margin);
     }
     
     @Test
