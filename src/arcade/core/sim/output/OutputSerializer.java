@@ -105,7 +105,8 @@ public final class OutputSerializer {
      *         "size": {
      *             "length": (length),
      *             "width": (width),
-     *             "height": (height)
+     *             "height": (height),
+     *             "margin": (margin)
      *         },
      *         "populations": {
      *             "(population_code)": {
@@ -135,6 +136,7 @@ public final class OutputSerializer {
             size.addProperty("length", src.length);
             size.addProperty("width", src.width);
             size.addProperty("height", src.height);
+            size.addProperty("margin", src.margin);
             json.add("size", size);
             
             // Add population parameters.
