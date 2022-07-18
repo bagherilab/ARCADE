@@ -114,6 +114,7 @@ public class OutputSerializerTest {
         int length = randomIntBetween(0, 100);
         int width = randomIntBetween(0, 100);
         int height = randomIntBetween(0, 100);
+        int margin = randomIntBetween(0, 100);
         
         try {
             Field lengthField = Series.class.getDeclaredField("length");
@@ -127,6 +128,10 @@ public class OutputSerializerTest {
             Field heightField = Series.class.getDeclaredField("height");
             heightField.setAccessible(true);
             heightField.setInt(series, height);
+            
+            Field marginField = Series.class.getDeclaredField("margin");
+            marginField.setAccessible(true);
+            marginField.setInt(series, margin);
             
             Field dsField = Series.class.getDeclaredField("ds");
             dsField.setAccessible(true);
@@ -179,7 +184,8 @@ public class OutputSerializerTest {
                 + "\"size\":{"
                 + "\"length\":" + length + ","
                 + "\"width\":" + width + ","
-                + "\"height\":" + height
+                + "\"height\":" + height + ","
+                + "\"margin\":" + margin
                 + "},"
                 + "\"populations\":{"
                 + "\"" + popA + "\":{\"" + keyA + "\":\"" + valueA + "\"},"
