@@ -66,16 +66,15 @@ public abstract class PatchLocationFactory implements LocationFactory {
         PatchSeries patchSeries = (PatchSeries) series;
         
         // Get all valid coordinates.
-        ArrayList<int[]> coordinates = getCoordinates(patchSeries.radius, patchSeries.depth);
+        ArrayList<Coordinate> coordinates = getCoordinates(patchSeries.radius, patchSeries.depth);
         Utilities.shuffleList(coordinates, random);
-        coordinates.sort(Comparator.comparingDouble(v ->
-                Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])));
+        coordinates.sort(Comparator.comparingDouble(Coordinate::calculateDistance));
         
         // Create containers for each coordinate.
         int id = 1;
-        for (int[] coordinate : coordinates) {
-            PatchLocationContainer cont = new PatchLocationContainer(id, coordinate);
-            locations.put(id, cont);
+        for (Coordinate coordinate : coordinates) {
+            PatchLocationContainer container = new PatchLocationContainer(id, coordinate);
+            locations.put(id, container);
             id++;
         }
     }
@@ -87,5 +86,5 @@ public abstract class PatchLocationFactory implements LocationFactory {
      * @param depth  the bound on the depth
      * @return  a list of location coordinates
      */
-    public abstract ArrayList<int[]> getCoordinates(int radius, int depth);
+    public abstract ArrayList<Coordinate> getCoordinates(int radius, int depth);
 }

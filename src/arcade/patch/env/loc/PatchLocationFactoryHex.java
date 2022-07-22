@@ -19,21 +19,21 @@ public final class PatchLocationFactoryHex extends PatchLocationFactory {
     public PatchLocationFactoryHex() { super(); }
     
     @Override
-    public ArrayList<int[]> getCoordinates(int radius, int depth) {
-        ArrayList<int[]> locations = new ArrayList<>();
+    public ArrayList<Coordinate> getCoordinates(int radius, int depth) {
+        ArrayList<Coordinate> coordinates = new ArrayList<>();
         
         for (int u = 1 - radius; u < radius; u++) {
             for (int v = 1 - radius; v < radius; v++) {
                 for (int w = 1 - radius; w < radius; w++) {
                     if (u + v + w == 0) {
                         for (int z = 1 - depth; z < depth; z++) {
-                            locations.add(new int[] { u, v, w, z });
+                            coordinates.add(new CoordinateHex(u, v, w, z));
                         }
                     }
                 }
             }
         }
         
-        return locations;
+        return coordinates;
     }
 }

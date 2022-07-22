@@ -17,17 +17,17 @@ public final class PatchLocationFactoryRect extends PatchLocationFactory {
     public PatchLocationFactoryRect() { super(); }
     
     @Override
-    public ArrayList<int[]> getCoordinates(int radius, int depth) {
-        ArrayList<int[]> locations = new ArrayList<>();
+    public ArrayList<Coordinate> getCoordinates(int radius, int depth) {
+        ArrayList<Coordinate> coordinates = new ArrayList<>();
         
         for (int x = 1 - radius; x < radius; x++) {
             for (int y = 1 - radius; y < radius; y++) {
                 for (int z = 1 - depth; z < depth; z++) {
-                    locations.add(new int[] {x, y, z});
+                    coordinates.add(new CoordinateRect(x, y, z));
                 }
             }
         }
         
-        return locations;
+        return coordinates;
     }
 }
