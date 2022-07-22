@@ -27,14 +27,14 @@ import arcade.core.vis.Panel;
  */
 
 public abstract class PatchDrawer extends Drawer {
+    /** Array holding values. */
+    DoubleGrid2D array;
+    
     /** Graph holding edges. */
     Network graph;
     
     /** Field holding nodes. */
     Continuous2D field;
-    
-    /** Array holding values. */
-    DoubleGrid2D array;
     
     /** View options. */
     enum View { STATE, AGE, VOLUME, HEIGHT, COUNTS }

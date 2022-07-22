@@ -7,6 +7,9 @@ import sim.engine.SimState;
 import sim.util.gui.ColorMap;
 import arcade.core.vis.Panel;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.env.loc.Coordinate;
+import arcade.patch.env.loc.CoordinateHex;
+import arcade.patch.env.loc.CoordinateTri;
 import arcade.patch.env.loc.PatchLocation;
 import arcade.patch.env.loc.PatchLocationContainer;
 import arcade.patch.env.loc.PatchLocationFactory;
@@ -150,43 +153,58 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                     break;
             }
             
-            HashMap<Integer, Integer> positions = new HashMap<>();
+            HashMap<Integer, Integer> indices = new HashMap<>();
             
             for (Object obj : sim.getGrid().getAllObjects()) {
                 cell = (PatchCell) obj;
                 location = (PatchLocation) cell.getLocation();
                 
-                if (location.getGridZ() == 0) {
-                    int[][] locs = location.getLatLocations();
+                if (location.getCoordinate().z == 0) {
+                    ArrayList<Coordinate> coords = location.getSubCoordinates();
                     
                     int hash = location.hashCode();
-                    int position = -1;
-                    if (positions.containsKey(hash)) { position = positions.get(hash); }
-                    positions.put(hash, ++position);
+                    int index = -1;
+                    if (indices.containsKey(hash)) { index = indices.get(hash); }
+                    indices.put(hash, ++index);
                     
                     switch (view) {
                         case STATE:
-                            temp[locs[position][0]][locs[position][1]] = cell.getState().ordinal();
-                            break;
                         case AGE:
-                            temp[locs[position][0]][locs[position][1]] = cell.getAge();
+                            CoordinateTri mainCoord = (CoordinateTri) coords.get(index);
+                            switch (view) {
+                                case STATE:
+                                    temp[mainCoord.x][mainCoord.y] = cell.getState().ordinal();
+                                    break;
+                                case AGE:
+                                    temp[mainCoord.x][mainCoord.y] = cell.getAge();
+                                    break;
+                                default:
+                                    break;
+                            }
                             break;
                         case COUNTS:
-                            for (int[] loc : locs) {
-                                temp[loc[0]][loc[1]]++;
-                            }
-                            break;
                         case VOLUME:
-                            double volume = cell.getVolume();
-                            for (int[] loc : locs) {
-                                temp[loc[0]][loc[1]] += volume;
-                                counter[loc[0]][loc[1]]++;
-                            }
                         case HEIGHT:
+                            double volume = cell.getVolume();
                             double height = cell.getHeight();
-                            for (int[] loc : locs) {
-                                temp[loc[0]][loc[1]] += height;
-                                counter[loc[0]][loc[1]]++;
+                            
+                            for (Coordinate coord : coords) {
+                                CoordinateTri triCoord = (CoordinateTri) coord;
+                                
+                                switch (view) {
+                                    case COUNTS:
+                                        temp[triCoord.x][triCoord.y]++;
+                                        break;
+                                    case VOLUME:
+                                        temp[triCoord.x][triCoord.y] += volume;
+                                        counter[triCoord.x][triCoord.y]++;
+                                        break;
+                                    case HEIGHT:
+                                        temp[triCoord.x][triCoord.y] += height;
+                                        counter[triCoord.x][triCoord.y]++;
+                                    default:
+                                        break;
+                                }
                             }
                         default:
                             break;
@@ -270,9 +288,10 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                 locations = new ArrayList<>();
                 PatchSeries series = (PatchSeries) sim.getSeries();
                 PatchLocationFactory factory = new PatchLocationFactoryHex();
-                ArrayList<int[]> coordinates = factory.getCoordinates(series.radius, series.depth);
+                ArrayList<Coordinate> coordinates =
+                        factory.getCoordinates(series.radius, series.depth);
                 
-                for (int[] coordinate : coordinates) {
+                for (Coordinate coordinate : coordinates) {
                     PatchLocationContainer container = new PatchLocationContainer(0, coordinate);
                     PatchLocation location = (PatchLocation) container.convert(factory, null);
                     locations.add(location);
@@ -304,11 +323,11 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             
             // Draw hexagonal agent locations.
             for (PatchLocation loc : locations) {
-                int[] xy = loc.getLatLocation();
+                CoordinateTri tri = (CoordinateTri) loc.getSubCoordinate();
                 for (int i = 0; i < 6; i++) {
                     add(field, graph, 2,
-                        xy[0] + OFFSETS[i][0], xy[1] + OFFSETS[i][1],
-                        xy[0] + OFFSETS[(i + 1) % 6][0], xy[1] + OFFSETS[(i + 1) % 6][1]);
+                        tri.x + OFFSETS[i][0], tri.y + OFFSETS[i][1],
+                        tri.x + OFFSETS[(i + 1) % 6][0], tri.y + OFFSETS[(i + 1) % 6][1]);
                 }
             }
             
@@ -317,53 +336,59 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             int ind;
             int r;
             for (PatchLocation loc : locations) {
-                int[] xy = loc.getLatLocation();
-                int[] uvw = loc.getGridLocation();
+                CoordinateHex coord = (CoordinateHex) loc.getCoordinate();
+                CoordinateTri subcoord = (CoordinateTri) loc.getSubCoordinate();
                 
-                r = (int) ((Math.abs(uvw[0]) + Math.abs(uvw[1]) + Math.abs(uvw[2])) / 2.0) + 1;
+                r = (int) ((Math.abs(coord.u) + Math.abs(coord.v) + Math.abs(coord.w)) / 2.0) + 1;
                 
                 if (r == radius) {
-                    if (uvw[0] == radius - 1) {
+                    if (coord.u == radius - 1) {
                         ind = 1;
-                    } else if (uvw[0] == 1 - radius) {
+                    } else if (coord.u == 1 - radius) {
                         ind = 4;
-                    } else if (uvw[1] == radius - 1) {
+                    } else if (coord.v == radius - 1) {
                         ind = 5;
-                    } else if (uvw[1] == 1 - radius) {
+                    } else if (coord.v == 1 - radius) {
                         ind = 2;
-                    } else if (uvw[2] == radius - 1) {
+                    } else if (coord.w == radius - 1) {
                         ind = 3;
-                    } else if (uvw[2] == 1 - radius) {
+                    } else if (coord.w == 1 - radius) {
                         ind = 0;
                     } else {
                         ind = 0;
                     }
                     
                     add(field, graph, 3,
-                        xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
-                        xy[0] + OFFSETS[(ind + 1) % 6][0], xy[1] + OFFSETS[(ind + 1) % 6][1]);
+                        subcoord.x + OFFSETS[ind][0],
+                        subcoord.y + OFFSETS[ind][1],
+                        subcoord.x + OFFSETS[(ind + 1) % 6][0],
+                        subcoord.y + OFFSETS[(ind + 1) % 6][1]);
                     add(field, graph, 3,
-                        xy[0] + OFFSETS[(ind + 1) % 6][0], xy[1] + OFFSETS[(ind + 1) % 6][1],
-                        xy[0] + OFFSETS[(ind + 2) % 6][0], xy[1] + OFFSETS[(ind + 2) % 6][1]);
+                        subcoord.x + OFFSETS[(ind + 1) % 6][0],
+                        subcoord.y + OFFSETS[(ind + 1) % 6][1],
+                        subcoord.x + OFFSETS[(ind + 2) % 6][0],
+                        subcoord.y + OFFSETS[(ind + 2) % 6][1]);
                     
-                    if (uvw[0] == 0 || uvw[1] == 0 || uvw[2] == 0) {
-                        if (uvw[0] == 0 && uvw[1] == radius - 1) {
+                    if (coord.u == 0 || coord.v == 0 || coord.w == 0) {
+                        if (coord.u == 0 && coord.v == radius - 1) {
                             ind = 1;
-                        } else if (uvw[0] == 0 && uvw[2] == radius - 1) {
+                        } else if (coord.u == 0 && coord.w == radius - 1) {
                             ind = 4;
-                        } else if (uvw[1] == 0 && uvw[0] == radius - 1) {
+                        } else if (coord.v == 0 && coord.u == radius - 1) {
                             ind = 0;
-                        } else if (uvw[1] == 0 && uvw[2] == radius - 1) {
+                        } else if (coord.v == 0 && coord.w == radius - 1) {
                             ind = 3;
-                        } else if (uvw[2] == 0 && uvw[0] == radius - 1) {
+                        } else if (coord.w == 0 && coord.u == radius - 1) {
                             ind = 3;
-                        } else if (uvw[2] == 0 && uvw[1] == radius - 1) {
+                        } else if (coord.w == 0 && coord.v == radius - 1) {
                             ind = 0;
                         }
                         
                         add(field, graph, 3,
-                            xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
-                            xy[0] + OFFSETS[(ind + 1) % 6][0], xy[1] + OFFSETS[(ind + 1) % 6][1]);
+                            subcoord.x + OFFSETS[ind][0],
+                            subcoord.y + OFFSETS[ind][1],
+                            subcoord.x + OFFSETS[(ind + 1) % 6][0],
+                            subcoord.y + OFFSETS[(ind + 1) % 6][1]);
                     }
                 }
             }

@@ -7,6 +7,8 @@ import sim.engine.SimState;
 import sim.util.gui.ColorMap;
 import arcade.core.vis.Panel;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.env.loc.Coordinate;
+import arcade.patch.env.loc.CoordinateRect;
 import arcade.patch.env.loc.PatchLocation;
 import arcade.patch.env.loc.PatchLocationContainer;
 import arcade.patch.env.loc.PatchLocationFactory;
@@ -112,43 +114,58 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                     break;
             }
             
-            HashMap<Integer, Integer> positions = new HashMap<>();
+            HashMap<Integer, Integer> indices = new HashMap<>();
             
             for (Object obj : sim.getGrid().getAllObjects()) {
                 cell = (PatchCell) obj;
                 location = (PatchLocation) cell.getLocation();
                 
-                if (location.getGridZ() == 0) {
-                    int[][] locs = location.getLatLocations();
+                if (location.getCoordinate().z == 0) {
+                    ArrayList<Coordinate> coords = location.getSubCoordinates();
                     
                     int hash = location.hashCode();
-                    int position = -1;
-                    if (positions.containsKey(hash)) { position = positions.get(hash); }
-                    positions.put(hash, ++position);
+                    int index = -1;
+                    if (indices.containsKey(hash)) { index = indices.get(hash); }
+                    indices.put(hash, ++index);
                     
                     switch (view) {
                         case STATE:
-                            arr[locs[position][0]][locs[position][1]] = cell.getState().ordinal();
-                            break;
                         case AGE:
-                            arr[locs[position][0]][locs[position][1]] = cell.getAge();
+                            CoordinateRect mainCoord = (CoordinateRect) coords.get(index);
+                            switch (view) {
+                                case STATE:
+                                    arr[mainCoord.x][mainCoord.y] = cell.getState().ordinal();
+                                    break;
+                                case AGE:
+                                    arr[mainCoord.x][mainCoord.y] = cell.getAge();
+                                    break;
+                                default:
+                                    break;
+                            }
                             break;
                         case COUNTS:
-                            for (int[] loc : locs) {
-                                arr[loc[0]][loc[1]]++;
-                            }
-                            break;
                         case VOLUME:
-                            double volume = cell.getVolume();
-                            for (int[] loc : locs) {
-                                arr[loc[0]][loc[1]] += volume;
-                                counter[loc[0]][loc[1]]++;
-                            }
                         case HEIGHT:
+                            double volume = cell.getVolume();
                             double height = cell.getHeight();
-                            for (int[] loc : locs) {
-                                arr[loc[0]][loc[1]] += height;
-                                counter[loc[0]][loc[1]]++;
+                            
+                            for (Coordinate coord : coords) {
+                                CoordinateRect rectCoord = (CoordinateRect) coord;
+                                
+                                switch (view) {
+                                    case COUNTS:
+                                        arr[rectCoord.x][rectCoord.y]++;
+                                        break;
+                                    case VOLUME:
+                                        arr[rectCoord.x][rectCoord.y] += volume;
+                                        counter[rectCoord.x][rectCoord.y]++;
+                                        break;
+                                    case HEIGHT:
+                                        arr[rectCoord.x][rectCoord.y] += height;
+                                        counter[rectCoord.x][rectCoord.y]++;
+                                    default:
+                                        break;
+                                }
                             }
                         default:
                             break;
@@ -220,9 +237,10 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                 locations = new ArrayList<>();
                 PatchSeries series = (PatchSeries) sim.getSeries();
                 PatchLocationFactory factory = new PatchLocationFactoryRect();
-                ArrayList<int[]> coordinates = factory.getCoordinates(series.radius, series.depth);
+                ArrayList<Coordinate> coordinates =
+                        factory.getCoordinates(series.radius, series.depth);
                 
-                for (int[] coordinate : coordinates) {
+                for (Coordinate coordinate : coordinates) {
                     PatchLocationContainer container = new PatchLocationContainer(0, coordinate);
                     PatchLocation location = (PatchLocation) container.convert(factory, null);
                     locations.add(location);
@@ -240,11 +258,11 @@ public abstract class PatchDrawerRect extends PatchDrawer {
             
             // Draw rectangular agent locations.
             for (PatchLocation loc : locations) {
-                int[] xy = loc.getLatLocation();
+                CoordinateRect rect = (CoordinateRect) loc.getSubCoordinate();
                 for (int i = 0; i < 4; i++) {
                     add(field, graph, 2,
-                        xy[0] + OFFSETS[i][0], xy[1] + OFFSETS[i][1],
-                        xy[0] + OFFSETS[(i + 1) % 4][0], xy[1] + OFFSETS[(i + 1) % 4][1]);
+                        rect.x + OFFSETS[i][0], rect.y + OFFSETS[i][1],
+                        rect.x + OFFSETS[(i + 1) % 4][0], rect.y + OFFSETS[(i + 1) % 4][1]);
                 }
             }
             
@@ -253,42 +271,46 @@ public abstract class PatchDrawerRect extends PatchDrawer {
             int ind;
             int r;
             for (PatchLocation loc : locations) {
-                int[] xyz = loc.getGridLocation();
-                int[] xy = loc.getLatLocation();
+                CoordinateRect coord = (CoordinateRect) loc.getCoordinate();
+                CoordinateRect subcoord = (CoordinateRect) loc.getSubCoordinate();
                 
-                r = Math.max(Math.abs(xyz[0]), Math.abs(xyz[1])) + 1;
+                r = Math.max(Math.abs(coord.x), Math.abs(coord.y)) + 1;
                 
                 if (r == radius) {
-                    if (xyz[0] == radius - 1) {
+                    if (coord.x == radius - 1) {
                         ind = 1;
-                    } else if (xyz[0] == 1 - radius) {
+                    } else if (coord.x == 1 - radius) {
                         ind = 3;
-                    } else if (xyz[1] == radius - 1) {
+                    } else if (coord.y == radius - 1) {
                         ind = 2;
-                    } else if (xyz[1] == 1 - radius) {
+                    } else if (coord.y == 1 - radius) {
                         ind = 0;
                     } else {
                         ind = 0;
                     }
                     
                     add(field, graph, 3,
-                        xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
-                        xy[0] + OFFSETS[(ind + 1) % 4][0], xy[1] + OFFSETS[(ind + 1) % 4][1]);
+                        subcoord.x + OFFSETS[ind][0],
+                        subcoord.y + OFFSETS[ind][1],
+                        subcoord.x + OFFSETS[(ind + 1) % 4][0],
+                        subcoord.y + OFFSETS[(ind + 1) % 4][1]);
                     
-                    if (Math.abs(xyz[0]) + 1 == r && Math.abs(xyz[1]) + 1 == r) {
-                        if (xyz[0] == radius - 1 && xyz[1] == radius - 1) {
+                    if (Math.abs(coord.x) + 1 == r && Math.abs(coord.y) + 1 == r) {
+                        if (coord.x == radius - 1 && coord.y == radius - 1) {
                             ind = 2;
-                        } else if (xyz[0] == 1 - radius && xyz[1] == radius - 1) {
+                        } else if (coord.x == 1 - radius && coord.y == radius - 1) {
                             ind = 2;
-                        } else if (xyz[0] == radius - 1 && xyz[1] == 1 - radius) {
+                        } else if (coord.x == radius - 1 && coord.y == 1 - radius) {
                             ind = 0;
-                        } else if (xyz[0] == 1 - radius && xyz[1] == 1 - radius) {
+                        } else if (coord.x == 1 - radius && coord.y == 1 - radius) {
                             ind = 0;
                         }
                         
                         add(field, graph, 3,
-                            xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
-                            xy[0] + OFFSETS[(ind + 1) % 4][0], xy[1] + OFFSETS[(ind + 1) % 4][1]);
+                            subcoord.x + OFFSETS[ind][0],
+                            subcoord.y + OFFSETS[ind][1],
+                            subcoord.x + OFFSETS[(ind + 1) % 4][0],
+                            subcoord.y + OFFSETS[(ind + 1) % 4][1]);
                     }
                 }
             }
