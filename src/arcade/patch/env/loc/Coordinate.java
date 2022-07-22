@@ -5,6 +5,25 @@ package arcade.patch.env.loc;
  */
 
 public abstract class Coordinate {
+    /** Coordinate z value. */
+    public final int z;
+    
+    /**
+     * Creates a {@code Coordinate}.
+     *
+     * @param z  the z coordinate value
+     */
+    public Coordinate(int z) {
+        this.z = z;
+    }
+    
+    /**
+     * Calculates the distance of the coordinate from the center.
+     *
+     * @return  the distance from the center
+     */
+    public abstract double calculateDistance();
+    
     /**
      * Gets hash based on coordinate.
      *

@@ -15,9 +15,6 @@ public final class CoordinateRect extends Coordinate {
     /** Coordinate y value. */
     public final int y;
     
-    /** Coordinate z value. */
-    public final int z;
-    
     /**
      * Creates a hexagonal {@code Coordinate}.
      *
@@ -26,9 +23,14 @@ public final class CoordinateRect extends Coordinate {
      * @param z  the z coordinate value
      */
     public CoordinateRect(int x, int y, int z) {
+        super(z);
         this.x = x;
         this.y = y;
-        this.z = z;
+    }
+    
+    @Override
+    public double calculateDistance() {
+        return Math.sqrt(x * x  + y * y);
     }
     
     /**

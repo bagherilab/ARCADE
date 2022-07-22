@@ -18,9 +18,6 @@ public final class CoordinateHex extends Coordinate {
     /** Coordinate w value. */
     public final int w;
     
-    /** Coordinate z value. */
-    public final int z;
-    
     /**
      * Creates a hexagonal {@code Coordinate}.
      *
@@ -30,10 +27,15 @@ public final class CoordinateHex extends Coordinate {
      * @param z  the z coordinate value
      */
     public CoordinateHex(int u, int v, int w, int z) {
+        super(z);
         this.u = u;
         this.v = v;
         this.w = w;
-        this.z = z;
+    }
+    
+    @Override
+    public double calculateDistance() {
+        return (Math.abs(u) + Math.abs(v) + Math.abs(w)) / 2.0;
     }
     
     /**
