@@ -75,28 +75,28 @@ public class PatchGrid implements Grid {
     @Override
     public void moveObject(Object object, Location fromLocation, Location toLocation) {
         // Remove object from old location.
-        int fromId = fromLocation.hashCode();
-        Bag fromBag = (Bag) objects.get(fromId);
+        int fromIndex = fromLocation.hashCode();
+        Bag fromBag = (Bag) objects.get(fromIndex);
         fromBag.remove(object);
         
         if (fromBag.numObjs == 0) {
-            objects.remove(fromId);
+            objects.remove(fromIndex);
         }
         
         // Add to new location.
-        int toId = toLocation.hashCode();
-        Bag toBag = (Bag) objects.get(toId);
+        int toIndex = toLocation.hashCode();
+        Bag toBag = (Bag) objects.get(toIndex);
         
         if (toBag == null) {
             toBag = new Bag(INITIAL_CAPACITY);
-            objects.put(toId, toBag);
+            objects.put(toIndex, toBag);
         }
-    
+        
         toBag.add(object);
         
         // Update location object.
         PatchLocation location = (PatchLocation) ((Cell) object).getLocation();
-        location.updateLocation((PatchLocation) toLocation);
+        location.update((PatchLocation) toLocation);
     }
     
     /**

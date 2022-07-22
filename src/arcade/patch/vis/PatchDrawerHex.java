@@ -160,7 +160,7 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                 location = (PatchLocation) cell.getLocation();
                 
                 if (location.getCoordinate().z == 0) {
-                    ArrayList<Coordinate> coords = location.getSubCoordinates();
+                    ArrayList<Coordinate> coords = location.getSubcoordinates();
                     
                     int hash = location.hashCode();
                     int index = -1;
@@ -323,7 +323,7 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             
             // Draw hexagonal agent locations.
             for (PatchLocation loc : locations) {
-                CoordinateTri tri = (CoordinateTri) loc.getSubCoordinate();
+                CoordinateTri tri = (CoordinateTri) loc.getSubcoordinate();
                 for (int i = 0; i < 6; i++) {
                     add(field, graph, 2,
                         tri.x + OFFSETS[i][0], tri.y + OFFSETS[i][1],
@@ -337,7 +337,7 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             int r;
             for (PatchLocation loc : locations) {
                 CoordinateHex coord = (CoordinateHex) loc.getCoordinate();
-                CoordinateTri subcoord = (CoordinateTri) loc.getSubCoordinate();
+                CoordinateTri subcoord = (CoordinateTri) loc.getSubcoordinate();
                 
                 r = (int) ((Math.abs(coord.u) + Math.abs(coord.v) + Math.abs(coord.w)) / 2.0) + 1;
                 

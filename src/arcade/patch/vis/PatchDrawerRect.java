@@ -121,7 +121,7 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                 location = (PatchLocation) cell.getLocation();
                 
                 if (location.getCoordinate().z == 0) {
-                    ArrayList<Coordinate> coords = location.getSubCoordinates();
+                    ArrayList<Coordinate> coords = location.getSubcoordinates();
                     
                     int hash = location.hashCode();
                     int index = -1;
@@ -258,7 +258,7 @@ public abstract class PatchDrawerRect extends PatchDrawer {
             
             // Draw rectangular agent locations.
             for (PatchLocation loc : locations) {
-                CoordinateRect rect = (CoordinateRect) loc.getSubCoordinate();
+                CoordinateRect rect = (CoordinateRect) loc.getSubcoordinate();
                 for (int i = 0; i < 4; i++) {
                     add(field, graph, 2,
                         rect.x + OFFSETS[i][0], rect.y + OFFSETS[i][1],
@@ -272,7 +272,7 @@ public abstract class PatchDrawerRect extends PatchDrawer {
             int r;
             for (PatchLocation loc : locations) {
                 CoordinateRect coord = (CoordinateRect) loc.getCoordinate();
-                CoordinateRect subcoord = (CoordinateRect) loc.getSubCoordinate();
+                CoordinateRect subcoord = (CoordinateRect) loc.getSubcoordinate();
                 
                 r = Math.max(Math.abs(coord.x), Math.abs(coord.y)) + 1;
                 

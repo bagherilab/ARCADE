@@ -22,7 +22,7 @@ public final class PatchLocationContainer implements LocationContainer {
      * The container does not have any regions.
      *
      * @param id  the location ID
-     * @param coordinates  the location coordinates
+     * @param coordinate  the location coordinate
      */
     public PatchLocationContainer(int id, Coordinate coordinate) {
         this.id = id;
