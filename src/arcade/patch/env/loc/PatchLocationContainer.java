@@ -13,8 +13,8 @@ public final class PatchLocationContainer implements LocationContainer {
     /** Unique location container ID. */
     public final int id;
     
-    /** Location coordinates. */
-    public final int[] coordinates;
+    /** Location coordinate. */
+    public final Coordinate coordinate;
     
     /**
      * Creates a {@code PatchLocationContainer} instance.
@@ -24,9 +24,9 @@ public final class PatchLocationContainer implements LocationContainer {
      * @param id  the location ID
      * @param coordinates  the location coordinates
      */
-    public PatchLocationContainer(int id, int[] coordinates) {
+    public PatchLocationContainer(int id, Coordinate coordinate) {
         this.id = id;
-        this.coordinates = coordinates;
+        this.coordinate = coordinate;
     }
     
     @Override
@@ -37,11 +37,9 @@ public final class PatchLocationContainer implements LocationContainer {
         PatchLocation location;
         
         if (factory instanceof PatchLocationFactoryRect) {
-            location = new PatchLocationRect(coordinates[0], coordinates[1],
-                    coordinates[2]);
+            location = new PatchLocationRect(coordinate);
         } else {
-            location = new PatchLocationHex(coordinates[0], coordinates[1],
-                    coordinates[2], coordinates[3]);
+            location = new PatchLocationHex(coordinate);
         }
         
         return location;
