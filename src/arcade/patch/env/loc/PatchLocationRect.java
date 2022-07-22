@@ -1,5 +1,6 @@
 package arcade.patch.env.loc;
 
+import java.util.ArrayList;
 import arcade.core.env.loc.Location;
 import arcade.core.env.loc.LocationContainer;
 import arcade.patch.sim.PatchSeries;
@@ -11,8 +12,8 @@ import arcade.patch.sim.PatchSeries;
  * <p>
  * {@link arcade.core.env.grid.Grid} coordinates are in terms of (x, y) and the
  * {@link arcade.core.env.lat.Lattice} coordinates are in (a, b).
- * Rectangular {@link arcade.core.env.lat.Lattice} positions are numbered 0 - 3,
- * with 0 at the top left.
+ * Rectangular {@link arcade.core.env.lat.Lattice} subcoordinates are ordered
+ * 0 - 3, with 0 at the top left and going clockwise around.
  * <pre>
  *     ---------
  *     | 0 | 1 |
@@ -55,23 +56,14 @@ public final class PatchLocationRect extends PatchLocation {
     /** Size of the subrectangle position [um]. */
     private static final double SUBRECT_SIZE = RECT_SIZE / 2.0;
     
-    /** Rectangle patch x coordinate. */
-    private int x;
+    /** Number of rectangular subcoordinates. */
+    private static final int NUM_SUBCOORDINATES = 4;
     
-    /** Rectangle patch y coordinate. */
-    private int y;
+    /** Relative rectangular subcoordinate offsets in the x direction. */
+    private static final byte[] X_OFF = new byte[] {0, 1, 0, 1};
     
-    /** Rectangle patch z coordinate. */
-    private int z;
-    
-    /** Subrectangular position coordinates. */
-    private int[][] ab = new int[4][2];
-    
-    /** Relative subrectangular coordinate offsets in the x direction. */
-    private static final byte[] A_OFF = new byte[] {0, 1, 0, 1};
-    
-    /** Relative subrectangular coordinate offsets in the y direction. */
-    private static final byte[] B_OFF = new byte[] {0, 0, 1, 1};
+    /** Relative rectangular subcoordinate offsets in the y direction. */
+    private static final byte[] Y_OFF = new byte[] {0, 0, 1, 1};
     
     /** List of relative rectangular neighbor locations. */
     private static final byte[] MOVES = new byte[] {
@@ -90,58 +82,24 @@ public final class PatchLocationRect extends PatchLocation {
     };
     
     /**
-     * Creates a {@code PatchLocationRect} at the same coordinates as location.
-     *
-     * @param loc  the location object
-     */
-    public PatchLocationRect(PatchLocation loc) { updateLocation(loc); }
-    
-    /**
-     * Creates a {@code PatchLocationRect} object at given coordinates.
+     * Creates a {@code PatchLocationRect} object for given coordinates.
      *
      * @param x  the coordinate in x direction
      * @param y  the coordinate in y direction
      * @param z  the coordinate in z direction
      */
     public PatchLocationRect(int x, int y, int z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.zo = (byte) (Math.abs(zOffset + z) % 2);
-        this.r = Math.max(Math.abs(x), Math.abs(y));
-        
-        calcSubrectangular();
-        calcChecks();
+        this(new CoordinateRect(x, y, z));
     }
     
-    @Override
-    public LocationContainer convert(int id) {
-        return new PatchLocationContainer(id, new int[] { x, y, z });
+    /**
+     * Creates a {@code PatchLocationRect} object at given coordinate.
+     *
+     * @param coordinate  the patch coordinate
+     */
+    public PatchLocationRect(Coordinate coordinate) {
+        super(coordinate, NUM_SUBCOORDINATES);
     }
-    
-    @Override
-    public PatchLocation getCopy() { return new PatchLocationRect(this); }
-    
-    @Override
-    public int[] getGridLocation() { return new int[] {x, y}; }
-    
-    @Override
-    public int getGridZ() { return z; }
-    
-    @Override
-    public int[] getLatLocation() { return ab[0]; }
-    
-    @Override
-    public int[][] getLatLocations() { return ab; }
-    
-    @Override
-    public int getLatZ() { return depthBounds + z - 1; }
-    
-    @Override
-    public double getGridSize() { return RECT_SIZE; }
-    
-    @Override
-    public double getLatSize() { return SUBRECT_SIZE; }
     
     @Override
     public double getVolume() { return RECT_VOLUME; }
@@ -156,10 +114,16 @@ public final class PatchLocationRect extends PatchLocation {
     public double getArea() { return RECT_AREA; }
     
     @Override
+    public double getCoordinateSize() { return RECT_SIZE; }
+    
+    @Override
+    public double getSubcoordinateSize() { return SUBRECT_SIZE; }
+    
+    @Override
     public double getRatio() { return RECT_RATIO; }
     
     @Override
-    public int getMax() { return 4; }
+    public int getMaximum() { return NUM_SUBCOORDINATES; }
     
     /**
      * Updates static configuration variables.
@@ -175,10 +139,45 @@ public final class PatchLocationRect extends PatchLocation {
         depth = series.depth;
         radiusBounds = series.radiusBounds;
         depthBounds = series.depthBounds;
+        heightOffset = series.height % 2 - series.height;
+    }
+    
+    @Override
+    void calculateOffset() {
+        offset = (byte) (Math.abs(heightOffset + coordinate.z) % 2);
+    }
+    
+    @Override
+    void calculateSubcoordinates() {
+        CoordinateRect rect = (CoordinateRect) coordinate;
         
-        // Calculate z offset for different layers in the simulation
-        int depth = 2 * series.depthBounds - 1;
-        zOffset = depth % 2 - depth;
+        // Calculate coordinate of top right subrectangle.
+        int x = 2 * (rect.x + radiusBounds - 1) + offset;
+        int y = 2 * (rect.y + radiusBounds - 1) + offset;
+        int z = depthBounds + rect.z - 1;
+        
+        // Set coordinates of subrectangles clockwise from top left.
+        for (int i = 0; i < NUM_SUBCOORDINATES; i++) {
+            subcoordinates.add(i, new CoordinateRect(x + X_OFF[i], y + Y_OFF[i], z));
+        }
+    }
+    
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Each direction of movement ({@code +x, -x, +y, -y, +z, -z}) is
+     * tracked by each bit within a byte.
+     */
+    @Override
+    void calculateChecks() {
+        CoordinateRect rect = (CoordinateRect) coordinate;
+        check = (byte) (
+            (rect.x == radius - 1 ? 0 : 1 << 5)
+            + (rect.x == 1 - radius ? 0 : 1 << 4)
+            + (rect.y == radius - 1 ? 0 : 1 << 3)
+            + (rect.y == 1 - radius ? 0 : 1 << 2)
+            + (rect.z == depth - 1 ? 0 : 1 << 1)
+            + (rect.z == 1 - depth ? 0 : 1 << 0));
     }
     
     /**
@@ -190,55 +189,8 @@ public final class PatchLocationRect extends PatchLocation {
      * additional inner segment is added.
      */
     @Override
-    public double calcPerimeter(double f) {
+    public double getPerimeter(double f) {
         return f * RECT_PERIMETER + (f == 1 ? 0 : RECT_SIZE);
-    }
-    
-    /**
-     * Updates rectangular and subrectangular locations based on given {@code Location}.
-     *
-     * @param loc  the reference location
-     */
-    public void updateLocation(PatchLocation loc) {
-        PatchLocationRect rectLoc = (PatchLocationRect) loc;
-        x = rectLoc.x;
-        y = rectLoc.y;
-        z = rectLoc.z;
-        zo = rectLoc.zo;
-        r = rectLoc.r;
-        
-        calcSubrectangular();
-        calcChecks();
-    }
-    
-    /**
-     * Calculates subrectangular coordinates based on rectangular coordinates and offset.
-     */
-    private void calcSubrectangular() {
-        // Calculate coordinates of top right subrectangle.
-        int a = 2 * (x + radiusBounds - 1) + zo;
-        int b = 2 * (y + radiusBounds - 1) + zo;
-        
-        // Set coordinates of subrectangles starting with top left.
-        for (int i = 0; i < 4; i++) {
-            ab[i] = new int[] {a + A_OFF[i], b + B_OFF[i]};
-        }
-    }
-    
-    /**
-     * Updates the possible moves that can be made.
-     * <p>
-     * Each direction of movement ({@code +x, -x, +y, -y, +z, -z}) is
-     * tracked by each bit within a byte.
-     */
-    private void calcChecks() {
-        check = (byte) (
-            (x == radius - 1 ? 0 : 1 << 5)
-            + (x == 1 - radius ? 0 : 1 << 4)
-            + (y == radius - 1 ? 0 : 1 << 3)
-            + (y == 1 - radius ? 0 : 1 << 2)
-            + (z == depth - 1 ? 0 : 1 << 1)
-            + (z == 1 - depth ? 0 : 1 << 0));
     }
     
     /**
@@ -249,90 +201,60 @@ public final class PatchLocationRect extends PatchLocation {
      * Neighbor list includes the current location.
      */
     @Override
-    public Location[] getNeighborLocations() {
-        Location[] neighbors = new Location[MOVES.length + 1];
+    public ArrayList<Location> getNeighbors() {
+        CoordinateRect rect = (CoordinateRect) coordinate;
+        ArrayList<Location> neighbors = new ArrayList<>(MOVES.length + 1);
         byte b;
-        
-        // Add current location.
-        neighbors[MOVES.length] = new PatchLocationRect(x, y, z);
         
         // Add neighbor locations.
         for (int i = 0; i < MOVES.length; i++) {
             // Adjust byte for vertical offset.
             if (i > 5) {
-                b = offsetByte(MOVES[i], zo);
+                b = offsetByte(MOVES[i], offset);
             } else {
                 b = MOVES[i];
             }
             
             // Add location if possible to move there.
             if ((b & check ^ b) == 0) {
-                neighbors[i] = new PatchLocationRect(
-                    x + (b >> 5 & 1) - (b >> 4 & 1),
-                    y + (b >> 3 & 1) - (b >> 2 & 1),
-                    z + (b >> 1 & 1) - (b >> 0 & 1));
+                neighbors.add(new PatchLocationRect(
+                        rect.x + (b >> 5 & 1) - (b >> 4 & 1),
+                        rect.y + (b >> 3 & 1) - (b >> 2 & 1),
+                        rect.z + (b >> 1 & 1) - (b >> 0 & 1))
+                );
             }
         }
+        
+        // Add current location.
+        neighbors.add(new PatchLocationHex(rect));
         
         return neighbors;
     }
     
-    /**
-     * Performs a left circular offset on the first six bits in a byte.
-     *
-     * @param b  the byte
-     * @param k  the offset
-     * @return  the offset byte
-     */
-    private byte offsetByte(byte b, int k) {
-        int left = b >> 2 & 0x3F; // left most 6 bits
-        int right = b & 0x3; // right most 2 bits
-        int shifted = (left << k & 0x3F) | (left >>> (6 - k) & 0x3F);
-        return (byte) (shifted << 2 | right);
-    }
-    
     @Override
-    public PatchLocation toLocation(int[] coords) {
-        return toRectLocation(coords);
+    public LocationContainer convert(int id) {
+        return new PatchLocationContainer(id, coordinate);
     }
     
     /**
-     * Converts {@link arcade.core.env.lat.Lattice} coordinates into a
-     * hexagonal {@link arcade.core.env.grid.Grid} location.
+     * Converts rectangular {@link arcade.core.env.lat.Lattice} coordinates into
+     * a rectangular {@link arcade.core.env.grid.Grid} coordinate.
      *
-     * @param coords  the lattice coordinates
-     * @return  the corresponding hexagonal grid location
+     * @param coordinate  the rectangular coordinate
+     * @return  the corresponding rectangular coordinate
      */
-    private static PatchLocation toRectLocation(int[] coords) {
-        int z = coords[2] - depthBounds + 1;
-        int zo = (byte) (Math.abs(zOffset + z) % 2);
+    public static CoordinateRect translate(CoordinateRect coordinate) {
+        int z = coordinate.z - depthBounds + 1;
+        int zo = (byte) (Math.abs(heightOffset + z) % 2);
         
         // Calculate a and b coordinates
-        double aa = (coords[0] - zo) / 2.0 + 1 - radiusBounds;
-        int a = (int) Math.floor(aa);
-        double bb = (coords[1] - zo) / 2.0 + 1 - radiusBounds;
-        int b = (int) Math.floor(bb);
-        
+        double xx = (coordinate.x - zo) / 2.0 + 1 - radiusBounds;
+        int x = (int) Math.floor(xx);
+        double yy = (coordinate.y - zo) / 2.0 + 1 - radiusBounds;
+        int y = (int) Math.floor(yy);
+
         // Check if out of bounds.
-        if (Math.abs(a) >= radius || Math.abs(b) >= radius) { return null; }
-        return new PatchLocationRect(a, b, z);
-    }
-    
-    /**
-     * Gets hash based on (x, y, z) coordinates.
-     *
-     * @return  the hash
-     */
-    public int hashCode() { return x + (y << 8); }
-    
-    /**
-     * Checks if two locations have the same (x, y, z) coordinates.
-     *
-     * @param obj  the location to compare
-     * @return  {@code true} if locations have the same grid coordinates, {@code false} otherwise
-     */
-    public boolean equals(Object obj) {
-        PatchLocationRect rectLoc = (PatchLocationRect) obj;
-        return rectLoc.z == z && rectLoc.y == y && rectLoc.x == x;
+        if (Math.abs(x) >= radius || Math.abs(y) >= radius) { return null; }
+        return new CoordinateRect(x, y, z);
     }
 }

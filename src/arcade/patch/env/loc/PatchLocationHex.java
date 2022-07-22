@@ -1,5 +1,6 @@
 package arcade.patch.env.loc;
 
+import java.util.ArrayList;
 import arcade.core.env.loc.Location;
 import arcade.core.env.loc.LocationContainer;
 import arcade.patch.sim.PatchSeries;
@@ -12,8 +13,8 @@ import arcade.patch.sim.PatchSeries;
  * {@link arcade.core.env.grid.Grid} coordinates are in terms of (u, v, w) and
  * the {@link arcade.core.env.lat.Lattice} coordinates are in (x, y).
  * Hexagons are flat side up.
- * Triangular {@link arcade.core.env.lat.Lattice} positions are numbered 0 - 5,
- * with 0 at the top center and going clockwise around.
+ * Triangular {@link arcade.core.env.lat.Lattice} subcoordinates are ordered
+ * 0 - 5, with 0 at the top center and going clockwise around.
  * <pre>
  *      -------
  *     / \ 0 / \
@@ -63,26 +64,14 @@ public final class PatchLocationHex extends PatchLocation {
     /** Size of the triangle position [um]. */
     private static final double TRI_SIZE = HEX_SIDE;
     
-    /** Hexagonal patch u coordinate. */
-    private int u;
+    /** Number of triangular subcoordinates. */
+    private static final int NUM_SUBCOORDINATES = 6;
     
-    /** Hexagonal patch v coordinate. */
-    private int v;
+    /** Relative triangular subcoordinate offsets in the x direction. */
+    private static final byte[] X_OFF = new byte[] { 0, 1, 1, 0, -1, -1 };
     
-    /** Hexagonal patch w coordinate. */
-    private int w;
-    
-    /** Hexagonal patch z coordinate. */
-    private int z;
-    
-    /** Triangular position coordinates. */
-    private int[][] xy = new int[6][2];
-    
-    /** Relative triangular coordinate offsets in the x direction. */
-    private static final byte[] X_OFF = new byte[] {0, 1, 1, 0, -1, -1};
-    
-    /** Relative triangular coordinate offsets in the y direction. */
-    private static final byte[] Y_OFF = new byte[] {0, 0, 1, 1, 1, 0};
+    /** Relative triangular subcoordinate offsets in the y direction. */
+    private static final byte[] Y_OFF = new byte[] { 0, 0, 1, 1, 1, 0 };
     
     /** List of relative hexagonal neighbor locations. */
     private static final byte[] MOVES = new byte[] {
@@ -101,14 +90,7 @@ public final class PatchLocationHex extends PatchLocation {
     };
     
     /**
-     * Creates a {@code PatchLocationHex} at the same coordinates as location.
-     *
-     * @param loc  the location object
-     */
-    public PatchLocationHex(PatchLocation loc) { updateLocation(loc); }
-    
-    /**
-     * Creates a {@code PatchLocationHex} object at given coordinates.
+     * Creates a {@code PatchLocationHex} object for given coordinates.
      *
      * @param u  the coordinate in u direction
      * @param v  the coordinate in v direction
@@ -116,45 +98,17 @@ public final class PatchLocationHex extends PatchLocation {
      * @param z  the coordinate in z direction
      */
     public PatchLocationHex(int u, int v, int w, int z) {
-        this.u = u;
-        this.v = v;
-        this.w = w;
-        this.z = z;
-        this.zo = (byte) ((Math.abs(zOffset + z)) % 3);
-        this.r = (int) ((Math.abs(u) + Math.abs(v) + Math.abs(w)) / 2.0);
-        
-        calcTriangular();
-        calcChecks();
+        this(new CoordinateHex(u, v, w, z));
     }
     
-    @Override
-    public LocationContainer convert(int id) {
-        return new PatchLocationContainer(id, new int[] { u, v, w, z });
+    /**
+     * Creates a {@code PatchLocationHex} object at given coordinate.
+     *
+     * @param coordinate  the patch coordinate
+     */
+    public PatchLocationHex(Coordinate coordinate) {
+        super(coordinate, NUM_SUBCOORDINATES);
     }
-    
-    @Override
-    public PatchLocation getCopy() { return new PatchLocationHex(this); }
-    
-    @Override
-    public int[] getGridLocation() { return new int[] {u, v, w}; }
-    
-    @Override
-    public int getGridZ() { return z; }
-    
-    @Override
-    public int[] getLatLocation() { return xy[0]; }
-    
-    @Override
-    public int[][] getLatLocations() { return xy; }
-    
-    @Override
-    public int getLatZ() { return depthBounds + z - 1; }
-    
-    @Override
-    public double getGridSize() { return HEX_SIZE; }
-    
-    @Override
-    public double getLatSize() { return TRI_SIZE; }
     
     @Override
     public double getVolume() { return HEX_VOLUME; }
@@ -169,10 +123,16 @@ public final class PatchLocationHex extends PatchLocation {
     public double getArea() { return HEX_AREA; }
     
     @Override
+    public double getCoordinateSize() { return HEX_SIZE; }
+    
+    @Override
+    public double getSubcoordinateSize() { return TRI_SIZE; }
+    
+    @Override
     public double getRatio() { return HEX_RATIO; }
     
     @Override
-    public int getMax() { return 6; }
+    public int getMaximum() { return NUM_SUBCOORDINATES; }
     
     /**
      * Updates static configuration variables.
@@ -188,10 +148,47 @@ public final class PatchLocationHex extends PatchLocation {
         depth = series.depth;
         radiusBounds = series.radiusBounds;
         depthBounds = series.depthBounds;
+        heightOffset = series.height % 3 - series.height;
+    }
+    
+    @Override
+    void calculateOffset() {
+        offset = (byte) ((Math.abs(heightOffset + coordinate.z)) % 3);
+    }
+    
+    @Override
+    void calculateSubcoordinates() {
+        CoordinateHex hex = (CoordinateHex) coordinate;
         
-        // Calculate z offset for different layers of the simulation.
-        int depth = 2 * series.depthBounds - 1;
-        zOffset = depth % 3 - depth;
+        // Calculate coordinate of top center triangle.
+        int x = 3 * (hex.u + radiusBounds) - 2 + (offset == 2 ? -1 : offset);
+        int y = (hex.w - hex.v) + 2 * radiusBounds - 2 + (offset == 0 ? 0 : 1);
+        int z = depthBounds + hex.z - 1;
+        
+        // Set coordinates of triangles clockwise from top center.
+        for (int i = 0; i < NUM_SUBCOORDINATES; i++) {
+            subcoordinates.add(i, new CoordinateTri(x + X_OFF[i], y + Y_OFF[i], z));
+        }
+    }
+    
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Each direction of movement ({@code +u, -u, +v, -v, +w, -w, +z, -z}) is
+     * tracked by each bit within a byte.
+     */
+    @Override
+    void calculateChecks() {
+        CoordinateHex hex = (CoordinateHex) coordinate;
+        check = (byte) (
+            (hex.u == radius - 1 ? 0 : 1 << 7)
+            + (hex.u == 1 - radius ? 0 : 1 << 6)
+            + (hex.v == radius - 1 ? 0 : 1 << 5)
+            + (hex.v == 1 - radius ? 0 : 1 << 4)
+            + (hex.w == radius - 1 ? 0 : 1 << 3)
+            + (hex.w == 1 - radius ? 0 : 1 << 2)
+            + (hex.z == depth - 1 ? 0 : 1 << 1)
+            + (hex.z == 1 - depth ? 0 : 1 << 0));
     }
     
     /**
@@ -203,58 +200,8 @@ public final class PatchLocationHex extends PatchLocation {
      * additional inner segments are added.
      */
     @Override
-    public double calcPerimeter(double f) {
+    public double getPerimeter(double f) {
         return f * HEX_PERIMETER + (f == 1 ? 0 : 2 * HEX_SIDE);
-    }
-    
-    /**
-     * Updates hexagonal and triangular locations based on given {@code Location}.
-     *
-     * @param loc  the reference location
-     */
-    public void updateLocation(PatchLocation loc) {
-        PatchLocationHex hexLoc = (PatchLocationHex) loc;
-        u = hexLoc.u;
-        v = hexLoc.v;
-        w = hexLoc.w;
-        z = hexLoc.z;
-        zo = hexLoc.zo;
-        r = hexLoc.r;
-        
-        calcTriangular();
-        calcChecks();
-    }
-    
-    /**
-     * Calculates triangular coordinates based on hexagonal coordinates and offset.
-     */
-    private void calcTriangular() {
-        // Calculate coordinates of top center triangle.
-        int x = 3 * (u + radiusBounds) - 2 + (zo == 2 ? -1 : zo);
-        int y = (w - v) + 2 * radiusBounds - 2 + (zo == 0 ? 0 : 1);
-        
-        // Set coordinates of triangles clockwise from top center.
-        for (int i = 0; i < 6; i++) {
-            xy[i] = new int[] {x + X_OFF[i], y + Y_OFF[i]};
-        }
-    }
-    
-    /**
-     * Updates the possible moves that can be made.
-     * <p>
-     * Each direction of movement ({@code +u, -u, +v, -v, +w, -w, +z, -z}) is
-     * tracked by each bit within a byte.
-     */
-    private void calcChecks() {
-        check = (byte) (
-            (u == radius - 1 ? 0 : 1 << 7)
-            + (u == 1 - radius ? 0 : 1 << 6)
-            + (v == radius - 1 ? 0 : 1 << 5)
-            + (v == 1 - radius ? 0 : 1 << 4)
-            + (w == radius - 1 ? 0 : 1 << 3)
-            + (w == 1 - radius ? 0 : 1 << 2)
-            + (z == depth - 1 ? 0 : 1 << 1)
-            + (z == 1 - depth ? 0 : 1 << 0));
     }
     
     /**
@@ -265,94 +212,64 @@ public final class PatchLocationHex extends PatchLocation {
      * Neighbor list includes the current location.
      */
     @Override
-    public Location[] getNeighborLocations() {
-        Location[] neighbors = new Location[MOVES.length + 1];
+    public ArrayList<Location> getNeighbors() {
+        CoordinateHex hex = (CoordinateHex) coordinate;
+        ArrayList<Location> neighbors = new ArrayList<>(MOVES.length + 1);
         byte b;
-        
-        // Add current location.
-        neighbors[MOVES.length] = new PatchLocationHex(u, v, w, z);
         
         // Add neighbor locations.
         for (int i = 0; i < MOVES.length; i++) {
             // Adjust byte for vertical offset.
             if (i > 7) {
-                b = offsetByte(MOVES[i], 2 * zo);
+                b = offsetByte(MOVES[i], 2 * offset);
             } else {
                 b = MOVES[i];
             }
             
             // Add location if possible to move there.
             if ((b & check ^ b) == 0) {
-                neighbors[i] = new PatchLocationHex(
-                    u + (b >> 7 & 1) - (b >> 6 & 1),
-                    v + (b >> 5 & 1) - (b >> 4 & 1),
-                    w + (b >> 3 & 1) - (b >> 2 & 1),
-                    z + (b >> 1 & 1) - (b >> 0 & 1));
+                neighbors.add(new PatchLocationHex(
+                        hex.u + (b >> 7 & 1) - (b >> 6 & 1),
+                        hex.v + (b >> 5 & 1) - (b >> 4 & 1),
+                        hex.w + (b >> 3 & 1) - (b >> 2 & 1),
+                        hex.z + (b >> 1 & 1) - (b >> 0 & 1)
+                ));
             }
         }
+        
+        // Add current location.
+        neighbors.add(new PatchLocationHex(hex));
         
         return neighbors;
     }
     
-    /**
-     * Performs a left circular offset on the first six bits in a byte.
-     *
-     * @param b  the byte
-     * @param k  the offset
-     * @return  the offset byte
-     */
-    private byte offsetByte(byte b, int k) {
-        int left = b >> 2 & 0x3F; // left most 6 bits
-        int right = b & 0x3; // right most 2 bits
-        int shifted = (left << k & 0x3F) | (left >>> (6 - k) & 0x3F);
-        return (byte) (shifted << 2 | right);
-    }
-    
     @Override
-    public PatchLocation toLocation(int[] coords) {
-        return toHexLocation(coords);
+    public LocationContainer convert(int id) {
+        return new PatchLocationContainer(id, coordinate);
     }
     
     /**
-     * Converts {@link arcade.core.env.lat.Lattice} coordinates into a
-     * hexagonal {@link arcade.core.env.grid.Grid} location.
+     * Converts triangular {@link arcade.core.env.lat.Lattice} coordinates into
+     * a hexagonal {@link arcade.core.env.grid.Grid} coordinate.
      *
-     * @param coords  the lattice coordinates
-     * @return  the corresponding hexagonal grid location
+     * @param coordinate  the triangular coordinate
+     * @return  the corresponding hexagonal coordinate
      */
-    private static PatchLocation toHexLocation(int[] coords) {
-        int z = coords[2] - depthBounds + 1;
-        int zo = (byte) ((Math.abs(zOffset + z)) % 3);
-        
+    public static CoordinateHex translate(CoordinateTri coordinate) {
+        int z = coordinate.z - depthBounds + 1;
+        int zo = (byte) ((Math.abs(heightOffset + z)) % 3);
+
         // Calculate u coordinate.
-        double uu = (coords[0] - (zo == 2 ? -1 : zo) + 2) / 3.0 - radiusBounds;
+        double uu = (coordinate.x - (zo == 2 ? -1 : zo) + 2) / 3.0 - radiusBounds;
         int u = Math.round(Math.round(uu));
-        
+
         // Calculate v and w coordinates based on u.
-        int vw = coords[1] - 2 * radiusBounds + 2 - (zo == 0 ? 0 : 1);
+        int vw = coordinate.y - 2 * radiusBounds + 2 - (zo == 0 ? 0 : 1);
         int v = -(int) Math.floor((vw + u) / 2.0);
         int w = -(u + v);
         
         // Check if out of bounds.
         if (Math.abs(v) >= radius || Math.abs(w) >= radius) { return null; }
-        return new PatchLocationHex(u, v, w, z);
-    }
-    
-    /**
-     * Gets hash based on (u, v, w) coordinates.
-     *
-     * @return  the hash
-     */
-    public int hashCode() { return u + (v << 8) + (w << 16); }
-    
-    /**
-     * Checks if two locations have the same (u, v, w, z) coordinates.
-     *
-     * @param obj  the location to compare
-     * @return  {@code true} if locations have the same grid coordinates, {@code false} otherwise
-     */
-    public boolean equals(Object obj) {
-        PatchLocationHex hexLoc = (PatchLocationHex) obj;
-        return hexLoc.z == z && hexLoc.u == u && hexLoc.v == v && hexLoc.w == w;
+        return new CoordinateHex(u, v, w, z);
     }
 }
