@@ -17,9 +17,6 @@ public final class PatchSeries extends Series {
     /** Radius of the simulation. */
     public final int radius;
     
-    /** Margin of the simulation. */
-    public final int margin;
-    
     /** Depth of the simulation. */
     public final int depth;
     
@@ -49,7 +46,6 @@ public final class PatchSeries extends Series {
         // Set sizing.
         MiniBox series = setupDicts.get("series");
         this.radius = series.getInt("radius");
-        this.margin = series.getInt("margin");
         this.depth = series.getInt("depth");
         this.radiusBounds = series.getInt("radiusBounds");
         this.depthBounds = series.getInt("depthBounds");
