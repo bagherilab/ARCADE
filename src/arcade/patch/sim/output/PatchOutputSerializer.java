@@ -27,14 +27,11 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  * <p>
  * Generic serializers include:
  * <ul>
- *     <li>{@link PatchSeriesSerializer} for serializing {@link PatchSeries} settings</li>
+ *     <li>{@link PatchSeriesSerializer} for serializing {@link PatchSeries}</li>
  *     <li>{@link PatchCellSerializer} for serializing {@link PatchCellContainer}</li>
- *     <li>{@link LocationListSerializer} (override) for serializing
- *     {@link PatchLocationContainer} lists</li>
- *     <li>{@link CoordinateRectSerializer} for serializing rectangular
- *     {@link Coordinate} instances</li>
- *     <li>{@link CoordinateHexSerializer} for serializing hexagonal
- *     {@link Coordinate} instances</li>
+ *     <li>{@link LocationListSerializer} for serializing {@link PatchLocationContainer} lists</li>
+ *     <li>{@link CoordinateRectSerializer} for serializing rectangular {@link Coordinate}</li>
+ *     <li>{@link CoordinateHexSerializer} for serializing hexagonal {@link Coordinate}</li>
  * </ul>
  */
 
@@ -53,12 +50,18 @@ public final class PatchOutputSerializer {
      */
     static Gson makeGSON() {
         GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();
-        gsonBuilder.registerTypeAdapter(PatchSeries.class, new PatchSeriesSerializer());
-        gsonBuilder.registerTypeAdapter(CellContainer.class, new CellSerializer());
-        gsonBuilder.registerTypeAdapter(PatchCellContainer.class, new PatchCellSerializer());
-        gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE, new LocationListSerializer());
-        gsonBuilder.registerTypeAdapter(CoordinateRect.class,  new CoordinateRectSerializer());
-        gsonBuilder.registerTypeAdapter(CoordinateHex.class, new CoordinateHexSerializer());
+        gsonBuilder.registerTypeAdapter(PatchSeries.class,
+                new PatchSeriesSerializer());
+        gsonBuilder.registerTypeAdapter(CellContainer.class,
+                new CellSerializer());
+        gsonBuilder.registerTypeAdapter(PatchCellContainer.class,
+                new PatchCellSerializer());
+        gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE,
+                new LocationListSerializer());
+        gsonBuilder.registerTypeAdapter(CoordinateRect.class,
+                new CoordinateRectSerializer());
+        gsonBuilder.registerTypeAdapter(CoordinateHex.class,
+                new CoordinateHexSerializer());
         return gsonBuilder.create();
     }
     

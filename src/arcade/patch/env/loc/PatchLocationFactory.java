@@ -53,7 +53,7 @@ public abstract class PatchLocationFactory implements LocationFactory {
     public void loadLocations(Series series) {
         // Load locations.
         ArrayList<LocationContainer> containers = series.loader.loadLocations();
-
+        
         // Map loaded container to factory.
         for (LocationContainer container : containers) {
             PatchLocationContainer locationContainer = (PatchLocationContainer) container;
