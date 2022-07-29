@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import com.google.gson.Gson;
 import sim.engine.Schedule;
 import sim.engine.SimState;
@@ -29,6 +31,9 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 public abstract class OutputSaver implements Steppable {
     /** Logger for {@code OutputSaver}. */
     private static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());
+    
+    /** Number of elements to format in output string. */
+    private static final int FORMAT_ELEMENTS = 6;
     
     /** JSON representation. */
     final Gson gson;
@@ -74,7 +79,8 @@ public abstract class OutputSaver implements Steppable {
      */
     public void saveSeries() {
         String path = series.getPrefix() + ".json";
-        write(path, format(gson.toJson(series)));
+        String json = gson.toJson(series);
+        write(path, format(json, FORMAT_ELEMENTS));
     }
     
     /**
@@ -84,7 +90,8 @@ public abstract class OutputSaver implements Steppable {
      */
     public void saveCells(int tick) {
         String path = prefix + String.format("_%06d.CELLS.json", tick);
-        write(path, format(gson.toJson(sim.getCells(), DEFAULT_CELL_TYPE)));
+        String json = gson.toJson(sim.getCells(), DEFAULT_CELL_TYPE);
+        write(path, format(json, FORMAT_ELEMENTS));
     }
     
     /**
@@ -94,7 +101,8 @@ public abstract class OutputSaver implements Steppable {
      */
     public void saveLocations(int tick) {
         String path = prefix + String.format("_%06d.LOCATIONS.json", tick);
-        write(path, format(gson.toJson(sim.getLocations(), DEFAULT_LOCATION_TYPE)));
+        String json = gson.toJson(sim.getLocations(), DEFAULT_LOCATION_TYPE);
+        write(path, format(json, FORMAT_ELEMENTS));
     }
     
     /**
@@ -150,26 +158,33 @@ public abstract class OutputSaver implements Steppable {
     /**
      * Formats the arrays in the given string.
      * <p>
-     * Method modifies the output of GSON pretty printing by:
-     * <ul>
-     *     <li>Converting {@code [\n A,\n B\n ]} to {@code [ A, B ]}</li>
-     *     <li>Converting {@code [\n A,\n B,\n C\n ]} to {@code [ A, B, C ]}</li>
-     *     <li>Converting {@code [\n A,\n B,\n C,\n D\n ]} to {@code [ A, B, C, D ]}</li>
-     * </ul>
+     * Method reformats the output of GSON pretty printing by converting
+     * {@code [\n A,\n B,\n ... N\n ]} to {@code [ A, B, ..., N ]} for lists of
+     * up to N elements.
      *
      * @param string  the string to format
+     * @param maxElements  the maximum number of elements to format.
      * @return  the formatted string
      */
-    protected static String format(String string) {
-        String r1 = "\\[\\n[\\s\\t]+([\\-\\d\\.]+),\\n[\\s\\t]+([\\-\\d\\.]+)\\n\\s+\\]";
-        String r2 = "\\[\\n[\\s\\t]+([\\-\\d\\.]+),\\n[\\s\\t]+([\\-\\d\\.]+),"
-                + "\\n[\\s\\t]+([\\-\\d\\.]+)\\n\\s+\\]";
-        String r3 = "\\[\\n[\\s\\t]+([\\-\\d\\.]+),\\n[\\s\\t]+([\\-\\d\\.]+)"
-                + ",\\n[\\s\\t]+([\\-\\d\\.]+),\\n[\\s\\t]+([\\-\\d\\.]+)\\n\\s+\\]";
+    protected static String format(String string, int maxElements) {
         String formatted = string;
-        formatted = formatted.replaceAll(r1, "[$1, $2]");
-        formatted = formatted.replaceAll(r2, "[$1, $2, $3]");
-        formatted = formatted.replaceAll(r3, "[$1, $2, $3, $4]");
+        
+        for (int elements = 1; elements < maxElements + 1; elements++) {
+            String inputPattern = IntStream.rangeClosed(1, elements)
+                    .mapToObj(Integer::toString)
+                    .map(s -> "([\\-\\d\\.]+)")
+                    .collect(Collectors.joining(",\\n[\\s\\t]+"));
+            inputPattern = "\\[\\n[\\s\\t]+" + inputPattern + "\\n[\\s\\t]+\\]";
+            
+            String outputPattern = IntStream.rangeClosed(1, elements)
+                    .mapToObj(Integer::toString)
+                    .map(s -> "$" + s)
+                    .collect(Collectors.joining(", "));
+            outputPattern = "[" + outputPattern + "]";
+            
+            formatted = formatted.replaceAll(inputPattern, outputPattern);
+        }
+        
         return formatted;
     }
 }
