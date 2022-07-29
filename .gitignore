@@ -9,5 +9,6 @@ bin/
 lib/
 build/
 docs/
+working/
 .DS_Store
 MANIFEST.MF
