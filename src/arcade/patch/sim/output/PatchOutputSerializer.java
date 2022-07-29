@@ -28,6 +28,13 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  * Generic serializers include:
  * <ul>
  *     <li>{@link PatchSeriesSerializer} for serializing {@link PatchSeries} settings</li>
+ *     <li>{@link PatchCellSerializer} for serializing {@link PatchCellContainer}</li>
+ *     <li>{@link LocationListSerializer} (override) for serializing
+ *     {@link PatchLocationContainer} lists</li>
+ *     <li>{@link CoordinateRectSerializer} for serializing rectangular
+ *     {@link Coordinate} instances</li>
+ *     <li>{@link CoordinateHexSerializer} for serializing hexagonal
+ *     {@link Coordinate} instances</li>
  * </ul>
  */
 
@@ -150,7 +157,7 @@ public final class PatchOutputSerializer {
     /**
      * Serializer for list of {@link PatchLocationContainer} objects.
      * <p>
-     * This serializer overrides the {@code} LocationListSerializer defined
+     * This serializer overrides the {@code LocationListSerializer} defined
      * in {@link OutputSerializer}.
      * The container object is formatted as:
      * <pre>

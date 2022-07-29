@@ -43,7 +43,7 @@ class PatchColorMaps {
     /** Color map for cell volume. */
     final Colors mapVolume;
     
-    /** Color map for cell volume. */
+    /** Color map for cell height. */
     final Colors mapHeight;
     
     /**
