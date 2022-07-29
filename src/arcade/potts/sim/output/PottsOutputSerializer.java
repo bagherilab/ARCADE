@@ -25,10 +25,10 @@ import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
  * <p>
  * Generic serializers include:
  * <ul>
- *     <li>{@link PottsSeriesSerializer} for serializing {@link PottsSeries} settings</li>
+ *     <li>{@link PottsSeriesSerializer} for serializing {@link PottsSeries}</li>
  *     <li>{@link PottsCellSerializer} for serializing {@link PottsCellContainer}</li>
  *     <li>{@link PottsLocationSerializer} for serializing {@link PottsLocationContainer}</li>
- *     <li>{@link VoxelSerializer} for serializing {@link Voxel} instances</li>
+ *     <li>{@link VoxelSerializer} for serializing {@link Voxel}</li>
  * </ul>
  */
 

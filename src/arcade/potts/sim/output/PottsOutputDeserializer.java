@@ -26,11 +26,9 @@ import static arcade.potts.util.PottsEnums.Phase;
  * <p>
  * Deserializers include:
  * <ul>
- *     <li>{@link PottsCellDeserializer} for deserializing a
- *     {@link PottsCellContainer} instance</li>
- *     <li>{@link PottsLocationDeserializer} for deserializing a
- *     {@link PottsLocationContainer} instance</li>
- *     <li>{@link VoxelDeserializer} for deserializing a {@link Voxel} instance</li>
+ *     <li>{@link PottsCellDeserializer} for deserializing {@link PottsCellContainer}</li>
+ *     <li>{@link PottsLocationDeserializer} for deserializing {@link PottsLocationContainer}</li>
+ *     <li>{@link VoxelDeserializer} for deserializing {@link Voxel}</li>
  * </ul>
  */
 
@@ -57,7 +55,8 @@ public final class PottsOutputDeserializer {
                 new PottsLocationDeserializer());
         gsonBuilder.registerTypeAdapter(PottsLocationContainer.class,
                 new PottsLocationDeserializer());
-        gsonBuilder.registerTypeAdapter(Voxel.class, new VoxelDeserializer());
+        gsonBuilder.registerTypeAdapter(Voxel.class,
+                new VoxelDeserializer());
         return gsonBuilder.create();
     }
     
