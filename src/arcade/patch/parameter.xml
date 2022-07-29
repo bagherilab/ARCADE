@@ -1,6 +1,6 @@
 <parameters>
     <!-- default parameters for series -->
-    <default id="RADIUS" value="34" />
+    <default id="RADIUS" value="1" />
     <default id="DEPTH" value="1" />
 
     <!-- default parameters for patch -->

@@ -124,6 +124,11 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     @Override
     public void finish() {
         super.finish();
+        
+        // Finalize saver.
+        if (!series.isVis) {
+            doOutput(false);
+        }
     }
     
     /**
