@@ -10,7 +10,7 @@ import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Term;
 
-public class PottsEnumTest {
+public class PottsEnumsTest {
     @Test(expected = UnsupportedOperationException.class)
     public void constructor_called_throwsException() {
         PottsEnums enums = new PottsEnums();
