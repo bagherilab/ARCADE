@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 public class PottsARCADETest {
     static String makeSetup(String name) {
         return "<set>"
-                + "<series name=\"" + name + "\" ticks=\"1\" interval=\"1\" height=\"1\" start=\"0\" end=\"0\">"
+                + "<series name=\"" + name + "\" ticks=\"1\" interval=\"1\" start=\"0\" end=\"0\">"
                 + "</series></set>";
     }
     
