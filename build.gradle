@@ -50,19 +50,7 @@ jacocoTestReport {
         classDirectories.from = files(classDirectories.files.collect {
             fileTree(dir: it, exclude: [
                 "arcade/core/gui/*",
-                "arcade/core/vis/*",
-                "arcade/core/util/Graph*",
-                "arcade/core/util/Matrix*",
-                "arcade/core/util/Solver*",
-                "arcade/core/util/Parameter*",
-                "arcade/core/util/Colors*",
-                "arcade/potts/vis/*",
-                "arcade/agent/*",
-                "arcade/env/*",
-                "arcade/vis/*",
-                "arcade/util/*",
-                "arcade/sim/*",
-                "arcade/gui/*"
+                "arcade/*/vis/*",
             ])
         })
     }
