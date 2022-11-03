@@ -1,13 +1,20 @@
 FROM amazoncorretto:8
 
+WORKDIR /home
+
 RUN yum -y install unzip aws-cli
 RUN yum -y install tar
 RUN yum -y install xz
 RUN mkdir input output init
 
-COPY arcade-3.1.jar /arcade.jar
+COPY arcade-3.1.jar ./arcade.jar
 
-COPY arcade.sh /arcade.sh
-RUN chmod +x /arcade.sh
+COPY arcade.sh ./arcade.sh
+RUN chmod +x ./arcade.sh
 
-ENTRYPOINT /arcade.sh
+RUN yum -y install shadow-utils
+RUN useradd nonroot
+RUN chown nonroot /mnt/ input/ output/ init/
+USER nonroot
+
+ENTRYPOINT ./arcade.sh

@@ -104,6 +104,7 @@ then
 			aws s3 cp . $OUTPUT_FILE_PATH --recursive --exclude "*" --include "*.json" --exclude "*/*"
 		;;
 		LOCAL)
+			mkdir -p cp $OUTPUT_FILE_PATH
 			cp *.tar.xz $OUTPUT_FILE_PATH
 			cp *.json $OUTPUT_FILE_PATH
 		;;
