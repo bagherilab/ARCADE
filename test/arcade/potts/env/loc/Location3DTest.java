@@ -1114,12 +1114,13 @@ public class Location3DTest {
         for (int k = 0; k < h; k++) {
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
+                    Voxel voxel = new Voxel(i - n / 2, j - n / 2, k - h / 2);
                     if (i == n / 2 && j == n / 2) {
-                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - h / 2));
+                        voxelsB.add(voxel);
                     } else if (randomDoubleBetween(0, 1) < 0.5) {
-                        voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - h / 2));
+                        voxelsA.add(voxel);
                     } else {
-                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - h / 2));
+                        voxelsB.add(voxel);
                     }
                 }
             }
@@ -1147,12 +1148,13 @@ public class Location3DTest {
         for (int k = 0; k < h; k++) {
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
+                    Voxel voxel = new Voxel(i - n / 2, j - n / 2, k - h / 2);
                     if (i == n / 2 && j == n / 2) {
-                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - h / 2));
+                        voxelsB.add(voxel);
                     } else if (randomDoubleBetween(0, 1) < 0.5) {
-                        voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - h / 2));
+                        voxelsA.add(voxel);
                     } else {
-                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - h / 2));
+                        voxelsB.add(voxel);
                     }
                 }
             }
@@ -1175,12 +1177,13 @@ public class Location3DTest {
         for (int k = 0; k < h; k++) {
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
+                    Voxel voxel = new Voxel(i - n / 2, j - n / 2, k - h / 2);
                     if (i == n / 2 && j == n / 2) {
-                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - h / 2));
+                        voxelsB.add(voxel);
                     } else if (randomDoubleBetween(0, 1) < 0.5) {
-                        voxelsA.add(new Voxel(i - n / 2, j - n / 2, k - h / 2));
+                        voxelsA.add(voxel);
                     } else {
-                        voxelsB.add(new Voxel(i - n / 2, j - n / 2, k - h / 2));
+                        voxelsB.add(voxel);
                     }
                 }
             }
