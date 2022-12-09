@@ -2,7 +2,6 @@ package arcade.potts.env.loc;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
-import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.loc.*;
 import arcade.potts.agent.cell.PottsCellContainer;
@@ -53,7 +52,7 @@ public final class PottsLocationContainer implements LocationContainer {
      * @param regions  the list of region voxels
      */
     public PottsLocationContainer(int id, Voxel center, ArrayList<Voxel> voxels,
-                             EnumMap<Region, ArrayList<Voxel>> regions) {
+                                  EnumMap<Region, ArrayList<Voxel>> regions) {
         this.id = id;
         this.center = center;
         this.allVoxels = voxels;
@@ -76,29 +75,15 @@ public final class PottsLocationContainer implements LocationContainer {
      * @return  a {@link PottsLocation} instance
      */
     private Location convert(PottsLocationFactory factory, PottsCellContainer cell) {
-        // Set 3D and parse cell container.
+        // Check for 3D.
         boolean is3D = (factory instanceof PottsLocationFactory3D);
-        int target = cell.voxels;
         
         // Select voxels.
-        ArrayList<Voxel> voxels;
-        if (target == allVoxels.size()) {
-            voxels = new ArrayList<>(allVoxels);
-        } else {
-            voxels = factory.getSelected(allVoxels, center, target);
-        }
-        
-        // Add or remove voxels to reach target number.
-        int size = voxels.size();
-        if (size < target) {
-            PottsLocationFactory.increase(allVoxels, voxels, target, factory.random);
-        } else if (size > target) {
-            PottsLocationFactory.decrease(voxels, target, factory.random);
-        }
+        int target = cell.voxels;
+        ArrayList<Voxel> voxels = select(target, factory, allVoxels);
         
         // Make location.
         PottsLocation location;
-        MersenneTwisterFast random = factory.random;
         
         // Add regions.
         if (cell.regionVoxels != null) {
@@ -112,15 +97,7 @@ public final class PottsLocationContainer implements LocationContainer {
                 // Select region voxels.
                 int regTarget = regionTargetMap.get(region);
                 ArrayList<Voxel> allRegVoxels = regions.get(region);
-                ArrayList<Voxel> regVoxels = factory.getSelected(allRegVoxels, center, regTarget);
-                
-                // Add or remove region voxels to reach target number.
-                int regSize = regVoxels.size();
-                if (regSize < regTarget) {
-                    PottsLocationFactory.increase(allRegVoxels, regVoxels, regTarget, random);
-                } else if (regSize > regTarget) {
-                    PottsLocationFactory.decrease(regVoxels, regTarget, random);
-                }
+                ArrayList<Voxel> regVoxels = select(regTarget, factory, allRegVoxels);
                 
                 // Assign regions.
                 regVoxels.forEach(voxel -> location.assign(region, voxel));
@@ -130,5 +107,35 @@ public final class PottsLocationContainer implements LocationContainer {
         }
         
         return location;
+    }
+    
+    /**
+     * Selects target number of voxels from list of valid voxels.
+     *
+     * @param target  the target number of voxels
+     * @param factory  the location factory instance
+     * @param voxels  the list of valid voxels
+     * @return  a list of selected voxels
+     */
+    private ArrayList<Voxel> select(int target, PottsLocationFactory factory,
+                                    ArrayList<Voxel> voxels) {
+        ArrayList<Voxel> selected;
+        
+        // Select voxels from list of all valid voxels.
+        if (target == voxels.size()) {
+            selected = new ArrayList<>(voxels);
+        } else {
+            selected = factory.getSelected(voxels, center, target);
+        }
+    
+        // Add or remove voxels to reach target number.
+        int size = selected.size();
+        if (size < target) {
+            PottsLocationFactory.increase(voxels, selected, target, factory.random);
+        } else if (size > target) {
+            PottsLocationFactory.decrease(selected, target, factory.random);
+        }
+        
+        return selected;
     }
 }

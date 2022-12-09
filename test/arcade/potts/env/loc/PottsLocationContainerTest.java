@@ -1,6 +1,7 @@
 package arcade.potts.env.loc;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -80,6 +81,21 @@ public class PottsLocationContainerTest {
     }
     
     @Test
+    public void convert_noRegionsEqual_createsObject() {
+        int n = 100;
+        for (int i = 1; i < n; i++) {
+            Voxel center = new Voxel(0, 0, 0);
+            ArrayList<Voxel> voxels = new ArrayList<>(Collections.nCopies(i, new Voxel(0, 0, 0)));
+            PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null, i, 0, 0);
+            PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, null);
+        
+            Location location = locationContainer.convert(FACTORY, cellContainer);
+            assertEquals(i, (int) location.getVolume());
+            assertTrue(location instanceof PottsLocation);
+        }
+    }
+    
+    @Test
     public void convert_noRegionsWithIncrease_createsObject() {
         int n = 100;
         for (int i = 2; i < n; i++) {
@@ -119,6 +135,31 @@ public class PottsLocationContainerTest {
             EnumMap<Region, ArrayList<Voxel>> regionVoxelMap = new EnumMap<>(Region.class);
             regionVoxelMap.put(Region.DEFAULT, voxels);
             regionVoxelMap.put(Region.NUCLEUS, voxels);
+            
+            EnumMap<Region, Integer> regionTargetMap = new EnumMap<>(Region.class);
+            regionTargetMap.put(Region.DEFAULT, i);
+            regionTargetMap.put(Region.NUCLEUS, n - i);
+            PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null,
+                    n, regionTargetMap, 0, 0, null, null);
+            PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, regionVoxelMap);
+            
+            Location location = locationContainer.convert(FACTORY, cellContainer);
+            assertEquals(n, (int) location.getVolume());
+            assertTrue(location instanceof PottsLocations);
+            assertEquals(n - i, (int) ((PottsLocations) location).locations.get(Region.NUCLEUS).getVolume());
+        }
+    }
+    
+    @Test
+    public void convert_withRegionsEqual_createsObject() {
+        int n = 100;
+        for (int i = 60; i < n; i++) {
+            Voxel center = new Voxel(0, 0, 0);
+            ArrayList<Voxel> voxels = new ArrayList<>(Collections.nCopies(n, new Voxel(0, 0, 0)));
+            
+            EnumMap<Region, ArrayList<Voxel>> regionVoxelMap = new EnumMap<>(Region.class);
+            regionVoxelMap.put(Region.DEFAULT, new ArrayList<>(Collections.nCopies(i, new Voxel(0, 0, 0))));
+            regionVoxelMap.put(Region.NUCLEUS, new ArrayList<>(Collections.nCopies(n - i, new Voxel(0, 0, 0))));
             
             EnumMap<Region, Integer> regionTargetMap = new EnumMap<>(Region.class);
             regionTargetMap.put(Region.DEFAULT, i);
