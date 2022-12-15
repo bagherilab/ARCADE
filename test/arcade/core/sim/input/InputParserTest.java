@@ -9,7 +9,9 @@ import static arcade.core.sim.input.InputParser.*;
 
 public class InputParserTest {
     private static final String COMMAND_ID_1 = randomString();
+    
     private static final String COMMAND_ID_2 = randomString();
+    
     private static final String COMMAND_ID_3 = randomString();
     
     @Test
