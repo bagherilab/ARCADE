@@ -53,7 +53,7 @@ public final class PatchSeries extends Series {
     
     @Override
     protected String getSimClass() {
-        String geometry = patch.get("GEOMETRY").toUpperCase().equals("HEX") ? "Hex" : "Rect";
+        String geometry = patch.get("GEOMETRY").equalsIgnoreCase("HEX") ? "Hex" : "Rect";
         return "arcade.patch.sim.PatchSimulation" + geometry;
     }
     
@@ -141,6 +141,7 @@ public final class PatchSeries extends Series {
             population.put("CODE", code++);
             this.populations.put(id, population);
             
+            // Add population init if given. If not given or invalid, set to zero.
             int init = (isValidNumber(p, "init")
                     ? (int) Double.parseDouble(p.getValue("init")) : 0);
             population.put("INIT", init);
@@ -149,7 +150,7 @@ public final class PatchSeries extends Series {
             Box parameters = p.filterBoxByTag("PARAMETER");
             MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
             MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
-
+            
             // Add in parameters. Start with value (if given) or default (if not
             // given). Then apply any scaling.
             for (String parameter : populationDefaults.getKeys()) {
