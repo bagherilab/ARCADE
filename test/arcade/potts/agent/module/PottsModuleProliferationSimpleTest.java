@@ -20,12 +20,19 @@ import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsModuleProliferationSimpleTest {
     private static final double EPSILON = 1E-10;
+    
     private static final double R = 1.0;
+    
     private static final int N = 0;
+    
     static MersenneTwisterFast random;
+    
     static Poisson poissonMock;
+    
     static PottsSimulation simMock;
+    
     static MiniBox parameters;
+    
     static Potts pottsMock;
     
     @BeforeClass

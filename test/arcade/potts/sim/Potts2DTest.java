@@ -15,6 +15,7 @@ import static arcade.potts.util.PottsEnums.Term;
 
 public class Potts2DTest {
     static Potts2D potts;
+    
     private static final double[][] AREA_MCS = new double[][] {
             {    1, 0.6842640 }, {    9, 1.2501410 }, {   25, 1.8321450 },
             {   45, 2.3367460 }, {   69, 2.8135120 }, {  109, 3.4554160 },

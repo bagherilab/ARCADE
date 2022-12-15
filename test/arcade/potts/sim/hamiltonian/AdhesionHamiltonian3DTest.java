@@ -12,7 +12,9 @@ import static arcade.potts.sim.hamiltonian.AdhesionHamiltonian3D.NEIGHBORHOOD_SI
 
 public class AdhesionHamiltonian3DTest {
     private static final double EPSILON = 1E-10;
+    
     static final int REGION_DEFAULT = Region.DEFAULT.ordinal();
+    
     static final int REGION_NUCLEUS = Region.NUCLEUS.ordinal();
     
     static Potts makePottsMock() {

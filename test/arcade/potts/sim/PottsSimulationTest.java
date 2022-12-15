@@ -31,12 +31,19 @@ import static arcade.potts.util.PottsEnums.Ordering;
 
 public class PottsSimulationTest {
     static final long RANDOM_SEED = randomSeed();
+    
     private static final int TOTAL_LOCATIONS = 6;
+    
     static Series seriesZeroPop;
+    
     static Series seriesOnePop;
+    
     static Series seriesMultiPop;
+    
     static Series seriesNullCell;
+    
     static Series seriesNullLocation;
+    
     static Series seriesNullBoth;
     
     static Series createSeries(int[] pops, String[] keys) {
@@ -87,7 +94,9 @@ public class PottsSimulationTest {
     
     static class PottsSimulationMock extends PottsSimulation {
         private final HashMap<MiniBox, HashMap<Integer, PottsLocation>> locationMap = new HashMap<>();
+        
         private final HashMap<MiniBox, HashMap<Integer, CellContainer>> cellContainerMap = new HashMap<>();
+        
         private final HashMap<MiniBox, HashMap<Integer, LocationContainer>> locationContainerMap = new HashMap<>();
         
         PottsSimulationMock(long seed, Series series) { super(seed, series); }

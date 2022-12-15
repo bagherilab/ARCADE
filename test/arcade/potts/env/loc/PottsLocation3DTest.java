@@ -10,13 +10,21 @@ import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
 
 public class PottsLocation3DTest {
     static MersenneTwisterFast randomDoubleZero;
+    
     static MersenneTwisterFast randomDoubleOne;
+    
     static ArrayList<Voxel> voxelListA;
+    
     static ArrayList<Voxel> voxelListB;
+    
     static ArrayList<Voxel> voxelListC;
+    
     static ArrayList<Voxel> voxelListAC;
+    
     static ArrayList<Voxel> voxelListCA;
+    
     static ArrayList<Voxel> voxelListBC;
+    
     static ArrayList<Voxel> voxelListAB;
     
     @BeforeClass

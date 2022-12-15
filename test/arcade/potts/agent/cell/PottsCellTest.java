@@ -30,29 +30,53 @@ import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsCellTest {
     private static final double EPSILON = 1E-8;
+    
     private static final double OFFSET = 0.01;
+    
     private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
+    
     static EnumMap<Region, Double> criticalVolumesRegionMock;
+    
     static EnumMap<Region, Double> criticalHeightsRegionMock;
+    
     static Location locationMock;
+    
     static int locationVolume;
+    
     static int locationHeight;
+    
     static int locationSurface;
+    
     static EnumMap<Region, Integer> locationRegionVolumes;
+    
     static EnumMap<Region, Integer> locationRegionHeights;
+    
     static EnumMap<Region, Integer> locationRegionSurfaces;
+    
     static int cellID = randomIntBetween(1, 10);
+    
     static int cellParent = randomIntBetween(1, 10);
+    
     static int cellPop = randomIntBetween(1, 10);
+    
     static int cellAge = randomIntBetween(1, 1000);
+    
     static int cellDivisions = randomIntBetween(1, 100);
+    
     static double cellCriticalVolume = randomDoubleBetween(10, 100);
+    
     static double cellCriticalHeight = randomDoubleBetween(10, 100);
+    
     static State cellState = State.QUIESCENT;
+    
     static PottsCell cellDefault;
+    
     static PottsCell cellWithRegions;
+    
     static PottsCell cellWithoutRegions;
+    
     static EnumSet<Region> regionList;
+    
     static MiniBox parametersMock;
     
     @BeforeClass

@@ -23,6 +23,7 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class PottsCellFactoryTest {
     private static final double EPSILON = 1E-10;
+    
     final MersenneTwisterFast random = mock(MersenneTwisterFast.class);
     
     static Series createSeries(int[] init) {

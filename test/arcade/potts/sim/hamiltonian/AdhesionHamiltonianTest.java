@@ -16,11 +16,13 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 public class AdhesionHamiltonianTest {
     private static final double EPSILON = 1E-10;
+    
     private static final double[] ADHESION_ID = {
             0,
             randomDoubleBetween(0, 10),
             randomDoubleBetween(0, 10)
     };
+    
     private static final double[] ADHESION_REGION = {
             0,
             randomDoubleBetween(0, 10),

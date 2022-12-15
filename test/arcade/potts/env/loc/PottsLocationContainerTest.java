@@ -16,7 +16,9 @@ import static arcade.potts.env.loc.PottsLocationFactoryTest.PottsLocationFactory
 
 public class PottsLocationContainerTest {
     static final PottsLocationFactory FACTORY = new PottsLocationFactoryMock();
+    
     static final PottsLocationFactory2D FACTORY_2D = mock(PottsLocationFactory2D.class, CALLS_REAL_METHODS);
+    
     static final PottsLocationFactory3D FACTORY_3D = mock(PottsLocationFactory3D.class, CALLS_REAL_METHODS);
     
     @BeforeClass

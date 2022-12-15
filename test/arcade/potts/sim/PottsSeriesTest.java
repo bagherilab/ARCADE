@@ -20,8 +20,11 @@ import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsSeriesTest {
     private static final double EPSILON = 1E-10;
+    
     private static final double DS = randomDoubleBetween(2, 10);
+    
     private static final double DT = randomDoubleBetween(0.5, 2);
+    
     private static final Box PARAMETERS = new Box();
     
     private static final String[] REGION_IDS = new String[] {
@@ -104,7 +107,9 @@ public class PottsSeriesTest {
     };
     
     private static final String POPULATION_ID_1 = randomString();
+    
     private static final String POPULATION_ID_2 = randomString();
+    
     private static final String POPULATION_ID_3 = randomString();
     
     private static final String[] POPULATION_KEYS = new String[] {
@@ -114,6 +119,7 @@ public class PottsSeriesTest {
     };
     
     private static final MiniBox POTTS = new MiniBox();
+    
     private static final MiniBox POPULATION = new MiniBox();
     
     @BeforeClass

@@ -18,6 +18,7 @@ import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsCellContainerTest {
     private static final double EPSILON = 1E-10;
+    
     private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
     
     @Test

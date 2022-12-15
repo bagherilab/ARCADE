@@ -10,6 +10,7 @@ import static arcade.core.util.Enums.Region;
 
 public class PottsLocations3DTest {
     static MersenneTwisterFast randomDoubleZero;
+    
     static MersenneTwisterFast randomDoubleOne;
     
     @BeforeClass

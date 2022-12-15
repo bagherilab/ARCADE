@@ -18,6 +18,7 @@ import static arcade.potts.util.PottsEnums.Term;
 
 public class Potts3DTest {
     static Potts3D potts;
+    
     private static final double[][] VOLUME_MCS = new double[][]{
             { 19669, 13, 4.441502 }, {  1586,  2, 1.000000 }, { 12688, 16, 4.703909 },
             { 17430, 14, 4.553762 }, { 11055, 11, 3.770773 }, { 14224, 16, 4.771082 },

@@ -18,12 +18,19 @@ import static arcade.potts.util.PottsEnums.Phase;
 
 public class PottsModuleApoptosisSimpleTest {
     private static final double EPSILON = 1E-10;
+    
     private static final double R = 1.0;
+    
     private static final int N = 0;
+    
     static MersenneTwisterFast random;
+    
     static Poisson poissonMock;
+    
     static PottsSimulation simMock;
+    
     static PottsCell cellMock;
+    
     static MiniBox parameters;
     
     @BeforeClass

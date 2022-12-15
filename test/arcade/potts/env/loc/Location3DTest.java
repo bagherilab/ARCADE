@@ -12,9 +12,13 @@ import static arcade.potts.util.PottsEnums.Direction;
 
 public class Location3DTest {
     private static final double EPSILON = 1E-10;
+    
     static ArrayList<Voxel> voxelListForDiametersXY;
+    
     static ArrayList<Voxel> voxelListForDiametersYZ;
+    
     static ArrayList<Voxel> voxelListForDiametersZX;
+    
     private static final int[][] VOLUME_SURFACE = new int[][] {
             { 1, 1, 5 },
             { 9, 1, 30 },

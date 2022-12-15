@@ -16,20 +16,35 @@ import static arcade.potts.util.PottsEnums.Direction;
 
 public class PottsLocationsTest {
     private static final double EPSILON = 1E-10;
+    
     static MersenneTwisterFast randomDoubleZero;
+    
     static MersenneTwisterFast randomDoubleOne;
+    
     static ArrayList<Voxel> voxelListForVolumeSurfaceHeight;
+    
     static ArrayList<Voxel> voxelListForMultipleRegionsA;
+    
     static ArrayList<Voxel> voxelListForMultipleRegionsB;
+    
     static ArrayList<Voxel> voxelListForMultipleRegions;
+    
     static ArrayList<Voxel> voxelListForAddRemove;
+    
     static ArrayList<Voxel> voxelListForRegionAddRemove;
+    
     static ArrayList<Voxel> voxelListSingle;
+    
     static ArrayList<Voxel> voxelListDouble;
+    
     static ArrayList<Voxel> voxelListA;
+    
     static ArrayList<Voxel> voxelListB;
+    
     static ArrayList<Voxel> voxelListAB;
+    
     static final int LOCATIONS_SURFACE = randomIntBetween(0, 100);
+    
     static final int LOCATIONS_HEIGHT = randomIntBetween(0, 100);
     
     @BeforeClass

@@ -24,9 +24,13 @@ import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsTest {
     private static final double EPSILON = 1E-10;
+    
     private static final double TEMPERATURE = 10;
+    
     private static final double R = randomDoubleBetween(0, 1);
+    
     private static final double R_PLUS = Math.exp(-3 / TEMPERATURE) + EPSILON;
+    
     private static final double R_MINUS = Math.exp(-3 / TEMPERATURE) - EPSILON;
     
     static class PottsMock extends Potts {

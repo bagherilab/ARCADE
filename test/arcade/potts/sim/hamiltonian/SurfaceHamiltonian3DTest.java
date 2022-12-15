@@ -9,6 +9,7 @@ import static arcade.core.util.Enums.Region;
 
 public class SurfaceHamiltonian3DTest {
     static final int REGION_DEFAULT = Region.DEFAULT.ordinal();
+    
     static final int REGION_NUCLEUS = Region.NUCLEUS.ordinal();
     
     static Potts makePottsMock() {
