@@ -170,6 +170,11 @@
             <property name="publicMemberPattern" value="^series*" />
         </module>
 
+        <!-- Checks for empty lines between class members -->
+        <module name="EmptyLineSeparator">
+            <property name="allowMultipleEmptyLines" value="false"/>
+        </module>
+
         <!-- Miscellaneous other checks -->
         <module name="ArrayTypeStyle" />
         <module name="CommentsIndentation" />

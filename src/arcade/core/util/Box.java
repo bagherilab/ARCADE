@@ -157,7 +157,6 @@ public class Box {
         return result;
     }
     
-    
     /**
      * Filters box for entries matching the given tag.
      *

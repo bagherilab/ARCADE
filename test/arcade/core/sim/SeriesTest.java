@@ -23,21 +23,37 @@ import static arcade.core.sim.Series.SEED_OFFSET;
 
 public class SeriesTest {
     private static final double EPSILON = 1E-8;
+    
     private static final double DS = randomDoubleBetween(1, 10);
+    
     private static final double DT = randomDoubleBetween(0.5, 2);
+    
     private static final Box PARAMETERS = new Box();
+    
     private static final String TEST_NAME = "DEFAULT_NAME";
+    
     private static final String TEST_PATH = "/default/path/";
+    
     private static final int DEFAULT_START_SEED = randomIntBetween(1, 100);
+    
     private static final int DEFAULT_END_SEED = randomIntBetween(1, 100);
+    
     private static final int DEFAULT_TICKS = randomIntBetween(1, 100);
+    
     private static final int DEFAULT_INTERVAL = randomIntBetween(1, 100);
+    
     private static final int DEFAULT_LENGTH = randomIntBetween(1, 100);
+    
     private static final int DEFAULT_WIDTH = randomIntBetween(1, 100);
+    
     private static final int DEFAULT_HEIGHT = randomIntBetween(1, 100);
+    
     private static final int DEFAULT_MARGIN = randomIntBetween(1, 100);
+    
     private static final String SIM_CONSTRUCTOR_CLASS = SimulationMock.class.getName();
+    
     private static final String VIS_CONSTRUCTOR_CLASS = VisualizationMock.class.getName();
+    
     private static final HashMap<String, ArrayList<Box>> SETUP_LISTS_MOCK = mock(HashMap.class);
     
     @BeforeClass
@@ -131,6 +147,7 @@ public class SeriesTest {
     
     static class SeriesMock extends Series {
         boolean invalidSim;
+        
         boolean invalidVis;
         
         SeriesMock(HashMap<String, MiniBox> setupDicts,
