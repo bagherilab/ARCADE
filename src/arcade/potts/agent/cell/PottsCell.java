@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Stoppable;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.module.Module;
@@ -277,7 +278,8 @@ public final class PottsCell implements Cell {
     public void stop() { stopper.stop(); }
     
     @Override
-    public PottsCell make(int newID, State newState, Location newLocation) {
+    public PottsCell make(int newID, State newState, Location newLocation,
+                          MersenneTwisterFast random) {
         divisions++;
         return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,
                 hasRegions, parameters, criticalVolume, criticalHeight,

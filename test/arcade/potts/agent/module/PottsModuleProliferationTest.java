@@ -162,7 +162,7 @@ public class PottsModuleProliferationTest {
         PottsLocation newLocation = mock(PottsLocation.class);
         PottsCell newCell = mock(PottsCell.class);
         
-        doReturn(newCell).when(cell).make(eq(id), any(State.class), eq(newLocation));
+        doReturn(newCell).when(cell).make(eq(id), any(State.class), eq(newLocation), eq(randomMock));
         doReturn(location).when(cell).getLocation();
         doReturn(newLocation).when(location).split(randomMock);
         doNothing().when(cell).reset(any(), any());

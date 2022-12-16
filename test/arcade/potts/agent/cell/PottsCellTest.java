@@ -630,7 +630,7 @@ public class PottsCellTest {
         PottsCell cell1 = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                 location1, false, parameters, criticalVolume, criticalHeight,
                 null, null);
-        PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
+        PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2, null);
         
         assertEquals(cellID + 1, cell2.id);
         assertEquals(cellID, cell2.parent);
@@ -667,7 +667,7 @@ public class PottsCellTest {
         PottsCell cell1 = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                 location1, true, parameters, criticalVolume, criticalHeight,
                 criticalVolumesRegion, criticalHeightsRegion);
-        PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2);
+        PottsCell cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2, null);
         
         assertEquals(cellID + 1, cell2.id);
         assertEquals(cellID, cell2.parent);
