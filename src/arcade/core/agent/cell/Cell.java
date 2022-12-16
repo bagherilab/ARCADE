@@ -2,6 +2,7 @@ package arcade.core.agent.cell;
 
 import sim.engine.Schedule;
 import sim.engine.Steppable;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.module.Module;
 import arcade.core.agent.process.Process;
 import arcade.core.env.loc.Location;
@@ -183,9 +184,10 @@ public interface Cell extends Steppable {
      * @param id  the new cell ID
      * @param state  the new cell state
      * @param location  the new cell location
+     * @param random  the random number generator
      * @return  the new {@code Cell} object
      */
-    Cell make(int id, State state, Location location);
+    Cell make(int id, State state, Location location, MersenneTwisterFast random);
     
     /**
      * Schedules the cell in the simulation.
