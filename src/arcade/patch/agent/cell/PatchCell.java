@@ -16,6 +16,7 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.loc.PatchLocation;
 import static arcade.core.util.Enums.Region;
@@ -243,7 +244,7 @@ public class PatchCell implements Cell {
                 break;
             case MIGRATORY:
                 flag = Flag.MIGRATORY;
-                // TODO: create instance of migration module
+                module = new PatchModuleMigration(this);
                 break;
             case APOPTOTIC:
                 flag = Flag.UNDEFINED;
@@ -378,9 +379,7 @@ public class PatchCell implements Cell {
                 
                 // Check if neighbor cells can exist at a tolerable height.
                 for (Object obj : bag) {
-                    Cell cell = (Cell) obj;
-                    double cellHeight = cell.getParameters().getDouble("proliferation/MAX_HEIGHT");
-                    if (currentHeight > cellHeight) {
+                    if (currentHeight > ((Cell) obj).getCriticalHeight()) {
                         continue locationCheck;
                     }
                 }

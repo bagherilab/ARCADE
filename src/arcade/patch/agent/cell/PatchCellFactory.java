@@ -34,6 +34,12 @@ public final class PatchCellFactory implements CellFactory {
     /** Map of population to ages. */
     HashMap<Integer, Uniform> popToAges;
     
+    /** Map of population to cell divisions. */
+    HashMap<Integer, Integer> popToDivisions;
+    
+    /** Map of population to compression tolerance. */
+    HashMap<Integer, Integer> popToCompression;
+    
     /** Map of population to parameters. */
     HashMap<Integer, MiniBox> popToParameters;
     
@@ -51,6 +57,8 @@ public final class PatchCellFactory implements CellFactory {
         popToCriticalVolumes = new HashMap<>();
         popToCriticalHeights = new HashMap<>();
         popToAges = new HashMap<>();
+        popToDivisions = new HashMap<>();
+        popToCompression = new HashMap<>();
         popToParameters = new HashMap<>();
         popToIDs = new HashMap<>();
     }
@@ -116,13 +124,17 @@ public final class PatchCellFactory implements CellFactory {
             Normal heights = popToCriticalHeights.get(pop);
             Uniform ages = popToAges.get(pop);
             
+            int divisions = popToDivisions.get(pop);
+            double compression = popToCompression.get(pop);
+            
             for (int i = 0; i < n; i++) {
                 double volume = volumes.nextDouble();
                 double height = heights.nextDouble();
                 int age = ages.nextInt();
                 
                 PatchCellContainer container = new PatchCellContainer(id, 0, pop,
-                        age, 0, State.UNDEFINED, volume, height);
+                        age, divisions, State.UNDEFINED, volume, height,
+                        volume, height + compression);
                 cells.put(id, container);
                 popToIDs.get(container.pop).add(container.id);
                 id++;
@@ -150,6 +162,8 @@ public final class PatchCellFactory implements CellFactory {
                     population.getDouble("CELL_HEIGHT_STDEV"), random));
             popToAges.put(pop, new Uniform(population.getDouble("CELL_AGE_MIN"),
                     population.getDouble("CELL_AGE_MAX"), random));
+            popToDivisions.put(pop, population.getInt("DIVISION_POTENTIAL"));
+            popToCompression.put(pop, population.getInt("COMPRESSION_TOLERANCE"));
         }
     }
 }

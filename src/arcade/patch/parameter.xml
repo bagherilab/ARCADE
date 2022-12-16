@@ -20,8 +20,11 @@
     <population id="NECRO_FRAC" value="0.5" description="fraction necrotic vs. apoptotic" />
     <population id="ENERGY_THRESHOLD" value="1000.0" description="maximum energy deficit" />
     <population id="DIVISION_POTENTIAL" value="50" description="max number of divisions" />
+    <population id="COMPRESSION_TOLERANCE" value="0" units="um" description="maximum compression tolerance via height" />
 
     <!-- proliferation module parameters -->
-    <population.module module="proliferation" id="MAX_HEIGHT" value="8.7" units="um" description="maximum height tolerance" />
     <population.module module="proliferation" id="SYNTHESIS_TIME" value="637" units="min" description="duration of DNA synthesis" />
+
+    <!-- migration module parameters -->
+    <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="rate of cell migraiton" />
 </parameters>

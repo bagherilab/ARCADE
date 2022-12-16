@@ -39,9 +39,9 @@ public class PatchModuleProliferation extends PatchModule {
         super(cell);
         
         targetVolume = 2 * cell.getCriticalVolume();
+        maxHeight = cell.getCriticalHeight();
         
         MiniBox parameters = cell.getParameters();
-        maxHeight = parameters.getDouble("proliferation/MAX_HEIGHT");
         synthesisTime = parameters.getInt("proliferation/SYNTHESIS_TIME");
     }
 
