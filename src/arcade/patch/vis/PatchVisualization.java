@@ -90,13 +90,19 @@ public final class PatchVisualization extends Visualization {
                 new PatchDrawerHex.PatchCells(panels[2], "agents:HEIGHT",
                         length, width, height, maps.mapHeight, getBox(h, 0, h, v)),
                 new PatchDrawerHex.PatchCells(panels[2], "agents:COUNTS",
-                        length, width, height, MAP_COUNTS, getBox(0, v, h, v)),
+                        length, width, height, MAP_COUNTS, getBox(2 * h, 0, h, v)),
                 new PatchDrawerHex.PatchCells(panels[2], "agents:POPULATION",
-                        length, width, height, MAP_POPULATION, getBox(h, v, h, v)),
+                        length, width, height, MAP_POPULATION, getBox(3 * h, 0, h, v)),
+                new PatchDrawerHex.PatchCells(panels[2], "agents:ENERGY",
+                        length, width, height, maps.mapEnergy, getBox(4 * h, 0, h, v)),
+                new PatchDrawerHex.PatchCells(panels[2], "agents:DIVISIONS",
+                        length, width, height, maps.mapDivisions, getBox(5 * h, 0, h, v)),
                 new PatchDrawer.Label(panels[2], "label", 0, 0, "VOLUME"),
-                new PatchDrawer.Label(panels[2], "label", 50, 0, "HEIGHT"),
-                new PatchDrawer.Label(panels[2], "label", 0, 50, "COUNTS"),
-                new PatchDrawer.Label(panels[2], "label", 50, 50, "POPULATION"),
+                new PatchDrawer.Label(panels[2], "label", 17, 0, "HEIGHT"),
+                new PatchDrawer.Label(panels[2], "label", 33, 0, "COUNTS"),
+                new PatchDrawer.Label(panels[2], "label", 50, 0, "POPULATION"),
+                new PatchDrawer.Label(panels[2], "label", 67, 0, "ENERGY"),
+                new PatchDrawer.Label(panels[2], "label", 83, 0, "DIVISIONS"),
         };
     }
     
@@ -140,22 +146,28 @@ public final class PatchVisualization extends Visualization {
                 new PatchDrawerRect.PatchCells(panels[2], "agents:HEIGHT",
                         length, width, height, maps.mapHeight, getBox(h, 0, h, v)),
                 new PatchDrawerRect.PatchCells(panels[2], "agents:COUNTS",
-                        length, width, height, MAP_COUNTS, getBox(0, v, h, v)),
+                        length, width, height, MAP_COUNTS, getBox(2 * h, 0, h, v)),
                 new PatchDrawerRect.PatchCells(panels[2], "agents:POPULATION",
-                        length, width, height, MAP_POPULATION, getBox(h, v, h, v)),
+                        length, width, height, MAP_POPULATION, getBox(3 * h, 0, h, v)),
+                new PatchDrawerRect.PatchCells(panels[2], "agents:ENERGY",
+                        length, width, height, maps.mapEnergy, getBox(4 * h, 0, h, v)),
+                new PatchDrawerRect.PatchCells(panels[2], "agents:DIVISIONS",
+                        length, width, height, maps.mapDivisions, getBox(5 * h, 0, h, v)),
                 new PatchDrawer.Label(panels[2], "label", 0, 0, "VOLUME"),
-                new PatchDrawer.Label(panels[2], "label", 50, 0, "HEIGHT"),
-                new PatchDrawer.Label(panels[2], "label", 0, 50, "COUNTS"),
-                new PatchDrawer.Label(panels[2], "label", 50, 50, "POPULATION"),
+                new PatchDrawer.Label(panels[2], "label", 17, 0, "HEIGHT"),
+                new PatchDrawer.Label(panels[2], "label", 33, 0, "COUNTS"),
+                new PatchDrawer.Label(panels[2], "label", 50, 0, "POPULATION"),
+                new PatchDrawer.Label(panels[2], "label", 67, 0, "ENERGY"),
+                new PatchDrawer.Label(panels[2], "label", 83, 0, "DIVISIONS"),
         };
     }
     
     @Override
     public Panel[] createPanels() {
         return new Panel[] {
-            new Panel("[PATCH] Agents", 10, 10, 400, 400, this),
-            new Panel("[PATCH] Environment", 500, 10, 600, 600, this),
-            new Panel("[PATCH] Auxiliary", 10, 500, 400, 400, this),
+            new Panel("[PATCH] Agents", 10, 10, 600, 600, this),
+            new Panel("[PATCH] Environment", 700, 10, 600, 600, this),
+            new Panel("[PATCH] Auxiliary", 10, 700, 1200, 200, this),
         };
     }
 }

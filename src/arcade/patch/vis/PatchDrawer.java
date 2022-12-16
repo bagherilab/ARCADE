@@ -37,7 +37,7 @@ public abstract class PatchDrawer extends Drawer {
     Continuous2D field;
     
     /** View options. */
-    enum View { STATE, AGE, VOLUME, HEIGHT, COUNTS, POPULATION }
+    enum View { STATE, AGE, VOLUME, HEIGHT, COUNTS, POPULATION, ENERGY, DIVISIONS }
 
     /**
      * Creates a {@link Drawer} for patch simulations.

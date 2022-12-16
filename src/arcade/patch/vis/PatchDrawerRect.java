@@ -107,7 +107,7 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                         }
                     }
                     break;
-                case VOLUME: case HEIGHT: case COUNTS: case POPULATION:
+                case VOLUME: case HEIGHT: case COUNTS: case POPULATION: case ENERGY: case DIVISIONS:
                     array.setTo(0);
                     break;
                 default:
@@ -132,6 +132,8 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                         case STATE:
                         case AGE:
                         case POPULATION:
+                        case ENERGY:
+                        case DIVISIONS:
                             CoordinateRect mainCoord = (CoordinateRect) coords.get(index);
                             switch (view) {
                                 case STATE:
@@ -142,6 +144,12 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                                     break;
                                 case POPULATION:
                                     arr[mainCoord.x][mainCoord.y] = cell.getPop();
+                                    break;
+                                case ENERGY:
+                                    arr[mainCoord.x][mainCoord.y] = cell.getEnergy();
+                                    break;
+                                case DIVISIONS:
+                                    arr[mainCoord.x][mainCoord.y] = cell.getDivisions();
                                     break;
                                 default:
                                     break;

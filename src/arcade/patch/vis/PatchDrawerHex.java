@@ -146,7 +146,7 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                         }
                     }
                     break;
-                case VOLUME: case HEIGHT: case COUNTS: case POPULATION:
+                case VOLUME: case HEIGHT: case COUNTS: case POPULATION: case ENERGY: case DIVISIONS:
                     array.setTo(0);
                     break;
                 default:
@@ -171,6 +171,8 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                         case STATE:
                         case AGE:
                         case POPULATION:
+                        case ENERGY:
+                        case DIVISIONS:
                             CoordinateTri mainCoord = (CoordinateTri) coords.get(index);
                             switch (view) {
                                 case STATE:
@@ -181,6 +183,12 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                                     break;
                                 case POPULATION:
                                     temp[mainCoord.x][mainCoord.y] = cell.getPop();
+                                    break;
+                                case ENERGY:
+                                    temp[mainCoord.x][mainCoord.y] = cell.getEnergy();
+                                    break;
+                                case DIVISIONS:
+                                    temp[mainCoord.x][mainCoord.y] = cell.getDivisions();
                                     break;
                                 default:
                                     break;

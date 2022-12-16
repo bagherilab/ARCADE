@@ -65,6 +65,12 @@ class PatchColorMaps {
     /** Color map for cell height. */
     final Colors mapHeight;
     
+    /** Color map for cell energy. */
+    final Colors mapEnergy;
+    
+    /** Color map for cell divisions. */
+    final Colors mapDivisions;
+    
     /**
      * Creates {@code ColorMaps} for the given series.
      *
@@ -106,7 +112,7 @@ class PatchColorMaps {
                         4. / 7 * volume * 2,
                         5. / 7 * volume * 2,
                         6. / 7 * volume * 2,
-                        7. / 7 * volume * 2
+                        7. / 7 * volume * 2,
                 }
         );
         
@@ -130,13 +136,72 @@ class PatchColorMaps {
                 },
                 new double[] {
                         0,
-                        1. / 7 * height * 4,
-                        2. / 7 * height * 4,
-                        3. / 7 * height * 4,
-                        4. / 7 * height * 4,
-                        5. / 7 * height * 4,
-                        6. / 7 * height * 4,
-                        7. / 7 * height * 4
+                        1. / 7 * height * 2,
+                        2. / 7 * height * 2,
+                        3. / 7 * height * 2,
+                        4. / 7 * height * 2,
+                        5. / 7 * height * 2,
+                        6. / 7 * height * 2,
+                        7. / 7 * height * 2,
+                }
+        );
+        
+        double energy = 0;
+        for (MiniBox box : series.populations.values()) {
+            if (box.getDouble("ENERGY_THRESHOLD") > energy) {
+                energy = box.getDouble("ENERGY_THRESHOLD");
+            }
+        }
+        
+        mapEnergy = new Colors(
+                new Color[]{
+                        new Color(0, 0, 0),
+                        new Color(18, 63, 90),
+                        new Color(35, 93, 114),
+                        new Color(58, 124, 137),
+                        new Color(85, 156, 158),
+                        new Color(123, 188, 176),
+                        new Color(165, 219, 194),
+                        new Color(210, 251, 212),
+                },
+                new double[] {
+                        0,
+                        1. / 7 * energy,
+                        2. / 7 * energy,
+                        3. / 7 * energy,
+                        4. / 7 * energy,
+                        5. / 7 * energy,
+                        6. / 7 * energy,
+                        energy,
+                }
+        );
+        double divisions = 0;
+        for (MiniBox box : series.populations.values()) {
+            if (box.getDouble("DIVISION_POTENTIAL") > divisions) {
+                divisions = box.getDouble("DIVISION_POTENTIAL");
+            }
+        }
+        
+        mapDivisions = new Colors(
+                new Color[]{
+                        new Color(0, 0, 0),
+                        new Color(18, 63, 90),
+                        new Color(35, 93, 114),
+                        new Color(58, 124, 137),
+                        new Color(85, 156, 158),
+                        new Color(123, 188, 176),
+                        new Color(165, 219, 194),
+                        new Color(210, 251, 212),
+                },
+                new double[] {
+                        0,
+                        1. / 7 * divisions,
+                        2. / 7 * divisions,
+                        3. / 7 * divisions,
+                        4. / 7 * divisions,
+                        5. / 7 * divisions,
+                        6. / 7 * divisions,
+                        divisions,
                 }
         );
     }
