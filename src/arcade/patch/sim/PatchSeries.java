@@ -5,6 +5,7 @@ import java.util.HashMap;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
  * Simulation manager for {@link PatchSimulation} instances.
@@ -156,6 +157,15 @@ public final class PatchSeries extends Series {
             for (String parameter : populationDefaults.getKeys()) {
                 parseParameter(population, parameter, populationDefaults.get(parameter),
                         parameterValues, parameterScales);
+            }
+            
+            // Extract process versions.
+            Box processes = p.filterBoxByTag("PROCESS");
+            MiniBox processVersions = processes.getIdValForTagAtt("PROCESS", "version");
+            
+            for (String process : processes.getKeys()) {
+                String version = processVersions.get(process);
+                population.put("(PROCESS)" + TAG_SEPARATOR + process, version);
             }
         }
     }

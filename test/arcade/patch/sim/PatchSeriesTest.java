@@ -345,6 +345,27 @@ public class PatchSeriesTest {
     }
     
     @Test
+    public void updatePopulation_withProcesses_setsTags() {
+        String[] versions = new String[] {
+                randomString(),
+                randomString(),
+        };
+        
+        Box[] boxes = new Box[] { new Box() };
+        boxes[0].add("id", POPULATION_ID_1);
+        boxes[0].addTag(PROCESS_IDS[0], "PROCESS");
+        boxes[0].addAtt(PROCESS_IDS[0], "version", versions[0]);
+        boxes[0].addTag(PROCESS_IDS[1], "PROCESS");
+        boxes[0].addAtt(PROCESS_IDS[1], "version", versions[1]);
+        
+        PatchSeries series = makeSeriesForPopulation(boxes);
+        
+        MiniBox box = series.populations.get(POPULATION_ID_1);
+        assertEquals(versions[0], box.get("(PROCESS)" + TAG_SEPARATOR + PROCESS_IDS[0]));
+        assertEquals(versions[1], box.get("(PROCESS)" + TAG_SEPARATOR + PROCESS_IDS[1]));
+    }
+    
+    @Test
     public void getSimClass_givenHex_returnsClass() {
         String className = PatchSimulationHex.class.getName();
         PatchSeries series = mock(PatchSeries.class, CALLS_REAL_METHODS);
