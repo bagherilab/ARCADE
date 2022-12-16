@@ -91,9 +91,12 @@ public final class PatchVisualization extends Visualization {
                         length, width, height, maps.mapHeight, getBox(h, 0, h, v)),
                 new PatchDrawerHex.PatchCells(panels[2], "agents:COUNTS",
                         length, width, height, MAP_COUNTS, getBox(0, v, h, v)),
+                new PatchDrawerHex.PatchCells(panels[2], "agents:POPULATION",
+                        length, width, height, MAP_POPULATION, getBox(h, v, h, v)),
                 new PatchDrawer.Label(panels[2], "label", 0, 0, "VOLUME"),
                 new PatchDrawer.Label(panels[2], "label", 50, 0, "HEIGHT"),
                 new PatchDrawer.Label(panels[2], "label", 0, 50, "COUNTS"),
+                new PatchDrawer.Label(panels[2], "label", 50, 50, "POPULATION"),
         };
     }
     
@@ -138,9 +141,12 @@ public final class PatchVisualization extends Visualization {
                         length, width, height, maps.mapHeight, getBox(h, 0, h, v)),
                 new PatchDrawerRect.PatchCells(panels[2], "agents:COUNTS",
                         length, width, height, MAP_COUNTS, getBox(0, v, h, v)),
+                new PatchDrawerRect.PatchCells(panels[2], "agents:POPULATION",
+                        length, width, height, MAP_POPULATION, getBox(h, v, h, v)),
                 new PatchDrawer.Label(panels[2], "label", 0, 0, "VOLUME"),
                 new PatchDrawer.Label(panels[2], "label", 50, 0, "HEIGHT"),
                 new PatchDrawer.Label(panels[2], "label", 0, 50, "COUNTS"),
+                new PatchDrawer.Label(panels[2], "label", 50, 50, "POPULATION"),
         };
     }
     

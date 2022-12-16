@@ -27,15 +27,34 @@ class PatchColorMaps {
     );
     
     /** Color map for cell counts. */
-    static final Colors MAP_COUNTS = new Colors(new Color[] {
-        new Color(0, 0, 0, 0),
-        new Color(253, 212, 158),
-        new Color(253, 187, 132),
-        new Color(252, 141, 89),
-        new Color(239, 101, 72),
-        new Color(215, 48, 31),
-        new Color(153, 0, 0)
-    });
+    static final Colors MAP_COUNTS = new Colors(
+            new Color[] {
+                    new Color(0, 0, 0, 0),
+                    new Color(253, 212, 158),
+                    new Color(253, 187, 132),
+                    new Color(252, 141, 89),
+                    new Color(239, 101, 72),
+                    new Color(215, 48, 31),
+                    new Color(153, 0, 0),
+        }
+    );
+    
+    /** Color map for cell populations. */
+    static final Colors MAP_POPULATION = new Colors(
+            new Color[] {
+                    new Color(0, 0, 0),
+                    new Color(95, 70, 144),
+                    new Color(29, 105, 150),
+                    new Color(56, 166, 165),
+                    new Color(15, 133, 84),
+                    new Color(115, 175, 72),
+                    new Color(237, 173, 8),
+                    new Color(225, 124, 5),
+                    new Color(204, 80, 62),
+                    new Color(148, 52, 110),
+            },
+            new double[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
+    );
     
     /** Color map for cell age. */
     final Colors mapAge;
