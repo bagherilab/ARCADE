@@ -5,6 +5,8 @@ import java.util.Map;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Stoppable;
+import sim.util.Bag;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.module.Module;
@@ -12,6 +14,9 @@ import arcade.core.agent.process.Process;
 import arcade.core.env.loc.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import arcade.patch.agent.module.PatchModule;
+import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.loc.PatchLocation;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
@@ -133,7 +138,7 @@ public class PatchCell implements Cell {
         this.age = age;
         this.energy = 0;
         this.divisions = divisions;
-        this.location = ((PatchLocation) location).getCopy();
+        this.location = (PatchLocation) location;
         this.volume = volume;
         this.height = height;
         this.criticalVolume = criticalVolume;
@@ -207,38 +212,48 @@ public class PatchCell implements Cell {
     @Override
     public double getCriticalHeight(Region region) { return getCriticalHeight(); }
     
+    /**
+     * Gets the cell energy level.
+     *
+     * @return  the energy level
+     */
+    public double getEnergy() { return energy; }
+    
     @Override
     public void stop() { stopper.stop(); }
     
     @Override
-    public PatchCell make(int newID, State newState, Location newLocation) {
-         divisions++;
+    public PatchCell make(int newID, State newState, Location newLocation,
+                          MersenneTwisterFast random) {
+        divisions--;
+        double splitVolume = (random.nextDouble() / 10 + 0.45) * volume;
+        volume -= splitVolume;
         return new PatchCell(newID, id, pop, newState, age, divisions, newLocation,
-                parameters, volume,  height, criticalVolume, criticalHeight);
+                parameters, splitVolume, height, criticalVolume, criticalHeight);
     }
     
     @Override
     public void setState(State state) {
-         this.state = state;
-         
-         switch (state) {
-             case PROLIFERATIVE:
-                 flag = Flag.PROLIFERATIVE;
-                 // TODO: create instance of proliferation module
-                 break;
-             case MIGRATORY:
-                 flag = Flag.MIGRATORY;
-                 // TODO: create instance of migration module
-                 break;
-             case APOPTOTIC:
-                 flag = Flag.UNDEFINED;
-                 // TODO: create instance of apoptosis module
-                 break;
-             default:
-                 module = null;
-                 flag = Flag.UNDEFINED;
-                 break;
-         }
+        this.state = state;
+        
+        switch (state) {
+            case PROLIFERATIVE:
+                flag = Flag.PROLIFERATIVE;
+                module = new PatchModuleProliferation(this);
+                break;
+            case MIGRATORY:
+                flag = Flag.MIGRATORY;
+                // TODO: create instance of migration module
+                break;
+            case APOPTOTIC:
+                flag = Flag.UNDEFINED;
+                // TODO: create instance of apoptosis module
+                break;
+            default:
+                module = null;
+                flag = Flag.UNDEFINED;
+                break;
+        }
     }
     
     @Override
@@ -258,13 +273,20 @@ public class PatchCell implements Cell {
         // Increase age of cell (in ticks).
         age++;
         
+        // TODO: check for death due to age
+        
+        // Step the module for the cell state.
+        if (module != null) {
+            module.step(simstate.random, sim);
+        }
+        
         // Step metabolism module.
         processes.get(Domain.METABOLISM).step(simstate.random, sim);
         
         // Check energy status. If cell has less energy than threshold, it will
         // necrose. If overall energy is negative, then cell enters quiescence.
-        if (state != State.APOPTOTIC && energy < 0) {
-            if (energy < energyThreshold) {
+        if (state != State.APOPTOTIC && energy > 0) {
+            if (energy > energyThreshold) {
                 if (simstate.random.nextDouble() > necroFrac) {
                     setState(State.APOPTOTIC);
                 } else {
@@ -278,7 +300,7 @@ public class PatchCell implements Cell {
         // Step signaling network module.
         processes.get(Domain.SIGNALING).step(simstate.random, sim);
         
-        // Change type from undefined.
+        // Change state from undefined.
         if (state == State.UNDEFINED) {
             if (flag == Flag.MIGRATORY) {
                 setState(State.MIGRATORY);
@@ -298,5 +320,101 @@ public class PatchCell implements Cell {
     public CellContainer convert() {
         return new PatchCellContainer(id, parent, pop, age, divisions, state,
                 volume, height, criticalVolume, criticalHeight);
+    }
+    
+    /**
+     * Calculates the total volume of {@code Cell} objects in a {@code Bag}.
+     *
+     * @param bag  the {@code Bag} containing cell objects
+     * @return  the total volume
+     */
+    public static double calculateTotalVolume(Bag bag) {
+        double totalVolume = 0;
+        for (Object obj : bag) {
+            totalVolume += ((Cell) obj).getVolume();
+        }
+        return totalVolume;
+    }
+    
+    /**
+     * Find free locations in the patch neighborhood.
+     *
+     * @param sim  the simulation instance
+     * @param currentLocation  the current location
+     * @param targetVolume  the target volume of cell to add or move
+     * @param targetHeight  the target height of the cell to add or move
+     * @return  a list of free locations
+     */
+    static Bag findFreeLocations(Simulation sim, PatchLocation currentLocation,
+                                 double targetVolume, double targetHeight) {
+        Bag freeLocations = new Bag();
+        int locationMax = currentLocation.getMaximum();
+        double locationVolume = currentLocation.getVolume();
+        double locationArea = currentLocation.getArea();
+        PatchGrid grid = (PatchGrid) sim.getGrid();
+        
+        // Iterate through each neighbor location and check if cell is able
+        // to move into it based on if it does not increase volume above hex
+        // volume and that each agent exists at tolerable height.
+        locationCheck:
+        for (Location neighborLocation : currentLocation.getNeighbors()) {
+            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
+            int n = bag.numObjs; // number of agents in location
+            
+            if (n == 0) {
+                freeLocations.add(neighborLocation); // no other cells in new location
+            } else if (n == locationMax) {
+                continue;  // location already full
+            } else {
+                double totalVolume = calculateTotalVolume(bag) + targetVolume;
+                double currentHeight = totalVolume / locationArea;
+                
+                // Check if total volume of cells with addition does not exceed
+                // volume of the hexagonal location.
+                if (totalVolume > locationVolume) { continue; }
+                
+                // Check if proposed cell can exist at a tolerable height.
+                if (currentHeight > targetHeight) {  continue; }
+                
+                // Check if neighbor cells can exist at a tolerable height.
+                for (Object obj : bag) {
+                    Cell cell = (Cell) obj;
+                    double cellHeight = cell.getParameters().getDouble("proliferation/MAX_HEIGHT");
+                    if (currentHeight > cellHeight) {
+                        continue locationCheck;
+                    }
+                }
+                
+                // TODO: ADD CHECK FOR MORE THAN ONE HEALTHY CELL AGENT.
+                
+                // Add location to list of free locations.
+                freeLocations.add(neighborLocation);
+            }
+        }
+        
+        // TODO: ADD CURRENT LOCATION
+        
+        return freeLocations;
+    }
+    
+    /**
+     * Selects the best location for a cell to be added or move into.
+     * <p>
+     * Each free location is scored based on glucose availability and distance
+     * from the center of the simulation.
+     *
+     * @param sim  the simulation instance
+     * @param location  the current location
+     * @param volume  the target volume of cell to add or move
+     * @param height  the target height of the cell to add or move
+     * @param random  the random number generator
+     * @return  the best location
+     */
+    public static PatchLocation selectBestLocation(Simulation sim, PatchLocation location,
+                                                   double volume, double height,
+                                                   MersenneTwisterFast random) {
+        Bag locs = findFreeLocations(sim, location, volume, height);
+        locs.shuffle(random);
+        return (locs.size() > 0 ? (PatchLocation) locs.get(0) : null);
     }
 }
