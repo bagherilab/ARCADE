@@ -23,7 +23,7 @@
     <population id="COMPRESSION_TOLERANCE" value="0" units="um" description="maximum compression tolerance via height" />
 
     <!-- proliferation module parameters -->
-    <population.module module="proliferation" id="SYNTHESIS_TIME" value="637" units="min" description="duration of DNA synthesis" />
+    <population.module module="proliferation" id="SYNTHESIS_DURATION" value="637" units="min" description="duration of DNA synthesis" />
 
     <!-- migration module parameters -->
     <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="rate of cell migraiton" />

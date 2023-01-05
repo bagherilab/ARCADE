@@ -28,7 +28,7 @@ public class PatchModuleProliferation extends PatchModule {
     private final double maxHeight;
     
     /** Time required for DNA synthesis (in minutes). */
-    private final double synthesisTime;
+    private final double synthesisDuration;
     
     /**
      * Creates a proliferation {@code Module} for the given {@link PatchCell}.
@@ -42,7 +42,7 @@ public class PatchModuleProliferation extends PatchModule {
         maxHeight = cell.getCriticalHeight();
         
         MiniBox parameters = cell.getParameters();
-        synthesisTime = parameters.getInt("proliferation/SYNTHESIS_TIME");
+        synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
     }
 
     /**
@@ -69,8 +69,8 @@ public class PatchModuleProliferation extends PatchModule {
             
             if (newLocation == null) {
                 cell.setState(State.QUIESCENT);
-            } else if (cell.getVolume() > targetVolume) {
-                if (ticker > synthesisTime) {
+            } else if (cell.getVolume() >= targetVolume) {
+                if (ticker > synthesisDuration) {
                     // TODO: ADD CYCLE TIME TO TRACKER.
                     
                     // Reset current cell.
