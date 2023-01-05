@@ -2,10 +2,10 @@
     <!-- default parameters for series -->
     <default id="RADIUS" value="1" />
     <default id="DEPTH" value="1" />
-
+    
     <!-- default parameters for patch -->
     <patch id="GEOMETRY" value="hex" description="Patch geometry (hex or rect)" />
-
+    
     <!-- default parameters for populations -->
     <population id="CELL_AGE_MIN" value="0" unit="min" description="0 weeks" />
     <population id="CELL_AGE_MAX" value="120960" unit="min" description="12 weeks" />
@@ -13,7 +13,7 @@
     <population id="CELL_VOLUME_STDEV" value="200.0" unit="um^3" />
     <population id="CELL_HEIGHT_MEAN" value="8.7" unit="um" />
     <population id="CELL_HEIGHT_STDEV" value="0" unit="um" />
-
+    
     <!-- cellular decision making -->
     <population id="HETEROGENEITY" value="0.0" description="variation in cell agent parameters" />
     <population id="SENES_FRAC" value="0.5" description="fraction senescent vs. apoptotic" />
@@ -21,10 +21,10 @@
     <population id="ENERGY_THRESHOLD" value="1000.0" description="maximum energy deficit" />
     <population id="DIVISION_POTENTIAL" value="50" description="max number of divisions" />
     <population id="COMPRESSION_TOLERANCE" value="0" units="um" description="maximum compression tolerance via height" />
-
+    
     <!-- proliferation module parameters -->
     <population.module module="proliferation" id="SYNTHESIS_DURATION" value="637" units="min" description="duration of DNA synthesis" />
-
+    
     <!-- migration module parameters -->
-    <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="rate of cell migraiton" />
+    <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="rate of cell migration" />
 </parameters>

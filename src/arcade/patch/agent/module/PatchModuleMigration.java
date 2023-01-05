@@ -24,7 +24,7 @@ public class PatchModuleMigration extends PatchModule {
     private final double migrationRate;
     
     /** Time required for cell migration (in minutes). */
-    private final double movementTime;
+    private final double movementDuration;
     
     /**
      * Creates a migration {@code Module} for the given {@link PatchCell}.
@@ -36,7 +36,7 @@ public class PatchModuleMigration extends PatchModule {
         
         MiniBox parameters = cell.getParameters();
         migrationRate = parameters.getDouble("migration/MIGRATION_RATE");
-        movementTime = Math.round(location.getCoordinateSize() / migrationRate);
+        movementDuration = Math.round(location.getCoordinateSize() / migrationRate);
     }
     
     /**
@@ -46,7 +46,7 @@ public class PatchModuleMigration extends PatchModule {
      * @param sim  the simulation instance
      */
     public void step(MersenneTwisterFast random, Simulation sim) {
-        if (ticker > movementTime) {
+        if (ticker > movementDuration) {
             PatchLocation newLocation = PatchCell.selectBestLocation(sim, location,
                     cell.getVolume(), cell.getCriticalHeight(), random);
             
