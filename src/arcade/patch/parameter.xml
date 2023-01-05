@@ -27,4 +27,7 @@
     
     <!-- migration module parameters -->
     <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="rate of cell migration" />
+    
+    <!-- apoptosis module parameters -->
+    <population.module module="apoptosis" id="DEATH_DURATION" value="1080" unit="min" description="duration of cell death" />
 </parameters>

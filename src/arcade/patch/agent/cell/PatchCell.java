@@ -14,9 +14,9 @@ import arcade.core.agent.process.Process;
 import arcade.core.env.loc.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
-import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.module.PatchModuleMigration;
+import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.loc.PatchLocation;
 import static arcade.core.util.Enums.Region;
@@ -248,7 +248,7 @@ public class PatchCell implements Cell {
                 break;
             case APOPTOTIC:
                 flag = Flag.UNDEFINED;
-                // TODO: create instance of apoptosis module
+                module = new PatchModuleApoptosis(this);
                 break;
             default:
                 module = null;

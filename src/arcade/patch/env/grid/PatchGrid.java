@@ -1,5 +1,6 @@
 package arcade.patch.env.grid;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import sim.util.Bag;
 import arcade.core.agent.cell.Cell;
@@ -135,7 +136,7 @@ public class PatchGrid implements Grid {
      * @param locations  the locations
      * @return  a bag of objects at the given locations
      */
-    public Bag getObjectsAtLocations(Location[] locations) {
+    public Bag getObjectsAtLocations(ArrayList<Location> locations) {
         Bag bag = new Bag();
         for (Location location : locations) {
             Bag temp = getObjectsAtLocation(location);
