@@ -1,35 +1,36 @@
 package arcade.core.env.lat;
 
-import arcade.core.env.comp.Component;
+import sim.engine.Schedule;
+import sim.engine.Steppable;
 import arcade.core.env.loc.Location;
-import arcade.core.sim.Simulation;
+import arcade.core.env.operation.Operation;
 import arcade.core.util.MiniBox;
 
 /**
- * A {@code Lattice} represents the environment for molecules.
+ * A {@code Lattice} represents an environment layer.
  * <p>
- * Each {@code Lattice} is a 3D array of doubles, where the values can represent
+ * Each lattice is a 3D array of doubles, where the values can represent
  * molecular concentrations or other continuous quantities.
- * {@code Lattice} objects are associated with {@link arcade.core.env.comp.Component}
- * objects that control changes in the values in the array (such as diffusion).
+ * Each lattice is associated with {@link Operation} objects that characterize
+ * environmental behaviors.
+ * The {@link Operation} object(s) are stepped during the step method of the
+ * {@code Lattice}.
  */
 
-public interface Lattice {
-    /** ID for diffuser component. */
-    int DIFFUSED = 0;
-    
-    /** ID for generator component. */
-    int GENERATED = 1;
-    
-    /** ID for sites component. */
-    int SITES = -1;
-    
+public interface Lattice extends Steppable {
     /**
      * Gets the underlying lattice array.
      *
      * @return  the array
      */
     double[][][] getField();
+    
+    /**
+     * Gets copy of the underlying lattice array.
+     *
+     * @return  the copied array
+     */
+    double[][][] getCopy();
     
     /**
      * Gets the length of the lattice (x direction).
@@ -53,97 +54,86 @@ public interface Lattice {
     int getDepth();
     
     /**
+     * Gets the lattice operation object.
+     *
+     * @param key  the lattice operation key
+     * @return  the lattice operation
+     */
+    Operation getOperation(String key);
+    
+    /**
+     * Gets the lattice layer parameters.
+     *
+     * @return  a dictionary of parameters
+     */
+    MiniBox getParameters();
+    
+    /**
      * Sets the underlying array at the height index to the given array.
      *
-     * @param vals  the array of values
+     * @param values  the array of values
      * @param index  the height index
      */
-    void setField(double[][] vals, int index);
+    void setField(double[][] values, int index);
     
     /**
      * Sets the underlying array to the given array of values.
      *
-     * @param vals  the array of values
+     * @param values  the array of values
      */
-    void setField(double[][][] vals);
+    void setField(double[][][] values);
     
     /**
      * Sets the underlying array to the given value.
      *
-     * @param val  the value to set
+     * @param value  the value to set
      */
-    void setTo(double val);
+    void setField(double value);
     
     /**
      * Gets the sum of values across lattice coordinates corresponding to the location.
      *
-     * @param loc  the location
+     * @param location  the location
      * @return  the sum value
      */
-    double getTotalVal(Location loc);
+    double getTotalValue(Location location);
     
     /**
      * Gets the average value across lattice coordinates corresponding to the location.
      *
-     * @param loc  the location
+     * @param location  the location
      * @return  the average values
      */
-    double getAverageVal(Location loc);
+    double getAverageValue(Location location);
     
     /**
      * Updates the value at the lattice coordinates corresponding to the location.
      *
-     * @param loc  the location
-     * @param frac  the fraction change in value
+     * @param location  the location
+     * @param fraction  the fraction change in value
      */
-    void updateVal(Location loc, double frac);
+    void updateValue(Location location, double fraction);
     
     /**
      * Increments the value at the lattice coordinates corresponding to the location.
      *
-     * @param loc  the location
-     * @param inc  the change in value
+     * @param location  the location
+     * @param increment  the change in value
      */
-    void incrementVal(Location loc, double inc);
+    void incrementValue(Location location, double increment);
     
     /**
      * Sets the value at the lattice coordinates corresponding to the location.
      *
-     * @param loc  the location
-     * @param val  the new value
+     * @param location  the location
+     * @param value  the new value
      */
-    void setVal(Location loc, double val);
+    void setValue(Location location, double value);
     
     /**
-     * Gets the {@link arcade.core.env.comp.Component} of the given name.
+     * Schedules the lattice in the simulation.
      *
-     * @param key  the component name
-     * @return  the component instance
+     * @param schedule  the simulation schedule
      */
-    Component getComponent(String key);
-    
-    /**
-     * Sets the {@link arcade.core.env.comp.Component} with the given name.
-     *
-     * @param key  the component name
-     * @param comp  the component instance
-     */
-    void setComponent(String key, Component comp);
-    
-    /**
-     * Adds a component to the lattice.
-     *
-     * @param sim  the simulation instance
-     * @param type  the component type
-     * @param molecule  the molecule parameters
-     */
-    void addComponent(Simulation sim, int type, MiniBox molecule);
-    
-    /**
-     * Represents object as a JSON entry.
-     *
-     * @param locs  the lattice coordinates
-     * @return  the JSON string
-     */
-    String toJSON(Location[][] locs);
+    void schedule(Schedule schedule);
 }
