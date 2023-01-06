@@ -59,10 +59,11 @@ public final class PottsSeries extends Series {
         ArrayList<Box> populationsBox = setupLists.get("populations");
         updatePopulations(populationsBox, populationDefaults, populationConversions);
         
-        // Initialize molecules.
-        MiniBox moleculeDefaults = parameters.getIdValForTag("MOLECULE");
-        ArrayList<Box> moleculesBox = setupLists.get("molecules");
-        updateMolecules(moleculesBox, moleculeDefaults);
+        // Initialize layers.
+        MiniBox layerDefaults = parameters.getIdValForTag("LAYER");
+        MiniBox layerConversions = parameters.getIdValForTagAtt("LAYER", "conversion");
+        ArrayList<Box> layersBox = setupLists.get("layers");
+        updateLayers(layersBox, layerDefaults, layerConversions);
         
         // Add helpers.
         MiniBox helperDefaults = parameters.getIdValForTag("HELPER");
@@ -82,7 +83,7 @@ public final class PottsSeries extends Series {
     }
     
     /**
-     * Calculates model sizing parameters.
+     * Calculates potts model parameters.
      *
      * @param pottsBox  the potts setup dictionary
      * @param pottsDefaults  the dictionary of default potts parameters
@@ -174,8 +175,8 @@ public final class PottsSeries extends Series {
         int code = 1;
         
         // Iterate through each setup dictionary to build population settings.
-        for (Box p : populationsBox) {
-            String id = p.getValue("id");
+        for (Box box : populationsBox) {
+            String id = box.getValue("id");
             
             // Create new population and update code.
             MiniBox population = new MiniBox();
@@ -183,23 +184,23 @@ public final class PottsSeries extends Series {
             this.populations.put(id, population);
             
             // Add population init if given. If not given or invalid, set to zero.
-            if (p.contains("init") && p.getValue("init").contains(":")) {
-                String[] initString = p.getValue("init").split(":");
+            if (box.contains("init") && box.getValue("init").contains(":")) {
+                String[] initString = box.getValue("init").split(":");
                 
-                p.add("init", initString[0]);
-                p.add("padding", initString[1]);
+                box.add("init", initString[0]);
+                box.add("padding", initString[1]);
                 
-                int padding = (isValidNumber(p, "padding")
-                        ? (int) Double.parseDouble(p.getValue("padding")) : 0);
+                int padding = (isValidNumber(box, "padding")
+                        ? (int) Double.parseDouble(box.getValue("padding")) : 0);
                 population.put("PADDING", padding);
             }
             
-            int init = (isValidNumber(p, "init")
-                    ? (int) Double.parseDouble(p.getValue("init")) : 0);
+            int init = (isValidNumber(box, "init")
+                    ? (int) Double.parseDouble(box.getValue("init")) : 0);
             population.put("INIT", init);
             
             // Get default parameters and any parameter adjustments.
-            Box parameters = p.filterBoxByTag("PARAMETER");
+            Box parameters = box.filterBoxByTag("PARAMETER");
             MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
             MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
             
@@ -211,7 +212,7 @@ public final class PottsSeries extends Series {
             }
             
             // Get list of regions, if valid.
-            HashSet<String> regions = p.filterTags("REGION");
+            HashSet<String> regions = box.filterTags("REGION");
             for (String region : regions) {
                 population.put("(REGION)" + TAG_SEPARATOR + region, "");
             }
@@ -225,7 +226,8 @@ public final class PottsSeries extends Series {
     }
     
     @Override
-    protected void updateMolecules(ArrayList<Box> moleculesBox, MiniBox moleculeDefaults) {
+    protected void updateLayers(ArrayList<Box> layersBox, MiniBox layerDefaults,
+                                MiniBox layerConversions) {
         // TODO
     }
     

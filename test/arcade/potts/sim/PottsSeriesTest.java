@@ -183,8 +183,8 @@ public class PottsSeriesTest {
         ArrayList<Box> populations = setupLists.get("populations");
         verify(series).updatePopulations(eq(populations), any(MiniBox.class), any(MiniBox.class));
         
-        ArrayList<Box> molecules = setupLists.get("molecules");
-        verify(series).updateMolecules(eq(molecules), any(MiniBox.class));
+        ArrayList<Box> layers = setupLists.get("layers");
+        verify(series).updateLayers(eq(layers), any(MiniBox.class), any(MiniBox.class));
         
         ArrayList<Box> helpers = setupLists.get("helpers");
         verify(series).updateHelpers(eq(helpers), any(MiniBox.class));
