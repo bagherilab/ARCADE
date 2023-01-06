@@ -1,6 +1,7 @@
 package arcade.patch.sim;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import sim.engine.Schedule;
 import sim.engine.SimState;
@@ -16,6 +17,8 @@ import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellFactory;
 import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.lat.PatchLattice;
+import arcade.patch.env.lat.PatchLatticeFactory;
 import arcade.patch.env.loc.PatchLocationFactory;
 
 /**
@@ -29,8 +32,11 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     /** Random number generator seed for this simulation. */
     final int seed;
     
-    /** {@link arcade.core.env.grid.Grid} containing agents in the simulation. */
+    /** {@link Grid} containing agents in the simulation. */
     Grid grid;
+    
+    /** Map of {@link Lattice} objects in the simulation. */
+    HashMap<String, Lattice> lattices;
     
     /** Cell ID tracker. */
     int id;
@@ -87,7 +93,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     public final Grid getGrid() { return grid; }
     
     @Override
-    public final Lattice getLattice(String key) { return null; }
+    public final Lattice getLattice(String key) { return lattices.get(key); }
     
     /**
      * Called at the start of the simulation to set up agents and environment
@@ -150,15 +156,15 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         // Initialize grid for agents.
         grid = new PatchGrid();
         
-        // Create factory for locations.
+        // Create factories.
         PatchLocationFactory locationFactory = makeLocationFactory();
         PatchCellFactory cellFactory = makeCellFactory();
         
         // Initialize factories.
         locationFactory.initialize(series, random);
         cellFactory.initialize(series, random);
-
-        // Iterate through each population to create agents.
+        
+        // Iterate through each population to create and schedule cells.
         for (MiniBox population : series.populations.values()) {
             int pop = population.getInt("CODE");
             HashSet<Integer> ids = cellFactory.popToIDs.get(pop);
@@ -187,7 +193,23 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     
     @Override
     public final void setupEnvironment() {
-        // TODO add environment setup (currently not needed)
+        // Initialize lattice map for layers.
+        lattices = new HashMap<>();
+        
+        // Create factory.
+        PatchLatticeFactory latticeFactory = new PatchLatticeFactory();
+        
+        // Initialize factory.
+        latticeFactory.initialize(series, random);
+        
+        // Iterate through each layer to create and schedule lattices.
+        for (String key : series.layers.keySet()) {
+            PatchLattice lattice = latticeFactory.lattices.get(key);
+            
+            // Add and schedule the lattice.
+            lattices.put(key, lattice);
+            lattice.schedule(schedule);
+        }
     }
     
     @Override
