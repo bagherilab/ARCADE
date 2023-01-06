@@ -15,9 +15,10 @@ import static arcade.core.util.Enums.State;
  * <p>
  * Each cell is associated with a {@link Location} object that defines their
  * physical location.
- * Each cell is also associated with a {@link Module} object that characterizes
- * cellular behaviors and states.
- * The {@link Module} is stepped during the step method of the {@code Cell}.
+ * Each cell is also associated with a {@link Module} object and/or
+ * {@link Process} objects that characterizes cellular behaviors and states.
+ * The {@link Module} or {@link Process} object(s) are stepped during the step
+ * method of the {@code Cell}.
  */
 
 public interface Cell extends Steppable {
