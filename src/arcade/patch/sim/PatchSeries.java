@@ -2,6 +2,7 @@ package arcade.patch.sim;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
@@ -73,14 +74,13 @@ public final class PatchSeries extends Series {
     protected void initialize(HashMap<String, ArrayList<Box>> setupLists, Box parameters) {
         // Initialize populations.
         MiniBox populationDefaults = parameters.getIdValForTag("POPULATION");
-        MiniBox populationConversions = parameters.getIdValForTagAtt("POPULATION", "conversion");
         ArrayList<Box> populationsBox = setupLists.get("populations");
-        updatePopulations(populationsBox, populationDefaults, populationConversions);
+        updatePopulations(populationsBox, populationDefaults, null);
         
-        // Initialize molecules.
-        MiniBox moleculeDefaults = parameters.getIdValForTag("MOLECULE");
-        ArrayList<Box> moleculesBox = setupLists.get("molecules");
-        updateMolecules(moleculesBox, moleculeDefaults);
+        // Initialize layers.
+        MiniBox layerDefaults = parameters.getIdValForTag("LAYER");
+        ArrayList<Box> layersBox = setupLists.get("layers");
+        updateLayers(layersBox, layerDefaults, null);
         
         // Add helpers.
         MiniBox helperDefaults = parameters.getIdValForTag("HELPER");
@@ -134,8 +134,8 @@ public final class PatchSeries extends Series {
         int code = 1;
         
         // Iterate through each setup dictionary to build population settings.
-        for (Box p : populationsBox) {
-            String id = p.getValue("id");
+        for (Box box : populationsBox) {
+            String id = box.getValue("id");
             
             // Create new population and update code.
             MiniBox population = new MiniBox();
@@ -143,12 +143,12 @@ public final class PatchSeries extends Series {
             this.populations.put(id, population);
             
             // Add population init if given. If not given or invalid, set to zero.
-            int init = (isValidNumber(p, "init")
-                    ? (int) Double.parseDouble(p.getValue("init")) : 0);
+            int init = (isValidNumber(box, "init")
+                    ? (int) Double.parseDouble(box.getValue("init")) : 0);
             population.put("INIT", init);
             
             // Get default parameters and any parameter adjustments.
-            Box parameters = p.filterBoxByTag("PARAMETER");
+            Box parameters = box.filterBoxByTag("PARAMETER");
             MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
             MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
             
@@ -160,7 +160,7 @@ public final class PatchSeries extends Series {
             }
             
             // Extract process versions.
-            Box processes = p.filterBoxByTag("PROCESS");
+            Box processes = box.filterBoxByTag("PROCESS");
             MiniBox processVersions = processes.getIdValForTagAtt("PROCESS", "version");
             
             for (String process : processes.getKeys()) {
@@ -171,8 +171,37 @@ public final class PatchSeries extends Series {
     }
     
     @Override
-    protected void updateMolecules(ArrayList<Box> moleculesBox, MiniBox moleculeDefaults) {
-        // TODO
+    protected void updateLayers(ArrayList<Box> layersBox, MiniBox layerDefaults,
+                                MiniBox layerConversions) {
+        this.layers = new HashMap<>();
+        if (layersBox == null) { return; }
+        
+        // Iterate through each setup dictionary to build layer settings.
+        for (Box box : layersBox) {
+            String id = box.getValue("id");
+            
+            // Create new layer.
+            MiniBox layer = new MiniBox();
+            this.layers.put(id, layer);
+            
+            // Get default parameters and any parameter adjustments.
+            Box parameters = box.filterBoxByTag("PARAMETER");
+            MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
+            MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
+            
+            // Add in parameters. Start with value (if given) or default (if not
+            // given). Then apply any scaling.
+            for (String parameter : layerDefaults.getKeys()) {
+                parseParameter(layer, parameter, layerDefaults.get(parameter),
+                        parameterValues, parameterScales);
+            }
+            
+            // Get list of operations.
+            HashSet<String> operations = box.filterTags("OPERATION");
+            for (String operation : operations) {
+                layer.put("(OPERATION)" + TAG_SEPARATOR + operation, "");
+            }
+        }
     }
     
     @Override
