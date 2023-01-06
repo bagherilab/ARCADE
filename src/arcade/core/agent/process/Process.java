@@ -18,6 +18,9 @@ import arcade.core.sim.Simulation;
  * More than one {@code Process} can be active for a given
  * {@link arcade.core.agent.cell.Cell} object.
  * Use {@link arcade.core.agent.module.Module} for exclusive steppables.
+ * <p>
+ * {@code Process} objects are analogs to
+ * {@link arcade.core.env.operation.Operation} for steppables that affect cells.
  */
 
 public interface Process {
