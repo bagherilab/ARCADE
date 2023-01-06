@@ -96,6 +96,9 @@ public abstract class Series {
     /** Map of population settings. */
     public HashMap<String, MiniBox> populations;
     
+    /** Map of layer settings. */
+    public HashMap<String, MiniBox> layers;
+    
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
      *
@@ -250,13 +253,15 @@ public abstract class Series {
                                               MiniBox populationConversions);
     
     /**
-     * Creates environment molecules.
+     * Creates environment layers.
      *
-     * @param moleculesBox  the list of molecule setup dictionaries
-     * @param moleculeDefaults  the dictionary of default molecule parameters
+     * @param layersBox  the list of layer setup dictionaries
+     * @param layerDefaults  the dictionary of default layer parameters
+     * @param layerConversions  the dictionary of layer parameter conversions
      */
-    protected abstract void updateMolecules(ArrayList<Box> moleculesBox,
-                                            MiniBox moleculeDefaults);
+    protected abstract void updateLayers(ArrayList<Box> layersBox,
+                                         MiniBox layerDefaults,
+                                         MiniBox layerConversions);
     
     /**
      * Creates selected helpers.

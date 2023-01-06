@@ -164,7 +164,8 @@ public class SeriesTest {
                                          MiniBox populationConversions) { }
         
         @Override
-        protected void updateMolecules(ArrayList<Box> molecules, MiniBox moleculeDefaults) { }
+        protected void updateLayers(ArrayList<Box> layers, MiniBox layerDefaults,
+                                    MiniBox layerConversions) { }
         
         @Override
         protected void updateHelpers(ArrayList<Box> helpers, MiniBox helperDefaults) { }
