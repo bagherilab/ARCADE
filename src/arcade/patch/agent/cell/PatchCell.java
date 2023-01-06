@@ -30,7 +30,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * <p>
  * {@code PatchCell} agents exist in one of seven states: undefined, apoptotic,
  * quiescent, migratory, proliferative, senescent, and necrotic.
- * The undefined state is an transition state for "undecided" cells, and does
+ * The undefined state is a transition state for "undecided" cells, and does
  * not have any biological analog.
  * <p>
  * {@code PatchCell} agents have two required {@link Process} domains:
@@ -42,9 +42,9 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * <ul>
  *     <li>update age</li>
  *     <li>check lifespan (possible change to apoptotic)</li>
- *     <li>step metabolism module</li>
+ *     <li>step metabolism process</li>
  *     <li>check energy status (possible change to quiescent, necrotic)</li>
- *     <li>step signaling module</li>
+ *     <li>step signaling process</li>
  *     <li>check if neutral (change to proliferative, migratory, senescent)</li>
  * </ul>
  * <p>
@@ -281,7 +281,7 @@ public class PatchCell implements Cell {
             module.step(simstate.random, sim);
         }
         
-        // Step metabolism module.
+        // Step metabolism process.
         processes.get(Domain.METABOLISM).step(simstate.random, sim);
         
         // Check energy status. If cell has less energy than threshold, it will
@@ -298,7 +298,7 @@ public class PatchCell implements Cell {
             }
         }
         
-        // Step signaling network module.
+        // Step signaling network process.
         processes.get(Domain.SIGNALING).step(simstate.random, sim);
         
         // Change state from undefined.

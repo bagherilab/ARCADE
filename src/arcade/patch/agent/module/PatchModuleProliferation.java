@@ -52,7 +52,7 @@ public class PatchModuleProliferation extends PatchModule {
      * @param sim  the simulation instance
      */
     public void step(MersenneTwisterFast random, Simulation sim) {
-        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(cell.getLocation());
+        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
         double totalVolume = PatchCell.calculateTotalVolume(bag);
         double currentHeight = totalVolume / location.getArea();
         
