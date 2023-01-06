@@ -24,7 +24,10 @@ public final class PatchEnums {
     /** Stepping order for simulation. */
     public enum Ordering {
         /** Stepping order for cells. */
-        CELLS
+        CELLS,
+        
+        /** Stepping order for lattices. */
+        LATTICES,
     }
     
     /** Process domain codes. */
@@ -45,6 +48,28 @@ public final class PatchEnums {
          * @return  a random {@code Domain}
          */
         public static Domain random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
+    
+    /** Operation category codes. */
+    public enum Category {
+        /** Code for undefined category. */
+        UNDEFINED,
+        
+        /** Code for metabolism category. */
+        DIFFUSER,
+        
+        /** Code for signaling category. */
+        GENERATOR;
+        
+        /**
+         * Randomly selects a {@code Category}.
+         *
+         * @param rng  the random number generator
+         * @return  a random {@code Operation}
+         */
+        public static Category random(MersenneTwisterFast rng) {
             return values()[rng.nextInt(values().length - 1) + 1];
         }
     }
