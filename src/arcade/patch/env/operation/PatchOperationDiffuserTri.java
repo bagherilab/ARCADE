@@ -1,4 +1,4 @@
-package arcade.patch.env.comp;
+package arcade.patch.env.operation;
 
 import arcade.core.sim.Simulation;
 import arcade.core.env.lat.Lattice;
@@ -15,10 +15,10 @@ import arcade.core.util.MiniBox;
 public class TriDiffuser extends Diffuser {
     /** Serialization version identifier */
     private static final long serialVersionUID = 0;
-    
+
     /** Orientation array for triangular geometry */
     private final byte[][] DIR;
-    
+
     /**
      * Creates a {@link arcade.env.comp.Diffuser} for triangular lattices.
      * <p>
@@ -36,19 +36,19 @@ public class TriDiffuser extends Diffuser {
      */
     public TriDiffuser(Simulation sim, Lattice lat, MiniBox molecule) {
         super(sim, lat, molecule);
-        
+
         // Calculate dimensionless rate and various multipliers.
         _rate = (4*_diff)/(3*_ds*_ds);
         _alpha = (DEPTH > 1 ? (3*_ds*_ds)/(2*_dz*_dz) : 0);
         _beta = 3 + 2*_alpha;
-        
+
         // Determine if solution is stable. If no, adjust for pseudo-steady.
         double lambda = _rate*_beta;
         if (lambda >= 1 | lambda < 0) {
             _rate = 1.0/_beta; // rate is now an average of neighbors
             _adjust = 0; // adjust old concentration in calculation
         } else { _adjust = 1; }
-        
+
         // Create orientation lattice.
         DIR = new byte[LENGTH][WIDTH];
         for (int i = 0; i < LENGTH; i++) {
@@ -59,7 +59,7 @@ public class TriDiffuser extends Diffuser {
             }
         }
     }
-    
+
     public double calcSum(int i, int j, double[][] field) {
         // Calculate sum of concentrations of three neighbors. First
         // add left and right neighbor. Check if located at left hand
@@ -67,10 +67,10 @@ public class TriDiffuser extends Diffuser {
         double sumConc = 0;
         sumConc += field[i - LEFT[i]][j];
         sumConc += field[i + RIGHT[i]][j];
-        
+
         // Add top or bottom neighbor, depending on orientation.
         sumConc += field[i][j + DIR[i][j]];
-        
+
         return sumConc;
     }
 }
