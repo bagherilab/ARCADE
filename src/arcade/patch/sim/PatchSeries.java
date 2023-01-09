@@ -31,12 +31,6 @@ public final class PatchSeries extends Series {
      */
     public final int depthBounds;
     
-    /** Spatial sizing in xy (um). */
-    public final double dxy;
-    
-    /** Spatial sizing in z (um). */
-    public final double dz;
-    
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
      *
@@ -57,10 +51,6 @@ public final class PatchSeries extends Series {
         this.depth = series.getInt("depth");
         this.radiusBounds = series.getInt("radiusBounds");
         this.depthBounds = series.getInt("depthBounds");
-        
-        // Set scaling.
-        this.dxy = series.getDouble("dxy");
-        this.dz = series.getDouble("dz");
     }
     
     @Override
@@ -89,8 +79,9 @@ public final class PatchSeries extends Series {
         
         // Initialize layers.
         MiniBox layerDefaults = parameters.getIdValForTag("LAYER");
+        MiniBox layerConversions = parameters.getIdValForTagAtt("LAYER", "conversion");
         ArrayList<Box> layersBox = setupLists.get("layers");
-        updateLayers(layersBox, layerDefaults, null);
+        updateLayers(layersBox, layerDefaults, layerConversions);
         
         // Add helpers.
         MiniBox helperDefaults = parameters.getIdValForTag("HELPER");
@@ -204,6 +195,12 @@ public final class PatchSeries extends Series {
             for (String parameter : layerDefaults.getKeys()) {
                 parseParameter(layer, parameter, layerDefaults.get(parameter),
                         parameterValues, parameterScales);
+            }
+            
+            // Apply conversion factors.
+            for (String convert : layerConversions.getKeys()) {
+                double conversion = parseConversion(layerConversions.get(convert), ds, dz, dt);
+                layer.put(convert, layer.getDouble(convert) * conversion);
             }
             
             // Get list of operations.

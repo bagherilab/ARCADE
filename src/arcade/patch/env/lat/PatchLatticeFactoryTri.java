@@ -24,11 +24,10 @@ public final class PatchLatticeFactoryTri extends PatchLatticeFactory {
     }
     
     @Override
-    public PatchOperation getOperation(Category category, PatchLattice lattice,
-                                       double dxy, double dz) {
+    public PatchOperation getOperation(Category category, PatchLattice lattice) {
         switch (category) {
             case DIFFUSER:
-                return new PatchOperationDiffuserTri(lattice, dxy, dz);
+                return new PatchOperationDiffuserTri(lattice);
             case GENERATOR:
                 return new PatchOperationGenerator(lattice);
             default:

@@ -24,11 +24,10 @@ public final class PatchLatticeFactoryRect extends PatchLatticeFactory {
     }
     
     @Override
-    public PatchOperation getOperation(Category category, PatchLattice lattice,
-                                       double dxy, double dz) {
+    public PatchOperation getOperation(Category category, PatchLattice lattice) {
         switch (category) {
             case DIFFUSER:
-                return new PatchOperationDiffuserRect(lattice, dxy, dz);
+                return new PatchOperationDiffuserRect(lattice);
             case GENERATOR:
                 return new PatchOperationGenerator(lattice);
             default:

@@ -188,7 +188,7 @@ public final class PatchInputBuilder extends InputBuilder {
             series.put("height", 2 * depthBounds - 1);
             CoordinateRect coordinate = new CoordinateRect(0, 0, 0);
             PatchLocationRect location = new PatchLocationRect(coordinate);
-            series.put("dxy", location.getSubcoordinateSize());
+            series.put("ds", location.getSubcoordinateSize());
             series.put("dz", location.getHeight());
         } else if (geometry.equals("HEX")) {
             series.put("length", 6 * radiusBounds - 3);
@@ -196,7 +196,7 @@ public final class PatchInputBuilder extends InputBuilder {
             series.put("height", 2 * depthBounds - 1);
             CoordinateHex coordinate = new CoordinateHex(0, 0, 0, 0);
             PatchLocationHex location = new PatchLocationHex(coordinate);
-            series.put("dxy", location.getSubcoordinateSize());
+            series.put("ds", location.getSubcoordinateSize());
             series.put("dz", location.getHeight());
         }
     }

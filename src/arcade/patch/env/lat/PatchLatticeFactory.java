@@ -40,9 +40,6 @@ public abstract class PatchLatticeFactory implements LatticeFactory {
         int width = series.width;
         int depth = ((PatchSeries) series).depthBounds;
         
-        double dxy = ((PatchSeries) series).dxy;
-        double dz = ((PatchSeries) series).dz;
-        
         for (String key : series.layers.keySet()) {
             double initialValue = 0;
             
@@ -60,7 +57,7 @@ public abstract class PatchLatticeFactory implements LatticeFactory {
             if (operationKeys.size() > 0) {
                 for (String operationKey : operationKeys) {
                     Category category = Category.valueOf(operationKey);
-                    PatchOperation operation = getOperation(category, lattice, dxy, dz);
+                    PatchOperation operation = getOperation(category, lattice);
                     lattice.setOperation(category, operation);
                 }
             }
@@ -85,10 +82,7 @@ public abstract class PatchLatticeFactory implements LatticeFactory {
      *
      * @param category  the operation category
      * @param lattice  the associated lattice instance
-     * @param dxy  the spatial scaling in xy
-     * @param dz  the spatial scaling in z
      * @return  the operation instance
      */
-    public abstract PatchOperation getOperation(Category category, PatchLattice lattice,
-                                           double dxy, double dz);
+    public abstract PatchOperation getOperation(Category category, PatchLattice lattice);
 }
