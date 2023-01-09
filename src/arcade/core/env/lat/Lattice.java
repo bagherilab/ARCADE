@@ -5,6 +5,7 @@ import sim.engine.Steppable;
 import arcade.core.env.loc.Location;
 import arcade.core.env.operation.Operation;
 import arcade.core.util.MiniBox;
+import static arcade.core.util.Enums.Category;
 
 /**
  * A {@code Lattice} represents an environment layer.
@@ -52,6 +53,14 @@ public interface Lattice extends Steppable {
      * @return  the depth of the lattice
      */
     int getDepth();
+    
+    /**
+     * Sets the lattice operation.
+     *
+     * @param category  the operation category
+     * @param operation  the lattice operation
+     */
+    void setOperation(Category category, Operation operation);
     
     /**
      * Gets the lattice operation object.

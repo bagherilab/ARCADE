@@ -81,4 +81,26 @@ public final class Enums {
             return values()[rng.nextInt(values().length - 1) + 1];
         }
     }
+    
+    /** Operation category codes. */
+    public enum Category {
+        /** Code for undefined category. */
+        UNDEFINED,
+        
+        /** Code for metabolism category. */
+        DIFFUSER,
+        
+        /** Code for signaling category. */
+        GENERATOR;
+        
+        /**
+         * Randomly selects a {@code Category}.
+         *
+         * @param rng  the random number generator
+         * @return  a random {@code Operation}
+         */
+        public static Category random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
 }
