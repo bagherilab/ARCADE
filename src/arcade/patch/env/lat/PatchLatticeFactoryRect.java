@@ -1,10 +1,14 @@
 package arcade.patch.env.lat;
 
-import arcade.core.env.operation.Operation;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.operation.PatchOperation;
 import arcade.patch.env.operation.PatchOperationDiffuserRect;
 import arcade.patch.env.operation.PatchOperationGenerator;
 import static arcade.core.util.Enums.Category;
+
+/**
+ * Concrete implementation of {@link PatchLatticeFactory} for rectangular geometry.
+ */
 
 public final class PatchLatticeFactoryRect extends PatchLatticeFactory {
     /**
@@ -20,7 +24,8 @@ public final class PatchLatticeFactoryRect extends PatchLatticeFactory {
     }
     
     @Override
-    public Operation getOperation(Category category, PatchLattice lattice, double dxy, double dz) {
+    public PatchOperation getOperation(Category category, PatchLattice lattice,
+                                       double dxy, double dz) {
         switch (category) {
             case DIFFUSER:
                 return new PatchOperationDiffuserRect(lattice, dxy, dz);

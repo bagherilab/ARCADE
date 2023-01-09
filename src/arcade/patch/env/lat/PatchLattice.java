@@ -2,16 +2,16 @@ package arcade.patch.env.lat;
 
 import java.util.HashMap;
 import java.util.Map;
+import sim.engine.Schedule;
+import sim.engine.SimState;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.operation.Operation;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
-import sim.engine.Schedule;
-import sim.engine.SimState;
 import static arcade.core.util.Enums.Category;
 import static arcade.patch.util.PatchEnums.Ordering;
 
-/** 
+/**
  * Implementation of {@link Lattice} for patch models.
  * <p>
  * {@code PatchLattice} agents can call two {@link Operation} categories:
@@ -27,16 +27,16 @@ import static arcade.patch.util.PatchEnums.Ordering;
  */
 
 public abstract class PatchLattice implements Lattice {
-    /** Array containing lattice values */
+    /** Array containing lattice values. */
     protected final double[][][] field;
     
-    /** Length of the array (x direction) */
+    /** Length of the array (x direction). */
     private final int length;
     
-    /** Width of the array (y direction) */
+    /** Width of the array (y direction). */
     private final int width;
     
-    /** Depth of the array (z direction) */
+    /** Depth of the array (z direction). */
     private final int depth;
     
     /** Map of operation categories and {@link Operation} instance. */
@@ -109,7 +109,9 @@ public abstract class PatchLattice implements Lattice {
     public void setField(double value) {
         for (int k = 0; k < depth; k++) {
             for (int i = 0; i < length; i++) {
-                for (int j = 0; j < width; j++) { field[k][i][j] = value; }
+                for (int j = 0; j < width; j++) {
+                    field[k][i][j] = value;
+                }
             }
         }
     }

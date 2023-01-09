@@ -3,13 +3,18 @@ package arcade.patch.env.lat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import ec.util.MersenneTwisterFast;
-import arcade.core.env.operation.Operation;
+import arcade.core.env.lat.LatticeFactory;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.operation.PatchOperation;
 import arcade.patch.sim.PatchSeries;
 import static arcade.core.util.Enums.Category;
 
-public abstract class PatchLatticeFactory {
+/**
+ * Implementation of{@link LatticeFactory} for {@link PatchLattice} objects.
+ */
+
+public abstract class PatchLatticeFactory implements LatticeFactory {
     /** Random number generator instance. */
     MersenneTwisterFast random;
     
@@ -23,11 +28,13 @@ public abstract class PatchLatticeFactory {
         lattices = new HashMap<>();
     }
     
+    @Override
     public void initialize(Series series, MersenneTwisterFast random) {
         this.random = random;
         createLattices(series);
     }
     
+    @Override
     public void createLattices(Series series) {
         int length = series.length;
         int width = series.width;
@@ -53,7 +60,7 @@ public abstract class PatchLatticeFactory {
             if (operationKeys.size() > 0) {
                 for (String operationKey : operationKeys) {
                     Category category = Category.valueOf(operationKey);
-                    Operation operation = getOperation(category, lattice, dxy, dz);
+                    PatchOperation operation = getOperation(category, lattice, dxy, dz);
                     lattice.setOperation(category, operation);
                 }
             }
@@ -62,8 +69,26 @@ public abstract class PatchLatticeFactory {
         }
     }
     
+    /**
+     * Creates a new {@link PatchLattice} instance.
+     *
+     * @param length  the length of array (x direction)
+     * @param width  the width of array (y direction)
+     * @param depth  the depth of array (z direction)
+     * @param parameters  the dictionary of parameters
+     * @return  the lattice instance
+     */
     public abstract PatchLattice getLattice(int length, int width, int depth, MiniBox parameters);
     
-    public abstract Operation getOperation(Category category, PatchLattice lattice,
+    /**
+     * Creates a new {@link PatchOperation} instance for the given category.
+     *
+     * @param category  the operation category
+     * @param lattice  the associated lattice instance
+     * @param dxy  the spatial scaling in xy
+     * @param dz  the spatial scaling in z
+     * @return  the operation instance
+     */
+    public abstract PatchOperation getOperation(Category category, PatchLattice lattice,
                                            double dxy, double dz);
 }
