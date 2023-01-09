@@ -21,29 +21,31 @@ public class PatchOperationDiffuserRect extends PatchOperationDiffuser {
         super(lattice);
         
         // Calculate dimensionless rate and various multipliers.
-        _rate = (_diff)/(_ds*_ds);
-        _alpha = (DEPTH > 1 ? (2*_ds*_ds)/(_dz*_dz) : 0);
-        _beta = 4 + 2*_alpha;
+        rate = (diffusivity) / (dxy * dxy);
+        alpha = (latticeDepth > 1 ? (2 * dxy * dxy) / (dz * dz) : 0);
+        beta = 4 + 2 * alpha;
         
         // Determine if solution is stable. If no, adjust for pseudo-steady.
-        double lambda = _rate*_beta;
+        double lambda = rate * beta;
         if (lambda >= 1 | lambda < 0) {
-            _rate = 1.0/_beta; // rate is now an average of neighbors
-            _adjust = 0; // adjust old concentration in calculation
-        } else { _adjust = 1; }
+            rate = 1.0 / beta; // rate is now an average of neighbors
+            adjust = 0; // adjust old concentration in calculation
+        } else {
+            adjust = 1;
+        }
     }
     
     @Override
     public double calcSum(int i, int j, double[][] field) {
-        // Calculate sum of concentrations of four neighbors. First
-        // add left, right, top, and bottom neighbor. Check if located at left
-        // hand side (for left), right hand side (for right), top side (for top),
-        // or bottom side (for bottom).
+        // Calculate sum of concentrations of four neighbors. First add left,
+        // right, top, and bottom neighbor. Check if located at left hand side
+        // (for left), right hand side (for right), top side (for top), or
+        // bottom side (for bottom).
         double sumConc = 0;
-        sumConc += field[i - LEFT[i]][j];
-        sumConc += field[i + RIGHT[i]][j];
-        sumConc += field[i][j - TOP[j]];
-        sumConc += field[i][j + BOTTOM[j]];
+        sumConc += field[i - leftBorder[i]][j];
+        sumConc += field[i + rightBorder[i]][j];
+        sumConc += field[i][j - topBorder[j]];
+        sumConc += field[i][j + bottomBorder[j]];
         return sumConc;
     }
 }

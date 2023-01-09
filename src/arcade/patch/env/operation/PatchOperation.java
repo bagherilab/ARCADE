@@ -8,33 +8,33 @@ import arcade.patch.env.lat.PatchLattice;
  */
 
 public abstract class PatchOperation implements Operation {
-    /** Depth of the array (z direction) */
-    final int DEPTH;
+    /** Depth of the array (z direction). */
+    final int latticeDepth;
     
-     /** Length of the array (x direction) */
-    final int LENGTH;
+    /** Length of the array (x direction). */
+    final int latticeLength;
     
-    /** Width of the array (y direction) */
-    final int WIDTH;
+    /** Width of the array (y direction). */
+    final int latticeWidth;
     
-    /** Lattice holding current values */
+    /** Lattice holding current values. */
     final PatchLattice lattice;
     
-    /** Lattice holding updated values */
-    final double[][][] latNew;
+    /** Lattice holding updated values. */
+    final double[][][] latticeUpdate;
     
     /**
      * Creates an operation for a {@link PatchLattice} category.
-     * 
+     *
      * @param lattice  the {@link PatchLattice} object
      */
     public PatchOperation(PatchLattice lattice) {
         this.lattice = lattice;
-        this.latNew = lattice.getCopy();
+        this.latticeUpdate = lattice.getCopy();
         
         // Get sizing.
-        LENGTH = lattice.getLength();
-        WIDTH = lattice.getWidth();
-        DEPTH = lattice.getDepth();
+        latticeLength = lattice.getLength();
+        latticeWidth = lattice.getWidth();
+        latticeDepth = lattice.getDepth();
     }
 }
