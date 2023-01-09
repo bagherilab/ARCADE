@@ -11,5 +11,6 @@
     
     <!-- default conversion factors -->
     <default id="DS" value="1" units="um/voxel" description="spatial conversion factor" />
+    <default id="DZ" value="1" units="um/voxel" description="spatial conversion factor in z" />
     <default id="DT" value="1" units="hours/tick" description="temporal conversion factor" />
 </parameters>
