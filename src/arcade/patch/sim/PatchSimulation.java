@@ -151,6 +151,13 @@ public abstract class PatchSimulation extends SimState implements Simulation {
      */
     abstract PatchCellFactory makeCellFactory();
     
+    /**
+     * Creates a factory for lattices.
+     *
+     * @return  a {@link arcade.core.env.lat.Lattice} factory
+     */
+    abstract PatchLatticeFactory makeLatticeFactory();
+    
     @Override
     public final void setupAgents() {
         // Initialize grid for agents.
@@ -197,7 +204,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         lattices = new HashMap<>();
         
         // Create factory.
-        PatchLatticeFactory latticeFactory = new PatchLatticeFactory();
+        PatchLatticeFactory latticeFactory = makeLatticeFactory();
         
         // Initialize factory.
         latticeFactory.initialize(series, random);

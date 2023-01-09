@@ -1,42 +1,68 @@
 package arcade.patch.env.lat;
 
-import arcade.core.sim.Simulation;
-import arcade.env.comp.*;
+import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.loc.CoordinateTri;
+import arcade.patch.env.loc.PatchLocation;
 
-/** 
- * Extension of {@link arcade.env.lat.PatchLattice} for triangular lattice.
- * <p>
- * {@code PatchLatticeTri} uses the {@link TriDiffuser} for diffusion on a triangular
- * grid.
- * Triangular grid locations have (x,y) coordinates, but additionally have are
- * "up" or "down" facing.
+/**
+ * Concrete implementation of {@link PatchLattice} for triangular coordinates.
  */
 
 public class PatchLatticeTri extends PatchLattice {
-    /**
-     * Creates a triangular {@link arcade.env.lat.PatchLattice} initialized to zero.
-     *
-     * @param length  the length of array (x direction)
-     * @param width  the width of array (y direction)
-     * @param depth  the depth of array (z direction)
-     */
-    public PatchLatticeTri(int length, int width, int depth) { this(length, width, depth, 0); }
-    
-    /**
-     * Creates a triangular {@link arcade.env.lat.PatchLattice} initialized to given
-     * value.
-     *
-     * @param length  the length of array (x direction)
-     * @param width  the width of array (y direction)
-     * @param depth  the depth of array (z direction)
-     * @param val  the initial value of array
-     */
-    public PatchLatticeTri(int length, int width, int depth, double val) {
-        super(length, width, depth, val);
-    }
-    
-    public Component makeDiffuser(Simulation sim, MiniBox molecule) {
-        return new TriDiffuser(sim, this, molecule);
+   /**
+    * Creates a triangular {@code PatchLattice} environment.
+    *
+    * @param length  the length of array (x direction)
+    * @param width  the width of array (y direction)
+    * @param depth  the depth of array (z direction)
+    * @param parameters  the dictionary of parameters
+    */
+   public PatchLatticeTri(int length, int width, int depth, MiniBox parameters) {
+      super(length, width, depth, parameters);
+   }
+   
+   @Override
+   public double getTotalValue(Location location) {
+      PatchLocation patchLocation = (PatchLocation) location;
+      return patchLocation.getSubcoordinates().stream()
+              .map(e -> (CoordinateTri) e)
+              .mapToDouble(c -> field[c.z][c.x][c.y])
+              .sum();
+   }
+   
+   @Override
+   public double getAverageValue(Location location) {
+      PatchLocation patchLocation = (PatchLocation) location;
+      return patchLocation.getSubcoordinates().stream()
+              .map(e -> (CoordinateTri) e)
+              .mapToDouble(c -> field[c.z][c.x][c.y])
+              .sum() / patchLocation.getMaximum();
+   }
+   
+   @Override
+   public void updateValue(Location location, double fraction) {
+      if (!Double.isNaN(fraction)) {
+         PatchLocation patchLocation = (PatchLocation) location;
+         patchLocation.getSubcoordinates().stream()
+                 .map(e -> (CoordinateTri) e)
+                 .forEach(c -> field[c.z][c.x][c.y] *= fraction);
+      }
+   }
+   
+   @Override
+   public void incrementValue(Location location, double increment) {
+      PatchLocation patchLocation = (PatchLocation) location;
+      patchLocation.getSubcoordinates().stream()
+              .map(e -> (CoordinateTri) e)
+              .forEach(c -> field[c.z][c.x][c.y] += increment);
+   }
+   
+    @Override
+    public void setValue(Location location, double value) {
+       PatchLocation patchLocation = (PatchLocation) location;
+       patchLocation.getSubcoordinates().stream()
+               .map(e -> (CoordinateTri) e)
+               .forEach(c -> field[c.z][c.x][c.y] = value);
     }
 }

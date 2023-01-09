@@ -1,40 +1,68 @@
 package arcade.patch.env.lat;
 
-import arcade.core.sim.Simulation;
-import arcade.env.comp.*;
+import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.loc.CoordinateRect;
+import arcade.patch.env.loc.PatchLocation;
 
-/** 
- * Extension of {@link arcade.env.lat.PatchLattice} for rectangular lattice.
- * <p>
- * {@code PatchLatticeRect} uses the {@link RectDiffuser} for diffusion on a rectangular
- * grid.
+/**
+ * Concrete implementation of {@link PatchLattice} for rectangular coordinates.
  */
 
 public class PatchLatticeRect extends PatchLattice {
-    /**
-     * Creates a rectangular {@link arcade.env.lat.PatchLattice} initialized to zero.
-     *
-     * @param length  the length of array (x direction)
-     * @param width  the width of array (y direction)
-     * @param depth  the depth of array (z direction)
-     */
-    public PatchLatticeRect(int length, int width, int depth) { this(length, width, depth, 0); }
-    
-    /**
-     * Creates a rectangular {@link arcade.env.lat.PatchLattice} initialized to given
-     * value.
-     *
-     * @param length  the length of array (x direction)
-     * @param width  the width of array (y direction)
-     * @param depth  the depth of array (z direction)
-     * @param val  the initial value of array
-     */
-    public PatchLatticeRect(int length, int width, int depth, double val) {
-        super(length, width, depth, val);
-    }
-    
-    public Component makeDiffuser(Simulation sim, MiniBox molecule) {
-        return new RectDiffuser(sim, this, molecule);
+   /**
+    * Creates a rectangular {@code PatchLattice} environment.
+    *
+    * @param length  the length of array (x direction)
+    * @param width  the width of array (y direction)
+    * @param depth  the depth of array (z direction)
+    * @param parameters  the dictionary of parameters
+    */
+   public PatchLatticeRect(int length, int width, int depth, MiniBox parameters) {
+      super(length, width, depth, parameters);
+   }
+   
+   @Override
+   public double getTotalValue(Location location) {
+      PatchLocation patchLocation = (PatchLocation) location;
+      return patchLocation.getSubcoordinates().stream()
+              .map(e -> (CoordinateRect) e)
+              .mapToDouble(c -> field[c.z][c.x][c.y])
+              .sum();
+   }
+   
+   @Override
+   public double getAverageValue(Location location) {
+      PatchLocation patchLocation = (PatchLocation) location;
+      return patchLocation.getSubcoordinates().stream()
+              .map(e -> (CoordinateRect) e)
+              .mapToDouble(c -> field[c.z][c.x][c.y])
+              .sum() / patchLocation.getMaximum();
+   }
+   
+   @Override
+   public void updateValue(Location location, double fraction) {
+      if (!Double.isNaN(fraction)) {
+         PatchLocation patchLocation = (PatchLocation) location;
+         patchLocation.getSubcoordinates().stream()
+                 .map(e -> (CoordinateRect) e)
+                 .forEach(c -> field[c.z][c.x][c.y] *= fraction);
+      }
+   }
+   
+   @Override
+   public void incrementValue(Location location, double increment) {
+      PatchLocation patchLocation = (PatchLocation) location;
+      patchLocation.getSubcoordinates().stream()
+              .map(e -> (CoordinateRect) e)
+              .forEach(c -> field[c.z][c.x][c.y] += increment);
+   }
+   
+    @Override
+    public void setValue(Location location, double value) {
+       PatchLocation patchLocation = (PatchLocation) location;
+       patchLocation.getSubcoordinates().stream()
+               .map(e -> (CoordinateRect) e)
+               .forEach(c -> field[c.z][c.x][c.y] = value);
     }
 }

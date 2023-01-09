@@ -2,6 +2,8 @@ package arcade.patch.sim;
 
 import arcade.core.sim.Series;
 import arcade.patch.agent.cell.PatchCellFactory;
+import arcade.patch.env.lat.PatchLatticeFactory;
+import arcade.patch.env.lat.PatchLatticeFactoryTri;
 import arcade.patch.env.loc.PatchLocationFactory;
 import arcade.patch.env.loc.PatchLocationFactoryHex;
 import arcade.patch.env.loc.PatchLocationHex;
@@ -26,9 +28,14 @@ public final class PatchSimulationHex extends PatchSimulation {
     PatchLocationFactory makeLocationFactory() {
         return new PatchLocationFactoryHex();
     }
-
+    
     @Override
     PatchCellFactory makeCellFactory() {
         return new PatchCellFactory();
+    }
+    
+    @Override
+    PatchLatticeFactory makeLatticeFactory() {
+        return new PatchLatticeFactoryTri();
     }
 }

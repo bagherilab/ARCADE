@@ -31,6 +31,12 @@ public final class PatchSeries extends Series {
      */
     public final int depthBounds;
     
+    /** Spatial sizing in xy (um). */
+    public final double dxy;
+    
+    /** Spatial sizing in z (um). */
+    public final double dz;
+    
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
      *
@@ -51,6 +57,10 @@ public final class PatchSeries extends Series {
         this.depth = series.getInt("depth");
         this.radiusBounds = series.getInt("radiusBounds");
         this.depthBounds = series.getInt("depthBounds");
+        
+        // Set scaling.
+        this.dxy = series.getDouble("dxy");
+        this.dz = series.getDouble("dz");
     }
     
     @Override

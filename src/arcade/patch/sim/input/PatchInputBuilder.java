@@ -7,6 +7,10 @@ import arcade.core.sim.input.InputBuilder;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import arcade.patch.sim.PatchSeries;
+import arcade.patch.env.loc.CoordinateHex;
+import arcade.patch.env.loc.CoordinateRect;
+import arcade.patch.env.loc.PatchLocationHex;
+import arcade.patch.env.loc.PatchLocationRect;
 import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.Box.KEY_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
@@ -182,10 +186,18 @@ public final class PatchInputBuilder extends InputBuilder {
             series.put("length", 4 * radiusBounds - 2);
             series.put("width", 4 * radiusBounds - 2);
             series.put("height", 2 * depthBounds - 1);
+            CoordinateRect coordinate = new CoordinateRect(0, 0, 0);
+            PatchLocationRect location = new PatchLocationRect(coordinate);
+            series.put("dxy", location.getSubcoordinateSize());
+            series.put("dz", location.getHeight());
         } else if (geometry.equals("HEX")) {
             series.put("length", 6 * radiusBounds - 3);
             series.put("width", 4 * radiusBounds - 2);
             series.put("height", 2 * depthBounds - 1);
+            CoordinateHex coordinate = new CoordinateHex(0, 0, 0, 0);
+            PatchLocationHex location = new PatchLocationHex(coordinate);
+            series.put("dxy", location.getSubcoordinateSize());
+            series.put("dz", location.getHeight());
         }
     }
 }
