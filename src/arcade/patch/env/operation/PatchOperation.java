@@ -29,12 +29,13 @@ public abstract class PatchOperation implements Operation {
      * @param lattice  the {@link PatchLattice} object
      */
     public PatchOperation(PatchLattice lattice) {
-        this.lattice = lattice;
-        this.latticeUpdate = lattice.getCopy();
-        
         // Get sizing.
         latticeLength = lattice.getLength();
         latticeWidth = lattice.getWidth();
         latticeDepth = lattice.getDepth();
+        
+        // Set lattices.
+        this.lattice = lattice;
+        this.latticeUpdate = new double[latticeDepth][latticeLength][latticeWidth];
     }
 }
