@@ -1,37 +1,30 @@
 package arcade.patch.env.operation;
 
-import arcade.core.sim.Simulation;
-import arcade.core.env.lat.Lattice;
-import arcade.core.util.MiniBox;
+import arcade.patch.env.lat.PatchLattice;
 
 /**
- * Extension of {@link arcade.env.comp.Diffuser} for rectangular lattice.
+ * Extension of {@link PatchOperationDiffuser} for rectangular lattices.
  */
 
-public class RectDiffuser extends Diffuser {
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 0;
-
+public class PatchOperationDiffuserRect extends PatchOperationDiffuser {
     /**
-     * Creates a {@link arcade.env.comp.Diffuser} for rectangular lattices.
+     * Creates a {@link PatchOperationDiffuser} for rectangular lattices.
      * <p>
      * Constructor calculates rate and multipliers for diffusion on the
-     * triangular lattice given diffusivity of the molecule.
+     * rectangular lattice given diffusivity of the molecule.
      * If the finite different approximation is not stable, the multipliers are
      * adjusted to use a pseudo-steady state approximation.
      *
-     * @param sim  the simulation instance
-     * @param lat  the lattice of concentrations to be diffused
-     * @param molecule  the molecule parameters
+     * @param lattice  the {@link PatchLattice} the operation is associated with
      */
-    public RectDiffuser(Simulation sim, Lattice lat, MiniBox molecule) {
-        super(sim, lat, molecule);
-
+    public PatchOperationDiffuserRect(PatchLattice lattice) {
+        super(lattice);
+        
         // Calculate dimensionless rate and various multipliers.
         _rate = (_diff)/(_ds*_ds);
         _alpha = (DEPTH > 1 ? (2*_ds*_ds)/(_dz*_dz) : 0);
         _beta = 4 + 2*_alpha;
-
+        
         // Determine if solution is stable. If no, adjust for pseudo-steady.
         double lambda = _rate*_beta;
         if (lambda >= 1 | lambda < 0) {
@@ -39,7 +32,8 @@ public class RectDiffuser extends Diffuser {
             _adjust = 0; // adjust old concentration in calculation
         } else { _adjust = 1; }
     }
-
+    
+    @Override
     public double calcSum(int i, int j, double[][] field) {
         // Calculate sum of concentrations of four neighbors. First
         // add left, right, top, and bottom neighbor. Check if located at left
