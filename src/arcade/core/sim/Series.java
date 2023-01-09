@@ -60,6 +60,9 @@ public abstract class Series {
     /** Spatial conversion factor (um/voxel). */
     public final double ds;
     
+    /** Spatial conversion factor in z (um/voxel). */
+    public final double dz;
+    
     /** Temporal conversion factor (hrs/tick). */
     public final double dt;
     
@@ -155,6 +158,9 @@ public abstract class Series {
         this.ds = (series.contains("ds")
                 ? series.getDouble("ds")
                 : defaults.getDouble("DS"));
+        this.dz = (series.contains("dz")
+                ? series.getDouble("dz")
+                : defaults.getDouble("DZ"));
         this.dt = (series.contains("dt")
                 ? series.getDouble("dt")
                 : defaults.getDouble("DT"));
@@ -307,7 +313,8 @@ public abstract class Series {
      * Updates conversion string into a value.
      * <p>
      * Conversion string is in the form of {@code D^N} where {@code D} is either
-     * {@code DS} or {@code DT} and {@code N} is an integer exponent.
+     * {@code DS}, {@code DZ}, or {@code DT} and {@code N} is an integer exponent.
+     * Conversions with {@code DZ} are replaced with {@code DS}.
      * Multiple terms can be chained in the form {@code D^N1.D^N2}.
      * The {@code ^N} is not required if N = 1.
      *
@@ -317,11 +324,31 @@ public abstract class Series {
      * @return  the updated conversion factor
      */
     protected static double parseConversion(String convert, double ds, double dt) {
+       return parseConversion(convert, ds, ds, dt);
+    }
+    
+    /**
+     * Updates conversion string into a value.
+     * <p>
+     * Conversion string is in the form of {@code D^N} where {@code D} is either
+     * {@code DS}, {@code DZ}, or {@code DT} and {@code N} is an integer exponent.
+     * Multiple terms can be chained in the form {@code D^N1.D^N2}.
+     * The {@code ^N} is not required if N = 1.
+     *
+     * @param convert  the conversion string
+     * @param ds  the spatial conversion factor in xy
+     * @param dz  the spatial conversion factor in z
+     * @param dt  the temporal conversion factor
+     * @return  the updated conversion factor
+     */
+    protected static double parseConversion(String convert, double ds, double dz, double dt) {
         double value = 1;
         String[] split = convert.split("\\.");
         for (String s : split) {
             String[] subsplit = s.replace(" ", "").split("\\^");
-            double v = (subsplit[0].equals("DS") ? ds : (subsplit[0].equals("DT") ? dt : 1));
+            double v = (subsplit[0].equals("DS") ? ds
+                    : (subsplit[0].equals("DZ") ? dz
+                    : (subsplit[0].equals("DT") ? dt : 1)));
             int n = (subsplit.length == 2 ? Integer.parseInt(subsplit[1]) : 1);
             value *= Math.pow(v, n);
         }
