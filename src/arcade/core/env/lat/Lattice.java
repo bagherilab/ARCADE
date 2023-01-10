@@ -41,11 +41,11 @@ public interface Lattice extends Steppable {
     int getWidth();
     
     /**
-     * Gets the depth of the lattice (z direction).
+     * Gets the height of the lattice (z direction).
      *
-     * @return  the depth of the lattice
+     * @return  the height of the lattice
      */
-    int getDepth();
+    int getHeight();
     
     /**
      * Sets the lattice operation.
