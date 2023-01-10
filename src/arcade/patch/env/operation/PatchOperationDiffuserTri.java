@@ -32,7 +32,7 @@ public class PatchOperationDiffuserTri extends PatchOperationDiffuser {
         
         // Calculate dimensionless rate and various multipliers.
         rate = (4 * diffusivity) / (3 * dxy * dxy);
-        alpha = (latticeDepth > 1 ? (3 * dxy * dxy) / (2 * dz * dz) : 0);
+        alpha = (latticeHeight > 1 ? (3 * dxy * dxy) / (2 * dz * dz) : 0);
         beta = 3 + 2 * alpha;
         
         // Determine if solution is stable. If no, adjust for pseudo-steady.

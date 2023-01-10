@@ -63,7 +63,7 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
      * Diffusion parameters are pulled based on the molecule code.
      * Six border arrays are used to check if an index is located at the
      * right/left ({@code LENGTH}, x axis), top/bottom ({@code WIDTH}, y axis),
-     * and up/down ({@code DEPTH}, z axis) directions.
+     * and up/down ({@code HEIGHT}, z axis) directions.
      *
      * @param lattice  the {@link PatchLattice} the operation is associated with
      */
@@ -77,10 +77,10 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
         dz = parameters.getDouble("diffuser/STEP_SIZE_Z");
         
         // Set up border arrays for up and down (z direction).
-        upBorder = new byte[latticeDepth];
-        downBorder = new byte[latticeDepth];
-        for (int k = 0; k < latticeDepth; k++) {
-            upBorder[k] = (byte) (k == latticeDepth - 1 ? 0 : 1);
+        upBorder = new byte[latticeHeight];
+        downBorder = new byte[latticeHeight];
+        for (int k = 0; k < latticeHeight; k++) {
+            upBorder[k] = (byte) (k == latticeHeight - 1 ? 0 : 1);
             downBorder[k] = (byte) (k == 0  ? 0 : 1);
         }
         
@@ -113,7 +113,7 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
     
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-        if (latticeDepth == 1) {
+        if (latticeHeight == 1) {
             step2D();
         } else {
             step3D();
@@ -154,7 +154,7 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
         
         // Update concentration in each location with step size of 1 second.
         for (int step = 0; step < 60; step++) {
-            for (int k = 0; k < latticeDepth; k++) {
+            for (int k = 0; k < latticeHeight; k++) {
                 up = k + upBorder[k];
                 down = k - downBorder[k];
                 

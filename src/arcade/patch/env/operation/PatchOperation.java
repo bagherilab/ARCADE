@@ -8,8 +8,8 @@ import arcade.patch.env.lat.PatchLattice;
  */
 
 public abstract class PatchOperation implements Operation {
-    /** Depth of the array (z direction). */
-    final int latticeDepth;
+    /** Height of the array (z direction). */
+    final int latticeHeight;
     
     /** Length of the array (x direction). */
     final int latticeLength;
@@ -32,10 +32,10 @@ public abstract class PatchOperation implements Operation {
         // Get sizing.
         latticeLength = lattice.getLength();
         latticeWidth = lattice.getWidth();
-        latticeDepth = lattice.getDepth();
+        latticeHeight = lattice.getHeight();
         
         // Set lattices.
         this.lattice = lattice;
-        this.latticeUpdate = new double[latticeDepth][latticeLength][latticeWidth];
+        this.latticeUpdate = new double[latticeHeight][latticeLength][latticeWidth];
     }
 }
