@@ -15,11 +15,11 @@ public class PatchLatticeTri extends PatchLattice {
     *
     * @param length  the length of array (x direction)
     * @param width  the width of array (y direction)
-    * @param depth  the depth of array (z direction)
+    * @param height  the height of array (z direction)
     * @param parameters  the dictionary of parameters
     */
-   public PatchLatticeTri(int length, int width, int depth, MiniBox parameters) {
-      super(length, width, depth, parameters);
+   public PatchLatticeTri(int length, int width, int height, MiniBox parameters) {
+      super(length, width, height, parameters);
    }
    
    @Override

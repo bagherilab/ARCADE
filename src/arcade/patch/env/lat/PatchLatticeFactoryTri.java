@@ -19,8 +19,8 @@ public final class PatchLatticeFactoryTri extends PatchLatticeFactory {
     }
     
     @Override
-    public PatchLattice getLattice(int length, int width, int depth, MiniBox parameters) {
-        return new PatchLatticeTri(length, width, depth, parameters);
+    public PatchLattice getLattice(int length, int width, int height, MiniBox parameters) {
+        return new PatchLatticeTri(length, width, height, parameters);
     }
     
     @Override

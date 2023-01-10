@@ -36,8 +36,8 @@ public abstract class PatchLattice implements Lattice {
     /** Width of the array (y direction). */
     private final int width;
     
-    /** Depth of the array (z direction). */
-    private final int depth;
+    /** Height of the array (z direction). */
+    private final int height;
     
     /** Map of operation categories and {@link Operation} instance. */
     protected final Map<Category, Operation> operations;
@@ -50,16 +50,16 @@ public abstract class PatchLattice implements Lattice {
      *
      * @param length  the length of array (x direction)
      * @param width  the width of array (y direction)
-     * @param depth  the depth of array (z direction)
+     * @param height  the height of array (z direction)
      * @param parameters  the dictionary of parameters
      */
-    public PatchLattice(int length, int width, int depth, MiniBox parameters) {
+    public PatchLattice(int length, int width, int height, MiniBox parameters) {
         this.length = length;
         this.width = width;
-        this.depth = depth;
+        this.height = height;
         this.operations = new HashMap<>();
         this.parameters = parameters;
-        this.field = new double[depth][length][width];
+        this.field = new double[height][length][width];
     }
     
     @Override
@@ -72,7 +72,7 @@ public abstract class PatchLattice implements Lattice {
     public int getWidth() { return width; }
     
     @Override
-    public int getDepth() { return depth; }
+    public int getHeight() { return height; }
     
     @Override
     public Operation getOperation(String key) { return operations.get(Category.valueOf(key)); }
@@ -96,7 +96,7 @@ public abstract class PatchLattice implements Lattice {
     
     @Override
     public void setField(double value) {
-        for (int k = 0; k < depth; k++) {
+        for (int k = 0; k < height; k++) {
             for (int i = 0; i < length; i++) {
                 for (int j = 0; j < width; j++) {
                     field[k][i][j] = value;

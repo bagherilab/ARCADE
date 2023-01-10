@@ -38,13 +38,13 @@ public abstract class PatchLatticeFactory implements LatticeFactory {
     public void createLattices(Series series) {
         int length = series.length;
         int width = series.width;
-        int depth = ((PatchSeries) series).depthBounds;
+        int height = series.height;
         
         for (String key : series.layers.keySet()) {
             double initialValue = 0;
             
             MiniBox parameters = series.layers.get(key);
-            PatchLattice lattice = getLattice(length, width, depth, parameters);
+            PatchLattice lattice = getLattice(length, width, height, parameters);
             lattice.setField(initialValue);
             
             MiniBox layer = series.layers.get(key);
@@ -71,11 +71,11 @@ public abstract class PatchLatticeFactory implements LatticeFactory {
      *
      * @param length  the length of array (x direction)
      * @param width  the width of array (y direction)
-     * @param depth  the depth of array (z direction)
+     * @param height  the height of array (z direction)
      * @param parameters  the dictionary of parameters
      * @return  the lattice instance
      */
-    public abstract PatchLattice getLattice(int length, int width, int depth, MiniBox parameters);
+    public abstract PatchLattice getLattice(int length, int width, int height, MiniBox parameters);
     
     /**
      * Creates a new {@link PatchOperation} instance for the given category.
