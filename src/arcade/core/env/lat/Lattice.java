@@ -58,10 +58,10 @@ public interface Lattice extends Steppable {
     /**
      * Gets the lattice operation object.
      *
-     * @param key  the lattice operation key
+     * @param category  the operation category
      * @return  the lattice operation
      */
-    Operation getOperation(String key);
+    Operation getOperation(Category category);
     
     /**
      * Gets the lattice layer parameters.
