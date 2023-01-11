@@ -60,10 +60,16 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
     /**
      * Creates a diffuser {@link PatchOperation} for the given layer.
      * <p>
-     * Diffusion parameters are pulled based on the molecule code.
      * Six border arrays are used to check if an index is located at the
      * right/left ({@code LENGTH}, x axis), top/bottom ({@code WIDTH}, y axis),
      * and up/down ({@code HEIGHT}, z axis) directions.
+     * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code DIFFUSIVITY} = diffusivity of molecule</li>
+     *     <li>{@code STEP_SIZE_XY} = lattice spacing in xy plane</li>
+     *     <li>{@code STEP_SIZE_Z} = lattice spacing in z plane</li>
+     * </ul>
      *
      * @param lattice  the {@link PatchLattice} the operation is associated with
      */
