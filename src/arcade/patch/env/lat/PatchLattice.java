@@ -12,7 +12,7 @@ import static arcade.core.util.Enums.Category;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
- * Implementation of {@link Lattice} for patch models.
+ * Abstract implementation of {@link Lattice} for patch models.
  * <p>
  * {@code PatchLattice} agents can call two {@link Operation} categories:
  * diffusers and generators.
@@ -75,7 +75,7 @@ public abstract class PatchLattice implements Lattice {
     public int getHeight() { return height; }
     
     @Override
-    public Operation getOperation(String key) { return operations.get(Category.valueOf(key)); }
+    public Operation getOperation(Category category) { return operations.get(category); }
     
     @Override
     public MiniBox getParameters() { return parameters; }

@@ -41,13 +41,12 @@ public abstract class PatchLatticeFactory implements LatticeFactory {
         int height = series.height;
         
         for (String key : series.layers.keySet()) {
-            double initialValue = 0;
-            
-            MiniBox parameters = series.layers.get(key);
-            PatchLattice lattice = getLattice(length, width, height, parameters);
-            lattice.setField(initialValue);
-            
             MiniBox layer = series.layers.get(key);
+            PatchLattice lattice = getLattice(length, width, height, layer);
+            
+            // Set initial lattice value.
+            double initialValue = layer.getDouble("INITIAL_CONCENTRATION");
+            lattice.setField(initialValue);
             
             // Get operations (if they exist).
             MiniBox operationBox = layer.filter("(OPERATION)");
