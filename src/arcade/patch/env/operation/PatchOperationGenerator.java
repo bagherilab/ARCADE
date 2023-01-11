@@ -23,7 +23,7 @@ public class PatchOperationGenerator extends PatchOperation {
     public final double concentration;
     
     /**
-     * Creates a generator {@link PatchOperation} for the given layer.
+     * Creates a generator {@link PatchOperation} for the given lattice.
      * <p>
      * Loaded parameters include:
      * <ul>

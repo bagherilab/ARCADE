@@ -31,7 +31,7 @@ public class PatchModuleProliferation extends PatchModule {
     private final double synthesisDuration;
     
     /**
-     * Creates a proliferation {@code Module} for the given {@link PatchCell}.
+     * Creates a proliferation {@link PatchModule} for the given cell.
      *
      * @param cell  the {@link PatchCell} the module is associated with
      */

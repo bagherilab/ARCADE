@@ -26,7 +26,7 @@ public class PatchModuleApoptosis extends PatchModule {
     private final double deathDuration;
     
     /**
-     * Creates an apoptosis {@code Module} for the given {@link PatchCell}.
+     * Creates an apoptosis {@link PatchModule} for the given cell.
      *
      * @param cell  the {@link PatchCell} the module is associated with
      */

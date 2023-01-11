@@ -58,7 +58,7 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
     final byte[] downBorder;
     
     /**
-     * Creates a diffuser {@link PatchOperation} for the given layer.
+     * Creates a diffuser {@link PatchOperation} for the given lattice.
      * <p>
      * Six border arrays are used to check if an index is located at the
      * right/left ({@code LENGTH}, x axis), top/bottom ({@code WIDTH}, y axis),

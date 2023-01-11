@@ -27,7 +27,7 @@ public class PatchModuleMigration extends PatchModule {
     private final double movementDuration;
     
     /**
-     * Creates a migration {@code Module} for the given {@link PatchCell}.
+     * Creates a migration {@link PatchModule} for the given cell.
      *
      * @param cell  the {@link PatchCell} the module is associated with
      */
