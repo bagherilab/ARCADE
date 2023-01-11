@@ -125,6 +125,7 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
      */
     private void step2D() {
         double[][] field = lattice.getField()[0]; // local variable for faster access
+        double[][] update = new double[latticeLength][latticeWidth];
         double oldConc;
         double sumConc;
         
@@ -133,12 +134,12 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
                 for (int j = 0; j < latticeWidth; j++) {
                     oldConc = field[i][j] * adjust;
                     sumConc = calcSum(i, j, field);
-                    latticeUpdate[0][i][j] = rate * (sumConc - beta * oldConc) + oldConc;
+                    update[i][j] = rate * (sumConc - beta * oldConc) + oldConc;
                 }
             }
             
             // Set grid values to new grid.
-            lattice.setField(latticeUpdate);
+            lattice.setField(update, 0);
         }
     }
     
@@ -147,6 +148,7 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
      */
     private void step3D() {
         double[][][] field = lattice.getField(); // local variable for faster access
+        double[][][] update = new double[latticeHeight][latticeLength][latticeWidth];
         double oldConc;
         double sumConc;
         int up;
@@ -169,13 +171,13 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
                         sumConc += field[up][i][j] * alpha;
                         sumConc += field[down][i][j] * alpha;
                         
-                        latticeUpdate[k][i][j] = rate * (sumConc - beta * oldConc) + oldConc;
+                        update[k][i][j] = rate * (sumConc - beta * oldConc) + oldConc;
                     }
                 }
             }
             
             // Set grid values to new grid.
-            lattice.setField(latticeUpdate);
+            lattice.setField(update);
         }
     }
 }

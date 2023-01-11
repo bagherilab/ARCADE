@@ -17,11 +17,8 @@ public abstract class PatchOperation implements Operation {
     /** Width of the array (y direction). */
     final int latticeWidth;
     
-    /** Lattice holding current values. */
+    /** The {@link PatchLattice} object the operation is associated with. */
     final PatchLattice lattice;
-    
-    /** Lattice holding updated values. */
-    final double[][][] latticeUpdate;
     
     /**
      * Creates an operation for a {@link PatchLattice} category.
@@ -36,6 +33,5 @@ public abstract class PatchOperation implements Operation {
         
         // Set lattices.
         this.lattice = lattice;
-        this.latticeUpdate = new double[latticeHeight][latticeLength][latticeWidth];
     }
 }
