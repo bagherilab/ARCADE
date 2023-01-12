@@ -23,8 +23,14 @@ public final class PatchEnums {
     
     /** Stepping order for simulation. */
     public enum Ordering {
+        /** Stepping order for actions. */
+        ACTIONS,
+        
         /** Stepping order for cells. */
         CELLS,
+        
+        /** Stepping order for components. */
+        COMPONENTS,
         
         /** Stepping order for lattices. */
         LATTICES,
