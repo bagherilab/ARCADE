@@ -1,127 +1,112 @@
-package arcade.patch.agent.helper;
+package arcade.patch.agent.action;
 
 import java.util.ArrayList;
+import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
-import arcade.core.sim.Simulation;
-import arcade.agent.cell.Cell;
-import arcade.core.env.grid.Grid;
+import arcade.core.agent.action.Action;
+import arcade.core.agent.cell.Cell;
 import arcade.core.env.loc.Location;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.loc.Coordinate;
+import arcade.patch.env.loc.PatchLocationFactory;
+import arcade.patch.sim.PatchSeries;
+import arcade.patch.sim.PatchSimulation;
+import static arcade.core.util.Enums.State;
+import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
- * Implementation of {@link arcade.core.agent.helper.Helper} for removing cell agents.
+ * Implementation of {@link Action} for removing cell agents.
  * <p>
- * {@code WoundHelper} is stepped once.
- * The {@code WoundHelper} will remove all cell agents within the specified
+ * {@code PatchActionWound} is stepped once.
+ * The {@code PatchActionWound} will remove all cell agents within the specified
  * radius from the center of the simulation.
- * Quiescent cells bordering the wound are set to neutral state.
+ * Quiescent cells bordering the wound are set to undefined state.
  */
 
-public class WoundHelper implements Helper {
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 0;
+public class PatchActionWound implements Action {
+    /** Time delay before calling the action (in minutes). */
+    private final int timeDelay;
     
-    /** Delay before calling the helper (in minutes) */
-    private final int delay;
+    /** Grid radius that cells are removed from. */
+    private final int woundRadius;
     
-    /** Grid radius that cells are removed from */
-    private final int radius;
-    
-    /** Tick the {@code Helper} began */
-    private double begin;
-    
-    /** Tick the {@code Helper} ended */
-    private double end;
+    /** Grid depth that cells are removed from. */
+    private final int gridDepth;
     
     /**
-     * Creates an {@code WoundHelper} to add agents after a delay.
-     * 
-     * @param helper  the parsed helper attributes
-     * @param radius  the simulation radius
+     * Creates a {@link Action} for introducing a wound.
+     * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code TIME_DELAY} = time delay before calling the action (in minutes)</li>
+     *     <li>{@code WOUND_RADIUS} = grid radius that cells are removed from</li>
+     * </ul>
+     *
+     * @param series  the simulation series
+     * @param parameters  the component parameters dictionary
      */
-    public WoundHelper(MiniBox helper, int radius) {
-        this.delay = helper.getInt("delay");
-        this.radius = (int)Math.ceil(helper.getDouble("bounds")*radius);
+    public PatchActionWound(Series series, MiniBox parameters) {
+        gridDepth = ((PatchSeries) series).depth;
+        
+        // Get wound action parameters.
+        timeDelay = parameters.getInt("wound/TIME_DELAY");
+        woundRadius = parameters.getInt("wound/WOUND_RADIUS");
     }
     
-    public double getBegin() { return begin; }
-    public double getEnd() { return end; }
-    
-    public void scheduleHelper(Simulation sim) { scheduleHelper(sim, sim.getTime()); }
-    public void scheduleHelper(Simulation sim, double begin) {
-        this.begin = begin;
-        this.end = begin + delay;
-        ((SimState)sim).schedule.scheduleOnce(end, Simulation.ORDERING_HELPER + 1, this);
+    @Override
+    public void schedule(Schedule schedule) {
+        schedule.scheduleOnce(timeDelay, Ordering.ACTIONS.ordinal(), this);
     }
     
-    /**
-     * Steps the helper to remove cells.
-     * 
-     * @param state  the MASON simulation state
-     */
+    @Override
+    public void register(Simulation sim, String layer) { }
+    
+    @Override
     public void step(SimState state) {
-        Simulation sim = (Simulation)state;
-        Grid grid = sim.getAgents();
-        ArrayList<Location> locs;
-        Cell c;
+        PatchSimulation sim = (PatchSimulation) state;
+        PatchGrid grid = (PatchGrid) sim.getGrid();
         
         // Remove all agents in wound area.
-        locs = sim.getRepresentation().getLocations(radius, sim.getSeries()._height);
-        for (Location loc : locs) {
-            Bag bag = new Bag(grid.getObjectsAtLocation(loc));
+        PatchLocationFactory locationFactory = sim.makeLocationFactory();
+        ArrayList<Coordinate> coordinates = locationFactory.getCoordinates(woundRadius, gridDepth);
+        for (Coordinate coordinate : coordinates) {
+            Bag bag = (Bag) grid.getObjectAt(coordinate.hashCode());
             
-            if (bag != null) {
-                for (Object obj : bag) {
-                    c = (Cell)obj;
-                    grid.removeObject(c);
-                    c.stop();
-                }
+            if (bag == null) {
+                continue;
             }
             
-            // Set all concentrations to 0.
-            sim.getEnvironment("tgfa").setVal(loc, 0);
-            sim.getEnvironment("glucose").setVal(loc, 0);
-            sim.getEnvironment("oxygen").setVal(loc, 0);
+            for (Object obj : bag) {
+                Cell cell = (Cell) obj;
+                Location location = cell.getLocation();
+                grid.removeObject(cell, location);
+                cell.stop();
+                
+                sim.getLattice("GLUCOSE").setValue(location, 0);
+                sim.getLattice("OXYGEN").setValue(location, 0);
+                sim.getLattice("TGFA").setValue(location, 0);
+            }
         }
         
         // Bring agents along edge out of quiescence.
-        locs = sim.getRepresentation().getLocations(radius + 1, sim.getSeries()._height);
-        for (Location loc : locs) {
-            Bag bag = new Bag(grid.getObjectsAtLocation(loc));
+        ArrayList<Coordinate> edges = locationFactory.getCoordinates(woundRadius + 1, gridDepth);
+        for (Coordinate coordinate : edges) {
+            Bag bag = (Bag) grid.getObjectAt(coordinate.hashCode());
             
-            if (bag != null) {
-                for (Object obj : bag) {
-                    c = (Cell)obj;
-                    if (c.getType() == Cell.TYPE_QUIES) { c.setType(Cell.TYPE_NEUTRAL); }
+            if (bag == null) {
+                continue;
+            }
+            
+            for (Object obj : bag) {
+                Cell cell = (Cell) obj;
+                if (cell.getState() == State.QUIESCENT) {
+                    cell.setState(State.UNDEFINED);
                 }
             }
         }
-    }
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The JSON is formatted as:
-     * <pre>
-     *     {
-     *         "type": "WOUND",
-     *         "delay": delay (in days),
-     *         "radius": wound radius
-     *     }
-     * </pre>
-     */
-    public String toJSON() {
-        String format = "{ "
-                + "\"type\": \"WOUND\", "
-                + "\"delay\": %.2f, "
-                + "\"radius\": %d, "
-                + "}";
-        
-        return String.format(format, delay/60.0/24.0, radius);
-    }
-    
-    public String toString() {
-        return String.format("[t = %4.1f] WOUND remove radius %d", delay/60.0/24.0, radius);
     }
 }
