@@ -6,6 +6,7 @@ import arcade.core.env.comp.Component;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.operation.Operation;
 import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.patch.env.operation.PatchOperationGenerator;
 import static arcade.core.util.Enums.Category;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -81,9 +82,10 @@ public abstract class PatchComponentSites implements Component {
     }
     
     @Override
-    public void register(Lattice lattice) {
+    public void register(Simulation sim, String layer) {
+        Lattice lattice = sim.getLattice(layer);
         Operation generator = lattice.getOperation(Category.GENERATOR);
-        SiteLayer layer = new SiteLayer((PatchOperationGenerator) generator);
-        layers.add(layer);
+        SiteLayer siteLayer = new SiteLayer((PatchOperationGenerator) generator);
+        layers.add(siteLayer);
     }
 }
