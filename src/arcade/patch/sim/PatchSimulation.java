@@ -41,6 +41,15 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     /** Cell ID tracker. */
     int id;
     
+    /** Location factory instance for the simulation. */
+    public final PatchLocationFactory locationFactory;
+    
+    /** Cell factory instance for the simulation. */
+    public final PatchCellFactory cellFactory;
+    
+    /** Lattice factory instance for the simulation. */
+    public final PatchLatticeFactory latticeFactory;
+    
     /**
      * Simulation instance for a {@link arcade.core.sim.Series} for given random seed.
      *
@@ -51,6 +60,10 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         super(seed);
         this.series = (PatchSeries) series;
         this.seed = (int) seed - Series.SEED_OFFSET;
+        
+        this.locationFactory = makeLocationFactory();
+        this.cellFactory = makeCellFactory();
+        this.latticeFactory = makeLatticeFactory();
     }
     
     @Override
@@ -163,10 +176,6 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         // Initialize grid for agents.
         grid = new PatchGrid();
         
-        // Create factories.
-        PatchLocationFactory locationFactory = makeLocationFactory();
-        PatchCellFactory cellFactory = makeCellFactory();
-        
         // Initialize factories.
         locationFactory.initialize(series, random);
         cellFactory.initialize(series, random);
@@ -202,9 +211,6 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     public final void setupEnvironment() {
         // Initialize lattice map for layers.
         lattices = new HashMap<>();
-        
-        // Create factory.
-        PatchLatticeFactory latticeFactory = makeLatticeFactory();
         
         // Initialize factory.
         latticeFactory.initialize(series, random);
