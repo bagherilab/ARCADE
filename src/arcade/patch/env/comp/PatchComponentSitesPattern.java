@@ -29,10 +29,13 @@ import arcade.core.util.MiniBox;
 
 public abstract class PatchComponentSitesPattern extends PatchComponentSites {
     /** Border directions. */
-    enum Border { LEFT, RIGHT, TOP, BOTTOM, UP, DOWN };
+    enum Border { LEFT, RIGHT, TOP, BOTTOM, UP, DOWN }
     
     /** Array holding locations of patterns. */
-    protected final byte[][][] patterns;
+    protected final boolean[][][] patterns;
+    
+    /** Array holding locations of pattern pair anchors. */
+    protected final boolean[][][] anchors;
     
     /** Array of damage instances for each lattice index. */
     protected final double[][][] damageSingle;
@@ -46,23 +49,23 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
     /** Pattern site damage scaling. */
     private final double damageScaling;
     
-    /** Relative contribution of hemodynamic factors */
+    /** Relative contribution of hemodynamic factors. */
     private final double fraction;
     
-    /** Weight of gradient hemodynamic factor */
-    private final double wGrad;
+    /** Weight of gradient hemodynamic factor. */
+    private final double weightGradient;
     
-    /** Weight of flow hemodynamic factor */
-    private final double wFlow;
+    /** Weight of flow hemodynamic factor. */
+    private final double weightFlow;
     
-    /** Weight of local hemodynamic factor */
-    private final double wLocal;
+    /** Weight of local hemodynamic factor. */
+    private final double weightLocal;
     
     /** {@code true} if local factor is calculated, {@code false} otherwise. */
-    private final boolean calcLocal;
+    private final boolean calculateLocal;
     
     /** {@code true} if flow factor is calculated, {@code false} otherwise. */
-    private final boolean calcFlow;
+    private final boolean calculateFlow;
     
     /** {@code true} if damage is calculated, {@code false} otherwise. */
     private final boolean calculateDamage;
@@ -88,17 +91,18 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
         // Get pattern site parameters.
         damageScaling = parameters.getDouble("sites_pattern/DAMAGE_SCALING");
         fraction = parameters.getDouble("sites_pattern/RELATIVE_FRACTION");
-        wGrad = parameters.getDouble("sites_pattern/WEIGHT_GRADIENT");
-        wLocal = parameters.getDouble("sites_pattern/WEIGHT_LOCAL");
-        wFlow = parameters.getDouble("sites_pattern/WEIGHT_FLOW");
+        weightGradient = parameters.getDouble("sites_pattern/WEIGHT_GRADIENT");
+        weightLocal = parameters.getDouble("sites_pattern/WEIGHT_LOCAL");
+        weightFlow = parameters.getDouble("sites_pattern/WEIGHT_FLOW");
         
         // Set booleans.
         calculateDamage = damageScaling != 0;
-        calcLocal = wLocal > 0;
-        calcFlow = wFlow > 0;
+        calculateLocal = weightLocal > 0;
+        calculateFlow = weightFlow > 0;
         
         // Create and initialize arrays.
-        patterns = new byte[latticeHeight][latticeLength][latticeWidth];
+        patterns = new boolean[latticeHeight][latticeLength][latticeWidth];
+        anchors = new boolean[latticeHeight][latticeLength][latticeWidth];
         damageSingle = new double[latticeHeight][latticeLength][latticeWidth];
         damageTotal = new double[latticeHeight][latticeLength][latticeWidth];
         damageValues = new double[latticeHeight][latticeLength][latticeWidth];
@@ -172,7 +176,7 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
             for (int k = 0; k < latticeHeight; k++) {
                 for (int i = 0; i < latticeLength; i++) {
                     for (int j = 0; j < latticeWidth; j++) {
-                        if (patterns[k][i][j] == 1) {
+                        if (anchors[k][i][j]) {
                             calculateDamage(i, j, k);
                         }
                         
@@ -189,21 +193,20 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
         
         // Iterate through each layer and each array to assign updates.
         for (SiteLayer layer : layers) {
+            double[][][] delta = layer.delta;
+            double[][][] current = layer.current;
+            double[][][] previous = layer.previous;
+            double concentration = layer.concentration;
             double total = 0;
-            double wg;
-            double wl;
-            double wf;
-            double w;
-            double W;
             
             // Iterate to calculate accumulation.
-            if (calcLocal || calcFlow) {
+            if (calculateLocal || calculateFlow) {
                 for (int k = 0; k < latticeHeight; k += 2) {
                     for (int i = 0; i < latticeLength; i++) {
                         for (int j = 0; j < latticeWidth; j++) {
-                            if (patterns[k][i][j] != 0) {
-                                accumulation[k][i][j] =
-                                        (layer.previous[k][i][j] - layer.current[k][i][j]) / layer.concentration;
+                            if (patterns[k][i][j]) {
+                                accumulation[k][i][j] = (previous[k][i][j] - current[k][i][j])
+                                        / concentration;
                                 total += accumulation[k][i][j];
                             }
                         }
@@ -227,22 +230,22 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
                         borders.put(Border.TOP, j == 0);
                         borders.put(Border.BOTTOM, j == latticeWidth - 1);
                         
-                        if (patterns[k][i][j] != 0) {
+                        if (patterns[k][i][j]) {
                             // Calculate flow.
-                            if (patterns[k][i][j] == 1 && calcFlow) {
+                            if (anchors[k][i][j] && calculateFlow) {
                                 calculateFlow(i, j, k, flow[k], accumulation[k], borders);
                             }
                             
-                            // Calculate fraction adjustments.
-                            wg = 1 - layer.current[k][i][j]/layer.concentration;
-                            wl = accumulation[k][i][j];
-                            wf = (total == 0 ? 0 : - flow[k][i][j]/total);
-                            w = wGrad*wg + wLocal*wl + wFlow*wf;
-                            W = 1.0/(1.0 + Math.exp(-w));
+                            // Calculate weight adjustments.
+                            double wg = 1 - current[k][i][j] / concentration;
+                            double wl = accumulation[k][i][j];
+                            double wf = (total == 0 ? 0 : -flow[k][i][j] / total);
+                            double w = weightGradient * wg + weightLocal * wl + weightFlow * wf;
+                            double ww = 1.0 / (1.0 + Math.exp(-w));
                             
-                            // Update fraction.
-                            layer.delta[k][i][j] = (layer.concentration - layer.previous[k][i][j])
-                                    * (W * fraction + 1 - fraction) * damageValues[k][i][j];
+                            // Calculate final change.
+                            delta[k][i][j] = Math.max((concentration - previous[k][i][j])
+                                    * (ww * fraction + 1 - fraction) * damageValues[k][i][j], 0);
                         }
                     }
                 }

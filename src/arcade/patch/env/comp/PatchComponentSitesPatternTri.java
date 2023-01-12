@@ -44,7 +44,7 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
     
     /**
      * Calculate the offset based on the layer index.
-     * 
+     *
      * @param k  the index in the z direction
      * @return  the lattice offset
      */
@@ -54,7 +54,7 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
     
     /**
      * Calculates the column of the triangular pattern based on offset and index.
-     * 
+     *
      * @param i  the index in the x direction
      * @param offset  the lattice offset
      * @return  the column index
@@ -79,20 +79,21 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
     double calculateAverage(int i, int j, int k, double[][] delta) {
         double average = delta[i][j];
         int offset = calcOffset(k);
-        double pattern = patterns[k][i][j];
         
         switch (calcCol(i, offset)) {
             case 0: case 7: case 5:
                 if (j != latticeWidth - 1) {
-                    average += delta[i][j + (pattern == 1 ? 1 : -1)];
+                    average += delta[i][j + (anchors[k][i][j] ? 1 : -1)];
                     average /= 2;
                 }
                 break;
             case 1: case 2: case 3: case 4:
-                if (i != latticeLength - 1 && !(i == 0 && pattern == 2)) {
-                    average += delta[i + (pattern == 1 ? 1 : -1)][j];
+                if (i != latticeLength - 1 && !(i == 0 && patterns[k][i][j] && !anchors[k][i][j])) {
+                    average += delta[i + (anchors[k][i][j] ? 1 : -1)][j];
                     average /= 2;
                 }
+                break;
+            default:
                 break;
         }
         
@@ -120,8 +121,8 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
                 flow[i + (borders.get(Border.RIGHT) ? 0 : 1)][j] = total;
                 break;
             case 5:
-                total = (flow[i - 1][j + (1 - (borders.get(Border.TOP) ? 0 : 1))] +
-                    flow[i - 1][j + (j > latticeWidth - 3 ? 0 : 1)])/2 + val;
+                total = (flow[i - 1][j + (1 - (borders.get(Border.TOP) ? 0 : 1))]
+                        + flow[i - 1][j + (j > latticeWidth - 3 ? 0 : 1)]) / 2 + val;
                 flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;
                 break;
             case 2: case 3:
@@ -136,8 +137,12 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
                             total = flow[i - 1][j - 1] + val;
                         }
                         break;
+                    default:
+                        break;
                 }
                 flow[i + (borders.get(Border.RIGHT) ? 0 : 1)][j] = total;
+                break;
+            default:
                 break;
         }
         
@@ -164,6 +169,8 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
                     damageTotal[k][i + 1][j] = total;
                 }
                 break;
+            default:
+                break;
         }
         
         damageTotal[k][i][j] = total;
@@ -186,7 +193,8 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
                 for (int j = 0; j < latticeWidth; j++) {
                     int col = calcCol(i, offset);
                     int row = calcRow(i, j, offset);
-                    patterns[k][i][j] = unit[row][col];
+                    patterns[k][i][j] = (unit[row][col] != 0);
+                    anchors[k][i][j] = (unit[row][col] == 1);
                 }
             }
         }

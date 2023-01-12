@@ -73,20 +73,21 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
     double calculateAverage(int i, int j, int k, double[][] delta) {
         double average = delta[i][j];
         int offset = calcOffset(k);
-        double pattern = patterns[k][i][j];
         
         switch (calcCol(i, offset)) {
             case 0: case 1: case 2: case 3:
                 if (j != latticeWidth - 1) {
-                    average += delta[i][j + (pattern == 1 ? 1 : -1)];
+                    average += delta[i][j + (anchors[k][i][j] ? 1 : -1)];
                     average /= 2;
                 }
                 break;
             case 4: case 5:
-                if (i != latticeLength - 1 && calcRow(i, j, offset)%3 == 0) {
-                    average += delta[i + (pattern == 1 ? 1 : -1)][j];
+                if (i != latticeLength - 1 && calcRow(i, j, offset) % 3 == 0) {
+                    average += delta[i + (anchors[k][i][j] ? 1 : -1)][j];
                     average /= 2;
                 }
+                break;
+            default:
                 break;
         }
         
@@ -106,7 +107,7 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
                     total = val;
                 } else {
                     total = (flow[i - 1][j]
-                        + flow[i - 1][j + (j == latticeWidth - 1 ? 0 : 1)])/2 + val;
+                        + flow[i - 1][j + (j == latticeWidth - 1 ? 0 : 1)]) / 2 + val;
                 }
                 flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;
                 break;
@@ -147,7 +148,11 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
                             total = flow[i - 1][j] + val;
                         }
                         break;
+                    default:
+                        break;
                 }
+                break;
+            default:
                 break;
         }
         
@@ -168,11 +173,13 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
                 }
                 break;
             case 4: case 5:
-                if (i != latticeLength - 1 && calcRow(i, j, offset)%3 == 0) {
+                if (i != latticeLength - 1 && calcRow(i, j, offset) % 3 == 0) {
                     total += damageSingle[k][i + 1][j];
                     total /= 2;
                     damageTotal[k][i + 1][j] = total;
                 }
+                break;
+            default:
                 break;
         }
         
@@ -196,7 +203,8 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
                 for (int j = 0; j < latticeWidth; j++) {
                     int col = calcCol(i, offset);
                     int row = calcRow(i, j, offset);
-                    patterns[k][i][j] = unit[row][col];
+                    patterns[k][i][j] = (unit[row][col] != 0);
+                    anchors[k][i][j] = (unit[row][col] == 1);
                 }
             }
         }

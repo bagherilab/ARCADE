@@ -87,6 +87,7 @@ public class PatchComponentSitesSource extends PatchComponentSites {
         sources = new boolean[latticeHeight][latticeLength][latticeWidth];
         damageSingle = new double[latticeHeight][latticeLength][latticeWidth];
         damageValues = new double[latticeHeight][latticeLength][latticeWidth];
+        
         initializeSourceArray();
         initializeDamageArrays();
     }
@@ -95,7 +96,6 @@ public class PatchComponentSitesSource extends PatchComponentSites {
      * Initializes damage array to 1.0 (no damage).
      */
     void initializeDamageArrays() {
-        // Set up damage value array.
         for (int k = 0; k < latticeHeight; k++) {
             for (int i = 0; i < latticeLength; i++) {
                 for (int j = 0; j < latticeWidth; j++) {
@@ -106,8 +106,10 @@ public class PatchComponentSitesSource extends PatchComponentSites {
     }
     
     /**
+     * Initializes sites in source array.
+     * <p>
      * Iterates through each index in the source lattice and assigns it as a
-     * source  site or not, depending on the specified spacings.
+     * source site or not, depending on the specified spacings.
      */
     void initializeSourceArray() {
         for (int k = 0; k < latticeHeight; k++) {
@@ -172,15 +174,18 @@ public class PatchComponentSitesSource extends PatchComponentSites {
             }
         }
         
-        // Iterate through each molecule and each array to assign updates.
+        // Iterate through each layer and each array to assign updates.
         for (SiteLayer layer : layers) {
+            double[][][] delta = layer.delta;
+            double[][][] previous = layer.previous;
+            double concentration = layer.concentration;
+            
             for (int k = 0; k < latticeHeight; k++) {
                 for (int i = 0; i < latticeLength; i++) {
                     for (int j = 0; j < latticeWidth; j++) {
                         if (sources[k][i][j]) {
-                            layer.delta[k][i][j] = Math.max(
-                                    (layer.concentration - layer.previous[k][i][j])
-                                            * damageValues[k][i][j], 0);
+                            delta[k][i][j] = Math.max((concentration - previous[k][i][j])
+                                    * damageValues[k][i][j], 0);
                         }
                     }
                 }
