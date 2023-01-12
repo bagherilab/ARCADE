@@ -121,8 +121,8 @@ public class PatchSeriesTest {
         ArrayList<Box> layers = setupLists.get("layers");
         verify(series).updateLayers(eq(layers), any(MiniBox.class), any(MiniBox.class));
         
-        ArrayList<Box> helpers = setupLists.get("helpers");
-        verify(series).updateHelpers(eq(helpers), any(MiniBox.class));
+        ArrayList<Box> actions = setupLists.get("actions");
+        verify(series).updateActions(eq(actions), any(MiniBox.class));
         
         ArrayList<Box> components = setupLists.get("components");
         verify(series).updateComponents(eq(components), any(MiniBox.class));
