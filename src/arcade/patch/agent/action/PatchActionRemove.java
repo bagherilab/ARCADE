@@ -12,7 +12,6 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.loc.Coordinate;
-import arcade.patch.env.loc.PatchLocationFactory;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
 import static arcade.core.util.Enums.State;
@@ -21,40 +20,38 @@ import static arcade.patch.util.PatchEnums.Ordering;
 /**
  * Implementation of {@link Action} for removing cell agents.
  * <p>
- * {@code PatchActionWound} is stepped once.
- * The {@code PatchActionWound} will remove all cell agents within the specified
- * radius from the center of the simulation.
- * Quiescent cells bordering the wound are set to undefined state.
+ * {@code PatchActionRemove} is stepped once.
+ * The {@code PatchActionRemove} will remove all cell agents within the
+ * specified radius from the center of the simulation.
+ * Quiescent cells bordering the removal site are set to undefined state.
  */
 
-public class PatchActionWound implements Action {
+public class PatchActionRemove implements Action {
     /** Time delay before calling the action (in minutes). */
     private final int timeDelay;
     
     /** Grid radius that cells are removed from. */
-    private final int woundRadius;
+    private final int removeRadius;
     
     /** Grid depth that cells are removed from. */
-    private final int gridDepth;
+    private final int removeDepth;
     
     /**
-     * Creates a {@link Action} for introducing a wound.
+     * Creates a {@link Action} for removing cell agents.
      * <p>
      * Loaded parameters include:
      * <ul>
      *     <li>{@code TIME_DELAY} = time delay before calling the action (in minutes)</li>
-     *     <li>{@code WOUND_RADIUS} = grid radius that cells are removed from</li>
+     *     <li>{@code REMOVE_RADIUS} = grid radius that cells are removed from</li>
      * </ul>
      *
      * @param series  the simulation series
      * @param parameters  the component parameters dictionary
      */
-    public PatchActionWound(Series series, MiniBox parameters) {
-        gridDepth = ((PatchSeries) series).depth;
-        
-        // Get wound action parameters.
-        timeDelay = parameters.getInt("wound/TIME_DELAY");
-        woundRadius = parameters.getInt("wound/WOUND_RADIUS");
+    public PatchActionRemove(Series series, MiniBox parameters) {
+        timeDelay = parameters.getInt("remove/TIME_DELAY");
+        removeRadius = parameters.getInt("remove/REMOVE_RADIUS");
+        removeDepth = ((PatchSeries) series).depth;
     }
     
     @Override
@@ -63,16 +60,18 @@ public class PatchActionWound implements Action {
     }
     
     @Override
-    public void register(Simulation sim, String layer) { }
+    public void register(Simulation sim, String population) { }
     
     @Override
     public void step(SimState state) {
         PatchSimulation sim = (PatchSimulation) state;
         PatchGrid grid = (PatchGrid) sim.getGrid();
         
-        // Remove all agents in wound area.
-        PatchLocationFactory locationFactory = sim.makeLocationFactory();
-        ArrayList<Coordinate> coordinates = locationFactory.getCoordinates(woundRadius, gridDepth);
+        // Select valid coordinates to remove from.
+        ArrayList<Coordinate> coordinates =
+                sim.locationFactory.getCoordinates(removeRadius, removeDepth);
+        
+        // Remove all cells in removal area.
         for (Coordinate coordinate : coordinates) {
             Bag bag = (Bag) grid.getObjectAt(coordinate.hashCode());
             
@@ -93,8 +92,9 @@ public class PatchActionWound implements Action {
         }
         
         // Bring agents along edge out of quiescence.
-        ArrayList<Coordinate> edges = locationFactory.getCoordinates(woundRadius + 1, gridDepth);
-        for (Coordinate coordinate : edges) {
+        ArrayList<Coordinate> edgeCoordinates =
+                sim.locationFactory.getCoordinates(removeRadius + 1, removeDepth);
+        for (Coordinate coordinate : edgeCoordinates) {
             Bag bag = (Bag) grid.getObjectAt(coordinate.hashCode());
             
             if (bag == null) {
