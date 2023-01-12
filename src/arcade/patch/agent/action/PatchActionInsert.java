@@ -1,168 +1,131 @@
-package arcade.patch.agent.helper;
+package arcade.patch.agent.action;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import sim.engine.Schedule;
 import sim.engine.SimState;
-import arcade.core.sim.Simulation;
-import arcade.agent.cell.Cell;
-import arcade.core.env.grid.Grid;
+import sim.util.distribution.Normal;
+import sim.util.distribution.Uniform;
+import arcade.core.agent.action.Action;
 import arcade.core.env.loc.Location;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Utilities;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellContainer;
+import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.loc.Coordinate;
+import arcade.patch.env.loc.PatchLocationContainer;
+import arcade.patch.sim.PatchSeries;
+import arcade.patch.sim.PatchSimulation;
+import static arcade.core.util.Enums.State;
+import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
- * Implementation of {@link arcade.core.agent.helper.Helper} for inserting cell
- * populations.
+ * Implementation of {@link Action} for inserting cell agents.
  * <p>
- * {@code InsertHelper} is stepped once.
- * The {@code InsertHelper} will insert a mixture of the cell from the specified
- * populations into locations within the specified radius from the center of the
- * simulation.
+ * {@code PatchActionInsert} is stepped once.
+ * The {@code PatchActionInsert} will insert a mixture of cells from the
+ * specified populations into locations within the specified radius from the
+ * center of the simulation.
  */
 
-public class InsertHelper implements Helper {
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 0;
+public class PatchActionInsert implements Action {
+    /** Time delay before calling the action (in minutes). */
+    private final int timeDelay;
     
-    /** Delay before calling the helper (in minutes) */
-    private final int delay;
+    /** Grid radius that cells are inserted into. */
+    private final int insertRadius;
     
-    /** Grid radius that cells are inserted at */
-    private final int radius;
+    /** Grid depth that cells are inserted into. */
+    private final int insertDepth;
     
-    /** List of target population indices for insertion */
-    private final int[] pops;
+    /** Number of cells to insert from each population. */
+    private final int insertNumber;
     
-    /** List of constructors for target populations */
-    private final Constructor<?>[] conses;
-    
-    /** List of target population parameter maps */
-    private final MiniBox[] boxes;
-    
-    /** Number of populations to be inserted */
-    private final int nPops;
-    
-    /** Number of cells in each population inserted */
-    private final int[] popCounts;
-    
-    /** Tick the {@code Helper} began */
-    private double begin;
-    
-    /** Tick the {@code Helper} ended */
-    private double end;
+    /** List of populations. */
+    ArrayList<MiniBox> populations;
     
     /**
-     * Creates an {@code InsertHelper} to add agents after a delay.
-     * 
-     * @param helper  the parsed helper attributes
-     * @param conses  the constructors for all cell populations
-     * @param boxes  the module maps for all cell populations
-     * @param radius  the simulation radius
-     */
-    public InsertHelper(MiniBox helper, Constructor<?>[] conses, MiniBox[] boxes, int radius) {
-        this.delay = helper.getInt("delay");
-        this.radius = (int)Math.ceil(helper.getDouble("bounds")*radius);
-        
-        String[] ps = helper.get("populations").split(",");
-        this.pops = new int[ps.length];
-        for (int i = 0; i < ps.length; i++) { pops[i] = Integer.parseInt(ps[i]); }
-        
-        this.conses = conses;
-        this.boxes = boxes;
-        
-        nPops = pops.length;
-        popCounts = new int[nPops];
-    }
-    
-    public double getBegin() { return begin; }
-    public double getEnd() { return end; }
-    
-    public void scheduleHelper(Simulation sim) { scheduleHelper(sim, sim.getTime()); }
-    public void scheduleHelper(Simulation sim, double begin) {
-        this.begin = begin;
-        this.end = begin + delay;
-        ((SimState)sim).schedule.scheduleOnce(end, Simulation.ORDERING_HELPER + 1, this);
-    }
-    
-    /**
-     * Steps the helper to insert cells of the target population(s).
-     * 
-     * @param state  the MASON simulation state
-     */
-    public void step(SimState state) {
-        Simulation sim = (Simulation)state;
-        Grid agents = sim.getAgents();
-        ArrayList<Location> locs = sim.getRepresentation().getInitLocations(radius);
-        Simulation.shuffle(locs, state.random);
-        
-        // Clear pop counts.
-        for (int p = 0; p < nPops; p++) { popCounts[p] = 0; }
-        
-        // Calculate bounds for inserted agents.
-        int n = locs.size();
-        int sum = 0;
-        int[] cumCounts = new int[nPops];
-        for (int p = 0; p < nPops; p++) {
-            sum += Math.round(1.0/nPops*n);
-            cumCounts[p] = sum;
-        }
-        
-        // Check for rounding error in counting number of agents.
-        if (cumCounts[nPops - 1] < n) { cumCounts[nPops - 1] = n; }
-        
-        // Iterate through locations and swap constructor as needed.
-        try {
-            int p = 0;
-            int i = 0;
-            Constructor<?> cons = conses[pops[p]];
-            MiniBox box = boxes[pops[p]];
-            
-            do {
-                if (i == cumCounts[p]) { cons = conses[pops[++p]]; }
-                Cell c = (Cell)(cons.newInstance(sim, pops[p], locs.get(i),
-                    sim.getNextVolume(pops[p]), sim.getNextAge(pops[p]),
-                    sim.getParams(pops[p]), box));
-                agents.addObject(c, c.getLocation());
-                c.setStopper(state.schedule.scheduleRepeating(c, Simulation.ORDERING_CELLS, 1));
-                popCounts[p]++;
-                i++;
-            } while (i < n);
-        } catch (Exception e) { e.printStackTrace(); System.exit(1); }
-    }
-    
-    /**
-     * {@inheritDoc}
+     * Creates a {@link Action} for removing cell agents.
      * <p>
-     * The JSON is formatted as:
-     * <pre>
-     *     {
-     *         "type": "INSERT",
-     *         "delay": delay (in days),
-     *         "radius": insertion radius
-     *         "pops": [
-     *             [ population index, population count ],
-     *             [ population index, population count ],
-     *             ...
-     *         ]
-     *     }
-     * </pre>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code TIME_DELAY} = time delay before calling the action (in minutes)</li>
+     *     <li>{@code INSERT_RADIUS} = grid radius that cells are inserted into</li>
+     *     <li>{@code INSERT_NUMBER} = number of cells to insert from each population</li>
+     * </ul>
+     *
+     * @param series  the simulation series
+     * @param parameters  the component parameters dictionary
      */
-    public String toJSON() {
-        String p = "";
-        for (int i = 0; i < pops.length; i++) { p += String.format("[%d,%d],", pops[i], popCounts[i]); }
+    public PatchActionInsert(Series series, MiniBox parameters) {
+        int maxRadius = ((PatchSeries) series).radius;
         
-        String format = "{ "
-                + "\"type\": \"INSERT\", "
-                + "\"delay\": %.2f, "
-                + "\"radius\": %d, "
-                + "\"pops\": [%s] "
-                + "}";
+        timeDelay = parameters.getInt("insert/TIME_DELAY");
+        insertRadius = Math.min(maxRadius, parameters.getInt("insert/INSERT_RADIUS"));
+        insertDepth = ((PatchSeries) series).depth;
+        insertNumber = parameters.getInt("insert/INSERT_NUMBER");
         
-        return String.format(format, delay/60.0/24.0, radius, p.replaceFirst(",$",""));
+        populations = new ArrayList<>();
     }
     
-    public String toString() {
-        String s = "";
-        for (int pop : pops) { s = s + String.format("[%d]", pop); }
-        return String.format("[t = %4.1f] INSERT radius %d pops ", delay/60.0/24.0, radius) + s;
+    @Override
+    public void schedule(Schedule schedule) {
+        schedule.scheduleOnce(timeDelay, Ordering.ACTIONS.ordinal(), this);
+    }
+    
+    @Override
+    public void register(Simulation sim, String population) {
+        populations.add(sim.getSeries().populations.get(population));
+    }
+    
+    @Override
+    public void step(SimState state) {
+        PatchSimulation sim = (PatchSimulation) state;
+        PatchGrid grid = (PatchGrid) sim.getGrid();
+        
+        // Select valid coordinates to insert into and shuffle.
+        ArrayList<Coordinate> coordinates =
+                sim.locationFactory.getCoordinates(insertRadius, insertDepth);
+        Utilities.shuffleList(coordinates, sim.random);
+        
+        // Add cells from each population into insertion area.
+        for (MiniBox population : populations) {
+            int pop = population.getInt("CODE");
+            
+            Normal volumes = sim.cellFactory.popToCriticalVolumes.get(pop);
+            Normal heights = sim.cellFactory.popToCriticalHeights.get(pop);
+            Uniform ages = sim.cellFactory.popToAges.get(pop);
+            
+            int divisions = sim.cellFactory.popToDivisions.get(pop);
+            double compression = sim.cellFactory.popToCompression.get(pop);
+            
+            for (int i = 0; i < insertNumber; i++) {
+                int id = sim.getID();
+                
+                double volume = volumes.nextDouble();
+                double height = heights.nextDouble();
+                int age = ages.nextInt();
+                
+                Coordinate coordinate = coordinates.remove(i);
+                
+                if (coordinate == null) {
+                    break;
+                }
+                
+                PatchLocationContainer locationContainer =
+                        new PatchLocationContainer(id, coordinate);
+                PatchCellContainer cellContainer = new PatchCellContainer(id, 0, pop,
+                        age, divisions, State.UNDEFINED, volume, height,
+                        volume, height + compression);
+                
+                Location location = locationContainer.convert(sim.locationFactory, cellContainer);
+                PatchCell cell = (PatchCell) cellContainer.convert(sim.cellFactory, location);
+                
+                grid.addObject(cell, location);
+                cell.schedule(sim.getSchedule());
+            }
+        }
     }
 }

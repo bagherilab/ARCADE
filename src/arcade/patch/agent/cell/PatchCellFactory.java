@@ -26,22 +26,22 @@ public final class PatchCellFactory implements CellFactory {
     MersenneTwisterFast random;
     
     /** Map of population to critical volumes. */
-    HashMap<Integer, Normal> popToCriticalVolumes;
+    public HashMap<Integer, Normal> popToCriticalVolumes;
     
     /** Map of population to critical heights. */
-    HashMap<Integer, Normal> popToCriticalHeights;
+    public HashMap<Integer, Normal> popToCriticalHeights;
     
     /** Map of population to ages. */
-    HashMap<Integer, Uniform> popToAges;
+    public HashMap<Integer, Uniform> popToAges;
     
     /** Map of population to cell divisions. */
-    HashMap<Integer, Integer> popToDivisions;
+    public HashMap<Integer, Integer> popToDivisions;
     
     /** Map of population to compression tolerance. */
-    HashMap<Integer, Integer> popToCompression;
+    public HashMap<Integer, Integer> popToCompression;
     
     /** Map of population to parameters. */
-    HashMap<Integer, MiniBox> popToParameters;
+    public HashMap<Integer, MiniBox> popToParameters;
     
     /** Map of population to list of ids. */
     public final HashMap<Integer, HashSet<Integer>> popToIDs;
