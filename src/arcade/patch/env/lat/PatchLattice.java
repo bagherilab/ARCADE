@@ -66,6 +66,17 @@ public abstract class PatchLattice implements Lattice {
     public double[][][] getField() { return field; }
     
     @Override
+    public double[][][] getCopy() {
+        double[][][] copy = new double[height][length][width];
+        for (int k = 0; k < height; k++) {
+            for (int i = 0; i < length; i++) {
+                System.arraycopy(field[k][i], 0, copy[k][i], 0, width);
+            }
+        }
+        return copy;
+    }
+    
+    @Override
     public int getLength() { return length; }
     
     @Override

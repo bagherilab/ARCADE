@@ -16,7 +16,13 @@ import arcade.patch.env.lat.PatchLattice;
  */
 
 public class PatchOperationGenerator extends PatchOperation {
-    /** Array holding changes in concentration. */
+    /** Array holding current concentration values. */
+    public final double[][][] latticeCurrent;
+    
+    /** Array holding previous concentration values. */
+    public final double[][][] latticePrevious;
+    
+    /** Array holding changes in concentration values. */
     public final double[][][] latticeDelta;
     
     /** Maximum concentration. */
@@ -40,6 +46,8 @@ public class PatchOperationGenerator extends PatchOperation {
         concentration = parameters.getDouble("generator/CONCENTRATION");
         
         // Set lattice field.
+        this.latticeCurrent = lattice.getField();
+        this.latticePrevious = lattice.getCopy();
         this.latticeDelta = new double[latticeHeight][latticeLength][latticeWidth];
     }
     
@@ -50,6 +58,7 @@ public class PatchOperationGenerator extends PatchOperation {
         for (int k = 0; k < latticeHeight; k++) {
             for (int i = 0; i < latticeLength; i++) {
                 for (int j = 0; j < latticeWidth; j++) {
+                    latticePrevious[k][i][j] = field[k][i][j];
                     field[k][i][j] += latticeDelta[k][i][j];
                 }
             }
