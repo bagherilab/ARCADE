@@ -129,7 +129,7 @@ public class SeriesTest {
         public void setupEnvironment() { }
         
         @Override
-        public void scheduleHelpers() { }
+        public void scheduleActions() { }
         
         @Override
         public void scheduleComponents() { }
@@ -168,7 +168,7 @@ public class SeriesTest {
                                     MiniBox layerConversions) { }
         
         @Override
-        protected void updateHelpers(ArrayList<Box> helpers, MiniBox helperDefaults) { }
+        protected void updateActions(ArrayList<Box> actions, MiniBox actionDefaults) { }
         
         @Override
         protected void updateComponents(ArrayList<Box> components, MiniBox componentDefaults) { }
