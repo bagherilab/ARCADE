@@ -4,7 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 
 /**
- * An {@code Operation} object is a non-exclusive environmental steppable.
+ * An {@code Operation} object is a non-exclusive environmental layer steppable.
  * <p>
  * {@code Operation} objects represent environmental behaviors or mechanisms
  * within a {@link arcade.core.env.lat.Lattice} object, such as diffusion.

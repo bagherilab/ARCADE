@@ -123,7 +123,7 @@ public abstract class Visualization extends GUIState {
      */
     public void setup() {
         for (Drawer drawer : drawers) {
-            this.scheduleRepeatingImmediatelyBefore(drawer);
+            this.scheduleRepeatingImmediatelyAfter(drawer);
         }
         
         for (Panel panel : panels) {
