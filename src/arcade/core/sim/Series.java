@@ -270,13 +270,13 @@ public abstract class Series {
                                          MiniBox layerConversions);
     
     /**
-     * Creates selected helpers.
+     * Creates selected actions.
      *
-     * @param helpersBox  the list of helper dictionaries
-     * @param helperDefaults  the dictionary of default helper parameters
+     * @param actionsBox  the list of action dictionaries
+     * @param actionDefaults  the dictionary of default action parameters
      */
-    protected abstract void updateHelpers(ArrayList<Box> helpersBox,
-                                          MiniBox helperDefaults);
+    protected abstract void updateActions(ArrayList<Box> actionsBox,
+                                          MiniBox actionDefaults);
     
     /**
      * Creates selected components.
