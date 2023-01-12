@@ -14,7 +14,7 @@ import static arcade.core.util.Graph.*;
  * Container class for utility functions used by {@link arcade.env.comp.GraphSites}.
  */
 
-abstract class GraphSitesUtilities {
+abstract class PatchComponentSitesGraphUtilities {
     /** Tolerance for difference in radii */
     private static final double DELTA_TOLERANCE = 1E-8;
     
@@ -422,7 +422,7 @@ abstract class GraphSitesUtilities {
      * @param G  the graph object
      * @param gs  the graph sites object
      */
-    static void calcFlows(Graph G, GraphSites gs) {
+    static void calcFlows(Graph G, PatchComponentSitesGraph gs) {
         for (Object obj : G.getAllEdges()) {
             SiteEdge edge = (SiteEdge)obj;
             SiteNode to = edge.getTo();
@@ -598,7 +598,7 @@ abstract class GraphSitesUtilities {
      * @param splitCol  the column in the pattern layout 
      * @param splitRow  the row in the pattern layout
      */
-    static void visit(Graph G, GraphSites gs, SiteNode node, int splitCol, int splitRow) {
+    static void visit(Graph G, PatchComponentSitesGraph gs, SiteNode node, int splitCol, int splitRow) {
         Bag bag = G.getEdgesOut(node);
         if (bag == null) { return; }
         
@@ -740,7 +740,7 @@ abstract class GraphSitesUtilities {
      * @param code  the update code
      * @param gs  the graph sites object
      */
-    static void updateRadii(Graph G, ArrayList<SiteEdge> list, int code, GraphSites gs) {
+    static void updateRadii(Graph G, ArrayList<SiteEdge> list, int code, PatchComponentSitesGraph gs) {
         ArrayList<SiteEdge> nextList;
         LinkedHashSet<SiteEdge> nextSet;
         LinkedHashSet<SiteEdge> currSet = new LinkedHashSet<>();
@@ -821,7 +821,7 @@ abstract class GraphSitesUtilities {
      * @param G  the graph object
      * @param gs  the graph sites object
      */
-    static void updateGraph(Graph G, GraphSites gs) {
+    static void updateGraph(Graph G, PatchComponentSitesGraph gs) {
         ArrayList<SiteEdge> list;
         Graph gCurr = G;
         
@@ -876,7 +876,7 @@ abstract class GraphSitesUtilities {
      * @param removeMin  {@code true} if the the minimum flow edges should be
      *                   removed, {@code false} otherwise
      */
-    static void updateTraverse(Graph G, GraphSites gs, LinkedHashSet<SiteNode> nodes, boolean removeMin) {
+    static void updateTraverse(Graph G, PatchComponentSitesGraph gs, LinkedHashSet<SiteNode> nodes, boolean removeMin) {
         double minFlow = Double.MAX_VALUE;
         SiteEdge minEdge = null;
         

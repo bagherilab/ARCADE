@@ -46,7 +46,7 @@ import static arcade.env.comp.GraphSitesUtilities.*;
  * </ul>
  */
 
-public abstract class GraphSites extends Sites {
+public abstract class PatchComponentSitesGraph extends Sites {
     /** Serialization version identifier */
     private static final long serialVersionUID = 0;
     
@@ -211,7 +211,7 @@ public abstract class GraphSites extends Sites {
      *
      * @param component  the parsed component attributes
      */
-    GraphSites(MiniBox component) {
+    PatchComponentSitesGraph(MiniBox component) {
         siteLayout = component.get("GRAPH_LAYOUT");
         siteSetup = new String[] {
             component.get("ROOTS_LEFT"),
