@@ -1,16 +1,15 @@
 package arcade.patch.env.comp;
 
 import sim.engine.SimState;
-import arcade.core.sim.Simulation;
-import arcade.core.env.loc.Location;
+import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 
-/** 
- * Extension of {@link arcade.env.comp.Sites} for source sites.
+/**
+ * Extension of {@link PatchComponentSites} for source sites.
  * <p>
- * Each index in the lattice can be assigned as a site, depending on the initial
+ * Each index in the lattice can be assigned as a source, depending on the initial
  * spacings in the x direction (length, {@code X_SPACING}), y direction (width,
- * {@code Y_SPACING}), and z direction (depth, {@code Z_SPACING}).
+ * {@code Y_SPACING}), and z direction (height, {@code Z_SPACING}).
  * Each spacing can be defined as:
  * <ul>
  *     <li>{@code *} = all indices in the lattice</li>
@@ -29,257 +28,171 @@ import arcade.core.util.MiniBox;
  * <p>
  * The amount of concentration added to each index is the difference between
  * the concentration at the index and the source concentration of the molecule.
- * Sites can be damaged by setting the {@code SOURCE_DAMAGE} parameter, which
+ * Sites can be damaged by setting the {@code DAMAGE_SCALING} parameter, which
  * reduces the amount of concentration added at each index.
  */
 
-public class SourceSites extends Sites {
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 0;
+public class PatchComponentSitesSource extends PatchComponentSites {
+    /** Array holding locations of sources. */
+    private final boolean[][][] sources;
     
-    /** Array of damage instances */
-    private double[][][] damageSingle;
+    /** Array of damage instances. */
+    private final double[][][] damageSingle;
     
-    /** Array of damage value multipliers */
-    private double[][][] damageValues;
-     
-    /** Damage scaling parameter */
-    private final double _damage;
+    /** Array of damage value multipliers. */
+    private final double[][][] damageValues;
     
-    /** Spacing of sites in x direction */
-    private String[] xSites;
+    /** Source site damage scaling. */
+    private final double damageScaling;
     
-    /** Spacing of sites in y direction */
-    private String[] ySites;
+    /** Spacing of sources in x direction. */
+    private final String[] xSpacing;
     
-    /** Spacing of sites in z direction */
-    private String[] zSites;
+    /** Spacing of sources in y direction. */
+    private final String[] ySpacing;
     
-    /** {@code true} if damage is calculated, {@code false} otherwise */
-    private boolean calcDamage;
+    /** Spacing of sources in z direction. */
+    private final String[] zSpacing;
     
-    /** Dictionary of specifications */
-    private final MiniBox specs;
+    /** {@code true} if damage is calculated, {@code false} otherwise. */
+    private final boolean calculateDamage;
     
     /**
-     * Creates a {@link arcade.env.comp.Sites} object with source sites.
+     * Creates a {@link PatchComponentSites} using source sites.
      * <p>
-     * Specifications include:
+     * Loaded parameters include:
      * <ul>
-     *     <li>{@code X_SPACING} = spacing of sites in x direction</li>
-     *     <li>{@code Y_SPACING} = spacing of sites in y direction</li>
-     *     <li>{@code Z_SPACING} = spacing of sites in z direction</li>
-     *     <li>{@code SOURCE_DAMAGE} = source site damage scaling</li>
+     *     <li>{@code X_SPACING} = spacing of sources in x direction</li>
+     *     <li>{@code Y_SPACING} = spacing of sources in y direction</li>
+     *     <li>{@code Z_SPACING} = spacing of sources in z direction</li>
+     *     <li>{@code DAMAGE_SCALING} = source site damage scaling</li>
      * </ul>
-     * 
-     * @param component  the parsed component attributes
+     *
+     * @param series  the simulation series
+     * @param parameters  the component parameters dictionary
      */
-    public SourceSites(MiniBox component) {
-        xSites = component.get("X_SPACING").split(":");
-        ySites = component.get("Y_SPACING").split(":");
-        zSites = component.get("Z_SPACING").split(":");
-        _damage = component.getDouble("SOURCE_DAMAGE");
+    public PatchComponentSitesSource(Series series, MiniBox parameters) {
+        super(series);
         
-        // Get list of specifications.
-        specs = new MiniBox();
-        String[] specList = new String[] { "X_SPACING", "Y_SPACING", "Z_SPACING", "SOURCE_DAMAGE" };
-        for (String spec : specList) { specs.put(spec, component.get(spec)); }
+        // Get source sites parameters.
+        damageScaling = parameters.getDouble("sites_source/DAMAGE_SCALING");
+        xSpacing = parameters.get("sites_source/X_SPACING").split(":");
+        ySpacing = parameters.get("sites_source/Y_SPACING").split(":");
+        zSpacing = parameters.get("sites_source/Z_SPACING").split(":");
+        
+        // Set boolean.
+        calculateDamage = damageScaling != 0;
+        
+        // Create and initialize arrays.
+        sources = new boolean[latticeHeight][latticeLength][latticeWidth];
+        damageSingle = new double[latticeHeight][latticeLength][latticeWidth];
+        damageValues = new double[latticeHeight][latticeLength][latticeWidth];
+        initializeSourceArray();
+        initializeDamageArrays();
     }
     
     /**
-     * {@inheritDoc}
-     * <p>
-     * Iterates through each index in the lattice and assigns it as a site or 
-     * not, depending on the specified spacings.
-     * Initial damage array is set to 1.0 (no damage).
+     * Initializes damage array to 1.0 (no damage).
      */
-    public void makeSites(Simulation sim) {
-        // Set up damage.
-        damageSingle = new double[DEPTH][LENGTH][WIDTH];
-        damageValues = new double[DEPTH][LENGTH][WIDTH];
-        
-        // Set booleans.
-        if (_damage != 0) { calcDamage = true; }
-        
+    void initializeDamageArrays() {
         // Set up damage value array.
-        for (int k = 0; k < DEPTH; k++) {
-            for (int i = 0; i < LENGTH; i++) {
-                for (int j = 0; j < WIDTH; j++) { damageValues[k][i][j] = 1.0; }
-            }
-        }
-        
-        // Set up sites.
-        for (int k = 0; k < DEPTH; k++) {
-            for (int i = 0; i < LENGTH; i++) {
-                for (int j = 0; j < WIDTH; j++) {
-                    if (checkSource(xSites, i)) { continue; }
-                    if (checkSource(ySites, j)) { continue; }
-                    if (checkSource(zSites, k)) { continue; }
-                    sites[k][i][j] = 1;
+        for (int k = 0; k < latticeHeight; k++) {
+            for (int i = 0; i < latticeLength; i++) {
+                for (int j = 0; j < latticeWidth; j++) {
+                    damageValues[k][i][j] = 1.0;
                 }
             }
         }
     }
     
     /**
-     * Gets the damage array.
-     * 
-     * @return  the array of damage values
+     * Iterates through each index in the source lattice and assigns it as a
+     * source  site or not, depending on the specified spacings.
      */
-    public double[][][] getDamage() { return damageValues; }
-    
-    /**
-     * Steps through the lattice for each molecule to calculate generation.
-     * 
-     * @param state  the MASON simulation state
-     */
-    public void step(SimState state) {
-        // Iterate through array to calculate damage, if needed.
-        if (calcDamage) {
-            for (int k = 0; k < DEPTH; k++) {
-                for (int i = 0; i < LENGTH; i++) {
-                    for (int j = 0; j < WIDTH; j++) {
-                        if (sites[k][i][j] != 0) {
-                            damageValues[k][i][j] = 1.0/Math.exp(_damage*damageSingle[k][i][j]);
-                        }
-                    }
+    void initializeSourceArray() {
+        for (int k = 0; k < latticeHeight; k++) {
+            for (int i = 0; i < latticeLength; i++) {
+                for (int j = 0; j < latticeWidth; j++) {
+                    if (checkSourceIndex(xSpacing, i)) { continue; }
+                    if (checkSourceIndex(ySpacing, j)) { continue; }
+                    if (checkSourceIndex(zSpacing, k)) { continue; }
+                    sources[k][i][j] = true;
                 }
             }
         }
-        
-        // Iterate through each molecule.
-        for (Site site : siteList) {
-            SourceSite s = (SourceSite)site;
-            
-            // Iterate through array.
-            for (int k = 0; k < DEPTH; k++) {
-                for (int i = 0; i < LENGTH; i++) {
-                    for (int j = 0; j < WIDTH; j++) {
-                        if (sites[k][i][j] != 0) {
-                            s.delta[k][i][j] = Math.max((s.conc - s.prev[k][i][j])*damageValues[k][i][j], 0);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Damage increases for movement into and out of a location.
-     */
-    public void updateComponent(Simulation sim, Location oldLoc, Location newLoc) {
-        if (sim.getAgents().getNumObjectsAtLocation(newLoc) > 1) {
-            int zNew = newLoc.getLatZ();
-            for (int[] i : newLoc.getLatLocations()) { damageSingle[zNew][i[0]][i[1]]++; }
-            int zOld = oldLoc.getLatZ();
-            for (int[] i : oldLoc.getLatLocations()) { damageSingle[zOld][i[0]][i[1]]++; }
-        }
-    }
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * For each molecule, the following parameters are required:
-     * <ul>
-     *     <li>{@code CONCENTRATION} = source concentration of molecule</li>
-     * </ul>
-     */
-    public void equip(MiniBox molecule, double[][][] delta, double[][][] current, double[][][] previous) {
-        int code = molecule.getInt("code");
-        double conc = molecule.getDouble("CONCENTRATION");
-        siteList.add(new SourceSite(code, delta, current, previous, conc));
     }
     
     /**
      * Checks if a given index is a valid source site.
-     * 
-     * @param sites  the site spacing
-     * @param v  the index
+     *
+     * @param spacing  the site spacing
+     * @param index  the source site index
      * @return  {@code true} if the index is valid, {@code false} otherwise
      */
-    private boolean checkSource(String[] sites, int v) {
-        int min, max;
+    boolean checkSourceIndex(String[] spacing, int index) {
+        int min;
+        int max;
         int inc = 1;
         
         // Site definition is given as a single value, min-max, or min-inc-max.
-        if (sites[0].equals("*")) {
-            if (sites.length == 1) { return false; }
-            inc = Integer.valueOf(sites[1]);
-            return v%inc != 0;
-        }
-        else if (sites[0].toLowerCase().equals("x")) { return true; }
-        else if (sites.length == 1) {
-            min = Integer.valueOf(sites[0]);
-            max = Integer.valueOf(sites[0]);
-        } else if (sites.length == 3) {
-            min = Integer.valueOf(sites[0]);
-            inc = Integer.valueOf(sites[1]);
-            max = Integer.valueOf(sites[2]);
+        if (spacing[0].equals("*")) {
+            if (spacing.length == 1) { return false; }
+            inc = Integer.parseInt(spacing[1]);
+            return index % inc != 0;
+        } else if (spacing[0].equalsIgnoreCase("x")) {
+            return true;
+        } else if (spacing.length == 1) {
+            min = Integer.parseInt(spacing[0]);
+            max = Integer.parseInt(spacing[0]);
+        } else if (spacing.length == 3) {
+            min = Integer.parseInt(spacing[0]);
+            inc = Integer.parseInt(spacing[1]);
+            max = Integer.parseInt(spacing[2]);
         } else {
-            min = Integer.valueOf(sites[0]);
-            max = Integer.valueOf(sites[1]);
+            min = Integer.parseInt(spacing[0]);
+            max = Integer.parseInt(spacing[1]);
         }
         
-        return v < min || v > max || (v - min)%inc != 0;
+        return index < min || index > max || (index - min) % inc != 0;
     }
     
-    /**
-     * Extension of {@link arcade.env.comp.Site} for {@link arcade.env.comp.SourceSites}.
-     * <p>
-     * Adds a field for source concentration.
-     */
-    class SourceSite extends Site {
-        /** Concentration of molecule */
-        double conc;
+    @Override
+    public void step(SimState simstate) {
+        // Iterate through array to calculate damage, if needed.
+        if (calculateDamage) {
+            for (int k = 0; k < latticeHeight; k++) {
+                for (int i = 0; i < latticeLength; i++) {
+                    for (int j = 0; j < latticeWidth; j++) {
+                        if (sources[k][i][j]) {
+                            damageValues[k][i][j] = 1.0
+                                    / Math.exp(damageScaling * damageSingle[k][i][j]);
+                        }
+                    }
+                }
+            }
+        }
         
-        /**
-         * Creates a {@code SourceSite} for the given molecule.
-         *
-         * @param code  the molecule code
-         * @param delta  the array holding change in concentration
-         * @param current  the array holding current concentrations for current tick
-         * @param previous  the array holding previous concentrations for previous tick
-         * @param conc  the source concentration of the molecule
-         */
-        private SourceSite(int code, double[][][] delta, double[][][] current, double[][][] previous, double conc) {
-            super(code, delta, current, previous);
-            this.conc = conc;
+        // Iterate through each molecule and each array to assign updates.
+        for (SiteLayer layer : layers) {
+            for (int k = 0; k < latticeHeight; k++) {
+                for (int i = 0; i < latticeLength; i++) {
+                    for (int j = 0; j < latticeWidth; j++) {
+                        if (sources[k][i][j]) {
+                            layer.delta[k][i][j] = Math.max(
+                                    (layer.concentration - layer.previous[k][i][j])
+                                            * damageValues[k][i][j], 0);
+                        }
+                    }
+                }
+            }
         }
     }
     
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The JSON is formatted as:
-     * <pre>
-     *     {
-     *         "type": "SITE",
-     *         "class": "source",
-     *         "specs" : {
-     *             "SPEC_NAME": spec value,
-     *             "SPEC_NAME": spec value,
-     *             ...
-     *         }
-     *     }
-     * </pre>
-     */
-    public String toJSON() {
-        String format = "{ " + "\"type\": \"SITE\", " + "\"class\": \"source\", " + "\"specs\": %s " + "}";
-        return String.format(format, specs.toJSON());
-    }
-    
-    public String toString() {
-        StringBuilder x = new StringBuilder();
-        StringBuilder y = new StringBuilder();
-        StringBuilder z = new StringBuilder();
-        for (String s : xSites) { x.append(s).append(":"); }
-        for (String s : ySites) { y.append(s).append(":"); }
-        for (String s : zSites) { z.append(s).append(":"); }
-        return String.format("SOURCE SITES [X = %s] [Y = %s] [Z = %s]",
-                x.toString().replaceFirst(":$",""),
-                y.toString().replaceFirst(":$",""),
-                z.toString().replaceFirst(":$",""));
-    }
+    // TODO add in damage increases for movement into and out of a location
+    //        if (sim.getAgents().getNumObjectsAtLocation(newLoc) > 1) {
+    //            int zNew = newLoc.getLatZ();
+    //            for (int[] i : newLoc.getLatLocations()) { damageSingle[zNew][i[0]][i[1]]++; }
+    //            int zOld = oldLoc.getLatZ();
+    //            for (int[] i : oldLoc.getLatLocations()) { damageSingle[zOld][i[0]][i[1]]++; }
+    //        }
 }
