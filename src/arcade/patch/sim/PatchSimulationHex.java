@@ -25,17 +25,17 @@ public final class PatchSimulationHex extends PatchSimulation {
     }
     
     @Override
-    PatchLocationFactory makeLocationFactory() {
+    public PatchLocationFactory makeLocationFactory() {
         return new PatchLocationFactoryHex();
     }
     
     @Override
-    PatchCellFactory makeCellFactory() {
+    public PatchCellFactory makeCellFactory() {
         return new PatchCellFactory();
     }
     
     @Override
-    PatchLatticeFactory makeLatticeFactory() {
+    public PatchLatticeFactory makeLatticeFactory() {
         return new PatchLatticeFactoryTri();
     }
 }

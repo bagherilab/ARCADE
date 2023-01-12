@@ -97,7 +97,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     
     /**
      * Called at the start of the simulation to set up agents and environment
-     * and schedule components and helpers as needed.
+     * and schedule actions and components as needed.
      */
     @Override
     public void start() {
@@ -114,7 +114,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         setupAgents();
         setupEnvironment();
         
-        scheduleHelpers();
+        scheduleActions();
         scheduleComponents();
         
         // Equip simulation to saver and schedule.
@@ -142,21 +142,21 @@ public abstract class PatchSimulation extends SimState implements Simulation {
      *
      * @return  a {@link arcade.core.env.loc.Location} factory
      */
-    abstract PatchLocationFactory makeLocationFactory();
+    public abstract PatchLocationFactory makeLocationFactory();
     
     /**
      * Creates a factory for cells.
      *
      * @return  a {@link arcade.core.agent.cell.Cell} factory
      */
-    abstract PatchCellFactory makeCellFactory();
+    public abstract PatchCellFactory makeCellFactory();
     
     /**
      * Creates a factory for lattices.
      *
      * @return  a {@link arcade.core.env.lat.Lattice} factory
      */
-    abstract PatchLatticeFactory makeLatticeFactory();
+    public abstract PatchLatticeFactory makeLatticeFactory();
     
     @Override
     public final void setupAgents() {
@@ -220,8 +220,8 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     }
     
     @Override
-    public final void scheduleHelpers() {
-        // TODO add helper scheduling
+    public final void scheduleActions() {
+        // TODO add action scheduling
     }
     
     @Override
