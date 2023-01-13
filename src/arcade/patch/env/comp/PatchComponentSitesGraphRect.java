@@ -1,17 +1,19 @@
 package arcade.patch.env.comp;
 
 import java.util.ArrayList;
-
-import sim.engine.SimState;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import sim.util.Bag;
-import arcade.core.sim.Simulation;
+import ec.util.MersenneTwisterFast;
+import arcade.core.sim.Series;
 import arcade.core.util.Graph;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.Graph.*;
-import static arcade.env.comp.GraphSitesUtilities.*;
+import arcade.core.util.Utilities;
+import static arcade.core.util.Graph.Node;
+import static arcade.patch.env.comp.PatchComponentSitesGraphUtilities.*;
 
 /**
- * Extension of {@link arcade.env.comp.GraphSites} for rectangular lattice.
+ * Extension of {@link PatchComponentSitesGraph} for rectangular geometry.
  * <p>
  * For pattern layout, the graph is given by:
  * <pre>
@@ -41,104 +43,92 @@ import static arcade.env.comp.GraphSitesUtilities.*;
  * </ul>
  */
 
-public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGraph {
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 0;
+public class PatchComponentSitesGraphRect extends PatchComponentSitesGraph {
+    /** List of all possible edge directions. */
+    private static final EnumSet<EdgeDirection> EDGE_DIRECTIONS = EnumSet.of(
+            EdgeDirection.UP,
+            EdgeDirection.UP_RIGHT,
+            EdgeDirection.RIGHT, 
+            EdgeDirection.DOWN_RIGHT,
+            EdgeDirection.DOWN,
+            EdgeDirection.DOWN_LEFT,
+            EdgeDirection.LEFT,
+            EdgeDirection.UP_LEFT
+    );
     
-    /** Code for UP direction */
-    private static final int UP = 0;
+    /** Map of edge directions to their reverse direction. */
+    private static final EnumSet<EdgeDirection> SINGLE_EDGE_DIRECTIONS = EnumSet.of(
+            EdgeDirection.UP_RIGHT,
+            EdgeDirection.DOWN_RIGHT,
+            EdgeDirection.DOWN_LEFT,
+            EdgeDirection.UP_LEFT
+    );
     
-    /** Code for UP RIGHT direction */
-    private static final int UP_RIGHT = 1;
-    
-    /** Code for RIGHT direction */
-    private static final int RIGHT = 2;
-    
-    /** Code for DOWN RIGHT direction */
-    private static final int DOWN_RIGHT = 3;
-    
-    /** Code for DOWN direction */
-    private static final int DOWN = 4;
-    
-    /** Code for DOWN LEFT direction */
-    private static final int DOWN_LEFT = 5;
-    
-    /** Code for LEFT direction */
-    private static final int LEFT = 6;
-    
-    /** Code for UP LEFT direction */
-    private static final int UP_LEFT = 7;
+    /** Map of edge directions to their reverse direction. */
+    private static final EnumMap<EdgeDirection, EdgeDirection> REVERSE_EDGE_DIRECTIONS
+            = new EnumMap<EdgeDirection, EdgeDirection>(EdgeDirection.class) {{
+                put(EdgeDirection.UP,         EdgeDirection.DOWN);
+                put(EdgeDirection.UP_RIGHT,   EdgeDirection.DOWN_LEFT);
+                put(EdgeDirection.RIGHT,      EdgeDirection.LEFT);
+                put(EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_LEFT);
+                put(EdgeDirection.DOWN,       EdgeDirection.UP);
+                put(EdgeDirection.DOWN_LEFT,  EdgeDirection.UP_RIGHT);
+                put(EdgeDirection.LEFT,       EdgeDirection.RIGHT);
+                put(EdgeDirection.UP_LEFT,    EdgeDirection.DOWN_RIGHT);
+    }};
     
     /** List of coordinate offsets for each direction */
-    private static final int[][] OFFSETS = new int[][] {
-        new int[] {  0, -1, 0},
-        new int[] {  1, -1, 0},
-        new int[] {  1,  0, 0},
-        new int[] {  1,  1, 0},
-        new int[] {  0,  1, 0},
-        new int[] { -1,  1, 0},
-        new int[] { -1,  0, 0},
-        new int[] { -1, -1, 0}
+    private static final EnumMap<EdgeDirection, int[]> OFFSETS
+            = new EnumMap<EdgeDirection, int[]>(EdgeDirection.class) {{
+                put(EdgeDirection.UP,         new int[] {  0, -1, 0});
+                put(EdgeDirection.UP_RIGHT,   new int[] {  1, -1, 0});
+                put(EdgeDirection.RIGHT,      new int[] {  1,  0, 0});
+                put(EdgeDirection.DOWN_RIGHT, new int[] {  1,  1, 0});
+                put(EdgeDirection.DOWN,       new int[] {  0,  1, 0});
+                put(EdgeDirection.DOWN_LEFT,  new int[] { -1,  1, 0});
+                put(EdgeDirection.LEFT,       new int[] { -1,  0, 0});
+                put(EdgeDirection.UP_LEFT,    new int[] { -1, -1, 0});
+    }};
+    
+    /** List of offset directions for root directions. */
+    private static final EnumMap<EdgeDirection, EdgeDirection[]> ROOT_OFFSETS
+            = new EnumMap<EdgeDirection, EdgeDirection[]>(EdgeDirection.class) {{
+                put(EdgeDirection.UP,         new EdgeDirection[] { EdgeDirection.UP_RIGHT,   EdgeDirection.UP_LEFT });
+                put(EdgeDirection.UP_RIGHT,   new EdgeDirection[] { EdgeDirection.RIGHT,      EdgeDirection.UP });
+                put(EdgeDirection.RIGHT,      new EdgeDirection[] { EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_RIGHT });
+                put(EdgeDirection.DOWN_RIGHT, new EdgeDirection[] { EdgeDirection.DOWN,       EdgeDirection.RIGHT });
+                put(EdgeDirection.DOWN,       new EdgeDirection[] { EdgeDirection.DOWN_LEFT,  EdgeDirection.DOWN_RIGHT });
+                put(EdgeDirection.DOWN_LEFT,  new EdgeDirection[] { EdgeDirection.LEFT,       EdgeDirection.DOWN });
+                put(EdgeDirection.LEFT,       new EdgeDirection[] { EdgeDirection.UP_LEFT,    EdgeDirection.DOWN_LEFT });
+                put(EdgeDirection.UP_LEFT,    new EdgeDirection[] { EdgeDirection.UP,         EdgeDirection.LEFT });
+    }};
+    
+    /** Array positions for edge directions. */
+    private static final EdgeDirection[][] DIRS = new EdgeDirection[][] {
+        { EdgeDirection.UP_LEFT,    EdgeDirection.UP,        EdgeDirection.UP_RIGHT },
+        { EdgeDirection.LEFT,       EdgeDirection.UNDEFINED, EdgeDirection.RIGHT },
+        { EdgeDirection.DOWN_LEFT,  EdgeDirection.DOWN,      EdgeDirection.DOWN_RIGHT },
     };
     
-    /** Array positions for directions */
-    private static final int[][] DIRS = new int[][] {
-        new int[] {   UP_LEFT,   UP,   UP_RIGHT },
-        new int[] {      LEFT,   -1,      RIGHT },
-        new int[] { DOWN_LEFT, DOWN, DOWN_RIGHT }
-    };
-    
-    /** List of edge lengths */
+    /** List of edge lengths. */
     private double[] EDGE_LENGTHS;
     
     /**
-     * Creates a {@link arcade.env.comp.GraphSites} for rectangular lattices.
+     * Creates a {@link PatchComponentSitesGraph} for rectangular geometry.
      *
-     * @param component  the parsed component attributes
+     * @param series  the simulation series
+     * @param parameters  the component parameters dictionary
      */
-    PatchComponentSitesGraphRect(MiniBox component) { super(component); }
-    
-    /**
-     * Extension of {@link arcade.env.comp.RectGraphSites} using simple hemodynamics.
-     */
-    public static class Simple extends PatchComponentSitesGraphRect {
-        /**
-         * Creates a {@link PatchComponentSitesGraphRect} with simple step.
-         *
-         * @param component  the parsed component attributes
-         */
-        public Simple(MiniBox component) { super(component); }
-        
-        /**
-         * Steps through the graph for each molecule to calculate simple generation.
-         *
-         * @param state  the MASON simulation state
-         */
-        public void step(SimState state) { super.simpleStep(); }
+    public PatchComponentSitesGraphRect(Series series, MiniBox parameters,
+                                        MersenneTwisterFast random) {
+        super(series, parameters, random);
     }
     
-    /**
-     * Extension of {@link arcade.env.comp.RectGraphSites} using complex hemodynamics.
-     */
-    public static class Complex extends PatchComponentSitesGraphRect {
-        /**
-         * Creates a {@link PatchComponentSitesGraphRect} with complex step.
-         *
-         * @param component  the parsed component attributes
-         */
-        public Complex(MiniBox component) { super(component); }
+    @Override
+    int[] getOffset(EdgeDirection offset) { return OFFSETS.get(offset); }
         
-        /**
-         * Steps through the graph for each molecule to calculate complex generation.
-         *
-         * @param state  the MASON simulation state
-         */
-        public void step(SimState state) { super.complexStep(); }
-    }
-    
-    int[] getOffset(int offset) { return OFFSETS[offset]; }
-    
-    Graph newGraph() { return new Graph(LENGTH + 1, WIDTH + 1); }
+    @Override
+    Graph newGraph() { return new Graph(latticeLength + 1, latticeWidth + 1); }
     
     /**
      * Checks if there is an edge in the cross diagonal.
@@ -149,7 +139,7 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
      * @return  {@code true} if there is not a cross diagonal edge, {@code false} otherwise
      */
     private boolean checkCross(SiteNode from, SiteNode to, int scale) {
-        int dir = getDirection(from, to, scale);
+        EdgeDirection dir = getDirection(from, to, scale);
         SiteNode node1 = new SiteNode(from.getX(), to.getY(), from.getZ());
         SiteNode node2 = new SiteNode(to.getX(), from.getY(), to.getZ());
         switch (dir) {
@@ -160,12 +150,22 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
         }
     }
     
-    int calcOffset(int k) { return (DEPTH - k/2 + 1 - ((DEPTH - 1)/4)%2)%2; }
+    @Override
+    int calcOffset(int k) {
+        return (latticeHeight - k / 2 + 1 - ((latticeHeight - 1) / 4) % 2) % 2;
+    }
     
-    int calcCol(int i, int offset) { return (i + 4*offset)%6; }
+    @Override
+    int calcCol(int i, int offset) {
+        return (i + 4 * offset) % 6;
+    }
     
-    int calcRow(int i, int j, int offset) { return (j + offset + (((i + 4*offset)/6 & 1) == 0 ? 0 : 3))%6; }
+    @Override
+    int calcRow(int i, int j, int offset) {
+        return (j + offset + (((i + 4 * offset) / 6 & 1) == 0 ? 0 : 3)) % 6;
+    }
     
+    @Override
     boolean checkNode(Node node) { return checkNode(node.getX(), node.getY(), node.getZ()); }
     
     /**
@@ -176,25 +176,40 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
      * @param z  the z coordinate
      * @return  {@code true} if the coordinates are within bounds, {@code false} otherwise
      */
-    private boolean checkNode(int x, int y, int z) { return !(x < 0 || x > LENGTH || y < 0 || y > WIDTH); }
-    
-    void calcLengths() {
-        EDGE_LENGTHS = new double[2];
-        EDGE_LENGTHS[0] = location.getLatSize();
-        EDGE_LENGTHS[1] = location.getLatSize()*Math.sqrt(2);
+    private boolean checkNode(int x, int y, int z) {
+        return !(x < 0 || x > latticeLength || y < 0 || y > latticeWidth);
     }
     
-    double getLength(SiteEdge edge, int scale) { return scale*EDGE_LENGTHS[getDirection(edge, scale)%2]; }
+    void calcLengths() {
+        EDGE_LENGTHS = new double[] {
+                dxy,
+                dxy * Math.sqrt(2),
+        };
+    }
     
+    @Override
+    double getLength(SiteEdge edge, int scale) {
+        EdgeDirection direction = getDirection(edge, scale);
+        switch (direction) {
+            case UP: case RIGHT: case DOWN: case LEFT:
+                return scale * EDGE_LENGTHS[0];
+            case UP_RIGHT: case UP_LEFT: case DOWN_RIGHT: case DOWN_LEFT:
+                return scale * EDGE_LENGTHS[1];
+            default:
+                return Double.NaN;
+        }
+    }
+    
+    @Override
     void createPatternSites() {
         ArrayList<int[]> edges = new ArrayList<>();
         
         // Add edges using pattern match layout.
-        for (int k = 0; k < DEPTH; k += 2) {
+        for (int k = 0; k < latticeHeight; k += 2) {
             int offset = calcOffset(k);
             
-            for (int i = 0; i <= LENGTH; i++) {
-                for (int j = 0; j <= WIDTH; j++) {
+            for (int i = 0; i <= latticeLength; i++) {
+                for (int j = 0; j <= latticeWidth; j++) {
                     int col = calcCol(i, offset);
                     int row = calcRow(i, j, offset);
                     
@@ -220,102 +235,130 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
                 // Calculate location of capillaries and adjust to make
                 // sure capillaries lie on a horizontal segment.
                 int offset = calcOffset(e[2]);
-                int thresh = LENGTH/2;
-                thresh += 2 - (calcCol(thresh, offset) + 1)%6;
+                int thresh = latticeLength / 2;
+                thresh += 2 - (calcCol(thresh, offset) + 1) % 6;
                 
                 // Add edge to graph.
                 SiteNode from = new SiteNode(e[0], e[1], e[2]);
                 SiteNode to = new SiteNode(e[3], e[4], e[5]);
-                int type = Integer.compare(e[0], thresh);
-                SiteEdge edge = new SiteEdge(from, to, type, LEVEL_1);
+                EdgeType type = (e[0] == thresh ? EdgeType.CAPILLARY
+                        : (e[0] < thresh ? EdgeType.ARTERY : EdgeType.VEIN));
+                SiteEdge edge = new SiteEdge(from, to, type, 1);
                 G.addEdge(edge);
             }
         }
         
         // Traverse graph from leftmost nodes to identify unnecessary edges.
-        for (int k = 0; k < DEPTH; k += 2) {
-            for (int j = 0; j <= WIDTH; j++) {
+        for (int k = 0; k < latticeHeight; k += 2) {
+            for (int j = 0; j <= latticeWidth; j++) {
                 SiteNode root = new SiteNode(0, j, k);
                 visit(G, this, root, 4, 5);
             }
         }
     }
     
-    Root createGrowthSites(Border border, double perc, int type, double frac, int scale) {
-        int[] offsets;
+    @Override
+    Root createGrowthSites(Border border, double perc, EdgeType type, double frac, int scale) {
+        EdgeDirection[] offsets;
         int n = 0;
         
         // Calculate adjusted length and width based on scaling.
         int c = -1;
-        int width = Math.floorDiv(WIDTH, scale);
-        int length = Math.floorDiv(LENGTH, scale);
+        int width = Math.floorDiv(latticeWidth, scale);
+        int length = Math.floorDiv(latticeLength, scale);
         
         switch (border) {
-            case LEFT_BORDER: case RIGHT_BORDER:
-                c = Math.round(Math.round(width*perc));
-                n = Math.round(Math.round(length*frac));
+            case LEFT_BORDER:
+            case RIGHT_BORDER:
+                c = Math.round(Math.round(width * perc));
+                n = Math.round(Math.round(length * frac));
                 break;
-            case TOP_BORDER: case BOTTOM_BORDER:
-                c = Math.round(Math.round(length*perc));
-                n = Math.round(Math.round(width*frac));
+            case TOP_BORDER:
+            case BOTTOM_BORDER:
+                c = Math.round(Math.round(length * perc));
+                n = Math.round(Math.round(width * frac));
                 break;
         }
         
         if (n > 0) {
-            int[] directions = null;
-            int dev = 0;
+            EdgeDirection[] directions = null;
+            int deviation = 0;
             int index = -1;
             int ran;
-            int offset;
+            EdgeDirection offset;
             
-            offsets = new int[n];
+            offsets = new EdgeDirection[n];
             
             // Get direction list.
             switch (border) {
                 case LEFT_BORDER:
-                    directions = new int[] { UP_RIGHT, RIGHT, DOWN_RIGHT };
+                    directions = new EdgeDirection[] {
+                            EdgeDirection.UP_RIGHT,
+                            EdgeDirection.RIGHT,
+                            EdgeDirection.DOWN_RIGHT
+                    };
                     index = 1;
                     break;
                 case RIGHT_BORDER:
-                    directions = new int[] { UP_LEFT, LEFT, DOWN_LEFT };
+                    directions = new EdgeDirection[] {
+                            EdgeDirection.UP_LEFT,
+                            EdgeDirection.LEFT,
+                            EdgeDirection.DOWN_LEFT
+                    };
                     index = 1;
                     break;
                 case TOP_BORDER:
-                    directions = new int[] { DOWN_LEFT, DOWN, DOWN_RIGHT };
+                    directions = new EdgeDirection[] {
+                            EdgeDirection.DOWN_LEFT,
+                            EdgeDirection.DOWN,
+                            EdgeDirection.DOWN_RIGHT
+                    };
                     index = 0;
                     break;
                 case BOTTOM_BORDER:
-                    directions = new int[] { UP_LEFT, UP, UP_RIGHT };
+                    directions = new EdgeDirection[] {
+                            EdgeDirection.UP_LEFT,
+                            EdgeDirection.UP,
+                            EdgeDirection.UP_RIGHT
+                    };
                     index = 0;
                     break;
             }
             
             // Iterate through to fill up offsets.
             for (int i = 0; i < n; i++) {
-                if (dev > 0) { ran = random.nextInt(2); }
-                else if (dev < 0) { ran = random.nextInt(2) + 1; }
-                else { ran = random.nextInt(3); }
+                if (deviation > 0) {
+                    ran = random.nextInt(2);
+                } else if (deviation < 0) {
+                    ran = random.nextInt(2) + 1;
+                } else {
+                    ran = random.nextInt(3);
+                }
+            
                 offset = directions[ran];
                 offsets[i] = offset;
-                dev += OFFSETS[offset][index];
+                deviation += OFFSETS.get(offset)[index];
             }
-        } else { offsets = null; }
+        } else {
+            offsets = null;
+        }
         
         switch (border) {
             case LEFT_BORDER:
-                return new Root(0, c*scale, type, RIGHT, offsets);
+                return new Root(0, c * scale, type, EdgeDirection.RIGHT, offsets);
             case RIGHT_BORDER:
-                return new Root(length*scale, c*scale, type, LEFT, offsets);
+                return new Root(length * scale, c * scale, type, EdgeDirection.LEFT, offsets);
             case TOP_BORDER:
-                return new Root(c*scale, 0, type, DOWN, offsets);
+                return new Root(c * scale, 0, type, EdgeDirection.DOWN, offsets);
             case BOTTOM_BORDER:
-                return new Root(c*scale, width*scale, type, UP, offsets);
+                return new Root(c * scale, width * scale, type, EdgeDirection.UP, offsets);
         }
         
         return null;
     }
     
-    int getDirection(SiteEdge edge, int scale) {
+    @Override
+    EdgeDirection getDirection(SiteEdge edge, int scale) {
         return getDirection(edge.getFrom(), edge.getTo(), scale);
     }
     
@@ -327,13 +370,14 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
      * @param scale  the graph resolution scaling
      * @return  the code for the edge direction
      */
-    private int getDirection(SiteNode from, SiteNode to, int scale) {
+    EdgeDirection getDirection(SiteNode from, SiteNode to, int scale) {
         int dx = (to.getX() - from.getX())/scale + 1;
         int dy = (to.getY() - from.getY())/scale + 1;
         return DIRS[dy][dx];
     }
     
-    void addRoot(SiteNode node0, int dir, int type, Bag bag, int scale, int level, int[] offsets) {
+    @Override
+    void addRoot(SiteNode node0, EdgeDirection dir, EdgeType type, Bag bag, int scale, ResolutionLevel level, EdgeDirection[] offsets) {
         SiteNode node1 = offsetNode(node0, dir, scale);
         boolean checkNode0 = checkNode(node0);
         boolean checkNode1 = checkNode(node1);
@@ -348,8 +392,8 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
         
         // Add the two leaves of the tripod if line is 0, otherwise add in the root line.
         if (offsets == null) {
-            for (int i = 0; i < 2; i++) {
-                SiteNode node2 = offsetNode(node1, (dir + 6*i + 1)%8, scale);
+            for (EdgeDirection offset : ROOT_OFFSETS.get(dir)) {
+                SiteNode node2 = offsetNode(node1, offset, scale);
                 if (checkNode(node2) && G.getDegree(node2) == 0
                         && checkCross(node1, node2, scale)) {
                     SiteEdge edge = new SiteEdge(node1, node2, type, level);
@@ -362,7 +406,7 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
             ArrayList<SiteEdge> edges = new ArrayList<>();
             
             // Add segments for given list of offsets.
-            for (int offset : offsets) {
+            for (EdgeDirection offset : offsets) {
                 SiteNode nextNode = offsetNode(currNode, offset, scale);
                 if (checkNode(nextNode) && G.getDegree(nextNode) == 0
                         && checkCross(currNode, nextNode, scale)) {
@@ -374,20 +418,24 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
             }
             
             // Shuffle and add tripods off the offset line.
-            Simulation.shuffle(edges, random);
-            for (SiteEdge edge : edges) { addMotif(edge.getTo(), getDirection(edge, scale), type, bag, scale, level, edge, TRIPLE); }
+            Utilities.shuffleList(edges, random);
+            for (SiteEdge edge : edges) {
+                addMotif(edge.getTo(), getDirection(edge, scale), type, bag, scale, level, edge, EdgeMotif.TRIPLE);
+            }
         }
     }
     
-    void addMotif(SiteNode node0, int dir0, int type, Bag bag, int scale, int level, SiteEdge e, int motif) {
+    @Override
+    void addMotif(SiteNode node0, EdgeDirection dir0, EdgeType type, Bag bag, int scale, ResolutionLevel level, SiteEdge e, EdgeMotif motif) {
         // Select new random direction.
-        int ran = random.nextInt(7);
-        int dir = ((dir0 + 4)%8 + ran)%8;
+        ArrayList<EdgeDirection> validDirections = new ArrayList<>(EDGE_DIRECTIONS);
+        validDirections.remove(REVERSE_EDGE_DIRECTIONS.get(dir0));
+        EdgeDirection dir = validDirections.get(random.nextInt(validDirections.size()));
         
         // Make tripod nodes.
         SiteNode node1 = offsetNode(node0, dir, scale);
-        SiteNode node2 = offsetNode(node1, (dir + 1)%8, scale);
-        SiteNode node3 = offsetNode(node1, (dir + 7)%8, scale);
+        SiteNode node2 = offsetNode(node1, ROOT_OFFSETS.get(dir)[0], scale);
+        SiteNode node3 = offsetNode(node1, ROOT_OFFSETS.get(dir)[1], scale);
         
         // Check nodes.
         boolean checkNode0 = checkNode(node0);
@@ -421,7 +469,7 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
                     if (checkNode2 && G.getDegree(node2) == 0 && checkCross(node1, node2, scale)) { options.add(node2); }
                     if (checkNode3 && G.getDegree(node3) == 0 && checkCross(node1, node3, scale)) { options.add(node3); }
                     
-                    Simulation.shuffle(options, random);
+                    Utilities.shuffleList(options, random);
                     
                     if (options.size() > 0) {
                         edge = new SiteEdge(node0, node1, type, level);
@@ -433,7 +481,8 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
                 } else if (bag != null) { bag.add(e); }
                 break;
             case SINGLE:
-                if (dir%2 != 0 && checkNode0 && checkNode1 && G.getDegree(node1) == 0 && checkCross(node0, node1, scale)) {
+                if (SINGLE_EDGE_DIRECTIONS.contains(dir) && checkNode0 && checkNode1
+                        && G.getDegree(node1) == 0 && checkCross(node0, node1, scale)) {
                     edge = new SiteEdge(node0, node1, type, level);
                     G.addEdge(edge);
                     if (bag != null) { bag.add(edge); }
@@ -442,12 +491,15 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
         }
     }
     
-    void addSegment(SiteNode node0, int dir, int scale, int level) {
+    @Override
+    void addSegment(SiteNode node0, EdgeDirection dir, int scale, ResolutionLevel level) {
         ArrayList<SiteNode> options = new ArrayList<>();
         
         // Iterate through all seven direction options.
-        for (int i = 0; i < 7; i++) {
-            SiteNode node1 = offsetNode(node0, (i + dir + 5)%8, scale);
+        for (EdgeDirection offset : EDGE_DIRECTIONS) {
+            if (offset == REVERSE_EDGE_DIRECTIONS.get(dir)) { continue; }
+            
+            SiteNode node1 = offsetNode(node0, offset, scale);
             if (!checkNode(node1)) { continue; }
             
             SiteEdge edgeOut = null;
@@ -456,13 +508,13 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
             // Check edges in and out of proposed node.
             if (G.getOutDegree(node1) == 1) {
                 edgeOut = (SiteEdge)G.getEdgesOut(node1).objs[0];
-                if (edgeOut.type != VEIN
+                if (edgeOut.type != EdgeType.VEIN
                         || edgeOut.radius > CAP_RADIUS_MAX
                         || edgeOut.getFrom().isRoot) { edgeOut = null; }
             }
             if (G.getInDegree(node1) == 1) {
                 edgeIn = (SiteEdge)G.getEdgesIn(node1).objs[0];
-                if (edgeIn.type != VEIN
+                if (edgeIn.type != EdgeType.VEIN
                         || edgeIn.radius > CAP_RADIUS_MAX
                         || edgeIn.getTo().isRoot) { edgeIn = null; }
             }
@@ -470,23 +522,25 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
             if (edgeOut != null || edgeIn != null) { options.add(node1); }
         }
         
-        Simulation.shuffle(options, random);
+        Utilities.shuffleList(options, random);
         
         for (SiteNode node1 : options) {
-            SiteEdge e = new SiteEdge(node0, node1, CAPILLARY, level);
+            SiteEdge e = new SiteEdge(node0, node1, EdgeType.CAPILLARY, level);
             if (G.getDegree(node0) < 3 && G.getDegree(node1) < 3
                     && checkCross(node0, node1, scale)) { G.addEdge(e); }
         }
     }
     
-    void addConnection(SiteNode node0, int dir, int type, int scale, int level) {
+    @Override
+    void addConnection(SiteNode node0, EdgeDirection dir, EdgeType type, int scale, ResolutionLevel level) {
         ArrayList<SiteNode> options = new ArrayList<>();
-        int connType = (type == ARTERY ? ARTERIOLE : VENULE);
+        EdgeType connType = (type == EdgeType.ARTERY ? EdgeType.ARTERIOLE : EdgeType.VENULE);
         
         // Iterate through all seven direction options.
-        for (int i = 0; i < 7; i++) {
-            int dir1 = (i + dir + 5)%8;
-            SiteNode node1 = offsetNode(node0, dir1, scale);
+        for (EdgeDirection offset : EDGE_DIRECTIONS) {
+            if (offset == REVERSE_EDGE_DIRECTIONS.get(dir)) { continue; }
+            
+            SiteNode node1 = offsetNode(node0, offset, scale);
             if (!checkNode(node1)) { continue; }
             
             // Check edges in and out of proposed node.
@@ -500,7 +554,7 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
             }
         }
         
-        Simulation.shuffle(options, random);
+        Utilities.shuffleList(options, random);
         
         for (SiteNode node1 : options) {
             SiteEdge e = new SiteEdge(node0, node1, connType, level);
@@ -509,6 +563,7 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
         }
     }
     
+    @Override
     public ArrayList<int[]> getSpan(SiteNode from, SiteNode to) {
         ArrayList<int[]> s = new ArrayList<>();
         
@@ -591,10 +646,5 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
         }
         
         return s;
-    }
-    
-    public String toJSON() {
-        String json = super.toJSON();
-        return json.replace("SITES", "SITES (" + this.getClass().getSimpleName().toLowerCase() + ")");
     }
 }

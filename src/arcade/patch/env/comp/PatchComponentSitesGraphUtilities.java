@@ -51,8 +51,8 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param type  the type letter
      * @return  the type code
      */
-    static int parseType(String type) {
-        return (type.equals("A") ? ARTERY : (type.equals("V") ? VEIN : 0));
+    static EdgeType parseType(String type) {
+        return (type.equals("A") ? EdgeType.ARTERY : (type.equals("V") ? EdgeType.VEIN : null));
     }
     
     /**
@@ -64,11 +64,11 @@ abstract class PatchComponentSitesGraphUtilities {
      * dilatation and compression. <em>PLOS ONE</em>, 11(8), e0161267.
      * 
      * @param radius  the radius of the edge
-     * @param type  the edge type
+     * @param category  the edge category
      * @return  the edge pressure
      */
-    static double calcPressure(double radius, int type) {
-        return 18 + (89 - 18)/(1 + Math.exp((radius*type + 21)/16));
+    static double calcPressure(double radius, EdgeCategory category) {
+        return 18 + (89 - 18)/(1 + Math.exp((radius * category.sign + 21)/16));
     }
     
     /**
@@ -139,13 +139,15 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param type  the root type
      * @return  the root pressure
      */
-    private static double getRootPressure(ArrayList<Root> roots, int type) {
-        double pressure = (type == ARTERY ? Double.MIN_VALUE : Double.MAX_VALUE);
+    private static double getRootPressure(ArrayList<Root> roots, EdgeCategory type) {
+        double pressure = (type == EdgeCategory.ARTERY ? Double.MIN_VALUE : Double.MAX_VALUE);
         for (Root root : roots) {
             SiteEdge edge = root.edge;
             switch (type) {
-                case ARTERY: pressure = Math.max(pressure, calcPressure(edge.radius, edge.type)); break;
-                case VEIN: pressure = Math.min(pressure, calcPressure(edge.radius, edge.type)); break;
+                case ARTERY:
+                    pressure = Math.max(pressure, calcPressure(edge.radius, edge.type.category)); break;
+                case VEIN:
+                    pressure = Math.min(pressure, calcPressure(edge.radius, edge.type.category)); break;
             }
         }
         return pressure;
@@ -161,7 +163,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param type  the root type
      * @return  the pressure assigned to the roots
      */
-    static double setRootPressures(ArrayList<Root> roots, int type) {
+    static double setRootPressures(ArrayList<Root> roots, EdgeCategory type) {
         double pressure = getRootPressure(roots, type);
         for (Root root: roots) {
             root.node.pressure = pressure;
@@ -183,7 +185,7 @@ abstract class PatchComponentSitesGraphUtilities {
             SiteNode to = edge.getTo();
             if (!to.isRoot) {
                 if (G.getOutDegree(to) == 0) {
-                    to.pressure = (edge.type == ARTERY ? arteryPressure : veinPressure);
+                    to.pressure = (edge.type == EdgeType.ARTERY ? arteryPressure : veinPressure);
                 }
             }
         }
@@ -431,11 +433,11 @@ abstract class PatchComponentSitesGraphUtilities {
             
             // Surface area for edges with diameter less than the layer height is
             // the surface area of a cylinder with the edge radius and length.
-            // For edges with diameter great than the height, we assume the vessel
+            // For edges with diameter greater than the height, we assume the vessel
             // exists past the layer so surface area is two rectangles.
             // Radius is taken to be the mid-wall radius.
-            if (2*edge.radius < gs.height) { edge.area = Math.PI*2*(edge.radius + edge.wall/2)*edge.length; }
-            else { edge.area = edge.length*gs.height*2; }
+            if (2*edge.radius < gs.dz) { edge.area = Math.PI*2*(edge.radius + edge.wall/2)*edge.length; }
+            else { edge.area = edge.length*gs.dz*2; }
         }
     }
     
@@ -464,7 +466,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @return  the list of children edges
      */
     private static ArrayList<SiteEdge> calcRadius(Graph G, SiteEdge edge,
-            int dir, int node, int fromcheck, int tocheck) {
+            Direction dir, EdgeNode node, int fromcheck, int tocheck) {
         ArrayList<SiteEdge> children = new ArrayList<>();
         ArrayList<Edge> list = null;
         
@@ -487,7 +489,7 @@ abstract class PatchComponentSitesGraphUtilities {
             
             if (in == 1 && out == 1 && edge.radius != 0) { e.radius = edge.radius; }
             else if (in == fromcheck && out == tocheck) {
-                ArrayList<Edge> b = (dir == DOWNSTREAM ? edge.getEdgesOut() : edge.getEdgesIn());
+                ArrayList<Edge> b = (dir == Direction.DOWNSTREAM ? edge.getEdgesOut() : edge.getEdgesIn());
                 double r1 = ((SiteEdge)b.get(0)).radius;
                 double r2 = ((SiteEdge)b.get(1)).radius;
                 
@@ -524,7 +526,7 @@ abstract class PatchComponentSitesGraphUtilities {
                 }
             }
             else if (in == tocheck && out == fromcheck) {
-                ArrayList<Edge> b = (dir == DOWNSTREAM ? e.getEdgesIn() : e.getEdgesOut());
+                ArrayList<Edge> b = (dir == Direction.DOWNSTREAM ? e.getEdgesIn() : e.getEdgesOut());
                 double r1 = ((SiteEdge)b.get(0)).radius;
                 double r2 = ((SiteEdge)b.get(1)).radius;
                 if (r1 != 0 && r2 != 0) { e.radius = Math.pow(Math.pow(r1, CAP_EXP) + Math.pow(r2, CAP_EXP), 1/CAP_EXP); }
@@ -554,7 +556,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @return  the list of children edges
      */
     private static ArrayList<SiteEdge> assignRadius(Graph G, SiteEdge edge,
-             int dir, int node, int fromcheck, int tocheck) {
+             Direction dir, EdgeNode node, int fromcheck, int tocheck) {
         ArrayList<SiteEdge> children = new ArrayList<>();
         ArrayList<Edge> list = null;
         
@@ -572,13 +574,17 @@ abstract class PatchComponentSitesGraphUtilities {
             int in = G.getInDegree(e.getNode(node));
             int out = G.getOutDegree(e.getNode(node));
             
-            if (in == 1 && out == 1 && edge.radius != 0) { e.radius = edge.radius; }
-            else if (in == fromcheck && out == tocheck) { e.radius = edge.radius; }
-            else if (in == tocheck && out == fromcheck) {
-                ArrayList<Edge> b = (dir == DOWNSTREAM ? e.getEdgesIn() : e.getEdgesOut());
+            if (in == 1 && out == 1 && edge.radius != 0) {
+                e.radius = edge.radius;
+            } else if (in == fromcheck && out == tocheck) {
+                e.radius = edge.radius;
+            } else if (in == tocheck && out == fromcheck) {
+                ArrayList<Edge> b = (dir == Direction.DOWNSTREAM ? e.getEdgesIn() : e.getEdgesOut());
                 double r1 = ((SiteEdge)b.get(0)).radius;
                 double r2 = ((SiteEdge)b.get(1)).radius;
-                if (r1 != 0 && r2 != 0) { e.radius = Math.pow(Math.pow(r1, CAP_EXP) + Math.pow(r2, CAP_EXP), 1/CAP_EXP); }
+                if (r1 != 0 && r2 != 0) {
+                    e.radius = Math.pow(Math.pow(r1, CAP_EXP) + Math.pow(r2, CAP_EXP), 1/CAP_EXP);
+                }
             }
             
             children.add(e);
@@ -598,7 +604,8 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param splitCol  the column in the pattern layout 
      * @param splitRow  the row in the pattern layout
      */
-    static void visit(Graph G, PatchComponentSitesGraph gs, SiteNode node, int splitCol, int splitRow) {
+    static void visit(Graph G, PatchComponentSitesGraph gs, SiteNode node,
+                      int splitCol, int splitRow) {
         Bag bag = G.getEdgesOut(node);
         if (bag == null) { return; }
         
@@ -615,7 +622,7 @@ abstract class PatchComponentSitesGraphUtilities {
             
             // Check for cases where flow network is incomplete.
             if (col == splitCol && row == splitRow) {
-                if ((edge.getTo().getY() - j) > 0 && j > gs.WIDTH - 3) { continue; }
+                if ((edge.getTo().getY() - j) > 0 && j > gs.latticeWidth - 3) { continue; }
                 else if ((edge.getTo().getY() - j) < 0 && j < 3) { continue; }
             }
             
@@ -727,7 +734,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param list  the list of edges
      * @param code  the update code
      */
-    static void updateRadii(Graph G, ArrayList<SiteEdge> list, int code) { updateRadii(G, list, code, null); }
+    static void updateRadii(Graph G, ArrayList<SiteEdge> list, RadiusCalculation code) { updateRadii(G, list, code, null); }
     
     /**
      * Updates radii for the graph using Murray's law.
@@ -740,7 +747,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param code  the update code
      * @param gs  the graph sites object
      */
-    static void updateRadii(Graph G, ArrayList<SiteEdge> list, int code, PatchComponentSitesGraph gs) {
+    static void updateRadii(Graph G, ArrayList<SiteEdge> list, RadiusCalculation code, PatchComponentSitesGraph gs) {
         ArrayList<SiteEdge> nextList;
         LinkedHashSet<SiteEdge> nextSet;
         LinkedHashSet<SiteEdge> currSet = new LinkedHashSet<>();
@@ -753,7 +760,7 @@ abstract class PatchComponentSitesGraphUtilities {
             edge.radius = CAP_RADIUS;
             
             // For pattern layout, modify capillary radius to introduce variation.
-            if (code == UPSTREAM_PATTERN || code == DOWNSTREAM_PATTERN) {
+            if (code == RadiusCalculation.UPSTREAM_PATTERN || code == RadiusCalculation.DOWNSTREAM_PATTERN) {
                 edge.radius *= gs.random.nextDouble() + 0.5;
             }
         }
@@ -762,24 +769,40 @@ abstract class PatchComponentSitesGraphUtilities {
         for (SiteEdge edge : list) {
             switch (code) {
                 case UPSTREAM_ALL:
-                    nextList = calcRadius(G, edge, UPSTREAM, DIR_TO, 2, 1);
+                    nextList = calcRadius(G, edge, Direction.UPSTREAM, EdgeNode.TO, 2, 1);
                     currSet.addAll(nextList);
                     break;
                 case UPSTREAM_ARTERIES:
-                    nextList = calcRadius(G, edge, UPSTREAM, DIR_TO, 2, 1);
-                    for (SiteEdge e : nextList) { if (Math.signum(e.type) == ARTERY) { currSet.add(e); } }
+                    nextList = calcRadius(G, edge, Direction.UPSTREAM, EdgeNode.TO, 2, 1);
+                    for (SiteEdge e : nextList) {
+                        if (e.type.category == EdgeCategory.ARTERY) {
+                            currSet.add(e);
+                        }
+                    }
                     break;
                 case DOWNSTREAM_VEINS:
-                    nextList = calcRadius(G, edge, DOWNSTREAM, DIR_FROM, 1, 2);
-                    for (SiteEdge e : nextList) { if (Math.signum(e.type) == VEIN) { currSet.add(e); } }
+                    nextList = calcRadius(G, edge, Direction.DOWNSTREAM, EdgeNode.FROM, 1, 2);
+                    for (SiteEdge e : nextList) {
+                        if (e.type.category == EdgeCategory.VEIN) {
+                            currSet.add(e);
+                        }
+                    }
                     break;
                 case UPSTREAM_PATTERN:
-                    nextList = assignRadius(G, edge, UPSTREAM, DIR_TO, 2, 1);
-                    for (SiteEdge e : nextList) { if (Math.signum(e.type) == ARTERY) { currSet.add(e); } }
+                    nextList = assignRadius(G, edge, Direction.UPSTREAM, EdgeNode.TO, 2, 1);
+                    for (SiteEdge e : nextList) {
+                        if (e.type.category == EdgeCategory.ARTERY) {
+                            currSet.add(e);
+                        }
+                    }
                     break;
                 case DOWNSTREAM_PATTERN:
-                    nextList = assignRadius(G, edge, DOWNSTREAM, DIR_FROM, 1, 2);
-                    for (SiteEdge e : nextList) { if (Math.signum(e.type) == VEIN) { currSet.add(e); } }
+                    nextList = assignRadius(G, edge, Direction.DOWNSTREAM, EdgeNode.FROM, 1, 2);
+                    for (SiteEdge e : nextList) {
+                        if (e.type.category == EdgeCategory.VEIN) {
+                            currSet.add(e);
+                        }
+                    }
                     break;
             }
         }
@@ -790,24 +813,40 @@ abstract class PatchComponentSitesGraphUtilities {
             for (SiteEdge edge : currSet) {
                 switch (code) {
                     case UPSTREAM_ALL:
-                        nextList = calcRadius(G, edge, UPSTREAM, DIR_TO, 2, 1);
+                        nextList = calcRadius(G, edge, Direction.UPSTREAM, EdgeNode.TO, 2, 1);
                         nextSet.addAll(nextList);
                         break;
                     case UPSTREAM_ARTERIES:
-                        nextList = calcRadius(G, edge, UPSTREAM, DIR_TO, 2, 1);
-                        for (SiteEdge e : nextList) { if (Math.signum(e.type) == ARTERY) { nextSet.add(e); } }
+                        nextList = calcRadius(G, edge, Direction.UPSTREAM, EdgeNode.TO, 2, 1);
+                        for (SiteEdge e : nextList) {
+                            if (e.type.category == EdgeCategory.ARTERY) {
+                                nextSet.add(e);
+                            }
+                        }
                         break;
                     case DOWNSTREAM_VEINS:
-                        nextList = calcRadius(G, edge, DOWNSTREAM, DIR_FROM, 1, 2);
-                        for (SiteEdge e : nextList) { if (Math.signum(e.type) == VEIN) { nextSet.add(e); } }
+                        nextList = calcRadius(G, edge, Direction.DOWNSTREAM, EdgeNode.FROM, 1, 2);
+                        for (SiteEdge e : nextList) {
+                            if (e.type.category == EdgeCategory.VEIN) {
+                                nextSet.add(e);
+                            }
+                        }
                         break;
                     case UPSTREAM_PATTERN:
-                        nextList = assignRadius(G, edge, UPSTREAM, DIR_TO, 2, 1);
-                        for (SiteEdge e : nextList) { if (Math.signum(e.type) == ARTERY) { nextSet.add(e); } }
+                        nextList = assignRadius(G, edge, Direction.UPSTREAM, EdgeNode.TO, 2, 1);
+                        for (SiteEdge e : nextList) {
+                            if (e.type.category == EdgeCategory.ARTERY) {
+                                nextSet.add(e);
+                            }
+                        }
                         break;
                     case DOWNSTREAM_PATTERN:
-                        nextList = assignRadius(G, edge, DOWNSTREAM, DIR_FROM, 1, 2);
-                        for (SiteEdge e : nextList) { if (Math.signum(e.type) == VEIN) { nextSet.add(e); } }
+                        nextList = assignRadius(G, edge, Direction.DOWNSTREAM, EdgeNode.FROM, 1, 2);
+                        for (SiteEdge e : nextList) {
+                            if (e.type.category == EdgeCategory.VEIN) {
+                                nextSet.add(e);
+                            }
+                        }
                         break;
                 }
             }
@@ -950,11 +989,15 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param types  the list of edge types
      * @return  a list of edges
      */
-    static ArrayList<SiteEdge> getEdgeByType(Graph G, int[] types) {
+    static ArrayList<SiteEdge> getEdgeByType(Graph G, EdgeType[] types) {
         ArrayList<SiteEdge> list = new ArrayList<>();
         for (Object obj : new Bag(G.getAllEdges())) {
-            SiteEdge edge = (SiteEdge)obj;
-            for (int t : types) { if (edge.type == t) { list.add(edge); } }
+            SiteEdge edge = (SiteEdge) obj;
+            for (EdgeType t : types) {
+                if (edge.type == t) {
+                    list.add(edge);
+                }
+            }
         }
         return list;
     }
@@ -967,11 +1010,15 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param level  the graph resolution level
      * @return  a list of edges
      */
-    static ArrayList<SiteEdge> getEdgeByType(Graph G, int[] types, int level) {
+    static ArrayList<SiteEdge> getEdgeByType(Graph G, EdgeType[] types, ResolutionLevel level) {
         ArrayList<SiteEdge> list = new ArrayList<>();
         for (Object obj : new Bag(G.getAllEdges())) {
-            SiteEdge edge = (SiteEdge)obj;
-            for (int t : types) { if (edge.type == t && edge.level == level) { list.add(edge); } }
+            SiteEdge edge = (SiteEdge) obj;
+            for (EdgeType t : types) {
+                if (edge.type == t && edge.level == level) {
+                    list.add(edge);
+                }
+            }
         }
         return list;
     }
@@ -983,11 +1030,11 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param types  the list of edge types
      * @return  a list of leaves
      */
-    static ArrayList<SiteEdge> getLeavesByType(Graph G, int[] types) {
+    static ArrayList<SiteEdge> getLeavesByType(Graph G, EdgeType[] types) {
         ArrayList<SiteEdge> list = new ArrayList<>();
         for (Object obj : new Bag(G.getAllEdges())) {
             SiteEdge edge = (SiteEdge)obj;
-            for (int t : types) {
+            for (EdgeType t : types) {
                 if (edge.type == t && G.getOutDegree(edge.getTo()) == 0) { list.add(edge); }
             }
         }

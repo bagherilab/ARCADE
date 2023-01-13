@@ -46,75 +46,105 @@ import static arcade.env.comp.GraphSitesUtilities.*;
  * </ul>
  */
 
-public abstract class PatchComponentSitesGraph extends Sites {
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 0;
-    
-    /** Tolerance for difference in internal and external concentrations */
-    private static final double DELTA_TOLERANCE = 1E-8;
-    
+public abstract class PatchComponentSitesGraph extends PatchComponentSites {
+    enum Direction {
     /** Code for upstream calculation */
-    static final int UPSTREAM = -1;
+        UPSTREAM,
     
     /** Code for downstream direction */
-    static final int DOWNSTREAM = 1;
+        DOWNSTREAM
+    }
     
+    /** Edge types. */
+    enum EdgeType {
     /** Code for arteriole edge type */
-    static final int ARTERIOLE = -2;
+        ARTERIOLE(EdgeCategory.ARTERY),
     
     /** Code for artery edge type */
-    static final int ARTERY = -1;
+        ARTERY(EdgeCategory.ARTERY),
     
     /** Code for capillary edge type */
-    static final int CAPILLARY = 0;
+        CAPILLARY(EdgeCategory.CAPILLARY),
     
     /** Code for vein edge type */
-    static final int VEIN = 1;
+        VEIN(EdgeCategory.VEIN),
     
     /** Code for venule edge type */
-    static final int VENULE = 2;
+        VENULE(EdgeCategory.VEIN);
     
+        final EdgeCategory category;
+                
+        EdgeType(EdgeCategory category) {
+            this.category = category;
+        }
+    }
+    
+    enum EdgeCategory {
+        ARTERY(-1),
+        
+        CAPILLARY(0),
+        
+        VEIN(1);
+    
+        final int sign;
+        
+        EdgeCategory(int sign) {
+            this.sign = sign;
+        }
+    }
+    
+    enum RadiusCalculation {
     /** Code for upstream radius calculation for all edge types */
-    static final int UPSTREAM_ALL = 0;
+        UPSTREAM_ALL,
     
     /** Code for upstream radius calculation for arteries only */
-    static final int UPSTREAM_ARTERIES = -1;
+        UPSTREAM_ARTERIES,
     
     /** Code for downstream radius calculation for veins only */
-    static final int DOWNSTREAM_VEINS = 1;
+        DOWNSTREAM_VEINS,
     
     /** Code for upstream radius calculation for pattern layout */
-    static final int UPSTREAM_PATTERN = -2;
+        UPSTREAM_PATTERN,
     
     /** Code for downstream radius calculation for pattern layout */
-    static final int DOWNSTREAM_PATTERN = 2;
+        DOWNSTREAM_PATTERN,
+    } 
      
+    enum EdgeTag {
     /** Tag for edge addition in iterative remodeling */
-    private static final int TO_ADD = 1;
+        ADD,
     
     /** Tag for edge removal in iterative remodeling */
-    private static final int TO_REMOVE = 2;
+        REMOVE,
+    }
     
+    enum EdgeMotif {
     /** Code for triple edge motif */
-    static final int TRIPLE = 0;
+        TRIPLE,
     
     /** Code for double edge motif */
-    static final int DOUBLE = 1;
+        DOUBLE,
     
     /** Code for single edge motif */
-    static final int SINGLE = 2;
+        SINGLE,
+    }
     
-    /** Scaling for level 1 resolution */
-    private static final int SCALE_LEVEL_1 = 4;
-    
-    /** Scaling for level 2 resolution */
-    private static final int SCALE_LEVEL_2 = 2;
+    /** Resolution levels. */
+    enum ResolutionLevel {
+        VARIABLE(0),
     
     /** Code for level 1 resolution */
-    static final int LEVEL_1 = 1;
+        LEVEL_1(4),
     
     /** Code for level 2 resolution */
-    static final int LEVEL_2 = 2;
+        LEVEL_2(2);
+    
+        final int scale;
+
+        ResolutionLevel(int scale) {
+            this.scale = scale;
+        }
+    }
     
     /** Probability weighting for iterative remodeling */
     private static final double PROB_WEIGHT = 0.2;
@@ -194,13 +224,36 @@ public abstract class PatchComponentSitesGraph extends Sites {
         BOTTOM_BORDER
     }
     
-    /** Dictionary of specifications */
-    private final MiniBox specs;
+    enum EdgeDirection {
+        UNDEFINED,
+        
+        UP,
+        
+        UP_RIGHT,
+        
+        RIGHT,
+        
+        DOWN_RIGHT,
+        
+        DOWN,
+        
+        DOWN_LEFT,
+        
+        LEFT,
+        
+        UP_LEFT,
+    }
+    
+    /** Lattice spacing in xy plane. */
+    final double dxy;
+    
+    /** Lattice spacing in z plane. */
+    final double dz;
     
     /**
-     * Creates a {@link arcade.env.comp.Sites} object with graph sites.
+     * Creates a {@link PatchComponentSites} using graph sites.
      * <p>
-     * Specifications include:
+     * Loaded parameters include:
      * <ul>
      *     <li>{@code GRAPH_LAYOUT} = graph layout type</li>
      *     <li>{@code ROOTS_LEFT} = graph roots on left side of environment</li>
@@ -209,22 +262,26 @@ public abstract class PatchComponentSitesGraph extends Sites {
      *     <li>{@code ROOTS_BOTTOM} = graph roots on bottom side of environment</li>
      * </ul>
      *
-     * @param component  the parsed component attributes
+     * @param series  the simulation series
+     * @param parameters  the component parameters dictionary
+     * @param random  the random number generator
      */
-    PatchComponentSitesGraph(MiniBox component) {
-        siteLayout = component.get("GRAPH_LAYOUT");
+    public PatchComponentSitesGraph(Series series, MiniBox parameters, MersenneTwisterFast random) {
+        super(series);
+        
+        // Get graph site parameters.
+        dxy = parameters.getDouble("sites_graph/STEP_SIZE_XY");
+        dz = parameters.getDouble("sites_graph/STEP_SIZE_Z");
+        siteLayout = parameters.get("sites_graph/GRAPH_LAYOUT");
         siteSetup = new String[] {
-            component.get("ROOTS_LEFT"),
-            component.get("ROOTS_TOP"),
-            component.get("ROOTS_RIGHT"),
-            component.get("ROOTS_BOTTOM")
+                parameters.get("sites_graph/ROOTS_LEFT"),
+                parameters.get("sites_graph/ROOTS_TOP"),
+                parameters.get("sites_graph/ROOTS_RIGHT"),
+                parameters.get("sites_graph/ROOTS_BOTTOM"),
         };
         
-        // Get list of specifications.
-        specs = new MiniBox();
-        String[] specList = new String[] { "GRAPH_LAYOUT", "ROOTS_LEFT",
-                "ROOTS_TOP", "ROOTS_RIGHT", "ROOTS_BOTTOM" };
-        for (String spec : specList) { specs.put(spec, component.get(spec)); }
+        this.random = random;
+        initializeGraph();
     }
     
     /**
@@ -304,7 +361,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param scale  the graph resolution scaling
      * @return  the code for the edge direction
      */
-    abstract int getDirection(SiteEdge edge, int scale);
+    abstract EdgeDirection getDirection(SiteEdge edge, int scale);
     
     /**
      * Adds a root motif to the graph.
@@ -317,7 +374,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param level  the graph resolution level
      * @param offsets  the list of offsets for line roots, null otherwise
      */
-    abstract void addRoot(SiteNode node0, int dir, int type, Bag bag, int scale, int level, int[] offsets);
+    abstract void addRoot(SiteNode node0, EdgeDirection dir, EdgeType type, Bag bag, int scale, ResolutionLevel level, EdgeDirection[] offsets);
     
     /**
      * Adds an edge motif to the graph.
@@ -331,7 +388,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param e  the edge the motif is being added to
      * @param motif  the motif type
      */
-    abstract void addMotif(SiteNode node0, int dir, int type, Bag bag, int scale, int level, SiteEdge e, int motif);
+    abstract void addMotif(SiteNode node0, EdgeDirection dir, EdgeType type, Bag bag, int scale, ResolutionLevel level, SiteEdge e, EdgeMotif motif);
     
     /**
      * Adds a capillary segment joining edges of different types to the graph.
@@ -341,7 +398,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param scale  the graph resolution scaling
      * @param level  the graph resolution level
      */
-    abstract void addSegment(SiteNode node0, int dir, int scale, int level);
+    abstract void addSegment(SiteNode node0, EdgeDirection dir, int scale, ResolutionLevel level);
     
     /**
      * Adds a connection joining edges of the same type to the graph.
@@ -352,7 +409,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param scale  the graph resolution scaling
      * @param level  the graph resolution level
      */
-    abstract void addConnection(SiteNode node0, int dir, int type, int scale, int level);
+    abstract void addConnection(SiteNode node0, EdgeDirection dir, EdgeType type, int scale, ResolutionLevel level);
     
     /**
      * Gets list of coordinate changes corresponding to a given offset direction.
@@ -360,7 +417,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param offset  the offset code
      * @return  the list of coordinate changes
      */
-    abstract int[] getOffset(int offset);
+    abstract int[] getOffset(EdgeDirection offset);
     
     /**
      * Gets the length of the given edge.
@@ -386,7 +443,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param scale  the graph resolution scaling 
      * @return  a {@link Root} object
      */
-    abstract Root createGrowthSites(Border border, double perc, int type, double frac, int scale);
+    abstract Root createGrowthSites(Border border, double perc, EdgeType type, double frac, int scale);
     
     /**
      * {@inheritDoc}
@@ -1149,21 +1206,21 @@ public abstract class PatchComponentSitesGraph extends Sites {
         }
         
         // Traverse graph from capillaries to calculate radii.
-        ArrayList<SiteEdge> caps = getEdgeByType(G, new int[] { CAPILLARY });
-        updateRadii(G, caps, UPSTREAM_PATTERN, this);
-        updateRadii(G, caps, DOWNSTREAM_PATTERN, this);
+        ArrayList<SiteEdge> caps = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY });
+        updateRadii(G, caps, RadiusCalculation.UPSTREAM_PATTERN, this);
+        updateRadii(G, caps, RadiusCalculation.DOWNSTREAM_PATTERN, this);
         
         G.mergeNodes();
         
         // Assign pressures.
         for (Object obj : G.getAllEdges()) {
             SiteEdge edge = (SiteEdge)obj;
-            if (G.getInDegree(edge.getFrom()) == 0 && edge.type == ARTERY) {
-                edge.getFrom().pressure = calcPressure(edge.radius, edge.type);
+            if (G.getInDegree(edge.getFrom()) == 0 && edge.type == EdgeType.ARTERY) {
+                edge.getFrom().pressure = calcPressure(edge.radius, edge.type.category);
                 edge.getFrom().isRoot = true;
             }
-            if (G.getOutDegree(edge.getTo()) == 0 && edge.type == VEIN) {
-                edge.getTo().pressure = calcPressure(edge.radius, edge.type);
+            if (G.getOutDegree(edge.getTo()) == 0 && edge.type == EdgeType.VEIN) {
+                edge.getTo().pressure = calcPressure(edge.radius, edge.type.category);
                 edge.getTo().isRoot = true;
             }
         }
@@ -1210,13 +1267,14 @@ public abstract class PatchComponentSitesGraph extends Sites {
             
             for (SiteEdge edge1 : set) {
                 if (G.getOutDegree(edge1.getTo()) == 1) {
-                    int dir1 = getDirection(edge1, edge1.level);
+                    EdgeDirection dir1 = getDirection(edge1, edge1.scale);
                     SiteEdge edge2 = (SiteEdge)edge1.getEdgesOut().get(0);
-                    int dir2 = getDirection(edge2, edge2.level);
+                    EdgeDirection dir2 = getDirection(edge2, edge2.scale);
                     
                     // Join edges that are the same direction and type.
                     if (dir1 == dir2 && edge1.type == edge2.type) {
-                        SiteEdge join = new SiteEdge(edge1.getFrom(), edge2.getTo(), edge1.type, edge1.level + edge2.level);
+                        SiteEdge join = new SiteEdge(edge1.getFrom(), edge2.getTo(),
+                                edge1.type, edge1.scale + edge2.scale);
                         
                         // Set length to be sum and radius to be average of the
                         // two constituent edges.
@@ -1248,7 +1306,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
     /**
      * Makes graph sites with root layout.
      */
-    private void makeGrowthSites() {
+    private void makeRootSites() {
         ArrayList<Root> roots = new ArrayList<>();
         Border[] border = Border.values();
         Pattern pattern = null;
@@ -1261,7 +1319,8 @@ public abstract class PatchComponentSitesGraph extends Sites {
             case "L": pattern = Pattern.compile("([0-9]{1,3})([AVav])([0-9]{1,3})"); break;
         }
         
-        int t, n;
+        EdgeType t;
+        int n;
         double p, f;
         
         // Add roots for each border given root type.
@@ -1270,32 +1329,32 @@ public abstract class PatchComponentSitesGraph extends Sites {
             while (matcher.find()) {
                 switch (siteLayout) {
                     case "S":
-                        p = Integer.valueOf(matcher.group(1))/100.0;
+                        p = Integer.parseInt(matcher.group(1)) / 100.0;
                         t = parseType(matcher.group(2));
-                        roots.add(createGrowthSites(b, p, t, 0, SCALE_LEVEL_1));
+                        roots.add(createGrowthSites(b, p, t, 0, ResolutionLevel.LEVEL_1.scale));
                         break;
                     case "A":
-                        n = (Integer.valueOf(matcher.group(1)));
-                        double inc = 100.0/n;
+                        n = (Integer.parseInt(matcher.group(1)));
+                        double inc = 100.0 / n;
                         for (int i = 0; i < n; i++) {
-                            p = i*inc + inc/2;
-                            t = (i % 2 == 0 ? ARTERY : VEIN);
-                            roots.add(createGrowthSites(b, p/100.0, t, 0, SCALE_LEVEL_1));
+                            p = i * inc + inc / 2;
+                            t = (i % 2 == 0 ? EdgeType.ARTERY : EdgeType.VEIN);
+                            roots.add(createGrowthSites(b, p / 100.0, t, 0, ResolutionLevel.LEVEL_1.scale));
                         }
                         break;
                     case "R":
-                        n = (Integer.valueOf(matcher.group(1)));
+                        n = (Integer.parseInt(matcher.group(1)));
                         for (int i = 0; i < n; i++) {
                             p = random.nextInt(100);
-                            t = (random.nextDouble() < 0.5 ? ARTERY : VEIN);
-                            roots.add(createGrowthSites(b, p/100.0, t, 0, SCALE_LEVEL_1));
+                            t = (random.nextDouble() < 0.5 ? EdgeType.ARTERY : EdgeType.VEIN);
+                            roots.add(createGrowthSites(b, p / 100.0, t, 0, ResolutionLevel.LEVEL_1.scale));
                         }
                         break;
                     case "L":
-                        p = Integer.valueOf(matcher.group(1))/100.0;
+                        p = Integer.parseInt(matcher.group(1)) / 100.0;
                         t = parseType(matcher.group(2));
-                        f = (Integer.valueOf(matcher.group(3)))/100.0;
-                        roots.add(createGrowthSites(b, p, t, f, SCALE_LEVEL_1));
+                        f = (Integer.parseInt(matcher.group(3))) / 100.0;
+                        roots.add(createGrowthSites(b, p, t, f, ResolutionLevel.LEVEL_1.scale));
                         break;
                 }
             }
@@ -1303,9 +1362,9 @@ public abstract class PatchComponentSitesGraph extends Sites {
         
         // Iterate through all roots and try to add to the graph.
         Bag leaves = new Bag();
-        Simulation.shuffle(roots, random);
+        Utilities.shuffleList(roots, random);
         for (Root root : roots) {
-            addRoot(root.node, root.dir, root.type, leaves, SCALE_LEVEL_1, LEVEL_1, root.offsets);
+            addRoot(root.node, root.dir, root.type, leaves, ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1, root.offsets);
         }
         
         ArrayList<Root> arteries = new ArrayList<>();
@@ -1335,22 +1394,25 @@ public abstract class PatchComponentSitesGraph extends Sites {
         
         // Check that at least one artery root was added. Exit if there is not
         // at least one artery and one vein.
-        if (!hasArtery || !hasVein) { G = new Graph(0, 0); return; }
+        if (!hasArtery || !hasVein) {
+            G = new Graph(0, 0);
+            return;
+        }
         
         // Add motifs from leaves.
-        addMotifs(addMotifs(addMotifs(leaves, SCALE_LEVEL_1, LEVEL_1, TRIPLE),
-                SCALE_LEVEL_1, LEVEL_1, DOUBLE),
-                SCALE_LEVEL_1, LEVEL_1, SINGLE);
+        addMotifs(addMotifs(addMotifs(leaves, ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1, EdgeMotif.TRIPLE),
+                        ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1, EdgeMotif.DOUBLE),
+                ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1, EdgeMotif.SINGLE);
         
         // Calculate radii, pressure, and shears.
-        updateGrowthSites(arteries, veins, SCALE_LEVEL_1, LEVEL_1);
+        updateGrowthSites(arteries, veins, ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1);
         
         // Iterative remodeling.
         int iter = 0;
         double frac = 1.0;
         while (frac > REMODELING_FRACTION && iter < MAX_ITER) {
-            frac = remodelSites(SCALE_LEVEL_1, LEVEL_1);
-            updateGrowthSites(arteries, veins, SCALE_LEVEL_1, LEVEL_1);
+            frac = remodelSites(ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1);
+            updateGrowthSites(arteries, veins, ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1);
             iter++;
         }
         
@@ -1358,13 +1420,13 @@ public abstract class PatchComponentSitesGraph extends Sites {
         refineGrowthSites(arteries, veins);
         
         // Subdivide growth sites and add new motifs.
-        Bag midpoints = subdivideGrowthSites(LEVEL_1);
-        addMotifs(addMotifs(addMotifs(midpoints, SCALE_LEVEL_2, LEVEL_2, TRIPLE),
-                SCALE_LEVEL_2, LEVEL_2, DOUBLE),
-                SCALE_LEVEL_2, LEVEL_2, SINGLE);
+        Bag midpoints = subdivideGrowthSites(ResolutionLevel.LEVEL_1);
+        addMotifs(addMotifs(addMotifs(midpoints, ResolutionLevel.LEVEL_2.scale, ResolutionLevel.LEVEL_2, EdgeMotif.TRIPLE),
+                        ResolutionLevel.LEVEL_2.scale, ResolutionLevel.LEVEL_2, EdgeMotif.DOUBLE),
+                ResolutionLevel.LEVEL_2.scale, ResolutionLevel.LEVEL_2, EdgeMotif.SINGLE);
         
         // Calculate radii, pressure, and shears.
-        updateGrowthSites(arteries, veins, SCALE_LEVEL_2, LEVEL_2);
+        updateGrowthSites(arteries, veins, ResolutionLevel.LEVEL_2.scale, ResolutionLevel.LEVEL_2);
         
         // Prune network for perfused segments and recalculate properties.
         refineGrowthSites(arteries, veins);
@@ -1378,54 +1440,54 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param scale  the graph resolution scaling
      * @param level  the graph resolution level
      */
-    private void updateGrowthSites(ArrayList<Root> arteries, ArrayList<Root> veins, int scale, int level) {
+    private void updateGrowthSites(ArrayList<Root> arteries, ArrayList<Root> veins, int scale, ResolutionLevel level) {
         ArrayList<SiteEdge> list;
         ArrayList<SiteEdge> caps = new ArrayList<>();
         
         // Store upper level capillaries.
-        if (level != LEVEL_1) {
-            caps = getEdgeByType(G, new int[] { CAPILLARY });
+        if (level != ResolutionLevel.LEVEL_1) {
+            caps = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY });
             for (SiteEdge edge : caps) { G.removeEdge(edge); }
         }
         
         // Get all leaves and update radii.
-        list = getLeavesByType(G, new int[] { ARTERY, VEIN });
-        updateRadii(G, list, UPSTREAM_ALL);
+        list = getLeavesByType(G, new EdgeType[] { EdgeType.ARTERY, EdgeType.VEIN });
+        updateRadii(G, list, RadiusCalculation.UPSTREAM_ALL);
         
         // Replace level 1 edges capillaries.
-        if (level != LEVEL_1) { for (SiteEdge edge : caps) { G.addEdge(edge); } }
+        if (level != ResolutionLevel.LEVEL_1) { for (SiteEdge edge : caps) { G.addEdge(edge); } }
         
         addSegments(scale, level);
         addConnections(scale, level);
         
-        caps = getEdgeByType(G, new int[] { CAPILLARY });
+        caps = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY });
         
         // Get capillaries and arterioles and update radii.
         switch (level) {
             case LEVEL_1:
-                list = getEdgeByType(G, new int[] { CAPILLARY, ARTERIOLE });
+                list = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY, EdgeType.ARTERIOLE });
                 break;
             case LEVEL_2:
-                list = getEdgeByType(G, new int[] { ARTERIOLE }, level);
+                list = getEdgeByType(G, new EdgeType[] { EdgeType.ARTERIOLE }, level);
                 list.addAll(caps);
                 break;
         }
         
-        updateRadii(G, list, UPSTREAM_ALL);
+        updateRadii(G, list, RadiusCalculation.UPSTREAM_ALL);
         for (SiteEdge cap : caps) { G.reverseEdge(cap); }
         
         // Get capillaries and venules and update radii.
         switch (level) {
             case LEVEL_1:
-                list = getEdgeByType(G, new int[] { CAPILLARY, VENULE });
+                list = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY, EdgeType.VENULE });
                 break;
             case LEVEL_2:
-                list = getEdgeByType(G, new int[] { VENULE }, level);
+                list = getEdgeByType(G, new EdgeType[] { EdgeType.VENULE }, level);
                 list.addAll(caps);
                 break;
         }
         
-        updateRadii(G, list, UPSTREAM_ALL);
+        updateRadii(G, list, RadiusCalculation.UPSTREAM_ALL);
         for (SiteEdge cap : caps) { G.reverseEdge(cap); }
         
         // Merge nodes. For level 2, separate graph into sub graphs by level.
@@ -1436,8 +1498,8 @@ public abstract class PatchComponentSitesGraph extends Sites {
             case LEVEL_2:
                 Graph g1 = newGraph();
                 Graph g2 = newGraph();
-                G.getSubgraph(g1, e -> ((SiteEdge)e).level == LEVEL_1);
-                G.getSubgraph(g2, e -> ((SiteEdge)e).level == LEVEL_2);
+                G.getSubgraph(g1, e -> ((SiteEdge)e).level == ResolutionLevel.LEVEL_1);
+                G.getSubgraph(g2, e -> ((SiteEdge)e).level == ResolutionLevel.LEVEL_2);
                 mergeGraphs(g1, g2);
                 break;
         }
@@ -1455,8 +1517,8 @@ public abstract class PatchComponentSitesGraph extends Sites {
         }
         
         // Assign pressures to roots.
-        double arteryPressure = setRootPressures(arteries, ARTERY);
-        double veinPressure = setRootPressures(veins, VEIN);
+        double arteryPressure = setRootPressures(arteries, EdgeCategory.ARTERY);
+        double veinPressure = setRootPressures(veins, EdgeCategory.VEIN);
         
         // Assign pressures to leaves.
         setLeafPressures(G, arteryPressure, veinPressure);
@@ -1479,14 +1541,14 @@ public abstract class PatchComponentSitesGraph extends Sites {
      */
     private void refineGrowthSites(ArrayList<Root> arteries, ArrayList<Root> veins) {
         // Reverse edges that are veins and venules.
-        ArrayList<SiteEdge> reverse = getEdgeByType(G, new int[] { VEIN, VENULE });
+        ArrayList<SiteEdge> reverse = getEdgeByType(G, new EdgeType[] { EdgeType.VEIN, EdgeType.VENULE });
         for (SiteEdge edge : reverse) { G.reverseEdge(edge); }
         
         // Reverse edges that have negative pressure difference.
         reversePressures(G);
         
         // Check for non-connected graph.
-        ArrayList<SiteEdge> caps = getEdgeByType(G, new int[] { CAPILLARY });
+        ArrayList<SiteEdge> caps = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY });
         if (caps.size() < 1) { G = new Graph(0, 0); return; }
         
         // Determine which edges are perfused.
@@ -1500,13 +1562,13 @@ public abstract class PatchComponentSitesGraph extends Sites {
         }
         
         // Get all capillaries and update radii.
-        ArrayList<SiteEdge> list = getEdgeByType(G, new int[] { CAPILLARY });
-        updateRadii(G, list, UPSTREAM_ARTERIES);
-        updateRadii(G, list, DOWNSTREAM_VEINS);
+        ArrayList<SiteEdge> list = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY });
+        updateRadii(G, list, RadiusCalculation.UPSTREAM_ARTERIES);
+        updateRadii(G, list, RadiusCalculation.DOWNSTREAM_VEINS);
         
         // Assign pressures to roots.
-        setRootPressures(arteries, ARTERY);
-        setRootPressures(veins, VEIN);
+        setRootPressures(arteries, EdgeCategory.ARTERY);
+        setRootPressures(veins, EdgeCategory.VEIN);
         
         // Recalculate pressure for updated graph.
         calcPressures(G);
@@ -1528,7 +1590,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param level  the graph resolution level
      * @return  the bag of edge midpoint nodes
      */
-    private Bag subdivideGrowthSites(int level) {
+    private Bag subdivideGrowthSites(ResolutionLevel level) {
         Bag midpoints = new Bag();
         Graph g = newGraph();
         
@@ -1568,7 +1630,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
             edge2.setTo(B);
             
             // Set radii for arteriole and venules.
-            if (edge.type == ARTERIOLE || edge.type == VENULE) {
+            if (edge.type == EdgeType.ARTERIOLE || edge.type == EdgeType.VENULE) {
                 edge1.radius = edge.radius;
                 edge2.radius = edge.radius;
             }
@@ -1582,7 +1644,9 @@ public abstract class PatchComponentSitesGraph extends Sites {
             edge2.isPerfused = true;
             
             // For arteries and veins, set midpoint as roots.
-            if (edge.type == ARTERY || edge.type == VEIN) { midpoints.add(edge1); }
+            if (edge.type == EdgeType.ARTERY || edge.type == EdgeType.VEIN) {
+                midpoints.add(edge1);
+            }
         }
         
         G = g;
@@ -1597,7 +1661,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param scale  the graph resolution scaling
      * @return  an offset node
      */
-    SiteNode offsetNode(SiteNode node, int offset, int scale) {
+    SiteNode offsetNode(SiteNode node, EdgeDirection offset, int scale) {
         int[] offsets = getOffset(offset);
         return new SiteNode(
                 node.getX() + offsets[0]*scale,
@@ -1615,7 +1679,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param motif  the motif code
      * @return  the updated bag of active edges
      */
-    private Bag addMotifs(Bag bag, int scale, int level, int motif) {
+    private Bag addMotifs(Bag bag, int scale, ResolutionLevel level, EdgeMotif motif) {
         final int NUM_ZEROS = 50;
         int delta;
         int zeros = 0;
@@ -1635,7 +1699,7 @@ public abstract class PatchComponentSitesGraph extends Sites {
                 SiteNode node = edge.getTo();
                 
                 // Get current direction and add tripod in random direction.
-                int dir = getDirection(edge, scale);
+                EdgeDirection dir = getDirection(edge, scale);
                 addMotif(node, dir, edge.type, newBag, scale, level, edge, motif);
             }
             
@@ -1658,14 +1722,14 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param scale  the graph resolution scaling
      * @param level  the graph resolution level
      */
-    private void addSegments(int scale, int level) {
+    private void addSegments(int scale, ResolutionLevel level) {
         Bag bag = new Bag(G.getAllEdges());
         bag.shuffle(random);
         for (Object obj : bag) {
             SiteEdge edge = (SiteEdge)obj;
-            if (edge.type == ARTERY) {
+            if (edge.type == EdgeType.ARTERY) {
                 SiteNode to = edge.getTo();
-                int dir = getDirection(edge, scale);
+                EdgeDirection dir = getDirection(edge, scale);
                 if (G.getOutDegree(to) == 0) { addSegment(to, dir, scale, level); }
                 else if (G.getInDegree(to) == 1 && G.getOutDegree(to) == 1) { addSegment(to, dir, scale, level);  }
             }
@@ -1678,16 +1742,16 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param scale  the graph resolution scaling
      * @param level  the graph resolution level
      */
-    private void addConnections(int scale, int level) {
+    private void addConnections(int scale, ResolutionLevel level) {
         Bag bag = new Bag(G.getAllEdges());
         bag.shuffle(random);
         for (Object obj : bag) {
             SiteEdge edge = (SiteEdge)obj;
             SiteNode to = edge.getTo();
             
-            int dir = getDirection(edge, scale);
-            int type = edge.type;
-            if (type != VEIN && type != ARTERY) { continue; }
+            EdgeDirection dir = getDirection(edge, scale);
+            EdgeType type = edge.type;
+            if (type != EdgeType.VEIN && type != EdgeType.ARTERY) { continue; }
             
             if (G.getOutDegree(to) == 0 && G.getInDegree(to) == 1) {
                 addConnection(to, dir, type, scale, level);
@@ -1715,14 +1779,14 @@ public abstract class PatchComponentSitesGraph extends Sites {
      * @param level  the graph resolution level
      * @return  the fraction of edges remodeled
      */
-    private double remodelSites(int scale, int level) {
+    private double remodelSites(int scale, ResolutionLevel level) {
         // Remove capillaries, arterioles, and venules.
-        ArrayList<SiteEdge> list = getEdgeByType(G, new int[] { CAPILLARY, VENULE, ARTERIOLE });
+        ArrayList<SiteEdge> list = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY, EdgeType.VENULE, EdgeType.ARTERIOLE });
         for (SiteEdge edge : list) { G.removeEdge(edge); }
         
         // Reset tags.
         Bag allEdges = new Bag(G.getAllEdges());
-        for (Object obj : allEdges) { ((SiteEdge)obj).tag = 0; }
+        for (Object obj : allEdges) { ((SiteEdge)obj).tag = null; }
         double total = allEdges.numObjs;
         
         // Tag edges to be removed or added.
@@ -1735,11 +1799,11 @@ public abstract class PatchComponentSitesGraph extends Sites {
             double rand = random.nextDouble();
             
             if (rand < wD) {
-                if (G.getOutDegree(to) == 0 && G.getInDegree(to) == 0) { edge.tag = TO_REMOVE; count++; }
+                if (G.getOutDegree(to) == 0 && G.getInDegree(to) == 0) { edge.tag = EdgeTag.REMOVE; count++; }
             }
             else if (rand < wG) {
-                if (G.getOutDegree(to) == 0) { edge.tag = TO_ADD; count++; }
-                else if (G.getInDegree(to) == 1 && G.getOutDegree(to) == 1) { edge.tag = TO_ADD; count++; }
+                if (G.getOutDegree(to) == 0) { edge.tag = EdgeTag.ADD; count++; }
+                else if (G.getInDegree(to) == 1 && G.getOutDegree(to) == 1) { edge.tag = EdgeTag.ADD; count++; }
             }
         }
         
@@ -1751,55 +1815,25 @@ public abstract class PatchComponentSitesGraph extends Sites {
         // Add or remove tagged edges.
         for (Object obj : allEdges) {
             SiteEdge edge = (SiteEdge)obj;
-            if (edge.tag == TO_ADD && G.getDegree(edge.getTo()) < 3) {
+            if (edge.tag == EdgeTag.ADD && G.getDegree(edge.getTo()) < 3) {
                 SiteEdge e;
                 Bag bag = new Bag();
-                addMotif(edge.getTo(), getDirection(edge, scale), edge.type, bag, scale, level, edge, TRIPLE);
+                addMotif(edge.getTo(), getDirection(edge, scale), edge.type, bag, scale, level, edge, EdgeMotif.TRIPLE);
                 
                 e = (SiteEdge)bag.get(0);
                 bag.clear();
-                addMotif(e.getTo(), getDirection(edge, scale), edge.type, bag, scale, level, edge, DOUBLE);
+                addMotif(e.getTo(), getDirection(edge, scale), edge.type, bag, scale, level, edge, EdgeMotif.DOUBLE);
                 
                 e = (SiteEdge)bag.get(0);
                 bag.clear();
-                addMotif(e.getTo(), getDirection(edge, scale), edge.type, bag, scale, level, edge, SINGLE);
+                addMotif(e.getTo(), getDirection(edge, scale), edge.type, bag, scale, level, edge, EdgeMotif.SINGLE);
             }
-            else if (edge.tag == TO_REMOVE) { G.removeEdge(edge); }
+            else if (edge.tag == EdgeTag.REMOVE) { G.removeEdge(edge); }
             
-            edge.tag = 0;
+            edge.tag = null;
             edge.radius = 0;
         }
         
         return count/total;
-    }
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The JSON is formatted as:
-     * <pre>
-     *     {
-     *         "type": "SITE",
-     *         "class": "graph",
-     *         "specs" : {
-     *             "SPEC_NAME": spec value,
-     *             "SPEC_NAME": spec value,
-     *             ...
-     *         }
-     *     }
-     * </pre>
-     */
-    public String toJSON() {
-        String format = "{ " + "\"type\": \"SITE\", " + "\"class\": \"graph\", " + "\"specs\": %s " + "}";
-        return String.format(format, specs.toJSON());
-    }
-    
-    public String toString() {
-        String[] labels = new String[] { "LEFT", "TOP", "RIGHT", "BOTTOM" };
-        String sites = "";
-        for (int i = 0; i < 4; i++) {
-            if (!siteSetup[i].equals("")) { sites +=  " [" + labels[i] + " = " + siteSetup[i] + "]"; }
-        }
-        return String.format("GRAPH SITES (%s)%s", siteLayout, sites);
     }
 }
