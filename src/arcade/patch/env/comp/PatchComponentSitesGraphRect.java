@@ -126,7 +126,7 @@ public class PatchComponentSitesGraphRect extends PatchComponentSitesGraph {
     
     @Override
     int[] getOffset(EdgeDirection offset) { return OFFSETS.get(offset); }
-        
+    
     @Override
     Graph newGraph() { return new Graph(latticeLength + 1, latticeWidth + 1); }
     
@@ -228,7 +228,7 @@ public class PatchComponentSitesGraphRect extends PatchComponentSitesGraph {
                 }
             }
         }
-            
+        
         // Add all edges within bounds to graph.
         for (int[] e : edges) {
             if (checkNode(e[0], e[1], e[2]) && checkNode(e[3], e[4], e[5])) {

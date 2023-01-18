@@ -1,29 +1,31 @@
 package arcade.patch.env.comp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import ec.util.MersenneTwisterFast;
 import sim.engine.SimState;
 import sim.util.Bag;
-import arcade.core.sim.Simulation;
-import arcade.core.env.loc.Location;
+import ec.util.MersenneTwisterFast;
+import arcade.core.sim.Series;
 import arcade.core.util.Graph;
-import arcade.core.util.Graph.*;
+import arcade.core.util.Graph.Node;
+import arcade.core.util.Graph.Edge;
+import arcade.core.util.MiniBox;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Function;
-import arcade.core.util.MiniBox;
-import static arcade.env.comp.GraphSitesUtilities.*;
+import arcade.core.util.Utilities;
+import static arcade.patch.env.comp.PatchComponentSitesGraphUtilities.*;
 
 /**
- * Extension of {@link arcade.env.comp.Sites} for graph sites.
+ * Extension of {@link PatchComponentSites} for graph sites.
  * <p>
  * Graph can be initialized in two ways ({@code GRAPH_LAYOUT}):
  * <ul>
  *     <li>root layout grown from a specified root system using motifs</li>
  *     <li>pattern layout that matches the structure used by
- *     {@link arcade.env.comp.PatternSites}</li>
+ *     {@link PatchComponentSitesPattern}</li>
  * </ul>
  * <p>
  * Roots are specified for the left (-x direction, {@code ROOTS_LEFT}), right
@@ -47,31 +49,34 @@ import static arcade.env.comp.GraphSitesUtilities.*;
  */
 
 public abstract class PatchComponentSitesGraph extends PatchComponentSites {
-    enum Direction {
-    /** Code for upstream calculation */
-        UPSTREAM,
+    /** Tolerance for difference in internal and external concentrations */
+    private static final double DELTA_TOLERANCE = 1E-8;
     
-    /** Code for downstream direction */
+    enum Direction {
+        /** Code for upstream calculation. */
+        UPSTREAM,
+        
+        /** Code for downstream direction. */
         DOWNSTREAM
     }
     
     /** Edge types. */
     enum EdgeType {
-    /** Code for arteriole edge type */
+        /** Code for arteriole edge type. */
         ARTERIOLE(EdgeCategory.ARTERY),
-    
-    /** Code for artery edge type */
+        
+        /** Code for artery edge type. */
         ARTERY(EdgeCategory.ARTERY),
-    
-    /** Code for capillary edge type */
+        
+        /** Code for capillary edge type. */
         CAPILLARY(EdgeCategory.CAPILLARY),
-    
-    /** Code for vein edge type */
+        
+        /** Code for vein edge type. */
         VEIN(EdgeCategory.VEIN),
-    
-    /** Code for venule edge type */
+        
+        /** Code for venule edge type. */
         VENULE(EdgeCategory.VEIN);
-    
+        
         final EdgeCategory category;
                 
         EdgeType(EdgeCategory category) {
@@ -94,53 +99,53 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     }
     
     enum RadiusCalculation {
-    /** Code for upstream radius calculation for all edge types */
+        /** Code for upstream radius calculation for all edge types. */
         UPSTREAM_ALL,
-    
-    /** Code for upstream radius calculation for arteries only */
+        
+        /** Code for upstream radius calculation for arteries only. */
         UPSTREAM_ARTERIES,
-    
-    /** Code for downstream radius calculation for veins only */
+        
+        /** Code for downstream radius calculation for veins only. */
         DOWNSTREAM_VEINS,
-    
-    /** Code for upstream radius calculation for pattern layout */
+        
+        /** Code for upstream radius calculation for pattern layout. */
         UPSTREAM_PATTERN,
-    
-    /** Code for downstream radius calculation for pattern layout */
+        
+        /** Code for downstream radius calculation for pattern layout. */
         DOWNSTREAM_PATTERN,
     } 
-     
-    enum EdgeTag {
-    /** Tag for edge addition in iterative remodeling */
-        ADD,
     
-    /** Tag for edge removal in iterative remodeling */
+    enum EdgeTag {
+        /** Tag for edge addition in iterative remodeling. */
+        ADD,
+        
+        /** Tag for edge removal in iterative remodeling. */
         REMOVE,
     }
     
     enum EdgeMotif {
-    /** Code for triple edge motif */
+        /** Code for triple edge motif. */
         TRIPLE,
-    
-    /** Code for double edge motif */
+        
+        /** Code for double edge motif. */
         DOUBLE,
-    
-    /** Code for single edge motif */
+        
+        /** Code for single edge motif. */
         SINGLE,
     }
     
     /** Resolution levels. */
     enum ResolutionLevel {
         VARIABLE(0),
-    
-    /** Code for level 1 resolution */
+        
+        /** Code for level 1 resolution */
         LEVEL_1(4),
-    
-    /** Code for level 2 resolution */
+        
+        /** Code for level 2 resolution */
         LEVEL_2(2);
-    
+        
         final int scale;
-
+        
         ResolutionLevel(int scale) {
             this.scale = scale;
         }
@@ -173,35 +178,26 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /** Maximum fraction of wall thickness to radius */
     static final double MAX_WALL_RADIUS_FRACTION = 0.5;
     
-    /** Viscosity of plasmat (in mmHg s) */
+    /** Viscosity of plasma (in mmHg s) */
     static final double PLASMA_VISCOSITY = 0.000009;
     
     /** Maximum oxygen partial pressure (in mmHg) */
     private static final double MAX_OXYGEN_PARTIAL_PRESSURE = 100;
     
     /** Solubility of oxygen in tissue */
-    private double oxySoluTissue;
+    private final double oxySoluTissue;
     
     /** Solubility of oxygen in plasma */
-    private double oxySoluPlasma;
+    private final double oxySoluPlasma;
     
-    /** Number of molecules */
-    int NUM_MOLECULES;
-    
-    /** Random number generator for the simulation */
-    MersenneTwisterFast random;
-    
-    /** Center location of the simulation */
-    Location location;
-    
-    /** Volume of a lattice site */
-    double volume;
-    
-    /** Height of a lattice site */
-    double height;
+    /** Random number generator instance. */
+    final MersenneTwisterFast random;
     
     /** Graph representing the sites */
     Graph G;
+    
+    /** Array holding locations of patterns. */
+    protected final boolean[][][] graphs;
     
     /** Graph layout type */
     private String siteLayout;
@@ -250,6 +246,9 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /** Lattice spacing in z plane. */
     final double dz;
     
+    /** Lattice site volume. */
+    final double volume;
+    
     /**
      * Creates a {@link PatchComponentSites} using graph sites.
      * <p>
@@ -272,6 +271,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         // Get graph site parameters.
         dxy = parameters.getDouble("sites_graph/STEP_SIZE_XY");
         dz = parameters.getDouble("sites_graph/STEP_SIZE_Z");
+        volume = parameters.getDouble("sites_graph/LATTICE_SITE_VOLUME");
         siteLayout = parameters.get("sites_graph/GRAPH_LAYOUT");
         siteSetup = new String[] {
                 parameters.get("sites_graph/ROOTS_LEFT"),
@@ -279,8 +279,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 parameters.get("sites_graph/ROOTS_RIGHT"),
                 parameters.get("sites_graph/ROOTS_BOTTOM"),
         };
+        oxySoluPlasma = parameters.getDouble("sites_graph/OXYGEN_SOLUBILITY_PLASMA");
+        oxySoluTissue = parameters.getDouble("sites_graph/OXYGEN_SOLUBILITY_TISSUE");
         
         this.random = random;
+        graphs = new boolean[latticeHeight][latticeLength][latticeWidth];
         initializeGraph();
     }
     
@@ -290,13 +293,6 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * @return  the graph object
      */
     public Graph getGraph() { return G; }
-    
-    /**
-     * Sets the {@link arcade.core.util.Graph} representing the sites.
-     * 
-     * @param graph  the graph object
-     */
-    public void setGraph(Graph graph) { this.G = graph; updateSpans(); }
     
     /**
      * Creates a new {@link arcade.core.util.Graph} to represent sites.
@@ -455,21 +451,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * After the graph is defined, the corresponding indices in the lattice
      * adjacent to edges are marked as sites.
      */
-    public void makeSites(Simulation sim) {
-        // Set random number generator and copy of location. Set volume, height,
-        // and length of lattice.
-        random = ((SimState)sim).random;
-        location = sim.getRepresentation().getCenterLocation();
-        volume = location.getVolume()/location.getMax();
-        height = location.getHeight();
-        
-        // Set parameter values.
-        oxySoluTissue = sim.getSeries().getParam("OXY_SOLU_TISSUE");
-        oxySoluPlasma = sim.getSeries().getParam("OXY_SOLU_PLASMA");
-        
-        // Set number of molecules.
-        NUM_MOLECULES = sim.getMolecules().size();
-        
+    public void initializeGraph() {
         // Calculate edge lengths.
         calcLengths();
         
@@ -486,7 +468,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 int iter = 0;
                 while (G.getAllEdges().numObjs == 0 && iter < MAX_ITER) {
                     G = newGraph();
-                    makeGrowthSites();
+                    makeRootSites();
                     iter++;
                 }
                 updateSpans();
@@ -502,26 +484,33 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * Edges that are not perfused are not included.
      */
     private void updateSpans() {
-        for (int k = 0; k < DEPTH; k ++) {
-            for (int i = 0; i < LENGTH; i++) {
-                for (int j = 0; j < WIDTH; j++) { sites[k][i][j] = 0; }
+        for (int k = 0; k < latticeHeight; k ++) {
+            for (int i = 0; i < latticeLength; i++) {
+                for (int j = 0; j < latticeWidth; j++) {
+                    graphs[k][i][j] = false;
+                }
             }
         }
         
         for (Object obj : G.getAllEdges()) {
             SiteEdge edge = (SiteEdge)obj;
-            edge.fraction = new double[NUM_MOLECULES];
-            edge.transport = new double[NUM_MOLECULES];
             edge.span = getSpan(edge.getFrom(), edge.getTo());
+            edge.transport.putIfAbsent("GLUCOSE", 0.);
+            edge.transport.putIfAbsent("OXYGEN", 0.);
             if (edge.isPerfused) {
                 for (int[] coords : edge.span) {
                     int i = coords[0];
                     int j = coords[1];
                     int k = coords[2];
-                    sites[k][i][j]++;
+                    graphs[k][i][j] = true;
                 }
             }
         }
+    }
+    
+    @Override
+    public void step(SimState state) {
+        complexStep();
     }
     
     /**
@@ -536,14 +525,16 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         Bag allEdges = new Bag(G.getAllEdges());
         
         // Iterate through each molecule.
-        for (Site site : siteList) {
-            GraphSite s = (GraphSite)site;
+        for (SiteLayer layer : layers) {
+            double[][][] delta = layer.delta;
+            double[][][] previous = layer.previous;
+            double concentration = layer.concentration;
             
             // Clear lattice values.
-            for (int k = 0; k < DEPTH; k++) {
-                for (int i = 0; i < LENGTH; i++) {
-                    for (int j = 0; j < WIDTH; j++) {
-                        s.delta[k][i][j] = 0;
+            for (int k = 0; k < latticeHeight; k++) {
+                for (int i = 0; i < latticeLength; i++) {
+                    for (int j = 0; j < latticeWidth; j++) {
+                        delta[k][i][j] = 0;
                     }
                 }
             }
@@ -557,7 +548,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     int j = coords[1];
                     int k = coords[2];
                     
-                    s.delta[k][i][j] = (s.conc - s.prev[k][i][j]);
+                    delta[k][i][j] = Math.max((concentration - previous[k][i][j]), 0);
                 }
             }
         }
@@ -580,12 +571,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
             if (edge.getFrom().isRoot && !edge.isIgnored) { isConnected = true; break; }
         }
         if (!isConnected) {
-            for (Site site : siteList) {
-                GraphSite s = (GraphSite) site;
-                for (int k = 0; k < DEPTH; k++) {
-                    for (int i = 0; i < LENGTH; i++) {
-                        for (int j = 0; j < WIDTH; j++) {
-                            s.delta[k][i][j] = 0;
+            for (SiteLayer layer : layers) {
+                for (int k = 0; k < latticeHeight; k++) {
+                    for (int i = 0; i < latticeLength; i++) {
+                        for (int j = 0; j < latticeWidth; j++) {
+                            layer.delta[k][i][j] = 0;
                         }
                     }
                 }
@@ -594,15 +584,19 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
         
         // Iterate through each molecule.
-        for (Site site : siteList) {
-            GraphSite s = (GraphSite)site;
-            stepGraph(s.code);
+        for (SiteLayer layer : layers) {
+            double[][][] delta = layer.delta;
+            double[][][] current = layer.current;
+            double concentration = layer.concentration;
+            double permeability = layer.permeability;
+            
+            stepGraph(layer.name);
             
             // Clear lattice values.
-            for (int k = 0; k < DEPTH; k++) {
-                for (int i = 0; i < LENGTH; i++) {
-                    for (int j = 0; j < WIDTH; j++) {
-                        s.delta[k][i][j] = 0;
+            for (int k = 0; k < latticeHeight; k++) {
+                for (int i = 0; i < latticeLength; i++) {
+                    for (int j = 0; j < latticeWidth; j++) {
+                        delta[k][i][j] = 0;
                     }
                 }
             }
@@ -615,7 +609,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 if (edge.isIgnored) { continue; }
                 SiteNode from = edge.getFrom();
                 SiteNode to = edge.getTo();
-                edge.transport[s.code] = 0;
+                edge.transport.put(layer.name, 0.0);
                 
                 double extConc, intConc, dmdt, intConcNew, extConcNew;
                 
@@ -625,7 +619,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     int i = coords[0];
                     int j = coords[1];
                     int k = coords[2];
-                    extConc += s.curr[k][i][j] + s.delta[k][i][j];
+                    extConc += current[k][i][j] + delta[k][i][j];
                 }
                 extConc /= edge.span.size();
                 
@@ -633,29 +627,26 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 // Here we multiply by (1 um) and then redivide by the actual
                 // thickness of the edge.
                 double flow = edge.flow/60; // um^3/sec
-                double PA = edge.area*s.perm/edge.wall; // um^3/sec
+                double PA = edge.area*permeability/edge.wall; // um^3/sec
                 
                 // Skip if flow is less than a certain speed.
                 if (flow < MIN_FLOW) { continue; }
                 
-                switch (s.code) {
-                    case Simulation.MOL_OXYGEN:
-                        extConc = oxySoluTissue*extConc; // mmHg -> fmol/um^3
-                        intConc = oxySoluPlasma*(from.oxygen + to.oxygen) / 2; // mmHg -> fmol/um^3
-                        intConcNew = intConc;
-                        extConcNew = extConc;
-                        break;
-                    default:
-                        intConc = edge.fraction[s.code]*s.conc; // fmol/um^3
-                        intConcNew = intConc; // fmol/um^3
-                        extConcNew = extConc; // fmol/um^3
-                        break;
+                if (layer.name.equalsIgnoreCase("OXYGEN")) {
+                    extConc = oxySoluTissue * extConc; // mmHg -> fmol/um^3
+                    intConc = oxySoluPlasma * (from.oxygen + to.oxygen) / 2; // mmHg -> fmol/um^3
+                    intConcNew = intConc;
+                    extConcNew = extConc;
+                } else {
+                    intConc = edge.fraction.get(layer.name) * concentration; // fmol/um^3
+                    intConcNew = intConc; // fmol/um^3
+                    extConcNew = extConc; // fmol/um^3
                 }
                 
                 if (Math.abs(intConc - extConc) > DELTA_TOLERANCE) {
                     // Check for stability.
                     double max = volume/edge.area;
-                    if (s.perm > max) {
+                    if (permeability > max) {
                         intConcNew = (intConcNew*flow + volume*extConcNew)/(flow + volume);
                         extConcNew = intConcNew;
                     } else {
@@ -673,54 +664,22 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                         int j = coords[1];
                         int k = coords[2];
                         
-                        switch (s.code) {
-                            case Simulation.MOL_OXYGEN:
-                                s.delta[k][i][j] += (extConcNew/oxySoluTissue - (s.curr[k][i][j] + s.delta[k][i][j]));
-                                break;
-                            default:
-                                s.delta[k][i][j] += (extConcNew - (s.curr[k][i][j] + s.delta[k][i][j]));
-                                break;
+                        if (layer.name.equalsIgnoreCase("OXYGEN")) {
+                            delta[k][i][j] += Math.max((extConcNew / oxySoluTissue - (current[k][i][j] + delta[k][i][j])), 0);
+                        } else {
+                            delta[k][i][j] += Math.max((extConcNew - (current[k][i][j] + delta[k][i][j])), 0);
                         }
                     }
                     
                     // Set transport of edge (for graph step).
-                    switch (s.code) {
-                        case Simulation.MOL_OXYGEN:
-                            edge.transport[s.code] = (intConc - intConcNew)*edge.flow;
-                            break;
-                        default:
-                            edge.transport[s.code] = (intConc - intConcNew)/s.conc;
-                            break;
+                    if (layer.name.equalsIgnoreCase("OXYGEN")) {
+                        edge.transport.put(layer.name, (intConc - intConcNew) * edge.flow);
+                    } else {
+                        edge.transport.put(layer.name,  (intConc - intConcNew) / concentration);
                     }
                 }
             }
         }
-    }
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Graph sites do not use this method to model damage.
-     * Instead, use the {@link arcade.env.comp.DegradeComponent} and/or the
-     * {@link arcade.env.comp.RemodelComponent} to introduce degradation and
-     * remodeling.
-     */
-    public void updateComponent(Simulation sim, Location oldLoc, Location newLoc) { }
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * For each molecule, the following parameters are required:
-     * <ul>
-     *     <li>{@code CONCENTRATION} = source concentration of molecule</li>
-     *     <li>{@code PERMEABILITY} = permeability of molecule</li>
-     * </ul>
-     */
-    public void equip(MiniBox molecule, double[][][] delta, double[][][] current, double[][][] previous) {
-        int code = molecule.getInt("code");
-        double conc = molecule.getDouble("CONCENTRATION");
-        double perm = molecule.getDouble("PERMEABILITY");
-        siteList.add(new GraphSite(code, delta, current, previous, conc, perm));
     }
     
     /**
@@ -732,36 +691,8 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * @param z  the coordinate in the z direction
      */
     void checkSite(ArrayList<int[]> s, int x, int y, int z) {
-        if (x >= 0 && x < LENGTH && y >= 0 && y < WIDTH) { s.add(new int[] { x, y, z }); }
-    }
-    
-    /**
-     * Extension of {@link arcade.env.comp.Site} for {@link arcade.env.comp.GraphSites}.
-     * <p>
-     * Adds a field for source concentration and permeability.
-     */
-    private class GraphSite extends Site {
-        /** Concentration of molecule */
-        private final double conc;
-        
-        /** Permeability of molecule */
-        private final double perm;
-        
-        /**
-         * Creates a {@code GraphSite} for the given molecule.
-         *
-         * @param code  the molecule code
-         * @param delta  the array holding change in concentration
-         * @param current  the array holding current concentrations for current tick
-         * @param previous  the array holding previous concentrations for previous tick
-         * @param conc  the source concentration of the molecule
-         * @param perm  the permeability of the molecule
-         */
-        private GraphSite(int code, double[][][] delta, double[][][] current, double[][][] previous,
-                double conc, double perm) {
-            super(code, delta, current, previous);
-            this.conc = conc;
-            this.perm = perm;
+        if (x >= 0 && x < latticeLength && y >= 0 && y < latticeWidth) {
+            s.add(new int[] { x, y, z });
         }
     }
     
@@ -774,23 +705,23 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         /** Node ID */
         int id;
         
-        /** {@code true} if the node is a root, {@code false} otherwise */
+        /** {@code true} if the node is a root, {@code false} otherwise. */
         public boolean isRoot;
         
-        /** Pressure of the node */
+        /** Pressure of the node. */
         public double pressure;
         
-        /** Oxygen partial pressure of the node */
+        /** Oxygen partial pressure of the node. */
         public double oxygen;
         
-        /** Distance for Dijkstra's algorithm */
-        public int distance;
+        /** Distance for Dijkstra's algorithm. */
+        int distance;
         
-        /** Parent node */
+        /** Parent node. */
         SiteNode prev;
         
         /**
-         * Creates a {@link arcade.core.util.Graph.Node} for graph sites.
+         * Creates a {@link Node} for graph sites.
          *
          * @param x  the x coordinate
          * @param y  the y coordinate
@@ -798,27 +729,13 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          */
         SiteNode(int x, int y, int z) {
             super(x, y, z);
-            id = -1;
             pressure = 0;
             isRoot = false;
-            oxygen = -1;
         }
         
-        public Node duplicate() { return new SiteNode(x, y, z); }
-        
-        /**
-         * Represents object as a JSON entry.
-         * <p>
-         * The JSON is formatted as:
-         * <pre>
-         *     [ x, y, z, pressure, oxygen ]
-         * </pre>
-         * 
-         * @return  the JSON string
-         */
-        public String toJSON() {
-            return String.format("[%d,%d,%d,%.3f,%.3f]",
-                    x, y, z, pressure, oxygen);
+        @Override
+        public Node duplicate() {
+            return new SiteNode(x, y, z);
         }
     }
     
@@ -833,7 +750,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         /** List of lattice coordinates spanned by edge */
         ArrayList<int[]> span;
         
-        /** {@code true} if edge as been visited, {@code false} otherwise */
+        /** {@code true} if edge as been visited, {@code false} otherwise. */
         public boolean isVisited;
         
         /** {@code true} if edge is perfused {@code false} otherwise */
@@ -842,14 +759,17 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         /** {@code true} if edge is ignored during traversal, {@code false} otherwise */
         public boolean isIgnored;
         
-        /** Edge type */
-        public final int type;
+        /** Edge type. */
+        public final EdgeType type;
         
-        /** Edge resolution */
-        public final int level;
+        /** Edge resolution level. */
+        public final ResolutionLevel level;
         
         /** Edge tag for iterative remodeling */
-        int tag;
+        EdgeTag tag;
+        
+        /** Scaling of edge. */
+        public int scale;
         
         /** Internal radius (in um) */
         public double radius;
@@ -876,46 +796,48 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         double shearScaled;
         
         /** Concentration fraction in edge */
-        double[] fraction;
+        public HashMap<String, Double> fraction;
         
         /** Concentration fraction transported out */
-        double[] transport;
+        public HashMap<String, Double> transport;
         
         /**
-         * Creates a {@link arcade.core.util.Graph.Edge} for graph sites.
+         * Creates a {@link Edge} for graph sites.
          *
          * @param from  the node the edge is from
          * @param to  the node the edge is to
          * @param type  the edge type
          * @param level  the graph resolution level
          */
-        SiteEdge(Node from, Node to, int type, int level) {
+        SiteEdge(Node from, Node to, EdgeType type, ResolutionLevel level) {
             super(from, to);
             this.type = type;
             this.level = level;
+            this.scale = level.scale;
             isVisited = false;
             isPerfused = false;
             isIgnored = false;
+            fraction = new HashMap<>();
+            transport = new HashMap<>();
         }
         
-        public SiteNode getFrom() { return (SiteNode)from; }
-        public SiteNode getTo() { return (SiteNode)to; }
-        
-        /**
-         * Represents object as a JSON entry.
-         * <p>
-         * The JSON is formatted as:
-         * <pre>
-         *     [ type, vessel radius, vessel length, wall thickness,
-         *     shear stress, circumferential stress, flow rate ]
-         * </pre>
-         *
-         * @return  the JSON string
-         */
-        public String toJSON() {
-            return String.format("[%d,%.3f,%.3f,%.3f,%.6f,%.3f,%.1f]",
-                    type, radius, length, wall, shear, circum, flow);
+        SiteEdge(Node from, Node to, EdgeType type, int scale) {
+            super(from, to);
+            this.type = type;
+            this.level = ResolutionLevel.VARIABLE;
+            this.scale = scale;
+            isVisited = false;
+            isPerfused = false;
+            isIgnored = false;
+            fraction = new HashMap<>();
+            transport = new HashMap<>();
         }
+        
+        @Override
+        public SiteNode getFrom() { return (SiteNode) from; }
+        
+        @Override
+        public SiteNode getTo() { return (SiteNode) to; }
     }
     
     /**
@@ -929,16 +851,16 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         SiteEdge edge;
         
         /** Root type */
-        final int type;
+        final EdgeType type;
         
         /** Root direction */
-        final int dir;
+        final EdgeDirection dir;
         
         /** List of offsets for line roots, null otherwise */
-        final int[] offsets;
+        final EdgeDirection[] offsets;
         
         /**
-         * Creates a {@code Root} object for {@link arcade.env.comp.GraphSites} with a root layout.
+         * Creates a {@code Root} object for {@link PatchComponentSitesGraph} with a root layout.
          *
          * @param x  the x coordinate
          * @param y  the y coordinate
@@ -946,7 +868,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          * @param dir  the direction code of the root
          * @param offsets  the list of offsets for line roots, null otherwise
          */
-        Root(int x, int y, int type, int dir, int[] offsets) {
+        Root(int x, int y, EdgeType type, EdgeDirection dir, EdgeDirection[] offsets) {
             node = new SiteNode(x, y, 0);
             this.type = type;
             this.dir = dir;
@@ -959,7 +881,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * 
      * @param code  the molecule code
      */
-    private void stepGraph(int code) {
+    private void stepGraph(String code) {
         ArrayList<SiteNode> inlets = new ArrayList<>();
         
         // Reset calculations in all edges and get list of inlets.
@@ -967,14 +889,12 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
             SiteEdge edge = (SiteEdge)obj;
             SiteNode from = edge.getFrom();
             
-            switch (code) {
-                case Simulation.MOL_OXYGEN:
-                    from.oxygen = (Double.isNaN(from.oxygen) ? Double.NaN : -1);
-                    break;
-                default:
-                    edge.isVisited = edge.isIgnored;
-                    edge.fraction[code] = -1;
-                    break;
+            if (code.equalsIgnoreCase("OXYGEN")) {
+                from.oxygen = (Double.isNaN(from.oxygen) ? Double.NaN : -1.0);
+            } else {
+                edge.isVisited = edge.isIgnored;
+                edge.fraction.put(code, -1.0);
+                
             }
             
             if (from.isRoot && !edge.isIgnored) { inlets.add(from); }
@@ -993,16 +913,13 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     SiteNode from = edge.getFrom();
                     SiteNode to = edge.getTo();
                     
-                    switch (code) {
-                        case Simulation.MOL_OXYGEN:
-                            from.oxygen = getPartial(edge);
-                            nextList = traverseNode(to, code);
-                            break;
-                        default:
-                            edge.isVisited = true;
-                            edge.fraction[code] = 1;
-                            nextList = traverseEdge(to, code);
-                            break;
+                    if (code.equalsIgnoreCase("OXYGEN")) {
+                        from.oxygen = getPartial(edge);
+                        nextList = traverseNode(to, code);
+                    } else {
+                        edge.isVisited = true;
+                        edge.fraction.put(code, 1.0);
+                        nextList = traverseEdge(to, code);
                     }
                     currSet.addAll(nextList);
                 }
@@ -1019,13 +936,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         while (currSize > 0) {
             nextSet = new LinkedHashSet<>();
             for (SiteNode node : currSet) {
-                switch (code) {
-                    case Simulation.MOL_OXYGEN:
-                        nextList = traverseNode(node, code);
-                        break;
-                    default:
-                        nextList = traverseEdge(node, code);
-                        break;
+                if (code.equalsIgnoreCase("OXYGEN")) {
+                    nextList = traverseNode(node, code);
+                } else {
+                    nextList = traverseEdge(node, code);
                 }
                 nextSet.addAll(nextList);
             }
@@ -1062,7 +976,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * @param code  the molecule code
      * @return  a list of children nodes to traverse
      */
-    private ArrayList<SiteNode> traverseEdge(SiteNode node, int code) {
+    private ArrayList<SiteNode> traverseEdge(SiteNode node, String code) {
         ArrayList<SiteNode> children = new ArrayList<>();
         Bag out = G.getEdgesOut(node);
         Bag in = G.getEdgesIn(node);
@@ -1083,7 +997,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         for (Object obj : in) {
             SiteEdge edge = (SiteEdge)obj;
             if (!edge.isIgnored) {
-                mass += (edge.fraction[code] - edge.transport[code])*edge.flow;
+                mass += (edge.fraction.get(code) - edge.transport.get(code))*edge.flow;
             }
         }
         
@@ -1107,7 +1021,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
             // Assign new fractions.
             for (Object obj : out) {
                 SiteEdge edge = (SiteEdge)obj;
-                edge.fraction[code] = Math.min(mass/flowOut, 1);
+                edge.fraction.put(code, Math.min(mass/flowOut, 1));
                 edge.isVisited = true;
                 children.add(edge.getTo());
             }
@@ -1123,7 +1037,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * @param code  the molecule code
      * @return  a list of children nodes to traverse
      */
-    private ArrayList<SiteNode> traverseNode(SiteNode node, int code) {
+    private ArrayList<SiteNode> traverseNode(SiteNode node, String code) {
         ArrayList<SiteNode> children = new ArrayList<>();
         Bag out = G.getEdgesOut(node);
         Bag in = G.getEdgesIn(node);
@@ -1142,7 +1056,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         for (Object obj : in) {
             SiteEdge edge = (SiteEdge)obj;
             if (!edge.isIgnored) {
-                massIn += edge.flow*getTotal(edge.getFrom().oxygen, oxySoluPlasma) - edge.transport[code];
+                massIn += edge.flow*getTotal(edge.getFrom().oxygen, oxySoluPlasma) - edge.transport.get(code);
             }
         }
         

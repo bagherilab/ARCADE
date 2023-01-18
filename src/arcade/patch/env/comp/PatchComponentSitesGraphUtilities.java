@@ -1,17 +1,28 @@
 package arcade.patch.env.comp;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import sim.util.Bag;
-import arcade.core.util.Solver;
 import arcade.core.util.Graph;
-import arcade.util.Matrix;
-import static arcade.env.comp.GraphSites.*;
-import static arcade.core.util.Graph.*;
+import arcade.core.util.Matrix;
+import arcade.core.util.Solver;
+import static arcade.core.util.Graph.Edge;
+import static arcade.core.util.Graph.EdgeNode;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.EdgeType;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.EdgeCategory;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.RadiusCalculation;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.ResolutionLevel;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.Direction;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.Root;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteEdge;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteNode;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.CAP_RADIUS_MIN;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.PLASMA_VISCOSITY;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.CAP_RADIUS;
 
 /**
- * Container class for utility functions used by {@link arcade.env.comp.GraphSites}.
+ * Container class for utility functions used by {@link PatchComponentSitesGraph}.
  */
 
 abstract class PatchComponentSitesGraphUtilities {
@@ -984,7 +995,7 @@ abstract class PatchComponentSitesGraphUtilities {
     
     /**
      * Gets list of edges of the given types(s).
-     * 
+     *
      * @param G  the graph object
      * @param types  the list of edge types
      * @return  a list of edges

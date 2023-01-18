@@ -128,7 +128,7 @@ public class PatchComponentSitesGraphTri extends PatchComponentSitesGraph {
     
     @Override
     int[] getOffset(EdgeDirection offset) { return OFFSETS.get(offset); }
-        
+    
     @Override
     Graph newGraph() { return new Graph(latticeLength + 2, latticeWidth + 1); }
     
@@ -141,7 +141,7 @@ public class PatchComponentSitesGraphTri extends PatchComponentSitesGraph {
     int calcCol(int i, int offset) {
         return (i + 6 * offset) % 9;
     }
-        
+    
     @Override
     int calcRow(int i, int j, int offset) {
         return (j + (((i + 6 * offset) / 9 & 1) == 0 ? 0 : 3)) % 6;
