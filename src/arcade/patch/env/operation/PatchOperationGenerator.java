@@ -28,12 +28,16 @@ public class PatchOperationGenerator extends PatchOperation {
     /** Maximum concentration. */
     public final double concentration;
     
+    /** Molecule permeability. */
+    public final double permeability;
+    
     /**
      * Creates a generator {@link PatchOperation} for the given lattice.
      * <p>
      * Loaded parameters include:
      * <ul>
-     *     <li>{@code CONCENTRATION} = max concentration</li>
+     *     <li>{@code CONCENTRATION} = maximum concentration</li>
+     *     <li>{@code PERMEABILITY} = molecule permeability</li>
      * </ul>
      *
      * @param lattice  the {@link PatchLattice} the operation is associated with
@@ -44,6 +48,7 @@ public class PatchOperationGenerator extends PatchOperation {
         // Get generator parameters.
         MiniBox parameters = lattice.getParameters();
         concentration = parameters.getDouble("generator/CONCENTRATION");
+        permeability = parameters.getDouble("generator/PERMEABILITY");
         
         // Set lattice field.
         this.latticeCurrent = lattice.getField();

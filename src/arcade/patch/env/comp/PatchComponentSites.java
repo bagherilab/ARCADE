@@ -50,7 +50,10 @@ public abstract class PatchComponentSites implements Component {
     /**
      * Specification of arrays and parameters for {@link PatchComponentSites}.
      */
-    protected class SiteLayer {
+    protected static class SiteLayer {
+        /** Unique name for layer. */
+        final String name;
+        
         /** Array holding current concentration values. */
         final double[][][] current;
 
@@ -63,16 +66,21 @@ public abstract class PatchComponentSites implements Component {
         /** Maximum concentration. */
         final double concentration;
         
+        /** Molecule permeability. */
+        final double permeability;
+        
         /**
          * Creates a {@code SiteLayer} for the given {@link PatchOperationGenerator}.
          *
          * @param generator  the generator operation instance
          */
-        SiteLayer(PatchOperationGenerator generator) {
+        SiteLayer(String name, PatchOperationGenerator generator) {
+            this.name = name;
             delta = generator.latticeDelta;
             previous = generator.latticePrevious;
             current = generator.latticeCurrent;
             concentration = generator.concentration;
+            permeability = generator.permeability;
         }
     }
     
@@ -85,7 +93,7 @@ public abstract class PatchComponentSites implements Component {
     public void register(Simulation sim, String layer) {
         Lattice lattice = sim.getLattice(layer);
         Operation generator = lattice.getOperation(Category.GENERATOR);
-        SiteLayer siteLayer = new SiteLayer((PatchOperationGenerator) generator);
+        SiteLayer siteLayer = new SiteLayer(layer, (PatchOperationGenerator) generator);
         layers.add(siteLayer);
     }
 }
