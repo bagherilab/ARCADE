@@ -1,4 +1,4 @@
-package arcade.patch.agent.module;
+package arcade.patch.agent.process;
 
 import java.util.Arrays;
 import arcade.core.sim.Series;
@@ -6,57 +6,45 @@ import arcade.core.sim.Simulation;
 import arcade.agent.cell.Cell;
 
 /**
- * Extension of {@link arcade.agent.module.PatchModuleMetabolism} for random metabolism.
+ * Extension of {@link arcade.agent.module.PatchModuleMetabolism} for simple metabolism.
  * <p>
- * {@code PatchModuleMetabolismRandom} will uptake a random fraction of glucose and oxygen
- * from the environment.
- * Oxygen is converted to ATP through oxidative phosphorylation and some random
- * fraction of glucose is converted to ATP through glycolysis.
+ * {@code PatchModuleMetabolismSimple} assumes a constant glucose uptake rate and constant
+ * ATP production rate.
+ * Ratio of ATP production that needs to be produced through glycolysis or
+ * oxidative phosphorylation is controlled by the {@code META_PREF} parameter.
  * <p>
- * {@code PatchModuleMetabolismRandom} will increase cell mass (using random fraction of
+ * {@code PatchModuleMetabolismSimple} will increase cell mass (using specified fraction of
  * internal glucose) if cell is dividing and less than double in size.
  */
 
-public class PatchModuleMetabolismRandom extends PatchModuleMetabolism {
-    /** Minimum glucose uptake */
-    private static final double GLUC_UPTAKE_MIN = 0.005;
-    
-    /** Maximum glucose uptake */
-    private static final double GLUC_UPTAKE_MAX = 0.015;
-    
-    /** Minimum oxygen uptake */
-    private static final double OXY_UPTAKE_MIN = 0.2;
-    
-    /** Maximum oxygen update */
-    private static final double OXY_UPTAKE_MAX = 0.5;
-    
-    /** Minimum fraction of glucose used for glycolysis */
-    private static final double GLUC_FRAC_MIN = 0.2;
-    
-    /** Maximum fraction of glucose used for glycolysis */
-    private static final double GLUC_FRAC_MAX = 0.4;
-    
-    /** Range of glucose uptake */
-    private static final double GLUC_UPTAKE_DELTA = GLUC_UPTAKE_MAX - GLUC_UPTAKE_MIN;
-    
-    /** Range of oxygen uptake */
-    private static final double OXY_UPTAKE_DELTA = OXY_UPTAKE_MAX - OXY_UPTAKE_MIN;
-    
-    /** Range of glucose fraction */
-    private static final double GLUC_FRAC_DELTA = GLUC_FRAC_MAX - GLUC_FRAC_MIN;
-    
+public class PatchProcessMetabolismSimple extends PatchProcessMetabolism {
     /** Average cell volume */
     private final double CELL_VOL_AVG;
     
+    /** Constant glucose uptake rate */
+    private final double CONS_GLUC_UPTAKE;
+    
+    /** Constant growth rate */
+    private final double GROWTH_RATE;
+    
+    /** Glucose requirement for glycolysis */
+    private final double GLUC_REQ_GLYC;
+    
+    /** Glucose requirement for oxidative phosphorylation */
+    private final double GLUC_REQ_OXPHOS;
+    
     /**
-     * Creates a random {@link arcade.agent.module.PatchModuleMetabolism} module.
+     * Creates a simple {@link arcade.agent.module.PatchModuleMetabolism} module.
      * <p>
      * Module only has internal glucose.
+     * Metabolic preference ({@code META_PREF}) parameter is drawn from a
+     * {@link arcade.core.util.Parameter} distribution and the distribution is updated
+     * with the new mean.
      *
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    public PatchModuleMetabolismRandom(Cell c, Simulation sim) {
+    public PatchProcessMetabolismSimple(Cell c, Simulation sim) {
         super(c, sim);
         
         // Initial internal concentrations.
@@ -68,9 +56,18 @@ public class PatchModuleMetabolismRandom extends PatchModuleMetabolism {
         intNames[GLUCOSE] = "glucose";
         names = Arrays.asList(intNames);
         
+        // Get metabolic preference from cell.
+        double meta_pref = c.getParams().get("META_PREF").nextDouble();
+        c.getParams().put("META_PREF", c.getParams().get("META_PREF").update(meta_pref));
+        
         // Set parameters.
         Series series = sim.getSeries();
+        double cons_atp_production = series.getParam(pop, "CONS_ATP_PRODUCTION");
         this.CELL_VOL_AVG = series.getParam(pop, "CELL_VOL_AVG");
+        this.CONS_GLUC_UPTAKE = series.getParam(pop, "CONS_GLUC_UPTAKE");
+        this.GROWTH_RATE = CELL_DENSITY*series.getParam(pop, "CONS_GROWTH_RATE");
+        this.GLUC_REQ_GLYC = cons_atp_production*meta_pref/ENERGY_FROM_GLYC;
+        this.GLUC_REQ_OXPHOS = cons_atp_production*(1 - meta_pref)/ENERGY_FROM_OXPHOS/PYRU_PER_GLUC;
     }
     
     public void stepPatchModuleMetabolismModule(Simulation sim) {
@@ -78,14 +75,17 @@ public class PatchModuleMetabolismRandom extends PatchModuleMetabolism {
         double glucExt = extAmts[GLUCOSE]; // [fmol]
         double oxyExt = extAmts[OXYGEN];   // [fmol]
         
-        // Randomly uptake some glucose and oxygen from environment.
-        double glucUptake = glucExt*(sim.getRandom()*GLUC_UPTAKE_DELTA + GLUC_UPTAKE_MIN);
-        double oxyUptake = oxyExt*(sim.getRandom()*OXY_UPTAKE_DELTA + OXY_UPTAKE_MIN);
+        // Calculate glucose uptake rate.
+        double glucGrad = (glucExt/loc.getVolume()) - (glucInt/volume);
+        glucGrad *= glucGrad < 1E-10 ? 0 : 1;
+        double glucUptake = CONS_GLUC_UPTAKE*glucGrad;
         glucInt += glucUptake;
         
-        // Determine energy requirement.
+        // Determine glucose requirement and calculate oxygen required.
         double energyGen = 0;
-        double glucFrac = sim.getRandom()*GLUC_FRAC_DELTA + GLUC_FRAC_MIN;
+        double oxyReq = GLUC_REQ_OXPHOS*PYRU_PER_GLUC*OXY_PER_PYRU;
+        double oxyUptake = Math.min(oxyExt, oxyReq);
+        oxyUptake *= oxyUptake < 1E-10 ? 0 : 1;
         
         // Generate energy from oxidative phosphorylation.
         double oxyUptakeInGluc = oxyUptake/OXY_PER_PYRU/PYRU_PER_GLUC;
@@ -99,9 +99,9 @@ public class PatchModuleMetabolismRandom extends PatchModuleMetabolism {
         }
         
         // Generate energy from glycolysis.
-        if (glucInt > glucFrac) {
-            energyGen += glucFrac*ENERGY_FROM_GLYC;
-            glucInt -= glucFrac;
+        if (glucInt > GLUC_REQ_GLYC) {
+            energyGen += GLUC_REQ_GLYC*ENERGY_FROM_GLYC;
+            glucInt -= GLUC_REQ_GLYC;
         } else {
             energyGen += glucInt*ENERGY_FROM_GLYC;
             glucInt = 0;
@@ -112,13 +112,10 @@ public class PatchModuleMetabolismRandom extends PatchModuleMetabolism {
         energy -= energyCons/volume*CELL_VOL_AVG;
         energy *= Math.abs(energy) < 1E-10 ? 0 : 1;
         
-        // Randomly increase mass if dividing and less than double mass.
-        // Set doubled flag to true once double mass is reached. Cell agent
-        // checks for this switch and will complete proliferation.
-        if (energy >= 0 && prolifOn && mass < 2*critMass) {
-            double growth = glucInt*sim.getRandom();
-            mass += growth/MASS_TO_GLUC;
-            glucInt -= growth;
+        // Increase mass if dividing and less than double mass.
+        if (energy >= 0 && prolifOn && mass < 2*critMass && glucInt > GROWTH_RATE*MASS_TO_GLUC) {
+            mass += GROWTH_RATE;
+            glucInt -= (GROWTH_RATE*MASS_TO_GLUC);
         }
         
         // Update doubled flag.
@@ -134,7 +131,7 @@ public class PatchModuleMetabolismRandom extends PatchModuleMetabolism {
     }
     
     public void updateModule(Module mod, double f) {
-        PatchModuleMetabolismRandom metabolism = (PatchModuleMetabolismRandom)mod;
+        PatchProcessMetabolismSimple metabolism = (PatchProcessMetabolismSimple)mod;
         
         // Update daughter cell metabolism as fraction of parent.
         this.energy = metabolism.energy*f;

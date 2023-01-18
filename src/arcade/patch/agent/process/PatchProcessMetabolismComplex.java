@@ -1,4 +1,4 @@
-package arcade.patch.agent.module;
+package arcade.patch.agent.process;
 
 import java.util.Arrays;
 import arcade.core.sim.Series;
@@ -32,7 +32,7 @@ import arcade.agent.cell.Cell;
  * Internal pyruvate is removed through conversion to lactate.
  */
 
-public class PatchModuleMetabolismComplex extends PatchModuleMetabolism {
+public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
     /** ID for pyruvate */
     private static final int PYRUVATE = 1;
     
@@ -68,7 +68,7 @@ public class PatchModuleMetabolismComplex extends PatchModuleMetabolism {
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    public PatchModuleMetabolismComplex(Cell c, Simulation sim) {
+    public PatchProcessMetabolismComplex(Cell c, Simulation sim) {
         super(c, sim);
         
         // Initial internal concentrations.
@@ -192,7 +192,7 @@ public class PatchModuleMetabolismComplex extends PatchModuleMetabolism {
     }
     
     public void updateModule(Module mod, double f) {
-        PatchModuleMetabolismComplex metabolism = (PatchModuleMetabolismComplex)mod;
+        PatchProcessMetabolismComplex metabolism = (PatchProcessMetabolismComplex)mod;
         
         // Update daughter cell metabolism as fraction of parent.
         this.energy = metabolism.energy*f;

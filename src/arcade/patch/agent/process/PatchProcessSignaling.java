@@ -1,4 +1,4 @@
-package arcade.patch.agent.module;
+package arcade.patch.agent.process;
 
 import java.util.List;
 import arcade.core.sim.Simulation;
@@ -12,7 +12,7 @@ import arcade.core.env.loc.Location;
  * ODEs.
  */
 
-public abstract class PatchModuleSignaling implements Module {
+public abstract class PatchProcessSignaling implements Module {
     /** Molecules in nM */
     static final double MOLEC_TO_NM = 1355.0;
     
@@ -43,7 +43,7 @@ public abstract class PatchModuleSignaling implements Module {
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    PatchModuleSignaling(Cell c, Simulation sim) {
+    PatchProcessSignaling(Cell c, Simulation sim) {
         this.loc = c.getLocation();
         this.c = c;
         this.pop = c.getPop();

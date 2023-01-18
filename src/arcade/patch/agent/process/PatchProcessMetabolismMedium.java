@@ -1,4 +1,4 @@
-package arcade.patch.agent.module;
+package arcade.patch.agent.process;
 
 import java.util.Arrays;
 import arcade.core.sim.Series;
@@ -29,7 +29,7 @@ import arcade.agent.cell.Cell;
  * </ul>
  */
 
-public class PatchModuleMetabolismMedium extends PatchModuleMetabolism {
+public class PatchProcessMetabolismMedium extends PatchProcessMetabolism {
     /** Metabolic preference for glycolysis over oxidative phosphorylation */
     private final double META_PREF;
     
@@ -59,7 +59,7 @@ public class PatchModuleMetabolismMedium extends PatchModuleMetabolism {
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    public PatchModuleMetabolismMedium(Cell c, Simulation sim) {
+    public PatchProcessMetabolismMedium(Cell c, Simulation sim) {
         super(c, sim);
         
         // Initial internal concentrations.
@@ -165,7 +165,7 @@ public class PatchModuleMetabolismMedium extends PatchModuleMetabolism {
     }
     
     public void updateModule(Module mod, double f) {
-        PatchModuleMetabolismMedium metabolism = (PatchModuleMetabolismMedium)mod;
+        PatchProcessMetabolismMedium metabolism = (PatchProcessMetabolismMedium)mod;
         
         // Update daughter cell metabolism as fraction of parent.
         this.energy = metabolism.energy*f;

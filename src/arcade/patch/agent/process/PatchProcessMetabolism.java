@@ -1,4 +1,4 @@
-package arcade.patch.agent.module;
+package arcade.patch.agent.process;
 
 import java.util.List;
 import sim.util.Bag;
@@ -27,7 +27,7 @@ import arcade.core.env.loc.Location;
  * molecules.
  */
 
-public abstract class PatchModuleMetabolism implements Module {
+public abstract class PatchProcessMetabolism implements Module {
     /** ID for glucose */
     static final int GLUCOSE = 0;
     
@@ -122,7 +122,7 @@ public abstract class PatchModuleMetabolism implements Module {
      * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
      * @param sim  the simulation instance
      */
-    PatchModuleMetabolism(Cell c, Simulation sim) {
+    PatchProcessMetabolism(Cell c, Simulation sim) {
         // Set parameters.
         pop = c.getPop();
         Series series = sim.getSeries();
