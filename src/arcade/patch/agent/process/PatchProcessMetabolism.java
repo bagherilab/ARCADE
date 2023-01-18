@@ -2,19 +2,20 @@ package arcade.patch.agent.process;
 
 import java.util.List;
 import sim.util.Bag;
-import arcade.core.sim.Series;
+import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
-import arcade.agent.cell.Cell;
-import arcade.core.env.loc.Location;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.env.grid.PatchGrid;
+import static arcade.patch.util.PatchEnums.Flag;
 
 /** 
- * Implementation of {@link arcade.core.agent.module.Module} for cell metabolism.
+ * Implementation of {@link Process} for cell metabolism.
  * <p>
- * The {@code PatchModuleMetabolism} module:
+ * The {@code PatchProcessMetabolism} process:
  * <ul>
  *     <li>gets available glucose and oxygen from the environment</li>
  *     <li>calculates energy consumption (in ATP) given cell size and state</li>
- *     <li>steps the metabolism module (implemented with different complexities)
+ *     <li>steps the metabolism process (implemented with different complexities)
  *     to determine changes to energy and volume</li>
  *     <li>updates glucose and oxygen environment with consumption</li>
  * </ul>
@@ -27,7 +28,7 @@ import arcade.core.env.loc.Location;
  * molecules.
  */
 
-public abstract class PatchProcessMetabolism implements Module {
+public abstract class PatchProcessMetabolism extends PatchProcess {
     /** ID for glucose */
     static final int GLUCOSE = 0;
     
@@ -64,15 +65,6 @@ public abstract class PatchProcessMetabolism implements Module {
     /** Ratio of glucose to biomass (in fmol glucose/ng biomass) */
     final double MASS_TO_GLUC;
     
-    /** Location of cell */
-    final Location loc;
-    
-    /** Cell the module is associated with */
-    final Cell c;
-    
-    /** Cell population index */
-    final int pop;
-    
     /** List of internal names */
     List<String> names;
     
@@ -87,12 +79,6 @@ public abstract class PatchProcessMetabolism implements Module {
     
     /** Volume fraction */
     protected double f;
-    
-    /** {@code true} if cell is proliferating, {@code false} otherwise */
-    boolean prolifOn;
-    
-    /** {@code true} if cell is migrating, {@code false} otherwise */
-    boolean migraOn;
     
     /** Cell energy [ATP] */
     double energy;
@@ -113,30 +99,27 @@ public abstract class PatchProcessMetabolism implements Module {
     double energyReq;
     
     /**
-     * Creates a {@code PatchModuleMetabolism} module for the given {@link arcade.agent.cell.PatchCell}.
+     * Creates a metabolism {@link PatchProcess} for the given cell.
      * <p>
-     * Module parameters are specific for the cell population.
-     * The module starts with energy at zero and assumes a constant ratio
+     * Process parameters are specific for the cell population.
+     * The process starts with energy at zero and assumes a constant ratio
      * between mass and volume (through density).
-     * 
-     * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
-     * @param sim  the simulation instance
+     *
+     * @param cell  the {@link PatchCell} the process is associated with
      */
-    PatchProcessMetabolism(Cell c, Simulation sim) {
-        // Set parameters.
-        pop = c.getPop();
-        Series series = sim.getSeries();
-        this.BASAL_ENERGY = series.getParam(pop, "BASAL_ENERGY");
-        this.PROLIF_ENERGY = series.getParam(pop, "PROLIF_ENERGY");
-        this.MIGRA_ENERGY = series.getParam(pop, "MIGRA_ENERGY");
-        this.CELL_DENSITY = series.getParam(pop, "CELL_DENSITY");
-        this.MASS_TO_GLUC = series.getParam(pop, "MASS_TO_GLUC");
-        this.OXY_SOLU_TISSUE = series.getParam("OXY_SOLU_TISSUE");
+    PatchProcessMetabolism(PatchCell cell) {
+        super(cell);
         
-        // Initialize module.
-        this.loc = c.getLocation();
-        this.c = c;
-        this.volume = c.getVolume();
+        // Set parameters.
+        this.BASAL_ENERGY = cell.getParameters().getDouble("metabolism/BASAL_ENERGY");
+        this.PROLIF_ENERGY = cell.getParameters().getDouble("metabolism/PROLIF_ENERGY");
+        this.MIGRA_ENERGY = cell.getParameters().getDouble("metabolism/MIGRA_ENERGY");
+        this.CELL_DENSITY = cell.getParameters().getDouble("metabolism/CELL_DENSITY");
+        this.MASS_TO_GLUC = cell.getParameters().getDouble( "metabolism/MASS_TO_GLUC");
+        this.OXY_SOLU_TISSUE = cell.getParameters().getDouble("metabolism/OXY_SOLU_TISSUE");
+        
+        // Initialize process.
+        this.volume = cell.getVolume();
         this.energy = 0;
         this.mass = volume*CELL_DENSITY;
         this.critMass = mass;
@@ -144,19 +127,15 @@ public abstract class PatchProcessMetabolism implements Module {
         // Initialize external and uptake concentration arrays;
         extAmts = new double[2];
         upAmts = new double[2];
-        
-        // Set external concentrations.
-        updateExternal(sim);
     }
     
-    public double getInternal(String key) { return intAmts[names.indexOf(key)]/volume; }
-    
     /**
-     * Steps the metabolism module.
-     * 
+     * Steps the metabolism process.
+     *
+     * @param random  the random number generator
      * @param sim  the simulation instance
      */
-    abstract void stepPatchModuleMetabolismModule(Simulation sim);
+    abstract void stepProcess(MersenneTwisterFast random, Simulation sim);
     
     /**
      * Gets the external amounts of glucose and oxygen.
@@ -166,35 +145,34 @@ public abstract class PatchProcessMetabolism implements Module {
      * @param sim  the simulation instance
      */
     private void updateExternal(Simulation sim) {
-        extAmts[GLUCOSE] = sim.getEnvironment("glucose").getAverageVal(loc)*loc.getVolume();
-        extAmts[OXYGEN] = sim.getEnvironment("oxygen").getAverageVal(loc)*loc.getVolume()*OXY_SOLU_TISSUE;
+        extAmts[GLUCOSE] = sim.getLattice("GLUCOSE").getAverageValue(location) * location.getVolume();
+        extAmts[OXYGEN] = sim.getLattice("OXYGEN").getAverageValue(location) * location.getVolume() * OXY_SOLU_TISSUE;
     }
     
-    public void stepModule(Simulation sim) {
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
         // Calculate fraction of volume occupied by cell.
-        Bag bag = sim.getAgents().getObjectsAtLocation(loc);
-        f = volume/Cell.calcTotalVolume(bag);
-        updateExternal(sim);
+        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
+        double totalVolume = PatchCell.calculateTotalVolume(bag);
+        f = volume / totalVolume;
         
-        // Check types.
-        migraOn = c.getFlag(Cell.IS_MIGRATING);
-        prolifOn = c.getFlag(Cell.IS_PROLIFERATING);
+        updateExternal(sim);
         
         // Calculate energy consumption.
         energyCons = volume*(BASAL_ENERGY +
-            (prolifOn ? PROLIF_ENERGY : 0) +
-            (migraOn ? MIGRA_ENERGY : 0));
+            (cell.flag == Flag.PROLIFERATIVE ? PROLIF_ENERGY : 0) +
+            (cell.flag == Flag.MIGRATORY ? MIGRA_ENERGY : 0));
         energyReq = energyCons - energy;
         
         // Modify energy and volume.
-        stepPatchModuleMetabolismModule(sim);
+        stepProcess(random, sim);
         
         // Update environment.
-        sim.getEnvironment("glucose").updateVal(loc, 1.0 - upAmts[GLUCOSE]/extAmts[GLUCOSE]);
-        sim.getEnvironment("oxygen").updateVal(loc, 1.0 - upAmts[OXYGEN]/extAmts[OXYGEN]);
+        sim.getLattice("GLUCOSE").updateValue(location, 1.0 - upAmts[GLUCOSE] / extAmts[GLUCOSE]);
+        sim.getLattice("OXYGEN").updateValue(location, 1.0 - upAmts[OXYGEN] / extAmts[OXYGEN]);
         
         // Update cell agent.
-        c.setVolume(volume);
-        c.setEnergy(energy);
+        cell.setVolume(volume);
+        cell.setEnergy(energy);
     }
 }

@@ -1,29 +1,30 @@
 package arcade.patch.agent.process;
 
 import java.util.Arrays;
-import arcade.core.sim.Series;
+import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
-import arcade.agent.cell.Cell;
+import arcade.patch.agent.cell.PatchCell;
+import static arcade.patch.util.PatchEnums.Flag;
 
 /** 
- * Extension of {@link arcade.agent.module.PatchModuleMetabolism} for complex metabolism.
+ * Extension of {@link PatchProcessMetabolism} for complex metabolism.
  * <p>
- * {@code PatchModuleMetabolismComplex} explicitly includes pyruvate intermediate between
- * glycolysis and oxidative phosphorylation and glucose uptake is based on cell
- * surface area.
+ * {@code PatchProcessMetabolismComplex} explicitly includes pyruvate intermediate
+ * between glycolysis and oxidative phosphorylation and glucose uptake is based
+ * on cell surface area.
  * Metabolic preference between glycolysis and oxidative phosphorylation is
  * controlled by the {@code META_PREF} parameter.
  * The glycolysis pathway will compensate if there is not enough oxygen to meet
  * energetic requirements through the oxidative phosphorylation pathway given
  * the specified metabolic preference.
  * <p>
- * {@code PatchModuleMetabolismComplex} will increase cell mass (using specified fractions
+ * {@code PatchProcessMetabolismComplex} will increase cell mass (using specified fractions
  * of internal glucose and pyruvate) if:
  * <ul>
  *     <li>cell is dividing and less than double in size</li>
  *     <li>cell is below critical mass for maintenance</li>
  * </ul>
- * {@code PatchModuleMetabolismComplex} will decrease cell mass if:
+ * {@code PatchProcessMetabolismComplex} will decrease cell mass if:
  * <ul>
  *     <li>cell has negative energy levels indicating insufficient nutrients</li>
  *     <li>cell is above critical mass for maintenance</li>
@@ -58,18 +59,14 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
     private final double GLUC_UPTAKE_RATE;
     
     /**
-     * Creates a complex {@link arcade.agent.module.PatchModuleMetabolism} module.
+     * Creates a complex metabolism {@code Process} for the given {@link PatchCell}.
      * <p>
      * Module has internal glucose and pyruvate.
-     * Metabolic preference ({@code META_PREF}) parameter is drawn from a
-     * {@link arcade.core.util.Parameter} distribution and the distribution is updated
-     * with the new mean.
-     * 
-     * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
-     * @param sim  the simulation instance
+     *
+     * @param cell  the {@link PatchCell} the process is associated with
      */
-    public PatchProcessMetabolismComplex(Cell c, Simulation sim) {
-        super(c, sim);
+    public PatchProcessMetabolismComplex(PatchCell cell) {
+        super(cell);
         
         // Initial internal concentrations.
         intAmts = new double[2];
@@ -83,20 +80,20 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
         names = Arrays.asList(intNames);
         
         // Get metabolic preference from cell.
-        this.META_PREF = c.getParams().get("META_PREF").nextDouble();
-        c.getParams().put("META_PREF", c.getParams().get("META_PREF").update(META_PREF));
+        // TODO: pull value from distribution?
+        this.META_PREF = cell.getParameters().getDouble("metabolism/META_PREF");
         
         // Set parameters.
-        Series series = sim.getSeries();
-        this.FRAC_MASS = series.getParam(pop, "FRAC_MASS");
-        this.RATIO_GLUC_TO_PYRU = series.getParam(pop, "RATIO_GLUC_TO_PYRU");
-        this.LACTATE_RATE = series.getParam(pop, "LACTATE_RATE");
-        this.AUTOPHAGY_RATE = series.getParam(pop, "AUTOPHAGY_RATE");
-        this.GLUC_UPTAKE_RATE = series.getParam(pop, "GLUC_UPTAKE_RATE");
-        this.MIN_MASS = this.critMass*series.getParam(c.getPop(), "MIN_MASS_FRAC");
+        this.FRAC_MASS = cell.getParameters().getDouble("metabolism/FRAC_MASS");
+        this.RATIO_GLUC_TO_PYRU = cell.getParameters().getDouble("metabolism/RATIO_GLUC_TO_PYRU");
+        this.LACTATE_RATE = cell.getParameters().getDouble("metabolism/LACTATE_RATE");
+        this.AUTOPHAGY_RATE = cell.getParameters().getDouble("metabolism/AUTOPHAGY_RATE");
+        this.GLUC_UPTAKE_RATE = cell.getParameters().getDouble("metabolism/GLUC_UPTAKE_RATE");
+        this.MIN_MASS = this.critMass * cell.getParameters().getDouble("metabolism/MIN_MASS_FRAC");
     }
     
-    public void stepPatchModuleMetabolismModule(Simulation sim) {
+    @Override
+    void stepProcess(MersenneTwisterFast random, Simulation sim) {
         double glucInt = intAmts[GLUCOSE];  // [fmol]
         double pyruInt = intAmts[PYRUVATE]; // [fmol]
         double glucExt = extAmts[GLUCOSE];  // [fmol]
@@ -105,9 +102,9 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
         // Take up glucose from environment, relative to glucose gradient.
         // If agent shares location with other agents, occupied area for 
         // calculating surface area is limited by the number of neighbors.
-        double area = loc.getArea()*f;
-        double surfaceArea = area*2 + (volume/area)*loc.calcPerimeter(f);
-        double glucGrad = (glucExt/loc.getVolume()) - (glucInt/volume);
+        double area = location.getArea()*f;
+        double surfaceArea = area*2 + (volume/area)*location.getPerimeter(f);
+        double glucGrad = (glucExt/location.getVolume()) - (glucInt/volume);
         glucGrad *= glucGrad < 1E-10 ? 0 : 1;
         double glucUptake = GLUC_UPTAKE_RATE*surfaceArea*glucGrad;
         glucInt += glucUptake;
@@ -162,21 +159,21 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
         
         // Increase mass if (i) dividing and less than double mass or (ii)
         // below critical mass for maintenance.
-        if ((energy >= 0 && prolifOn && mass < 2*critMass) || (energy >= 0 && mass < 0.99*critMass)) {
-            mass += FRAC_MASS*(RATIO_GLUC_TO_PYRU*glucInt + (1 - RATIO_GLUC_TO_PYRU)*pyruInt/PYRU_PER_GLUC)/MASS_TO_GLUC;
+        if ((energy >= 0 && cell.flag == Flag.PROLIFERATIVE && mass < 2 * critMass)
+                || (energy >= 0 && mass < 0.99 * critMass)) {
+            mass += FRAC_MASS*(RATIO_GLUC_TO_PYRU*glucInt
+                    + (1 - RATIO_GLUC_TO_PYRU)*pyruInt/PYRU_PER_GLUC)/MASS_TO_GLUC;
             glucInt *= (1 - FRAC_MASS*RATIO_GLUC_TO_PYRU);
             pyruInt *= (1 - FRAC_MASS*(1 - RATIO_GLUC_TO_PYRU));
         }
         
         // Decrease mass through autophagy if (i) negative energy indicating
         // not enough nutrients or (ii) above critical mass for maintenance
-        if ((energy < 0 && mass > MIN_MASS) || (energy >= 0 && mass > 1.01*critMass && !prolifOn)) {
+        if ((energy < 0 && mass > MIN_MASS)
+                || (energy >= 0 && mass > 1.01*critMass && cell.flag != Flag.PROLIFERATIVE)) {
             mass -= AUTOPHAGY_RATE;
             glucInt += AUTOPHAGY_RATE*MASS_TO_GLUC;
         }
-        
-        // Update doubled flag.
-        c.setFlag(Cell.IS_DOUBLED, mass >= 2*critMass);
         
         // Update volume based on changes in mass.
         volume = mass/CELL_DENSITY;

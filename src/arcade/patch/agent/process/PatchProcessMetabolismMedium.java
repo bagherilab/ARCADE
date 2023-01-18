@@ -1,14 +1,15 @@
 package arcade.patch.agent.process;
 
 import java.util.Arrays;
-import arcade.core.sim.Series;
+import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
-import arcade.agent.cell.Cell;
+import arcade.patch.agent.cell.PatchCell;
+import static arcade.patch.util.PatchEnums.Flag;
 
 /**
- * Extension of {@link arcade.agent.module.PatchModuleMetabolism} for medium metabolism.
+ * Extension of {@link PatchProcessMetabolism} for medium metabolism.
  * <p>
- * {@code PatchModuleMetabolismMedium} does not use a pyruvate intermediate and glucose
+ * {@code PatchProcessMetabolismMedium} does not use a pyruvate intermediate and glucose
  * uptake is based on cell volume.
  * Metabolic preference between glycolysis and oxidative phosphorylation is
  * controlled by the {@code META_PREF} parameter.
@@ -16,13 +17,13 @@ import arcade.agent.cell.Cell;
  * energetic requirements through the oxidative phosphorylation pathway given
  * the specified metabolic preference.
  * <p>
- * {@code PatchModuleMetabolismMedium} will increase cell mass (using specified fraction of
+ * {@code PatchProcessMetabolismMedium} will increase cell mass (using specified fraction of
  * internal glucose) if:
  * <ul>
  *     <li>cell is dividing and less than double in size</li>
  *     <li>cell is below critical mass for maintenance</li>
  * </ul>
- * {@code PatchModuleMetabolismMedium} will decrease cell mass if:
+ * {@code PatchProcessMetabolismMedium} will decrease cell mass if:
  * <ul>
  *     <li>cell has negative energy levels indicating insufficient nutrients</li>
  *     <li>cell is above critical mass for maintenance</li>
@@ -49,18 +50,14 @@ public class PatchProcessMetabolismMedium extends PatchProcessMetabolism {
     private final int ATP_PER_GLUCOSE;
     
     /**
-     * Creates a medium {@link arcade.agent.module.PatchModuleMetabolism} module.
+     * Creates a medium metabolism {@code Process} for the given {@link PatchCell}.
      * <p>
      * Module only has internal glucose.
-     * Metabolic preference ({@code META_PREF}) parameter is drawn from a
-     * {@link arcade.core.util.Parameter} distribution and the distribution is updated
-     * with the new mean.
      *
-     * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
-     * @param sim  the simulation instance
+     * @param cell  the {@link PatchCell} the process is associated with
      */
-    public PatchProcessMetabolismMedium(Cell c, Simulation sim) {
-        super(c, sim);
+    public PatchProcessMetabolismMedium(PatchCell cell) {
+        super(cell);
         
         // Initial internal concentrations.
         intAmts = new double[1];
@@ -72,26 +69,25 @@ public class PatchProcessMetabolismMedium extends PatchProcessMetabolism {
         names = Arrays.asList(intNames);
         
         // Get metabolic preference from cell.
-        this.META_PREF = c.getParams().get("META_PREF").nextDouble();
-        c.getParams().put("META_PREF", c.getParams().get("META_PREF").update(META_PREF));
+        // TODO: pull value from distribution?
+        this.META_PREF = cell.getParameters().getDouble("metabolism/META_PREF");
         
         // Set parameters.
-        Series series = sim.getSeries();
-        this.FRAC_MASS = series.getParam(pop, "FRAC_MASS");
-        this.AUTOPHAGY_RATE = series.getParam(pop, "AUTOPHAGY_RATE");
-        this.ATP_PRODUCTION_RATE = series.getParam(pop, "ATP_PRODUCTION_RATE");
-        this.MIN_MASS = this.critMass*series.getParam(c.getPop(), "MIN_MASS_FRAC");
+        this.FRAC_MASS = cell.getParameters().getDouble("metabolism/FRAC_MASS");
+        this.AUTOPHAGY_RATE = cell.getParameters().getDouble("metabolism/AUTOPHAGY_RATE");
+        this.ATP_PRODUCTION_RATE = cell.getParameters().getDouble("metabolism/ATP_PRODUCTION_RATE");
+        this.MIN_MASS = this.critMass * cell.getParameters().getDouble("metabolism/MIN_MASS_FRAC");
         this.ATP_PER_GLUCOSE = (int)(META_PREF*ENERGY_FROM_GLYC +
             (1 - META_PREF)*ENERGY_FROM_OXPHOS*PYRU_PER_GLUC);
     }
     
-    public void stepPatchModuleMetabolismModule(Simulation sim) {
+    public void stepProcess(MersenneTwisterFast random, Simulation sim) {
         double glucInt = intAmts[GLUCOSE]; // [fmol]
         double glucExt = extAmts[GLUCOSE]; // [fmol]
         double oxyExt = extAmts[OXYGEN];   // [fmol]
         
         // Calculate glucose uptake and update internal glucose.
-        double glucGrad = (glucExt/loc.getVolume()) - (glucInt/volume);
+        double glucGrad = (glucExt/location.getVolume()) - (glucInt/volume);
         glucGrad *= glucGrad < 1E-10 ? 0 : 1;
         double glucUptake = ATP_PRODUCTION_RATE*volume*glucGrad/ATP_PER_GLUCOSE;
         glucInt += glucUptake;
@@ -140,7 +136,7 @@ public class PatchProcessMetabolismMedium extends PatchProcessMetabolism {
         
         // Increase mass if (i) dividing and less than double mass or (ii)
         // below critical mass for maintenance.
-        if ((energy >= 0 && prolifOn && mass < 2*critMass) || (energy >= 0 && mass < 0.99*critMass)) {
+        if ((energy >= 0 && cell.flag == Flag.PROLIFERATIVE && mass < 2*critMass) || (energy >= 0 && mass < 0.99*critMass)) {
             mass += FRAC_MASS*glucInt/MASS_TO_GLUC;
             glucInt *= (1 - FRAC_MASS);
         }
@@ -151,9 +147,6 @@ public class PatchProcessMetabolismMedium extends PatchProcessMetabolism {
             mass -= AUTOPHAGY_RATE;
             glucInt += AUTOPHAGY_RATE*MASS_TO_GLUC;
         }
-        
-        // Update doubled flag.
-        c.setFlag(Cell.IS_DOUBLED, mass >= 2*critMass);
         
         // Update volume based on changes in mass.
         volume = mass/CELL_DENSITY;
