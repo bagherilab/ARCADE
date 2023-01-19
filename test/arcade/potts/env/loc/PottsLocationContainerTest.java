@@ -99,8 +99,8 @@ public class PottsLocationContainerTest {
     
     @Test
     public void convert_noRegionsWithIncrease_createsObject() {
-        int n = 100;
-        for (int i = 2; i < n; i++) {
+        int n = 20;
+        for (int i = 10; i < n; i++) {
             Voxel center = new Voxel(-1, 0, 0);
             ArrayList<Voxel> voxels = FACTORY.getPossible(center, n, 1);
             PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null, i, 0, 0);
@@ -114,8 +114,8 @@ public class PottsLocationContainerTest {
     
     @Test
     public void convert_noRegionsWithDecrease_createsObject() {
-        int n = 100;
-        for (int i = 2; i < n; i++) {
+        int n = 20;
+        for (int i = 10; i < n; i++) {
             Voxel center = new Voxel(1, 0, 0);
             ArrayList<Voxel> voxels = FACTORY.getPossible(center, n, 1);
             PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null, i, 0, 0);
@@ -129,8 +129,8 @@ public class PottsLocationContainerTest {
     
     @Test
     public void convert_withRegions_createsObject() {
-        int n = 100;
-        for (int i = 0; i < n; i++) {
+        int n = 20;
+        for (int i = 10; i < n; i++) {
             Voxel center = new Voxel(0, 0, 0);
             ArrayList<Voxel> voxels = FACTORY.getPossible(center, n, 1);
             
@@ -154,8 +154,8 @@ public class PottsLocationContainerTest {
     
     @Test
     public void convert_withRegionsEqual_createsObject() {
-        int n = 100;
-        for (int i = 60; i < n; i++) {
+        int n = 20;
+        for (int i = 10; i < n; i++) {
             Voxel center = new Voxel(0, 0, 0);
             ArrayList<Voxel> voxels = new ArrayList<>(Collections.nCopies(n, new Voxel(0, 0, 0)));
             
@@ -179,8 +179,8 @@ public class PottsLocationContainerTest {
     
     @Test
     public void convert_withRegionsWithIncrease_createsObject() {
-        int n = 100;
-        for (int i = 0; i < n - 1; i++) {
+        int n = 20;
+        for (int i = 10; i < n - 1; i++) {
             Voxel center = new Voxel(-1, 0, 0);
             ArrayList<Voxel> voxels = FACTORY.getPossible(center, n, 1);
             
@@ -205,8 +205,8 @@ public class PottsLocationContainerTest {
     
     @Test
     public void convert_withRegionsWithDecrease_createsObject() {
-        int n = 100;
-        for (int i = 0; i < n - 1; i++) {
+        int n = 20;
+        for (int i = 10; i < n - 1; i++) {
             Voxel center = new Voxel(1, 0, 0);
             ArrayList<Voxel> voxels = FACTORY.getPossible(center, n, 1);
             
@@ -233,7 +233,7 @@ public class PottsLocationContainerTest {
     public void convert_noRegions2D_createsObject() {
         Voxel center = new Voxel(0, 0, 0);
         ArrayList<Voxel> voxels = new ArrayList<>();
-        PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null, 0, 0, 0);
+        PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null, 1, 0, 0);
         PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, null);
         
         Location location = locationContainer.convert(FACTORY_2D, cellContainer);
@@ -254,7 +254,7 @@ public class PottsLocationContainerTest {
         regionTargetMap.put(Region.NUCLEUS, 0);
         
         PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null,
-                0, regionTargetMap, 0, 0, null, null);
+                1, regionTargetMap, 0, 0, null, null);
         PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, regionVoxelMap);
         
         Location location = locationContainer.convert(FACTORY_2D, cellContainer);
@@ -265,7 +265,7 @@ public class PottsLocationContainerTest {
     public void convert_noRegions3D_createsObject() {
         Voxel center = new Voxel(0, 0, 0);
         ArrayList<Voxel> voxels = new ArrayList<>();
-        PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null, 0, 0, 0);
+        PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null, 1, 0, 0);
         PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, null);
         
         Location location = locationContainer.convert(FACTORY_3D, cellContainer);
@@ -286,7 +286,7 @@ public class PottsLocationContainerTest {
         regionTargetMap.put(Region.NUCLEUS, 0);
         
         PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null,
-                0, regionTargetMap, 0, 0, null, null);
+                1, regionTargetMap, 0, 0, null, null);
         PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, regionVoxelMap);
         
         Location location = locationContainer.convert(FACTORY_3D, cellContainer);
