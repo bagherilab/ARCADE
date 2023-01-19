@@ -36,9 +36,6 @@ public abstract class Series {
     /** Offset of random seed to avoid using seed of 0. */
     public static final int SEED_OFFSET = 1000;
     
-    /** Separator character for targets. */
-    public static final String TARGET_SEPARATOR = ":";
-    
     /** {@code true} if the {@code Series} is not valid, {@code false} otherwise. */
     public boolean isSkipped;
     

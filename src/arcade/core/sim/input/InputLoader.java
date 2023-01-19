@@ -9,7 +9,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import arcade.core.util.Box;
-import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
@@ -85,7 +84,6 @@ public class InputLoader extends DefaultHandler {
         String id;
         String tag;
         String filter;
-        String target;
         
         // Iterate through each attribute and add to a map.
         if (numAtts > 0) {
@@ -102,9 +100,6 @@ public class InputLoader extends DefaultHandler {
             } else {
                 filter = "";
             }
-            
-            // Add target tag if set.
-            if (att.getValue("target") != null) { id += TARGET_SEPARATOR + att.getValue("target"); }
             
             box.addTag(id, split[0].toUpperCase());
             
