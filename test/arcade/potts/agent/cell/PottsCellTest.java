@@ -22,6 +22,7 @@ import arcade.potts.sim.PottsSimulation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
+import static arcade.core.util.Enums.Domain;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
 import static arcade.potts.agent.cell.PottsCellFactoryTest.*;
@@ -249,8 +250,8 @@ public class PottsCellTest {
     
     @Test
     public void getProcess_defaultConstructor_returnsNull() {
-        String key = randomString();
-        assertNull(cellDefault.getProcess(key));
+        Domain domain = Domain.random(RANDOM);
+        assertNull(cellDefault.getProcess(domain));
     }
     
     @Test

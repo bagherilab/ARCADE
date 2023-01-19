@@ -19,6 +19,7 @@ import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.loc.PottsLocation;
+import static arcade.core.util.Enums.Domain;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Ordering;
@@ -178,7 +179,7 @@ public final class PottsCell implements Cell {
     public Module getModule() { return module; }
     
     @Override
-    public Process getProcess(String key) { return null; }
+    public Process getProcess(Domain domain) { return null; }
     
     @Override
     public MiniBox getParameters() { return parameters; }
