@@ -99,6 +99,12 @@ public abstract class Series {
     /** Map of layer settings. */
     public HashMap<String, MiniBox> layers;
     
+    /** Map of action settings. */
+    public HashMap<String, MiniBox> actions;
+    
+    /** Map of component settings. */
+    public HashMap<String, MiniBox> components;
+    
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
      *
