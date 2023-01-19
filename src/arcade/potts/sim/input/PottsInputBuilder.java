@@ -7,8 +7,8 @@ import arcade.core.sim.input.InputBuilder;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import arcade.potts.sim.PottsSeries;
-import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 
 /**
  * Custom builder for potts-specific simulation setup XMLs.
@@ -35,25 +35,20 @@ public final class PottsInputBuilder extends InputBuilder {
         
         int numAtts = atts.getLength();
         String id;
-        String region;
         String module;
         String target;
         String term;
         
         if (numAtts > 0) {
-            // Entry can have at most one of the following tags: region, module, term.
-            boolean hasRegion = atts.getValue("region") != null;
+            // Entry can have at most one of the following tags: module, term.
             boolean hasModule = atts.getValue("module") != null;
             boolean hasTerm = atts.getValue("term") != null;
-            if (hasRegion ^ hasModule ? hasTerm : hasRegion) { return; }
+            if (hasModule & hasTerm) { return; }
             
-            // Get any tags (module or region or term) or target.
+            // Get any tags (module or term) or target.
             term = (atts.getValue("term") == null
                     ? ""
                     : atts.getValue("term").toLowerCase() + TAG_SEPARATOR);
-            region = (atts.getValue("region") == null
-                    ? ""
-                    : atts.getValue("region").toUpperCase() + TAG_SEPARATOR);
             module = (atts.getValue("module") == null
                     ? ""
                     : atts.getValue("module").toLowerCase() + TAG_SEPARATOR);
@@ -61,15 +56,20 @@ public final class PottsInputBuilder extends InputBuilder {
                     ? ""
                     : TARGET_SEPARATOR + atts.getValue("target"));
             
-            // Create id by combining tags (module or region), id, and target.
-            id = region + module + term + atts.getValue("id") + target;
+            // Create id by combining tags, id, and target.
+            id = module + term + atts.getValue("id") + target;
             box.addTag(id, tag.toUpperCase());
             
             for (int i = 0; i < numAtts; i++) {
                 String name = atts.getQName(i);
                 switch (name) {
-                    case "id": case "region": case "module": case "target": case "term": break;
-                    default: box.addAtt(id, name, atts.getValue(i));
+                    case "id":
+                    case "module":
+                    case "target":
+                    case "term":
+                        break;
+                    default:
+                        box.addAtt(id, name, atts.getValue(i));
                 }
             }
         }

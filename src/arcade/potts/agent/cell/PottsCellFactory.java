@@ -211,16 +211,19 @@ public final class PottsCellFactory implements CellFactory {
                 EnumMap<Region, Distribution> criticalRegionHeights = new EnumMap<>(Region.class);
                 
                 for (String regionKey : regionKeys) {
-                    MiniBox popRegion = population.filter(regionKey);
                     Region region = Region.valueOf(regionKey);
                     
-                    double muVolumeRegion = popRegion.getDouble("CRITICAL_VOLUME_MEAN");
-                    double sigmaVolumeRegion = popRegion.getDouble("CRITICAL_VOLUME_STDEV");
+                    double muVolumeRegion =
+                            population.getDouble("CRITICAL_VOLUME_MEAN_" + regionKey);
+                    double sigmaVolumeRegion =
+                            population.getDouble("CRITICAL_VOLUME_STDEV_" + regionKey);
                     criticalRegionVolumes.put(region,
                             new Distribution(muVolumeRegion, sigmaVolumeRegion, random));
                     
-                    double muHeightRegion = popRegion.getDouble("CRITICAL_HEIGHT_MEAN");
-                    double sigmaHeightRegion = popRegion.getDouble("CRITICAL_HEIGHT_STDEV");
+                    double muHeightRegion =
+                            population.getDouble("CRITICAL_HEIGHT_MEAN_" + regionKey);
+                    double sigmaHeightRegion =
+                            population.getDouble("CRITICAL_HEIGHT_STDEV_" + regionKey);
                     criticalRegionHeights.put(region,
                             new Distribution(muHeightRegion, sigmaHeightRegion, random));
                 }

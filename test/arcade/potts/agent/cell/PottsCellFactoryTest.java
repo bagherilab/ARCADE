@@ -206,10 +206,10 @@ public class PottsCellFactoryTest {
                 double criticalRegionVolumeStdev = criticalRegionVolumeStdevs.get(region);
                 double criticalRegionHeightMean = criticalRegionHeightMeans.get(region);
                 double criticalRegionHeightStdev = criticalRegionHeightStdevs.get(region);
-                population.put(region + TAG_SEPARATOR + "CRITICAL_VOLUME_MEAN", criticalRegionVolumeMean + pop);
-                population.put(region + TAG_SEPARATOR + "CRITICAL_VOLUME_STDEV", criticalRegionVolumeStdev + pop);
-                population.put(region + TAG_SEPARATOR + "CRITICAL_HEIGHT_MEAN", criticalRegionHeightMean + pop);
-                population.put(region + TAG_SEPARATOR + "CRITICAL_HEIGHT_STDEV", criticalRegionHeightStdev + pop);
+                population.put("CRITICAL_VOLUME_MEAN_" + region, criticalRegionVolumeMean + pop);
+                population.put("CRITICAL_VOLUME_STDEV_" + region, criticalRegionVolumeStdev + pop);
+                population.put("CRITICAL_HEIGHT_MEAN_" + region, criticalRegionHeightMean + pop);
+                population.put("CRITICAL_HEIGHT_STDEV_" + region, criticalRegionHeightStdev + pop);
             }
             
             series.populations.put(popKeys[i], population);
