@@ -105,9 +105,7 @@ public class InputLoader extends DefaultHandler {
             
             for (int i = 0; i < numAtts; i++) {
                 String name = att.getQName(i);
-                if (!name.equals("id")
-                        && !name.equals(filter)
-                        && !name.equals("target")) {
+                if (!name.equals("id") && !name.equals(filter)) {
                     box.addAtt(id, name, att.getValue(i));
                 }
             }
