@@ -7,6 +7,7 @@ import arcade.core.agent.module.Module;
 import arcade.core.agent.process.Process;
 import arcade.core.env.loc.Location;
 import arcade.core.util.MiniBox;
+import static arcade.core.util.Enums.Domain;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
 
@@ -95,10 +96,10 @@ public interface Cell extends Steppable {
     /**
      * Gets the cell process object.
      *
-     * @param key  the cell process key
+     * @param domain  the process domain
      * @return  the cell process
      */
-    Process getProcess(String key);
+    Process getProcess(Domain domain);
     
     /**
      * Gets the cell population parameters.

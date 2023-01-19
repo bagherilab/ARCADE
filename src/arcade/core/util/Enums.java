@@ -82,6 +82,28 @@ public final class Enums {
         }
     }
     
+    /** Process domain codes. */
+    public enum Domain {
+        /** Code for undefined domain. */
+        UNDEFINED,
+        
+        /** Code for metabolism domain. */
+        METABOLISM,
+        
+        /** Code for signaling domain. */
+        SIGNALING;
+        
+        /**
+         * Randomly selects a {@code Domain}.
+         *
+         * @param rng  the random number generator
+         * @return  a random {@code Domain}
+         */
+        public static Domain random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
+    
     /** Operation category codes. */
     public enum Category {
         /** Code for undefined category. */
