@@ -26,6 +26,8 @@ public class SeriesTest {
     
     private static final double DS = randomDoubleBetween(1, 10);
     
+    private static final double DZ = randomDoubleBetween(1, 10);
+    
     private static final double DT = randomDoubleBetween(0.5, 2);
     
     private static final Box PARAMETERS = new Box();
@@ -69,6 +71,7 @@ public class SeriesTest {
         PARAMETERS.addTag("MARGIN", "DEFAULT");
         PARAMETERS.addTag("DS", "DEFAULT");
         PARAMETERS.addTag("DT", "DEFAULT");
+        PARAMETERS.addTag("DZ", "DEFAULT");
         PARAMETERS.addAtt("START_SEED", "value", "" + DEFAULT_START_SEED);
         PARAMETERS.addAtt("END_SEED", "value", "" + DEFAULT_END_SEED);
         PARAMETERS.addAtt("TICKS", "value", "" + DEFAULT_TICKS);
@@ -79,6 +82,7 @@ public class SeriesTest {
         PARAMETERS.addAtt("MARGIN", "value", "" + DEFAULT_MARGIN);
         PARAMETERS.addAtt("DS", "value", "" + DS);
         PARAMETERS.addAtt("DT", "value", "" + DT);
+        PARAMETERS.addAtt("DZ", "value", "" + DZ);
     }
     
     private HashMap<String, MiniBox> makeDicts() {
@@ -400,6 +404,24 @@ public class SeriesTest {
     }
     
     @Test
+    public void constructor_dzNotGiven_usesDefault() {
+        HashMap<String, MiniBox> setupDicts = makeDicts();
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
+        
+        assertEquals(DZ, series.dz, EPSILON);
+    }
+    
+    @Test
+    public void constructor_dzGiven_usesGiven() {
+        double dz = randomDoubleBetween(0, 100);
+        HashMap<String, MiniBox> setupDicts = makeDicts();
+        setupDicts.get("series").put("dz", dz);
+        Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
+        
+        assertEquals(dz, series.dz, EPSILON);
+    }
+    
+    @Test
     public void constructor_dtNotGiven_usesDefault() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
         Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
@@ -530,27 +552,30 @@ public class SeriesTest {
     
     @Test
     public void parseConversion_invalidConversion_returnsOne() {
-        assertEquals(1, Series.parseConversion(randomString(), DS, DT), EPSILON);
+        assertEquals(1, Series.parseConversion(randomString(), DS, DZ, DT), EPSILON);
     }
     
     @Test
     public void parseConversion_noExponent_returnsValue() {
-        assertEquals(DS, Series.parseConversion("DS", DS, DT), EPSILON);
-        assertEquals(DT, Series.parseConversion("DT", DS, DT), EPSILON);
+        assertEquals(DS, Series.parseConversion("DS", DS, DZ, DT), EPSILON);
+        assertEquals(DT, Series.parseConversion("DT", DS, DZ, DT), EPSILON);
+        assertEquals(DZ, Series.parseConversion("DZ", DS, DZ, DT), EPSILON);
     }
     
     @Test
     public void parseConversion_positiveExponent_returnsValue() {
         int n = randomIntBetween(1, 100);
-        assertEquals(Math.pow(DS, n), Series.parseConversion("DS^" + n, DS, DT), EPSILON);
-        assertEquals(Math.pow(DT, n), Series.parseConversion("DT^" + n, DS, DT), EPSILON);
+        assertEquals(Math.pow(DS, n), Series.parseConversion("DS^" + n, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DT, n), Series.parseConversion("DT^" + n, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DZ, n), Series.parseConversion("DZ^" + n, DS, DZ, DT), EPSILON);
     }
     
     @Test
     public void parseConversion_negativeExponent_returnsValue() {
         int n = randomIntBetween(1, 100);
-        assertEquals(Math.pow(DS, -n), Series.parseConversion("DS^-" + n, DS, DT), EPSILON);
-        assertEquals(Math.pow(DT, -n), Series.parseConversion("DT^-" + n, DS, DT), EPSILON);
+        assertEquals(Math.pow(DS, -n), Series.parseConversion("DS^-" + n, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DT, -n), Series.parseConversion("DT^-" + n, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DZ, -n), Series.parseConversion("DZ^-" + n, DS, DZ, DT), EPSILON);
     }
     
     @Test
@@ -559,18 +584,72 @@ public class SeriesTest {
         int m = randomIntBetween(3, 5);
         String ds = String.join(".", Collections.nCopies(m, "DS^" + n));
         String dt = String.join(".", Collections.nCopies(m, "DT^" + n));
-        assertEquals(Math.pow(DS, n * m), Series.parseConversion(ds, DS, DT), EPSILON);
-        assertEquals(Math.pow(DT, n * m), Series.parseConversion(dt, DS, DT), EPSILON);
+        String dz = String.join(".", Collections.nCopies(m, "DZ^" + n));
+        assertEquals(Math.pow(DS, n * m), Series.parseConversion(ds, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DT, n * m), Series.parseConversion(dt, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DZ, n * m), Series.parseConversion(dz, DS, DZ, DT), EPSILON);
     }
     
     @Test
-    public void parseConversion_mixedTerms_returnsValue() {
+    public void parseConversion_twoMixedTerms_returnsValue() {
         int n1 = randomIntBetween(1, 3);
         int n2 = randomIntBetween(3, 5);
         String dsdt = String.format("DS^%d.DT^%d", n1, n2);
         String dtds = String.format("DT^%d.DS^%d", n1, n2);
-        assertEquals(Math.pow(DS, n1) * Math.pow(DT, n2), Series.parseConversion(dsdt, DS, DT), EPSILON);
-        assertEquals(Math.pow(DT, n1) * Math.pow(DS, n2), Series.parseConversion(dtds, DS, DT), EPSILON);
+        String dzds = String.format("DZ^%d.DS^%d", n1, n2);
+        String dsdz = String.format("DS^%d.DZ^%d", n1, n2);
+        String dzdt = String.format("DZ^%d.DT^%d", n1, n2);
+        String dtdz = String.format("DT^%d.DZ^%d", n1, n2);
+        assertEquals(Math.pow(DS, n1) * Math.pow(DT, n2), Series.parseConversion(dsdt, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DT, n1) * Math.pow(DS, n2), Series.parseConversion(dtds, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DZ, n1) * Math.pow(DS, n2), Series.parseConversion(dzds, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DS, n1) * Math.pow(DZ, n2), Series.parseConversion(dsdz, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DZ, n1) * Math.pow(DT, n2), Series.parseConversion(dzdt, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DT, n1) * Math.pow(DZ, n2), Series.parseConversion(dtdz, DS, DZ, DT), EPSILON);
+    }
+    
+    @Test
+    public void parseConversion_threeMixedTerms_retrunsValue() {
+        int n1 = randomIntBetween(1, 3);
+        int n2 = randomIntBetween(3, 5);
+        int n3 = randomIntBetween(2, 4);
+        String dsdzdt = String.format("DS^%d.DZ^%d.DT^%d", n1, n2, n3);
+        String dsdtdz = String.format("DS^%d.DT^%d.DZ^%d", n1, n2, n3);
+        String dzdsdt = String.format("DZ^%d.DS^%d.DT^%d", n1, n2, n3);
+        String dzdtds = String.format("DZ^%d.DT^%d.DS^%d", n1, n2, n3);
+        String dtdsdz = String.format("DT^%d.DS^%d.DZ^%d", n1, n2, n3);
+        String dtdzds = String.format("DT^%d.DZ^%d.DS^%d", n1, n2, n3);
+        assertEquals(Math.pow(DS, n1) * Math.pow(DZ, n2) * Math.pow(DT, n3),
+                Series.parseConversion(dsdzdt, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DS, n1) * Math.pow(DT, n2) * Math.pow(DZ, n3),
+                Series.parseConversion(dsdtdz, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DZ, n1) * Math.pow(DS, n2) * Math.pow(DT, n3),
+                Series.parseConversion(dzdsdt, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DZ, n1) * Math.pow(DT, n2) * Math.pow(DS, n3),
+                Series.parseConversion(dzdtds, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DT, n1) * Math.pow(DS, n2) * Math.pow(DZ, n3),
+                Series.parseConversion(dtdsdz, DS, DZ, DT), EPSILON);
+        assertEquals(Math.pow(DT, n1) * Math.pow(DZ, n2) * Math.pow(DS, n3),
+                Series.parseConversion(dtdzds, DS, DZ, DT), EPSILON);
+    }
+    
+    @Test
+    public void parseConversion_givenDSDT_retrunsValue() {
+        int n1 = randomIntBetween(1, 3);
+        int n2 = randomIntBetween(3, 5);
+        int n3 = randomIntBetween(2, 4);
+        String dsdzdt = String.format("DS^%d.DZ^%d.DT^%d", n1, n2, n3);
+        String dsdtdz = String.format("DS^%d.DT^%d.DZ^%d", n1, n2, n3);
+        String dzdsdt = String.format("DZ^%d.DS^%d.DT^%d", n1, n2, n3);
+        String dzdtds = String.format("DZ^%d.DT^%d.DS^%d", n1, n2, n3);
+        String dtdsdz = String.format("DT^%d.DS^%d.DZ^%d", n1, n2, n3);
+        String dtdzds = String.format("DT^%d.DZ^%d.DS^%d", n1, n2, n3);
+        assertEquals(Math.pow(DS, n1 + n2) * Math.pow(DT, n3), Series.parseConversion(dsdzdt, DS, DT), EPSILON);
+        assertEquals(Math.pow(DS, n1 + n3) * Math.pow(DT, n2), Series.parseConversion(dsdtdz, DS, DT), EPSILON);
+        assertEquals(Math.pow(DS, n1 + n2) * Math.pow(DT, n3), Series.parseConversion(dzdsdt, DS, DT), EPSILON);
+        assertEquals(Math.pow(DS, n1 + n3) * Math.pow(DT, n2), Series.parseConversion(dzdtds, DS, DT), EPSILON);
+        assertEquals(Math.pow(DT, n1) * Math.pow(DS, n2 + n3), Series.parseConversion(dtdsdz, DS, DT), EPSILON);
+        assertEquals(Math.pow(DT, n1) * Math.pow(DS, n2 + n3), Series.parseConversion(dtdzds, DS, DT), EPSILON);
     }
     
     @Test
