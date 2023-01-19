@@ -10,8 +10,8 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.loc.Location3D;
 import arcade.potts.env.loc.Voxel;
 import arcade.potts.sim.PottsSeries;
-import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.Enums.Region;
+import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 
 /**
  * Implementation of {@link Hamiltonian} for height energy.

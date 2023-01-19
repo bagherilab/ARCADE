@@ -13,9 +13,9 @@ import arcade.potts.sim.PottsSeries;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 
 public class HeightHamiltonianTest {
     private static final double EPSILON = 1E-10;

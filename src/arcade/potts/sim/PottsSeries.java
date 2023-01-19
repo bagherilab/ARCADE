@@ -14,6 +14,9 @@ import static arcade.potts.util.PottsEnums.Term;
  */
 
 public final class PottsSeries extends Series {
+    /** Separator character for targets. */
+    public static final String TARGET_SEPARATOR = ":";
+    
     /** Map of potts settings. */
     public MiniBox potts;
     

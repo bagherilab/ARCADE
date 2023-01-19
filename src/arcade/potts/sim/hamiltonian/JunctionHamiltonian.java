@@ -6,7 +6,7 @@ import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
-import static arcade.core.sim.Series.TARGET_SEPARATOR;
+import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 
 /**
  * Implementation of {@link Hamiltonian} for tight junction energy.

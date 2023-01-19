@@ -14,8 +14,8 @@ import arcade.potts.vis.PottsVisualization;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.sim.Series.TARGET_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsSeriesTest {
