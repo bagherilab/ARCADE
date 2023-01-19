@@ -1,19 +1,20 @@
 package arcade.patch.agent.process;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import arcade.agent.cell.Cell;
+import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Equations;
+import arcade.patch.agent.cell.PatchCell;
+import static arcade.patch.util.PatchEnums.Flag;
 
 /**
- * Extension of {@link arcade.agent.module.PatchModuleSignaling} for simple EGFR signaling.
+ * Extension of {@link PatchProcessSignaling} for simple EGFR signaling.
  * <p>
  * {@code PatchModuleSignalingSimple} represents a 5-component signaling network spanning
  * the cytoplasm.
  * Migratory flag is set based on fold change in active PLCg.
- * Derived from {@link arcade.agent.module.PatchModuleSignalingMedium} using minimal components.
+ * Derived from {@link PatchProcessSignalingMedium} using minimal components.
  */
 
 public class PatchProcessSignalingSimple extends PatchProcessSignaling {
@@ -75,19 +76,15 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
     private double current = 1.0;
     
     /**
-     * Creates a simple {@link arcade.agent.module.PatchModuleSignaling} module.
+     * Creates a simple signaling {@code Process} for the given {@link PatchCell}.
      * <p>
      * Initial concentrations of all components in the network are assigned and
      * molecule names are added.
-     * Migratory threshold ({@code MIGRA_THRESHOLD}) parameter is drawn from a
-     * {@link arcade.core.util.Parameter} distribution and the distribution is updated
-     * with the new mean.
      *
-     * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
-     * @param sim  the simulation instance
+     * @param cell  the {@link PatchCell} the process is associated with
      */
-    public PatchProcessSignalingSimple(Cell c, Simulation sim) {
-        super(c, sim);
+    public PatchProcessSignalingSimple(PatchCell cell) {
+        super(cell);
         
         // Initial concentrations, all in nM (umol/m^3). Most are zeros.
         concs = new double[NUM_COMPONENTS];
@@ -103,8 +100,8 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
         names.add(P_ACTIVE, "plcg_active");
         
         // Get migratory threshold from cell.
-        double thresh = c.getParams().get("MIGRA_THRESHOLD").nextDouble();
-        c.getParams().put("MIGRA_THRESHOLD", c.getParams().get("MIGRA_THRESHOLD").update(thresh));
+        // TODO: pull value from distribution?
+        double thresh = cell.getParameters().getDouble("signaling/MIGRA_THRESHOLD");
         
         // Set parameters.
         this.MIGRA_THRESHOLD  = 1 + thresh*thresh;
@@ -113,7 +110,7 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
     /**
      * System of ODEs for network
      */
-    Equations dydt = (Equations & Serializable) (t, y) -> {
+    Equations dydt = (t, y) -> {
         double wG = 1 + y[G_INT]/(WG + y[G_INT]);       // increase in TGFa-EGFR by glucose
         double wP = 1 + y[TE_CYTO]/(WP + y[TE_CYTO]);   // increase in PLCg activation by TGFa-EGFR
         double wC = 1 - y[P_ACTIVE]/(WC + y[P_ACTIVE]); // decrease in TGFa-EGFR by active PLCg
@@ -129,10 +126,14 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
         return dydt;
     };
     
-    public void stepModule(Simulation sim) {
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        // Get metabolism process from cell.
+        PatchProcessMetabolism metabolism = (PatchProcessMetabolism) cell.getProcess("METABOLISM");
+        
         // Get concentration of external TGFa and internal glucose in nM.
-        concs[G_INT] = c.getModule("metabolism").getInternal("glucose")/c.getVolume()*1E9;
-        concs[T_EXT] = sim.getEnvironment("tgfa").getAverageVal(loc)/TGFA_MW;
+        concs[G_INT] = metabolism.intAmts[0] / cell.getVolume() * 1E9;
+        concs[T_EXT] = sim.getLattice("TGFA").getAverageValue(location) / TGFA_MW;
         
         // Solve system of equations.
         double pre = concs[P_ACTIVE];
@@ -142,11 +143,19 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
         // Calculate fold change and set migratory or proliferative flag.
         current = ((pre > post ? pre/post : post/pre) - 1);
         double delta = (current > previous ? current/previous : previous/current);
-        c.setFlag(Cell.IS_MIGRATORY, delta > MIGRA_THRESHOLD);
+        
+        if (cell.flag == Flag.UNDEFINED) {
+            if (delta > MIGRA_THRESHOLD) {
+                cell.setFlag(Flag.MIGRATORY);
+            } else {
+                cell.setFlag(Flag.PROLIFERATIVE);
+            }
+        }
+        
         previous = current;
         
         // Update environment.
-        sim.getEnvironment("tgfa").setVal(loc, concs[T_EXT]*TGFA_MW);
+        sim.getLattice("TGFA").setValue(location, concs[T_EXT]*TGFA_MW);
     }
     
     public void updateModule(Module mod, double f) {

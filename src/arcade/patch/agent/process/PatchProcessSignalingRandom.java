@@ -1,13 +1,17 @@
 package arcade.patch.agent.process;
 
-import arcade.agent.cell.Cell;
-import arcade.core.sim.Series;
+import java.util.ArrayList;
+import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
+import arcade.core.util.Solver;
+import arcade.core.util.Solver.Equations;
+import arcade.patch.agent.cell.PatchCell;
+import static arcade.patch.util.PatchEnums.Flag;
 
 /**
- * Extension of {@link arcade.agent.module.PatchModuleSignaling} for random signaling.
+ * Extension of {@link PatchProcessSignaling} for random EGFR signaling.
  * <p>
- * {@code PatchModuleSignalingRandom} simply randomly sets the migratory flag.
+ * {@code PatchModuleSignalingRandom} randomly sets the migratory flag.
  */
 
 public class PatchProcessSignalingRandom extends PatchProcessSignaling {
@@ -15,20 +19,25 @@ public class PatchProcessSignalingRandom extends PatchProcessSignaling {
     private final double MIGRA_PROB;
     
     /**
-     * Creates a random {@link arcade.agent.module.PatchModuleSignaling} module.
-     * 
-     * @param c  the {@link arcade.agent.cell.PatchCell} the module is associated with
-     * @param sim  the simulation instance
+     * Creates a random signaling {@code Process} for the given {@link PatchCell}.
+     *
+     * @param cell  the {@link PatchCell} the process is associated with
      */
-    public PatchProcessSignalingRandom(Cell c, Simulation sim) {
-        super(c, sim);
-        Series series = sim.getSeries();
-        this.MIGRA_PROB = series.getParam(pop, "MIGRA_PROB");
+    public PatchProcessSignalingRandom(PatchCell cell) {
+        super(cell);
+        
+        // Set parameters.
+        this.MIGRA_PROB = cell.getParameters().getDouble("signaling/MIGRA_PROB");
     }
     
-    public void stepModule(Simulation sim) {
-        c.setFlag(Cell.IS_MIGRATORY, sim.getRandom() < MIGRA_PROB);
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        if (cell.flag == Flag.UNDEFINED) {
+            if (random.nextDouble() < MIGRA_PROB) {
+                cell.setFlag(Flag.MIGRATORY);
+            } else {
+                cell.setFlag(Flag.PROLIFERATIVE);
+            }
+        }
     }
-    
-    public void updateModule(Module mod, double f) { }
 }
