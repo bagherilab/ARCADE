@@ -97,7 +97,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     
     /**
      * Called at the start of the simulation to set up agents and environment
-     * and schedule components and helpers as needed.
+     * and schedule actions and components as needed.
      */
     @Override
     public void start() {
@@ -115,7 +115,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         setupAgents();
         setupEnvironment();
         
-        scheduleHelpers();
+        scheduleActions();
         scheduleComponents();
         
         // Equip simulation to saver and schedule.
@@ -216,8 +216,8 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     }
     
     @Override
-    public final void scheduleHelpers() {
-        // TODO add helper scheduling
+    public final void scheduleActions() {
+        // TODO add action scheduling
     }
     
     @Override

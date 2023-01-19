@@ -363,7 +363,7 @@ public class PottsSimulationTest {
         verify(sim).setupPotts();
         verify(sim).setupAgents();
         verify(sim).setupEnvironment();
-        verify(sim).scheduleHelpers();
+        verify(sim).scheduleActions();
         verify(sim).scheduleComponents();
     }
     

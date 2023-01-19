@@ -68,10 +68,10 @@ public final class PottsSeries extends Series {
         ArrayList<Box> layersBox = setupLists.get("layers");
         updateLayers(layersBox, layerDefaults, layerConversions);
         
-        // Add helpers.
-        MiniBox helperDefaults = parameters.getIdValForTag("HELPER");
-        ArrayList<Box> helpersBox = setupLists.get("helpers");
-        updateHelpers(helpersBox, helperDefaults);
+        // Add actions.
+        MiniBox actionDefaults = parameters.getIdValForTag("ACTION");
+        ArrayList<Box> actionsBox = setupLists.get("actions");
+        updateActions(actionsBox, actionDefaults);
         
         // Add components.
         MiniBox componentDefaults = parameters.getIdValForTag("COMPONENT");
@@ -235,7 +235,7 @@ public final class PottsSeries extends Series {
     }
     
     @Override
-    protected void updateHelpers(ArrayList<Box> helpersBox, MiniBox helperDefaults) {
+    protected void updateActions(ArrayList<Box> actionsBox, MiniBox actionDefaults) {
         // TODO
     }
     
