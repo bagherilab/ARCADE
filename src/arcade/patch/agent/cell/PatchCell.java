@@ -19,9 +19,9 @@ import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.loc.PatchLocation;
+import static arcade.core.util.Enums.Domain;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
-import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
 
@@ -184,7 +184,7 @@ public class PatchCell implements Cell {
     public Module getModule() { return module; }
     
     @Override
-    public Process getProcess(String key) { return processes.get(Domain.valueOf(key)); }
+    public Process getProcess(Domain domain) { return processes.get(domain); }
     
     @Override
     public MiniBox getParameters() { return parameters; }

@@ -36,28 +36,6 @@ public final class PatchEnums {
         LATTICES,
     }
     
-    /** Process domain codes. */
-    public enum Domain {
-        /** Code for undefined domain. */
-        UNDEFINED,
-        
-        /** Code for metabolism domain. */
-        METABOLISM,
-
-        /** Code for signaling domain. */
-        SIGNALING;
-
-        /**
-         * Randomly selects a {@code Domain}.
-         *
-         * @param rng  the random number generator
-         * @return  a random {@code Domain}
-         */
-        public static Domain random(MersenneTwisterFast rng) {
-            return values()[rng.nextInt(values().length - 1) + 1];
-        }
-    }
-    
     /** State change flags. */
     public enum Flag {
         /** Code for undefined flag. */
