@@ -213,11 +213,77 @@ public final class PatchSeries extends Series {
     
     @Override
     protected void updateActions(ArrayList<Box> actionsBox, MiniBox actionDefaults) {
-        // TODO
+        this.actions = new HashMap<>();
+        if (actionsBox == null) { return; }
+        
+        // Iterate through each setup dictionary to build action settings.
+        for (Box box : actionsBox) {
+            String id = box.getValue("id");
+            String actionClass = box.getValue("class").toLowerCase();
+            
+            // Create new population and update code.
+            MiniBox action = new MiniBox();
+            this.actions.put(id, action);
+            
+            // Filter defaults for parameters specific to action class.
+            action.put("CLASS", actionClass);
+            MiniBox actionClassDefaults = actionDefaults.filter(actionClass);
+            
+            // Get default parameters and any parameter adjustments.
+            Box parameters = box.filterBoxByTag("PARAMETER");
+            MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
+            MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
+            
+            // Add in parameters. Start with value (if given) or default (if not
+            // given). Then apply any scaling.
+            for (String parameter : actionClassDefaults.getKeys()) {
+                parseParameter(action, parameter, actionClassDefaults.get(parameter),
+                        parameterValues, parameterScales);
+            }
+            
+            // Add list of registered populations.
+            HashSet<String> registers = box.filterTags("REGISTER");
+            for (String register : registers) {
+                action.put("(REGISTER)" + TAG_SEPARATOR + register, "");
+            }
+        }
     }
     
     @Override
     protected void updateComponents(ArrayList<Box> componentsBox, MiniBox componentDefaults) {
-        // TODO
+        this.components = new HashMap<>();
+        if (componentsBox == null) { return; }
+        
+        // Iterate through each setup dictionary to build component settings.
+        for (Box box : componentsBox) {
+            String id = box.getValue("id");
+            String componentClass = box.getValue("class").toLowerCase();
+            
+            // Create new population and update code.
+            MiniBox component = new MiniBox();
+            this.components.put(id, component);
+            
+            // Filter defaults for parameters specific to component class.
+            component.put("CLASS", componentClass);
+            MiniBox componentClassDefaults = componentDefaults.filter(componentClass);
+            
+            // Get default parameters and any parameter adjustments.
+            Box parameters = box.filterBoxByTag("PARAMETER");
+            MiniBox parameterValues = parameters.getIdValForTagAtt("PARAMETER", "value");
+            MiniBox parameterScales = parameters.getIdValForTagAtt("PARAMETER", "scale");
+            
+            // Add in parameters. Start with value (if given) or default (if not
+            // given). Then apply any scaling.
+            for (String parameter : componentClassDefaults.getKeys()) {
+                parseParameter(component, parameter, componentClassDefaults.get(parameter),
+                        parameterValues, parameterScales);
+            }
+            
+            // Add list of registered layers.
+            HashSet<String> registers = box.filterTags("REGISTER");
+            for (String register : registers) {
+                component.put("(REGISTER)" + TAG_SEPARATOR + register, "");
+            }
+        }
     }
 }
