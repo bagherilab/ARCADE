@@ -6,12 +6,11 @@ import org.xml.sax.Attributes;
 import arcade.core.sim.input.InputBuilder;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import arcade.patch.sim.PatchSeries;
 import arcade.patch.env.loc.CoordinateHex;
 import arcade.patch.env.loc.CoordinateRect;
 import arcade.patch.env.loc.PatchLocationHex;
 import arcade.patch.env.loc.PatchLocationRect;
-import static arcade.core.sim.Series.TARGET_SEPARATOR;
+import arcade.patch.sim.PatchSeries;
 import static arcade.core.util.Box.KEY_SEPARATOR;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
@@ -20,14 +19,20 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
  */
 
 public final class PatchInputBuilder extends InputBuilder {
-    public PatchInputBuilder() { super(); }
+    /**
+     * Creates a {@code PatchInputBuilder} instance.
+     */
+    public PatchInputBuilder() {
+        super();
+    }
     
     /**
-     * Updates a {@link arcade.core.util.Box} dictionary with tagged attributes.
+     * Updates a {@link Box} dictionary with tagged attributes.
      * <p>
-     * Attributes are added to the last entry in the list of dictionaries.
-     * One of the attributes must be "id" which is used as the id for the entry.
-     * Attributes "tag" and "target" are concatenated to the id as tag/id:target.
+     * Attributes are added to the last entry in the list of dictionaries. One
+     * of the attributes must be "id" which is used as the id for the entry.
+     * Attributes "tag" and "target" are concatenated to the id as
+     * tag/id:target.
      *
      * @param list  the list the box is in
      * @param tag  the entry tag
@@ -40,41 +45,44 @@ public final class PatchInputBuilder extends InputBuilder {
         
         int numAtts = atts.getLength();
         String id;
-        String region;
         String module;
-        String target;
-        String term;
+        String process;
+        String operation;
         
         if (numAtts > 0) {
-            // Entry can have at most one of the following tags: region, module, term.
-            boolean hasRegion = atts.getValue("region") != null;
+            // Entry can have at most one of the following tags.
             boolean hasModule = atts.getValue("module") != null;
-            boolean hasTerm = atts.getValue("term") != null;
-            if (hasRegion ^ hasModule ? hasTerm : hasRegion) { return; }
+            boolean hasProcess = atts.getValue("process") != null;
+            boolean hasOperation = atts.getValue("operation") != null;
+            if (hasModule ^ hasProcess ? hasOperation : hasModule) {
+                return;
+            }
             
             // Get any tags (module or region or term) or target.
-            term = (atts.getValue("term") == null
-                    ? ""
-                    : atts.getValue("term").toLowerCase() + TAG_SEPARATOR);
-            region = (atts.getValue("region") == null
-                    ? ""
-                    : atts.getValue("region").toUpperCase() + TAG_SEPARATOR);
             module = (atts.getValue("module") == null
                     ? ""
                     : atts.getValue("module").toLowerCase() + TAG_SEPARATOR);
-            target = (atts.getValue("target") == null
+            process = (atts.getValue("process") == null
                     ? ""
-                    : TARGET_SEPARATOR + atts.getValue("target"));
+                    : atts.getValue("process").toLowerCase() + TAG_SEPARATOR);
+            operation = (atts.getValue("operation") == null
+                    ? ""
+                    : atts.getValue("operation").toLowerCase() + TAG_SEPARATOR);
             
-            // Create id by combining tags (module or region), id, and target.
-            id = region + module + term + atts.getValue("id") + target;
+            // Create id by combining tags and id.
+            id = operation + module + process + atts.getValue("id");
             box.addTag(id, tag.toUpperCase());
             
             for (int i = 0; i < numAtts; i++) {
                 String name = atts.getQName(i);
                 switch (name) {
-                    case "id": case "region": case "module": case "target": case "term": break;
-                    default: box.addAtt(id, name, atts.getValue(i));
+                    case "id":
+                    case "module":
+                    case "process":
+                    case "operation":
+                        break;
+                    default:
+                        box.addAtt(id, name, atts.getValue(i));
                 }
             }
         }
@@ -85,7 +93,8 @@ public final class PatchInputBuilder extends InputBuilder {
         LOGGER.fine("start element [ " + name + " ]");
         
         switch (name) {
-            case "set": case "series":
+            case "set":
+            case "series":
                 MiniBox minibox = makeMiniBox(atts);
                 setupDicts.put(name, minibox);
                 break;
@@ -94,9 +103,15 @@ public final class PatchInputBuilder extends InputBuilder {
                 setupLists.get(name).add(new Box());
                 break;
             case "populations":
+            case "layers":
+            case "actions":
+            case "components":
                 setupLists.put(name, new ArrayList<>());
                 break;
             case "population":
+            case "layer":
+            case "action":
+            case "component":
                 Box box = makeBox(atts);
                 setupLists.get(name + "s").add(box);
                 break;
@@ -105,25 +120,23 @@ public final class PatchInputBuilder extends InputBuilder {
         }
         
         String[] split = name.split("\\.");
-        if (split.length == 2) { updateBox(split[0], split[1], atts); }
+        if (split.length == 2) {
+            updateBox(split[0], split[1], atts);
+        }
     }
     
     @Override
     public void endElement(String uri, String local, String name) {
         LOGGER.fine("end element [ " + name + " ]");
         
-        switch (name) {
-            case "series":
-                processSizing(setupDicts.get("series"), parameters);
-                processPatch(setupDicts.get("series"), setupLists.get("patch").get(0), parameters);
-                series.add(new PatchSeries(setupDicts, setupLists, path, parameters, isVis));
-                MiniBox set = setupDicts.get("set");
-                setupDicts = new HashMap<>();
-                setupLists = new HashMap<>();
-                setupDicts.put("set", set);
-                break;
-            default:
-                break;
+        if ("series".equals(name)) {
+            processSizing(setupDicts.get("series"), parameters);
+            processPatch(setupDicts.get("series"), setupLists.get("patch").get(0), parameters);
+            series.add(new PatchSeries(setupDicts, setupLists, path, parameters, isVis));
+            MiniBox set = setupDicts.get("set");
+            setupDicts = new HashMap<>();
+            setupLists = new HashMap<>();
+            setupDicts.put("set", set);
         }
     }
     
@@ -142,9 +155,15 @@ public final class PatchInputBuilder extends InputBuilder {
         int margin = defaults.getInt("MARGIN");
         
         // Override sizes from specific flags.
-        if (series.contains("radius")) { radius = series.getInt("radius"); }
-        if (series.contains("depth")) { depth = series.getInt("depth"); }
-        if (series.contains("margin")) { margin = series.getInt("margin"); }
+        if (series.contains("radius")) {
+            radius = series.getInt("radius");
+        }
+        if (series.contains("depth")) {
+            depth = series.getInt("depth");
+        }
+        if (series.contains("margin")) {
+            margin = series.getInt("margin");
+        }
         
         // Enforce that RADIUS and MARGIN are even, and DEPTH is odd.
         int radiusUpdated = ((radius & 1) == 0 ? radius : radius + 1);
