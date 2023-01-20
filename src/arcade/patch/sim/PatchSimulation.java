@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import sim.engine.Schedule;
 import sim.engine.SimState;
+import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.comp.Component;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.loc.Location;
@@ -38,6 +40,12 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     /** Map of {@link Lattice} objects in the simulation. */
     HashMap<String, Lattice> lattices;
     
+    /** Map of {@link Action} instances in the simulation. */
+    HashMap<String, Action> actions;
+    
+    /** Map of {@link Component} instances in the simulation. */
+    HashMap<String, Component> components;
+    
     /** Cell ID tracker. */
     int id;
     
@@ -51,7 +59,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     public final PatchLatticeFactory latticeFactory;
     
     /**
-     * Simulation instance for a {@link arcade.core.sim.Series} for given random seed.
+     * Simulation instance for a {@link Series} for given random seed.
      *
      * @param seed  the random seed for random number generator
      * @param series  the simulation series
@@ -107,6 +115,12 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     
     @Override
     public final Lattice getLattice(String key) { return lattices.get(key); }
+    
+    @Override
+    public final Action getAction(String key) { return actions.get(key); }
+    
+    @Override
+    public final Component getComponent(String key) { return components.get(key); }
     
     /**
      * Called at the start of the simulation to set up agents and environment
@@ -171,6 +185,24 @@ public abstract class PatchSimulation extends SimState implements Simulation {
      */
     public abstract PatchLatticeFactory makeLatticeFactory();
     
+    /**
+     * Creates an instance of the given action.
+     *
+     * @param actionClass  the name of the action class
+     * @param parameters  the dictionary of action parameters
+     * @return  a {@link Action} instance
+     */
+    public abstract Action makeAction(String actionClass, MiniBox parameters);
+    
+    /**
+     * Creates an instance of the given component.
+     *
+     * @param componentClass  the name of the component class
+     * @param parameters  the dictionary of component parameters
+     * @return  a {@link Component} instance
+     */
+    public abstract Component makeComponent(String componentClass, MiniBox parameters);
+    
     @Override
     public final void setupAgents() {
         // Initialize grid for agents.
@@ -191,7 +223,9 @@ public abstract class PatchSimulation extends SimState implements Simulation {
                 CellContainer cellContainer = cellFactory.cells.get(i);
                 
                 // Check that we have enough containers.
-                if (locationContainer == null || cellContainer == null) { break; }
+                if (locationContainer == null || cellContainer == null) {
+                    break;
+                }
                 
                 // Make the location and cell.
                 Location location = locationContainer.convert(locationFactory, cellContainer);
@@ -227,18 +261,55 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     
     @Override
     public final void scheduleActions() {
-        // TODO add action scheduling
+        actions = new HashMap<>();
+        
+        for (String actionKey : series.actions.keySet()) {
+            MiniBox actionParameters = series.actions.get(actionKey);
+            String actionClass = actionParameters.get("CLASS");
+            Action action = makeAction(actionClass, actionParameters);
+            
+            if (action == null) {
+                continue;
+            }
+            
+            MiniBox registerBox = actionParameters.filter("(REGISTER)");
+            for (String registerKey : registerBox.getKeys()) {
+                action.register(this, registerKey);
+            }
+            
+            action.schedule(schedule);
+            actions.put(actionKey, action);
+        }
     }
     
     @Override
     public final void scheduleComponents() {
-        // TODO add component scheduling
+        components = new HashMap<>();
+        
+        for (String componentKey : series.components.keySet()) {
+            MiniBox componentParameters = series.components.get(componentKey);
+            String componentClass = componentParameters.get("CLASS");
+            Component component = makeComponent(componentClass, componentParameters);
+            
+            if (component == null) {
+                continue;
+            }
+            
+            MiniBox registerBox = componentParameters.filter("(REGISTER)");
+            for (String registerKey : registerBox.getKeys()) {
+                component.register(this, registerKey);
+            }
+            
+            component.schedule(schedule);
+            components.put(componentKey, component);
+        }
     }
     
     /**
      * Runs output methods.
      *
-     * @param isScheduled  {@code true} if the output should be scheduled, {@code false} otherwise
+     * @param isScheduled {@code true} if the output should be scheduled,
+     *                    {@code false} otherwise
      */
     public void doOutput(boolean isScheduled) {
         if (isScheduled) {
