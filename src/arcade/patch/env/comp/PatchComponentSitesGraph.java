@@ -269,18 +269,18 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         super(series);
         
         // Get graph site parameters.
-        dxy = parameters.getDouble("sites_graph/STEP_SIZE_XY");
-        dz = parameters.getDouble("sites_graph/STEP_SIZE_Z");
-        volume = parameters.getDouble("sites_graph/LATTICE_SITE_VOLUME");
-        siteLayout = parameters.get("sites_graph/GRAPH_LAYOUT");
+        dxy = parameters.getDouble("STEP_SIZE_XY");
+        dz = parameters.getDouble("STEP_SIZE_Z");
+        volume = parameters.getDouble("LATTICE_SITE_VOLUME");
+        siteLayout = parameters.get("GRAPH_LAYOUT");
         siteSetup = new String[] {
-                parameters.get("sites_graph/ROOTS_LEFT"),
-                parameters.get("sites_graph/ROOTS_TOP"),
-                parameters.get("sites_graph/ROOTS_RIGHT"),
-                parameters.get("sites_graph/ROOTS_BOTTOM"),
+                parameters.get("ROOTS_LEFT"),
+                parameters.get("ROOTS_TOP"),
+                parameters.get("ROOTS_RIGHT"),
+                parameters.get("ROOTS_BOTTOM"),
         };
-        oxySoluPlasma = parameters.getDouble("sites_graph/OXYGEN_SOLUBILITY_PLASMA");
-        oxySoluTissue = parameters.getDouble("sites_graph/OXYGEN_SOLUBILITY_TISSUE");
+        oxySoluPlasma = parameters.getDouble("OXYGEN_SOLUBILITY_PLASMA");
+        oxySoluTissue = parameters.getDouble("OXYGEN_SOLUBILITY_TISSUE");
         
         this.random = random;
         graphs = new boolean[latticeHeight][latticeLength][latticeWidth];
@@ -508,18 +508,14 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         }
     }
     
-    @Override
-    public void step(SimState state) {
-        complexStep();
-    }
-    
     /**
      * Graph step that only considers differences in concentration.
      * <p>
-     * Method is equivalent to the step used with {@link arcade.env.comp.SourceSites}
-     * and {@link arcade.env.comp.PatternSites} where the amount of concentration
-     * added is the difference between the source concentration and the current
-     * concentration for a given molecule.
+     * Method is equivalent to the step used with
+     * {@link arcade.patch.env.comp.PatchComponentSitesSource} and
+     * {@link arcade.patch.env.comp.PatchComponentSitesPattern} where the amount
+     * of concentration added is the difference between the source concentration
+     * and the current concentration for a given molecule.
      */
     void simpleStep() {
         Bag allEdges = new Bag(G.getAllEdges());
@@ -557,8 +553,8 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /**
      * Graph step that uses traversals to calculate exact hemodynamics.
      * <p>
-     * Traversing the graph updates the concentrations of molecules in each edge.
-     * The amount of concentration added is a function of flow rate and
+     * Traversing the graph updates the concentrations of molecules in each
+     * edge. The amount of concentration added is a function of flow rate and
      * permeability to the given molecule.
      */
     void complexStep() {

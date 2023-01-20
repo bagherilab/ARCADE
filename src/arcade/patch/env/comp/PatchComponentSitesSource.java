@@ -7,10 +7,10 @@ import arcade.core.util.MiniBox;
 /**
  * Extension of {@link PatchComponentSites} for source sites.
  * <p>
- * Each index in the lattice can be assigned as a source, depending on the initial
- * spacings in the x direction (length, {@code X_SPACING}), y direction (width,
- * {@code Y_SPACING}), and z direction (height, {@code Z_SPACING}).
- * Each spacing can be defined as:
+ * Each index in the lattice can be assigned as a source, depending on the
+ * initial spacings in the x direction (length, {@code X_SPACING}), y direction
+ * (width, {@code Y_SPACING}), and z direction (height, {@code Z_SPACING}). Each
+ * spacing can be defined as:
  * <ul>
  *     <li>{@code *} = all indices in the lattice</li>
  *     <li>{@code x} or {@code X} = no indices in the lattice</li>
@@ -75,10 +75,10 @@ public class PatchComponentSitesSource extends PatchComponentSites {
         super(series);
         
         // Get source sites parameters.
-        damageScaling = parameters.getDouble("sites_source/DAMAGE_SCALING");
-        xSpacing = parameters.get("sites_source/X_SPACING").split(":");
-        ySpacing = parameters.get("sites_source/Y_SPACING").split(":");
-        zSpacing = parameters.get("sites_source/Z_SPACING").split(":");
+        damageScaling = parameters.getDouble("DAMAGE_SCALING");
+        xSpacing = parameters.get("X_SPACING").split(":");
+        ySpacing = parameters.get("Y_SPACING").split(":");
+        zSpacing = parameters.get("Z_SPACING").split(":");
         
         // Set boolean.
         calculateDamage = damageScaling != 0;
@@ -115,9 +115,15 @@ public class PatchComponentSitesSource extends PatchComponentSites {
         for (int k = 0; k < latticeHeight; k++) {
             for (int i = 0; i < latticeLength; i++) {
                 for (int j = 0; j < latticeWidth; j++) {
-                    if (checkSourceIndex(xSpacing, i)) { continue; }
-                    if (checkSourceIndex(ySpacing, j)) { continue; }
-                    if (checkSourceIndex(zSpacing, k)) { continue; }
+                    if (checkSourceIndex(xSpacing, i)) {
+                        continue;
+                    }
+                    if (checkSourceIndex(ySpacing, j)) {
+                        continue;
+                    }
+                    if (checkSourceIndex(zSpacing, k)) {
+                        continue;
+                    }
                     sources[k][i][j] = true;
                 }
             }
@@ -129,7 +135,7 @@ public class PatchComponentSitesSource extends PatchComponentSites {
      *
      * @param spacing  the site spacing
      * @param index  the source site index
-     * @return  {@code true} if the index is valid, {@code false} otherwise
+     * @return {@code true}  if the index is valid, {@code false} otherwise
      */
     boolean checkSourceIndex(String[] spacing, int index) {
         int min;
@@ -138,7 +144,9 @@ public class PatchComponentSitesSource extends PatchComponentSites {
         
         // Site definition is given as a single value, min-max, or min-inc-max.
         if (spacing[0].equals("*")) {
-            if (spacing.length == 1) { return false; }
+            if (spacing.length == 1) {
+                return false;
+            }
             inc = Integer.parseInt(spacing[1]);
             return index % inc != 0;
         } else if (spacing[0].equalsIgnoreCase("x")) {

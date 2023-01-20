@@ -42,4 +42,30 @@
     <action class="remove" id="TIME_DELAY" value="0" units="min" />
     <action class="remove" id="REMOVE_RADIUS" value="1" units="min" />
      
+    <!-- COMPONENTS ======================================================== -->
+     
+    <!-- source sites component parameters -->
+    <component class="source_sites" id="X_SPACING" value="*" />
+    <component class="source_sites" id="Y_SPACING" value="*" />
+    <component class="source_sites" id="Z_SPACING" value="*" />
+    <component class="source_sites" id="DAMAGE_SCALING" value="0" />
+    
+    <!-- pattern sites component parameters -->
+    <component class="pattern_sites" id="RELATIVE_FRACTION" value="1.0" description="relative contribution of hemodynamic factors" />
+    <component class="pattern_sites" id="WEIGHT_GRADIENT" value="10" description="weight of gradient hemodynamic factor" />
+    <component class="pattern_sites" id="WEIGHT_LOCAL" value="10" description="weight of local hemodynamic factor" />
+    <component class="pattern_sites" id="WEIGHT_FLOW" value="10" description="weight of flow hemodynamic factor" />
+    <component class="pattern_sites" id="DAMAGE_SCALING" value="0" description="pattern site damage scaling" />
+    
+    <!-- graph site component parameters -->
+    <component class="graph_sites" id="STEP_SIZE_XY" value="1" units="patch" conversion="DS" />
+    <component class="graph_sites" id="STEP_SIZE_Z" value="1" units="patch" conversion="DZ" />
+    <component class="graph_sites" id="LATTICE_SITE_VOLUME" value="1" units="patch" conversion="DS^2.DS" />
+    <component class="graph_sites" id="GRAPH_LAYOUT" value="*" description="layout of graph sites" />
+    <component class="graph_sites" id="ROOTS_LEFT" value="x" description="roots at the left of environment (x direction)" />
+    <component class="graph_sites" id="ROOTS_RIGHT" value="x" description="roots at the right of environment (x direction)" />
+    <component class="graph_sites" id="ROOTS_TOP" value="x" description="roots at the top of environment (y direction)" />
+    <component class="graph_sites" id="ROOTS_BOTTOM" value="x" description="roots at the bottom of environment (y direction)" />
+    <component class="graph_sites" id="OXYGEN_SOLUBILITY_TISSUE" value="0.00000131" units="fmol O2/(um^3 mmHg)" />
+    <component class="graph_sites" id="OXYGEN_SOLUBILITY_PLASMA" value="0.00000138" units="fmol O2/(um^3 mmHg)" />
 </parameters>

@@ -15,10 +15,9 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * Abstract implementation of {@link Component} for patch sites.
  * <p>
  * The object defines the locations of sites from which molecules are generated
- * and added into the environment.
- * Multiple molecules generated from the same sites are tracked by a list of
- * {@link SiteLayer} objects, which map the component to the correct environment
- * lattices.
+ * and added into the environment. Multiple molecules generated from the same
+ * sites are tracked by a list of {@link SiteLayer} objects, which map the
+ * component to the correct environment lattices.
  */
 
 public abstract class PatchComponentSites implements Component {
@@ -56,7 +55,7 @@ public abstract class PatchComponentSites implements Component {
         
         /** Array holding current concentration values. */
         final double[][][] current;
-
+        
         /** Array holding previous concentration values. */
         final double[][][] previous;
         
@@ -70,7 +69,7 @@ public abstract class PatchComponentSites implements Component {
         final double permeability;
         
         /**
-         * Creates a {@code SiteLayer} for the given {@link PatchOperationGenerator}.
+         * Creates a {@code SiteLayer} for a {@link PatchOperationGenerator}.
          *
          * @param generator  the generator operation instance
          */

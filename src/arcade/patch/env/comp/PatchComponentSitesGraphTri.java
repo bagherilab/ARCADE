@@ -3,6 +3,7 @@ package arcade.patch.env.comp;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import sim.engine.SimState;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
@@ -43,7 +44,7 @@ import static arcade.patch.env.comp.PatchComponentSitesGraphUtilities.*;
  * </ul>
  */
 
-public class PatchComponentSitesGraphTri extends PatchComponentSitesGraph {
+public abstract class PatchComponentSitesGraphTri extends PatchComponentSitesGraph {
     /** List of all possible edge directions. */
     private static final EnumSet<EdgeDirection> EDGE_DIRECTIONS = EnumSet.of(
             EdgeDirection.UP_LEFT,
@@ -124,6 +125,46 @@ public class PatchComponentSitesGraphTri extends PatchComponentSitesGraph {
     public PatchComponentSitesGraphTri(Series series, MiniBox parameters,
                                        MersenneTwisterFast random) {
         super(series, parameters, random);
+    }
+    
+    /**
+     * Extension of {@link PatchComponentSitesGraphTri} for simple hemodynamics.
+     */
+    public static class Simple extends PatchComponentSitesGraphTri {
+        /**
+         * Creates a {@link PatchComponentSitesGraphTri} with simple step.
+         *
+         * @param series  the simulation series
+         * @param parameters  the component parameters dictionary
+         */
+        public Simple(Series series, MiniBox parameters, MersenneTwisterFast random) {
+            super(series, parameters, random);
+        }
+        
+        @Override
+        public void step(SimState state) {
+            super.simpleStep();
+        }
+    }
+    
+    /**
+     * Extension of {@link PatchComponentSitesGraphTri} for complex hemodynamics.
+     */
+    public static class Complex extends PatchComponentSitesGraphTri {
+        /**
+         * Creates a {@link PatchComponentSitesGraphTri} with complex step.
+         *
+         * @param series  the simulation series
+         * @param parameters  the component parameters dictionary
+         */
+        public Complex(Series series, MiniBox parameters, MersenneTwisterFast random) {
+            super(series, parameters, random);
+        }
+        
+        @Override
+        public void step(SimState state) {
+            super.complexStep();
+        }
     }
     
     @Override

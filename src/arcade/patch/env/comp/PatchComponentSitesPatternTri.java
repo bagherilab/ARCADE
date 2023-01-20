@@ -53,7 +53,7 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
     }
     
     /**
-     * Calculates the column of the triangular pattern based on offset and index.
+     * Calculates column of the triangular pattern based on offset and index.
      *
      * @param i  the index in the x direction
      * @param offset  the lattice offset
@@ -64,7 +64,7 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
     }
     
     /**
-     * Calculates the row of the triangular pattern based on offset and index.
+     * Calculates row of the triangular pattern based on offset and index.
      *
      * @param i  the index in the x direction
      * @param j  the index in the y direction
@@ -81,13 +81,18 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
         int offset = calcOffset(k);
         
         switch (calcCol(i, offset)) {
-            case 0: case 7: case 5:
+            case 0:
+            case 7:
+            case 5:
                 if (j != latticeWidth - 1) {
                     average += delta[i][j + (anchors[k][i][j] ? 1 : -1)];
                     average /= 2;
                 }
                 break;
-            case 1: case 2: case 3: case 4:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
                 if (i != latticeLength - 1 && !(i == 0 && patterns[k][i][j] && !anchors[k][i][j])) {
                     average += delta[i + (anchors[k][i][j] ? 1 : -1)][j];
                     average /= 2;
@@ -108,7 +113,8 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
         int offset = calcOffset(k);
         
         switch (calcCol(i, offset)) {
-            case 0: case 7:
+            case 0:
+            case 7:
                 if (i == 0 || i == 1) {
                     total = val;
                 } else {
@@ -125,14 +131,17 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
                         + flow[i - 1][j + (j > latticeWidth - 3 ? 0 : 1)]) / 2 + val;
                 flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;
                 break;
-            case 2: case 3:
+            case 2:
+            case 3:
                 switch (calcRow(i, j, offset)) {
-                    case 1: case 2:
+                    case 1:
+                    case 2:
                         if (j != latticeWidth - 1 && i != 0) {
                             total = flow[i - 1][j + 1] + val;
                         }
                         break;
-                    case 0: case 5:
+                    case 0:
+                    case 5:
                         if (j != 0 && i != 0) {
                             total = flow[i - 1][j - 1] + val;
                         }
@@ -155,14 +164,18 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
         int offset = calcOffset(k);
         
         switch (calcCol(i, offset)) {
-            case 0: case 7: case 5:
+            case 0:
+            case 7:
+            case 5:
                 if (j != latticeWidth - 1) {
                     total += damageSingle[k][i][j + 1];
                     total /= 2;
                     damageTotal[k][i][j + 1] = total;
                 }
                 break;
-            case 1: case 2: case 3:
+            case 1:
+            case 2:
+            case 3:
                 if (i != latticeLength - 1) {
                     total += damageSingle[k][i + 1][j];
                     total /= 2;
@@ -179,12 +192,12 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
     @Override
     void initializePatternArray() {
         byte[][] unit = {
-            {0, 0, 0, 1, 2, 1, 0, 1, 0},
-            {0, 0, 0, 1, 2, 2, 0, 2, 0},
-            {0, 0, 1, 2, 0, 0, 0, 0, 0},
-            {1, 1, 2, 0, 0, 0, 0, 0, 0},
-            {2, 1, 2, 0, 0, 0, 0, 0, 0},
-            {0, 0, 1, 2, 0, 0, 0, 0, 0}
+                { 0, 0, 0, 1, 2, 1, 0, 1, 0 },
+                { 0, 0, 0, 1, 2, 2, 0, 2, 0 },
+                { 0, 0, 1, 2, 0, 0, 0, 0, 0 },
+                { 1, 1, 2, 0, 0, 0, 0, 0, 0 },
+                { 2, 1, 2, 0, 0, 0, 0, 0, 0 },
+                { 0, 0, 1, 2, 0, 0, 0, 0, 0 }
         };
         
         for (int k = 0; k < latticeHeight; k += 2) {

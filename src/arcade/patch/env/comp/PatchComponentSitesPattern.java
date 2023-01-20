@@ -11,10 +11,11 @@ import arcade.core.util.MiniBox;
  * A repeating pattern of lattice indices are assigned as sites, defined by
  * tessellating the "unit cell" of the pattern across the entire lattice.
  * <p>
- * The amount of concentration added to each index is the difference between
- * the concentration at the index and the source concentration of the molecule.
- * Three hemodynamic factors can be optionally included ({@code RELATIVE_FRACTION})
- * with variable weights to reduce the amount of concentration added.
+ * The amount of concentration added to each index is the difference between the
+ * concentration at the index and the source concentration of the molecule.
+ * Three hemodynamic factors can be optionally included
+ * ({@code RELATIVE_FRACTION}) with variable weights to reduce the amount of
+ * concentration added.
  * <ul>
  *     <li>{@code WEIGHT_FLOW} = consumption upstream of a given lattice site</li>
  *     <li>{@code WEIGHT_LOCAL} = local cell consumption of the molecule at a given
@@ -89,11 +90,11 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
         super(series);
         
         // Get pattern site parameters.
-        damageScaling = parameters.getDouble("sites_pattern/DAMAGE_SCALING");
-        fraction = parameters.getDouble("sites_pattern/RELATIVE_FRACTION");
-        weightGradient = parameters.getDouble("sites_pattern/WEIGHT_GRADIENT");
-        weightLocal = parameters.getDouble("sites_pattern/WEIGHT_LOCAL");
-        weightFlow = parameters.getDouble("sites_pattern/WEIGHT_FLOW");
+        fraction = parameters.getDouble("RELATIVE_FRACTION");
+        weightGradient = parameters.getDouble("WEIGHT_GRADIENT");
+        weightLocal = parameters.getDouble("WEIGHT_LOCAL");
+        weightFlow = parameters.getDouble("WEIGHT_FLOW");
+        damageScaling = parameters.getDouble("DAMAGE_SCALING");
         
         // Set booleans.
         calculateDamage = damageScaling != 0;
@@ -124,7 +125,7 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
     abstract double calculateAverage(int i, int j, int k, double[][] delta);
     
     /**
-     * Calculates the final change in concentration based on upstream capillaries.
+     * Calculates final change in concentration based on upstream capillaries.
      *
      * @param i  the index in the x direction
      * @param j  the index in the y direction
@@ -137,15 +138,13 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
                                 EnumMap<Border, Boolean> borders);
     
     /**
-     * Calculates the average damage between the two lattice indices bordering
-     * a capillary.
+     * Calculates average damage between the two indices bordering a capillary.
      *
      * @param i  the index in the x direction
      * @param j  the index in the y direction
      * @param k  the index in the z direction
      */
     abstract void calculateDamage(int i, int j, int k);
-    
     
     /**
      * Initializes damage array to 1.0 (no damage).

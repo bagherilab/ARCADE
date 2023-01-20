@@ -1,6 +1,7 @@
 package arcade.patch.env.comp;
 
 import java.util.EnumMap;
+
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 
@@ -47,7 +48,7 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
     }
     
     /**
-     * Calculates the column of the rectangular pattern based on offset and index.
+     * Calculates column of the rectangular pattern based on offset and index.
      *
      * @param i  the index in the x direction
      * @param offset  the lattice offset
@@ -58,7 +59,7 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
     }
     
     /**
-     * Calculates the row of the rectangular pattern based on offset and index.
+     * Calculates row of the rectangular pattern based on offset and index.
      *
      * @param i  the index in the x direction
      * @param j  the index in the y direction
@@ -75,13 +76,17 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
         int offset = calcOffset(k);
         
         switch (calcCol(i, offset)) {
-            case 0: case 1: case 2: case 3:
+            case 0:
+            case 1:
+            case 2:
+            case 3:
                 if (j != latticeWidth - 1) {
                     average += delta[i][j + (anchors[k][i][j] ? 1 : -1)];
                     average /= 2;
                 }
                 break;
-            case 4: case 5:
+            case 4:
+            case 5:
                 if (i != latticeLength - 1 && calcRow(i, j, offset) % 3 == 0) {
                     average += delta[i + (anchors[k][i][j] ? 1 : -1)][j];
                     average /= 2;
@@ -107,11 +112,13 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
                     total = val;
                 } else {
                     total = (flow[i - 1][j]
-                        + flow[i - 1][j + (j == latticeWidth - 1 ? 0 : 1)]) / 2 + val;
+                            + flow[i - 1][j + (j == latticeWidth - 1 ? 0 : 1)]) / 2 + val;
                 }
                 flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;
                 break;
-            case 1: case 2: case 3:
+            case 1:
+            case 2:
+            case 3:
                 if (i == 0) {
                     total = val;
                 } else {
@@ -119,7 +126,8 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
                 }
                 flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;
                 break;
-            case 4: case 5:
+            case 4:
+            case 5:
                 switch ((j + ((i / 6 & 1) == 0 ? 0 : 3) + offset) % 6) {
                     case 0:
                         if (j != 0) {
@@ -143,7 +151,8 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
                             flow[i + (borders.get(Border.BOTTOM) ? 0 : 1)][j] = total;
                         }
                         break;
-                    case 4: case 5:
+                    case 4:
+                    case 5:
                         if (i != 0) {
                             total = flow[i - 1][j] + val;
                         }
@@ -165,14 +174,18 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
         int offset = calcOffset(k);
         
         switch (calcCol(i, offset)) {
-            case 0: case 1: case 2: case 3:
+            case 0:
+            case 1:
+            case 2:
+            case 3:
                 if (j != latticeWidth - 1) {
                     total += damageSingle[k][i][j + 1];
                     total /= 2;
                     damageTotal[k][i][j + 1] = total;
                 }
                 break;
-            case 4: case 5:
+            case 4:
+            case 5:
                 if (i != latticeLength - 1 && calcRow(i, j, offset) % 3 == 0) {
                     total += damageSingle[k][i + 1][j];
                     total /= 2;
@@ -189,12 +202,12 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
     @Override
     void initializePatternArray() {
         byte[][] unit = {
-            {0, 0, 0, 0, 1, 2},
-            {0, 0, 0, 0, 0, 1},
-            {0, 0, 0, 0, 0, 1},
-            {0, 0, 0, 0, 1, 2},
-            {1, 1, 1, 1, 1, 0},
-            {2, 2, 2, 2, 1, 0}
+                { 0, 0, 0, 0, 1, 2 },
+                { 0, 0, 0, 0, 0, 1 },
+                { 0, 0, 0, 0, 0, 1 },
+                { 0, 0, 0, 0, 1, 2 },
+                { 1, 1, 1, 1, 1, 0 },
+                { 2, 2, 2, 2, 1, 0 }
         };
         
         for (int k = 0; k < latticeHeight; k += 2) {
