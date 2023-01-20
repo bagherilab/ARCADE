@@ -6,6 +6,8 @@
     <!-- default parameters for patch -->
     <patch id="GEOMETRY" value="hex" description="Patch geometry (hex or rect)" />
     
+    <!-- POPULATIONS ======================================================= -->
+    
     <!-- default parameters for populations -->
     <population id="CELL_AGE_MIN" value="0" unit="min" description="0 weeks" />
     <population id="CELL_AGE_MAX" value="120960" unit="min" description="12 weeks" />
@@ -13,14 +15,12 @@
     <population id="CELL_VOLUME_STDEV" value="200.0" unit="um^3" />
     <population id="CELL_HEIGHT_MEAN" value="8.7" unit="um" />
     <population id="CELL_HEIGHT_STDEV" value="0" unit="um" />
-    
-    <!-- cellular decision making -->
     <population id="HETEROGENEITY" value="0.0" description="variation in cell agent parameters" />
     <population id="SENES_FRAC" value="0.5" description="fraction senescent vs. apoptotic" />
     <population id="NECRO_FRAC" value="0.5" description="fraction necrotic vs. apoptotic" />
     <population id="ENERGY_THRESHOLD" value="1000.0" description="maximum energy deficit" />
     <population id="DIVISION_POTENTIAL" value="50" description="max number of divisions" />
-    <population id="COMPRESSION_TOLERANCE" value="0" units="um" description="maximum compression tolerance via height" />
+    <population id="COMPRESSION_TOLERANCE" value="0" units="um" description="maximum compression tolerance" />
     
     <!-- proliferation module parameters -->
     <population.module module="proliferation" id="SYNTHESIS_DURATION" value="637" units="min" description="duration of DNA synthesis" />
@@ -30,6 +30,43 @@
     
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="DEATH_DURATION" value="1080" unit="min" description="duration of cell death" />
+    
+    <!-- metabolism process parameters -->
+    <population.process process="metabolism" id="BASAL_ENERGY" value="0.001" unit="fmol ATP/um^3 cell/min" />
+    <population.process process="metabolism" id="PROLIF_ENERGY" value="0.001" unit="fmol ATP/um^3 cell/min" />
+    <population.process process="metabolism" id="MIGRA_ENERGY" value="0.0002" unit="fmol ATP/um^3 cell/min" />
+    <population.process process="metabolism" id="CELL_DENSITY" value="0.00133" unit="ng/um^3" />
+    <population.process process="metabolism" id="MASS_TO_GLUC" value="694.0" unit="fmol glucose/ng biomass" />
+    <population.process process="metabolism" id="OXY_SOLU_TISSUE" value="0.00000131" units="fmol O2/(um^3 mmHg)" />
+    <population.process process="metabolism" id="META_PREF" value="0.3" description="preference for glycolysis" />
+    <population.process process="metabolism" id="FRAC_MASS" value="0.25" description="percent of internal nutrients converted to mass" />
+    <population.process process="metabolism" id="RATIO_GLUC_TO_PYRU" value="0.5" description="preference for glucose over pyruvate to convert to mass" />
+    <population.process process="metabolism" id="LACTATE_RATE" value="0.1" unit="fmol lactate/fmol pyruvate" />
+    <population.process process="metabolism" id="AUTOPHAGY_RATE" value="0.0001" unit="ng/min" />
+    <population.process process="metabolism" id="GLUC_UPTAKE_RATE" value="1.12" unit="fmol glucose/um^2 cell/min/M glucose" />
+    <population.process process="metabolism" id="MIN_MASS_FRAC" value="0.5" />
+    <population.process process="metabolism" id="ATP_PRODUCTION_RATE" value="8.927" unit="fmol ATP/um^3/min/M glucose" />
+    <population.process process="metabolism" id="CONS_GLUC_UPTAKE" value="929.88" unit="fmol glucose/min/M glucose" />
+    <population.process process="metabolism" id="CONS_GROWTH_RATE" value="2.819" unit="um^3/min" />
+    <population.process process="metabolism" id="CONS_ATP_PRODUCTION" value="4.9817" unit="fmol ATP/cell/min" />
+    
+    <!-- signaling process parameters -->
+    <population.process process="signaling" id="MIGRA_THRESHOLD" value="3" description="fold change in PLCg for migratory" />
+    <population.process process="signaling" id="MIGRA_PROB" value="0.05" description="probability for migration" />
+    
+    <!-- LAYERS ============================================================ -->
+    
+    <!-- default parameters for layers -->
+    <layer id="INITIAL_CONCENTRATION" value="0" units="(variable)" />
+    
+    <!-- diffuser operation parameters -->
+    <layer.operation operation="diffuser" id="DIFFUSIVITY" value="1.0" units="um^2/s" />
+    <layer.operation operation="diffuser" id="STEP_SIZE_XY" value="1" units="patch" conversion="DS" />
+    <layer.operation operation="diffuser" id="STEP_SIZE_Z" value="1" units="patch" conversion="DZ" />
+    
+    <!-- generator operation parameters -->
+    <layer.operation operation="generator" id="CONCENTRATION" value="1.0" units="(variable)" />
+    <layer.operation operation="generator" id="PERMEABILITY" value="100.0" units="(variable)" />
      
     <!-- ACTIONS =========================================================== -->
     
