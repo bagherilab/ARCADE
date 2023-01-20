@@ -4,17 +4,20 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import com.google.gson.reflect.TypeToken;
 import sim.engine.Schedule;
+import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.comp.Component;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.loc.LocationContainer;
 
 /**
- * A {@code Simulation} object sets up the agents and environments for a simulation.
+ * A {@code Simulation} sets up agents and environments for a simulation.
  * <p>
  * A {@code Simulation} consists of stepping the model for a given random seed.
  * At the start, agents and environments are added the instance and scheduled.
- * Any additional steppables, including actions and components, are also scheduled.
+ * Any additional steppables, including actions and components, are also
+ * scheduled.
  * <p>
  * A {@code Simulation} should also extend {@code SimState} from the
  * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
@@ -31,12 +34,12 @@ public interface Simulation {
     Type DEFAULT_LOCATION_TYPE = new TypeToken<ArrayList<LocationContainer>>() { }.getType();
     
     /**
-     * Gets the {@link arcade.core.sim.Series} object for the current simulation.
+     * Gets the {@link Series} object for the current simulation.
      * <p>
-     * The {@link arcade.core.sim.Series} object can be further queried for information
-     * on configuration and parameters.
+     * The {@link Series} object can be further queried for information on
+     * configuration and parameters.
      *
-     * @return  the {@link arcade.core.sim.Series} instance
+     * @return  the {@link Series} instance
      */
     Series getSeries();
     
@@ -76,53 +79,69 @@ public interface Simulation {
     ArrayList<LocationContainer> getLocations();
     
     /**
-     * Gets the {@link arcade.core.env.grid.Grid} object.
+     * Gets the {@link Grid} object.
      *
-     * @return  the {@link arcade.core.env.grid.Grid} object
+     * @return  the {@link Grid} object
      */
     Grid getGrid();
     
     /**
-     * Gets the {@link arcade.core.env.lat.Lattice} object for a given key.
+     * Gets the {@link Lattice} object for a given key.
      *
      * @param key  the name of the lattice
-     * @return  the {@link arcade.core.env.lat.Lattice} object
+     * @return  the {@link Lattice} object
      */
     Lattice getLattice(String key);
     
     /**
+     * Gets the {@link Action} object for a given key.
+     *
+     * @param key  the name of the action
+     * @return  the {@link Action} object
+     */
+    Action getAction(String key);
+    
+    /**
+     * Gets the {@link Component} object for a given key.
+     *
+     * @param key  the name of the component
+     * @return  the {@link Component} object
+     */
+    Component getComponent(String key);
+    
+    /**
      * Sets up the agents in the grid for the simulation.
      * <p>
-     * The concrete implementing class calls this and other {@code setup}
-     * methods from the MASON library {@code start()} method, which is called
-     * before the schedule starts stepping the simulation.
+     * The concrete implementing class calls this and other setup methods from
+     * the MASON library {@code start()} method, which is called before the
+     * schedule starts stepping the simulation.
      */
     void setupAgents();
     
     /**
      * Sets up the environment using lattices for the simulation.
      * <p>
-     * The concrete implementing class calls this and other {@code setup}
-     * methods from the MASON library {@code start()} method, which is called
-     * before the schedule starts stepping the simulation.
+     * The concrete implementing class calls this and other setup methods from
+     * the MASON library {@code start()} method, which is called before the
+     * schedule starts stepping the simulation.
      */
     void setupEnvironment();
     
     /**
      * Schedules any {@link arcade.core.agent.action.Action} instances.
      * <p>
-     * The concrete implementing class calls this and all other {@code schedule}
-     * methods from the MASON library {@code start()} method, which is called
-     * before the schedule starts stepping the simulation.
+     * The concrete implementing class calls this and other schedule methods
+     * from the MASON library {@code start()} method, which is called before the
+     * schedule starts stepping the simulation.
      */
     void scheduleActions();
     
     /**
      * Schedules any {@link arcade.core.env.comp.Component} instances.
      * <p>
-     * The concrete implementing class calls this and all other {@code schedule}
-     * methods from the MASON library {@code start()} method, which is called
-     * before the schedule starts stepping the simulation.
+     * The concrete implementing class calls this and other schedule methods
+     * from the MASON library {@code start()} method, which is called before the
+     * schedule starts stepping the simulation.
      */
     void scheduleComponents();
 }
