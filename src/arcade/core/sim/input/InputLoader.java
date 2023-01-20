@@ -101,6 +101,11 @@ public class InputLoader extends DefaultHandler {
                 filter = "";
             }
             
+            // Add target tag if set.
+            if (att.getValue("class") != null) {
+                id = att.getValue("class") + TAG_SEPARATOR + id;
+            }
+            
             box.addTag(id, split[0].toUpperCase());
             
             for (int i = 0; i < numAtts; i++) {
