@@ -30,4 +30,16 @@
     
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="DEATH_DURATION" value="1080" unit="min" description="duration of cell death" />
+     
+    <!-- ACTIONS =========================================================== -->
+    
+    <!-- insert action parameters -->
+    <action class="insert" id="TIME_DELAY" value="0" units="min" />
+    <action class="insert" id="INSERT_RADIUS" value="1" />
+    <action class="insert" id="INSERT_NUMBER" value="1" />
+    
+    <!-- remove action parameters -->
+    <action class="remove" id="TIME_DELAY" value="0" units="min" />
+    <action class="remove" id="REMOVE_RADIUS" value="1" units="min" />
+     
 </parameters>

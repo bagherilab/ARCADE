@@ -20,10 +20,10 @@ import static arcade.patch.util.PatchEnums.Ordering;
 /**
  * Implementation of {@link Action} for removing cell agents.
  * <p>
- * {@code PatchActionRemove} is stepped once.
- * The {@code PatchActionRemove} will remove all cell agents within the
- * specified radius from the center of the simulation.
- * Quiescent cells bordering the removal site are set to undefined state.
+ * The action is stepped once after {@code TIME_DELAY}. The action will remove
+ * all cell agents within the specified radius {@code REMOVE_RADIUS} from the
+ * center of the simulation. Quiescent cells bordering the removal site are set
+ * to undefined state.
  */
 
 public class PatchActionRemove implements Action {
@@ -49,8 +49,8 @@ public class PatchActionRemove implements Action {
      * @param parameters  the component parameters dictionary
      */
     public PatchActionRemove(Series series, MiniBox parameters) {
-        timeDelay = parameters.getInt("remove/TIME_DELAY");
-        removeRadius = parameters.getInt("remove/REMOVE_RADIUS");
+        timeDelay = parameters.getInt("TIME_DELAY");
+        removeRadius = parameters.getInt("REMOVE_RADIUS");
         removeDepth = ((PatchSeries) series).depth;
     }
     
@@ -84,10 +84,6 @@ public class PatchActionRemove implements Action {
                 Location location = cell.getLocation();
                 grid.removeObject(cell, location);
                 cell.stop();
-                
-                sim.getLattice("GLUCOSE").setValue(location, 0);
-                sim.getLattice("OXYGEN").setValue(location, 0);
-                sim.getLattice("TGFA").setValue(location, 0);
             }
         }
         

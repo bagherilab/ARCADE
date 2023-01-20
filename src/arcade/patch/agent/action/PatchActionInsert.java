@@ -24,10 +24,10 @@ import static arcade.patch.util.PatchEnums.Ordering;
 /**
  * Implementation of {@link Action} for inserting cell agents.
  * <p>
- * {@code PatchActionInsert} is stepped once.
- * The {@code PatchActionInsert} will insert a mixture of cells from the
- * specified populations into locations within the specified radius from the
- * center of the simulation.
+ * The action is stepped once after {@code TIME_DELAY}. The action will insert a
+ * mixture of {@code INSERT_NUMBER} cells from each of the registered
+ * populations into locations within the specified radius {@code INSERT_RADIUS}
+ * from the center of the simulation.
  */
 
 public class PatchActionInsert implements Action {
@@ -44,7 +44,7 @@ public class PatchActionInsert implements Action {
     private final int insertNumber;
     
     /** List of populations. */
-    ArrayList<MiniBox> populations;
+    private final ArrayList<MiniBox> populations;
     
     /**
      * Creates a {@link Action} for removing cell agents.
@@ -62,10 +62,10 @@ public class PatchActionInsert implements Action {
     public PatchActionInsert(Series series, MiniBox parameters) {
         int maxRadius = ((PatchSeries) series).radius;
         
-        timeDelay = parameters.getInt("insert/TIME_DELAY");
-        insertRadius = Math.min(maxRadius, parameters.getInt("insert/INSERT_RADIUS"));
+        timeDelay = parameters.getInt("TIME_DELAY");
+        insertRadius = Math.min(maxRadius, parameters.getInt("INSERT_RADIUS"));
         insertDepth = ((PatchSeries) series).depth;
-        insertNumber = parameters.getInt("insert/INSERT_NUMBER");
+        insertNumber = parameters.getInt("INSERT_NUMBER");
         
         populations = new ArrayList<>();
     }
@@ -108,14 +108,12 @@ public class PatchActionInsert implements Action {
                 double height = heights.nextDouble();
                 int age = ages.nextInt();
                 
-                Coordinate coordinate = coordinates.remove(i);
-                
-                if (coordinate == null) {
+                if (coordinates.isEmpty()) {
                     break;
                 }
                 
                 PatchLocationContainer locationContainer =
-                        new PatchLocationContainer(id, coordinate);
+                        new PatchLocationContainer(id, coordinates.remove(0));
                 PatchCellContainer cellContainer = new PatchCellContainer(id, 0, pop,
                         age, divisions, State.UNDEFINED, volume, height,
                         volume, height + compression);
