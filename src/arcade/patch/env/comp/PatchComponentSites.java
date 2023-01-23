@@ -85,7 +85,7 @@ public abstract class PatchComponentSites implements Component {
     
     @Override
     public void schedule(Schedule schedule) {
-        schedule.scheduleOnce(this, Ordering.FIRST.ordinal());
+        schedule.scheduleOnce(this, Ordering.FIRST.ordinal() - 1);
         schedule.scheduleRepeating(this, Ordering.COMPONENTS.ordinal(), 1);
     }
     
