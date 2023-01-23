@@ -44,7 +44,7 @@ public final class PatchLocationRect extends PatchLocation {
     /** Area of rectangle patch [um<sup>2</sup>]. */
     private static final double RECT_AREA = RECT_SIZE * RECT_SIZE;
     
-    /** Surface area of hexagon patch [um<sup>2</sup>]. */
+    /** Surface area of rectangle patch [um<sup>2</sup>]. */
     private static final double RECT_SURFACE = 2 * RECT_AREA + RECT_DEPTH * RECT_PERIMETER;
     
     /** Volume of rectangle patch [um<sup>3</sup>]. */
@@ -226,7 +226,7 @@ public final class PatchLocationRect extends PatchLocation {
         }
         
         // Add current location.
-        neighbors.add(new PatchLocationHex(rect));
+        neighbors.add(new PatchLocationRect(rect));
         
         return neighbors;
     }
