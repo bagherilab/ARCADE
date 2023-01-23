@@ -7,7 +7,6 @@ import arcade.core.env.lat.LatticeFactory;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.patch.env.operation.PatchOperation;
-import arcade.patch.sim.PatchSeries;
 import static arcade.core.util.Enums.Category;
 
 /**

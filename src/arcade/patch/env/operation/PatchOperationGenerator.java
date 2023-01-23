@@ -1,9 +1,11 @@
 package arcade.patch.env.operation;
 
 import ec.util.MersenneTwisterFast;
+import arcade.core.env.operation.Operation;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.env.lat.PatchLattice;
+import static arcade.core.util.Enums.Category;
 
 /**
  * Extension of {@link PatchOperation} for generation.
@@ -52,19 +54,22 @@ public class PatchOperationGenerator extends PatchOperation {
         
         // Set lattice field.
         this.latticeCurrent = lattice.getField();
-        this.latticePrevious = lattice.getCopy();
         this.latticeDelta = new double[latticeHeight][latticeLength][latticeWidth];
+        
+        if (lattice.getOperation(Category.DIFFUSER) != null) {
+            Operation diffuser = lattice.getOperation(Category.DIFFUSER);
+            this.latticePrevious = ((PatchOperationDiffuser) diffuser).latticeNew;
+        } else {
+            this.latticePrevious =  new double[latticeHeight][latticeLength][latticeWidth];
+        }
     }
     
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-        double[][][] field = lattice.getField(); // local variable for faster access
-        
         for (int k = 0; k < latticeHeight; k++) {
             for (int i = 0; i < latticeLength; i++) {
                 for (int j = 0; j < latticeWidth; j++) {
-                    latticePrevious[k][i][j] = field[k][i][j];
-                    field[k][i][j] += latticeDelta[k][i][j];
+                    latticeCurrent[k][i][j] += latticeDelta[k][i][j];
                 }
             }
         }

@@ -1,9 +1,11 @@
 package arcade.patch.env.operation;
 
 import ec.util.MersenneTwisterFast;
+import arcade.core.env.operation.Operation;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.env.lat.PatchLattice;
+import static arcade.core.util.Enums.Category;
 
 /**
  * Extension of {@link PatchOperation} for diffusion.
@@ -18,6 +20,12 @@ import arcade.patch.env.lat.PatchLattice;
  */
 
 public abstract class PatchOperationDiffuser extends PatchOperation {
+    /** Array holding current concentration values. */
+    public final double[][][] latticeCurrent;
+    
+    /** Array holding new concentration values. */
+    public final double[][][] latticeNew;
+    
     /** Dimensionless rate of diffusion. */
     double rate;
     
@@ -82,6 +90,16 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
         dxy = parameters.getDouble("diffuser/STEP_SIZE_XY");
         dz = parameters.getDouble("diffuser/STEP_SIZE_Z");
         
+        // Set lattice fields.
+        this.latticeCurrent = lattice.getField();
+        
+        if (lattice.getOperation(Category.GENERATOR) != null) {
+            Operation generator = lattice.getOperation(Category.GENERATOR);
+            this.latticeNew = ((PatchOperationGenerator) generator).latticePrevious;
+        } else {
+            this.latticeNew =  new double[latticeHeight][latticeLength][latticeWidth];
+        }
+        
         // Set up border arrays for up and down (z direction).
         upBorder = new byte[latticeHeight];
         downBorder = new byte[latticeHeight];
@@ -130,22 +148,22 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
      * Steps the diffuser for 2D simulations.
      */
     private void step2D() {
-        double[][] field = lattice.getField()[0]; // local variable for faster access
-        double[][] update = new double[latticeLength][latticeWidth];
+        double[][] latticeCurrentLayer = latticeCurrent[0];
+        double[][] latticeNewLayer = latticeNew[0];
         double oldConc;
         double sumConc;
         
         for (int step = 0; step < 60; step++) {
             for (int i = 0; i < latticeLength; i++) {
                 for (int j = 0; j < latticeWidth; j++) {
-                    oldConc = field[i][j] * adjust;
-                    sumConc = calcSum(i, j, field);
-                    update[i][j] = rate * (sumConc - beta * oldConc) + oldConc;
+                    oldConc = latticeCurrentLayer[i][j] * adjust;
+                    sumConc = calcSum(i, j, latticeCurrentLayer);
+                    latticeNewLayer[i][j] = rate * (sumConc - beta * oldConc) + oldConc;
                 }
             }
             
             // Set grid values to new grid.
-            lattice.setField(update, 0);
+            lattice.setField(latticeNewLayer, 0);
         }
     }
     
@@ -153,8 +171,6 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
      * Steps the diffuser for 3D simulations.
      */
     private void step3D() {
-        double[][][] field = lattice.getField(); // local variable for faster access
-        double[][][] update = new double[latticeHeight][latticeLength][latticeWidth];
         double oldConc;
         double sumConc;
         int up;
@@ -168,22 +184,22 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
                 
                 for (int i = 0; i < latticeLength; i++) {
                     for (int j = 0; j < latticeWidth; j++) {
-                        oldConc = field[k][i][j] * adjust;
-                        sumConc = calcSum(i, j, field[k]);
+                        oldConc = latticeCurrent[k][i][j] * adjust;
+                        sumConc = calcSum(i, j, latticeCurrent[k]);
                         
                         // Add in up and down neighbors for 3D case. Check if
                         // located at the up (for up) and down (for down) side
                         // of the environment. Includes multiplier since dz =/= dx = dy.
-                        sumConc += field[up][i][j] * alpha;
-                        sumConc += field[down][i][j] * alpha;
+                        sumConc += latticeCurrent[up][i][j] * alpha;
+                        sumConc += latticeCurrent[down][i][j] * alpha;
                         
-                        update[k][i][j] = rate * (sumConc - beta * oldConc) + oldConc;
+                        latticeNew[k][i][j] = rate * (sumConc - beta * oldConc) + oldConc;
                     }
                 }
             }
             
             // Set grid values to new grid.
-            lattice.setField(update);
+            lattice.setField(latticeNew);
         }
     }
 }
