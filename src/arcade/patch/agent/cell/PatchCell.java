@@ -155,6 +155,7 @@ public class PatchCell implements Cell {
         // Select parameters from given distribution
         this.necroFrac = parameters.getDouble("NECRO_FRAC");
         this.senesFrac = parameters.getDouble("SENES_FRAC");
+        this.energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
         
         // Add cell processes.
         MiniBox processBox = parameters.filter("(PROCESS)");
@@ -305,8 +306,8 @@ public class PatchCell implements Cell {
         
         // Check energy status. If cell has less energy than threshold, it will
         // necrose. If overall energy is negative, then cell enters quiescence.
-        if (state != State.APOPTOTIC && energy > 0) {
-            if (energy > energyThreshold) {
+        if (state != State.APOPTOTIC && energy < 0) {
+            if (energy < energyThreshold) {
                 if (simstate.random.nextDouble() > necroFrac) {
                     setState(State.APOPTOTIC);
                 } else {
