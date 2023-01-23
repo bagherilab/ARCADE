@@ -16,6 +16,9 @@ import java.util.ArrayList;
  */
 
 public final class PatchLocationFactoryHex extends PatchLocationFactory {
+    /**
+     * Creates a factory for making hexagonal {@link PatchLocation} instances.
+     */
     public PatchLocationFactoryHex() { super(); }
     
     @Override

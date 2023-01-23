@@ -39,12 +39,7 @@ public class PatchModuleMigration extends PatchModule {
         movementDuration = Math.round(location.getCoordinateSize() / migrationRate);
     }
     
-    /**
-     * Calls the step method for the module.
-     *
-     * @param random  the random number generator
-     * @param sim  the simulation instance
-     */
+    @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         if (ticker > movementDuration) {
             PatchLocation newLocation = PatchCell.selectBestLocation(sim, location,

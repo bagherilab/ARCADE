@@ -14,6 +14,9 @@ import java.util.ArrayList;
  */
 
 public final class PatchLocationFactoryRect extends PatchLocationFactory {
+    /**
+     * Creates a factory for making rectangular {@link PatchLocation} instances.
+     */
     public PatchLocationFactoryRect() { super(); }
     
     @Override

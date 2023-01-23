@@ -37,12 +37,7 @@ public class PatchModuleApoptosis extends PatchModule {
         deathDuration = parameters.getInt("apoptosis/DEATH_DURATION");
     }
     
-    /**
-     * Calls the step method for the module.
-     *
-     * @param random  the random number generator
-     * @param sim  the simulation instance
-     */
+    @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         if (ticker > deathDuration) {
             // Induce one neighboring quiescent cell to proliferate.
