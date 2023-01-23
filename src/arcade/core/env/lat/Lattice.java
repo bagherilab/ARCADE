@@ -27,13 +27,6 @@ public interface Lattice extends Steppable {
     double[][][] getField();
     
     /**
-     * Gets a copy of the underlying lattice array.
-     *
-     * @return  the copied array
-     */
-    double[][][] getCopy();
-    
-    /**
      * Gets the length of the lattice (x direction).
      *
      * @return  the length of the lattice
