@@ -5,7 +5,6 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
-import static arcade.patch.util.PatchEnums.Flag;
 
 /** 
  * Extension of {@link PatchProcessMetabolism} for complex metabolism.
@@ -160,7 +159,7 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
         
         // Increase mass if (i) dividing and less than double mass or (ii)
         // below critical mass for maintenance.
-        if ((energy >= 0 && cell.flag == Flag.PROLIFERATIVE && mass < 2 * critMass)
+        if ((energy >= 0 && isProliferative && mass < 2 * critMass)
                 || (energy >= 0 && mass < 0.99 * critMass)) {
             mass += FRAC_MASS*(RATIO_GLUC_TO_PYRU*glucInt
                     + (1 - RATIO_GLUC_TO_PYRU)*pyruInt/PYRU_PER_GLUC)/MASS_TO_GLUC;
@@ -171,7 +170,7 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
         // Decrease mass through autophagy if (i) negative energy indicating
         // not enough nutrients or (ii) above critical mass for maintenance
         if ((energy < 0 && mass > MIN_MASS)
-                || (energy >= 0 && mass > 1.01*critMass && cell.flag != Flag.PROLIFERATIVE)) {
+                || (energy >= 0 && mass > 1.01*critMass && !isProliferative)) {
             mass -= AUTOPHAGY_RATE;
             glucInt += AUTOPHAGY_RATE*MASS_TO_GLUC;
         }

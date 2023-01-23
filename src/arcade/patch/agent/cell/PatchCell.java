@@ -228,6 +228,27 @@ public class PatchCell implements Cell {
      */
     public double getEnergy() { return energy; }
     
+    /**
+     * Sets the cell flag.
+     *
+     * @param flag  the target cell flag
+     */
+    public void setFlag(Flag flag) { this.flag = flag; }
+    
+    /**
+     * Sets the cell volume.
+     *
+     * @param volume  the target cell volume
+     */
+    public void setVolume(double volume) { this.volume = volume; }
+    
+    /**
+     * Sets the cell energy level.
+     *
+     * @param energy  the target energy level
+     */
+    public void setEnergy(double energy) { this.energy = energy; }
+    
     @Override
     public void stop() { stopper.stop(); }
     
@@ -242,23 +263,20 @@ public class PatchCell implements Cell {
     @Override
     public void setState(State state) {
         this.state = state;
+        this.flag = Flag.UNDEFINED;
         
         switch (state) {
             case PROLIFERATIVE:
-                flag = Flag.PROLIFERATIVE;
                 module = new PatchModuleProliferation(this);
                 break;
             case MIGRATORY:
-                flag = Flag.MIGRATORY;
                 module = new PatchModuleMigration(this);
                 break;
             case APOPTOTIC:
-                flag = Flag.UNDEFINED;
                 module = new PatchModuleApoptosis(this);
                 break;
             default:
                 module = null;
-                flag = Flag.UNDEFINED;
                 break;
         }
     }
@@ -281,11 +299,6 @@ public class PatchCell implements Cell {
         age++;
         
         // TODO: check for death due to age
-        
-        // Step the module for the cell state.
-        if (module != null) {
-            module.step(simstate.random, sim);
-        }
         
         // Step metabolism process.
         processes.get(Domain.METABOLISM).step(simstate.random, sim);
@@ -320,6 +333,11 @@ public class PatchCell implements Cell {
             } else {
                 setState(State.PROLIFERATIVE);
             }
+        }
+        
+        // Step the module for the cell state.
+        if (module != null) {
+            module.step(simstate.random, sim);
         }
     }
     

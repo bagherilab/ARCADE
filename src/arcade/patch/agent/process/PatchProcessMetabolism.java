@@ -6,7 +6,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.grid.PatchGrid;
-import static arcade.patch.util.PatchEnums.Flag;
+import static arcade.core.util.Enums.State;
 
 /** 
  * Implementation of {@link Process} for cell metabolism.
@@ -98,6 +98,12 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
     /** Energy required */
     double energyReq;
     
+    /** {@code true} if cell is in proliferative state, {@code false} otherwise. */
+    protected boolean isProliferative;
+    
+    /** {@code true} if cell is in migratory state, {@code false} otherwise. */
+    protected boolean isMigratory;
+    
     /**
      * Creates a metabolism {@link PatchProcess} for the given cell.
      * <p>
@@ -158,10 +164,14 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
         
         updateExternal(sim);
         
+        // Check cell state.
+        isProliferative = cell.getState() == State.PROLIFERATIVE;
+        isMigratory = cell.getState() == State.MIGRATORY;
+        
         // Calculate energy consumption.
-        energyCons = volume*(BASAL_ENERGY +
-            (cell.flag == Flag.PROLIFERATIVE ? PROLIF_ENERGY : 0) +
-            (cell.flag == Flag.MIGRATORY ? MIGRA_ENERGY : 0));
+        energyCons = volume * (BASAL_ENERGY +
+                (isProliferative ? PROLIF_ENERGY : 0) +
+                (isMigratory ? MIGRA_ENERGY : 0));
         energyReq = energyCons - energy;
         
         // Modify energy and volume.

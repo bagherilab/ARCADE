@@ -30,13 +30,7 @@ public class PatchProcessSignalingRandom extends PatchProcessSignaling {
     
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-        if (cell.flag == Flag.UNDEFINED) {
-            if (random.nextDouble() < MIGRA_PROB) {
-                cell.setFlag(Flag.MIGRATORY);
-            } else {
-                cell.setFlag(Flag.PROLIFERATIVE);
-            }
-        }
+        cell.setFlag(random.nextDouble() < MIGRA_PROB ? Flag.MIGRATORY : Flag.PROLIFERATIVE);
     }
     
     @Override

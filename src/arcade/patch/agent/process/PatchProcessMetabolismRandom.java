@@ -5,7 +5,6 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
-import static arcade.patch.util.PatchEnums.Flag;
 
 /**
  * Extension of {@link PatchProcessMetabolism} for random metabolism.
@@ -115,7 +114,7 @@ public class PatchProcessMetabolismRandom extends PatchProcessMetabolism {
         // Randomly increase mass if dividing and less than double mass.
         // Set doubled flag to true once double mass is reached. Cell agent
         // checks for this switch and will complete proliferation.
-        if (energy >= 0 && cell.flag == Flag.PROLIFERATIVE && mass < 2*critMass) {
+        if (energy >= 0 && isProliferative && mass < 2*critMass) {
             double growth = glucInt*random.nextDouble();
             mass += growth/MASS_TO_GLUC;
             glucInt -= growth;

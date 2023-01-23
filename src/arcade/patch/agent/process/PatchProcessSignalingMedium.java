@@ -189,15 +189,7 @@ public class PatchProcessSignalingMedium extends PatchProcessSignaling {
         // Calculate fold change and set migratory or proliferative flag.
         current = ((pre > post ? pre/post : post/pre) - 1);
         double delta = (current > previous ? current/previous : previous/current);
-        
-        if (cell.flag == Flag.UNDEFINED) {
-            if (delta > MIGRA_THRESHOLD) {
-                cell.setFlag(Flag.MIGRATORY);
-            } else {
-                cell.setFlag(Flag.PROLIFERATIVE);
-            }
-        }
-        
+        cell.setFlag(delta > MIGRA_THRESHOLD ? Flag.MIGRATORY : Flag.PROLIFERATIVE);
         previous = current;
         
         // Update environment.

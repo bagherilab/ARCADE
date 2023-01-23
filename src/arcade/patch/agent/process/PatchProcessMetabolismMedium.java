@@ -5,7 +5,6 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
-import static arcade.patch.util.PatchEnums.Flag;
 
 /**
  * Extension of {@link PatchProcessMetabolism} for medium metabolism.
@@ -137,7 +136,7 @@ public class PatchProcessMetabolismMedium extends PatchProcessMetabolism {
         
         // Increase mass if (i) dividing and less than double mass or (ii)
         // below critical mass for maintenance.
-        if ((energy >= 0 && cell.flag == Flag.PROLIFERATIVE && mass < 2*critMass) || (energy >= 0 && mass < 0.99*critMass)) {
+        if ((energy >= 0 && isProliferative && mass < 2*critMass) || (energy >= 0 && mass < 0.99*critMass)) {
             mass += FRAC_MASS*glucInt/MASS_TO_GLUC;
             glucInt *= (1 - FRAC_MASS);
         }
