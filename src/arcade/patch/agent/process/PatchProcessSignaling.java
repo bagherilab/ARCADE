@@ -23,9 +23,6 @@ public abstract class PatchProcessSignaling extends PatchProcess {
     /** List of internal names */
     List<String> names;
     
-    /** List of internal concentrations */
-    double[] concs;
-    
     /**
      * Creates a signaling {@link PatchProcess} for the given cell.
      *

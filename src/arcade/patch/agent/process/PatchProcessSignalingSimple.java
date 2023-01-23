@@ -2,10 +2,12 @@ package arcade.patch.agent.process;
 
 import java.util.ArrayList;
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Equations;
 import arcade.patch.agent.cell.PatchCell;
+import static arcade.core.util.Enums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 
 /**
@@ -75,6 +77,9 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
     /** Fold change in PLCg for current time step */
     private double current = 1.0;
     
+    /** List of internal concentrations */
+    private double[] concs;
+    
     /**
      * Creates a simple signaling {@code Process} for the given {@link PatchCell}.
      * <p>
@@ -129,7 +134,7 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         // Get metabolism process from cell.
-        PatchProcessMetabolism metabolism = (PatchProcessMetabolism) cell.getProcess("METABOLISM");
+        PatchProcessMetabolism metabolism = (PatchProcessMetabolism) cell.getProcess(Domain.METABOLISM);
         
         // Get concentration of external TGFa and internal glucose in nM.
         concs[G_INT] = metabolism.intAmts[0] / cell.getVolume() * 1E9;
@@ -158,7 +163,9 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
         sim.getLattice("TGFA").setValue(location, concs[T_EXT]*TGFA_MW);
     }
     
-    public void updateModule(Module mod, double f) {
-        concs = ((PatchProcessSignalingSimple)mod).concs.clone();
+    @Override
+    public void update(Process process) {
+        PatchProcessSignalingSimple signaling = (PatchProcessSignalingSimple) process;
+        this.concs = signaling.concs.clone();
     }
 }

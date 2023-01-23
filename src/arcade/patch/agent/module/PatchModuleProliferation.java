@@ -5,8 +5,10 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.loc.PatchLocation;
+import static arcade.core.util.Enums.Domain;
 import static arcade.core.util.Enums.State;
 
 /**
@@ -44,13 +46,8 @@ public class PatchModuleProliferation extends PatchModule {
         MiniBox parameters = cell.getParameters();
         synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
     }
-
-    /**
-     * Calls the step method for the module.
-     *
-     * @param random  the random number generator
-     * @param sim  the simulation instance
-     */
+    
+    @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
         Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
         double totalVolume = PatchCell.calculateTotalVolume(bag);
@@ -82,7 +79,20 @@ public class PatchModuleProliferation extends PatchModule {
                     sim.getGrid().addObject(newCell, newLocation);
                     newCell.schedule(sim.getSchedule());
                     
-                    // TODO: Update daughter cell modules.
+                    // Update cell volume and energy based on split.
+                    double split = (random.nextDouble() / 10 + 0.45);
+                    double volume = cell.getVolume();
+                    double energy = cell.getEnergy();
+                    cell.setVolume(volume * split);
+                    cell.setEnergy(energy * split);
+                    newCell.setVolume(volume * (1 - split));
+                    newCell.setEnergy(energy * (1 - split));
+                    
+                    // Update processes.
+                    PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);
+                    metabolism.update(cell.getProcess(Domain.METABOLISM));
+                    PatchProcess signaling = (PatchProcess) newCell.getProcess(Domain.SIGNALING);
+                    signaling.update(cell.getProcess(Domain.SIGNALING));
                     
                     // TODO: Update environment generator sites.
                 } else {

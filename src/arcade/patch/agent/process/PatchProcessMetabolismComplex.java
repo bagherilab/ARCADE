@@ -2,6 +2,7 @@ package arcade.patch.agent.process;
 
 import java.util.Arrays;
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
 import arcade.patch.agent.cell.PatchCell;
 import static arcade.patch.util.PatchEnums.Flag;
@@ -188,19 +189,23 @@ public class PatchProcessMetabolismComplex extends PatchProcessMetabolism {
         intAmts[PYRUVATE] = pyruInt;
     }
     
-    public void updateModule(Module mod, double f) {
-        PatchProcessMetabolismComplex metabolism = (PatchProcessMetabolismComplex)mod;
+    @Override
+    public void update(Process process) {
+        PatchProcessMetabolismComplex metabolism = (PatchProcessMetabolismComplex) process;
+        double split = this.cell.getVolume() / this.volume;
         
-        // Update daughter cell metabolism as fraction of parent.
-        this.energy = metabolism.energy*f;
-        this.intAmts[GLUCOSE] = metabolism.intAmts[GLUCOSE]*f;
-        this.intAmts[PYRUVATE] = metabolism.intAmts[PYRUVATE]*f;
+        // Update this process as split of given process.
+        this.volume = this.cell.getVolume();
+        this.energy = this.cell.getEnergy();
+        this.mass = this.volume * CELL_DENSITY;
+        this.intAmts[GLUCOSE] = metabolism.intAmts[GLUCOSE] * split;
+        this.intAmts[PYRUVATE] = metabolism.intAmts[PYRUVATE] * split;
         
-        // Update parent cell with remaining fraction.
-        metabolism.energy *= (1 - f);
-        metabolism.intAmts[GLUCOSE] *= (1 - f);
-        metabolism.intAmts[PYRUVATE] *= (1 - f);
-        metabolism.volume *= (1 - f);
-        metabolism.mass *= (1 - f);
+        // Update given process with remaining split.
+        metabolism.volume = metabolism.cell.getVolume();
+        metabolism.energy = metabolism.cell.getEnergy();
+        metabolism.mass = metabolism.volume * CELL_DENSITY;
+        metabolism.intAmts[GLUCOSE] *= (1 - split);
+        metabolism.intAmts[PYRUVATE] *= (1 - split);
     }
 }

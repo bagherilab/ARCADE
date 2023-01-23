@@ -235,10 +235,8 @@ public class PatchCell implements Cell {
     public PatchCell make(int newID, State newState, Location newLocation,
                           MersenneTwisterFast random) {
         divisions--;
-        double splitVolume = (random.nextDouble() / 10 + 0.45) * volume;
-        volume -= splitVolume;
         return new PatchCell(newID, id, pop, newState, age, divisions, newLocation,
-                parameters, splitVolume, height, criticalVolume, criticalHeight);
+                parameters, volume, height, criticalVolume, criticalHeight);
     }
     
     @Override

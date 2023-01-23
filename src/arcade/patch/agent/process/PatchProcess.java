@@ -26,4 +26,11 @@ public abstract class PatchProcess implements Process {
         this.cell = cell;
         this.location = (PatchLocation) cell.getLocation();
     }
+    
+    /**
+     * Update the process with values from the given process.
+     *
+     * @param process  the reference process.
+     */
+    public abstract void update(Process process);
 }

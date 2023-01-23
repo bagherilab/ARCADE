@@ -121,8 +121,8 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
         // Initialize process.
         this.volume = cell.getVolume();
         this.energy = 0;
-        this.mass = volume*CELL_DENSITY;
-        this.critMass = mass;
+        this.mass = cell.getVolume() * CELL_DENSITY;
+        this.critMass = cell.getCriticalVolume() * CELL_DENSITY;
         
         // Initialize external and uptake concentration arrays;
         extAmts = new double[2];

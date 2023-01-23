@@ -1,10 +1,8 @@
 package arcade.patch.agent.process;
 
-import java.util.ArrayList;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
-import arcade.core.util.Solver;
-import arcade.core.util.Solver.Equations;
+import arcade.core.agent.process.Process;
 import arcade.patch.agent.cell.PatchCell;
 import static arcade.patch.util.PatchEnums.Flag;
 
@@ -40,4 +38,7 @@ public class PatchProcessSignalingRandom extends PatchProcessSignaling {
             }
         }
     }
+    
+    @Override
+    public void update(Process process) { }
 }
