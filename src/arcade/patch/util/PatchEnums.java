@@ -23,6 +23,9 @@ public final class PatchEnums {
     
     /** Stepping order for simulation. */
     public enum Ordering {
+        /** First stepping order (nothing stepped before). */
+        FIRST,
+        
         /** Stepping order for actions. */
         ACTIONS,
         
@@ -34,6 +37,9 @@ public final class PatchEnums {
         
         /** Stepping order for lattices. */
         LATTICES,
+        
+        /** Last stepping order (nothing stepped after). */
+        LAST,
     }
     
     /** State change flags. */
