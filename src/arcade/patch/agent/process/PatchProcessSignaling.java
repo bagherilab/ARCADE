@@ -34,4 +34,26 @@ public abstract class PatchProcessSignaling extends PatchProcess {
     PatchProcessSignaling(PatchCell cell) {
         super(cell);
     }
+    
+    /**
+     * Creates a {@code PatchProcessSignaling} for given version.
+     *
+     * @param cell  the {@link PatchCell} the process is associated with
+     * @param version  the process version
+     * @return  the process instance
+     */
+    public static PatchProcess make(PatchCell cell, String version) {
+        switch (version.toUpperCase()) {
+            case "RANDOM":
+                return new PatchProcessSignalingRandom(cell);
+            case "SIMPLE":
+                return new PatchProcessSignalingSimple(cell);
+            case "MEDIUM":
+                return new PatchProcessSignalingMedium(cell);
+            case "COMPLEX":
+                return new PatchProcessSignalingComplex(cell);
+            default:
+                return null;
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package arcade.patch.agent.cell;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +12,8 @@ import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import static arcade.core.util.Enums.State;
+import static arcade.core.util.Enums.Domain;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
  * Implementation of {@link CellFactory} for {@link PatchCell} agents.
@@ -31,6 +34,9 @@ public final class PatchCellFactory implements CellFactory {
     /** Map of population to critical heights. */
     public HashMap<Integer, Normal> popToCriticalHeights;
     
+    /** Map of population to parameters. */
+    public HashMap<Integer, MiniBox> popToParameters;
+    
     /** Map of population to ages. */
     public HashMap<Integer, Uniform> popToAges;
     
@@ -40,8 +46,8 @@ public final class PatchCellFactory implements CellFactory {
     /** Map of population to compression tolerance. */
     public HashMap<Integer, Integer> popToCompression;
     
-    /** Map of population to parameters. */
-    public HashMap<Integer, MiniBox> popToParameters;
+    /** Map of population to region critical volumes. */
+    HashMap<Integer, EnumMap<Domain, String>> popToProcessVersions;
     
     /** Map of population to list of ids. */
     public final HashMap<Integer, HashSet<Integer>> popToIDs;
@@ -56,10 +62,11 @@ public final class PatchCellFactory implements CellFactory {
         cells = new HashMap<>();
         popToCriticalVolumes = new HashMap<>();
         popToCriticalHeights = new HashMap<>();
+        popToParameters = new HashMap<>();
         popToAges = new HashMap<>();
         popToDivisions = new HashMap<>();
         popToCompression = new HashMap<>();
-        popToParameters = new HashMap<>();
+        popToProcessVersions = new HashMap<>();
         popToIDs = new HashMap<>();
     }
     
@@ -154,7 +161,6 @@ public final class PatchCellFactory implements CellFactory {
             MiniBox population = series.populations.get(key);
             int pop = population.getInt("CODE");
             popToIDs.put(pop, new HashSet<>());
-            popToParameters.put(pop, series.populations.get(key));
             
             popToCriticalVolumes.put(pop, new Normal(population.getDouble("CELL_VOLUME_MEAN"),
                     population.getDouble("CELL_VOLUME_STDEV"), random));
@@ -164,6 +170,21 @@ public final class PatchCellFactory implements CellFactory {
                     population.getDouble("CELL_AGE_MAX"), random));
             popToDivisions.put(pop, population.getInt("DIVISION_POTENTIAL"));
             popToCompression.put(pop, population.getInt("COMPRESSION_TOLERANCE"));
+            
+            // Set process versions if not specified.
+            MiniBox parameters = series.populations.get(key);
+            
+            String metabolismVersionKey = "(PROCESS)" + TAG_SEPARATOR + Domain.METABOLISM.name();
+            if (!parameters.contains(metabolismVersionKey)) {
+                parameters.put(metabolismVersionKey, "random");
+            }
+            
+            String signalingVersionKey = "(PROCESS)" + TAG_SEPARATOR + Domain.SIGNALING.name();
+            if (!parameters.contains(signalingVersionKey)) {
+                parameters.put(signalingVersionKey, "random");
+            }
+            
+            popToParameters.put(pop, parameters);
         }
     }
 }

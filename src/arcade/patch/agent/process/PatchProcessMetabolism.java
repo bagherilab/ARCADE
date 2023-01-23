@@ -175,4 +175,26 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
         cell.setVolume(volume);
         cell.setEnergy(energy);
     }
+    
+    /**
+     * Creates a {@code PatchProcessMetabolism} for given version.
+     *
+     * @param cell  the {@link PatchCell} the process is associated with
+     * @param version  the process version
+     * @return  the process instance
+     */
+    public static PatchProcess make(PatchCell cell, String version) {
+        switch (version.toUpperCase()) {
+            case "RANDOM":
+                return new PatchProcessMetabolismRandom(cell);
+            case "SIMPLE":
+                return new PatchProcessMetabolismSimple(cell);
+            case "MEDIUM":
+                return new PatchProcessMetabolismMedium(cell);
+            case "COMPLEX":
+                return new PatchProcessMetabolismComplex(cell);
+            default:
+                return null;
+        }
+    }
 }

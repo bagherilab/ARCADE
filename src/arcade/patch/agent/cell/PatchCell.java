@@ -17,6 +17,8 @@ import arcade.core.util.MiniBox;
 import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleApoptosis;
+import arcade.patch.agent.process.PatchProcessMetabolism;
+import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.loc.PatchLocation;
 import static arcade.core.util.Enums.Domain;
@@ -153,7 +155,13 @@ public class PatchCell implements Cell {
         // Select parameters from given distribution
         this.necroFrac = parameters.getDouble("NECRO_FRAC");
         this.senesFrac = parameters.getDouble("SENES_FRAC");
-        this.energyThreshold = parameters.getDouble("ENERGY_THRESHOLD");
+        
+        // Add cell processes.
+        MiniBox processBox = parameters.filter("(PROCESS)");
+        this.processes.put(Domain.METABOLISM,
+                PatchProcessMetabolism.make(this, processBox.get(Domain.METABOLISM.name())));
+        this.processes.put(Domain.SIGNALING,
+                PatchProcessSignaling.make(this, processBox.get(Domain.SIGNALING.name())));
     }
     
     @Override
