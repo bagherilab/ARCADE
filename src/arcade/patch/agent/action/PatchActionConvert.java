@@ -1,4 +1,4 @@
-package arcade.patch.agent.helper;
+package arcade.patch.agent.action;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
@@ -20,7 +20,7 @@ import arcade.core.util.MiniBox;
  * the old cell and creating a new cell with the same age and volume. 
  */
 
-public class ConvertHelper implements Helper {
+public class PatchActionConvert implements Helper {
     /** Serialization version identifier */
     private static final long serialVersionUID = 0;
     
@@ -49,7 +49,7 @@ public class ConvertHelper implements Helper {
      * @param cons  the constructor for target cell population
      * @param box  the module map for target cell population
      */
-    public ConvertHelper(MiniBox helper, Constructor<?> cons, MiniBox box) {
+    public PatchActionConvert(MiniBox helper, Constructor<?> cons, MiniBox box) {
         this.delay = helper.getInt("delay");
         this.pop = helper.getInt("population");
         this.cons = cons;
