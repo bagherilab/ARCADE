@@ -11,8 +11,8 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.Enums.State;
 import static arcade.core.util.Enums.Domain;
+import static arcade.core.util.Enums.State;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
@@ -29,22 +29,22 @@ public final class PatchCellFactory implements CellFactory {
     MersenneTwisterFast random;
     
     /** Map of population to critical volumes. */
-    public HashMap<Integer, Normal> popToCriticalVolumes;
+    HashMap<Integer, Normal> popToCriticalVolumes;
     
     /** Map of population to critical heights. */
-    public HashMap<Integer, Normal> popToCriticalHeights;
+    HashMap<Integer, Normal> popToCriticalHeights;
     
     /** Map of population to parameters. */
-    public HashMap<Integer, MiniBox> popToParameters;
+    HashMap<Integer, MiniBox> popToParameters;
     
     /** Map of population to ages. */
-    public HashMap<Integer, Uniform> popToAges;
+    HashMap<Integer, Uniform> popToAges;
     
     /** Map of population to cell divisions. */
-    public HashMap<Integer, Integer> popToDivisions;
+    HashMap<Integer, Integer> popToDivisions;
     
     /** Map of population to compression tolerance. */
-    public HashMap<Integer, Integer> popToCompression;
+    HashMap<Integer, Integer> popToCompression;
     
     /** Map of population to region critical volumes. */
     HashMap<Integer, EnumMap<Domain, String>> popToProcessVersions;
@@ -127,26 +127,36 @@ public final class PatchCellFactory implements CellFactory {
             int n = population.getInt("INIT");
             int pop = population.getInt("CODE");
             
-            Normal volumes = popToCriticalVolumes.get(pop);
-            Normal heights = popToCriticalHeights.get(pop);
-            Uniform ages = popToAges.get(pop);
-            
-            int divisions = popToDivisions.get(pop);
-            double compression = popToCompression.get(pop);
-            
             for (int i = 0; i < n; i++) {
-                double volume = volumes.nextDouble();
-                double height = heights.nextDouble();
-                int age = ages.nextInt();
-                
-                PatchCellContainer container = new PatchCellContainer(id, 0, pop,
-                        age, divisions, State.UNDEFINED, volume, height,
-                        volume, height + compression);
-                cells.put(id, container);
-                popToIDs.get(container.pop).add(container.id);
+                PatchCellContainer container = createCellForPopulation(id, pop);
+                cells.put(container.id, container);
+                popToIDs.get(pop).add(container.id);
                 id++;
             }
         }
+    }
+    
+    /**
+     * Create a {@link CellContainer} for a cell in given population.
+     *
+     * @param id  the cell container id
+     * @param pop  the cell population
+     * @return  the cell container
+     */
+    public PatchCellContainer createCellForPopulation(int id, int pop) {
+        Normal volumes = popToCriticalVolumes.get(pop);
+        Normal heights = popToCriticalHeights.get(pop);
+        Uniform ages = popToAges.get(pop);
+        
+        int divisions = popToDivisions.get(pop);
+        double compression = popToCompression.get(pop);
+        
+        double volume = volumes.nextDouble();
+        double height = heights.nextDouble();
+        int age = ages.nextInt();
+        
+        return new PatchCellContainer(id, 0, pop, age, divisions, State.UNDEFINED,
+                volume, height, volume, height + compression);
     }
     
     /**

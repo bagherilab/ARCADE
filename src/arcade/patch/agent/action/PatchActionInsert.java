@@ -94,29 +94,16 @@ public class PatchActionInsert implements Action {
         for (MiniBox population : populations) {
             int pop = population.getInt("CODE");
             
-            Normal volumes = sim.cellFactory.popToCriticalVolumes.get(pop);
-            Normal heights = sim.cellFactory.popToCriticalHeights.get(pop);
-            Uniform ages = sim.cellFactory.popToAges.get(pop);
-            
-            int divisions = sim.cellFactory.popToDivisions.get(pop);
-            double compression = sim.cellFactory.popToCompression.get(pop);
-            
             for (int i = 0; i < insertNumber; i++) {
                 int id = sim.getID();
-                
-                double volume = volumes.nextDouble();
-                double height = heights.nextDouble();
-                int age = ages.nextInt();
                 
                 if (coordinates.isEmpty()) {
                     break;
                 }
                 
-                PatchLocationContainer locationContainer =
-                        new PatchLocationContainer(id, coordinates.remove(0));
-                PatchCellContainer cellContainer = new PatchCellContainer(id, 0, pop,
-                        age, divisions, State.UNDEFINED, volume, height,
-                        volume, height + compression);
+                Coordinate coord = coordinates.remove(0);
+                PatchLocationContainer locationContainer = new PatchLocationContainer(id, coord);
+                PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
                 
                 Location location = locationContainer.convert(sim.locationFactory, cellContainer);
                 PatchCell cell = (PatchCell) cellContainer.convert(sim.cellFactory, location);
