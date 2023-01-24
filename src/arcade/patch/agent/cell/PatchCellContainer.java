@@ -111,9 +111,16 @@ public final class PatchCellContainer implements CellContainer {
         MiniBox parameters = factory.popToParameters.get(pop);
         
         // Make cell.
-        PatchCell cell = new PatchCell(id, parent, pop, state, age, divisions,
-        location, parameters, volume, height, criticalVolume, criticalHeight);
-        
-        return cell;
+        switch (parameters.get("CLASS")) {
+            case "tissue": default:
+                return new PatchCellTissue(id, parent, pop, state, age, divisions, location,
+                        parameters, volume, height, criticalVolume, criticalHeight);
+            case "cancer":
+                return new PatchCellCancer(id, parent, pop, state, age, divisions, location,
+                        parameters, volume, height, criticalVolume, criticalHeight);
+            case "cancer_stem":
+                return new PatchCellCancerStem(id, parent, pop, state, age, divisions, location,
+                        parameters, volume, height, criticalVolume, criticalHeight);
+        }
     }
 }

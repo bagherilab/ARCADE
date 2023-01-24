@@ -137,10 +137,12 @@ public final class PatchSeries extends Series {
         // Iterate through each setup dictionary to build population settings.
         for (Box box : populationsBox) {
             String id = box.getValue("id");
+            String populationClass = box.getValue("class");
             
             // Create new population and update code.
             MiniBox population = new MiniBox();
             population.put("CODE", code++);
+            population.put("CLASS", populationClass);
             this.populations.put(id, population);
             
             // Add population init if given. If not given or invalid, set to zero.

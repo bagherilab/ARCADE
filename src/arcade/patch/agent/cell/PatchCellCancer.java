@@ -1,63 +1,44 @@
 package arcade.patch.agent.cell;
 
-import java.util.Map;
 import sim.engine.SimState;
-import arcade.core.sim.Simulation;
-import arcade.core.agent.module.Module;
+import ec.util.MersenneTwisterFast;
 import arcade.core.env.loc.Location;
-import arcade.core.util.Parameter;
+import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import static arcade.core.util.Enums.State;
 
-/** 
- * Extension of {@link arcade.agent.cell.PatchCellTissue} for cancerous tissue cells.
+/**
+ * Extension of {@link PatchCellTissue} for cancerous tissue cells.
  * <p>
  * {@code PatchCellCancer} agents are modified from their superclass:
  * <ul>
- *     <li>Code change to {@code CODE_C_CELL}</li>
- *     <li>If cell is quiescent, they may exit out of quiescence into neutral
+ *     <li>If cell is quiescent, they may exit out of quiescence into undefined
  *     if there is space in their neighborhood</li>
  * </ul>
  */
 
 public class PatchCellCancer extends PatchCellTissue {
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 0;
-    
     /**
-     * Creates a cancerous {@link arcade.agent.cell.PatchCell} agent given
-     * specific module versions.
-     * <p>
-     * Changes the cell agent code to cancerous.
+     * Creates a tissue {@code PatchCell} agent.
      *
-     * @param sim  the simulation instance
-     * @param pop  the population index
-     * @param loc  the location of the cell 
-     * @param vol  the initial (and critical) volume of the cell
-     * @param age  the initial age of the cell in minutes
-     * @param params  the map of parameter name to {@link arcade.core.util.Parameter} objects
-     * @param box  the map of module name to version
+     * @param id  the cell ID
+     * @param parent  the parent ID
+     * @param pop  the cell population index
+     * @param state  the cell state
+     * @param age  the cell age (in ticks)
+     * @param divisions  the number of cell divisions
+     * @param location  the {@link Location} of the cell
+     * @param parameters  the dictionary of parameters
+     * @param volume  the cell volume
+     * @param height  the cell height
+     * @param criticalVolume  the critical cell volume
+     * @param criticalHeight  the critical cell height
      */
-    public PatchCellCancer(Simulation sim, int pop, Location loc, double vol,
-                       int age, Map<String, Parameter> params, MiniBox box) {
-        super(sim, pop, loc, vol, age, params, box);
-        code = Cell.CODE_C_CELL;
-    }
-    
-    /**
-     * Creates a cancerous {@link arcade.agent.cell.PatchCell} agent given the
-     * modules of the parent cell.
-     * <p>
-     * Constructor uses reflection to create constructors based on the
-     * existing {@link arcade.core.agent.module.Module} objects.
-     * Changes the cell agent code to cancerous.
-     *
-     * @param sim  the simulation instance
-     * @param parent  the parent cell
-     * @param f  the fractional reduction
-     */
-    public PatchCellCancer(Simulation sim, PatchCell parent, double f) {
-        super(sim, parent, f);
-        code = Cell.CODE_C_CELL;
+    public PatchCellCancer(int id, int parent, int pop, State state, int age, int divisions,
+                           Location location, MiniBox parameters, double volume, double height,
+                           double criticalVolume, double criticalHeight) {
+        super(id, parent, pop, state, age, divisions, location, parameters,
+                volume, height, criticalVolume, criticalHeight);
     }
     
     /**
@@ -65,25 +46,32 @@ public class PatchCellCancer extends PatchCellTissue {
      * <p>
      * Cells that are quiescent will check their neighborhood for free locations.
      */
-    public void step(SimState state) {
-        if (type == TYPE_QUIES) { checkNeighborhood(state, this); }
-        super.step(state);
+    @Override
+    public void step(SimState simstate) {
+        if (state == State.QUIESCENT) { checkNeighborhood(simstate, this); }
+        super.step(simstate);
     }
     
-    public Cell newCell(Simulation sim, Cell parent, double f) {
-        return new PatchCellCancer(sim, (PatchCell)parent, f);
+    @Override
+    public PatchCell make(int newID, State newState, Location newLocation,
+                          MersenneTwisterFast random) {
+        divisions--;
+        return new PatchCellTissue(newID, id, pop, newState, age, divisions, newLocation,
+                parameters, volume, height, criticalVolume, criticalHeight);
     }
     
     /**
      * Checks neighborhood for free locations.
      * <p>
-     * If there is at least one free location, the cell becomes neutral.
-     * 
-     * @param state  the MASON simulation state
-     * @param c  the cell
+     * If there is at least one free location, cell state becomes undefined.
+     *
+     * @param simstate the MASON simulation state
+     * @param cell  the reference cell
      */
-    private static void checkNeighborhood(SimState state, Cell c) {
-        Simulation sim = (Simulation)state;
-        if (PatchCell.getFreeLocations(sim, c).size() > 0) { c.setType(Cell.TYPE_NEUTRAL); }
+    private static void checkNeighborhood(SimState simstate, PatchCell cell) {
+        Simulation sim = (Simulation) simstate;
+        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() > 0) {
+            cell.setState(State.UNDEFINED);
+        }
     }
 }

@@ -14,9 +14,9 @@ import arcade.core.agent.process.Process;
 import arcade.core.env.loc.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
-import arcade.patch.agent.module.PatchModuleProliferation;
-import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleApoptosis;
+import arcade.patch.agent.module.PatchModuleMigration;
+import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
@@ -48,6 +48,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
  *     <li>check energy status (possible change to quiescent, necrotic)</li>
  *     <li>step signaling process</li>
  *     <li>check if neutral (change to proliferative, migratory, senescent)</li>
+ *     <li>step state-specific module</li>
  * </ul>
  * <p>
  * Cell parameters are tracked using a map between the parameter name and value.
@@ -55,12 +56,12 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * parent cell parameter with the specified amount of heterogeneity.
  */
 
-public class PatchCell implements Cell {
+public abstract class PatchCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule. */
     Stoppable stopper;
     
     /** Cell {@link arcade.core.env.loc.Location} object. */
-    private final PatchLocation location;
+    final PatchLocation location;
     
     /** Unique cell ID. */
     final int id;
@@ -72,28 +73,28 @@ public class PatchCell implements Cell {
     final int pop;
     
     /** Cell state. */
-    private State state;
+    State state;
     
     /** Cell age (in ticks). */
-    private int age;
+    int age;
     
     /** Cell energy (in fmol ATP). */
     private double energy;
     
     /** Number of divisions. */
-    private int divisions;
+    int divisions;
     
     /** Cell volume (in um<sup>3</sup>). */
-    private double volume;
+    double volume;
     
     /** Critical volume for cell (in ium<sup>3</sup>). */
-    private final double criticalVolume;
+    final double criticalVolume;
     
     /** Cell height (in um). */
-    private double height;
+    double height;
     
     /** Critical height for cell (in um). */
-    private final double criticalHeight;
+    final double criticalHeight;
     
     /** Cell state change flag. */
     private Flag flag;
@@ -254,14 +255,6 @@ public class PatchCell implements Cell {
     public void stop() { stopper.stop(); }
     
     @Override
-    public PatchCell make(int newID, State newState, Location newLocation,
-                          MersenneTwisterFast random) {
-        divisions--;
-        return new PatchCell(newID, id, pop, newState, age, divisions, newLocation,
-                parameters, volume, height, criticalVolume, criticalHeight);
-    }
-    
-    @Override
     public void setState(State state) {
         this.state = state;
         this.flag = Flag.UNDEFINED;
@@ -287,11 +280,6 @@ public class PatchCell implements Cell {
         stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);
     }
     
-    /**
-     * Steps through cell rules.
-     *
-     * @param simstate  the MASON simulation state
-     */
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
@@ -367,7 +355,7 @@ public class PatchCell implements Cell {
      *
      * @param sim  the simulation instance
      * @param currentLocation  the current location
-     * @param targetVolume  the target volume of cell to add or move
+     * @param targetVolume  the target volume of the cell to add or move
      * @param targetHeight  the target height of the cell to add or move
      * @return  a list of free locations
      */
