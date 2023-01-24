@@ -78,6 +78,9 @@
     <!-- remove action parameters -->
     <action class="remove" id="TIME_DELAY" value="0" units="min" />
     <action class="remove" id="REMOVE_RADIUS" value="1" units="min" />
+    
+    <!-- convert action parameters -->
+    <action class="convert" id="TIME_DELAY" value="0" units="min" />
      
     <!-- COMPONENTS ======================================================== -->
      

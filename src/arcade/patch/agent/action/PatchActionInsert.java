@@ -3,8 +3,6 @@ package arcade.patch.agent.action;
 import java.util.ArrayList;
 import sim.engine.Schedule;
 import sim.engine.SimState;
-import sim.util.distribution.Normal;
-import sim.util.distribution.Uniform;
 import arcade.core.agent.action.Action;
 import arcade.core.env.loc.Location;
 import arcade.core.sim.Series;
@@ -18,7 +16,6 @@ import arcade.patch.env.loc.Coordinate;
 import arcade.patch.env.loc.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
-import static arcade.core.util.Enums.State;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**

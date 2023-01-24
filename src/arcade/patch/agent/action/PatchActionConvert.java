@@ -1,128 +1,87 @@
 package arcade.patch.agent.action;
 
-import java.lang.reflect.Constructor;
-import java.util.Map;
+import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.util.Bag;
-import arcade.core.sim.Simulation;
-import arcade.core.util.Parameter;
-import arcade.agent.cell.Cell;
+import arcade.core.agent.action.Action;
 import arcade.core.env.loc.Location;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellContainer;
+import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.loc.Coordinate;
+import arcade.patch.sim.PatchSimulation;
+import static arcade.patch.util.PatchEnums.Ordering;
 
-/** 
- * Implementation of {@link arcade.core.agent.helper.Helper} for converting a cell to a
- * different population.
+/**
+ * Implementation of {@link Action} for converting cells to a different class.
  * <p>
- * {@code ConvertHelper} is stepped once.
- * The {@code ConvertHelper} will select one cell located at the center of the
- * simulation and convert it to a cell agent of the new population by removing
- * the old cell and creating a new cell with the same age and volume. 
+ * The action is stepped once after {@code TIME_DELAY}. The action will select
+ * one cell located at the center of the simulation and convert it to a cell
+ * agent of the new population by removing the old cell and creating a new cell
+ * with the same age and volume.
  */
 
-public class PatchActionConvert implements Helper {
-    /** Serialization version identifier */
-    private static final long serialVersionUID = 0;
+public class PatchActionConvert implements Action {
+    /** Time delay before calling the action (in minutes). */
+    private final int timeDelay;
     
-    /** Delay before calling the helper (in minutes) */
-    private final int delay;
-    
-    /** Target population index for conversion */
-    private final int pop;
-    
-    /** Constructor for the target population */
-    private Constructor<?> cons;
-    
-    /** Map of target population parameters */
-    private MiniBox box;
-    
-    /** Tick the {@code Helper} began */
-    private double begin;
-    
-    /** Tick the {@code Helper} ended */
-    private double end;
+    /** Target population id for conversion. */
+    private int pop;
     
     /**
-     * Creates a {@code ConvertHelper} to add agents after a delay.
-     * 
-     * @param helper  the parsed helper attributes
-     * @param cons  the constructor for target cell population
-     * @param box  the module map for target cell population
+     * Creates a {@link Action} for converting cell agent classes.
+     * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code TIME_DELAY} = time delay before calling the action (in minutes)</li>
+     * </ul>
+     *
+     * @param series  the simulation series
+     * @param parameters  the component parameters dictionary
      */
-    public PatchActionConvert(MiniBox helper, Constructor<?> cons, MiniBox box) {
-        this.delay = helper.getInt("delay");
-        this.pop = helper.getInt("population");
-        this.cons = cons;
-        this.box = box;
+    public PatchActionConvert(Series series, MiniBox parameters) {
+        timeDelay = parameters.getInt("TIME_DELAY");
     }
     
-    public double getBegin() { return begin; }
-    public double getEnd() { return end; }
-    
-    public void scheduleHelper(Simulation sim) { scheduleHelper(sim, sim.getTime()); }
-    public void scheduleHelper(Simulation sim, double begin) {
-        this.begin = begin;
-        this.end = begin + delay;
-        ((SimState)sim).schedule.scheduleOnce(end, Simulation.ORDERING_HELPER + 1, this);
+    @Override
+    public void schedule(Schedule schedule) {
+        schedule.scheduleOnce(timeDelay, Ordering.ACTIONS.ordinal(), this);
     }
     
-    /**
-     * Steps the helper to convert center cell to the target population.
-     * 
-     * @param state  the MASON simulation state
-     */
+    @Override
+    public void register(Simulation sim, String population) {
+        pop = sim.getSeries().populations.get(population).getInt("CODE");
+    }
+    
+    @Override
     public void step(SimState state) {
-        Simulation sim = (Simulation)state;
-        Location loc = sim.getRepresentation().getCenterLocation();
-        Bag bag = sim.getAgents().getObjectsAtLocation(loc);
-        double vol = sim.getNextVolume(pop);
-        int age = 0;
-        Map<String, Parameter> params = sim.getParams(pop);
+        PatchSimulation sim = (PatchSimulation) state;
+        PatchGrid grid = (PatchGrid) sim.getGrid();
         
-        if (bag != null) {
-            // Get age and volume from cell currently in the location
-            Cell old = (Cell)bag.get(0);
-            vol = old.getVolume();
-            age = old.getAge();
-            
-            // Remove old cell agent from simulation.
-            sim.getAgents().removeObject(old);
-            old.stop();
+        // Get cells at center of simulation.
+        Coordinate center = sim.locationFactory.getCoordinates(1, 1).get(0);
+        Bag bag = (Bag) grid.getObjectAt(center.hashCode());
+        
+        if (bag == null) {
+            return;
         }
         
-        // Create a new agent of given population of same age and size and add
-        // to schedule.
-        try {
-            Cell c = (Cell)(cons.newInstance(sim, pop, loc, vol, age, params, box));
-            sim.getAgents().addObject(c, c.getLocation());
-            c.setStopper(state.schedule.scheduleRepeating(c, Simulation.ORDERING_CELLS, 1));
-        } catch (Exception e) { e.printStackTrace(); System.exit(1); }
-    }
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * The JSON is formatted as:
-     * <pre>
-     *     {
-     *         "type": "CONVERT",
-     *         "delay": delay (in days),
-     *         "pop": target population index,
-     *         "class": target class name
-     *     }
-     * </pre>
-     */
-    public String toJSON() {
-        String format = "{ "
-                + "\"type\": \"CONVERT\", "
-                + "\"delay\": %.2f, "
-                + "\"pop\": %d, "
-                + "\"class\": \"%s\" "
-                + "}";
-        return String.format(format, delay/60.0/24.0, pop, cons.getName());
-    }
-    
-    public String toString() {
-        return String.format("[t = %4.1f] CONVERT to [%d] %s", delay/60.0/24.0, pop, cons.getName());
+        // Select old cell and remove from simulation.
+        PatchCell oldCell = (PatchCell) bag.get(0);
+        Location location = oldCell.getLocation();
+        grid.removeObject(oldCell, oldCell.getLocation());
+        oldCell.stop();
+        
+        // Create new cell and add to simulation.
+        PatchCellContainer cellContainer = new PatchCellContainer(oldCell.getID(),
+                oldCell.getParent(), pop, oldCell.getAge(), oldCell.getDivisions(),
+                oldCell.getState(), oldCell.getVolume(), oldCell.getHeight(),
+                oldCell.getCriticalVolume(), oldCell.getCriticalHeight());
+        PatchCell newCell = (PatchCell) cellContainer.convert(sim.cellFactory, location);
+        grid.addObject(newCell, location);
+        newCell.schedule(sim.getSchedule());
     }
 }
