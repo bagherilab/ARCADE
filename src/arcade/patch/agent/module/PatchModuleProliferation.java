@@ -75,7 +75,7 @@ public class PatchModuleProliferation extends PatchModule {
                     
                     // Create and schedule new cell.
                     int newID = sim.getID();
-                    PatchCell newCell = cell.make(newID, State.UNDEFINED, newLocation, random);
+                    PatchCell newCell = (PatchCell) cell.make(newID, State.UNDEFINED, newLocation, random);
                     sim.getGrid().addObject(newCell, newLocation);
                     newCell.schedule(sim.getSchedule());
                     
