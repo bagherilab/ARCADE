@@ -15,8 +15,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * Abstract implementation of {@link Lattice} for patch models.
  * <p>
  * {@code PatchLattice} agents can call two {@link Operation} categories:
- * diffusers and generators.
- * Diffusers diffuse values on the underlying array.
+ * diffusers and generators. Diffusers diffuse values on the underlying array.
  * Generators add values to the underlying array.
  * <p>
  * General order of rules for the {@code PatchLattice} step:
@@ -39,6 +38,12 @@ public abstract class PatchLattice implements Lattice {
     /** Height of the array (z direction). */
     private final int height;
     
+    /** Spatial conversion factor (um/voxel). */
+    protected final double ds;
+    
+    /** Spatial conversion factor in z (um/voxel). */
+    protected final double dz;
+    
     /** Map of operation categories and {@link Operation} instance. */
     protected final Map<Category, Operation> operations;
     
@@ -51,16 +56,40 @@ public abstract class PatchLattice implements Lattice {
      * @param length  the length of array (x direction)
      * @param width  the width of array (y direction)
      * @param height  the height of array (z direction)
+     * @param ds  the spatial scaling (x and y directions)
+     * @param dz  the spatial scaling (z direction)
      * @param parameters  the dictionary of parameters
      */
-    public PatchLattice(int length, int width, int height, MiniBox parameters) {
+    public PatchLattice(int length, int width, int height,
+                        double ds, double dz, MiniBox parameters) {
         this.length = length;
         this.width = width;
         this.height = height;
-        this.operations = new HashMap<>();
+        this.ds = ds;
+        this.dz = dz;
         this.parameters = parameters;
-        this.field = new double[height][length][width];
+        
+        field = new double[height][length][width];
+        
+        // Add lattice operations.
+        operations = new HashMap<>();
+        MiniBox operationBox = parameters.filter("(OPERATION)");
+        for (String operationKey : operationBox.getKeys()) {
+            Category category = Category.valueOf(operationKey);
+            String version = operationBox.get(operationKey);
+            Operation operation = makeOperation(category, version);
+            operations.put(category, operation);
+        }
     }
+    
+    /**
+     * Makes the specified {@link Operation} object.
+     *
+     * @param category  the operation category
+     * @param version  the operation version
+     * @return  the operation instance
+     */
+    public abstract Operation makeOperation(Category category, String version);
     
     @Override
     public double[][][] getField() { return field; }

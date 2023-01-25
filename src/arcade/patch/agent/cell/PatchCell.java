@@ -182,10 +182,12 @@ public abstract class PatchCell implements Cell {
         // Add cell processes.
         processes = new HashMap<>();
         MiniBox processBox = parameters.filter("(PROCESS)");
-        processes.put(Domain.METABOLISM,
-                PatchProcessMetabolism.make(this, processBox.get(Domain.METABOLISM.name())));
-        processes.put(Domain.SIGNALING,
-                PatchProcessSignaling.make(this, processBox.get(Domain.SIGNALING.name())));
+        for (String processKey : processBox.getKeys()) {
+            Domain domain = Domain.valueOf(processKey);
+            String version = processBox.get(processKey);
+            Process process = makeProcess(domain, version);
+            processes.put(domain, process);
+        }
     }
     
     @Override
@@ -294,6 +296,25 @@ public abstract class PatchCell implements Cell {
             default:
                 module = null;
                 break;
+        }
+    }
+    
+    /**
+     * Makes the specified {@link Process} object.
+     *
+     * @param domain  the process domain
+     * @param version  the process version
+     * @return  the process instance
+     */
+    public Process makeProcess(Domain domain, String version) {
+        switch (domain) {
+            case METABOLISM:
+                return PatchProcessMetabolism.make(this, version);
+            case SIGNALING:
+                return PatchProcessSignaling.make(this, version);
+            case UNDEFINED:
+            default:
+                return null;
         }
     }
     
