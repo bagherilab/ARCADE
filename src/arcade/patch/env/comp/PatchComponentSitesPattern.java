@@ -17,11 +17,11 @@ import arcade.core.util.MiniBox;
  * ({@code RELATIVE_FRACTION}) with variable weights to reduce the amount of
  * concentration added.
  * <ul>
- *     <li>{@code WEIGHT_FLOW} = consumption upstream of a given lattice site</li>
- *     <li>{@code WEIGHT_LOCAL} = local cell consumption of the molecule at a given
- *     lattice site</li>
- *     <li>{@code WEIGHT_GRADIENT} = concentration difference between source and a
- *     given lattice site</li>
+ *     <li>{@code WEIGHT_FLOW} = consumption upstream of a given site</li>
+ *     <li>{@code WEIGHT_LOCAL} = local cell consumption of the molecule at a
+ *         given lattice site</li>
+ *     <li>{@code WEIGHT_GRADIENT} = concentration difference between source and
+ *         a given lattice site</li>
  * </ul>
  * <p>
  * Sites can be damaged by setting the {@code DAMAGE_SCALING} parameter, which
@@ -89,7 +89,7 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
     public PatchComponentSitesPattern(Series series, MiniBox parameters) {
         super(series);
         
-        // Get pattern site parameters.
+        // Set loaded parameters.
         fraction = parameters.getDouble("RELATIVE_FRACTION");
         weightGradient = parameters.getDouble("WEIGHT_GRADIENT");
         weightLocal = parameters.getDouble("WEIGHT_LOCAL");

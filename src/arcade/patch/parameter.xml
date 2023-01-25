@@ -84,10 +84,10 @@
     <!-- COMPONENTS ======================================================== -->
      
     <!-- source sites component parameters -->
-    <component class="source_sites" id="X_SPACING" value="*" />
-    <component class="source_sites" id="Y_SPACING" value="*" />
-    <component class="source_sites" id="Z_SPACING" value="*" />
-    <component class="source_sites" id="DAMAGE_SCALING" value="0" />
+    <component class="source_sites" id="X_SPACING" value="*" description="spacing of sources in x direction" />
+    <component class="source_sites" id="Y_SPACING" value="*" description="spacing of sources in y direction" />
+    <component class="source_sites" id="Z_SPACING" value="*" description="spacing of sources in z direction" />
+    <component class="source_sites" id="DAMAGE_SCALING" value="0" description="source site damage scaling" />
     
     <!-- pattern sites component parameters -->
     <component class="pattern_sites" id="RELATIVE_FRACTION" value="1.0" description="relative contribution of hemodynamic factors" />
@@ -109,7 +109,6 @@
     <component class="graph_sites" id="OXYGEN_SOLUBILITY_PLASMA" value="0.00000138" units="fmol O2/(um^3 mmHg)" />
     
     <!-- pulse component parameters -->
-    <component class="pulse" id="MEDIA_VOLUME" value="2000" unit="um^3" />
-    <component class="pulse" id="PULSE_INTERVAL" value="1000" unit="min" />
-    <component class="pulse" id="LATTICE_PATCH_VOLUME" value="10" unit="um^3" />
+    <component class="pulse" id="PULSE_INTERVAL" value="1440" unit="min" description="interval between pulses" />
+    <component class="pulse" id="MEDIA_AMOUNT" value="2000" unit="um^3/um^2" description="media volume per area" />
 </parameters>

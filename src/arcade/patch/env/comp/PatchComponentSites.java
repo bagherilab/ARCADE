@@ -21,6 +21,9 @@ import static arcade.patch.util.PatchEnums.Ordering;
  */
 
 public abstract class PatchComponentSites implements Component {
+    /** List of site layers. */
+    final ArrayList<SiteLayer> layers;
+    
     /** Height of the array (z direction). */
     final int latticeHeight;
     
@@ -30,20 +33,17 @@ public abstract class PatchComponentSites implements Component {
     /** Width of the array (y direction). */
     final int latticeWidth;
     
-    /** List of site layers. */
-    ArrayList<SiteLayer> layers;
-    
     /**
-     * Creates a {@code PatchComponentSites} object.
+     * Creates a {@code Component} object for representing sites.
      *
      * @param series  the simulation series
      */
     public PatchComponentSites(Series series) {
+        layers = new ArrayList<>();
+        
         latticeLength = series.length;
         latticeWidth = series.width;
         latticeHeight = series.height;
-        
-        layers = new ArrayList<>();
     }
     
     /**
@@ -63,15 +63,15 @@ public abstract class PatchComponentSites implements Component {
         final double[][][] delta;
         
         /** Maximum concentration. */
-        final double concentration;
+        double concentration;
         
         /** Molecule permeability. */
-        final double permeability;
+        double permeability;
         
         /**
-         * Creates a {@code SiteLayer} for a {@link PatchOperationGenerator}.
+         * Creates a {@code SiteLayer} object.
          *
-         * @param generator  the generator operation instance
+         * @param generator  the associated generator operation instance
          */
         SiteLayer(String name, PatchOperationGenerator generator) {
             this.name = name;

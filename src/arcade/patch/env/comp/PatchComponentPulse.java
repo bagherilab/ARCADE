@@ -10,6 +10,7 @@ import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.env.operation.PatchOperationGenerator;
+import arcade.patch.sim.PatchSeries;
 import static arcade.core.util.Enums.Category;
 import static arcade.patch.env.comp.PatchComponentSites.SiteLayer;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -17,15 +18,22 @@ import static arcade.patch.util.PatchEnums.Ordering;
 /**
  * Implementation of {@link Component} for pulsing sources.
  * <p>
- * This component can only be used with {@link PatchComponentSitesSource}. The
- * amount of media ({@code MEDIA_VOLUME}) is used to determine the total amount
- * of molecule available. The molecule concentration is updated each step as the
- * molecule is consumed or otherwise removed from the environment. At the
- * specified pulse interval ({@code PULSE_INTERVAL}), a "pulse" of media is
- * introduced, updating the total amount of molecule available.
+ * This component can only be used with {@link PatchComponentSitesSource}.
+ * Multiple pulsed molecules are tracked by a list of {@link PulseLayer}
+ * objected.
+ * <p>
+ * The amount of media ({@code MEDIA_AMOUNT}) is used to determine the total
+ * amount of molecule available given total simulation area. The molecule
+ * concentration is updated each step as the molecule is consumed or otherwise
+ * removed from the environment. At the specified pulse interval
+ * ({@code PULSE_INTERVAL}), a "pulse" of media is introduced, updating the
+ * total amount of molecule available.
  */
 
 public class PatchComponentPulse implements Component {
+    /** List of pulse layers. */
+    private final ArrayList<PulseLayer> layers;
+    
     /** Height of the array (z direction). */
     private final int latticeHeight;
     
@@ -35,11 +43,11 @@ public class PatchComponentPulse implements Component {
     /** Width of the array (y direction). */
     private final int latticeWidth;
     
-    /** List of pulse layers. */
-    private final ArrayList<PulseLayer> layers;
-    
     /** Interval between pulses [min]. */
     private final double pulseInterval;
+    
+    /** Media volume per area [um<sup>3</sup>/um<sup>2</sup>]. */
+    private final double mediaAmount;
     
     /** Total media volume [um<sup>3</sup>]. */
     private final double mediaVolume;
@@ -47,30 +55,39 @@ public class PatchComponentPulse implements Component {
     /** Volume of individual lattice patch [um<sup>3</sup>]. */
     private final double latticePatchVolume;
     
+    /** Area of individual lattice patch [um<sup>2</sup>]. */
+    private final double latticePatchArea;
+    
     /**
      * Creates a {@code Component} object for representing source site pulses.
      * <p>
      * Loaded parameters include:
      * <ul>
      *     <li>{@code PULSE_INTERVAL} = interval between pulses</li>
-     *     <li>{@code MEDIA_VOLUME} = total media volume</li>
-     *     <li>{@code LATTICE_PATCH_VOLUME} = volume of individual lattice patch</li>
+     *     <li>{@code MEDIA_AMOUNT} = media volume per area</li>
      * </ul>
      *
      * @param series  the simulation series
      * @param parameters  the component parameters dictionary
      */
     public PatchComponentPulse(Series series, MiniBox parameters) {
+        layers = new ArrayList<>();
+        
         latticeLength = series.length;
         latticeWidth = series.width;
         latticeHeight = series.height;
         
-        layers = new ArrayList<>();
-        
         // Set loaded parameters.
         pulseInterval = parameters.getDouble("PULSE_INTERVAL");
-        mediaVolume = parameters.getDouble("MEDIA_VOLUME");
-        latticePatchVolume = parameters.getDouble("LATTICE_PATCH_VOLUME");
+        mediaAmount = parameters.getDouble("MEDIA_AMOUNT");
+        
+        // Set patch parameters.
+        MiniBox patch = ((PatchSeries) series).patch;
+        latticePatchVolume = patch.getDouble("LATTICE_VOLUME");
+        latticePatchArea = patch.getDouble("LATTICE_AREA");
+        
+        // Calculate media volume.
+        mediaVolume = latticePatchArea * latticeLength * latticeWidth * mediaAmount;
     }
     
     /**
@@ -92,8 +109,8 @@ public class PatchComponentPulse implements Component {
         /** Initial concentration. */
         final double initialConcentration;
         
-        /** Current concentration. */
-        double currentConcentration;
+        /** Current amount. */
+        double currentAmount;
         
         /**
          * Creates a {@code PulseLayer} object.
@@ -108,12 +125,13 @@ public class PatchComponentPulse implements Component {
             previous = generator.latticePrevious;
             current = generator.latticeCurrent;
             initialConcentration = generator.concentration;
-            currentConcentration = generator.concentration;
+            currentAmount = 0;
         }
     }
     
     @Override
     public void schedule(Schedule schedule) {
+        schedule.scheduleOnce(this, Ordering.FIRST.ordinal() - 2);
         schedule.scheduleRepeating(this, Ordering.FIRST_COMPONENT.ordinal(), 1);
     }
     
@@ -159,12 +177,12 @@ public class PatchComponentPulse implements Component {
             }
             
             // Update available concentrations.
-            layer.currentConcentration -= delta / mediaVolume;
-            layer.siteLayer.concentration = layer.currentConcentration;
+            layer.currentAmount = Math.max(0, layer.currentAmount - delta);
+            layer.siteLayer.concentration = layer.currentAmount / mediaVolume;
             
             // Pulse returns concentration to initial value.
             if (tick % pulseInterval == 0) {
-                layer.currentConcentration = layer.initialConcentration;
+                layer.currentAmount = layer.initialConcentration * mediaVolume;
                 layer.siteLayer.concentration = layer.initialConcentration;
             }
         }

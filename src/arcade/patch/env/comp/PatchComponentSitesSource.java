@@ -74,7 +74,7 @@ public class PatchComponentSitesSource extends PatchComponentSites {
     public PatchComponentSitesSource(Series series, MiniBox parameters) {
         super(series);
         
-        // Get source sites parameters.
+        // Set loaded parameters.
         damageScaling = parameters.getDouble("DAMAGE_SCALING");
         xSpacing = parameters.get("X_SPACING").split(":");
         ySpacing = parameters.get("Y_SPACING").split(":");
@@ -135,7 +135,7 @@ public class PatchComponentSitesSource extends PatchComponentSites {
      *
      * @param spacing  the site spacing
      * @param index  the source site index
-     * @return {@code true}  if the index is valid, {@code false} otherwise
+     * @return  {@code true} if the index is valid, {@code false} otherwise
      */
     boolean checkSourceIndex(String[] spacing, int index) {
         int min;
