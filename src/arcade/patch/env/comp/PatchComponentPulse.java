@@ -22,9 +22,9 @@ import arcade.core.util.MiniBox;
  * is introduced, updating the total amount of molecule available.
  */
 
-public class PulseComponent implements Component {
+public class PatchComponentPulse implements Component {
     /** Logger for {@code PulseComponent} */
-    private static Logger LOGGER = Logger.getLogger(PulseComponent.class.getName());
+    private static Logger LOGGER = Logger.getLogger(PatchComponentPulse.class.getName());
     
     /** Depth of the array (z direction) */
     int DEPTH;
@@ -74,7 +74,7 @@ public class PulseComponent implements Component {
      *
      * @param component  the parsed component attributes
      */
-    public PulseComponent(MiniBox component) {
+    public PatchComponentPulse(MiniBox component) {
         // Get parameters.
         _pulseMolecule = component.get("PULSE_MOLECULE");
         _pulseInterval = component.getDouble("PULSE_INTERVAL")*24*60; // days -> minutes
