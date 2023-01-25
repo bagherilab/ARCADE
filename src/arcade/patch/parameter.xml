@@ -109,4 +109,9 @@
     <component class="graph_sites" id="ROOTS_BOTTOM" value="x" description="roots at the bottom of environment (y direction)" />
     <component class="graph_sites" id="OXYGEN_SOLUBILITY_TISSUE" value="0.00000131" units="fmol O2/(um^3 mmHg)" />
     <component class="graph_sites" id="OXYGEN_SOLUBILITY_PLASMA" value="0.00000138" units="fmol O2/(um^3 mmHg)" />
+    
+    <!-- pulse component parameters -->
+    <component class="pulse" id="MEDIA_VOLUME" value="2000" unit="um^3" />
+    <component class="pulse" id="PULSE_INTERVAL" value="1000" unit="min" />
+    <component class="pulse" id="LATTICE_PATCH_VOLUME" value="10" unit="um^3" />
 </parameters>
