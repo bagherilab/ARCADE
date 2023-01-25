@@ -25,7 +25,7 @@ public class PatchCellCancer extends PatchCellTissue {
      * @param parent  the parent ID
      * @param pop  the cell population index
      * @param state  the cell state
-     * @param age  the cell age (in ticks)
+     * @param age  the cell age
      * @param divisions  the number of cell divisions
      * @param location  the {@link Location} of the cell
      * @param parameters  the dictionary of parameters

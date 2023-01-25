@@ -24,7 +24,7 @@ public final class PatchCellContainer implements CellContainer {
     /** Cell population index. */
     public final int pop;
     
-    /** Cell age (in ticks). */
+    /** Cell age [min]. */
     public final int age;
     
     /** Number of divisions. */
@@ -33,16 +33,16 @@ public final class PatchCellContainer implements CellContainer {
     /** Cell state. */
     public final State state;
     
-    /** Cell volume (in um<sup>3</sup>). */
+    /** Cell volume [um<sup>3</sup>]. */
     public final double volume;
     
-    /** Cell height (in um). */
+    /** Cell height [um]. */
     public final double height;
     
-    /** Critical cell volume (in um<sup>3</sup>). */
+    /** Critical cell volume [um<sup>3</sup>]. */
     public final double criticalVolume;
     
-    /** Critical cell height (in um). */
+    /** Critical cell height [um]. */
     public final double criticalHeight;
     
     /**

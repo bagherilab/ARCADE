@@ -15,7 +15,7 @@ import static arcade.core.util.Enums.State;
  * The {@code PatchProcessMetabolism} process:
  * <ul>
  *     <li>gets available glucose and oxygen from the environment</li>
- *     <li>calculates energy consumption (in ATP) given cell size and state</li>
+ *     <li>calculates energy consumption (ATP) given cell size and state</li>
  *     <li>steps the metabolism process (implemented with different complexities)
  *     to determine changes to energy and volume</li>
  *     <li>updates glucose and oxygen environment with consumption</li>

@@ -80,25 +80,25 @@ public abstract class PatchCell implements Cell {
     /** Cell state. */
     State state;
     
-    /** Cell age (in ticks). */
+    /** Cell age [min]. */
     int age;
     
-    /** Cell energy (in fmol ATP). */
+    /** Cell energy [fmol ATP]. */
     private double energy;
     
     /** Number of divisions. */
     int divisions;
     
-    /** Cell volume (in um<sup>3</sup>). */
+    /** Cell volume [um<sup>3</sup>]. */
     double volume;
     
-    /** Critical volume for cell (in ium<sup>3</sup>). */
-    final double criticalVolume;
-    
-    /** Cell height (in um). */
+    /** Cell height [um]. */
     double height;
     
-    /** Critical height for cell (in um). */
+    /** Critical volume for cell [um<sup>3</sup>]. */
+    final double criticalVolume;
+    
+    /** Critical height for cell [um]. */
     final double criticalHeight;
     
     /** Cell state change flag. */
@@ -143,7 +143,7 @@ public abstract class PatchCell implements Cell {
      * @param parent  the parent ID
      * @param pop  the cell population index
      * @param state  the cell state
-     * @param age  the cell age (in ticks)
+     * @param age  the cell age
      * @param divisions  the number of cell divisions
      * @param location  the {@link Location} of the cell
      * @param parameters  the dictionary of parameters
@@ -327,7 +327,7 @@ public abstract class PatchCell implements Cell {
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
         
-        // Increase age of cell (in ticks).
+        // Increase age of cell.
         age++;
         
         // TODO: check for death due to age
