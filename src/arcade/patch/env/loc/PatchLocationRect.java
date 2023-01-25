@@ -11,9 +11,9 @@ import arcade.patch.sim.PatchSeries;
  * {@link arcade.core.env.lat.Lattice}.
  * <p>
  * {@link arcade.core.env.grid.Grid} coordinates are in terms of (x, y) and the
- * {@link arcade.core.env.lat.Lattice} coordinates are in (a, b).
- * Rectangular {@link arcade.core.env.lat.Lattice} subcoordinates are ordered
- * 0 - 3, with 0 at the top left and going clockwise around.
+ * {@link arcade.core.env.lat.Lattice} coordinates are in (a, b). Rectangular
+ * {@link arcade.core.env.lat.Lattice} subcoordinates are ordered 0 - 3, with 0
+ * at the top left and going clockwise around.
  * <pre>
  *     ---------
  *     | 0 | 1 |
@@ -22,13 +22,12 @@ import arcade.patch.sim.PatchSeries;
  *     ---------
  * </pre>
  * For simulations with {@code DEPTH} &#62; 0 (3D simulations), each the
- * rectangular grid is offset in relative to the rectangular lattice.
- * Therefore, each cell in a location has four neighboring locations in the same
- * layer, four neighboring locations in the layer above, and four neighboring
- * locations in the layer below.
- * Simulations with {@code DEPTH} &#62; 1 must have a {@code MARGIN} &#62; 0,
- * otherwise the offset location coordinates will be associated with lattice
- * coordinates that are out of bounds of the array.
+ * rectangular grid is offset in relative to the rectangular lattice. Therefore,
+ * each cell in a location has four neighboring locations in the same layer,
+ * four neighboring locations in the layer above, and four neighboring locations
+ * in the layer below. Simulations with {@code DEPTH} &#62; 1 must have a
+ * {@code MARGIN} &#62; 0, otherwise the offset location coordinates will be
+ * associated with lattice coordinates that are out of bounds of the array.
  */
 
 public final class PatchLocationRect extends PatchLocation {
@@ -60,25 +59,25 @@ public final class PatchLocationRect extends PatchLocation {
     private static final int NUM_SUBCOORDINATES = 4;
     
     /** Relative rectangular subcoordinate offsets in the x direction. */
-    private static final byte[] X_OFF = new byte[] {0, 1, 0, 1};
+    private static final byte[] X_OFF = new byte[] { 0, 1, 0, 1 };
     
     /** Relative rectangular subcoordinate offsets in the y direction. */
-    private static final byte[] Y_OFF = new byte[] {0, 0, 1, 1};
+    private static final byte[] Y_OFF = new byte[] { 0, 0, 1, 1 };
     
     /** List of relative rectangular neighbor locations. */
     private static final byte[] MOVES = new byte[] {
-        (byte) Integer.parseInt("00001000", 2), // up
-        (byte) Integer.parseInt("00000100", 2), // down
-        (byte) Integer.parseInt("00100000", 2), // right
-        (byte) Integer.parseInt("00010000", 2), // left
-        (byte) Integer.parseInt("00000010", 2), // vert up
-        (byte) Integer.parseInt("00000001", 2), // vert down
-        (byte) Integer.parseInt("00010010", 2), // vert up clockwise 1
-        (byte) Integer.parseInt("00010110", 2), // vert up clockwise 2
-        (byte) Integer.parseInt("00000110", 2), // vert up clockwise 3
-        (byte) Integer.parseInt("00010001", 2), // vert down clockwise 1
-        (byte) Integer.parseInt("00010101", 2), // vert down clockwise 2
-        (byte) Integer.parseInt("00000101", 2), // vert down clockwise 3
+            (byte) Integer.parseInt("00001000", 2), // up
+            (byte) Integer.parseInt("00000100", 2), // down
+            (byte) Integer.parseInt("00100000", 2), // right
+            (byte) Integer.parseInt("00010000", 2), // left
+            (byte) Integer.parseInt("00000010", 2), // vert up
+            (byte) Integer.parseInt("00000001", 2), // vert down
+            (byte) Integer.parseInt("00010010", 2), // vert up clockwise 1
+            (byte) Integer.parseInt("00010110", 2), // vert up clockwise 2
+            (byte) Integer.parseInt("00000110", 2), // vert up clockwise 3
+            (byte) Integer.parseInt("00010001", 2), // vert down clockwise 1
+            (byte) Integer.parseInt("00010101", 2), // vert down clockwise 2
+            (byte) Integer.parseInt("00000101", 2), // vert down clockwise 3
     };
     
     /**
@@ -129,8 +128,8 @@ public final class PatchLocationRect extends PatchLocation {
      * Updates static configuration variables.
      * <p>
      * Environment sizes are not set until the simulation series is created.
-     * Calculations for coordinates depend on these sizes, so the {@code Location}
-     * needs to be updated based on the series configuration.
+     * Calculations for coordinates depend on these sizes, so the
+     * {@code Location} needs to be updated based on the series configuration.
      *
      * @param series  the current simulation series
      */
@@ -165,19 +164,19 @@ public final class PatchLocationRect extends PatchLocation {
     /**
      * {@inheritDoc}
      * <p>
-     * Each direction of movement ({@code +x, -x, +y, -y, +z, -z}) is
-     * tracked by each bit within a byte.
+     * Each direction of movement ({@code +x, -x, +y, -y, +z, -z}) is tracked by
+     * each bit within a byte.
      */
     @Override
     void calculateChecks() {
         CoordinateRect rect = (CoordinateRect) coordinate;
         check = (byte) (
-            (rect.x == radius - 1 ? 0 : 1 << 5)
-            + (rect.x == 1 - radius ? 0 : 1 << 4)
-            + (rect.y == radius - 1 ? 0 : 1 << 3)
-            + (rect.y == 1 - radius ? 0 : 1 << 2)
-            + (rect.z == depth - 1 ? 0 : 1 << 1)
-            + (rect.z == 1 - depth ? 0 : 1 << 0));
+                (rect.x == radius - 1 ? 0 : 1 << 5)
+                        + (rect.x == 1 - radius ? 0 : 1 << 4)
+                        + (rect.y == radius - 1 ? 0 : 1 << 3)
+                        + (rect.y == 1 - radius ? 0 : 1 << 2)
+                        + (rect.z == depth - 1 ? 0 : 1 << 1)
+                        + (rect.z == 1 - depth ? 0 : 1 << 0));
     }
     
     /**
@@ -197,8 +196,8 @@ public final class PatchLocationRect extends PatchLocation {
      * {@inheritDoc}
      * <p>
      * We check if a neighbor location is valid by comparing the movement checks
-     * byte with the neighbor location byte.
-     * Neighbor list includes the current location.
+     * byte with the neighbor location byte. Neighbor list includes the current
+     * location.
      */
     @Override
     public ArrayList<Location> getNeighbors() {
@@ -252,9 +251,11 @@ public final class PatchLocationRect extends PatchLocation {
         int x = (int) Math.floor(xx);
         double yy = (coordinate.y - zo) / 2.0 + 1 - radiusBounds;
         int y = (int) Math.floor(yy);
-
+        
         // Check if out of bounds.
-        if (Math.abs(x) >= radius || Math.abs(y) >= radius) { return null; }
+        if (Math.abs(x) >= radius || Math.abs(y) >= radius) {
+            return null;
+        }
         return new CoordinateRect(x, y, z);
     }
 }

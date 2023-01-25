@@ -3,9 +3,8 @@ package arcade.patch.env.loc;
 /**
  * Representation of a hexagonal coordinate.
  * <p>
- * Each coordinate is defined by (u, v, w, z) values.
- * Two coordinate objects are considered equal if they have matching
- * (u, v, w, z) values.
+ * Each coordinate is defined by (u, v, w, z) values. Two coordinate objects are
+ * considered equal if they have matching (u, v, w, z) values.
  */
 
 public final class CoordinateHex extends Coordinate {
@@ -40,6 +39,7 @@ public final class CoordinateHex extends Coordinate {
     
     /**
      * {@inheritDoc}
+     * <p>
      * Uses (u, v, z) coordinate values to calculate hash.
      */
     @Override
@@ -47,7 +47,9 @@ public final class CoordinateHex extends Coordinate {
     
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof CoordinateHex)) { return false; }
+        if (!(obj instanceof CoordinateHex)) {
+            return false;
+        }
         CoordinateHex coordinate = (CoordinateHex) obj;
         return coordinate.u == u && coordinate.v == v && coordinate.w == w && coordinate.z == z;
     }

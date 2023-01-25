@@ -10,21 +10,21 @@ import static arcade.core.util.Enums.Region;
  * <p>
  * {@code PatchLocation} objects define where agents are within the
  * {@link arcade.core.env.grid.Grid} (relative to other agents) and relative to
- * the {@link arcade.core.env.lat.Lattice} (local molecule concentrations).
- * The <em>coordinate</em> defines the location in the
+ * the {@link arcade.core.env.lat.Lattice} (local molecule concentrations). The
+ * <em>coordinate</em> defines the location in the
  * {@link arcade.core.env.grid.Grid} while the term <em>subcoordinate(s)</em>
  * defines the location(s) in the {@link arcade.core.env.lat.Lattice}.
  * <p>
  * There may be multiple <em>subcoordinates</em> associated with the same
  * <em>coordinate</em> (therefore there may be more than one agent per
  * coordinate, but there can only be one agent for a given coordinate /
- * subcoordinate pair).
- * For example, in the hexagonal grid, each hexagon has a <em>coordinate</em>.
- * Within each hexagon there are six corresponding triangular lattice
+ * subcoordinate pair). For example, in the hexagonal grid, each hexagon has a
+ * <em>coordinate</em>. Within each hexagon there are six corresponding
+ * triangular lattice
  * <em>subcoordinates</em>.
  * There may be multiple agents in a given hexagon, but each cell within that
- * hexagon is associated with a specific unique triangle.
- * Therefore, there can be no more than six agents per hexagonal patch.
+ * hexagon is associated with a specific unique triangle. Therefore, there can
+ * be no more than six agents per hexagonal patch.
  * <p>
  * Regardless of geometry, the center of the model should have
  * {@link arcade.core.env.grid.Grid} location coordinate (0,0,0) or (0,0,0,0).
@@ -97,8 +97,8 @@ public abstract class PatchLocation implements Location {
     /**
      * Gets the patch coordinate in the {@link arcade.core.env.grid.Grid}.
      * <p>
-     * These are not necessarily the same as the {@link arcade.core.env.lat.Lattice}
-     * coordinates.
+     * These are not necessarily the same as the
+     * {@link arcade.core.env.lat.Lattice} coordinates.
      *
      * @return  the coordinate
      */
@@ -107,14 +107,15 @@ public abstract class PatchLocation implements Location {
     /**
      * Gets the patch subcoordinate in the {@link arcade.core.env.lat.Lattice}.
      * <p>
-     * These are not necessarily the same as the {@link arcade.core.env.grid.Grid}
-     * coordinates.
+     * These are not necessarily the same as the
+     * {@link arcade.core.env.grid.Grid} coordinates.
      *
      * @return  the subcoordinate
      */
     public Coordinate getSubcoordinate() { return subcoordinates.get(0); }
     
-    /** Gets all subcoordinates in the {@link arcade.core.env.lat.Lattice} that
+    /**
+     * Gets all subcoordinates in the {@link arcade.core.env.lat.Lattice} that
      * correspond to the {@link arcade.core.env.grid.Grid} location.
      *
      * @return  the array of subcoordinates
@@ -122,14 +123,16 @@ public abstract class PatchLocation implements Location {
     public ArrayList<Coordinate> getSubcoordinates() { return subcoordinates; }
     
     /**
-     * Gets the {@link arcade.core.env.grid.Grid} coordinate size in the xy plane.
+     * Gets the {@link arcade.core.env.grid.Grid} coordinate size in the xy
+     * plane.
      *
      * @return  the coordinate size
      */
     public abstract double getCoordinateSize();
-
+    
     /**
-     * Gets the {@link arcade.core.env.lat.Lattice} coordinate size in the xy plane.
+     * Gets the {@link arcade.core.env.lat.Lattice} coordinate size in the xy
+     * plane.
      *
      * @return  the subcoordinate size
      */
@@ -141,7 +144,7 @@ public abstract class PatchLocation implements Location {
      * @return  the size ratio
      */
     public abstract double getRatio();
-
+    
     /**
      * Gets the maximum occupancy of a location.
      *
@@ -188,7 +191,8 @@ public abstract class PatchLocation implements Location {
      * Checks if two locations have the same coordinate.
      *
      * @param obj  the location to compare
-     * @return  {@code true} if coordinates are the same, {@code false} otherwise
+     * @return  {@code true} if coordinates are the same, {@code false}
+     *          otherwise
      */
     public boolean equals(Object obj) { return coordinate.equals(obj); }
     

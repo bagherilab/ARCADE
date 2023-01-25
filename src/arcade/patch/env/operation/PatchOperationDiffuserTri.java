@@ -18,21 +18,23 @@ public class PatchOperationDiffuserTri extends PatchOperationDiffuser {
      * Creates a {@link PatchOperationDiffuser} for triangular lattices.
      * <p>
      * Constructor calculates rate and multipliers for diffusion on the
-     * triangular lattice given diffusivity of the molecule.
-     * If the finite different approximation is not stable, the multipliers are
-     * adjusted to use a pseudo-steady state approximation.
+     * triangular lattice given diffusivity of the molecule. If the finite
+     * different approximation is not stable, the multipliers are adjusted to
+     * use a pseudo-steady state approximation.
      * <p>
      * The constructor also initializes an orientation lattice indicating which
      * direction the triangles are facing.
      *
      * @param lattice  the {@link PatchLattice} the operation is associated with
+     * @param ds  the spatial scaling (x and y directions)
+     * @param dz  the spatial scaling (z direction)
      */
-    public PatchOperationDiffuserTri(PatchLattice lattice) {
+    public PatchOperationDiffuserTri(PatchLattice lattice, double ds, double dz) {
         super(lattice);
         
         // Calculate dimensionless rate and various multipliers.
-        rate = (4 * diffusivity) / (3 * dxy * dxy);
-        alpha = (latticeHeight > 1 ? (3 * dxy * dxy) / (2 * dz * dz) : 0);
+        rate = (4 * diffusivity) / (3 * ds * ds);
+        alpha = (latticeHeight > 1 ? (3 * ds * ds) / (2 * dz * dz) : 0);
         beta = 3 + 2 * alpha;
         
         // Determine if solution is stable. If no, adjust for pseudo-steady.

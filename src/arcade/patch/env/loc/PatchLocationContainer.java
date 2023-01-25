@@ -6,7 +6,8 @@ import arcade.core.env.loc.LocationContainer;
 import arcade.core.env.loc.LocationFactory;
 
 /**
- * Implementation of {@link LocationContainer} for {@link PatchLocation} objects.
+ * Implementation of {@link LocationContainer} for {@link PatchLocation}
+ * objects.
  */
 
 public final class PatchLocationContainer implements LocationContainer {

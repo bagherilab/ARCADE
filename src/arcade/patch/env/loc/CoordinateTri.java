@@ -3,9 +3,8 @@ package arcade.patch.env.loc;
 /**
  * Representation of a triangular coordinate.
  * <p>
- * Each coordinate is defined by (x, y, z) values.
- * Two coordinate objects are considered equal if they have matching
- * (x, y, z) values.
+ * Each coordinate is defined by (x, y, z) values. Two coordinate objects are
+ * considered equal if they have matching (x, y, z) values.
  */
 
 public final class CoordinateTri extends Coordinate {
@@ -30,11 +29,12 @@ public final class CoordinateTri extends Coordinate {
     
     @Override
     public double calculateDistance() {
-        return Math.sqrt(x * x  + y * y);
+        return Math.sqrt(x * x + y * y);
     }
     
     /**
      * {@inheritDoc}
+     * <p>
      * Uses (x, y, z) coordinate values to calculate hash.
      */
     @Override
@@ -42,7 +42,9 @@ public final class CoordinateTri extends Coordinate {
     
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof CoordinateTri)) { return false; }
+        if (!(obj instanceof CoordinateTri)) {
+            return false;
+        }
         CoordinateTri coordinate = (CoordinateTri) obj;
         return coordinate.x == x && coordinate.y == y && coordinate.z == z;
     }

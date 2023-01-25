@@ -11,10 +11,10 @@ import static arcade.core.util.Enums.Category;
  * Extension of {@link PatchOperation} for generation.
  * <p>
  * Operation updates the associated lattice field with values provided in the
- * delta array.
- * The delta array defaults to zero (no changes to lattice field) and can be
- * modified by external classes.
- * Operation is independent of underlying geometry.
+ * delta array for a molecule with given {@code CONCENTRATION} and
+ * {@code PERMEABILITY}. The delta array defaults to zero (no changes to lattice
+ * field) and can be modified by external classes. Operation is independent of
+ * underlying geometry.
  */
 
 public class PatchOperationGenerator extends PatchOperation {
@@ -60,7 +60,7 @@ public class PatchOperationGenerator extends PatchOperation {
             Operation diffuser = lattice.getOperation(Category.DIFFUSER);
             this.latticePrevious = ((PatchOperationDiffuser) diffuser).latticeNew;
         } else {
-            this.latticePrevious =  new double[latticeHeight][latticeLength][latticeWidth];
+            this.latticePrevious = new double[latticeHeight][latticeLength][latticeWidth];
         }
     }
     

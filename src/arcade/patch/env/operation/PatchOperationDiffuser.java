@@ -11,12 +11,11 @@ import static arcade.core.util.Enums.Category;
  * Extension of {@link PatchOperation} for diffusion.
  * <p>
  * Operation calculates diffusion of concentrations using finite difference
- * approximation.
- * The calculation is repeated per second (model tick is one minute).
- * Methods are written to work regardless of underlying geometry.
- * Methods extending this operation for a specific geometry will need to
- * adjust the multipliers for both the finite difference approximation and the
- * pseudo-steady state approximation.
+ * approximation with given {@code DIFFUSIVITY}. The calculation is repeated per
+ * second (model tick is one minute). Methods are written to work regardless of
+ * underlying geometry. Methods extending this operation for a specific geometry
+ * will need to adjust the multipliers for both the finite difference
+ * approximation and the pseudo-steady state approximation.
  */
 
 public abstract class PatchOperationDiffuser extends PatchOperation {
@@ -38,14 +37,8 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
     /** {@code 0} if pseudo-steady state, {@code false} otherwise. */
     int adjust;
     
-    /** Diffusivity of molecule. */
+    /** Diffusivity of molecule [um<sup>2</sup>/s]. */
     final double diffusivity;
-    
-    /** Lattice spacing in xy plane. */
-    final double dxy;
-    
-    /** Lattice spacing in z plane. */
-    final double dz;
     
     /** Border array for left border (x direction). */
     final byte[] leftBorder;
@@ -75,8 +68,6 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
      * Loaded parameters include:
      * <ul>
      *     <li>{@code DIFFUSIVITY} = diffusivity of molecule</li>
-     *     <li>{@code STEP_SIZE_XY} = lattice spacing in xy plane</li>
-     *     <li>{@code STEP_SIZE_Z} = lattice spacing in z plane</li>
      * </ul>
      *
      * @param lattice  the {@link PatchLattice} the operation is associated with
@@ -87,8 +78,6 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
         // Get diffuser parameters.
         MiniBox parameters = lattice.getParameters();
         diffusivity = parameters.getDouble("diffuser/DIFFUSIVITY");
-        dxy = parameters.getDouble("diffuser/STEP_SIZE_XY");
-        dz = parameters.getDouble("diffuser/STEP_SIZE_Z");
         
         // Set lattice fields.
         this.latticeCurrent = lattice.getField();
@@ -97,7 +86,7 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
             Operation generator = lattice.getOperation(Category.GENERATOR);
             this.latticeNew = ((PatchOperationGenerator) generator).latticePrevious;
         } else {
-            this.latticeNew =  new double[latticeHeight][latticeLength][latticeWidth];
+            this.latticeNew = new double[latticeHeight][latticeLength][latticeWidth];
         }
         
         // Set up border arrays for up and down (z direction).
@@ -105,7 +94,7 @@ public abstract class PatchOperationDiffuser extends PatchOperation {
         downBorder = new byte[latticeHeight];
         for (int k = 0; k < latticeHeight; k++) {
             upBorder[k] = (byte) (k == latticeHeight - 1 ? 0 : 1);
-            downBorder[k] = (byte) (k == 0  ? 0 : 1);
+            downBorder[k] = (byte) (k == 0 ? 0 : 1);
         }
         
         // Set up border arrays for left and right (x direction).

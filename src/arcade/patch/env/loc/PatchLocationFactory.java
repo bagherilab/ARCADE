@@ -32,8 +32,8 @@ public abstract class PatchLocationFactory implements LocationFactory {
      * {@inheritDoc}
      * <p>
      * For series with no loader, a list of available patches are created based
-     * on population settings.
-     * For series with a loader, the specified file is loaded into the factory.
+     * on population settings. For series with a loader, the specified file is
+     * loaded into the factory.
      */
     @Override
     public void initialize(Series series, MersenneTwisterFast random) {

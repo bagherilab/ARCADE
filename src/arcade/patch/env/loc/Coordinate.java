@@ -35,7 +35,8 @@ public abstract class Coordinate {
      * Checks if two coordinates have the same coordinate values.
      *
      * @param obj  the coordinate to compare
-     * @return  {@code true} if coordinates are the same, {@code false} otherwise
+     * @return  {@code true} if coordinates are the same, {@code false}
+     *          otherwise
      */
     public abstract boolean equals(Object obj);
 }

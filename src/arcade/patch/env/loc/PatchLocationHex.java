@@ -11,10 +11,10 @@ import arcade.patch.sim.PatchSeries;
  * {@link arcade.core.env.lat.Lattice}.
  * <p>
  * {@link arcade.core.env.grid.Grid} coordinates are in terms of (u, v, w) and
- * the {@link arcade.core.env.lat.Lattice} coordinates are in (x, y).
- * Hexagons are flat side up.
- * Triangular {@link arcade.core.env.lat.Lattice} subcoordinates are ordered
- * 0 - 5, with 0 at the top center and going clockwise around.
+ * the {@link arcade.core.env.lat.Lattice} coordinates are in (x, y). Hexagons
+ * are flat side up. Triangular {@link arcade.core.env.lat.Lattice}
+ * subcoordinates are ordered 0 - 5, with 0 at the top center and going
+ * clockwise around.
  * <pre>
  *      -------
  *     / \ 0 / \
@@ -24,16 +24,14 @@ import arcade.patch.sim.PatchSeries;
  *     \ / 3 \ /
  *      -------
  * </pre>
- * In (u, v, w) coordinates, only coordinates where u + v + w = 0 are valid.
- * For simulations with {@code DEPTH} &#62; 0 (3D simulations), each the
- * hexagonal grid is offset in one of two directions relative to the triangular
- * lattice.
+ * In (u, v, w) coordinates, only coordinates where u + v + w = 0 are valid. For
+ * simulations with {@code DEPTH} &#62; 0 (3D simulations), each the hexagonal
+ * grid is offset in one of two directions relative to the triangular lattice.
  * Therefore, each cell in a location has six neighboring locations in the same
  * layer, three neighboring locations in the layer above, and three neighboring
- * locations in the layer below.
- * Simulations with {@code DEPTH} &#62; 1 must have a {@code MARGIN} &#62; 0,
- * otherwise the offset location coordinates will be associated with lattice
- * coordinates that are out of bounds of the array.
+ * locations in the layer below. Simulations with {@code DEPTH} &#62; 1 must
+ * have a {@code MARGIN} &#62; 0, otherwise the offset location coordinates will
+ * be associated with lattice coordinates that are out of bounds of the array.
  */
 
 public final class PatchLocationHex extends PatchLocation {
@@ -75,18 +73,18 @@ public final class PatchLocationHex extends PatchLocation {
     
     /** List of relative hexagonal neighbor locations. */
     private static final byte[] MOVES = new byte[] {
-        (byte) Integer.parseInt("00100100", 2), // up
-        (byte) Integer.parseInt("00011000", 2), // down
-        (byte) Integer.parseInt("01100000", 2), // up left
-        (byte) Integer.parseInt("10010000", 2), // down right
-        (byte) Integer.parseInt("01001000", 2), // down left
-        (byte) Integer.parseInt("10000100", 2), // up right
-        (byte) Integer.parseInt("00000010", 2), // vert up
-        (byte) Integer.parseInt("00000001", 2), // vert down
-        (byte) Integer.parseInt("10000110", 2), // vert up clockwise 1
-        (byte) Integer.parseInt("00100110", 2), // vert up clockwise 2
-        (byte) Integer.parseInt("01100001", 2), // vert down counterclockwise 1
-        (byte) Integer.parseInt("00100101", 2), // vert down counterclockwise 2
+            (byte) Integer.parseInt("00100100", 2), // up
+            (byte) Integer.parseInt("00011000", 2), // down
+            (byte) Integer.parseInt("01100000", 2), // up left
+            (byte) Integer.parseInt("10010000", 2), // down right
+            (byte) Integer.parseInt("01001000", 2), // down left
+            (byte) Integer.parseInt("10000100", 2), // up right
+            (byte) Integer.parseInt("00000010", 2), // vert up
+            (byte) Integer.parseInt("00000001", 2), // vert down
+            (byte) Integer.parseInt("10000110", 2), // vert up cw 1
+            (byte) Integer.parseInt("00100110", 2), // vert up cw 2
+            (byte) Integer.parseInt("01100001", 2), // vert down ccw 1
+            (byte) Integer.parseInt("00100101", 2), // vert down ccw 2
     };
     
     /**
@@ -138,8 +136,8 @@ public final class PatchLocationHex extends PatchLocation {
      * Updates static configuration variables.
      * <p>
      * Environment sizes are not set until the simulation series is created.
-     * Calculations for coordinates depend on these sizes, so the {@code Location}
-     * needs to be updated based on the series configuration.
+     * Calculations for coordinates depend on these sizes, so the
+     * {@code Location} needs to be updated based on the series configuration.
      *
      * @param series  the current simulation series
      */
@@ -181,22 +179,22 @@ public final class PatchLocationHex extends PatchLocation {
     void calculateChecks() {
         CoordinateHex hex = (CoordinateHex) coordinate;
         check = (byte) (
-            (hex.u == radius - 1 ? 0 : 1 << 7)
-            + (hex.u == 1 - radius ? 0 : 1 << 6)
-            + (hex.v == radius - 1 ? 0 : 1 << 5)
-            + (hex.v == 1 - radius ? 0 : 1 << 4)
-            + (hex.w == radius - 1 ? 0 : 1 << 3)
-            + (hex.w == 1 - radius ? 0 : 1 << 2)
-            + (hex.z == depth - 1 ? 0 : 1 << 1)
-            + (hex.z == 1 - depth ? 0 : 1 << 0));
+                (hex.u == radius - 1 ? 0 : 1 << 7)
+                        + (hex.u == 1 - radius ? 0 : 1 << 6)
+                        + (hex.v == radius - 1 ? 0 : 1 << 5)
+                        + (hex.v == 1 - radius ? 0 : 1 << 4)
+                        + (hex.w == radius - 1 ? 0 : 1 << 3)
+                        + (hex.w == 1 - radius ? 0 : 1 << 2)
+                        + (hex.z == depth - 1 ? 0 : 1 << 1)
+                        + (hex.z == 1 - depth ? 0 : 1 << 0));
     }
     
     /**
      * {@inheritDoc}
      * <p>
-     * Estimates the perimeter of cell occupying the hexagonal location.
-     * Volume fraction used to take fraction of the perimeter of the hexagon.
-     * If fraction is not 1 (i.e. at least two cells in the location), then two
+     * Estimates the perimeter of cell occupying the hexagonal location. Volume
+     * fraction used to take fraction of the perimeter of the hexagon. If
+     * fraction is not 1 (i.e. at least two cells in the location), then two
      * additional inner segments are added.
      */
     @Override
@@ -208,8 +206,8 @@ public final class PatchLocationHex extends PatchLocation {
      * {@inheritDoc}
      * <p>
      * We check if a neighbor location is valid by comparing the movement checks
-     * byte with the neighbor location byte.
-     * Neighbor list includes the current location.
+     * byte with the neighbor location byte. Neighbor list includes the current
+     * location.
      */
     @Override
     public ArrayList<Location> getNeighbors() {
@@ -258,18 +256,20 @@ public final class PatchLocationHex extends PatchLocation {
     public static CoordinateHex translate(CoordinateTri coordinate) {
         int z = coordinate.z - depthBounds + 1;
         int zo = (byte) ((Math.abs(heightOffset + z)) % 3);
-
+        
         // Calculate u coordinate.
         double uu = (coordinate.x - (zo == 2 ? -1 : zo) + 2) / 3.0 - radiusBounds;
         int u = Math.round(Math.round(uu));
-
+        
         // Calculate v and w coordinates based on u.
         int vw = coordinate.y - 2 * radiusBounds + 2 - (zo == 0 ? 0 : 1);
         int v = -(int) Math.floor((vw + u) / 2.0);
         int w = -(u + v);
         
         // Check if out of bounds.
-        if (Math.abs(v) >= radius || Math.abs(w) >= radius) { return null; }
+        if (Math.abs(v) >= radius || Math.abs(w) >= radius) {
+            return null;
+        }
         return new CoordinateHex(u, v, w, z);
     }
 }

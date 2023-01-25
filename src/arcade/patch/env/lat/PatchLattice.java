@@ -145,11 +145,6 @@ public abstract class PatchLattice implements Lattice {
         schedule.scheduleRepeating(this, Ordering.LATTICES.ordinal(), 1);
     }
     
-    /**
-     * Steps through cell rules.
-     *
-     * @param simstate  the MASON simulation state
-     */
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;

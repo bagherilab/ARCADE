@@ -11,18 +11,20 @@ public class PatchOperationDiffuserRect extends PatchOperationDiffuser {
      * Creates a {@link PatchOperationDiffuser} for rectangular lattices.
      * <p>
      * Constructor calculates rate and multipliers for diffusion on the
-     * rectangular lattice given diffusivity of the molecule.
-     * If the finite different approximation is not stable, the multipliers are
-     * adjusted to use a pseudo-steady state approximation.
+     * rectangular lattice given diffusivity of the molecule. If the finite
+     * different approximation is not stable, the multipliers are adjusted to
+     * use a pseudo-steady state approximation.
      *
      * @param lattice  the {@link PatchLattice} the operation is associated with
+     * @param ds  the spatial scaling (x and y directions)
+     * @param dz  the spatial scaling (z direction)
      */
-    public PatchOperationDiffuserRect(PatchLattice lattice) {
+    public PatchOperationDiffuserRect(PatchLattice lattice, double ds, double dz) {
         super(lattice);
         
         // Calculate dimensionless rate and various multipliers.
-        rate = (diffusivity) / (dxy * dxy);
-        alpha = (latticeHeight > 1 ? (2 * dxy * dxy) / (dz * dz) : 0);
+        rate = (diffusivity) / (ds * ds);
+        alpha = (latticeHeight > 1 ? (2 * ds * ds) / (dz * dz) : 0);
         beta = 4 + 2 * alpha;
         
         // Determine if solution is stable. If no, adjust for pseudo-steady.

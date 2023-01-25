@@ -140,7 +140,9 @@ public class PatchGrid implements Grid {
         Bag bag = new Bag();
         for (Location location : locations) {
             Bag temp = getObjectsAtLocation(location);
-            if (temp == null) { continue; }
+            if (temp == null) {
+                continue;
+            }
             for (Object object : temp) {
                 bag.add(object);
             }

@@ -58,16 +58,14 @@
     <!-- LAYERS ============================================================ -->
     
     <!-- default parameters for layers -->
-    <layer id="INITIAL_CONCENTRATION" value="0" units="(variable)" />
+    <layer id="INITIAL_CONCENTRATION" value="0" units="(variable)" description="initial layer concentration" />
     
     <!-- diffuser operation parameters -->
-    <layer.operation operation="diffuser" id="DIFFUSIVITY" value="1.0" units="um^2/s" />
-    <layer.operation operation="diffuser" id="STEP_SIZE_XY" value="1" units="patch" conversion="DS" />
-    <layer.operation operation="diffuser" id="STEP_SIZE_Z" value="1" units="patch" conversion="DZ" />
+    <layer.operation operation="diffuser" id="DIFFUSIVITY" value="1.0" units="um^2/s" description="diffusivity of molecule" />
     
     <!-- generator operation parameters -->
-    <layer.operation operation="generator" id="CONCENTRATION" value="1.0" units="(variable)" />
-    <layer.operation operation="generator" id="PERMEABILITY" value="100.0" units="(variable)" />
+    <layer.operation operation="generator" id="CONCENTRATION" value="1.0" units="(variable)" description="maximum concentration" />
+    <layer.operation operation="generator" id="PERMEABILITY" value="100.0" units="(variable)" description="molecule permeability" />
      
     <!-- ACTIONS =========================================================== -->
     
