@@ -19,34 +19,41 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
  * Implementation of {@link CellFactory} for {@link PatchCell} agents.
  * <p>
  * For a given {@link Series}, the factory parses out parameter values into a
- * series of maps from population to the parameter values.
- * These maps are then combined with a {@link PatchCellContainer} to instantiate
- * a {@link PatchCell} agent.
+ * series of maps from population to the parameter values. These maps are then
+ * combined with a {@link PatchCellContainer} to instantiate a {@link PatchCell}
+ * agent.
+ * <p>
+ * Cell volumes ({@code CELL_VOLUME_MEAN}, {@code CELL_VOLUME_STDEV}) and cell
+ * heights ({@code CELL_HEIGHT_MEAN}, {@code CELL_HEIGHT_STDEV}) are drawn from
+ * normal distributions. Cell ages ({@code CELL_AGE_MIN}, {@code CELL_AGE_MAX})
+ * are drawn from a uniform distribution. Cell division potential is initialized
+ * to {@code DIVISION_POTENTIAL}. Cell compression tolerance
+ * ({@code COMPRESSION_TOLERANCE}) is added to the cell critical height.
  */
 
 public final class PatchCellFactory implements CellFactory {
     /** Random number generator instance. */
     MersenneTwisterFast random;
     
-    /** Map of population to critical volumes. */
+    /** Map of population to critical volumes [um<sup>3</sup>]. */
     HashMap<Integer, Normal> popToCriticalVolumes;
     
-    /** Map of population to critical heights. */
+    /** Map of population to critical heights [um]. */
     HashMap<Integer, Normal> popToCriticalHeights;
     
     /** Map of population to parameters. */
     HashMap<Integer, MiniBox> popToParameters;
     
-    /** Map of population to ages. */
+    /** Map of population to ages [min]. */
     HashMap<Integer, Uniform> popToAges;
     
     /** Map of population to cell divisions. */
     HashMap<Integer, Integer> popToDivisions;
     
-    /** Map of population to compression tolerance. */
+    /** Map of population to compression tolerance [um]. */
     HashMap<Integer, Integer> popToCompression;
     
-    /** Map of population to region critical volumes. */
+    /** Map of population to process versions. */
     HashMap<Integer, EnumMap<Domain, String>> popToProcessVersions;
     
     /** Map of population to list of ids. */
@@ -84,9 +91,9 @@ public final class PatchCellFactory implements CellFactory {
     /**
      * {@inheritDoc}
      * <p>
-     * Population sizes are determined from the given series.
-     * The list of loaded containers is filtered by population code and population
-     * size so that extra containers are discarded.
+     * Population sizes are determined from the given series. The list of loaded
+     * containers is filtered by population code and population size so that
+     * extra containers are discarded.
      */
     @Override
     public void loadCells(Series series) {
@@ -160,7 +167,22 @@ public final class PatchCellFactory implements CellFactory {
     }
     
     /**
-     * Parses the population settings into maps from population to parameter value.
+     * Parses the population settings into maps to parameter value.
+     * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code CELL_VOLUME_MEAN} = cell volume distribution average</li>
+     *     <li>{@code CELL_VOLUME_STDEV} = cell volume distribution standard
+     *         deviation</li>
+     *     <li>{@code CELL_HEIGHT_MEAN} = cell height distribution average</li>
+     *     <li>{@code CELL_HEIGHT_STDEV} = cell height distribution standard
+     *         deviation</li>
+     *     <li>{@code CELL_AGE_MIN} = minimum cell age</li>
+     *     <li>{@code CELL_AGE_MAX} = maximum cell age</li>
+     *     <li>{@code DIVISION_POTENTIAL} = maximum number of divisions</li>
+     *     <li>{@code COMPRESSION_TOLERANCE} = maximum compression
+     *         tolerance</li>
+     * </ul>
      *
      * @param series  the simulation series
      */

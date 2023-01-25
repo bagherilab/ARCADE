@@ -44,11 +44,13 @@ public class PatchCellCancer extends PatchCellTissue {
     /**
      * {@inheritDoc}
      * <p>
-     * Cells that are quiescent will check their neighborhood for free locations.
+     * Quiescent cells will check their neighborhood for free locations.
      */
     @Override
     public void step(SimState simstate) {
-        if (state == State.QUIESCENT) { checkNeighborhood(simstate, this); }
+        if (state == State.QUIESCENT) {
+            checkNeighborhood(simstate, this);
+        }
         super.step(simstate);
     }
     
@@ -65,7 +67,7 @@ public class PatchCellCancer extends PatchCellTissue {
      * <p>
      * If there is at least one free location, cell state becomes undefined.
      *
-     * @param simstate the MASON simulation state
+     * @param simstate  the MASON simulation state
      * @param cell  the reference cell
      */
     private static void checkNeighborhood(SimState simstate, PatchCell cell) {

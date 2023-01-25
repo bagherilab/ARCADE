@@ -16,7 +16,9 @@ import static arcade.core.util.Enums.State;
  * <p>
  * During proliferation, the module is repeatedly stepped from its creation
  * until either the cell is no longer able to proliferate or it has successfully
- * doubled in size and is able to create a new cell object.
+ * doubled in size and is able to create a new cell object. The module will wait
+ * for at least {@code SYNTHESIS_DURATION} ticks to pass before creating a new
+ * cell.
  */
 
 public class PatchModuleProliferation extends PatchModule {
@@ -29,20 +31,27 @@ public class PatchModuleProliferation extends PatchModule {
     /** Maximum tolerable height for cell. */
     private final double maxHeight;
     
-    /** Time required for DNA synthesis (in minutes). */
+    /** Time required for DNA synthesis [min]. */
     private final double synthesisDuration;
     
     /**
      * Creates a proliferation {@link PatchModule} for the given cell.
+     * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code SYNTHESIS_DURATION} = time required for DNA synthesis</li>
+     * </ul>
      *
      * @param cell  the {@link PatchCell} the module is associated with
      */
     public PatchModuleProliferation(PatchCell cell) {
         super(cell);
         
+        // Calculate thresholds.
         targetVolume = 2 * cell.getCriticalVolume();
         maxHeight = cell.getCriticalHeight();
         
+        // Set loaded parameters.
         MiniBox parameters = cell.getParameters();
         synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
     }
@@ -75,7 +84,8 @@ public class PatchModuleProliferation extends PatchModule {
                     
                     // Create and schedule new cell.
                     int newID = sim.getID();
-                    PatchCell newCell = (PatchCell) cell.make(newID, State.UNDEFINED, newLocation, random);
+                    PatchCell newCell = (PatchCell) cell.make(newID, State.UNDEFINED,
+                            newLocation, random);
                     sim.getGrid().addObject(newCell, newLocation);
                     newCell.schedule(sim.getSchedule());
                     

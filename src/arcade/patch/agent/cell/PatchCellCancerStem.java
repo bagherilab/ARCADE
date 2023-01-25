@@ -11,18 +11,25 @@ import static arcade.core.util.Enums.State;
  * {@code PatchCellCancerStem} agents are modified from their superclass:
  * <ul>
  *     <li>Cells are immortal (death age set to maximum)</li>
- *     <li>Asymmetric division with probability of producing another stem cell
- *     ({@code PatchCellCancerStem}) or a cancerous cell ({@code PatchCellCancer})</li>
+ *     <li>Asymmetric division with probability ({@code SYMMETRIC_FRACTION}) of
+ *     producing another stem cell ({@code PatchCellCancerStem}) or a cancerous
+ *     cell ({@code PatchCellCancer})</li>
  *     <li>No division limit</li>
  * </ul>
  */
 
 public class PatchCellCancerStem extends PatchCellCancer {
-    /** Probability for symmetric division. */
-    private final double divisionProb;
+    /** Fraction of divisions that are symmetric. */
+    private final double symmetricFraction;
     
     /**
      * Creates a tissue {@code PatchCell} agent.
+     *
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code SYMMETRIC_FRACTION} = fraction of divisions that are
+     *         symmetric</li>
+     * </ul>
      *
      * @param id  the cell ID
      * @param parent  the parent ID
@@ -43,10 +50,10 @@ public class PatchCellCancerStem extends PatchCellCancer {
         super(id, parent, pop, state, age, divisions, location, parameters,
                 volume, height, criticalVolume, criticalHeight);
         
-        // Select parameters from given distribution
-        this.divisionProb = parameters.getDouble("DIVISION_PROB");
+        // Set loaded parameters.
+        symmetricFraction = parameters.getDouble("SYMMETRIC_FRACTION");
         
-        // TODO set death age
+        // TODO: set death age
     }
     
     /**
@@ -57,7 +64,7 @@ public class PatchCellCancerStem extends PatchCellCancer {
     @Override
     public PatchCell make(int newID, State newState, Location newLocation,
                           MersenneTwisterFast random) {
-        return random.nextDouble() < divisionProb
+        return random.nextDouble() < symmetricFraction
                 ? new PatchCellCancerStem(newID, id, pop, newState, age, divisions, newLocation,
                 parameters, volume, height, criticalVolume, criticalHeight)
                 : new PatchCellCancer(newID, id, pop, newState, age, divisions - 1, newLocation,

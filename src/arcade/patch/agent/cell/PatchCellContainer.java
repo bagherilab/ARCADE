@@ -56,23 +56,6 @@ public final class PatchCellContainer implements CellContainer {
      * @param state  the cell state
      * @param volume  the cell volume
      * @param height  the cell height
-     */
-    public PatchCellContainer(int id, int parent, int pop, int age, int divisions,
-                              State state, double volume, double height) {
-        this(id, parent, pop, age, divisions, state, volume, height, volume, height);
-    }
-    
-    /**
-     * Creates a {@code PatchCellContainer} instance.
-     *
-     * @param id  the cell ID
-     * @param parent  the parent ID
-     * @param pop  the cell population index
-     * @param age  the cell age
-     * @param divisions  the number of cell divisions
-     * @param state  the cell state
-     * @param volume  the cell volume
-     * @param height  the cell height
      * @param criticalVolume  the critical volume
      * @param criticalHeight  the critical height
      */
@@ -90,10 +73,10 @@ public final class PatchCellContainer implements CellContainer {
         this.criticalVolume = criticalVolume;
         this.criticalHeight = criticalHeight;
     }
-
+    
     @Override
     public int getID() { return id; }
-
+    
     @Override
     public Cell convert(CellFactory factory, Location location) {
         return convert((PatchCellFactory) factory, location);
@@ -112,7 +95,8 @@ public final class PatchCellContainer implements CellContainer {
         
         // Make cell.
         switch (parameters.get("CLASS")) {
-            case "tissue": default:
+            default:
+            case "tissue":
                 return new PatchCellTissue(id, parent, pop, state, age, divisions, location,
                         parameters, volume, height, criticalVolume, criticalHeight);
             case "cancer":

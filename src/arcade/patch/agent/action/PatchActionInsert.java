@@ -28,7 +28,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
  */
 
 public class PatchActionInsert implements Action {
-    /** Time delay before calling the action (in minutes). */
+    /** Time delay before calling the action [min]. */
     private final int timeDelay;
     
     /** Grid radius that cells are inserted into. */
@@ -48,9 +48,11 @@ public class PatchActionInsert implements Action {
      * <p>
      * Loaded parameters include:
      * <ul>
-     *     <li>{@code TIME_DELAY} = time delay before calling the action (in minutes)</li>
-     *     <li>{@code INSERT_RADIUS} = grid radius that cells are inserted into</li>
-     *     <li>{@code INSERT_NUMBER} = number of cells to insert from each population</li>
+     *     <li>{@code TIME_DELAY} = time delay before calling the action</li>
+     *     <li>{@code INSERT_RADIUS} = grid radius that cells are inserted
+     *         into</li>
+     *     <li>{@code INSERT_NUMBER} = number of cells to insert from each
+     *         population</li>
      * </ul>
      *
      * @param series  the simulation series
@@ -59,11 +61,13 @@ public class PatchActionInsert implements Action {
     public PatchActionInsert(Series series, MiniBox parameters) {
         int maxRadius = ((PatchSeries) series).radius;
         
+        // Set loaded parameters.
         timeDelay = parameters.getInt("TIME_DELAY");
         insertRadius = Math.min(maxRadius, parameters.getInt("INSERT_RADIUS"));
         insertDepth = ((PatchSeries) series).depth;
         insertNumber = parameters.getInt("INSERT_NUMBER");
         
+        // Initialize population register.
         populations = new ArrayList<>();
     }
     

@@ -4,23 +4,23 @@ import java.util.List;
 import arcade.patch.agent.cell.PatchCell;
 
 /**
- * Implementation of {@link java.lang.Process} for cell signaling.
+ * Implementation of {@link Process} for cell metabolism.
  * <p>
- * The {@code PatchProcessSignaling} module can be used for networks comprising
+ * The {@code PatchProcessSignaling} process can be used for networks comprising
  * a system of ODEs.
  */
 
 public abstract class PatchProcessSignaling extends PatchProcess {
-    /** Molecules in nM */
+    /** Molecules in nM. */
     static final double MOLEC_TO_NM = 1355.0;
     
-    /** Molecular weight of TGFa [g/mol] */
+    /** Molecular weight of TGFa [g/mol]. */
     static final double TGFA_MW = 17006.0;
     
-    /** Step size for module (in seconds) */
+    /** Step size for process [sec]. */
     static final double STEP_SIZE = 1.0;
     
-    /** List of internal names */
+    /** List of internal names. */
     List<String> names;
     
     /**

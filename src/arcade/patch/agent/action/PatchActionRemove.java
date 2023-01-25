@@ -27,7 +27,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
  */
 
 public class PatchActionRemove implements Action {
-    /** Time delay before calling the action (in minutes). */
+    /** Time delay before calling the action [min]. */
     private final int timeDelay;
     
     /** Grid radius that cells are removed from. */
@@ -41,14 +41,16 @@ public class PatchActionRemove implements Action {
      * <p>
      * Loaded parameters include:
      * <ul>
-     *     <li>{@code TIME_DELAY} = time delay before calling the action (in minutes)</li>
-     *     <li>{@code REMOVE_RADIUS} = grid radius that cells are removed from</li>
+     *     <li>{@code TIME_DELAY} = time delay before calling the action</li>
+     *     <li>{@code REMOVE_RADIUS} = grid radius that cells are removed
+     *         from</li>
      * </ul>
      *
      * @param series  the simulation series
      * @param parameters  the component parameters dictionary
      */
     public PatchActionRemove(Series series, MiniBox parameters) {
+        // Set loaded parameters.
         timeDelay = parameters.getInt("TIME_DELAY");
         removeRadius = parameters.getInt("REMOVE_RADIUS");
         removeDepth = ((PatchSeries) series).depth;

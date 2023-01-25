@@ -25,7 +25,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
  */
 
 public class PatchActionConvert implements Action {
-    /** Time delay before calling the action (in minutes). */
+    /** Time delay before calling the action [min]. */
     private final int timeDelay;
     
     /** Target population id for conversion. */
@@ -36,13 +36,14 @@ public class PatchActionConvert implements Action {
      * <p>
      * Loaded parameters include:
      * <ul>
-     *     <li>{@code TIME_DELAY} = time delay before calling the action (in minutes)</li>
+     *     <li>{@code TIME_DELAY} = time delay before calling the action</li>
      * </ul>
      *
      * @param series  the simulation series
      * @param parameters  the component parameters dictionary
      */
     public PatchActionConvert(Series series, MiniBox parameters) {
+        // Set loaded parameters.
         timeDelay = parameters.getInt("TIME_DELAY");
     }
     

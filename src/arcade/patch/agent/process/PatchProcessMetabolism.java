@@ -4,11 +4,12 @@ import java.util.List;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.grid.PatchGrid;
 import static arcade.core.util.Enums.State;
 
-/** 
+/**
  * Implementation of {@link Process} for cell metabolism.
  * <p>
  * The {@code PatchProcessMetabolism} process:
@@ -29,73 +30,73 @@ import static arcade.core.util.Enums.State;
  */
 
 public abstract class PatchProcessMetabolism extends PatchProcess {
-    /** ID for glucose */
+    /** ID for glucose. */
     static final int GLUCOSE = 0;
     
-    /** ID for oxygen */
+    /** ID for oxygen. */
     static final int OXYGEN = 1;
     
-    /** Energy from glycolysis  [mol ATP/mol glucose] */
+    /** Energy from glycolysis  [mol ATP/mol glucose]. */
     static final int ENERGY_FROM_GLYC = 2;
     
-    /** Energy from oxidative phosphorylation [mol ATP/mol pyruvate] */
+    /** Energy from oxidative phosphorylation [mol ATP/mol pyruvate]. */
     static final int ENERGY_FROM_OXPHOS = 15;
     
-    /** Stoichiometric ratio between oxygen and pyruvate [mol oxygen/mol pyruvate] */
+    /** Stoichiometric ratio for oxygen:pyruvate [mol oxygen/mol pyruvate]. */
     static final int OXY_PER_PYRU = 3;
     
-    /** Stoichiometric ratio between pyruvate and glucose [mol pyruvate/mol glucose] */
+    /** Stoichiometric ratio for pyruvate:glucose [mol pyruvate/mol glucose]. */
     static final int PYRU_PER_GLUC = 2;
     
-    /** Basal energy requirement */
-    private final double BASAL_ENERGY;
+    /** Basal energy requirement [fmol ATP/um<sup>3</sup> cell/min]. */
+    private final double basalEnergy;
     
-    /** Additional energy required during proliferation */
-    private final double PROLIF_ENERGY;
+    /** Additional energy required for proliferation [fmol ATP/um<sup>3</sup> cell/min]. */
+    private final double proliferationEnergy;
     
-    /** Additional energy required during migration */
-    private final double MIGRA_ENERGY;
+    /** Additional energy required for migration [fmol ATP/um<sup>3</sup> cell/min]. */
+    private final double migrationEnergy;
     
-    /** Oxygen solubility in tissue */
-    private final double OXY_SOLU_TISSUE;
+    /** Oxygen solubility in tissue [fmol O2/um<sup>3</sup>/mmHg]. */
+    private final double oxygenSolubilityTissue;
     
-    /** Cell density (in ng/um<sup>3</sup>) */
-    final double CELL_DENSITY;
+    /** Cell density [ng/um<sup>3</sup>]. */
+    final double cellDensity;
     
-    /** Ratio of glucose to biomass (in fmol glucose/ng biomass) */
-    final double MASS_TO_GLUC;
+    /** Ratio of glucose to biomass [fmol glucose/ng biomass]. */
+    final double ratioGlucoseBiomass;
     
-    /** List of internal names */
+    /** List of internal names. */
     List<String> names;
     
-    /** List of internal amounts [fmol] */
+    /** List of internal amounts [fmol]. */
     double[] intAmts;
     
-    /** List of external amounts [fmol] */
+    /** List of external amounts [fmol]. */
     final double[] extAmts;
     
-    /** List of uptake amounts [fmol] */
+    /** List of uptake amounts [fmol]. */
     final double[] upAmts;
     
-    /** Volume fraction */
+    /** Volume fraction. */
     protected double f;
     
-    /** Cell energy [ATP] */
+    /** Cell energy [ATP]. */
     double energy;
     
-    /** Volume of cell [um<sup>3</sup>] */
+    /** Volume of cell [um<sup>3</sup>]. */
     double volume;
     
-    /** Dry mass of cell [ng] */
+    /** Dry mass of cell [ng]. */
     double mass;
     
-    /** Critical cell mass */
+    /** Critical cell mass. */
     final double critMass;
     
-    /** Energy consumed */
+    /** Energy consumed. */
     double energyCons;
     
-    /** Energy required */
+    /** Energy required. */
     double energyReq;
     
     /** {@code true} if cell is in proliferative state, {@code false} otherwise. */
@@ -107,7 +108,17 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
     /**
      * Creates a metabolism {@link PatchProcess} for the given cell.
      * <p>
-     * Process parameters are specific for the cell population.
+     * Process parameters are specific for the cell population. Loaded
+     * parameters include:
+     * <ul>
+     *     <li>{@code BASAL_ENERGY} = basal energy requirement</li>
+     *     <li>{@code PROLIFERATION_ENERGY} = additional energy required for proliferation</li>
+     *     <li>{@code MIGRATION_ENERGY} = additional energy required for migration</li>
+     *     <li>{@code CELL_DENSITY} = cell density</li>
+     *     <li>{@code RATIO_GLUCOSE_BIOMASS} = ratio of glucose to biomass</li>
+     *     <li>{@code OXYGEN_SOLUBILITY_TISSUE} = oxygen solubility in tissue</li>
+     * </ul>
+     * <p>
      * The process starts with energy at zero and assumes a constant ratio
      * between mass and volume (through density).
      *
@@ -117,18 +128,19 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
         super(cell);
         
         // Set parameters.
-        this.BASAL_ENERGY = cell.getParameters().getDouble("metabolism/BASAL_ENERGY");
-        this.PROLIF_ENERGY = cell.getParameters().getDouble("metabolism/PROLIF_ENERGY");
-        this.MIGRA_ENERGY = cell.getParameters().getDouble("metabolism/MIGRA_ENERGY");
-        this.CELL_DENSITY = cell.getParameters().getDouble("metabolism/CELL_DENSITY");
-        this.MASS_TO_GLUC = cell.getParameters().getDouble( "metabolism/MASS_TO_GLUC");
-        this.OXY_SOLU_TISSUE = cell.getParameters().getDouble("metabolism/OXY_SOLU_TISSUE");
+        MiniBox parameters = cell.getParameters();
+        basalEnergy = parameters.getDouble("metabolism/BASAL_ENERGY");
+        proliferationEnergy = parameters.getDouble("metabolism/PROLIFERATION_ENERGY");
+        migrationEnergy = parameters.getDouble("metabolism/MIGRATION_ENERGY");
+        cellDensity = parameters.getDouble("metabolism/CELL_DENSITY");
+        ratioGlucoseBiomass = parameters.getDouble("metabolism/RATIO_GLUCOSE_BIOMASS");
+        oxygenSolubilityTissue = parameters.getDouble("metabolism/OXYGEN_SOLUBILITY_TISSUE");
         
         // Initialize process.
-        this.volume = cell.getVolume();
-        this.energy = 0;
-        this.mass = cell.getVolume() * CELL_DENSITY;
-        this.critMass = cell.getCriticalVolume() * CELL_DENSITY;
+        volume = cell.getVolume();
+        energy = 0;
+        mass = cell.getVolume() * cellDensity;
+        critMass = cell.getCriticalVolume() * cellDensity;
         
         // Initialize external and uptake concentration arrays;
         extAmts = new double[2];
@@ -144,15 +156,15 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
     abstract void stepProcess(MersenneTwisterFast random, Simulation sim);
     
     /**
-     * Gets the external amounts of glucose and oxygen.
-     * <p>
-     * Multiply by location volume to get in fmol.
-     * 
+     * Gets the external amounts of glucose and oxygen in fmol.
+     *
      * @param sim  the simulation instance
      */
     private void updateExternal(Simulation sim) {
-        extAmts[GLUCOSE] = sim.getLattice("GLUCOSE").getAverageValue(location) * location.getVolume();
-        extAmts[OXYGEN] = sim.getLattice("OXYGEN").getAverageValue(location) * location.getVolume() * OXY_SOLU_TISSUE;
+        extAmts[GLUCOSE] = sim.getLattice("GLUCOSE").getAverageValue(location)
+                * location.getVolume();
+        extAmts[OXYGEN] = sim.getLattice("OXYGEN").getAverageValue(location)
+                * location.getVolume() * oxygenSolubilityTissue;
     }
     
     @Override
@@ -169,9 +181,9 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
         isMigratory = cell.getState() == State.MIGRATORY;
         
         // Calculate energy consumption.
-        energyCons = volume * (BASAL_ENERGY +
-                (isProliferative ? PROLIF_ENERGY : 0) +
-                (isMigratory ? MIGRA_ENERGY : 0));
+        energyCons = volume * (basalEnergy
+                + (isProliferative ? proliferationEnergy : 0)
+                + (isMigratory ? migrationEnergy : 0));
         energyReq = energyCons - energy;
         
         // Modify energy and volume.

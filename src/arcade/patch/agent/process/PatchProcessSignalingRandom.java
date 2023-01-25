@@ -1,36 +1,48 @@
 package arcade.patch.agent.process;
 
 import ec.util.MersenneTwisterFast;
-import arcade.core.sim.Simulation;
 import arcade.core.agent.process.Process;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
 import static arcade.patch.util.PatchEnums.Flag;
 
 /**
  * Extension of {@link PatchProcessSignaling} for random EGFR signaling.
  * <p>
- * {@code PatchModuleSignalingRandom} randomly sets the migratory flag.
+ * {@code PatchModuleSignalingRandom} randomly sets the migratory flag based on
+ * {@code MIGRATORY_PROBABILITY}.
  */
 
 public class PatchProcessSignalingRandom extends PatchProcessSignaling {
-    /** Migratory threshold */
-    private final double MIGRA_PROB;
+    /** Probability of migration instead of proliferation. */
+    private final double migratoryProbability;
     
     /**
-     * Creates a random signaling {@code Process} for the given {@link PatchCell}.
+     * Creates a random signaling {@code Process} for the given
+     * {@link PatchCell}.
+     * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code MIGRATORY_PROBABILITY} = probability of migration instead
+     *         of proliferation</li>
+     * </ul>
      *
      * @param cell  the {@link PatchCell} the process is associated with
      */
     public PatchProcessSignalingRandom(PatchCell cell) {
         super(cell);
         
-        // Set parameters.
-        this.MIGRA_PROB = cell.getParameters().getDouble("signaling/MIGRA_PROB");
+        // Set loaded parameters.
+        // TODO: pull migratory threshold from distribution
+        MiniBox parameters = cell.getParameters();
+        migratoryProbability = parameters.getDouble("metabolism/MIGRATORY_PROBABILITY");
     }
     
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-        cell.setFlag(random.nextDouble() < MIGRA_PROB ? Flag.MIGRATORY : Flag.PROLIFERATIVE);
+        cell.setFlag(random.nextDouble() < migratoryProbability
+                ? Flag.MIGRATORY : Flag.PROLIFERATIVE);
     }
     
     @Override

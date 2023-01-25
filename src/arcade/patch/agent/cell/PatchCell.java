@@ -31,29 +31,34 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * Implementation of {@link Cell} for generic tissue cell.
  * <p>
  * {@code PatchCell} agents exist in one of seven states: undefined, apoptotic,
- * quiescent, migratory, proliferative, senescent, and necrotic.
- * The undefined state is a transition state for "undecided" cells, and does
- * not have any biological analog.
+ * quiescent, migratory, proliferative, senescent, and necrotic. The undefined
+ * state is a transition state for "undecided" cells, and does not have any
+ * biological analog.
  * <p>
  * {@code PatchCell} agents have two required {@link Process} domains:
- * metabolism and signaling.
- * Metabolism controls changes in cell energy and volume.
- * Signaling controls the proliferative vs. migratory decision.
+ * metabolism and signaling. Metabolism controls changes in cell energy and
+ * volume. Signaling controls the proliferative vs. migratory decision.
  * <p>
  * General order of rules for the {@code PatchCell} step:
  * <ul>
  *     <li>update age</li>
  *     <li>check lifespan (possible change to apoptotic)</li>
  *     <li>step metabolism process</li>
- *     <li>check energy status (possible change to quiescent, necrotic)</li>
+ *     <li>check energy status (possible change to quiescent or necrotic
+ *     depending on {@code ENERGY_THRESHOLD})</li>
  *     <li>step signaling process</li>
  *     <li>check if neutral (change to proliferative, migratory, senescent)</li>
  *     <li>step state-specific module</li>
  * </ul>
  * <p>
+ * Cells that become necrotic or senescent have a change to become apoptotic
+ * instead ({@code NECROTIC_FRACTION} and {@code SENESCENT_FRACTION},
+ * respectively).
+ * <p>
  * Cell parameters are tracked using a map between the parameter name and value.
  * Daughter cell parameter values are drawn from a distribution centered on the
- * parent cell parameter with the specified amount of heterogeneity.
+ * parent cell parameter with the specified amount of heterogeneity
+ * ({@code HETEROGENEITY}).
  */
 
 public abstract class PatchCell implements Cell {
@@ -99,13 +104,16 @@ public abstract class PatchCell implements Cell {
     /** Cell state change flag. */
     private Flag flag;
     
+    /** Variation in cell agent parameters. */
+    private final double heterogeneity;
+    
     /** Fraction of necrotic cells that become apoptotic. */
-    private final double necroFrac;
+    private final double necroticFraction;
     
     /** Fraction of senescent cells that become apoptotic. */
-    private final double senesFrac;
+    private final double senescentFraction;
     
-    /** Energy threshold at which cells become necrotic. */
+    /** Maximum energy deficit before necrosis. */
     private final double energyThreshold;
     
     /** Cell state module. */
@@ -119,6 +127,17 @@ public abstract class PatchCell implements Cell {
     
     /**
      * Creates a {@code PatchCell} agent.
+     * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code NECROTIC_FRACTION} = fraction of necrotic cells that
+     *         become apoptotic</li>
+     *     <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that
+     *         become apoptotic</li>
+     *     <li>{@code ENERGY_THRESHOLD} = maximum energy deficit before
+     *         necrosis</li>
+     *     <li>{@code HETEROGENEITY} = variation in cell agent parameters</li>
+     * </ul>
      *
      * @param id  the cell ID
      * @param parent  the parent ID
@@ -148,21 +167,24 @@ public abstract class PatchCell implements Cell {
         this.criticalVolume = criticalVolume;
         this.criticalHeight = criticalHeight;
         this.flag = Flag.UNDEFINED;
-        this.processes = new HashMap<>();
         this.parameters = parameters;
         
         setState(state);
         
-        // Select parameters from given distribution
-        this.necroFrac = parameters.getDouble("NECRO_FRAC");
-        this.senesFrac = parameters.getDouble("SENES_FRAC");
-        this.energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
+        // Set loaded parameters.
+        heterogeneity = parameters.getDouble("HETEROGENEITY");
+        necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
+        senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
+        energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
+        
+        // TODO: implement heterogeneity
         
         // Add cell processes.
+        processes = new HashMap<>();
         MiniBox processBox = parameters.filter("(PROCESS)");
-        this.processes.put(Domain.METABOLISM,
+        processes.put(Domain.METABOLISM,
                 PatchProcessMetabolism.make(this, processBox.get(Domain.METABOLISM.name())));
-        this.processes.put(Domain.SIGNALING,
+        processes.put(Domain.SIGNALING,
                 PatchProcessSignaling.make(this, processBox.get(Domain.SIGNALING.name())));
     }
     
@@ -296,7 +318,7 @@ public abstract class PatchCell implements Cell {
         // necrose. If overall energy is negative, then cell enters quiescence.
         if (state != State.APOPTOTIC && energy < 0) {
             if (energy < energyThreshold) {
-                if (simstate.random.nextDouble() > necroFrac) {
+                if (simstate.random.nextDouble() > necroticFraction) {
                     setState(State.APOPTOTIC);
                 } else {
                     setState(State.NECROTIC);
@@ -314,7 +336,7 @@ public abstract class PatchCell implements Cell {
             if (flag == Flag.MIGRATORY) {
                 setState(State.MIGRATORY);
             } else if (divisions == 0) {
-                if (simstate.random.nextDouble() > senesFrac) {
+                if (simstate.random.nextDouble() > senescentFraction) {
                     setState(State.APOPTOTIC);
                 } else {
                     setState(State.SENESCENT);
@@ -385,10 +407,14 @@ public abstract class PatchCell implements Cell {
                 
                 // Check if total volume of cells with addition does not exceed
                 // volume of the hexagonal location.
-                if (totalVolume > locationVolume) { continue; }
+                if (totalVolume > locationVolume) {
+                    continue;
+                }
                 
                 // Check if proposed cell can exist at a tolerable height.
-                if (currentHeight > targetHeight) {  continue; }
+                if (currentHeight > targetHeight) {
+                    continue;
+                }
                 
                 // Check if neighbor cells can exist at a tolerable height.
                 for (Object obj : bag) {

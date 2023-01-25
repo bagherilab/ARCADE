@@ -4,40 +4,56 @@ import java.util.Arrays;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
 
 /**
  * Extension of {@link PatchProcessMetabolism} for simple metabolism.
  * <p>
- * {@code PatchProcessMetabolismSimple} assumes a constant glucose uptake rate and constant
- * ATP production rate.
- * Ratio of ATP production that needs to be produced through glycolysis or
- * oxidative phosphorylation is controlled by the {@code META_PREF} parameter.
+ * {@code PatchProcessMetabolismSimple} assumes a constant glucose uptake rate
+ * and constant ATP production rate. Ratio of ATP production that needs to be
+ * produced through glycolysis or oxidative phosphorylation is controlled by the
+ * {@code METABOLIC_PREFERENCE} parameter.
  * <p>
- * {@code PatchProcessMetabolismSimple} will increase cell mass (using specified fraction of
- * internal glucose) if cell is dividing and less than double in size.
+ * {@code PatchProcessMetabolismSimple} will increase cell mass (using specified
+ * fraction of internal glucose) if cell is dividing and less than double in
+ * size.
  */
 
 public class PatchProcessMetabolismSimple extends PatchProcessMetabolism {
-    /** Average cell volume */
-    private final double CELL_VOL_AVG;
+    /** Average cell volume [um<sup>3</sup>]. */
+    private final double averageCellVolume;
     
-    /** Constant glucose uptake rate */
-    private final double CONS_GLUC_UPTAKE;
+    /** Preference for glycolysis over oxidative phosphorylation. */
+    private final double metabolicPreference;
     
-    /** Constant growth rate */
-    private final double GROWTH_RATE;
+    /** Constant glucose uptake rate [fmol glucose/min/M glucose]. */
+    private final double glucoseUptakeRate;
     
-    /** Glucose requirement for glycolysis */
-    private final double GLUC_REQ_GLYC;
+    /** Constant ATP production rate [fmol ATP/cell/min]. */
+    private final double atpProductionRate;
     
-    /** Glucose requirement for oxidative phosphorylation */
-    private final double GLUC_REQ_OXPHOS;
+    /** Constant volume growth rate [um<sup>3</sup>/min]. */
+    private final double volumeGrowthRate;
     
     /**
-     * Creates a simple metabolism {@code Process} for the given {@link PatchCell}.
+     * Creates a simple metabolism {@code Process} for the given
+     * {@link PatchCell}.
      * <p>
      * Module only has internal glucose.
+     * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code CELL_VOLUME_MEAN} = average cell volume</li>
+     *     <li>{@code METABOLIC_PREFERENCE} = preference for glycolysis over
+     *         oxidative phosphorylation</li>
+     *     <li>{@code CONSTANT_GLUCOSE_UPTAKE_RATE} = constant glucose uptake
+     *         rate</li>
+     *     <li>{@code CONSTANT_ATP_PRODUCTION_RATE} = constant ATP production
+     *         rate</li>
+     *     <li>{@code CONSTANT_VOLUME_GROWTH_RATE} = constant volume growth
+     *         rate</li>
+     * </ul>
      *
      * @param cell  the {@link PatchCell} the process is associated with
      */
@@ -53,69 +69,72 @@ public class PatchProcessMetabolismSimple extends PatchProcessMetabolism {
         intNames[GLUCOSE] = "glucose";
         names = Arrays.asList(intNames);
         
-        // Get metabolic preference from cell.
-        // TODO: pull value from distribution?
-        double meta_pref = cell.getParameters().getDouble("metabolism/META_PREF");
-        
-        // Set parameters.
-        double cons_atp_production = cell.getParameters().getDouble("metabolism/CONS_ATP_PRODUCTION");
-        this.CELL_VOL_AVG = cell.getParameters().getDouble("CELL_VOLUME_MEAN");
-        this.CONS_GLUC_UPTAKE = cell.getParameters().getDouble("metabolism/CONS_GLUC_UPTAKE");
-        this.GROWTH_RATE = CELL_DENSITY * cell.getParameters().getDouble("metabolism/CONS_GROWTH_RATE");
-        this.GLUC_REQ_GLYC = cons_atp_production*meta_pref/ENERGY_FROM_GLYC;
-        this.GLUC_REQ_OXPHOS = cons_atp_production*(1 - meta_pref)/ENERGY_FROM_OXPHOS/PYRU_PER_GLUC;
+        // Set loaded parameters.
+        // TODO: pull metabolic preference from distribution
+        MiniBox parameters = cell.getParameters();
+        averageCellVolume = parameters.getDouble("CELL_VOLUME_MEAN");
+        metabolicPreference = parameters.getDouble("metabolism/METABOLIC_PREFERENCE");
+        glucoseUptakeRate = parameters.getDouble("metabolism/CONSTANT_GLUCOSE_UPTAKE_RATE");
+        atpProductionRate = parameters.getDouble("metabolism/CONSTANT_ATP_PRODUCTION_RATE");
+        volumeGrowthRate = parameters.getDouble("metabolism/CONSTANT_VOLUME_GROWTH_RATE");
     }
     
+    @Override
     public void stepProcess(MersenneTwisterFast random, Simulation sim) {
         double glucInt = intAmts[GLUCOSE]; // [fmol]
         double glucExt = extAmts[GLUCOSE]; // [fmol]
         double oxyExt = extAmts[OXYGEN];   // [fmol]
         
         // Calculate glucose uptake rate.
-        double glucGrad = (glucExt/location.getVolume()) - (glucInt/volume);
+        double glucGrad = (glucExt / location.getVolume()) - (glucInt / volume);
         glucGrad *= glucGrad < 1E-10 ? 0 : 1;
-        double glucUptake = CONS_GLUC_UPTAKE*glucGrad;
+        double glucUptake = glucoseUptakeRate * glucGrad;
         glucInt += glucUptake;
         
         // Determine glucose requirement and calculate oxygen required.
         double energyGen = 0;
-        double oxyReq = GLUC_REQ_OXPHOS*PYRU_PER_GLUC*OXY_PER_PYRU;
+        double glucoseRequiredGlycolysis = atpProductionRate * metabolicPreference
+                / ENERGY_FROM_GLYC;
+        double glucoseRequiredOxPhos = atpProductionRate * (1 - metabolicPreference)
+                / ENERGY_FROM_OXPHOS / PYRU_PER_GLUC;
+        double oxyReq = glucoseRequiredOxPhos * PYRU_PER_GLUC * OXY_PER_PYRU;
         double oxyUptake = Math.min(oxyExt, oxyReq);
         oxyUptake *= oxyUptake < 1E-10 ? 0 : 1;
         
         // Generate energy from oxidative phosphorylation.
-        double oxyUptakeInGluc = oxyUptake/OXY_PER_PYRU/PYRU_PER_GLUC;
+        double oxyUptakeInGluc = oxyUptake / OXY_PER_PYRU / PYRU_PER_GLUC;
         if (glucInt > oxyUptakeInGluc) {
-            energyGen += oxyUptakeInGluc*ENERGY_FROM_OXPHOS*PYRU_PER_GLUC;
+            energyGen += oxyUptakeInGluc * ENERGY_FROM_OXPHOS * PYRU_PER_GLUC;
             glucInt -= oxyUptakeInGluc;
         } else {
-            energyGen += glucInt*ENERGY_FROM_OXPHOS*PYRU_PER_GLUC;
-            oxyUptake = glucInt*OXY_PER_PYRU*PYRU_PER_GLUC;
+            energyGen += glucInt * ENERGY_FROM_OXPHOS * PYRU_PER_GLUC;
+            oxyUptake = glucInt * OXY_PER_PYRU * PYRU_PER_GLUC;
             glucInt = 0.0;
         }
         
         // Generate energy from glycolysis.
-        if (glucInt > GLUC_REQ_GLYC) {
-            energyGen += GLUC_REQ_GLYC*ENERGY_FROM_GLYC;
-            glucInt -= GLUC_REQ_GLYC;
+        if (glucInt > glucoseRequiredGlycolysis) {
+            energyGen += glucoseRequiredGlycolysis * ENERGY_FROM_GLYC;
+            glucInt -= glucoseRequiredGlycolysis;
         } else {
-            energyGen += glucInt*ENERGY_FROM_GLYC;
+            energyGen += glucInt * ENERGY_FROM_GLYC;
             glucInt = 0;
         }
         
         // Update energy.
         energy += energyGen;
-        energy -= energyCons/volume*CELL_VOL_AVG;
+        energy -= energyCons / volume * averageCellVolume;
         energy *= Math.abs(energy) < 1E-10 ? 0 : 1;
         
         // Increase mass if dividing and less than double mass.
-        if (energy >= 0 && isProliferative && mass < 2*critMass && glucInt > GROWTH_RATE*MASS_TO_GLUC) {
-            mass += GROWTH_RATE;
-            glucInt -= (GROWTH_RATE*MASS_TO_GLUC);
+        if (energy >= 0 && isProliferative && mass < 2 * critMass
+                && glucInt > cellDensity * volumeGrowthRate * ratioGlucoseBiomass) {
+            mass += cellDensity * volumeGrowthRate;
+            glucInt -= (cellDensity * volumeGrowthRate * ratioGlucoseBiomass);
         }
         
         // Update volume based on changes in mass.
-        volume = mass/CELL_DENSITY;
+        volume = mass / cellDensity;
         
         // Reset values.
         intAmts[GLUCOSE] = glucInt;
@@ -131,13 +150,13 @@ public class PatchProcessMetabolismSimple extends PatchProcessMetabolism {
         // Update this process as split of given process.
         this.volume = this.cell.getVolume();
         this.energy = this.cell.getEnergy();
-        this.mass = this.volume * CELL_DENSITY;
+        this.mass = this.volume * cellDensity;
         this.intAmts[GLUCOSE] = metabolism.intAmts[GLUCOSE] * split;
         
         // Update given process with remaining split.
         metabolism.volume = metabolism.cell.getVolume();
         metabolism.energy = metabolism.cell.getEnergy();
-        metabolism.mass = metabolism.volume * CELL_DENSITY;
+        metabolism.mass = metabolism.volume * cellDensity;
         metabolism.intAmts[GLUCOSE] *= (1 - split);
     }
 }
