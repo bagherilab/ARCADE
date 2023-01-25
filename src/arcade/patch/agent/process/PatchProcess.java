@@ -11,16 +11,16 @@ import arcade.patch.env.loc.PatchLocation;
  */
 
 public abstract class PatchProcess implements Process {
-    /** The {@link PatchCell} object the process is associated with. */
+    /** The {@link PatchCell} the process is associated with. */
     final PatchCell cell;
     
-    /** The {@link PatchLocation} object the process is associated with. */
+    /** The {@link PatchLocation} the process is associated with. */
     final PatchLocation location;
     
     /**
      * Creates a module for a {@link PatchCell} state.
      *
-     * @param cell  the {@link PatchCell} object
+     * @param cell  the {@link PatchCell} the process is associated with
      */
     public PatchProcess(PatchCell cell) {
         this.cell = cell;

@@ -24,7 +24,7 @@ public class PatchCellCancerStem extends PatchCellCancer {
     
     /**
      * Creates a tissue {@code PatchCell} agent.
-     *
+     * <p>
      * Loaded parameters include:
      * <ul>
      *     <li>{@code SYMMETRIC_FRACTION} = fraction of divisions that are

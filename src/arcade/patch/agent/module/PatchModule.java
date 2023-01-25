@@ -11,10 +11,10 @@ import arcade.patch.env.loc.PatchLocation;
  */
 
 public abstract class PatchModule implements Module {
-    /** The {@link PatchCell} object the module is associated with. */
+    /** The {@link PatchCell} the module is associated with. */
     final PatchCell cell;
     
-    /** The {@link PatchLocation} object the module is associated with. */
+    /** The {@link PatchLocation} the module is associated with. */
     final PatchLocation location;
     
     /** Tick the {@code Module} was started. */
@@ -26,7 +26,7 @@ public abstract class PatchModule implements Module {
     /**
      * Creates a module for a {@link PatchCell} state.
      *
-     * @param cell  the {@link PatchCell} object
+     * @param cell  the {@link PatchCell} the module is associated with
      */
     public PatchModule(PatchCell cell) {
         this.cell = cell;
