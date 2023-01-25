@@ -97,9 +97,6 @@
     <component class="pattern_sites" id="DAMAGE_SCALING" value="0" description="pattern site damage scaling" />
     
     <!-- graph site component parameters -->
-    <component class="graph_sites" id="STEP_SIZE_XY" value="1" units="patch" conversion="DS" />
-    <component class="graph_sites" id="STEP_SIZE_Z" value="1" units="patch" conversion="DZ" />
-    <component class="graph_sites" id="LATTICE_SITE_VOLUME" value="1" units="patch" conversion="DS^2.DS" />
     <component class="graph_sites" id="GRAPH_LAYOUT" value="*" description="layout of graph sites" />
     <component class="graph_sites" id="ROOTS_LEFT" value="x" description="roots at the left of environment (x direction)" />
     <component class="graph_sites" id="ROOTS_RIGHT" value="x" description="roots at the right of environment (x direction)" />

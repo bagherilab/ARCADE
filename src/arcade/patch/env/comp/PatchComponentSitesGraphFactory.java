@@ -1,0 +1,1076 @@
+package arcade.patch.env.comp;
+
+import arcade.core.sim.Series;
+import arcade.core.util.Graph;
+import arcade.core.util.Graph.Node;
+import arcade.core.util.MiniBox;
+import arcade.core.util.Utilities;
+import static arcade.patch.env.comp.PatchComponentSitesGraphUtilities.*;
+import ec.util.MersenneTwisterFast;
+import sim.util.Bag;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteEdge;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteNode;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.EdgeDirection;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.EdgeType;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.EdgeCategory;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.EdgeTag;
+import static arcade.patch.env.comp.PatchComponentSitesGraph.ResolutionLevel;
+
+/**
+ * Extension of {@link PatchComponentSites} for graph sites.
+ * <p>
+ * Graph can be initialized in two ways ({@code GRAPH_LAYOUT}):
+ * <ul>
+ *     <li>root layout grown from a specified root system using motifs</li>
+ *     <li>pattern layout that matches the structure used by
+ *     {@link PatchComponentSitesPattern}</li>
+ * </ul>
+ * <p>
+ * Roots are specified for the left (-x direction, {@code ROOTS_LEFT}), right
+ * (+x direction, {@code ROOTS_RIGHT}), top (-y direction, {@code ROOTS_TOP}),
+ * and bottom (-y direction, {@code ROOTS_BOTTOM}) sides of the environment.
+ * Specifications for each side depend on the layout where {@code #} indicates
+ * a number and X is {@code A}/{@code a} for an artery or {@code V}/{@code v}
+ * for a vein.
+ * <ul>
+ *     <li>{@code S} = single roots, {@code #X} for a root of type {@code X}
+ *     a distance {@code #} percent across the specified side</li>
+ *     <li>{@code A} = alternating roots, {@code #} for {@code #} 
+ *     evenly spaced roots alternating between artery and vein</li>
+ *     <li>{@code R} = random roots, {@code #} for {@code #} randomly
+ *     spaced roots, randomly assigned as artery or vein</li>
+ *     <li>{@code L} = line roots, {@code #X#} for root of type {@code X}
+ *     started {@code #} percent (first number) across the specified side and
+ *     spanning {@code #} percent (second number) across the environment in
+ *     the direction normal to the side</li>
+ * </ul>
+ */
+
+public abstract class PatchComponentSitesGraphFactory {
+    enum RadiusCalculation {
+        /** Code for upstream radius calculation for all edge types. */
+        UPSTREAM_ALL,
+        
+        /** Code for upstream radius calculation for arteries only. */
+        UPSTREAM_ARTERIES,
+        
+        /** Code for downstream radius calculation for veins only. */
+        DOWNSTREAM_VEINS,
+        
+        /** Code for upstream radius calculation for pattern layout. */
+        UPSTREAM_PATTERN,
+        
+        /** Code for downstream radius calculation for pattern layout. */
+        DOWNSTREAM_PATTERN,
+    }
+    
+    enum EdgeMotif {
+        /** Code for triple edge motif. */
+        TRIPLE,
+        
+        /** Code for double edge motif. */
+        DOUBLE,
+        
+        /** Code for single edge motif. */
+        SINGLE,
+    }
+    
+    /** Probability weighting for iterative remodeling */
+    private static final double PROB_WEIGHT = 0.2;
+    
+    /** Iterative remodeling fraction */
+    private static final double REMODELING_FRACTION = 0.05;
+    
+    /** Maximum number of iterations */
+    private static final int MAX_ITER = 100;
+    
+    /** Random number generator instance. */
+    final MersenneTwisterFast random;
+    
+    /** Array holding locations of patterns. */
+    protected final boolean[][][] graphs;
+    
+    /** Graph layout type */
+    private String siteLayout;
+    
+    /** List of graph roots */
+    private String[] siteSetup;
+    
+    /** Environment border locations. */
+    enum Border {
+        /** Left side of environment (-x direction) */
+        LEFT_BORDER,
+        
+        /** Top side of environment (-y direction) */
+        TOP_BORDER,
+        
+        /** Right side of environment (+x direction) */
+        RIGHT_BORDER,
+        
+        /** Bottom side of environment (+y direction) */
+        BOTTOM_BORDER
+    }
+    
+    /** Height of the array (z direction). */
+    final int latticeHeight;
+    
+    /** Length of the array (x direction). */
+    final int latticeLength;
+    
+    /** Width of the array (y direction). */
+    final int latticeWidth;
+    
+    /** Lattice spacing in xy plane. */
+    final double ds;
+    
+    /** Lattice spacing in z plane. */
+    final double dz;
+    
+    /** Graph representing the sites. */
+    Graph G;
+    
+    /**
+     * Creates a {@link PatchComponentSites} using graph sites.
+     * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code GRAPH_LAYOUT} = graph layout type</li>
+     *     <li>{@code ROOTS_LEFT} = graph roots on left side of environment</li>
+     *     <li>{@code ROOTS_TOP} = graph roots on top side of environment</li>
+     *     <li>{@code ROOTS_RIGHT} = graph roots on right side of environment</li>
+     *     <li>{@code ROOTS_BOTTOM} = graph roots on bottom side of environment</li>
+     * </ul>
+     *
+     * @param series  the simulation series
+     * @param parameters  the component parameters dictionary
+     * @param random  the random number generator
+     */
+    public PatchComponentSitesGraphFactory(Series series, MiniBox parameters, MersenneTwisterFast random) {
+        // Set loaded parameters.
+        siteLayout = parameters.get("GRAPH_LAYOUT");
+        siteSetup = new String[] {
+                parameters.get("ROOTS_LEFT"),
+                parameters.get("ROOTS_TOP"),
+                parameters.get("ROOTS_RIGHT"),
+                parameters.get("ROOTS_BOTTOM"),
+        };
+        
+        latticeLength = series.length;
+        latticeWidth = series.width;
+        latticeHeight = series.height;
+        
+        ds = series.ds;
+        dz = series.dz;
+        this.random = random;
+        
+        graphs = new boolean[latticeHeight][latticeLength][latticeWidth];
+        initializeGraph();
+    }
+    
+    /**
+     * Creates a new {@link Graph} to represent sites.
+     * 
+     * @return  a graph object
+     */
+    abstract Graph newGraph();
+    
+    /**
+     * Gets the lattice indices spanned by an edge between two nodes.
+     * 
+     * @param from  the node the edge extends from 
+     * @param to  the node the edge extends to
+     * @return  the list of indices
+     */
+    abstract ArrayList<int[]> getSpan(SiteNode from, SiteNode to);
+    
+    /**
+     * Calculate the offset based on the layer index.
+     *
+     * @param k  the index in the z direction
+     * @return  the lattice offset
+     */
+    abstract int calcOffset(int k);
+    
+    /**
+     * Calculates the column of the triangular pattern based on offset and index.
+     *
+     * @param i  the index in the x direction
+     * @param offset  the lattice offset
+     * @return  the column index
+     */
+    abstract int calcCol(int i, int offset);
+    
+    /**
+     * Calculates the row of the triangular pattern based on offset and index.
+     *
+     * @param i  the index in the x direction
+     * @param j  the index in the y direction
+     * @param offset  the lattice offset
+     * @return  the row index
+     */
+    abstract int calcRow(int i, int j, int offset);
+    
+    /**
+     * Checks if the given node is outside the bounds of the environment.
+     * 
+     * @param node  the node to check
+     * @return  {@code true} if the node is within bounds, {@code false} otherwise
+     */
+    abstract boolean checkNode(Node node);
+    
+    /**
+     * Gets direction code for an edge.
+     * 
+     * @param edge  the edge object
+     * @param scale  the graph resolution scaling
+     * @return  the code for the edge direction
+     */
+    abstract EdgeDirection getDirection(SiteEdge edge, int scale);
+    
+    /**
+     * Adds a root motif to the graph.
+     * 
+     * @param node0  the node the motif starts at
+     * @param dir  the direction code of the root
+     * @param type  the root type
+     * @param bag  the bag of active edges
+     * @param scale  the graph resolution scaling
+     * @param level  the graph resolution level
+     * @param offsets  the list of offsets for line roots, null otherwise
+     */
+    abstract void addRoot(SiteNode node0, EdgeDirection dir, EdgeType type, Bag bag, int scale, ResolutionLevel level, EdgeDirection[] offsets);
+    
+    /**
+     * Adds an edge motif to the graph.
+     * 
+     * @param node0  the node the motif starts at
+     * @param dir  the direction code for the edge
+     * @param type  the edge type
+     * @param bag  the bag of active edges
+     * @param scale  the graph resolution scaling
+     * @param level  the graph resolution level
+     * @param e  the edge the motif is being added to
+     * @param motif  the motif type
+     */
+    abstract void addMotif(SiteNode node0, EdgeDirection dir, EdgeType type, Bag bag, int scale, ResolutionLevel level, SiteEdge e, EdgeMotif motif);
+    
+    /**
+     * Adds a capillary segment joining edges of different types to the graph.
+     * 
+     * @param node0  the node the segment starts at
+     * @param dir  the direction code for the segment
+     * @param scale  the graph resolution scaling
+     * @param level  the graph resolution level
+     */
+    abstract void addSegment(SiteNode node0, EdgeDirection dir, int scale, ResolutionLevel level);
+    
+    /**
+     * Adds a connection joining edges of the same type to the graph.
+     *
+     * @param node0  the node the connection starts at
+     * @param dir  the direction code for the segment
+     * @param type  the connection type
+     * @param scale  the graph resolution scaling
+     * @param level  the graph resolution level
+     */
+    abstract void addConnection(SiteNode node0, EdgeDirection dir, EdgeType type, int scale, ResolutionLevel level);
+    
+    /**
+     * Gets list of coordinate changes corresponding to a given offset direction.
+     * 
+     * @param offset  the offset code
+     * @return  the list of coordinate changes
+     */
+    abstract int[] getOffset(EdgeDirection offset);
+    
+    /**
+     * Gets the length of the given edge.
+     * 
+     * @param edge  the edge object
+     * @param scale  the graph resolution scaling
+     * @return  the length of the edge
+     */
+    abstract double getLength(SiteEdge edge, int scale);
+    
+    /**
+     * Creates graph sites using pattern layout.
+     */
+    abstract void createPatternSites();
+    
+    /**
+     * Creates a {@link Root} for graph sites using a root layout.
+     * 
+     * @param border  the border the root extends from
+     * @param perc  the percentage distance across the border the root is located
+     * @param type  the root type
+     * @param frac  the fraction distance in the perpendicular direction the root extends
+     * @param scale  the graph resolution scaling 
+     * @return  a {@link Root} object
+     */
+    abstract Root createGrowthSites(Border border, double perc, EdgeType type, double frac, int scale);
+    
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Initializes a new {@link Graph} object representing the graph
+     * sites.
+     * Calls the correct method to population the graph with edges (either
+     * pattern or root layout).
+     * After the graph is defined, the corresponding indices in the lattice
+     * adjacent to edges are marked as sites.
+     */
+    public void initializeGraph() {
+        // Create graph and add sites.
+        G = newGraph();
+        
+        // Check which graph type to create.
+        switch (siteLayout) {
+            case "*":
+                makePatternSites();
+                updateSpans();
+                break;
+            case "S": case "A": case "R": case "L":
+                int iter = 0;
+                while (G.getAllEdges().numObjs == 0 && iter < MAX_ITER) {
+                    G = newGraph();
+                    makeRootSites();
+                    iter++;
+                }
+                updateSpans();
+                break;
+        }
+    }
+    
+    /**
+     * Iterates through the graph to draw span sites.
+     * <p>
+     * Each edge is assigned a list of molecule fractions and transport for
+     * graph traversals.
+     * Edges that are not perfused are not included.
+     */
+    private void updateSpans() {
+        for (int k = 0; k < latticeHeight; k ++) {
+            for (int i = 0; i < latticeLength; i++) {
+                for (int j = 0; j < latticeWidth; j++) {
+                    graphs[k][i][j] = false;
+                }
+            }
+        }
+        
+        for (Object obj : G.getAllEdges()) {
+            SiteEdge edge = (SiteEdge)obj;
+            edge.span = getSpan(edge.getFrom(), edge.getTo());
+            edge.transport.putIfAbsent("GLUCOSE", 0.);
+            edge.transport.putIfAbsent("OXYGEN", 0.);
+            if (edge.isPerfused) {
+                for (int[] coords : edge.span) {
+                    int i = coords[0];
+                    int j = coords[1];
+                    int k = coords[2];
+                    graphs[k][i][j] = true;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Checks if the given coordinates are within the environment to add to list.
+     * 
+     * @param s  the list of valid coordinates
+     * @param x  the coordinate in the x direction
+     * @param y  the coordinate in the y direction
+     * @param z  the coordinate in the z direction
+     */
+    void checkSite(ArrayList<int[]> s, int x, int y, int z) {
+        if (x >= 0 && x < latticeLength && y >= 0 && y < latticeWidth) {
+            s.add(new int[] { x, y, z });
+        }
+    }
+    
+    /**
+     * Container class for details of root nodes.
+     */
+    static class Root {
+        /** Corresponding node object */
+        SiteNode node;
+        
+        /** Corresponding edge object */
+        SiteEdge edge;
+        
+        /** Root type */
+        final EdgeType type;
+        
+        /** Root direction */
+        final EdgeDirection dir;
+        
+        /** List of offsets for line roots, null otherwise */
+        final EdgeDirection[] offsets;
+        
+        /**
+         * Creates a {@code Root} object for {@link PatchComponentSitesGraphFactory} with a root layout.
+         *
+         * @param x  the x coordinate
+         * @param y  the y coordinate
+         * @param type  the edge type
+         * @param dir  the direction code of the root
+         * @param offsets  the list of offsets for line roots, null otherwise
+         */
+        Root(int x, int y, EdgeType type, EdgeDirection dir, EdgeDirection[] offsets) {
+            node = new SiteNode(x, y, 0);
+            this.type = type;
+            this.dir = dir;
+            this.offsets = offsets;
+        }
+    }
+    
+    /**
+     * Makes graph sites with a pattern layout.
+     */
+    private void makePatternSites() {
+        createPatternSites();
+        
+        // Remove edges that were not visited. Need to make a new copy of the
+        // bag otherwise we iterate over an object that is being changed.
+        Bag all = new Bag(G.getAllEdges());
+        for (Object obj : all) {
+            SiteEdge edge = (SiteEdge)obj;
+            if (!edge.isVisited) { G.removeEdge(edge); }
+            else { edge.isPerfused = true; }
+        }
+        
+        // Traverse graph from capillaries to calculate radii.
+        ArrayList<SiteEdge> caps = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY });
+        updateRadii(G, caps, RadiusCalculation.UPSTREAM_PATTERN, random);
+        updateRadii(G, caps, RadiusCalculation.DOWNSTREAM_PATTERN, random);
+        
+        G.mergeNodes();
+        
+        // Assign pressures.
+        for (Object obj : G.getAllEdges()) {
+            SiteEdge edge = (SiteEdge)obj;
+            if (G.getInDegree(edge.getFrom()) == 0 && edge.type == EdgeType.ARTERY) {
+                edge.getFrom().pressure = calcPressure(edge.radius, edge.type.category);
+                edge.getFrom().isRoot = true;
+            }
+            if (G.getOutDegree(edge.getTo()) == 0 && edge.type == EdgeType.VEIN) {
+                edge.getTo().pressure = calcPressure(edge.radius, edge.type.category);
+                edge.getTo().isRoot = true;
+            }
+        }
+        
+        // Assign lengths to edges and set as perfused.
+        for (Object obj : G.getAllEdges()) {
+            SiteEdge edge = (SiteEdge)obj;
+            edge.length = getLength(edge, 1);
+            edge.isPerfused = true;
+        }
+        
+        // Merge segments of the same type in the same direction.
+        mergePatternSites();
+        
+        // Calculate network properties.
+        calcPressures(G);
+        
+        // Reverse edges that have negative pressure difference. Recalculate
+        // pressure for updated graph if there were edge reversals.
+        boolean reversed = reversePressures(G);
+        if (reversed) { calcPressures(G); }
+        
+        calcThicknesses(G);
+        calcStress(G);
+        calcFlows(G);
+    }
+    
+    /**
+     * Merges the edges in the graph with a pattern layout.
+     */
+    private void mergePatternSites() {
+        LinkedHashSet<SiteEdge> set = new LinkedHashSet<>();
+        
+        // Create a set with all objects.
+        for (Object obj : G.getAllEdges()) {
+            SiteEdge edge = (SiteEdge)obj;
+            set.add(edge);
+        }
+        
+        int n;
+        
+        do {
+            n = set.size();
+            
+            for (SiteEdge edge1 : set) {
+                if (G.getOutDegree(edge1.getTo()) == 1) {
+                    EdgeDirection dir1 = getDirection(edge1, edge1.scale);
+                    SiteEdge edge2 = (SiteEdge)edge1.getEdgesOut().get(0);
+                    EdgeDirection dir2 = getDirection(edge2, edge2.scale);
+                    
+                    // Join edges that are the same direction and type.
+                    if (dir1 == dir2 && edge1.type == edge2.type) {
+                        SiteEdge join = new SiteEdge(edge1.getFrom(), edge2.getTo(),
+                                edge1.type, edge1.scale + edge2.scale);
+                        
+                        // Set length to be sum and radius to be average of the
+                        // two constituent edges.
+                        join.length = edge1.length + edge1.length;
+                        join.radius = (edge1.radius + edge2.radius)/2;
+                        join.isPerfused = true;
+                        
+                        // Set the node objects.
+                        join.setFrom(edge1.getFrom());
+                        join.setTo(edge2.getTo());
+                        
+                        // Replace the edges in the graph with the joined edge.
+                        G.removeEdge(edge1);
+                        G.removeEdge(edge2);
+                        G.addEdge(join);
+                        
+                        // Update the iteration set.
+                        set.remove(edge1);
+                        set.remove(edge2);
+                        set.add(join);
+                        
+                        break;
+                    }
+                }
+            }
+        } while ((n - set.size()) != 0);
+    }
+    
+    /**
+     * Makes graph sites with root layout.
+     */
+    private void makeRootSites() {
+        ArrayList<Root> roots = new ArrayList<>();
+        Border[] border = Border.values();
+        Pattern pattern = null;
+        Matcher matcher;
+        
+        // Select regular expression for given root type.
+        switch (siteLayout) {
+            case "S": pattern = Pattern.compile("([0-9]{1,3})([AVav])"); break;
+            case "A": case "R": pattern = Pattern.compile("([0-9]+)"); break;
+            case "L": pattern = Pattern.compile("([0-9]{1,3})([AVav])([0-9]{1,3})"); break;
+        }
+        
+        EdgeType t;
+        int n;
+        double p, f;
+        
+        // Add roots for each border given root type.
+        for (Border b : border) {
+            matcher = pattern.matcher(siteSetup[b.ordinal()]);
+            while (matcher.find()) {
+                switch (siteLayout) {
+                    case "S":
+                        p = Integer.parseInt(matcher.group(1)) / 100.0;
+                        t = parseType(matcher.group(2));
+                        roots.add(createGrowthSites(b, p, t, 0, ResolutionLevel.LEVEL_1.scale));
+                        break;
+                    case "A":
+                        n = (Integer.parseInt(matcher.group(1)));
+                        double inc = 100.0 / n;
+                        for (int i = 0; i < n; i++) {
+                            p = i * inc + inc / 2;
+                            t = (i % 2 == 0 ? EdgeType.ARTERY : EdgeType.VEIN);
+                            roots.add(createGrowthSites(b, p / 100.0, t, 0, ResolutionLevel.LEVEL_1.scale));
+                        }
+                        break;
+                    case "R":
+                        n = (Integer.parseInt(matcher.group(1)));
+                        for (int i = 0; i < n; i++) {
+                            p = random.nextInt(100);
+                            t = (random.nextDouble() < 0.5 ? EdgeType.ARTERY : EdgeType.VEIN);
+                            roots.add(createGrowthSites(b, p / 100.0, t, 0, ResolutionLevel.LEVEL_1.scale));
+                        }
+                        break;
+                    case "L":
+                        p = Integer.parseInt(matcher.group(1)) / 100.0;
+                        t = parseType(matcher.group(2));
+                        f = (Integer.parseInt(matcher.group(3))) / 100.0;
+                        roots.add(createGrowthSites(b, p, t, f, ResolutionLevel.LEVEL_1.scale));
+                        break;
+                }
+            }
+        }
+        
+        // Iterate through all roots and try to add to the graph.
+        Bag leaves = new Bag();
+        Utilities.shuffleList(roots, random);
+        for (Root root : roots) {
+            addRoot(root.node, root.dir, root.type, leaves, ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1, root.offsets);
+        }
+        
+        ArrayList<Root> arteries = new ArrayList<>();
+        ArrayList<Root> veins = new ArrayList<>();
+        boolean hasArtery = false;
+        boolean hasVein = false;
+        
+        // Iterate through roots and determine which ones were successfully
+        // added. Separate into veins and arteries.
+        for (Root root : roots) {
+            Bag b = G.getEdgesOut(root.node);
+            if (b != null && b.numObjs > 0) {
+                root.edge = (SiteEdge)b.objs[0];
+                root.edge.getFrom().isRoot = true;
+                switch (root.type) {
+                    case ARTERY:
+                        arteries.add(root);
+                        hasArtery = true;
+                        break;
+                    case VEIN:
+                        veins.add(root);
+                        hasVein = true;
+                        break;
+                }
+            }
+        }
+        
+        // Check that at least one artery root was added. Exit if there is not
+        // at least one artery and one vein.
+        if (!hasArtery || !hasVein) {
+            G = new Graph(0, 0);
+            return;
+        }
+        
+        // Add motifs from leaves.
+        addMotifs(addMotifs(addMotifs(leaves, ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1, EdgeMotif.TRIPLE),
+                        ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1, EdgeMotif.DOUBLE),
+                ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1, EdgeMotif.SINGLE);
+        
+        // Calculate radii, pressure, and shears.
+        updateGrowthSites(arteries, veins, ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1);
+        
+        // Iterative remodeling.
+        int iter = 0;
+        double frac = 1.0;
+        while (frac > REMODELING_FRACTION && iter < MAX_ITER) {
+            frac = remodelSites(ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1);
+            updateGrowthSites(arteries, veins, ResolutionLevel.LEVEL_1.scale, ResolutionLevel.LEVEL_1);
+            iter++;
+        }
+        
+        // Prune network for perfused segments and recalculate properties.
+        refineGrowthSites(arteries, veins);
+        
+        // Subdivide growth sites and add new motifs.
+        Bag midpoints = subdivideGrowthSites(ResolutionLevel.LEVEL_1);
+        addMotifs(addMotifs(addMotifs(midpoints, ResolutionLevel.LEVEL_2.scale, ResolutionLevel.LEVEL_2, EdgeMotif.TRIPLE),
+                        ResolutionLevel.LEVEL_2.scale, ResolutionLevel.LEVEL_2, EdgeMotif.DOUBLE),
+                ResolutionLevel.LEVEL_2.scale, ResolutionLevel.LEVEL_2, EdgeMotif.SINGLE);
+        
+        // Calculate radii, pressure, and shears.
+        updateGrowthSites(arteries, veins, ResolutionLevel.LEVEL_2.scale, ResolutionLevel.LEVEL_2);
+        
+        // Prune network for perfused segments and recalculate properties.
+        refineGrowthSites(arteries, veins);
+    }
+    
+    /**
+     * Updates hemodynamic properties for graph sites with root layouts.
+     * 
+     * @param arteries  the list of artery edges
+     * @param veins  the list of vein edges
+     * @param scale  the graph resolution scaling
+     * @param level  the graph resolution level
+     */
+    private void updateGrowthSites(ArrayList<Root> arteries, ArrayList<Root> veins, int scale, ResolutionLevel level) {
+        ArrayList<SiteEdge> list;
+        ArrayList<SiteEdge> caps = new ArrayList<>();
+        
+        // Store upper level capillaries.
+        if (level != ResolutionLevel.LEVEL_1) {
+            caps = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY });
+            for (SiteEdge edge : caps) { G.removeEdge(edge); }
+        }
+        
+        // Get all leaves and update radii.
+        list = getLeavesByType(G, new EdgeType[] { EdgeType.ARTERY, EdgeType.VEIN });
+        updateRadii(G, list, RadiusCalculation.UPSTREAM_ALL);
+        
+        // Replace level 1 edges capillaries.
+        if (level != ResolutionLevel.LEVEL_1) { for (SiteEdge edge : caps) { G.addEdge(edge); } }
+        
+        addSegments(scale, level);
+        addConnections(scale, level);
+        
+        caps = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY });
+        
+        // Get capillaries and arterioles and update radii.
+        switch (level) {
+            case LEVEL_1:
+                list = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY, EdgeType.ARTERIOLE });
+                break;
+            case LEVEL_2:
+                list = getEdgeByType(G, new EdgeType[] { EdgeType.ARTERIOLE }, level);
+                list.addAll(caps);
+                break;
+        }
+        
+        updateRadii(G, list, RadiusCalculation.UPSTREAM_ALL);
+        for (SiteEdge cap : caps) { G.reverseEdge(cap); }
+        
+        // Get capillaries and venules and update radii.
+        switch (level) {
+            case LEVEL_1:
+                list = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY, EdgeType.VENULE });
+                break;
+            case LEVEL_2:
+                list = getEdgeByType(G, new EdgeType[] { EdgeType.VENULE }, level);
+                list.addAll(caps);
+                break;
+        }
+        
+        updateRadii(G, list, RadiusCalculation.UPSTREAM_ALL);
+        for (SiteEdge cap : caps) { G.reverseEdge(cap); }
+        
+        // Merge nodes. For level 2, separate graph into sub graphs by level.
+        switch (level) {
+            case LEVEL_1:
+                G.mergeNodes();
+                break;
+            case LEVEL_2:
+                Graph g1 = newGraph();
+                Graph g2 = newGraph();
+                G.getSubgraph(g1, e -> ((SiteEdge)e).level == ResolutionLevel.LEVEL_1);
+                G.getSubgraph(g2, e -> ((SiteEdge)e).level == ResolutionLevel.LEVEL_2);
+                mergeGraphs(g1, g2);
+                break;
+        }
+        
+        // Set root edges.
+        switch (level) {
+            case LEVEL_1:
+                for (Root artery : arteries) { artery.node = artery.edge.getFrom(); }
+                for (Root vein : veins) { vein.node = vein.edge.getFrom(); }
+                break;
+            case LEVEL_2:
+                for (Root artery : arteries) { artery.edge = (SiteEdge)G.getEdgesOut(artery.node).get(0); }
+                for (Root vein : veins) { vein.edge = (SiteEdge)G.getEdgesOut(vein.node).get(0); }
+                break;
+        }
+        
+        // Assign pressures to roots.
+        double arteryPressure = setRootPressures(arteries, EdgeCategory.ARTERY);
+        double veinPressure = setRootPressures(veins, EdgeCategory.VEIN);
+        
+        // Assign pressures to leaves.
+        setLeafPressures(G, arteryPressure, veinPressure);
+        
+        // Assign lengths to edges.
+        for (Object obj : G.getAllEdges()) {
+            SiteEdge edge = (SiteEdge)obj;
+            edge.length = getLength(edge, scale);
+        }
+        
+        calcPressures(G);
+        calcStress(G);
+    }
+    
+    /**
+     * Refines the graph for graph sites with root layouts.
+     * 
+     * @param arteries  the list of artery edges
+     * @param veins  the list of vein edges
+     */
+    private void refineGrowthSites(ArrayList<Root> arteries, ArrayList<Root> veins) {
+        // Reverse edges that are veins and venules.
+        ArrayList<SiteEdge> reverse = getEdgeByType(G, new EdgeType[] { EdgeType.VEIN, EdgeType.VENULE });
+        for (SiteEdge edge : reverse) { G.reverseEdge(edge); }
+        
+        // Reverse edges that have negative pressure difference.
+        reversePressures(G);
+        
+        // Check for non-connected graph.
+        ArrayList<SiteEdge> caps = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY });
+        if (caps.size() < 1) { G = new Graph(0, 0); return; }
+        
+        // Determine which edges are perfused.
+        checkPerfused(G, arteries, veins);
+        
+        // Remove edges that are not perfused and reset radii.
+        for (Object obj : new Bag(G.getAllEdges())) {
+            SiteEdge edge = (SiteEdge)obj;
+            if (!edge.isPerfused) { G.removeEdge(edge); }
+            else { edge.radius = 0; }
+        }
+        
+        // Get all capillaries and update radii.
+        ArrayList<SiteEdge> list = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY });
+        updateRadii(G, list, RadiusCalculation.UPSTREAM_ARTERIES);
+        updateRadii(G, list, RadiusCalculation.DOWNSTREAM_VEINS);
+        
+        // Assign pressures to roots.
+        setRootPressures(arteries, EdgeCategory.ARTERY);
+        setRootPressures(veins, EdgeCategory.VEIN);
+        
+        // Recalculate pressure for updated graph.
+        calcPressures(G);
+        
+        // Reverse edges that have negative pressure difference. Recalculate
+        // pressure for updated graph if there were edge reversals.
+        boolean reversed = reversePressures(G);
+        if (reversed) { calcPressures(G); }
+        
+        // Calculate shear and flow.
+        calcThicknesses(G);
+        calcStress(G);
+        calcFlows(G);
+    }
+    
+    /**
+     * Subdivides the graph edges by splitting each edge in half.
+     * 
+     * @param level  the graph resolution level
+     * @return  the bag of edge midpoint nodes
+     */
+    private Bag subdivideGrowthSites(ResolutionLevel level) {
+        Bag midpoints = new Bag();
+        Graph g = newGraph();
+        
+        for (Object obj : G.getAllEdges()) {
+            SiteEdge edge = (SiteEdge)obj;
+            SiteNode from = edge.getFrom();
+            SiteNode to = edge.getTo();
+            
+            // Calculate mid point.
+            int x = (from.getX() + to.getX())/2;
+            int y = (from.getY() + to.getY())/2;
+            int z = (from.getZ() + to.getZ())/2;
+            SiteNode mid = new SiteNode(x, y, z);
+            
+            // Set pressure to average of two nodes.
+            mid.pressure = (from.pressure + to.pressure)/2;
+            
+            // Make edges. For veins and venules, reverse the edges.
+            SiteNode A = null;
+            SiteNode B = null;
+            SiteEdge edge1, edge2;
+            
+            switch (edge.type) {
+                case ARTERY: case ARTERIOLE: case CAPILLARY:
+                    A = from; B = to; break;
+                case VEIN: case VENULE:
+                    A = to; B = from; break;
+            }
+            
+            edge1 = new SiteEdge(A, mid, edge.type, level);
+            edge2 = new SiteEdge(mid, B, edge.type, level);
+            
+            // Set node objects.
+            edge1.setFrom(A);
+            edge1.setTo(mid);
+            edge2.setFrom(mid);
+            edge2.setTo(B);
+            
+            // Set radii for arteriole and venules.
+            if (edge.type == EdgeType.ARTERIOLE || edge.type == EdgeType.VENULE) {
+                edge1.radius = edge.radius;
+                edge2.radius = edge.radius;
+            }
+            
+            // Add edges to temporary graph.
+            g.addEdge(edge1);
+            g.addEdge(edge2);
+            
+            // Set edges as perfused.
+            edge1.isPerfused = true;
+            edge2.isPerfused = true;
+            
+            // For arteries and veins, set midpoint as roots.
+            if (edge.type == EdgeType.ARTERY || edge.type == EdgeType.VEIN) {
+                midpoints.add(edge1);
+            }
+        }
+        
+        G = g;
+        return midpoints;
+    }
+    
+    /**
+     * Creates a node offset in the given direction.
+     * 
+     * @param node  the node of the initial location
+     * @param offset  the offset direction
+     * @param scale  the graph resolution scaling
+     * @return  an offset node
+     */
+    SiteNode offsetNode(SiteNode node, EdgeDirection offset, int scale) {
+        int[] offsets = getOffset(offset);
+        return new SiteNode(
+                node.getX() + offsets[0]*scale,
+                node.getY() + offsets[1]*scale,
+                node.getZ() + offsets[2]*scale
+        );
+    }
+    
+    /**
+     * Adds motifs to graph until no additional motifs can be added.
+     * 
+     * @param bag  the current bag of active edges
+     * @param scale  the graph resolution scaling
+     * @param level  the graph resolution level
+     * @param motif  the motif code
+     * @return  the updated bag of active edges
+     */
+    private Bag addMotifs(Bag bag, int scale, ResolutionLevel level, EdgeMotif motif) {
+        final int NUM_ZEROS = 50;
+        int delta;
+        int zeros = 0;
+        
+        // Keep trying to add tripods until bag size no longer changes.
+        while (zeros < NUM_ZEROS) {
+            // Create new bag to track new leaves.
+            Bag newBag = new Bag();
+            
+            // Stop loop if there are no objects in the bag.
+            if (bag.numObjs == 0) { return null; }
+            
+            // Iterate through each leaf in bag.
+            for (Object obj : bag) {
+                // Get leaf edge from bag.
+                SiteEdge edge = (SiteEdge)obj;
+                SiteNode node = edge.getTo();
+                
+                // Get current direction and add tripod in random direction.
+                EdgeDirection dir = getDirection(edge, scale);
+                addMotif(node, dir, edge.type, newBag, scale, level, edge, motif);
+            }
+            
+            // Calculate change in number of bags.
+            delta = newBag.numObjs - bag.numObjs;
+            if (delta == 0) { zeros++; }
+            else { zeros--; }
+            
+            // Update bag to new bag of leaves.
+            bag = newBag;
+            bag.shuffle(random);
+        }
+        
+        return bag;
+    }
+    
+    /**
+     * Adds segments to graph between arteries and veins.
+     *
+     * @param scale  the graph resolution scaling
+     * @param level  the graph resolution level
+     */
+    private void addSegments(int scale, ResolutionLevel level) {
+        Bag bag = new Bag(G.getAllEdges());
+        bag.shuffle(random);
+        for (Object obj : bag) {
+            SiteEdge edge = (SiteEdge)obj;
+            if (edge.type == EdgeType.ARTERY) {
+                SiteNode to = edge.getTo();
+                EdgeDirection dir = getDirection(edge, scale);
+                if (G.getOutDegree(to) == 0) { addSegment(to, dir, scale, level); }
+                else if (G.getInDegree(to) == 1 && G.getOutDegree(to) == 1) { addSegment(to, dir, scale, level);  }
+            }
+        }
+    }
+    
+    /**
+     * Adds connections to graphs between arteries or between veins.
+     * 
+     * @param scale  the graph resolution scaling
+     * @param level  the graph resolution level
+     */
+    private void addConnections(int scale, ResolutionLevel level) {
+        Bag bag = new Bag(G.getAllEdges());
+        bag.shuffle(random);
+        for (Object obj : bag) {
+            SiteEdge edge = (SiteEdge)obj;
+            SiteNode to = edge.getTo();
+            
+            EdgeDirection dir = getDirection(edge, scale);
+            EdgeType type = edge.type;
+            if (type != EdgeType.VEIN && type != EdgeType.ARTERY) { continue; }
+            
+            if (G.getOutDegree(to) == 0 && G.getInDegree(to) == 1) {
+                addConnection(to, dir, type, scale, level);
+            }
+            else if (G.getInDegree(to) == 1 && G.getOutDegree(to) == 1
+                    && ((SiteEdge)G.getEdgesOut(to).objs[0]).type == type
+                    && ((SiteEdge)G.getEdgesIn(to).objs[0]).type == type) {
+                addConnection(to, dir, type, scale, level);
+            }
+            else if (G.getOutDegree(to) == 0 && G.getInDegree(to) == 2) {
+                boolean typeCheck = true;
+                for (Object in : G.getEdgesIn(to)) {
+                    SiteEdge e = (SiteEdge)in;
+                    if (e.type != type) { typeCheck = false; break; }
+                }
+                if (typeCheck) { addConnection(to, dir, type, scale, level); }
+            }
+        }
+    }
+    
+    /**
+     * Remodels sites based on shear stress.
+     *
+     * @param scale  the graph resolution scaling
+     * @param level  the graph resolution level
+     * @return  the fraction of edges remodeled
+     */
+    private double remodelSites(int scale, ResolutionLevel level) {
+        // Remove capillaries, arterioles, and venules.
+        ArrayList<SiteEdge> list = getEdgeByType(G, new EdgeType[] { EdgeType.CAPILLARY, EdgeType.VENULE, EdgeType.ARTERIOLE });
+        for (SiteEdge edge : list) { G.removeEdge(edge); }
+        
+        // Reset tags.
+        Bag allEdges = new Bag(G.getAllEdges());
+        for (Object obj : allEdges) { ((SiteEdge)obj).tag = null; }
+        double total = allEdges.numObjs;
+        
+        // Tag edges to be removed or added.
+        int count = 0;
+        for (Object obj : allEdges) {
+            SiteEdge edge = (SiteEdge)obj;
+            SiteNode to = edge.getTo();
+            double wG = edge.shearScaled + PROB_WEIGHT;
+            double wD = 1 - edge.shearScaled - PROB_WEIGHT;
+            double rand = random.nextDouble();
+            
+            if (rand < wD) {
+                if (G.getOutDegree(to) == 0 && G.getInDegree(to) == 0) { edge.tag = EdgeTag.REMOVE; count++; }
+            }
+            else if (rand < wG) {
+                if (G.getOutDegree(to) == 0) { edge.tag = EdgeTag.ADD; count++; }
+                else if (G.getInDegree(to) == 1 && G.getOutDegree(to) == 1) { edge.tag = EdgeTag.ADD; count++; }
+            }
+        }
+        
+        allEdges = new Bag(G.getAllEdges());
+        allEdges.shuffle(random);
+        
+        if (count == 0) { return 0; }
+        
+        // Add or remove tagged edges.
+        for (Object obj : allEdges) {
+            SiteEdge edge = (SiteEdge)obj;
+            if (edge.tag == EdgeTag.ADD && G.getDegree(edge.getTo()) < 3) {
+                SiteEdge e;
+                Bag bag = new Bag();
+                addMotif(edge.getTo(), getDirection(edge, scale), edge.type, bag, scale, level, edge, EdgeMotif.TRIPLE);
+                
+                e = (SiteEdge)bag.get(0);
+                bag.clear();
+                addMotif(e.getTo(), getDirection(edge, scale), edge.type, bag, scale, level, edge, EdgeMotif.DOUBLE);
+                
+                e = (SiteEdge)bag.get(0);
+                bag.clear();
+                addMotif(e.getTo(), getDirection(edge, scale), edge.type, bag, scale, level, edge, EdgeMotif.SINGLE);
+            }
+            else if (edge.tag == EdgeTag.REMOVE) { G.removeEdge(edge); }
+            
+            edge.tag = null;
+            edge.radius = 0;
+        }
+        
+        return count/total;
+    }
+}

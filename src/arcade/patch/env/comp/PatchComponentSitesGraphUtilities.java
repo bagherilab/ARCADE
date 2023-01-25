@@ -3,6 +3,7 @@ package arcade.patch.env.comp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import ec.util.MersenneTwisterFast;
 import sim.util.Bag;
 import arcade.core.util.Graph;
 import arcade.core.util.Matrix;
@@ -11,10 +12,9 @@ import static arcade.core.util.Graph.Edge;
 import static arcade.core.util.Graph.EdgeNode;
 import static arcade.patch.env.comp.PatchComponentSitesGraph.EdgeType;
 import static arcade.patch.env.comp.PatchComponentSitesGraph.EdgeCategory;
-import static arcade.patch.env.comp.PatchComponentSitesGraph.RadiusCalculation;
 import static arcade.patch.env.comp.PatchComponentSitesGraph.ResolutionLevel;
-import static arcade.patch.env.comp.PatchComponentSitesGraph.Direction;
-import static arcade.patch.env.comp.PatchComponentSitesGraph.Root;
+import static arcade.patch.env.comp.PatchComponentSitesGraphFactory.Root;
+import static arcade.patch.env.comp.PatchComponentSitesGraphFactory.RadiusCalculation;
 import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteNode;
 import static arcade.patch.env.comp.PatchComponentSitesGraph.CAP_RADIUS_MIN;
@@ -26,8 +26,19 @@ import static arcade.patch.env.comp.PatchComponentSitesGraph.CAP_RADIUS;
  */
 
 abstract class PatchComponentSitesGraphUtilities {
+    enum Direction {
+        /** Code for upstream calculation. */
+        UPSTREAM,
+        
+        /** Code for downstream direction. */
+        DOWNSTREAM
+    }
+    
     /** Tolerance for difference in radii */
     private static final double DELTA_TOLERANCE = 1E-8;
+    
+    /** Height of each layer [um]. */
+    private static final double LAYER_HEIGHT = 8.7;
     
     /** Maximum oxygen partial pressure (in mmHg) */
     private static final double OXY_PRESSURE_MAX = 100;
@@ -35,10 +46,10 @@ abstract class PatchComponentSitesGraphUtilities {
     /** Minimum oxygen partial pressure (in mmHg) */
     private static final double OXY_PRESSURE_MIN = 55;
     
-    /** Oxygen partial pressure per radius (in mmHg/um) */ 
+    /** Oxygen partial pressure per radius (in mmHg/um) */
     private static final double OXY_PRESSURE_SCALE = 1;
     
-    /** Hemoglobin hill equation exponent  */
+    /** Hemoglobin hill equation exponent */
     private static final double OXY_CURVE_EXP = 2.8275;
     
     /** Hemoglobin hill equation P<sub>50</sub> (in mmHg) */
@@ -50,7 +61,7 @@ abstract class PatchComponentSitesGraphUtilities {
     /** Exponent for Murray's law */
     private static final double CAP_EXP = 2.7;
     
-    /** Minimum flow rate (in um<sup>3</sup>/min) */
+    /** Minimum flow rate for edge removal (in um<sup>3</sup>/min) */
     private static final double MIN_FLOW = 1000;
     
     /** Minimum flow percent for edge removal */
@@ -433,9 +444,8 @@ abstract class PatchComponentSitesGraphUtilities {
      * Calculates flow rate (in um<sup>3</sup>/min) and area (in um<sup>2</sup>) for all edges.
      * 
      * @param G  the graph object
-     * @param gs  the graph sites object
      */
-    static void calcFlows(Graph G, PatchComponentSitesGraph gs) {
+    static void calcFlows(Graph G) {
         for (Object obj : G.getAllEdges()) {
             SiteEdge edge = (SiteEdge)obj;
             SiteNode to = edge.getTo();
@@ -447,8 +457,8 @@ abstract class PatchComponentSitesGraphUtilities {
             // For edges with diameter greater than the height, we assume the vessel
             // exists past the layer so surface area is two rectangles.
             // Radius is taken to be the mid-wall radius.
-            if (2*edge.radius < gs.dz) { edge.area = Math.PI*2*(edge.radius + edge.wall/2)*edge.length; }
-            else { edge.area = edge.length*gs.dz*2; }
+            if (2*edge.radius < LAYER_HEIGHT) { edge.area = Math.PI*2*(edge.radius + edge.wall/2)*edge.length; }
+            else { edge.area = edge.length*LAYER_HEIGHT*2; }
         }
     }
     
@@ -615,7 +625,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param splitCol  the column in the pattern layout 
      * @param splitRow  the row in the pattern layout
      */
-    static void visit(Graph G, PatchComponentSitesGraph gs, SiteNode node,
+    static void visit(Graph G, PatchComponentSitesGraphFactory gs, SiteNode node,
                       int splitCol, int splitRow) {
         Bag bag = G.getEdgesOut(node);
         if (bag == null) { return; }
@@ -756,9 +766,10 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param G  the graph object
      * @param list  the list of edges
      * @param code  the update code
-     * @param gs  the graph sites object
+     * @param random  the random number generator
      */
-    static void updateRadii(Graph G, ArrayList<SiteEdge> list, RadiusCalculation code, PatchComponentSitesGraph gs) {
+    static void updateRadii(Graph G, ArrayList<SiteEdge> list, RadiusCalculation code,
+                            MersenneTwisterFast random) {
         ArrayList<SiteEdge> nextList;
         LinkedHashSet<SiteEdge> nextSet;
         LinkedHashSet<SiteEdge> currSet = new LinkedHashSet<>();
@@ -772,7 +783,7 @@ abstract class PatchComponentSitesGraphUtilities {
             
             // For pattern layout, modify capillary radius to introduce variation.
             if (code == RadiusCalculation.UPSTREAM_PATTERN || code == RadiusCalculation.DOWNSTREAM_PATTERN) {
-                edge.radius *= gs.random.nextDouble() + 0.5;
+                edge.radius *= random.nextDouble() + 0.5;
             }
         }
         
@@ -869,14 +880,13 @@ abstract class PatchComponentSitesGraphUtilities {
      * Updates hemodynamic properties in the graph after edges are removed.
      * 
      * @param G  the graph object
-     * @param gs  the graph sites object
      */
-    static void updateGraph(Graph G, PatchComponentSitesGraph gs) {
+    static void updateGraph(Graph G) {
         ArrayList<SiteEdge> list;
         Graph gCurr = G;
         
         do {
-            Graph gNew = gs.newGraph();
+            Graph gNew = new Graph(G.length, G.width);
             list = new ArrayList<>();
             
             for (Object obj : new Bag(gCurr.getAllEdges())) {
@@ -904,7 +914,7 @@ abstract class PatchComponentSitesGraphUtilities {
         calcPressures(G);
         boolean reversed = reversePressures(G);
         if (reversed) { calcPressures(G); }
-        calcFlows(G, gs);
+        calcFlows(G);
         calcStress(G);
         
         // Set oxygen nodes.
@@ -921,12 +931,11 @@ abstract class PatchComponentSitesGraphUtilities {
      * Iterates through nodes to eliminate low flow edges preventing graph traversal.
      *
      * @param G  the graph object
-     * @param gs  the graph sites object
      * @param nodes  the set of nodes
-     * @param removeMin  {@code true} if the the minimum flow edges should be
-     *                   removed, {@code false} otherwise
+     * @param removeMin  {@code true} if minimum flow edges should be removed,
+     *                   {@code false} otherwise
      */
-    static void updateTraverse(Graph G, PatchComponentSitesGraph gs, LinkedHashSet<SiteNode> nodes, boolean removeMin) {
+    static void updateTraverse(Graph G, LinkedHashSet<SiteNode> nodes, boolean removeMin) {
         double minFlow = Double.MAX_VALUE;
         SiteEdge minEdge = null;
         
@@ -941,7 +950,7 @@ abstract class PatchComponentSitesGraphUtilities {
                         G.removeEdge(edge);
                         edge.getFrom().pressure = Double.NaN;
                         edge.getTo().pressure = Double.NaN;
-                        updateGraph(G, gs);
+                        updateGraph(G);
                     } else if (edge.flow < minFlow) {
                         minFlow = edge.flow;
                         minEdge = edge;
@@ -956,7 +965,7 @@ abstract class PatchComponentSitesGraphUtilities {
                         G.removeEdge(edge);
                         edge.getFrom().pressure = Double.NaN;
                         edge.getTo().pressure = Double.NaN;
-                        updateGraph(G, gs);
+                        updateGraph(G);
                     } else if (edge.flow < minFlow) {
                         minFlow = edge.flow;
                         minEdge = edge;
@@ -973,13 +982,13 @@ abstract class PatchComponentSitesGraphUtilities {
                         G.removeEdge(edge1);
                         edge1.getFrom().pressure = Double.NaN;
                         edge1.getTo().pressure = Double.NaN;
-                        updateGraph(G, gs);
+                        updateGraph(G);
                     }
                     else if (edge2.flow/totalFlow < MIN_FLOW_PERCENT) {
                         G.removeEdge(edge2);
                         edge2.getFrom().pressure = Double.NaN;
                         edge2.getTo().pressure = Double.NaN;
-                        updateGraph(G, gs);
+                        updateGraph(G);
                     }
                 }
             }
@@ -989,7 +998,7 @@ abstract class PatchComponentSitesGraphUtilities {
             G.removeEdge(minEdge);
             minEdge.getFrom().pressure = Double.NaN;
             minEdge.getTo().pressure = Double.NaN;
-            updateGraph(G, gs);
+            updateGraph(G);
         }
     }
     
