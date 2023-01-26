@@ -147,6 +147,15 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
     abstract void calculateDamage(int i, int j, int k);
     
     /**
+     * Initializes sites in pattern array.
+     * <p>
+     * Sites are defined by copying the pattern unit cell across the array.
+     * Values of 1 and 2 indicate which the two lattice indices that border a
+     * capillary.
+     */
+    abstract void initializePatternArray();
+    
+    /**
      * Initializes damage array to 1.0 (no damage).
      */
     void initializeDamageArrays() {
@@ -158,15 +167,6 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
             }
         }
     }
-    
-    /**
-     * Initializes sites in pattern array.
-     * <p>
-     * Sites are defined by copying the pattern unit cell across the array.
-     * Values of 1 and 2 indicate which the two lattice indices that border a
-     * capillary.
-     */
-    abstract void initializePatternArray();
     
     @Override
     public void step(SimState state) {

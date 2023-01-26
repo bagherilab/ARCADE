@@ -93,19 +93,6 @@ public class PatchComponentSitesSource extends PatchComponentSites {
     }
     
     /**
-     * Initializes damage array to 1.0 (no damage).
-     */
-    void initializeDamageArrays() {
-        for (int k = 0; k < latticeHeight; k++) {
-            for (int i = 0; i < latticeLength; i++) {
-                for (int j = 0; j < latticeWidth; j++) {
-                    damageValues[k][i][j] = 1.0;
-                }
-            }
-        }
-    }
-    
-    /**
      * Initializes sites in source array.
      * <p>
      * Iterates through each index in the source lattice and assigns it as a
@@ -125,6 +112,19 @@ public class PatchComponentSitesSource extends PatchComponentSites {
                         continue;
                     }
                     sources[k][i][j] = true;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Initializes damage array to 1.0 (no damage).
+     */
+    void initializeDamageArrays() {
+        for (int k = 0; k < latticeHeight; k++) {
+            for (int i = 0; i < latticeLength; i++) {
+                for (int j = 0; j < latticeWidth; j++) {
+                    damageValues[k][i][j] = 1.0;
                 }
             }
         }
