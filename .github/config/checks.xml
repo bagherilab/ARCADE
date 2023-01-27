@@ -72,6 +72,7 @@
         <module name="JavadocStyle" />
         <module name="MissingJavadocMethod">
             <property name="scope" value="private" />
+            <property name="minLineCount" value="-2" />
         </module>
         <module name="MissingJavadocType">
             <property name="scope" value="private" />
