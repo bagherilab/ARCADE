@@ -58,7 +58,7 @@ public interface Cell extends Steppable {
     State getState();
     
     /**
-     * Gets the cell age (in ticks).
+     * Gets the cell age.
      *
      * @return  the cell age
      */
