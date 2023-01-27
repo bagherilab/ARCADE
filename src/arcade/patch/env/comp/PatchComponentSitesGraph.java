@@ -21,31 +21,26 @@ import static arcade.patch.env.comp.PatchComponentSitesGraphUtilities.*;
 /**
  * Extension of {@link PatchComponentSites} for graph sites.
  * <p>
- * Graph can be initialized in two ways ({@code GRAPH_LAYOUT}):
+ * Layout of the underlying graph is specified by {@code GRAPH_LAYOUT}. The
+ * pattern layout is specified by using {@code "*"}. The root layout is
+ * specified by specifying roots:
  * <ul>
- *     <li>root layout grown from a specified root system using motifs</li>
- *     <li>pattern layout that matches the structure used by
- *     {@link PatchComponentSitesPattern}</li>
+ *     <li>{@code [<BORDER> random <#>]} = random roots with {@code <#>}
+ *     randomly spaced roots, randomly assigned as artery or vein</li>
+ *     <li>{@code [<BORDER> alternate <#>]} = alternating roots with {@code <#>}
+ *     evenly spaced roots, alternating between arteries and veins</li>
+ *     <li>{@code [<BORDER> single <#><TYPE>]} = single {@code <TYPE>} root
+ *     placed a distance {@code <#>} percent across the specified border
+ *     <li>{@code [<BORDER> line <#><TYPE><#>]} = line {@code <TYPE>} root
+ *     placed a distance {@code <#>} (first number) percent across the specified
+ *     border that spans a distance {@code <#>} (second number) percent across
+ *     the environment in the direction normal to the specified border
  * </ul>
  * <p>
- * Roots are specified for the left (-x direction, {@code ROOTS_LEFT}), right
- * (+x direction, {@code ROOTS_RIGHT}), top (-y direction, {@code ROOTS_TOP}),
- * and bottom (-y direction, {@code ROOTS_BOTTOM}) sides of the environment.
- * Specifications for each side depend on the layout where {@code #} indicates
- * a number and X is {@code A}/{@code a} for an artery or {@code V}/{@code v}
- * for a vein.
- * <ul>
- *     <li>{@code S} = single roots, {@code #X} for a root of type {@code X}
- *     a distance {@code #} percent across the specified side</li>
- *     <li>{@code A} = alternating roots, {@code #} for {@code #}
- *     evenly spaced roots alternating between artery and vein</li>
- *     <li>{@code R} = random roots, {@code #} for {@code #} randomly
- *     spaced roots, randomly assigned as artery or vein</li>
- *     <li>{@code L} = line roots, {@code #X#} for root of type {@code X}
- *     started {@code #} percent (first number) across the specified side and
- *     spanning {@code #} percent (second number) across the environment in
- *     the direction normal to the side</li>
- * </ul>
+ * The border {@code <BORDER>} can be {@code LEFT} (-x direction), {@code RIGHT}
+ * (+x direction), {@code TOP} (-y direction), or {@code BOTTOM} (+y direction).
+ * The type {@code <TYPE>} can be {@code A} / {@code a} for an artery or
+ * {@code V} / {@code v} for a vein.
  */
 
 public abstract class PatchComponentSitesGraph extends PatchComponentSites {
@@ -61,7 +56,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /** Maximum oxygen partial pressure [mmHg]. */
     private static final double MAX_OXYGEN_PARTIAL_PRESSURE = 100;
     
-    /** Graph layout type. */
+    /** Graph layout description. */
     private final String graphLayout;
     
     /** Solubility of oxygen in plasma [fmol O2/(um<sup>3</sup> mmHg)]. */
@@ -381,13 +376,13 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         int id;
         
         /** {@code true} if the node is a root, {@code false} otherwise. */
-        public boolean isRoot;
+        boolean isRoot;
         
         /** Pressure of the node. */
-        public double pressure;
+        double pressure;
         
         /** Oxygen partial pressure of the node. */
-        public double oxygen;
+        double oxygen;
         
         /** Distance for Dijkstra's algorithm. */
         int distance;
@@ -426,52 +421,52 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         ArrayList<int[]> span;
         
         /** {@code true} if edge as been visited, {@code false} otherwise. */
-        public boolean isVisited;
+        boolean isVisited;
         
         /** {@code true} if edge is perfused {@code false} otherwise. */
-        public boolean isPerfused;
+        boolean isPerfused;
         
         /** {@code true} if edge is ignored, {@code false} otherwise. */
-        public boolean isIgnored;
+        boolean isIgnored;
         
         /** Edge type. */
-        public final EdgeType type;
+        final EdgeType type;
         
         /** Edge resolution level. */
-        public final EdgeLevel level;
+        final EdgeLevel level;
         
         /** Edge tag for iterative remodeling. */
         EdgeTag tag;
         
         /** Internal radius [um]. */
-        public double radius;
+        double radius;
         
         /** Vessel length [um]. */
-        public double length;
+        double length;
         
         /** Wall thickness [um]. */
-        public double wall;
+        double wall;
         
         /** Shear stress in edge [mmHg]. */
-        public double shear;
+        double shear;
         
         /** Circumferential stress in edge [mmHg]. */
-        public double circum;
+        double circum;
         
         /** Volumetric flow rate in edge [um<sup>3</sup>/min]. */
-        public double flow;
+        double flow;
         
         /** Cross-sectional area of edge [um<sup>2</sup>]. */
-        public double area;
+        double area;
         
         /** Scaled shear stress. */
         double shearScaled;
         
         /** Concentration fraction in edge. */
-        public HashMap<String, Double> fraction;
+        HashMap<String, Double> fraction;
         
         /** Concentration fraction transported out. */
-        public HashMap<String, Double> transport;
+        HashMap<String, Double> transport;
         
         /**
          * Creates a {@link Edge} for graph sites.

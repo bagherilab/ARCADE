@@ -16,36 +16,20 @@ import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteNode;
 import static arcade.patch.env.comp.PatchComponentSitesGraphUtilities.*;
 
 /**
- * Extension of {@link PatchComponentSites} for graph sites.
+ * Factory for building a {@link Graph} for {@link PatchComponentSitesGraph}.
  * <p>
- * Graph can be initialized in two ways ({@code GRAPH_LAYOUT}):
+ * Graph can be initialized in two ways:
  * <ul>
- *     <li>root layout grown from a specified root system using motifs</li>
  *     <li>pattern layout that matches the structure used by
  *     {@link PatchComponentSitesPattern}</li>
- * </ul>
- * <p>
- * Roots are specified for the left (-x direction, {@code ROOTS_LEFT}), right
- * (+x direction, {@code ROOTS_RIGHT}), top (-y direction, {@code ROOTS_TOP}),
- * and bottom (-y direction, {@code ROOTS_BOTTOM}) sides of the environment.
- * Specifications for each side depend on the layout where {@code #} indicates
- * a number and X is {@code A}/{@code a} for an artery or {@code V}/{@code v}
- * for a vein.
- * <ul>
- *     <li>{@code S} = single roots, {@code #X} for a root of type {@code X}
- *     a distance {@code #} percent across the specified side</li>
- *     <li>{@code A} = alternating roots, {@code #} for {@code #}
- *     evenly spaced roots alternating between artery and vein</li>
- *     <li>{@code R} = random roots, {@code #} for {@code #} randomly
- *     spaced roots, randomly assigned as artery or vein</li>
- *     <li>{@code L} = line roots, {@code #X#} for root of type {@code X}
- *     started {@code #} percent (first number) across the specified side and
- *     spanning {@code #} percent (second number) across the environment in
- *     the direction normal to the side</li>
+ *     <li>root layout grown from a specified root system using motifs</li>
  * </ul>
  */
 
 public abstract class PatchComponentSitesGraphFactory {
+    /** Border directions. */
+    enum Border { LEFT, RIGHT, TOP, BOTTOM }
+    
     /** Edge types. */
     enum EdgeType {
         /** Code for arteriole edge type. */
@@ -63,8 +47,14 @@ public abstract class PatchComponentSitesGraphFactory {
         /** Code for venule edge type. */
         VENULE(EdgeCategory.VEIN);
         
+        /** Edge category corresponding to the edge type. */
         final EdgeCategory category;
         
+        /**
+         * Creates an {@code EdgeType} instance.
+         *
+         * @param  category the edge category
+         */
         EdgeType(EdgeCategory category) {
             this.category = category;
         }
@@ -81,8 +71,14 @@ public abstract class PatchComponentSitesGraphFactory {
         /** Code for vein edge category. */
         VEIN(1);
         
+        /** Sign corresponding to edge category. */
         final int sign;
         
+        /**
+         * Creates an {@code EdgeCategory} instance.
+         *
+         * @param  sign the category sign
+         */
         EdgeCategory(int sign) {
             this.sign = sign;
         }
@@ -108,8 +104,14 @@ public abstract class PatchComponentSitesGraphFactory {
         /** Code for level 2 resolution. */
         LEVEL_2(2);
         
+        /** Scaling corresponding to edge level. */
         final int scale;
         
+        /**
+         * Creates an {@code EdgeLevel} instance.
+         *
+         * @param scale  the level scale
+         */
         EdgeLevel(int scale) {
             this.scale = scale;
         }
@@ -145,6 +147,7 @@ public abstract class PatchComponentSitesGraphFactory {
         UP_LEFT,
     }
     
+    /** Edge motifs. */
     enum EdgeMotif {
         /** Code for triple edge motif. */
         TRIPLE,
@@ -154,21 +157,6 @@ public abstract class PatchComponentSitesGraphFactory {
         
         /** Code for single edge motif. */
         SINGLE,
-    }
-    
-    /** Environment border locations. */
-    enum Border {
-        /** Left side of environment (-x direction). */
-        LEFT,
-        
-        /** Top side of environment (-y direction). */
-        TOP,
-        
-        /** Right side of environment (+x direction). */
-        RIGHT,
-        
-        /** Bottom side of environment (+y direction). */
-        BOTTOM
     }
     
     /** Probability weighting for iterative remodeling. */
@@ -253,31 +241,27 @@ public abstract class PatchComponentSitesGraphFactory {
      * @param node0  the node the motif starts at
      * @param dir  the direction code of the root
      * @param type  the root type
-     * @param bag  the bag of active edges
-     * @param level  the graph resolution level
      * @param offsets  the list of offsets for line roots, null otherwise
      * @param random  the random number generator
+     * @return  the bag of active edges
      */
-    abstract void addRoot(Graph graph, SiteNode node0, EdgeDirection dir, EdgeType type,
-                          Bag bag, EdgeLevel level, EdgeDirection[] offsets,
-                          MersenneTwisterFast random);
+    abstract Bag addRoot(Graph graph, SiteNode node0, EdgeDirection dir, EdgeType type,
+                         EdgeDirection[] offsets, MersenneTwisterFast random);
     
     /**
      * Adds an edge motif to the graph.
      *
      * @param graph  the graph instance
      * @param node0  the node the motif starts at
-     * @param dir  the direction code for the edge
+     * @param edge0  the edge the motif is being added to
      * @param type  the edge type
-     * @param bag  the bag of active edges
      * @param level  the graph resolution level
-     * @param e  the edge the motif is being added to
      * @param motif  the motif type
      * @param random  the random number generator
+     * @return  the bag of active edges
      */
-    abstract void addMotif(Graph graph, SiteNode node0, EdgeDirection dir, EdgeType type,
-                           Bag bag, EdgeLevel level, SiteEdge e, EdgeMotif motif,
-                           MersenneTwisterFast random);
+    abstract Bag addMotif(Graph graph, SiteNode node0, SiteEdge edge0, EdgeType type,
+                          EdgeLevel level, EdgeMotif motif, MersenneTwisterFast random);
     
     /**
      * Adds a capillary segment joining edges of different types to the graph.
@@ -332,15 +316,24 @@ public abstract class PatchComponentSitesGraphFactory {
      * Creates a {@link Root} for graph sites using a root layout.
      *
      * @param border  the border the root extends from
-     * @param perc  the percentage distance across the border the root is located
+     * @param percent  the percentage distance along the border
      * @param type  the root type
-     * @param frac  the fraction distance in the perpendicular direction the root extends
-     * @param scale  the graph resolution scaling
-     * @param random  the random number generator
+     * @param level  the graph resolution level
      * @return  a {@link Root} object
      */
-    abstract Root createRootGraph(Border border, double perc, EdgeType type, double frac,
-                                  int scale, MersenneTwisterFast random);
+    abstract Root createRoot(Border border, double percent, EdgeType type, EdgeLevel level);
+    
+    /**
+     * Creates offsets for a {@link Root} for graph sites using a root layout.
+     *
+     * @param border  the border the root extends from
+     * @param percent  the percentage distance in the perpendicular direction
+     * @param level  the graph resolution level
+     * @param random  the random number generator
+     * @return  a list of offsets
+     */
+    abstract EdgeDirection[] createRootOffsets(Border border, double percent, EdgeLevel level,
+                                               MersenneTwisterFast random);
     
     /**
      * Container class for details of root nodes.
@@ -359,7 +352,7 @@ public abstract class PatchComponentSitesGraphFactory {
         final EdgeDirection dir;
         
         /** List of offsets for line roots, null otherwise. */
-        final EdgeDirection[] offsets;
+        EdgeDirection[] offsets;
         
         /**
          * Creates a {@code Root} object for generating root graphs.
@@ -368,13 +361,11 @@ public abstract class PatchComponentSitesGraphFactory {
          * @param y  the y coordinate
          * @param type  the edge type
          * @param dir  the direction code of the root
-         * @param offsets  the list of offsets for line roots, null otherwise
          */
-        Root(int x, int y, EdgeType type, EdgeDirection dir, EdgeDirection[] offsets) {
+        Root(int x, int y, EdgeType type, EdgeDirection dir) {
             node = new SiteNode(x, y, 0);
             this.type = type;
             this.dir = dir;
-            this.offsets = offsets;
         }
     }
     
@@ -569,80 +560,16 @@ public abstract class PatchComponentSitesGraphFactory {
      * @param graphLayout  the specification for layout of roots
      * @return  a graph instance with root layout
      */
-    public Graph initializeRootGraph(MersenneTwisterFast random,
-                                     String siteLayout, String[] siteSetup) {
-        ArrayList<Root> roots = new ArrayList<>();
-        Border[] border = Border.values();
-        Pattern pattern = null;
-        Matcher matcher;
-        
-        // Select regular expression for given root type.
-        switch (siteLayout) {
-            case "S":
-                pattern = Pattern.compile("([0-9]{1,3})([AVav])");
-                break;
-            case "A":
-            case "R":
-                pattern = Pattern.compile("([0-9]+)");
-                break;
-            case "L":
-                pattern = Pattern.compile("([0-9]{1,3})([AVav])([0-9]{1,3})");
-                break;
-            default:
-                return new Graph();
-        }
-        
-        EdgeType t;
-        int n;
-        double p;
-        double f;
-        
-        // Add roots for each border given root type.
-        for (Border b : border) {
-            matcher = pattern.matcher(siteSetup[b.ordinal()]);
-            while (matcher.find()) {
-                switch (siteLayout) {
-                    case "S":
-                        p = Integer.parseInt(matcher.group(1)) / 100.0;
-                        t = parseType(matcher.group(2));
-                        roots.add(createRootGraph(b, p, t, 0, EdgeLevel.LEVEL_1.scale, random));
-                        break;
-                    case "A":
-                        n = (Integer.parseInt(matcher.group(1)));
-                        double inc = 100.0 / n;
-                        for (int i = 0; i < n; i++) {
-                            p = i * inc + inc / 2;
-                            t = (i % 2 == 0 ? EdgeType.ARTERY : EdgeType.VEIN);
-                            roots.add(createRootGraph(b, p / 100.0, t, 0, EdgeLevel.LEVEL_1.scale, random));
-                        }
-                        break;
-                    case "R":
-                        n = (Integer.parseInt(matcher.group(1)));
-                        for (int i = 0; i < n; i++) {
-                            p = random.nextInt(100);
-                            t = (random.nextDouble() < 0.5 ? EdgeType.ARTERY : EdgeType.VEIN);
-                            roots.add(createRootGraph(b, p / 100.0, t, 0, EdgeLevel.LEVEL_1.scale, random));
-                        }
-                        break;
-                    case "L":
-                        p = Integer.parseInt(matcher.group(1)) / 100.0;
-                        t = parseType(matcher.group(2));
-                        f = (Integer.parseInt(matcher.group(3))) / 100.0;
-                        roots.add(createRootGraph(b, p, t, f, EdgeLevel.LEVEL_1.scale, random));
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        
+    public Graph initializeRootGraph(MersenneTwisterFast random, String graphLayout) {
+        ArrayList<Root> roots = parseRoots(graphLayout, random);
         Graph graph = new Graph();
         
         // Iterate through all roots and try to add to the graph.
         Bag leaves = new Bag();
         Utilities.shuffleList(roots, random);
         for (Root root : roots) {
-            addRoot(graph, root.node, root.dir, root.type, leaves, EdgeLevel.LEVEL_1, root.offsets, random);
+            Bag bag = addRoot(graph, root.node, root.dir, root.type, root.offsets, random);
+            leaves.addAll(bag);
         }
         
         ArrayList<Root> arteries = new ArrayList<>();
@@ -754,10 +681,12 @@ public abstract class PatchComponentSitesGraphFactory {
         // Get capillaries and arterioles and update radii.
         switch (level) {
             case LEVEL_1:
-                list = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY, EdgeType.ARTERIOLE });
+                list = getEdgeByType(graph,
+                        new EdgeType[] { EdgeType.CAPILLARY, EdgeType.ARTERIOLE });
                 break;
             case LEVEL_2:
-                list = getEdgeByType(graph, new EdgeType[] { EdgeType.ARTERIOLE }, level);
+                list = getEdgeByType(graph,
+                        new EdgeType[] { EdgeType.ARTERIOLE }, level);
                 list.addAll(caps);
                 break;
             default:
@@ -998,7 +927,11 @@ public abstract class PatchComponentSitesGraphFactory {
     private double remodelRootGraph(Graph graph, EdgeLevel level, MersenneTwisterFast random) {
         // Remove capillaries, arterioles, and venules.
         ArrayList<SiteEdge> list = getEdgeByType(graph,
-                new EdgeType[] { EdgeType.CAPILLARY, EdgeType.VENULE, EdgeType.ARTERIOLE });
+                new EdgeType[] {
+                        EdgeType.CAPILLARY,
+                        EdgeType.VENULE,
+                        EdgeType.ARTERIOLE
+                });
         for (SiteEdge edge : list) {
             graph.removeEdge(edge);
         }
@@ -1046,17 +979,16 @@ public abstract class PatchComponentSitesGraphFactory {
         for (Object obj : allEdges) {
             SiteEdge edge = (SiteEdge) obj;
             if (edge.tag == EdgeTag.ADD && graph.getDegree(edge.getTo()) < 3) {
-                SiteEdge e;
-                Bag bag = new Bag();
-                addMotif(graph, edge.getTo(), getDirection(edge, level), edge.type, bag, level, edge, EdgeMotif.TRIPLE, random);
+                Bag bag1 = addMotif(graph, edge.getTo(), edge, edge.type, level,
+                        EdgeMotif.TRIPLE, random);
                 
-                e = (SiteEdge) bag.get(0);
-                bag.clear();
-                addMotif(graph, e.getTo(), getDirection(edge, level), edge.type, bag, level, edge, EdgeMotif.DOUBLE, random);
+                SiteEdge edge1 = (SiteEdge) bag1.get(0);
+                Bag bag2 = addMotif(graph, edge1.getTo(), edge, edge.type, level,
+                        EdgeMotif.DOUBLE, random);
                 
-                e = (SiteEdge) bag.get(0);
-                bag.clear();
-                addMotif(graph, e.getTo(), getDirection(edge, level), edge.type, bag, level, edge, EdgeMotif.SINGLE, random);
+                SiteEdge edge2 = (SiteEdge) bag2.get(0);
+                addMotif(graph, edge2.getTo(), edge, edge.type, level,
+                        EdgeMotif.SINGLE, random);
             } else if (edge.tag == EdgeTag.REMOVE) {
                 graph.removeEdge(edge);
             }
@@ -1066,6 +998,72 @@ public abstract class PatchComponentSitesGraphFactory {
         }
         
         return count / total;
+    }
+    
+    /**
+     * Parses the layout specification to create root objects.
+     *
+     * @param layout  the layout description
+     * @param random  the random number generator
+     * @return  a list of roots
+     */
+    private ArrayList<Root> parseRoots(String layout, MersenneTwisterFast random) {
+        ArrayList<Root> roots = new ArrayList<>();
+        EdgeLevel level = EdgeLevel.LEVEL_1;
+        
+        // Find and add random roots.
+        String regexRandom = "(LEFT|RIGHT|TOP|BOTTOM) random (\\d+)";
+        Matcher matcherRandom = Pattern.compile(regexRandom).matcher(layout);
+        while (matcherRandom.find()) {
+            Border border = Border.valueOf(matcherRandom.group(1));
+            int n = (Integer.parseInt(matcherRandom.group(2)));
+            for (int i = 0; i < n; i++) {
+                double percent = random.nextInt(100) / 100.0;
+                EdgeType type = (random.nextDouble() < 0.5 ? EdgeType.ARTERY : EdgeType.VEIN);
+                Root root = createRoot(border, percent, type, level);
+                roots.add(root);
+            }
+        }
+        
+        // Find and add single roots.
+        String regexSingle = "(LEFT|RIGHT|TOP|BOTTOM) single (\\d+)([AVav])";
+        Matcher matcherSingle = Pattern.compile(regexSingle).matcher(layout);
+        while (matcherSingle.find()) {
+            Border border = Border.valueOf(matcherSingle.group(1));
+            double percent = Integer.parseInt(matcherSingle.group(2)) / 100.0;
+            EdgeType type = parseType(matcherSingle.group(3));
+            roots.add(createRoot(border, percent, type, level));
+        }
+        
+        // Find and add alternating roots.
+        String regexAlternate = "(LEFT|RIGHT|TOP|BOTTOM) alternate (\\d+)";
+        Matcher matcherAlternate = Pattern.compile(regexAlternate).matcher(layout);
+        while (matcherAlternate.find()) {
+            Border border = Border.valueOf(matcherAlternate.group(1));
+            double n = (Integer.parseInt(matcherAlternate.group(2)));
+            double inc = 100.0 / n;
+            
+            for (int i = 0; i < n; i++) {
+                double percent = (i * inc + inc / 2) / 100.0;
+                EdgeType type = (i % 2 == 0 ? EdgeType.ARTERY : EdgeType.VEIN);
+                roots.add(createRoot(border, percent, type, level));
+            }
+        }
+        
+        // Find and add line roots.
+        String regexLine = "(LEFT|RIGHT|TOP|BOTTOM) line (\\d+)([AVav])(\\d+)";
+        Matcher matcherLine = Pattern.compile(regexLine).matcher(layout);
+        while (matcherLine.find()) {
+            Border border = Border.valueOf(matcherLine.group(1));
+            double percent = Integer.parseInt(matcherLine.group(2)) / 100.0;
+            EdgeType type = parseType(matcherLine.group(3));
+            double fraction = (Integer.parseInt(matcherLine.group(4))) / 100.0;
+            Root root = createRoot(border, percent, type, level);
+            root.offsets = createRootOffsets(border, fraction, level, random);
+            roots.add(root);
+        }
+        
+        return roots;
     }
     
     /**
@@ -1101,8 +1099,7 @@ public abstract class PatchComponentSitesGraphFactory {
                 SiteNode node = edge.getTo();
                 
                 // Get current direction and add tripod in random direction.
-                EdgeDirection dir = getDirection(edge, level);
-                addMotif(graph, node, dir, edge.type, newBag, level, edge, motif, random);
+                newBag.addAll(addMotif(graph, node, edge, edge.type, level, motif, random));
             }
             
             // Calculate change in number of bags.

@@ -8,33 +8,6 @@ import arcade.core.util.MiniBox;
 
 /**
  * Extension of {@link PatchComponentSitesGraph} for rectangular geometry.
- * <p>
- * For pattern layout, the graph is given by:
- * <pre>
- *                         _ _ _ _
- *                       /         \
- *                      |           |
- *             _ _ _ _ /             \ _ _ _ _
- *           /         \             /         \
- *          |           |           |           |
- * _ _ _ _ /             \ _ _ _ _ /             \ _ _ _ _
- *         \             /         \             /
- *          |           |           |           |
- *           \ _ _ _ _ /             \ _ _ _ _ /
- *                     \             /
- *                      |           |
- *                       \ _ _ _ _ /
- * </pre>
- * <p>
- * For root layouts, each node has eight possible orientations for the edge:
- * left, right, up, down, up left, up right, down left, and down right. When
- * initializing roots from a border, only certain orientations are possible:
- * <ul>
- *     <li>left border = right, up right, down right</li>
- *     <li>right border = left, up left, down left</li>
- *     <li>top border = down, down right, down left</li>
- *     <li>bottom border = up, up right, up left</li>
- * </ul>
  */
 
 public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGraph {

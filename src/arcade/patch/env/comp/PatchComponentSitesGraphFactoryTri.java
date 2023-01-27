@@ -14,7 +14,8 @@ import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteNode;
 import static arcade.patch.env.comp.PatchComponentSitesGraphUtilities.*;
 
 /**
- * Extension of {@link PatchComponentSitesGraph} for triangular geometry.
+ * Concrete implementation of {@link PatchComponentSitesGraphFactory} for
+ * triangular geometry.
  * <p>
  * For pattern layout, the graph is given by:
  * <pre>
@@ -237,131 +238,146 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
     }
     
     @Override
-    Root createRootGraph(Border border, double perc, EdgeType type, double frac, int scale, MersenneTwisterFast random) {
-        EdgeDirection[] offsets;
-        int n = 0;
-        
-        // Calculate adjusted length and width based on scaling.
-        int c = -1;
+    Root createRoot(Border border, double percent, EdgeType type, EdgeLevel level) {
+        int scale = level.scale;
         int width = Math.floorDiv(latticeWidth, scale);
         int length = (latticeLength - 2 * scale + 3) / scale;
+        int c = -1;
         
         switch (border) {
-            case LEFT_BORDER:
-            case RIGHT_BORDER:
-                c = Math.round(Math.round(width * perc));
-                n = Math.round(Math.round(length * frac / 2));
+            case LEFT:
+            case RIGHT:
+                c = Math.round(Math.round(width * percent));
                 break;
-            case TOP_BORDER:
-            case BOTTOM_BORDER:
-                c = Math.round(Math.round(length * perc));
-                n = Math.round(Math.round(width * frac));
+            case TOP:
+            case BOTTOM:
+                c = Math.round(Math.round(length * percent));
                 break;
             default:
                 break;
         }
         
-        if (n > 0) {
-            EdgeDirection[] directions = null;
-            int deviation = 0;
-            int index = -1;
-            int ran;
-            EdgeDirection offset;
-            
-            offsets = new EdgeDirection[n];
-            
-            // Get direction list.
-            switch (border) {
-                case LEFT_BORDER:
-                    directions = new EdgeDirection[] {
-                            EdgeDirection.UP_RIGHT,
-                            EdgeDirection.RIGHT,
-                            EdgeDirection.DOWN_RIGHT
-                    };
-                    index = 1;
-                    break;
-                case RIGHT_BORDER:
-                    directions = new EdgeDirection[] {
-                            EdgeDirection.UP_LEFT,
-                            EdgeDirection.LEFT,
-                            EdgeDirection.DOWN_LEFT
-                    };
-                    index = 1;
-                    break;
-                case TOP_BORDER:
-                    directions = new EdgeDirection[] {
-                            EdgeDirection.DOWN_RIGHT,
-                            EdgeDirection.DOWN_LEFT
-                    };
-                    index = 0;
-                    break;
-                case BOTTOM_BORDER:
-                    directions = new EdgeDirection[] {
-                            EdgeDirection.UP_RIGHT,
-                            EdgeDirection.UP_LEFT
-                    };
-                    index = 0;
-                    break;
-                default:
-                    break;
-            }
-            
-            // Iterate through to fill up offsets.
-            for (int i = 0; i < n; i++) {
-                ran = -1;
-                
-                // Select type of random number generator. Left and right borders
-                // have three options, while top and bottom borders only have two.
-                switch (border) {
-                    case LEFT_BORDER:
-                    case RIGHT_BORDER:
-                        if (deviation > 0) {
-                            ran = random.nextInt(2);
-                        } else if (deviation < 0) {
-                            ran = random.nextInt(2) + 1;
-                        } else {
-                            ran = random.nextInt(3);
-                        }
-                        break;
-                    case TOP_BORDER:
-                    case BOTTOM_BORDER:
-                        if (deviation > 1) {
-                            ran = 1;
-                        } else if (deviation < -1) {
-                            ran = 0;
-                        } else {
-                            ran = random.nextInt(2);
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                
-                offset = directions[ran];
-                offsets[i] = offset;
-                deviation += OFFSETS.get(offset)[index];
-            }
-        } else {
-            offsets = null;
-        }
-        
         switch (border) {
-            case LEFT_BORDER:
-                return new Root((c % 2 == 0 ? 0 : scale), c * scale, type, EdgeDirection.RIGHT, offsets);
-            case RIGHT_BORDER:
+            case LEFT:
+                return new Root((c % 2 == 0 ? 0 : scale), c * scale, type, EdgeDirection.RIGHT);
+            case RIGHT:
                 int off = (length % 2 == 0 ? (c % 2 == 0 ? 0 : scale) : (c % 2 == 0 ? scale : 0));
-                return new Root(length * scale + off, c * scale, type, EdgeDirection.LEFT, offsets);
-            case TOP_BORDER:
-                c = (c % 2 == 0 ? c : c + 1); // must be even number
-                return new Root(c * scale, 0, type, (c < (length + 1) / 2 ? EdgeDirection.DOWN_RIGHT : EdgeDirection.DOWN_LEFT), offsets);
-            case BOTTOM_BORDER:
-                c = (width % 2 == 0 ? (c % 2 == 0 ? c : c + 1) : (c % 2 == 0 ? c + 1 : c)); // must be even number if width is even, odd otherwise
-                return new Root(c * scale, width * scale, type, (c < (length + 1) / 2 ? EdgeDirection.UP_RIGHT : EdgeDirection.UP_LEFT), offsets);
+                return new Root(length * scale + off, c * scale, type, EdgeDirection.LEFT);
+            case TOP:
+                // must be even number
+                c = (c % 2 == 0 ? c : c + 1);
+                return new Root(c * scale, 0, type, (c < (length + 1) / 2
+                        ? EdgeDirection.DOWN_RIGHT : EdgeDirection.DOWN_LEFT));
+            case BOTTOM:
+                // must be even number if width is even, odd otherwise
+                c = (width % 2 == 0 ? (c % 2 == 0 ? c : c + 1) : (c % 2 == 0 ? c + 1 : c));
+                return new Root(c * scale, width * scale, type, (c < (length + 1) / 2
+                        ? EdgeDirection.UP_RIGHT : EdgeDirection.UP_LEFT));
             default:
                 break;
         }
         
         return null;
+    }
+    
+    @Override
+    EdgeDirection[] createRootOffsets(Border border, double fraction, EdgeLevel level,
+                                      MersenneTwisterFast random) {
+        int scale = level.scale;
+        int width = Math.floorDiv(latticeWidth, scale);
+        int length = (latticeLength - 2 * scale + 3) / scale;
+        int numOffsets = 0;
+        
+        switch (border) {
+            case LEFT:
+            case RIGHT:
+                numOffsets = Math.round(Math.round(length * fraction / 2));
+                break;
+            case TOP:
+            case BOTTOM:
+                numOffsets = Math.round(Math.round(width * fraction));
+                break;
+            default:
+                break;
+        }
+        
+        EdgeDirection[] directions = null;
+        int index = -1;
+        
+        // Get direction list.
+        switch (border) {
+            case LEFT:
+                directions = new EdgeDirection[] {
+                        EdgeDirection.UP_RIGHT,
+                        EdgeDirection.RIGHT,
+                        EdgeDirection.DOWN_RIGHT
+                };
+                index = 1;
+                break;
+            case RIGHT:
+                directions = new EdgeDirection[] {
+                        EdgeDirection.UP_LEFT,
+                        EdgeDirection.LEFT,
+                        EdgeDirection.DOWN_LEFT
+                };
+                index = 1;
+                break;
+            case TOP:
+                directions = new EdgeDirection[] {
+                        EdgeDirection.DOWN_RIGHT,
+                        EdgeDirection.DOWN_LEFT
+                };
+                index = 0;
+                break;
+            case BOTTOM:
+                directions = new EdgeDirection[] {
+                        EdgeDirection.UP_RIGHT,
+                        EdgeDirection.UP_LEFT
+                };
+                index = 0;
+                break;
+            default:
+                break;
+        }
+        
+        int deviation = 0;
+        EdgeDirection offset = null;
+        EdgeDirection[] offsets = new EdgeDirection[numOffsets];
+        
+        // Iterate through to fill up offsets.
+        for (int i = 0; i < numOffsets; i++) {
+            // Select type of random number generator. Left and right borders
+            // have three options, while top and bottom borders only have two.
+            switch (border) {
+                case LEFT:
+                case RIGHT:
+                    if (deviation > 0) {
+                        offset = directions[random.nextInt(2)];
+                    } else if (deviation < 0) {
+                        offset = directions[random.nextInt(2) + 1];
+                    } else {
+                        offset = directions[random.nextInt(3)];
+                    }
+                    break;
+                case TOP:
+                case BOTTOM:
+                    if (deviation > 1) {
+                        offset = directions[1];
+                    } else if (deviation < -1) {
+                        offset = directions[0];
+                    } else {
+                        offset = directions[random.nextInt(2)];
+                    }
+                    break;
+                default:
+                    break;
+            }
+            
+            offsets[i] = offset;
+            deviation += OFFSETS.get(offset)[index];
+        }
+        
+        return offsets;
     }
     
     @Override
@@ -372,18 +388,23 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
     }
     
     @Override
-    void addRoot(Graph graph, SiteNode node0, EdgeDirection dir, EdgeType type, Bag bag, EdgeLevel level, EdgeDirection[] offsets, MersenneTwisterFast random) {
+    Bag addRoot(Graph graph, SiteNode node0, EdgeDirection dir, EdgeType type,
+                EdgeDirection[] offsets, MersenneTwisterFast random) {
+        Bag bag = new Bag();
+        EdgeLevel level = EdgeLevel.LEVEL_1;
         SiteNode node1 = offsetNode(node0, dir, level);
         boolean checkNode0 = checkNode(node0);
         boolean checkNode1 = checkNode(node1);
         
         // Add initial edge in the specified direction. If unable to add it,
         // then do not add the rest of the tripod.
-        if (checkNode0 && checkNode1 && graph.getDegree(node0) == 0 && graph.getDegree(node1) == 0) {
+        if (checkNode0 && checkNode1
+                && graph.getDegree(node0) == 0
+                && graph.getDegree(node1) == 0) {
             SiteEdge edge = new SiteEdge(node0, node1, type, level);
             graph.addEdge(edge);
         } else {
-            return;
+            return bag;
         }
         
         // Add the two leaves of the tripod if line is 0, otherwise add in the root line.
@@ -415,14 +436,19 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
             // Shuffle and add tripods off the offset line.
             Utilities.shuffleList(edges, random);
             for (SiteEdge edge : edges) {
-                addMotif(graph, edge.getTo(), getDirection(edge, level), type, bag, level, edge, EdgeMotif.TRIPLE, random);
+                bag.addAll(addMotif(graph, edge.getTo(), edge, type, level,
+                        EdgeMotif.TRIPLE, random));
             }
         }
+        
+        return bag;
     }
     
     @Override
-    void addMotif(Graph graph, SiteNode node0, EdgeDirection dir0, EdgeType type, Bag bag, EdgeLevel level, SiteEdge e, EdgeMotif motif, MersenneTwisterFast random) {
+    Bag addMotif(Graph graph, SiteNode node0, SiteEdge edge0, EdgeType type, EdgeLevel level,
+                 EdgeMotif motif, MersenneTwisterFast random) {
         // Select new random direction.
+        EdgeDirection dir0 = getDirection(edge0, level);
         ArrayList<EdgeDirection> validDirections = new ArrayList<>(EDGE_DIRECTIONS);
         validDirections.remove(REVERSE_EDGE_DIRECTIONS.get(dir0));
         EdgeDirection dir = validDirections.get(random.nextInt(validDirections.size()));
@@ -438,12 +464,15 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
         boolean checkNode2 = checkNode(node2);
         boolean checkNode3 = checkNode(node3);
         
+        Bag bag = new Bag();
         SiteEdge edge;
         
         switch (motif) {
             case TRIPLE:
                 if (checkNode0 && checkNode1 && checkNode2 && checkNode3
-                        && graph.getDegree(node1) == 0 && graph.getDegree(node2) == 0 && graph.getDegree(node3) == 0) {
+                        && graph.getDegree(node1) == 0
+                        && graph.getDegree(node2) == 0
+                        && graph.getDegree(node3) == 0) {
                     edge = new SiteEdge(node0, node1, type, level);
                     graph.addEdge(edge);
                     
@@ -459,7 +488,7 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
                         bag.add(edge);
                     }
                 } else if (bag != null) {
-                    bag.add(e);
+                    bag.add(edge0);
                 }
                 break;
             case DOUBLE:
@@ -484,10 +513,10 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
                             bag.add(edge);
                         }
                     } else if (bag != null) {
-                        bag.add(e);
+                        bag.add(edge0);
                     }
                 } else if (bag != null) {
-                    bag.add(e);
+                    bag.add(edge0);
                 }
                 break;
             case SINGLE:
@@ -498,16 +527,19 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
                         bag.add(edge);
                     }
                 } else if (bag != null) {
-                    bag.add(e);
+                    bag.add(edge0);
                 }
                 break;
             default:
                 break;
         }
+        
+        return bag;
     }
     
     @Override
-    void addSegment(Graph graph, SiteNode node0, EdgeDirection dir, EdgeLevel level, MersenneTwisterFast random) {
+    void addSegment(Graph graph, SiteNode node0, EdgeDirection dir,
+                    EdgeLevel level, MersenneTwisterFast random) {
         ArrayList<SiteNode> options = new ArrayList<>();
         
         // Iterate through all five direction options.
@@ -558,7 +590,8 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
     }
     
     @Override
-    void addConnection(Graph graph, SiteNode node0, EdgeDirection dir, EdgeType type, EdgeLevel level, MersenneTwisterFast random) {
+    void addConnection(Graph graph, SiteNode node0, EdgeDirection dir, EdgeType type,
+                       EdgeLevel level, MersenneTwisterFast random) {
         ArrayList<SiteNode> options = new ArrayList<>();
         EdgeType connType = (type == EdgeType.ARTERY ? EdgeType.ARTERIOLE : EdgeType.VENULE);
         
@@ -579,7 +612,8 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
                 SiteEdge edgeIn = (SiteEdge) graph.getEdgesIn(node1).objs[0];
                 
                 if (edgeOut.type == type && edgeIn.type == type
-                        && edgeOut.radius <= CAPILLARY_RADIUS_MAX && edgeIn.radius <= CAPILLARY_RADIUS_MAX) {
+                        && edgeOut.radius <= CAPILLARY_RADIUS_MAX
+                        && edgeIn.radius <= CAPILLARY_RADIUS_MAX) {
                     options.add(node1);
                 }
             }
@@ -589,7 +623,8 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
         
         for (SiteNode node1 : options) {
             SiteEdge e = new SiteEdge(node0, node1, connType, level);
-            if (graph.getDegree(node0) < 3 && graph.getDegree(node1) < 3 && !graph.hasEdge(node0, node1)) {
+            if (graph.getDegree(node0) < 3 && graph.getDegree(node1) < 3
+                    && !graph.hasEdge(node0, node1)) {
                 graph.addEdge(e);
             }
         }

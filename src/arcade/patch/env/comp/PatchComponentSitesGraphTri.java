@@ -8,33 +8,6 @@ import arcade.core.util.MiniBox;
 
 /**
  * Extension of {@link PatchComponentSitesGraph} for triangular geometry.
- * <p>
- * For pattern layout, the graph is given by:
- * <pre>
- *                         ___ ___
- *                       /         \
- *                      /           \
- *             ___ ___ /             \ ___ ___
- *           /         \             /         \
- *          /           \           /           \
- * ___ ___ /             \ ___ ___ /             \ ___ ___
- *         \             /         \             /
- *          \           /           \           /
- *           \ ___ ___ /             \ ___ ___ /
- *                     \             /
- *                      \           /
- *                       \ ___ ___ /
- * </pre>
- * <p>
- * For root layouts, each node has six possible orientations for the edge: left,
- * right, up left, up right, down left, and down right. When initializing roots
- * from a border, only certain orientations are possible:
- * <ul>
- *     <li>left border = right, up right, down right</li>
- *     <li>right border = left, up left, down left</li>
- *     <li>top border = down right, down left</li>
- *     <li>bottom border = up right, up left</li>
- * </ul>
  */
 
 public abstract class PatchComponentSitesGraphTri extends PatchComponentSitesGraph {
