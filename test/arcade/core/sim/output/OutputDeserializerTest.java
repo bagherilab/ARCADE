@@ -78,7 +78,9 @@ public class OutputDeserializerTest {
         for (int i = 0; i < n; i++) {
             int id = id0 + i;
             string.append("{\"id\":").append(id).append("}");
-            if (i < n - 1) { string.append(","); }
+            if (i < n - 1) {
+                string.append(",");
+            }
         }
         string.append("]");
         
@@ -103,7 +105,9 @@ public class OutputDeserializerTest {
         for (int i = 0; i < n; i++) {
             int id = id0 + i;
             string.append("{\"id\":").append(id).append("}");
-            if (i < n - 1) { string.append(","); }
+            if (i < n - 1) {
+                string.append(",");
+            }
         }
         string.append("]");
         

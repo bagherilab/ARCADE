@@ -377,40 +377,40 @@ public class BoxTest {
     
     @Test
     public void filterBoxByTag_invalidTag_returnsEmpty() {
-           Box box = new Box();
-           
-           String id1 = randomString();
-           String id2 = randomString();
-           String id3 = randomString();
-           
-           String tag1 = randomString();
-           String tag2 = randomString();
-           
-           String att1 = randomString();
-           String att2 = randomString();
-           
-           String value1 = randomString();
-           String value2 = randomString();
-           String value3 = randomString();
-           String value4 = randomString();
-           
-           box.addTag(id2, tag2);
-           box.addTag(id3, tag2);
-           
-           box.addAtt(id1, att1, value1);
-           box.addAtt(id2, att1, value2);
-           box.addAtt(id3, att1, value3);
-           box.addAtt(id3, att2, value4);
-           
-           Box filtered = box.filterBoxByTag(tag1);
-           
-           ArrayList<String> keys = new ArrayList<>();
-           MiniBox idToTag = new MiniBox();
-           MiniBox idToVal = new MiniBox();
-           
-           assertEquals(keys, filtered.keys);
-           assertTrue(idToTag.compare(filtered.idToTag));
-           assertTrue(idToVal.compare(filtered.idToVal));
+        Box box = new Box();
+        
+        String id1 = randomString();
+        String id2 = randomString();
+        String id3 = randomString();
+        
+        String tag1 = randomString();
+        String tag2 = randomString();
+        
+        String att1 = randomString();
+        String att2 = randomString();
+        
+        String value1 = randomString();
+        String value2 = randomString();
+        String value3 = randomString();
+        String value4 = randomString();
+        
+        box.addTag(id2, tag2);
+        box.addTag(id3, tag2);
+        
+        box.addAtt(id1, att1, value1);
+        box.addAtt(id2, att1, value2);
+        box.addAtt(id3, att1, value3);
+        box.addAtt(id3, att2, value4);
+        
+        Box filtered = box.filterBoxByTag(tag1);
+        
+        ArrayList<String> keys = new ArrayList<>();
+        MiniBox idToTag = new MiniBox();
+        MiniBox idToVal = new MiniBox();
+        
+        assertEquals(keys, filtered.keys);
+        assertTrue(idToTag.compare(filtered.idToTag));
+        assertTrue(idToVal.compare(filtered.idToVal));
     }
     
     @Test

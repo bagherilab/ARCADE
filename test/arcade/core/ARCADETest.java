@@ -28,6 +28,8 @@ public class ARCADETest {
     
     private static final String PATH = randomString();
     
+    private static final String IMPLEMENTATION = randomString();
+    
     @BeforeClass
     public static void setFields() { ARCADE.logger = mock(Logger.class); }
     
@@ -81,12 +83,12 @@ public class ARCADETest {
     
     @Test
     public void loadCommands_called_loadsBox() throws IOException, SAXException {
-        File file = folder.newFile("command.xml");
+        File file = folder.newFile("command." + IMPLEMENTATION + ".xml");
         FileUtils.writeStringToFile(file,
                 "<commands><switch id=\"MOCK\" /></commands>", "UTF-8");
         
         ARCADE arcade = new MockARCADE();
-        Box commands = arcade.loadCommands();
+        Box commands = arcade.loadCommands(IMPLEMENTATION);
         
         assertEquals("POSITION", commands.getTag("ARCADE"));
         assertEquals("SWITCH", commands.getTag("MOCK"));
@@ -94,12 +96,12 @@ public class ARCADETest {
     
     @Test
     public void loadParameters_called_loadsBox() throws IOException, SAXException {
-        File file = folder.newFile("parameter.xml");
+        File file = folder.newFile("parameter." + IMPLEMENTATION + ".xml");
         FileUtils.writeStringToFile(file,
                 "<parameter><mockparameter id=\"MOCK\" value=\"MOCK_VALUE\" /></parameter>", "UTF-8");
         
         ARCADE arcade = new MockARCADE();
-        Box parameters = arcade.loadParameters();
+        Box parameters = arcade.loadParameters(IMPLEMENTATION);
         
         assertEquals("DEFAULT", parameters.getTag("START_SEED"));
         assertEquals("0", parameters.getValue("START_SEED~value"));
@@ -170,7 +172,7 @@ public class ARCADETest {
         assertEquals(1, series.size());
         assertFalse(series.get(0).isVis);
     }
-   
+    
     @Test
     public void runSeries_noVis_runsSim() throws Exception {
         ArrayList<Series> series = new ArrayList<>();
