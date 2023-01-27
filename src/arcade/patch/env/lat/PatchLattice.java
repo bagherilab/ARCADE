@@ -135,11 +135,6 @@ public abstract class PatchLattice implements Lattice {
     }
     
     @Override
-    public void setOperation(Category category, Operation operation) {
-        operations.put(category, operation);
-    }
-    
-    @Override
     public void schedule(Schedule schedule) {
         schedule.scheduleOnce(this, Ordering.FIRST.ordinal());
         schedule.scheduleRepeating(this, Ordering.LATTICES.ordinal(), 1);
