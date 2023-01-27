@@ -13,7 +13,7 @@ public class AdhesionHamiltonian3D extends AdhesionHamiltonian {
     public static final int NEIGHBORHOOD_SIZE = (3 * 3 * 3) - 1;
     
     /**
-     * Creates the adhesion energy term for the {@code Potts} Hamiltonian in 3D.
+     * Creates the adhesion energy term for {@code Potts} Hamiltonian in 3D.
      *
      * @param series  the associated Series instance
      * @param potts  the associated Potts instance

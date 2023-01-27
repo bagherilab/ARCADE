@@ -12,14 +12,14 @@ import static arcade.core.util.Enums.Region;
  * Abstract extension of {@link PottsLocation} for regions.
  * <p>
  * {@code PottsLocations} objects manage an additional map of region to
- * {@link PottsLocation} objects that manages the specific subsets of voxels
- * for each region.
+ * {@link PottsLocation} objects that manages the specific subsets of voxels for
+ * each region.
  * <p>
  * Concrete implementations of {@code PottsLocations} manage the dimensionality
  * of the voxels.
  * <p>
- * {@code PottsLocations} also provides several additional general static methods
- * for manipulating voxel lists needed for regions:
+ * {@code PottsLocations} also provides several additional general static
+ * methods for manipulating voxel lists needed for regions:
  * <ul>
  *     <li><strong>Assign</strong> voxels in lists to regions</li>
  *     <li><strong>Select</strong> voxels to assign based on distance</li>
@@ -81,7 +81,9 @@ public abstract class PottsLocations extends PottsLocation {
         Voxel voxel = new Voxel(x, y, z);
         
         for (PottsLocation loc : locations.values()) {
-            if (loc.voxels.contains(voxel)) { return; }
+            if (loc.voxels.contains(voxel)) {
+                return;
+            }
         }
         
         if (!locations.containsKey(region)) {
@@ -118,11 +120,15 @@ public abstract class PottsLocations extends PottsLocation {
         
         // Check all regions for the voxel.
         for (Region key : locations.keySet()) {
-            if (key != region && locations.get(key).voxels.contains(voxel)) { oldRegion = key; }
+            if (key != region && locations.get(key).voxels.contains(voxel)) {
+                oldRegion = key;
+            }
         }
         
         // Only assign if voxel exists and is assigned to a different region.
-        if (oldRegion == Region.UNDEFINED) { return; }
+        if (oldRegion == Region.UNDEFINED) {
+            return;
+        }
         
         // Create new region location if it does not exist.
         if (!locations.containsKey(region)) {
@@ -144,7 +150,9 @@ public abstract class PottsLocations extends PottsLocation {
     
     @Override
     public void distribute(Region region, int target, MersenneTwisterFast random) {
-        if (region == Region.DEFAULT) { return; }
+        if (region == Region.DEFAULT) {
+            return;
+        }
         
         PottsLocation defaultLocation = locations.get(Region.DEFAULT);
         PottsLocation regionLocation = locations.get(region);
@@ -222,14 +230,14 @@ public abstract class PottsLocations extends PottsLocation {
     abstract PottsLocations makeLocations(ArrayList<Voxel> voxels);
     
     /**
-     * Separates the voxels in the list between this location and a new location.
+     * Separates voxels in the list between this location and a new location.
      * <p>
      * Regions are re-assigned between the two splits.
      *
      * @param voxelsA  the list of voxels for this location
      * @param voxelsB  the list of voxels for the split location
      * @param random  the seeded random number generator
-     * @return  a {@link arcade.core.env.loc.Location} object with the split voxels
+     * @return  a {@link arcade.core.env.loc.Location} object with split voxels
      */
     @Override
     Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
@@ -263,7 +271,9 @@ public abstract class PottsLocations extends PottsLocation {
         // Assign voxel regions.
         for (Region region : locations.keySet()) {
             // No assignment for default regions.
-            if (region == Region.DEFAULT) { continue; }
+            if (region == Region.DEFAULT) {
+                continue;
+            }
             
             // Get target number of voxels to assign for current split.
             int target = (int) (fractions.get(region) * this.volume);

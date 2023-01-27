@@ -66,9 +66,9 @@ public class PersistenceHamiltonian implements Hamiltonian {
      * {@inheritDoc}
      * <p>
      * Persistence energy is calculated by taking the sum of source and target
-     * persistence energies.
-     * Source energy is calculated from displacement when a voxel is removed.
-     * Target energy is calculated from displacement when a voxel is added.
+     * persistence energies. Source energy is calculated from displacement when
+     * a voxel is removed. Target energy is calculated from displacement when a
+     * voxel is added.
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
@@ -81,9 +81,9 @@ public class PersistenceHamiltonian implements Hamiltonian {
      * {@inheritDoc}
      * <p>
      * Persistence energy is calculated by taking the sum of source and target
-     * persistence energies for the region.
-     * Source energy is calculated from displacement when a voxel is removed.
-     * Target energy is calculated from displacement when a voxel is added.
+     * persistence energies for the region. Source energy is calculated from
+     * displacement when a voxel is removed. Target energy is calculated from
+     * displacement when a voxel is added.
      */
     @Override
     public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
@@ -105,7 +105,9 @@ public class PersistenceHamiltonian implements Hamiltonian {
      * @return  the energy
      */
     double getPersistence(int id, int x, int y, int z, int change) {
-        if (id <= 0) { return 0; }
+        if (id <= 0) {
+            return 0;
+        }
         
         PersistenceHamiltonianConfig config = configs.get(id);
         
@@ -121,9 +123,9 @@ public class PersistenceHamiltonian implements Hamiltonian {
     /**
      * Gets the persistence energy for voxel added or removed in a region.
      * <p>
-     * Persistence for the default region is zero.
-     * Calculating persistence for a region does not update the target vector
-     * or displacement vectors for the cell.
+     * Persistence for the default region is zero. Calculating persistence for a
+     * region does not update the target vector or displacement vectors for the
+     * cell.
      *
      * @param id  the voxel id
      * @param t  the voxel region
@@ -135,7 +137,9 @@ public class PersistenceHamiltonian implements Hamiltonian {
      */
     double getPersistence(int id, int t, int x, int y, int z, int change) {
         Region region = Region.values()[t];
-        if (id == 0 || region == Region.DEFAULT) { return 0; }
+        if (id == 0 || region == Region.DEFAULT) {
+            return 0;
+        }
         
         PersistenceHamiltonianConfig config = configs.get(id);
         double[] displacement = config.getDisplacement(x, y, z, change, region);
@@ -152,7 +156,9 @@ public class PersistenceHamiltonian implements Hamiltonian {
      * @param series  the series instance
      */
     void initialize(PottsSeries series) {
-        if (series.populations == null) { return; }
+        if (series.populations == null) {
+            return;
+        }
         
         Set<String> keySet = series.populations.keySet();
         MiniBox parameters = series.potts;
@@ -186,7 +192,7 @@ public class PersistenceHamiltonian implements Hamiltonian {
                 popToLambdasRegion.put(pop, null);
             }
         }
-    
+        
         // Set term parameters.
         threshold = parameters.getDouble("persistence/VOLUME_THRESHOLD");
     }

@@ -22,14 +22,14 @@ class AdhesionHamiltonianConfig {
     final boolean hasRegions;
     
     /**
-     * Creates parameter configuration for {@code AdhesionHamiltonian} class.
+     * Creates parameter configuration for {@code AdhesionHamiltonian}.
      *
      * @param cell  the associated cell instance
      * @param adhesion  the list of adhesion values
      * @param adhesionRegion  the map of adhesion values for regions
      */
     AdhesionHamiltonianConfig(PottsCell cell, double[] adhesion,
-                                     EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
+                              EnumMap<Region, EnumMap<Region, Double>> adhesionRegion) {
         this.cell = cell;
         this.adhesion = adhesion.clone();
         this.hasRegions = (adhesionRegion != null) && (adhesionRegion.keySet().size() > 0);

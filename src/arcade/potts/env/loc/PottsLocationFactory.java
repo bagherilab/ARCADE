@@ -16,8 +16,8 @@ import static arcade.core.util.Enums.Region;
  * Implementation of {@link LocationFactory} for {@link PottsLocation} objects.
  * <p>
  * For a given {@link Series}, the factory uses its associated random number
- * generator for shuffling voxel lists.
- * The voxel lists a {@link PottsLocationContainer} are combined with a
+ * generator for shuffling voxel lists. The voxel lists a
+ * {@link PottsLocationContainer} are combined with a
  * {@link arcade.potts.agent.cell.PottsCellContainer} to instantiate a
  * {@link PottsLocation} object.
  */
@@ -50,8 +50,8 @@ public abstract class PottsLocationFactory implements LocationFactory {
      * {@inheritDoc}
      * <p>
      * For series with no loader, a list of available centers is created based
-     * on population settings.
-     * For series with a loader, the specified file is loaded into the factory.
+     * on population settings. For series with a loader, the specified file is
+     * loaded into the factory.
      */
     @Override
     public void initialize(Series series, MersenneTwisterFast random) {
@@ -83,19 +83,21 @@ public abstract class PottsLocationFactory implements LocationFactory {
     /**
      * {@inheritDoc}
      * <p>
-     * The potts layer is subdivided into a grid of voxel sets.
-     * Each of these sets is used to create a location container.
-     * Note that these sets contain more voxels than required for instantiating
-     * a location; voxels are selected from the center outward until the required
-     * number of voxels (defined by a cell container) is selected.
-     * Containers are assigned regions if they exist.
+     * The potts layer is subdivided into a grid of voxel sets. Each of these
+     * sets is used to create a location container. Note that these sets contain
+     * more voxels than required for instantiating a location; voxels are
+     * selected from the center outward until the required number of voxels
+     * (defined by a cell container) is selected. Containers are assigned
+     * regions if they exist.
      */
     @Override
     public void createLocations(Series series) {
         int heightRange = getVoxelsPerHeight(series);
         int sideRange = getVoxelsPerSide(series, heightRange);
         
-        if (sideRange == 0) { return; }
+        if (sideRange == 0) {
+            return;
+        }
         
         // Get center voxels.
         ArrayList<Voxel> centers = getCenters(series.length, series.width, series.height,
@@ -107,7 +109,9 @@ public abstract class PottsLocationFactory implements LocationFactory {
         HashSet<String> regionKeys = new HashSet<>();
         for (MiniBox population : series.populations.values()) {
             MiniBox regionBox = population.filter("(REGION)");
-            if (regionBox.getKeys().size() > 0) { regionKeys.addAll(regionBox.getKeys()); }
+            if (regionBox.getKeys().size() > 0) {
+                regionKeys.addAll(regionBox.getKeys());
+            }
         }
         
         // Create containers for each center.
@@ -230,7 +234,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
      * @param voxel  the voxel
      * @return  the list of valid voxels
      */
-    static ArrayList<Voxel> getValid(Voxel voxel)  {
+    static ArrayList<Voxel> getValid(Voxel voxel) {
         ArrayList<Voxel> valid = new ArrayList<>();
         for (int[] moves : VALID_MOVES) {
             Voxel v = new Voxel(voxel.x + moves[0], voxel.y + moves[1], voxel.z + moves[2]);
@@ -240,7 +244,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
     }
     
     /**
-     * Increases the number of voxels by adding from a given list of voxels.
+     * Increases the number of voxels by adding from given list of voxels.
      *
      * @param allVoxels  the list of all possible voxels
      * @param voxels  the list of selected voxels
@@ -272,7 +276,7 @@ public abstract class PottsLocationFactory implements LocationFactory {
     }
     
     /**
-     * Decreases the number of voxels by removing from the given list of voxels.
+     * Decreases the number of voxels by removing from given list of voxels.
      *
      * @param voxels  the list of selected voxels
      * @param target  the target number of voxels
@@ -288,7 +292,9 @@ public abstract class PottsLocationFactory implements LocationFactory {
         
         for (int i = 0; i < size - target; i++) {
             // Return if there are no remaining neighbors to remove.
-            if (index == voxelsShuffled.size()) { return; }
+            if (index == voxelsShuffled.size()) {
+                return;
+            }
             
             Voxel candidate = voxelsShuffled.get(index++);
             

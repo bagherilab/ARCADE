@@ -79,8 +79,7 @@ public class JunctionHamiltonian implements Hamiltonian {
     /**
      * {@inheritDoc}
      * <p>
-     * Junction energy is set to zero.
-     * Region voxels do not form junctions.
+     * Junction energy is set to zero. Region voxels do not form junctions.
      */
     @Override
     public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
@@ -93,7 +92,9 @@ public class JunctionHamiltonian implements Hamiltonian {
      * @param series  the series instance
      */
     void initialize(PottsSeries series) {
-        if (series.populations == null) { return; }
+        if (series.populations == null) {
+            return;
+        }
         
         Set<String> keySet = series.populations.keySet();
         MiniBox parameters = series.potts;

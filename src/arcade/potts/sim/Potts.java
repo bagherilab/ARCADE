@@ -16,9 +16,8 @@ import static arcade.potts.util.PottsEnums.Term;
  * Cellular Potts Model (CPM) implementation.
  * <p>
  * The potts layer tracks cells in an array of ids that define the morphology of
- * each cell (alongside non-cell areas).
- * The corresponding array of regions further defines regions within a given
- * cell.
+ * each cell (alongside non-cell areas). The corresponding array of regions
+ * further defines regions within a given cell.
  * <p>
  * The Hamiltonian, which decides which positions in the arrays are flipped,
  * consists of a series of terms including:
@@ -175,7 +174,8 @@ public abstract class Potts implements Steppable {
     }
     
     /**
-     * Flips connected voxel from source to target id based on Boltzmann probability.
+     * Flips connected voxel from source to target id based on Boltzmann
+     * probability.
      *
      * @param sourceID  the id of the source voxel
      * @param targetID  the id of the target voxel
@@ -191,13 +191,17 @@ public abstract class Potts implements Steppable {
         if (sourceID > 0) {
             boolean[][][] neighborhood = getNeighborhood(sourceID, x, y, z);
             boolean candidateConnected = getConnectivity(neighborhood, zero);
-            if (!candidateConnected) { return; }
+            if (!candidateConnected) {
+                return;
+            }
             
             // Check connectivity of regions.
             if (regions[z][x][y] > Region.DEFAULT.ordinal()) {
                 boolean[][][] rNeighborhood = getNeighborhood(sourceID, regions[z][x][y], x, y, z);
                 boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);
-                if (!candidateRegionConnected) { return; }
+                if (!candidateRegionConnected) {
+                    return;
+                }
             }
         }
         
@@ -205,13 +209,17 @@ public abstract class Potts implements Steppable {
         if (targetID > 0) {
             boolean[][][] neighborhood = getNeighborhood(targetID, x, y, z);
             boolean targetConnected = getConnectivity(neighborhood, zero);
-            if (!targetConnected) { return; }
+            if (!targetConnected) {
+                return;
+            }
             
             // Check connectivity of regions.
             if (regions[z][x][y] > Region.DEFAULT.ordinal()) {
                 boolean[][][] rNeighborhood = getNeighborhood(targetID, regions[z][x][y], x, y, z);
                 boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);
-                if (!candidateRegionConnected) { return; }
+                if (!candidateRegionConnected) {
+                    return;
+                }
             }
         }
         
@@ -252,13 +260,18 @@ public abstract class Potts implements Steppable {
                         : Region.DEFAULT.ordinal());
             }
             
-            if (sourceID > 0) { ((PottsLocation) getCell(sourceID).getLocation()).remove(x, y, z); }
-            if (targetID > 0) { ((PottsLocation) getCell(targetID).getLocation()).add(x, y, z); }
+            if (sourceID > 0) {
+                ((PottsLocation) getCell(sourceID).getLocation()).remove(x, y, z);
+            }
+            if (targetID > 0) {
+                ((PottsLocation) getCell(targetID).getLocation()).add(x, y, z);
+            }
         }
     }
     
     /**
-     * Flips connected voxel from source to target region based on Boltzmann probability.
+     * Flips connected voxel from source to target region based on Boltzmann
+     * probability.
      *
      * @param id  the voxel id
      * @param sourceRegion  the region of the source voxel
@@ -275,14 +288,18 @@ public abstract class Potts implements Steppable {
         if (sourceRegion > Region.DEFAULT.ordinal()) {
             boolean[][][] neighborhood = getNeighborhood(id, sourceRegion, x, y, z);
             boolean candidateConnected = getConnectivity(neighborhood, zero);
-            if (!candidateConnected) { return; }
+            if (!candidateConnected) {
+                return;
+            }
         }
         
         // Check connectivity of target.
         if (targetRegion > Region.DEFAULT.ordinal()) {
             boolean[][][] neighborhood = getNeighborhood(id, targetRegion, x, y, z);
             boolean targetConnected = getConnectivity(neighborhood, zero);
-            if (!targetConnected) { return; }
+            if (!targetConnected) {
+                return;
+            }
         }
         
         // Change the voxel region.
@@ -324,10 +341,10 @@ public abstract class Potts implements Steppable {
     }
     
     /**
-     * Gets the {@link arcade.core.agent.cell.Cell} object for the given id.
+     * Gets the {@link PottsCell} object for the given id.
      *
      * @param id  the cell id
-     * @return  the {@link arcade.core.agent.cell.Cell} object, {@code null} if id is zero
+     * @return  the {@link PottsCell} object, {@code null} if id is zero
      */
     public PottsCell getCell(int id) {
         if (id > 0) {
@@ -364,7 +381,7 @@ public abstract class Potts implements Steppable {
      * Determines connectivity of given neighborhood.
      *
      * @param array  the array of neighbors
-     * @param zero  {@code true} if the location has a zero id, {@code false} otherwise
+     * @param zero {@code true} if location has zero id, {@code false} otherwise
      * @return  {@code true} if simply connected, {@code false} otherwise
      */
     abstract boolean getConnectivity(boolean[][][] array, boolean zero);

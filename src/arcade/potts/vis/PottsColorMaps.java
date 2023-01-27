@@ -14,7 +14,7 @@ import arcade.core.util.MiniBox;
 public class PottsColorMaps {
     /** Color map for cell state. */
     static final Colors MAP_STATE = new Colors(
-            new Color[]{
+            new Color[] {
                     new Color(0, 0, 0),
                     // new Color(43, 136, 158),
                     new Color(115, 175, 72),        // proliferative : G1
@@ -32,7 +32,7 @@ public class PottsColorMaps {
     
     /** Color map for cell populations. */
     static final Colors MAP_POPULATION = new Colors(
-            new Color[]{
+            new Color[] {
                     new Color(0, 0, 0),
                     new Color(95, 70, 144),
                     new Color(29, 105, 150),
@@ -86,9 +86,9 @@ public class PottsColorMaps {
                 volume = box.getDouble("CRITICAL_VOLUME_MEAN");
             }
         }
-    
+        
         mapVolume = new Colors(
-                new Color[]{
+                new Color[] {
                         new Color(0, 0, 0),
                         new Color(112, 40, 74),
                         new Color(156, 63, 93),
@@ -118,7 +118,7 @@ public class PottsColorMaps {
         }
         
         mapHeight = new Colors(
-                new Color[]{
+                new Color[] {
                         new Color(0, 0, 0),
                         new Color(251, 230, 197),
                         new Color(245, 186, 152),

@@ -22,7 +22,7 @@ class VolumeHamiltonianConfig {
     final boolean hasRegions;
     
     /**
-     * Creates parameter configuration for {@code VolumeHamiltonian} class.
+     * Creates parameter configuration for {@code VolumeHamiltonian}.
      *
      * @param cell  the associated cell instance
      * @param lambda  the lambda multiplier

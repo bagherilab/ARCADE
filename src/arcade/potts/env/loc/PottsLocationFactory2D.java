@@ -7,6 +7,9 @@ import java.util.ArrayList;
  */
 
 public final class PottsLocationFactory2D extends PottsLocationFactory {
+    /**
+     * Creates a factory for making 2D {@link PottsLocation} instances.
+     */
     public PottsLocationFactory2D() { super(); }
     
     @Override

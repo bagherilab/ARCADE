@@ -3,12 +3,12 @@ package arcade.potts.sim.hamiltonian;
 import arcade.potts.agent.cell.PottsCell;
 
 /**
- * A {@code Hamiltonian} object represents a term in the CPM Hamiltonian equation.
+ * A {@code Hamiltonian} object represents a term in a CPM Hamiltonian equation.
  * <p>
- * Each {@link arcade.potts.sim.Potts} instance is contains a list of {@code Hamiltonian}
- * terms associated with the simulation.
- * For each flip, changes in energy for all terms in the list are summed together
- * to get the total change in energy.
+ * Each {@link arcade.potts.sim.Potts} instance is contains a list of
+ * {@code Hamiltonian} terms associated with the simulation. For each flip,
+ * changes in energy for all terms in the list are summed together to get the
+ * total change in energy.
  */
 
 public interface Hamiltonian {

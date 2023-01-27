@@ -34,7 +34,7 @@ public interface Location2D {
     /**
      * Calculate correction factor for surface area conversion.
      *
-     * @param volume  the volume (in voxels)
+     * @param volume  the volume
      * @return  the correction factor
      */
     static double getCorrection(double volume) {
@@ -59,9 +59,9 @@ public interface Location2D {
     /**
      * Converts volume and height to surface area.
      *
-     * @param volume  the volume (in voxels)
-     * @param height  the height (in voxels)
-     * @return  the surface area (in voxels)
+     * @param volume  the volume
+     * @param height  the height
+     * @return  the surface area
      */
     static double convertSurface(double volume, double height) {
         double surface = 2 * Math.sqrt(Math.PI) * Math.sqrt(volume);
@@ -81,7 +81,9 @@ public interface Location2D {
         for (Voxel v : voxels) {
             for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
                 Voxel voxel = new Voxel(v.x + MOVES_X[i], v.y + MOVES_Y[i], v.z);
-                if (!voxels.contains(voxel)) { surface++; }
+                if (!voxels.contains(voxel)) {
+                    surface++;
+                }
             }
         }
         
@@ -91,8 +93,8 @@ public interface Location2D {
     /**
      * Calculates height of location (z axis).
      * <p>
-     * Height is always one if there is as least one voxel in the list of voxels.
-     * Otherwise, height is zero.
+     * Height is always one if there is as least one voxel in the list of
+     * voxels. Otherwise, height is zero.
      *
      * @param voxels  the list of voxels
      * @return  the height
@@ -170,26 +172,38 @@ public interface Location2D {
                 
                 for (Direction direction : DIRECTIONS) {
                     existsMap.put(direction, true);
-                    if (v > maxValueMap.get(direction)) { maxValueMap.put(direction, v); }
-                    if (v < minValueMap.get(direction)) { minValueMap.put(direction, v); }
+                    if (v > maxValueMap.get(direction)) {
+                        maxValueMap.put(direction, v);
+                    }
+                    if (v < minValueMap.get(direction)) {
+                        minValueMap.put(direction, v);
+                    }
                 }
                 
                 continue;
             } else if (j == 0) {
-                dir = Direction.YZ_PLANE; v = i;
+                dir = Direction.YZ_PLANE;
+                v = i;
             } else if (i == 0) {
-                dir = Direction.ZX_PLANE; v = j;
+                dir = Direction.ZX_PLANE;
+                v = j;
             } else if (i == j) {
-                dir = Direction.POSITIVE_XY; v = i;
+                dir = Direction.POSITIVE_XY;
+                v = i;
             } else if (i == -j) {
-                dir = Direction.NEGATIVE_XY; v = i;
+                dir = Direction.NEGATIVE_XY;
+                v = i;
             } else {
                 continue;
             }
             
             existsMap.put(dir, true);
-            if (v > maxValueMap.get(dir)) { maxValueMap.put(dir, v); }
-            if (v < minValueMap.get(dir)) { minValueMap.put(dir, v); }
+            if (v > maxValueMap.get(dir)) {
+                maxValueMap.put(dir, v);
+            }
+            if (v < minValueMap.get(dir)) {
+                minValueMap.put(dir, v);
+            }
         }
         
         HashMap<Direction, Integer> diameterMap = new HashMap<>();
@@ -212,11 +226,16 @@ public interface Location2D {
      */
     static Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) {
         switch (direction) {
-            case YZ_PLANE: return Direction.YZ_PLANE;
-            case ZX_PLANE: return Direction.ZX_PLANE;
-            case POSITIVE_XY: return Direction.NEGATIVE_XY;
-            case NEGATIVE_XY: return Direction.POSITIVE_XY;
-            default: return null;
+            case YZ_PLANE:
+                return Direction.YZ_PLANE;
+            case ZX_PLANE:
+                return Direction.ZX_PLANE;
+            case POSITIVE_XY:
+                return Direction.NEGATIVE_XY;
+            case NEGATIVE_XY:
+                return Direction.POSITIVE_XY;
+            default:
+                return null;
         }
     }
     
@@ -236,7 +255,9 @@ public interface Location2D {
         for (Voxel voxel : voxels) {
             double d = Math.sqrt(Math.pow(focus.x - voxel.x, 2)
                     + Math.pow(focus.y - voxel.y, 2));
-            if (d < r) { selected.add(voxel); }
+            if (d < r) {
+                selected.add(voxel);
+            }
         }
         
         return selected;

@@ -13,8 +13,8 @@ import static arcade.potts.util.PottsEnums.Phase;
 /**
  * Extension of {@link PottsModule} for proliferation.
  * <p>
- * During proliferation, cells cycle through G1, S, G2, and M phases.
- * Once the cell complete M phase, it divides to create a new daughter cell.
+ * During proliferation, cells cycle through G1, S, G2, and M phases. Once the
+ * cell complete M phase, it divides to create a new daughter cell.
  */
 
 public abstract class PottsModuleProliferation extends PottsModule {
@@ -85,9 +85,9 @@ public abstract class PottsModuleProliferation extends PottsModule {
     /**
      * Adds a cell to the simulation.
      * <p>
-     * The cell location is split, along with any regions.
-     * The new cell is created, initialized, and added to the schedule.
-     * Both cells are reset and remain in the proliferative state.
+     * The cell location is split, along with any regions. The new cell is
+     * created, initialized, and added to the schedule. Both cells are reset and
+     * remain in the proliferative state.
      *
      * @param random  the random number generator
      * @param sim  the simulation instance

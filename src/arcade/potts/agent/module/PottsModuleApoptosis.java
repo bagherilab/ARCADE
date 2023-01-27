@@ -11,8 +11,8 @@ import static arcade.potts.util.PottsEnums.Phase;
 /**
  * Extension of {@link PottsModule} for apoptosis.
  * <p>
- * During apoptosis, cells cycle through early and late phases.
- * Once the cell completes the late phase, it is removed from the simulation.
+ * During apoptosis, cells cycle through early and late phases. Once the cell
+ * completes the late phase, it is removed from the simulation.
  */
 
 public abstract class PottsModuleApoptosis extends PottsModule {
@@ -63,8 +63,8 @@ public abstract class PottsModuleApoptosis extends PottsModule {
     /**
      * Removes a cell from the simulation.
      * <p>
-     * The location is cleared, along with any regions.
-     * The cell is then removed from the grid and simulation schedule.
+     * The location is cleared, along with any regions. The cell is then removed
+     * from the grid and simulation schedule.
      *
      * @param sim  the simulation instance
      */

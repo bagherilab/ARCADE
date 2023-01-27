@@ -9,7 +9,7 @@ class JunctionHamiltonianConfig {
     private final double lambda;
     
     /**
-     * Creates parameter configuration for {@code JunctionHamiltonian} class.
+     * Creates parameter configuration for {@code JunctionHamiltonian}.
      *
      * @param lambda  the lambda multiplier
      */

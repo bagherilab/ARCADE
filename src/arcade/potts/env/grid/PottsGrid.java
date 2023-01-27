@@ -9,9 +9,9 @@ import arcade.core.env.loc.Location;
 /**
  * Implementation of {@link Grid} for potts models.
  * <p>
- * {@code PottsGrid} uses the cell id as the index to map to agents.
- * Index 0 is reserved for a {@code null} object representing non-cell voxels
- * in the potts layer.
+ * {@code PottsGrid} uses the cell id as the index to map to agents. Index 0 is
+ * reserved for a {@code null} object representing non-cell voxels in the potts
+ * layer.
  */
 
 public final class PottsGrid implements Grid {
@@ -35,9 +35,13 @@ public final class PottsGrid implements Grid {
     
     @Override
     public void addObject(Object object, Location location) {
-        if (object == null) { return; }
+        if (object == null) {
+            return;
+        }
         int index = ((Cell) object).getID();
-        if (objects.containsKey(index)) { return; }
+        if (objects.containsKey(index)) {
+            return;
+        }
         allObjects.add(object);
         objects.put(index, object);
     }

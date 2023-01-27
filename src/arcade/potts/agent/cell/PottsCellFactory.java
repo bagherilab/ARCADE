@@ -18,9 +18,9 @@ import static arcade.potts.util.PottsEnums.Phase;
  * Implementation of {@link CellFactory} for {@link PottsCell} agents.
  * <p>
  * For a given {@link Series}, the factory parses out parameter values into a
- * series of maps from population to the parameter values.
- * These maps are then combined with a {@link PottsCellContainer} to instantiate
- * a {@link PottsCell} agent.
+ * series of maps from population to the parameter values. These maps are then
+ * combined with a {@link PottsCellContainer} to instantiate a {@link PottsCell}
+ * agent.
  */
 
 public final class PottsCellFactory implements CellFactory {
@@ -85,9 +85,9 @@ public final class PottsCellFactory implements CellFactory {
     /**
      * {@inheritDoc}
      * <p>
-     * Population sizes are determined from the given series.
-     * The list of loaded containers is filtered by population code and population
-     * size so that extra containers are discarded.
+     * Population sizes are determined from the given series. The list of loaded
+     * containers is filtered by population code and population size so that
+     * extra containers are discarded.
      */
     @Override
     public void loadCells(Series series) {
@@ -117,8 +117,8 @@ public final class PottsCellFactory implements CellFactory {
      * {@inheritDoc}
      * <p>
      * For each population specified in the given series, containers are created
-     * until the population size is met.
-     * Containers are assigned regions if they exist.
+     * until the population size is met. Containers are assigned regions if they
+     * exist.
      */
     @Override
     public void createCells(Series series) {
@@ -150,7 +150,9 @@ public final class PottsCellFactory implements CellFactory {
                     criticalRegionHeights = new EnumMap<>(Region.class);
                     
                     for (Region region : Region.values()) {
-                        if (region == Region.UNDEFINED) { continue; }
+                        if (region == Region.UNDEFINED) {
+                            continue;
+                        }
                         
                         double criticalRegionVolume = regionVolumes.get(region).nextDouble();
                         double criticalRegionHeight = regionHeights.get(region).nextDouble();
@@ -178,7 +180,7 @@ public final class PottsCellFactory implements CellFactory {
     }
     
     /**
-     * Parses the population settings into maps from population to parameter value.
+     * Parses population settings into maps from population to parameter value.
      *
      * @param series  the simulation series
      */

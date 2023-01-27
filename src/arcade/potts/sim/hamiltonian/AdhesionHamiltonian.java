@@ -23,7 +23,7 @@ public abstract class AdhesionHamiltonian implements Hamiltonian {
     final HashMap<Integer, double[]> popToAdhesion;
     
     /** Map of population to adhesion values for regions. */
-    final HashMap<Integer, EnumMap<Region, EnumMap<Region, Double>>>  popToAdhesionRegion;
+    final HashMap<Integer, EnumMap<Region, EnumMap<Region, Double>>> popToAdhesionRegion;
     
     /** Potts array for ids. */
     final int[][][] ids;
@@ -67,9 +67,8 @@ public abstract class AdhesionHamiltonian implements Hamiltonian {
      * {@inheritDoc}
      * <p>
      * Adhesion energy is calculated by summing across adhesion of the given
-     * voxel to all non-self neighbor voxels.
-     * Change in adhesion energy is taken as the difference in adhesion energies
-     * for the source and target IDs.
+     * voxel to all non-self neighbor voxels. Change in adhesion energy is taken
+     * as the difference in adhesion energies for the source and target IDs.
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
@@ -82,9 +81,9 @@ public abstract class AdhesionHamiltonian implements Hamiltonian {
      * {@inheritDoc}
      * <p>
      * Adhesion energy is calculated by summing across adhesion of the given
-     * voxel to all non-same regions with the same ID.
-     * Change in adhesion energy is taken as the difference in adhesion energies
-     * for the source and target regions.
+     * voxel to all non-same regions with the same ID. Change in adhesion energy
+     * is taken as the difference in adhesion energies for the source and target
+     * regions.
      */
     @Override
     public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
@@ -122,7 +121,9 @@ public abstract class AdhesionHamiltonian implements Hamiltonian {
      * @param series  the series instance
      */
     void initialize(PottsSeries series) {
-        if (series.populations == null) { return; }
+        if (series.populations == null) {
+            return;
+        }
         
         Set<String> keySet = series.populations.keySet();
         MiniBox parameters = series.potts;
@@ -146,7 +147,7 @@ public abstract class AdhesionHamiltonian implements Hamiltonian {
             MiniBox regionBox = population.filter("(REGION)");
             ArrayList<Region> regionKeys = new ArrayList<>();
             regionBox.getKeys().forEach(s -> regionKeys.add(Region.valueOf(s)));
-    
+            
             // Get adhesion value for regions.
             if (regionKeys.size() > 0) {
                 EnumMap<Region, EnumMap<Region, Double>> adhesionRegion =

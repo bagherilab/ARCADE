@@ -29,12 +29,12 @@ public final class PottsSeries extends Series {
      * @param setupDicts  the map of attribute to value for single instance tags
      * @param setupLists  the map of attribute to value for multiple instance tags
      * @param path  the path for simulation output
-     * @param parameters  the default parameter values loaded from {@code parameter.xml}
-     * @param isVis  {@code true} if run with visualization, {@code false} otherwise
+     * @param parameters  the default parameter values
+     * @param isVis  {@code true} if visualized, {@code false} otherwise
      */
     public PottsSeries(HashMap<String, MiniBox> setupDicts,
-                  HashMap<String, ArrayList<Box>> setupLists,
-                  String path, Box parameters, boolean isVis) {
+                       HashMap<String, ArrayList<Box>> setupLists,
+                       String path, Box parameters, boolean isVis) {
         super(setupDicts, setupLists, path, parameters, isVis);
     }
     
@@ -172,7 +172,9 @@ public final class PottsSeries extends Series {
     protected void updatePopulations(ArrayList<Box> populationsBox, MiniBox populationDefaults,
                                      MiniBox populationConversions) {
         this.populations = new HashMap<>();
-        if (populationsBox == null) { return; }
+        if (populationsBox == null) {
+            return;
+        }
         
         // Assign codes to each population.
         int code = 1;

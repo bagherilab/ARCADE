@@ -9,7 +9,7 @@ class SubstrateHamiltonianConfig {
     private final double substrate;
     
     /**
-     * Creates parameter configuration for {@code SubstrateHamiltonian} class.
+     * Creates parameter configuration for {@code SubstrateHamiltonian}.
      *
      * @param substrate  the substrate adhesion
      */

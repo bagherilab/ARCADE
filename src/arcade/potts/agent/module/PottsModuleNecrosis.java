@@ -9,6 +9,11 @@ import arcade.potts.agent.cell.PottsCell;
  */
 
 public class PottsModuleNecrosis extends PottsModule {
+    /**
+     * Creates a necrosis {@code Module} for the given {@link PottsCell}.
+     *
+     * @param cell  the {@link PottsCell} the module is associated with
+     */
     public PottsModuleNecrosis(PottsCell cell) { super(cell); }
     
     @Override

@@ -10,7 +10,7 @@ import arcade.core.sim.output.OutputSaver;
 
 public final class PottsOutputSaver extends OutputSaver {
     /**
-     * Creates an {@code PottsOutputSaver} for the series.
+     * Creates a {@code PottsOutputSaver} for the series.
      *
      * @param series  the simulation series
      */

@@ -12,9 +12,9 @@ import static arcade.potts.util.PottsEnums.Phase;
 /**
  * Implementation of {@link CellContainer} for {@link PottsCell} agents.
  * <p>
- * The container can be instantiated for cells with or without regions.
- * Cell parameters are drawn from the associated {@link PottsCellFactory}
- * instance for the given population.
+ * The container can be instantiated for cells with or without regions. Cell
+ * parameters are drawn from the associated {@link PottsCellFactory} instance
+ * for the given population.
  */
 
 public final class PottsCellContainer implements CellContainer {
@@ -27,7 +27,7 @@ public final class PottsCellContainer implements CellContainer {
     /** Cell population index. */
     public final int pop;
     
-    /** Cell age (in ticks). */
+    /** Cell age [ticks]. */
     public final int age;
     
     /** Number of divisions. */
@@ -39,22 +39,22 @@ public final class PottsCellContainer implements CellContainer {
     /** Cell phase. */
     public final Phase phase;
     
-    /** Cell size (in voxels). */
+    /** Cell size [voxels]. */
     public final int voxels;
     
-    /** Cell region sizes (in voxels). */
+    /** Cell region sizes [voxels]. */
     public final EnumMap<Region, Integer> regionVoxels;
     
-    /** Critical cell volume (in voxels). */
+    /** Critical cell volume [voxels]. */
     public final double criticalVolume;
     
-    /** Critical cell height (in voxels). */
+    /** Critical cell height [voxels]. */
     public final double criticalHeight;
     
-    /** Critical region cell volumes (in voxels). */
+    /** Critical region cell volumes [voxels]. */
     public final EnumMap<Region, Double> criticalRegionVolumes;
     
-    /** Critical region cell heights (in voxels). */
+    /** Critical region cell heights [voxels]. */
     public final EnumMap<Region, Double> criticalRegionHeights;
     
     /**
@@ -69,7 +69,7 @@ public final class PottsCellContainer implements CellContainer {
      * @param divisions  the number of cell divisions
      * @param state  the cell state
      * @param phase  the cell phase
-     * @param voxels  the cell size (in voxels)
+     * @param voxels  the cell size
      * @param criticalVolume  the critical volume
      * @param criticalHeight  the critical height
      */
@@ -90,8 +90,8 @@ public final class PottsCellContainer implements CellContainer {
      * @param divisions  the number of cell divisions
      * @param state  the cell state
      * @param phase  the cell phase
-     * @param voxels  the cell size (in voxels)
-     * @param regionVoxels  the cell region sizes (in voxels)
+     * @param voxels  the cell size
+     * @param regionVoxels  the cell region sizes
      * @param criticalVolume  the critical volume
      * @param criticalHeight  the critical height
      * @param criticalRegionVolumes  the critical region volumes

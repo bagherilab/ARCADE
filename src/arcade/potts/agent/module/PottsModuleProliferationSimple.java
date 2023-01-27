@@ -13,7 +13,7 @@ import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
 
 /**
- * Extension of {@link PottsModuleProliferation} with simple Poisson transitions.
+ * Extension of {@link PottsModuleProliferation} with Poisson transitions.
  */
 
 public class PottsModuleProliferationSimple extends PottsModuleProliferation {
@@ -57,7 +57,8 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
     final double nucleusCondFraction;
     
     /**
-     * Creates a simple proliferation {@code Module} for the given {@link PottsCell}.
+     * Creates a simple proliferation {@code Module} for the given
+     * {@link PottsCell}.
      *
      * @param cell  the {@link PottsCell} the module is associated with
      */
@@ -83,9 +84,8 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
      * {@inheritDoc}
      * <p>
      * Cell increases in size toward a target of twice its critical size at a
-     * rate of {@code CELL_GROWTH_RATE}.
-     * Cell will transition to S phase after completing {@code STEPS_G1} steps
-     * at an average rate of {@code RATE_G1}.
+     * rate of {@code CELL_GROWTH_RATE}. Cell will transition to S phase after
+     * completing {@code STEPS_G1} steps at an average rate of {@code RATE_G1}.
      * At each tick, cell may randomly apoptosis at a basal rate of
      * {@code BASAL_APOPTOSIS_RATE}.
      */
@@ -99,7 +99,7 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, 2);
-    
+        
         // Increase size of nucleus (if cell has regions).
         if (cell.hasRegions()
                 && cell.getVolume(Region.NUCLEUS) > cell.getCriticalVolume(Region.NUCLEUS)) {
@@ -109,16 +109,17 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateG1, random);
         currentSteps += poisson.nextInt();
-        if (currentSteps >= stepsG1) { setPhase(Phase.PROLIFERATIVE_S); }
+        if (currentSteps >= stepsG1) {
+            setPhase(Phase.PROLIFERATIVE_S);
+        }
     }
     
     /**
      * {@inheritDoc}
      * <p>
      * Cell increases in size toward a target of twice its critical size at a
-     * rate of {@code CELL_GROWTH_RATE}.
-     * Cell will transition to G2 phase after completing {@code STEPS_S} steps
-     * at an average rate of {@code RATE_S}.
+     * rate of {@code CELL_GROWTH_RATE}. Cell will transition to G2 phase after
+     * completing {@code STEPS_S} steps at an average rate of {@code RATE_S}.
      */
     @Override
     void stepS(MersenneTwisterFast random) {
@@ -133,16 +134,17 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateS, random);
         currentSteps += poisson.nextInt();
-        if (currentSteps >= stepsS) { setPhase(Phase.PROLIFERATIVE_G2); }
+        if (currentSteps >= stepsS) {
+            setPhase(Phase.PROLIFERATIVE_G2);
+        }
     }
     
     /**
      * {@inheritDoc}
      * <p>
      * Cell increases in size toward a target of twice its critical size at a
-     * rate of {@code CELL_GROWTH_RATE}.
-     * Cell will transition to M phase after completing {@code STEPS_G2} steps
-     * at an average rate of {@code RATE_G2}.
+     * rate of {@code CELL_GROWTH_RATE}. Cell will transition to M phase after
+     * completing {@code STEPS_G2} steps at an average rate of {@code RATE_G2}.
      * At each tick, cell may randomly apoptosis at a basal rate of
      * {@code BASAL_APOPTOSIS_RATE}.
      */
@@ -178,10 +180,10 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
      * {@inheritDoc}
      * <p>
      * Cell increases in size toward a target of twice its critical size at a
-     * rate of {@code CELL_GROWTH_RATE}.
-     * Cell will complete cell division after completing {@code STEPS_M} steps
-     * at an average rate of {@code RATE_M}.
-     * Cell must be greater than {@code SIZE_CHECKPOINT} times the critical size.
+     * rate of {@code CELL_GROWTH_RATE}. Cell will complete cell division after
+     * completing {@code STEPS_M} steps at an average rate of {@code RATE_M}.
+     * Cell must be greater than {@code SIZE_CHECKPOINT} times the critical
+     * size.
      */
     @Override
     void stepM(MersenneTwisterFast random, Simulation sim) {

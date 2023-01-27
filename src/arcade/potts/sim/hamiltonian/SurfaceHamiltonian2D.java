@@ -32,12 +32,16 @@ public class SurfaceHamiltonian2D extends SurfaceHamiltonian {
             
             if (neighbor != sourceID) {
                 beforeSource++;
-                if (neighbor == targetID) { beforeTarget++; }
+                if (neighbor == targetID) {
+                    beforeTarget++;
+                }
             }
             
             if (neighbor != targetID) {
                 afterTarget++;
-                if (neighbor == sourceID) { afterSource++; }
+                if (neighbor == sourceID) {
+                    afterSource++;
+                }
             }
         }
         
@@ -62,12 +66,16 @@ public class SurfaceHamiltonian2D extends SurfaceHamiltonian {
             
             if (neighborRegion != sourceRegion || neighborID != id) {
                 beforeSource++;
-                if (neighborRegion == targetRegion && neighborID == id) { beforeTarget++; }
+                if (neighborRegion == targetRegion && neighborID == id) {
+                    beforeTarget++;
+                }
             }
             
             if (neighborRegion != targetRegion || neighborID != id) {
                 afterTarget++;
-                if (neighborRegion == sourceRegion && neighborID == id) { afterSource++; }
+                if (neighborRegion == sourceRegion && neighborID == id) {
+                    afterSource++;
+                }
             }
         }
         

@@ -27,9 +27,9 @@ import static arcade.potts.util.PottsEnums.Ordering;
 /**
  * Implementation of {@link Cell} for potts models.
  * <p>
- * {@code PottsCell} agents exist in one of five states: quiescent, proliferative,
- * apoptotic, necrotic, or autotic.
- * Each state may be further divided into relevant phases.
+ * {@code PottsCell} agents exist in one of five states: quiescent,
+ * proliferative, apoptotic, necrotic, or autotic. Each state may be further
+ * divided into relevant phases.
  * <p>
  * General order of rules for the {@code PottsCell} step:
  * <ul>
@@ -64,7 +64,7 @@ public final class PottsCell implements Cell {
     /** Cell state. */
     private State state;
     
-    /** Cell age (in ticks). */
+    /** Cell age [ticks]. */
     private int age;
     
     /** Number of divisions. */
@@ -73,28 +73,28 @@ public final class PottsCell implements Cell {
     /** {@code true} if the cell has regions, {@code false} otherwise. */
     private final boolean hasRegions;
     
-    /** Target cell volume (in voxels). */
+    /** Target cell volume [voxels]. */
     private double targetVolume;
     
-    /** Target region cell volumes (in voxels). */
+    /** Target region cell volumes [voxels]. */
     private final EnumMap<Region, Double> targetRegionVolumes;
     
-    /** Target cell surface (in voxels). */
+    /** Target cell surface [voxels]. */
     private double targetSurface;
     
-    /** Target region cell surfaces (in voxels). */
+    /** Target region cell surfaces [voxels]. */
     private final EnumMap<Region, Double> targetRegionSurfaces;
     
-    /** Critical volume for cell (in voxels). */
+    /** Critical volume for cell [voxels]. */
     private final double criticalVolume;
     
-    /** Critical volumes for cell (in voxels) by region. */
+    /** Critical volumes for cell by region [voxels]. */
     private final EnumMap<Region, Double> criticalRegionVolumes;
     
-    /** Critical height for cell (in voxels). */
+    /** Critical height for cell [voxels]. */
     private final double criticalHeight;
     
-    /** Critical heights for cell (in voxels) by region. */
+    /** Critical heights for cell by region [voxels]. */
     private final EnumMap<Region, Double> criticalRegionHeights;
     
     /** Cell state module. */
@@ -110,13 +110,13 @@ public final class PottsCell implements Cell {
      * @param parent  the parent ID
      * @param pop  the cell population index
      * @param state  the cell state
-     * @param age  the cell age (in ticks)
+     * @param age  the cell age
      * @param divisions  the number of cell divisions
      * @param location  the {@link arcade.core.env.loc.Location} of the cell
-     * @param hasRegions  {@code true} if the cell has regions, {@code false} otherwise
+     * @param hasRegions  {@code true} if cell has regions, {@code false} otherwise
      * @param parameters  the dictionary of parameters
-     * @param criticalVolume  the critical cell volume (in voxels)
-     * @param criticalHeight  the critical cell height (in voxels)
+     * @param criticalVolume  the critical cell volume
+     * @param criticalHeight  the critical cell height
      * @param criticalRegionVolumes  the map of critical volumes for regions
      * @param criticalRegionHeights  the map of critical heights for regions
      */
@@ -201,14 +201,14 @@ public final class PottsCell implements Cell {
     }
     
     /**
-     * Gets the cell surface (in voxels).
+     * Gets the cell surface.
      *
      * @return  the cell surface
      */
     public double getSurface() { return location.getSurface(); }
     
     /**
-     * Gets the cell surface (in voxels) for a region.
+     * Gets the cell surface for a region.
      *
      * @param region  the region
      * @return  the cell region surface
@@ -218,14 +218,14 @@ public final class PottsCell implements Cell {
     }
     
     /**
-     * Gets the target volume (in voxels).
+     * Gets the target volume.
      *
      * @return  the target volume
      */
     public double getTargetVolume() { return targetVolume; }
     
     /**
-     * Gets the target volume (in voxels) for a region.
+     * Gets the target volume for a region.
      *
      * @param region  the region
      * @return  the target region volume
@@ -237,14 +237,14 @@ public final class PottsCell implements Cell {
     }
     
     /**
-     * Gets the target surface (in voxels).
+     * Gets the target surface.
      *
      * @return  the target surface
      */
     public double getTargetSurface() { return targetSurface; }
     
     /**
-     * Gets the target surface (in voxels) for a region.
+     * Gets the target surface for a region.
      *
      * @param region  the region
      * @return  the target region surface
@@ -331,7 +331,9 @@ public final class PottsCell implements Cell {
         targetVolume = location.getVolume();
         targetSurface = location.getSurface();
         
-        if (!hasRegions) { return; }
+        if (!hasRegions) {
+            return;
+        }
         
         for (Region region : location.getRegions()) {
             targetRegionVolumes.put(region, location.getVolume(region));
@@ -351,7 +353,9 @@ public final class PottsCell implements Cell {
         targetVolume = criticalVolume;
         targetSurface = location.convertSurface(targetVolume, criticalHeight);
         
-        if (!hasRegions) { return; }
+        if (!hasRegions) {
+            return;
+        }
         
         for (Region region : location.getRegions()) {
             double regionHeight = criticalRegionHeights.get(region);
@@ -361,16 +365,11 @@ public final class PottsCell implements Cell {
         }
     }
     
-    /**
-     * Steps through cell rules.
-     *
-     * @param simstate  the MASON simulation state
-     */
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
         
-        // Increase age of cell (in ticks).
+        // Increase age of cell.
         age++;
         
         // Step the module for the cell state.
@@ -401,19 +400,22 @@ public final class PottsCell implements Cell {
     }
     
     /**
-     * Updates target volume and surface area.
-     * When scale is greater than one, volume increases by given rate.
-     * When scale is less than one, volume decreases by given rate.
-     * If scale is one, sizes are not changed.
+     * Updates target volume and surface area. When scale is greater than one,
+     * volume increases by given rate. When scale is less than one, volume
+     * decreases by given rate. If scale is one, sizes are not changed.
      *
      * @param rate  the rate of change
      * @param scale  the relative final size scaling
      */
     public void updateTarget(double rate, double scale) {
-        if (scale == 1) { return; }
+        if (scale == 1) {
+            return;
+        }
         
         if (hasRegions) {
-            if (scale < 1) { rate = Math.min(rate, targetRegionVolumes.get(Region.DEFAULT)); }
+            if (scale < 1) {
+                rate = Math.min(rate, targetRegionVolumes.get(Region.DEFAULT));
+            }
             double updateVolume = targetRegionVolumes.get(Region.DEFAULT) - targetVolume;
             targetRegionVolumes.put(Region.DEFAULT, updateVolume);
         }
@@ -440,6 +442,7 @@ public final class PottsCell implements Cell {
     
     /**
      * Updates target volume and surface area for a region.
+     * <p>
      * If the region is the DEFAULT region, then updates are the same as for a
      * cell without regions.
      *
@@ -448,14 +451,18 @@ public final class PottsCell implements Cell {
      * @param scale  the relative final size scaling
      */
     public void updateTarget(Region region, double rate, double scale) {
-        if (!hasRegions || scale == 1) { return; }
+        if (!hasRegions || scale == 1) {
+            return;
+        }
         
         if (region == Region.DEFAULT) {
             updateTarget(rate, scale);
             return;
         }
         
-        if (scale > 1) { rate = Math.min(rate, targetRegionVolumes.get(Region.DEFAULT)); }
+        if (scale > 1) {
+            rate = Math.min(rate, targetRegionVolumes.get(Region.DEFAULT));
+        }
         
         double criticalRegionVolume = criticalRegionVolumes.get(region);
         double criticalRegionHeight = criticalRegionHeights.get(region);

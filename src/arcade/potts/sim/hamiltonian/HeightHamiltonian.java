@@ -56,10 +56,10 @@ public class HeightHamiltonian implements Hamiltonian {
     /**
      * {@inheritDoc}
      * <p>
-     * Height energy is calculated by taking the difference in target and proposed
-     * height for the given ID.
-     * Change in height energy is taken as the difference in differences of height
-     * energies for the source and target IDs when a voxel is removed or added.
+     * Height energy is calculated by taking the difference in target and
+     * proposed height for the given ID. Change in height energy is taken as the
+     * difference in differences of height energies for the source and target
+     * IDs when a voxel is removed or added.
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
@@ -72,10 +72,10 @@ public class HeightHamiltonian implements Hamiltonian {
     /**
      * {@inheritDoc}
      * <p>
-     * Height energy is calculated by taking the difference in target and proposed
-     * height for the given region.
-     * Change in height energy is taken as the difference in differences of height
-     * energies for the source and target regions when a voxel is removed or added.
+     * Height energy is calculated by taking the difference in target and
+     * proposed height for the given region. Change in height energy is taken as
+     * the difference in differences of height energies for the source and
+     * target regions when a voxel is removed or added.
      */
     @Override
     public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
@@ -96,7 +96,9 @@ public class HeightHamiltonian implements Hamiltonian {
      * @return  the energy
      */
     double getHeight(int id, Voxel voxel, int change) {
-        if (id == 0) { return 0; }
+        if (id == 0) {
+            return 0;
+        }
         
         HeightHamiltonianConfig config = configs.get(id);
         ArrayList<Voxel> voxels = (ArrayList<Voxel>) config.location.getVoxels().stream()
@@ -123,7 +125,9 @@ public class HeightHamiltonian implements Hamiltonian {
     double getHeight(int id, Voxel voxel, int t, double change) {
         Region region = Region.values()[t];
         
-        if (id == 0 || region == Region.DEFAULT) { return 0; }
+        if (id == 0 || region == Region.DEFAULT) {
+            return 0;
+        }
         
         HeightHamiltonianConfig config = configs.get(id);
         ArrayList<Voxel> voxels = (ArrayList<Voxel>) config.location.getVoxels(region).stream()
@@ -144,7 +148,9 @@ public class HeightHamiltonian implements Hamiltonian {
      * @param series  the series instance
      */
     void initialize(PottsSeries series) {
-        if (series.populations == null) { return; }
+        if (series.populations == null) {
+            return;
+        }
         
         Set<String> keySet = series.populations.keySet();
         MiniBox parameters = series.potts;

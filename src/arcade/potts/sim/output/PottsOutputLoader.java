@@ -10,7 +10,7 @@ import arcade.core.sim.output.OutputLoader;
 
 public final class PottsOutputLoader extends OutputLoader {
     /**
-     * Creates an {@code PottsOutputLoader} for the series.
+     * Creates a {@code PottsOutputLoader} for the series.
      *
      * @param series  the simulation series
      */

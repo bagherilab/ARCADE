@@ -26,7 +26,7 @@ class HeightHamiltonianConfig {
     final boolean hasRegions;
     
     /**
-     * Creates parameter configuration for {@code HeightHamiltonian} class.
+     * Creates parameter configuration for {@code HeightHamiltonian}.
      *
      * @param cell  the associated cell instance
      * @param lambda  the lambda multiplier

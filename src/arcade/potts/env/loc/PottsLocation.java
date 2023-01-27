@@ -15,9 +15,9 @@ import static arcade.potts.util.PottsEnums.Direction;
  * Abstract implementation of {@link Location} for potts models.
  * <p>
  * {@code PottsLocation} objects manage the a list of associated {@link Voxel}
- * objects that comprise the location.
- * These voxels are represented as an array in the {@link arcade.potts.sim.Potts}
- * layer and the two representations are kept in sync.
+ * objects that comprise the location. These voxels are represented as an array
+ * in the {@link arcade.potts.sim.Potts} layer and the two representations are
+ * kept in sync.
  * <p>
  * Concrete implementations of {@code PottsLocation} manage the dimensionality
  * of the voxels.
@@ -191,7 +191,9 @@ public abstract class PottsLocation implements Location {
      * @return  the closest voxel or the starting voxel if it exists
      */
     public Voxel adjust(Voxel voxel) {
-        if (voxels.contains(voxel)) { return voxel; }
+        if (voxels.contains(voxel)) {
+            return voxel;
+        }
         
         int x = voxel.x;
         int y = voxel.y;
@@ -240,9 +242,8 @@ public abstract class PottsLocation implements Location {
      * <p>
      * The location are split along the direction with the shortest diameter.
      * The lists of locations are guaranteed to be connected, and generally will
-     * be balanced in size.
-     * One of the splits is assigned to the current location and the other is
-     * returned.
+     * be balanced in size. One of the splits is assigned to the current
+     * location and the other is returned.
      *
      * @param random  the seeded random number generator
      * @return  a location with the split voxels
@@ -274,14 +275,16 @@ public abstract class PottsLocation implements Location {
     /**
      * Gets the voxel at the center of the location.
      * <p>
-     * The center voxel is not guaranteed to exist in the location.
-     * If the center voxel must exist, use {@code adjust()} to get the closest
-     * voxel that exists.
+     * The center voxel is not guaranteed to exist in the location. If the
+     * center voxel must exist, use {@code adjust()} to get the closest voxel
+     * that exists.
      *
      * @return  the center voxel, returns {@code null} if there are no voxels
      */
     public Voxel getCenter() {
-        if (voxels.size() == 0) { return null; }
+        if (voxels.size() == 0) {
+            return null;
+        }
         
         int x = (int) Math.round(cx);
         int y = (int) Math.round(cy);
@@ -293,8 +296,8 @@ public abstract class PottsLocation implements Location {
     /**
      * Gets the centroid of the location.
      * <p>
-     * Note that centroid positions may not be integer values.
-     * If a specific center voxel is needed, use {@code getCenter()} instead.
+     * Note that centroid positions may not be integer values. If a specific
+     * center voxel is needed, use {@code getCenter()} instead.
      *
      * @return  the location centroid
      */
@@ -305,8 +308,8 @@ public abstract class PottsLocation implements Location {
     /**
      * Gets the centroid of the location for the region.
      * <p>
-     * Note that centroid positions may not be integer values.
-     * If a specific center voxel is needed, use {@code getCenter()} instead.
+     * Note that centroid positions may not be integer values. If a specific
+     * center voxel is needed, use {@code getCenter()} instead.
      *
      * @param region  the voxel region
      * @return  the location centroid
@@ -361,9 +364,9 @@ public abstract class PottsLocation implements Location {
     /**
      * Converts volume and height to surface area.
      *
-     * @param volume  the volume (in voxels)
-     * @param height  the height (in voxels)
-     * @return  the surface area (in voxels)
+     * @param volume  the volume
+     * @param height  the height
+     * @return  the surface area
      */
     public abstract double convertSurface(double volume, double height);
     
@@ -445,13 +448,17 @@ public abstract class PottsLocation implements Location {
         int maximumDiameter = 0;
         for (Direction direction : Direction.values()) {
             diameter = diameters.getOrDefault(direction, 0);
-            if (diameter > maximumDiameter) { maximumDiameter = diameter; }
+            if (diameter > maximumDiameter) {
+                maximumDiameter = diameter;
+            }
         }
         
         // Find all directions with the maximum diameter.
         for (Direction direction : Direction.values()) {
             diameter = diameters.getOrDefault(direction, 0);
-            if (diameter >= DIAMETER_RATIO * maximumDiameter) { directions.add(direction); }
+            if (diameter >= DIAMETER_RATIO * maximumDiameter) {
+                directions.add(direction);
+            }
         }
         
         // Randomly select one direction with the minimum diameter.
@@ -467,12 +474,13 @@ public abstract class PottsLocation implements Location {
     }
     
     /**
-     * Separates the voxels in the list between this location and a new location.
+     * Separates the voxels in the list between this location and a new
+     * location.
      *
      * @param voxelsA  the list of voxels for this location
      * @param voxelsB  the list of voxels for the split location
      * @param random  the seeded random number generator
-     * @return  a {@link arcade.core.env.loc.Location} object with the split voxels
+     * @return  a {@link arcade.core.env.loc.Location} object with split voxels
      */
     Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
                             MersenneTwisterFast random) {
@@ -626,8 +634,8 @@ public abstract class PottsLocation implements Location {
     /**
      * Connects voxels in the splits.
      * <p>
-     * Checks that the voxels in each split are connected.
-     * If not, then move the unconnected voxels into the other split.
+     * Checks that the voxels in each split are connected. If not, then move the
+     * unconnected voxels into the other split.
      *
      * @param voxelsA  the list for the first half of the split
      * @param voxelsB  the list for the second half of the split
@@ -646,10 +654,14 @@ public abstract class PottsLocation implements Location {
             ArrayList<Voxel> unconnectedAB;
             ArrayList<Voxel> unconnectedBA;
             
-            if (unconnectedA != null) { voxelsB.addAll(unconnectedA); }
+            if (unconnectedA != null) {
+                voxelsB.addAll(unconnectedA);
+            }
             unconnectedBA = checkVoxels(voxelsB, location, random, true);
             
-            if (unconnectedB != null) { voxelsA.addAll(unconnectedB); }
+            if (unconnectedB != null) {
+                voxelsA.addAll(unconnectedB);
+            }
             unconnectedAB = checkVoxels(voxelsA, location, random, true);
             
             unconnectedA = unconnectedAB;
@@ -661,12 +673,11 @@ public abstract class PottsLocation implements Location {
      * Balances voxels in the splits.
      * <p>
      * Checks that the number of voxels in each split are within a certain
-     * difference.
-     * If not, then add voxels from the larger split into the smaller split
-     * such that both splits are still connected.
-     * For small split sizes, there may not be a valid split that is both
-     * connected and within the difference; in these cases, connectedness is
-     * prioritized and the splits are returned not balanced.
+     * difference. If not, then add voxels from the larger split into the
+     * smaller split such that both splits are still connected. For small split
+     * sizes, there may not be a valid split that is both connected and within
+     * the difference; in these cases, connectedness is prioritized and the
+     * splits are returned not balanced.
      *
      * @param voxelsA  the list for the first half of the split
      * @param voxelsB  the list for the second half of the split
@@ -695,12 +706,16 @@ public abstract class PottsLocation implements Location {
             for (Voxel voxel : toVoxels) {
                 ArrayList<Voxel> neighbors = location.getNeighbors(voxel);
                 for (Voxel neighbor : neighbors) {
-                    if (!toVoxels.contains(neighbor)) { neighborSet.add(neighbor); }
+                    if (!toVoxels.contains(neighbor)) {
+                        neighborSet.add(neighbor);
+                    }
                 }
             }
             
             // If one list is empty, add all voxels in other list as neighbors.
-            if (toVoxels.size() == 0) { neighborSet.addAll(fromVoxels); }
+            if (toVoxels.size() == 0) {
+                neighborSet.addAll(fromVoxels);
+            }
             
             ArrayList<Voxel> neighborList = new ArrayList<>(neighborSet);
             Utilities.shuffleList(neighborList, random);
@@ -743,23 +758,23 @@ public abstract class PottsLocation implements Location {
      * Checks voxels in the list for connectedness.
      * <p>
      * All the connected voxels from a random starting voxel are found and
-     * marked as visited.
-     * If there are no remaining unvisited voxels, then the list is fully
-     * connected.
-     * If there are, then the smaller of the visited or unvisited lists is
-     * returned.
+     * marked as visited. If there are no remaining unvisited voxels, then the
+     * list is fully connected. If there are, then the smaller of the visited or
+     * unvisited lists is returned.
      * <p>
      * Some voxel lists may have more than one unconnected section.
      *
      * @param voxels  the list of voxels
      * @param location  the location instance
      * @param random  the seeded random number generator
-     * @param update  {@code true} if the voxel list should be updated, {@code false} otherwise
-     * @return  a list of unconnected voxels, {@code null} if the list is connected
+     * @param update  {@code true} if list should be updated, {@code false} otherwise
+     * @return  a list of unconnected voxels, {@code null} if list is connected
      */
     static ArrayList<Voxel> checkVoxels(ArrayList<Voxel> voxels, PottsLocation location,
                                         MersenneTwisterFast random, boolean update) {
-        if (voxels.size() == 0) { return null; }
+        if (voxels.size() == 0) {
+            return null;
+        }
         
         ArrayList<Voxel> unvisited = new ArrayList<>(voxels);
         ArrayList<Voxel> visited = new ArrayList<>();
@@ -781,7 +796,9 @@ public abstract class PottsLocation implements Location {
                 // and add to neighbor list if it exists.
                 ArrayList<Voxel> neighbors = location.getNeighbors(voxel);
                 for (Voxel neighbor : neighbors) {
-                    if (unvisited.contains(neighbor)) { nextList.add(neighbor); }
+                    if (unvisited.contains(neighbor)) {
+                        nextList.add(neighbor);
+                    }
                 }
                 
                 // Updated next voxel set with list of neighbors.
@@ -798,10 +815,14 @@ public abstract class PottsLocation implements Location {
         // coordinates is not connected.
         if (unvisited.size() != 0) {
             if (unvisited.size() > visited.size()) {
-                if (update) { voxels.removeAll(visited); }
+                if (update) {
+                    voxels.removeAll(visited);
+                }
                 return visited;
             } else {
-                if (update) { voxels.removeAll(unvisited); }
+                if (update) {
+                    voxels.removeAll(unvisited);
+                }
                 return unvisited;
             }
         } else {

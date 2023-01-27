@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import sim.engine.Schedule;
 import sim.engine.SimState;
+import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.comp.Component;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.loc.Location;
@@ -39,8 +41,14 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     /** Cell ID tracker. */
     int id;
     
+    /** Cell factory instance for the simulation. */
+    public final PottsCellFactory cellFactory;
+    
+    /** Location factory instance for the simulation. */
+    public final PottsLocationFactory locationFactory;
+    
     /**
-     * Simulation instance for a {@link arcade.core.sim.Series} for given random seed.
+     * Simulation instance for a {@link Series} for given random seed.
      *
      * @param seed  the random seed for random number generator
      * @param series  the simulation series
@@ -49,6 +57,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         super(seed);
         this.series = (PottsSeries) series;
         this.seed = (int) seed - Series.SEED_OFFSET;
+        
+        this.locationFactory = makeLocationFactory();
+        this.cellFactory = makeCellFactory();
     }
     
     @Override
@@ -87,13 +98,24 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         return locationContainers;
     }
     
-    public final Potts getPotts() { return potts; }
-    
     @Override
     public final Grid getGrid() { return grid; }
     
     @Override
     public final Lattice getLattice(String key) { return null; }
+    
+    @Override
+    public final Action getAction(String key) { return null; }
+    
+    @Override
+    public final Component getComponent(String key) { return null; }
+    
+    /**
+     * Gets {@link Potts} instance for the simulation.
+     *
+     * @return  the potts instance
+     */
+    public final Potts getPotts() { return potts; }
     
     /**
      * Called at the start of the simulation to set up agents and environment
@@ -146,6 +168,20 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     abstract Potts makePotts();
     
     /**
+     * Creates a factory for locations.
+     *
+     * @return  a {@link arcade.core.env.loc.Location} factory
+     */
+    public abstract PottsLocationFactory makeLocationFactory();
+    
+    /**
+     * Creates a factory for cells.
+     *
+     * @return  a {@link arcade.core.agent.cell.Cell} factory
+     */
+    public abstract PottsCellFactory makeCellFactory();
+    
+    /**
      * Sets up the potts layer for the simulation.
      */
     public final void setupPotts() {
@@ -153,29 +189,11 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         schedule.scheduleRepeating(1, Ordering.POTTS.ordinal(), potts);
     }
     
-    /**
-     * Creates a factory for locations.
-     *
-     * @return  a {@link arcade.core.env.loc.Location} factory
-     */
-    abstract PottsLocationFactory makeLocationFactory();
-    
-    /**
-     * Creates a factory for cells.
-     *
-     * @return  a {@link arcade.core.agent.cell.Cell} factory
-     */
-    abstract PottsCellFactory makeCellFactory();
-    
     @Override
     public final void setupAgents() {
         // Initialize grid for agents.
         grid = new PottsGrid();
         potts.grid = grid;
-        
-        // Create factory for locations.
-        PottsLocationFactory locationFactory = makeLocationFactory();
-        PottsCellFactory cellFactory = makeCellFactory();
         
         // Initialize factories.
         locationFactory.initialize(series, random);
@@ -192,7 +210,9 @@ public abstract class PottsSimulation extends SimState implements Simulation {
                 CellContainer cellContainer = cellFactory.cells.get(i);
                 
                 // Check that we have enough containers.
-                if (locationContainer == null || cellContainer == null) { break; }
+                if (locationContainer == null || cellContainer == null) {
+                    break;
+                }
                 
                 // Make the location and cell.
                 Location location = locationContainer.convert(locationFactory, cellContainer);
@@ -228,7 +248,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
     /**
      * Runs output methods.
      *
-     * @param isScheduled  {@code true} if the output should be scheduled, {@code false} otherwise
+     * @param isScheduled  {@code true} to schedule output, {@code false} otherwise
      */
     public void doOutput(boolean isScheduled) {
         if (isScheduled) {

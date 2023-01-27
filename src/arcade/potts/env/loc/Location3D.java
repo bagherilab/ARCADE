@@ -40,8 +40,8 @@ public interface Location3D {
     /**
      * Calculate correction factor for surface area conversion.
      *
-     * @param volume  the volume (in voxels)
-     * @param height  the height (in voxels)
+     * @param volume  the volume
+     * @param height  the height
      * @return  the correction factor
      */
     static double getCorrection(double volume, double height) {
@@ -67,9 +67,9 @@ public interface Location3D {
     /**
      * Converts volume and height to surface area.
      *
-     * @param volume  the volume (in voxels)
-     * @param height  the height (in voxels)
-     * @return  the surface area (in voxels)
+     * @param volume  the volume
+     * @param height  the height
+     * @return  the surface area
      */
     static double convertSurface(double volume, double height) {
         double surface = 2 * volume / height + 2 * Math.sqrt(Math.PI) * Math.sqrt(volume * height);
@@ -89,7 +89,9 @@ public interface Location3D {
         for (Voxel v : voxels) {
             for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
                 Voxel voxel = new Voxel(v.x + MOVES_X[i], v.y + MOVES_Y[i], v.z + MOVES_Z[i]);
-                if (!voxels.contains(voxel)) { surface++; }
+                if (!voxels.contains(voxel)) {
+                    surface++;
+                }
             }
         }
         
@@ -103,7 +105,9 @@ public interface Location3D {
      * @return  the height
      */
     static int calculateHeight(ArrayList<Voxel> voxels) {
-        if (voxels.size() == 0) { return 0; }
+        if (voxels.size() == 0) {
+            return 0;
+        }
         OptionalInt max = voxels.stream().mapToInt(voxel -> voxel.z).max();
         OptionalInt min = voxels.stream().mapToInt(voxel -> voxel.z).min();
         return max.getAsInt() - min.getAsInt() + 1;
@@ -139,14 +143,22 @@ public interface Location3D {
      * @return  the change in height
      */
     static int updateHeight(ArrayList<Voxel> voxels, Voxel voxel) {
-        if (voxels.size() == 0) { return 1; }
-        if (voxels.size() == 1 && voxels.contains(voxel)) { return 1; }
+        if (voxels.size() == 0) {
+            return 1;
+        }
+        if (voxels.size() == 1 && voxels.contains(voxel)) {
+            return 1;
+        }
         
         OptionalInt max = voxels.stream().filter(v -> !v.equals(voxel)).mapToInt(v -> v.z).max();
         OptionalInt min = voxels.stream().filter(v -> !v.equals(voxel)).mapToInt(v -> v.z).min();
         
-        if (voxel.z > max.getAsInt()) { return voxel.z - max.getAsInt(); }
-        if (voxel.z < min.getAsInt()) { return min.getAsInt() - voxel.z; }
+        if (voxel.z > max.getAsInt()) {
+            return voxel.z - max.getAsInt();
+        }
+        if (voxel.z < min.getAsInt()) {
+            return min.getAsInt() - voxel.z;
+        }
         
         return 0;
     }
@@ -186,36 +198,53 @@ public interface Location3D {
                 
                 for (Direction direction : DIRECTIONS) {
                     existsMap.put(direction, true);
-                    if (v > maxValueMap.get(direction)) { maxValueMap.put(direction, v); }
-                    if (v < minValueMap.get(direction)) { minValueMap.put(direction, v); }
+                    if (v > maxValueMap.get(direction)) {
+                        maxValueMap.put(direction, v);
+                    }
+                    if (v < minValueMap.get(direction)) {
+                        minValueMap.put(direction, v);
+                    }
                 }
                 
                 continue;
             } else if (j == 0 && k == 0) {
-                dir = Direction.YZ_PLANE; v = i;
+                dir = Direction.YZ_PLANE;
+                v = i;
             } else if (k == 0 && i == 0) {
-                dir = Direction.ZX_PLANE; v = j;
+                dir = Direction.ZX_PLANE;
+                v = j;
             } else if (i == 0 && j == 0) {
-                dir = Direction.XY_PLANE; v = k;
+                dir = Direction.XY_PLANE;
+                v = k;
             } else if (i == j && k == 0) {
-                dir = Direction.POSITIVE_XY; v = i;
+                dir = Direction.POSITIVE_XY;
+                v = i;
             } else if (i == -j && k == 0) {
-                dir = Direction.NEGATIVE_XY; v = i;
+                dir = Direction.NEGATIVE_XY;
+                v = i;
             } else if (j == k && i == 0) {
-                dir = Direction.POSITIVE_YZ; v = j;
+                dir = Direction.POSITIVE_YZ;
+                v = j;
             } else if (j == -k && i == 0) {
-                dir = Direction.NEGATIVE_YZ; v = j;
+                dir = Direction.NEGATIVE_YZ;
+                v = j;
             } else if (k == i && j == 0) {
-                dir = Direction.POSITIVE_ZX; v = k;
+                dir = Direction.POSITIVE_ZX;
+                v = k;
             } else if (k == -i && j == 0) {
-                dir = Direction.NEGATIVE_ZX; v = k;
+                dir = Direction.NEGATIVE_ZX;
+                v = k;
             } else {
                 continue;
             }
             
             existsMap.put(dir, true);
-            if (v > maxValueMap.get(dir)) { maxValueMap.put(dir, v); }
-            if (v < minValueMap.get(dir)) { minValueMap.put(dir, v); }
+            if (v > maxValueMap.get(dir)) {
+                maxValueMap.put(dir, v);
+            }
+            if (v < minValueMap.get(dir)) {
+                minValueMap.put(dir, v);
+            }
         }
         
         HashMap<Direction, Integer> diameterMap = new HashMap<>();
@@ -238,9 +267,12 @@ public interface Location3D {
      */
     static Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) {
         switch (direction) {
-            case YZ_PLANE: return Direction.YZ_PLANE;
-            case ZX_PLANE: return Direction.ZX_PLANE;
-            case XY_PLANE: return Direction.XY_PLANE;
+            case YZ_PLANE:
+                return Direction.YZ_PLANE;
+            case ZX_PLANE:
+                return Direction.ZX_PLANE;
+            case XY_PLANE:
+                return Direction.XY_PLANE;
             case POSITIVE_XY:
                 if (diameters.get(direction) >= diameters.get(Direction.XY_PLANE)) {
                     return Direction.NEGATIVE_XY;
@@ -299,7 +331,9 @@ public interface Location3D {
         for (Voxel voxel : voxels) {
             double d = Math.sqrt(Math.pow(focus.x - voxel.x, 2)
                     + Math.pow(focus.y - voxel.y, 2));
-            if (d < r) { selected.add(voxel); }
+            if (d < r) {
+                selected.add(voxel);
+            }
         }
         
         return selected;

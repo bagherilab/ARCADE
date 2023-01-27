@@ -9,6 +9,11 @@ import arcade.potts.agent.cell.PottsCell;
  */
 
 public class PottsModuleQuiescence extends PottsModule {
+    /**
+     * Creates a quiescence {@code Module} for the given {@link PottsCell}.
+     *
+     * @param cell  the {@link PottsCell} the module is associated with
+     */
     public PottsModuleQuiescence(PottsCell cell) { super(cell); }
     
     @Override

@@ -63,9 +63,8 @@ public class SubstrateHamiltonian implements Hamiltonian {
      * {@inheritDoc}
      * <p>
      * Substrate energy is calculated by summing across substrate voxels
-     * bordering the given voxel.
-     * Change in adhesion energy is taken as the difference in substrate energies
-     * for the source and target IDs.
+     * bordering the given voxel. Change in adhesion energy is taken as the
+     * difference in substrate energies for the source and target IDs.
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
@@ -77,8 +76,8 @@ public class SubstrateHamiltonian implements Hamiltonian {
     /**
      * {@inheritDoc}
      * <p>
-     * Substrate energy is set to zero.
-     * Region voxels cannot adhere to substrate.
+     * Substrate energy is set to zero. Region voxels cannot adhere to
+     * substrate.
      */
     @Override
     public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
@@ -88,9 +87,9 @@ public class SubstrateHamiltonian implements Hamiltonian {
     /**
      * Gets substrate energy for a given voxel.
      * <p>
-     * Substrate is assumed to be located at z = 0.
-     * Media (id = 0) and cells not located adjacent to z = 0 (i.e. z == 1)
-     * return zero for substrate energy.
+     * Substrate is assumed to be located at z = 0. Media (id = 0) and cells not
+     * located adjacent to z = 0 (i.e. z == 1) return zero for substrate
+     * energy.
      *
      * @param id  the voxel id
      * @param x  the x coordinate
@@ -99,7 +98,9 @@ public class SubstrateHamiltonian implements Hamiltonian {
      * @return  the energy
      */
     double getSubstrate(int id, int x, int y, int z) {
-        if (id <= 0) { return 0; }
+        if (id <= 0) {
+            return 0;
+        }
         
         SubstrateHamiltonianConfig config = configs.get(id);
         
@@ -121,7 +122,9 @@ public class SubstrateHamiltonian implements Hamiltonian {
      * @param series  the series instance
      */
     void initialize(PottsSeries series) {
-        if (series.populations == null) { return; }
+        if (series.populations == null) {
+            return;
+        }
         
         Set<String> keySet = series.populations.keySet();
         MiniBox parameters = series.potts;

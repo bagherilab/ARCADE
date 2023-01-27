@@ -9,9 +9,9 @@ import static arcade.potts.util.PottsEnums.Phase;
 /**
  * Abstract implementation of {@link Module} for {@link PottsCell} agents.
  * <p>
- * Each module represents the behaviors of a cell in a given state.
- * Module behaviors are further divided by phases, such as the phases of the
- * cell cycle for a cell in the proliferative state.
+ * Each module represents the behaviors of a cell in a given state. Module
+ * behaviors are further divided by phases, such as the phases of the cell cycle
+ * for a cell in the proliferative state.
  */
 
 public abstract class PottsModule implements Module {
@@ -46,6 +46,7 @@ public abstract class PottsModule implements Module {
     
     /**
      * Sets the module phase.
+     * <p>
      * Current steps count is reset to zero.
      *
      * @param phase  the module phase

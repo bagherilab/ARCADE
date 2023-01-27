@@ -22,7 +22,7 @@ class SurfaceHamiltonianConfig {
     final boolean hasRegions;
     
     /**
-     * Creates parameter configuration for {@code SurfaceHamiltonian} class.
+     * Creates parameter configuration for {@code SurfaceHamiltonian}.
      *
      * @param cell  the associated cell instance
      * @param lambda  the lambda multiplier

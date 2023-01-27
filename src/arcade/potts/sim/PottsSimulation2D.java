@@ -22,12 +22,12 @@ public final class PottsSimulation2D extends PottsSimulation {
     Potts makePotts() { return new Potts2D(series); }
     
     @Override
-    PottsLocationFactory makeLocationFactory() {
+    public PottsLocationFactory makeLocationFactory() {
         return new PottsLocationFactory2D();
     }
     
     @Override
-    PottsCellFactory makeCellFactory() {
+    public PottsCellFactory makeCellFactory() {
         return new PottsCellFactory();
     }
 }

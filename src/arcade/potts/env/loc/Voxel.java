@@ -5,8 +5,8 @@ import java.util.Comparator;
 /**
  * Representation of a voxel for locations.
  * <p>
- * Each voxel is defined by (x, y, z) coordinates.
- * Two voxels objects are considered equal if they have matching (x, y, z) coordinates.
+ * Each voxel is defined by (x, y, z) coordinates. Two voxels objects are
+ * considered equal if they have matching (x, y, z) coordinates.
  */
 
 public final class Voxel {
@@ -48,10 +48,12 @@ public final class Voxel {
      * Checks if two locations have the same (x, y, z) coordinates.
      *
      * @param obj  the voxel to compare
-     * @return  {@code true} if voxels have the same coordinates, {@code false} otherwise
+     * @return {@code true} if coordinates are the same, {@code false} otherwise
      */
     public boolean equals(Object obj) {
-        if (!(obj instanceof Voxel)) { return false; }
+        if (!(obj instanceof Voxel)) {
+            return false;
+        }
         Voxel voxel = (Voxel) obj;
         return voxel.x == x && voxel.y == y && voxel.z == z;
     }

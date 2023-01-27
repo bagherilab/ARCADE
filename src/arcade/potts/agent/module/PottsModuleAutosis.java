@@ -9,6 +9,11 @@ import arcade.potts.agent.cell.PottsCell;
  */
 
 public class PottsModuleAutosis extends PottsModule {
+    /**
+     * Creates an autosis {@code Module} for the given {@link PottsCell}.
+     *
+     * @param cell  the {@link PottsCell} the module is associated with
+     */
     public PottsModuleAutosis(PottsCell cell) { super(cell); }
     
     @Override

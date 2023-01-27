@@ -8,13 +8,14 @@ import arcade.potts.agent.cell.PottsCellContainer;
 import static arcade.core.util.Enums.Region;
 
 /**
- * Implementation of {@link LocationContainer} for {@link PottsLocation} objects.
+ * Implementation of {@link LocationContainer} for {@link PottsLocation}
+ * objects.
  * <p>
- * The container can be instantiated for locations with or without regions.
- * The voxels available in a container are not necessarily all used when
- * instantiating a {@link Location} instance.
- * Instead, the number of voxels is selected based on the associated
- * {@link PottsCellContainer} and {@link PottsLocationFactory} instance.
+ * The container can be instantiated for locations with or without regions. The
+ * voxels available in a container are not necessarily all used when
+ * instantiating a {@link Location} instance. Instead, the number of voxels is
+ * selected based on the associated {@link PottsCellContainer} and
+ * {@link PottsLocationFactory} instance.
  */
 
 public final class PottsLocationContainer implements LocationContainer {
@@ -92,7 +93,9 @@ public final class PottsLocationContainer implements LocationContainer {
             
             for (Region region : Region.values()) {
                 // TODO add handling of other regions
-                if (region != Region.NUCLEUS) { continue; }
+                if (region != Region.NUCLEUS) {
+                    continue;
+                }
                 
                 // Select region voxels.
                 int regTarget = regionTargetMap.get(region);
@@ -127,7 +130,7 @@ public final class PottsLocationContainer implements LocationContainer {
         } else {
             selected = factory.getSelected(voxels, center, target);
         }
-    
+        
         // Add or remove voxels to reach target number.
         int size = selected.size();
         if (size < target) {

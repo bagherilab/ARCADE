@@ -41,7 +41,7 @@ class PersistenceHamiltonianConfig {
     private int volumeCheck;
     
     /**
-     * Creates parameter configuration for {@code PersistenceHamiltonian} class.
+     * Creates parameter configuration for {@code PersistenceHamiltonian}.
      *
      * @param location  the associated location instance
      * @param lambda  the lambda multiplier

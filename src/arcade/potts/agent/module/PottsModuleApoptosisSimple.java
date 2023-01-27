@@ -9,7 +9,7 @@ import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Phase;
 
 /**
- * Extension of {@link PottsModuleApoptosis} with simple Poisson transitions.
+ * Extension of {@link PottsModuleApoptosis} with Poisson transitions.
  */
 
 public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
@@ -44,7 +44,8 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
     final double nucleusFragmentationRate;
     
     /**
-     * Creates a simple apoptosis {@code Module} for the given {@link PottsCell}.
+     * Creates a simple apoptosis {@code Module} for the given
+     * {@link PottsCell}.
      *
      * @param cell  the {@link PottsCell} the module is associated with
      */
@@ -65,9 +66,9 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
     /**
      * {@inheritDoc}
      * <p>
-     * Cell decreases in size due to cytoplasmic water loss and nuclear pyknosis.
-     * Cell will transition to late apoptosis after completing {@code STEPS_EARLY}
-     * steps at an average rate of {@code RATE_EARLY}.
+     * Cell decreases in size due to cytoplasmic water loss and nuclear
+     * pyknosis. Cell will transition to late apoptosis after completing
+     * {@code STEPS_EARLY} steps at an average rate of {@code RATE_EARLY}.
      */
     @Override
     void stepEarly(MersenneTwisterFast random) {
@@ -82,18 +83,20 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
         // Check for phase transition.
         Poisson poisson = poissonFactory.createPoisson(rateEarly, random);
         currentSteps += poisson.nextInt();
-        if (currentSteps >= stepsEarly) { setPhase(Phase.APOPTOTIC_LATE); }
+        if (currentSteps >= stepsEarly) {
+            setPhase(Phase.APOPTOTIC_LATE);
+        }
     }
     
     /**
      * {@inheritDoc}
      * <p>
      * Cell continues to decrease in size due to cytoplasm blebbing and nuclear
-     * fragmentation.
-     * Cell will complete apoptosis after completing {@code STEPS_LATE} steps
-     * at an average rate of {@code RATE_LATE} or if the total cell volume falls
-     * below a threshold of {@code APOPTOSIS_CHECKPOINT} times the critical size.
-     * Cell must be less than {@code LATE_SIZE_CHECKPOINT} times the critical size.
+     * fragmentation. Cell will complete apoptosis after completing
+     * {@code STEPS_LATE} steps at an average rate of {@code RATE_LATE} or if
+     * the total cell volume falls below a threshold of
+     * {@code APOPTOSIS_CHECKPOINT} times the critical size. Cell must be less
+     * than {@code LATE_SIZE_CHECKPOINT} times the critical size.
      */
     @Override
     void stepLate(MersenneTwisterFast random, Simulation sim) {

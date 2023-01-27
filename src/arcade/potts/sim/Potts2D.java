@@ -79,15 +79,22 @@ public final class Potts2D extends Potts {
         boolean[][] subarray = array[0];
         int links = 0;
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
-            if (subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]]) { links++; }
+            if (subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]]) {
+                links++;
+            }
         }
         
         switch (links) {
-            case 1: return true;
-            case 2: return getConnectivityTwoNeighbors(subarray);
-            case 3: return getConnectivityThreeNeighbors(subarray);
-            case 4: return zero;
-            default: return false;
+            case 1:
+                return true;
+            case 2:
+                return getConnectivityTwoNeighbors(subarray);
+            case 3:
+                return getConnectivityThreeNeighbors(subarray);
+            case 4:
+                return zero;
+            default:
+                return false;
         }
     }
     
@@ -111,7 +118,9 @@ public final class Potts2D extends Potts {
                 boolean check2 = subarray[1 + MOVES_X[(i + 1) % NUMBER_NEIGHBORS]]
                         [1 + MOVES_Y[(i + 1) % NUMBER_NEIGHBORS]];
                 boolean check3 = subarray[1 + CORNER_X[i]][1 + CORNER_Y[i]];
-                if (check1 && check2 && check3) { return true; }
+                if (check1 && check2 && check3) {
+                    return true;
+                }
             }
             return false;
         }
@@ -130,7 +139,9 @@ public final class Potts2D extends Potts {
                         [1 + CORNER_Y[(i + 1) % NUMBER_NEIGHBORS]];
                 boolean check2 = subarray[1 + CORNER_X[(i + 2) % NUMBER_NEIGHBORS]]
                         [1 + CORNER_Y[(i + 2) % NUMBER_NEIGHBORS]];
-                if (check1 && check2) { return true; }
+                if (check1 && check2) {
+                    return true;
+                }
             }
         }
         return false;
@@ -143,7 +154,9 @@ public final class Potts2D extends Potts {
         
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
             int neighbor = ids[z][x + MOVES_X[i]][y + MOVES_Y[i]];
-            if (id != neighbor) { unique.add(neighbor); }
+            if (id != neighbor) {
+                unique.add(neighbor);
+            }
         }
         return unique;
     }
@@ -158,8 +171,12 @@ public final class Potts2D extends Potts {
             int neighborID = ids[z][x + MOVES_X[i]][y + MOVES_Y[i]];
             int neighborRegion = regions[z][x + MOVES_X[i]][y + MOVES_Y[i]];
             
-            if (neighborID != id) { continue; }
-            if (region != neighborRegion) { unique.add(neighborRegion); }
+            if (neighborID != id) {
+                continue;
+            }
+            if (region != neighborRegion) {
+                unique.add(neighborRegion);
+            }
         }
         
         return unique;

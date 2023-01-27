@@ -53,10 +53,10 @@ public class VolumeHamiltonian implements Hamiltonian {
     /**
      * {@inheritDoc}
      * <p>
-     * Volume energy is calculated by taking the difference in target and proposed
-     * volume for the given ID.
-     * Change in volume energy is taken as the difference in differences of volume
-     * energies for the source and target IDs when a voxel is removed or added.
+     * Volume energy is calculated by taking the difference in target and
+     * proposed volume for the given ID. Change in volume energy is taken as the
+     * difference in differences of volume energies for the source and target
+     * IDs when a voxel is removed or added.
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
@@ -68,10 +68,10 @@ public class VolumeHamiltonian implements Hamiltonian {
     /**
      * {@inheritDoc}
      * <p>
-     * Volume energy is calculated by taking the difference in target and proposed
-     * volume for the given region.
-     * Change in volume energy is taken as the difference in differences of volume
-     * energies for the source and target regions when a voxel is removed or added.
+     * Volume energy is calculated by taking the difference in target and
+     * proposed volume for the given region. Change in volume energy is taken as
+     * the difference in differences of volume energies for the source and
+     * target regions when a voxel is removed or added.
      */
     @Override
     public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
@@ -88,7 +88,9 @@ public class VolumeHamiltonian implements Hamiltonian {
      * @return  the energy
      */
     double getVolume(int id, int change) {
-        if (id == 0) { return 0; }
+        if (id == 0) {
+            return 0;
+        }
         VolumeHamiltonianConfig config = configs.get(id);
         double volume = config.cell.getVolume();
         double targetVolume = config.cell.getTargetVolume();
@@ -106,7 +108,9 @@ public class VolumeHamiltonian implements Hamiltonian {
      */
     double getVolume(int id, int t, int change) {
         Region region = Region.values()[t];
-        if (id == 0 || region == Region.DEFAULT) { return 0; }
+        if (id == 0 || region == Region.DEFAULT) {
+            return 0;
+        }
         VolumeHamiltonianConfig config = configs.get(id);
         double volume = config.cell.getVolume(region);
         double targetVolume = config.cell.getTargetVolume(region);
@@ -120,7 +124,9 @@ public class VolumeHamiltonian implements Hamiltonian {
      * @param series  the series instance
      */
     void initialize(PottsSeries series) {
-        if (series.populations == null) { return; }
+        if (series.populations == null) {
+            return;
+        }
         
         Set<String> keySet = series.populations.keySet();
         MiniBox parameters = series.potts;

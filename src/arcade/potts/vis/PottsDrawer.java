@@ -99,7 +99,8 @@ public abstract class PottsDrawer extends Drawer {
                     case Y:
                         array = new DoubleGrid2D(length, height, map.defaultValue());
                         break;
-                    case Z: default:
+                    case Z:
+                    default:
                         array = new DoubleGrid2D(length, width, map.defaultValue());
                         break;
                 }
@@ -173,7 +174,8 @@ public abstract class PottsDrawer extends Drawer {
                     }
                 }
                 return yarr;
-            case Z: default:
+            case Z:
+            default:
                 return array;
         }
     }
@@ -207,7 +209,8 @@ public abstract class PottsDrawer extends Drawer {
                     }
                 }
                 return planeY;
-            default: case Z:
+            case Z:
+            default:
                 return array[(height - 1) / 2];
         }
     }
@@ -254,8 +257,8 @@ public abstract class PottsDrawer extends Drawer {
          * @param bounds  the size of the drawer within the panel
          */
         public PottsCells(Panel panel, String name,
-                         int length, int width, int depth,
-                         ColorMap map, Rectangle2D.Double bounds) {
+                          int length, int width, int depth,
+                          ColorMap map, Rectangle2D.Double bounds) {
             super(panel, name, length, width, depth, map, bounds);
             String[] split = name.split(":");
             view = View.valueOf(split[1]);
@@ -281,7 +284,10 @@ public abstract class PottsDrawer extends Drawer {
                 case NUCLEUS:
                     drawNucleus(arr, ids, regions);
                     break;
-                case STATE: case POPULATION: case VOLUME: case HEIGHT:
+                case STATE:
+                case POPULATION:
+                case VOLUME:
+                case HEIGHT:
                     drawSlice(arr, ids[index], grid);
                     break;
                 case OVERLAY:
@@ -331,12 +337,16 @@ public abstract class PottsDrawer extends Drawer {
                     
                     if (height == 1) {
                         int id = ids[0][a][b];
-                        if (id == 0) { continue; }
+                        if (id == 0) {
+                            continue;
+                        }
                         arr[a][b] += count(ids[0], id, a, b);
                     } else {
                         for (int c = 1; c < cc - 1; c++) {
-                            int id  = ids[c][a][b];
-                            if (id == 0) { continue; }
+                            int id = ids[c][a][b];
+                            if (id == 0) {
+                                continue;
+                            }
                             arr[a][b] += count(ids[c], id, a, b);
                         }
                     }
@@ -374,13 +384,17 @@ public abstract class PottsDrawer extends Drawer {
                     if (height == 1) {
                         int id = ids[0][a][b];
                         int region = regions[0][a][b];
-                        if (id == 0 || region != nucleus) { continue; }
+                        if (id == 0 || region != nucleus) {
+                            continue;
+                        }
                         arr[a][b] += count(regions[0], region, a, b);
                     } else {
                         for (int c = 1; c < cc - 1; c++) {
-                            int id  = ids[c][a][b];
+                            int id = ids[c][a][b];
                             int region = regions[c][a][b];
-                            if (id == 0 || region != nucleus) { continue; }
+                            if (id == 0 || region != nucleus) {
+                                continue;
+                            }
                             arr[a][b] += count(regions[c], region, a, b);
                         }
                     }
@@ -395,7 +409,7 @@ public abstract class PottsDrawer extends Drawer {
                 }
             }
         }
-    
+        
         /**
          * Draws voxels for region overlay.
          *
@@ -405,7 +419,7 @@ public abstract class PottsDrawer extends Drawer {
         private void drawOverlay(double[][] arr, int[][] regions) {
             int aa = arr.length;
             int bb = arr[0].length;
-        
+            
             for (int a = 1; a < aa - 1; a++) {
                 for (int b = 1; b < bb - 1; b++) {
                     arr[a][b] = (regions[a][b] > 0 ? regions[a][b] - 1 : 0);
@@ -428,7 +442,9 @@ public abstract class PottsDrawer extends Drawer {
                 for (int b = 1; b < bb - 1; b++) {
                     arr[a][b] = 0;
                     
-                    if (ids[a][b] == 0) { continue; }
+                    if (ids[a][b] == 0) {
+                        continue;
+                    }
                     
                     Cell cell = (Cell) grid.getObjectAt(ids[a][b]);
                     
@@ -486,7 +502,8 @@ public abstract class PottsDrawer extends Drawer {
                     field.width = length;
                     field.height = depth;
                     break;
-                default: case Z:
+                default:
+                case Z:
                     field.width = length;
                     field.height = width;
             }

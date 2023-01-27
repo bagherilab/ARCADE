@@ -15,14 +15,19 @@ import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
  */
 
 public final class PottsInputBuilder extends InputBuilder {
+    /**
+     * Creates a {@code PottsInputBuilder} instance.
+     */
     public PottsInputBuilder() { super(); }
     
     /**
-     * Updates a {@link arcade.core.util.Box} dictionary with tagged attributes.
+     * Updates a {@link arcade.core.util.Box} dictionary with tagged
+     * attributes.
      * <p>
-     * Attributes are added to the last entry in the list of dictionaries.
-     * One of the attributes must be "id" which is used as the id for the entry.
-     * Attributes "tag" and "target" are concatenated to the id as tag/id:target.
+     * Attributes are added to the last entry in the list of dictionaries. One
+     * of the attributes must be "id" which is used as the id for the entry.
+     * Attributes "tag" and "target" are concatenated to the id as
+     * tag/id:target.
      *
      * @param list  the list the box is in
      * @param tag  the entry tag
@@ -43,7 +48,9 @@ public final class PottsInputBuilder extends InputBuilder {
             // Entry can have at most one of the following tags: module, term.
             boolean hasModule = atts.getValue("module") != null;
             boolean hasTerm = atts.getValue("term") != null;
-            if (hasModule & hasTerm) { return; }
+            if (hasModule & hasTerm) {
+                return;
+            }
             
             // Get any tags (module or term) or target.
             term = (atts.getValue("term") == null
@@ -80,7 +87,8 @@ public final class PottsInputBuilder extends InputBuilder {
         LOGGER.fine("start element [ " + name + " ]");
         
         switch (name) {
-            case "set": case "series":
+            case "set":
+            case "series":
                 MiniBox minibox = makeMiniBox(atts);
                 setupDicts.put(name, minibox);
                 break;
@@ -100,7 +108,9 @@ public final class PottsInputBuilder extends InputBuilder {
         }
         
         String[] split = name.split("\\.");
-        if (split.length == 2) { updateBox(split[0], split[1], atts); }
+        if (split.length == 2) {
+            updateBox(split[0], split[1], atts);
+        }
     }
     
     @Override
