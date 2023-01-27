@@ -488,7 +488,7 @@ abstract class PatchComponentSitesGraphUtilities {
         }
         
         // Solve for pressure and update nodes.
-        double[] x = Solver.SOR(sA, sB, x0);
+        double[] x = Solver.sor(sA, sB, x0);
         for (SiteNode node : set) {
             node.pressure = x[node.id];
         }
