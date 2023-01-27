@@ -11,27 +11,27 @@ public class MatrixTest {
     private static final double EPSILON = 1E-10;
     
     private static final double[][] A1D = new double[][] {
-        {  1,  2,  3,  4,  5 },
-        {  6,  7,  8,  9, 10 },
-        { 11, 12, 13, 14, 15 },
-        { 16, 17, 18, 19, 20 },
-        { 21, 22, 23, 24, 25 }
+            {  1,  2,  3,  4,  5 },
+            {  6,  7,  8,  9, 10 },
+            { 11, 12, 13, 14, 15 },
+            { 16, 17, 18, 19, 20 },
+            { 21, 22, 23, 24, 25 }
     };
     
     private static final double[][] A2D = new double[][] {
-        { 2, 3, 0, 1, 2 },
-        { 0, 1, 2, 3, 1 },
-        { 0, 3, 1, 1, 0 },
-        { 0, 1, 2, 1, 1 },
-        { 0, 0, 0, 2, 1 }
+            { 2, 3, 0, 1, 2 },
+            { 0, 1, 2, 3, 1 },
+            { 0, 3, 1, 1, 0 },
+            { 0, 1, 2, 1, 1 },
+            { 0, 0, 0, 2, 1 }
     };
     
     private static final double[][] A3D = new double[][] {
-        { 1, 0, 4, 3, 0 },
-        { 6, 2, 0, 2, 2 },
-        { 4, 3, 1, 0, 0 },
-        { 2, 3, 2, 1, 0 },
-        { 3, 1, 3, 2, 1 }
+            { 1, 0, 4, 3, 0 },
+            { 6, 2, 0, 2, 2 },
+            { 4, 3, 1, 0, 0 },
+            { 2, 3, 2, 1, 0 },
+            { 3, 1, 3, 2, 1 }
     };
     
     private static final double[] B1D = new double[] { 2, 3, 6, 1, 2 };
@@ -167,11 +167,11 @@ public class MatrixTest {
     @Test
     public void getUpper_isStrictDense_getsMatrix() {
         double[][] expected = new double[][] {
-            {  0,  2,  3,  4,  5 },
-            {  0,  0,  8,  9, 10 },
-            {  0,  0,  0, 14, 15 },
-            {  0,  0,  0,  0, 20 },
-            {  0,  0,  0,  0,  0 }
+                {  0,  2,  3,  4,  5 },
+                {  0,  0,  8,  9, 10 },
+                {  0,  0,  0, 14, 15 },
+                {  0,  0,  0,  0, 20 },
+                {  0,  0,  0,  0,  0 }
         };
         assertArrayEquals(expected, getUpper(A1D, true));
     }
@@ -200,11 +200,11 @@ public class MatrixTest {
     @Test
     public void getLower_isNotStrictDense_getsMatrix() {
         double[][] expected = new double[][] {
-            {  1,  0,  0,  0,  0 },
-            {  6,  7,  0,  0,  0 },
-            { 11, 12, 13,  0,  0 },
-            { 16, 17, 18, 19,  0 },
-            { 21, 22, 23, 24, 25 }
+                {  1,  0,  0,  0,  0 },
+                {  6,  7,  0,  0,  0 },
+                { 11, 12, 13,  0,  0 },
+                { 16, 17, 18, 19,  0 },
+                { 21, 22, 23, 24, 25 }
         };
         assertArrayEquals(expected, getLower(A1D, false));
     }
@@ -270,14 +270,14 @@ public class MatrixTest {
     
     @Test
     public void multiply_denseRepresentation_calculatesMatrix() {
-        double[] multiplyA2B1 = new double[] { 18, 20, 16, 18,  4 };
+        double[] multiplyA2B1 = new double[] { 18, 20, 16, 18, 4 };
         double[] multiplyA3B1 = new double[] { 29, 24, 23, 26, 31 };
         double[][] multiplyA2A3 = new double[][] {
-            { 28, 11, 16, 17, 8 },
-            { 23, 18, 11,  7, 3 },
-            { 24, 12,  3,  7, 6 },
-            { 19, 12,  7,  5, 3 },
-            {  7,  7,  7,  4, 1 }
+                { 28, 11, 16, 17, 8 },
+                { 23, 18, 11,  7, 3 },
+                { 24, 12,  3,  7, 6 },
+                { 19, 12,  7,  5, 3 },
+                {  7,  7,  7,  4, 1 }
         };
         
         assertArrayEquals(multiply(A2D, B1D), multiplyA2B1, EPSILON);
@@ -324,19 +324,19 @@ public class MatrixTest {
     @Test
     public void invertUpper_givenUpper_calculatesInversion() {
         double[][] invertUpperA2 = new double[][]{
-            { 0.5, -1.5,   3,  1, -0.5 },
-            {   0,    1,  -2, -1,   0 },
-            {   0,    0,   1, -1,   1 },
-            {   0,    0,   0,  1,  -1 },
-            {   0,    0,   0,  0,   1 }
+                { 0.5, -1.5,   3,  1, -0.5 },
+                {   0,    1,  -2, -1,    0 },
+                {   0,    0,   1, -1,    1 },
+                {   0,    0,   0,  1,   -1 },
+                {   0,    0,   0,  0,    1 }
         };
         
         double[][] invertUpperA3 = new double[][]{
-            { 1,   0, -4, -3,  0 },
-            { 0, 0.5,  0, -1, -1 },
-            { 0,   0,  1,  0,  0 },
-            { 0,   0,  0,  1,  0 },
-            { 0,   0,  0,  0,  1 }
+                { 1,   0, -4, -3,  0 },
+                { 0, 0.5,  0, -1, -1 },
+                { 0,   0,  1,  0,  0 },
+                { 0,   0,  0,  1,  0 },
+                { 0,   0,  0,  0,  1 }
         };
         
         assertArrayEquals(invertUpper(A2D), invertUpperA2);

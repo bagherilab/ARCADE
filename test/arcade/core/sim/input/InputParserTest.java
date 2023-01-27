@@ -512,7 +512,7 @@ public class InputParserTest {
         
         int index = randomIntBetween(1, 10);
         String[] arguments = randomStringArray(index + randomIntBetween(2, 10));
-        int newIndex =  parser.parseFlaggedArgument(arguments, index, parser.allCommands.get(0));
+        int newIndex = parser.parseFlaggedArgument(arguments, index, parser.allCommands.get(0));
         
         assertEquals(index + 2, newIndex);
     }

@@ -116,7 +116,7 @@ public class InputLoaderTest {
         expected.addAtt("id2", "att2", "value22");
         expected.addTag("id1", "TAG1");
         expected.addTag("id2", "TAG2");
-    
+        
         assertSame(updated, box);
         assertTrue(box.compare(expected));
     }

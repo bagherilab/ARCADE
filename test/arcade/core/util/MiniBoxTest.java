@@ -62,7 +62,8 @@ public class MiniBoxTest {
     @Test
     public void getInt_givenValidKeyGivenDouble_returnsValue() {
         String key = randomString();
-        String[] integers = new String[] { "1.0", "-1.0", "-.1", ".1", "1.1", "-1.1", "1.9", "-1.9" };
+        String[] integers = new String[] {
+                "1.0", "-1.0", "-.1", ".1", "1.1", "-1.1", "1.9", "-1.9" };
         int[] values = new int[] { 1, -1, 0, 0, 1, -1, 1, -1 };
         for (int i = 0; i < integers.length; i++) {
             MiniBox box = new MiniBox();
@@ -102,8 +103,10 @@ public class MiniBoxTest {
     @Test
     public void getDouble_givenValidKeyGivenDouble_returnsValue() {
         String key = randomString();
-        String[] doubles = new String[] { "1.0", "-1.0", "-.1", ".1", "1.1", "-1.1", "1.9", "-1.9", "1.3E2", "-1.3E2" };
-        double[] values = new double[] { 1.0, -1.0, -0.1, 0.1, 1.1, -1.1, 1.9, -1.9, 130, -130 };
+        String[] doubles = new String[] { "1.0", "-1.0", "-.1", ".1",
+                "1.1", "-1.1", "1.9", "-1.9", "1.3E2", "-1.3E2" };
+        double[] values = new double[] { 1.0, -1.0, -0.1, 0.1,
+                1.1, -1.1, 1.9, -1.9, 130, -130 };
         for (int i = 0; i < doubles.length; i++) {
             MiniBox box = new MiniBox();
             box.put(key, doubles[i]);

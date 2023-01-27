@@ -216,7 +216,7 @@ public class OutputSaverTest {
     }
     
     @Test
-    public void write_validPath_savesFile() throws IOException  {
+    public void write_validPath_savesFile() throws IOException {
         String contents = randomString();
         File file = folder.newFile("write_validPath_savesFile.json");
         String filepath = file.getAbsolutePath();

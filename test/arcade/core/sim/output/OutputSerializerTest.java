@@ -93,10 +93,10 @@ public class OutputSerializerTest {
         box.put(key3, value3);
         
         String expected = "{"
-            + "\"" + key1 + "\":\"" + value1 + "\","
-            + "\"" + key2 + "\":" + value2 + ","
-            + "\"" + key3 + "\":" + value3 + ""
-            + "}";
+                + "\"" + key1 + "\":\"" + value1 + "\","
+                + "\"" + key2 + "\":" + value2 + ","
+                + "\"" + key3 + "\":" + value3 + ""
+                + "}";
         
         JsonElement json = serializer.serialize(box, null, null);
         assertEquals(expected, json.toString());
@@ -218,7 +218,9 @@ public class OutputSerializerTest {
         for (int i = 0; i < n; i++) {
             int id = id0 + i;
             expected.append("{\"id\":").append(id).append("}");
-            if (i < n - 1) { expected.append(","); }
+            if (i < n - 1) {
+                expected.append(",");
+            }
         }
         expected.append("]");
         
@@ -245,7 +247,9 @@ public class OutputSerializerTest {
         for (int i = 0; i < n; i++) {
             int id = id0 + i;
             expected.append("{\"id\":").append(id).append("}");
-            if (i < n - 1) { expected.append(","); }
+            if (i < n - 1) {
+                expected.append(",");
+            }
         }
         expected.append("]");
         

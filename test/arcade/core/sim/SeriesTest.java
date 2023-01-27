@@ -9,7 +9,9 @@ import sim.display.GUIState;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
+import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.comp.Component;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lat.Lattice;
 import arcade.core.env.loc.LocationContainer;
@@ -127,6 +129,12 @@ public class SeriesTest {
         public Lattice getLattice(String key) { return null; }
         
         @Override
+        public Action getAction(String key) { return null; }
+        
+        @Override
+        public Component getComponent(String key) { return null; }
+        
+        @Override
         public void setupAgents() { }
         
         @Override
@@ -155,8 +163,8 @@ public class SeriesTest {
         boolean invalidVis;
         
         SeriesMock(HashMap<String, MiniBox> setupDicts,
-                          HashMap<String, ArrayList<Box>> setupLists,
-                          String path, Box parameters, boolean isVis) {
+                   HashMap<String, ArrayList<Box>> setupLists,
+                   String path, Box parameters, boolean isVis) {
             super(setupDicts, setupLists, path, parameters, isVis);
         }
         
