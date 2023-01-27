@@ -478,16 +478,12 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
                     
                     edge = new SiteEdge(node1, node2, type, level);
                     graph.addEdge(edge);
-                    if (bag != null) {
-                        bag.add(edge);
-                    }
+                    bag.add(edge);
                     
                     edge = new SiteEdge(node1, node3, type, level);
                     graph.addEdge(edge);
-                    if (bag != null) {
-                        bag.add(edge);
-                    }
-                } else if (bag != null) {
+                    bag.add(edge);
+                } else {
                     bag.add(edge0);
                 }
                 break;
@@ -509,13 +505,11 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
                         graph.addEdge(edge);
                         edge = new SiteEdge(node1, options.get(0), type, level);
                         graph.addEdge(edge);
-                        if (bag != null) {
-                            bag.add(edge);
-                        }
-                    } else if (bag != null) {
+                        bag.add(edge);
+                    } else {
                         bag.add(edge0);
                     }
-                } else if (bag != null) {
+                } else {
                     bag.add(edge0);
                 }
                 break;
@@ -523,10 +517,8 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
                 if (checkNode0 && checkNode1 && graph.getDegree(node1) == 0) {
                     edge = new SiteEdge(node0, node1, type, level);
                     graph.addEdge(edge);
-                    if (bag != null) {
-                        bag.add(edge);
-                    }
-                } else if (bag != null) {
+                    bag.add(edge);
+                } else {
                     bag.add(edge0);
                 }
                 break;
