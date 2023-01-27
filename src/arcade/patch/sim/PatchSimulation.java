@@ -308,8 +308,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     /**
      * Runs output methods.
      *
-     * @param isScheduled {@code true} if the output should be scheduled,
-     *                    {@code false} otherwise
+     * @param isScheduled  {@code true} to schedule output, {@code false} otherwise
      */
     public void doOutput(boolean isScheduled) {
         if (isScheduled) {

@@ -160,9 +160,8 @@ public final class PatchOutputSerializer {
     /**
      * Serializer for list of {@link PatchLocationContainer} objects.
      * <p>
-     * This serializer overrides the {@code LocationListSerializer} defined
-     * in {@link OutputSerializer}.
-     * The container object is formatted as:
+     * This serializer overrides the {@code LocationListSerializer} defined in
+     * {@link OutputSerializer}. The container object is formatted as:
      * <pre>
      *     [
      *         {

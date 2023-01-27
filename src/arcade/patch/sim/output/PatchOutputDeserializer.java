@@ -123,7 +123,8 @@ public final class PatchOutputDeserializer {
     static class CoordinateDeserializer implements JsonDeserializer<Coordinate> {
         @Override
         public Coordinate deserialize(JsonElement json, Type typeOfT,
-                                 JsonDeserializationContext context) throws JsonParseException {
+                                      JsonDeserializationContext context)
+                throws JsonParseException {
             JsonArray jsonArray = json.getAsJsonArray();
             
             if (jsonArray.size() == 3) {

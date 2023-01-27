@@ -26,8 +26,8 @@ public final class PatchSeries extends Series {
     public final int radiusBounds;
     
     /**
-     * Overall height of the simulation (equal to 1 if DEPTH = 1, or
-     * DEPTH + MARGIN otherwise).
+     * Overall height of the simulation (equal to 1 if DEPTH = 1, or DEPTH +
+     * MARGIN otherwise).
      */
     public final int depthBounds;
     
@@ -37,8 +37,8 @@ public final class PatchSeries extends Series {
      * @param setupDicts  the map of attribute to value for single instance tags
      * @param setupLists  the map of attribute to value for multiple instance tags
      * @param path  the path for simulation output
-     * @param parameters  the default parameter values loaded from {@code parameter.xml}
-     * @param isVis  {@code true} if run with visualization, {@code false} otherwise
+     * @param parameters  the default parameter values
+     * @param isVis  {@code true} if visualized, {@code false} otherwise
      */
     public PatchSeries(HashMap<String, MiniBox> setupDicts,
                        HashMap<String, ArrayList<Box>> setupLists,
@@ -135,7 +135,9 @@ public final class PatchSeries extends Series {
     protected void updatePopulations(ArrayList<Box> populationsBox, MiniBox populationDefaults,
                                      MiniBox populationConversions) {
         this.populations = new HashMap<>();
-        if (populationsBox == null) { return; }
+        if (populationsBox == null) {
+            return;
+        }
         
         // Assign codes to each population.
         int code = 1;
@@ -183,7 +185,9 @@ public final class PatchSeries extends Series {
     protected void updateLayers(ArrayList<Box> layersBox, MiniBox layerDefaults,
                                 MiniBox layerConversions) {
         this.layers = new HashMap<>();
-        if (layersBox == null) { return; }
+        if (layersBox == null) {
+            return;
+        }
         
         // Iterate through each setup dictionary to build layer settings.
         for (Box box : layersBox) {
@@ -222,7 +226,9 @@ public final class PatchSeries extends Series {
     @Override
     protected void updateActions(ArrayList<Box> actionsBox, MiniBox actionDefaults) {
         this.actions = new HashMap<>();
-        if (actionsBox == null) { return; }
+        if (actionsBox == null) {
+            return;
+        }
         
         // Iterate through each setup dictionary to build action settings.
         for (Box box : actionsBox) {
@@ -260,7 +266,9 @@ public final class PatchSeries extends Series {
     @Override
     protected void updateComponents(ArrayList<Box> componentsBox, MiniBox componentDefaults) {
         this.components = new HashMap<>();
-        if (componentsBox == null) { return; }
+        if (componentsBox == null) {
+            return;
+        }
         
         // Iterate through each setup dictionary to build component settings.
         for (Box box : componentsBox) {

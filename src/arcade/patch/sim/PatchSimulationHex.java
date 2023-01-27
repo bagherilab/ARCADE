@@ -4,9 +4,11 @@ import arcade.core.agent.action.Action;
 import arcade.core.env.comp.Component;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import arcade.patch.agent.action.PatchActionConvert;
 import arcade.patch.agent.action.PatchActionInsert;
 import arcade.patch.agent.action.PatchActionRemove;
 import arcade.patch.agent.cell.PatchCellFactory;
+import arcade.patch.env.comp.PatchComponentPulse;
 import arcade.patch.env.comp.PatchComponentSitesGraphTri;
 import arcade.patch.env.comp.PatchComponentSitesPatternTri;
 import arcade.patch.env.comp.PatchComponentSitesSource;
@@ -49,40 +51,33 @@ public final class PatchSimulationHex extends PatchSimulation {
     
     @Override
     public Action makeAction(String actionClass, MiniBox parameters) {
-        Action action = null;
-        
         switch (actionClass) {
             case "insert":
-                action = new PatchActionInsert(series, parameters);
-                break;
+                return new PatchActionInsert(series, parameters);
             case "remove":
-                action = new PatchActionRemove(series, parameters);
-                break;
+                return new PatchActionRemove(series, parameters);
+            case "convert":
+                return new PatchActionConvert(series, parameters);
             default:
-                break;
+                return null;
         }
-        
-        return action;
     }
     
     @Override
     public Component makeComponent(String componentClass, MiniBox parameters) {
-        Component component = null;
-        
         switch (componentClass) {
             case "source_sites":
-                component = new PatchComponentSitesSource(series, parameters);
-                break;
+                return new PatchComponentSitesSource(series, parameters);
             case "pattern_sites":
-                component = new PatchComponentSitesPatternTri(series, parameters);
-                break;
-            case "graph_sites":
-                component = new PatchComponentSitesGraphTri(series, parameters, random);
-                break;
+                return new PatchComponentSitesPatternTri(series, parameters);
+            case "graph_sites_simple":
+                return new PatchComponentSitesGraphTri.Simple(series, parameters, random);
+            case "graph_sites_complex":
+                return new PatchComponentSitesGraphTri.Complex(series, parameters, random);
+            case "pulse":
+                return new PatchComponentPulse(series, parameters);
             default:
-                break;
+                return null;
         }
-        
-        return component;
     }
 }
