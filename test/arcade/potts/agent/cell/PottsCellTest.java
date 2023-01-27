@@ -887,7 +887,7 @@ public class PottsCellTest {
                 randomDoubleBetween(0, 1 - OFFSET),
                 randomDoubleBetween(0, 1 - OFFSET),
         };
-    
+        
         double[] rates = new double[] {
                 randomDoubleBetween(0, scales[0] - 1) * cellCriticalVolume,
                 randomDoubleBetween(scales[1] - 1, scales[1]) * cellCriticalVolume,

@@ -260,9 +260,9 @@ public class PersistenceHamiltonianConfigTest {
         PersistenceHamiltonianConfig phc = new PersistenceHamiltonianConfig(location, 0, null, 0, 0);
         
         double[] displacement = new double[] {
-            randomDoubleBetween(1, 10),
-            randomDoubleBetween(1, 10),
-            randomDoubleBetween(1, 10),
+                randomDoubleBetween(1, 10),
+                randomDoubleBetween(1, 10),
+                randomDoubleBetween(1, 10),
         };
         
         phc.displacement[0] = displacement[0];

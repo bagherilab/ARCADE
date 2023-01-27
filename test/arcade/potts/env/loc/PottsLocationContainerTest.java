@@ -90,7 +90,7 @@ public class PottsLocationContainerTest {
             ArrayList<Voxel> voxels = new ArrayList<>(Collections.nCopies(i, new Voxel(0, 0, 0)));
             PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null, i, 0, 0);
             PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, null);
-        
+            
             Location location = locationContainer.convert(FACTORY, cellContainer);
             assertEquals(i, (int) location.getVolume());
             assertTrue(location instanceof PottsLocation);
@@ -217,7 +217,7 @@ public class PottsLocationContainerTest {
             EnumMap<Region, Integer> regionTargetMap = new EnumMap<>(Region.class);
             regionTargetMap.put(Region.DEFAULT, i);
             regionTargetMap.put(Region.NUCLEUS, n - i);
-    
+            
             PottsCellContainer cellContainer = new PottsCellContainer(0, 0, 0, 0, 0, null, null,
                     n, regionTargetMap, 0, 0, null, null);
             PottsLocationContainer locationContainer = new PottsLocationContainer(0, center, voxels, regionVoxelMap);

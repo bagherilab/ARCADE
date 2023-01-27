@@ -37,7 +37,7 @@ public class SurfaceHamiltonian2DTest {
                         { 0, 0, 0, 0, 0, 0 },
                 }
         };
-    
+        
         return potts;
     }
     

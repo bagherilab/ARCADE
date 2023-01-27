@@ -165,7 +165,7 @@ public class AdhesionHamiltonian3DTest {
     public void getAdhesion_validRegions_calculateValue() {
         Potts potts = makePottsMock();
         AdhesionHamiltonian3D ah = new AdhesionHamiltonian3D(mock(PottsSeries.class), potts);
-    
+        
         double[][] subadhesions = new double[][] {
                 { Double.NaN, 1 },
                 { 2, Double.NaN, },

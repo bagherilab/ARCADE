@@ -80,7 +80,7 @@ public class JunctionHamiltonianTest {
         
         double lambda = randomDoubleBetween(1, 100);
         jh.popToLambda.put(pop, lambda);
-    
+        
         jh.register(cell);
         JunctionHamiltonianConfig config = jh.configs.get(id);
         
@@ -98,7 +98,7 @@ public class JunctionHamiltonianTest {
         
         JunctionHamiltonianConfig config = mock(JunctionHamiltonianConfig.class);
         jh.configs.put(id, config);
-    
+        
         jh.deregister(cell);
         
         assertFalse(jh.configs.containsKey(id));

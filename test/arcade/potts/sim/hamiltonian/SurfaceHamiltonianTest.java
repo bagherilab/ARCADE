@@ -165,7 +165,7 @@ public class SurfaceHamiltonianTest {
         
         SurfaceHamiltonianConfig config = mock(SurfaceHamiltonianConfig.class);
         shm.configs.put(id, config);
-    
+        
         shm.deregister(cell);
         
         assertFalse(shm.configs.containsKey(id));

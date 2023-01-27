@@ -67,7 +67,7 @@ public class PottsCellContainerTest {
         EnumMap<Region, Integer> regionVoxels = new EnumMap<>(Region.class);
         EnumMap<Region, Double> criticalRegionVolumes = new EnumMap<>(Region.class);
         EnumMap<Region, Double> criticalRegionHeights = new EnumMap<>(Region.class);
-                
+        
         PottsCellContainer cellContainer = new PottsCellContainer(id, parent, pop, age, divisions,
                 state, phase, voxels, regionVoxels, criticalVolume, criticalHeight,
                 criticalRegionVolumes, criticalRegionHeights);

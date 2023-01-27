@@ -42,7 +42,7 @@ public class PottsModuleProliferationSimpleTest {
         
         poissonMock = mock(Poisson.class);
         doReturn(N).when(poissonMock).nextInt();
-    
+        
         pottsMock = mock(Potts.class);
         
         simMock = mock(PottsSimulation.class);
@@ -228,7 +228,7 @@ public class PottsModuleProliferationSimpleTest {
         module.stepG1(random);
         module.currentSteps = 0;
         module.stepG1(random);
-    
+        
         verify(cell, never()).updateTarget(eq(Region.NUCLEUS), anyDouble(), anyDouble());
     }
     
@@ -435,7 +435,7 @@ public class PottsModuleProliferationSimpleTest {
         double volume = randomDoubleBetween(0, 100);
         doReturn((volume * SIZE_CHECKPOINT) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
-    
+        
         double regionVolume = randomDoubleBetween(0, 100);
         doReturn((regionVolume * SIZE_CHECKPOINT) - 1).when(cell).getVolume(Region.NUCLEUS);
         doReturn(regionVolume).when(cell).getCriticalVolume(Region.NUCLEUS);

@@ -105,7 +105,7 @@ public class Potts2DTest {
         
         h = potts2D.getHamiltonian(Term.SURFACE, series);
         assertTrue(h instanceof SurfaceHamiltonian2D);
-    
+        
         h = potts2D.getHamiltonian(Term.PERSISTENCE, series);
         assertTrue(h instanceof PersistenceHamiltonian);
     }
@@ -244,10 +244,10 @@ public class Potts2DTest {
     
     @Test
     public void getConnectivity_zeroNeighbors_returnsFalse() {
-        assertFalse(potts.getConnectivity(new boolean[][][] {{
+        assertFalse(potts.getConnectivity(new boolean[][][] { {
                 { false, false, false },
                 { false,  true, false },
-                { false, false, false } }}, false));
+                { false, false, false } } }, false));
     }
     
     /* -------------------------------------------------------------------------
@@ -258,11 +258,11 @@ public class Potts2DTest {
      * If there is only one neighbor, the voxel is always connected.
     ------------------------------------------------------------------------- */
     
-    private static final boolean[][][] BASE_ONE_NEIGHBOR = new boolean[][][] {{
+    private static final boolean[][][] BASE_ONE_NEIGHBOR = new boolean[][][] { {
             { false,  true, false },
             { false,  true, false },
             { false, false, false }
-    }};
+    } };
     
     @Test
     public void getConnectivity_oneNeighbor_returnsTrue() {
@@ -283,24 +283,24 @@ public class Potts2DTest {
      * a link in the shared corner.
     ------------------------------------------------------------------------- */
     
-    private static final boolean[][][] BASE_TWO_NEIGHBORS_OPPOSITE = new boolean[][][] {{
+    private static final boolean[][][] BASE_TWO_NEIGHBORS_OPPOSITE = new boolean[][][] { {
             { false,  true, false },
             { false,  true, false },
             { false,  true, false }
-    }};
+    } };
     
-    private static final boolean[][][] BASE_TWO_NEIGHBORS_ADJACENT = new boolean[][][] {{
+    private static final boolean[][][] BASE_TWO_NEIGHBORS_ADJACENT = new boolean[][][] { {
             { false,  true, false },
             {  true,  true, false },
             { false, false, false }
-    }};
+    } };
     
     private static final int[][] LINKS_TWO_NEIGHBORS_ADJACENT = new int[][] {
             { 0 }, // X
             { 0 }, // Y
     };
     
-    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS = new int[][] { {} };
+    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS = new int[][] { { } };
     
     private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK = new int[][] { { 0 } };
     
@@ -346,18 +346,18 @@ public class Potts2DTest {
      *       2 links | 1 combo   | connected
     ------------------------------------------------------------------------- */
     
-    private static final boolean[][][] BASE_THREE_NEIGHBORS = new boolean[][][] {{
+    private static final boolean[][][] BASE_THREE_NEIGHBORS = new boolean[][][] { {
             { false,  true, false },
             {  true,  true, false },
             { false,  true, false }
-    }};
+    } };
     
     private static final int[][] LINKS_THREE_NEIGHBORS = new int[][] {
             { 0, 2 }, // X
             { 0, 0 }, // Y
     };
     
-    private static final int[][] COMBOS_THREE_NEIGHBORS_ZERO_LINKS = new int[][] { {} };
+    private static final int[][] COMBOS_THREE_NEIGHBORS_ZERO_LINKS = new int[][] { { } };
     
     private static final int[][] COMBOS_THREE_NEIGHBORS_ONE_LINK = new int[][] {
             { 0 },
@@ -411,17 +411,17 @@ public class Potts2DTest {
     
     @Test
     public void getConnectivity_fourNeighborsNonZeroID_returnsFalse() {
-        assertFalse(potts.getConnectivity(new boolean[][][] {{
+        assertFalse(potts.getConnectivity(new boolean[][][] { {
                 { false,  true, false },
                 {  true,  true,  true },
-                { false,  true, false } }}, false));
+                { false,  true, false } } }, false));
     }
     
     @Test
     public void getConnectivity_fourNeighborsZeroID_returnsTrue() {
-        assertTrue(potts.getConnectivity(new boolean[][][] {{
+        assertTrue(potts.getConnectivity(new boolean[][][] { {
                 { false,  true, false },
                 {  true,  true,  true },
-                { false,  true, false } }}, true));
+                { false,  true, false } } }, true));
     }
 }

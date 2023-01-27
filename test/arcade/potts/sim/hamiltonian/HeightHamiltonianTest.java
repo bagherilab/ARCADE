@@ -153,7 +153,7 @@ public class HeightHamiltonianTest {
         
         double cell1plus1 = randomDoubleBetween(1, 100);
         doReturn(cell1plus1).when(hh).getHeight(id1, voxel, 1);
-    
+        
         double cell1minus1 = randomDoubleBetween(1, 100);
         doReturn(cell1minus1).when(hh).getHeight(id1, voxel, -1);
         
@@ -244,7 +244,7 @@ public class HeightHamiltonianTest {
         assertEquals(lambda * Math.pow(height - criticalHeight - 1, 2),
                 hh.getHeight(id, new Voxel(0, 0, 0), -1), EPSILON);
     }
-
+    
     @Test
     public void getHeight_validRegions_calculatesValue() {
         HeightHamiltonian hh = new HeightHamiltonian(mock(PottsSeries.class));

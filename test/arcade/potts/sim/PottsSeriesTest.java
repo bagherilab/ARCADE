@@ -254,8 +254,12 @@ public class PottsSeriesTest {
                 
                 for (String parameter : POTTS_PARAMETER_NAMES) {
                     double expected = POTTS.getDouble(parameter);
-                    if (parameter.equals(pottsParameter1)) { expected = value; }
-                    if (parameter.equals(pottsParameter2)) { expected *= scale; }
+                    if (parameter.equals(pottsParameter1)) {
+                        expected = value;
+                    }
+                    if (parameter.equals(pottsParameter2)) {
+                        expected *= scale;
+                    }
                     assertEquals(expected, box.getDouble(parameter), EPSILON);
                 }
             }
@@ -292,8 +296,12 @@ public class PottsSeriesTest {
                 
                 for (String parameter : POTTS_PARAMETER_TERM_NAMES) {
                     double expected = POTTS.getDouble(parameter);
-                    if (parameter.equals(pottsParameter1)) { expected = value; }
-                    if (parameter.equals(pottsParameter2)) { expected *= scale; }
+                    if (parameter.equals(pottsParameter1)) {
+                        expected = value;
+                    }
+                    if (parameter.equals(pottsParameter2)) {
+                        expected *= scale;
+                    }
                     
                     for (String pop : POPULATION_KEYS) {
                         assertEquals(expected, box.getDouble(parameter + TARGET_SEPARATOR + pop), EPSILON);
@@ -353,7 +361,9 @@ public class PottsSeriesTest {
         
         for (String parameter : POTTS_PARAMETER_NAMES) {
             double expected = POTTS.getDouble(parameter);
-            if (parameter.equals(convertedParameter)) { expected *= DT; }
+            if (parameter.equals(convertedParameter)) {
+                expected *= DT;
+            }
             assertEquals(expected, box.getDouble(parameter), EPSILON);
         }
     }
@@ -372,7 +382,9 @@ public class PottsSeriesTest {
         for (String pop : POPULATION_KEYS) {
             for (String parameter : POTTS_PARAMETER_TERM_NAMES) {
                 double expected = POTTS.getDouble(parameter);
-                if (parameter.equals(convertedParameter)) { expected *= DT; }
+                if (parameter.equals(convertedParameter)) {
+                    expected *= DT;
+                }
                 assertEquals(expected, box.getDouble(parameter + TARGET_SEPARATOR + pop), EPSILON);
             }
         }
@@ -422,13 +434,17 @@ public class PottsSeriesTest {
                 
                 for (String source : POPULATION_KEYS) {
                     double expected1 = POTTS.getDouble(TERM_ADHESION_PARAMETER);
-                    if (source.equals(pop1)) { expected1 = value; }
+                    if (source.equals(pop1)) {
+                        expected1 = value;
+                    }
                     String adhesionSource = TERM_ADHESION_PARAMETER + TARGET_SEPARATOR + source;
                     assertEquals(expected1, box.getDouble(adhesionSource), EPSILON);
                     
                     for (String target : pops) {
                         double expected2 = expected1;
-                        if (source.equals(pop1) && target.equals(pop2)) { expected2 *= scale; }
+                        if (source.equals(pop1) && target.equals(pop2)) {
+                            expected2 *= scale;
+                        }
                         String adhesionTarget = adhesionSource + TARGET_SEPARATOR + target;
                         assertEquals(expected2, box.getDouble(adhesionTarget), EPSILON);
                     }
@@ -497,13 +513,17 @@ public class PottsSeriesTest {
                 
                 for (String source : REGION_IDS) {
                     double expected1 = POTTS.getDouble(TERM_ADHESION_PARAMETER + "_" + source);
-                    if (source.equals(region1)) { expected1 = value; }
+                    if (source.equals(region1)) {
+                        expected1 = value;
+                    }
                     String adhesionSource = TERM_ADHESION_PARAMETER + "_" + source + TARGET_SEPARATOR + key;
                     assertEquals(expected1, box.getDouble(adhesionSource), EPSILON);
                     
                     for (String target : REGION_IDS) {
                         double expected2 = expected1;
-                        if (source.equals(region1) && target.equals(region2)) { expected2 *= scale; }
+                        if (source.equals(region1) && target.equals(region2)) {
+                            expected2 *= scale;
+                        }
                         String adhesionTarget = adhesionSource + TARGET_SEPARATOR + target;
                         assertEquals(expected2, box.getDouble(adhesionTarget), EPSILON);
                     }
@@ -635,7 +655,7 @@ public class PottsSeriesTest {
         String[] fractions = new String[] { "1.1", "-1" };
         
         for (String fraction : fractions) {
-            Box[] boxes = new Box[]{new Box()};
+            Box[] boxes = new Box[] { new Box() };
             boxes[0].add("id", POPULATION_ID_1);
             boxes[0].add("init", fraction);
             PottsSeries series = makeSeriesForPopulation(boxes);
@@ -650,10 +670,10 @@ public class PottsSeriesTest {
         String[] fractions = new String[] { "0", "10", "1E2" };
         String[] paddings = new String[] { "0", "10", "1E2" };
         int[] values = new int[] { 0, 10, 100 };
-    
+        
         for (int i = 0; i < fractions.length; i++) {
             for (int j = 0; j < paddings.length; j++) {
-                Box[] boxes = new Box[]{new Box()};
+                Box[] boxes = new Box[] { new Box() };
                 boxes[0].add("id", POPULATION_ID_1);
                 boxes[0].add("init", fractions[i] + ":" + paddings[j]);
                 PottsSeries series = makeSeriesForPopulation(boxes);
@@ -673,7 +693,7 @@ public class PottsSeriesTest {
         
         for (int i = 0; i < fractions.length; i++) {
             for (String padding : paddings) {
-                Box[] boxes = new Box[]{new Box()};
+                Box[] boxes = new Box[] { new Box() };
                 boxes[0].add("id", POPULATION_ID_1);
                 boxes[0].add("init", fractions[i] + ":" + padding);
                 PottsSeries series = makeSeriesForPopulation(boxes);
@@ -729,8 +749,12 @@ public class PottsSeriesTest {
                 
                 for (String parameter : POPULATION_PARAMETER_NAMES) {
                     double expected = POPULATION.getDouble(parameter);
-                    if (parameter.equals(populationParameter1)) { expected = value; }
-                    if (parameter.equals(populationParameter2)) { expected *= scale; }
+                    if (parameter.equals(populationParameter1)) {
+                        expected = value;
+                    }
+                    if (parameter.equals(populationParameter2)) {
+                        expected *= scale;
+                    }
                     assertEquals(expected, box.getDouble(parameter), EPSILON);
                 }
             }
@@ -781,8 +805,12 @@ public class PottsSeriesTest {
                     assertEquals(POPULATION.get(parameter), box3.get(parameter));
                     
                     double expected = POPULATION.getDouble(parameter);
-                    if (parameter.equals(populationParameter1)) { expected = value; }
-                    if (parameter.equals(populationParameter2)) { expected *= scale; }
+                    if (parameter.equals(populationParameter1)) {
+                        expected = value;
+                    }
+                    if (parameter.equals(populationParameter2)) {
+                        expected *= scale;
+                    }
                     assertEquals(expected, box2.getDouble(parameter), EPSILON);
                 }
             }
@@ -803,7 +831,9 @@ public class PottsSeriesTest {
         
         for (String parameter : POPULATION_PARAMETER_NAMES) {
             double expected = POPULATION.getDouble(parameter);
-            if (parameter.equals(convertedParameter)) { expected *= DS; }
+            if (parameter.equals(convertedParameter)) {
+                expected *= DS;
+            }
             assertEquals(expected, box.getDouble(parameter), EPSILON);
         }
     }
@@ -826,7 +856,9 @@ public class PottsSeriesTest {
         
         for (String parameter : POPULATION_PARAMETER_NAMES) {
             double expected = POPULATION.getDouble(parameter);
-            if (parameter.equals(convertedParameter)) { expected *= DS; }
+            if (parameter.equals(convertedParameter)) {
+                expected *= DS;
+            }
             assertEquals(expected, box1.getDouble(parameter), EPSILON);
             assertEquals(expected, box2.getDouble(parameter), EPSILON);
             assertEquals(expected, box3.getDouble(parameter), EPSILON);
@@ -857,7 +889,7 @@ public class PottsSeriesTest {
             field.setAccessible(true);
             field.setInt(series, 3);
         } catch (Exception ignored) { }
-            
+        
         assertEquals(className, series.getSimClass());
     }
     

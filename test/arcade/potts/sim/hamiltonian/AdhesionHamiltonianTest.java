@@ -156,7 +156,7 @@ public class AdhesionHamiltonianTest {
         
         doReturn(id).when(cell).getID();
         doReturn(pop).when(cell).getPop();
-    
+        
         double[] adhesion = new double[] {
                 randomDoubleBetween(1, 100),
                 randomDoubleBetween(1, 100),
@@ -164,7 +164,7 @@ public class AdhesionHamiltonianTest {
         EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = null;
         ahm.popToAdhesion.put(pop, adhesion);
         ahm.popToAdhesionRegion.put(pop, adhesionRegion);
-    
+        
         ahm.register(cell);
         AdhesionHamiltonianConfig config = ahm.configs.get(id);
         
@@ -185,7 +185,7 @@ public class AdhesionHamiltonianTest {
         
         doReturn(id).when(cell).getID();
         doReturn(pop).when(cell).getPop();
-    
+        
         double[] adhesion = new double[] {
                 randomDoubleBetween(1, 100),
                 randomDoubleBetween(1, 100),
@@ -195,10 +195,10 @@ public class AdhesionHamiltonianTest {
         
         EnumMap<Region, EnumMap<Region, Double>> adhesionRegion = new EnumMap<>(Region.class);
         adhesionRegion.put(Region.NUCLEUS, adhesionNucleus);
-    
+        
         ahm.popToAdhesion.put(pop, adhesion);
         ahm.popToAdhesionRegion.put(pop, adhesionRegion);
-    
+        
         ahm.register(cell);
         AdhesionHamiltonianConfig config = ahm.configs.get(id);
         

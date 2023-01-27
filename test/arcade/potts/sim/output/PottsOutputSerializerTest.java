@@ -240,7 +240,7 @@ public class PottsOutputSerializerTest {
         JsonSerializationContext context = mock(JsonSerializationContext.class);
         JsonElement expected = mock(JsonElement.class);
         doReturn(expected).when(context).serialize(locationContainer, PottsLocationContainer.class);
-    
+        
         LocationSerializer serializer = new LocationSerializer();
         JsonElement jsonElement = serializer.serialize(locationContainer, null, context);
         

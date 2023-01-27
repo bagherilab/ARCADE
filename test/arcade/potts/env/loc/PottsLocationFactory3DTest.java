@@ -592,7 +592,7 @@ public class PottsLocationFactory3DTest {
     @Test
     public void decrease_unconnectedTarget_updatesList() {
         ArrayList<Voxel> voxels = new ArrayList<>();
-    
+        
         voxels.add(new Voxel(0, 0, 0));
         voxels.add(new Voxel(1, 0, 0));
         voxels.add(new Voxel(-1, 0, 0));
@@ -602,13 +602,13 @@ public class PottsLocationFactory3DTest {
         voxels.add(new Voxel(-1, -1, 0));
         voxels.add(new Voxel(1, -1, 0));
         voxels.add(new Voxel(-1, 1, 0));
-    
+        
         voxels.add(new Voxel(0, 0, -1));
         voxels.add(new Voxel(1, 0, -1));
         voxels.add(new Voxel(-1, 0, -1));
         voxels.add(new Voxel(0, -1, -1));
         voxels.add(new Voxel(0, 1, -1));
-    
+        
         voxels.add(new Voxel(0, 0, 1));
         voxels.add(new Voxel(1, 0, 1));
         voxels.add(new Voxel(-1, 0, 1));

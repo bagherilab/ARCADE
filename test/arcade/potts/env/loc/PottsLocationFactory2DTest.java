@@ -440,7 +440,7 @@ public class PottsLocationFactory2DTest {
         voxels.add(new Voxel(3, 0, 0));
         voxels.add(new Voxel(4, 0, 0));
         PottsLocationFactory2D.decrease(voxels, 2, RANDOM);
-    
+        
         ArrayList<Voxel> expected = new ArrayList<>();
         expected.add(new Voxel(0, 0, 0));
         expected.add(new Voxel(1, 0, 0));

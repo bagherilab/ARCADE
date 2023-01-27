@@ -71,10 +71,10 @@ public class PottsARCADETest {
     public void getResource_requiredFiles_returnsResource() {
         PottsARCADE arcade = new PottsARCADE();
         
-        String parameterFile = arcade.getResource("parameter.xml");
+        String parameterFile = arcade.getResource("parameter.potts.xml");
         assertNotNull(parameterFile);
         
-        String commandFile = arcade.getResource("command.xml");
+        String commandFile = arcade.getResource("command.potts.xml");
         assertNotNull(commandFile);
     }
     

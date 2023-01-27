@@ -61,7 +61,10 @@ public class PottsTest {
         @Override
         HashSet<Integer> getUniqueIDs(int x, int y, int z) {
             HashSet<Integer> set = new HashSet<>();
-            if (x == 0 && y == 0) { set.add(1); set.add(2); }
+            if (x == 0 && y == 0) {
+                set.add(1);
+                set.add(2);
+            }
             return set;
         }
         
@@ -85,7 +88,7 @@ public class PottsTest {
     }
     
     static PottsSeries makeSeries(int length, int width, int height) {
-       return makeSeries(length, width, height, 1, 1);
+        return makeSeries(length, width, height, 1, 1);
     }
     
     static PottsSeries makeSeries(int length, int width, int height, double ds, double dt) {
@@ -950,7 +953,7 @@ public class PottsTest {
     public void getCell_validID_returnsObject() {
         PottsSeries series = makeSeries(1, 1, 1);
         PottsMock potts = new PottsMock(series);
-    
+        
         Grid grid = mock(Grid.class);
         potts.grid = grid;
         

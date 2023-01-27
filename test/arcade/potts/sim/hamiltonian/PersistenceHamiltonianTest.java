@@ -338,13 +338,13 @@ public class PersistenceHamiltonianTest {
         doReturn((double) surface).when(location).getSurface(region);
         
         PersistenceHamiltonianConfig config = mock(PersistenceHamiltonianConfig.class);
-    
+        
         double[] vector = new double[] {
                 randomDoubleBetween(1, 10),
                 randomDoubleBetween(1, 10),
                 randomDoubleBetween(1, 10),
         };
-    
+        
         double[] displacement = new double[] {
                 randomDoubleBetween(1, 10),
                 randomDoubleBetween(1, 10),
@@ -355,11 +355,11 @@ public class PersistenceHamiltonianTest {
             Field locationField = PersistenceHamiltonianConfig.class.getDeclaredField("location");
             locationField.setAccessible(true);
             locationField.set(config, location);
-    
+            
             Field vectorField = PersistenceHamiltonianConfig.class.getDeclaredField("vector");
             vectorField.setAccessible(true);
             vectorField.set(config, vector);
-    
+            
             Field displacementField = PersistenceHamiltonianConfig.class.getDeclaredField("displacement");
             displacementField.setAccessible(true);
             displacementField.set(config, displacement);
@@ -376,7 +376,7 @@ public class PersistenceHamiltonianTest {
                 randomDoubleBetween(1, 10),
                 randomDoubleBetween(1, 10),
         };
-    
+        
         double[] vector3 = new double[] {
                 randomDoubleBetween(1, 10),
                 randomDoubleBetween(1, 10),

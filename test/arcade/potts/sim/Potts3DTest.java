@@ -19,7 +19,7 @@ import static arcade.potts.util.PottsEnums.Term;
 public class Potts3DTest {
     static Potts3D potts;
     
-    private static final double[][] VOLUME_MCS = new double[][]{
+    private static final double[][] VOLUME_MCS = new double[][] {
             { 19669, 13, 4.441502 }, {  1586,  2, 1.000000 }, { 12688, 16, 4.703909 },
             { 17430, 14, 4.553762 }, { 11055, 11, 3.770773 }, { 14224, 16, 4.771082 },
             { 20250, 18, 5.307441 }, {  3730, 10, 3.109355 }, { 33286, 22, 6.269841 },
@@ -201,13 +201,15 @@ public class Potts3DTest {
         
         array[index++] = s.clone();
         
-        for (;;) {
+        for (; ; ) {
             int ii = k - 1;
             for (int i = k - 1; i >= 0 && s[i] == n - k + i; i--) {
                 ii--;
             }
             
-            if (ii < 0) { break; }
+            if (ii < 0) {
+                break;
+            }
             
             s[ii]++;
             for (++ii; ii < k; ii++) {
@@ -242,7 +244,7 @@ public class Potts3DTest {
         
         h = potts3D.getHamiltonian(Term.SUBSTRATE, series);
         assertTrue(h instanceof SubstrateHamiltonian);
-    
+        
         h = potts3D.getHamiltonian(Term.PERSISTENCE, series);
         assertTrue(h instanceof PersistenceHamiltonian);
     }
@@ -669,7 +671,7 @@ public class Potts3DTest {
             { 1 }, // Y
     };
     
-    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS = new int[][] { {} };
+    private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ZERO_LINKS = new int[][] { { } };
     
     private static final int[][] COMBOS_TWO_NEIGHBORS_ADJACENT_ONE_LINK = new int[][] { { 0 } };
     
@@ -885,7 +887,7 @@ public class Potts3DTest {
             { 1, 0, 0 }, // Y
     };
     
-    private static final int[][] COMBOS_THREE_NEIGHBORS_PLANE_ZERO_LINKS = new int[][] { {} };
+    private static final int[][] COMBOS_THREE_NEIGHBORS_PLANE_ZERO_LINKS = new int[][] { { } };
     
     private static final int[][] COMBOS_THREE_NEIGHBORS_PLANE_ONE_LINK = new int[][] {
             { 0 },
@@ -896,7 +898,7 @@ public class Potts3DTest {
             { 0, 1 },
     };
     
-    private static final int[][] COMBOS_THREE_NEIGHBORS_CORNER_ZERO_LINKS = new int[][] { {} };
+    private static final int[][] COMBOS_THREE_NEIGHBORS_CORNER_ZERO_LINKS = new int[][] { { } };
     
     private static final int[][] COMBOS_THREE_NEIGHBORS_CORNER_ONE_LINK = new int[][] {
             { 0 },
@@ -1240,7 +1242,7 @@ public class Potts3DTest {
             { 1, 1, 0, 0, 0 }, // Y
     };
     
-    private static final int[][] COMBOS_FOUR_NEIGHBORS_PLANE_ZERO_LINKS = new int[][] { {} };
+    private static final int[][] COMBOS_FOUR_NEIGHBORS_PLANE_ZERO_LINKS = new int[][] { { } };
     
     private static final int[][] COMBOS_FOUR_NEIGHBORS_PLANE_ONE_LINK = new int[][] {
             { 0 },
@@ -1269,7 +1271,7 @@ public class Potts3DTest {
             { 0, 1, 2, 3 },
     };
     
-    private static final int[][] COMBOS_FOUR_NEIGHBORS_AXIS_ZERO_LINKS = new int[][] { {} };
+    private static final int[][] COMBOS_FOUR_NEIGHBORS_AXIS_ZERO_LINKS = new int[][] { { } };
     
     private static final int[][] COMBOS_FOUR_NEIGHBORS_AXIS_ONE_LINK = new int[][] {
             { 0 },
@@ -1536,7 +1538,7 @@ public class Potts3DTest {
             }
         }
     }
-
+    
     @Test
     public void getConnectivity_fourNeighborsAxisXThreeLinksInvalid_returnsFalse() {
         for (int rotation = 0; rotation < 4; rotation++) {
@@ -1678,7 +1680,7 @@ public class Potts3DTest {
             { 1, 0, 2, 1, 0, 2, 0, 2 }, // Y
     };
     
-    private static final int[][] COMBOS_FIVE_NEIGHBORS_ZERO_LINKS = new int[][] { {} };
+    private static final int[][] COMBOS_FIVE_NEIGHBORS_ZERO_LINKS = new int[][] { { } };
     
     private static final int[][] COMBOS_FIVE_NEIGHBORS_ONE_LINK = new int[8][1];
     

@@ -28,7 +28,7 @@ public class PottsLocations3DTest {
         voxels.add(new Voxel(0, 0, 0));
         PottsLocations3D oldLoc = new PottsLocations3D(new ArrayList<>());
         PottsLocation newLoc = oldLoc.makeLocation(voxels);
-
+        
         assertTrue(newLoc instanceof PottsLocation3D);
         assertEquals(1, newLoc.voxels.size());
     }
@@ -70,7 +70,7 @@ public class PottsLocations3DTest {
             int sizeDefault = loc.locations.get(Region.DEFAULT).voxels.size();
             int sizeRegion = loc.locations.get(Region.NUCLEUS).voxels.size();
             
-            assertEquals(n * n  * n - target, sizeDefault);
+            assertEquals(n * n * n - target, sizeDefault);
             assertEquals(target, sizeRegion);
         }
     }

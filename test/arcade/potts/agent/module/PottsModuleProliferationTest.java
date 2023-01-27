@@ -92,7 +92,7 @@ public class PottsModuleProliferationTest {
     public void step_givenPhaseS_callsMethod() {
         PottsModuleProliferation module = spy(new PottsModuleProliferationMock(cellMock));
         module.phase = Phase.PROLIFERATIVE_S;
-
+        
         module.step(randomMock, simMock);
         verify(module).stepS(randomMock);
         verify(module, never()).stepG1(randomMock);
@@ -104,7 +104,7 @@ public class PottsModuleProliferationTest {
     public void step_givenPhaseG2_callsMethod() {
         PottsModuleProliferation module = spy(new PottsModuleProliferationMock(cellMock));
         module.phase = Phase.PROLIFERATIVE_G2;
-
+        
         module.step(randomMock, simMock);
         verify(module).stepG2(randomMock);
         verify(module, never()).stepG1(randomMock);
@@ -117,7 +117,7 @@ public class PottsModuleProliferationTest {
         PottsModuleProliferation module = spy(new PottsModuleProliferationMock(cellMock));
         doNothing().when(module).addCell(randomMock, simMock);
         module.phase = Phase.PROLIFERATIVE_M;
-
+        
         module.step(randomMock, simMock);
         verify(module).stepM(randomMock, simMock);
         verify(module, never()).stepG1(randomMock);

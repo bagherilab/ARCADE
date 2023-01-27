@@ -73,7 +73,7 @@ public class PottsOutputDeserializerTest {
         
         TypeToken<LocationContainer> location = new TypeToken<LocationContainer>() { };
         assertSame(gson.getAdapter(location).getClass(), TreeTypeAdapter.class);
-    
+        
         TypeToken<PottsLocationContainer> pottsLocation = new TypeToken<PottsLocationContainer>() { };
         assertSame(gson.getAdapter(pottsLocation).getClass(), TreeTypeAdapter.class);
     }

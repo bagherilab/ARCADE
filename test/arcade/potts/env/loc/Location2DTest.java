@@ -194,7 +194,7 @@ public class Location2DTest {
                 { { 1, 1, 0 }, { 2, 1, 0 }, { 1, 2, 0 } },
                 { { 1, 1, 0 }, { 2, 1, 0 }, { 1, 2, 0 }, { 2, 2, 0 } },
         };
-    
+        
         for (int i = 0; i < heights.length; i++) {
             ArrayList<Voxel> voxels = new ArrayList<>();
             for (int[] v : voxelLists[i]) {
@@ -257,7 +257,7 @@ public class Location2DTest {
                 { { 0, 1, 0 }, { 1, 0, 0 }, { 2, 1, 0 } },
                 { { 0, 1, 0 }, { 1, 0, 0 }, { 2, 1, 0 }, { 1, 2, 0 } },
         };
-    
+        
         for (int i = 0; i < heights.length; i++) {
             ArrayList<Voxel> voxels = new ArrayList<>();
             for (int[] v : voxelLists[i]) {
@@ -278,7 +278,7 @@ public class Location2DTest {
                 { { 1, 1, 0 }, { 0, 1, 0 }, { 1, 0, 0 }, { 2, 1, 0 } },
                 { { 1, 1, 0 }, { 0, 1, 0 }, { 1, 0, 0 }, { 2, 1, 0 }, { 1, 2, 0 } },
         };
-    
+        
         for (int i = 0; i < heights.length; i++) {
             ArrayList<Voxel> voxels = new ArrayList<>();
             for (int[] v : voxelLists[i]) {

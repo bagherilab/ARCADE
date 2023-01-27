@@ -267,7 +267,7 @@ public class PottsLocationFactoryTest {
                 assertTrue(voxel.z <= h);
                 assertTrue(voxel.z >= 0);
             }
-    
+            
             for (Voxel voxel : container.regions.get(Region.NUCLEUS)) {
                 assertTrue(voxel.x <= s - padding);
                 assertTrue(voxel.x >= 0);

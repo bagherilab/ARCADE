@@ -60,10 +60,10 @@ public class AdhesionHamiltonian2DTest {
         
         PottsCell cell1 = mock(PottsCell.class);
         doReturn(1).when(cell1).getPop();
-    
+        
         PottsCell cell2 = mock(PottsCell.class);
         doReturn(2).when(cell2).getPop();
-    
+        
         PottsCell cell3 = mock(PottsCell.class);
         doReturn(1).when(cell3).getPop();
         

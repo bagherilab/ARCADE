@@ -91,13 +91,13 @@ public class PottsLocationTest {
         
         @Override
         int calculateSurface() { return surface + LOCATION_SURFACE; }
-    
+        
         @Override
         int calculateHeight() { return height + LOCATION_HEIGHT; }
         
         @Override
         int updateSurface(Voxel voxel) { return DELTA_SURFACE; }
-    
+        
         @Override
         int updateHeight(Voxel voxel) { return DELTA_HEIGHT; }
         
@@ -138,11 +138,16 @@ public class PottsLocationTest {
         @Override
         Direction getSlice(Direction direction, HashMap<Direction, Integer> diameters) {
             switch (direction) {
-                case XY_PLANE: return Direction.NEGATIVE_YZ;
-                case POSITIVE_XY: return Direction.YZ_PLANE;
-                case NEGATIVE_ZX: return Direction.POSITIVE_YZ;
-                case YZ_PLANE: return Direction.ZX_PLANE;
-                default: return null;
+                case XY_PLANE:
+                    return Direction.NEGATIVE_YZ;
+                case POSITIVE_XY:
+                    return Direction.YZ_PLANE;
+                case NEGATIVE_ZX:
+                    return Direction.POSITIVE_YZ;
+                case YZ_PLANE:
+                    return Direction.ZX_PLANE;
+                default:
+                    return null;
             }
         }
         
@@ -744,8 +749,10 @@ public class PottsLocationTest {
         assertEquals(voxelsASplit, voxelsA);
         assertEquals(voxelsBSplit, voxelsB);
         
-        voxelsA.clear(); voxelsB.clear();
-        voxelsASplit.clear(); voxelsBSplit.clear();
+        voxelsA.clear();
+        voxelsB.clear();
+        voxelsASplit.clear();
+        voxelsBSplit.clear();
     }
     
     @Test

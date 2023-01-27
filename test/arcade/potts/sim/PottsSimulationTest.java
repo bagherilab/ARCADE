@@ -105,7 +105,7 @@ public class PottsSimulationTest {
         public Potts makePotts() { return mock(Potts.class); }
         
         private void mockLocations(PottsLocationFactory factory, MiniBox pop,
-                                          int n, int m, MersenneTwisterFast random) {
+                                   int n, int m, MersenneTwisterFast random) {
             HashMap<Integer, PottsLocation> idToLocation = new HashMap<>();
             locationMap.put(pop, idToLocation);
             
@@ -132,7 +132,7 @@ public class PottsSimulationTest {
         }
         
         @Override
-        PottsLocationFactory makeLocationFactory() {
+        public PottsLocationFactory makeLocationFactory() {
             PottsLocationFactory factory = mock(PottsLocationFactory.class);
             
             try {
@@ -195,7 +195,7 @@ public class PottsSimulationTest {
         }
         
         @Override
-        PottsCellFactory makeCellFactory() {
+        public PottsCellFactory makeCellFactory() {
             PottsCellFactory factory = mock(PottsCellFactory.class);
             
             try {
@@ -359,7 +359,7 @@ public class PottsSimulationTest {
         PottsSimulationMock sim = spy(new PottsSimulationMock(RANDOM_SEED, series));
         doNothing().when(sim).doOutput(anyBoolean());
         sim.start();
-    
+        
         verify(sim).setupPotts();
         verify(sim).setupAgents();
         verify(sim).setupEnvironment();
