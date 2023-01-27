@@ -22,10 +22,12 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  * <p>
  * Generic serializers include:
  * <ul>
- *     <li>{@link SeriesSerializer} for serializing {@link Series} settings</li>
- *     <li>{@link MiniBoxSerializer} for serializing {@link MiniBox} objects</li>
- *     <li>{@link CellListSerializer} for serializing a list of {@link CellContainer}</li>
- *     <li>{@link LocationListSerializer} for serializing a list of {@link LocationContainer}</li>
+ *     <li>{@code SeriesSerializer} for serializing {@link Series}</li>
+ *     <li>{@code MiniBoxSerializer} for serializing {@link MiniBox}</li>
+ *     <li>{@code CellListSerializer} for serializing a list of
+ *     {@link CellContainer}</li>
+ *     <li>{@code LocationListSerializer} for serializing a list of
+ *     {@link LocationContainer}</li>
  * </ul>
  */
 

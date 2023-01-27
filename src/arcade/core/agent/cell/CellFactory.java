@@ -6,10 +6,12 @@ import arcade.core.sim.Series;
 /**
  * Factory class for {@link Cell} objects.
  * <p>
- * The factory implementation manages the creation of {@link Cell} objects by either:
+ * The factory manages the creation of {@link Cell} objects by either:
  * <ul>
- *     <li>Loading existing {@link CellContainer} instances from a given JSON file</li>
- *     <li>Generating new {@link CellContainer} instances based on population settings</li>
+ *     <li>Loading existing {@link CellContainer} instances from a given JSON
+ *     file</li>
+ *     <li>Generating new {@link CellContainer} instances based on population
+ *     settings</li>
  * </ul>
  */
 

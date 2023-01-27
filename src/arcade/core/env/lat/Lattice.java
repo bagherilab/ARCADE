@@ -11,11 +11,10 @@ import static arcade.core.util.Enums.Category;
  * A {@code Lattice} represents an environment layer.
  * <p>
  * Each lattice is a 3D array of doubles, where the values can represent
- * molecular concentrations or other continuous quantities.
- * Each lattice is associated with {@link Operation} objects that characterize
- * environmental behaviors.
- * The {@link Operation} object(s) are stepped during the step method of the
- * {@code Lattice}.
+ * molecular concentrations or other continuous quantities. Each lattice is
+ * associated with {@link Operation} objects that characterize environmental
+ * behaviors. The {@link Operation} object(s) are stepped during the step method
+ * of the {@code Lattice}.
  */
 
 public interface Lattice extends Steppable {
@@ -46,14 +45,6 @@ public interface Lattice extends Steppable {
      * @return  the height of the lattice
      */
     int getHeight();
-    
-    /**
-     * Sets the lattice operation.
-     *
-     * @param category  the operation category
-     * @param operation  the lattice operation
-     */
-    void setOperation(Category category, Operation operation);
     
     /**
      * Gets the lattice operation object.
@@ -93,7 +84,7 @@ public interface Lattice extends Steppable {
     void setField(double value);
     
     /**
-     * Gets the sum of values across lattice coordinates corresponding to the location.
+     * Gets the sum of values across lattice coordinates for the location.
      *
      * @param location  the location
      * @return  the sum value
@@ -101,7 +92,7 @@ public interface Lattice extends Steppable {
     double getTotalValue(Location location);
     
     /**
-     * Gets the average value across lattice coordinates corresponding to the location.
+     * Gets the average value across lattice coordinates for the location.
      *
      * @param location  the location
      * @return  the average values
@@ -109,7 +100,7 @@ public interface Lattice extends Steppable {
     double getAverageValue(Location location);
     
     /**
-     * Updates the value at the lattice coordinates corresponding to the location.
+     * Updates the value at the lattice coordinates for the location.
      *
      * @param location  the location
      * @param fraction  the fraction change in value
@@ -117,7 +108,7 @@ public interface Lattice extends Steppable {
     void updateValue(Location location, double fraction);
     
     /**
-     * Increments the value at the lattice coordinates corresponding to the location.
+     * Increments the value at the lattice coordinates for the location.
      *
      * @param location  the location
      * @param increment  the change in value

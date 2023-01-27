@@ -12,7 +12,7 @@ import arcade.core.util.Box;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
- * Custom XML file loader that uses SAX parsing to iterate through the XML file.
+ * Custom XML file loader that uses SAX parsing to iterate through XML files.
  * <p>
  * XML files should only be one level deep, with all values as attributes.
  * Results are stored in a {@link arcade.core.util.Box} object.
@@ -95,7 +95,9 @@ public class InputLoader extends DefaultHandler {
             if (split.length == 2) {
                 filter = split[1];
                 tag = att.getValue(filter);
-                if (tag == null) { return; }
+                if (tag == null) {
+                    return;
+                }
                 id = tag + TAG_SEPARATOR + id;
             } else {
                 filter = "";

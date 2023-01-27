@@ -18,12 +18,12 @@ import arcade.core.util.MiniBox;
 /**
  * Custom builder for simulation setup XMLs.
  * <p>
- * The class checks for specific tags, which determine where the parsed data
- * is placed for further processing by the {@link arcade.core.sim.Series} class.
+ * The class checks for specific tags, which determine where the parsed data is
+ * placed for further processing by the {@link arcade.core.sim.Series} class.
  * Once the end tag for a given {@code <series>} is reached, a new
- * {@link arcade.core.sim.Series} object is instantiated.
- * All content in the setup XML is stored as attribute-value pairs; there
- * is no content between tags (the {@code characters} method is not used).
+ * {@link arcade.core.sim.Series} object is instantiated. All content in the
+ * setup XML is stored as attribute-value pairs; there is no content between
+ * tags (the {@code characters} method is not used).
  * <p>
  * General structure of the XML file (attributes not listed):
  * <pre>
@@ -88,9 +88,8 @@ public abstract class InputBuilder implements ContentHandler {
      * <p>
      * Reads through the setup XML file using an SAX parser with custom defined
      * content handler, which creates the {@link arcade.core.sim.Series} objects
-     * as they are parsed.
-     * SAX parses XML files using event handlers and therefore does not load the
-     * entire XML file into memory (in contrast to DOM).
+     * as they are parsed. SAX parses XML files using event handlers and so does
+     * not load the entire XML file into memory (in contrast to DOM).
      *
      * @param xml  the XML file
      * @return  a list of {@link arcade.core.sim.Series} instances
@@ -107,7 +106,7 @@ public abstract class InputBuilder implements ContentHandler {
     }
     
     /**
-     * Creates a {@link arcade.core.util.MiniBox} dictionary from given attributes.
+     * Creates a {@link arcade.core.util.MiniBox} dictionary from attributes.
      *
      * @param atts  the attributes
      * @return  a dictionary

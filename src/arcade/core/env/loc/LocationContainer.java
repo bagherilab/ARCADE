@@ -6,9 +6,8 @@ import arcade.core.agent.cell.CellContainer;
  * Container class for {@link Location} objects.
  * <p>
  * The container implementation should contain the minimal set of information
- * needed to initialize a {@link Location} object.
- * The container is used by the serializers/deserializers to save/load location
- * objects for the simulation.
+ * needed to initialize a {@link Location} object. The container is used by the
+ * serializers/deserializers to save/load location objects for the simulation.
  */
 
 public interface LocationContainer {

@@ -4,7 +4,7 @@ import java.awt.Color;
 import sim.util.gui.ColorMap;
 
 /**
- * Implementation of {@code ColorMap} for discrete and continuous color selection.
+ * Implementation of {@code ColorMap} for discrete and continuous colors.
  * <p>
  * Custom color map management for use with visualization classes in
  * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
@@ -136,9 +136,9 @@ public class Colors implements ColorMap {
     /**
      * Gets color map index for given number value.
      * <p>
-     * Applies modulo if the {@code mod} is not zero.
-     * Index is determined as (length of bins in the colormap)*(level scaled
-     * between the minimum and maximum).
+     * Applies modulo if the {@code mod} is not zero. Index is determined as
+     * (length of bins in the colormap)*(level scaled between the minimum and
+     * maximum).
      *
      * @param level  the number value
      * @return  the color map index
@@ -156,7 +156,9 @@ public class Colors implements ColorMap {
      */
     @Override
     public Color getColor(double level) {
-        if (level == defaultValue) { return EMPTY; }
+        if (level == defaultValue) {
+            return EMPTY;
+        }
         return colors[getIndex(level)];
     }
     
@@ -168,7 +170,9 @@ public class Colors implements ColorMap {
      */
     @Override
     public int getRGB(double level) {
-        if (level == defaultValue) { return EMPTY.getRGB(); }
+        if (level == defaultValue) {
+            return EMPTY.getRGB();
+        }
         return colors[getIndex(level)].getRGB();
     }
     
@@ -180,7 +184,9 @@ public class Colors implements ColorMap {
      */
     @Override
     public int getAlpha(double level) {
-        if (level == defaultValue) { return EMPTY.getAlpha(); }
+        if (level == defaultValue) {
+            return EMPTY.getAlpha();
+        }
         return colors[getIndex(level)].getAlpha();
     }
     

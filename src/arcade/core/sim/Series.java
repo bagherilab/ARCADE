@@ -16,9 +16,8 @@ import arcade.core.util.MiniBox;
  * <p>
  * The class is instantiated by parsing an XML document specifying model setup.
  * Constructors for the {@link Simulation} objects are built, but not called to
- * instantiate the simulation until the series is run.
- * {@code Series} objects that are not valid are flagged with {@code isSkipped}
- * and are not run.
+ * instantiate the simulation until the series is run. {@code Series} objects
+ * that are not valid are flagged with {@code isSkipped} and are not run.
  * <p>
  * {@link Simulation} objects are passed their parent {@code Series} object.
  */
@@ -36,10 +35,10 @@ public abstract class Series {
     /** Offset of random seed to avoid using seed of 0. */
     public static final int SEED_OFFSET = 1000;
     
-    /** {@code true} if the {@code Series} is not valid, {@code false} otherwise. */
+    /** {@code true} if {@code Series} is not valid, {@code false} otherwise. */
     public boolean isSkipped;
     
-    /** {@code true} if {@code Series} is run with visualization, {@code false} otherwise. */
+    /** {@code true} if {@code Series} is visualized, {@code false} otherwise. */
     public boolean isVis;
     
     /** Output saver for the simulation. */
@@ -111,8 +110,8 @@ public abstract class Series {
      * @param setupDicts  the map of attribute to value for single instance tags
      * @param setupLists  the map of attribute to value for multiple instance tags
      * @param path  the path for simulation output
-     * @param parameters  the default parameter values loaded from {@code parameter.xml}
-     * @param isVis  {@code true} if run with visualization, {@code false} otherwise
+     * @param parameters  the default parameter values
+     * @param isVis  {@code true} if visualized, {@code false} otherwise
      */
     public Series(HashMap<String, MiniBox> setupDicts,
                   HashMap<String, ArrayList<Box>> setupLists,
@@ -225,7 +224,9 @@ public abstract class Series {
      * @return  {@code true if valid}, {@code false} otherwise
      */
     protected static boolean isValidNumber(Box box, String key) {
-        if (box.getValue(key) == null) { return false; }
+        if (box.getValue(key) == null) {
+            return false;
+        }
         return box.getValue(key).matches(NUMBER_REGEX);
     }
     
@@ -237,7 +238,9 @@ public abstract class Series {
      * @return  {@code true if valid}, {@code false} otherwise
      */
     protected static boolean isValidFraction(Box box, String key) {
-        if (box.getValue(key) == null) { return false; }
+        if (box.getValue(key) == null) {
+            return false;
+        }
         return box.getValue(key).matches(FRACTION_REGEX);
     }
     
@@ -316,10 +319,10 @@ public abstract class Series {
      * Updates conversion string into a value.
      * <p>
      * Conversion string is in the form of {@code D^N} where {@code D} is either
-     * {@code DS}, {@code DZ}, or {@code DT} and {@code N} is an integer exponent.
-     * Conversions with {@code DZ} are replaced with {@code DS}.
-     * Multiple terms can be chained in the form {@code D^N1.D^N2}.
-     * The {@code ^N} is not required if N = 1.
+     * {@code DS}, {@code DZ}, or {@code DT} and {@code N} is an integer
+     * exponent. Conversions with {@code DZ} are replaced with {@code DS}.
+     * Multiple terms can be chained in the form {@code D^N1.D^N2}. The
+     * {@code ^N} is not required if N = 1.
      *
      * @param convert  the conversion string
      * @param ds  the spatial conversion factor
@@ -327,15 +330,15 @@ public abstract class Series {
      * @return  the updated conversion factor
      */
     protected static double parseConversion(String convert, double ds, double dt) {
-       return parseConversion(convert, ds, ds, dt);
+        return parseConversion(convert, ds, ds, dt);
     }
     
     /**
      * Updates conversion string into a value.
      * <p>
      * Conversion string is in the form of {@code D^N} where {@code D} is either
-     * {@code DS}, {@code DZ}, or {@code DT} and {@code N} is an integer exponent.
-     * Multiple terms can be chained in the form {@code D^N1.D^N2}.
+     * {@code DS}, {@code DZ}, or {@code DT} and {@code N} is an integer
+     * exponent. Multiple terms can be chained in the form {@code D^N1.D^N2}.
      * The {@code ^N} is not required if N = 1.
      *
      * @param convert  the conversion string
@@ -397,9 +400,10 @@ public abstract class Series {
      */
     protected abstract String getVisClass();
     
-    /** Calls {@code runSim} for each random seed.
+    /**
+     * Calls {@code runSim} for each random seed.
      *
-     * @throws Exception  if the simulation constructor cannot be instantiated
+     * @throws Exception  if simulation constructor cannot be instantiated
      */
     public void runSims() throws Exception {
         long simStart;
@@ -439,7 +443,9 @@ public abstract class Series {
         // Run simulation loop.
         double tick;
         do {
-            if (!state.schedule.step(state)) { break; }
+            if (!state.schedule.step(state)) {
+                break;
+            }
             tick = state.schedule.getTime();
             
             if (tick >= checkpoint) {
@@ -456,11 +462,13 @@ public abstract class Series {
     /**
      * Creates controller for visualization.
      *
-     * @throws Exception  if the visualization constructor cannot be instantiated
+     * @throws Exception  if visualization constructor cannot be instantiated
      */
     public void runVis() throws Exception {
         if (System.getProperty("java.awt.headless") != null
-                && System.getProperty("java.awt.headless").equals("true")) { return; }
+                && System.getProperty("java.awt.headless").equals("true")) {
+            return;
+        }
         Simulation sim = (Simulation) (simCons.newInstance(startSeed + SEED_OFFSET, this));
         ((GUIState) visCons.newInstance(sim)).createController();
     }

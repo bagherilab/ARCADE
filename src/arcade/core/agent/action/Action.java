@@ -7,8 +7,8 @@ import arcade.core.sim.Simulation;
 /**
  * An {@code Action} object is a steppable that interacts with agents.
  * <p>
- * {@code Action} objects represent any entity that interacts with agents.
- * They can be used for:
+ * {@code Action} objects represent any entity that interacts with agents. They
+ * can be used for:
  * <ul>
  *     <li>introducing outside perturbations to the cells in the system, such as
  *     applying a treatment intervention or wounding the tissue</li>

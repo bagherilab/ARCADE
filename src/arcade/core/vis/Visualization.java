@@ -9,9 +9,10 @@ import sim.portrayal.Inspector;
 /**
  * Extension of {@code GUIState} wrapper of simulations for visualization.
  * <p>
- * {@code Visualization} organizes the visualization into {@link arcade.core.vis.Panel}
- * objects, on which visualizations are drawn, and {@link arcade.core.vis.Drawer}
- * objects, which draw the visualization through methods provided by the
+ * {@code Visualization} organizes the visualization into
+ * {@link arcade.core.vis.Panel} objects, on which visualizations are drawn, and
+ * {@link arcade.core.vis.Drawer} objects, which draw the visualization through
+ * methods provided by the
  * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
  */
 
@@ -106,15 +107,15 @@ public abstract class Visualization extends GUIState {
     /**
      * Initializes the visualization.
      *
-     * @param control  the controller
+     * @param controller  the controller
      */
     @Override
-    public void init(Controller control) {
-        super.init(control);
+    public void init(Controller controller) {
+        super.init(controller);
         panels = createPanels();
         drawers = createDrawers();
         for (Panel panel : panels) {
-            panel.register(control);
+            panel.register(controller);
         }
     }
     
