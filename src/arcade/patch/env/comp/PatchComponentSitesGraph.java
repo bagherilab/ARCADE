@@ -13,6 +13,9 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Function;
 import arcade.patch.sim.PatchSeries;
+import static arcade.patch.env.comp.PatchComponentSitesGraphFactory.EdgeLevel;
+import static arcade.patch.env.comp.PatchComponentSitesGraphFactory.EdgeTag;
+import static arcade.patch.env.comp.PatchComponentSitesGraphFactory.EdgeType;
 import static arcade.patch.env.comp.PatchComponentSitesGraphUtilities.*;
 
 /**
@@ -49,135 +52,32 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /** Tolerance for difference in internal and external concentrations. */
     private static final double DELTA_TOLERANCE = 1E-8;
     
-    /** Edge types. */
-    enum EdgeType {
-        /** Code for arteriole edge type. */
-        ARTERIOLE(EdgeCategory.ARTERY),
-        
-        /** Code for artery edge type. */
-        ARTERY(EdgeCategory.ARTERY),
-        
-        /** Code for capillary edge type. */
-        CAPILLARY(EdgeCategory.CAPILLARY),
-        
-        /** Code for vein edge type. */
-        VEIN(EdgeCategory.VEIN),
-        
-        /** Code for venule edge type. */
-        VENULE(EdgeCategory.VEIN);
-        
-        final EdgeCategory category;
-        
-        EdgeType(EdgeCategory category) {
-            this.category = category;
-        }
-    }
-    
-    enum EdgeCategory {
-        /** Code for artery edge category. */
-        ARTERY(-1),
-        
-        /** Code for capillary edge category. */
-        CAPILLARY(0),
-        
-        /** Code for vein edge category. */
-        VEIN(1);
-        
-        final int sign;
-        
-        EdgeCategory(int sign) {
-            this.sign = sign;
-        }
-    }
-    
-    enum EdgeTag {
-        /** Tag for edge addition in iterative remodeling. */
-        ADD,
-        
-        /** Tag for edge removal in iterative remodeling. */
-        REMOVE,
-    }
-    
-    /** Resolution levels. */
-    enum ResolutionLevel {
-        /** Code for variable resolution level. */
-        VARIABLE(0),
-        
-        /** Code for level 1 resolution. */
-        LEVEL_1(4),
-        
-        /** Code for level 2 resolution. */
-        LEVEL_2(2);
-        
-        final int scale;
-        
-        ResolutionLevel(int scale) {
-            this.scale = scale;
-        }
-    }
-    
-    /** Edge directions. */
-    enum EdgeDirection {
-        /** Code for undefined edge direction. */
-        UNDEFINED,
-        
-        /** Code for up edge direction. */
-        UP,
-        
-        /** Code for up-right edge direction. */
-        UP_RIGHT,
-        
-        /** Code for right edge direction. */
-        RIGHT,
-        
-        /** Code for down-right edge direction. */
-        DOWN_RIGHT,
-        
-        /** Code for down edge direction. */
-        DOWN,
-        
-        /** Code for down-left edge direction. */
-        DOWN_LEFT,
-        
-        /** Code for left edge direction. */
-        LEFT,
-        
-        /** Code for up-left edge direction. */
-        UP_LEFT,
-    }
-    
     /** Maximum number of iterations. */
-    private static final int MAX_ITER = 100;
+    private static final int MAXIMUM_ITERATIONS = 100;
     
     /** Minimum flow rate [um<sup>3</sup>/s]. */
-    private static final double MIN_FLOW = 2000;
-    
-    /** Initial capillary radius [um]. */
-    static final double CAP_RADIUS = 4;
-    
-    /** Maximum capillary radius [um]. */
-    static final double CAP_RADIUS_MAX = 20;
-    
-    /** Minimum capillary radius [um]. */
-    static final double CAP_RADIUS_MIN = 2;
-    
-    /** Viscosity of plasma [mmHg s]. */
-    static final double PLASMA_VISCOSITY = 0.000009;
+    private static final double MINIMUM_FLOW = 2000;
     
     /** Maximum oxygen partial pressure [mmHg]. */
     private static final double MAX_OXYGEN_PARTIAL_PRESSURE = 100;
     
-    /** Solubility of oxygen in tissue. */
-    private final double oxySoluTissue;
+    /** Graph layout type. */
+    private final String graphLayout;
     
-    /** Solubility of oxygen in plasma. */
+    /** Solubility of oxygen in plasma [fmol O2/(um<sup>3</sup> mmHg)]. */
     private final double oxySoluPlasma;
     
-    /** Graph representing the sites. */
-    Graph graph;
+    /** Solubility of oxygen in tissue [fmol O2/(um<sup>3</sup> mmHg)]. */
+    private final double oxySoluTissue;
     
     /** Volume of individual lattice patch [um<sup>3</sup>]. */
-    final double latticePatchVolume;
+    private final double latticePatchVolume;
+    
+    /** Location factory instance for the simulation. */
+    final PatchComponentSitesGraphFactory graphFactory;
+    
+    /** Graph representing the sites. */
+    final Graph graph;
     
     /**
      * Creates a {@link PatchComponentSites} using graph sites.
@@ -185,33 +85,102 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * Loaded parameters include:
      * <ul>
      *     <li>{@code GRAPH_LAYOUT} = graph layout type</li>
-     *     <li>{@code ROOTS_LEFT} = graph roots on left side of environment</li>
-     *     <li>{@code ROOTS_TOP} = graph roots on top side of environment</li>
-     *     <li>{@code ROOTS_RIGHT} = graph roots on right side of environment</li>
-     *     <li>{@code ROOTS_BOTTOM} = graph roots on bottom side of environment</li>
+     *     <li>{@code OXYGEN_SOLUBILITY_PLASMA} = solubility of oxygen in plasma</li>
+     *     <li>{@code OXYGEN_SOLUBILITY_TISSUE} = solubility of oxygen in tissue</li>
      * </ul>
      *
      * @param series  the simulation series
      * @param parameters  the component parameters dictionary
+     * @param random  the random number generator
      */
-    public PatchComponentSitesGraph(Series series, MiniBox parameters) {
+    public PatchComponentSitesGraph(Series series, MiniBox parameters,
+                                    MersenneTwisterFast random) {
         super(series);
         
         // Set loaded parameters.
+        graphLayout = parameters.get("GRAPH_LAYOUT");
         oxySoluPlasma = parameters.getDouble("OXYGEN_SOLUBILITY_PLASMA");
         oxySoluTissue = parameters.getDouble("OXYGEN_SOLUBILITY_TISSUE");
         
         // Set patch parameters.
         MiniBox patch = ((PatchSeries) series).patch;
         latticePatchVolume = patch.getDouble("LATTICE_VOLUME");
+        
+        // Create graph.
+        graphFactory = makeGraphFactory(series);
+        graph = initializeGraph(random);
     }
     
     /**
-     * Gets the {@link arcade.core.util.Graph} representing the sites.
+     * Gets the {@link Graph} representing the sites.
      *
      * @return  the graph object
      */
     public Graph getGraph() { return graph; }
+    
+    /**
+     * Creates a factory for graphs.
+     *
+     * @param series  the simulation series
+     * @return  a {@link Graph} factory
+     */
+    abstract PatchComponentSitesGraphFactory makeGraphFactory(Series series);
+    
+    /**
+     * Gets the lattice indices spanned by an edge between two nodes.
+     *
+     * @param from  the node the edge extends from
+     * @param to  the node the edge extends to
+     * @return  the list of indices
+     */
+    abstract ArrayList<int[]> getSpan(SiteNode from, SiteNode to);
+    
+    /**
+     * Checks if given coordinates are within the environment to add to list.
+     *
+     * @param s  the list of valid coordinates
+     * @param x  the coordinate in the x direction
+     * @param y  the coordinate in the y direction
+     * @param z  the coordinate in the z direction
+     */
+    void checkSite(ArrayList<int[]> s, int x, int y, int z) {
+        if (x >= 0 && x < latticeLength && y >= 0 && y < latticeWidth) {
+            s.add(new int[] { x, y, z });
+        }
+    }
+    
+    /**
+     * Initializes graph for representing sites.
+     * <p>
+     * Calls the correct method to populate the graph with edges (either pattern
+     * or root layout). After the graph is defined, the corresponding indices in
+     * the lattice adjacent to edges are marked.
+     *
+     * @param random  the random number generator
+     * @return  an initialized graph object
+     */
+    Graph initializeGraph(MersenneTwisterFast random) {
+        Graph initGraph;
+        
+        if (graphLayout.equals("*")) {
+            initGraph = graphFactory.initializePatternGraph(random);
+        } else {
+            int iter = 0;
+            do {
+                initGraph = graphFactory.initializeRootGraph(random, graphLayout);
+                iter++;
+            } while (initGraph.getAllEdges().numObjs == 0 && iter < MAXIMUM_ITERATIONS);
+        }
+        
+        for (Object obj : initGraph.getAllEdges()) {
+            SiteEdge edge = (SiteEdge) obj;
+            edge.span = getSpan(edge.getFrom(), edge.getTo());
+            edge.transport.putIfAbsent("GLUCOSE", 0.);
+            edge.transport.putIfAbsent("OXYGEN", 0.);
+        }
+        
+        return initGraph;
+    }
     
     /**
      * Graph step that only considers differences in concentration.
@@ -344,7 +313,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 double pa = edge.area * permeability / edge.wall; // um^3/sec
                 
                 // Skip if flow is less than a certain speed.
-                if (flow < MIN_FLOW) {
+                if (flow < MINIMUM_FLOW) {
                     continue;
                 }
                 
@@ -382,9 +351,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                         int k = coords[2];
                         
                         if (layer.name.equalsIgnoreCase("OXYGEN")) {
-                            delta[k][i][j] += Math.max((extConcNew / oxySoluTissue - (current[k][i][j] + delta[k][i][j])), 0);
+                            delta[k][i][j] += Math.max((extConcNew / oxySoluTissue
+                                    - (current[k][i][j] + delta[k][i][j])), 0);
                         } else {
-                            delta[k][i][j] += Math.max((extConcNew - (current[k][i][j] + delta[k][i][j])), 0);
+                            delta[k][i][j] += Math.max((extConcNew - (current[k][i][j]
+                                    + delta[k][i][j])), 0);
                         }
                     }
                     
@@ -406,7 +377,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * oxygen.
      */
     public static class SiteNode extends Node {
-        /** Node ID */
+        /** Node ID. */
         int id;
         
         /** {@code true} if the node is a root, {@code false} otherwise. */
@@ -451,32 +422,26 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * rate.
      */
     public static class SiteEdge extends Edge {
-        /** List of lattice coordinates spanned by edge */
+        /** List of lattice coordinates spanned by edge. */
         ArrayList<int[]> span;
         
         /** {@code true} if edge as been visited, {@code false} otherwise. */
         public boolean isVisited;
         
-        /** {@code true} if edge is perfused {@code false} otherwise */
+        /** {@code true} if edge is perfused {@code false} otherwise. */
         public boolean isPerfused;
         
-        /**
-         * {@code true} if edge is ignored during traversal, {@code false}
-         * otherwise
-         */
+        /** {@code true} if edge is ignored, {@code false} otherwise. */
         public boolean isIgnored;
         
         /** Edge type. */
         public final EdgeType type;
         
         /** Edge resolution level. */
-        public final ResolutionLevel level;
+        public final EdgeLevel level;
         
         /** Edge tag for iterative remodeling. */
         EdgeTag tag;
-        
-        /** Scaling of edge. */
-        public int scale;
         
         /** Internal radius [um]. */
         public double radius;
@@ -516,23 +481,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
          * @param type  the edge type
          * @param level  the graph resolution level
          */
-        SiteEdge(Node from, Node to, EdgeType type, ResolutionLevel level) {
+        SiteEdge(Node from, Node to, EdgeType type, EdgeLevel level) {
             super(from, to);
             this.type = type;
             this.level = level;
-            this.scale = level.scale;
-            isVisited = false;
-            isPerfused = false;
-            isIgnored = false;
-            fraction = new HashMap<>();
-            transport = new HashMap<>();
-        }
-        
-        SiteEdge(Node from, Node to, EdgeType type, int scale) {
-            super(from, to);
-            this.type = type;
-            this.level = ResolutionLevel.VARIABLE;
-            this.scale = scale;
             isVisited = false;
             isPerfused = false;
             isIgnored = false;
@@ -565,7 +517,6 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
             } else {
                 edge.isVisited = edge.isIgnored;
                 edge.fraction.put(code, -1.0);
-                
             }
             
             if (from.isRoot && !edge.isIgnored) {
@@ -630,11 +581,11 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
             
             // If the graph cannot be traversed, try eliminating edges. Reset
             // counter and the starting node set to recalculate flows.
-            if (counter > MAX_ITER) {
+            if (counter > MAXIMUM_ITERATIONS) {
                 updateTraverse(graph, currSet, false);
                 stops++;
                 
-                if (stops > MAX_ITER) {
+                if (stops > MAXIMUM_ITERATIONS) {
                     updateTraverse(graph, currSet, true);
                     stops = 0;
                 }
@@ -738,7 +689,8 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         for (Object obj : in) {
             SiteEdge edge = (SiteEdge) obj;
             if (!edge.isIgnored) {
-                massIn += edge.flow * getTotal(edge.getFrom().oxygen, oxySoluPlasma) - edge.transport.get(code);
+                massIn += edge.flow * getTotal(edge.getFrom().oxygen, oxySoluPlasma)
+                        - edge.transport.get(code);
             }
         }
         

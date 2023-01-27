@@ -98,12 +98,8 @@
     
     <!-- graph site component parameters -->
     <component class="graph_sites" id="GRAPH_LAYOUT" value="*" description="layout of graph sites" />
-    <component class="graph_sites" id="ROOTS_LEFT" value="x" description="roots at the left of environment (x direction)" />
-    <component class="graph_sites" id="ROOTS_RIGHT" value="x" description="roots at the right of environment (x direction)" />
-    <component class="graph_sites" id="ROOTS_TOP" value="x" description="roots at the top of environment (y direction)" />
-    <component class="graph_sites" id="ROOTS_BOTTOM" value="x" description="roots at the bottom of environment (y direction)" />
-    <component class="graph_sites" id="OXYGEN_SOLUBILITY_TISSUE" value="0.00000131" units="fmol O2/(um^3 mmHg)" />
-    <component class="graph_sites" id="OXYGEN_SOLUBILITY_PLASMA" value="0.00000138" units="fmol O2/(um^3 mmHg)" />
+    <component class="graph_sites" id="OXYGEN_SOLUBILITY_PLASMA" value="0.00000138" units="fmol O2/(um^3 mmHg)" description="solubility of oxygen in plasma"/>
+    <component class="graph_sites" id="OXYGEN_SOLUBILITY_TISSUE" value="0.00000131" units="fmol O2/(um^3 mmHg)" description="solubility of oxygen in tissue" />
     
     <!-- pulse component parameters -->
     <component class="pulse" id="PULSE_INTERVAL" value="1440" unit="min" description="interval between pulses" />

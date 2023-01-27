@@ -7,16 +7,11 @@ import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
 import arcade.core.util.Graph;
-import arcade.core.util.MiniBox;
 import arcade.core.util.Utilities;
 import static arcade.core.util.Graph.Node;
-import static arcade.patch.env.comp.PatchComponentSitesGraphUtilities.*;
 import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteNode;
-import static arcade.patch.env.comp.PatchComponentSitesGraph.EdgeDirection;
-import static arcade.patch.env.comp.PatchComponentSitesGraph.EdgeType;
-import static arcade.patch.env.comp.PatchComponentSitesGraph.ResolutionLevel;
-import static arcade.patch.env.comp.PatchComponentSitesGraph.CAP_RADIUS_MAX;
+import static arcade.patch.env.comp.PatchComponentSitesGraphUtilities.*;
 
 /**
  * Extension of {@link PatchComponentSitesGraph} for rectangular geometry.
@@ -39,8 +34,8 @@ import static arcade.patch.env.comp.PatchComponentSitesGraph.CAP_RADIUS_MAX;
  * </pre>
  * <p>
  * For root layouts, each node has eight possible orientations for the edge:
- * left, right, up, down, up left, up right, down left, and down right.
- * When initializing roots from a border, only certain orientations are possible:
+ * left, right, up, down, up left, up right, down left, and down right. When
+ * initializing roots from a border, only certain orientations are possible:
  * <ul>
  *     <li>left border = right, up right, down right</li>
  *     <li>right border = left, up left, down left</li>
@@ -54,7 +49,7 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
     private static final EnumSet<EdgeDirection> EDGE_DIRECTIONS = EnumSet.of(
             EdgeDirection.UP,
             EdgeDirection.UP_RIGHT,
-            EdgeDirection.RIGHT, 
+            EdgeDirection.RIGHT,
             EdgeDirection.DOWN_RIGHT,
             EdgeDirection.DOWN,
             EdgeDirection.DOWN_LEFT,
@@ -73,47 +68,67 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
     /** Map of edge directions to their reverse direction. */
     private static final EnumMap<EdgeDirection, EdgeDirection> REVERSE_EDGE_DIRECTIONS
             = new EnumMap<EdgeDirection, EdgeDirection>(EdgeDirection.class) {{
-                put(EdgeDirection.UP,         EdgeDirection.DOWN);
-                put(EdgeDirection.UP_RIGHT,   EdgeDirection.DOWN_LEFT);
-                put(EdgeDirection.RIGHT,      EdgeDirection.LEFT);
-                put(EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_LEFT);
-                put(EdgeDirection.DOWN,       EdgeDirection.UP);
-                put(EdgeDirection.DOWN_LEFT,  EdgeDirection.UP_RIGHT);
-                put(EdgeDirection.LEFT,       EdgeDirection.RIGHT);
-                put(EdgeDirection.UP_LEFT,    EdgeDirection.DOWN_RIGHT);
+        put(EdgeDirection.UP, EdgeDirection.DOWN);
+        put(EdgeDirection.UP_RIGHT, EdgeDirection.DOWN_LEFT);
+        put(EdgeDirection.RIGHT, EdgeDirection.LEFT);
+        put(EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_LEFT);
+        put(EdgeDirection.DOWN, EdgeDirection.UP);
+        put(EdgeDirection.DOWN_LEFT, EdgeDirection.UP_RIGHT);
+        put(EdgeDirection.LEFT, EdgeDirection.RIGHT);
+        put(EdgeDirection.UP_LEFT, EdgeDirection.DOWN_RIGHT);
     }};
     
-    /** List of coordinate offsets for each direction */
+    /** List of coordinate offsets for each direction. */
     private static final EnumMap<EdgeDirection, int[]> OFFSETS
             = new EnumMap<EdgeDirection, int[]>(EdgeDirection.class) {{
-                put(EdgeDirection.UP,         new int[] {  0, -1, 0});
-                put(EdgeDirection.UP_RIGHT,   new int[] {  1, -1, 0});
-                put(EdgeDirection.RIGHT,      new int[] {  1,  0, 0});
-                put(EdgeDirection.DOWN_RIGHT, new int[] {  1,  1, 0});
-                put(EdgeDirection.DOWN,       new int[] {  0,  1, 0});
-                put(EdgeDirection.DOWN_LEFT,  new int[] { -1,  1, 0});
-                put(EdgeDirection.LEFT,       new int[] { -1,  0, 0});
-                put(EdgeDirection.UP_LEFT,    new int[] { -1, -1, 0});
+        put(EdgeDirection.UP, new int[] { 0, -1, 0 });
+        put(EdgeDirection.UP_RIGHT, new int[] { 1, -1, 0 });
+        put(EdgeDirection.RIGHT, new int[] { 1, 0, 0 });
+        put(EdgeDirection.DOWN_RIGHT, new int[] { 1, 1, 0 });
+        put(EdgeDirection.DOWN, new int[] { 0, 1, 0 });
+        put(EdgeDirection.DOWN_LEFT, new int[] { -1, 1, 0 });
+        put(EdgeDirection.LEFT, new int[] { -1, 0, 0 });
+        put(EdgeDirection.UP_LEFT, new int[] { -1, -1, 0 });
     }};
     
     /** List of offset directions for root directions. */
     private static final EnumMap<EdgeDirection, EdgeDirection[]> ROOT_OFFSETS
             = new EnumMap<EdgeDirection, EdgeDirection[]>(EdgeDirection.class) {{
-                put(EdgeDirection.UP,         new EdgeDirection[] { EdgeDirection.UP_RIGHT,   EdgeDirection.UP_LEFT });
-                put(EdgeDirection.UP_RIGHT,   new EdgeDirection[] { EdgeDirection.RIGHT,      EdgeDirection.UP });
-                put(EdgeDirection.RIGHT,      new EdgeDirection[] { EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_RIGHT });
-                put(EdgeDirection.DOWN_RIGHT, new EdgeDirection[] { EdgeDirection.DOWN,       EdgeDirection.RIGHT });
-                put(EdgeDirection.DOWN,       new EdgeDirection[] { EdgeDirection.DOWN_LEFT,  EdgeDirection.DOWN_RIGHT });
-                put(EdgeDirection.DOWN_LEFT,  new EdgeDirection[] { EdgeDirection.LEFT,       EdgeDirection.DOWN });
-                put(EdgeDirection.LEFT,       new EdgeDirection[] { EdgeDirection.UP_LEFT,    EdgeDirection.DOWN_LEFT });
-                put(EdgeDirection.UP_LEFT,    new EdgeDirection[] { EdgeDirection.UP,         EdgeDirection.LEFT });
+        put(EdgeDirection.UP,
+                new EdgeDirection[] { EdgeDirection.UP_RIGHT, EdgeDirection.UP_LEFT });
+        put(EdgeDirection.UP_RIGHT,
+                new EdgeDirection[] { EdgeDirection.RIGHT, EdgeDirection.UP });
+        put(EdgeDirection.RIGHT,
+                new EdgeDirection[] { EdgeDirection.DOWN_RIGHT, EdgeDirection.UP_RIGHT });
+        put(EdgeDirection.DOWN_RIGHT,
+                new EdgeDirection[] { EdgeDirection.DOWN, EdgeDirection.RIGHT });
+        put(EdgeDirection.DOWN,
+                new EdgeDirection[] { EdgeDirection.DOWN_LEFT, EdgeDirection.DOWN_RIGHT });
+        put(EdgeDirection.DOWN_LEFT,
+                new EdgeDirection[] { EdgeDirection.LEFT, EdgeDirection.DOWN });
+        put(EdgeDirection.LEFT,
+                new EdgeDirection[] { EdgeDirection.UP_LEFT, EdgeDirection.DOWN_LEFT });
+        put(EdgeDirection.UP_LEFT,
+                new EdgeDirection[] { EdgeDirection.UP, EdgeDirection.LEFT });
     }};
     
     /** Array positions for edge directions. */
     private static final EdgeDirection[][] DIRS = new EdgeDirection[][] {
-        { EdgeDirection.UP_LEFT,    EdgeDirection.UP,        EdgeDirection.UP_RIGHT },
-        { EdgeDirection.LEFT,       EdgeDirection.UNDEFINED, EdgeDirection.RIGHT },
-        { EdgeDirection.DOWN_LEFT,  EdgeDirection.DOWN,      EdgeDirection.DOWN_RIGHT },
+            {
+                    EdgeDirection.UP_LEFT,
+                    EdgeDirection.UP,
+                    EdgeDirection.UP_RIGHT
+            },
+            {
+                    EdgeDirection.LEFT,
+                    EdgeDirection.UNDEFINED,
+                    EdgeDirection.RIGHT
+            },
+            {
+                    EdgeDirection.DOWN_LEFT,
+                    EdgeDirection.DOWN,
+                    EdgeDirection.DOWN_RIGHT
+            },
     };
     
     /** List of edge lengths. */
@@ -123,35 +138,34 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
      * Creates a {@link PatchComponentSitesGraph} for rectangular geometry.
      *
      * @param series  the simulation series
-     * @param parameters  the component parameters dictionary
      */
-    public PatchComponentSitesGraphFactoryRect(Series series, MiniBox parameters,
-                                               MersenneTwisterFast random) {
-        super(series, parameters, random);
-        edgeLengths = new double[] { ds, ds * Math.sqrt(2) };
+    public PatchComponentSitesGraphFactoryRect(Series series) {
+        super(series);
+        edgeLengths = new double[] { series.ds, series.ds * Math.sqrt(2) };
     }
     
     @Override
     int[] getOffset(EdgeDirection offset) { return OFFSETS.get(offset); }
     
-    @Override
-    Graph newGraph() { return new Graph(latticeLength + 1, latticeWidth + 1); }
-    
     /**
      * Checks if there is an edge in the cross diagonal.
-     * 
+     *
+     * @param graph  the graph instance
      * @param from  the node the edge is from
      * @param to  the node the edge is to
-     * @param scale  the graph resolution scaling
-     * @return  {@code true} if there is not a cross diagonal edge, {@code false} otherwise
+     * @param level  the graph resolution level
+     * @return  {@code true} if no cross diagonal edge, {@code false} otherwise
      */
-    private boolean checkCross(SiteNode from, SiteNode to, int scale) {
-        EdgeDirection dir = getDirection(from, to, scale);
+    private boolean checkCross(Graph graph, SiteNode from, SiteNode to, EdgeLevel level) {
+        EdgeDirection dir = getDirection(from, to, level);
         SiteNode node1 = new SiteNode(from.getX(), to.getY(), from.getZ());
         SiteNode node2 = new SiteNode(to.getX(), from.getY(), to.getZ());
         switch (dir) {
-            case DOWN_RIGHT: case DOWN_LEFT: case UP_RIGHT: case UP_LEFT:
-                return !(G.hasEdge(node1, node2) || G.hasEdge(node2, node1));
+            case DOWN_RIGHT:
+            case DOWN_LEFT:
+            case UP_RIGHT:
+            case UP_LEFT:
+                return !(graph.hasEdge(node1, node2) || graph.hasEdge(node2, node1));
             default:
                 return true;
         }
@@ -176,32 +190,38 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
     boolean checkNode(Node node) { return checkNode(node.getX(), node.getY(), node.getZ()); }
     
     /**
-     * Checks if the given coordinates are outside the bounds of the environment.
+     * Checks if the given coordinates are outside bounds of the environment.
      *
      * @param x  the x coordinate
      * @param y  the y coordinate
      * @param z  the z coordinate
-     * @return  {@code true} if the coordinates are within bounds, {@code false} otherwise
+     * @return  {@code true} if within bounds, {@code false} otherwise
      */
     private boolean checkNode(int x, int y, int z) {
         return !(x < 0 || x > latticeLength || y < 0 || y > latticeWidth);
     }
     
     @Override
-    double getLength(SiteEdge edge, int scale) {
-        EdgeDirection direction = getDirection(edge, scale);
+    double getLength(SiteEdge edge, EdgeLevel level) {
+        EdgeDirection direction = getDirection(edge, level);
         switch (direction) {
-            case UP: case RIGHT: case DOWN: case LEFT:
-                return scale * edgeLengths[0];
-            case UP_RIGHT: case UP_LEFT: case DOWN_RIGHT: case DOWN_LEFT:
-                return scale * edgeLengths[1];
+            case UP:
+            case RIGHT:
+            case DOWN:
+            case LEFT:
+                return level.scale * edgeLengths[0];
+            case UP_RIGHT:
+            case UP_LEFT:
+            case DOWN_RIGHT:
+            case DOWN_LEFT:
+                return level.scale * edgeLengths[1];
             default:
                 return Double.NaN;
         }
     }
     
     @Override
-    void createPatternSites() {
+    void createPattern(Graph graph) {
         ArrayList<int[]> edges = new ArrayList<>();
         
         // Add edges using pattern match layout.
@@ -213,15 +233,23 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
                     int col = calcCol(i, offset);
                     int row = calcRow(i, j, offset);
                     
-                    if (col == 0 && row == 5) { edges.add(new int[] { i, j, k, i + 1, j, k }); }
-                    else if (col == 1 && row == 5) { edges.add(new int[] { i, j, k, i + 1, j, k }); }
-                    else if (col == 2 && row == 5) { edges.add(new int[] { i, j, k, i + 1, j, k }); }
-                    else if (col == 3 && row == 5) { edges.add(new int[] { i, j, k, i + 1, j, k }); }
-                    else if (col == 5 && row == 4) { edges.add(new int[] { i, j, k, i, j - 1, k }); }
-                    else if (col == 5 && row == 0) { edges.add(new int[] { i, j, k, i, j + 1, k }); }
-                    else if (col == 5 && row == 1) { edges.add(new int[] { i, j, k, i + 1, j + 1, k }); }
-                    else if (col == 5 && row == 3) { edges.add(new int[] { i, j, k, i + 1, j - 1, k }); }
-                    else if (col == 4 && row == 5) {
+                    if (col == 0 && row == 5) {
+                        edges.add(new int[] { i, j, k, i + 1, j, k });
+                    } else if (col == 1 && row == 5) {
+                        edges.add(new int[] { i, j, k, i + 1, j, k });
+                    } else if (col == 2 && row == 5) {
+                        edges.add(new int[] { i, j, k, i + 1, j, k });
+                    } else if (col == 3 && row == 5) {
+                        edges.add(new int[] { i, j, k, i + 1, j, k });
+                    } else if (col == 5 && row == 4) {
+                        edges.add(new int[] { i, j, k, i, j - 1, k });
+                    } else if (col == 5 && row == 0) {
+                        edges.add(new int[] { i, j, k, i, j + 1, k });
+                    } else if (col == 5 && row == 1) {
+                        edges.add(new int[] { i, j, k, i + 1, j + 1, k });
+                    } else if (col == 5 && row == 3) {
+                        edges.add(new int[] { i, j, k, i + 1, j - 1, k });
+                    } else if (col == 4 && row == 5) {
                         edges.add(new int[] { i, j, k, i + 1, j - 1, k });
                         edges.add(new int[] { i, j, k, i + 1, j + 1, k });
                     }
@@ -243,8 +271,8 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
                 SiteNode to = new SiteNode(e[3], e[4], e[5]);
                 EdgeType type = (e[0] == thresh ? EdgeType.CAPILLARY
                         : (e[0] < thresh ? EdgeType.ARTERY : EdgeType.VEIN));
-                SiteEdge edge = new SiteEdge(from, to, type, 1);
-                G.addEdge(edge);
+                SiteEdge edge = new SiteEdge(from, to, type, EdgeLevel.VARIABLE);
+                graph.addEdge(edge);
             }
         }
         
@@ -252,13 +280,13 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
         for (int k = 0; k < latticeHeight; k += 2) {
             for (int j = 0; j <= latticeWidth; j++) {
                 SiteNode root = new SiteNode(0, j, k);
-                visit(G, this, root, 4, 5);
+                visit(graph, this, root, 4, 5);
             }
         }
     }
     
     @Override
-    Root createGrowthSites(Border border, double perc, EdgeType type, double frac, int scale) {
+    Root createRootGraph(Border border, double perc, EdgeType type, double frac, int scale, MersenneTwisterFast random) {
         EdgeDirection[] offsets;
         int n = 0;
         
@@ -277,6 +305,8 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
             case BOTTOM_BORDER:
                 c = Math.round(Math.round(length * perc));
                 n = Math.round(Math.round(width * frac));
+                break;
+            default:
                 break;
         }
         
@@ -323,6 +353,8 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
                     };
                     index = 0;
                     break;
+                default:
+                    break;
             }
             
             // Iterate through to fill up offsets.
@@ -334,7 +366,7 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
                 } else {
                     ran = random.nextInt(3);
                 }
-            
+                
                 offset = directions[ran];
                 offsets[i] = offset;
                 deviation += OFFSETS.get(offset)[index];
@@ -352,52 +384,44 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
                 return new Root(c * scale, 0, type, EdgeDirection.DOWN, offsets);
             case BOTTOM_BORDER:
                 return new Root(c * scale, width * scale, type, EdgeDirection.UP, offsets);
+            default:
+                break;
         }
         
         return null;
     }
     
     @Override
-    EdgeDirection getDirection(SiteEdge edge, int scale) {
-        return getDirection(edge.getFrom(), edge.getTo(), scale);
-    }
-    
-    /**
-     * Gets direction code for an edge between two nodes.
-     *
-     * @param from  the node the edge is from
-     * @param to  the node the edge is to
-     * @param scale  the graph resolution scaling
-     * @return  the code for the edge direction
-     */
-    EdgeDirection getDirection(SiteNode from, SiteNode to, int scale) {
-        int dx = (to.getX() - from.getX())/scale + 1;
-        int dy = (to.getY() - from.getY())/scale + 1;
+    EdgeDirection getDirection(int fromX, int fromY, int toX, int toY) {
+        int dx = (toX - fromX) + 1;
+        int dy = (toY - fromY) + 1;
         return DIRS[dy][dx];
     }
     
     @Override
-    void addRoot(SiteNode node0, EdgeDirection dir, EdgeType type, Bag bag, int scale, ResolutionLevel level, EdgeDirection[] offsets) {
-        SiteNode node1 = offsetNode(node0, dir, scale);
+    void addRoot(Graph graph, SiteNode node0, EdgeDirection dir, EdgeType type, Bag bag, EdgeLevel level, EdgeDirection[] offsets, MersenneTwisterFast random) {
+        SiteNode node1 = offsetNode(node0, dir, level);
         boolean checkNode0 = checkNode(node0);
         boolean checkNode1 = checkNode(node1);
         
         // Add initial edge in the specified direction. If unable to add it,
         // then do not add the rest of the tripod.
-        if (checkNode0 && checkNode1 && G.getDegree(node0) == 0 && G.getDegree(node1) == 0
-                && checkCross(node0, node1, scale)) {
+        if (checkNode0 && checkNode1 && graph.getDegree(node0) == 0 && graph.getDegree(node1) == 0
+                && checkCross(graph, node0, node1, level)) {
             SiteEdge edge = new SiteEdge(node0, node1, type, level);
-            G.addEdge(edge);
-        } else { return; }
+            graph.addEdge(edge);
+        } else {
+            return;
+        }
         
         // Add the two leaves of the tripod if line is 0, otherwise add in the root line.
         if (offsets == null) {
             for (EdgeDirection offset : ROOT_OFFSETS.get(dir)) {
-                SiteNode node2 = offsetNode(node1, offset, scale);
-                if (checkNode(node2) && G.getDegree(node2) == 0
-                        && checkCross(node1, node2, scale)) {
+                SiteNode node2 = offsetNode(node1, offset, level);
+                if (checkNode(node2) && graph.getDegree(node2) == 0
+                        && checkCross(graph, node1, node2, level)) {
                     SiteEdge edge = new SiteEdge(node1, node2, type, level);
-                    G.addEdge(edge);
+                    graph.addEdge(edge);
                     bag.add(edge);
                 }
             }
@@ -407,11 +431,11 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
             
             // Add segments for given list of offsets.
             for (EdgeDirection offset : offsets) {
-                SiteNode nextNode = offsetNode(currNode, offset, scale);
-                if (checkNode(nextNode) && G.getDegree(nextNode) == 0
-                        && checkCross(currNode, nextNode, scale)) {
+                SiteNode nextNode = offsetNode(currNode, offset, level);
+                if (checkNode(nextNode) && graph.getDegree(nextNode) == 0
+                        && checkCross(graph, currNode, nextNode, level)) {
                     SiteEdge edge = new SiteEdge(currNode, nextNode, type, level);
-                    G.addEdge(edge);
+                    graph.addEdge(edge);
                     edges.add(edge);
                     currNode = nextNode;
                 }
@@ -420,22 +444,22 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
             // Shuffle and add tripods off the offset line.
             Utilities.shuffleList(edges, random);
             for (SiteEdge edge : edges) {
-                addMotif(edge.getTo(), getDirection(edge, scale), type, bag, scale, level, edge, EdgeMotif.TRIPLE);
+                addMotif(graph, edge.getTo(), getDirection(edge, level), type, bag, level, edge, EdgeMotif.TRIPLE, random);
             }
         }
     }
     
     @Override
-    void addMotif(SiteNode node0, EdgeDirection dir0, EdgeType type, Bag bag, int scale, ResolutionLevel level, SiteEdge e, EdgeMotif motif) {
+    void addMotif(Graph graph, SiteNode node0, EdgeDirection dir0, EdgeType type, Bag bag, EdgeLevel level, SiteEdge e, EdgeMotif motif, MersenneTwisterFast random) {
         // Select new random direction.
         ArrayList<EdgeDirection> validDirections = new ArrayList<>(EDGE_DIRECTIONS);
         validDirections.remove(REVERSE_EDGE_DIRECTIONS.get(dir0));
         EdgeDirection dir = validDirections.get(random.nextInt(validDirections.size()));
         
         // Make tripod nodes.
-        SiteNode node1 = offsetNode(node0, dir, scale);
-        SiteNode node2 = offsetNode(node1, ROOT_OFFSETS.get(dir)[0], scale);
-        SiteNode node3 = offsetNode(node1, ROOT_OFFSETS.get(dir)[1], scale);
+        SiteNode node1 = offsetNode(node0, dir, level);
+        SiteNode node2 = offsetNode(node1, ROOT_OFFSETS.get(dir)[0], level);
+        SiteNode node3 = offsetNode(node1, ROOT_OFFSETS.get(dir)[1], level);
         
         // Check nodes.
         boolean checkNode0 = checkNode(node0);
@@ -448,109 +472,152 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
         switch (motif) {
             case TRIPLE:
                 if (checkNode0 && checkNode1 && checkNode2 && checkNode3
-                        && G.getDegree(node1) == 0 && G.getDegree(node2) == 0 && G.getDegree(node3) == 0
-                        && checkCross(node0, node1, scale) && checkCross(node1, node2, scale) && checkCross(node1, node3, scale)) {
+                        && graph.getDegree(node1) == 0
+                        && graph.getDegree(node2) == 0
+                        && graph.getDegree(node3) == 0
+                        && checkCross(graph, node0, node1, level)
+                        && checkCross(graph, node1, node2, level)
+                        && checkCross(graph, node1, node3, level)) {
                     edge = new SiteEdge(node0, node1, type, level);
-                    G.addEdge(edge);
+                    graph.addEdge(edge);
                     
                     edge = new SiteEdge(node1, node2, type, level);
-                    G.addEdge(edge);
-                    if (bag != null) { bag.add(edge); }
+                    graph.addEdge(edge);
+                    if (bag != null) {
+                        bag.add(edge);
+                    }
                     
                     edge = new SiteEdge(node1, node3, type, level);
-                    G.addEdge(edge);
-                    if (bag != null) { bag.add(edge); }
-                } else if (bag != null) { bag.add(e); }
+                    graph.addEdge(edge);
+                    if (bag != null) {
+                        bag.add(edge);
+                    }
+                } else if (bag != null) {
+                    bag.add(e);
+                }
                 break;
             case DOUBLE:
-                if (checkNode0 && checkNode1 && G.getDegree(node1) == 0 && checkCross(node0, node1, scale)) {
+                if (checkNode0 && checkNode1 && graph.getDegree(node1) == 0 && checkCross(graph, node0, node1, level)) {
                     ArrayList<SiteNode> options = new ArrayList<>();
                     
-                    if (checkNode2 && G.getDegree(node2) == 0 && checkCross(node1, node2, scale)) { options.add(node2); }
-                    if (checkNode3 && G.getDegree(node3) == 0 && checkCross(node1, node3, scale)) { options.add(node3); }
+                    if (checkNode2 && graph.getDegree(node2) == 0 && checkCross(graph, node1, node2, level)) {
+                        options.add(node2);
+                    }
+                    if (checkNode3 && graph.getDegree(node3) == 0 && checkCross(graph, node1, node3, level)) {
+                        options.add(node3);
+                    }
                     
                     Utilities.shuffleList(options, random);
                     
                     if (options.size() > 0) {
                         edge = new SiteEdge(node0, node1, type, level);
-                        G.addEdge(edge);
+                        graph.addEdge(edge);
                         edge = new SiteEdge(node1, options.get(0), type, level);
-                        G.addEdge(edge);
-                        if (bag != null) { bag.add(edge); }
-                    } else if (bag != null) { bag.add(e); }
-                } else if (bag != null) { bag.add(e); }
+                        graph.addEdge(edge);
+                        if (bag != null) {
+                            bag.add(edge);
+                        }
+                    } else if (bag != null) {
+                        bag.add(e);
+                    }
+                } else if (bag != null) {
+                    bag.add(e);
+                }
                 break;
             case SINGLE:
                 if (SINGLE_EDGE_DIRECTIONS.contains(dir) && checkNode0 && checkNode1
-                        && G.getDegree(node1) == 0 && checkCross(node0, node1, scale)) {
+                        && graph.getDegree(node1) == 0 && checkCross(graph, node0, node1, level)) {
                     edge = new SiteEdge(node0, node1, type, level);
-                    G.addEdge(edge);
-                    if (bag != null) { bag.add(edge); }
-                } else if (bag != null) { bag.add(e); }
+                    graph.addEdge(edge);
+                    if (bag != null) {
+                        bag.add(edge);
+                    }
+                } else if (bag != null) {
+                    bag.add(e);
+                }
+                break;
+            default:
                 break;
         }
     }
     
     @Override
-    void addSegment(SiteNode node0, EdgeDirection dir, int scale, ResolutionLevel level) {
+    void addSegment(Graph graph, SiteNode node0, EdgeDirection dir, EdgeLevel level, MersenneTwisterFast random) {
         ArrayList<SiteNode> options = new ArrayList<>();
         
         // Iterate through all seven direction options.
         for (EdgeDirection offset : EDGE_DIRECTIONS) {
-            if (offset == REVERSE_EDGE_DIRECTIONS.get(dir)) { continue; }
+            if (offset == REVERSE_EDGE_DIRECTIONS.get(dir)) {
+                continue;
+            }
             
-            SiteNode node1 = offsetNode(node0, offset, scale);
-            if (!checkNode(node1)) { continue; }
+            SiteNode node1 = offsetNode(node0, offset, level);
+            if (!checkNode(node1)) {
+                continue;
+            }
             
             SiteEdge edgeOut = null;
             SiteEdge edgeIn = null;
             
             // Check edges in and out of proposed node.
-            if (G.getOutDegree(node1) == 1) {
-                edgeOut = (SiteEdge)G.getEdgesOut(node1).objs[0];
+            if (graph.getOutDegree(node1) == 1) {
+                edgeOut = (SiteEdge) graph.getEdgesOut(node1).objs[0];
                 if (edgeOut.type != EdgeType.VEIN
-                        || edgeOut.radius > CAP_RADIUS_MAX
-                        || edgeOut.getFrom().isRoot) { edgeOut = null; }
+                        || edgeOut.radius > CAPILLARY_RADIUS_MAX
+                        || edgeOut.getFrom().isRoot) {
+                    edgeOut = null;
+                }
             }
-            if (G.getInDegree(node1) == 1) {
-                edgeIn = (SiteEdge)G.getEdgesIn(node1).objs[0];
+            if (graph.getInDegree(node1) == 1) {
+                edgeIn = (SiteEdge) graph.getEdgesIn(node1).objs[0];
                 if (edgeIn.type != EdgeType.VEIN
-                        || edgeIn.radius > CAP_RADIUS_MAX
-                        || edgeIn.getTo().isRoot) { edgeIn = null; }
+                        || edgeIn.radius > CAPILLARY_RADIUS_MAX
+                        || edgeIn.getTo().isRoot) {
+                    edgeIn = null;
+                }
             }
             
-            if (edgeOut != null || edgeIn != null) { options.add(node1); }
+            if (edgeOut != null || edgeIn != null) {
+                options.add(node1);
+            }
         }
         
         Utilities.shuffleList(options, random);
         
         for (SiteNode node1 : options) {
             SiteEdge e = new SiteEdge(node0, node1, EdgeType.CAPILLARY, level);
-            if (G.getDegree(node0) < 3 && G.getDegree(node1) < 3
-                    && checkCross(node0, node1, scale)) { G.addEdge(e); }
+            if (graph.getDegree(node0) < 3 && graph.getDegree(node1) < 3
+                    && checkCross(graph, node0, node1, level)) {
+                graph.addEdge(e);
+            }
         }
     }
     
     @Override
-    void addConnection(SiteNode node0, EdgeDirection dir, EdgeType type, int scale, ResolutionLevel level) {
+    void addConnection(Graph graph, SiteNode node0, EdgeDirection dir, EdgeType type, EdgeLevel level, MersenneTwisterFast random) {
         ArrayList<SiteNode> options = new ArrayList<>();
         EdgeType connType = (type == EdgeType.ARTERY ? EdgeType.ARTERIOLE : EdgeType.VENULE);
         
         // Iterate through all seven direction options.
         for (EdgeDirection offset : EDGE_DIRECTIONS) {
-            if (offset == REVERSE_EDGE_DIRECTIONS.get(dir)) { continue; }
+            if (offset == REVERSE_EDGE_DIRECTIONS.get(dir)) {
+                continue;
+            }
             
-            SiteNode node1 = offsetNode(node0, offset, scale);
-            if (!checkNode(node1)) { continue; }
+            SiteNode node1 = offsetNode(node0, offset, level);
+            if (!checkNode(node1)) {
+                continue;
+            }
             
             // Check edges in and out of proposed node.
-            if (G.getOutDegree(node1) == 1 && G.getInDegree(node1) == 1) {
-                SiteEdge edgeOut = (SiteEdge)G.getEdgesOut(node1).objs[0];
-                SiteEdge edgeIn = (SiteEdge)G.getEdgesIn(node1).objs[0];
+            if (graph.getOutDegree(node1) == 1 && graph.getInDegree(node1) == 1) {
+                SiteEdge edgeOut = (SiteEdge) graph.getEdgesOut(node1).objs[0];
+                SiteEdge edgeIn = (SiteEdge) graph.getEdgesIn(node1).objs[0];
                 
                 if (edgeOut.type == type && edgeIn.type == type
-                        && edgeOut.radius <= CAP_RADIUS_MAX && edgeIn.radius <= CAP_RADIUS_MAX)
-                { options.add(node1); }
+                        && edgeOut.radius <= CAPILLARY_RADIUS_MAX && edgeIn.radius <= CAPILLARY_RADIUS_MAX) {
+                    options.add(node1);
+                }
             }
         }
         
@@ -558,93 +625,10 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
         
         for (SiteNode node1 : options) {
             SiteEdge e = new SiteEdge(node0, node1, connType, level);
-            if (G.getDegree(node0) < 3 && G.getDegree(node1) < 3 && !G.hasEdge(node0, node1)
-                    && checkCross(node0, node1, scale)) { G.addEdge(e); }
-        }
-    }
-    
-    @Override
-    public ArrayList<int[]> getSpan(SiteNode from, SiteNode to) {
-        ArrayList<int[]> s = new ArrayList<>();
-        
-        int z = from.getZ();
-        int x0 = from.getX();
-        int y0 = from.getY();
-        int x1 = to.getX();
-        int y1 = to.getY();
-        
-        // Calculate deltas.
-        int dX = x1 - x0;
-        int dY = y1 - y0;
-        
-        // Check direction of arrow and update deltas to absolute.
-        boolean sX = dX < 0;
-        boolean sY = dY < 0;
-        
-        dX = Math.abs(dX);
-        dY = Math.abs(dY);
-        
-        // Check if line is vertical.
-        if (x0 == x1) {
-            for (int d = 0; d < dY; d++) {
-                checkSite(s, x0, y0 + (sY ? -(d + 1) : d), z);
-                checkSite(s, x0 - 1, y0 + (sY ? -(d + 1) : d), z);
+            if (graph.getDegree(node0) < 3 && graph.getDegree(node1) < 3 && !graph.hasEdge(node0, node1)
+                    && checkCross(graph, node0, node1, level)) {
+                graph.addEdge(e);
             }
         }
-        
-        // Check if line is horizontal.
-        else if (y0 == y1) {
-            for (int d = 0; d < dX; d++) {
-                checkSite(s, x0 + (sX ? -(d + 1) : d), y0, z);
-                checkSite(s, x0 + (sX ? -(d + 1) : d), y0 - 1, z);
-            }
-        }
-        
-        // Check for diagonals.
-        else if ((float)dX/(float)dY == 1) {
-            for (int d = 0; d < dX; d++) {
-                checkSite(s, x0 + (sX ? -(d + 1) : d), y0 + (sY ? -(d + 1) : d), z);
-            }
-        }
-        
-        // All other cases.
-        else {
-            // Calculate starting and ending squares.
-            int startx = x0 - (sX ? 1 : 0);
-            int starty = y0 - (sY ? 1 : 0);
-            int endx = x1 - (sX ? 0 : 1);
-            int endy = y1 - (sY ? 0 : 1);
-            
-            // Calculate new deltas based on squares.
-            int dx = Math.abs(endx - startx);
-            int dy = Math.abs(endy - starty);
-            
-            // Initial conditions.
-            int x = startx;
-            int y = starty;
-            int e = dx - dy;
-            
-            // Add start square.
-            checkSite(s, x, y, z);
-            
-            // Calculate increments.
-            int incX = (x1 > x0 ? 1 : -1);
-            int incY = (y1 > y0 ? 1 : -1);
-            
-            // Iterate until the ending square is reached.
-            while (x != endx || y != endy) {
-                if (e > 0) {
-                    x += incX;
-                    e -= 2*dy;
-                } else {
-                    y += incY;
-                    e += 2*dx;
-                }
-                
-                checkSite(s, x, y, z);
-            }
-        }
-        
-        return s;
     }
 }
