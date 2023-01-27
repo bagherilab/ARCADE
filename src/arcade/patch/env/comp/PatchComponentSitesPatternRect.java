@@ -1,7 +1,6 @@
 package arcade.patch.env.comp;
 
 import java.util.EnumMap;
-
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 

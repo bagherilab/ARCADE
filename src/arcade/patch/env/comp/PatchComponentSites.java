@@ -71,6 +71,7 @@ public abstract class PatchComponentSites implements Component {
         /**
          * Creates a {@code SiteLayer} object.
          *
+         * @param name  the name of the layer
          * @param generator  the associated generator operation instance
          */
         SiteLayer(String name, PatchOperationGenerator generator) {
