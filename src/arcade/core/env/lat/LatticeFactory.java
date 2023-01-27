@@ -6,7 +6,7 @@ import arcade.core.sim.Series;
 /**
  * Factory class for {@link Lattice} objects.
  * <p>
- * The factory implementation manages the creation of {@link Lattice} objects by:
+ * The factory manages the creation of {@link Lattice} objects by:
  * <ul>
  *     <li>Generating new instances based on layer settings</li>
  * </ul>

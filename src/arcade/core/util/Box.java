@@ -7,9 +7,8 @@ import java.util.HashSet;
  * Container that maps a key to a tag category and a series of attributes.
  * <p>
  * {@code Box} objects use two {@link arcade.core.util.MiniBox} objects to map
- * between key, tags, and attributes.
- * Rather than nesting the key to attribute to values, the class automatically
- * joins key and attribute into a new key.
+ * between key, tags, and attributes. Rather than nesting the key to attribute
+ * to values, the class automatically joins key and attribute into a new key.
  */
 
 public class Box {
@@ -74,7 +73,9 @@ public class Box {
      * @param tag  the tag
      */
     public void addTag(String id, String tag) {
-        if (!keys.contains(id)) { keys.add(id); }
+        if (!keys.contains(id)) {
+            keys.add(id);
+        }
         idToTag.put(id, tag);
     }
     
@@ -86,7 +87,9 @@ public class Box {
      * @param val  the attribute value
      */
     public void addAtt(String id, String att, String val) {
-        if (!keys.contains(id)) { keys.add(id); }
+        if (!keys.contains(id)) {
+            keys.add(id);
+        }
         idToVal.put(id + KEY_SEPARATOR + att, val);
     }
     
@@ -98,7 +101,9 @@ public class Box {
      */
     public void add(String id, String val) {
         String key = id.split(KEY_SEPARATOR)[0];
-        if (!keys.contains(key)) { keys.add(key); }
+        if (!keys.contains(key)) {
+            keys.add(key);
+        }
         idToVal.put(id, val);
     }
     
@@ -112,7 +117,9 @@ public class Box {
         MiniBox result = new MiniBox();
         for (String key : idToVal.getKeys()) {
             String[] split = key.split(KEY_SEPARATOR);
-            if (split[0].equals(id)) { result.put(split[1], idToVal.get(key)); }
+            if (split[0].equals(id)) {
+                result.put(split[1], idToVal.get(key));
+            }
         }
         return result;
     }
@@ -126,7 +133,9 @@ public class Box {
         MiniBox result = new MiniBox();
         for (String key : idToVal.getKeys()) {
             String[] split = key.split(KEY_SEPARATOR);
-            if (split.length == 1) { result.put(key, idToVal.get(key)); }
+            if (split.length == 1) {
+                result.put(key, idToVal.get(key));
+            }
         }
         return result;
     }
@@ -209,7 +218,9 @@ public class Box {
         
         // Get list of ids matching given attribute value.
         for (String key : keys) {
-            if (idToVal.contains(key + KEY_SEPARATOR + att)) { ids.add(key); }
+            if (idToVal.contains(key + KEY_SEPARATOR + att)) {
+                ids.add(key);
+            }
         }
         
         // Add all entries for the key to the new box.
@@ -229,7 +240,7 @@ public class Box {
      * Compares two {@code Box} instances.
      *
      * @param box  the {@code Box} to compare to
-     * @return  {@code true} if both boxes have the same entries, {@code false} otherwise
+     * @return  {@code true} if entries match, {@code false} otherwise
      */
     public boolean compare(Box box) {
         return idToTag.compare(box.idToTag) && idToVal.compare(box.idToVal);

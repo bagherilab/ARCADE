@@ -28,8 +28,8 @@ import arcade.core.ARCADE;
 /**
  * Creates a {@code GUI} for selecting setup file and running the simulation.
  * <p>
- * When the model is called with arguments, then the {@code main} method in
- * {@link arcade.core.ARCADE} is called directly and the {@code GUI} is not shown.
+ * When model is called with arguments, the {@code main} method in
+ * {@link ARCADE} is called directly and the {@code GUI} is not shown.
  */
 
 public class GUI implements ActionListener {
@@ -150,7 +150,7 @@ public class GUI implements ActionListener {
         centerPanel.setBorder(makeBorder());
         
         displayArea = addATextArea(centerPanel,
-            "AGENT-BASED MODEL OF HETEROGENEOUS CELLS IN DYNAMIC ENVIRONMENT\n");
+                "AGENT-BASED MODEL OF HETEROGENEOUS CELLS IN DYNAMIC ENVIRONMENT\n");
         PrintStream printStream = new PrintStream(new CustomOutputStream(displayArea));
         System.setOut(printStream);
         System.setErr(printStream);
@@ -166,7 +166,7 @@ public class GUI implements ActionListener {
      * @param e  the action event
      */
     @Override
-    public void actionPerformed(ActionEvent e)  {
+    public void actionPerformed(ActionEvent e) {
         String cmd = e.getActionCommand();
         
         switch (cmd) {
@@ -194,7 +194,6 @@ public class GUI implements ActionListener {
                         } else {
                             ARCADE.main(new String[]{"", xml.getAbsolutePath()});
                         }
-                        
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }

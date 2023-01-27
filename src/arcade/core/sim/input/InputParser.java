@@ -9,9 +9,9 @@ import arcade.core.util.MiniBox;
 /**
  * Command line parser built from XML defining the possible commands.
  * <p>
- * {@code InputParser} is built using the {@link arcade.core.util.Box} created by
- * {@link arcade.core.sim.input.InputLoader} when parsing {@code command.xml}.
- * There are three command argument types:
+ * {@code InputParser} is built using the {@link arcade.core.util.Box} created
+ * by {@link arcade.core.sim.input.InputLoader} when parsing
+ * {@code command.xml}. There are three command argument types:
  * <ul>
  *     <li><em>position</em> arguments are ordered by their location in the
  *     command and all are required</li>
@@ -69,7 +69,7 @@ public class InputParser {
     /**
      * Creates a command line {@code InputParser} object.
      *
-      * @param options  the map of command line options
+     * @param options  the map of command line options
      */
     public InputParser(Box options) {
         // Initialize maps to commands.
@@ -85,10 +85,17 @@ public class InputParser {
             // Create appropriate command type object.
             Command cmd;
             switch (options.getTag(id)) {
-                case "POSITION": cmd = new Command(id, POSITION); break;
-                case "OPTION": cmd = new Command(id, OPTION); break;
-                case "SWITCH": cmd = new Command(id, SWITCH); break;
-                default: continue;
+                case "POSITION":
+                    cmd = new Command(id, POSITION);
+                    break;
+                case "OPTION":
+                    cmd = new Command(id, OPTION);
+                    break;
+                case "SWITCH":
+                    cmd = new Command(id, SWITCH);
+                    break;
+                default:
+                    continue;
             }
             
             // Modify selected attributes.
@@ -97,15 +104,23 @@ public class InputParser {
                 String val = atts.get(att);
                 
                 switch (att) {
-                    case "help": cmd.help = val; break;
+                    case "help":
+                        cmd.help = val;
+                        break;
                     case "default":
-                        if (cmd.type != POSITION && cmd.type != SWITCH) { cmd.defaults = val; }
+                        if (cmd.type != POSITION && cmd.type != SWITCH) {
+                            cmd.defaults = val;
+                        }
                         break;
                     case "short":
-                        if (cmd.type != POSITION) { cmd.shortFlag = val; }
+                        if (cmd.type != POSITION) {
+                            cmd.shortFlag = val;
+                        }
                         break;
                     case "long":
-                        if (cmd.type != POSITION) { cmd.longFlag = val; }
+                        if (cmd.type != POSITION) {
+                            cmd.longFlag = val;
+                        }
                         break;
                     default:
                         break;
@@ -114,8 +129,12 @@ public class InputParser {
             
             allCommands.add(cmd);
             if (cmd.type != POSITION) {
-                if (cmd.shortFlag != null) { shortToCommand.put(cmd.shortFlag, cmd); }
-                if (cmd.longFlag != null) { longToCommand.put(cmd.longFlag, cmd); }
+                if (cmd.shortFlag != null) {
+                    shortToCommand.put(cmd.shortFlag, cmd);
+                }
+                if (cmd.longFlag != null) {
+                    longToCommand.put(cmd.longFlag, cmd);
+                }
             } else {
                 positionCommands.add(cmd);
             }
@@ -127,8 +146,8 @@ public class InputParser {
     /**
      * Container class for arguments of a command.
      * <p>
-     * A {@code Command} object is created for each command defined from
-     * parsing {@code command.xml}.
+     * A {@code Command} object is created for each command defined from parsing
+     * {@code command.xml}.
      */
     static class Command {
         /** Format string. */
@@ -170,10 +189,10 @@ public class InputParser {
          */
         public String toString() {
             return "\t" + id.toUpperCase() + "\n"
-                + (help == null ? "" : String.format(format, "[help]", help))
-                + (defaults == null ? "" : String.format(format, "[default]", defaults))
-                + (shortFlag == null ? "" : String.format(format, "[short]", shortFlag))
-                + (longFlag == null ? "" : String.format(format, "[long]", longFlag));
+                    + (help == null ? "" : String.format(format, "[help]", help))
+                    + (defaults == null ? "" : String.format(format, "[default]", defaults))
+                    + (shortFlag == null ? "" : String.format(format, "[short]", shortFlag))
+                    + (longFlag == null ? "" : String.format(format, "[long]", longFlag));
         }
     }
     
@@ -194,7 +213,7 @@ public class InputParser {
             LOGGER.severe("missing position arguments");
             throw new IllegalArgumentException();
         } else {
-          LOGGER.config("successfully parsed commands\n\n" + parsed.toString());
+            LOGGER.config("successfully parsed commands\n\n" + parsed.toString());
         }
         
         return parsed;
@@ -207,7 +226,9 @@ public class InputParser {
      */
     void addDefaults() {
         for (Command cmd : allCommands) {
-            if (cmd.defaults != null) { parsed.put(cmd.id, cmd.defaults); }
+            if (cmd.defaults != null) {
+                parsed.put(cmd.id, cmd.defaults);
+            }
         }
     }
     

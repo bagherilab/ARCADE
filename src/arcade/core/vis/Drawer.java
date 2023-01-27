@@ -44,7 +44,7 @@ public abstract class Drawer implements Steppable {
      * @param bounds  the size of the drawer within the panel
      */
     public Drawer(Panel panel, String name, int length, int width, int height,
-            ColorMap map, Rectangle2D.Double bounds) {
+                  ColorMap map, Rectangle2D.Double bounds) {
         this.name = name;
         this.length = length;
         this.width = width;

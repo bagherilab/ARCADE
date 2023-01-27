@@ -21,11 +21,10 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  * Custom saver for serializing objects to JSON.
  * <p>
  * The saver is associated with an implementation-specific {@code Gson} instance
- * that defines serialization of implementation-specific classes.
- * The associated {@link arcade.core.sim.Series} instance is used to save static
- * series-specific information.
- * The equipped {@link arcade.core.sim.Simulation} instance is called to get the
- * cells/locations that are saved at a given tick.
+ * that defines serialization of implementation-specific classes. The associated
+ * {@link arcade.core.sim.Series} instance is used to save static information
+ * specific to the series. The equipped {@link arcade.core.sim.Simulation}
+ * instance is called to get cells / locations that are saved at a given tick.
  */
 
 public abstract class OutputSaver implements Steppable {
@@ -65,7 +64,7 @@ public abstract class OutputSaver implements Steppable {
     protected abstract Gson makeGSON();
     
     /**
-     * Equips the given {@link arcade.core.sim.Simulation} instance to the saver.
+     * Equips a {@link arcade.core.sim.Simulation} instance to the saver.
      *
      * @param sim  the simulation instance
      */
@@ -84,7 +83,7 @@ public abstract class OutputSaver implements Steppable {
     }
     
     /**
-     * Save a list of {@link arcade.core.agent.cell.CellContainer} objects to a JSON.
+     * Save a list of {@link arcade.core.agent.cell.CellContainer} to a JSON.
      *
      * @param tick  the simulation tick
      */
@@ -95,7 +94,7 @@ public abstract class OutputSaver implements Steppable {
     }
     
     /**
-     * Save a list of {@link arcade.core.env.loc.LocationContainer} objects to a JSON.
+     * Save a list of {@link arcade.core.env.loc.LocationContainer} to a JSON.
      *
      * @param tick  the simulation tick
      */

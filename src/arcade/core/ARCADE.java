@@ -22,17 +22,17 @@ import arcade.patch.PatchARCADE;
 /**
  * Entry point class for ARCADE simulations.
  * <p>
- * The class loads two XML files {@code command.xml} and {@code parameter.xml} that specify the
- * command line parser options and the default parameter values, respectively.
- * The setup XML file is then parsed to produce an array of {@link Series} objects, each of which
- * defines replicates (differing only in random seed) of {@link arcade.core.sim.Simulation}
- * instances to run.
+ * The class loads two XML files {@code command.xml} and {@code parameter.xml}
+ * that specify the command line parser options and the default parameter
+ * values, respectively. The setup XML file is then parsed to produce an array
+ * of {@link Series} objects, each of which defines replicates (differing only
+ * in random seed) of {@link arcade.core.sim.Simulation} instances to run.
  * <p>
- * If the visualization flag is used, only the first valid {@link Series} in the array is run.
- * Otherwise, all valid {@code Series} are run.
+ * If the visualization flag is used, only the first valid {@link Series} in the
+ * array is run. Otherwise, all valid {@code Series} are run.
  * <p>
- * An implementing package {@code <implementation>} extends this class to define implementation
- * specific:
+ * An implementing package {@code <implementation>} extends this class to define
+ * implementation specific:
  * <ul>
  *     <li>{@code command.<implementation>.xml} with custom command line parameters</li>
  *     <li>{@code parameter.<implementation>.xml} with new default parameter values</li>
@@ -106,8 +106,8 @@ public abstract class ARCADE {
         }
         
         // Load command and parameter XML files.
-        Box commands = arcade.loadCommands();
-        Box parameters = arcade.loadParameters();
+        Box commands = arcade.loadCommands(args[0]);
+        Box parameters = arcade.loadParameters(args[0]);
         
         // Parse arguments from command line.
         MiniBox settings = arcade.parseArguments(args, commands);
@@ -122,17 +122,18 @@ public abstract class ARCADE {
     /**
      * Loads command line parser from {@code command.xml} files.
      *
+     * @param implementation  the implementation name
      * @return  a container of command line settings
      */
-    Box loadCommands() throws IOException, SAXException {
+    Box loadCommands(String implementation) throws IOException, SAXException {
         InputLoader loader = new InputLoader();
-    
+        
         logger.info("loading framework command line parser from [ command.xml ]");
         Box commands = loader.load(ARCADE.class.getResource("command.xml").toString());
-    
+        
         logger.info("loading implementation [ " + this.getClass().getSimpleName()
                 + " ] command line parser from [ command.xml ]");
-        loader.load(this.getResource("command.xml"), commands);
+        loader.load(this.getResource("command." + implementation + ".xml"), commands);
         
         return commands;
     }
@@ -140,17 +141,18 @@ public abstract class ARCADE {
     /**
      * Loads default parameter from {@code parameter.xml} files.
      *
+     * @param implementation  the implementation name
      * @return  a container of default parameter values
      */
-    Box loadParameters() throws IOException, SAXException {
+    Box loadParameters(String implementation) throws IOException, SAXException {
         InputLoader loader = new InputLoader();
-    
+        
         logger.info("loading framework default parameters from [ parameter.xml ]");
         Box parameters = loader.load(ARCADE.class.getResource("parameter.xml").toString());
-    
+        
         logger.info("loading implementation [ " + this.getClass().getSimpleName()
                 + " ] default parameters from [ parameter.xml ]");
-        loader.load(this.getResource("parameter.xml"), parameters);
+        loader.load(this.getResource("parameter." + implementation + ".xml"), parameters);
         
         return parameters;
     }
@@ -193,8 +195,8 @@ public abstract class ARCADE {
     /**
      * Runs simulations for each {@link Series}.
      * <p>
-     * If the {@code --vis} flag is set, then only the first valid series is run.
-     * Otherwise, all valid series in the list are run.
+     * If the {@code --vis} flag is set, then only the first valid series is
+     * run. Otherwise, all valid series in the list are run.
      *
      * @param series  the list of {@link Series} instances
      * @param settings  a container of parsed arguments
@@ -222,7 +224,9 @@ public abstract class ARCADE {
             }
             
             // Skip simulations if there is an error in the series.
-            if (s.isSkipped) { continue; }
+            if (s.isSkipped) {
+                continue;
+            }
             
             // Run with visualization if requested, otherwise run command line.
             if (isVis) {

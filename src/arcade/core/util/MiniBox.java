@@ -101,16 +101,18 @@ public class MiniBox {
      * @param val  the value
      */
     public void put(String id, String val) {
-        if (!keys.contains(id)) { keys.add(id); }
+        if (!keys.contains(id)) {
+            keys.add(id);
+        }
         contents.put(id, val);
     }
     
     /**
      * Filters keys by the given code.
      * <p>
-     * Entries in the form "key = value" where key = code/subkey can be filtered.
-     * The returned box contains all entries in the form "subkey = value"
-     * for all entries where the code matches the given code.
+     * Entries in the form "key = value" where key = code/subkey can be
+     * filtered. The returned box contains all entries in the form "subkey =
+     * value" for all entries where the code matches the given code.
      *
      * @param code  the code to filter by
      * @return  the filtered box
@@ -130,7 +132,7 @@ public class MiniBox {
      * Compares two {@code MiniBox} instances.
      *
      * @param box  the {@code MiniBox} to compare to
-     * @return  {@code true} if both boxes have the same entries, {@code false} otherwise
+     * @return  {@code true} if entries match, {@code false} otherwise
      */
     public boolean compare(MiniBox box) {
         HashSet<String> allKeys = new HashSet<>();
@@ -138,8 +140,10 @@ public class MiniBox {
         allKeys.addAll(box.keys);
         
         for (String key : allKeys) {
-            if (!contents.containsKey(key)) { return false; }
-
+            if (!contents.containsKey(key)) {
+                return false;
+            }
+            
             if (!box.contents.containsKey(key)) {
                 return false;
             } else if (!contents.get(key).equals(box.get(key))) {

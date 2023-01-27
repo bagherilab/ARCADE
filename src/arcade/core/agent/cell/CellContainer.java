@@ -6,9 +6,8 @@ import arcade.core.env.loc.Location;
  * Container class for {@link Cell} objects.
  * <p>
  * The container implementation should contain the minimal set of information
- * needed to initialize a {@link Cell} object.
- * The container is used by the serializers/deserializers to save/load cell
- * objects for the simulation.
+ * needed to initialize a {@link Cell} object. The container is used by the
+ * serializers/deserializers to save/load cell objects for the simulation.
  */
 
 public interface CellContainer {

@@ -6,10 +6,12 @@ import arcade.core.sim.Series;
 /**
  * Factory class for {@link Location} objects.
  * <p>
- * The factory implementation manages the creation of {@link Location} objects by either:
+ * The factory manages the creation of {@link Location} objects by either:
  * <ul>
- *     <li>Loading existing {@link LocationContainer} instances from a given file</li>
- *     <li>Generating new {@link LocationContainer} instances based on population settings</li>
+ *     <li>Loading existing {@link LocationContainer} instances from a given
+ *     file</li>
+ *     <li>Generating new {@link LocationContainer} instances based on
+ *     population settings</li>
  * </ul>
  */
 
