@@ -9,7 +9,6 @@ import arcade.core.util.Graph;
 import arcade.core.util.Matrix;
 import arcade.core.util.Solver;
 import static arcade.core.util.Graph.Edge;
-import static arcade.core.util.Graph.EdgeNode;
 import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteEdge;
 import static arcade.patch.env.comp.PatchComponentSitesGraph.SiteNode;
 import static arcade.patch.env.comp.PatchComponentSitesGraphFactory.EdgeCategory;
@@ -569,18 +568,55 @@ abstract class PatchComponentSitesGraphUtilities {
     }
     
     /**
+     * Gets in degree for edge in given calculation direction.
+     *
+     * @param graph  the graph object
+     * @param edge  the edge object
+     * @param dir  the calculation direction
+     * @return  the edge in degree
+     */
+    private static int getInDegree(Graph graph, SiteEdge edge, CalculationCategory dir) {
+        switch (dir) {
+            case UPSTREAM:
+                return graph.getInDegree(edge.getTo());
+            case DOWNSTREAM:
+                return graph.getInDegree(edge.getFrom());
+            default:
+                return 0;
+        }
+    }
+    
+    /**
+     * Gets out degree for edge in given calculation direction.
+     *
+     * @param graph  the graph object
+     * @param edge  the edge object
+     * @param dir  the calculation direction
+     * @return  the edge out degree
+     */
+    private static int getOutDegree(Graph graph, SiteEdge edge, CalculationCategory dir) {
+        switch (dir) {
+            case UPSTREAM:
+                return graph.getOutDegree(edge.getTo());
+            case DOWNSTREAM:
+                return graph.getOutDegree(edge.getFrom());
+            default:
+                return 0;
+        }
+    }
+    
+    /**
      * Calculate the radii (in um) using Murray's law.
      *
      * @param graph  the graph object
      * @param edge  the starting edge for the calculation
      * @param dir  the direction of the calculation
-     * @param node  the selected node of the edge
      * @param fromcheck  the number of edges in to the selected node
      * @param tocheck  the number of edges out of the selected node
      * @return  the list of children edges
      */
     private static ArrayList<SiteEdge> calculateRadius(Graph graph, SiteEdge edge,
-                                                       CalculationCategory dir, EdgeNode node,
+                                                       CalculationCategory dir,
                                                        int fromcheck, int tocheck) {
         ArrayList<SiteEdge> children = new ArrayList<>();
         ArrayList<Edge> list = null;
@@ -609,8 +645,8 @@ abstract class PatchComponentSitesGraphUtilities {
         // Iterate through all edges and calculate radii and then recurse.
         for (Edge obj : list) {
             SiteEdge e = (SiteEdge) obj;
-            int in = graph.getInDegree(e.getNode(node));
-            int out = graph.getOutDegree(e.getNode(node));
+            int in = getInDegree(graph, e, dir);
+            int out = getOutDegree(graph, e, dir);
             
             if (in == 1 && out == 1 && edge.radius != 0) {
                 e.radius = edge.radius;
@@ -702,13 +738,12 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param graph  the graph object
      * @param edge  the starting edge for the calculation
      * @param dir  the direction of the calculation
-     * @param node  the selected node of the edge
      * @param fromcheck  the number of edges in to the selected node
      * @param tocheck  the number of edges out of the selected node
      * @return  the list of children edges
      */
     private static ArrayList<SiteEdge> assignRadius(Graph graph, SiteEdge edge,
-                                                    CalculationCategory dir, EdgeNode node,
+                                                    CalculationCategory dir,
                                                     int fromcheck, int tocheck) {
         ArrayList<SiteEdge> children = new ArrayList<>();
         ArrayList<Edge> list = null;
@@ -732,8 +767,8 @@ abstract class PatchComponentSitesGraphUtilities {
         // Iterate through all edges and calculate radii and then recurse.
         for (Edge obj : list) {
             SiteEdge e = (SiteEdge) obj;
-            int in = graph.getInDegree(e.getNode(node));
-            int out = graph.getOutDegree(e.getNode(node));
+            int in = getInDegree(graph, e, dir);
+            int out = getOutDegree(graph, e, dir);
             
             if (in == 1 && out == 1 && edge.radius != 0) {
                 e.radius = edge.radius;
@@ -953,11 +988,11 @@ abstract class PatchComponentSitesGraphUtilities {
         for (SiteEdge edge : list) {
             switch (code) {
                 case UPSTREAM_ALL:
-                    nextList = calculateRadius(graph, edge, code.category, EdgeNode.TO, 2, 1);
+                    nextList = calculateRadius(graph, edge, code.category, 2, 1);
                     currSet.addAll(nextList);
                     break;
                 case UPSTREAM_ARTERIES:
-                    nextList = calculateRadius(graph, edge, code.category, EdgeNode.TO, 2, 1);
+                    nextList = calculateRadius(graph, edge, code.category, 2, 1);
                     for (SiteEdge e : nextList) {
                         if (e.type.category == EdgeCategory.ARTERY) {
                             currSet.add(e);
@@ -965,7 +1000,7 @@ abstract class PatchComponentSitesGraphUtilities {
                     }
                     break;
                 case DOWNSTREAM_VEINS:
-                    nextList = calculateRadius(graph, edge, code.category, EdgeNode.FROM, 1, 2);
+                    nextList = calculateRadius(graph, edge, code.category, 1, 2);
                     for (SiteEdge e : nextList) {
                         if (e.type.category == EdgeCategory.VEIN) {
                             currSet.add(e);
@@ -973,7 +1008,7 @@ abstract class PatchComponentSitesGraphUtilities {
                     }
                     break;
                 case UPSTREAM_PATTERN:
-                    nextList = assignRadius(graph, edge, code.category, EdgeNode.TO, 2, 1);
+                    nextList = assignRadius(graph, edge, code.category, 2, 1);
                     for (SiteEdge e : nextList) {
                         if (e.type.category == EdgeCategory.ARTERY) {
                             currSet.add(e);
@@ -981,7 +1016,7 @@ abstract class PatchComponentSitesGraphUtilities {
                     }
                     break;
                 case DOWNSTREAM_PATTERN:
-                    nextList = assignRadius(graph, edge, code.category, EdgeNode.FROM, 1, 2);
+                    nextList = assignRadius(graph, edge, code.category, 1, 2);
                     for (SiteEdge e : nextList) {
                         if (e.type.category == EdgeCategory.VEIN) {
                             currSet.add(e);
@@ -999,11 +1034,11 @@ abstract class PatchComponentSitesGraphUtilities {
             for (SiteEdge edge : currSet) {
                 switch (code) {
                     case UPSTREAM_ALL:
-                        nextList = calculateRadius(graph, edge, code.category, EdgeNode.TO, 2, 1);
+                        nextList = calculateRadius(graph, edge, code.category, 2, 1);
                         nextSet.addAll(nextList);
                         break;
                     case UPSTREAM_ARTERIES:
-                        nextList = calculateRadius(graph, edge, code.category, EdgeNode.TO, 2, 1);
+                        nextList = calculateRadius(graph, edge, code.category, 2, 1);
                         for (SiteEdge e : nextList) {
                             if (e.type.category == EdgeCategory.ARTERY) {
                                 nextSet.add(e);
@@ -1011,7 +1046,7 @@ abstract class PatchComponentSitesGraphUtilities {
                         }
                         break;
                     case DOWNSTREAM_VEINS:
-                        nextList = calculateRadius(graph, edge, code.category, EdgeNode.FROM, 1, 2);
+                        nextList = calculateRadius(graph, edge, code.category, 1, 2);
                         for (SiteEdge e : nextList) {
                             if (e.type.category == EdgeCategory.VEIN) {
                                 nextSet.add(e);
@@ -1019,7 +1054,7 @@ abstract class PatchComponentSitesGraphUtilities {
                         }
                         break;
                     case UPSTREAM_PATTERN:
-                        nextList = assignRadius(graph, edge, code.category, EdgeNode.TO, 2, 1);
+                        nextList = assignRadius(graph, edge, code.category, 2, 1);
                         for (SiteEdge e : nextList) {
                             if (e.type.category == EdgeCategory.ARTERY) {
                                 nextSet.add(e);
@@ -1027,7 +1062,7 @@ abstract class PatchComponentSitesGraphUtilities {
                         }
                         break;
                     case DOWNSTREAM_PATTERN:
-                        nextList = assignRadius(graph, edge, code.category, EdgeNode.FROM, 1, 2);
+                        nextList = assignRadius(graph, edge, code.category, 1, 2);
                         for (SiteEdge e : nextList) {
                             if (e.type.category == EdgeCategory.VEIN) {
                                 nextSet.add(e);
