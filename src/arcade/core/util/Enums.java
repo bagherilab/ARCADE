@@ -54,11 +54,11 @@ public final class Enums {
         /**
          * Randomly selects a {@code State}.
          *
-         * @param random  the random number generator
+         * @param rng  the random number generator
          * @return  a random {@code State}
          */
-        public static State random(MersenneTwisterFast random) {
-            return values()[random.nextInt(values().length - 1) + 1];
+        public static State random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
         }
     }
     
@@ -76,11 +76,11 @@ public final class Enums {
         /**
          * Randomly selects a {@code Region}.
          *
-         * @param random  the random number generator
+         * @param rng  the random number generator
          * @return  a random {@code Region}
          */
-        public static Region random(MersenneTwisterFast random) {
-            return values()[random.nextInt(values().length - 1) + 1];
+        public static Region random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
         }
     }
     
@@ -98,11 +98,11 @@ public final class Enums {
         /**
          * Randomly selects a {@code Domain}.
          *
-         * @param random  the random number generator
+         * @param rng  the random number generator
          * @return  a random {@code Domain}
          */
-        public static Domain random(MersenneTwisterFast random) {
-            return values()[random.nextInt(values().length - 1) + 1];
+        public static Domain random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
         }
     }
     
@@ -120,11 +120,11 @@ public final class Enums {
         /**
          * Randomly selects a {@code Category}.
          *
-         * @param random  the random number generator
+         * @param rng  the random number generator
          * @return  a random {@code Operation}
          */
-        public static Category random(MersenneTwisterFast random) {
-            return values()[random.nextInt(values().length - 1) + 1];
+        public static Category random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
         }
     }
 }
