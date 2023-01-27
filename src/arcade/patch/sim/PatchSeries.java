@@ -123,6 +123,12 @@ public final class PatchSeries extends Series {
             parseParameter(this.patch, parameter, patchDefaults.get(parameter),
                     parameterValues, parameterScales);
         }
+        
+        // Add in constants.
+        MiniBox constants = box.getIdVal();
+        for (String constantKey : constants.getKeys()) {
+            this.patch.put(constantKey, constants.get(constantKey));
+        }
     }
     
     @Override

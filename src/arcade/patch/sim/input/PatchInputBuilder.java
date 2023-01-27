@@ -8,6 +8,7 @@ import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import arcade.patch.env.loc.CoordinateHex;
 import arcade.patch.env.loc.CoordinateRect;
+import arcade.patch.env.loc.PatchLocation;
 import arcade.patch.env.loc.PatchLocationHex;
 import arcade.patch.env.loc.PatchLocationRect;
 import arcade.patch.sim.PatchSeries;
@@ -201,22 +202,30 @@ public final class PatchInputBuilder extends InputBuilder {
                 : defaults.get(key);
         geometry = geometry.toUpperCase();
         
+        PatchLocation location;
+        
         if (geometry.equals("RECT")) {
             series.put("length", 4 * radiusBounds - 2);
             series.put("width", 4 * radiusBounds - 2);
             series.put("height", 2 * depthBounds - 1);
             CoordinateRect coordinate = new CoordinateRect(0, 0, 0);
-            PatchLocationRect location = new PatchLocationRect(coordinate);
-            series.put("ds", location.getSubcoordinateSize());
-            series.put("dz", location.getHeight());
+            location = new PatchLocationRect(coordinate);
         } else if (geometry.equals("HEX")) {
             series.put("length", 6 * radiusBounds - 3);
             series.put("width", 4 * radiusBounds - 2);
             series.put("height", 2 * depthBounds - 1);
             CoordinateHex coordinate = new CoordinateHex(0, 0, 0, 0);
-            PatchLocationHex location = new PatchLocationHex(coordinate);
-            series.put("ds", location.getSubcoordinateSize());
-            series.put("dz", location.getHeight());
+            location = new PatchLocationHex(coordinate);
+        } else {
+            return;
         }
+        
+        series.put("ds", location.getSubcoordinateSize());
+        series.put("dz", location.getHeight());
+        
+        patch.add("GRID_VOLUME", String.valueOf(location.getVolume()));
+        patch.add("GRID_AREA", String.valueOf(location.getArea()));
+        patch.add("LATTICE_VOLUME", String.valueOf(location.getVolume() / location.getMaximum()));
+        patch.add("LATTICE_AREA", String.valueOf(location.getArea() / location.getMaximum()));
     }
 }
