@@ -13,23 +13,10 @@ import sim.util.Bag;
  * Container class for directed graph using nodes as hashes.
  * <p>
  * {@code Edge} objects represent edges in the graph and {@code Node} objects
- * represent nodes in the graph.
- * Nodes may have more than one edge in or out.
+ * represent nodes in the graph. Nodes may have more than one edge in or out.
  */
 
 public final class Graph {
-    /** Code indicating the FROM node of an edge. */
-    public static final int DIR_FROM = -1;
-    
-    /** Code indicating the TO node of an edge. */
-    public static final int DIR_TO = 1;
-    
-    /** Code indicating that an edge was added for degree updates. */
-    private static final int ADD = 1;
-    
-    /** Code indicating that an edge was removed for degree updates. */
-    private static final int REMOVE = -1;
-    
     /** Collection of all {@code Edge} objects in a graph. */
     private final Bag allEdges;
     
@@ -39,24 +26,33 @@ public final class Graph {
     /** Map of {@code Node} IN to bag of {@code Edge} objects. */
     private final Map<Node, Bag> nodeToInBag;
     
-    /** Array of in degree for node coordinates. */
-    private final int[][] inDegree;
-    
-    /** Array of out degree for node coordinates. */
-    private final int[][] outDegree;
-    
     /**
-     * Creates a {@code Graph} for the given array size.
-     *
-     * @param length  the length of the array (x direction)
-     * @param width  the width of the array (y direction)
+     * Creates an empty {@code Graph}.
      */
-    public Graph(int length, int width) {
+    public Graph() {
         allEdges = new Bag();
         nodeToOutBag = new HashMap<>();
         nodeToInBag = new HashMap<>();
-        inDegree = new int[length][width];
-        outDegree = new int[length][width];
+    }
+    
+    /**
+     * Updates edges and nodes with contents of given graph.
+     *
+     * @param graph  the graph object
+     */
+    public void update(Graph graph) {
+        allEdges.addAll(graph.allEdges);
+        nodeToOutBag.putAll(graph.nodeToOutBag);
+        nodeToInBag.putAll(graph.nodeToInBag);
+    }
+    
+    /**
+     * Clear edges and nodes from graph.
+     */
+    public void clear() {
+        allEdges.clear();
+        nodeToOutBag.clear();
+        nodeToInBag.clear();
     }
     
     /**
@@ -88,7 +84,9 @@ public final class Graph {
      * @param node  the node
      * @return  the in degree
      */
-    public int getInDegree(Node node) { return inDegree[node.x][node.y]; }
+    public int getInDegree(Node node) {
+        return nodeToInBag.containsKey(node) ? nodeToInBag.get(node).numObjs : 0;
+    }
     
     /**
      * Gets the out degree at the given node.
@@ -96,7 +94,9 @@ public final class Graph {
      * @param node  the node
      * @return  the out degree
      */
-    public int getOutDegree(Node node) { return outDegree[node.x][node.y]; }
+    public int getOutDegree(Node node) {
+        return nodeToOutBag.containsKey(node) ? nodeToOutBag.get(node).numObjs : 0;
+    }
     
     /**
      * Gets the total degree (in degree + out degree) at the given node.
@@ -104,7 +104,7 @@ public final class Graph {
      * @param node  the node
      * @return  the degree
      */
-    public int getDegree(Node node) { return inDegree[node.x][node.y] + outDegree[node.x][node.y]; }
+    public int getDegree(Node node) { return getInDegree(node) + getOutDegree(node); }
     
     /**
      * Checks if the graph has an edge between the given nodes.
@@ -115,20 +115,24 @@ public final class Graph {
      */
     public boolean hasEdge(Node from, Node to) {
         Bag bag = getEdgesOut(from);
-        if (bag == null) { return false; }
+        if (bag == null) {
+            return false;
+        }
         for (Object obj : bag) {
-            if (to.equals(((Edge) obj).to)) { return true; }
+            if (to.equals(((Edge) obj).to)) {
+                return true;
+            }
         }
         return false;
     }
     
     /** Defines a filter for edges in a graph. */
-    public interface Filter {
+    public interface GraphFilter {
         /**
          * Applies filter to an {link Edge} object.
          *
          * @param edge  the edge
-         * @return  {@code true} if edge passes the filter, {@code false} otherwise
+         * @return  {@code true} if edge passes filter, {@code false} otherwise
          */
         boolean filter(Edge edge);
     }
@@ -141,7 +145,7 @@ public final class Graph {
      * @param g  the graph to add filtered edges to
      * @param f  the edge filter
      */
-    public void getSubgraph(Graph g, Filter f) {
+    public void getSubgraph(Graph g, GraphFilter f) {
         for (Object obj : allEdges) {
             Edge edge = (Edge) obj;
             if (f.filter(edge)) {
@@ -158,13 +162,17 @@ public final class Graph {
     public void mergeNodes() {
         Set<Node> sOut = nodeToOutBag.keySet();
         Set<Node> sIn = nodeToInBag.keySet();
-        Set<Node> set = new LinkedHashSet<Node>() { { addAll(sOut); addAll(sIn); }};
+        Set<Node> set = new LinkedHashSet<Node>() {
+            {
+                addAll(sOut);
+                addAll(sIn);
+            }
+        };
         
-        for (Object obj : set) {
-            Node node = (Node) obj;
-            Node join = node.duplicate();
-            Bag out = getEdgesOut(node);
-            Bag in = getEdgesIn(node);
+        for (Node obj : set) {
+            Node join = obj.duplicate();
+            Bag out = getEdgesOut(obj);
+            Bag in = getEdgesIn(obj);
             
             // Iterate through all edges OUT of node.
             if (out != null) {
@@ -194,7 +202,6 @@ public final class Graph {
         setOutMap(edge.getFrom(), edge);
         setInMap(edge.getTo(), edge);
         setLinks(edge);
-        updateDegrees(edge, ADD);
     }
     
     /**
@@ -237,8 +244,12 @@ public final class Graph {
         if (outTo != null) {
             for (Object obj : outTo) {
                 Edge e = (Edge) obj;
-                if (!e.edgesIn.contains(edge)) { e.edgesIn.add(edge); }
-                if (!edge.edgesOut.contains(e)) { edge.edgesOut.add(e); }
+                if (!e.edgesIn.contains(edge)) {
+                    e.edgesIn.add(edge);
+                }
+                if (!edge.edgesOut.contains(e)) {
+                    edge.edgesOut.add(e);
+                }
             }
         }
         
@@ -246,8 +257,12 @@ public final class Graph {
         if (inFrom != null) {
             for (Object obj : inFrom) {
                 Edge e = (Edge) obj;
-                if (!e.edgesOut.contains(edge)) { e.edgesOut.add(edge); }
-                if (!edge.edgesIn.contains(e)) { edge.edgesIn.add(e); }
+                if (!e.edgesOut.contains(edge)) {
+                    e.edgesOut.add(edge);
+                }
+                if (!edge.edgesIn.contains(e)) {
+                    edge.edgesIn.add(e);
+                }
             }
         }
     }
@@ -262,7 +277,6 @@ public final class Graph {
         unsetOutMap(edge.getFrom(), edge);
         unsetInMap(edge.getTo(), edge);
         unsetLinks(edge);
-        updateDegrees(edge, REMOVE);
     }
     
     /**
@@ -274,7 +288,9 @@ public final class Graph {
     private void unsetOutMap(Node node, Edge edge) {
         Bag objs = nodeToOutBag.get(node);
         objs.remove(edge);
-        if (objs.numObjs == 0) { nodeToOutBag.remove(node); }
+        if (objs.numObjs == 0) {
+            nodeToOutBag.remove(node);
+        }
     }
     
     /**
@@ -286,7 +302,9 @@ public final class Graph {
     private void unsetInMap(Node node, Edge edge) {
         Bag objs = nodeToInBag.get(node);
         objs.remove(edge);
-        if (objs.numObjs == 0) { nodeToInBag.remove(node); }
+        if (objs.numObjs == 0) {
+            nodeToInBag.remove(node);
+        }
     }
     
     /**
@@ -312,19 +330,6 @@ public final class Graph {
                 edge.edgesIn.remove(e);
             }
         }
-    }
-    
-    /**
-     * Updates the in and out degree for the given edge.
-     *
-     * @param edge  the edge that was added or removed
-     * @param type  the type of update (addition or removal)
-     */
-    private void updateDegrees(Edge edge, int type) {
-        Node from = edge.from;
-        Node to = edge.to;
-        inDegree[to.getX()][to.getY()] += type;
-        outDegree[from.getX()][from.getY()] += type;
     }
     
     /**
@@ -391,7 +396,8 @@ public final class Graph {
         /** Coordinate in z direction. */
         protected int z;
         
-        /** Creates a {@code Node} at the given coordinates.
+        /**
+         * Creates a {@code Node} at the given coordinates.
          *
          * @param x  the x coordinate
          * @param y  the y coordinate
@@ -429,7 +435,7 @@ public final class Graph {
          *
          * @param node  the node to compare
          * @return  zero if the x and y coordinates are equal, otherwise the
-         *          the result of integer comparison for x and y
+         *          result of integer comparison for x and y
          */
         public int compareTo(Node node) {
             int xComp = Integer.compare(x, node.getX());
@@ -455,7 +461,11 @@ public final class Graph {
          *
          * @param node  the {@code Node} with coordinates to update with
          */
-        public void update(Node node) { this.x = node.x; this.y = node.y; this.z = node.z; }
+        public void update(Node node) {
+            this.x = node.x;
+            this.y = node.y;
+            this.z = node.z;
+        }
         
         /**
          * Specifies object hashing based on coordinates.
@@ -468,7 +478,7 @@ public final class Graph {
          * Checks if two nodes are equal based on coordinates.
          *
          * @param obj  the object to check
-         * @return  {@code true} if the coordinate match, {@code false} otherwise
+         * @return  {@code true} if coordinates match, {@code false} otherwise
          */
         public final boolean equals(Object obj) {
             if (obj instanceof Node) {
@@ -549,32 +559,18 @@ public final class Graph {
         public void setFrom(Node from) { this.from = from; }
         
         /**
-         * Gets the list of edges that point into the node this edge points from.
+         * Gets list of edges that point into the node this edge points from.
          *
          * @return  the list of edges
          */
         public ArrayList<Edge> getEdgesIn() { return edgesIn; }
         
         /**
-         * Gets the list of edges that point out of the node this edge points to.
+         * Gets list of edges that point out of the node this edge points to.
          *
          * @return  the list of edges
          */
         public ArrayList<Edge> getEdgesOut() { return edgesOut; }
-        
-        /**
-         * Gets the node for the given direction of this edge.
-         *
-         * @param dir  the direction
-         * @return  the node
-         */
-        public Node getNode(int dir) {
-            switch (dir) {
-                case DIR_FROM: return from;
-                case DIR_TO: return to;
-                default: return null;
-            }
-        }
         
         /**
          * Reverses the edge by swapping the nodes.
