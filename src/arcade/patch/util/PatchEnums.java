@@ -28,28 +28,28 @@ public final class PatchEnums {
         
         /** Stepping order for first action. */
         FIRST_ACTION,
-    
+        
         /** Stepping order for actions. */
         ACTIONS,
-    
+        
         /** Stepping order for last action. */
         LAST_ACTION,
-    
+        
         /** Stepping order for first cell. */
         FIRST_CELL,
         
         /** Stepping order for cells. */
         CELLS,
-    
+        
         /** Stepping order for last cell. */
         LAST_CELL,
-    
+        
         /** Stepping order for first component. */
         FIRST_COMPONENT,
         
         /** Stepping order for components. */
         COMPONENTS,
-    
+        
         /** Stepping order for last component. */
         LAST_COMPONENT,
         
@@ -58,7 +58,7 @@ public final class PatchEnums {
         
         /** Stepping order for lattices. */
         LATTICES,
-    
+        
         /** Stepping order for last lattice. */
         LAST_LATTICE,
         
