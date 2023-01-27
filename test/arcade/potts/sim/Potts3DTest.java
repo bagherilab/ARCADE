@@ -201,7 +201,7 @@ public class Potts3DTest {
         
         array[index++] = s.clone();
         
-        for (; ; ) {
+        for (;;) {
             int ii = k - 1;
             for (int i = k - 1; i >= 0 && s[i] == n - k + i; i--) {
                 ii--;
