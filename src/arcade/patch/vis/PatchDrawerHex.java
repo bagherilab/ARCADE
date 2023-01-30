@@ -7,6 +7,9 @@ import sim.engine.SimState;
 import sim.util.gui.ColorMap;
 import arcade.core.vis.Panel;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.env.comp.PatchComponentSites;
+import arcade.patch.env.comp.PatchComponentSitesPattern;
+import arcade.patch.env.comp.PatchComponentSitesSource;
 import arcade.patch.env.loc.Coordinate;
 import arcade.patch.env.loc.CoordinateHex;
 import arcade.patch.env.loc.CoordinateTri;
@@ -102,13 +105,13 @@ public abstract class PatchDrawerHex extends PatchDrawer {
         private final int width;
         
         /** Drawing view. */
-        private final View view;
+        private final CellView view;
         
         /**
          * Creates a {@link PatchDrawer} for drawing hexagonal cells.
          * <p>
-         * Length and width of the drawer are expanded from the given length and
-         * width of the simulation so each index can be drawn as a 3x3 triangle.
+         * Length and width of the drawer are expanded from given length and
+         * width of simulation so each index can be drawn as a 3x3 triangle.
          *
          * @param panel  the panel the drawer is attached to
          * @param name  the name of the drawer
@@ -125,12 +128,12 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             this.length = length;
             this.width = width;
             String[] split = name.split(":");
-            view = View.valueOf(split[1]);
+            view = CellView.valueOf(split[1]);
         }
         
         @Override
-        public void step(SimState state) {
-            PatchSimulation sim = (PatchSimulation) state;
+        public void step(SimState simstate) {
+            PatchSimulation sim = (PatchSimulation) simstate;
             double[][] arr = array.field;
             double[][] temp = new double[length][width];
             double[][] counter = new double[length][width];
@@ -139,14 +142,20 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             PatchLocation location;
             
             switch (view) {
-                case STATE: case AGE:
+                case STATE:
+                case AGE:
                     for (int i = 0; i < length; i++) {
                         for (int j = 0; j < width; j++) {
                             temp[i][j] = map.defaultValue();
                         }
                     }
                     break;
-                case VOLUME: case HEIGHT: case COUNTS: case POPULATION: case ENERGY: case DIVISIONS:
+                case VOLUME:
+                case HEIGHT:
+                case COUNTS:
+                case POPULATION:
+                case ENERGY:
+                case DIVISIONS:
                     array.setTo(0);
                     break;
                 default:
@@ -164,7 +173,9 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                     
                     int hash = location.hashCode();
                     int index = -1;
-                    if (indices.containsKey(hash)) { index = indices.get(hash); }
+                    if (indices.containsKey(hash)) {
+                        index = indices.get(hash);
+                    }
                     indices.put(hash, ++index);
                     
                     switch (view) {
@@ -185,7 +196,7 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                                     temp[mainCoord.x][mainCoord.y] = cell.getPop();
                                     break;
                                 case ENERGY:
-                                    temp[mainCoord.x][mainCoord.y] = cell.getEnergy();
+                                    temp[mainCoord.x][mainCoord.y] = -cell.getEnergy();
                                     break;
                                 case DIVISIONS:
                                     temp[mainCoord.x][mainCoord.y] = cell.getDivisions();
@@ -223,7 +234,7 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                     }
                 }
             }
-    
+            
             switch (view) {
                 case VOLUME:
                 case HEIGHT:
@@ -238,6 +249,89 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             }
             
             expand(arr, temp, length, width);
+        }
+    }
+    
+    /**
+     * Extension of {@link PatchDrawer} for drawing hexagonal lattices.
+     */
+    public static class PatchLayers extends PatchDrawerHex {
+        /** Length of the lattice (x direction). */
+        private final int length;
+        
+        /** Width of the lattice (y direction). */
+        private final int width;
+        
+        /** Lattice z index to display. */
+        private final int index;
+        
+        /** Drawing view. */
+        private final LatticeView view;
+        
+        /** Layer key. */
+        private final String key;
+        
+        /**
+         * Creates a {@link PatchDrawer} for drawing hexagonal layers.
+         *
+         * @param panel  the panel the drawer is attached to
+         * @param name  the name of the drawer
+         * @param length  the length of array (x direction)
+         * @param width  the width of array (y direction)
+         * @param depth  the depth of array (z direction)
+         * @param map  the color map for the array
+         * @param bounds  the size of the drawer within the panel
+         */
+        public PatchLayers(Panel panel, String name,
+                           int length, int width, int depth,
+                           ColorMap map, Rectangle2D.Double bounds) {
+            super(panel, name, 3 * length + 2, 3 * width, depth, map, bounds);
+            this.length = length;
+            this.width = width;
+            this.index = ((depth - 1) / 2);
+            String[] split = name.split(":");
+            view = LatticeView.valueOf(split[1]);
+            key = (split.length == 3 ? split[2] : null);
+        }
+        
+        @Override
+        public void step(SimState simstate) {
+            PatchSimulation sim = (PatchSimulation) simstate;
+            double[][] temp = new double[length][width];
+            
+            switch (view) {
+                case CONCENTRATION:
+                    temp = sim.getLattice(key).getField()[index];
+                    break;
+                case SITES:
+                case DAMAGE:
+                    PatchComponentSites component = (PatchComponentSites) sim.getComponent("SITES");
+                    
+                    if (component instanceof PatchComponentSitesSource) {
+                        PatchComponentSitesSource sites = (PatchComponentSitesSource) component;
+                        if (view == LatticeView.SITES) {
+                            boolean[][][] sources = sites.getSources();
+                            convert(sources[index], temp);
+                        } else {
+                            temp = sites.getDamage()[index];
+                        }
+                    } else if (component instanceof PatchComponentSitesPattern) {
+                        PatchComponentSitesPattern sites = (PatchComponentSitesPattern) component;
+                        if (view == LatticeView.SITES) {
+                            boolean[][][] pattern = sites.getPatterns();
+                            boolean[][][] anchors = sites.getAnchors();
+                            convert(pattern[index], temp);
+                            convert(anchors[index], temp);
+                        } else {
+                            temp = sites.getDamage()[index];
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            
+            expand(array.field, temp, length, width);
         }
     }
     
@@ -277,8 +371,8 @@ public abstract class PatchDrawerHex extends PatchDrawer {
          * @param depth  the depth of array (z direction)
          * @param bounds  the size of the drawer within the panel
          */
-        PatchGrid(Panel panel, String name,
-                int length, int width, int depth, Rectangle2D.Double bounds) {
+        PatchGrid(Panel panel, String name, int length, int width, int depth,
+                  Rectangle2D.Double bounds) {
             super(panel, name, 3 * length + 2, 3 * width, depth, bounds);
             this.length = length + 1;
             this.width = width;
@@ -313,23 +407,23 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             // Draw triangular grid.
             for (int i = 0; i <= width; i++) {
                 add(field, graph, 1,
-                    (i % 2 == 0 ? 0 : 1), i,
-                    (i % 2 == 0 ? length : length - 1), i);
+                        (i % 2 == 0 ? 0 : 1), i,
+                        (i % 2 == 0 ? length : length - 1), i);
             }
             
             for (int i = 0; i <= length - 1; i += 2) {
                 for (int j = 0; j < width; j++) {
                     add(field, graph, 1,
-                        (j % 2 == 0 ? i : i + 1), j,
-                        (j % 2 == 0 ? i + 1 : i), j + 1);
+                            (j % 2 == 0 ? i : i + 1), j,
+                            (j % 2 == 0 ? i + 1 : i), j + 1);
                 }
             }
             
             for (int i = 1; i <= length; i += 2) {
                 for (int j = 0; j < width; j++) {
                     add(field, graph, 1,
-                        (j % 2 == 0 ? i + 1 : i), j,
-                        (j % 2 == 0 ? i : i + 1), j + 1);
+                            (j % 2 == 0 ? i + 1 : i), j,
+                            (j % 2 == 0 ? i : i + 1), j + 1);
                 }
             }
             
@@ -338,8 +432,8 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                 CoordinateTri tri = (CoordinateTri) loc.getSubcoordinate();
                 for (int i = 0; i < 6; i++) {
                     add(field, graph, 2,
-                        tri.x + OFFSETS[i][0], tri.y + OFFSETS[i][1],
-                        tri.x + OFFSETS[(i + 1) % 6][0], tri.y + OFFSETS[(i + 1) % 6][1]);
+                            tri.x + OFFSETS[i][0], tri.y + OFFSETS[i][1],
+                            tri.x + OFFSETS[(i + 1) % 6][0], tri.y + OFFSETS[(i + 1) % 6][1]);
                 }
             }
             
@@ -371,15 +465,15 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                     }
                     
                     add(field, graph, 3,
-                        subcoord.x + OFFSETS[ind][0],
-                        subcoord.y + OFFSETS[ind][1],
-                        subcoord.x + OFFSETS[(ind + 1) % 6][0],
-                        subcoord.y + OFFSETS[(ind + 1) % 6][1]);
+                            subcoord.x + OFFSETS[ind][0],
+                            subcoord.y + OFFSETS[ind][1],
+                            subcoord.x + OFFSETS[(ind + 1) % 6][0],
+                            subcoord.y + OFFSETS[(ind + 1) % 6][1]);
                     add(field, graph, 3,
-                        subcoord.x + OFFSETS[(ind + 1) % 6][0],
-                        subcoord.y + OFFSETS[(ind + 1) % 6][1],
-                        subcoord.x + OFFSETS[(ind + 2) % 6][0],
-                        subcoord.y + OFFSETS[(ind + 2) % 6][1]);
+                            subcoord.x + OFFSETS[(ind + 1) % 6][0],
+                            subcoord.y + OFFSETS[(ind + 1) % 6][1],
+                            subcoord.x + OFFSETS[(ind + 2) % 6][0],
+                            subcoord.y + OFFSETS[(ind + 2) % 6][1]);
                     
                     if (coord.u == 0 || coord.v == 0 || coord.w == 0) {
                         if (coord.u == 0 && coord.v == radius - 1) {
@@ -397,10 +491,10 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                         }
                         
                         add(field, graph, 3,
-                            subcoord.x + OFFSETS[ind][0],
-                            subcoord.y + OFFSETS[ind][1],
-                            subcoord.x + OFFSETS[(ind + 1) % 6][0],
-                            subcoord.y + OFFSETS[(ind + 1) % 6][1]);
+                                subcoord.x + OFFSETS[ind][0],
+                                subcoord.y + OFFSETS[ind][1],
+                                subcoord.x + OFFSETS[(ind + 1) % 6][0],
+                                subcoord.y + OFFSETS[(ind + 1) % 6][1]);
                     }
                 }
             }

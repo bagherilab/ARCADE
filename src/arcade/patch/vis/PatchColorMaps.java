@@ -12,6 +12,36 @@ import arcade.core.util.MiniBox;
  */
 
 class PatchColorMaps {
+    /**
+     * BurgYl colormap from
+     * <a href="https://carto.com/carto-colors/">CARTOColors</a>.
+     */
+    private static final Color[] BURGUNDY_YELLOW = new Color[] {
+            new Color(0, 0, 0),
+            new Color(112, 40, 74),
+            new Color(156, 63, 93),
+            new Color(200, 88, 108),
+            new Color(220, 113, 118),
+            new Color(238, 138, 130),
+            new Color(245, 186, 152),
+            new Color(251, 230, 197),
+    };
+    
+    /**
+     * Dark mint colormap from
+     * <a href="https://carto.com/carto-colors/">CARTOColors</a>.
+     */
+    private static final Color[] DARK_MINT = new Color[] {
+            new Color(0, 0, 0),
+            new Color(18, 63, 90),
+            new Color(35, 93, 114),
+            new Color(58, 124, 137),
+            new Color(85, 156, 158),
+            new Color(123, 188, 176),
+            new Color(165, 219, 194),
+            new Color(210, 251, 212),
+    };
+    
     /** Color map for cell state. */
     static final Colors MAP_STATE = new Colors(
             new Color[] {
@@ -36,7 +66,7 @@ class PatchColorMaps {
                     new Color(239, 101, 72),
                     new Color(215, 48, 31),
                     new Color(153, 0, 0),
-        }
+            }
     );
     
     /** Color map for cell populations. */
@@ -56,6 +86,30 @@ class PatchColorMaps {
             new double[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }
     );
     
+    /** Color map for cell populations. */
+    static final Colors MAP_SITES = new Colors(
+            new Color[] {
+                    new Color(0, 0, 0, 0),
+                    new Color(100, 100, 100),
+                    new Color(150, 150, 150),
+            },
+            new double[] { 0, 1, 2 }
+    );
+    
+    /** Color map for cell populations. */
+    static final Colors MAP_DAMAGE = new Colors(
+            new Color[] {
+                    new Color(0, 0, 0, 0),
+                    new Color(253, 212, 158),
+                    new Color(253, 187, 132),
+                    new Color(252, 141, 89),
+                    new Color(239, 101, 72),
+                    new Color(215, 48, 31),
+                    new Color(153, 0, 0),
+            },
+            new double[] { 0, 5, 10, 15, 20, 25, 30 }
+    );
+    
     /** Color map for cell age. */
     final Colors mapAge;
     
@@ -71,6 +125,15 @@ class PatchColorMaps {
     /** Color map for cell divisions. */
     final Colors mapDivisions;
     
+    /** Color map for glucose concentration. */
+    final Colors mapGlucose;
+    
+    /** Color map for oxygen concentration. */
+    final Colors mapOxygen;
+    
+    /** Color map for TGFa concentration. */
+    final Colors mapTGFa;
+    
     /**
      * Creates {@code ColorMaps} for the given series.
      *
@@ -84,7 +147,10 @@ class PatchColorMaps {
             }
         }
         
-        mapAge = new Colors(new Color(0, 0, 0, 0), new Color(0, 0, 0, 180), 0, age);
+        mapAge = new Colors(
+                new Color(0, 0, 0, 0),
+                new Color(0, 0, 0, 180),
+                0, age);
         
         double volume = 0;
         for (MiniBox box : series.populations.values()) {
@@ -94,16 +160,7 @@ class PatchColorMaps {
         }
         
         mapVolume = new Colors(
-                new Color[]{
-                        new Color(0, 0, 0),
-                        new Color(112, 40, 74),
-                        new Color(156, 63, 93),
-                        new Color(200, 88, 108),
-                        new Color(220, 113, 118),
-                        new Color(238, 138, 130),
-                        new Color(245, 186, 152),
-                        new Color(251, 230, 197),
-                },
+                BURGUNDY_YELLOW,
                 new double[] {
                         0,
                         1. / 7 * volume * 2,
@@ -124,16 +181,7 @@ class PatchColorMaps {
         }
         
         mapHeight = new Colors(
-                new Color[]{
-                        new Color(0, 0, 0),
-                        new Color(112, 40, 74),
-                        new Color(156, 63, 93),
-                        new Color(200, 88, 108),
-                        new Color(220, 113, 118),
-                        new Color(238, 138, 130),
-                        new Color(245, 186, 152),
-                        new Color(251, 230, 197),
-                },
+                BURGUNDY_YELLOW,
                 new double[] {
                         0,
                         1. / 7 * height * 2,
@@ -154,16 +202,7 @@ class PatchColorMaps {
         }
         
         mapEnergy = new Colors(
-                new Color[]{
-                        new Color(0, 0, 0),
-                        new Color(18, 63, 90),
-                        new Color(35, 93, 114),
-                        new Color(58, 124, 137),
-                        new Color(85, 156, 158),
-                        new Color(123, 188, 176),
-                        new Color(165, 219, 194),
-                        new Color(210, 251, 212),
-                },
+                BURGUNDY_YELLOW,
                 new double[] {
                         0,
                         1. / 7 * energy,
@@ -175,6 +214,7 @@ class PatchColorMaps {
                         energy,
                 }
         );
+        
         double divisions = 0;
         for (MiniBox box : series.populations.values()) {
             if (box.getDouble("DIVISION_POTENTIAL") > divisions) {
@@ -183,16 +223,7 @@ class PatchColorMaps {
         }
         
         mapDivisions = new Colors(
-                new Color[]{
-                        new Color(0, 0, 0),
-                        new Color(18, 63, 90),
-                        new Color(35, 93, 114),
-                        new Color(58, 124, 137),
-                        new Color(85, 156, 158),
-                        new Color(123, 188, 176),
-                        new Color(165, 219, 194),
-                        new Color(210, 251, 212),
-                },
+                BURGUNDY_YELLOW,
                 new double[] {
                         0,
                         1. / 7 * divisions,
@@ -202,6 +233,54 @@ class PatchColorMaps {
                         5. / 7 * divisions,
                         6. / 7 * divisions,
                         divisions,
+                }
+        );
+        
+        double glucose = series.layers.get("GLUCOSE").getDouble("generator/CONCENTRATION");
+        
+        mapGlucose = new Colors(
+                DARK_MINT,
+                new double[] {
+                        0,
+                        1. / 7 * glucose,
+                        2. / 7 * glucose,
+                        3. / 7 * glucose,
+                        4. / 7 * glucose,
+                        5. / 7 * glucose,
+                        6. / 7 * glucose,
+                        glucose,
+                }
+        );
+        
+        double oxygen = series.layers.get("OXYGEN").getDouble("generator/CONCENTRATION");
+        
+        mapOxygen = new Colors(
+                DARK_MINT,
+                new double[] {
+                        0,
+                        1. / 7 * oxygen,
+                        2. / 7 * oxygen,
+                        3. / 7 * oxygen,
+                        4. / 7 * oxygen,
+                        5. / 7 * oxygen,
+                        6. / 7 * oxygen,
+                        oxygen,
+                }
+        );
+        
+        double tgfa = series.layers.get("TGFA").getDouble("INITIAL_CONCENTRATION");
+        
+        mapTGFa = new Colors(
+                DARK_MINT,
+                new double[] {
+                        0,
+                        1. / 7 * tgfa,
+                        2. / 7 * tgfa,
+                        3. / 7 * tgfa,
+                        4. / 7 * tgfa,
+                        5. / 7 * tgfa,
+                        6. / 7 * tgfa,
+                        tgfa,
                 }
         );
     }

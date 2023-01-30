@@ -36,9 +36,12 @@ public abstract class PatchDrawer extends Drawer {
     /** Field holding nodes. */
     Continuous2D field;
     
-    /** View options. */
-    enum View { STATE, AGE, VOLUME, HEIGHT, COUNTS, POPULATION, ENERGY, DIVISIONS }
-
+    /** View options for cells. */
+    enum CellView { STATE, AGE, VOLUME, HEIGHT, COUNTS, POPULATION, ENERGY, DIVISIONS }
+    
+    /** View options for lattices. */
+    enum LatticeView { CONCENTRATION, SITES, DAMAGE }
+    
     /**
      * Creates a {@link Drawer} for patch simulations.
      *
@@ -55,21 +58,6 @@ public abstract class PatchDrawer extends Drawer {
         super(panel, name, length, width, depth, map, bounds);
     }
     
-    /**
-     * Creates a {@link Drawer} for patch simulations.
-     *
-     * @param panel  the panel the drawer is attached to
-     * @param name  the name of the drawer
-     * @param length  the length of array (x direction)
-     * @param width  the width of array (y direction)
-     * @param depth  the depth of array (z direction)
-     * @param bounds  the size of the drawer within the panel
-     */
-    PatchDrawer(Panel panel, String name, int length, int width, int depth,
-                Rectangle2D.Double bounds) {
-        super(panel, name, length, width, depth, null, bounds);
-    }
-    
     @Override
     public Portrayal makePort() {
         String[] split = name.split(":");
@@ -84,6 +72,7 @@ public abstract class PatchDrawer extends Drawer {
                 gridPort.setPortrayalForAll(sep);
                 return gridPort;
             case "agents":
+            case "environment":
                 array = new DoubleGrid2D(length, width, map.defaultValue());
                 ValueGridPortrayal2D valuePort = new FastValueGridPortrayal2D();
                 valuePort.setField(array);
@@ -192,12 +181,26 @@ public abstract class PatchDrawer extends Drawer {
      * @param y2  the y position of the to node
      */
     static void add(Continuous2D field, Network graph, int weight,
-                            int x1, int y1, int x2, int y2) {
+                    int x1, int y1, int x2, int y2) {
         Double2D a = new Double2D(x1, y1);
         Double2D b = new Double2D(x2, y2);
         field.setObjectLocation(a, a);
         field.setObjectLocation(b, b);
         graph.addEdge(a, b, weight);
+    }
+    
+    /**
+     * Converts a boolean array to a double array.
+     *
+     * @param fromArray  the array to convert
+     * @param toArray  the array to store results
+     */
+    static void convert(boolean[][] fromArray, double[][] toArray) {
+        for (int i = 0; i < fromArray.length; i++) {
+            for (int j = 0; j < fromArray[0].length; j++) {
+                toArray[i][j] += (fromArray[i][j] ? 1 : 0);
+            }
+        }
     }
     
     /**
@@ -221,7 +224,9 @@ public abstract class PatchDrawer extends Drawer {
             this.string = string;
             
             LabelFieldPortrayal2D port = (LabelFieldPortrayal2D) this.getPortrayal();
-            if (string == null) { port.fontSize = 20; }
+            if (string == null) {
+                port.fontSize = 20;
+            }
         }
         
         @Override
@@ -232,12 +237,12 @@ public abstract class PatchDrawer extends Drawer {
         /**
          * Steps the drawer to add a label.
          *
-         * @param state  the MASON simulation state
+         * @param simstate  the MASON simulation state
          */
-        public void step(SimState state) {
+        public void step(SimState simstate) {
             LabelFieldPortrayal2D port = (LabelFieldPortrayal2D) this.getPortrayal();
             if (string == null) {
-                double ticks = state.schedule.getTime();
+                double ticks = simstate.schedule.getTime();
                 int days = (int) Math.floor(ticks / 60 / 24);
                 int hours = (int) Math.floor((ticks - days * 60 * 24) / 60);
                 int minutes = (int) ticks - days * 24 * 60 - hours * 60;
