@@ -730,16 +730,16 @@ public class SeriesTest {
         setupDicts.get("series").put("ticks", ticks);
         Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
         
-        SimState state = mock(SimState.class);
-        state.schedule = spy(new Schedule());
-        state.schedule.scheduleRepeating((Steppable) simState -> { }, 1);
+        SimState simstate = mock(SimState.class);
+        simstate.schedule = spy(new Schedule());
+        simstate.schedule.scheduleRepeating((Steppable) simState -> { }, 1);
         
-        series.runSim(state, randomIntBetween(1, 100));
+        series.runSim(simstate, randomIntBetween(1, 100));
         
-        verify(state).start();
-        verify(state).finish();
-        verify(state.schedule, times(ticks)).step(state);
-        verify(state.schedule, times(ticks)).getTime();
+        verify(simstate).start();
+        verify(simstate).finish();
+        verify(simstate.schedule, times(ticks)).step(simstate);
+        verify(simstate.schedule, times(ticks)).getTime();
     }
     
     @Test
@@ -749,16 +749,16 @@ public class SeriesTest {
         setupDicts.get("series").put("ticks", ticks + 1);
         Series series = spy(new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false));
         
-        SimState state = mock(SimState.class);
-        state.schedule = spy(new Schedule());
-        state.schedule.scheduleOnce(ticks - 1, (Steppable) simState -> { });
+        SimState simstate = mock(SimState.class);
+        simstate.schedule = spy(new Schedule());
+        simstate.schedule.scheduleOnce(ticks - 1, (Steppable) simState -> { });
         
-        series.runSim(state, randomIntBetween(1, 100));
+        series.runSim(simstate, randomIntBetween(1, 100));
         
-        verify(state).start();
-        verify(state).finish();
-        verify(state.schedule, times(2)).step(state);
-        verify(state.schedule).getTime();
+        verify(simstate).start();
+        verify(simstate).finish();
+        verify(simstate.schedule, times(2)).step(simstate);
+        verify(simstate.schedule).getTime();
     }
     
     @Test
