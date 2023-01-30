@@ -26,9 +26,9 @@ public abstract class Visualization extends GUIState {
     /**
      * Creates a {@code Visualization} for the given simulation.
      *
-     * @param state  the simulation state instance
+     * @param simstate  the simulation state instance
      */
-    protected Visualization(SimState state) { super(state); }
+    protected Visualization(SimState simstate) { super(simstate); }
     
     /**
      * Sets the inspector to get state property methods.
@@ -85,11 +85,11 @@ public abstract class Visualization extends GUIState {
     /**
      * Loads a visualization from the given simulation.
      *
-     * @param state  the MASON simulation state
+     * @param simstate  the MASON simulation state
      */
     @Override
-    public void load(SimState state) {
-        super.load(state);
+    public void load(SimState simstate) {
+        super.load(simstate);
         setup();
     }
     

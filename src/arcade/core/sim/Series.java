@@ -416,8 +416,8 @@ public abstract class Series {
             simStart = System.currentTimeMillis();
             
             // Run simulation.
-            SimState state = (SimState) (simCons.newInstance(seed + SEED_OFFSET, this));
-            runSim(state, seed);
+            SimState simstate = (SimState) (simCons.newInstance(seed + SEED_OFFSET, this));
+            runSim(simstate, seed);
             
             // Post-simulation output.
             simEnd = System.currentTimeMillis();
@@ -429,12 +429,12 @@ public abstract class Series {
     /**
      * Iterates through each tick of the simulation.
      *
-     * @param state  the simulation state instance
+     * @param simstate  the simulation state instance
      * @param seed  the random seed
      */
-    void runSim(SimState state, int seed) {
+    void runSim(SimState simstate, int seed) {
         // Start simulation.
-        state.start();
+        simstate.start();
         
         // Set up logger checkpoints.
         double delta = ticks / 10.0;
@@ -443,10 +443,10 @@ public abstract class Series {
         // Run simulation loop.
         double tick;
         do {
-            if (!state.schedule.step(state)) {
+            if (!simstate.schedule.step(simstate)) {
                 break;
             }
-            tick = state.schedule.getTime();
+            tick = simstate.schedule.getTime();
             
             if (tick >= checkpoint) {
                 LOGGER.info(String.format("simulation [ %s | %04d ] tick %6d ( %4.2f %% )",
@@ -456,7 +456,7 @@ public abstract class Series {
         } while (tick < ticks - 1);
         
         // Finish simulation.
-        state.finish();
+        simstate.finish();
     }
     
     /**
