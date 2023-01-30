@@ -266,8 +266,8 @@ public abstract class PottsDrawer extends Drawer {
         }
         
         @Override
-        public void step(SimState state) {
-            PottsSimulation sim = (PottsSimulation) state;
+        public void step(SimState simstate) {
+            PottsSimulation sim = (PottsSimulation) simstate;
             Grid grid = sim.getGrid();
             Potts potts = sim.getPotts();
             
@@ -510,8 +510,8 @@ public abstract class PottsDrawer extends Drawer {
         }
         
         @Override
-        public void step(SimState state) {
-            PottsSimulation sim = (PottsSimulation) state;
+        public void step(SimState simstate) {
+            PottsSimulation sim = (PottsSimulation) simstate;
             field.clear();
             graph.clear();
             
