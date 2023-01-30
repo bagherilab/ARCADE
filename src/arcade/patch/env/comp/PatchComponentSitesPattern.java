@@ -113,6 +113,27 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
     }
     
     /**
+     * Gets the underlying pattern sites array.
+     *
+     * @return  the pattern sites array
+     */
+    public boolean[][][] getPatterns() { return patterns; }
+    
+    /**
+     * Gets the underlying pattern anchors array.
+     *
+     * @return  the pattern sites array
+     */
+    public boolean[][][] getAnchors() { return anchors; }
+    
+    /**
+     * Gets the underlying pattern damage array.
+     *
+     * @return  the pattern damage array
+     */
+    public double[][][] getDamage() { return damageSingle; }
+    
+    /**
      * Calculates the average change in concentration between the two lattice
      * indices bordering a capillary.
      *

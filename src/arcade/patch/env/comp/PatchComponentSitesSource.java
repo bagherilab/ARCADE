@@ -93,6 +93,20 @@ public class PatchComponentSitesSource extends PatchComponentSites {
     }
     
     /**
+     * Gets the underlying source sites array.
+     *
+     * @return  the source sites array
+     */
+    public boolean[][][] getSources() { return sources; }
+    
+    /**
+     * Gets the underlying source damage array.
+     *
+     * @return  the source damage array
+     */
+    public double[][][] getDamage() { return damageSingle; }
+    
+    /**
      * Initializes sites in source array.
      * <p>
      * Iterates through each index in the source lattice and assigns it as a
