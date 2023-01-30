@@ -82,8 +82,8 @@ public class PatchActionInsert implements Action {
     }
     
     @Override
-    public void step(SimState state) {
-        PatchSimulation sim = (PatchSimulation) state;
+    public void step(SimState simstate) {
+        PatchSimulation sim = (PatchSimulation) simstate;
         PatchGrid grid = (PatchGrid) sim.getGrid();
         
         // Select valid coordinates to insert into and shuffle.

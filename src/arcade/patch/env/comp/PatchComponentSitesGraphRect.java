@@ -45,7 +45,7 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
         }
         
         @Override
-        public void step(SimState state) {
+        public void step(SimState simstate) {
             super.simpleStep();
         }
     }
@@ -67,8 +67,8 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
         }
         
         @Override
-        public void step(SimState state) {
-            super.complexStep(state.random);
+        public void step(SimState simstate) {
+            super.complexStep(simstate.random);
         }
     }
     

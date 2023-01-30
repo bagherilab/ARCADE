@@ -169,7 +169,7 @@ public abstract class PatchComponentSitesPattern extends PatchComponentSites {
     }
     
     @Override
-    public void step(SimState state) {
+    public void step(SimState simstate) {
         // Iterate through array to calculate damage, if needed.
         if (calculateDamage) {
             for (int k = 0; k < latticeHeight; k++) {

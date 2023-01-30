@@ -20,7 +20,7 @@ import static arcade.patch.util.PatchEnums.Ordering;
  * <p>
  * This component can only be used with {@link PatchComponentSitesSource}.
  * Multiple pulsed molecules are tracked by a list of {@link PulseLayer}
- * objected.
+ * objects.
  * <p>
  * The amount of media ({@code MEDIA_AMOUNT}) is used to determine the total
  * amount of molecule available given total simulation area. The molecule
