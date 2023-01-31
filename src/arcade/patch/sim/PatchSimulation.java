@@ -263,6 +263,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     public final void scheduleActions() {
         actions = new HashMap<>();
         
+        // Create all action instances.
         for (String actionKey : series.actions.keySet()) {
             MiniBox actionParameters = series.actions.get(actionKey);
             String actionClass = actionParameters.get("CLASS");
@@ -272,13 +273,20 @@ public abstract class PatchSimulation extends SimState implements Simulation {
                 continue;
             }
             
+            actions.put(actionKey, action);
+        }
+        
+        // Register and schedule actions.
+        for (String actionKey : actions.keySet()) {
+            MiniBox actionParameters = series.actions.get(actionKey);
+            Action action = actions.get(actionKey);
+            
             MiniBox registerBox = actionParameters.filter("(REGISTER)");
             for (String registerKey : registerBox.getKeys()) {
                 action.register(this, registerKey);
             }
             
             action.schedule(schedule);
-            actions.put(actionKey, action);
         }
     }
     
@@ -286,6 +294,7 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     public final void scheduleComponents() {
         components = new HashMap<>();
         
+        // Create all component instances.
         for (String componentKey : series.components.keySet()) {
             MiniBox componentParameters = series.components.get(componentKey);
             String componentClass = componentParameters.get("CLASS");
@@ -295,13 +304,20 @@ public abstract class PatchSimulation extends SimState implements Simulation {
                 continue;
             }
             
+            components.put(componentKey, component);
+        }
+        
+        // Register and schedule components.
+        for (String componentKey : components.keySet()) {
+            MiniBox componentParameters = series.components.get(componentKey);
+            Component component = components.get(componentKey);
+            
             MiniBox registerBox = componentParameters.filter("(REGISTER)");
             for (String registerKey : registerBox.getKeys()) {
                 component.register(this, registerKey);
             }
             
             component.schedule(schedule);
-            components.put(componentKey, component);
         }
     }
     
