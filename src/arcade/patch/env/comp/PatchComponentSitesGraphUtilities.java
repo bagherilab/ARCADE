@@ -72,6 +72,9 @@ abstract class PatchComponentSitesGraphUtilities {
     /** Minimum viable thickness for vessel wall [um]. */
     static final double MINIMUM_WALL_THICKNESS = 0.5;
     
+    /** Maximum fraction of wall thickness to radius. */
+    static final double MAXIMUM_WALL_RADIUS_FRACTION = 0.5;
+    
     /** Viscosity of plasma [mmHg s]. */
     static final double PLASMA_VISCOSITY = 0.000009;
     

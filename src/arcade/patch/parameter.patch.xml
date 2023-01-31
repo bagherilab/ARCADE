@@ -110,4 +110,12 @@
     <component class="degrade" id="DEGRADATION_INTERVAL" value="1" units="min" description="interval between degradation steps" />
     <component class="degrade" id="DEGRADATION_RATE" value="0.04" units="um/hr" description="rate of wall thickness degradation" />
     <component class="degrade" id="SHEAR_THRESHOLD" value="0.01" units="mmHg" description="shear threshold for vessel collapse" />
+    
+    <component class="remodel" id="REMODELING_INTERVAL" value="60" units="min" description="interval between remodeling steps" />
+    <component class="remodel" id="SCALE_SHEAR" value="0.01" description="shear stress scaling" />
+    <component class="remodel" id="SCALE_CIRCUM" value="0.01" description="circumferential stress scaling" />
+    <component class="remodel" id="SCALE_FLOW" value="0.005" description="flow rate scaling" />
+    <component class="remodel" id="SCALE_METABOLIC" value="0.01" description="metabolic demand scaling" />
+    <component class="remodel" id="SCALE_TAU" value="0.01" description="shear stress contribution to area mass scaling" />
+    <component class="remodel" id="SCALE_SIGMA" value="0.5" description="circumferential stress contribution to radius scaling" />
 </parameters>

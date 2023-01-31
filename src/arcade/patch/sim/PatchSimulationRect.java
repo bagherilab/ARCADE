@@ -11,6 +11,7 @@ import arcade.patch.agent.cell.PatchCellFactory;
 import arcade.patch.env.comp.PatchComponentCycle;
 import arcade.patch.env.comp.PatchComponentDegrade;
 import arcade.patch.env.comp.PatchComponentPulse;
+import arcade.patch.env.comp.PatchComponentRemodel;
 import arcade.patch.env.comp.PatchComponentSitesGraphRect;
 import arcade.patch.env.comp.PatchComponentSitesPatternRect;
 import arcade.patch.env.comp.PatchComponentSitesSource;
@@ -82,6 +83,8 @@ public final class PatchSimulationRect extends PatchSimulation {
                 return new PatchComponentCycle(series, parameters);
             case "degrade":
                 return new PatchComponentDegrade(series, parameters);
+            case "remodel":
+                return new PatchComponentRemodel(series, parameters);
             default:
                 return null;
         }
