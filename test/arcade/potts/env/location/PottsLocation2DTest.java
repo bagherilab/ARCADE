@@ -1,4 +1,4 @@
-package arcade.potts.env.loc;
+package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import org.junit.BeforeClass;
@@ -6,9 +6,9 @@ import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
 
-public class PottsLocation3DTest {
+public class PottsLocation2DTest {
     static MersenneTwisterFast randomDoubleZero;
     
     static MersenneTwisterFast randomDoubleOne;
@@ -40,49 +40,33 @@ public class PottsLocation3DTest {
     public static void setupLists() {
         /*
          * Lattice site shape:
-         *     z = 0            z = 1            z = 2
-         *     x x . .          x x x x          . . . .
-         *     .   x .          x   x x          .   . x
-         *     .     . x        x     x x        x     x .
+         *
+         *     x x x x
+         *     x   x x
+         *     x     x x
          *
          * Each list is a subset of the shape:
          *
          *  (A)         (B)         (C)        (A) + (C)   (B) + (C)   (A) + (B)
-         *  x x . .     . . . .     . . . .     x x . .     . . . .     x x . .
-         *  .   . .     .   . .     .   x .     .   x .     .   x .     .   . .
-         *  .     . .   .     . .   .     . x   .     . x   .     . x   .     . .
-         *
          *  x x . .     . . x x     . . . .     x x . .     . . x x     x x x x
          *  x   . .     .   . x     .   x .     x   x .     .   x x     x   . x
-         *  x     . .   .     . .   .     x x   x     x x   .     x x   x     . .
-         *
-         *  . . . .     . . . .     . . . .     . . . .     . . . .     . . . .
-         *  .   . .     .   . x     .   . .     .   . .     .   . x     .   . x
-         *  x     . .   .     x x   .     . .   x     . .   .     x x   x     x x
+         *  x     . .   .     . .   .     x x   x     x x   .     x x   x     .
          */
         
         voxelListA = new ArrayList<>();
-        voxelListA.add(new Voxel(0, 0, 1));
-        voxelListA.add(new Voxel(0, 1, 1));
-        voxelListA.add(new Voxel(1, 0, 1));
-        voxelListA.add(new Voxel(0, 2, 1));
         voxelListA.add(new Voxel(0, 0, 0));
+        voxelListA.add(new Voxel(0, 1, 0));
         voxelListA.add(new Voxel(1, 0, 0));
-        voxelListA.add(new Voxel(0, 2, 2));
+        voxelListA.add(new Voxel(0, 2, 0));
         
         voxelListB = new ArrayList<>();
-        voxelListB.add(new Voxel(2, 0, 1));
-        voxelListB.add(new Voxel(3, 0, 1));
-        voxelListB.add(new Voxel(3, 1, 1));
-        voxelListB.add(new Voxel(3, 1, 2));
-        voxelListB.add(new Voxel(3, 2, 2));
-        voxelListB.add(new Voxel(4, 2, 2));
+        voxelListB.add(new Voxel(2, 0, 0));
+        voxelListB.add(new Voxel(3, 0, 0));
+        voxelListB.add(new Voxel(3, 1, 0));
         
         voxelListC = new ArrayList<>();
-        voxelListC.add(new Voxel(2, 1, 1));
-        voxelListC.add(new Voxel(3, 2, 1));
-        voxelListC.add(new Voxel(4, 2, 1));
         voxelListC.add(new Voxel(2, 1, 0));
+        voxelListC.add(new Voxel(3, 2, 0));
         voxelListC.add(new Voxel(4, 2, 0));
         
         voxelListAC = new ArrayList<>(voxelListA);
@@ -102,16 +86,16 @@ public class PottsLocation3DTest {
     public void makeLocation_givenList_createsObject() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         voxels.add(new Voxel(0, 0, 0));
-        PottsLocation3D oldLoc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D oldLoc = new PottsLocation2D(new ArrayList<>());
         PottsLocation newLoc = oldLoc.makeLocation(voxels);
         
-        assertTrue(newLoc instanceof PottsLocation3D);
+        assertTrue(newLoc instanceof PottsLocation2D);
         assertEquals(1, newLoc.voxels.size());
     }
     
     @Test
     public void checkVoxels_noVoxels_returnsNull() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         ArrayList<Voxel> voxels = new ArrayList<>();
         assertNull(PottsLocation.checkVoxels(voxels, loc, randomDoubleZero, false));
         assertNull(PottsLocation.checkVoxels(voxels, loc, randomDoubleZero, true));
@@ -119,7 +103,7 @@ public class PottsLocation3DTest {
     
     @Test
     public void checkVoxels_connectedVoxels_returnsNull() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         ArrayList<Voxel> voxels = new ArrayList<>(voxelListA);
         assertNull(PottsLocation.checkVoxels(voxels, loc, randomDoubleZero, false));
         assertNull(PottsLocation.checkVoxels(voxels, loc, randomDoubleZero, true));
@@ -127,24 +111,23 @@ public class PottsLocation3DTest {
     
     @Test
     public void checkVoxels_unconnectedVoxelsWithoutUpdateLargerVisited_returnsList() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         ArrayList<Voxel> voxels = new ArrayList<>(voxelListAC);
         assertEquals(voxelListC, PottsLocation.checkVoxels(voxels, loc, randomDoubleZero, false));
     }
     
     @Test
     public void checkVoxels_unconnectedVoxelsWithoutUpdateLargerUnvisited_returnsList() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         ArrayList<Voxel> voxels = new ArrayList<>(voxelListCA);
         ArrayList<Voxel> unvisited = new ArrayList<>();
         unvisited.add(voxelListC.get(0));
-        unvisited.add(voxelListC.get(3));
         assertEquals(unvisited, PottsLocation.checkVoxels(voxels, loc, randomDoubleZero, false));
     }
     
     @Test
     public void checkVoxels_unconnectedVoxelsWithUpdateLargerVisited_updatesList() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         ArrayList<Voxel> voxels = new ArrayList<>(voxelListAC);
         assertEquals(voxelListC, PottsLocation.checkVoxels(voxels, loc, randomDoubleZero, true));
         assertEquals(voxelListA, voxels);
@@ -152,15 +135,13 @@ public class PottsLocation3DTest {
     
     @Test
     public void checkVoxels_unconnectedVoxelsWithUpdateLargerUnvisited_updatesList() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         ArrayList<Voxel> voxels = new ArrayList<>(voxelListCA);
         ArrayList<Voxel> unvisited = new ArrayList<>();
         unvisited.add(voxelListC.get(0));
-        unvisited.add(voxelListC.get(3));
         
         ArrayList<Voxel> visited = new ArrayList<>(voxelListCA);
         visited.remove(voxelListC.get(0));
-        visited.remove(voxelListC.get(3));
         
         assertEquals(unvisited, PottsLocation.checkVoxels(voxels, loc, randomDoubleZero, true));
         assertEquals(visited, voxels);
@@ -168,7 +149,7 @@ public class PottsLocation3DTest {
     
     @Test
     public void connectVoxels_bothListsConnected_doesNothing() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         ArrayList<Voxel> voxelsA = new ArrayList<>(voxelListA);
         ArrayList<Voxel> voxelsB = new ArrayList<>(voxelListB);
         PottsLocation.connectVoxels(voxelsA, voxelsB, loc, randomDoubleZero);
@@ -178,7 +159,7 @@ public class PottsLocation3DTest {
     
     @Test
     public void connectVoxels_oneListUnconnected_updatesLists() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         
         ArrayList<Voxel> voxelsA1 = new ArrayList<>(voxelListAC);
         ArrayList<Voxel> voxelsB1 = new ArrayList<>(voxelListB);
@@ -195,7 +176,7 @@ public class PottsLocation3DTest {
     
     @Test
     public void balanceVoxels_balancedLists_doesNothing() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         ArrayList<Voxel> voxelsA = new ArrayList<>(voxelListA);
         ArrayList<Voxel> voxelsB = new ArrayList<>(voxelListB);
         PottsLocation.balanceVoxels(voxelsA, voxelsB, loc, randomDoubleZero);
@@ -205,12 +186,12 @@ public class PottsLocation3DTest {
     
     @Test
     public void balanceVoxels_unbalancedLists_updatesLists() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         ArrayList<Voxel> voxelsA = new ArrayList<>(voxelListAB);
         ArrayList<Voxel> voxelsB = new ArrayList<>();
         
-        voxelsA.remove(new Voxel(3, 2, 2));
-        voxelsB.add(new Voxel(3, 2, 2));
+        voxelsA.remove(new Voxel(3, 1, 0));
+        voxelsB.add(new Voxel(3, 1, 0));
         
         PottsLocation.balanceVoxels(voxelsA, voxelsB, loc, randomDoubleZero);
         
@@ -225,21 +206,21 @@ public class PottsLocation3DTest {
     
     @Test
     public void balanceVoxels_unconnectedLists_updatesLists() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         ArrayList<Voxel> voxelsA = new ArrayList<>();
         ArrayList<Voxel> voxelsB = new ArrayList<>(voxelListAC);
         
-        voxelsB.add(new Voxel(1, 1, 1));
-        voxelsB.add(new Voxel(3, 1, 1));
-        voxelsB.remove(new Voxel(1, 0, 1));
-        voxelsA.add(new Voxel(1, 0, 1));
+        voxelsB.add(new Voxel(1, 1, 0));
+        voxelsB.add(new Voxel(3, 1, 0));
+        voxelsB.remove(new Voxel(1, 0, 0));
+        voxelsA.add(new Voxel(1, 0, 0));
         
         PottsLocation.balanceVoxels(voxelsA, voxelsB, loc, randomDoubleZero);
         
         ArrayList<Voxel> voxelListAX = new ArrayList<>(voxelListA);
         ArrayList<Voxel> voxelListCX = new ArrayList<>(voxelListC);
-        voxelListAX.add(new Voxel(1, 1, 1));
-        voxelListCX.add(new Voxel(3, 1, 1));
+        voxelListAX.add(new Voxel(1, 1, 0));
+        voxelListCX.add(new Voxel(3, 1, 0));
         
         voxelListAX.sort(VOXEL_COMPARATOR);
         voxelListCX.sort(VOXEL_COMPARATOR);
@@ -252,7 +233,7 @@ public class PottsLocation3DTest {
     
     @Test
     public void balanceVoxels_emptyList_updatesLists() {
-        PottsLocation3D loc = new PottsLocation3D(new ArrayList<>());
+        PottsLocation2D loc = new PottsLocation2D(new ArrayList<>());
         ArrayList<Voxel> voxelsA = new ArrayList<>(voxelListAB);
         ArrayList<Voxel> voxelsB = new ArrayList<>();
         
@@ -263,11 +244,14 @@ public class PottsLocation3DTest {
     
     @Test
     public void split_balanceableLocationRandomZero_returnsList() {
-        PottsLocation3D loc = new PottsLocation3D(voxelListAB);
-        PottsLocation3D split = (PottsLocation3D) loc.split(randomDoubleZero);
+        PottsLocation2D loc = new PottsLocation2D(voxelListAB);
+        PottsLocation2D split = (PottsLocation2D) loc.split(randomDoubleZero);
         
         ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListA);
+        locVoxels.remove(new Voxel(1, 0, 0));
+        
         ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListB);
+        splitVoxels.add(new Voxel(1, 0, 0));
         
         locVoxels.sort(VOXEL_COMPARATOR);
         loc.voxels.sort(VOXEL_COMPARATOR);
@@ -280,8 +264,8 @@ public class PottsLocation3DTest {
     
     @Test
     public void split_balanceableLocationRandomOne_returnsList() {
-        PottsLocation3D loc = new PottsLocation3D(voxelListAB);
-        PottsLocation3D split = (PottsLocation3D) loc.split(randomDoubleOne);
+        PottsLocation2D loc = new PottsLocation2D(voxelListAB);
+        PottsLocation2D split = (PottsLocation2D) loc.split(randomDoubleOne);
         
         ArrayList<Voxel> locVoxels = new ArrayList<>(voxelListB);
         ArrayList<Voxel> splitVoxels = new ArrayList<>(voxelListA);

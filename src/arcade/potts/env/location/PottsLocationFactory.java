@@ -1,4 +1,4 @@
-package arcade.potts.env.loc;
+package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -6,7 +6,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
-import arcade.core.env.loc.*;
+import arcade.core.env.location.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Utilities;

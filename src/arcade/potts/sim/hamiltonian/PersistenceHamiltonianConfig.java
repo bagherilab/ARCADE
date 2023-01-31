@@ -3,7 +3,7 @@ package arcade.potts.sim.hamiltonian;
 import java.util.EnumMap;
 import arcade.core.util.Enums.Region;
 import arcade.core.util.Matrix;
-import arcade.potts.env.loc.PottsLocation;
+import arcade.potts.env.location.PottsLocation;
 
 /**
  * Configuration for {@link PersistenceHamiltonian} parameters.

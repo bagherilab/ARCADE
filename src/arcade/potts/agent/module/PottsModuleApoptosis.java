@@ -3,7 +3,7 @@ package arcade.potts.agent.module;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.env.loc.PottsLocation;
+import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import static arcade.potts.util.PottsEnums.Phase;

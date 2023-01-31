@@ -7,7 +7,7 @@ import java.util.Set;
 import arcade.core.util.Matrix;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.env.loc.PottsLocation;
+import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.PottsSeries;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;

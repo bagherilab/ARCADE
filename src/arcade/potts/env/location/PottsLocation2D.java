@@ -1,30 +1,24 @@
-package arcade.potts.env.loc;
+package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 
 /**
- * Concrete implementation of {@link PottsLocations} for 2D.
+ * Concrete implementation of {@link PottsLocation} for 2D.
  */
 
-public final class PottsLocations2D extends PottsLocations implements Location2D {
+public final class PottsLocation2D extends PottsLocation implements Location2D {
     /**
      * Creates a 2D {@link PottsLocation} for a list of voxels.
      *
      * @param voxels  the list of voxels
      */
-    public PottsLocations2D(ArrayList<Voxel> voxels) { super(voxels); }
+    public PottsLocation2D(ArrayList<Voxel> voxels) { super(voxels); }
     
     @Override
     PottsLocation makeLocation(ArrayList<Voxel> voxels) {
         return new PottsLocation2D(voxels);
-    }
-    
-    @Override
-    PottsLocations makeLocations(ArrayList<Voxel> voxels) {
-        return new PottsLocations2D(voxels);
     }
     
     @Override
@@ -69,6 +63,6 @@ public final class PottsLocations2D extends PottsLocations implements Location2D
     
     @Override
     ArrayList<Voxel> getSelected(Voxel focus, double n) {
-        return Location2D.getSelected(locations.get(Region.DEFAULT).voxels, focus, n);
+        return Location2D.getSelected(voxels, focus, n);
     }
 }

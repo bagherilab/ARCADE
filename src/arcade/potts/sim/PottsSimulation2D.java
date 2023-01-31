@@ -2,8 +2,8 @@ package arcade.potts.sim;
 
 import arcade.core.sim.Series;
 import arcade.potts.agent.cell.PottsCellFactory;
-import arcade.potts.env.loc.PottsLocationFactory;
-import arcade.potts.env.loc.PottsLocationFactory2D;
+import arcade.potts.env.location.PottsLocationFactory;
+import arcade.potts.env.location.PottsLocationFactory2D;
 
 /**
  * Extension of {@link PottsSimulation} for 2D.

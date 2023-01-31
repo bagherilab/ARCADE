@@ -9,7 +9,7 @@ import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.module.Module;
 import arcade.core.agent.process.Process;
-import arcade.core.env.loc.Location;
+import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
@@ -18,7 +18,7 @@ import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.agent.module.PottsModuleQuiescence;
-import arcade.potts.env.loc.PottsLocation;
+import arcade.potts.env.location.PottsLocation;
 import static arcade.core.util.Enums.Domain;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
@@ -49,7 +49,7 @@ public final class PottsCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule. */
     Stoppable stopper;
     
-    /** Cell {@link arcade.core.env.loc.Location} object. */
+    /** Cell {@link Location} object. */
     private final PottsLocation location;
     
     /** Unique cell ID. */
@@ -112,7 +112,7 @@ public final class PottsCell implements Cell {
      * @param state  the cell state
      * @param age  the cell age
      * @param divisions  the number of cell divisions
-     * @param location  the {@link arcade.core.env.loc.Location} of the cell
+     * @param location  the {@link Location} of the cell
      * @param hasRegions  {@code true} if cell has regions, {@code false} otherwise
      * @param parameters  the dictionary of parameters
      * @param criticalVolume  the critical cell volume

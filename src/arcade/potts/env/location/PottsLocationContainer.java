@@ -1,9 +1,9 @@
-package arcade.potts.env.loc;
+package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.*;
+import arcade.core.env.location.*;
 import arcade.potts.agent.cell.PottsCellContainer;
 import static arcade.core.util.Enums.Region;
 

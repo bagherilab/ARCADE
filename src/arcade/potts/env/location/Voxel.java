@@ -1,4 +1,4 @@
-package arcade.potts.env.loc;
+package arcade.potts.env.location;
 
 import java.util.Comparator;
 

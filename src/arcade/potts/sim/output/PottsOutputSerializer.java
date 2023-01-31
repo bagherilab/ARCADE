@@ -10,15 +10,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSerializer;
 import arcade.potts.agent.cell.PottsCellContainer;
-import arcade.potts.env.loc.PottsLocationContainer;
-import arcade.potts.env.loc.Voxel;
+import arcade.potts.env.location.PottsLocationContainer;
+import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.PottsSeries;
 import static arcade.core.util.Enums.Region;
-import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
 
 /**
  * Container class for potts-specific object serializers.

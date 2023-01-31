@@ -2,7 +2,7 @@ package arcade.potts.sim.hamiltonian;
 
 import java.util.EnumMap;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.env.loc.PottsLocation;
+import arcade.potts.env.location.PottsLocation;
 import static arcade.core.util.Enums.Region;
 
 /**

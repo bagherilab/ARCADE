@@ -7,7 +7,7 @@ import org.junit.Test;
 import arcade.core.util.Matrix;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.env.loc.PottsLocation;
+import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.PottsSeries;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

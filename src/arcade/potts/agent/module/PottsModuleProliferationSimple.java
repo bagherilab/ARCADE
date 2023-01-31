@@ -5,7 +5,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.env.loc.PottsLocations;
+import arcade.potts.env.location.PottsLocations;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import static arcade.core.util.Enums.Region;

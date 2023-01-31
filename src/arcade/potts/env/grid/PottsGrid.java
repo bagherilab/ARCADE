@@ -4,7 +4,7 @@ import java.util.HashMap;
 import sim.util.Bag;
 import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
-import arcade.core.env.loc.Location;
+import arcade.core.env.location.Location;
 
 /**
  * Implementation of {@link Grid} for potts models.

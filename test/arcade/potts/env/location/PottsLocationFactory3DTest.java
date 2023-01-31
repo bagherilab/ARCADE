@@ -1,4 +1,4 @@
-package arcade.potts.env.loc;
+package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,7 +7,7 @@ import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
 
 public class PottsLocationFactory3DTest {
     static final MersenneTwisterFast RANDOM = mock(MersenneTwisterFast.class);

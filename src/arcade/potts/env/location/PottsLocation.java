@@ -1,12 +1,12 @@
-package arcade.potts.env.loc;
+package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
-import arcade.core.env.loc.Location;
-import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.location.Location;
+import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Utilities;
 import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
@@ -480,7 +480,7 @@ public abstract class PottsLocation implements Location {
      * @param voxelsA  the list of voxels for this location
      * @param voxelsB  the list of voxels for the split location
      * @param random  the seeded random number generator
-     * @return  a {@link arcade.core.env.loc.Location} object with split voxels
+     * @return  a {@link arcade.core.env.location.Location} object with split voxels
      */
     Location separateVoxels(ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
                             MersenneTwisterFast random) {

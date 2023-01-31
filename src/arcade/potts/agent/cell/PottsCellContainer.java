@@ -2,7 +2,7 @@ package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
 import arcade.core.agent.cell.*;
-import arcade.core.env.loc.Location;
+import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
 import static arcade.core.util.Enums.Region;

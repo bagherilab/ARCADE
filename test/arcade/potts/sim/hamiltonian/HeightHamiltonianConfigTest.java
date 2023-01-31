@@ -3,7 +3,7 @@ package arcade.potts.sim.hamiltonian;
 import java.util.EnumMap;
 import org.junit.Test;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.env.loc.PottsLocation;
+import arcade.potts.env.location.PottsLocation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;

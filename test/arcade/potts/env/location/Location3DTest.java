@@ -1,4 +1,4 @@
-package arcade.potts.env.loc;
+package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Enums.Region;
-import static arcade.potts.env.loc.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.util.PottsEnums.Direction;
 
 public class Location3DTest {

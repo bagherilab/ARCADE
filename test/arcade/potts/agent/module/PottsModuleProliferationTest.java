@@ -7,7 +7,7 @@ import arcade.core.env.grid.Grid;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.env.loc.PottsLocation;
+import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.Assert.*;
