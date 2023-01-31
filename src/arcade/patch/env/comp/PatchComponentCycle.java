@@ -78,9 +78,10 @@ public class PatchComponentCycle implements Component {
     
     @Override
     public void register(Simulation sim, String layer) {
-        Lattice lattice = sim.getLattice(layer);
+        String[] layerSplit = layer.split(":");
+        Lattice lattice = sim.getLattice(layerSplit[1]);
         Operation generator = lattice.getOperation(Category.GENERATOR);
-        Component component = sim.getComponent("SITES");
+        Component component = sim.getComponent(layerSplit[0]);
         
         if (!(component instanceof PatchComponentSitesSource)) {
             return;
@@ -88,7 +89,7 @@ public class PatchComponentCycle implements Component {
         
         PatchComponentSitesSource sites = (PatchComponentSitesSource) component;
         SiteLayer siteLayer = sites.layers.stream()
-                .filter(sl -> sl.name.equalsIgnoreCase(layer))
+                .filter(sl -> sl.name.equalsIgnoreCase(layerSplit[1]))
                 .findFirst()
                 .orElse(null);
         
