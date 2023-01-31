@@ -15,8 +15,8 @@ import arcade.core.env.loc.LocationContainer;
 import arcade.core.sim.output.OutputDeserializer;
 import arcade.patch.agent.cell.PatchCellContainer;
 import arcade.patch.env.loc.Coordinate;
-import arcade.patch.env.loc.CoordinateHex;
-import arcade.patch.env.loc.CoordinateRect;
+import arcade.patch.env.loc.CoordinateUVWZ;
+import arcade.patch.env.loc.CoordinateXYZ;
 import arcade.patch.env.loc.PatchLocationContainer;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 import static arcade.core.util.Enums.State;
@@ -131,13 +131,13 @@ public final class PatchOutputDeserializer {
                 int x = jsonArray.get(0).getAsInt();
                 int y = jsonArray.get(1).getAsInt();
                 int z = jsonArray.get(2).getAsInt();
-                return new CoordinateRect(x, y, z);
+                return new CoordinateXYZ(x, y, z);
             } else if (jsonArray.size() == 4) {
                 int u = jsonArray.get(0).getAsInt();
                 int v = jsonArray.get(1).getAsInt();
                 int w = jsonArray.get(2).getAsInt();
                 int z = jsonArray.get(3).getAsInt();
-                return new CoordinateHex(u, v, w, z);
+                return new CoordinateUVWZ(u, v, w, z);
             }
             
             return null;

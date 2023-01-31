@@ -1,13 +1,13 @@
 package arcade.patch.env.loc;
 
 /**
- * Representation of a triangular coordinate.
+ * Representation of (x, y, z) coordinates.
  * <p>
  * Each coordinate is defined by (x, y, z) values. Two coordinate objects are
  * considered equal if they have matching (x, y, z) values.
  */
 
-public final class CoordinateTri extends Coordinate {
+public final class CoordinateXYZ extends Coordinate {
     /** Coordinate x value. */
     public final int x;
     
@@ -15,13 +15,13 @@ public final class CoordinateTri extends Coordinate {
     public final int y;
     
     /**
-     * Creates a hexagonal {@code Coordinate}.
+     * Creates an (x, y, z) {@code Coordinate}.
      *
      * @param x  the x coordinate value
      * @param y  the y coordinate value
      * @param z  the z coordinate value
      */
-    public CoordinateTri(int x, int y, int z) {
+    public CoordinateXYZ(int x, int y, int z) {
         super(z);
         this.x = x;
         this.y = y;
@@ -42,10 +42,10 @@ public final class CoordinateTri extends Coordinate {
     
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof CoordinateTri)) {
+        if (!(obj instanceof CoordinateXYZ)) {
             return false;
         }
-        CoordinateTri coordinate = (CoordinateTri) obj;
+        CoordinateXYZ coordinate = (CoordinateXYZ) obj;
         return coordinate.x == x && coordinate.y == y && coordinate.z == z;
     }
     

@@ -11,7 +11,7 @@ import arcade.patch.env.comp.PatchComponentSites;
 import arcade.patch.env.comp.PatchComponentSitesPattern;
 import arcade.patch.env.comp.PatchComponentSitesSource;
 import arcade.patch.env.loc.Coordinate;
-import arcade.patch.env.loc.CoordinateRect;
+import arcade.patch.env.loc.CoordinateXYZ;
 import arcade.patch.env.loc.PatchLocation;
 import arcade.patch.env.loc.PatchLocationContainer;
 import arcade.patch.env.loc.PatchLocationFactory;
@@ -142,7 +142,7 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                         case POPULATION:
                         case ENERGY:
                         case DIVISIONS:
-                            CoordinateRect mainCoord = (CoordinateRect) coords.get(index);
+                            CoordinateXYZ mainCoord = (CoordinateXYZ) coords.get(index);
                             switch (view) {
                                 case STATE:
                                     arr[mainCoord.x][mainCoord.y] = cell.getState().ordinal();
@@ -170,7 +170,7 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                             double height = cell.getHeight();
                             
                             for (Coordinate coord : coords) {
-                                CoordinateRect rectCoord = (CoordinateRect) coord;
+                                CoordinateXYZ rectCoord = (CoordinateXYZ) coord;
                                 
                                 switch (view) {
                                     case COUNTS:
@@ -357,7 +357,7 @@ public abstract class PatchDrawerRect extends PatchDrawer {
             
             // Draw rectangular agent locations.
             for (PatchLocation loc : locations) {
-                CoordinateRect rect = (CoordinateRect) loc.getSubcoordinate();
+                CoordinateXYZ rect = (CoordinateXYZ) loc.getSubcoordinate();
                 for (int i = 0; i < 4; i++) {
                     add(field, graph, 2,
                             rect.x + OFFSETS[i][0], rect.y + OFFSETS[i][1],
@@ -370,8 +370,8 @@ public abstract class PatchDrawerRect extends PatchDrawer {
             int ind;
             int r;
             for (PatchLocation loc : locations) {
-                CoordinateRect coord = (CoordinateRect) loc.getCoordinate();
-                CoordinateRect subcoord = (CoordinateRect) loc.getSubcoordinate();
+                CoordinateXYZ coord = (CoordinateXYZ) loc.getCoordinate();
+                CoordinateXYZ subcoord = (CoordinateXYZ) loc.getSubcoordinate();
                 
                 r = Math.max(Math.abs(coord.x), Math.abs(coord.y)) + 1;
                 

@@ -88,7 +88,7 @@ public final class PatchLocationRect extends PatchLocation {
      * @param z  the coordinate in z direction
      */
     public PatchLocationRect(int x, int y, int z) {
-        this(new CoordinateRect(x, y, z));
+        this(new CoordinateXYZ(x, y, z));
     }
     
     /**
@@ -96,7 +96,7 @@ public final class PatchLocationRect extends PatchLocation {
      *
      * @param coordinate  the patch coordinate
      */
-    public PatchLocationRect(Coordinate coordinate) {
+    public PatchLocationRect(CoordinateXYZ coordinate) {
         super(coordinate, NUM_SUBCOORDINATES);
     }
     
@@ -148,7 +148,7 @@ public final class PatchLocationRect extends PatchLocation {
     
     @Override
     void calculateSubcoordinates() {
-        CoordinateRect rect = (CoordinateRect) coordinate;
+        CoordinateXYZ rect = (CoordinateXYZ) coordinate;
         
         // Calculate coordinate of top right subrectangle.
         int x = 2 * (rect.x + radiusBounds - 1) + offset;
@@ -157,7 +157,7 @@ public final class PatchLocationRect extends PatchLocation {
         
         // Set coordinates of subrectangles clockwise from top left.
         for (int i = 0; i < NUM_SUBCOORDINATES; i++) {
-            subcoordinates.add(i, new CoordinateRect(x + X_OFF[i], y + Y_OFF[i], z));
+            subcoordinates.add(i, new CoordinateXYZ(x + X_OFF[i], y + Y_OFF[i], z));
         }
     }
     
@@ -169,7 +169,7 @@ public final class PatchLocationRect extends PatchLocation {
      */
     @Override
     void calculateChecks() {
-        CoordinateRect rect = (CoordinateRect) coordinate;
+        CoordinateXYZ rect = (CoordinateXYZ) coordinate;
         check = (byte) (
                 (rect.x == radius - 1 ? 0 : 1 << 5)
                         + (rect.x == 1 - radius ? 0 : 1 << 4)
@@ -201,7 +201,7 @@ public final class PatchLocationRect extends PatchLocation {
      */
     @Override
     public ArrayList<Location> getNeighbors() {
-        CoordinateRect rect = (CoordinateRect) coordinate;
+        CoordinateXYZ rect = (CoordinateXYZ) coordinate;
         ArrayList<Location> neighbors = new ArrayList<>(MOVES.length + 1);
         byte b;
         
@@ -242,7 +242,7 @@ public final class PatchLocationRect extends PatchLocation {
      * @param coordinate  the rectangular coordinate
      * @return  the corresponding rectangular coordinate
      */
-    public static CoordinateRect translate(CoordinateRect coordinate) {
+    public static CoordinateXYZ translate(CoordinateXYZ coordinate) {
         int z = coordinate.z - depthBounds + 1;
         int zo = (byte) (Math.abs(heightOffset + z) % 2);
         
@@ -256,6 +256,6 @@ public final class PatchLocationRect extends PatchLocation {
         if (Math.abs(x) >= radius || Math.abs(y) >= radius) {
             return null;
         }
-        return new CoordinateRect(x, y, z);
+        return new CoordinateXYZ(x, y, z);
     }
 }

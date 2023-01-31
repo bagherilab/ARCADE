@@ -11,8 +11,8 @@ import arcade.patch.env.comp.PatchComponentSites;
 import arcade.patch.env.comp.PatchComponentSitesPattern;
 import arcade.patch.env.comp.PatchComponentSitesSource;
 import arcade.patch.env.loc.Coordinate;
-import arcade.patch.env.loc.CoordinateHex;
-import arcade.patch.env.loc.CoordinateTri;
+import arcade.patch.env.loc.CoordinateUVWZ;
+import arcade.patch.env.loc.CoordinateXYZ;
 import arcade.patch.env.loc.PatchLocation;
 import arcade.patch.env.loc.PatchLocationContainer;
 import arcade.patch.env.loc.PatchLocationFactory;
@@ -184,7 +184,7 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                         case POPULATION:
                         case ENERGY:
                         case DIVISIONS:
-                            CoordinateTri mainCoord = (CoordinateTri) coords.get(index);
+                            CoordinateXYZ mainCoord = (CoordinateXYZ) coords.get(index);
                             switch (view) {
                                 case STATE:
                                     temp[mainCoord.x][mainCoord.y] = cell.getState().ordinal();
@@ -212,7 +212,7 @@ public abstract class PatchDrawerHex extends PatchDrawer {
                             double height = cell.getHeight();
                             
                             for (Coordinate coord : coords) {
-                                CoordinateTri triCoord = (CoordinateTri) coord;
+                                CoordinateXYZ triCoord = (CoordinateXYZ) coord;
                                 
                                 switch (view) {
                                     case COUNTS:
@@ -425,7 +425,7 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             
             // Draw hexagonal agent locations.
             for (PatchLocation loc : locations) {
-                CoordinateTri tri = (CoordinateTri) loc.getSubcoordinate();
+                CoordinateXYZ tri = (CoordinateXYZ) loc.getSubcoordinate();
                 for (int i = 0; i < 6; i++) {
                     add(field, graph, 2,
                             tri.x + OFFSETS[i][0], tri.y + OFFSETS[i][1],
@@ -438,8 +438,8 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             int ind;
             int r;
             for (PatchLocation loc : locations) {
-                CoordinateHex coord = (CoordinateHex) loc.getCoordinate();
-                CoordinateTri subcoord = (CoordinateTri) loc.getSubcoordinate();
+                CoordinateUVWZ coord = (CoordinateUVWZ) loc.getCoordinate();
+                CoordinateXYZ subcoord = (CoordinateXYZ) loc.getSubcoordinate();
                 
                 r = (int) ((Math.abs(coord.u) + Math.abs(coord.v) + Math.abs(coord.w)) / 2.0) + 1;
                 

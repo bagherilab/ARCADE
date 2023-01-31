@@ -38,9 +38,9 @@ public final class PatchLocationContainer implements LocationContainer {
         PatchLocation location;
         
         if (factory instanceof PatchLocationFactoryRect) {
-            location = new PatchLocationRect(coordinate);
+            location = new PatchLocationRect((CoordinateXYZ) coordinate);
         } else {
-            location = new PatchLocationHex(coordinate);
+            location = new PatchLocationHex((CoordinateUVWZ) coordinate);
         }
         
         return location;

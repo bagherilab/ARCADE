@@ -96,7 +96,7 @@ public final class PatchLocationHex extends PatchLocation {
      * @param z  the coordinate in z direction
      */
     public PatchLocationHex(int u, int v, int w, int z) {
-        this(new CoordinateHex(u, v, w, z));
+        this(new CoordinateUVWZ(u, v, w, z));
     }
     
     /**
@@ -104,7 +104,7 @@ public final class PatchLocationHex extends PatchLocation {
      *
      * @param coordinate  the patch coordinate
      */
-    public PatchLocationHex(Coordinate coordinate) {
+    public PatchLocationHex(CoordinateUVWZ coordinate) {
         super(coordinate, NUM_SUBCOORDINATES);
     }
     
@@ -156,7 +156,7 @@ public final class PatchLocationHex extends PatchLocation {
     
     @Override
     void calculateSubcoordinates() {
-        CoordinateHex hex = (CoordinateHex) coordinate;
+        CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;
         
         // Calculate coordinate of top center triangle.
         int x = 3 * (hex.u + radiusBounds) - 2 + (offset == 2 ? -1 : offset);
@@ -165,7 +165,7 @@ public final class PatchLocationHex extends PatchLocation {
         
         // Set coordinates of triangles clockwise from top center.
         for (int i = 0; i < NUM_SUBCOORDINATES; i++) {
-            subcoordinates.add(i, new CoordinateTri(x + X_OFF[i], y + Y_OFF[i], z));
+            subcoordinates.add(i, new CoordinateXYZ(x + X_OFF[i], y + Y_OFF[i], z));
         }
     }
     
@@ -177,7 +177,7 @@ public final class PatchLocationHex extends PatchLocation {
      */
     @Override
     void calculateChecks() {
-        CoordinateHex hex = (CoordinateHex) coordinate;
+        CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;
         check = (byte) (
                 (hex.u == radius - 1 ? 0 : 1 << 7)
                         + (hex.u == 1 - radius ? 0 : 1 << 6)
@@ -211,7 +211,7 @@ public final class PatchLocationHex extends PatchLocation {
      */
     @Override
     public ArrayList<Location> getNeighbors() {
-        CoordinateHex hex = (CoordinateHex) coordinate;
+        CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;
         ArrayList<Location> neighbors = new ArrayList<>(MOVES.length + 1);
         byte b;
         
@@ -253,7 +253,7 @@ public final class PatchLocationHex extends PatchLocation {
      * @param coordinate  the triangular coordinate
      * @return  the corresponding hexagonal coordinate
      */
-    public static CoordinateHex translate(CoordinateTri coordinate) {
+    public static CoordinateUVWZ translate(CoordinateXYZ coordinate) {
         int z = coordinate.z - depthBounds + 1;
         int zo = (byte) ((Math.abs(heightOffset + z)) % 3);
         
@@ -270,6 +270,6 @@ public final class PatchLocationHex extends PatchLocation {
         if (Math.abs(v) >= radius || Math.abs(w) >= radius) {
             return null;
         }
-        return new CoordinateHex(u, v, w, z);
+        return new CoordinateUVWZ(u, v, w, z);
     }
 }

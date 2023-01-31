@@ -31,7 +31,7 @@ public final class PatchLocationFactoryHex extends PatchLocationFactory {
                 for (int w = 1 - radius; w < radius; w++) {
                     if (u + v + w == 0) {
                         for (int z = 1 - depth; z < depth; z++) {
-                            coordinates.add(new CoordinateHex(u, v, w, z));
+                            coordinates.add(new CoordinateUVWZ(u, v, w, z));
                         }
                     }
                 }

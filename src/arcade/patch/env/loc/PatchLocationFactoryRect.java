@@ -27,7 +27,7 @@ public final class PatchLocationFactoryRect extends PatchLocationFactory {
         for (int x = 1 - radius; x < radius; x++) {
             for (int y = 1 - radius; y < radius; y++) {
                 for (int z = 1 - depth; z < depth; z++) {
-                    coordinates.add(new CoordinateRect(x, y, z));
+                    coordinates.add(new CoordinateXYZ(x, y, z));
                 }
             }
         }

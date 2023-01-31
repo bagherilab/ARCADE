@@ -191,8 +191,7 @@ public abstract class PatchLocation implements Location {
      * Checks if two locations have the same coordinate.
      *
      * @param obj  the location to compare
-     * @return  {@code true} if coordinates are the same, {@code false}
-     *          otherwise
+     * @return  {@code true} if coordinates are equal, {@code false} otherwise
      */
     public boolean equals(Object obj) { return coordinate.equals(obj); }
     

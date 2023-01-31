@@ -16,8 +16,8 @@ import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputSerializer;
 import arcade.patch.agent.cell.PatchCellContainer;
 import arcade.patch.env.loc.Coordinate;
-import arcade.patch.env.loc.CoordinateHex;
-import arcade.patch.env.loc.CoordinateRect;
+import arcade.patch.env.loc.CoordinateUVWZ;
+import arcade.patch.env.loc.CoordinateXYZ;
 import arcade.patch.env.loc.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
@@ -30,8 +30,8 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
  *     <li>{@link PatchSeriesSerializer} for serializing {@link PatchSeries}</li>
  *     <li>{@link PatchCellSerializer} for serializing {@link PatchCellContainer}</li>
  *     <li>{@link LocationListSerializer} for serializing {@link PatchLocationContainer} lists</li>
- *     <li>{@link CoordinateRectSerializer} for serializing rectangular {@link Coordinate}</li>
- *     <li>{@link CoordinateHexSerializer} for serializing hexagonal {@link Coordinate}</li>
+ *     <li>{@link CoordinateXYZSerializer} for serializing (x, y, z) {@link Coordinate}</li>
+ *     <li>{@link CoordinateUVWZSerializer} for serializing (u, v, w, z) {@link Coordinate}</li>
  * </ul>
  */
 
@@ -58,10 +58,10 @@ public final class PatchOutputSerializer {
                 new PatchCellSerializer());
         gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE,
                 new LocationListSerializer());
-        gsonBuilder.registerTypeAdapter(CoordinateRect.class,
-                new CoordinateRectSerializer());
-        gsonBuilder.registerTypeAdapter(CoordinateHex.class,
-                new CoordinateHexSerializer());
+        gsonBuilder.registerTypeAdapter(CoordinateXYZ.class,
+                new CoordinateXYZSerializer());
+        gsonBuilder.registerTypeAdapter(CoordinateUVWZ.class,
+                new CoordinateUVWZSerializer());
         return gsonBuilder.create();
     }
     
@@ -203,16 +203,16 @@ public final class PatchOutputSerializer {
     }
     
     /**
-     * Serializer for {@link CoordinateRect} objects.
+     * Serializer for {@link CoordinateXYZ} objects.
      * <p>
      * The coordinate object is formatted as:
      * <pre>
      *     [(x), (y), (z)]
      * </pre>
      */
-    static class CoordinateRectSerializer implements JsonSerializer<CoordinateRect> {
+    static class CoordinateXYZSerializer implements JsonSerializer<CoordinateXYZ> {
         @Override
-        public JsonElement serialize(CoordinateRect src, Type typeOfSrc,
+        public JsonElement serialize(CoordinateXYZ src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonArray json = new JsonArray();
             json.add(src.x);
@@ -223,16 +223,16 @@ public final class PatchOutputSerializer {
     }
     
     /**
-     * Serializer for {@link CoordinateHex} objects.
+     * Serializer for {@link CoordinateUVWZ} objects.
      * <p>
      * The coordinate object is formatted as:
      * <pre>
      *     [(u), (v), (w), (z)]
      * </pre>
      */
-    static class CoordinateHexSerializer implements JsonSerializer<CoordinateHex> {
+    static class CoordinateUVWZSerializer implements JsonSerializer<CoordinateUVWZ> {
         @Override
-        public JsonElement serialize(CoordinateHex src, Type typeOfSrc,
+        public JsonElement serialize(CoordinateUVWZ src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonArray json = new JsonArray();
             json.add(src.u);

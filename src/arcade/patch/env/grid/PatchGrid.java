@@ -101,21 +101,6 @@ public class PatchGrid implements Grid {
     }
     
     /**
-     * Gets the number of objects at a given location.
-     *
-     * @param location  the location
-     * @return  the number of objects
-     */
-    public int getNumObjectsAtLocation(Location location) {
-        Bag bag = getObjectsAtLocation(location);
-        if (bag == null) {
-            return 0;
-        } else {
-            return bag.numObjs;
-        }
-    }
-    
-    /**
      * Gets all objects at a location.
      *
      * @param location  the location

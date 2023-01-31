@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
+import arcade.core.env.loc.Location;
 import arcade.core.sim.Series;
 import arcade.core.util.Graph;
 import arcade.core.util.Graph.Edge;
@@ -12,6 +13,7 @@ import arcade.core.util.Graph.Node;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Function;
+import arcade.patch.env.loc.CoordinateXYZ;
 import arcade.patch.sim.PatchSeries;
 import static arcade.patch.env.comp.PatchComponentSitesGraphFactory.EdgeLevel;
 import static arcade.patch.env.comp.PatchComponentSitesGraphFactory.EdgeTag;
@@ -122,13 +124,13 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     abstract PatchComponentSitesGraphFactory makeGraphFactory(Series series);
     
     /**
-     * Gets the lattice indices spanned by an edge between two nodes.
+     * Gets the lattice coordinates spanned by an edge between two nodes.
      *
      * @param from  the node the edge extends from
      * @param to  the node the edge extends to
-     * @return  the list of indices
+     * @return  the list of span coordinates
      */
-    abstract ArrayList<int[]> getSpan(SiteNode from, SiteNode to);
+    abstract ArrayList<CoordinateXYZ> getSpan(SiteNode from, SiteNode to);
     
     /**
      * Checks if given coordinates are within the environment to add to list.
@@ -138,11 +140,19 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      * @param y  the coordinate in the y direction
      * @param z  the coordinate in the z direction
      */
-    void checkSite(ArrayList<int[]> s, int x, int y, int z) {
+    void checkSite(ArrayList<CoordinateXYZ> s, int x, int y, int z) {
         if (x >= 0 && x < latticeLength && y >= 0 && y < latticeWidth) {
-            s.add(new int[] { x, y, z });
+            s.add(new CoordinateXYZ(x, y, z));
         }
     }
+    
+    /**
+     * Converts the given span coordinate to the corresponding location.
+     *
+     * @param span  the span coordinate
+     * @return  a location object
+     */
+    abstract Location getLocation(CoordinateXYZ span);
     
     /**
      * Initializes graph for representing sites.
@@ -210,11 +220,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     continue;
                 }
                 
-                for (int[] coords : edge.span) {
-                    int i = coords[0];
-                    int j = coords[1];
-                    int k = coords[2];
-                    
+                for (CoordinateXYZ coordinate : edge.span) {
+                    int i = coordinate.x;
+                    int j = coordinate.y;
+                    int k = coordinate.z;
                     delta[k][i][j] = Math.max((concentration - previous[k][i][j]), 0);
                 }
             }
@@ -293,10 +302,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                 
                 // Get average external concentration across spanning locations.
                 extConc = 0;
-                for (int[] coords : edge.span) {
-                    int i = coords[0];
-                    int j = coords[1];
-                    int k = coords[2];
+                for (CoordinateXYZ coordinate : edge.span) {
+                    int i = coordinate.x;
+                    int j = coordinate.y;
+                    int k = coordinate.z;
                     extConc += current[k][i][j] + delta[k][i][j];
                 }
                 extConc /= edge.span.size();
@@ -340,10 +349,10 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     }
                     
                     // Update external concentrations.
-                    for (int[] coords : edge.span) {
-                        int i = coords[0];
-                        int j = coords[1];
-                        int k = coords[2];
+                    for (CoordinateXYZ coordinate : edge.span) {
+                        int i = coordinate.x;
+                        int j = coordinate.y;
+                        int k = coordinate.z;
                         
                         if (layer.name.equalsIgnoreCase("OXYGEN")) {
                             delta[k][i][j] += Math.max((extConcNew / oxySoluTissue
@@ -432,7 +441,7 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
      */
     public static class SiteEdge extends Edge {
         /** List of lattice coordinates spanned by edge. */
-        ArrayList<int[]> span;
+        ArrayList<CoordinateXYZ> span;
         
         /** {@code true} if edge as been visited, {@code false} otherwise. */
         boolean isVisited;

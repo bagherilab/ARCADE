@@ -6,8 +6,8 @@ import org.xml.sax.Attributes;
 import arcade.core.sim.input.InputBuilder;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import arcade.patch.env.loc.CoordinateHex;
-import arcade.patch.env.loc.CoordinateRect;
+import arcade.patch.env.loc.CoordinateUVWZ;
+import arcade.patch.env.loc.CoordinateXYZ;
 import arcade.patch.env.loc.PatchLocation;
 import arcade.patch.env.loc.PatchLocationHex;
 import arcade.patch.env.loc.PatchLocationRect;
@@ -208,13 +208,13 @@ public final class PatchInputBuilder extends InputBuilder {
             series.put("length", 4 * radiusBounds - 2);
             series.put("width", 4 * radiusBounds - 2);
             series.put("height", 2 * depthBounds - 1);
-            CoordinateRect coordinate = new CoordinateRect(0, 0, 0);
+            CoordinateXYZ coordinate = new CoordinateXYZ(0, 0, 0);
             location = new PatchLocationRect(coordinate);
         } else if (geometry.equals("HEX")) {
             series.put("length", 6 * radiusBounds - 3);
             series.put("width", 4 * radiusBounds - 2);
             series.put("height", 2 * depthBounds - 1);
-            CoordinateHex coordinate = new CoordinateHex(0, 0, 0, 0);
+            CoordinateUVWZ coordinate = new CoordinateUVWZ(0, 0, 0, 0);
             location = new PatchLocationHex(coordinate);
         } else {
             return;

@@ -3,8 +3,11 @@ package arcade.patch.env.comp;
 import java.util.ArrayList;
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
+import arcade.core.env.loc.Location;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.loc.CoordinateXYZ;
+import arcade.patch.env.loc.PatchLocationHex;
 
 /**
  * Extension of {@link PatchComponentSitesGraph} for triangular geometry.
@@ -73,8 +76,13 @@ public abstract class PatchComponentSitesGraphTri extends PatchComponentSitesGra
     }
     
     @Override
-    public ArrayList<int[]> getSpan(SiteNode from, SiteNode to) {
-        ArrayList<int[]> s = new ArrayList<>();
+    public Location getLocation(CoordinateXYZ span) {
+        return new PatchLocationHex(PatchLocationHex.translate(span));
+    }
+    
+    @Override
+    public ArrayList<CoordinateXYZ> getSpan(SiteNode from, SiteNode to) {
+        ArrayList<CoordinateXYZ> s = new ArrayList<>();
         
         int z = from.getZ();
         int x0 = from.getX();

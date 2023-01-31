@@ -5,9 +5,12 @@ import java.util.Map;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.env.lat.Lattice;
+import arcade.core.env.loc.Location;
 import arcade.core.env.operation.Operation;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.loc.CoordinateXYZ;
+import arcade.patch.env.loc.PatchLocation;
 import static arcade.core.util.Enums.Category;
 import static arcade.patch.util.PatchEnums.Ordering;
 
@@ -132,6 +135,50 @@ public abstract class PatchLattice implements Lattice {
                 }
             }
         }
+    }
+    
+    @Override
+    public double getTotalValue(Location location) {
+        PatchLocation patchLocation = (PatchLocation) location;
+        return patchLocation.getSubcoordinates().stream()
+                .map(e -> (CoordinateXYZ) e)
+                .mapToDouble(c -> field[c.z][c.x][c.y])
+                .sum();
+    }
+    
+    @Override
+    public double getAverageValue(Location location) {
+        PatchLocation patchLocation = (PatchLocation) location;
+        return patchLocation.getSubcoordinates().stream()
+                .map(e -> (CoordinateXYZ) e)
+                .mapToDouble(c -> field[c.z][c.x][c.y])
+                .sum() / patchLocation.getMaximum();
+    }
+    
+    @Override
+    public void updateValue(Location location, double fraction) {
+        if (!Double.isNaN(fraction)) {
+            PatchLocation patchLocation = (PatchLocation) location;
+            patchLocation.getSubcoordinates().stream()
+                    .map(e -> (CoordinateXYZ) e)
+                    .forEach(c -> field[c.z][c.x][c.y] *= fraction);
+        }
+    }
+    
+    @Override
+    public void incrementValue(Location location, double increment) {
+        PatchLocation patchLocation = (PatchLocation) location;
+        patchLocation.getSubcoordinates().stream()
+                .map(e -> (CoordinateXYZ) e)
+                .forEach(c -> field[c.z][c.x][c.y] += increment);
+    }
+    
+    @Override
+    public void setValue(Location location, double value) {
+        PatchLocation patchLocation = (PatchLocation) location;
+        patchLocation.getSubcoordinates().stream()
+                .map(e -> (CoordinateXYZ) e)
+                .forEach(c -> field[c.z][c.x][c.y] = value);
     }
     
     @Override

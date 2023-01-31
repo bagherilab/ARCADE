@@ -1,13 +1,13 @@
 package arcade.patch.env.loc;
 
 /**
- * Representation of a hexagonal coordinate.
+ * Representation of (u, v, w, z) coordinate.
  * <p>
  * Each coordinate is defined by (u, v, w, z) values. Two coordinate objects are
  * considered equal if they have matching (u, v, w, z) values.
  */
 
-public final class CoordinateHex extends Coordinate {
+public final class CoordinateUVWZ extends Coordinate {
     /** Coordinate u value. */
     public final int u;
     
@@ -18,14 +18,14 @@ public final class CoordinateHex extends Coordinate {
     public final int w;
     
     /**
-     * Creates a hexagonal {@code Coordinate}.
+     * Creates a (u, v, w, z) {@code Coordinate}.
      *
      * @param u  the u coordinate value
      * @param v  the v coordinate value
      * @param w  the w coordinate value
      * @param z  the z coordinate value
      */
-    public CoordinateHex(int u, int v, int w, int z) {
+    public CoordinateUVWZ(int u, int v, int w, int z) {
         super(z);
         this.u = u;
         this.v = v;
@@ -47,10 +47,10 @@ public final class CoordinateHex extends Coordinate {
     
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof CoordinateHex)) {
+        if (!(obj instanceof CoordinateUVWZ)) {
             return false;
         }
-        CoordinateHex coordinate = (CoordinateHex) obj;
+        CoordinateUVWZ coordinate = (CoordinateUVWZ) obj;
         return coordinate.u == u && coordinate.v == v && coordinate.w == w && coordinate.z == z;
     }
     
