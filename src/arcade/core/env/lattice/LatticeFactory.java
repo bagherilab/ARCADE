@@ -1,4 +1,4 @@
-package arcade.core.env.lat;
+package arcade.core.env.lattice;
 
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;

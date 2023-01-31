@@ -6,10 +6,10 @@ import com.google.gson.reflect.TypeToken;
 import sim.engine.Schedule;
 import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.comp.Component;
+import arcade.core.env.component.Component;
 import arcade.core.env.grid.Grid;
-import arcade.core.env.lat.Lattice;
-import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.lattice.Lattice;
+import arcade.core.env.location.LocationContainer;
 
 /**
  * A {@code Simulation} sets up agents and environments for a simulation.
@@ -128,7 +128,7 @@ public interface Simulation {
     void setupEnvironment();
     
     /**
-     * Schedules any {@link arcade.core.agent.action.Action} instances.
+     * Schedules any {@link Action} instances.
      * <p>
      * The concrete implementing class calls this and other schedule methods
      * from the MASON library {@code start()} method, which is called before the
@@ -137,7 +137,7 @@ public interface Simulation {
     void scheduleActions();
     
     /**
-     * Schedules any {@link arcade.core.env.comp.Component} instances.
+     * Schedules any {@link Component} instances.
      * <p>
      * The concrete implementing class calls this and other schedule methods
      * from the MASON library {@code start()} method, which is called before the

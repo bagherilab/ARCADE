@@ -14,7 +14,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.internal.bind.TreeTypeAdapter;
 import com.google.gson.reflect.TypeToken;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.location.LocationContainer;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;

@@ -1,4 +1,4 @@
-package arcade.core.env.loc;
+package arcade.core.env.location;
 
 import arcade.core.agent.cell.CellContainer;
 

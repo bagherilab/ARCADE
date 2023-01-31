@@ -1,4 +1,4 @@
-package arcade.core.env.loc;
+package arcade.core.env.location;
 
 import java.util.EnumSet;
 import static arcade.core.util.Enums.Region;
@@ -8,7 +8,7 @@ import static arcade.core.util.Enums.Region;
  * <p>
  * Each agent has a {@code Location} that identifies where they are within the
  * {@link arcade.core.env.grid.Grid} (relative to other agents) and the
- * {@link arcade.core.env.lat.Lattice} (local molecule concentrations).
+ * {@link arcade.core.env.lattice.Lattice} (local molecule concentrations).
  */
 
 public interface Location {

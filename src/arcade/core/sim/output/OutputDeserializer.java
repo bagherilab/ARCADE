@@ -10,7 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.location.LocationContainer;
 import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 

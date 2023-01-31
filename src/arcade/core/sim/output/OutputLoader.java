@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 import com.google.gson.Gson;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;

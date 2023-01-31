@@ -1,8 +1,8 @@
-package arcade.core.env.lat;
+package arcade.core.env.lattice;
 
 import sim.engine.Schedule;
 import sim.engine.Steppable;
-import arcade.core.env.loc.Location;
+import arcade.core.env.location.Location;
 import arcade.core.env.operation.Operation;
 import arcade.core.util.MiniBox;
 import static arcade.core.util.Enums.Category;

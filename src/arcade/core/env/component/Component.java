@@ -1,4 +1,4 @@
-package arcade.core.env.comp;
+package arcade.core.env.component;
 
 import sim.engine.Schedule;
 import sim.engine.Steppable;
@@ -17,7 +17,7 @@ import arcade.core.sim.Simulation;
  *     capillary beds or matrix scaffolding</li>
  * </ul>
  * <p>
- * {@code Component} objects can affect {@link arcade.core.env.lat.Lattice}
+ * {@code Component} objects can affect {@link arcade.core.env.lattice.Lattice}
  * layers or layer {@link arcade.core.env.operation.Operation} instances.
  * {@code Component} objects are analogs to
  * {@link arcade.core.agent.action.Action} for steppables that affect the
