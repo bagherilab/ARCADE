@@ -8,6 +8,7 @@ import arcade.patch.agent.action.PatchActionConvert;
 import arcade.patch.agent.action.PatchActionInsert;
 import arcade.patch.agent.action.PatchActionRemove;
 import arcade.patch.agent.cell.PatchCellFactory;
+import arcade.patch.env.comp.PatchComponentCycle;
 import arcade.patch.env.comp.PatchComponentPulse;
 import arcade.patch.env.comp.PatchComponentSitesGraphTri;
 import arcade.patch.env.comp.PatchComponentSitesPatternTri;
@@ -76,6 +77,8 @@ public final class PatchSimulationHex extends PatchSimulation {
                 return new PatchComponentSitesGraphTri.Complex(series, parameters, random);
             case "pulse":
                 return new PatchComponentPulse(series, parameters);
+            case "cycle":
+                return new PatchComponentCycle(series, parameters);
             default:
                 return null;
         }
