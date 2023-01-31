@@ -217,7 +217,7 @@ public class InputParserTest {
     public void parse_noConfigNoArgs_returnsEmpty() {
         Box box = new Box();
         InputParser parser = new InputParser(box);
-        MiniBox parsed = parser.parse(new String[] {});
+        MiniBox parsed = parser.parse(new String[] { });
         assertTrue(parsed.compare(new MiniBox()));
     }
     
@@ -227,7 +227,7 @@ public class InputParserTest {
         box.addTag(COMMAND_ID_1, "SWITCH");
         
         InputParser parser = new InputParser(box);
-        MiniBox parsed = parser.parse(new String[] {});
+        MiniBox parsed = parser.parse(new String[] { });
         assertTrue(parsed.compare(new MiniBox()));
     }
     
@@ -237,7 +237,7 @@ public class InputParserTest {
         box.addTag(COMMAND_ID_1, "POSITION");
         
         InputParser parser = new InputParser(box);
-        MiniBox parsed = parser.parse(new String[] {});
+        MiniBox parsed = parser.parse(new String[] { });
         assertTrue(parsed.compare(new MiniBox()));
     }
     
@@ -249,7 +249,7 @@ public class InputParserTest {
         box.addAtt(COMMAND_ID_1, "default", defaultValue);
         
         InputParser parser = new InputParser(box);
-        MiniBox parsed = parser.parse(new String[] {});
+        MiniBox parsed = parser.parse(new String[] { });
         
         MiniBox expected = new MiniBox();
         expected.put(COMMAND_ID_1, defaultValue);
