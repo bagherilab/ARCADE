@@ -3,7 +3,7 @@ package arcade.patch.agent.cell;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
-import arcade.core.env.loc.Location;
+import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 import static arcade.core.util.Enums.State;
 

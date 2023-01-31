@@ -1,6 +1,6 @@
 package arcade.patch.env.operation;
 
-import arcade.patch.env.lat.PatchLattice;
+import arcade.patch.env.lattice.PatchLattice;
 
 /**
  * Extension of {@link PatchOperationDiffuser} for rectangular lattices.

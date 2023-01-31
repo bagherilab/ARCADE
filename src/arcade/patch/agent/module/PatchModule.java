@@ -2,7 +2,7 @@ package arcade.patch.agent.module;
 
 import arcade.core.agent.module.Module;
 import arcade.patch.agent.cell.PatchCell;
-import arcade.patch.env.loc.PatchLocation;
+import arcade.patch.env.location.PatchLocation;
 
 /**
  * Abstract implementation of {@link Module} for {@link PatchCell} agents.

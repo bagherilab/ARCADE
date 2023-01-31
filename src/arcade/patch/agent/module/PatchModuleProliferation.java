@@ -7,7 +7,7 @@ import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.process.PatchProcess;
 import arcade.patch.env.grid.PatchGrid;
-import arcade.patch.env.loc.PatchLocation;
+import arcade.patch.env.location.PatchLocation;
 import static arcade.core.util.Enums.Domain;
 import static arcade.core.util.Enums.State;
 

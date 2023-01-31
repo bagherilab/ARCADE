@@ -8,20 +8,20 @@ import sim.engine.SimState;
 import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.comp.Component;
+import arcade.core.env.component.Component;
 import arcade.core.env.grid.Grid;
-import arcade.core.env.lat.Lattice;
-import arcade.core.env.loc.Location;
-import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.lattice.Lattice;
+import arcade.core.env.location.Location;
+import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellFactory;
 import arcade.patch.env.grid.PatchGrid;
-import arcade.patch.env.lat.PatchLattice;
-import arcade.patch.env.lat.PatchLatticeFactory;
-import arcade.patch.env.loc.PatchLocationFactory;
+import arcade.patch.env.lattice.PatchLattice;
+import arcade.patch.env.lattice.PatchLatticeFactory;
+import arcade.patch.env.location.PatchLocationFactory;
 
 /**
  * Abstract implementation for patch {@link Simulation} instances.
@@ -167,21 +167,21 @@ public abstract class PatchSimulation extends SimState implements Simulation {
     /**
      * Creates a factory for locations.
      *
-     * @return  a {@link arcade.core.env.loc.Location} factory
+     * @return  a {@link Location} factory
      */
     public abstract PatchLocationFactory makeLocationFactory();
     
     /**
      * Creates a factory for cells.
      *
-     * @return  a {@link arcade.core.agent.cell.Cell} factory
+     * @return  a {@link Cell} factory
      */
     public abstract PatchCellFactory makeCellFactory();
     
     /**
      * Creates a factory for lattices.
      *
-     * @return  a {@link arcade.core.env.lat.Lattice} factory
+     * @return  a {@link Lattice} factory
      */
     public abstract PatchLatticeFactory makeLatticeFactory();
     

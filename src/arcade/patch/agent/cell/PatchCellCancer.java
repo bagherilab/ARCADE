@@ -2,7 +2,7 @@ package arcade.patch.agent.cell;
 
 import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
-import arcade.core.env.loc.Location;
+import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import static arcade.core.util.Enums.State;

@@ -2,7 +2,7 @@ package arcade.patch.agent.process;
 
 import arcade.core.agent.process.Process;
 import arcade.patch.agent.cell.PatchCell;
-import arcade.patch.env.loc.PatchLocation;
+import arcade.patch.env.location.PatchLocation;
 
 /**
  * Abstract implementation of {@link Process} for {@link PatchCell} agents.

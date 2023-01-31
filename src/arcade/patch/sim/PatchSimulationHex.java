@@ -1,25 +1,25 @@
 package arcade.patch.sim;
 
 import arcade.core.agent.action.Action;
-import arcade.core.env.comp.Component;
+import arcade.core.env.component.Component;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.action.PatchActionConvert;
 import arcade.patch.agent.action.PatchActionInsert;
 import arcade.patch.agent.action.PatchActionRemove;
 import arcade.patch.agent.cell.PatchCellFactory;
-import arcade.patch.env.comp.PatchComponentCycle;
-import arcade.patch.env.comp.PatchComponentDegrade;
-import arcade.patch.env.comp.PatchComponentPulse;
-import arcade.patch.env.comp.PatchComponentRemodel;
-import arcade.patch.env.comp.PatchComponentSitesGraphTri;
-import arcade.patch.env.comp.PatchComponentSitesPatternTri;
-import arcade.patch.env.comp.PatchComponentSitesSource;
-import arcade.patch.env.lat.PatchLatticeFactory;
-import arcade.patch.env.lat.PatchLatticeFactoryTri;
-import arcade.patch.env.loc.PatchLocationFactory;
-import arcade.patch.env.loc.PatchLocationFactoryHex;
-import arcade.patch.env.loc.PatchLocationHex;
+import arcade.patch.env.component.PatchComponentCycle;
+import arcade.patch.env.component.PatchComponentDegrade;
+import arcade.patch.env.component.PatchComponentPulse;
+import arcade.patch.env.component.PatchComponentRemodel;
+import arcade.patch.env.component.PatchComponentSitesGraphTri;
+import arcade.patch.env.component.PatchComponentSitesPatternTri;
+import arcade.patch.env.component.PatchComponentSitesSource;
+import arcade.patch.env.lattice.PatchLatticeFactory;
+import arcade.patch.env.lattice.PatchLatticeFactoryTri;
+import arcade.patch.env.location.PatchLocationFactory;
+import arcade.patch.env.location.PatchLocationFactoryHex;
+import arcade.patch.env.location.PatchLocationHex;
 
 /**
  * Extension of {@link PatchSimulation} for hexagonal geometry.

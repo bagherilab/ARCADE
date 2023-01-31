@@ -11,13 +11,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.output.OutputDeserializer;
 import arcade.patch.agent.cell.PatchCellContainer;
-import arcade.patch.env.loc.Coordinate;
-import arcade.patch.env.loc.CoordinateUVWZ;
-import arcade.patch.env.loc.CoordinateXYZ;
-import arcade.patch.env.loc.PatchLocationContainer;
+import arcade.patch.env.location.Coordinate;
+import arcade.patch.env.location.CoordinateUVWZ;
+import arcade.patch.env.location.CoordinateXYZ;
+import arcade.patch.env.location.PatchLocationContainer;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 import static arcade.core.util.Enums.State;
 

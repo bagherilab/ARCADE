@@ -5,8 +5,8 @@ import java.util.HashMap;
 import sim.util.Bag;
 import arcade.core.agent.cell.Cell;
 import arcade.core.env.grid.Grid;
-import arcade.core.env.loc.Location;
-import arcade.patch.env.loc.PatchLocation;
+import arcade.core.env.location.Location;
+import arcade.patch.env.location.PatchLocation;
 
 /**
  * Implementation of {@link Grid} for patch models.

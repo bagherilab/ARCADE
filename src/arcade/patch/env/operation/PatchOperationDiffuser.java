@@ -4,7 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.operation.Operation;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
-import arcade.patch.env.lat.PatchLattice;
+import arcade.patch.env.lattice.PatchLattice;
 import static arcade.core.util.Enums.Category;
 
 /**

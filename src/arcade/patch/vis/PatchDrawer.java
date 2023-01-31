@@ -26,9 +26,9 @@ import arcade.core.util.Graph.Edge;
 import arcade.core.util.Graph.Node;
 import arcade.core.vis.Drawer;
 import arcade.core.vis.Panel;
-import arcade.patch.env.comp.PatchComponentSitesGraph;
-import arcade.patch.env.comp.PatchComponentSitesGraph.SiteEdge;
-import arcade.patch.env.comp.PatchComponentSitesGraph.SiteNode;
+import arcade.patch.env.component.PatchComponentSitesGraph;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
+import arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
 import arcade.patch.sim.PatchSimulation;
 import static arcade.patch.vis.PatchColorMaps.*;
 

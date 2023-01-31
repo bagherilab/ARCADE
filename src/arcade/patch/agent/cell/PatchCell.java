@@ -11,7 +11,7 @@ import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.module.Module;
 import arcade.core.agent.process.Process;
-import arcade.core.env.loc.Location;
+import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.module.PatchModuleApoptosis;
@@ -20,7 +20,7 @@ import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
-import arcade.patch.env.loc.PatchLocation;
+import arcade.patch.env.location.PatchLocation;
 import static arcade.core.util.Enums.Domain;
 import static arcade.core.util.Enums.Region;
 import static arcade.core.util.Enums.State;
@@ -65,7 +65,7 @@ public abstract class PatchCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule. */
     Stoppable stopper;
     
-    /** Cell {@link arcade.core.env.loc.Location} object. */
+    /** Cell {@link Location} object. */
     final PatchLocation location;
     
     /** Unique cell ID. */

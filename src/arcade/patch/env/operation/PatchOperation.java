@@ -1,7 +1,7 @@
 package arcade.patch.env.operation;
 
 import arcade.core.env.operation.Operation;
-import arcade.patch.env.lat.PatchLattice;
+import arcade.patch.env.lattice.PatchLattice;
 
 /**
  * Abstract implementation of {@link Operation} for {@link PatchLattice}
