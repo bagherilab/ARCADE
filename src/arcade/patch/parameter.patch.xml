@@ -105,4 +105,9 @@
     <!-- pulse component parameters -->
     <component class="pulse" id="PULSE_INTERVAL" value="1440" unit="min" description="interval between pulses" />
     <component class="pulse" id="MEDIA_AMOUNT" value="2000" unit="um^3/um^2" description="media volume per area" />
+    
+    <!-- degrade component parameters -->
+    <component class="degrade" id="DEGRADATION_INTERVAL" value="1" units="min" description="interval between degradation steps" />
+    <component class="degrade" id="DEGRADATION_RATE" value="0.04" units="um/hr" description="rate of wall thickness degradation" />
+    <component class="degrade" id="SHEAR_THRESHOLD" value="0.01" units="mmHg" description="shear threshold for vessel collapse" />
 </parameters>

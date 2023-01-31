@@ -77,7 +77,12 @@ public abstract class PatchComponentSitesGraphRect extends PatchComponentSitesGr
     
     @Override
     public Location getLocation(CoordinateXYZ span) {
-        return new PatchLocationRect(PatchLocationRect.translate(span));
+        CoordinateXYZ coordinate = PatchLocationRect.translate(span);
+        if (coordinate != null) {
+            return new PatchLocationRect(coordinate);
+        } else {
+            return null;
+        }
     }
     
     @Override

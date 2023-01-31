@@ -552,7 +552,7 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
             if (graph.getOutDegree(node1) == 1) {
                 edgeOut = (SiteEdge) graph.getEdgesOut(node1).objs[0];
                 if (edgeOut.type != EdgeType.VEIN
-                        || edgeOut.radius > CAPILLARY_RADIUS_MAX
+                        || edgeOut.radius > MAXIMUM_CAPILLARY_RADIUS
                         || edgeOut.getFrom().isRoot) {
                     edgeOut = null;
                 }
@@ -560,7 +560,7 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
             if (graph.getInDegree(node1) == 1) {
                 edgeIn = (SiteEdge) graph.getEdgesIn(node1).objs[0];
                 if (edgeIn.type != EdgeType.VEIN
-                        || edgeIn.radius > CAPILLARY_RADIUS_MAX
+                        || edgeIn.radius > MAXIMUM_CAPILLARY_RADIUS
                         || edgeIn.getTo().isRoot) {
                     edgeIn = null;
                 }
@@ -604,8 +604,8 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
                 SiteEdge edgeIn = (SiteEdge) graph.getEdgesIn(node1).objs[0];
                 
                 if (edgeOut.type == type && edgeIn.type == type
-                        && edgeOut.radius <= CAPILLARY_RADIUS_MAX
-                        && edgeIn.radius <= CAPILLARY_RADIUS_MAX) {
+                        && edgeOut.radius <= MAXIMUM_CAPILLARY_RADIUS
+                        && edgeIn.radius <= MAXIMUM_CAPILLARY_RADIUS) {
                     options.add(node1);
                 }
             }

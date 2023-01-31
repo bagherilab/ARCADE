@@ -64,10 +64,13 @@ abstract class PatchComponentSitesGraphUtilities {
     static final double CAPILLARY_RADIUS = 4;
     
     /** Maximum capillary radius [um]. */
-    static final double CAPILLARY_RADIUS_MAX = 20;
+    static final double MAXIMUM_CAPILLARY_RADIUS = 20;
     
     /** Minimum capillary radius [um]. */
-    static final double CAPILLARY_RADIUS_MIN = 2;
+    static final double MINIMUM_CAPILLARY_RADIUS = 2;
+    
+    /** Minimum viable thickness for vessel wall [um]. */
+    static final double MINIMUM_WALL_THICKNESS = 0.5;
     
     /** Viscosity of plasma [mmHg s]. */
     static final double PLASMA_VISCOSITY = 0.000009;
@@ -79,10 +82,10 @@ abstract class PatchComponentSitesGraphUtilities {
     private static final double LAYER_HEIGHT = 8.7;
     
     /** Maximum oxygen partial pressure [mmHg]. */
-    private static final double OXYGEN_PRESSURE_MAX = 100;
+    private static final double MAXIMUM_OXYGEN_PRESSURE = 100;
     
     /** Minimum oxygen partial pressure [mmHg]. */
-    private static final double OXYGEN_PRESSURE_MIN = 55;
+    private static final double MINIMUM_OXYGEN_PRESSURE = 55;
     
     /** Oxygen partial pressure per radius [mmHg/um]. */
     private static final double OXYGEN_PRESSURE_SCALE = 1;
@@ -168,8 +171,8 @@ abstract class PatchComponentSitesGraphUtilities {
      * @return  the oxygen partial pressure
      */
     static double getPartial(SiteEdge edge) {
-        return Math.min(OXYGEN_PRESSURE_MIN + OXYGEN_PRESSURE_SCALE * edge.radius,
-                OXYGEN_PRESSURE_MAX);
+        return Math.min(MINIMUM_OXYGEN_PRESSURE + OXYGEN_PRESSURE_SCALE * edge.radius,
+                MAXIMUM_OXYGEN_PRESSURE);
     }
     
     /**
@@ -664,8 +667,8 @@ abstract class PatchComponentSitesGraphUtilities {
                             if (Math.abs(e.radius - r2) < DELTA_TOLERANCE) {
                                 e.radius = r2;
                             }
-                            if (e.radius < CAPILLARY_RADIUS_MIN) {
-                                e.radius = CAPILLARY_RADIUS_MIN;
+                            if (e.radius < MINIMUM_CAPILLARY_RADIUS) {
+                                e.radius = MINIMUM_CAPILLARY_RADIUS;
                             }
                         } else if (edge.radius < r2) {
                             e.radius = Math.pow(Math.pow(r2, MURRAY_EXPONENT)
@@ -673,8 +676,8 @@ abstract class PatchComponentSitesGraphUtilities {
                             if (Math.abs(e.radius - edge.radius) < DELTA_TOLERANCE) {
                                 e.radius = edge.radius;
                             }
-                            if (e.radius < CAPILLARY_RADIUS_MIN) {
-                                e.radius = CAPILLARY_RADIUS_MIN;
+                            if (e.radius < MINIMUM_CAPILLARY_RADIUS) {
+                                e.radius = MINIMUM_CAPILLARY_RADIUS;
                             }
                         } else if (edge.radius == r2) {
                             e.radius = r2;
@@ -686,8 +689,8 @@ abstract class PatchComponentSitesGraphUtilities {
                             if (Math.abs(e.radius - r1) < DELTA_TOLERANCE) {
                                 e.radius = r1;
                             }
-                            if (e.radius < CAPILLARY_RADIUS_MIN) {
-                                e.radius = CAPILLARY_RADIUS_MIN;
+                            if (e.radius < MINIMUM_CAPILLARY_RADIUS) {
+                                e.radius = MINIMUM_CAPILLARY_RADIUS;
                             }
                         } else if (edge.radius < r1) {
                             e.radius = Math.pow(Math.pow(r1, MURRAY_EXPONENT)
@@ -695,16 +698,16 @@ abstract class PatchComponentSitesGraphUtilities {
                             if (Math.abs(e.radius - edge.radius) < DELTA_TOLERANCE) {
                                 e.radius = edge.radius;
                             }
-                            if (e.radius < CAPILLARY_RADIUS_MIN) {
-                                e.radius = CAPILLARY_RADIUS_MIN;
+                            if (e.radius < MINIMUM_CAPILLARY_RADIUS) {
+                                e.radius = MINIMUM_CAPILLARY_RADIUS;
                             }
                         } else if (edge.radius == r1) {
                             e.radius = r1;
                         }
                     } else {
                         e.radius = edge.radius / Math.pow(2, 1 / MURRAY_EXPONENT);
-                        if (e.radius < CAPILLARY_RADIUS_MIN) {
-                            e.radius = CAPILLARY_RADIUS_MIN;
+                        if (e.radius < MINIMUM_CAPILLARY_RADIUS) {
+                            e.radius = MINIMUM_CAPILLARY_RADIUS;
                         }
                     }
                 }

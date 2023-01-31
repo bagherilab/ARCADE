@@ -6,6 +6,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.loc.Location;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.loc.CoordinateUVWZ;
 import arcade.patch.env.loc.CoordinateXYZ;
 import arcade.patch.env.loc.PatchLocationHex;
 
@@ -77,7 +78,12 @@ public abstract class PatchComponentSitesGraphTri extends PatchComponentSitesGra
     
     @Override
     public Location getLocation(CoordinateXYZ span) {
-        return new PatchLocationHex(PatchLocationHex.translate(span));
+        CoordinateUVWZ coordinate = PatchLocationHex.translate(span);
+        if (coordinate != null) {
+            return new PatchLocationHex(coordinate);
+        } else {
+            return null;
+        }
     }
     
     @Override
