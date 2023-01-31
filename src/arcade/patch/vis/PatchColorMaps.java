@@ -110,6 +110,33 @@ class PatchColorMaps {
             new double[] { 0, 5, 10, 15, 20, 25, 30 }
     );
     
+    /** Colors for edge vessel radius. */
+    static final Colors MAP_EDGE_RADIUS = new Colors(new Color[] {
+            new Color(255, 0, 0),
+            new Color(180, 0, 0),
+            new Color(130, 0, 130),
+            new Color(0, 0, 180),
+            new Color(0, 0, 255),
+    }, new double[] { -20, -10, 0, 10, 20 });
+    
+    /** Colors for edge wall thickness. */
+    static final Colors MAP_EDGE_WALL = new Colors(new Color[] {
+            new Color(0, 100, 0),
+            new Color(0, 255, 0),
+            new Color(255, 255, 0)
+    }, new double[] { 0, 5, 10 });
+    
+    /** Colors for node pressures. */
+    static final Colors MAP_NODE_PRESSURE = new Colors(new Color[] {
+            new Color(255, 255, 255),
+            new Color(253, 212, 158),
+            new Color(253, 187, 132),
+            new Color(252, 141, 89),
+            new Color(239, 101, 72),
+            new Color(215, 48, 31),
+            new Color(153, 0, 0)
+    }, new double[] { 0, 10, 20, 30, 40, 50, 60 });
+    
     /** Color map for cell age. */
     final Colors mapAge;
     

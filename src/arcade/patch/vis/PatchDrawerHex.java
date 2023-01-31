@@ -380,11 +380,7 @@ public abstract class PatchDrawerHex extends PatchDrawer {
             field.height = this.width;
         }
         
-        /**
-         * Steps the drawer to draw triangular grid.
-         *
-         * @param simstate  the MASON simulation state
-         */
+        @Override
         public void step(SimState simstate) {
             PatchSimulation sim = (PatchSimulation) simstate;
             field.clear();

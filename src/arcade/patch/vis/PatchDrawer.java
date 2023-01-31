@@ -11,16 +11,26 @@ import sim.field.network.Network;
 import sim.portrayal.DrawInfo2D;
 import sim.portrayal.FieldPortrayal2D;
 import sim.portrayal.Portrayal;
+import sim.portrayal.continuous.ContinuousPortrayal2D;
 import sim.portrayal.grid.FastValueGridPortrayal2D;
 import sim.portrayal.grid.ValueGridPortrayal2D;
 import sim.portrayal.network.EdgeDrawInfo2D;
 import sim.portrayal.network.NetworkPortrayal2D;
 import sim.portrayal.network.SimpleEdgePortrayal2D;
 import sim.portrayal.network.SpatialNetwork2D;
+import sim.portrayal.simple.AbstractShapePortrayal2D;
+import sim.util.Bag;
 import sim.util.Double2D;
 import sim.util.gui.ColorMap;
+import arcade.core.util.Graph.Edge;
+import arcade.core.util.Graph.Node;
 import arcade.core.vis.Drawer;
 import arcade.core.vis.Panel;
+import arcade.patch.env.comp.PatchComponentSitesGraph;
+import arcade.patch.env.comp.PatchComponentSitesGraph.SiteEdge;
+import arcade.patch.env.comp.PatchComponentSitesGraph.SiteNode;
+import arcade.patch.sim.PatchSimulation;
+import static arcade.patch.vis.PatchColorMaps.*;
 
 /**
  * Container for patch-specific {@link Drawer} classes.
@@ -61,15 +71,17 @@ public abstract class PatchDrawer extends Drawer {
     @Override
     public Portrayal makePort() {
         String[] split = name.split(":");
+        graph = new Network(true);
+        field = new Continuous2D(1.0, 1, 1);
         
         switch (split[0]) {
+            case "label":
+                return new LabelFieldPortrayal2D(length, width, "", 12);
             case "grid":
-                graph = new Network(true);
-                field = new Continuous2D(1.0, 1, 1);
-                SimpleEdgePortrayal2D sep = new SimpleEdgePortrayal2DGridWrapper();
+                SimpleEdgePortrayal2D sepg = new SimpleEdgePortrayal2DGridWrapper();
                 NetworkPortrayal2D gridPort = new NetworkPortrayal2D();
                 gridPort.setField(new SpatialNetwork2D(field, graph));
-                gridPort.setPortrayalForAll(sep);
+                gridPort.setPortrayalForAll(sepg);
                 return gridPort;
             case "agents":
             case "environment":
@@ -78,6 +90,19 @@ public abstract class PatchDrawer extends Drawer {
                 valuePort.setField(array);
                 valuePort.setMap(map);
                 return valuePort;
+            case "edges":
+                String feature = split[1];
+                SimpleEdgePortrayal2D sepe = new SimpleEdgePortrayal2DEdgeWrapper(feature);
+                NetworkPortrayal2D edgePort = new NetworkPortrayal2D();
+                edgePort.setField(new SpatialNetwork2D(field, graph));
+                edgePort.setPortrayalForAll(sepe);
+                return edgePort;
+            case "nodes":
+                ContinuousPortrayal2D nodePort = new ContinuousPortrayal2D();
+                nodePort.setField(field);
+                OvalPortrayal2DWrapper op = new OvalPortrayal2DWrapper();
+                nodePort.setPortrayalForAll(op);
+                return nodePort;
             default:
                 return null;
         }
@@ -94,7 +119,9 @@ public abstract class PatchDrawer extends Drawer {
         /**
          * Creates {@code SimpleEdgePortrayal2D} wrapper with no scaling.
          */
-        SimpleEdgePortrayal2DGridWrapper() { setScaling(NEVER_SCALE); }
+        SimpleEdgePortrayal2DGridWrapper() {
+            setScaling(NEVER_SCALE);
+        }
         
         @Override
         public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
@@ -120,6 +147,103 @@ public abstract class PatchDrawer extends Drawer {
         protected double getPositiveWeight(Object object, EdgeDrawInfo2D info) {
             sim.field.network.Edge edge = (sim.field.network.Edge) object;
             return (Integer) edge.getInfo();
+        }
+    }
+    
+    /** Wrapper for MASON class that changes edge colors based on weight. */
+    private static class SimpleEdgePortrayal2DEdgeWrapper extends SimpleEdgePortrayal2D {
+        /** Edge feature to display. */
+        private final String feature;
+        
+        /**
+         * Creates {@code SimpleEdgePortrayal2D} wrapper with rounded edges.
+         *
+         * @param feature  the name of the feature to display
+         */
+        SimpleEdgePortrayal2DEdgeWrapper(String feature) {
+            setShape(SimpleEdgePortrayal2D.SHAPE_LINE_ROUND_ENDS);
+            this.feature = feature;
+        }
+        
+        /**
+         * {@inheritDoc}
+         * <p>
+         * Gets color of edge based on drawing code.
+         *
+         * @return  the edge weight
+         */
+        protected double getPositiveWeight(Object object, EdgeDrawInfo2D info) {
+            sim.field.network.Edge edge = (sim.field.network.Edge) object;
+            SiteEdge siteEdge = (SiteEdge) (edge.getInfo());
+            
+            if (feature.equalsIgnoreCase("radius")) {
+                return siteEdge.getRadius() / 25 + 0.1;
+            } else if (feature.equalsIgnoreCase("wall")) {
+                return (siteEdge.getRadius() + siteEdge.getWall() * 2) / 25.0 + 0.1;
+            } else {
+                return 2;
+            }
+        }
+        
+        @Override
+        public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
+            sim.field.network.Edge edge = (sim.field.network.Edge) object;
+            SiteEdge siteEdge = (SiteEdge) (edge.getInfo());
+            
+            if (feature.equalsIgnoreCase("radius")) {
+                fromPaint = MAP_EDGE_RADIUS.getColor(siteEdge.getRadius() * siteEdge.getSign());
+            } else if (feature.equalsIgnoreCase("wall")) {
+                fromPaint = MAP_EDGE_WALL.getColor(siteEdge.getWall());
+                if (siteEdge.getWall() <= 0.5) {
+                    fromPaint = new Color(255, 255, 255);
+                }
+            } else {
+                fromPaint = new Color(100, 100, 100);
+            }
+            
+            toPaint = fromPaint;
+            super.draw(object, graphics, info);
+            
+        }
+    }
+    
+    /** Wrapper for MASON class that change node colors. */
+    private static class OvalPortrayal2DWrapper extends AbstractShapePortrayal2D {
+        /** Node portrayal scaling. */
+        private static final double OVAL_SCALE = 0.7;
+        
+        /**
+         * Creates {@code AbstractShapePortrayal2D} wrapper.
+         */
+        OvalPortrayal2DWrapper() { super(); }
+        
+        @Override
+        public void draw(Object object, Graphics2D graphics, DrawInfo2D info) {
+            graphics.setPaint(new Color(255, 255, 255));
+            SiteNode node = (SiteNode) object;
+            
+            if (node.getRoot()) {
+                graphics.setPaint(new Color(255, 255, 0));
+                Rectangle2D.Double draw = info.draw;
+                double s = Math.min(draw.width, draw.height) / OVAL_SCALE;
+                final int x = (int) (draw.x - s / 2.0);
+                final int y = (int) (draw.y - s / 2.0);
+                int w = (int) (s);
+                int h = (int) (s);
+                graphics.fillOval(x - 1, y - 1, w + 2, h + 2);
+            }
+            graphics.setPaint(MAP_NODE_PRESSURE.getColor(node.getPressure()));
+            if (node.getPressure() <= 0) {
+                graphics.setPaint(new Color(0, 255, 255));
+            }
+            
+            Rectangle2D.Double draw = info.draw;
+            double s = Math.min(draw.width, draw.height) / OVAL_SCALE;
+            final int x = (int) (draw.x - s / 2.0);
+            final int y = (int) (draw.y - s / 2.0);
+            int w = (int) (s);
+            int h = (int) (s);
+            graphics.fillOval(x, y, w, h);
         }
     }
     
@@ -204,6 +328,57 @@ public abstract class PatchDrawer extends Drawer {
     }
     
     /**
+     * Extension of {@link Drawer} for drawing graphs.
+     */
+    public static class Graph extends PatchDrawer {
+        /** Length of the lattice (x direction). */
+        private final int length;
+        
+        /** Width of the lattice (y direction). */
+        private final int width;
+        
+        /**
+         * Creates a {@code Graph} drawer.
+         *
+         * @param panel  the panel the drawer is attached to
+         * @param name  the name of the drawer
+         * @param length  the length of array (x direction)
+         * @param width  the width of array (y direction)
+         * @param offset  the offset for array geometry
+         * @param bounds  the size of the drawer within the panel
+         */
+        Graph(Panel panel, String name, int length, int width, int offset,
+              Rectangle2D.Double bounds) {
+            super(panel, name, length, width, 0, null, bounds);
+            this.length = length + offset;
+            this.width = width;
+            field.width = length;
+            field.height = width;
+        }
+        
+        @Override
+        public void step(SimState simstate) {
+            PatchSimulation sim = (PatchSimulation) simstate;
+            PatchComponentSitesGraph component =
+                    (PatchComponentSitesGraph) sim.getComponent("SITES");
+            
+            field.clear();
+            graph.clear();
+            
+            // Iterate through all edges in the sites bag.
+            Bag bag = component.getGraph().getAllEdges();
+            for (Object obj : bag) {
+                Edge e = (Edge) obj;
+                Node from = e.getFrom();
+                Node to = e.getTo();
+                field.setObjectLocation(from, new Double2D(from.getX(), from.getY()));
+                field.setObjectLocation(to, new Double2D(to.getX(), to.getY()));
+                graph.addEdge(from, to, e);
+            }
+        }
+    }
+    
+    /**
      * Extension of {@link Drawer} for drawing labels.
      */
     public static class Label extends PatchDrawer {
@@ -217,7 +392,8 @@ public abstract class PatchDrawer extends Drawer {
          * @param name  the name of the drawer
          * @param xoffset  the offset in x direction
          * @param yoffset  the offset in y direction
-         * @param string  the text to draw, set to null to show timestamp
+         * @param string  the text to draw, set to null to show
+         *         timestamp
          */
         public Label(Panel panel, String name, int xoffset, int yoffset, String string) {
             super(panel, name, xoffset, yoffset, 0, null, null);
@@ -230,15 +406,6 @@ public abstract class PatchDrawer extends Drawer {
         }
         
         @Override
-        public Portrayal makePort() {
-            return new LabelFieldPortrayal2D(length, width, "", 12);
-        }
-        
-        /**
-         * Steps the drawer to add a label.
-         *
-         * @param simstate  the MASON simulation state
-         */
         public void step(SimState simstate) {
             LabelFieldPortrayal2D port = (LabelFieldPortrayal2D) this.getPortrayal();
             if (string == null) {

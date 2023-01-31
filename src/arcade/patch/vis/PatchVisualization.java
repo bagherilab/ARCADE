@@ -107,7 +107,12 @@ public final class PatchVisualization extends Visualization {
                 new PatchDrawer.Label(panels[2], "label", 83, 0, "DIVISIONS")));
         
         if (hasGraph) {
-            // TODO: add views for nodes (pressure) + edges (radius, wall, type)
+            drawers.add(new PatchDrawer.Graph(panels[1], "edges:wall",
+                    length, width, 1, getBox(h, 0, 2 * h, 2 * v)));
+            drawers.add(new PatchDrawer.Graph(panels[1], "edges:radius",
+                    length, width, 1, getBox(h, 0, 2 * h, 2 * v)));
+            drawers.add(new PatchDrawer.Graph(panels[1], "nodes",
+                    length, width, 1, getBox(h, 0, 2 * h, 2 * v)));
         } else {
             drawers.add(new PatchDrawerHex.PatchLayers(panels[1], "environment:SITES",
                     length, width, height, MAP_SITES, getBox(h, 0, h, v)));
@@ -169,7 +174,12 @@ public final class PatchVisualization extends Visualization {
                 new PatchDrawer.Label(panels[2], "label", 83, 0, "DIVISIONS")));
         
         if (hasGraph) {
-            // TODO: add views for nodes (pressure) + edges (radius, wall, type)
+            drawers.add(new PatchDrawer.Graph(panels[1], "edges:wall",
+                    length, width, 0, getBox(h, 0, 2 * h, 2 * v)));
+            drawers.add(new PatchDrawer.Graph(panels[1], "edges:radius",
+                    length, width, 0, getBox(h, 0, 2 * h, 2 * v)));
+            drawers.add(new PatchDrawer.Graph(panels[1], "nodes",
+                    length, width, 0, getBox(h, 0, 2 * h, 2 * v)));
         } else {
             drawers.add(new PatchDrawerRect.PatchLayers(panels[1], "environment:SITES",
                     length, width, height, MAP_SITES, getBox(h, 0, h, v)));

@@ -407,6 +407,20 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         public Node duplicate() {
             return new SiteNode(x, y, z);
         }
+        
+        /**
+         * Gets the root type of the node.
+         *
+         * @return  {@code true} if node is root, {@code false} otherwise
+         */
+        public boolean getRoot() { return isRoot; }
+        
+        /**
+         * Get the pressure of the node.
+         *
+         * @return  the node pressure
+         */
+        public double getPressure() { return pressure; }
     }
     
     /**
@@ -492,6 +506,27 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
         
         @Override
         public SiteNode getTo() { return (SiteNode) to; }
+        
+        /**
+         * Gets the sign type of the radius.
+         *
+         * @return  the edge type sign
+         */
+        public int getSign() { return type.category.sign; }
+        
+        /**
+         * Get the radius of the edge.
+         *
+         * @return  the edge radius
+         */
+        public double getRadius() { return radius; }
+        
+        /**
+         * Get the wall thickness of the edge.
+         *
+         * @return  the edge wall thickness
+         */
+        public double getWall() { return wall; }
     }
     
     /**
