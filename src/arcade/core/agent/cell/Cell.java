@@ -5,7 +5,7 @@ import sim.engine.Steppable;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.module.Module;
 import arcade.core.agent.process.Process;
-import arcade.core.env.loc.Location;
+import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 import static arcade.core.util.Enums.Domain;
 import static arcade.core.util.Enums.Region;

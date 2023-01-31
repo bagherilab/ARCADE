@@ -1,4 +1,4 @@
-package arcade.core.env.loc;
+package arcade.core.env.location;
 
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;

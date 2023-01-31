@@ -93,7 +93,7 @@
 
         <!-- Checks for imports -->
         <module name="AvoidStarImport">
-            <property name="excludes" value="arcade.core.agent.cell, arcade.core.agent.module, arcade.core.agent.helper, arcade.core.env.loc, arcade.core.env.grid, arcade.core.env.grid, arcade.core.env.lat, arcade.core.sim, arcade.core.sim.input, arcade.core.sim.output, arcade.core.vis"/>
+            <property name="excludes" value="arcade.core.agent.cell, arcade.core.agent.module, arcade.core.agent.helper, arcade.core.env.location, arcade.core.env.grid, arcade.core.env.grid, arcade.core.env.lattice, arcade.core.sim, arcade.core.sim.input, arcade.core.sim.output, arcade.core.vis"/>
             <property name="allowStaticMemberImports" value="true" />
         </module>
         <module name="IllegalImport" />

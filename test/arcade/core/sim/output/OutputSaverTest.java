@@ -12,7 +12,7 @@ import com.google.gson.Gson;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

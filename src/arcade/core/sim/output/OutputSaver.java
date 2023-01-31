@@ -94,7 +94,7 @@ public abstract class OutputSaver implements Steppable {
     }
     
     /**
-     * Save a list of {@link arcade.core.env.loc.LocationContainer} to a JSON.
+     * Save a list of {@link arcade.core.env.location.LocationContainer} to a JSON.
      *
      * @param tick  the simulation tick
      */

@@ -19,7 +19,7 @@ import arcade.core.sim.Simulation;
  * {@code Action} objects can affect {@link arcade.core.agent.cell.Cell}
  * populations or cell {@link arcade.core.agent.module.Module} or
  * {@link arcade.core.agent.process.Process} instances.
- * {@code Action} objects are analogs to {@link arcade.core.env.comp.Component}
+ * {@code Action} objects are analogs to {@link arcade.core.env.component.Component}
  * for steppables that affect agents.
  */
 

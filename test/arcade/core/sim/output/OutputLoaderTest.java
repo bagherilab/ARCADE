@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import com.google.gson.Gson;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

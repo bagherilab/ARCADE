@@ -11,7 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import arcade.core.agent.cell.CellContainer;
-import arcade.core.env.loc.LocationContainer;
+import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;

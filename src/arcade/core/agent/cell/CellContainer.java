@@ -1,6 +1,6 @@
 package arcade.core.agent.cell;
 
-import arcade.core.env.loc.Location;
+import arcade.core.env.location.Location;
 
 /**
  * Container class for {@link Cell} objects.
