@@ -116,7 +116,7 @@ public class PatchSeriesTest {
         verify(series).updatePatch(eq(patch), any(MiniBox.class));
         
         ArrayList<Box> populations = setupLists.get("populations");
-        verify(series).updatePopulations(eq(populations), any(MiniBox.class), any(MiniBox.class));
+        verify(series).updatePopulations(eq(populations), any(MiniBox.class), eq(null));
         
         ArrayList<Box> layers = setupLists.get("layers");
         verify(series).updateLayers(eq(layers), any(MiniBox.class), any(MiniBox.class));
@@ -174,8 +174,12 @@ public class PatchSeriesTest {
                 
                 for (String parameter : PATCH_PARAMETER_NAMES) {
                     double expected = PATCH.getDouble(parameter);
-                    if (parameter.equals(patchParameter1)) { expected = value; }
-                    if (parameter.equals(patchParameter2)) { expected *= scale; }
+                    if (parameter.equals(patchParameter1)) {
+                        expected = value;
+                    }
+                    if (parameter.equals(patchParameter2)) {
+                        expected *= scale;
+                    }
                     assertEquals(expected, box.getDouble(parameter), EPSILON);
                 }
             }
@@ -284,8 +288,12 @@ public class PatchSeriesTest {
                 
                 for (String parameter : POPULATION_PARAMETER_NAMES) {
                     double expected = POPULATION.getDouble(parameter);
-                    if (parameter.equals(populationParameter1)) { expected = value; }
-                    if (parameter.equals(populationParameter2)) { expected *= scale; }
+                    if (parameter.equals(populationParameter1)) {
+                        expected = value;
+                    }
+                    if (parameter.equals(populationParameter2)) {
+                        expected *= scale;
+                    }
                     assertEquals(expected, box.getDouble(parameter), EPSILON);
                 }
             }
@@ -325,7 +333,7 @@ public class PatchSeriesTest {
                 boxes[1].addTag(populationParameter1, "PARAMETER");
                 boxes[1].addAtt(populationParameter2, "scale", "" + scale);
                 boxes[1].addTag(populationParameter2, "PARAMETER");
-    
+                
                 PatchSeries series = makeSeriesForPopulation(boxes);
                 MiniBox box1 = series.populations.get(POPULATION_ID_1);
                 MiniBox box2 = series.populations.get(POPULATION_ID_2);
@@ -336,8 +344,12 @@ public class PatchSeriesTest {
                     assertEquals(POPULATION.get(parameter), box3.get(parameter));
                     
                     double expected = POPULATION.getDouble(parameter);
-                    if (parameter.equals(populationParameter1)) { expected = value; }
-                    if (parameter.equals(populationParameter2)) { expected *= scale; }
+                    if (parameter.equals(populationParameter1)) {
+                        expected = value;
+                    }
+                    if (parameter.equals(populationParameter2)) {
+                        expected *= scale;
+                    }
                     assertEquals(expected, box2.getDouble(parameter), EPSILON);
                 }
             }

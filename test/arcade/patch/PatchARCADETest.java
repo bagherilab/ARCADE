@@ -71,10 +71,10 @@ public class PatchARCADETest {
     public void getResource_requiredFiles_returnsResource() {
         PatchARCADE arcade = new PatchARCADE();
         
-        String parameterFile = arcade.getResource("parameter.xml");
+        String parameterFile = arcade.getResource("parameter.patch.xml");
         assertNotNull(parameterFile);
         
-        String commandFile = arcade.getResource("command.xml");
+        String commandFile = arcade.getResource("command.patch.xml");
         assertNotNull(commandFile);
     }
     
