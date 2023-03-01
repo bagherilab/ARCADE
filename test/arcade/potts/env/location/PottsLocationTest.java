@@ -81,6 +81,8 @@ public class PottsLocationTest {
     }
     
     static class PottsLocationMock extends PottsLocation {
+        HashMap<Direction, Integer> diameterMap;
+                
         PottsLocationMock(ArrayList<Voxel> voxels) { super(voxels); }
         
         @Override
@@ -117,22 +119,14 @@ public class PottsLocationTest {
         
         @Override
         HashMap<Direction, Integer> getDiameters() {
-            HashMap<Direction, Integer> diameters = new HashMap<>();
-            
-            if (voxels.size() == 0) {
-                diameters.put(Direction.XY_PLANE, 50);
-                diameters.put(Direction.POSITIVE_XY, 89);
-                diameters.put(Direction.NEGATIVE_ZX, 100);
-            } else if (voxels.size() == 7) {
-                diameters.put(Direction.YZ_PLANE, 1);
+            if (diameterMap != null) {
+                return diameterMap;
             } else {
-                diameters.put(Direction.YZ_PLANE, 50);
-                diameters.put(Direction.XY_PLANE, 90);
-                diameters.put(Direction.POSITIVE_XY, 95);
-                diameters.put(Direction.NEGATIVE_ZX, 100);
+                this.diameterMap = new HashMap<>();
+                diameterMap.put(Direction.YZ_PLANE, 1);
             }
             
-            return diameters;
+            return diameterMap;
         }
         
         @Override
@@ -666,6 +660,13 @@ public class PottsLocationTest {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         when(random.nextInt(1)).thenReturn(0);
+        
+        HashMap<Direction, Integer> diameters = new HashMap<>();
+        diameters.put(Direction.XY_PLANE, 50);
+        diameters.put(Direction.POSITIVE_XY, 89);
+        diameters.put(Direction.NEGATIVE_ZX, 100);
+        loc.diameterMap = diameters;
+        
         assertEquals(Direction.POSITIVE_YZ, loc.getDirection(random));
     }
     
@@ -676,9 +677,36 @@ public class PottsLocationTest {
         PottsLocationMock loc = new PottsLocationMock(voxels);
         MersenneTwisterFast random = mock(MersenneTwisterFast.class);
         when(random.nextInt(3)).thenReturn(1).thenReturn(0).thenReturn(2);
+        
+        HashMap<Direction, Integer> diameters = new HashMap<>();
+        diameters.put(Direction.YZ_PLANE, 50);
+        diameters.put(Direction.XY_PLANE, 90);
+        diameters.put(Direction.POSITIVE_XY, 95);
+        diameters.put(Direction.NEGATIVE_ZX, 100);
+        loc.diameterMap = diameters;
+        
         assertEquals(Direction.YZ_PLANE, loc.getDirection(random));
         assertEquals(Direction.NEGATIVE_YZ, loc.getDirection(random));
         assertEquals(Direction.POSITIVE_YZ, loc.getDirection(random));
+    }
+    
+    @Test
+    public void getDirection_zeroDiameters_returnsRandomValue() {
+        for (int i = 0; i < 100; i++) {
+            PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
+            MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+            when(random.nextInt(1)).thenReturn(0);
+            
+            HashMap<Direction, Integer> diameters = new HashMap<>();
+            diameters.put(Direction.XY_PLANE, 0);
+            diameters.put(Direction.POSITIVE_XY, 0);
+            diameters.put(Direction.NEGATIVE_ZX, 0);
+            loc.diameterMap = diameters;
+            
+            Direction direction = loc.getDirection(random);
+            assertNotNull(direction);
+            assertNotEquals(Direction.UNDEFINED, direction);
+        }
     }
     
     @Test

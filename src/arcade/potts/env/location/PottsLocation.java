@@ -443,7 +443,7 @@ public abstract class PottsLocation implements Location {
         HashMap<Direction, Integer> diameters = getDiameters();
         ArrayList<Direction> directions = new ArrayList<>();
         
-        // Determine minimum diameter.
+        // Determine maximum diameter.
         int diameter;
         int maximumDiameter = 0;
         for (Direction direction : Direction.values()) {
@@ -465,7 +465,7 @@ public abstract class PottsLocation implements Location {
         Direction d = directions.get(random.nextInt(directions.size()));
         
         // Convert diameter direction to slice direction.
-        return getSlice(d, diameters);
+        return (d == Direction.UNDEFINED ? Direction.random(random) : getSlice(d, diameters));
     }
     
     @Override
