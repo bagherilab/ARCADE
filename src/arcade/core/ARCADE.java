@@ -131,8 +131,8 @@ public abstract class ARCADE {
         logger.info("loading framework command line parser from [ command.xml ]");
         Box commands = loader.load(ARCADE.class.getResource("command.xml").toString());
         
-        logger.info("loading implementation [ " + this.getClass().getSimpleName()
-                + " ] command line parser from [ command.xml ]");
+        logger.info("loading implementation [ " + this.getClass().getSimpleName() + " ]"
+                + " command line parser from [ command." + implementation + ".xml ]");
         loader.load(this.getResource("command." + implementation + ".xml"), commands);
         
         return commands;
@@ -150,8 +150,8 @@ public abstract class ARCADE {
         logger.info("loading framework default parameters from [ parameter.xml ]");
         Box parameters = loader.load(ARCADE.class.getResource("parameter.xml").toString());
         
-        logger.info("loading implementation [ " + this.getClass().getSimpleName()
-                + " ] default parameters from [ parameter.xml ]");
+        logger.info("loading implementation [ " + this.getClass().getSimpleName() + " ]"
+                + " default parameters from [ parameter." + implementation + ".xml ]");
         loader.load(this.getResource("parameter." + implementation + ".xml"), parameters);
         
         return parameters;
