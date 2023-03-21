@@ -10,26 +10,32 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.logging.LogManager;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
+import com.formdev.flatlaf.FlatDarculaLaf;
 import sim.display.SimApplet;
 import arcade.core.ARCADE;
 
 /**
  * Creates a {@code GUI} for selecting setup file and running the simulation.
  * <p>
- * When model is called with arguments, the {@code main} method in
- * {@link ARCADE} is called directly and the {@code GUI} is not shown.
+ * When the model is called with arguments, then the {@code main} method in
+ * {@link arcade.core.ARCADE} is called directly and {@code GUI} is not shown.
  */
 
 public class GUI implements ActionListener {
@@ -40,10 +46,10 @@ public class GUI implements ActionListener {
     private static String chooserDir = null;
     
     /** Text field for file. */
-    private JTextField fileField;
+    private JTextField inputFileField;
     
-    /** Button for select file. */
-    private JButton selectButton;
+    /** Text field for output path. */
+    private JTextField outputPathField;
     
     /** Button for run simulation. */
     private JButton runButton;
@@ -54,8 +60,14 @@ public class GUI implements ActionListener {
     /** Check box for visualization. */
     private JCheckBox visCheck;
     
-    /** XML setup file. */
-    private File xml;
+    /** Input file. */
+    private File inputFile;
+    
+    /** Output path. */
+    private File outputPath;
+    
+    /** Implementation name. */
+    private String implementation;
     
     /**
      * Main function for running ARCADE simulations through the GUI.
@@ -63,6 +75,8 @@ public class GUI implements ActionListener {
      * @param args  list of command line arguments
      */
     public static void main(String[] args) throws Exception {
+        FlatDarculaLaf.install();
+        
         if (args.length > 0) {
             ARCADE.main(args);
         } else {
@@ -74,9 +88,9 @@ public class GUI implements ActionListener {
     private static void createAndShowGUI() {
         frame = new JFrame();
         
-        // Create and setup the content pane.
-        GUI g = new GUI();
-        frame.setContentPane(g.createContent());
+        // Create and set up the content pane.
+        GUI gui = new GUI();
+        frame.setContentPane(gui.createContent());
         
         // Creates an instance of a MASON SimApplet so the doQuit() method of
         // Console does not exit (so that the GUI console is not forced to close).
@@ -91,10 +105,10 @@ public class GUI implements ActionListener {
     /**
      * Creates the content pane.
      *
-     * @return  the panel containing the {@code IntroScreen}
+     * @return  the content panel
      */
     private JPanel createContent() {
-        frame.setSize(900, 700);
+        frame.setSize(1200, 700);
         
         JPanel screen = new JPanel();
         screen.setLayout(new BorderLayout());
@@ -104,14 +118,60 @@ public class GUI implements ActionListener {
         northPanel.setBorder(makeBorder());
         GroupLayout grouping = prepGrouping(northPanel);
         
+        // Label panel.
+        JPanel labelPanel = new JPanel();
+        labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
+        labelPanel.setBorder(new EmptyBorder(10, 0, 20, 0));
+        
+        JLabel titleLabel = new JLabel("<html><b><font size=+10>ARCADE</font></b> v3.1</html>");
+        labelPanel.add(titleLabel);
+        
+        JLabel nameLabel = new JLabel("<html><b>Agent-based Representation "
+                + "of Cells And Dynamic Environments</b></html>");
+        labelPanel.add(nameLabel);
+        
+        northPanel.add(labelPanel);
+        
+        // Select input file panel.
         addATextField("No input file selected", 40, northPanel);
-        ((JTextField) northPanel.getComponent(0)).setEditable(false);
-        fileField = ((JTextField) northPanel.getComponent(0));
+        ((JTextField) northPanel.getComponent(1)).setEditable(false);
+        inputFileField = ((JTextField) northPanel.getComponent(1));
         
-        selectButton = addAButton("SELECT SETUP", northPanel);
-        selectButton.addActionListener(this);
-        selectButton.setActionCommand("SELECT");
+        JButton inputSelectButton = addAButton("SELECT INPUT FILE", northPanel);
+        inputSelectButton.addActionListener(this);
+        inputSelectButton.setActionCommand("INPUT");
         
+        // Select output path panel.
+        addATextField("No output path selected", 40, northPanel);
+        ((JTextField) northPanel.getComponent(3)).setEditable(false);
+        outputPathField = ((JTextField) northPanel.getComponent(3));
+        
+        JButton outputSelectButton = addAButton("SELECT OUTPUT PATH", northPanel);
+        outputSelectButton.addActionListener(this);
+        outputSelectButton.setActionCommand("OUTPUT");
+        
+        // Implementation panel.
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        implementation = "potts";
+        
+        JRadioButton patchImplButton = addARadioButton("patch implementation", buttonPanel);
+        patchImplButton.addActionListener(this);
+        patchImplButton.setActionCommand("patch");
+        patchImplButton.setEnabled(false);
+        
+        JRadioButton pottImplButton = addARadioButton("potts implementation", buttonPanel);
+        pottImplButton.addActionListener(this);
+        pottImplButton.setActionCommand("potts");
+        pottImplButton.setSelected(true);
+        
+        northPanel.add(buttonPanel);
+        
+        ButtonGroup implementations = new ButtonGroup();
+        implementations.add(patchImplButton);
+        implementations.add(pottImplButton);
+        
+        // Run simulation panel.
         runButton = addAButton("RUN SIMULATIONS", northPanel);
         runButton.setEnabled(false);
         runButton.addActionListener(this);
@@ -124,22 +184,32 @@ public class GUI implements ActionListener {
         grouping.setHorizontalGroup(
                 grouping.createSequentialGroup()
                         .addGroup(grouping.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                .addComponent(northPanel.getComponent(0)))
+                                .addComponent(northPanel.getComponent(0))
+                                .addComponent(northPanel.getComponent(1))
+                                .addComponent(northPanel.getComponent(3))
+                                .addComponent(northPanel.getComponent(5)))
+                        .addGroup(grouping.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                .addComponent(northPanel.getComponent(2))
+                                .addComponent(northPanel.getComponent(4))
+                                .addComponent(northPanel.getComponent(6)))
                         .addGroup(grouping.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                .addComponent(northPanel.getComponent(1)))
-                        .addGroup(grouping.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                .addComponent(northPanel.getComponent(2)))
-                        .addGroup(grouping.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                .addComponent(northPanel.getComponent(3)))
+                                .addComponent(northPanel.getComponent(7)))
         );
         
         grouping.setVerticalGroup(
                 grouping.createSequentialGroup()
                         .addGroup(grouping.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                .addComponent(northPanel.getComponent(0))
+                                .addComponent(northPanel.getComponent(0)))
+                        .addGroup(grouping.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(northPanel.getComponent(1))
-                                .addComponent(northPanel.getComponent(2))
-                                .addComponent(northPanel.getComponent(3)))
+                                .addComponent(northPanel.getComponent(2)))
+                        .addGroup(grouping.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(northPanel.getComponent(3))
+                                .addComponent(northPanel.getComponent(4)))
+                        .addGroup(grouping.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                .addComponent(northPanel.getComponent(5))
+                                .addComponent(northPanel.getComponent(6))
+                                .addComponent(northPanel.getComponent(7)))
         );
         
         screen.add(northPanel, BorderLayout.NORTH);
@@ -149,8 +219,7 @@ public class GUI implements ActionListener {
         centerPanel.setLayout(new BorderLayout());
         centerPanel.setBorder(makeBorder());
         
-        displayArea = addATextArea(centerPanel,
-                "AGENT-BASED MODEL OF HETEROGENEOUS CELLS IN DYNAMIC ENVIRONMENT\n");
+        displayArea = addATextArea(centerPanel, "");
         PrintStream printStream = new PrintStream(new CustomOutputStream(displayArea));
         System.setOut(printStream);
         System.setErr(printStream);
@@ -163,25 +232,55 @@ public class GUI implements ActionListener {
     /**
      * Performs the action for the given event.
      *
-     * @param e  the action event
+     * @param event  the action event
      */
     @Override
-    public void actionPerformed(ActionEvent e) {
-        String cmd = e.getActionCommand();
+    public void actionPerformed(ActionEvent event) {
+        String cmd = event.getActionCommand();
         
         switch (cmd) {
-            case "SELECT":
-                xml = getFile();
-                if (xml == null) {
-                    fileField.setText("No input file selected");
+            case "INPUT":
+                inputFile = getFile();
+                if (inputFile == null) {
+                    inputFileField.setText("No input file selected");
                     runButton.setEnabled(false);
                     visCheck.setEnabled(false);
                 } else {
-                    displayArea.append("\nselected input xml [" + xml.getName() + "]\n");
-                    fileField.setText(xml.getAbsolutePath());
-                    runButton.setEnabled(true);
-                    visCheck.setEnabled(true);
+                    displayArea.append("\nselected input xml [ " + inputFile.getName() + " ]\n");
+                    inputFileField.setText(inputFile.getAbsolutePath());
+                    
+                    if (outputPath != null) {
+                        runButton.setEnabled(true);
+                        visCheck.setEnabled(true);
+                    } else {
+                        runButton.setEnabled(false);
+                        visCheck.setEnabled(false);
+                    }
                 }
+                break;
+            case "OUTPUT":
+                outputPath = getPath();
+                if (outputPath == null) {
+                    outputPathField.setText("No output path selected");
+                    runButton.setEnabled(false);
+                    visCheck.setEnabled(false);
+                } else {
+                    displayArea.append("\nselected output path [ " + outputPath.getPath() + " ]\n");
+                    outputPathField.setText(outputPath.getAbsolutePath());
+                    
+                    if (inputFile != null) {
+                        runButton.setEnabled(true);
+                        visCheck.setEnabled(true);
+                    } else {
+                        runButton.setEnabled(false);
+                        visCheck.setEnabled(false);
+                    }
+                }
+                break;
+            case "potts":
+            case "patch":
+                implementation = cmd;
+                displayArea.append("\nselected implementation [ " + implementation + " ]\n");
                 break;
             case "RUN":
                 Thread thread = new Thread(() -> {
@@ -190,9 +289,18 @@ public class GUI implements ActionListener {
                         LogManager.getLogManager().reset();
                         
                         if (visCheck.isSelected()) {
-                            ARCADE.main(new String[]{"", xml.getAbsolutePath(), "--vis"});
+                            ARCADE.main(new String[] {
+                                    implementation,
+                                    inputFile.getAbsolutePath(),
+                                    outputPath.getAbsolutePath(),
+                                    "--vis"
+                            });
                         } else {
-                            ARCADE.main(new String[]{"", xml.getAbsolutePath()});
+                            ARCADE.main(new String[] {
+                                    implementation,
+                                    inputFile.getAbsolutePath(),
+                                    outputPath.getAbsolutePath()
+                            });
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -209,23 +317,47 @@ public class GUI implements ActionListener {
     /**
      * Opens dialog to select input file.
      *
-     * @return the selected file, null if no file is selected
+     * @return  the selected file, null if no file is selected
      */
     public File getFile() {
         JFileChooser chooser = new JFileChooser(chooserDir);
-        chooser.setDialogTitle("Select input xml file ...");
+        chooser.setDialogTitle("Select input file ...");
+        chooser.setCurrentDirectory(new File("."));
         chooser.addChoosableFileFilter(new XMLFileFilter());
         chooser.setAcceptAllFileFilterUsed(false);
-        File dataFile;
+        File file;
         
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            dataFile = chooser.getSelectedFile();
-            chooserDir = dataFile.getParent();
+            file = chooser.getSelectedFile();
+            chooserDir = file.getParent();
         } else {
             return null;
         }
         
-        return dataFile;
+        return file;
+    }
+    
+    /**
+     * Opens dialog to select output path.
+     *
+     * @return  the selected path, null if no path is selected
+     */
+    public File getPath() {
+        JFileChooser chooser = new JFileChooser(chooserDir);
+        chooser.setDialogTitle("Select output path ...");
+        chooser.setCurrentDirectory(new File("."));
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+        File file;
+        
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            file = chooser.getCurrentDirectory();
+            chooserDir = file.getParent();
+        } else {
+            return null;
+        }
+        
+        return file;
     }
     
     /** Custom file filter for XML files. */
@@ -233,15 +365,15 @@ public class GUI implements ActionListener {
         /**
          * Determines if the file is an XML file.
          *
-         * @param f  the file
+         * @param file  the file
          * @return  {@code true} if the file is an XML, {@code false} otherwise
          */
         @Override
-        public boolean accept(File f) {
-            if (f.isDirectory()) {
+        public boolean accept(File file) {
+            if (file.isDirectory()) {
                 return true;
             }
-            String[] filename = f.getName().split("[.]");
+            String[] filename = file.getName().split("[.]");
             String extension = filename[filename.length - 1];
             return extension.equalsIgnoreCase("xml");
         }
@@ -255,7 +387,7 @@ public class GUI implements ActionListener {
     /** Custom output stream for console text. */
     public static class CustomOutputStream extends OutputStream {
         /** Text area for output. */
-        private JTextArea textArea;
+        private final JTextArea textArea;
         
         /**
          * Creates an output stream for the text area.
@@ -271,10 +403,10 @@ public class GUI implements ActionListener {
          */
         @Override
         public void write(int b) {
-            // redirects data to the text area
+            // Redirects data to the text area.
             textArea.append(String.valueOf((char) b));
             
-            // scrolls the text area to the end of data
+            // Scrolls the text area to the end of data.
             textArea.setCaretPosition(textArea.getDocument().getLength());
         }
     }
@@ -320,6 +452,19 @@ public class GUI implements ActionListener {
     }
     
     /**
+     * Adds a radio button to the container.
+     *
+     * @param text  the text for the radio button
+     * @param container  the container to add to
+     * @return  the radio button object
+     */
+    private static JRadioButton addARadioButton(String text, Container container) {
+        JRadioButton radioButton = new JRadioButton(text);
+        container.add(radioButton);
+        return radioButton;
+    }
+    
+    /**
      * Adds a text area to the container.
      *
      * @param container  the container to add to
@@ -357,9 +502,9 @@ public class GUI implements ActionListener {
      */
     private static Border makeBorder() {
         return BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(5, 7, 5, 7),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10),
                 BorderFactory.createCompoundBorder(
                         BorderFactory.createTitledBorder("test").getBorder(),
-                        BorderFactory.createEmptyBorder(5, 7, 5, 7)));
+                        BorderFactory.createEmptyBorder(10, 10, 10, 10)));
     }
 }
