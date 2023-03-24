@@ -498,8 +498,13 @@ public abstract class RectGraphSites extends GraphSites {
 				SiteEdge edgeIn = (SiteEdge)G.getEdgesIn(node1).objs[0];
 				
 				if (edgeOut.type == type && edgeIn.type == type
-						&& edgeOut.radius <= CAP_RADIUS_MAX && edgeIn.radius <= CAP_RADIUS_MAX)
-				{ options.add(node1); }
+						&& edgeOut.radius <= CAP_RADIUS_MAX && edgeIn.radius <= CAP_RADIUS_MAX) {
+					// Check if adding the edge creates a cycle.
+					path(G, node1, node0);
+					if (node0.prev == null) {
+						options.add(node1);
+					}
+				}
 			}
 		}
 		

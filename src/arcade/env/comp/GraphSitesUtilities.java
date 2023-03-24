@@ -634,7 +634,7 @@ abstract class GraphSitesUtilities {
 	 * @param start  the start node
 	 * @param end  the end node
 	 */
-	private static void path(Graph G, SiteNode start, SiteNode end) {
+	static void path(Graph G, SiteNode start, SiteNode end) {
 		// Reset all distances.
 		for (Object obj : G.getAllEdges()) {
 			SiteEdge edge = (SiteEdge)obj;
@@ -704,7 +704,7 @@ abstract class GraphSitesUtilities {
 	 * @param start  the start node
 	 * @param path  the list of edges in the path
 	 */
-	private static void traverse(Graph G, SiteNode start, ArrayList<SiteEdge> path) {
+	static void traverse(Graph G, SiteNode start, ArrayList<SiteEdge> path) {
 		Bag bag = G.getEdgesOut(start);
 		if (bag == null) { return; }
 		for (Object obj : bag) {
