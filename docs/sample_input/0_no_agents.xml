@@ -2,5 +2,6 @@
     <series name="no_agents" days="0">
         <simulation type="growth" />
         <agents initialization="0" />
+        <environment coordinate="hex" />
     </series>
 </set>

@@ -14,7 +14,7 @@
                 </population>
             </populations>
         </agents>
-        <environment>
+        <environment coordinate="hex">
             <globals>
                 <global id="CONCENTRATION_GLUCOSE" value="0" />
                 <global id="CONCENTRATION_OXYGEN" value="0" />
@@ -36,7 +36,7 @@
                 </population>
             </populations>
         </agents>
-        <environment>
+        <environment coordinate="hex">
             <globals>
                 <global id="CONCENTRATION_OXYGEN" value="0" />
             </globals>
@@ -57,7 +57,7 @@
                 </population>
             </populations>
         </agents>
-        <environment>
+        <environment coordinate="hex">
             <globals>
                 <global id="CONCENTRATION_GLUCOSE" value="0" />
             </globals>

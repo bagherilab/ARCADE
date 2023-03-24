@@ -10,6 +10,7 @@
                 <population type="C" fraction="1.0" />
             </populations>
         </agents>
+        <environment coordinate="hex" />
     </series>
     <series name="INSERTED" days="5">
         <simulation type="growth" radius="10" margin="2">
@@ -25,6 +26,7 @@
                 <helper type="insert" delay="1440" populations="0" bounds="0.2"/>
             </helpers>
         </agents>
+        <environment coordinate="hex" />
     </series>
     <series name="CONVERTED" days="5">
         <simulation type="growth" radius="10" margin="2">
@@ -41,5 +43,6 @@
                 <helper type="convert" delay="1440" population="1" />
             </helpers>
         </agents>
+        <environment coordinate="hex" />
     </series>
 </set>

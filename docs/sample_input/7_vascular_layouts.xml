@@ -10,7 +10,7 @@
                 <population type="C" fraction="1.0" />
             </populations>
         </agents>
-        <environment>
+        <environment coordinate="hex">
             <components>
                 <component type="sites" class="graph">
                     <specifications>
@@ -35,7 +35,7 @@
                 <population type="C" fraction="1.0" />
             </populations>
         </agents>
-        <environment>
+        <environment coordinate="hex">
             <components>
                 <components>
                 <component type="sites" class="graph">

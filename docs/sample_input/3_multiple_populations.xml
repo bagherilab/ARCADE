@@ -20,5 +20,6 @@
                 </population>
         	</populations>
         </agents>
+        <environment coordinate="hex" />
     </series>
 </set>
