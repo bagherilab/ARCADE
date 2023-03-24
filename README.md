@@ -91,7 +91,7 @@ The basic structure of the file is:
         <agents initialization="INIT">
             <!-- AGENTS TAGS HERE -->
         </agents>
-        <environment>
+        <environment coordinate="COORD">
             <!-- ENVIRONMENT TAGS HERE-->
         </environment>
     </series>
@@ -125,6 +125,10 @@ The __agents__ tag describes the agents initialization. Nested tags include defi
     + use `FULL` to seed up to the `RADIUS` of the simulation
 
 The __environment__ tag describes the environment. Nested tags include environment parameters and components.
+
+- `coordinate` = (string) coordinate geometry
+    + use `hex` for hexagonal
+    + use `rect` for rectangular
 
 ### `<simulation>` tags
 
@@ -264,6 +268,8 @@ All components have specifications (shown below only for the __sites__ / __sourc
     <component type="sites" class="graph" complexity="COMPLEXITY" />
     <component type="remodel" interval="INTERVAL" />
     <component type="degrade" interval="INTERVAL" />
+    <component type="cycle" />
+    <component type="pulse" />
     ...
 <components>
 ```
@@ -277,3 +283,5 @@ All components have specifications (shown below only for the __sites__ / __sourc
     + `interval` = (integer) minutes between degradation
 - __remodel__ remodels the cell wall and vessel radius based on hemodynamic properties (only use with __sites__ / __graph__)
     + `interval` = (integer) minutes between remodeling
+- __cycle__ cycles the source concentraiton of the specified molecule (only use with __sites__ / __source__)
+- __pulse__ pulses the source concentraiton of the specified molecule (only use with __sites__ / __source__)

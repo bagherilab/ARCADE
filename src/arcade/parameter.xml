@@ -98,4 +98,12 @@
     <specification.component id="SCALE_META" value="0.01" type="remodel" />
     <specification.component id="SCALE_TAU" value="0.01" type="remodel" />
     <specification.component id="SCALE_SIGMA" value="0.5" type="remodel" />
+
+    <!-- source pulsing -->
+    <specification.component id="PULSE_MOLECULE" value="GLUCOSE" type="pulse" />
+    <specification.component id="MEDIA_AMOUNT" value="2000" unit="um^3/um^2" type="pulse" />
+    <specification.component id="PULSE_INTERVAL" value="2" unit="days" type="pulse" />
+    
+    <!-- source cycling -->
+    <specification.component id="CYCLE_MOLECULE" value="GLUCOSE" type="cycle" />
 </parameters>

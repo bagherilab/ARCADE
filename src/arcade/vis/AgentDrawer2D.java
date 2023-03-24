@@ -18,7 +18,7 @@ import arcade.agent.cell.Cell;
  * The array values are the value of a selected property (such as cell type or
  * cell population).
  *
- * @version 2.3.X
+ * @version 2.3.3
  * @since   2.2
  */
 
@@ -154,6 +154,90 @@ public abstract class AgentDrawer2D extends Drawer {
 			}
 			
 			Drawer.toTriangular(_to, _from, LENGTH, WIDTH);
+		}
+	}
+	
+	/** {@link arcade.vis.AgentDrawer2D} for drawing rectangular agents */
+	public static class Rectangular extends AgentDrawer2D {
+		/** Serialization version identifier */
+		private static final long serialVersionUID = 0;
+		
+		/** Length of the lattice (x direction) */
+		private final int LENGTH;
+		
+		/** Width of the lattice (y direction) */
+		private final int WIDTH;
+		
+		/** Drawing code */
+		private final int CODE;
+		
+		/**
+		 * Creates a {@code Rectangular} agent drawer.
+		 * <p>
+		 * Length and width of the drawer are the same as the length and width
+		 * of the simulation.
+		 *
+		 * @param panel  the panel the drawer is attached to
+		 * @param name  the name of the drawer
+		 * @param length  the length of array (x direction)
+		 * @param width  the width of array (y direction)
+		 * @param depth  the depth of array (z direction)
+		 * @param map  the color map for the array
+		 * @param bounds  the size of the drawer within the panel
+		 * @param code  the drawing code
+		 */
+		public Rectangular(Panel panel, String name,
+						 int length, int width, int depth,
+						 ColorMap map, Rectangle2D.Double bounds, int code) {
+			super(panel, name, length, width, depth, map, bounds);
+			LENGTH = length;
+			WIDTH = width;
+			CODE = code;
+		}
+		
+		/**
+		 * Steps the drawer to populate the array with values.
+		 */
+		public void step(SimState state) {
+			Simulation sim = (Simulation)state;
+			double[][] _to = array.field;
+			Cell c;
+			
+			// Reset old fields.
+			if (CODE == LATTICE_DOUBLE || CODE == LATTICE_INTEGER) {
+				for (int i = 0; i < LENGTH; i++) {
+					for (int j = 0; j < WIDTH; j++) {
+						_to[i][j] = map.defaultValue();
+					}
+				}
+			} else { array.setTo(0); }
+			
+			double value = 0;
+			for (Object obj : sim.getAgents().getAllObjects()) {
+				c = (Cell)obj;
+				if (c.getLocation().getGridZ() == 0) {
+					int[][] locs = c.getLocation().getLatLocations();
+					
+					switch (CODE) {
+						case LATTICE_DOUBLE: case GRID_DOUBLE:
+							value = (double)(Drawer.getValue(method, c));
+							break;
+						case LATTICE_INTEGER: case GRID_INTEGER:
+							value = (int)(Drawer.getValue(method, c));
+							break;
+					}
+					
+					switch (CODE) {
+						case LATTICE_DOUBLE: case LATTICE_INTEGER:
+							int p = c.getLocation().getPosition();
+							_to[locs[p][0]][locs[p][1]] = value;
+							break;
+						case GRID_DOUBLE: case GRID_INTEGER:
+							for (int[] loc : locs) { _to[loc[0]][loc[1]] += value; }
+							break;
+					}
+				}
+			}
 		}
 	}
 }

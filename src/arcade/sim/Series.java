@@ -26,13 +26,22 @@ import arcade.util.*;
  * {@link arcade.sim.Simulation} objects are passed their parent {@code Series}
  * object and have access to fields with the "_" prefix.
  *
- * @version 2.3.X
+ * @version 2.3.31
  * @since   2.2
  */
 
 public class Series {
 	/** Logger for {@code Series} */
 	private final static Logger LOGGER = Logger.getLogger(Series.class.getName());
+	
+	/** Code for hexagonal geometry */
+	private static final int COORD_HEX = 0;
+	
+	/** Code for rectangular geometry */
+	private static final int COORD_RECT = 1;
+	
+	/** List of geometry names */
+	private static final String[] COORD_NAMES = new String[] { "Hexagonal", "Rectangular" };
 	
 	/** Placeholder integer for initialization of agents at all locations */
 	public static final int FULL_INIT = -1;
@@ -106,6 +115,9 @@ public class Series {
 	/** Radius to which cells are initialized, may be {@code FULL_INIT} */
 	int _init;
 	
+	/** Geometry of simulations */
+	int _coord;
+	
 	/** Number of cell populations */
 	int _pops;
 	
@@ -151,11 +163,12 @@ public class Series {
 	 * @param setupDicts  the map of attribute to value for single instance tags
 	 * @param setupLists  the map of attribute to value for multiple instance tags
 	 * @param parameters  the default parameter values loaded from {@code parameter.xml}
+	 * @param view  indicates the visualization view
 	 * @param vis  indicates if simulations are to be run with visualization
 	 */
 	public Series(HashMap<String, MiniBox> setupDicts,
 				  HashMap<String, ArrayList<MiniBox>> setupLists,
-				  Box parameters, boolean vis) {
+				  Box parameters, String view, boolean vis) {
 		// Overall setup.
 		MiniBox set = setupDicts.get("set");
 		MiniBox series = setupDicts.get("series");
@@ -211,7 +224,7 @@ public class Series {
 		updateCheckpoints(checkpoints);
 		
 		// Make constructors for simulation and visualization.
-		makeConstructor(simulation);
+		makeConstructor(simulation, view);
 	}
 	
 	/**
@@ -325,7 +338,19 @@ public class Series {
 	 * 
 	 * @param environment  the environment setup dictionary
 	 */
-	private void updateEnvironment(MiniBox environment) { }
+	private void updateEnvironment(MiniBox environment) {
+		_coord = COORD_HEX;
+		String coord = environment.get("coordinate");
+		
+		// Select appropriate simulation class.
+		switch (coord.toUpperCase()) {
+			case "HEX": _coord = COORD_HEX; break;
+			case "RECT": _coord = COORD_RECT; break;
+			default:
+				LOGGER.warning("coordinate [ " + coord + " ] must be HEX or RECT");
+				skip = true;
+		}
+	}
 	
 	/**
 	 * Creates agent population constructors.
@@ -556,16 +581,19 @@ public class Series {
 							LOGGER.info(String.format(componentFormat, "SITE [ source ]", name));
 							break;
 						case "pattern":
-							_components.add(new TriPatternSites(c));
+							if (_coord == COORD_HEX) { _components.add(new TriPatternSites(c)); }
+							else if (_coord == COORD_RECT) { _components.add(new RectPatternSites(c)); }
 							LOGGER.info(String.format(componentFormat, "SITE [ pattern ]", name));
 							break;
 						case "graph":
 							String complexity = c.get("complexity");
 							
 							if (complexity == null || !complexity.equals("simple")) {
-								_components.add(new TriGraphSites.Complex(c));
+								if (_coord == COORD_HEX) { _components.add(new TriGraphSites.Complex(c)); }
+								else if (_coord == COORD_RECT) {  _components.add(new RectGraphSites.Complex(c)); }
 							} else {
-								_components.add(new TriGraphSites.Simple(c));
+								if (_coord == COORD_HEX) { _components.add(new TriGraphSites.Simple(c)); }
+								else if (_coord == COORD_RECT) {  _components.add(new RectGraphSites.Simple(c)); }
 							}
 							hasGraph = true;
 							LOGGER.info(String.format(componentFormat, "SITE [ graph ]", name));
@@ -575,6 +603,14 @@ public class Series {
 							skip = true;
 							break;
 					}
+					break;
+				case "pulse":
+					_components.add(new PulseComponent(c));
+					LOGGER.info(String.format(componentFormat, "PULSE", name));
+					break;
+				case "cycle":
+					_components.add(new CycleComponent(c));
+					LOGGER.info(String.format(componentFormat, "CYCLE", name));
 					break;
 				case "degrade":
 					_components.add(new DegradeComponent(c));
@@ -649,6 +685,13 @@ public class Series {
 			int tick = (c.contains("day") ? c.getInt("day")*60*24 : 0);
 			
 			switch (c.get("type").toLowerCase()) {
+				case "cells":
+					switch (c.get("class").toLowerCase()) {
+						case "save": _checkpoints.add(new CellCheckpoint.Save(prefix, tick)); break;
+						case "load": _checkpoints.add(new CellCheckpoint.Load(prefix, tick)); break;
+						default: LOGGER.info(String.format(checkpointFormat, c.get("type")));
+					}
+					break;
 				case "graph":
 					if (!hasGraph) {
 						LOGGER.warning("GRAPH checkpoint can only be used with graph sites component");
@@ -672,15 +715,22 @@ public class Series {
 	 * Uses reflections to build constructors for simulation (and visualization).
 	 * 
 	 * @param simulation  the simulation setup dictionary
+	 * @param view  the visualization view   
 	 */
-	private void makeConstructor(MiniBox simulation) {
+	private void makeConstructor(MiniBox simulation, String view) {
+		if (!view.equals("2D") && !view.equals("3D")) {
+			LOGGER.warning("view [ " + view + " ] must be 2D or 3D");
+			skip = true;
+			return;
+		}
+		
 		String type = simulation.get("type").toLowerCase();
 		String simClass, visClass;
 		
 		switch (type) {
 			case "growth":
-				simClass = "arcade.sim.GrowthSimulation$Hexagonal";
-				visClass = "arcade.vis.GrowthVisualization2D$Hexagonal";
+				simClass = "arcade.sim.GrowthSimulation$" + COORD_NAMES[_coord];
+				visClass = "arcade.vis.GrowthVisualization" + view + "$" + COORD_NAMES[_coord];
 				break;
 			default:
 				LOGGER.warning("simulation type [ " + type + " ] not supported");

@@ -32,7 +32,7 @@ import arcade.util.Colors;
  * Additional <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a>
  * portrayals can be added.
  *
- * @version 2.3.X
+ * @version 2.3.11
  * @since   2.3
  */
 
@@ -388,6 +388,97 @@ public abstract class AuxDrawer2D extends Drawer {
 		graph.addEdge(a, b, weight);
 	}
 	
+	/** {@link arcade.vis.AuxDrawer2D} for drawing a rectangular grid. */
+	public static class RectGrid extends AuxDrawer2D {
+		/** Serialization version identifier */
+		private static final long serialVersionUID = 0;
+		
+		/** Offsets for rectangles */
+		private static final int[][] OFFSETS = { { 0, 0 }, { 2, 0 }, { 2, 2 }, { 0, 2 } };
+		
+		/** Length of the lattice (x direction) */
+		private final int LENGTH;
+		
+		/** Width of the lattice (y direction) */
+		private final int WIDTH;
+		
+		/**
+		 * Creates a {@code RectGrid} drawer.
+		 *
+		 * @param panel  the panel the drawer is attached to
+		 * @param name  the name of the drawer
+		 * @param length  the length of array (x direction)
+		 * @param width  the width of array (y direction)
+		 * @param depth  the depth of array (z direction)
+		 * @param bounds  the size of the drawer within the panel
+		 */
+		RectGrid(Panel panel, String name,
+				int length, int width, int depth, Rectangle2D.Double bounds) {
+			super(panel, name, length, width, depth, bounds);
+			LENGTH = length;
+			WIDTH = width;
+			field.width = LENGTH;
+			field.height = WIDTH;
+		}
+		
+		/**
+		 * Steps the drawer to draw rectangular grid.
+		 */
+		public void step(SimState state) {
+			Simulation sim = (Simulation)state;
+			field.clear();
+			graph.clear();
+			
+			// Draw rectangular grid.
+			for (int i = 0; i <= WIDTH; i++) { add(field, graph, 1, 0, i, LENGTH, i); }
+			for (int i = 0; i <= LENGTH; i++) { add(field, graph, 1, i, 0, i, WIDTH); }
+			
+			// Draw rectangular agent locations.
+			int radius = sim.getSeries()._radius;
+			ArrayList<Location> locs = sim.getRepresentation().getLocations(radius, 1);
+			for (Location loc : locs) {
+				int[] xy = loc.getLatLocation();
+				for (int i = 0; i < 4; i++) {
+					add(field, graph, 2,
+						xy[0] + OFFSETS[i][0], xy[1] + OFFSETS[i][1],
+						xy[0] + OFFSETS[(i + 1)%4][0], xy[1] + OFFSETS[(i + 1)%4][1]);
+				}
+			}
+			
+			// Draw border.
+			int ind, r;
+			for (Location loc : locs) {
+				int[] xyz = loc.getGridLocation();
+				int[] xy = loc.getLatLocation();
+				
+				r = Math.max(Math.abs(xyz[0]), Math.abs(xyz[1])) + 1;
+				
+				if (r == radius) {
+					if (xyz[0] == radius - 1) { ind = 1; }
+					else if (xyz[0] == 1 - radius) { ind = 3; }
+					else if (xyz[1] == radius - 1) { ind = 2; }
+					else if (xyz[1] == 1 - radius) { ind = 0; }
+					else { ind = 0; }
+					
+					add(field, graph, 3,
+						xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
+						xy[0] + OFFSETS[(ind + 1)%4][0], xy[1] + OFFSETS[(ind + 1)%4][1]);
+					
+					if (Math.abs(xyz[0]) + 1 == r && Math.abs(xyz[1]) + 1 == r) {
+						if (xyz[0] == radius - 1 && xyz[1] == radius - 1) { ind = 2; }
+						else if (xyz[0] == 1 - radius && xyz[1] == radius - 1) { ind = 2; }
+						else if (xyz[0] == radius - 1 && xyz[1] == 1 - radius) { ind = 0; }
+						else if (xyz[0] == 1 - radius && xyz[1] == 1 - radius) { ind = 0; }
+						
+						add(field, graph, 3,
+							xy[0] + OFFSETS[ind][0], xy[1] + OFFSETS[ind][1],
+							xy[0] + OFFSETS[(ind + 1)%4][0], xy[1] + OFFSETS[(ind + 1)%4][1]);
+					}
+				}
+			}
+		}
+	}
+	
 	/** {@link arcade.vis.AuxDrawer2D} for drawing a triangular grid. */
 	public static class TriGrid extends AuxDrawer2D {
 		/** Serialization version identifier */
@@ -568,6 +659,29 @@ public abstract class AuxDrawer2D extends Drawer {
 				graph.addEdge(from, to, e);
 			}
 		}
+	}
+	
+	/** {@link arcade.vis.AuxDrawer2D.Graph} for drawing a rectangular graph. */
+	public static class RectGraph extends Graph {
+		/** Serialization version identifier */
+		private static final long serialVersionUID = 0;
+		
+		/**
+		 * Creates a {@code Graph} drawer for a rectangular graph.
+		 *
+		 * @param panel  the panel the drawer is attached to
+		 * @param name  the name of the drawer
+		 * @param length  the length of array (x direction)
+		 * @param width  the width of array (y direction)
+		 * @param depth  the depth of array (z direction)
+		 * @param bounds  the size of the drawer within the panel
+		 */
+		RectGraph(Panel panel, String name,
+				int length, int width, int depth, Rectangle2D.Double bounds) {
+			super(panel, name, length, width, depth, bounds);
+		}
+		
+		public int getOffset() { return 0; }
 	}
 	
 	/** {@link arcade.vis.AuxDrawer2D.Graph} for drawing a triangular graph. */

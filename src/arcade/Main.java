@@ -44,6 +44,9 @@ public class Main {
 	/** Container for specifying the command line parser */
 	private static Box commands;
 	
+	/** Visualization view (2D or 3D) */
+	private static String view;
+	
 	/** Indicates if the simulation should be run with visualization */
 	private static boolean vis;
 	
@@ -79,6 +82,7 @@ public class Main {
 		LOGGER.info("parsing command line");
 		Parser parser = new Parser(commands);
 		MiniBox settings = parser.parse(args);
+		view = settings.get("VIEW");
 		vis = settings.getBoolean("VIS");
 		
 		// Make series from given setup file.
@@ -251,7 +255,7 @@ public class Main {
 			log("end element [ " + name + " ]");
 			switch (name) {
 				case "series":
-					series.add(new Series(setupDicts, setupLists, parameters, vis));
+					series.add(new Series(setupDicts, setupLists, parameters, view, vis));
 					MiniBox set = setupDicts.get("set");
 					setupDicts = new HashMap<>();
 					setupLists = new HashMap<>();

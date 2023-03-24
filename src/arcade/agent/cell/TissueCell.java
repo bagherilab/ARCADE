@@ -176,6 +176,7 @@ public abstract class TissueCell implements Cell {
 	public void setType(int type) { this.type = type; }
 	public int getType() { return type; }
 	public int getAge() { return age; }
+	public void setAge(int age) { this.age = age; }
 	public double getVolume() { return volume; }
 	public double getEnergy() { return energy; }
 	public Map<String, Parameter> getParams() { return params; }
@@ -463,8 +464,8 @@ public abstract class TissueCell implements Cell {
 	public String toJSON() {
 		String cycles = "";
 		for (Object c : cycle) { cycles += (double)c + ","; }
-		return "[" + code + "," + pop + "," + type + ","
-				+ location.getPosition() + "," + String.format("%.2f", volume)
+		return "[" + code + "," + pop + "," + type + "," + location.getPosition() 
+			+ "," + String.format("%.2f", volume)
 			+ ",[" + cycles.replaceFirst(",$","") + "]]";
 	}
 }

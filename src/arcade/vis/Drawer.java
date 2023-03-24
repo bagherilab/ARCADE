@@ -41,9 +41,6 @@ public abstract class Drawer implements Steppable {
 	/** Depth of the array (z direction) */
 	final int depth;
 	
-	/** Index of z slice */
-	int k;
-	
 	/**
 	 * Creates a {@code Drawer} and attaches it to the panel.
 	 * 

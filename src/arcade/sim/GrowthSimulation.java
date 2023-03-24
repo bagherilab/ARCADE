@@ -41,7 +41,7 @@ import arcade.util.MiniBox;
  * <p>
  * {@code GrowthSimulation} does not specify grid or lattice geometry.
  * 
- * @version 2.3.X
+ * @version 2.3.20
  * @since   2.2
  */
 
@@ -117,6 +117,22 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
 		public Hexagonal(long seed, Series series) {
 			super(seed, series);
 			representation = new HexagonalRepresentation(series);
+		}
+	}
+	
+	/**
+	 * Extension of {@link arcade.sim.GrowthSimulation} for rectangular geometry.
+	 */
+	public static class Rectangular extends GrowthSimulation {
+		/**
+		 * Creates a rectangular {@link arcade.sim.GrowthSimulation}.
+		 * 
+		 * @param seed  the random seed for random number generator
+		 * @param series  the simulation series
+		 */
+		public Rectangular(long seed, Series series) {
+			super(seed, series);
+			representation = new RectangularRepresentation(series);
 		}
 	}
 	

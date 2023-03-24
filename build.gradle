@@ -2,7 +2,7 @@ plugins {
     id "java"
 }
 
-version = "2.3"
+version = "2.4"
 sourceCompatibility = 1.8
 
 repositories {
@@ -22,8 +22,7 @@ sourceSets {
 }
 
 dependencies {
-    implementation files("lib/mason.19.jar", "lib/vecmath.jar")
-    implementation fileTree("lib") { include "j3d*.jar" }
+    implementation files("lib/mason.19.jar")
     implementation "com.formdev:flatlaf:0.36"
     testImplementation "org.mockito:mockito-core:2.+"
     testImplementation "junit:junit:4.12"

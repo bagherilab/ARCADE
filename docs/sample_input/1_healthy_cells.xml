@@ -10,5 +10,6 @@
         		<population type="H" fraction="1.0" />
         	</populations>
         </agents>
+        <environment coordinate="hex" />
     </series>
 </set>
