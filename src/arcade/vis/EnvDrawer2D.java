@@ -103,6 +103,9 @@ public abstract class EnvDrawer2D extends Drawer {
 					PatternSites sites = (PatternSites)comp;
 					array.field = sites.getDamage()[k];
 				}
+				else {
+					return;
+				}
 			}
 		}
 	}
@@ -159,6 +162,9 @@ public abstract class EnvDrawer2D extends Drawer {
 				else if (comp instanceof PatternSites) {
 					PatternSites sites = (PatternSites)comp;
 					_from = sites.getDamage()[k];
+				}
+				else {
+					return;
 				}
 			}
 			
