@@ -849,7 +849,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param start  the start node
      * @param end  the end node
      */
-    private static void path(Graph graph, SiteNode start, SiteNode end) {
+    static void path(Graph graph, SiteNode start, SiteNode end) {
         // Reset all distances.
         for (Object obj : graph.getAllEdges()) {
             SiteEdge edge = (SiteEdge) obj;
@@ -923,7 +923,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param start  the start node
      * @param path  the list of edges in the path
      */
-    private static void traverse(Graph graph, SiteNode start, ArrayList<SiteEdge> path) {
+    static void traverse(Graph graph, SiteNode start, ArrayList<SiteEdge> path) {
         Bag bag = graph.getEdgesOut(start);
         if (bag == null) {
             return;

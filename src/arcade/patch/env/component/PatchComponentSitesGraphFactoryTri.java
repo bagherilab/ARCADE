@@ -606,7 +606,10 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
                 if (edgeOut.type == type && edgeIn.type == type
                         && edgeOut.radius <= MAXIMUM_CAPILLARY_RADIUS
                         && edgeIn.radius <= MAXIMUM_CAPILLARY_RADIUS) {
-                    options.add(node1);
+                    path(graph, node1, node0);
+                    if (node0.prev == null) {
+                        options.add(node1);
+                    }
                 }
             }
         }
