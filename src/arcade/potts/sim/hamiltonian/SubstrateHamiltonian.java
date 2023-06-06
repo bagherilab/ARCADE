@@ -17,7 +17,7 @@ public class SubstrateHamiltonian implements Hamiltonian {
     static final int NUMBER_NEIGHBORS = 9;
     
     /** Scaling at threshold height. */
-    static final double THRESHOLD_FRACTION = 0.001;
+    static final double THRESHOLD_FRACTION = 0.01;
     
     /** Map of hamiltonian config objects. */
     final HashMap<Integer, SubstrateHamiltonianConfig> configs;
@@ -62,9 +62,9 @@ public class SubstrateHamiltonian implements Hamiltonian {
     /**
      * {@inheritDoc}
      * <p>
-     * Substrate energy is calculated by summing across substrate voxels
-     * bordering the given voxel. Change in adhesion energy is taken as the
-     * difference in substrate energies for the source and target IDs.
+     * Substrate energy is calculated by summing across substrate voxels below
+     * the given voxel. Change in adhesion energy is taken as the difference in
+     * substrate energies for the source and target IDs.
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
@@ -87,9 +87,9 @@ public class SubstrateHamiltonian implements Hamiltonian {
     /**
      * Gets substrate energy for a given voxel.
      * <p>
-     * Substrate is assumed to be located at z = 0. Media (id = 0) and cells not
-     * located adjacent to z = 0 (i.e. z == 1) return zero for substrate
-     * energy.
+     * Substrate is assumed to be located at z = 0. Media (id = 0) returns zero
+     * for substrate energy. Substrate energy is scaled by distance from z = 0
+     * by a power function.
      *
      * @param id  the voxel id
      * @param x  the x coordinate
@@ -102,18 +102,17 @@ public class SubstrateHamiltonian implements Hamiltonian {
             return 0;
         }
         
-        SubstrateHamiltonianConfig config = configs.get(id);
+        double substrate = configs.get(id).getSubstrate();
+        double substrateEnergy = 0;
         
-        double s = 0;
         for (int i = x - 1; i <= x + 1; i++) {
             for (int j = y - 1; j <= y + 1; j++) {
-                s += -substrates[i][j] * config.getSubstrate();
+                substrateEnergy -= substrates[i][j];
             }
         }
         
-        s = Math.pow(z, power) * s / NUMBER_NEIGHBORS;
-        
-        return s;
+        substrateEnergy = Math.pow(z, power) * substrateEnergy / NUMBER_NEIGHBORS * substrate;
+        return substrateEnergy;
     }
     
     /**
