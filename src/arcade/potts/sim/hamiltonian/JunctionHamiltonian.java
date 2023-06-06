@@ -52,28 +52,22 @@ public class JunctionHamiltonian implements Hamiltonian {
     /**
      * {@inheritDoc}
      * <p>
-     * Junction energy is calculated only for the case where the source is media
-     * (id == 0) and the target is not media (id =/= 0).
+     * Junction energy is calculated only for the case where both the source
+     * and the target are not media (id =/= 0).
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
-        if (sourceID == 0 && targetID > 0) {
-            double lambda = configs.get(targetID).getLambda();
-            int neighbors = 0;
-            
-            for (int i = x - 1; i <= x + 1; i++) {
-                for (int j = y - 1; j <= y + 1; j++) {
-                    
-                    if (!(i == x && j == y) && ids[z][i][j] != 0) {
-                        neighbors += 1;
-                    }
-                }
-            }
-            
-            return lambda * neighbors;
+        if (sourceID == 0 || targetID == 0) {
+            return 0;
         }
         
-        return 0;
+        double lambda = configs.get(targetID).getLambda();
+        
+        if (ids[z - 1][x][y] == targetID) {
+            return -lambda;
+        }
+        
+        return lambda;
     }
     
     /**

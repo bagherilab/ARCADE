@@ -105,21 +105,21 @@ public class JunctionHamiltonianTest {
     }
     
     @Test
-    public void getDelta_validIDs_calculatesValue() {
+    public void getDelta_validIDsTargetMatch_calculatesValue() {
         int id1 = randomIntBetween(1, 100);
         int id2 = id1 + randomIntBetween(1, 100);
         
         Potts potts = mock(Potts.class);
         potts.ids = new int[][][] {
                 {
-                        { id1, id1, id1, id1 },
-                        { id1, id1, id1, id1 },
-                        { id1, id1, id1, id1 },
+                        { 0, 0,   0, 0 },
+                        { 0, 0, id1, 0 },
+                        { 0, 0,   0, 0 },
                 },
                 {
-                        { id2, id2, 0,   0 },
-                        { id2,   0, 0, id1 },
-                        { id2, id2, 0,   0 },
+                        { 0, 0,   0, 0 },
+                        { 0, 0, id2, 0 },
+                        { 0, 0,   0, 0 },
                 },
         };
         
@@ -131,8 +131,39 @@ public class JunctionHamiltonianTest {
         
         jh.configs.put(id1, config);
         
-        double delta = jh.getDelta(0, id1, 1, 2, 1);
-        assertEquals(3 * lambda, delta, EPSILON);
+        double delta = jh.getDelta(id2, id1, 1, 2, 1);
+        assertEquals(-lambda, delta, EPSILON);
+    }
+    
+    @Test
+    public void getDelta_validIDsSourceMatch_calculatesValue() {
+        int id1 = randomIntBetween(1, 100);
+        int id2 = id1 + randomIntBetween(1, 100);
+    
+        Potts potts = mock(Potts.class);
+        potts.ids = new int[][][] {
+                {
+                        { 0, 0,   0, 0 },
+                        { 0, 0, id2, 0 },
+                        { 0, 0,   0, 0 },
+                },
+                {
+                        { 0, 0,   0, 0 },
+                        { 0, 0, id2, 0 },
+                        { 0, 0,   0, 0 },
+                },
+        };
+    
+        JunctionHamiltonianConfig config = mock(JunctionHamiltonianConfig.class);
+        double lambda = randomDoubleBetween(10, 100);
+        doReturn(lambda).when(config).getLambda();
+    
+        JunctionHamiltonian jh = new JunctionHamiltonian(mock(PottsSeries.class), potts);
+    
+        jh.configs.put(id1, config);
+    
+        double delta = jh.getDelta(id2, id1, 1, 2, 1);
+        assertEquals(lambda, delta, EPSILON);
     }
     
     @Test
@@ -148,7 +179,7 @@ public class JunctionHamiltonianTest {
         double delta2 = jh.getDelta(id1, 0, 0, 0, 0);
         assertEquals(0, delta2, EPSILON);
         
-        double delta3 = jh.getDelta(id1, id2, 0, 0, 0);
+        double delta3 = jh.getDelta(0, id2, 0, 0, 0);
         assertEquals(0, delta3, EPSILON);
     }
     
