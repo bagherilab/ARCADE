@@ -24,7 +24,7 @@
     <potts.term term="height" id="LAMBDA_NUCLEUS" value="1" />
     
     <!-- height term parameters -->
-    <potts.term term="junction" id="LAMBDA" value="100" />
+    <potts.term term="junction" id="LAMBDA" value="10" />
     
     <!-- substrate term parameters -->
     <potts.term term="substrate" id="HEIGHT_THRESHOLD" value="9" units="um" conversion="DS^-1" />
