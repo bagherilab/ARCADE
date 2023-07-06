@@ -1,12 +1,12 @@
 package arcade.agent.cell;
 
 import java.util.Map;
-import sim.engine.SimState;
-import arcade.sim.Simulation;
-import arcade.agent.module.Module;
+
 import arcade.env.loc.Location;
-import arcade.util.Parameter;
+import arcade.sim.Simulation;
 import arcade.util.MiniBox;
+import arcade.util.Parameter;
+import sim.engine.SimState;
 
 /** 
  * Extension of {@link arcade.agent.cell.TissueHCell} for cancerous tissue cells.
