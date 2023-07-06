@@ -2,12 +2,23 @@ package arcade.agent.cell;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
-import arcade.sim.Simulation;
+
+import arcade.agent.module.MetabolismComplex;
+import arcade.agent.module.MetabolismMedium;
+import arcade.agent.module.MetabolismRandom;
+import arcade.agent.module.MetabolismSimple;
 import arcade.agent.module.Module;
-import arcade.agent.module.*;
+import arcade.agent.module.SensingDynamic;
+import arcade.agent.module.SensingProportional;
+import arcade.agent.module.SensingRandom;
+import arcade.agent.module.SignalingComplex;
+import arcade.agent.module.SignalingMedium;
+import arcade.agent.module.SignalingRandom;
+import arcade.agent.module.SignalingSimple;
 import arcade.env.loc.Location;
-import arcade.util.Parameter;
+import arcade.sim.Simulation;
 import arcade.util.MiniBox;
+import arcade.util.Parameter;
 
 /** 
  * Extension of {@link arcade.agent.cell.TissueCell} for healthy tissue cells with
@@ -69,6 +80,19 @@ public class TissueHCell extends TissueCell {
 				break;
 			case "COMPLEX":
 				modules.put("signaling", new SignalingComplex(this, sim));
+				break;
+		}
+
+        // Add sensing module.
+		switch (box.get("sensing")) {
+			case "RANDOM":
+				modules.put("sensing", new SensingRandom(this, sim));
+				break;
+			case "PROPORTIONAL":
+				modules.put("sensing", new SensingProportional(this, sim));
+				break;
+			case "DYNAMIC":
+				modules.put("sensing", new SensingDynamic(this, sim));
 				break;
 		}
 	}

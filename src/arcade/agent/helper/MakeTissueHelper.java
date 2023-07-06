@@ -1,11 +1,12 @@
 package arcade.agent.helper;
 
-import sim.engine.*;
-import sim.util.Bag;
-import arcade.sim.Simulation;
 import arcade.agent.cell.Cell;
 import arcade.agent.cell.TissueCell;
 import arcade.env.loc.Location;
+import arcade.sim.Simulation;
+import sim.engine.SimState;
+import sim.engine.Stoppable;
+import sim.util.Bag;
 
 /** 
  * Extension of {@link arcade.agent.helper.TissueHelper} for cell division.
@@ -127,6 +128,7 @@ public class MakeTissueHelper extends TissueHelper {
 					cNew.setStopper(((SimState)sim).schedule.scheduleRepeating(cNew, Simulation.ORDERING_CELLS, 1));
 					
 					// Update daughter cell modules.
+                    cNew.getModule("sensing").updateModule(c.getModule("sensing"), f);
 					cNew.getModule("metabolism").updateModule(c.getModule("metabolism"), f);
 					cNew.getModule("signaling").updateModule(c.getModule("signaling"), 1);
 					

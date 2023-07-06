@@ -1,14 +1,19 @@
 package arcade.agent.cell;
 
-import java.util.Map;
 import java.util.HashMap;
-import sim.engine.*;
-import sim.util.Bag;
+import java.util.Map;
+
+import arcade.agent.helper.Helper;
+import arcade.agent.helper.MakeTissueHelper;
+import arcade.agent.helper.MoveTissueHelper;
+import arcade.agent.helper.RemoveTissueHelper;
+import arcade.agent.module.Module;
+import arcade.env.loc.Location;
 import arcade.sim.Simulation;
 import arcade.util.Parameter;
-import arcade.env.loc.Location;
-import arcade.agent.module.Module;
-import arcade.agent.helper.*;
+import sim.engine.SimState;
+import sim.engine.Stoppable;
+import sim.util.Bag;
 
 /** 
  * Implementation of {@link arcade.agent.cell.Cell} for generic tissue cell.
@@ -225,7 +230,9 @@ public abstract class TissueCell implements Cell {
 	 * @param state  the MASON simulation state
 	 */
 	public void step(SimState state) {
-		Simulation sim = (Simulation)state;
+		Simulation sim = (Simulation) state;
+
+        modules.get("sensing").stepModule(sim);
 		
 		// Increase age.
 		age++;

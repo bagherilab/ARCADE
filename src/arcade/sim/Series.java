@@ -1,17 +1,36 @@
 package arcade.sim;
 
+import java.lang.reflect.Constructor;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
-import java.text.DecimalFormat;
-import java.lang.reflect.Constructor;
-import sim.engine.SimState;
+
+import arcade.agent.helper.ConvertHelper;
+import arcade.agent.helper.Helper;
+import arcade.agent.helper.InsertHelper;
+import arcade.agent.helper.WoundHelper;
+import arcade.env.comp.Component;
+import arcade.env.comp.CycleComponent;
+import arcade.env.comp.DegradeComponent;
+import arcade.env.comp.PulseComponent;
+import arcade.env.comp.RectGraphSites;
+import arcade.env.comp.RectPatternSites;
+import arcade.env.comp.RemodelComponent;
+import arcade.env.comp.SourceSites;
+import arcade.env.comp.TriGraphSites;
+import arcade.env.comp.TriPatternSites;
+import arcade.sim.checkpoint.CellCheckpoint;
+import arcade.sim.checkpoint.Checkpoint;
+import arcade.sim.checkpoint.GraphCheckpoint;
+import arcade.sim.profiler.GraphProfiler;
+import arcade.sim.profiler.GrowthProfiler;
+import arcade.sim.profiler.ParameterProfiler;
+import arcade.sim.profiler.Profiler;
+import arcade.util.Box;
+import arcade.util.MiniBox;
 import sim.display.GUIState;
-import arcade.agent.helper.*;
-import arcade.env.comp.*;
-import arcade.sim.profiler.*;
-import arcade.sim.checkpoint.*;
-import arcade.util.*;
+import sim.engine.SimState;
 
 /** 
  * Container for a series of {@link arcade.sim.Simulation} objects, differing only
@@ -54,6 +73,9 @@ public class Series {
 	
 	/** Default signaling module version */
 	private static final String MODULE_DEFAULT_SIGNALING = "COMPLEX";
+
+    /** Default sensing module version */
+	private static final String MODULE_DEFAULT_SENSING = "DYNAMIC";
 	
 	/** Format for console output of simulation time */
 	private final static DecimalFormat f = new DecimalFormat("#.0000");
@@ -325,7 +347,7 @@ public class Series {
 		// Check if init is an integer less than radius. If init is given as
 		// "FULL", then all locations are initialized.
 		if (init.matches("[0-9]+") && Integer.parseInt(init) <= _radius) { _init = Integer.parseInt(init); }
-		else if (init.toUpperCase().equals("FULL")) { _init = FULL_INIT; }
+		else if ("FULL".equals(init.toUpperCase())) { _init = FULL_INIT; }
 		else {
 			LOGGER.warning("initialization [ " + init
 				+ " ] must be FULL or less than or equal to " + _radius);
@@ -374,29 +396,37 @@ public class Series {
 			double ratio = p.getDouble("fraction");
 			
 			// Add in placeholders for metabolism and signaling modules.
+            box.put("sensing", null);
 			box.put("metabolism", null);
 			box.put("signaling", null);
 			
 			for (MiniBox m : mm) {
-				switch (m.get("type")) {
-					case "metabolism": case "signaling":
-						String version = m.get("version");
-						if (version != null) {
-							switch (version.toUpperCase().substring(0,1)) {
-								case "R": version = "RANDOM"; break;
-								case "S": version = "SIMPLE"; break;
-								case "M": version = "MEDIUM"; break;
-								case "C": version = "COMPLEX"; break;
-							}
-						}
-						box.put(m.get("type"), version);
-						break;
-					default:
-						LOGGER.warning(String.format(DNEFormat, "module", m.get("type")));
-						skip = true;
-				}
-			}
-			
+                String version = m.get("version");
+                String moduleName = m.get("type");
+				if (version != null) {
+                    switch (moduleName) {
+                        case "metabolism": case "signaling":
+                            switch (version.toUpperCase().substring(0,1)) {
+                                case "R": version = "RANDOM"; break;
+                                case "S": version = "SIMPLE"; break;
+                                case "M": version = "MEDIUM"; break;
+                                case "C": version = "COMPLEX"; break;
+                            }
+                        case "sensing":
+                            switch (version.toUpperCase().substring(0,1)) {
+                                case "R": version = "RANDOM"; break;
+                                case "P": version = "PROPORTIONAL"; break;
+                                case "D": version = "DYNAMIC"; break;
+                            }
+                            break;
+                        default:
+                            LOGGER.warning(String.format(DNEFormat, "module", m.get("type")));
+                            skip = true;
+                        }
+                    }
+                box.put(moduleName, version);
+            }
+
 			if (box.get("metabolism") == null) {
 				LOGGER.warning(String.format(undefinedFormat, "metabolism", MODULE_DEFAULT_METABOLISM, name, i));
 				box.put("metabolism", MODULE_DEFAULT_METABOLISM);
@@ -405,6 +435,11 @@ public class Series {
 			if (box.get("signaling") == null) {
 				LOGGER.warning(String.format(undefinedFormat, "signaling", MODULE_DEFAULT_SIGNALING, name, i));
 				box.put("signaling", MODULE_DEFAULT_SIGNALING);
+			}
+
+			if (box.get("sensing") == null) {
+				LOGGER.warning(String.format(undefinedFormat, "sensing", MODULE_DEFAULT_SENSING, name, i));
+				box.put("sensing", MODULE_DEFAULT_SENSING);
 			}
 			
 			// Add modules list for population.
@@ -588,7 +623,7 @@ public class Series {
 						case "graph":
 							String complexity = c.get("complexity");
 							
-							if (complexity == null || !complexity.equals("simple")) {
+							if (complexity == null || !"simple".equals(complexity)) {
 								if (_coord == COORD_HEX) { _components.add(new TriGraphSites.Complex(c)); }
 								else if (_coord == COORD_RECT) {  _components.add(new RectGraphSites.Complex(c)); }
 							} else {
@@ -718,7 +753,7 @@ public class Series {
 	 * @param view  the visualization view   
 	 */
 	private void makeConstructor(MiniBox simulation, String view) {
-		if (!view.equals("2D") && !view.equals("3D")) {
+		if (!"2D".equals(view) && !"3D".equals(view)) {
 			LOGGER.warning("view [ " + view + " ] must be 2D or 3D");
 			skip = true;
 			return;
