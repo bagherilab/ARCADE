@@ -1,9 +1,16 @@
 *.iml
 *.jar
 *.idea
+*.txt
+*.json
+*.csv
+.gradle
 bin/
 lib/
 build/
-.gradle/
+docs/
+working/
 .DS_Store
+.vs_code
 MANIFEST.MF
+java-formatter.xml
