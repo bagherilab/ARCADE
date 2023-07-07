@@ -129,18 +129,17 @@ public class GrowthComponent implements Component {
             if (node.isTip() || sumListArrays(vegfList) > vegfThreshold) {
                 updated = true;
                 final ArrayList<Double> vegfAverages = getListAverages(vegfList);
-                vegfAverages.remove(skip);
 
                 switch (walkType.toUpperCase()) {
                     case "RANDOM":
-                        performRandomWalk(random, node, vegfAverages, tick);
+                        performRandomWalk(random, node, vegfAverages, tick, skip);
                     case "BIASED":
-                        performBiasedWalk(random, node, vegfAverages, tick);
+                        performBiasedWalk(random, node, vegfAverages, tick, skip);
                     case "MAX":
-                        performDeterministicWalk(random, node, vegfAverages, tick);
+                        performDeterministicWalk(random, node, vegfAverages, tick, skip);
                     default:
                         LOGGER.warning("invalid walk type: " + walkType + "; using default of BIASED.");
-                        performBiasedWalk(random, node, vegfAverages, tick);
+                        performBiasedWalk(random, node, vegfAverages, tick, skip);
                 }
             }
         }
@@ -153,13 +152,17 @@ public class GrowthComponent implements Component {
     }
 
     private void performRandomWalk(final MersenneTwisterFast random, final SiteNode node,
-            final ArrayList<Double> valList, final double tick) {
-        final int randDir = random.nextInt(offsets.length);
+            final ArrayList<Double> valList, final double tick, int skip) {
+        int randDir;
+        do{
+            randDir = random.nextInt(offsets.length);
+        } while (randDir != skip);
         createNewEdge(randDir, node, tick);
     }
 
     private void performBiasedWalk(final MersenneTwisterFast random, final SiteNode node,
-            final ArrayList<Double> valList, final double tick) {
+            final ArrayList<Double> valList, final double tick, int skip) {
+        valList.set(skip, 0.0);
         final ArrayList<Double> seqList = normalizeSequentialList(valList);
         final double val = random.nextDouble();
         for (int i=0; i < offsets.length; i++) {
@@ -171,8 +174,9 @@ public class GrowthComponent implements Component {
     }
 
     private void performDeterministicWalk(final MersenneTwisterFast random, final SiteNode node,
-            final ArrayList<Double> seqList, final double tick) {
-        final int maxDir = getMaxKey(seqList);
+            final ArrayList<Double> valList, final double tick, int skip) {
+        valList.set(skip, 0.0);
+        final int maxDir = getMaxKey(valList);
         createNewEdge(maxDir, node, tick);
     }
 
