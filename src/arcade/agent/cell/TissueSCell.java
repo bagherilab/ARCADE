@@ -2,7 +2,6 @@ package arcade.agent.cell;
 
 import java.util.Map;
 import arcade.sim.Simulation;
-import arcade.agent.module.Module;
 import arcade.env.loc.Location;
 import arcade.util.Parameter;
 import arcade.util.MiniBox;

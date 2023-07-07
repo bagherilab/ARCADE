@@ -7,8 +7,6 @@ import arcade.sim.Simulation;
 import arcade.agent.cell.Cell;
 import arcade.agent.helper.Helper;
 
-import java.io.Serializable;
-
 /**
  * Extension of {@code Checkpoint} for cell agents.
  * 
