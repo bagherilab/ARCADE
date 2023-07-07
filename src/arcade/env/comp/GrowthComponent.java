@@ -111,7 +111,7 @@ public class GrowthComponent implements Component {
     @Override
     public void step(final SimState state) {
         final Simulation sim = (Simulation) state;
-        final Lattice vegf_lattice = sim.getEnvironment("VEGF");
+        final Lattice vegf_lattice = sim.getEnvironment("vegf");
         final MersenneTwisterFast random = state.random;
 
         final double tick = sim.getTime();

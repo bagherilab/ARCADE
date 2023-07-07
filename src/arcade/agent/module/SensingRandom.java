@@ -15,8 +15,8 @@ public class SensingRandom extends Sensing {
 
     @Override
     public void stepModule(Simulation sim) {
-        Double VEGF = sim.getEnvironment("VEGF").getAverageVal(loc);
-        sim.getEnvironment("VEGF").setVal(loc, VEGF + sim.getRandom() * rateRandom);
+        Double VEGF = sim.getEnvironment("vegf").getAverageVal(loc);
+        sim.getEnvironment("vegf").setVal(loc, VEGF + sim.getRandom() * rateRandom);
     }
 
     @Override

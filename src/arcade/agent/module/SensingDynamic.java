@@ -261,16 +261,16 @@ public class SensingDynamic extends Sensing {
     @Override
     public void stepModule(Simulation sim) {
 
-        O2 = sim.getEnvironment("OXYGEN").getAverageVal(loc);
+        O2 = sim.getEnvironment("oxygen").getAverageVal(loc);
 
         concs = Solver.euler(equations, 0, concs, 60, STEP_SIZE);
 
-        sim.getEnvironment("VEGF").setVal(loc, concs[VEGF]);
+        sim.getEnvironment("vegf").setVal(loc, concs[VEGF]);
     }
     
     @Override
     public void updateModule(Module mod, double f)  {
-        Sensing sensing = (Sensing) mod;
+        SensingDynamic sensing = (SensingDynamic) mod;
         this.concs = sensing.concs.clone();
     }
 }

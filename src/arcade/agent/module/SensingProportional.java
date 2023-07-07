@@ -14,10 +14,10 @@ public class SensingProportional extends Sensing {
     
     @Override
     public void stepModule(Simulation sim) {
-        Double O2 = sim.getEnvironment("OXYGEN").getAverageVal(loc);
-        Double VEGF = sim.getEnvironment("VEGF").getAverageVal(loc);
+        Double O2 = sim.getEnvironment("oxygen").getAverageVal(loc);
+        Double VEGF = sim.getEnvironment("vegf").getAverageVal(loc);
         Double newVEGF = VEGF + proportionalFactor * O2;
-        sim.getEnvironment("VEGF").setVal(loc, newVEGF);
+        sim.getEnvironment("vegf").setVal(loc, newVEGF);
 
     }
 
