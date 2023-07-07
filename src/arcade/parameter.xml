@@ -8,11 +8,14 @@
     <global id="DIFFUSIVITY_TGFA" value="51.8" units="um^2/s" />
     <global id="DIFFUSIVITY_GLUCOSE" value="39.0" units="um^2/s" />
     <global id="DIFFUSIVITY_OXYGEN" value="2000.0" units="um^2/s" />
+    <global id="DIFFUSIVITY_VEGF" value="10.0" units="um^2/s" />
     <global id="CONCENTRATION_TGFA" value="150.0" units="pg/cm^3" />
     <global id="CONCENTRATION_GLUCOSE" value="0.005" units="fmol/um^3" description="equal to 5 umol/cm^3" />
     <global id="CONCENTRATION_OXYGEN" value="100" units="mmHg" />
+    <global id="CONCENTRATION_VEGF" value="0.0" units="" />
     <global id="PERMEABILITY_GLUCOSE" value="0.5" units="um/s" />
     <global id="PERMEABILITY_OXYGEN" value="500" units="um/s" />
+    <global id="DECAYRATE_VEGF" value="0.00045" units="1/s" />
     <global id="OXY_SOLU_TISSUE" value="0.00000131" units="fmol O2/(um^3 mmHg)" />
     <global id="OXY_SOLU_PLASMA" value="0.00000138" units="fmol O2/(um^3 mmHg)" />
     
@@ -99,10 +102,10 @@
     <specification.component id="SCALE_TAU" value="0.01" type="remodel" />
     <specification.component id="SCALE_SIGMA" value="0.5" type="remodel" />
 
-    <!-- graph grow -->"MIGRATION_RATE", "VEGF_THRESHOLD", "WALK_TYPE"
-    <specification.component id="MIGRATION_RATE" value="10" type="grow" description="migration rate of tip cell" />
-    <specification.component id="VEGF_THRESHOLD" value="0.1" type="grow" description="concentration of VEGF required to sprout" />
-    <specification.component id="WALK_TYPE" value="BIASED" type="grow" description="type of chemotaxic propensity to VEGF"/>
+    <!-- graph growth -->
+    <specification.component id="MIGRATION_RATE" value="10.0" type="growth" description="migration rate of tip cell" />
+    <specification.component id="VEGF_THRESHOLD" value="0.1" type="growth" description="concentration of VEGF required to sprout" />
+    <specification.component id="WALK_TYPE" value="BIASED" type="growth" description="type of chemotaxic propensity to VEGF"/>
 
     <!-- source pulsing -->
     <specification.component id="PULSE_MOLECULE" value="GLUCOSE" type="pulse" />

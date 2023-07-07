@@ -185,8 +185,8 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
 		
 		// Create molecules.
 		allMolecules = new HashMap<>();
-		String[] moleculeList = new String[] { "GLUCOSE", "OXYGEN", "TGFA" };
-		int[] moleculeCodes = new int[] { MOL_GLUCOSE, MOL_OXYGEN, MOL_TGFA };
+		String[] moleculeList = new String[] { "GLUCOSE", "OXYGEN", "TGFA", "VEGF" };
+		int[] moleculeCodes = new int[] { MOL_GLUCOSE, MOL_OXYGEN, MOL_TGFA, MOL_VEGF };
 		for (int m = 0; m < moleculeList.length; m++) {
 			String molecule = moleculeList[m];
 			MiniBox box = series.getParams(molecule);
@@ -249,6 +249,12 @@ public abstract class GrowthSimulation extends SimState implements Simulation {
 		Lattice tgfa = representation.getNewLattice(allMolecules.get("TGFA").getDouble("CONCENTRATION"));
 		tgfa.addComponent(this, Lattice.DIFFUSED, allMolecules.get("TGFA"));
 		environments.put("tgfa", tgfa);
+
+        // Add tgfa to environment (diffused).
+		Lattice vegf = representation.getNewLattice(allMolecules.get("VEGF").getDouble("CONCENTRATION"));
+		vegf.addComponent(this, Lattice.DIFFUSED, allMolecules.get("VEGF"));
+        vegf.addComponent(this, Lattice.DECAYED, allMolecules.get("VEGF"));
+		environments.put("vegf", vegf);
 	}
 	
 	/**

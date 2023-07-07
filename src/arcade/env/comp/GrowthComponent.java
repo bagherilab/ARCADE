@@ -122,7 +122,10 @@ public class GrowthComponent implements Component {
             if (tick - node.lastUpdate < migrationRate && !node.isSprout()) {
                 continue;
             }
-
+            else if (node.prev == null) {
+                // node has no parent, edge of simulation
+                continue;
+            }
             final int skip = sites.getDirection(node, node.prev, level);
             final ArrayList<ArrayList<Double>> vegfList = getVEGFList(vegf_lattice, node);
 

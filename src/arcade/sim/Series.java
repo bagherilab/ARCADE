@@ -13,6 +13,7 @@ import arcade.agent.helper.WoundHelper;
 import arcade.env.comp.Component;
 import arcade.env.comp.CycleComponent;
 import arcade.env.comp.DegradeComponent;
+import arcade.env.comp.GrowthComponent;
 import arcade.env.comp.PulseComponent;
 import arcade.env.comp.RectGraphSites;
 import arcade.env.comp.RectPatternSites;
@@ -654,6 +655,10 @@ public class Series {
 				case "remodel":
 					_components.add(new RemodelComponent(c));
 					LOGGER.info(String.format(componentFormat, "REMODEL", name));
+					break;
+                case "growth":
+					_components.add(new GrowthComponent(c));
+					LOGGER.info(String.format(componentFormat, "GROWTH", name));
 					break;
 				default:
 					LOGGER.warning(String.format(DNEFormat, "component", c.get("type")));

@@ -37,6 +37,9 @@ public interface Simulation {
 	
 	/** ID for TGFa molecule */
 	int MOL_TGFA = 2;
+
+    /** ID for TGFa molecule */
+    int MOL_VEGF = 3;
 	
 	/** Stepping order for checkpoints */
 	int ORDERING_CHECKPOINT = -20;

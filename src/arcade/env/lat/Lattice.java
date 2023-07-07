@@ -24,6 +24,9 @@ public interface Lattice {
 	/** ID for generator component */
 	int GENERATED = 1;
 	
+	/** ID for decayer component */
+	int DECAYED = 2;
+
 	/** ID for sites component */
 	int SITES = -1;
 	

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import arcade.env.comp.Generator;
 import arcade.env.comp.Component;
+import arcade.env.comp.Decayer;
 import arcade.env.loc.Location;
 import arcade.sim.Simulation;
 import arcade.util.MiniBox;
@@ -126,6 +127,11 @@ public abstract class EnvLattice implements Lattice {
 				Component generator = new Generator(sim, this, molecule);
 				components.put("generator", generator);
 				generator.scheduleComponent(sim);
+				break;
+            case DECAYED:
+				Component decayer = new Decayer(sim, this, molecule);
+				components.put("decayer", decayer);
+				decayer.scheduleComponent(sim);
 				break;
 		}
 	}
