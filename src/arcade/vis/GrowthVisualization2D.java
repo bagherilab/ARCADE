@@ -86,6 +86,8 @@ public abstract class GrowthVisualization2D extends Visualization {
 							LENGTH, WIDTH, DEPTH, maps.MAP_OXY, getBox(0,200,200)),
 					new EnvDrawer2D.Triangular(panels[1], "tgfa",
 							LENGTH, WIDTH, DEPTH, maps.MAP_TGF, getBox(0,400,200)),
+					new EnvDrawer2D.Triangular(panels[1], "vegf",
+							LENGTH, WIDTH, DEPTH, maps.MAP_TGF, getBox(0,400,200)),
 					new EnvDrawer2D.Triangular(panels[1], "sites:glucose",
 							LENGTH, WIDTH, DEPTH, maps.MAP_GLUC, getBox(200,0,200)),
 					new EnvDrawer2D.Triangular(panels[1], "sites:oxygen",
