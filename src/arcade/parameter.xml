@@ -99,6 +99,11 @@
     <specification.component id="SCALE_TAU" value="0.01" type="remodel" />
     <specification.component id="SCALE_SIGMA" value="0.5" type="remodel" />
 
+    <!-- graph grow -->"MIGRATION_RATE", "VEGF_THRESHOLD", "WALK_TYPE"
+    <specification.component id="MIGRATION_RATE" value="10" type="grow" description="migration rate of tip cell" />
+    <specification.component id="VEGF_THRESHOLD" value="0.1" type="grow" description="concentration of VEGF required to sprout" />
+    <specification.component id="WALK_TYPE" value="BIASED" type="grow" description="type of chemotaxic propensity to VEGF"/>
+
     <!-- source pulsing -->
     <specification.component id="PULSE_MOLECULE" value="GLUCOSE" type="pulse" />
     <specification.component id="MEDIA_AMOUNT" value="2000" unit="um^3/um^2" type="pulse" />

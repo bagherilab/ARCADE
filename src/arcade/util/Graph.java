@@ -347,7 +347,6 @@ public class Graph implements Serializable {
                 addAll(sIn);
             }
         };
-
         return set;
     }
 
