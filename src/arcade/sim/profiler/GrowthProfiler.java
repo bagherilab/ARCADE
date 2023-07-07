@@ -37,7 +37,7 @@ public class GrowthProfiler extends Profiler {
 	private static final long serialVersionUID = 0;
 	
 	/** Names of molecules */
-	private final String[] MOLS = new String[] { "glucose", "oxygen", "tgfa" };
+	private final String[] MOLS = new String[] { "glucose", "oxygen", "tgfa", "vegf" };
 	
 	/** Suffix for file name */
 	private final String SUFFIX;
@@ -106,7 +106,7 @@ public class GrowthProfiler extends Profiler {
 		
 		// Go through each grid and compile concentrations.
 		String mols = "";
-		for (int m = 0; m < 3; m++) {
+		for (int m = 0; m < MOLS.length; m++) {
 			String mol = "";
 			for (Location[][] locations : SPAN) {
 				mol += "\t\t\t\t\t" + sim.getEnvironment(MOLS[m]).toJSON(locations) + ",\n";
