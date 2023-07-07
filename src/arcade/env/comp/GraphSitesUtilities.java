@@ -55,7 +55,7 @@ abstract class GraphSitesUtilities {
 	 * @return  the type code
 	 */
 	static int parseType(String type) {
-		return (type.equals("A") ? ARTERY : (type.equals("V") ? VEIN : 0));
+		return ("A".equals(type) ? ARTERY : ("V".equals(type) ? VEIN : 0));
 	}
 	
 	/**

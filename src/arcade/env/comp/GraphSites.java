@@ -1,23 +1,5 @@
 package arcade.env.comp;
 
-import static arcade.env.comp.GraphSitesUtilities.calcFlows;
-import static arcade.env.comp.GraphSitesUtilities.calcPressure;
-import static arcade.env.comp.GraphSitesUtilities.calcPressures;
-import static arcade.env.comp.GraphSitesUtilities.calcStress;
-import static arcade.env.comp.GraphSitesUtilities.calcThicknesses;
-import static arcade.env.comp.GraphSitesUtilities.checkPerfused;
-import static arcade.env.comp.GraphSitesUtilities.getEdgeByType;
-import static arcade.env.comp.GraphSitesUtilities.getLeavesByType;
-import static arcade.env.comp.GraphSitesUtilities.getPartial;
-import static arcade.env.comp.GraphSitesUtilities.getTotal;
-import static arcade.env.comp.GraphSitesUtilities.mergeGraphs;
-import static arcade.env.comp.GraphSitesUtilities.parseType;
-import static arcade.env.comp.GraphSitesUtilities.reversePressures;
-import static arcade.env.comp.GraphSitesUtilities.setLeafPressures;
-import static arcade.env.comp.GraphSitesUtilities.setRootPressures;
-import static arcade.env.comp.GraphSitesUtilities.updateRadii;
-import static arcade.env.comp.GraphSitesUtilities.updateTraverse;
-
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.regex.Matcher;
@@ -26,13 +8,16 @@ import java.util.regex.Pattern;
 import arcade.env.loc.Location;
 import arcade.sim.Simulation;
 import arcade.util.Graph;
+import arcade.util.Graph.Edge;
+import arcade.util.Graph.Node;
+import static arcade.env.comp.GraphSitesUtilities.*;
 import arcade.util.MiniBox;
 import arcade.util.Solver;
 import arcade.util.Solver.Function;
 import ec.util.MersenneTwisterFast;
 import sim.engine.SimState;
 import sim.util.Bag;
-import static arcade.util.Graph.*;
+
 /**
  * Extension of {@link arcade.env.comp.Sites} for graph sites.
  * <p>
