@@ -1,20 +1,39 @@
 package arcade.env.comp;
 
+import static arcade.env.comp.GraphSitesUtilities.calcFlows;
+import static arcade.env.comp.GraphSitesUtilities.calcPressure;
+import static arcade.env.comp.GraphSitesUtilities.calcPressures;
+import static arcade.env.comp.GraphSitesUtilities.calcStress;
+import static arcade.env.comp.GraphSitesUtilities.calcThicknesses;
+import static arcade.env.comp.GraphSitesUtilities.checkPerfused;
+import static arcade.env.comp.GraphSitesUtilities.getEdgeByType;
+import static arcade.env.comp.GraphSitesUtilities.getLeavesByType;
+import static arcade.env.comp.GraphSitesUtilities.getPartial;
+import static arcade.env.comp.GraphSitesUtilities.getTotal;
+import static arcade.env.comp.GraphSitesUtilities.mergeGraphs;
+import static arcade.env.comp.GraphSitesUtilities.parseType;
+import static arcade.env.comp.GraphSitesUtilities.reversePressures;
+import static arcade.env.comp.GraphSitesUtilities.setLeafPressures;
+import static arcade.env.comp.GraphSitesUtilities.setRootPressures;
+import static arcade.env.comp.GraphSitesUtilities.updateRadii;
+import static arcade.env.comp.GraphSitesUtilities.updateTraverse;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import arcade.env.loc.Location;
+import arcade.sim.Simulation;
+import arcade.util.Graph;
+import arcade.util.Graph.Edge;
+import arcade.util.Graph.Node;
+import arcade.util.MiniBox;
+import arcade.util.Solver;
+import arcade.util.Solver.Function;
 import ec.util.MersenneTwisterFast;
 import sim.engine.SimState;
 import sim.util.Bag;
-import arcade.sim.Simulation;
-import arcade.env.loc.Location;
-import arcade.util.Graph;
-import arcade.util.Graph.*;
-import arcade.util.Solver;
-import arcade.util.Solver.Function;
-import arcade.util.MiniBox;
-import static arcade.env.comp.GraphSitesUtilities.*;
 
 /**
  * Extension of {@link arcade.env.comp.Sites} for graph sites.
@@ -173,6 +192,9 @@ public abstract class GraphSites extends Sites {
 	/** Height of a lattice site */
 	double height;
 	
+    /** Size of a lattice site */
+    double gridSize;
+
 	/** Graph representing the sites */
 	Graph G;
 	
@@ -237,6 +259,8 @@ public abstract class GraphSites extends Sites {
 	 */
 	public Graph getGraph() { return G; }
 	
+    public double getGridSize() { return gridSize; }
+
 	/**
 	 * Sets the {@link arcade.util.Graph} representing the sites.
 	 * 
@@ -300,6 +324,7 @@ public abstract class GraphSites extends Sites {
 	 */
 	abstract boolean checkNode(Node node);
 	
+
 	/**
 	 * Gets direction code for an edge.
 	 * 
@@ -307,8 +332,32 @@ public abstract class GraphSites extends Sites {
 	 * @param scale  the graph resolution scaling
 	 * @return  the code for the edge direction
 	 */
-	abstract int getDirection(SiteEdge edge, int scale);
-	
+	abstract int getDirection(int fromX, int fromY, int toX, int toY);
+
+    /**
+     * Gets direction code for an edge.
+     *
+     * @param edge  the edge object
+     * @param level  the graph resolution level
+     * @return  the code for the edge direction
+     */
+    public int getDirection(SiteEdge edge, int scale) {
+        return getDirection(edge.getFrom(), edge.getTo(), scale);
+    }
+
+    /**
+     * Gets direction code for an edge.
+     *
+     * @param from  the node the edge is from
+     * @param to  the node the edge is to
+     * @param level  the graph resolution level
+     * @return  the code for the edge direction
+     */
+    public int getDirection(SiteNode from, SiteNode to, int scale) {
+        return getDirection(from.getX() / scale, from.getY() / scale,
+                to.getX() / scale, to.getY() / scale);
+    }
+
 	/**
 	 * Adds a root motif to the graph.
 	 * 
@@ -357,6 +406,13 @@ public abstract class GraphSites extends Sites {
 	 */
 	abstract void addConnection(SiteNode node0, int dir, int type, int scale, int level);
 	
+	/**
+	 * Gets list of possible coordinate changes for a graph.
+	 *
+	 * @return  the list of lists of coordinate changes
+	 */
+    abstract int[][] getOffsets();
+
 	/**
 	 * Gets list of coordinate changes corresponding to a given offset direction.
 	 * 
@@ -408,6 +464,7 @@ public abstract class GraphSites extends Sites {
 		location = sim.getRepresentation().getCenterLocation();
 		volume = location.getVolume()/location.getMax();
 		height = location.getHeight();
+        gridSize = location.getGridSize();
 		
 		// Set parameter values.
 		oxySoluTissue = sim.getSeries().getParam("OXY_SOLU_TISSUE");
@@ -722,7 +779,13 @@ public abstract class GraphSites extends Sites {
 		
 		/** {@code true} if the node is a root, {@code false} otherwise */
 		public boolean isRoot;
-		
+
+        /** {@code true} if the node is a tip, {@code false} otherwise */
+        boolean isTip;
+
+        /** {@code true} if the node is a sprout, {@code false} otherwise */
+        boolean isSprout;
+
 		/** Pressure of the node */
 		public double pressure;
 		
@@ -732,6 +795,9 @@ public abstract class GraphSites extends Sites {
 		/** Distance for Dijkstra's algorithm */
 		public int distance;
 		
+        /** Tick for the last update during growth. */
+        double lastUpdate;
+
 		/** Parent node */
 		SiteNode prev;
 		
@@ -752,6 +818,21 @@ public abstract class GraphSites extends Sites {
 		
 		public Node duplicate() { return new SiteNode(x, y, z); }
 		
+        /**
+         * Check for if node is from angiogenesis tip.
+         *
+         * @return  {@code true} if node is root, {@code false} otherwise
+         */
+        public boolean isTip() { return isTip; }
+
+        /**
+         * Check for if node is from angiogenesis sprout.
+         *
+         * @return  {@code true} if node is sprout, {@code false} otherwise
+         */
+        public boolean isSprout() { return isSprout; }
+
+
 		/**
 		 * Represents object as a JSON entry.
 		 * <p>
@@ -1801,7 +1882,7 @@ public abstract class GraphSites extends Sites {
 		String[] labels = new String[] { "LEFT", "TOP", "RIGHT", "BOTTOM" };
 		String sites = "";
 		for (int i = 0; i < 4; i++) {
-			if (!siteSetup[i].equals("")) { sites +=  " [" + labels[i] + " = " + siteSetup[i] + "]"; }
+			if (!"".equals(siteSetup[i])) { sites +=  " [" + labels[i] + " = " + siteSetup[i] + "]"; }
 		}
 		return String.format("GRAPH SITES (%s)%s", siteLayout, sites);
 	}

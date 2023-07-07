@@ -1,13 +1,14 @@
 package arcade.util;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Collections;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import sim.util.Bag;
 
 /**
@@ -73,6 +74,8 @@ public class Graph implements Serializable {
 	 */
 	public Bag getAllEdges() { return allEdges; }
 	
+    public Set<Node> getAllNodes() { return retrieveNodes(); }
+
 	/**
 	 * Gets edges out of the given node.
 	 * 
@@ -334,6 +337,20 @@ public class Graph implements Serializable {
 		addEdge(edge.reverse());
 	}
 	
+
+    private Set<Node> retrieveNodes() {
+        Set<Node> sOut = nodeToOutBag.keySet();
+        Set<Node> sIn = nodeToInBag.keySet();
+        Set<Node> set = new LinkedHashSet<Node>() {
+            {
+                addAll(sOut);
+                addAll(sIn);
+            }
+        };
+
+        return set;
+    }
+
 	/**
 	 * Displays the graph as a list of edges and nodes.
 	 * 

@@ -1,14 +1,16 @@
 package arcade.env.comp;
 
+import static arcade.env.comp.GraphSitesUtilities.path;
+import static arcade.env.comp.GraphSitesUtilities.visit;
+
 import java.util.ArrayList;
 
-import sim.engine.SimState;
-import sim.util.Bag;
 import arcade.sim.Simulation;
 import arcade.util.Graph;
+import arcade.util.Graph.Node;
 import arcade.util.MiniBox;
-import static arcade.util.Graph.*;
-import static arcade.env.comp.GraphSitesUtilities.*;
+import sim.engine.SimState;
+import sim.util.Bag;
 
 /**
  * Extension of {@link arcade.env.comp.GraphSites} for rectangular lattice.
@@ -139,6 +141,8 @@ public abstract class RectGraphSites extends GraphSites {
 		public void step(SimState state) { super.complexStep(); }
 	}
 	
+    int[][] getOffsets() { return OFFSETS; }
+
 	int[] getOffset(int offset) { return OFFSETS[offset]; }
 	
 	Graph newGraph() { return new Graph(LENGTH + 1, WIDTH + 1); }
@@ -317,11 +321,7 @@ public abstract class RectGraphSites extends GraphSites {
 		
 		return null;
 	}
-	
-	int getDirection(SiteEdge edge, int scale) {
-		return getDirection(edge.getFrom(), edge.getTo(), scale);
-	}
-	
+
 	/**
 	 * Gets direction code for an edge between two nodes.
 	 *
@@ -330,11 +330,13 @@ public abstract class RectGraphSites extends GraphSites {
 	 * @param scale  the graph resolution scaling
 	 * @return  the code for the edge direction
 	 */
-	private int getDirection(SiteNode from, SiteNode to, int scale) {
-		int dx = (to.getX() - from.getX())/scale + 1;
-		int dy = (to.getY() - from.getY())/scale + 1;
-		return DIRS[dy][dx];
-	}
+    @Override
+    int getDirection(int fromX, int fromY, int toX, int toY) {
+        int dx = (toX - fromX) + 1;
+        int dy = (toY - fromY) + 1;
+        return DIRS[dy][dx];
+    }
+
 	
 	void addRoot(SiteNode node0, int dir, int type, Bag bag, int scale, int level, int[] offsets) {
 		SiteNode node1 = offsetNode(node0, dir, scale);
