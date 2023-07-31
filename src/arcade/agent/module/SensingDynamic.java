@@ -6,6 +6,7 @@ import arcade.agent.cell.Cell;
 import arcade.sim.Simulation;
 import arcade.util.Solver;
 import arcade.util.Solver.Equations;
+import arcade.env.lat.Lattice;
 
 public class SensingDynamic extends Sensing {
     /** Number of components in signaling network. */
@@ -26,7 +27,7 @@ public class SensingDynamic extends Sensing {
     private static final double Km_15a = Km_3a;
 
     /** Michaelis-Menten constant for PHD-mediated hydroxylation of HIFa */
-    private static final double Km_3b = 250;
+    private static final double Km_3b = 100;
     private static final double Km_15b = Km_3b;
 
     /**  Catalytic rate constant for VHL-mediated degredation of HIFa-pOH*/
@@ -110,7 +111,7 @@ public class SensingDynamic extends Sensing {
     private static final double k_28 = 0.0001;       
 
     /**  VEGF export rate  */
-    private static final double k_29 = 0.02;   
+    private static final double k_29 = 0.2;
 
     /* Concentration of FIH in cytoplasm */
     private static final double FIH = 110;       
@@ -119,11 +120,10 @@ public class SensingDynamic extends Sensing {
     private static final double FIHn = 40; 
 
     /* Concentration of VHL in cytoplasm */
-    private static final double VHL = 110;       
+    private static final double VHL = 50;
 
     /* Concentration of VHL in nucleus */
-    private static final double VHLn = 40; 
-
+    private static final double VHLn = 50;
 
     /* Oxygen level at normoxia */
     private double O2;   
@@ -201,7 +201,6 @@ public class SensingDynamic extends Sensing {
         names.add(mRNA, "mRNA");
         names.add(PROTEIN, "protein");
         names.add(VEGF, "VEGF");
-
     }
     
     Equations equations = (t, y) -> {
@@ -234,7 +233,7 @@ public class SensingDynamic extends Sensing {
         double v26 = k_26 * y[mRNA] ;
         double v27 = k_27 * y[mRNA] ;
         double v28 = k_28 * y[PROTEIN];
-        double v29 = k_29 * y[PROTEIN];
+        double v29 = k_29 * y[HIFd_HRE];
 
         double[] dydt = new double[NUM_COMPONENTS];
         dydt[HIFa] = v1 - v2 - v9 + v10 - v3 - v5 + v6;
@@ -260,18 +259,21 @@ public class SensingDynamic extends Sensing {
     
     @Override
     public void stepModule(Simulation sim) {
-
-        O2 = sim.getEnvironment("oxygen").getAverageVal(loc);
+        double currO2 = sim.getEnvironment("oxygen").getAverageVal(loc);
+        O2 = 100*(1.0 - currO2/160.0);
 
         concs = Solver.euler(equations, 0, concs, 60, STEP_SIZE);
+        double vol = c.getVolume();
 
-        sim.getEnvironment("vegf").setVal(loc, concs[VEGF]);
+        Lattice vegf = sim.getEnvironment("vegf");
+        vegf.setVal(loc, vegf.getAverageVal(loc) + concs[VEGF]*(vol/loc.getVolume()));
+        concs[VEGF] = 0;
     }
     
     @Override
     public void updateModule(Module mod, double f)  {
         SensingDynamic sensing = (SensingDynamic) mod;
         this.concs = sensing.concs.clone();
+        concs[VEGF] = 0;
     }
 }
-
