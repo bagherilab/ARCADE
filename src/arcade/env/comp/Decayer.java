@@ -2,6 +2,9 @@ package arcade.env.comp;
 
 import sim.engine.SimState;
 import arcade.sim.Simulation;
+
+import java.util.logging.Logger;
+
 import arcade.env.lat.Lattice;
 import arcade.env.loc.Location;
 import arcade.util.MiniBox;
@@ -60,12 +63,10 @@ public class Decayer implements Component {
 		LENGTH = lat.getLength();
 		WIDTH = lat.getWidth();
 		DEPTH = lat.getDepth();
-		
 
 		// Set fields.
 
         decayRate = molecule.getDouble("DECAYRATE");
-
 		this.latCurr = lat.getField();
 	}
 
@@ -109,13 +110,15 @@ public class Decayer implements Component {
 	 */
 	public void step(SimState state) {
 		// Iterate through every layer.
-		for (int k = 0; k < DEPTH; k++) {
-			for (int i = 0; i < LENGTH; i++) {
-				for (int j = 0; j < WIDTH; j++) {
-					latCurr[k][i][j] -= decayRate*latCurr[k][i][j];
-				}
-			}
-		}
+        for (int step = 0; step < 60; step++) {
+            for (int k = 0; k < DEPTH; k++) {
+                for (int i = 0; i < LENGTH; i++) {
+                    for (int j = 0; j < WIDTH; j++) {
+                        latCurr[k][i][j] -= decayRate*latCurr[k][i][j];
+                    }
+                }
+            }
+        }
 	}
 	
 	/**

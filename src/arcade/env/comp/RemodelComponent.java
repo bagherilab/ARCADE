@@ -127,8 +127,8 @@ public class RemodelComponent implements Component {
 		
 		sites = (GraphSites)comp;
 		
-		((SimState)sim).schedule.scheduleRepeating(1, Simulation.ORDERING_COMPONENT - 2, this, INTERVAL);
-		((SimState)sim).schedule.scheduleOnce((state) -> G = sites.getGraph(), Simulation.ORDERING_COMPONENT - 2);
+		((SimState)sim).schedule.scheduleRepeating(1, Simulation.ORDERING_COMPONENT- 3, this, INTERVAL);
+		((SimState)sim).schedule.scheduleOnce((state) -> G = sites.getGraph(), Simulation.ORDERING_COMPONENT -  3);
 	}
 	
 	/**
@@ -191,6 +191,8 @@ public class RemodelComponent implements Component {
 			if (edge.radius < GraphSites.CAP_RADIUS_MIN
 					|| edge.wall <  GraphSites.MIN_WALL_THICKNESS
 					|| Double.isNaN(edge.radius)) {
+                LOGGER.info("REMOVING " + edge + " FROM REMODELING" );
+                LOGGER.info("radius check: " + edge.radius + "<" + GraphSites.CAP_RADIUS_MIN + " || wall thickness: " + edge.wall + "<" + GraphSites.MIN_WALL_THICKNESS + " || radius:  " + edge.radius);
 				G.removeEdge(edge);
 				edge.getFrom().pressure = Double.NaN;
 				edge.getTo().pressure = Double.NaN;

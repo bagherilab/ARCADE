@@ -2,10 +2,15 @@ package arcade.env.comp;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.logging.Logger;
 import java.util.HashSet;
 import sim.util.Bag;
 import arcade.util.Solver;
+import arcade.env.comp.GraphSites.Root;
+import arcade.env.comp.GraphSites.SiteEdge;
+import arcade.env.comp.GraphSites.SiteNode;
 import arcade.util.Graph;
+import arcade.util.Graph.Edge;
 import arcade.util.Matrix;
 import static arcade.env.comp.GraphSites.*;
 import static arcade.util.Graph.*;
@@ -18,6 +23,8 @@ import static arcade.util.Graph.*;
  */
 
 abstract class GraphSitesUtilities {
+    private static Logger LOGGER = Logger.getLogger(GraphSitesUtilities.class.getName());
+
 	/** Tolerance for difference in radii */
 	private static final double DELTA_TOLERANCE = 1E-8;
 	
@@ -450,10 +457,14 @@ abstract class GraphSitesUtilities {
 	static void calcThicknesses(Graph G) {
 		for (Object obj : G.getAllEdges()) {
 			SiteEdge edge = (SiteEdge)obj;
-			double d = 2*edge.radius;
-			edge.wall = d*(0.267 - 0.084*Math.log10(d));
+			edge.wall = calcThickness(edge.radius);
 		}
 	}
+
+    static double calcThickness(double r){
+        double d = 2*r;
+        return d*(0.267 - 0.084*Math.log10(d));
+    }
 	
 	/**
 	 * Calculate the radii (in um) using Murray's law.
@@ -817,7 +828,70 @@ abstract class GraphSitesUtilities {
 			currSet = nextSet;
 		}
 	}
-	
+
+	static void updateGraph(Graph G, GraphSites gs, ArrayList<SiteEdge> add) {
+
+		ArrayList<SiteEdge> list;
+		Graph gCurr = G;
+
+        LOGGER.info("Updating graph with " + add.toString());
+        for (SiteEdge a : add){
+            LOGGER.info("Edge -  " + a + "in graph: " + gCurr.getAllEdges().contains(a));
+        }
+
+		do {
+			Graph gNew = gs.newGraph();
+			list = new ArrayList<>();
+
+			for (Object obj : new Bag(gCurr.getAllEdges())) {
+				SiteEdge edge = (SiteEdge)obj;
+				SiteNode to = edge.getTo();
+				SiteNode from = edge.getFrom();
+				if (edge.isIgnored) { continue; }
+
+				// Check for leaves.
+				if (gCurr.getOutDegree(to) == 0 && !to.isRoot || gCurr.getOutDegree(to) > 3) {
+                    list.add(edge);
+                }
+				else if (gCurr.getInDegree(from) == 0 && !from.isRoot || gCurr.getOutDegree(from) > 3) {
+                    list.add(edge);
+                }
+				else { gNew.addEdge(edge); }
+			}
+
+			// Update leaves to be ignored.
+			for (SiteEdge edge : list) {
+                LOGGER.info("Ignoring " + edge);
+				edge.isIgnored = true;
+				edge.getFrom().pressure = Double.NaN;
+				edge.getTo().pressure = Double.NaN;
+			}
+
+			gCurr = gNew;
+		} while (list.size() != 0);
+
+        LOGGER.info("AFTER TRYING TO ADD " + add.toString());
+        for (SiteEdge a : add){
+            a.getTo().pressure = calcPressure(a.radius, 0);
+            a.getFrom().pressure = calcPressure(a.radius, 0);
+        }
+
+		calcPressures(G);
+		boolean reversed = reversePressures(G);
+		if (reversed) { calcPressures(G); }
+		calcFlows(G, gs);
+		calcStress(G);
+
+		// Set oxygen nodes.
+		for (Object obj : G.getAllEdges()) {
+			SiteEdge edge = (SiteEdge)obj;
+			SiteNode to = edge.getTo();
+			SiteNode from = edge.getFrom();
+			if (Double.isNaN(to.pressure)) { to.oxygen = Double.NaN; }
+			if (Double.isNaN(from.pressure)) { from.oxygen = Double.NaN; }
+		}
+	}
+
 	/**
 	 * Updates hemodynamic properties in the graph after edges are removed.
 	 * 
@@ -839,8 +913,12 @@ abstract class GraphSitesUtilities {
 				if (edge.isIgnored) { continue; }
 				
 				// Check for leaves.
-				if (gCurr.getOutDegree(to) == 0 && !to.isRoot) { list.add(edge); }
-				else if (gCurr.getInDegree(from) == 0 && !from.isRoot) { list.add(edge); }
+				if (gCurr.getOutDegree(to) == 0 && !to.isRoot) {
+                    list.add(edge);
+                }
+				else if (gCurr.getInDegree(from) == 0 && !from.isRoot) {
+                    list.add(edge);
+                }
 				else { gNew.addEdge(edge); }
 			}
 			
@@ -891,6 +969,7 @@ abstract class GraphSitesUtilities {
 				for (Object obj : out) {
 					SiteEdge edge = (SiteEdge)obj;
 					if (edge.flow < MIN_FLOW || Double.isNaN(edge.flow)) {
+                        LOGGER.info("Removing" + edge + "because low flow : " + edge.flow);
 						G.removeEdge(edge);
 						edge.getFrom().pressure = Double.NaN;
 						edge.getTo().pressure = Double.NaN;
@@ -906,6 +985,7 @@ abstract class GraphSitesUtilities {
 				for (Object obj : in) {
 					SiteEdge edge = (SiteEdge)obj;
 					if (edge.flow < MIN_FLOW || Double.isNaN(edge.flow)) {
+                        LOGGER.info("Removing" + edge + "because low flow : " + edge.flow);
 						G.removeEdge(edge);
 						edge.getFrom().pressure = Double.NaN;
 						edge.getTo().pressure = Double.NaN;
@@ -923,12 +1003,14 @@ abstract class GraphSitesUtilities {
 					double totalFlow = edge1.flow + edge2.flow;
 					
 					if (edge1.flow/totalFlow < MIN_FLOW_PERCENT) {
+                        LOGGER.info("Removing" + edge1 + "because low flow");
 						G.removeEdge(edge1);
 						edge1.getFrom().pressure = Double.NaN;
 						edge1.getTo().pressure = Double.NaN;
 						updateGraph(G, gs);
 					}
 					else if (edge2.flow/totalFlow < MIN_FLOW_PERCENT) {
+                        LOGGER.info("Removing" + edge2 + "because low flow");
 						G.removeEdge(edge2);
 						edge2.getFrom().pressure = Double.NaN;
 						edge2.getTo().pressure = Double.NaN;

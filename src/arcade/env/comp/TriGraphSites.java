@@ -310,9 +310,14 @@ public abstract class TriGraphSites extends GraphSites {
 	}
 	
 	int getDirection(int fromX, int fromY, int toX, int toY) {
-		int dx = (toX - fromX) + 2;
-		int dy =  (toY - fromY) + 1;
-		return DIRS[dy][dx];
+		int dx = (toX - fromX);
+		int dy =  (toY - fromY);
+        int sum = Math.abs(dx) + Math.abs(dy);
+        int scale = sum/2;
+        int ux = dx/scale + 2;
+        int uy = dy/scale + 1;
+
+		return DIRS[uy][ux];
 	}
 	
 	void addRoot(SiteNode node0, int dir, int type, Bag bag, int scale, int level, int[] offsets) {

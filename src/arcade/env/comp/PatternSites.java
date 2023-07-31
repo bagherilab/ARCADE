@@ -2,6 +2,8 @@ package arcade.env.comp;
 
 import sim.engine.SimState;
 import arcade.sim.Simulation;
+
+
 import arcade.env.loc.Location;
 import arcade.util.MiniBox;
 
@@ -31,6 +33,7 @@ import arcade.util.MiniBox;
  */
 
 public abstract class PatternSites extends Sites {
+
 	/** Serialization version identifier */
 	private static final long serialVersionUID = 0;
 	

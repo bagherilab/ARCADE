@@ -2,6 +2,7 @@ package arcade.env.comp;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,12 +47,14 @@ import sim.util.Bag;
  * spanning {@code #} percent (second number) across the environment in
  * the direction normal to the side</li>
  * </ul>
- * 
+ *
  * @version 2.3.70
  * @since 2.3
  */
 
 public abstract class GraphSites extends Sites {
+    private static Logger LOGGER = Logger.getLogger(GraphSites.class.getName());
+
     /** Serialization version identifier */
     private static final long serialVersionUID = 0;
 
@@ -334,7 +337,7 @@ public abstract class GraphSites extends Sites {
      *            the edge object
      * @param scale
      *            the graph resolution scaling
-     * @return the code for the edge direction
+     * @return the code for the edge direction g
      */
     abstract int getDirection(int fromX, int fromY, int toX, int toY);
 
@@ -349,6 +352,10 @@ public abstract class GraphSites extends Sites {
      */
     public int getDirection(SiteEdge edge, int scale) {
         return getDirection(edge.getFrom(), edge.getTo(), scale);
+    }
+
+    public int getOppositeDirection(SiteEdge edge, int scale) {
+        return getDirection(edge.getTo(), edge.getFrom(), scale);
     }
 
     /**
@@ -549,7 +556,7 @@ public abstract class GraphSites extends Sites {
      * graph traversals.
      * Edges that are not perfused are not included.
      */
-    private void updateSpans() {
+    public void updateSpans() {
         for (int k = 0; k < DEPTH; k++) {
             for (int i = 0; i < LENGTH; i++) {
                 for (int j = 0; j < WIDTH; j++) {
@@ -850,11 +857,11 @@ public abstract class GraphSites extends Sites {
         /** {@code true} if the node is a root, {@code false} otherwise */
         public boolean isRoot;
 
-        /** {@code true} if the node is a tip, {@code false} otherwise */
-        public boolean isTip;
+        public boolean isAngio;
 
-        /** {@code true} if the node is a sprout, {@code false} otherwise */
-        public boolean isSprout;
+        public int sproutDir;
+
+        public boolean anastomosis;
 
         /** Pressure of the node */
         public double pressure;
@@ -887,28 +894,13 @@ public abstract class GraphSites extends Sites {
             pressure = 0;
             isRoot = false;
             oxygen = -1;
+            isAngio = false;
+            anastomosis = false;
+            sproutDir = -1;
         }
 
         public Node duplicate() {
             return new SiteNode(x, y, z);
-        }
-
-        /**
-         * Check for if node is from angiogenesis tip.
-         *
-         * @return {@code true} if node is root, {@code false} otherwise
-         */
-        public boolean isTip() {
-            return isTip;
-        }
-
-        /**
-         * Check for if node is from angiogenesis sprout.
-         *
-         * @return {@code true} if node is sprout, {@code false} otherwise
-         */
-        public boolean isSprout() {
-            return isSprout;
         }
 
         /**
@@ -948,8 +940,14 @@ public abstract class GraphSites extends Sites {
         /** {@code true} if edge is ignored during traversal, {@code false} otherwise */
         public boolean isIgnored;
 
+        /** {@code true} if edge is a result of angiogenesis (all added by growth module) */
+        public boolean isAngiogenic;
+
+        /** {@code true} if edge connects angiogenic edge to other perfused edge */
+        public boolean isAnastomotic;
+
         /** Edge type */
-        public final int type;
+        public int type;
 
         /** Edge resolution */
         public final int level;
@@ -1029,8 +1027,8 @@ public abstract class GraphSites extends Sites {
          * @return the JSON string
          */
         public String toJSON() {
-            return String.format("[%d,%.3f,%.3f,%.3f,%.6f,%.3f,%.1f]",
-                    type, radius, length, wall, shear, circum, flow);
+            return String.format("[%d,%.3f,%.3f,%.3f,%.6f,%.3f,%.1f,%b]",
+                    type, radius, length, wall, shear, circum, flow, isAngiogenic);
         }
     }
 
@@ -1182,6 +1180,7 @@ public abstract class GraphSites extends Sites {
             }
         }
     }
+
 
     /**
      * Traverses through the graph based on edges.
