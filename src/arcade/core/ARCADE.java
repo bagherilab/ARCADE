@@ -17,6 +17,7 @@ import arcade.core.sim.output.OutputLoader;
 import arcade.core.sim.output.OutputSaver;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
+import arcade.patch.PatchARCADE;
 import arcade.potts.PottsARCADE;
 
 /**
@@ -96,6 +97,10 @@ public abstract class ARCADE {
         ARCADE arcade;
         
         switch (args[0]) {
+            case "patch":
+                logger.info("running ARCADE [ patch ] simulations");
+                arcade = new PatchARCADE();
+                break;
             case "potts":
                 logger.info("running ARCADE [ potts ] simulations");
                 arcade = new PottsARCADE();
