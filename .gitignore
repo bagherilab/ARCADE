@@ -3,7 +3,5 @@
 *.idea
 bin/
 lib/
-build/
-.gradle/
 .DS_Store
 MANIFEST.MF

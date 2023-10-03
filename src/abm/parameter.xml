@@ -1,0 +1,99 @@
+<parameters>
+    <!-- default model size -->
+    <default id="RADIUS" value="34" />
+    <default id="HEIGHT" value="1" />
+    <default id="MARGIN" value="6" />
+
+    <!-- global environment parameters -->
+    <global id="DIFFUSIVITY_TGFA" value="51.8" units="um^2/s" />
+    <global id="DIFFUSIVITY_GLUCOSE" value="39.0" units="um^2/s" />
+    <global id="DIFFUSIVITY_OXYGEN" value="2000.0" units="um^2/s" />
+    <global id="CONCENTRATION_TGFA" value="150.0" units="pg/cm^3" />
+    <global id="CONCENTRATION_GLUCOSE" value="0.005" units="fmol/um^3" description="equal to 5 umol/cm^3" />
+    <global id="CONCENTRATION_OXYGEN" value="100" units="mmHg" />
+    <global id="PERMEABILITY_GLUCOSE" value="0.5" units="um/s" />
+    <global id="PERMEABILITY_OXYGEN" value="500" units="um/s" />
+    <global id="OXY_SOLU_TISSUE" value="0.00000131" units="fmol O2/(um^3 mmHg)" />
+    <global id="OXY_SOLU_PLASMA" value="0.00000138" units="fmol O2/(um^3 mmHg)" />
+    
+    <!-- cell process timing -->
+    <variable id="DEATH_AGE_AVG" value="120960" unit="min" description="12 weeks" />
+    <variable id="DEATH_AGE_RANGE" value="10080" unit="min" description="1 week" />
+    <variable id="DEATH_TIME" value="1080" unit="min" description="18 hours" />
+    <variable id="MIGRA_RATE" value="0.24" unit="um/min" />
+    <variable id="SYNTHESIS_TIME" value="637" unit="min" />
+
+    <!-- cell sizing -->
+    <variable id="CELL_DENSITY" value="0.00133" unit="ng/um^3" />
+    <variable id="CELL_VOL_AVG" value="2250.0" unit="um^3" />
+    <variable id="CELL_VOL_RANGE" value="200.0" unit="um^3" />
+    <variable id="MIN_MASS_FRAC" value="0.5" />
+    <variable id="MAX_HEIGHT" value="8.7" unit="um" />
+
+    <!-- cell growth -->
+    <variable id="META_PREF" value="0.3" description="preference for glycolysis" />
+    <variable id="FRAC_MASS" value="0.25" description="percent of internal nutrients converted to mass" />
+    <variable id="RATIO_GLUC_TO_PYRU" value="0.5" description="preference for glucose over pyruvate to convert to mass" />
+
+    <variable id="MASS_TO_GLUC" value="694.0" unit="fmol glucose/ng biomass" />
+    <variable id="AUTOPHAGY_RATE" value="0.0001" unit="ng/min" />
+    <variable id="LACTATE_RATE" value="0.1" unit="fmol lactate/fmol pyruvate" />
+
+    <!-- cell energy -->
+    <variable id="BASAL_ENERGY" value="0.001" unit="fmol ATP/um^3 cell/min" />
+    <variable id="PROLIF_ENERGY" value="0.001" unit="fmol ATP/um^3 cell/min" />
+    <variable id="MIGRA_ENERGY" value="0.0002" unit="fmol ATP/um^3 cell/min" />
+
+    <!-- metabolism module -->
+    <variable id="GLUC_UPTAKE_RATE" value="1.12" unit="fmol glucose/um^2 cell/min/M glucose" />
+    <variable id="ATP_PRODUCTION_RATE" value="8.927" unit="fmol ATP/um^3/min/M glucose" />
+    <variable id="CONS_GLUC_UPTAKE" value="929.88" unit="fmol glucose/min/M glucose" />
+    <variable id="CONS_GROWTH_RATE" value="2.819" unit="um^3/min" />
+    <variable id="CONS_ATP_PRODUCTION" value="4.9817" unit="fmol ATP/cell/min" />
+
+    <!-- cellular decision making -->
+    <variable id="SENES_FRAC" value="0.5" description="fraction senescent vs. apoptotic" />
+    <variable id="NECRO_FRAC" value="0.5" description="fraction necrotic vs. apoptotic" />
+    <variable id="DIVISION_POTENTIAL" value="50" description="max number of divisions" />
+    <variable id="MIGRA_THRESHOLD" value="3" description="fold change in PLCg for migratory" />
+    <variable id="ENERGY_THRESHOLD" value="-1000.0" description="minimum energy requirement" />
+    <variable id="ACCURACY" value="0.8" description="best location search accuracy" />
+    <variable id="AFFINITY" value="0.5" description="movement toward center affinity" />
+    <variable id="HETEROGENEITY" value="0.0" description="variation in cell agent parameters" />
+    <variable id="MIGRA_PROB" value="0.05" description="probability for migration" />
+
+    <!-- cancer specific parameters -->
+    <variable id="DIVISION_PROB" value="0.05" description="cancer stem cell symmetric division" />
+    
+    <!-- source sites -->
+    <specification.component id="X_SPACING" value="*" type="sites" class="source" description="source spacing in x direction" />
+    <specification.component id="Y_SPACING" value="*" type="sites" class="source" description="source spacing in y direction" />
+    <specification.component id="Z_SPACING" value="*" type="sites" class="source" description="source spacing in z direction" />
+    <specification.component id="SOURCE_DAMAGE" value="0" type="sites" class="source" />
+    
+    <!-- pattern sites -->
+    <specification.component id="WEIGHT_GRADIENT" value="10" type="sites" class="pattern" description="weight for gradient in pattern sites" />
+    <specification.component id="WEIGHT_LOCAL" value="10"  type="sites" class="pattern" description="weight for local in pattern sites"  />
+    <specification.component id="WEIGHT_FLOW" value="10"  type="sites" class="pattern" description="weight for flow in pattern sites" />
+    <specification.component id="RELATIVE_FRACTION" value="1.0" type="sites" class="pattern" description="relative contribution of multipliers" />
+    <specification.component id="PATTERN_DAMAGE" value="0" type="sites" class="pattern" />
+    
+    <!-- graph sites -->
+    <specification.component id="GRAPH_LAYOUT" value="*" type="sites" class="graph" description="layout of graph sites" />
+    <specification.component id="ROOTS_LEFT" value="" type="sites" class="graph" description="roots at the left of environment (x direction)" />
+    <specification.component id="ROOTS_RIGHT" value="" type="sites" class="graph" description="roots at the right of environment (x direction)" />
+    <specification.component id="ROOTS_TOP" value="" type="sites" class="graph" description="roots at the top of environment (y direction)" />
+    <specification.component id="ROOTS_BOTTOM" value="" type="sites" class="graph" description="roots at the bottom of environment (y direction)" />
+    
+    <!-- graph degradation -->
+    <specification.component id="DEGRADATION_RATE" value="0.04" units="um/hr" type="degrade" />
+    <specification.component id="SHEAR_THRESHOLD" value="0.01" units="mmHg" type="degrade" />
+
+    <!-- graph remodeling -->
+    <specification.component id="SCALE_SHEAR" value="0.01" type="remodel" />
+    <specification.component id="SCALE_CIRCUM" value="0.01" type="remodel" />
+    <specification.component id="SCALE_FLOWRATE" value="0.005" type="remodel" />
+    <specification.component id="SCALE_META" value="0.01" type="remodel" />
+    <specification.component id="SCALE_TAU" value="0.01" type="remodel" />
+    <specification.component id="SCALE_SIGMA" value="0.5" type="remodel" />
+</parameters>
