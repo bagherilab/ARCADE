@@ -28,7 +28,9 @@ jobs:
       uses: gradle/gradle-build-action@v2
 
     - name: Generate javadoc
-      run: ./gradlew javadoc
+      run: |
+        ./gradlew javadoc
+        touch docs/javadoc/.nojekyll
 
     - name: Publish docs
       uses: JamesIves/github-pages-deploy-action@v4
