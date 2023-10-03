@@ -8,7 +8,7 @@
 bin/
 lib/
 build/
-docs/
+docs/javadoc
 working/
 .DS_Store
 MANIFEST.MF

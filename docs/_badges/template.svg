@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="{{ badge width }}" height="20">
+    <g shape-rendering="crispEdges">
+        <rect width="{{ color split x }}" height="20" fill="#555555"/>
+        <rect x="{{ color split x }}" width="{{ value width }}" height="20" fill="{{ color }}"/>
+    </g>
+    <g fill="#FFFFFF" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="{{ font size }}">
+        <text x="{{ label anchor }}" y="14" fill="#FFFFFF">{{ label }}</text>
+        <text x="{{ value anchor }}" y="14" fill="#FFFFFF">{{ value }}</text>
+    </g>
+</svg>

@@ -15,9 +15,40 @@ jobs:
         fetch-depth: 0
 
     - name: Lint code base
-      uses: dbelyaev/action-checkstyle@master
+      uses: dbelyaev/action-checkstyle@v0.9.5
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: github-check
         checkstyle_config: .github/config/checks.xml
         fail_on_error: true
+
+    - name: Generate passing badge
+      if: success()
+      uses: knightdave/anybadge-action@v1.1.0
+      with:
+        file: docs/_badges/lint.svg
+        label: lint
+        value: passing
+        color: green
+        template: docs/_badges/template.svg
+        overwrite: true
+
+    - name: Generate failing badge
+      if: failure()
+      uses: knightdave/anybadge-action@v1.1.0
+      with:
+        file: docs/_badges/lint.svg
+        label: lint
+        value: failing
+        color: red
+        template: docs/_badges/template.svg
+        overwrite: true
+
+    - name: Publish badge
+      if: success() || failure()
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: gh-pages
+        folder: docs/_badges
+        target-folder: _badges
+        clean: false
