@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SurfaceHamiltonianConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.sim.hamiltonian</a> &gt; <span class="el_source">SurfaceHamiltonianConfig.java</span></div><h1>SurfaceHamiltonianConfig.java</h1><pre class="source lang-java linenums">package arcade.potts.sim.hamiltonian;
+
+import java.util.EnumMap;
+import arcade.potts.agent.cell.PottsCell;
+import static arcade.core.util.Enums.Region;
+
+/**
+ * Configuration for {@link SurfaceHamiltonian} parameters.
+ */
+
+class SurfaceHamiltonianConfig {
+    /** Associated {@link PottsCell} instance. */
+    final PottsCell cell;
+    
+    /** Lambda multiplier for cell. */
+    private final double lambda;
+    
+    /** Lambda multipliers for cell by region. */
+    private final EnumMap&lt;Region, Double&gt; lambdasRegion;
+    
+    /** {@code true} if the cell has regions, {@code false} otherwise. */
+    final boolean hasRegions;
+    
+    /**
+     * Creates parameter configuration for {@code SurfaceHamiltonian}.
+     *
+     * @param cell  the associated cell instance
+     * @param lambda  the lambda multiplier
+     * @param lambdasRegion  the map of lambda multiplier for regions
+     */
+<span class="fc" id="L31">    SurfaceHamiltonianConfig(PottsCell cell, double lambda, EnumMap&lt;Region, Double&gt; lambdasRegion) {</span>
+<span class="fc" id="L32">        this.cell = cell;</span>
+<span class="fc" id="L33">        this.lambda = lambda;</span>
+<span class="fc bfc" id="L34" title="All 4 branches covered.">        this.hasRegions = (lambdasRegion != null) &amp;&amp; (lambdasRegion.keySet().size() &gt; 0);</span>
+        
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (hasRegions) {</span>
+<span class="fc" id="L37">            this.lambdasRegion = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">            for (Region region : lambdasRegion.keySet()) {</span>
+<span class="fc" id="L39">                this.lambdasRegion.put(region, lambdasRegion.get(region));</span>
+<span class="fc" id="L40">            }</span>
+        } else {
+<span class="fc" id="L42">            this.lambdasRegion = null;</span>
+        }
+<span class="fc" id="L44">    }</span>
+    
+    /**
+     * Gets the lambda value.
+     *
+     * @return  the lambda value
+     */
+<span class="fc" id="L51">    public double getLambda() { return lambda; }</span>
+    
+    /**
+     * Gets the lambda value for the region.
+     *
+     * @param region  the region
+     * @return  the lambda value
+     */
+    public double getLambda(Region region) {
+<span class="fc bfc" id="L60" title="All 4 branches covered.">        return (hasRegions &amp;&amp; lambdasRegion.containsKey(region)</span>
+<span class="fc" id="L61">                ? lambdasRegion.get(region)</span>
+                : Double.NaN);
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

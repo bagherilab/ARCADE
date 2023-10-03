@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SubstrateHamiltonian.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.sim.hamiltonian</a> &gt; <span class="el_source">SubstrateHamiltonian.java</span></div><h1>SubstrateHamiltonian.java</h1><pre class="source lang-java linenums">package arcade.potts.sim.hamiltonian;
+
+import java.util.HashMap;
+import java.util.Set;
+import arcade.core.util.MiniBox;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
+import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
+
+/**
+ * Implementation of {@link Hamiltonian} for substrate energy.
+ */
+
+public class SubstrateHamiltonian implements Hamiltonian {
+    /** Number of neighbors considered for substrate adhesion. */
+    static final int NUMBER_NEIGHBORS = 9;
+    
+    /** Scaling at threshold height. */
+    static final double THRESHOLD_FRACTION = 0.01;
+    
+    /** Map of hamiltonian config objects. */
+    final HashMap&lt;Integer, SubstrateHamiltonianConfig&gt; configs;
+    
+    /** Map of population to substrate adhesion values. */
+    final HashMap&lt;Integer, Double&gt; popToSubstrate;
+    
+    /** Grid tracking substrate values. */
+    final int[][] substrates;
+    
+    /** Power for scaling substrate energy. */
+    double power;
+    
+    /**
+     * Creates the substrate energy term for the {@code Potts} Hamiltonian.
+     *
+     * @param series  the associated Series instance
+     * @param potts  the associated Potts instance
+     */
+<span class="fc" id="L40">    public SubstrateHamiltonian(PottsSeries series, Potts potts) {</span>
+<span class="fc" id="L41">        configs = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L42">        popToSubstrate = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L43">        initialize(series);</span>
+        
+        // Create substrate array.
+<span class="fc" id="L46">        substrates = createSubstrate(potts.length + 2, potts.width + 2);</span>
+<span class="fc" id="L47">    }</span>
+    
+    @Override
+    public void register(PottsCell cell) {
+<span class="fc" id="L51">        int pop = cell.getPop();</span>
+<span class="fc" id="L52">        double substrate = popToSubstrate.get(pop);</span>
+<span class="fc" id="L53">        SubstrateHamiltonianConfig config = new SubstrateHamiltonianConfig(substrate);</span>
+<span class="fc" id="L54">        configs.put(cell.getID(), config);</span>
+<span class="fc" id="L55">    }</span>
+    
+    @Override
+    public void deregister(PottsCell cell) {
+<span class="fc" id="L59">        configs.remove(cell.getID());</span>
+<span class="fc" id="L60">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Substrate energy is calculated by summing across substrate voxels below
+     * the given voxel. Change in adhesion energy is taken as the difference in
+     * substrate energies for the source and target IDs.
+     */
+    @Override
+    public double getDelta(int sourceID, int targetID, int x, int y, int z) {
+<span class="fc" id="L71">        double source = getSubstrate(sourceID, x, y, z);</span>
+<span class="fc" id="L72">        double target = getSubstrate(targetID, x, y, z);</span>
+<span class="fc" id="L73">        return target - source;</span>
+    }
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Substrate energy is set to zero. Region voxels cannot adhere to
+     * substrate.
+     */
+    @Override
+    public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
+<span class="fc" id="L84">        return 0;</span>
+    }
+    
+    /**
+     * Gets substrate energy for a given voxel.
+     * &lt;p&gt;
+     * Substrate is assumed to be located at z = 0. Media (id = 0) returns zero
+     * for substrate energy. Substrate energy is scaled by distance from z = 0
+     * by a power function.
+     *
+     * @param id  the voxel id
+     * @param x  the x coordinate
+     * @param y  the y coordinate
+     * @param z  the z coordinate
+     * @return  the energy
+     */
+    double getSubstrate(int id, int x, int y, int z) {
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if (id &lt;= 0) {</span>
+<span class="fc" id="L102">            return 0;</span>
+        }
+        
+<span class="fc" id="L105">        double substrate = configs.get(id).getSubstrate();</span>
+<span class="fc" id="L106">        double substrateEnergy = 0;</span>
+        
+<span class="fc bfc" id="L108" title="All 2 branches covered.">        for (int i = x - 1; i &lt;= x + 1; i++) {</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">            for (int j = y - 1; j &lt;= y + 1; j++) {</span>
+<span class="fc" id="L110">                substrateEnergy -= substrates[i][j];</span>
+            }
+        }
+        
+<span class="fc" id="L114">        substrateEnergy = Math.pow(z, power) * substrateEnergy / NUMBER_NEIGHBORS * substrate;</span>
+<span class="fc" id="L115">        return substrateEnergy;</span>
+    }
+    
+    /**
+     * Initializes parameters for substrate hamiltonian term.
+     *
+     * @param series  the series instance
+     */
+    void initialize(PottsSeries series) {
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (series.populations == null) {</span>
+<span class="fc" id="L125">            return;</span>
+        }
+        
+<span class="fc" id="L128">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
+<span class="fc" id="L129">        MiniBox parameters = series.potts;</span>
+        
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        for (String key : keySet) {</span>
+<span class="fc" id="L132">            MiniBox population = series.populations.get(key);</span>
+<span class="fc" id="L133">            int pop = population.getInt(&quot;CODE&quot;);</span>
+            
+            // Get substrate adhesion value.
+<span class="fc" id="L136">            double substrate = parameters.getDouble(&quot;substrate/ADHESION&quot; + TARGET_SEPARATOR + key);</span>
+<span class="fc" id="L137">            popToSubstrate.put(pop, substrate);</span>
+<span class="fc" id="L138">        }</span>
+        
+        // Set term parameters.
+<span class="fc" id="L141">        double thresholdHeight = parameters.getDouble(&quot;substrate/HEIGHT_THRESHOLD&quot;);</span>
+<span class="fc" id="L142">        power = Math.log(THRESHOLD_FRACTION) / Math.log(thresholdHeight);</span>
+<span class="fc" id="L143">    }</span>
+    
+    /**
+     * Creates array representing substrate.
+     *
+     * @param length  the length (x direction) of potts array
+     * @param width  the width (y direction) of potts array
+     * @return  the substrate array
+     */
+    int[][] createSubstrate(int length, int width) {
+<span class="fc" id="L153">        int[][] arr = new int[length][width];</span>
+        
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        for (int i = 0; i &lt; length; i++) {</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">            for (int j = 0; j &lt; width; j++) {</span>
+<span class="fc" id="L157">                arr[i][j] = 1;</span>
+            }
+        }
+        
+<span class="fc" id="L161">        return arr;</span>
+    }
+    
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsSeries.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.sim</a> &gt; <span class="el_source">PottsSeries.java</span></div><h1>PottsSeries.java</h1><pre class="source lang-java linenums">package arcade.potts.sim;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import arcade.core.sim.Series;
+import arcade.core.util.Box;
+import arcade.core.util.MiniBox;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.util.PottsEnums.Term;
+
+/**
+ * Simulation manager for {@link PottsSimulation} instances.
+ */
+
+public final class PottsSeries extends Series {
+    /** Separator character for targets. */
+    public static final String TARGET_SEPARATOR = &quot;:&quot;;
+    
+    /** Map of potts settings. */
+    public MiniBox potts;
+    
+    /** List of Hamiltonian terms. */
+    public ArrayList&lt;Term&gt; terms;
+    
+    /**
+     * Creates a {@code Series} object given setup information parsed from XML.
+     *
+     * @param setupDicts  the map of attribute to value for single instance tags
+     * @param setupLists  the map of attribute to value for multiple instance tags
+     * @param path  the path for simulation output
+     * @param parameters  the default parameter values
+     * @param isVis  {@code true} if visualized, {@code false} otherwise
+     */
+    public PottsSeries(HashMap&lt;String, MiniBox&gt; setupDicts,
+                       HashMap&lt;String, ArrayList&lt;Box&gt;&gt; setupLists,
+                       String path, Box parameters, boolean isVis) {
+<span class="fc" id="L38">        super(setupDicts, setupLists, path, parameters, isVis);</span>
+<span class="fc" id="L39">    }</span>
+    
+    @Override
+    protected String getSimClass() {
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        return &quot;arcade.potts.sim.PottsSimulation&quot; + (height &gt; 1 ? &quot;3D&quot; : &quot;2D&quot;);</span>
+    }
+    
+    @Override
+    protected String getVisClass() {
+<span class="fc" id="L48">        return &quot;arcade.potts.vis.PottsVisualization&quot;;</span>
+    }
+    
+    /**
+     * Initializes series simulation, agents, and environment.
+     *
+     * @param setupLists  the map of attribute to value for multiple instance tags
+     * @param parameters  the default parameter values loaded from {@code parameter.xml}
+     */
+    @Override
+    protected void initialize(HashMap&lt;String, ArrayList&lt;Box&gt;&gt; setupLists, Box parameters) {
+        // Initialize populations.
+<span class="fc" id="L60">        MiniBox populationDefaults = parameters.getIdValForTag(&quot;POPULATION&quot;);</span>
+<span class="fc" id="L61">        MiniBox populationConversions = parameters.getIdValForTagAtt(&quot;POPULATION&quot;, &quot;conversion&quot;);</span>
+<span class="fc" id="L62">        ArrayList&lt;Box&gt; populationsBox = setupLists.get(&quot;populations&quot;);</span>
+<span class="fc" id="L63">        updatePopulations(populationsBox, populationDefaults, populationConversions);</span>
+        
+        // Initialize layers.
+<span class="fc" id="L66">        MiniBox layerDefaults = parameters.getIdValForTag(&quot;LAYER&quot;);</span>
+<span class="fc" id="L67">        MiniBox layerConversions = parameters.getIdValForTagAtt(&quot;LAYER&quot;, &quot;conversion&quot;);</span>
+<span class="fc" id="L68">        ArrayList&lt;Box&gt; layersBox = setupLists.get(&quot;layers&quot;);</span>
+<span class="fc" id="L69">        updateLayers(layersBox, layerDefaults, layerConversions);</span>
+        
+        // Add actions.
+<span class="fc" id="L72">        MiniBox actionDefaults = parameters.getIdValForTag(&quot;ACTION&quot;);</span>
+<span class="fc" id="L73">        ArrayList&lt;Box&gt; actionsBox = setupLists.get(&quot;actions&quot;);</span>
+<span class="fc" id="L74">        updateActions(actionsBox, actionDefaults);</span>
+        
+        // Add components.
+<span class="fc" id="L77">        MiniBox componentDefaults = parameters.getIdValForTag(&quot;COMPONENT&quot;);</span>
+<span class="fc" id="L78">        ArrayList&lt;Box&gt; componentsBox = setupLists.get(&quot;components&quot;);</span>
+<span class="fc" id="L79">        updateComponents(componentsBox, componentDefaults);</span>
+        
+        // Initialize potts.
+<span class="fc" id="L82">        MiniBox pottsDefaults = parameters.getIdValForTag(&quot;POTTS&quot;);</span>
+<span class="fc" id="L83">        MiniBox pottsConversions = parameters.getIdValForTagAtt(&quot;POTTS&quot;, &quot;conversion&quot;);</span>
+<span class="fc" id="L84">        ArrayList&lt;Box&gt; pottsBox = setupLists.get(&quot;potts&quot;);</span>
+<span class="fc" id="L85">        updatePotts(pottsBox, pottsDefaults, pottsConversions);</span>
+<span class="fc" id="L86">    }</span>
+    
+    /**
+     * Calculates potts model parameters.
+     *
+     * @param pottsBox  the potts setup dictionary
+     * @param pottsDefaults  the dictionary of default potts parameters
+     * @param pottsConversions  the dictionary of potts parameter conversions
+     */
+    void updatePotts(ArrayList&lt;Box&gt; pottsBox, MiniBox pottsDefaults,
+                     MiniBox pottsConversions) {
+<span class="fc" id="L97">        this.potts = new MiniBox();</span>
+        
+<span class="fc" id="L99">        Box box = new Box();</span>
+<span class="fc bfc" id="L100" title="All 6 branches covered.">        if (pottsBox != null &amp;&amp; pottsBox.size() == 1 &amp;&amp; pottsBox.get(0) != null) {</span>
+<span class="fc" id="L101">            box = pottsBox.get(0);</span>
+        }
+        
+        // Get default parameters and any parameter tags.
+<span class="fc" id="L105">        Box parameters = box.filterBoxByTag(&quot;PARAMETER&quot;);</span>
+<span class="fc" id="L106">        MiniBox parameterValues = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;value&quot;);</span>
+<span class="fc" id="L107">        MiniBox parameterScales = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;scale&quot;);</span>
+        
+        // Add in parameters. Start with value (if given) or default (if not
+        // given). Then apply any scaling.
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        for (String parameter : pottsDefaults.getKeys()) {</span>
+<span class="fc" id="L112">            parseParameter(this.potts, parameter, pottsDefaults.get(parameter),</span>
+                    parameterValues, parameterScales);
+            
+<span class="fc bfc" id="L115" title="All 2 branches covered.">            if (parameter.contains(TAG_SEPARATOR)) {</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">                for (String pop : populations.keySet()) {</span>
+<span class="fc" id="L117">                    parseParameter(this.potts, parameter + TARGET_SEPARATOR + pop,</span>
+<span class="fc" id="L118">                            this.potts.get(parameter), parameterValues, parameterScales);</span>
+<span class="fc" id="L119">                }</span>
+            }
+<span class="fc" id="L121">        }</span>
+        
+        // Add adhesion values for each population and media (*). Values
+        // are set as equal to the default (or adjusted) value, before
+        // any specific values or scaling is applied.
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        for (String source : populations.keySet()) {</span>
+<span class="fc" id="L127">            String adhesion = &quot;adhesion/ADHESION&quot; + TARGET_SEPARATOR + source;</span>
+<span class="fc" id="L128">            parseParameter(this.potts, adhesion + TARGET_SEPARATOR + &quot;*&quot;,</span>
+<span class="fc" id="L129">                    this.potts.get(adhesion), parameterValues, parameterScales);</span>
+            
+<span class="fc bfc" id="L131" title="All 2 branches covered.">            for (String target : populations.keySet()) {</span>
+<span class="fc" id="L132">                parseParameter(this.potts, adhesion + TARGET_SEPARATOR + target,</span>
+<span class="fc" id="L133">                        this.potts.get(adhesion), parameterValues, parameterScales);</span>
+<span class="fc" id="L134">            }</span>
+<span class="fc" id="L135">        }</span>
+        
+        // Add adhesion values for each population that has regions.
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        for (String pop : populations.keySet()) {</span>
+<span class="fc" id="L139">            ArrayList&lt;String&gt; regions = populations.get(pop).filter(&quot;(REGION)&quot;).getKeys();</span>
+            
+<span class="fc bfc" id="L141" title="All 2 branches covered.">            for (String source : regions) {</span>
+<span class="fc" id="L142">                String adhesion = &quot;adhesion/ADHESION_&quot; + source + TARGET_SEPARATOR + pop;</span>
+                
+<span class="fc bfc" id="L144" title="All 2 branches covered.">                for (String target : regions) {</span>
+<span class="fc" id="L145">                    parseParameter(this.potts, adhesion + TARGET_SEPARATOR + target,</span>
+<span class="fc" id="L146">                            this.potts.get(adhesion), parameterValues, parameterScales);</span>
+<span class="fc" id="L147">                }</span>
+<span class="fc" id="L148">            }</span>
+<span class="fc" id="L149">        }</span>
+        
+        // Apply conversion factors.
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        for (String convert : pottsConversions.getKeys()) {</span>
+<span class="fc" id="L153">            double conversion = parseConversion(pottsConversions.get(convert), ds, dt);</span>
+<span class="fc" id="L154">            this.potts.put(convert, this.potts.getDouble(convert) * conversion);</span>
+            
+<span class="fc bfc" id="L156" title="All 2 branches covered.">            if (convert.contains(TAG_SEPARATOR)) {</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">                for (String pop : populations.keySet()) {</span>
+<span class="fc" id="L158">                    String convertPop = convert + TARGET_SEPARATOR + pop;</span>
+<span class="fc" id="L159">                    this.potts.put(convertPop, this.potts.getDouble(convertPop) * conversion);</span>
+<span class="fc" id="L160">                }</span>
+            }
+<span class="fc" id="L162">        }</span>
+        
+        // Get list of terms.
+<span class="fc" id="L165">        this.terms = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">        for (String term : box.filterTags(&quot;TERM&quot;)) {</span>
+<span class="fc" id="L167">            terms.add(Term.valueOf(term.toUpperCase()));</span>
+<span class="fc" id="L168">        }</span>
+<span class="fc" id="L169">    }</span>
+    
+    @Override
+    protected void updatePopulations(ArrayList&lt;Box&gt; populationsBox, MiniBox populationDefaults,
+                                     MiniBox populationConversions) {
+<span class="fc" id="L174">        this.populations = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (populationsBox == null) {</span>
+<span class="fc" id="L176">            return;</span>
+        }
+        
+        // Assign codes to each population.
+<span class="fc" id="L180">        int code = 1;</span>
+        
+        // Iterate through each setup dictionary to build population settings.
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        for (Box box : populationsBox) {</span>
+<span class="fc" id="L184">            String id = box.getValue(&quot;id&quot;);</span>
+            
+            // Create new population and update code.
+<span class="fc" id="L187">            MiniBox population = new MiniBox();</span>
+<span class="fc" id="L188">            population.put(&quot;CODE&quot;, code++);</span>
+<span class="fc" id="L189">            this.populations.put(id, population);</span>
+            
+            // Add population init if given. If not given or invalid, set to zero.
+<span class="fc bfc" id="L192" title="All 4 branches covered.">            if (box.contains(&quot;init&quot;) &amp;&amp; box.getValue(&quot;init&quot;).contains(&quot;:&quot;)) {</span>
+<span class="fc" id="L193">                String[] initString = box.getValue(&quot;init&quot;).split(&quot;:&quot;);</span>
+                
+<span class="fc" id="L195">                box.add(&quot;init&quot;, initString[0]);</span>
+<span class="fc" id="L196">                box.add(&quot;padding&quot;, initString[1]);</span>
+                
+<span class="fc bfc" id="L198" title="All 2 branches covered.">                int padding = (isValidNumber(box, &quot;padding&quot;)</span>
+<span class="fc" id="L199">                        ? (int) Double.parseDouble(box.getValue(&quot;padding&quot;)) : 0);</span>
+<span class="fc" id="L200">                population.put(&quot;PADDING&quot;, padding);</span>
+            }
+            
+<span class="fc bfc" id="L203" title="All 2 branches covered.">            int init = (isValidNumber(box, &quot;init&quot;)</span>
+<span class="fc" id="L204">                    ? (int) Double.parseDouble(box.getValue(&quot;init&quot;)) : 0);</span>
+<span class="fc" id="L205">            population.put(&quot;INIT&quot;, init);</span>
+            
+            // Get default parameters and any parameter adjustments.
+<span class="fc" id="L208">            Box parameters = box.filterBoxByTag(&quot;PARAMETER&quot;);</span>
+<span class="fc" id="L209">            MiniBox parameterValues = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;value&quot;);</span>
+<span class="fc" id="L210">            MiniBox parameterScales = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;scale&quot;);</span>
+            
+            // Add in parameters. Start with value (if given) or default (if not
+            // given). Then apply any scaling.
+<span class="fc bfc" id="L214" title="All 2 branches covered.">            for (String parameter : populationDefaults.getKeys()) {</span>
+<span class="fc" id="L215">                parseParameter(population, parameter, populationDefaults.get(parameter),</span>
+                        parameterValues, parameterScales);
+<span class="fc" id="L217">            }</span>
+            
+            // Get list of regions, if valid.
+<span class="fc" id="L220">            HashSet&lt;String&gt; regions = box.filterTags(&quot;REGION&quot;);</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">            for (String region : regions) {</span>
+<span class="fc" id="L222">                population.put(&quot;(REGION)&quot; + TAG_SEPARATOR + region, &quot;&quot;);</span>
+<span class="fc" id="L223">            }</span>
+            
+            // Apply conversion factors.
+<span class="fc bfc" id="L226" title="All 2 branches covered.">            for (String convert : populationConversions.getKeys()) {</span>
+<span class="fc" id="L227">                double conversion = parseConversion(populationConversions.get(convert), ds, dt);</span>
+<span class="fc" id="L228">                population.put(convert, population.getDouble(convert) * conversion);</span>
+<span class="fc" id="L229">            }</span>
+<span class="fc" id="L230">        }</span>
+<span class="fc" id="L231">    }</span>
+    
+    @Override
+    protected void updateLayers(ArrayList&lt;Box&gt; layersBox, MiniBox layerDefaults,
+                                MiniBox layerConversions) {
+        // TODO
+<span class="fc" id="L237">    }</span>
+    
+    @Override
+    protected void updateActions(ArrayList&lt;Box&gt; actionsBox, MiniBox actionDefaults) {
+        // TODO
+<span class="fc" id="L242">    }</span>
+    
+    @Override
+    protected void updateComponents(ArrayList&lt;Box&gt; componentsBox, MiniBox componentDefaults) {
+        // TODO
+<span class="fc" id="L247">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

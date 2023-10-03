@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsInputBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.sim.input</a> &gt; <span class="el_source">PottsInputBuilder.java</span></div><h1>PottsInputBuilder.java</h1><pre class="source lang-java linenums">package arcade.potts.sim.input;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import org.xml.sax.Attributes;
+import arcade.core.sim.input.InputBuilder;
+import arcade.core.util.Box;
+import arcade.core.util.MiniBox;
+import arcade.potts.sim.PottsSeries;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
+
+/**
+ * Custom builder for potts-specific simulation setup XMLs.
+ */
+
+public final class PottsInputBuilder extends InputBuilder {
+    /**
+     * Creates a {@code PottsInputBuilder} instance.
+     */
+<span class="fc" id="L21">    public PottsInputBuilder() { super(); }</span>
+    
+    /**
+     * Updates a {@link arcade.core.util.Box} dictionary with tagged
+     * attributes.
+     * &lt;p&gt;
+     * Attributes are added to the last entry in the list of dictionaries. One
+     * of the attributes must be &quot;id&quot; which is used as the id for the entry.
+     * Attributes &quot;tag&quot; and &quot;target&quot; are concatenated to the id as
+     * tag/id:target.
+     *
+     * @param list  the list the box is in
+     * @param tag  the entry tag
+     * @param atts  the attributes to add
+     */
+    void updateBox(String list, String tag, Attributes atts) {
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        String listName = list + (list.equals(&quot;potts&quot;) ? &quot;&quot; : &quot;s&quot;);</span>
+<span class="fc" id="L38">        ArrayList&lt;Box&gt; lists = setupLists.get(listName);</span>
+<span class="fc" id="L39">        Box box = lists.get(lists.size() - 1);</span>
+        
+<span class="fc" id="L41">        int numAtts = atts.getLength();</span>
+        String id;
+        String module;
+        String target;
+        String term;
+        
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (numAtts &gt; 0) {</span>
+            // Entry can have at most one of the following tags: module, term.
+<span class="fc bfc" id="L49" title="All 2 branches covered.">            boolean hasModule = atts.getValue(&quot;module&quot;) != null;</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            boolean hasTerm = atts.getValue(&quot;term&quot;) != null;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            if (hasModule &amp; hasTerm) {</span>
+<span class="fc" id="L52">                return;</span>
+            }
+            
+            // Get any tags (module or term) or target.
+<span class="fc bfc" id="L56" title="All 2 branches covered.">            term = (atts.getValue(&quot;term&quot;) == null</span>
+                    ? &quot;&quot;
+<span class="fc" id="L58">                    : atts.getValue(&quot;term&quot;).toLowerCase() + TAG_SEPARATOR);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">            module = (atts.getValue(&quot;module&quot;) == null</span>
+                    ? &quot;&quot;
+<span class="fc" id="L61">                    : atts.getValue(&quot;module&quot;).toLowerCase() + TAG_SEPARATOR);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            target = (atts.getValue(&quot;target&quot;) == null</span>
+                    ? &quot;&quot;
+<span class="fc" id="L64">                    : TARGET_SEPARATOR + atts.getValue(&quot;target&quot;));</span>
+            
+            // Create id by combining tags, id, and target.
+<span class="fc" id="L67">            id = module + term + atts.getValue(&quot;id&quot;) + target;</span>
+<span class="fc" id="L68">            box.addTag(id, tag.toUpperCase());</span>
+            
+<span class="fc bfc" id="L70" title="All 2 branches covered.">            for (int i = 0; i &lt; numAtts; i++) {</span>
+<span class="fc" id="L71">                String name = atts.getQName(i);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">                switch (name) {</span>
+                    case &quot;id&quot;:
+                    case &quot;module&quot;:
+                    case &quot;target&quot;:
+                    case &quot;term&quot;:
+<span class="fc" id="L77">                        break;</span>
+                    default:
+<span class="fc" id="L79">                        box.addAtt(id, name, atts.getValue(i));</span>
+                }
+            }
+        }
+<span class="fc" id="L83">    }</span>
+    
+    @Override
+    public void startElement(String uri, String local, String name, Attributes atts) {
+<span class="fc" id="L87">        LOGGER.fine(&quot;start element [ &quot; + name + &quot; ]&quot;);</span>
+        
+<span class="fc bfc" id="L89" title="All 5 branches covered.">        switch (name) {</span>
+            case &quot;set&quot;:
+            case &quot;series&quot;:
+<span class="fc" id="L92">                MiniBox minibox = makeMiniBox(atts);</span>
+<span class="fc" id="L93">                setupDicts.put(name, minibox);</span>
+<span class="fc" id="L94">                break;</span>
+            case &quot;potts&quot;:
+<span class="fc" id="L96">                setupLists.put(name, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L97">                setupLists.get(name).add(new Box());</span>
+<span class="fc" id="L98">                break;</span>
+            case &quot;populations&quot;:
+<span class="fc" id="L100">                setupLists.put(name, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L101">                break;</span>
+            case &quot;population&quot;:
+<span class="fc" id="L103">                Box box = makeBox(atts);</span>
+<span class="fc" id="L104">                setupLists.get(name + &quot;s&quot;).add(box);</span>
+<span class="fc" id="L105">                break;</span>
+            default:
+                break;
+        }
+        
+<span class="fc" id="L110">        String[] split = name.split(&quot;\\.&quot;);</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (split.length == 2) {</span>
+<span class="fc" id="L112">            updateBox(split[0], split[1], atts);</span>
+        }
+<span class="fc" id="L114">    }</span>
+    
+    @Override
+    public void endElement(String uri, String local, String name) {
+<span class="fc" id="L118">        LOGGER.fine(&quot;end element [ &quot; + name + &quot; ]&quot;);</span>
+        
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        switch (name) {</span>
+            case &quot;series&quot;:
+<span class="fc" id="L122">                series.add(new PottsSeries(setupDicts, setupLists, path, parameters, isVis));</span>
+<span class="fc" id="L123">                MiniBox set = setupDicts.get(&quot;set&quot;);</span>
+<span class="fc" id="L124">                setupDicts = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L125">                setupLists = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L126">                setupDicts.put(&quot;set&quot;, set);</span>
+<span class="fc" id="L127">                break;</span>
+            default:
+                break;
+        }
+<span class="fc" id="L131">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

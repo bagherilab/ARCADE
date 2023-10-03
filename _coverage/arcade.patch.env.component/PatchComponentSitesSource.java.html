@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchComponentSitesSource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.component</a> &gt; <span class="el_source">PatchComponentSitesSource.java</span></div><h1>PatchComponentSitesSource.java</h1><pre class="source lang-java linenums">package arcade.patch.env.component;
+
+import sim.engine.SimState;
+import arcade.core.sim.Series;
+import arcade.core.util.MiniBox;
+
+/**
+ * Extension of {@link PatchComponentSites} for source sites.
+ * &lt;p&gt;
+ * Each index in the lattice can be assigned as a source, depending on the
+ * initial spacings in the x direction (length, {@code X_SPACING}), y direction
+ * (width, {@code Y_SPACING}), and z direction (height, {@code Z_SPACING}). Each
+ * spacing can be defined as:
+ * &lt;ul&gt;
+ *     &lt;li&gt;{@code *} = all indices in the lattice&lt;/li&gt;
+ *     &lt;li&gt;{@code x} or {@code X} = no indices in the lattice&lt;/li&gt;
+ *     &lt;li&gt;{@code *:INC} = all indices in the lattice incremented by INC
+ *         (i = 0, INC, 2*INC, ... , n*INC) where n*INC &amp;le; lattice size&lt;/li&gt;
+ *     &lt;li&gt;{@code INDEX} = only index INDEX&lt;/li&gt;
+ *     &lt;li&gt;{@code MIN:MAX} = all indices between MIN and MAX, inclusive&lt;/li&gt;
+ *     &lt;li&gt;{@code MIN:INC:MAX} = all indices between MIN and MAX incremented
+ *         by INC (i = MIN, MIN + INC, MIN + 2*INC, ... , MIN + n*INC) where
+ *         MIN + n*INC &amp;le; MAX&lt;/li&gt;
+ * &lt;/ul&gt;
+ * &lt;p&gt;
+ * Setting all spacings to {@code *} creates a constant source.
+ * Setting any spacings to {@code x} removes all sites.
+ * &lt;p&gt;
+ * The amount of concentration added to each index is the difference between
+ * the concentration at the index and the source concentration of the molecule.
+ * Sites can be damaged by setting the {@code DAMAGE_SCALING} parameter, which
+ * reduces the amount of concentration added at each index.
+ */
+
+public class PatchComponentSitesSource extends PatchComponentSites {
+    /** Array holding locations of sources. */
+    private final boolean[][][] sources;
+    
+    /** Array of damage instances. */
+    private final double[][][] damageSingle;
+    
+    /** Array of damage value multipliers. */
+    private final double[][][] damageValues;
+    
+    /** Source site damage scaling. */
+    private final double damageScaling;
+    
+    /** Spacing of sources in x direction. */
+    private final String[] xSpacing;
+    
+    /** Spacing of sources in y direction. */
+    private final String[] ySpacing;
+    
+    /** Spacing of sources in z direction. */
+    private final String[] zSpacing;
+    
+    /** {@code true} if damage is calculated, {@code false} otherwise. */
+    private final boolean calculateDamage;
+    
+    /**
+     * Creates a {@link PatchComponentSites} using source sites.
+     * &lt;p&gt;
+     * Loaded parameters include:
+     * &lt;ul&gt;
+     *     &lt;li&gt;{@code X_SPACING} = spacing of sources in x direction&lt;/li&gt;
+     *     &lt;li&gt;{@code Y_SPACING} = spacing of sources in y direction&lt;/li&gt;
+     *     &lt;li&gt;{@code Z_SPACING} = spacing of sources in z direction&lt;/li&gt;
+     *     &lt;li&gt;{@code DAMAGE_SCALING} = source site damage scaling&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param series  the simulation series
+     * @param parameters  the component parameters dictionary
+     */
+    public PatchComponentSitesSource(Series series, MiniBox parameters) {
+<span class="nc" id="L75">        super(series);</span>
+        
+        // Set loaded parameters.
+<span class="nc" id="L78">        damageScaling = parameters.getDouble(&quot;DAMAGE_SCALING&quot;);</span>
+<span class="nc" id="L79">        xSpacing = parameters.get(&quot;X_SPACING&quot;).split(&quot;:&quot;);</span>
+<span class="nc" id="L80">        ySpacing = parameters.get(&quot;Y_SPACING&quot;).split(&quot;:&quot;);</span>
+<span class="nc" id="L81">        zSpacing = parameters.get(&quot;Z_SPACING&quot;).split(&quot;:&quot;);</span>
+        
+        // Set boolean.
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        calculateDamage = damageScaling != 0;</span>
+        
+        // Create and initialize arrays.
+<span class="nc" id="L87">        sources = new boolean[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L88">        damageSingle = new double[latticeHeight][latticeLength][latticeWidth];</span>
+<span class="nc" id="L89">        damageValues = new double[latticeHeight][latticeLength][latticeWidth];</span>
+        
+<span class="nc" id="L91">        initializeSourceArray();</span>
+<span class="nc" id="L92">        initializeDamageArrays();</span>
+<span class="nc" id="L93">    }</span>
+    
+    /**
+     * Gets the underlying source sites array.
+     *
+     * @return  the source sites array
+     */
+<span class="nc" id="L100">    public boolean[][][] getSources() { return sources; }</span>
+    
+    /**
+     * Gets the underlying source damage array.
+     *
+     * @return  the source damage array
+     */
+<span class="nc" id="L107">    public double[][][] getDamage() { return damageSingle; }</span>
+    
+    /**
+     * Initializes sites in source array.
+     * &lt;p&gt;
+     * Iterates through each index in the source lattice and assigns it as a
+     * source site or not, depending on the specified spacings.
+     */
+    void initializeSourceArray() {
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">            for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                    if (checkSourceIndex(xSpacing, i)) {</span>
+<span class="nc" id="L120">                        continue;</span>
+                    }
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                    if (checkSourceIndex(ySpacing, j)) {</span>
+<span class="nc" id="L123">                        continue;</span>
+                    }
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                    if (checkSourceIndex(zSpacing, k)) {</span>
+<span class="nc" id="L126">                        continue;</span>
+                    }
+<span class="nc" id="L128">                    sources[k][i][j] = true;</span>
+                }
+            }
+        }
+<span class="nc" id="L132">    }</span>
+    
+    /**
+     * Initializes damage array to 1.0 (no damage).
+     */
+    void initializeDamageArrays() {
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">            for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc" id="L141">                    damageValues[k][i][j] = 1.0;</span>
+                }
+            }
+        }
+<span class="nc" id="L145">    }</span>
+    
+    /**
+     * Checks if a given index is a valid source site.
+     *
+     * @param spacing  the site spacing
+     * @param index  the source site index
+     * @return  {@code true} if the index is valid, {@code false} otherwise
+     */
+    boolean checkSourceIndex(String[] spacing, int index) {
+        int min;
+        int max;
+<span class="nc" id="L157">        int inc = 1;</span>
+        
+        // Site definition is given as a single value, min-max, or min-inc-max.
+<span class="nc bnc" id="L160" title="All 2 branches missed.">        if (spacing[0].equals(&quot;*&quot;)) {</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">            if (spacing.length == 1) {</span>
+<span class="nc" id="L162">                return false;</span>
+            }
+<span class="nc" id="L164">            inc = Integer.parseInt(spacing[1]);</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">            return index % inc != 0;</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        } else if (spacing[0].equalsIgnoreCase(&quot;x&quot;)) {</span>
+<span class="nc" id="L167">            return true;</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        } else if (spacing.length == 1) {</span>
+<span class="nc" id="L169">            min = Integer.parseInt(spacing[0]);</span>
+<span class="nc" id="L170">            max = Integer.parseInt(spacing[0]);</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        } else if (spacing.length == 3) {</span>
+<span class="nc" id="L172">            min = Integer.parseInt(spacing[0]);</span>
+<span class="nc" id="L173">            inc = Integer.parseInt(spacing[1]);</span>
+<span class="nc" id="L174">            max = Integer.parseInt(spacing[2]);</span>
+        } else {
+<span class="nc" id="L176">            min = Integer.parseInt(spacing[0]);</span>
+<span class="nc" id="L177">            max = Integer.parseInt(spacing[1]);</span>
+        }
+        
+<span class="nc bnc" id="L180" title="All 6 branches missed.">        return index &lt; min || index &gt; max || (index - min) % inc != 0;</span>
+    }
+    
+    @Override
+    public void step(SimState simstate) {
+        // Iterate through array to calculate damage, if needed.
+<span class="nc bnc" id="L186" title="All 2 branches missed.">        if (calculateDamage) {</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">                        if (sources[k][i][j]) {</span>
+<span class="nc" id="L191">                            damageValues[k][i][j] = 1.0</span>
+<span class="nc" id="L192">                                    / Math.exp(damageScaling * damageSingle[k][i][j]);</span>
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Iterate through each layer and each array to assign updates.
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        for (SiteLayer layer : layers) {</span>
+<span class="nc" id="L201">            double[][][] delta = layer.delta;</span>
+<span class="nc" id="L202">            double[][][] previous = layer.previous;</span>
+<span class="nc" id="L203">            double concentration = layer.concentration;</span>
+            
+<span class="nc bnc" id="L205" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">                        if (sources[k][i][j]) {</span>
+<span class="nc" id="L209">                            delta[k][i][j] = Math.max((concentration - previous[k][i][j])</span>
+                                    * damageValues[k][i][j], 0);
+                        }
+                    }
+                }
+            }
+<span class="nc" id="L215">        }</span>
+<span class="nc" id="L216">    }</span>
+    
+    // TODO add in damage increases for movement into and out of a location
+    //        if (sim.getAgents().getNumObjectsAtLocation(newLoc) &gt; 1) {
+    //            int zNew = newLoc.getLatZ();
+    //            for (int[] i : newLoc.getLatLocations()) { damageSingle[zNew][i[0]][i[1]]++; }
+    //            int zOld = oldLoc.getLatZ();
+    //            for (int[] i : oldLoc.getLatLocations()) { damageSingle[zOld][i[0]][i[1]]++; }
+    //        }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

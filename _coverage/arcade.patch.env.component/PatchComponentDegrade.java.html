@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchComponentDegrade.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.component</a> &gt; <span class="el_source">PatchComponentDegrade.java</span></div><h1>PatchComponentDegrade.java</h1><pre class="source lang-java linenums">package arcade.patch.env.component;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.util.Bag;
+import arcade.core.agent.cell.Cell;
+import arcade.core.env.component.Component;
+import arcade.core.env.location.Location;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import arcade.core.util.Graph;
+import arcade.core.util.MiniBox;
+import arcade.patch.agent.cell.PatchCellCancer;
+import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.location.CoordinateXYZ;
+import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.MINIMUM_WALL_THICKNESS;
+import static arcade.patch.util.PatchEnums.Ordering;
+
+/**
+ * Implementation of {@link Component} for degrading graph edges.
+ * &lt;p&gt;
+ * This component can only be used with {@link PatchComponentSitesGraph}. The
+ * component is stepped every {@code DEGRADATION_INTERVAL} ticks. wall thickness
+ * of edges that are adjacent to a location with cancerous cells is decreased
+ * ({@code DEGRADATION_RATE}). Edges that are below a minimum wall thickness and
+ * have a shear stress below the shear threshold ({@code SHEAR_THRESHOLD}) are
+ * removed from the graph. At the end of a step, if no edges have been removed
+ * from the graph, then only the stresses in the graph are recalculated.
+ * Otherwise, all hemodynamic properties are recalculated.
+ */
+
+public class PatchComponentDegrade implements Component {
+    /** Interval between degradation steps [min]. */
+    private final int degradationInterval;
+    
+    /** Rate of wall thickness degradation [um/min]. */
+    private final double degradationRate;
+    
+    /** Shear threshold for vessel collapse [mmHg]. */
+    private final double shearThreshold;
+    
+    /** The associated {@link PatchComponentSitesGraph} object. */
+    private PatchComponentSitesGraph sites;
+    
+    /** The {@link Graph} object representing the sites. */
+    private Graph graph;
+    
+    /**
+     * Creates a {@code Component} object for degrading graph sites.
+     * &lt;p&gt;
+     * Loaded parameters include:
+     * &lt;ul&gt;
+     *     &lt;li&gt;{@code DEGRADATION_INTERVAL} = interval between degradation steps&lt;/li&gt;
+     *     &lt;li&gt;{@code DEGRADATION_RATE} = rate of wall thickness degradation&lt;/li&gt;
+     *     &lt;li&gt;{@code SHEAR_THRESHOLD} = shear threshold for vessel collapse&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param series  the simulation series
+     * @param parameters  the component parameters dictionary
+     */
+<span class="nc" id="L64">    public PatchComponentDegrade(Series series, MiniBox parameters) {</span>
+        // Set loaded parameters.
+<span class="nc" id="L66">        degradationInterval = parameters.getInt(&quot;DEGRADATION_INTERVAL&quot;);</span>
+<span class="nc" id="L67">        degradationRate = parameters.getDouble(&quot;DEGRADATION_RATE&quot;);</span>
+<span class="nc" id="L68">        shearThreshold = parameters.getDouble(&quot;SHEAR_THRESHOLD&quot;);</span>
+<span class="nc" id="L69">    }</span>
+    
+    @Override
+    public void schedule(Schedule schedule) {
+<span class="nc" id="L73">        schedule.scheduleRepeating(this, Ordering.LAST_COMPONENT.ordinal(), degradationInterval);</span>
+<span class="nc" id="L74">    }</span>
+    
+    @Override
+    public void register(Simulation sim, String layer) {
+<span class="nc" id="L78">        Component component = sim.getComponent(layer);</span>
+        
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (!(component instanceof PatchComponentSitesGraph)) {</span>
+<span class="nc" id="L81">            return;</span>
+        }
+        
+<span class="nc" id="L84">        sites = (PatchComponentSitesGraph) component;</span>
+<span class="nc" id="L85">        graph = sites.graph;</span>
+<span class="nc" id="L86">    }</span>
+    
+    @Override
+    public void step(SimState state) {
+<span class="nc" id="L90">        Simulation sim = (Simulation) state;</span>
+<span class="nc" id="L91">        PatchGrid grid = (PatchGrid) sim.getGrid();</span>
+<span class="nc" id="L92">        boolean removed = false;</span>
+        
+        // Iterate through all edges and degrade if there are cancerous cells.
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        for (Object edgeObj : new Bag(graph.getAllEdges())) {</span>
+<span class="nc" id="L96">            SiteEdge edge = (SiteEdge) edgeObj;</span>
+<span class="nc" id="L97">            HashSet&lt;Location&gt; locations = new HashSet&lt;&gt;();</span>
+            
+            // Get set of agent locations from edge span.
+<span class="nc bnc" id="L100" title="All 2 branches missed.">            for (CoordinateXYZ span : edge.span) {</span>
+<span class="nc" id="L101">                locations.add(sites.getLocation(span));</span>
+<span class="nc" id="L102">            }</span>
+            
+            // Get agents at locations.
+<span class="nc" id="L105">            locations.remove(null);</span>
+<span class="nc" id="L106">            Bag agents = grid.getObjectsAtLocations(new ArrayList&lt;&gt;(locations));</span>
+            
+            // If any agents are cancerous, then degrade the wall.
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            for (Object cellObj : agents) {</span>
+<span class="nc" id="L110">                Cell cell = (Cell) cellObj;</span>
+                
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                if (cell instanceof PatchCellCancer) {</span>
+<span class="nc" id="L113">                    edge.wall -= degradationRate / 60.0;</span>
+<span class="nc" id="L114">                    edge.wall = Math.max(MINIMUM_WALL_THICKNESS, edge.wall);</span>
+                    
+<span class="nc bnc" id="L116" title="All 4 branches missed.">                    if (edge.wall &lt;= MINIMUM_WALL_THICKNESS</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                            &amp;&amp; (edge.shear &lt; shearThreshold || Double.isNaN(edge.shear))) {</span>
+<span class="nc" id="L118">                        graph.removeEdge(edge);</span>
+<span class="nc" id="L119">                        edge.getFrom().pressure = Double.NaN;</span>
+<span class="nc" id="L120">                        edge.getTo().pressure = Double.NaN;</span>
+<span class="nc" id="L121">                        removed = true;</span>
+                    }
+                    
+                    break;
+                }
+<span class="nc" id="L126">            }</span>
+<span class="nc" id="L127">        }</span>
+        
+        // If any edges are removed, update the graph edges that are ignored.
+        // Otherwise, recalculate calculate stresses.
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (removed) {</span>
+<span class="nc" id="L132">            PatchComponentSitesGraphUtilities.updateGraph(graph);</span>
+        } else {
+<span class="nc" id="L134">            PatchComponentSitesGraphUtilities.calculateStresses(graph);</span>
+        }
+<span class="nc" id="L136">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

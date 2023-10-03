@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Potts2D.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.sim</a> &gt; <span class="el_source">Potts2D.java</span></div><h1>Potts2D.java</h1><pre class="source lang-java linenums">package arcade.potts.sim;
+
+import java.util.HashSet;
+import arcade.potts.sim.hamiltonian.AdhesionHamiltonian2D;
+import arcade.potts.sim.hamiltonian.Hamiltonian;
+import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
+import arcade.potts.sim.hamiltonian.SurfaceHamiltonian2D;
+import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
+import static arcade.potts.util.PottsEnums.Term;
+
+/**
+ * Extension of {@link Potts} for 2D.
+ */
+
+public final class Potts2D extends Potts {
+    /** Number of neighbors. */
+    public static final int NUMBER_NEIGHBORS = 4;
+    
+    /** List of x direction movements (N, E, S, W). */
+<span class="fc" id="L20">    public static final int[] MOVES_X = { 0, 1, 0, -1 };</span>
+    
+    /** List of y direction movements (N, E, S, W). */
+<span class="fc" id="L23">    public static final int[] MOVES_Y = { -1, 0, 1, 0 };</span>
+    
+    /** List of x direction corner movements (NE, SE, SW, NW). */
+<span class="fc" id="L26">    private static final int[] CORNER_X = { 1, 1, -1, -1 };</span>
+    
+    /** List of y direction corner movements (NE, SE, SW, NW). */
+<span class="fc" id="L29">    private static final int[] CORNER_Y = { -1, 1, 1, -1 };</span>
+    
+    /**
+     * Creates a cellular {@code Potts} model in 2D.
+     *
+     * @param series  the simulation series
+     */
+<span class="fc" id="L36">    public Potts2D(PottsSeries series) { super(series); }</span>
+    
+    @Override
+    Hamiltonian getHamiltonian(Term term, PottsSeries series) {
+<span class="fc bfc" id="L40" title="All 5 branches covered.">        switch (term) {</span>
+            case ADHESION:
+<span class="fc" id="L42">                return new AdhesionHamiltonian2D(series, this);</span>
+            case VOLUME:
+<span class="fc" id="L44">                return new VolumeHamiltonian(series);</span>
+            case SURFACE:
+<span class="fc" id="L46">                return new SurfaceHamiltonian2D(series, this);</span>
+            case PERSISTENCE:
+<span class="fc" id="L48">                return new PersistenceHamiltonian(series);</span>
+            default:
+<span class="fc" id="L50">                return null;</span>
+        }
+    }
+    
+    @Override
+    boolean[][][] getNeighborhood(int id, int x, int y, int z) {
+<span class="fc" id="L56">        boolean[][] array = new boolean[3][3];</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        for (int i = 0; i &lt; 3; i++) {</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">            for (int j = 0; j &lt; 3; j++) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                array[i][j] = ids[0][i + x - 1][j + y - 1] == id;</span>
+            }
+        }
+<span class="fc" id="L62">        return new boolean[][][] { array };</span>
+    }
+    
+    @Override
+    boolean[][][] getNeighborhood(int id, int region, int x, int y, int z) {
+<span class="fc" id="L67">        boolean[][] array = new boolean[3][3];</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        for (int i = 0; i &lt; 3; i++) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            for (int j = 0; j &lt; 3; j++) {</span>
+<span class="fc bfc" id="L70" title="All 4 branches covered.">                array[i][j] = ids[0][i + x - 1][j + y - 1] == id</span>
+                        &amp;&amp; regions[0][i + x - 1][j + y - 1] == region;
+            }
+        }
+<span class="fc" id="L74">        return new boolean[][][] { array };</span>
+    }
+    
+    @Override
+    boolean getConnectivity(boolean[][][] array, boolean zero) {
+<span class="fc" id="L79">        boolean[][] subarray = array[0];</span>
+<span class="fc" id="L80">        int links = 0;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">            if (subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]]) {</span>
+<span class="fc" id="L83">                links++;</span>
+            }
+        }
+        
+<span class="fc bfc" id="L87" title="All 5 branches covered.">        switch (links) {</span>
+            case 1:
+<span class="fc" id="L89">                return true;</span>
+            case 2:
+<span class="fc" id="L91">                return getConnectivityTwoNeighbors(subarray);</span>
+            case 3:
+<span class="fc" id="L93">                return getConnectivityThreeNeighbors(subarray);</span>
+            case 4:
+<span class="fc" id="L95">                return zero;</span>
+            default:
+<span class="fc" id="L97">                return false;</span>
+        }
+    }
+    
+    /**
+     * Determines simple connectivity for a position with two neighbors.
+     *
+     * @param subarray  the local neighborhood array
+     * @return  {@code true} if simply connected, {@code false} otherwise
+     */
+    private boolean getConnectivityTwoNeighbors(boolean[][] subarray) {
+<span class="fc bfc" id="L108" title="All 4 branches covered.">        if (subarray[1][2] &amp;&amp; subarray[1][0]) {</span>
+            // Check for opposites N / S
+<span class="fc" id="L110">            return false;</span>
+<span class="fc bfc" id="L111" title="All 4 branches covered.">        } else if (subarray[2][1] &amp;&amp; subarray[0][1]) {</span>
+            // Check for opposites E / W
+<span class="fc" id="L113">            return false;</span>
+        } else {
+            // Check for corners
+<span class="fc bfc" id="L116" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
+<span class="fc" id="L117">                boolean check1 = subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]];</span>
+<span class="fc" id="L118">                boolean check2 = subarray[1 + MOVES_X[(i + 1) % NUMBER_NEIGHBORS]]</span>
+                        [1 + MOVES_Y[(i + 1) % NUMBER_NEIGHBORS]];
+<span class="fc" id="L120">                boolean check3 = subarray[1 + CORNER_X[i]][1 + CORNER_Y[i]];</span>
+<span class="fc bfc" id="L121" title="All 6 branches covered.">                if (check1 &amp;&amp; check2 &amp;&amp; check3) {</span>
+<span class="fc" id="L122">                    return true;</span>
+                }
+            }
+<span class="fc" id="L125">            return false;</span>
+        }
+    }
+    
+    /**
+     * Determines simple connectivity for a position with three neighbors.
+     *
+     * @param subarray  the local neighborhood array
+     * @return  {@code true} if simply connected, {@code false} otherwise
+     */
+    private boolean getConnectivityThreeNeighbors(boolean[][] subarray) {
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">            if (!subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]]) {</span>
+<span class="fc" id="L138">                boolean check1 = subarray[1 + CORNER_X[(i + 1) % NUMBER_NEIGHBORS]]</span>
+                        [1 + CORNER_Y[(i + 1) % NUMBER_NEIGHBORS]];
+<span class="fc" id="L140">                boolean check2 = subarray[1 + CORNER_X[(i + 2) % NUMBER_NEIGHBORS]]</span>
+                        [1 + CORNER_Y[(i + 2) % NUMBER_NEIGHBORS]];
+<span class="fc bfc" id="L142" title="All 4 branches covered.">                if (check1 &amp;&amp; check2) {</span>
+<span class="fc" id="L143">                    return true;</span>
+                }
+            }
+        }
+<span class="fc" id="L147">        return false;</span>
+    }
+    
+    @Override
+    HashSet&lt;Integer&gt; getUniqueIDs(int x, int y, int z) {
+<span class="fc" id="L152">        int id = ids[z][x][y];</span>
+<span class="fc" id="L153">        HashSet&lt;Integer&gt; unique = new HashSet&lt;&gt;();</span>
+        
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
+<span class="fc" id="L156">            int neighbor = ids[z][x + MOVES_X[i]][y + MOVES_Y[i]];</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">            if (id != neighbor) {</span>
+<span class="fc" id="L158">                unique.add(neighbor);</span>
+            }
+        }
+<span class="fc" id="L161">        return unique;</span>
+    }
+    
+    @Override
+    HashSet&lt;Integer&gt; getUniqueRegions(int x, int y, int z) {
+<span class="fc" id="L166">        int id = ids[z][x][y];</span>
+<span class="fc" id="L167">        int region = regions[z][x][y];</span>
+<span class="fc" id="L168">        HashSet&lt;Integer&gt; unique = new HashSet&lt;&gt;();</span>
+        
+<span class="fc bfc" id="L170" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
+<span class="fc" id="L171">            int neighborID = ids[z][x + MOVES_X[i]][y + MOVES_Y[i]];</span>
+<span class="fc" id="L172">            int neighborRegion = regions[z][x + MOVES_X[i]][y + MOVES_Y[i]];</span>
+            
+<span class="fc bfc" id="L174" title="All 2 branches covered.">            if (neighborID != id) {</span>
+<span class="fc" id="L175">                continue;</span>
+            }
+<span class="fc bfc" id="L177" title="All 2 branches covered.">            if (region != neighborRegion) {</span>
+<span class="fc" id="L178">                unique.add(neighborRegion);</span>
+            }
+        }
+        
+<span class="fc" id="L182">        return unique;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

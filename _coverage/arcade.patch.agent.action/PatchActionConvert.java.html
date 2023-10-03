@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchActionConvert.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.action</a> &gt; <span class="el_source">PatchActionConvert.java</span></div><h1>PatchActionConvert.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.action;
+
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.util.Bag;
+import arcade.core.agent.action.Action;
+import arcade.core.env.location.Location;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellContainer;
+import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.location.Coordinate;
+import arcade.patch.sim.PatchSimulation;
+import static arcade.patch.util.PatchEnums.Ordering;
+
+/**
+ * Implementation of {@link Action} for converting cells to a different class.
+ * &lt;p&gt;
+ * The action is stepped once after {@code TIME_DELAY}. The action will select
+ * one cell located at the center of the simulation and convert it to a cell
+ * agent of the new population by removing the old cell and creating a new cell
+ * with the same age and volume.
+ */
+
+public class PatchActionConvert implements Action {
+    /** Time delay before calling the action [min]. */
+    private final int timeDelay;
+    
+    /** Target population id for conversion. */
+    private int pop;
+    
+    /**
+     * Creates a {@link Action} for converting cell agent classes.
+     * &lt;p&gt;
+     * Loaded parameters include:
+     * &lt;ul&gt;
+     *     &lt;li&gt;{@code TIME_DELAY} = time delay before calling the action&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param series  the simulation series
+     * @param parameters  the component parameters dictionary
+     */
+<span class="nc" id="L45">    public PatchActionConvert(Series series, MiniBox parameters) {</span>
+        // Set loaded parameters.
+<span class="nc" id="L47">        timeDelay = parameters.getInt(&quot;TIME_DELAY&quot;);</span>
+<span class="nc" id="L48">    }</span>
+    
+    @Override
+    public void schedule(Schedule schedule) {
+<span class="nc" id="L52">        schedule.scheduleOnce(timeDelay, Ordering.ACTIONS.ordinal(), this);</span>
+<span class="nc" id="L53">    }</span>
+    
+    @Override
+    public void register(Simulation sim, String population) {
+<span class="nc" id="L57">        pop = sim.getSeries().populations.get(population).getInt(&quot;CODE&quot;);</span>
+<span class="nc" id="L58">    }</span>
+    
+    @Override
+    public void step(SimState simstate) {
+<span class="nc" id="L62">        PatchSimulation sim = (PatchSimulation) simstate;</span>
+<span class="nc" id="L63">        PatchGrid grid = (PatchGrid) sim.getGrid();</span>
+        
+        // Get cells at center of simulation.
+<span class="nc" id="L66">        Coordinate center = sim.locationFactory.getCoordinates(1, 1).get(0);</span>
+<span class="nc" id="L67">        Bag bag = (Bag) grid.getObjectAt(center.hashCode());</span>
+        
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (bag == null) {</span>
+<span class="nc" id="L70">            return;</span>
+        }
+        
+        // Select old cell and remove from simulation.
+<span class="nc" id="L74">        PatchCell oldCell = (PatchCell) bag.get(0);</span>
+<span class="nc" id="L75">        Location location = oldCell.getLocation();</span>
+<span class="nc" id="L76">        grid.removeObject(oldCell, oldCell.getLocation());</span>
+<span class="nc" id="L77">        oldCell.stop();</span>
+        
+        // Create new cell and add to simulation.
+<span class="nc" id="L80">        PatchCellContainer cellContainer = new PatchCellContainer(oldCell.getID(),</span>
+<span class="nc" id="L81">                oldCell.getParent(), pop, oldCell.getAge(), oldCell.getDivisions(),</span>
+<span class="nc" id="L82">                oldCell.getState(), oldCell.getVolume(), oldCell.getHeight(),</span>
+<span class="nc" id="L83">                oldCell.getCriticalVolume(), oldCell.getCriticalHeight());</span>
+<span class="nc" id="L84">        PatchCell newCell = (PatchCell) cellContainer.convert(sim.cellFactory, location);</span>
+<span class="nc" id="L85">        grid.addObject(newCell, location);</span>
+<span class="nc" id="L86">        newCell.schedule(sim.getSchedule());</span>
+<span class="nc" id="L87">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

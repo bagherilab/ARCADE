@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchLocationHex.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.location</a> &gt; <span class="el_source">PatchLocationHex.java</span></div><h1>PatchLocationHex.java</h1><pre class="source lang-java linenums">package arcade.patch.env.location;
+
+import java.util.ArrayList;
+import arcade.core.env.location.Location;
+import arcade.core.env.location.LocationContainer;
+import arcade.patch.sim.PatchSeries;
+
+/**
+ * Concrete implementation of {@link PatchLocation} for hexagonal
+ * {@link arcade.core.env.grid.Grid} to a triangular
+ * {@link arcade.core.env.lattice.Lattice}.
+ * &lt;p&gt;
+ * {@link arcade.core.env.grid.Grid} coordinates are in terms of (u, v, w) and
+ * the {@link arcade.core.env.lattice.Lattice} coordinates are in (x, y).
+ * Hexagons are flat side up. Triangular {@link arcade.core.env.lattice.Lattice}
+ * subcoordinates are ordered 0 - 5, with 0 at the top center and going
+ * clockwise around.
+ * &lt;pre&gt;
+ *      -------
+ *     / \ 0 / \
+ *    / 5 \ / 1 \
+ *    -----------
+ *    \ 4 / \ 2 /
+ *     \ / 3 \ /
+ *      -------
+ * &lt;/pre&gt;
+ * In (u, v, w) coordinates, only coordinates where u + v + w = 0 are valid. For
+ * simulations with {@code DEPTH} &amp;#62; 0 (3D simulations), each the hexagonal
+ * grid is offset in one of two directions relative to the triangular lattice.
+ * Therefore, each cell in a location has six neighboring locations in the same
+ * layer, three neighboring locations in the layer above, and three neighboring
+ * locations in the layer below. Simulations with {@code DEPTH} &amp;#62; 1 must
+ * have a {@code MARGIN} &amp;#62; 0, otherwise the offset location coordinates will
+ * be associated with lattice coordinates that are out of bounds of the array.
+ */
+
+public final class PatchLocationHex extends PatchLocation {
+    /** Size of hexagon patch from side to side [um]. */
+    private static final double HEX_SIZE = 30.0;
+    
+    /** Size of the hexagon patch side [um]. */
+<span class="fc" id="L42">    private static final double HEX_SIDE = HEX_SIZE / Math.sqrt(3.0);</span>
+    
+    /** Height of hexagon patch [um]. */
+    private static final double HEX_DEPTH = 8.7;
+    
+    /** Perimeter of hexagon patch [um]. */
+<span class="fc" id="L48">    private static final double HEX_PERIMETER = 6 * HEX_SIDE;</span>
+    
+    /** Area of hexagon patch [um&lt;sup&gt;2&lt;/sup&gt;]. */
+<span class="fc" id="L51">    private static final double HEX_AREA = 3.0 / 2.0 / Math.sqrt(3.0) * HEX_SIZE * HEX_SIZE;</span>
+    
+    /** Surface area of hexagon patch [um&lt;sup&gt;2&lt;/sup&gt;]. */
+<span class="fc" id="L54">    private static final double HEX_SURFACE = 2 * HEX_AREA + HEX_DEPTH * HEX_PERIMETER;</span>
+    
+    /** Volume of hexagon patch [um&lt;sup&gt;3&lt;/sup&gt;]. */
+<span class="fc" id="L57">    private static final double HEX_VOLUME = HEX_AREA * HEX_DEPTH;</span>
+    
+    /** Ratio of hexagon location height to size. */
+    private static final double HEX_RATIO = HEX_DEPTH / HEX_SIZE;
+    
+    /** Size of the triangle position [um]. */
+<span class="fc" id="L63">    private static final double TRI_SIZE = HEX_SIDE;</span>
+    
+    /** Number of triangular subcoordinates. */
+    private static final int NUM_SUBCOORDINATES = 6;
+    
+    /** Relative triangular subcoordinate offsets in the x direction. */
+<span class="fc" id="L69">    private static final byte[] X_OFF = new byte[] { 0, 1, 1, 0, -1, -1 };</span>
+    
+    /** Relative triangular subcoordinate offsets in the y direction. */
+<span class="fc" id="L72">    private static final byte[] Y_OFF = new byte[] { 0, 0, 1, 1, 1, 0 };</span>
+    
+    /** List of relative hexagonal neighbor locations. */
+<span class="fc" id="L75">    private static final byte[] MOVES = new byte[] {</span>
+<span class="fc" id="L76">            (byte) Integer.parseInt(&quot;00100100&quot;, 2), // up</span>
+<span class="fc" id="L77">            (byte) Integer.parseInt(&quot;00011000&quot;, 2), // down</span>
+<span class="fc" id="L78">            (byte) Integer.parseInt(&quot;01100000&quot;, 2), // up left</span>
+<span class="fc" id="L79">            (byte) Integer.parseInt(&quot;10010000&quot;, 2), // down right</span>
+<span class="fc" id="L80">            (byte) Integer.parseInt(&quot;01001000&quot;, 2), // down left</span>
+<span class="fc" id="L81">            (byte) Integer.parseInt(&quot;10000100&quot;, 2), // up right</span>
+<span class="fc" id="L82">            (byte) Integer.parseInt(&quot;00000010&quot;, 2), // vert up</span>
+<span class="fc" id="L83">            (byte) Integer.parseInt(&quot;00000001&quot;, 2), // vert down</span>
+<span class="fc" id="L84">            (byte) Integer.parseInt(&quot;10000110&quot;, 2), // vert up cw 1</span>
+<span class="fc" id="L85">            (byte) Integer.parseInt(&quot;00100110&quot;, 2), // vert up cw 2</span>
+<span class="fc" id="L86">            (byte) Integer.parseInt(&quot;01100001&quot;, 2), // vert down ccw 1</span>
+<span class="fc" id="L87">            (byte) Integer.parseInt(&quot;00100101&quot;, 2), // vert down ccw 2</span>
+    };
+    
+    /**
+     * Creates a {@code PatchLocationHex} object for given coordinates.
+     *
+     * @param u  the coordinate in u direction
+     * @param v  the coordinate in v direction
+     * @param w  the coordinate in w direction
+     * @param z  the coordinate in z direction
+     */
+    public PatchLocationHex(int u, int v, int w, int z) {
+<span class="nc" id="L99">        this(new CoordinateUVWZ(u, v, w, z));</span>
+<span class="nc" id="L100">    }</span>
+    
+    /**
+     * Creates a {@code PatchLocationHex} object at given coordinate.
+     *
+     * @param coordinate  the patch coordinate
+     */
+    public PatchLocationHex(CoordinateUVWZ coordinate) {
+<span class="fc" id="L108">        super(coordinate, NUM_SUBCOORDINATES);</span>
+<span class="fc" id="L109">    }</span>
+    
+    @Override
+<span class="fc" id="L112">    public double getVolume() { return HEX_VOLUME; }</span>
+    
+    @Override
+<span class="nc" id="L115">    public double getSurface() { return HEX_SURFACE; }</span>
+    
+    @Override
+<span class="fc" id="L118">    public double getHeight() { return HEX_DEPTH; }</span>
+    
+    @Override
+<span class="fc" id="L121">    public double getArea() { return HEX_AREA; }</span>
+    
+    @Override
+<span class="nc" id="L124">    public double getCoordinateSize() { return HEX_SIZE; }</span>
+    
+    @Override
+<span class="fc" id="L127">    public double getSubcoordinateSize() { return TRI_SIZE; }</span>
+    
+    @Override
+<span class="nc" id="L130">    public double getRatio() { return HEX_RATIO; }</span>
+    
+    @Override
+<span class="fc" id="L133">    public int getMaximum() { return NUM_SUBCOORDINATES; }</span>
+    
+    /**
+     * Updates static configuration variables.
+     * &lt;p&gt;
+     * Environment sizes are not set until the simulation series is created.
+     * Calculations for coordinates depend on these sizes, so the
+     * {@code Location} needs to be updated based on the series configuration.
+     *
+     * @param series  the current simulation series
+     */
+    public static void updateConfigs(PatchSeries series) {
+<span class="fc" id="L145">        radius = series.radius;</span>
+<span class="fc" id="L146">        depth = series.depth;</span>
+<span class="fc" id="L147">        radiusBounds = series.radiusBounds;</span>
+<span class="fc" id="L148">        depthBounds = series.depthBounds;</span>
+<span class="fc" id="L149">        heightOffset = series.height % 3 - series.height;</span>
+<span class="fc" id="L150">    }</span>
+    
+    @Override
+    void calculateOffset() {
+<span class="fc" id="L154">        offset = (byte) ((Math.abs(heightOffset + coordinate.z)) % 3);</span>
+<span class="fc" id="L155">    }</span>
+    
+    @Override
+    void calculateSubcoordinates() {
+<span class="fc" id="L159">        CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;</span>
+        
+        // Calculate coordinate of top center triangle.
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">        int x = 3 * (hex.u + radiusBounds) - 2 + (offset == 2 ? -1 : offset);</span>
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">        int y = (hex.w - hex.v) + 2 * radiusBounds - 2 + (offset == 0 ? 0 : 1);</span>
+<span class="fc" id="L164">        int z = depthBounds + hex.z - 1;</span>
+        
+        // Set coordinates of triangles clockwise from top center.
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        for (int i = 0; i &lt; NUM_SUBCOORDINATES; i++) {</span>
+<span class="fc" id="L168">            subcoordinates.add(i, new CoordinateXYZ(x + X_OFF[i], y + Y_OFF[i], z));</span>
+        }
+<span class="fc" id="L170">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Each direction of movement ({@code +u, -u, +v, -v, +w, -w, +z, -z}) is
+     * tracked by each bit within a byte.
+     */
+    @Override
+    void calculateChecks() {
+<span class="fc" id="L180">        CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;</span>
+<span class="pc bpc" id="L181" title="6 of 16 branches missed.">        check = (byte) (</span>
+                (hex.u == radius - 1 ? 0 : 1 &lt;&lt; 7)
+                        + (hex.u == 1 - radius ? 0 : 1 &lt;&lt; 6)
+                        + (hex.v == radius - 1 ? 0 : 1 &lt;&lt; 5)
+                        + (hex.v == 1 - radius ? 0 : 1 &lt;&lt; 4)
+                        + (hex.w == radius - 1 ? 0 : 1 &lt;&lt; 3)
+                        + (hex.w == 1 - radius ? 0 : 1 &lt;&lt; 2)
+                        + (hex.z == depth - 1 ? 0 : 1 &lt;&lt; 1)
+                        + (hex.z == 1 - depth ? 0 : 1 &lt;&lt; 0));
+<span class="fc" id="L190">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Estimates the perimeter of cell occupying the hexagonal location. Volume
+     * fraction used to take fraction of the perimeter of the hexagon. If
+     * fraction is not 1 (i.e. at least two cells in the location), then two
+     * additional inner segments are added.
+     */
+    @Override
+    public double getPerimeter(double f) {
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        return f * HEX_PERIMETER + (f == 1 ? 0 : 2 * HEX_SIDE);</span>
+    }
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * We check if a neighbor location is valid by comparing the movement checks
+     * byte with the neighbor location byte. Neighbor list includes the current
+     * location.
+     */
+    @Override
+    public ArrayList&lt;Location&gt; getNeighbors() {
+<span class="nc" id="L214">        CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;</span>
+<span class="nc" id="L215">        ArrayList&lt;Location&gt; neighbors = new ArrayList&lt;&gt;(MOVES.length + 1);</span>
+        byte b;
+        
+        // Add neighbor locations.
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        for (int i = 0; i &lt; MOVES.length; i++) {</span>
+            // Adjust byte for vertical offset.
+<span class="nc bnc" id="L221" title="All 2 branches missed.">            if (i &gt; 7) {</span>
+<span class="nc" id="L222">                b = offsetByte(MOVES[i], 2 * offset);</span>
+            } else {
+<span class="nc" id="L224">                b = MOVES[i];</span>
+            }
+            
+            // Add location if possible to move there.
+<span class="nc bnc" id="L228" title="All 2 branches missed.">            if ((b &amp; check ^ b) == 0) {</span>
+<span class="nc" id="L229">                neighbors.add(new PatchLocationHex(</span>
+                        hex.u + (b &gt;&gt; 7 &amp; 1) - (b &gt;&gt; 6 &amp; 1),
+                        hex.v + (b &gt;&gt; 5 &amp; 1) - (b &gt;&gt; 4 &amp; 1),
+                        hex.w + (b &gt;&gt; 3 &amp; 1) - (b &gt;&gt; 2 &amp; 1),
+                        hex.z + (b &gt;&gt; 1 &amp; 1) - (b &gt;&gt; 0 &amp; 1)
+                ));
+            }
+        }
+        
+        // Add current location.
+<span class="nc" id="L239">        neighbors.add(new PatchLocationHex(hex));</span>
+        
+<span class="nc" id="L241">        return neighbors;</span>
+    }
+    
+    @Override
+    public LocationContainer convert(int id) {
+<span class="nc" id="L246">        return new PatchLocationContainer(id, coordinate);</span>
+    }
+    
+    /**
+     * Converts triangular {@link arcade.core.env.lattice.Lattice} coordinates
+     * into a hexagonal {@link arcade.core.env.grid.Grid} coordinate.
+     *
+     * @param coordinate  the triangular coordinate
+     * @return  the corresponding hexagonal coordinate
+     */
+    public static CoordinateUVWZ translate(CoordinateXYZ coordinate) {
+<span class="nc" id="L257">        int z = coordinate.z - depthBounds + 1;</span>
+<span class="nc" id="L258">        int zo = (byte) ((Math.abs(heightOffset + z)) % 3);</span>
+        
+        // Calculate u coordinate.
+<span class="nc bnc" id="L261" title="All 2 branches missed.">        double uu = (coordinate.x - (zo == 2 ? -1 : zo) + 2) / 3.0 - radiusBounds;</span>
+<span class="nc" id="L262">        int u = Math.round(Math.round(uu));</span>
+        
+        // Calculate v and w coordinates based on u.
+<span class="nc bnc" id="L265" title="All 2 branches missed.">        int vw = coordinate.y - 2 * radiusBounds + 2 - (zo == 0 ? 0 : 1);</span>
+<span class="nc" id="L266">        int v = -(int) Math.floor((vw + u) / 2.0);</span>
+<span class="nc" id="L267">        int w = -(u + v);</span>
+        
+        // Check if out of bounds.
+<span class="nc bnc" id="L270" title="All 4 branches missed.">        if (Math.abs(v) &gt;= radius || Math.abs(w) &gt;= radius) {</span>
+<span class="nc" id="L271">            return null;</span>
+        }
+<span class="nc" id="L273">        return new CoordinateUVWZ(u, v, w, z);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

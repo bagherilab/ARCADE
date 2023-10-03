@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VolumeHamiltonian.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.sim.hamiltonian</a> &gt; <span class="el_source">VolumeHamiltonian.java</span></div><h1>VolumeHamiltonian.java</h1><pre class="source lang-java linenums">package arcade.potts.sim.hamiltonian;
+
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Set;
+import arcade.core.util.MiniBox;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.sim.PottsSeries;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
+
+/**
+ * Implementation of {@link Hamiltonian} for volume energy.
+ */
+
+public class VolumeHamiltonian implements Hamiltonian {
+    /** Map of hamiltonian config objects. */
+    final HashMap&lt;Integer, VolumeHamiltonianConfig&gt; configs;
+    
+    /** Map of population to lambda values. */
+    final HashMap&lt;Integer, Double&gt; popToLambda;
+    
+    /** Map of population to lambda values for regions. */
+    final HashMap&lt;Integer, EnumMap&lt;Region, Double&gt;&gt; popToLambdasRegion;
+    
+    /**
+     * Creates the volume energy term for the {@code Potts} Hamiltonian.
+     *
+     * @param series  the associated Series instance
+     */
+<span class="fc" id="L32">    public VolumeHamiltonian(PottsSeries series) {</span>
+<span class="fc" id="L33">        configs = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L34">        popToLambda = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L35">        popToLambdasRegion = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L36">        initialize(series);</span>
+<span class="fc" id="L37">    }</span>
+    
+    @Override
+    public void register(PottsCell cell) {
+<span class="fc" id="L41">        int pop = cell.getPop();</span>
+<span class="fc" id="L42">        double lambda = popToLambda.get(pop);</span>
+<span class="fc" id="L43">        EnumMap&lt;Region, Double&gt; lambdasRegion = popToLambdasRegion.get(pop);</span>
+<span class="fc" id="L44">        VolumeHamiltonianConfig config = new VolumeHamiltonianConfig(cell, lambda, lambdasRegion);</span>
+<span class="fc" id="L45">        configs.put(cell.getID(), config);</span>
+<span class="fc" id="L46">    }</span>
+    
+    @Override
+    public void deregister(PottsCell cell) {
+<span class="fc" id="L50">        configs.remove(cell.getID());</span>
+<span class="fc" id="L51">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Volume energy is calculated by taking the difference in target and
+     * proposed volume for the given ID. Change in volume energy is taken as the
+     * difference in differences of volume energies for the source and target
+     * IDs when a voxel is removed or added.
+     */
+    @Override
+    public double getDelta(int sourceID, int targetID, int x, int y, int z) {
+<span class="fc" id="L63">        double source = getVolume(sourceID, -1) - getVolume(sourceID, 0);</span>
+<span class="fc" id="L64">        double target = getVolume(targetID, 1) - getVolume(targetID, 0);</span>
+<span class="fc" id="L65">        return target + source;</span>
+    }
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Volume energy is calculated by taking the difference in target and
+     * proposed volume for the given region. Change in volume energy is taken as
+     * the difference in differences of volume energies for the source and
+     * target regions when a voxel is removed or added.
+     */
+    @Override
+    public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
+<span class="fc" id="L78">        double source = getVolume(id, sourceRegion, -1) - getVolume(id, sourceRegion, 0);</span>
+<span class="fc" id="L79">        double target = getVolume(id, targetRegion, 1) - getVolume(id, targetRegion, 0);</span>
+<span class="fc" id="L80">        return target + source;</span>
+    }
+    
+    /**
+     * Gets volume energy for a given change in volume.
+     *
+     * @param id  the voxel id
+     * @param change  the change in volume
+     * @return  the energy
+     */
+    double getVolume(int id, int change) {
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if (id == 0) {</span>
+<span class="fc" id="L92">            return 0;</span>
+        }
+<span class="fc" id="L94">        VolumeHamiltonianConfig config = configs.get(id);</span>
+<span class="fc" id="L95">        double volume = config.cell.getVolume();</span>
+<span class="fc" id="L96">        double targetVolume = config.cell.getTargetVolume();</span>
+<span class="fc" id="L97">        double lambda = config.getLambda();</span>
+<span class="fc" id="L98">        return lambda * Math.pow((volume - targetVolume + change), 2);</span>
+    }
+    
+    /**
+     * Gets volume energy for a given change in volume for region.
+     *
+     * @param id  the voxel id
+     * @param t  the voxel region
+     * @param change  the change in volume
+     * @return  the energy
+     */
+    double getVolume(int id, int t, int change) {
+<span class="fc" id="L110">        Region region = Region.values()[t];</span>
+<span class="fc bfc" id="L111" title="All 4 branches covered.">        if (id == 0 || region == Region.DEFAULT) {</span>
+<span class="fc" id="L112">            return 0;</span>
+        }
+<span class="fc" id="L114">        VolumeHamiltonianConfig config = configs.get(id);</span>
+<span class="fc" id="L115">        double volume = config.cell.getVolume(region);</span>
+<span class="fc" id="L116">        double targetVolume = config.cell.getTargetVolume(region);</span>
+<span class="fc" id="L117">        double lambda = config.getLambda(region);</span>
+<span class="fc" id="L118">        return lambda * Math.pow((volume - targetVolume + change), 2);</span>
+    }
+    
+    /**
+     * Initializes parameters for volume hamiltonian term.
+     *
+     * @param series  the series instance
+     */
+    void initialize(PottsSeries series) {
+<span class="fc bfc" id="L127" title="All 2 branches covered.">        if (series.populations == null) {</span>
+<span class="fc" id="L128">            return;</span>
+        }
+        
+<span class="fc" id="L131">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
+<span class="fc" id="L132">        MiniBox parameters = series.potts;</span>
+        
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        for (String key : keySet) {</span>
+<span class="fc" id="L135">            MiniBox population = series.populations.get(key);</span>
+<span class="fc" id="L136">            int pop = population.getInt(&quot;CODE&quot;);</span>
+            
+            // Get lambda value.
+<span class="fc" id="L139">            double lambda = parameters.getDouble(&quot;volume/LAMBDA&quot; + TARGET_SEPARATOR + key);</span>
+<span class="fc" id="L140">            popToLambda.put(pop, lambda);</span>
+            
+<span class="fc" id="L142">            MiniBox regionBox = population.filter(&quot;(REGION)&quot;);</span>
+<span class="fc" id="L143">            ArrayList&lt;Region&gt; regionKeys = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L144">            regionBox.getKeys().forEach(s -&gt; regionKeys.add(Region.valueOf(s)));</span>
+            
+            // Get lambda values for regions.
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            if (regionKeys.size() &gt; 0) {</span>
+<span class="fc" id="L148">                EnumMap&lt;Region, Double&gt; lambdasRegion = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">                for (Region region : regionKeys) {</span>
+<span class="fc" id="L150">                    double lambdaRegion = parameters.getDouble(&quot;volume/LAMBDA_&quot;</span>
+<span class="fc" id="L151">                            + region.name() + TARGET_SEPARATOR + key);</span>
+<span class="fc" id="L152">                    lambdasRegion.put(region, lambdaRegion);</span>
+<span class="fc" id="L153">                }</span>
+<span class="fc" id="L154">                popToLambdasRegion.put(pop, lambdasRegion);</span>
+<span class="fc" id="L155">            } else {</span>
+<span class="fc" id="L156">                popToLambdasRegion.put(pop, null);</span>
+            }
+<span class="fc" id="L158">        }</span>
+<span class="fc" id="L159">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

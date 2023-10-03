@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchOperationGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.operation</a> &gt; <span class="el_source">PatchOperationGenerator.java</span></div><h1>PatchOperationGenerator.java</h1><pre class="source lang-java linenums">package arcade.patch.env.operation;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.env.operation.Operation;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.patch.env.lattice.PatchLattice;
+import static arcade.core.util.Enums.Category;
+
+/**
+ * Extension of {@link PatchOperation} for generation.
+ * &lt;p&gt;
+ * Operation updates the associated lattice field with values provided in the
+ * delta array for a molecule with given {@code CONCENTRATION} and
+ * {@code PERMEABILITY}. The delta array defaults to zero (no changes to lattice
+ * field) and can be modified by external classes. Operation is independent of
+ * underlying geometry.
+ */
+
+public class PatchOperationGenerator extends PatchOperation {
+    /** Array holding current concentration values. */
+    public final double[][][] latticeCurrent;
+    
+    /** Array holding previous concentration values. */
+    public final double[][][] latticePrevious;
+    
+    /** Array holding changes in concentration values. */
+    public final double[][][] latticeDelta;
+    
+    /** Maximum concentration. */
+    public final double concentration;
+    
+    /** Molecule permeability. */
+    public final double permeability;
+    
+    /**
+     * Creates a generator {@link PatchOperation} for the given lattice.
+     * &lt;p&gt;
+     * Loaded parameters include:
+     * &lt;ul&gt;
+     *     &lt;li&gt;{@code CONCENTRATION} = maximum concentration&lt;/li&gt;
+     *     &lt;li&gt;{@code PERMEABILITY} = molecule permeability&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param lattice  the {@link PatchLattice} the operation is associated with
+     */
+    public PatchOperationGenerator(PatchLattice lattice) {
+<span class="nc" id="L48">        super(lattice);</span>
+        
+        // Get generator parameters.
+<span class="nc" id="L51">        MiniBox parameters = lattice.getParameters();</span>
+<span class="nc" id="L52">        concentration = parameters.getDouble(&quot;generator/CONCENTRATION&quot;);</span>
+<span class="nc" id="L53">        permeability = parameters.getDouble(&quot;generator/PERMEABILITY&quot;);</span>
+        
+        // Set lattice field.
+<span class="nc" id="L56">        this.latticeCurrent = lattice.getField();</span>
+<span class="nc" id="L57">        this.latticeDelta = new double[latticeHeight][latticeLength][latticeWidth];</span>
+        
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (lattice.getOperation(Category.DIFFUSER) != null) {</span>
+<span class="nc" id="L60">            Operation diffuser = lattice.getOperation(Category.DIFFUSER);</span>
+<span class="nc" id="L61">            this.latticePrevious = ((PatchOperationDiffuser) diffuser).latticeNew;</span>
+<span class="nc" id="L62">        } else {</span>
+<span class="nc" id="L63">            this.latticePrevious = new double[latticeHeight][latticeLength][latticeWidth];</span>
+        }
+<span class="nc" id="L65">    }</span>
+    
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc" id="L72">                    latticeCurrent[k][i][j] += latticeDelta[k][i][j];</span>
+                }
+            }
+        }
+<span class="nc" id="L76">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

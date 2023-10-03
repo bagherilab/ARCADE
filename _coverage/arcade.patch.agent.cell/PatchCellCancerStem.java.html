@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchCellCancerStem.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.cell</a> &gt; <span class="el_source">PatchCellCancerStem.java</span></div><h1>PatchCellCancerStem.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.cell;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.env.location.Location;
+import arcade.core.util.MiniBox;
+import static arcade.core.util.Enums.State;
+
+/**
+ * Extension of {@link PatchCellCancer} for cancerous stem cells.
+ * &lt;p&gt;
+ * {@code PatchCellCancerStem} agents are modified from their superclass:
+ * &lt;ul&gt;
+ *     &lt;li&gt;Cells are immortal (death age set to maximum)&lt;/li&gt;
+ *     &lt;li&gt;Asymmetric division with probability ({@code SYMMETRIC_FRACTION}) of
+ *     producing another stem cell ({@code PatchCellCancerStem}) or a cancerous
+ *     cell ({@code PatchCellCancer})&lt;/li&gt;
+ *     &lt;li&gt;No division limit&lt;/li&gt;
+ * &lt;/ul&gt;
+ */
+
+public class PatchCellCancerStem extends PatchCellCancer {
+    /** Fraction of divisions that are symmetric. */
+    private final double symmetricFraction;
+    
+    /**
+     * Creates a tissue {@code PatchCell} agent.
+     * &lt;p&gt;
+     * Loaded parameters include:
+     * &lt;ul&gt;
+     *     &lt;li&gt;{@code SYMMETRIC_FRACTION} = fraction of divisions that are
+     *         symmetric&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param id  the cell ID
+     * @param parent  the parent ID
+     * @param pop  the cell population index
+     * @param state  the cell state
+     * @param age  the cell age
+     * @param divisions  the number of cell divisions
+     * @param location  the {@link Location} of the cell
+     * @param parameters  the dictionary of parameters
+     * @param volume  the cell volume
+     * @param height  the cell height
+     * @param criticalVolume  the critical cell volume
+     * @param criticalHeight  the critical cell height
+     */
+    public PatchCellCancerStem(int id, int parent, int pop, State state, int age, int divisions,
+                               Location location, MiniBox parameters, double volume, double height,
+                               double criticalVolume, double criticalHeight) {
+<span class="nc" id="L50">        super(id, parent, pop, state, age, divisions, location, parameters,</span>
+                volume, height, criticalVolume, criticalHeight);
+        
+        // Set loaded parameters.
+<span class="nc" id="L54">        symmetricFraction = parameters.getDouble(&quot;SYMMETRIC_FRACTION&quot;);</span>
+        
+        // TODO: set death age
+<span class="nc" id="L57">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Cells have a certain probability of producing another cancer stem cell.
+     */
+    @Override
+    public PatchCell make(int newID, State newState, Location newLocation,
+                          MersenneTwisterFast random) {
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        return random.nextDouble() &lt; symmetricFraction</span>
+                ? new PatchCellCancerStem(newID, id, pop, newState, age, divisions, newLocation,
+                parameters, volume, height, criticalVolume, criticalHeight)
+                : new PatchCellCancer(newID, id, pop, newState, age, divisions - 1, newLocation,
+                parameters, volume, height, criticalVolume, criticalHeight);
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

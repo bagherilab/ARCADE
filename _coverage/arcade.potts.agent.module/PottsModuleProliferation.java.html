@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsModuleProliferation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.agent.module</a> &gt; <span class="el_source">PottsModuleProliferation.java</span></div><h1>PottsModuleProliferation.java</h1><pre class="source lang-java linenums">package arcade.potts.agent.module;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.env.location.Location;
+import arcade.core.sim.Simulation;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.location.PottsLocation;
+import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSimulation;
+import static arcade.core.util.Enums.State;
+import static arcade.potts.util.PottsEnums.Phase;
+
+/**
+ * Extension of {@link PottsModule} for proliferation.
+ * &lt;p&gt;
+ * During proliferation, cells cycle through G1, S, G2, and M phases. Once the
+ * cell complete M phase, it divides to create a new daughter cell.
+ */
+
+public abstract class PottsModuleProliferation extends PottsModule {
+    /**
+     * Creates a proliferation {@code Module} for the given {@link PottsCell}.
+     *
+     * @param cell  the {@link PottsCell} the module is associated with
+     */
+    public PottsModuleProliferation(PottsCell cell) {
+<span class="fc" id="L27">        super(cell);</span>
+<span class="fc" id="L28">        setPhase(Phase.PROLIFERATIVE_G1);</span>
+<span class="fc" id="L29">    }</span>
+    
+    /**
+     * Calls the step method for the current simple phase.
+     *
+     * @param random  the random number generator
+     * @param sim  the simulation instance
+     */
+    public void step(MersenneTwisterFast random, Simulation sim) {
+<span class="fc bfc" id="L38" title="All 5 branches covered.">        switch (phase) {</span>
+            case PROLIFERATIVE_G1:
+<span class="fc" id="L40">                stepG1(random);</span>
+<span class="fc" id="L41">                break;</span>
+            case PROLIFERATIVE_S:
+<span class="fc" id="L43">                stepS(random);</span>
+<span class="fc" id="L44">                break;</span>
+            case PROLIFERATIVE_G2:
+<span class="fc" id="L46">                stepG2(random);</span>
+<span class="fc" id="L47">                break;</span>
+            case PROLIFERATIVE_M:
+<span class="fc" id="L49">                stepM(random, sim);</span>
+<span class="fc" id="L50">                break;</span>
+            default:
+                break;
+        }
+<span class="fc" id="L54">    }</span>
+    
+    /**
+     * Performs actions for G1 phase.
+     *
+     * @param random  the random number generator
+     */
+    abstract void stepG1(MersenneTwisterFast random);
+    
+    /**
+     * Performs actions for S phase.
+     *
+     * @param random  the random number generator
+     */
+    abstract void stepS(MersenneTwisterFast random);
+    
+    /**
+     * Performs actions for G2 phase.
+     *
+     * @param random  the random number generator
+     */
+    abstract void stepG2(MersenneTwisterFast random);
+    
+    /**
+     * Performs actions for M phase.
+     *
+     * @param random  the random number generator
+     * @param sim  the simulation instance
+     */
+    abstract void stepM(MersenneTwisterFast random, Simulation sim);
+    
+    /**
+     * Adds a cell to the simulation.
+     * &lt;p&gt;
+     * The cell location is split, along with any regions. The new cell is
+     * created, initialized, and added to the schedule. Both cells are reset and
+     * remain in the proliferative state.
+     *
+     * @param random  the random number generator
+     * @param sim  the simulation instance
+     */
+    void addCell(MersenneTwisterFast random, Simulation sim) {
+<span class="fc" id="L96">        Potts potts = ((PottsSimulation) sim).getPotts();</span>
+        
+        // Split current location.
+<span class="fc" id="L99">        Location newLocation = ((PottsLocation) cell.getLocation()).split(random);</span>
+        
+        // Reset current cell.
+<span class="fc" id="L102">        cell.reset(potts.ids, potts.regions);</span>
+        
+        // Create and schedule new cell.
+<span class="fc" id="L105">        int newID = sim.getID();</span>
+<span class="fc" id="L106">        PottsCell newCell = cell.make(newID, State.PROLIFERATIVE, newLocation, random);</span>
+<span class="fc" id="L107">        sim.getGrid().addObject(newCell, null);</span>
+<span class="fc" id="L108">        potts.register(newCell);</span>
+<span class="fc" id="L109">        newCell.reset(potts.ids, potts.regions);</span>
+<span class="fc" id="L110">        newCell.schedule(sim.getSchedule());</span>
+<span class="fc" id="L111">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OutputSaver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.core.sim.output</a> &gt; <span class="el_source">OutputSaver.java</span></div><h1>OutputSaver.java</h1><pre class="source lang-java linenums">package arcade.core.sim.output;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import com.google.gson.Gson;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.engine.Steppable;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
+import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
+
+/**
+ * Custom saver for serializing objects to JSON.
+ * &lt;p&gt;
+ * The saver is associated with an implementation-specific {@code Gson} instance
+ * that defines serialization of implementation-specific classes. The associated
+ * {@link arcade.core.sim.Series} instance is used to save static information
+ * specific to the series. The equipped {@link arcade.core.sim.Simulation}
+ * instance is called to get cells / locations that are saved at a given tick.
+ */
+
+public abstract class OutputSaver implements Steppable {
+    /** Logger for {@code OutputSaver}. */
+<span class="fc" id="L32">    private static final Logger LOGGER = Logger.getLogger(OutputSaver.class.getName());</span>
+    
+    /** Number of elements to format in output string. */
+    private static final int FORMAT_ELEMENTS = 6;
+    
+    /** JSON representation. */
+    final Gson gson;
+    
+    /** {@link arcade.core.sim.Series} instance. */
+    final Series series;
+    
+    /** Prefix for saved files. */
+    public String prefix;
+    
+    /** {@link arcade.core.sim.Simulation} instance. */
+    Simulation sim;
+    
+    /**
+     * Creates an {@code OutputSaver} for the series.
+     *
+     * @param series  the simulation series
+     */
+<span class="fc" id="L54">    public OutputSaver(Series series) {</span>
+<span class="fc" id="L55">        this.series = series;</span>
+<span class="fc" id="L56">        this.gson = makeGSON();</span>
+<span class="fc" id="L57">    }</span>
+    
+    /**
+     * Creates a {@code Gson} instance for serializing objects.
+     *
+     * @return  a {@code Gson} instance
+     */
+    protected abstract Gson makeGSON();
+    
+    /**
+     * Equips a {@link arcade.core.sim.Simulation} instance to the saver.
+     *
+     * @param sim  the simulation instance
+     */
+    public void equip(Simulation sim) {
+<span class="fc" id="L72">        this.prefix = String.format(&quot;%s_%04d&quot;, series.getPrefix(), sim.getSeed());</span>
+<span class="fc" id="L73">        this.sim = sim;</span>
+<span class="fc" id="L74">    }</span>
+    
+    /**
+     * Saves the {@link arcade.core.sim.Series} as a JSON.
+     */
+    public void saveSeries() {
+<span class="fc" id="L80">        String path = series.getPrefix() + &quot;.json&quot;;</span>
+<span class="fc" id="L81">        String json = gson.toJson(series);</span>
+<span class="fc" id="L82">        write(path, format(json, FORMAT_ELEMENTS));</span>
+<span class="fc" id="L83">    }</span>
+    
+    /**
+     * Save a list of {@link arcade.core.agent.cell.CellContainer} to a JSON.
+     *
+     * @param tick  the simulation tick
+     */
+    public void saveCells(int tick) {
+<span class="fc" id="L91">        String path = prefix + String.format(&quot;_%06d.CELLS.json&quot;, tick);</span>
+<span class="fc" id="L92">        String json = gson.toJson(sim.getCells(), DEFAULT_CELL_TYPE);</span>
+<span class="fc" id="L93">        write(path, format(json, FORMAT_ELEMENTS));</span>
+<span class="fc" id="L94">    }</span>
+    
+    /**
+     * Save a list of {@link arcade.core.env.location.LocationContainer} to a JSON.
+     *
+     * @param tick  the simulation tick
+     */
+    public void saveLocations(int tick) {
+<span class="fc" id="L102">        String path = prefix + String.format(&quot;_%06d.LOCATIONS.json&quot;, tick);</span>
+<span class="fc" id="L103">        String json = gson.toJson(sim.getLocations(), DEFAULT_LOCATION_TYPE);</span>
+<span class="fc" id="L104">        write(path, format(json, FORMAT_ELEMENTS));</span>
+<span class="fc" id="L105">    }</span>
+    
+    /**
+     * Steps through cell rules.
+     *
+     * @param simstate  the MASON simulation state
+     */
+    @Override
+    public void step(SimState simstate) {
+<span class="fc" id="L114">        int tick = (int) simstate.schedule.getTime();</span>
+<span class="fc" id="L115">        saveCells(tick);</span>
+<span class="fc" id="L116">        saveLocations(tick);</span>
+<span class="fc" id="L117">    }</span>
+    
+    /**
+     * Schedules the saver to take snapshots at the given interval.
+     *
+     * @param schedule  the simulation schedule
+     * @param interval  the interval (in ticks) between snapshots
+     */
+    public void schedule(Schedule schedule, double interval) {
+<span class="fc" id="L126">        schedule.scheduleRepeating(Schedule.EPOCH, -1, this, interval);</span>
+<span class="fc" id="L127">    }</span>
+    
+    /**
+     * Writes the contents to the given file path.
+     *
+     * @param filepath  the path for the file
+     * @param contents  the contents of the file
+     */
+    public void write(String filepath, String contents) {
+        try {
+            // Get writer
+<span class="fc" id="L138">            File outfile = new File(filepath);</span>
+<span class="fc" id="L139">            FileOutputStream fos = new FileOutputStream(outfile, false);</span>
+<span class="fc" id="L140">            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));</span>
+            
+            // Write contents
+<span class="fc" id="L143">            bw.write(contents);</span>
+            
+            // Close streams.
+<span class="fc" id="L146">            bw.close();</span>
+<span class="fc" id="L147">            fos.close();</span>
+            
+<span class="fc" id="L149">            LOGGER.info(&quot;file [ &quot; + filepath + &quot; ] successfully written&quot;);</span>
+<span class="fc" id="L150">        } catch (IOException ex) {</span>
+<span class="fc" id="L151">            LOGGER.severe(&quot;error writing [ &quot; + filepath + &quot; ] due to &quot; + ex.getClass().getName());</span>
+<span class="fc" id="L152">            ex.printStackTrace();</span>
+<span class="fc" id="L153">            series.isSkipped = true;</span>
+<span class="fc" id="L154">        }</span>
+<span class="fc" id="L155">    }</span>
+    
+    /**
+     * Formats the arrays in the given string.
+     * &lt;p&gt;
+     * Method reformats the output of GSON pretty printing by converting
+     * {@code [\n A,\n B,\n ... N\n ]} to {@code [ A, B, ..., N ]} for lists of
+     * up to N elements.
+     *
+     * @param string  the string to format
+     * @param maxElements  the maximum number of elements to format.
+     * @return  the formatted string
+     */
+    protected static String format(String string, int maxElements) {
+<span class="fc" id="L169">        String formatted = string;</span>
+        
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        for (int elements = 1; elements &lt; maxElements + 1; elements++) {</span>
+<span class="fc" id="L172">            String inputPattern = IntStream.rangeClosed(1, elements)</span>
+<span class="fc" id="L173">                    .mapToObj(Integer::toString)</span>
+<span class="fc" id="L174">                    .map(s -&gt; &quot;([\\-\\d\\.]+)&quot;)</span>
+<span class="fc" id="L175">                    .collect(Collectors.joining(&quot;,\\n[\\s\\t]+&quot;));</span>
+<span class="fc" id="L176">            inputPattern = &quot;\\[\\n[\\s\\t]+&quot; + inputPattern + &quot;\\n[\\s\\t]+\\]&quot;;</span>
+            
+<span class="fc" id="L178">            String outputPattern = IntStream.rangeClosed(1, elements)</span>
+<span class="fc" id="L179">                    .mapToObj(Integer::toString)</span>
+<span class="fc" id="L180">                    .map(s -&gt; &quot;$&quot; + s)</span>
+<span class="fc" id="L181">                    .collect(Collectors.joining(&quot;, &quot;));</span>
+<span class="fc" id="L182">            outputPattern = &quot;[&quot; + outputPattern + &quot;]&quot;;</span>
+            
+<span class="fc" id="L184">            formatted = formatted.replaceAll(inputPattern, outputPattern);</span>
+        }
+        
+<span class="fc" id="L187">        return formatted;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

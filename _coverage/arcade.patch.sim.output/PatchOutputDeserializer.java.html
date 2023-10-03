@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchOutputDeserializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.sim.output</a> &gt; <span class="el_source">PatchOutputDeserializer.java</span></div><h1>PatchOutputDeserializer.java</h1><pre class="source lang-java linenums">package arcade.patch.sim.output;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.location.LocationContainer;
+import arcade.core.sim.output.OutputDeserializer;
+import arcade.patch.agent.cell.PatchCellContainer;
+import arcade.patch.env.location.Coordinate;
+import arcade.patch.env.location.CoordinateUVWZ;
+import arcade.patch.env.location.CoordinateXYZ;
+import arcade.patch.env.location.PatchLocationContainer;
+import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
+import static arcade.core.util.Enums.State;
+
+/**
+ * Container class for patch-specific object deserializers.
+ * &lt;p&gt;
+ * Deserializers include:
+ * &lt;ul&gt;
+ *     &lt;li&gt;{@link PatchCellDeserializer} for deserializing {@link PatchCellContainer}&lt;/li&gt;
+ *     &lt;li&gt;{@link LocationListDeserializer} for deserializing {@link PatchLocationContainer}
+ *     lists&lt;/li&gt;
+ *     &lt;li&gt;{@link CoordinateDeserializer} for deserializing {@link Coordinate}&lt;/li&gt;
+ * &lt;/ul&gt;
+ */
+
+public final class PatchOutputDeserializer {
+    /**
+     * Hidden utility class constructor.
+     */
+<span class="nc" id="L40">    protected PatchOutputDeserializer() {</span>
+<span class="nc" id="L41">        throw new UnsupportedOperationException();</span>
+    }
+    
+    /**
+     * Creates a {@code Gson} with generic and implementation-specific adaptors.
+     *
+     * @return  a {@code Gson} instance
+     */
+    static Gson makeGSON() {
+<span class="fc" id="L50">        GsonBuilder gsonBuilder = OutputDeserializer.makeGSONBuilder();</span>
+<span class="fc" id="L51">        gsonBuilder.registerTypeAdapter(CellContainer.class,</span>
+                new PatchCellDeserializer());
+<span class="fc" id="L53">        gsonBuilder.registerTypeAdapter(PatchCellContainer.class,</span>
+                new PatchCellDeserializer());
+<span class="fc" id="L55">        gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE,</span>
+                new LocationListDeserializer());
+<span class="fc" id="L57">        gsonBuilder.registerTypeAdapter(Coordinate.class,</span>
+                new CoordinateDeserializer());
+<span class="fc" id="L59">        return gsonBuilder.create();</span>
+    }
+    
+    /**
+     * Deserializer for {@link PatchCellContainer} objects.
+     */
+<span class="fc" id="L65">    static class PatchCellDeserializer implements JsonDeserializer&lt;PatchCellContainer&gt; {</span>
+        @Override
+        public PatchCellContainer deserialize(JsonElement json, Type typeOfT,
+                                              JsonDeserializationContext context)
+                throws JsonParseException {
+<span class="nc" id="L70">            JsonObject jsonObject = json.getAsJsonObject();</span>
+            
+<span class="nc" id="L72">            int id = jsonObject.get(&quot;id&quot;).getAsInt();</span>
+<span class="nc" id="L73">            int parent = jsonObject.get(&quot;parent&quot;).getAsInt();</span>
+<span class="nc" id="L74">            int pop = jsonObject.get(&quot;pop&quot;).getAsInt();</span>
+<span class="nc" id="L75">            int age = jsonObject.get(&quot;age&quot;).getAsInt();</span>
+<span class="nc" id="L76">            int divisions = jsonObject.get(&quot;divisions&quot;).getAsInt();</span>
+<span class="nc" id="L77">            double volume = jsonObject.get(&quot;volume&quot;).getAsDouble();</span>
+<span class="nc" id="L78">            double height = jsonObject.get(&quot;height&quot;).getAsDouble();</span>
+            
+<span class="nc" id="L80">            State state = State.valueOf(jsonObject.get(&quot;state&quot;).getAsString());</span>
+            
+<span class="nc" id="L82">            JsonArray criticals = jsonObject.get(&quot;criticals&quot;).getAsJsonArray();</span>
+<span class="nc" id="L83">            double criticalVolume = criticals.get(0).getAsDouble();</span>
+<span class="nc" id="L84">            double criticalHeight = criticals.get(1).getAsDouble();</span>
+            
+<span class="nc" id="L86">            return new PatchCellContainer(id, parent, pop, age, divisions,</span>
+                    state, volume, height, criticalVolume, criticalHeight);
+        }
+    }
+    
+    /**
+     * Deserializer for list of {@link PatchLocationContainer} objects.
+     */
+<span class="fc" id="L94">    public static final class LocationListDeserializer</span>
+            implements JsonDeserializer&lt;ArrayList&lt;LocationContainer&gt;&gt; {
+        @Override
+        public ArrayList&lt;LocationContainer&gt; deserialize(JsonElement json, Type typeOfT,
+                                                        JsonDeserializationContext context)
+                throws JsonParseException {
+<span class="nc" id="L100">            ArrayList&lt;LocationContainer&gt; locations = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L101">            JsonArray jsonArray = json.getAsJsonArray();</span>
+            
+<span class="nc bnc" id="L103" title="All 2 branches missed.">            for (JsonElement element : jsonArray) {</span>
+<span class="nc" id="L104">                JsonObject location = element.getAsJsonObject();</span>
+                
+<span class="nc" id="L106">                JsonElement coordinateElement = location.get(&quot;coordinate&quot;);</span>
+<span class="nc" id="L107">                Coordinate coordinate = context.deserialize(coordinateElement, Coordinate.class);</span>
+                
+<span class="nc bnc" id="L109" title="All 2 branches missed.">                for (JsonElement idElement : location.getAsJsonArray(&quot;ids&quot;)) {</span>
+<span class="nc" id="L110">                    int id = idElement.getAsInt();</span>
+<span class="nc" id="L111">                    PatchLocationContainer container = new PatchLocationContainer(id, coordinate);</span>
+<span class="nc" id="L112">                    locations.add(container);</span>
+<span class="nc" id="L113">                }</span>
+<span class="nc" id="L114">            }</span>
+            
+<span class="nc" id="L116">            return locations;</span>
+        }
+    }
+    
+    /**
+     * Deserializer for {@link Coordinate} objects.
+     */
+<span class="fc" id="L123">    static class CoordinateDeserializer implements JsonDeserializer&lt;Coordinate&gt; {</span>
+        @Override
+        public Coordinate deserialize(JsonElement json, Type typeOfT,
+                                      JsonDeserializationContext context)
+                throws JsonParseException {
+<span class="nc" id="L128">            JsonArray jsonArray = json.getAsJsonArray();</span>
+            
+<span class="nc bnc" id="L130" title="All 2 branches missed.">            if (jsonArray.size() == 3) {</span>
+<span class="nc" id="L131">                int x = jsonArray.get(0).getAsInt();</span>
+<span class="nc" id="L132">                int y = jsonArray.get(1).getAsInt();</span>
+<span class="nc" id="L133">                int z = jsonArray.get(2).getAsInt();</span>
+<span class="nc" id="L134">                return new CoordinateXYZ(x, y, z);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            } else if (jsonArray.size() == 4) {</span>
+<span class="nc" id="L136">                int u = jsonArray.get(0).getAsInt();</span>
+<span class="nc" id="L137">                int v = jsonArray.get(1).getAsInt();</span>
+<span class="nc" id="L138">                int w = jsonArray.get(2).getAsInt();</span>
+<span class="nc" id="L139">                int z = jsonArray.get(3).getAsInt();</span>
+<span class="nc" id="L140">                return new CoordinateUVWZ(u, v, w, z);</span>
+            }
+            
+<span class="nc" id="L143">            return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

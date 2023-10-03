@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchOperationDiffuser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.operation</a> &gt; <span class="el_source">PatchOperationDiffuser.java</span></div><h1>PatchOperationDiffuser.java</h1><pre class="source lang-java linenums">package arcade.patch.env.operation;
+
+import ec.util.MersenneTwisterFast;
+import arcade.core.env.operation.Operation;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.patch.env.lattice.PatchLattice;
+import static arcade.core.util.Enums.Category;
+
+/**
+ * Extension of {@link PatchOperation} for diffusion.
+ * &lt;p&gt;
+ * Operation calculates diffusion of concentrations using finite difference
+ * approximation with given {@code DIFFUSIVITY}. The calculation is repeated per
+ * second (model tick is one minute). Methods are written to work regardless of
+ * underlying geometry. Methods extending this operation for a specific geometry
+ * will need to adjust the multipliers for both the finite difference
+ * approximation and the pseudo-steady state approximation.
+ */
+
+public abstract class PatchOperationDiffuser extends PatchOperation {
+    /** Array holding current concentration values. */
+    public final double[][][] latticeCurrent;
+    
+    /** Array holding new concentration values. */
+    public final double[][][] latticeNew;
+    
+    /** Dimensionless rate of diffusion. */
+    double rate;
+    
+    /** Multiplier on axial concentrations. */
+    double alpha;
+    
+    /** Multiplier on previous concentration. */
+    double beta;
+    
+    /** {@code 0} if pseudo-steady state, {@code false} otherwise. */
+    int adjust;
+    
+    /** Diffusivity of molecule [um&lt;sup&gt;2&lt;/sup&gt;/s]. */
+    final double diffusivity;
+    
+    /** Border array for left border (x direction). */
+    final byte[] leftBorder;
+    
+    /** Border array for right border (x direction). */
+    final byte[] rightBorder;
+    
+    /** Border array for top border (y direction). */
+    final byte[] topBorder;
+    
+    /** Border array for bottom border (y direction). */
+    final byte[] bottomBorder;
+    
+    /** Border array for up border (z direction). */
+    final byte[] upBorder;
+    
+    /** Border array for down border (z direction). */
+    final byte[] downBorder;
+    
+    /**
+     * Creates a diffuser {@link PatchOperation} for the given lattice.
+     * &lt;p&gt;
+     * Six border arrays are used to check if an index is located at the
+     * right/left ({@code LENGTH}, x axis), top/bottom ({@code WIDTH}, y axis),
+     * and up/down ({@code HEIGHT}, z axis) directions.
+     * &lt;p&gt;
+     * Loaded parameters include:
+     * &lt;ul&gt;
+     *     &lt;li&gt;{@code DIFFUSIVITY} = diffusivity of molecule&lt;/li&gt;
+     * &lt;/ul&gt;
+     *
+     * @param lattice  the {@link PatchLattice} the operation is associated with
+     */
+    public PatchOperationDiffuser(PatchLattice lattice) {
+<span class="nc" id="L76">        super(lattice);</span>
+        
+        // Get diffuser parameters.
+<span class="nc" id="L79">        MiniBox parameters = lattice.getParameters();</span>
+<span class="nc" id="L80">        diffusivity = parameters.getDouble(&quot;diffuser/DIFFUSIVITY&quot;);</span>
+        
+        // Set lattice fields.
+<span class="nc" id="L83">        this.latticeCurrent = lattice.getField();</span>
+        
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (lattice.getOperation(Category.GENERATOR) != null) {</span>
+<span class="nc" id="L86">            Operation generator = lattice.getOperation(Category.GENERATOR);</span>
+<span class="nc" id="L87">            this.latticeNew = ((PatchOperationGenerator) generator).latticePrevious;</span>
+<span class="nc" id="L88">        } else {</span>
+<span class="nc" id="L89">            this.latticeNew = new double[latticeHeight][latticeLength][latticeWidth];</span>
+        }
+        
+        // Set up border arrays for up and down (z direction).
+<span class="nc" id="L93">        upBorder = new byte[latticeHeight];</span>
+<span class="nc" id="L94">        downBorder = new byte[latticeHeight];</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">            upBorder[k] = (byte) (k == latticeHeight - 1 ? 0 : 1);</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">            downBorder[k] = (byte) (k == 0 ? 0 : 1);</span>
+        }
+        
+        // Set up border arrays for left and right (x direction).
+<span class="nc" id="L101">        leftBorder = new byte[latticeLength];</span>
+<span class="nc" id="L102">        rightBorder = new byte[latticeLength];</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">            leftBorder[i] = (byte) (i == 0 ? 0 : 1);</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            rightBorder[i] = (byte) (i == latticeLength - 1 ? 0 : 1);</span>
+        }
+        
+        // Set up border arrays for top and bottom (y direction).
+<span class="nc" id="L109">        topBorder = new byte[latticeWidth];</span>
+<span class="nc" id="L110">        bottomBorder = new byte[latticeWidth];</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">            topBorder[j] = (byte) (j == 0 ? 0 : 1);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            bottomBorder[j] = (byte) (j == latticeWidth - 1 ? 0 : 1);</span>
+        }
+<span class="nc" id="L115">    }</span>
+    
+    /**
+     * Calculate the sum of neighboring locations in 2D plane.
+     *
+     * @param i  the coordinate in the x axis
+     * @param j  the coordinate in the y axis
+     * @param field  the 2D concentration field
+     * @return  the total concentration in the neighboring locations
+     */
+    abstract double calcSum(int i, int j, double[][] field);
+    
+    @Override
+    public void step(MersenneTwisterFast random, Simulation sim) {
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (latticeHeight == 1) {</span>
+<span class="nc" id="L130">            step2D();</span>
+        } else {
+<span class="nc" id="L132">            step3D();</span>
+        }
+<span class="nc" id="L134">    }</span>
+    
+    /**
+     * Steps the diffuser for 2D simulations.
+     */
+    private void step2D() {
+<span class="nc" id="L140">        double[][] latticeCurrentLayer = latticeCurrent[0];</span>
+<span class="nc" id="L141">        double[][] latticeNewLayer = latticeNew[0];</span>
+        double oldConc;
+        double sumConc;
+        
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        for (int step = 0; step &lt; 60; step++) {</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">                for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc" id="L148">                    oldConc = latticeCurrentLayer[i][j] * adjust;</span>
+<span class="nc" id="L149">                    sumConc = calcSum(i, j, latticeCurrentLayer);</span>
+<span class="nc" id="L150">                    latticeNewLayer[i][j] = rate * (sumConc - beta * oldConc) + oldConc;</span>
+                }
+            }
+            
+            // Set grid values to new grid.
+<span class="nc" id="L155">            lattice.setField(latticeNewLayer, 0);</span>
+        }
+<span class="nc" id="L157">    }</span>
+    
+    /**
+     * Steps the diffuser for 3D simulations.
+     */
+    private void step3D() {
+        double oldConc;
+        double sumConc;
+        int up;
+        int down;
+        
+        // Update concentration in each location with step size of 1 second.
+<span class="nc bnc" id="L169" title="All 2 branches missed.">        for (int step = 0; step &lt; 60; step++) {</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc" id="L171">                up = k + upBorder[k];</span>
+<span class="nc" id="L172">                down = k - downBorder[k];</span>
+                
+<span class="nc bnc" id="L174" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc" id="L176">                        oldConc = latticeCurrent[k][i][j] * adjust;</span>
+<span class="nc" id="L177">                        sumConc = calcSum(i, j, latticeCurrent[k]);</span>
+                        
+                        // Add in up and down neighbors for 3D case. Check if
+                        // located at the up (for up) and down (for down) side
+                        // of the environment. Includes multiplier since dz =/= dx = dy.
+<span class="nc" id="L182">                        sumConc += latticeCurrent[up][i][j] * alpha;</span>
+<span class="nc" id="L183">                        sumConc += latticeCurrent[down][i][j] * alpha;</span>
+                        
+<span class="nc" id="L185">                        latticeNew[k][i][j] = rate * (sumConc - beta * oldConc) + oldConc;</span>
+                    }
+                }
+            }
+            
+            // Set grid values to new grid.
+<span class="nc" id="L191">            lattice.setField(latticeNew);</span>
+        }
+<span class="nc" id="L193">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

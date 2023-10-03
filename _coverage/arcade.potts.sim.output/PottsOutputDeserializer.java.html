@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsOutputDeserializer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.sim.output</a> &gt; <span class="el_source">PottsOutputDeserializer.java</span></div><h1>PottsOutputDeserializer.java</h1><pre class="source lang-java linenums">package arcade.potts.sim.output;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.location.LocationContainer;
+import arcade.core.sim.output.OutputDeserializer;
+import arcade.potts.agent.cell.PottsCellContainer;
+import arcade.potts.env.location.PottsLocationContainer;
+import arcade.potts.env.location.Voxel;
+import static arcade.core.util.Enums.Region;
+import static arcade.core.util.Enums.State;
+import static arcade.potts.util.PottsEnums.Phase;
+
+/**
+ * Container class for potts-specific object deserializers.
+ * &lt;p&gt;
+ * Deserializers include:
+ * &lt;ul&gt;
+ *     &lt;li&gt;{@link PottsCellDeserializer} for deserializing {@link PottsCellContainer}&lt;/li&gt;
+ *     &lt;li&gt;{@link PottsLocationDeserializer} for deserializing {@link PottsLocationContainer}&lt;/li&gt;
+ *     &lt;li&gt;{@link VoxelDeserializer} for deserializing {@link Voxel}&lt;/li&gt;
+ * &lt;/ul&gt;
+ */
+
+public final class PottsOutputDeserializer {
+    /**
+     * Hidden utility class constructor.
+     */
+<span class="fc" id="L39">    protected PottsOutputDeserializer() {</span>
+<span class="fc" id="L40">        throw new UnsupportedOperationException();</span>
+    }
+    
+    /**
+     * Creates a {@code Gson} with generic and implementation-specific adaptors.
+     *
+     * @return  a {@code Gson} instance
+     */
+    static Gson makeGSON() {
+<span class="fc" id="L49">        GsonBuilder gsonBuilder = OutputDeserializer.makeGSONBuilder();</span>
+<span class="fc" id="L50">        gsonBuilder.registerTypeAdapter(CellContainer.class,</span>
+                new PottsCellDeserializer());
+<span class="fc" id="L52">        gsonBuilder.registerTypeAdapter(PottsCellContainer.class,</span>
+                new PottsCellDeserializer());
+<span class="fc" id="L54">        gsonBuilder.registerTypeAdapter(LocationContainer.class,</span>
+                new PottsLocationDeserializer());
+<span class="fc" id="L56">        gsonBuilder.registerTypeAdapter(PottsLocationContainer.class,</span>
+                new PottsLocationDeserializer());
+<span class="fc" id="L58">        gsonBuilder.registerTypeAdapter(Voxel.class,</span>
+                new VoxelDeserializer());
+<span class="fc" id="L60">        return gsonBuilder.create();</span>
+    }
+    
+    /**
+     * Deserializer for {@link PottsCellContainer} objects.
+     */
+<span class="fc" id="L66">    static class PottsCellDeserializer implements JsonDeserializer&lt;PottsCellContainer&gt; {</span>
+        @Override
+        public PottsCellContainer deserialize(JsonElement json, Type typeOfT,
+                                              JsonDeserializationContext context)
+                throws JsonParseException {
+<span class="fc" id="L71">            JsonObject jsonObject = json.getAsJsonObject();</span>
+            
+<span class="fc" id="L73">            int id = jsonObject.get(&quot;id&quot;).getAsInt();</span>
+<span class="fc" id="L74">            int parent = jsonObject.get(&quot;parent&quot;).getAsInt();</span>
+<span class="fc" id="L75">            int pop = jsonObject.get(&quot;pop&quot;).getAsInt();</span>
+<span class="fc" id="L76">            int age = jsonObject.get(&quot;age&quot;).getAsInt();</span>
+<span class="fc" id="L77">            int divisions = jsonObject.get(&quot;divisions&quot;).getAsInt();</span>
+<span class="fc" id="L78">            int voxels = jsonObject.get(&quot;voxels&quot;).getAsInt();</span>
+            
+<span class="fc" id="L80">            State state = State.valueOf(jsonObject.get(&quot;state&quot;).getAsString());</span>
+<span class="fc" id="L81">            Phase phase = Phase.valueOf(jsonObject.get(&quot;phase&quot;).getAsString());</span>
+            
+<span class="fc" id="L83">            JsonArray criticals = jsonObject.get(&quot;criticals&quot;).getAsJsonArray();</span>
+<span class="fc" id="L84">            double criticalVolume = criticals.get(0).getAsDouble();</span>
+<span class="fc" id="L85">            double criticalHeight = criticals.get(1).getAsDouble();</span>
+            
+<span class="fc" id="L87">            EnumMap&lt;Region, Integer&gt; regions = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc" id="L88">            EnumMap&lt;Region, Double&gt; criticalRegionVolumes = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc" id="L89">            EnumMap&lt;Region, Double&gt; criticalRegionHeights = new EnumMap&lt;&gt;(Region.class);</span>
+            
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            if (jsonObject.has(&quot;regions&quot;)) {</span>
+<span class="fc" id="L92">                JsonArray jsonArray = jsonObject.getAsJsonArray(&quot;regions&quot;);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">                for (JsonElement object : jsonArray) {</span>
+<span class="fc" id="L94">                    JsonObject regionObject = object.getAsJsonObject();</span>
+<span class="fc" id="L95">                    Region region = Region.valueOf(regionObject.get(&quot;region&quot;).getAsString());</span>
+<span class="fc" id="L96">                    int regionVoxels = regionObject.get(&quot;voxels&quot;).getAsInt();</span>
+                    
+<span class="fc" id="L98">                    JsonArray regionCriticals = regionObject.get(&quot;criticals&quot;).getAsJsonArray();</span>
+<span class="fc" id="L99">                    criticalRegionVolumes.put(region, regionCriticals.get(0).getAsDouble());</span>
+<span class="fc" id="L100">                    criticalRegionHeights.put(region, regionCriticals.get(1).getAsDouble());</span>
+                    
+<span class="fc" id="L102">                    regions.put(region, regionVoxels);</span>
+<span class="fc" id="L103">                }</span>
+            }
+            
+            PottsCellContainer cell;
+<span class="fc bfc" id="L107" title="All 2 branches covered.">            if (regions.size() == 0) {</span>
+<span class="fc" id="L108">                cell = new PottsCellContainer(id, parent, pop, age, divisions, state, phase,</span>
+                        voxels, criticalVolume, criticalHeight);
+            } else {
+<span class="fc" id="L111">                cell = new PottsCellContainer(id, parent, pop, age, divisions, state, phase,</span>
+                        voxels, regions, criticalVolume, criticalHeight,
+                        criticalRegionVolumes, criticalRegionHeights);
+            }
+            
+<span class="fc" id="L116">            return cell;</span>
+        }
+    }
+    
+    /**
+     * Deserializer for {@link PottsLocationContainer} objects.
+     */
+<span class="fc" id="L123">    static class PottsLocationDeserializer implements JsonDeserializer&lt;PottsLocationContainer&gt; {</span>
+        @Override
+        public PottsLocationContainer deserialize(JsonElement json, Type typeOfT,
+                                                  JsonDeserializationContext context)
+                throws JsonParseException {
+<span class="fc" id="L128">            JsonObject jsonObject = json.getAsJsonObject();</span>
+            
+            // Parse out id and center voxel.
+<span class="fc" id="L131">            int id = jsonObject.get(&quot;id&quot;).getAsInt();</span>
+<span class="fc" id="L132">            Voxel center = context.deserialize(jsonObject.get(&quot;center&quot;), Voxel.class);</span>
+            
+            // Set up list of all voxels and map for region voxels.
+<span class="fc" id="L135">            ArrayList&lt;Voxel&gt; allVoxels = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L136">            EnumMap&lt;Region, ArrayList&lt;Voxel&gt;&gt; regions = new EnumMap&lt;&gt;(Region.class);</span>
+            
+            // Parse lists of voxels.
+<span class="fc" id="L139">            JsonArray jsonArray = jsonObject.getAsJsonArray(&quot;location&quot;);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">            for (JsonElement object : jsonArray) {</span>
+<span class="fc" id="L141">                JsonObject regionObject = object.getAsJsonObject();</span>
+<span class="fc" id="L142">                Region region = Region.valueOf(regionObject.get(&quot;region&quot;).getAsString());</span>
+<span class="fc" id="L143">                JsonArray voxelArray = regionObject.get(&quot;voxels&quot;).getAsJsonArray();</span>
+                
+<span class="fc" id="L145">                ArrayList&lt;Voxel&gt; voxels = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">                for (JsonElement element : voxelArray) {</span>
+<span class="fc" id="L147">                    Voxel voxel = context.deserialize(element, Voxel.class);</span>
+<span class="fc" id="L148">                    voxels.add(voxel);</span>
+<span class="fc" id="L149">                    allVoxels.add(voxel);</span>
+<span class="fc" id="L150">                }</span>
+                
+<span class="fc" id="L152">                regions.put(region, voxels);</span>
+<span class="fc" id="L153">            }</span>
+            
+            PottsLocationContainer location;
+<span class="fc bfc" id="L156" title="All 2 branches covered.">            if (jsonArray.size() == 1) {</span>
+<span class="fc" id="L157">                location = new PottsLocationContainer(id, center, allVoxels);</span>
+            } else {
+<span class="fc" id="L159">                location = new PottsLocationContainer(id, center, allVoxels, regions);</span>
+            }
+            
+<span class="fc" id="L162">            return location;</span>
+        }
+    }
+    
+    /**
+     * Deserializer for {@link Voxel} objects.
+     */
+<span class="fc" id="L169">    static class VoxelDeserializer implements JsonDeserializer&lt;Voxel&gt; {</span>
+        @Override
+        public Voxel deserialize(JsonElement json, Type typeOfT,
+                                 JsonDeserializationContext context) throws JsonParseException {
+<span class="fc" id="L173">            JsonArray jsonArray = json.getAsJsonArray();</span>
+<span class="fc" id="L174">            int x = jsonArray.get(0).getAsInt();</span>
+<span class="fc" id="L175">            int y = jsonArray.get(1).getAsInt();</span>
+<span class="fc" id="L176">            int z = jsonArray.get(2).getAsInt();</span>
+<span class="fc" id="L177">            return new Voxel(x, y, z);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

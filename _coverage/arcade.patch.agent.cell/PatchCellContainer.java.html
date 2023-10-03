@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchCellContainer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.cell</a> &gt; <span class="el_source">PatchCellContainer.java</span></div><h1>PatchCellContainer.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.cell;
+
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactory;
+import arcade.core.env.location.Location;
+import arcade.core.util.MiniBox;
+import static arcade.core.util.Enums.State;
+
+/**
+ * Implementation of {@link CellContainer} for {@link PatchCell} agents.
+ * &lt;p&gt;
+ * Cell parameters are drawn from the associated {@link PatchCellFactory}
+ * instance for the given population.
+ */
+
+public final class PatchCellContainer implements CellContainer {
+    /** Unique cell container ID. */
+    public final int id;
+    
+    /** Cell parent ID. */
+    public final int parent;
+    
+    /** Cell population index. */
+    public final int pop;
+    
+    /** Cell age [min]. */
+    public final int age;
+    
+    /** Number of divisions. */
+    public final int divisions;
+    
+    /** Cell state. */
+    public final State state;
+    
+    /** Cell volume [um&lt;sup&gt;3&lt;/sup&gt;]. */
+    public final double volume;
+    
+    /** Cell height [um]. */
+    public final double height;
+    
+    /** Critical cell volume [um&lt;sup&gt;3&lt;/sup&gt;]. */
+    public final double criticalVolume;
+    
+    /** Critical cell height [um]. */
+    public final double criticalHeight;
+    
+    /**
+     * Creates a {@code PatchCellContainer} instance.
+     *
+     * @param id  the cell ID
+     * @param parent  the parent ID
+     * @param pop  the cell population index
+     * @param age  the cell age
+     * @param divisions  the number of cell divisions
+     * @param state  the cell state
+     * @param volume  the cell volume
+     * @param height  the cell height
+     * @param criticalVolume  the critical volume
+     * @param criticalHeight  the critical height
+     */
+    public PatchCellContainer(int id, int parent, int pop, int age, int divisions,
+                              State state, double volume, double height,
+<span class="nc" id="L64">                              double criticalVolume, double criticalHeight) {</span>
+<span class="nc" id="L65">        this.id = id;</span>
+<span class="nc" id="L66">        this.parent = parent;</span>
+<span class="nc" id="L67">        this.pop = pop;</span>
+<span class="nc" id="L68">        this.age = age;</span>
+<span class="nc" id="L69">        this.divisions = divisions;</span>
+<span class="nc" id="L70">        this.state = state;</span>
+<span class="nc" id="L71">        this.volume = volume;</span>
+<span class="nc" id="L72">        this.height = height;</span>
+<span class="nc" id="L73">        this.criticalVolume = criticalVolume;</span>
+<span class="nc" id="L74">        this.criticalHeight = criticalHeight;</span>
+<span class="nc" id="L75">    }</span>
+    
+    @Override
+<span class="nc" id="L78">    public int getID() { return id; }</span>
+    
+    @Override
+    public Cell convert(CellFactory factory, Location location) {
+<span class="nc" id="L82">        return convert((PatchCellFactory) factory, location);</span>
+    }
+    
+    /**
+     * Converts the cell container into a {@link PatchCell}.
+     *
+     * @param factory  the cell factory instance
+     * @param location  the cell location
+     * @return  a {@link PatchCell} instance
+     */
+    private Cell convert(PatchCellFactory factory, Location location) {
+        // Get parameters for the cell population.
+<span class="nc" id="L94">        MiniBox parameters = factory.popToParameters.get(pop);</span>
+        
+        // Make cell.
+<span class="nc bnc" id="L97" title="All 3 branches missed.">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
+            default:
+            case &quot;tissue&quot;:
+<span class="nc" id="L100">                return new PatchCellTissue(id, parent, pop, state, age, divisions, location,</span>
+                        parameters, volume, height, criticalVolume, criticalHeight);
+            case &quot;cancer&quot;:
+<span class="nc" id="L103">                return new PatchCellCancer(id, parent, pop, state, age, divisions, location,</span>
+                        parameters, volume, height, criticalVolume, criticalHeight);
+            case &quot;cancer_stem&quot;:
+<span class="nc" id="L106">                return new PatchCellCancerStem(id, parent, pop, state, age, divisions, location,</span>
+                        parameters, volume, height, criticalVolume, criticalHeight);
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

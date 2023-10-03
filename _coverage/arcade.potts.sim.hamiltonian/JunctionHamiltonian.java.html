@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JunctionHamiltonian.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.sim.hamiltonian</a> &gt; <span class="el_source">JunctionHamiltonian.java</span></div><h1>JunctionHamiltonian.java</h1><pre class="source lang-java linenums">package arcade.potts.sim.hamiltonian;
+
+import java.util.HashMap;
+import java.util.Set;
+import arcade.core.util.MiniBox;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
+import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
+
+/**
+ * Implementation of {@link Hamiltonian} for tight junction energy.
+ */
+
+public class JunctionHamiltonian implements Hamiltonian {
+    /** Map of hamiltonian config objects. */
+    final HashMap&lt;Integer, JunctionHamiltonianConfig&gt; configs;
+    
+    /** Map of population to lambda values. */
+    final HashMap&lt;Integer, Double&gt; popToLambda;
+    
+    /** Potts array for ids. */
+    final int[][][] ids;
+    
+    /**
+     * Creates the junction energy term for the {@code Potts} Hamiltonian.
+     *
+     * @param series  the associated Series instance
+     * @param potts  the associated Potts instance
+     */
+<span class="fc" id="L31">    public JunctionHamiltonian(PottsSeries series, Potts potts) {</span>
+<span class="fc" id="L32">        configs = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L33">        popToLambda = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L34">        initialize(series);</span>
+        
+<span class="fc" id="L36">        this.ids = potts.ids;</span>
+<span class="fc" id="L37">    }</span>
+    
+    @Override
+    public void register(PottsCell cell) {
+<span class="fc" id="L41">        int pop = cell.getPop();</span>
+<span class="fc" id="L42">        double lambda = popToLambda.get(pop);</span>
+<span class="fc" id="L43">        JunctionHamiltonianConfig config = new JunctionHamiltonianConfig(lambda);</span>
+<span class="fc" id="L44">        configs.put(cell.getID(), config);</span>
+<span class="fc" id="L45">    }</span>
+    
+    @Override
+    public void deregister(PottsCell cell) {
+<span class="fc" id="L49">        configs.remove(cell.getID());</span>
+<span class="fc" id="L50">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Junction energy is calculated only for the case where both the source
+     * and the target are not media (id =/= 0).
+     */
+    @Override
+    public double getDelta(int sourceID, int targetID, int x, int y, int z) {
+<span class="fc bfc" id="L60" title="All 4 branches covered.">        if (sourceID == 0 || targetID == 0) {</span>
+<span class="fc" id="L61">            return 0;</span>
+        }
+        
+<span class="fc" id="L64">        double lambda = configs.get(targetID).getLambda();</span>
+        
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (ids[z - 1][x][y] == targetID) {</span>
+<span class="fc" id="L67">            return -lambda;</span>
+        }
+        
+<span class="fc" id="L70">        return lambda;</span>
+    }
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Junction energy is set to zero. Region voxels do not form junctions.
+     */
+    @Override
+    public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
+<span class="fc" id="L80">        return 0;</span>
+    }
+    
+    /**
+     * Initializes parameters for junction hamiltonian term.
+     *
+     * @param series  the series instance
+     */
+    void initialize(PottsSeries series) {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (series.populations == null) {</span>
+<span class="fc" id="L90">            return;</span>
+        }
+        
+<span class="fc" id="L93">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
+<span class="fc" id="L94">        MiniBox parameters = series.potts;</span>
+        
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (String key : keySet) {</span>
+<span class="fc" id="L97">            MiniBox population = series.populations.get(key);</span>
+<span class="fc" id="L98">            int pop = population.getInt(&quot;CODE&quot;);</span>
+            
+            // Get lambda value.
+<span class="fc" id="L101">            double lambda = parameters.getDouble(&quot;junction/LAMBDA&quot; + TARGET_SEPARATOR + key);</span>
+<span class="fc" id="L102">            popToLambda.put(pop, lambda);</span>
+<span class="fc" id="L103">        }</span>
+<span class="fc" id="L104">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

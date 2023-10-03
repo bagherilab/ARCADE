@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsLocations2D.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.env.location</a> &gt; <span class="el_source">PottsLocations2D.java</span></div><h1>PottsLocations2D.java</h1><pre class="source lang-java linenums">package arcade.potts.env.location;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Direction;
+
+/**
+ * Concrete implementation of {@link PottsLocations} for 2D.
+ */
+
+public final class PottsLocations2D extends PottsLocations implements Location2D {
+    /**
+     * Creates a 2D {@link PottsLocation} for a list of voxels.
+     *
+     * @param voxels  the list of voxels
+     */
+<span class="fc" id="L18">    public PottsLocations2D(ArrayList&lt;Voxel&gt; voxels) { super(voxels); }</span>
+    
+    @Override
+    PottsLocation makeLocation(ArrayList&lt;Voxel&gt; voxels) {
+<span class="fc" id="L22">        return new PottsLocation2D(voxels);</span>
+    }
+    
+    @Override
+    PottsLocations makeLocations(ArrayList&lt;Voxel&gt; voxels) {
+<span class="fc" id="L27">        return new PottsLocations2D(voxels);</span>
+    }
+    
+    @Override
+    ArrayList&lt;Voxel&gt; getNeighbors(Voxel focus) {
+<span class="fc" id="L32">        return Location2D.getNeighbors(focus);</span>
+    }
+    
+    @Override
+    public double convertSurface(double volume, double height) {
+<span class="fc" id="L37">        return Location2D.convertSurface(volume, height);</span>
+    }
+    
+    @Override
+    int calculateSurface() {
+<span class="fc" id="L42">        return Location2D.calculateSurface(voxels);</span>
+    }
+    
+    @Override
+    int calculateHeight() {
+<span class="fc" id="L47">        return Location2D.calculateHeight(voxels);</span>
+    }
+    
+    @Override
+    int updateSurface(Voxel voxel) {
+<span class="fc" id="L52">        return Location2D.updateSurface(voxels, voxel);</span>
+    }
+    
+    @Override
+    int updateHeight(Voxel voxel) {
+<span class="fc" id="L57">        return Location2D.updateHeight(voxels, voxel);</span>
+    }
+    
+    @Override
+    HashMap&lt;Direction, Integer&gt; getDiameters() {
+<span class="fc" id="L62">        return Location2D.getDiameters(voxels, getCenter());</span>
+    }
+    
+    @Override
+    Direction getSlice(Direction direction, HashMap&lt;Direction, Integer&gt; diameters) {
+<span class="fc" id="L67">        return Location2D.getSlice(direction, diameters);</span>
+    }
+    
+    @Override
+    ArrayList&lt;Voxel&gt; getSelected(Voxel focus, double n) {
+<span class="fc" id="L72">        return Location2D.getSelected(locations.get(Region.DEFAULT).voxels, focus, n);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

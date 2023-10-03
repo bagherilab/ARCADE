@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchComponentSitesGraphTri.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.component</a> &gt; <span class="el_source">PatchComponentSitesGraphTri.java</span></div><h1>PatchComponentSitesGraphTri.java</h1><pre class="source lang-java linenums">package arcade.patch.env.component;
+
+import java.util.ArrayList;
+import sim.engine.SimState;
+import ec.util.MersenneTwisterFast;
+import arcade.core.env.location.Location;
+import arcade.core.sim.Series;
+import arcade.core.util.MiniBox;
+import arcade.patch.env.location.CoordinateUVWZ;
+import arcade.patch.env.location.CoordinateXYZ;
+import arcade.patch.env.location.PatchLocationHex;
+
+/**
+ * Extension of {@link PatchComponentSitesGraph} for triangular geometry.
+ */
+
+public abstract class PatchComponentSitesGraphTri extends PatchComponentSitesGraph {
+    /**
+     * Creates a {@link PatchComponentSitesGraph} for triangular geometry.
+     *
+     * @param series  the simulation series
+     * @param parameters  the component parameters dictionary
+     * @param random  the random number generator
+     */
+    public PatchComponentSitesGraphTri(Series series, MiniBox parameters,
+                                       MersenneTwisterFast random) {
+<span class="nc" id="L27">        super(series, parameters, random);</span>
+<span class="nc" id="L28">    }</span>
+    
+    @Override
+    public PatchComponentSitesGraphFactory makeGraphFactory(Series series) {
+<span class="nc" id="L32">        return new PatchComponentSitesGraphFactoryTri(series);</span>
+    }
+    
+    /**
+     * Extension of {@link PatchComponentSitesGraphTri} for simple
+     * hemodynamics.
+     */
+    public static class Simple extends PatchComponentSitesGraphTri {
+        /**
+         * Creates a {@link PatchComponentSitesGraphTri} with simple step.
+         *
+         * @param series  the simulation series
+         * @param parameters  the component parameters dictionary
+         * @param random  the random number generator
+         */
+        public Simple(Series series, MiniBox parameters, MersenneTwisterFast random) {
+<span class="nc" id="L48">            super(series, parameters, random);</span>
+<span class="nc" id="L49">        }</span>
+        
+        @Override
+        public void step(SimState simstate) {
+<span class="nc" id="L53">            super.simpleStep();</span>
+<span class="nc" id="L54">        }</span>
+    }
+    
+    /**
+     * Extension of {@link PatchComponentSitesGraphTri} for complex
+     * hemodynamics.
+     */
+    public static class Complex extends PatchComponentSitesGraphTri {
+        /**
+         * Creates a {@link PatchComponentSitesGraphTri} with complex step.
+         *
+         * @param series  the simulation series
+         * @param parameters  the component parameters dictionary
+         * @param random  the random number generator
+         */
+        public Complex(Series series, MiniBox parameters, MersenneTwisterFast random) {
+<span class="nc" id="L70">            super(series, parameters, random);</span>
+<span class="nc" id="L71">        }</span>
+        
+        @Override
+        public void step(SimState simstate) {
+<span class="nc" id="L75">            super.complexStep(simstate.random);</span>
+<span class="nc" id="L76">        }</span>
+    }
+    
+    @Override
+    public Location getLocation(CoordinateXYZ span) {
+<span class="nc" id="L81">        CoordinateUVWZ coordinate = PatchLocationHex.translate(span);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if (coordinate != null) {</span>
+<span class="nc" id="L83">            return new PatchLocationHex(coordinate);</span>
+        } else {
+<span class="nc" id="L85">            return null;</span>
+        }
+    }
+    
+    @Override
+    public ArrayList&lt;CoordinateXYZ&gt; getSpan(SiteNode from, SiteNode to) {
+<span class="nc" id="L91">        ArrayList&lt;CoordinateXYZ&gt; s = new ArrayList&lt;&gt;();</span>
+        
+<span class="nc" id="L93">        int z = from.getZ();</span>
+<span class="nc" id="L94">        int x0 = from.getX();</span>
+<span class="nc" id="L95">        int y0 = from.getY();</span>
+<span class="nc" id="L96">        int x1 = to.getX();</span>
+<span class="nc" id="L97">        int y1 = to.getY();</span>
+        
+        // Calculate deltas.
+<span class="nc" id="L100">        int dX = x1 - x0;</span>
+<span class="nc" id="L101">        int dY = y1 - y0;</span>
+        
+        // Check direction of arrow and update deltas to absolute.
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        boolean sX = dX &lt; 0;</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        boolean sY = dY &lt; 0;</span>
+        
+<span class="nc" id="L107">        dX = Math.abs(dX);</span>
+<span class="nc" id="L108">        dY = Math.abs(dY);</span>
+        
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (x0 == x1) { // Check if line is vertical.</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            for (int d = 0; d &lt; dY; d++) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                checkSite(s, x0 - 1, y0 + (sY ? -(d + 1) : d), z);</span>
+            }
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        } else if (y0 == y1) { // Check if line is horizontal.</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">            for (int d = 0; d &lt; dX; d += 2) {</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">                checkSite(s, x0 + (sX ? -(d + 2) : d), y0, z);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                checkSite(s, x0 + (sX ? -(d + 2) : d), y0 - 1, z);</span>
+            }
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        } else if ((float) dX / (float) dY == 3) { // Check for upper diagonals (30 degrees).</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">            for (int d = 0; d &lt; dX - 1; d += 3) {</span>
+<span class="nc bnc" id="L121" title="All 4 branches missed.">                checkSite(s, x0 + (sX ? -(d + 2) : d), y0 + (sY ? -(d / 3 + 1) : d / 3), z);</span>
+<span class="nc bnc" id="L122" title="All 4 branches missed.">                checkSite(s, x0 + (sX ? -(d + 3) : d + 1), y0 + (sY ? -(d / 3 + 1) : d / 3), z);</span>
+            }
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        } else if (dX == dY) { // Check for lower diagonals (60 degrees).</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">            for (int d = 0; d &lt; dX; d++) {</span>
+<span class="nc bnc" id="L126" title="All 4 branches missed.">                checkSite(s, x0 + (sX ? -(d + 2) : d), y0 + (sY ? -(d + 1) : d), z);</span>
+<span class="nc bnc" id="L127" title="All 4 branches missed.">                checkSite(s, x0 + (sX ? -(d + 1) : d - 1), y0 + (sY ? -(d + 1) : d), z);</span>
+            }
+        } else {
+            // Calculate starting and ending triangles.
+<span class="nc bnc" id="L131" title="All 4 branches missed.">            int startx = x0 - (dY &lt; dX ? (sX ? 2 : 0) : 1);</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">            int starty = y0 - (sY ? 1 : 0);</span>
+<span class="nc bnc" id="L133" title="All 4 branches missed.">            int endx = x1 - (dY &lt; dX ? (sX ? 0 : 2) : 1);</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">            int endy = y1 - (sY ? 0 : 1);</span>
+            
+            // Calculate new deltas based on triangle.
+<span class="nc" id="L137">            int dx = Math.abs(endx - startx);</span>
+<span class="nc" id="L138">            int dy = Math.abs(endy - starty);</span>
+            
+            // Initial conditions.
+<span class="nc" id="L141">            int x = startx;</span>
+<span class="nc" id="L142">            int y = starty;</span>
+<span class="nc" id="L143">            int e = 0;</span>
+            
+            // Add start triangle.
+<span class="nc" id="L146">            checkSite(s, x, y, z);</span>
+            
+            // Track if triangle is even (point down) or odd (point up).
+            boolean even;
+            
+            // Iterate until the ending triangle is reached.
+<span class="nc bnc" id="L152" title="All 4 branches missed.">            while (x != endx || y != endy) {</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">                even = ((x + y) &amp; 1) == 0;</span>
+                
+<span class="nc bnc" id="L155" title="All 2 branches missed.">                if (e &gt; 3 * dx) {</span>
+<span class="nc bnc" id="L156" title="All 4 branches missed.">                    if (!sX &amp;&amp; !sY) {</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                        if (even) {</span>
+<span class="nc" id="L158">                            checkSite(s, --x, y++, z);</span>
+                        } else {
+<span class="nc" id="L160">                            checkSite(s, x--, ++y, z);</span>
+                        }
+<span class="nc bnc" id="L162" title="All 4 branches missed.">                    } else if (!sX &amp;&amp; sY) {</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">                        if (even) {</span>
+<span class="nc" id="L164">                            checkSite(s, x--, --y, z);</span>
+                        } else {
+<span class="nc" id="L166">                            checkSite(s, --x, y--, z);</span>
+                        }
+<span class="nc bnc" id="L168" title="All 4 branches missed.">                    } else if (sX &amp;&amp; !sY) {</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">                        if (even) {</span>
+<span class="nc" id="L170">                            checkSite(s, ++x, y++, z);</span>
+                        } else {
+<span class="nc" id="L172">                            checkSite(s, x++, ++y, z);</span>
+                        }
+<span class="nc bnc" id="L174" title="All 4 branches missed.">                    } else if (sX &amp;&amp; sY) {</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">                        if (even) {</span>
+<span class="nc" id="L176">                            checkSite(s, x++, --y, z);</span>
+                        } else {
+<span class="nc" id="L178">                            checkSite(s, ++x, y--, z);</span>
+                        }
+                    }
+<span class="nc" id="L181">                    e -= (2 * dy + 2 * dx);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">                } else if (e &gt;= 2 * dx) {</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">                    if (!sY) {</span>
+<span class="nc" id="L184">                        y++;</span>
+                    } else {
+<span class="nc" id="L186">                        y--;</span>
+                    }
+<span class="nc" id="L188">                    e -= 2 * dx;</span>
+                } else {
+<span class="nc" id="L190">                    e += 2 * dy;</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">                    if (e &gt;= dx) {</span>
+<span class="nc bnc" id="L192" title="All 4 branches missed.">                        if (!sX &amp;&amp; !sY) {</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">                            if (even) {</span>
+<span class="nc" id="L194">                                checkSite(s, ++x, y++, z);</span>
+                            } else {
+<span class="nc" id="L196">                                checkSite(s, x++, ++y, z);</span>
+                            }
+<span class="nc bnc" id="L198" title="All 4 branches missed.">                        } else if (!sX &amp;&amp; sY) {</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">                            if (even) {</span>
+<span class="nc" id="L200">                                checkSite(s, x++, --y, z);</span>
+                            } else {
+<span class="nc" id="L202">                                checkSite(s, ++x, y--, z);</span>
+                            }
+<span class="nc bnc" id="L204" title="All 4 branches missed.">                        } else if (sX &amp;&amp; !sY) {</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">                            if (even) {</span>
+<span class="nc" id="L206">                                checkSite(s, --x, y++, z);</span>
+                            } else {
+<span class="nc" id="L208">                                checkSite(s, x--, ++y, z);</span>
+                            }
+<span class="nc bnc" id="L210" title="All 4 branches missed.">                        } else if (sX &amp;&amp; sY) {</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">                            if (even) {</span>
+<span class="nc" id="L212">                                checkSite(s, x--, --y, z);</span>
+                            } else {
+<span class="nc" id="L214">                                checkSite(s, --x, y--, z);</span>
+                            }
+                        }
+<span class="nc" id="L217">                        e -= 2 * dx;</span>
+                    } else {
+<span class="nc bnc" id="L219" title="All 2 branches missed.">                        if (!sX) {</span>
+<span class="nc" id="L220">                            x++;</span>
+                        } else {
+<span class="nc" id="L222">                            x--;</span>
+                        }
+                    }
+                }
+                
+<span class="nc" id="L227">                checkSite(s, x, y, z);</span>
+            }
+        }
+        
+<span class="nc" id="L231">        return s;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

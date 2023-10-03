@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsLocationFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.env.location</a> &gt; <span class="el_source">PottsLocationFactory.java</span></div><h1>PottsLocationFactory.java</h1><pre class="source lang-java linenums">package arcade.potts.env.location;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.HashSet;
+import ec.util.MersenneTwisterFast;
+import arcade.core.env.location.*;
+import arcade.core.sim.Series;
+import arcade.core.util.MiniBox;
+import arcade.core.util.Utilities;
+import static arcade.core.util.Enums.Region;
+
+/**
+ * Implementation of {@link LocationFactory} for {@link PottsLocation} objects.
+ * &lt;p&gt;
+ * For a given {@link Series}, the factory uses its associated random number
+ * generator for shuffling voxel lists. The voxel lists a
+ * {@link PottsLocationContainer} are combined with a
+ * {@link arcade.potts.agent.cell.PottsCellContainer} to instantiate a
+ * {@link PottsLocation} object.
+ */
+
+public abstract class PottsLocationFactory implements LocationFactory {
+    /** List of valid (x, y, z) moves. */
+<span class="fc" id="L27">    static final int[][] VALID_MOVES = {</span>
+            { -1,  0,  0 },
+            {  1,  0,  0 },
+            {  0, -1,  0 },
+            {  0,  1,  0 },
+            {  0,  0, -1 },
+            {  0,  0,  1 }
+    };
+    
+    /** Random number generator instance. */
+    MersenneTwisterFast random;
+    
+    /** Map of id to location. */
+    public final HashMap&lt;Integer, PottsLocationContainer&gt; locations;
+    
+    /**
+     * Creates a factory for making {@link PottsLocation} instances.
+     */
+<span class="fc" id="L45">    public PottsLocationFactory() {</span>
+<span class="fc" id="L46">        locations = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L47">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * For series with no loader, a list of available centers is created based
+     * on population settings. For series with a loader, the specified file is
+     * loaded into the factory.
+     */
+    @Override
+    public void initialize(Series series, MersenneTwisterFast random) {
+<span class="fc" id="L58">        this.random = random;</span>
+<span class="fc bfc" id="L59" title="All 4 branches covered.">        if (series.loader != null &amp;&amp; series.loader.loadLocations) {</span>
+<span class="fc" id="L60">            loadLocations(series);</span>
+        } else {
+<span class="fc" id="L62">            createLocations(series);</span>
+        }
+<span class="fc" id="L64">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Loaded locations are mapped by their id.
+     */
+    @Override
+    public void loadLocations(Series series) {
+        // Load locations.
+<span class="fc" id="L74">        ArrayList&lt;LocationContainer&gt; containers = series.loader.loadLocations();</span>
+        
+        // Map loaded container to factory.
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        for (LocationContainer container : containers) {</span>
+<span class="fc" id="L78">            PottsLocationContainer locationContainer = (PottsLocationContainer) container;</span>
+<span class="fc" id="L79">            locations.put(locationContainer.id, locationContainer);</span>
+<span class="fc" id="L80">        }</span>
+<span class="fc" id="L81">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * The potts layer is subdivided into a grid of voxel sets. Each of these
+     * sets is used to create a location container. Note that these sets contain
+     * more voxels than required for instantiating a location; voxels are
+     * selected from the center outward until the required number of voxels
+     * (defined by a cell container) is selected. Containers are assigned
+     * regions if they exist.
+     */
+    @Override
+    public void createLocations(Series series) {
+<span class="fc" id="L95">        int heightRange = getVoxelsPerHeight(series);</span>
+<span class="fc" id="L96">        int sideRange = getVoxelsPerSide(series, heightRange);</span>
+        
+<span class="fc bfc" id="L98" title="All 2 branches covered.">        if (sideRange == 0) {</span>
+<span class="fc" id="L99">            return;</span>
+        }
+        
+        // Get center voxels.
+<span class="fc" id="L103">        ArrayList&lt;Voxel&gt; centers = getCenters(series.length, series.width, series.height,</span>
+                series.margin, sideRange, heightRange);
+<span class="fc" id="L105">        Utilities.shuffleList(centers, random);</span>
+<span class="fc" id="L106">        centers.sort(Comparator.comparingInt(v -&gt; v.z));</span>
+        
+        // Get regions (if they exist).
+<span class="fc" id="L109">        HashSet&lt;String&gt; regionKeys = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
+<span class="fc" id="L111">            MiniBox regionBox = population.filter(&quot;(REGION)&quot;);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            if (regionBox.getKeys().size() &gt; 0) {</span>
+<span class="fc" id="L113">                regionKeys.addAll(regionBox.getKeys());</span>
+            }
+<span class="fc" id="L115">        }</span>
+        
+        // Create containers for each center.
+<span class="fc" id="L118">        int id = 1;</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        for (Voxel center : centers) {</span>
+<span class="fc" id="L120">            ArrayList&lt;Voxel&gt; voxels = getPossible(center, sideRange, heightRange);</span>
+            
+            // Add regions (if they exist).
+<span class="fc" id="L123">            EnumMap&lt;Region, ArrayList&lt;Voxel&gt;&gt; regions = null;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">            if (regionKeys.size() &gt; 0) {</span>
+<span class="fc" id="L125">                regions = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">                for (String regionKey : regionKeys) {</span>
+<span class="fc" id="L127">                    Region region = Region.valueOf(regionKey);</span>
+<span class="fc" id="L128">                    regions.put(region, getPossible(center, sideRange - 2, heightRange));</span>
+<span class="fc" id="L129">                }</span>
+            }
+            
+<span class="fc" id="L132">            PottsLocationContainer container =</span>
+                    new PottsLocationContainer(id, center, voxels, regions);
+<span class="fc" id="L134">            locations.put(id, container);</span>
+<span class="fc" id="L135">            id++;</span>
+<span class="fc" id="L136">        }</span>
+<span class="fc" id="L137">    }</span>
+    
+    /**
+     * Converts volume to voxels per square side.
+     *
+     * @param volume  the target volume
+     * @param height  the target height
+     * @return  the voxels per side
+     */
+    int convert(double volume, double height) {
+<span class="fc" id="L147">        int sqrt = (int) Math.ceil(Math.sqrt(volume / height));</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        return sqrt + (sqrt % 2 == 0 ? 1 : 0);</span>
+    }
+    
+    /**
+     * Finds the maximum height range between centers based on critical height.
+     * The height range is at least one and at most equal to the height of the
+     * simulation series with two voxel padding.
+     *
+     * @param series  the simulation series
+     * @return  the voxel height range
+     */
+    int getVoxelsPerHeight(Series series) {
+<span class="fc" id="L160">        int heightRange = 1;</span>
+        
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
+<span class="fc" id="L163">            double criticalHeight = population.getDouble(&quot;CRITICAL_HEIGHT_MEAN&quot;);</span>
+<span class="fc" id="L164">            int voxelsPerHeight = (int) (Math.min(series.height - 2, Math.ceil(criticalHeight)));</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            if (voxelsPerHeight &gt; heightRange) {</span>
+<span class="fc" id="L166">                heightRange = voxelsPerHeight;</span>
+            }
+<span class="fc" id="L168">        }</span>
+        
+<span class="fc" id="L170">        return heightRange;</span>
+    }
+    
+    /**
+     * Finds the maximum side range between centers based on critical volume.
+     * The side range may be zero if no cells can fit in the given simulation
+     * series and includes a two voxel padding.
+     *
+     * @param series  the simulation series
+     * @param heightRange  the voxel height range
+     * @return  the voxel sides range
+     */
+    int getVoxelsPerSide(Series series, int heightRange) {
+<span class="fc" id="L183">        int sideRange = 0;</span>
+        
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
+<span class="fc" id="L186">            double criticalVolume = population.getDouble(&quot;CRITICAL_VOLUME_MEAN&quot;);</span>
+<span class="fc" id="L187">            int padding = population.getInt(&quot;PADDING&quot;);</span>
+<span class="fc" id="L188">            int voxelsPerSide = convert(2 * criticalVolume, heightRange) + padding;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">            if (voxelsPerSide &gt; sideRange) {</span>
+<span class="fc" id="L190">                sideRange = voxelsPerSide;</span>
+            }
+<span class="fc" id="L192">        }</span>
+        
+<span class="fc" id="L194">        return sideRange;</span>
+    }
+    
+    /**
+     * Selects specified number of voxels from a focus voxel.
+     *
+     * @param voxels  the list of voxels to select from
+     * @param focus  the focus voxel
+     * @param n  the number of voxels to select
+     * @return  the list of selected voxels
+     */
+    abstract ArrayList&lt;Voxel&gt; getSelected(ArrayList&lt;Voxel&gt; voxels, Voxel focus, double n);
+    
+    /**
+     * Gets all possible voxels within given range.
+     *
+     * @param focus  the focus voxel
+     * @param sideRange  the location range per side
+     * @param heightRange  the location range per height
+     * @return  the list of possible voxels
+     */
+    abstract ArrayList&lt;Voxel&gt; getPossible(Voxel focus, int sideRange, int heightRange);
+    
+    /**
+     * Gets all centers for the given range.
+     *
+     * @param length  the array length
+     * @param width  the array width
+     * @param height  the array height
+     * @param margin  the location margin
+     * @param sideRange  the location range per side
+     * @param heightRange  the location range per height
+     * @return  the list of center voxels
+     */
+    abstract ArrayList&lt;Voxel&gt; getCenters(int length, int width, int height, int margin,
+                                         int sideRange, int heightRange);
+    
+    /**
+     * Gets list of valid voxels around a given voxel.
+     *
+     * @param voxel  the voxel
+     * @return  the list of valid voxels
+     */
+    static ArrayList&lt;Voxel&gt; getValid(Voxel voxel) {
+<span class="fc" id="L238">        ArrayList&lt;Voxel&gt; valid = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        for (int[] moves : VALID_MOVES) {</span>
+<span class="fc" id="L240">            Voxel v = new Voxel(voxel.x + moves[0], voxel.y + moves[1], voxel.z + moves[2]);</span>
+<span class="fc" id="L241">            valid.add(v);</span>
+        }
+<span class="fc" id="L243">        return valid;</span>
+    }
+    
+    /**
+     * Increases the number of voxels by adding from given list of voxels.
+     *
+     * @param allVoxels  the list of all possible voxels
+     * @param voxels  the list of selected voxels
+     * @param target  the target number of voxels
+     * @param random  the seeded random number generator
+     */
+    static void increase(ArrayList&lt;Voxel&gt; allVoxels, ArrayList&lt;Voxel&gt; voxels, int target,
+                         MersenneTwisterFast random) {
+<span class="fc" id="L256">        int size = voxels.size();</span>
+<span class="fc" id="L257">        HashSet&lt;Voxel&gt; neighbors = new HashSet&lt;&gt;();</span>
+        
+        // Get neighbors.
+<span class="fc bfc" id="L260" title="All 2 branches covered.">        for (Voxel voxel : voxels) {</span>
+<span class="fc" id="L261">            ArrayList&lt;Voxel&gt; allNeighbors = getValid(voxel);</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">            for (Voxel neighbor : allNeighbors) {</span>
+<span class="fc bfc" id="L263" title="All 4 branches covered.">                if (allVoxels.contains(neighbor) &amp;&amp; !voxels.contains(neighbor)) {</span>
+<span class="fc" id="L264">                    neighbors.add(neighbor);</span>
+                }
+<span class="fc" id="L266">            }</span>
+<span class="fc" id="L267">        }</span>
+        
+        // Add in random neighbors until target size is reached.
+<span class="fc" id="L270">        ArrayList&lt;Voxel&gt; neighborsShuffled = new ArrayList&lt;&gt;(neighbors);</span>
+<span class="fc" id="L271">        Utilities.shuffleList(neighborsShuffled, random);</span>
+<span class="fc" id="L272">        int n = Math.min(target - size, neighborsShuffled.size());</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L274">            voxels.add(neighborsShuffled.get(i));</span>
+        }
+<span class="fc" id="L276">    }</span>
+    
+    /**
+     * Decreases the number of voxels by removing from given list of voxels.
+     *
+     * @param voxels  the list of selected voxels
+     * @param target  the target number of voxels
+     * @param random  the seeded random number generator
+     */
+    static void decrease(ArrayList&lt;Voxel&gt; voxels, int target, MersenneTwisterFast random) {
+<span class="fc" id="L286">        int size = voxels.size();</span>
+        
+        // Remove random voxels until target size is reached.
+<span class="fc" id="L289">        ArrayList&lt;Voxel&gt; voxelsShuffled = new ArrayList&lt;&gt;(voxels);</span>
+<span class="fc" id="L290">        Utilities.shuffleList(voxelsShuffled, random);</span>
+<span class="fc" id="L291">        int index = 0;</span>
+        
+<span class="fc bfc" id="L293" title="All 2 branches covered.">        for (int i = 0; i &lt; size - target; i++) {</span>
+            // Return if there are no remaining neighbors to remove.
+<span class="fc bfc" id="L295" title="All 2 branches covered.">            if (index == voxelsShuffled.size()) {</span>
+<span class="fc" id="L296">                return;</span>
+            }
+            
+<span class="fc" id="L299">            Voxel candidate = voxelsShuffled.get(index++);</span>
+            
+            // Always remove if the target number of voxels is one.
+<span class="fc bfc" id="L302" title="All 2 branches covered.">            if (target == 1) {</span>
+<span class="fc" id="L303">                voxels.remove(candidate);</span>
+<span class="fc" id="L304">                continue;</span>
+            }
+            
+            // Check candidate. Do not remove a candidate if it has a neighbor
+            // that has only one neighbor (i.e. the candidate is the only connection)
+<span class="fc" id="L309">            ArrayList&lt;Voxel&gt; candidateNeighbors = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">            for (Voxel neighbor : getValid(candidate)) {</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">                if (voxels.contains(neighbor)) {</span>
+<span class="fc" id="L312">                    candidateNeighbors.add(neighbor);</span>
+                }
+<span class="fc" id="L314">            }</span>
+            
+            // Check neighbors of neighbor list.
+<span class="fc" id="L317">            boolean valid = true;</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">            for (Voxel neighbor : candidateNeighbors) {</span>
+<span class="fc" id="L319">                int count = getValid(neighbor).stream()</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">                        .mapToInt(v -&gt; voxels.contains(v) ? 1 : 0)</span>
+<span class="fc" id="L321">                        .sum();</span>
+                
+<span class="fc bfc" id="L323" title="All 2 branches covered.">                if (count == 1) {</span>
+<span class="fc" id="L324">                    valid = false;</span>
+<span class="fc" id="L325">                    break;</span>
+                }
+<span class="fc" id="L327">            }</span>
+            
+<span class="fc bfc" id="L329" title="All 2 branches covered.">            if (valid) {</span>
+<span class="fc" id="L330">                voxels.remove(candidate);</span>
+            } else {
+<span class="fc" id="L332">                i--;</span>
+            }
+        }
+<span class="fc" id="L335">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

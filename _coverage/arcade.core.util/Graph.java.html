@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Graph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.core.util</a> &gt; <span class="el_source">Graph.java</span></div><h1>Graph.java</h1><pre class="source lang-java linenums">package arcade.core.util;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import sim.util.Bag;
+
+/**
+ * Container class for directed graph using nodes as hashes.
+ * &lt;p&gt;
+ * {@code Edge} objects represent edges in the graph and {@code Node} objects
+ * represent nodes in the graph. Nodes may have more than one edge in or out.
+ */
+
+public final class Graph {
+    /** Collection of all {@code Edge} objects in a graph. */
+    private final Bag allEdges;
+    
+    /** Map of {@code Node} OUT to bag of {@code Edge} objects. */
+    private final Map&lt;Node, Bag&gt; nodeToOutBag;
+    
+    /** Map of {@code Node} IN to bag of {@code Edge} objects. */
+    private final Map&lt;Node, Bag&gt; nodeToInBag;
+    
+    /**
+     * Creates an empty {@code Graph}.
+     */
+<span class="nc" id="L32">    public Graph() {</span>
+<span class="nc" id="L33">        allEdges = new Bag();</span>
+<span class="nc" id="L34">        nodeToOutBag = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L35">        nodeToInBag = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L36">    }</span>
+    
+    /**
+     * Updates edges and nodes with contents of given graph.
+     *
+     * @param graph  the graph object
+     */
+    public void update(Graph graph) {
+<span class="nc" id="L44">        allEdges.addAll(graph.allEdges);</span>
+<span class="nc" id="L45">        nodeToOutBag.putAll(graph.nodeToOutBag);</span>
+<span class="nc" id="L46">        nodeToInBag.putAll(graph.nodeToInBag);</span>
+<span class="nc" id="L47">    }</span>
+    
+    /**
+     * Clear edges and nodes from graph.
+     */
+    public void clear() {
+<span class="nc" id="L53">        allEdges.clear();</span>
+<span class="nc" id="L54">        nodeToOutBag.clear();</span>
+<span class="nc" id="L55">        nodeToInBag.clear();</span>
+<span class="nc" id="L56">    }</span>
+    
+    /**
+     * Gets all edges in the graph.
+     *
+     * @return  a bag containing the edges
+     */
+<span class="nc" id="L63">    public Bag getAllEdges() { return allEdges; }</span>
+    
+    /**
+     * Gets edges out of the given node.
+     *
+     * @param node  the node that edges are from
+     * @return  a bag containing the edges
+     */
+<span class="nc" id="L71">    public Bag getEdgesOut(Node node) { return nodeToOutBag.get(node); }</span>
+    
+    /**
+     * Gets edges into the given node.
+     *
+     * @param node  the node that edges are to
+     * @return  a bag containing the edges
+     */
+<span class="nc" id="L79">    public Bag getEdgesIn(Node node) { return nodeToInBag.get(node); }</span>
+    
+    /**
+     * Gets the in degree at the given node.
+     *
+     * @param node  the node
+     * @return  the in degree
+     */
+    public int getInDegree(Node node) {
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        return nodeToInBag.containsKey(node) ? nodeToInBag.get(node).numObjs : 0;</span>
+    }
+    
+    /**
+     * Gets the out degree at the given node.
+     *
+     * @param node  the node
+     * @return  the out degree
+     */
+    public int getOutDegree(Node node) {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        return nodeToOutBag.containsKey(node) ? nodeToOutBag.get(node).numObjs : 0;</span>
+    }
+    
+    /**
+     * Gets the total degree (in degree + out degree) at the given node.
+     *
+     * @param node  the node
+     * @return  the degree
+     */
+<span class="nc" id="L107">    public int getDegree(Node node) { return getInDegree(node) + getOutDegree(node); }</span>
+    
+    /**
+     * Checks if the graph has an edge between the given nodes.
+     *
+     * @param from  the node the edge points from
+     * @param to  the node the edge points to
+     * @return  {@code true} if edge exists, {@code false} otherwise
+     */
+    public boolean hasEdge(Node from, Node to) {
+<span class="nc" id="L117">        Bag bag = getEdgesOut(from);</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (bag == null) {</span>
+<span class="nc" id="L119">            return false;</span>
+        }
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        for (Object obj : bag) {</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">            if (to.equals(((Edge) obj).to)) {</span>
+<span class="nc" id="L123">                return true;</span>
+            }
+<span class="nc" id="L125">        }</span>
+<span class="nc" id="L126">        return false;</span>
+    }
+    
+    /** Defines a filter for edges in a graph. */
+    public interface GraphFilter {
+        /**
+         * Applies filter to an {link Edge} object.
+         *
+         * @param edge  the edge
+         * @return  {@code true} if edge passes filter, {@code false} otherwise
+         */
+        boolean filter(Edge edge);
+    }
+    
+    /**
+     * Filters this graph for edges and copies them to the given graph object.
+     * &lt;p&gt;
+     * Notes that the links in the subgraph are not correct.
+     *
+     * @param g  the graph to add filtered edges to
+     * @param f  the edge filter
+     */
+    public void getSubgraph(Graph g, GraphFilter f) {
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        for (Object obj : allEdges) {</span>
+<span class="nc" id="L150">            Edge edge = (Edge) obj;</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">            if (f.filter(edge)) {</span>
+<span class="nc" id="L152">                g.allEdges.add(edge);</span>
+<span class="nc" id="L153">                g.setOutMap(edge.getFrom(), edge);</span>
+<span class="nc" id="L154">                g.setInMap(edge.getTo(), edge);</span>
+            }
+<span class="nc" id="L156">        }</span>
+<span class="nc" id="L157">    }</span>
+    
+    /**
+     * Sets the TO and FROM nodes for edges to be the same object.
+     */
+    public void mergeNodes() {
+<span class="nc" id="L163">        Set&lt;Node&gt; sOut = nodeToOutBag.keySet();</span>
+<span class="nc" id="L164">        Set&lt;Node&gt; sIn = nodeToInBag.keySet();</span>
+<span class="nc" id="L165">        Set&lt;Node&gt; set = new LinkedHashSet&lt;Node&gt;() {</span>
+            {
+<span class="nc" id="L167">                addAll(sOut);</span>
+<span class="nc" id="L168">                addAll(sIn);</span>
+<span class="nc" id="L169">            }</span>
+        };
+        
+<span class="nc bnc" id="L172" title="All 2 branches missed.">        for (Node obj : set) {</span>
+<span class="nc" id="L173">            Node join = obj.duplicate();</span>
+<span class="nc" id="L174">            Bag out = getEdgesOut(obj);</span>
+<span class="nc" id="L175">            Bag in = getEdgesIn(obj);</span>
+            
+            // Iterate through all edges OUT of node.
+<span class="nc bnc" id="L178" title="All 2 branches missed.">            if (out != null) {</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                for (Object x : out) {</span>
+<span class="nc" id="L180">                    Edge e = (Edge) x;</span>
+<span class="nc" id="L181">                    e.setFrom(join);</span>
+<span class="nc" id="L182">                }</span>
+            }
+            
+            // Iterate through all edges IN to node.
+<span class="nc bnc" id="L186" title="All 2 branches missed.">            if (in != null) {</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">                for (Object x : in) {</span>
+<span class="nc" id="L188">                    Edge e = (Edge) x;</span>
+<span class="nc" id="L189">                    e.setTo(join);</span>
+<span class="nc" id="L190">                }</span>
+            }
+<span class="nc" id="L192">        }</span>
+<span class="nc" id="L193">    }</span>
+    
+    /**
+     * Adds edge to graph.
+     *
+     * @param edge  the edge to add
+     */
+    public void addEdge(Edge edge) {
+<span class="nc" id="L201">        allEdges.add(edge);</span>
+<span class="nc" id="L202">        setOutMap(edge.getFrom(), edge);</span>
+<span class="nc" id="L203">        setInMap(edge.getTo(), edge);</span>
+<span class="nc" id="L204">        setLinks(edge);</span>
+<span class="nc" id="L205">    }</span>
+    
+    /**
+     * Adds the edge to the bag for the mapping of OUT node to edge.
+     *
+     * @param node  the node hash
+     * @param edge  the edge
+     */
+    private void setOutMap(Node node, Edge edge) {
+<span class="nc" id="L214">        Bag objs = nodeToOutBag.get(node);</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        if (objs == null) {</span>
+<span class="nc" id="L216">            objs = new Bag(10);</span>
+<span class="nc" id="L217">            nodeToOutBag.put(node.duplicate(), objs);</span>
+        }
+<span class="nc" id="L219">        objs.add(edge);</span>
+<span class="nc" id="L220">    }</span>
+    
+    /**
+     * Adds the edge to the bag for the mapping of IN node to edge.
+     *
+     * @param node  the node hash
+     * @param edge  the edge
+     */
+    private void setInMap(Node node, Edge edge) {
+<span class="nc" id="L229">        Bag objs = nodeToInBag.get(node);</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">        if (objs == null) {</span>
+<span class="nc" id="L231">            objs = new Bag(10);</span>
+<span class="nc" id="L232">            nodeToInBag.put(node.duplicate(), objs);</span>
+        }
+<span class="nc" id="L234">        objs.add(edge);</span>
+<span class="nc" id="L235">    }</span>
+    
+    /**
+     * Adds links between edges in and out of the nodes for a given edge.
+     *
+     * @param edge  the edge
+     */
+    public void setLinks(Edge edge) {
+<span class="nc" id="L243">        Bag outTo = getEdgesOut(edge.getTo());</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">        if (outTo != null) {</span>
+<span class="nc bnc" id="L245" title="All 2 branches missed.">            for (Object obj : outTo) {</span>
+<span class="nc" id="L246">                Edge e = (Edge) obj;</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">                if (!e.edgesIn.contains(edge)) {</span>
+<span class="nc" id="L248">                    e.edgesIn.add(edge);</span>
+                }
+<span class="nc bnc" id="L250" title="All 2 branches missed.">                if (!edge.edgesOut.contains(e)) {</span>
+<span class="nc" id="L251">                    edge.edgesOut.add(e);</span>
+                }
+<span class="nc" id="L253">            }</span>
+        }
+        
+<span class="nc" id="L256">        Bag inFrom = getEdgesIn(edge.getFrom());</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">        if (inFrom != null) {</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">            for (Object obj : inFrom) {</span>
+<span class="nc" id="L259">                Edge e = (Edge) obj;</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">                if (!e.edgesOut.contains(edge)) {</span>
+<span class="nc" id="L261">                    e.edgesOut.add(edge);</span>
+                }
+<span class="nc bnc" id="L263" title="All 2 branches missed.">                if (!edge.edgesIn.contains(e)) {</span>
+<span class="nc" id="L264">                    edge.edgesIn.add(e);</span>
+                }
+<span class="nc" id="L266">            }</span>
+        }
+<span class="nc" id="L268">    }</span>
+    
+    /**
+     * Removes edge from graph.
+     *
+     * @param edge  the edge to remove
+     */
+    public void removeEdge(Edge edge) {
+<span class="nc" id="L276">        allEdges.remove(edge);</span>
+<span class="nc" id="L277">        unsetOutMap(edge.getFrom(), edge);</span>
+<span class="nc" id="L278">        unsetInMap(edge.getTo(), edge);</span>
+<span class="nc" id="L279">        unsetLinks(edge);</span>
+<span class="nc" id="L280">    }</span>
+    
+    /**
+     * Removes the edge from the bag for the mapping of OUT node to edge.
+     *
+     * @param node  the node hash
+     * @param edge  the edge
+     */
+    private void unsetOutMap(Node node, Edge edge) {
+<span class="nc" id="L289">        Bag objs = nodeToOutBag.get(node);</span>
+<span class="nc" id="L290">        objs.remove(edge);</span>
+<span class="nc bnc" id="L291" title="All 2 branches missed.">        if (objs.numObjs == 0) {</span>
+<span class="nc" id="L292">            nodeToOutBag.remove(node);</span>
+        }
+<span class="nc" id="L294">    }</span>
+    
+    /**
+     * Removes the edge from the bag for the mapping of IN node to edge.
+     *
+     * @param node  the node hash
+     * @param edge  the edge
+     */
+    private void unsetInMap(Node node, Edge edge) {
+<span class="nc" id="L303">        Bag objs = nodeToInBag.get(node);</span>
+<span class="nc" id="L304">        objs.remove(edge);</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        if (objs.numObjs == 0) {</span>
+<span class="nc" id="L306">            nodeToInBag.remove(node);</span>
+        }
+<span class="nc" id="L308">    }</span>
+    
+    /**
+     * Removes links between edges in and out of the nodes for a given edge.
+     *
+     * @param edge  the edge
+     */
+    private void unsetLinks(Edge edge) {
+<span class="nc" id="L316">        Bag outTo = getEdgesOut(edge.getTo());</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">        if (outTo != null) {</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">            for (Object obj : outTo) {</span>
+<span class="nc" id="L319">                Edge e = (Edge) obj;</span>
+<span class="nc" id="L320">                e.edgesIn.remove(edge);</span>
+<span class="nc" id="L321">                edge.edgesOut.remove(e);</span>
+<span class="nc" id="L322">            }</span>
+        }
+        
+<span class="nc" id="L325">        Bag inFrom = getEdgesIn(edge.getFrom());</span>
+<span class="nc bnc" id="L326" title="All 2 branches missed.">        if (inFrom != null) {</span>
+<span class="nc bnc" id="L327" title="All 2 branches missed.">            for (Object obj : inFrom) {</span>
+<span class="nc" id="L328">                Edge e = (Edge) obj;</span>
+<span class="nc" id="L329">                e.edgesOut.remove(edge);</span>
+<span class="nc" id="L330">                edge.edgesIn.remove(e);</span>
+<span class="nc" id="L331">            }</span>
+        }
+<span class="nc" id="L333">    }</span>
+    
+    /**
+     * Removes the given edge and adds the reversed edge.
+     *
+     * @param edge  the edge to reverse
+     */
+    public void reverseEdge(Edge edge) {
+<span class="nc" id="L341">        removeEdge(edge);</span>
+<span class="nc" id="L342">        addEdge(edge.reverse());</span>
+<span class="nc" id="L343">    }</span>
+    
+    /**
+     * Displays the graph as a list of edges and nodes.
+     *
+     * @return  the string representation of the graph
+     */
+    public String toString() {
+<span class="nc" id="L351">        String s = &quot;&quot;;</span>
+        
+<span class="nc" id="L353">        s += &quot;\nEDGES OUT\n\n&quot;;</span>
+<span class="nc" id="L354">        Set&lt;Node&gt; setFrom = nodeToOutBag.keySet();</span>
+<span class="nc" id="L355">        List&lt;Node&gt; sortedFrom = new ArrayList&lt;&gt;(setFrom);</span>
+<span class="nc" id="L356">        Collections.sort(sortedFrom);</span>
+        
+<span class="nc bnc" id="L358" title="All 2 branches missed.">        for (Object obj : sortedFrom) {</span>
+<span class="nc" id="L359">            Bag b = nodeToOutBag.get(obj);</span>
+<span class="nc" id="L360">            s += obj.toString() + &quot; : &quot;;</span>
+<span class="nc bnc" id="L361" title="All 2 branches missed.">            for (int i = 0; i &lt; b.numObjs; i++) {</span>
+<span class="nc" id="L362">                s += b.get(i) + &quot; &quot;;</span>
+            }
+<span class="nc" id="L364">            s += &quot;\n&quot;;</span>
+<span class="nc" id="L365">        }</span>
+        
+<span class="nc" id="L367">        s += &quot;\nEDGES IN\n\n&quot;;</span>
+<span class="nc" id="L368">        Set&lt;Node&gt; setTo = nodeToInBag.keySet();</span>
+<span class="nc" id="L369">        List&lt;Node&gt; sortedTo = new ArrayList&lt;&gt;(setTo);</span>
+<span class="nc" id="L370">        Collections.sort(sortedTo);</span>
+        
+<span class="nc bnc" id="L372" title="All 2 branches missed.">        for (Object obj : sortedTo) {</span>
+<span class="nc" id="L373">            Bag b = nodeToInBag.get(obj);</span>
+<span class="nc" id="L374">            s += obj.toString() + &quot; : &quot;;</span>
+<span class="nc bnc" id="L375" title="All 2 branches missed.">            for (int i = 0; i &lt; b.numObjs; i++) {</span>
+<span class="nc" id="L376">                s += b.get(i) + &quot; &quot;;</span>
+            }
+<span class="nc" id="L378">            s += &quot;\n&quot;;</span>
+<span class="nc" id="L379">        }</span>
+        
+<span class="nc" id="L381">        return s;</span>
+    }
+    
+    /**
+     * Nested class representing a graph node.
+     * &lt;p&gt;
+     * The node tracks its corresponding position in the lattice.
+     */
+    public abstract static class Node implements Comparable&lt;Node&gt; {
+        /** Coordinate in x direction. */
+        protected int x;
+        
+        /** Coordinate in y direction. */
+        protected int y;
+        
+        /** Coordinate in z direction. */
+        protected int z;
+        
+        /**
+         * Creates a {@code Node} at the given coordinates.
+         *
+         * @param x  the x coordinate
+         * @param y  the y coordinate
+         * @param z  the z coordinate
+         */
+<span class="nc" id="L406">        public Node(int x, int y, int z) {</span>
+<span class="nc" id="L407">            this.x = x;</span>
+<span class="nc" id="L408">            this.y = y;</span>
+<span class="nc" id="L409">            this.z = z;</span>
+<span class="nc" id="L410">        }</span>
+        
+        /**
+         * Gets the x coordinate of the node.
+         *
+         * @return  the x coordinate
+         */
+<span class="nc" id="L417">        public int getX() { return x; }</span>
+        
+        /**
+         * Gets the y coordinate of the node.
+         *
+         * @return  the y coordinate
+         */
+<span class="nc" id="L424">        public int getY() { return y; }</span>
+        
+        /**
+         * Gets the z coordinate of the node.
+         *
+         * @return  the z coordinate
+         */
+<span class="nc" id="L431">        public int getZ() { return z; }</span>
+        
+        /**
+         * Compares a node to this node.
+         *
+         * @param node  the node to compare
+         * @return  zero if the x and y coordinates are equal, otherwise the
+         *          result of integer comparison for x and y
+         */
+        public int compareTo(Node node) {
+<span class="nc" id="L441">            int xComp = Integer.compare(x, node.getX());</span>
+<span class="nc" id="L442">            int yComp = Integer.compare(y, node.getY());</span>
+            
+<span class="nc bnc" id="L444" title="All 2 branches missed.">            if (xComp == 0) {</span>
+<span class="nc" id="L445">                return yComp;</span>
+            } else {
+<span class="nc" id="L447">                return xComp;</span>
+            }
+        }
+        
+        /**
+         * Creates a duplicate node with the same coordinates.
+         *
+         * @return  a {@code Node} copy
+         */
+        public abstract Node duplicate();
+        
+        /**
+         * Updates the position of this {@code Node} with coordinate from given
+         * {@code Node}.
+         *
+         * @param node  the {@code Node} with coordinates to update with
+         */
+        public void update(Node node) {
+<span class="nc" id="L465">            this.x = node.x;</span>
+<span class="nc" id="L466">            this.y = node.y;</span>
+<span class="nc" id="L467">            this.z = node.z;</span>
+<span class="nc" id="L468">        }</span>
+        
+        /**
+         * Specifies object hashing based on coordinates.
+         *
+         * @return  a hash based on coordinates
+         */
+<span class="nc" id="L475">        public final int hashCode() { return x + y &lt;&lt; 8 + z &lt;&lt; 16; }</span>
+        
+        /**
+         * Checks if two nodes are equal based on coordinates.
+         *
+         * @param obj  the object to check
+         * @return  {@code true} if coordinates match, {@code false} otherwise
+         */
+        public final boolean equals(Object obj) {
+<span class="nc bnc" id="L484" title="All 2 branches missed.">            if (obj instanceof Node) {</span>
+<span class="nc" id="L485">                Node node = (Node) obj;</span>
+<span class="nc bnc" id="L486" title="All 6 branches missed.">                return node.x == x &amp;&amp; node.y == y &amp;&amp; node.z == z;</span>
+            }
+<span class="nc" id="L488">            return false;</span>
+        }
+        
+        /**
+         * Formats node as a string.
+         *
+         * @return  a string representation of the node
+         */
+        public String toString() {
+<span class="nc" id="L497">            return &quot;(&quot; + x + &quot;,&quot; + y + &quot;,&quot; + z + &quot;)&quot;;</span>
+        }
+    }
+    
+    /**
+     * Nested class representing a graph edge.
+     * &lt;p&gt;
+     * The edge tracks its corresponding nodes as well as the edges into the
+     * FROM node and out of the TO node.
+     */
+    public abstract static class Edge {
+        /** Node this edge points to. */
+        protected Node to;
+        
+        /** Node this edge points from. */
+        protected Node from;
+        
+        /** List of edges that point into the node this edge points from. */
+        private final ArrayList&lt;Edge&gt; edgesIn;
+        
+        /** List of edges that point out of the node this edge points to. */
+        private final ArrayList&lt;Edge&gt; edgesOut;
+        
+        /**
+         * Creates an {@code Edge} between two {@link Node} objects.
+         *
+         * @param from  the node the edge is from
+         * @param to  the node the edge is to
+         */
+<span class="nc" id="L526">        public Edge(Node from, Node to) {</span>
+<span class="nc" id="L527">            this.from = from.duplicate();</span>
+<span class="nc" id="L528">            this.to = to.duplicate();</span>
+<span class="nc" id="L529">            edgesIn = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L530">            edgesOut = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L531">        }</span>
+        
+        /**
+         * Gets the node the edge points from.
+         *
+         * @return  the node the edge points from
+         */
+<span class="nc" id="L538">        public Node getFrom() { return from; }</span>
+        
+        /**
+         * Gets the node the edge points to.
+         *
+         * @return  the node the edge points to
+         */
+<span class="nc" id="L545">        public Node getTo() { return to; }</span>
+        
+        /**
+         * Sets the node the edge points to.
+         *
+         * @param to  the node the edge points to
+         */
+<span class="nc" id="L552">        public void setTo(Node to) { this.to = to; }</span>
+        
+        /**
+         * Sets the node the edge points from.
+         *
+         * @param from  the node the edge points from
+         */
+<span class="nc" id="L559">        public void setFrom(Node from) { this.from = from; }</span>
+        
+        /**
+         * Gets list of edges that point into the node this edge points from.
+         *
+         * @return  the list of edges
+         */
+<span class="nc" id="L566">        public ArrayList&lt;Edge&gt; getEdgesIn() { return edgesIn; }</span>
+        
+        /**
+         * Gets list of edges that point out of the node this edge points to.
+         *
+         * @return  the list of edges
+         */
+<span class="nc" id="L573">        public ArrayList&lt;Edge&gt; getEdgesOut() { return edgesOut; }</span>
+        
+        /**
+         * Reverses the edge by swapping the nodes.
+         *
+         * @return  the reversed edge
+         */
+        Edge reverse() {
+<span class="nc" id="L581">            Node tempTo = to;</span>
+<span class="nc" id="L582">            Node tempFrom = from;</span>
+<span class="nc" id="L583">            to = tempFrom;</span>
+<span class="nc" id="L584">            from = tempTo;</span>
+<span class="nc" id="L585">            return this;</span>
+        }
+        
+        /**
+         * Removes the linked edges.
+         */
+        public void clear() {
+<span class="nc" id="L592">            edgesIn.clear();</span>
+<span class="nc" id="L593">            edgesOut.clear();</span>
+<span class="nc" id="L594">        }</span>
+        
+        /**
+         * Formats edge as a string.
+         *
+         * @return  a string representation of the edge
+         */
+        public String toString() {
+<span class="nc" id="L602">            return &quot;[&quot; + from.toString() + &quot;~&quot; + to.toString() + &quot;]&quot;;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

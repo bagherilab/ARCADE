@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdhesionHamiltonian.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.sim.hamiltonian</a> &gt; <span class="el_source">AdhesionHamiltonian.java</span></div><h1>AdhesionHamiltonian.java</h1><pre class="source lang-java linenums">package arcade.potts.sim.hamiltonian;
+
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Set;
+import arcade.core.util.MiniBox;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.sim.Potts;
+import arcade.potts.sim.PottsSeries;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
+
+/**
+ * Implementation of {@link Hamiltonian} for adhesion energy.
+ */
+
+public abstract class AdhesionHamiltonian implements Hamiltonian {
+    /** Map of hamiltonian config objects. */
+    final HashMap&lt;Integer, AdhesionHamiltonianConfig&gt; configs;
+    
+    /** Map of population to adhesion values. */
+    final HashMap&lt;Integer, double[]&gt; popToAdhesion;
+    
+    /** Map of population to adhesion values for regions. */
+    final HashMap&lt;Integer, EnumMap&lt;Region, EnumMap&lt;Region, Double&gt;&gt;&gt; popToAdhesionRegion;
+    
+    /** Potts array for ids. */
+    final int[][][] ids;
+    
+    /** Potts array for regions. */
+    final int[][][] regions;
+    
+    /**
+     * Creates the adhesion energy term for the {@code Potts} Hamiltonian.
+     *
+     * @param potts  the associated Potts instance
+     * @param series  the associated Series instance
+     */
+<span class="fc" id="L40">    public AdhesionHamiltonian(PottsSeries series, Potts potts) {</span>
+<span class="fc" id="L41">        configs = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L42">        configs.put(0, null);</span>
+<span class="fc" id="L43">        popToAdhesion = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L44">        popToAdhesionRegion = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L45">        initialize(series);</span>
+        
+<span class="fc" id="L47">        this.ids = potts.ids;</span>
+<span class="fc" id="L48">        this.regions = potts.regions;</span>
+<span class="fc" id="L49">    }</span>
+    
+    @Override
+    public void register(PottsCell cell) {
+<span class="fc" id="L53">        int pop = cell.getPop();</span>
+<span class="fc" id="L54">        double[] adhesion = popToAdhesion.get(pop);</span>
+<span class="fc" id="L55">        EnumMap&lt;Region, EnumMap&lt;Region, Double&gt;&gt; adhesionRegion = popToAdhesionRegion.get(pop);</span>
+<span class="fc" id="L56">        AdhesionHamiltonianConfig config =</span>
+                new AdhesionHamiltonianConfig(cell, adhesion, adhesionRegion);
+<span class="fc" id="L58">        configs.put(cell.getID(), config);</span>
+<span class="fc" id="L59">    }</span>
+    
+    @Override
+    public void deregister(PottsCell cell) {
+<span class="fc" id="L63">        configs.remove(cell.getID());</span>
+<span class="fc" id="L64">    }</span>
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Adhesion energy is calculated by summing across adhesion of the given
+     * voxel to all non-self neighbor voxels. Change in adhesion energy is taken
+     * as the difference in adhesion energies for the source and target IDs.
+     */
+    @Override
+    public double getDelta(int sourceID, int targetID, int x, int y, int z) {
+<span class="fc" id="L75">        double source = getAdhesion(sourceID, x, y, z);</span>
+<span class="fc" id="L76">        double target = getAdhesion(targetID, x, y, z);</span>
+<span class="fc" id="L77">        return target - source;</span>
+    }
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Adhesion energy is calculated by summing across adhesion of the given
+     * voxel to all non-same regions with the same ID. Change in adhesion energy
+     * is taken as the difference in adhesion energies for the source and target
+     * regions.
+     */
+    @Override
+    public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
+<span class="fc" id="L90">        double source = getAdhesion(id, sourceRegion, x, y, z);</span>
+<span class="fc" id="L91">        double target = getAdhesion(id, targetRegion, x, y, z);</span>
+<span class="fc" id="L92">        return target - source;</span>
+    }
+    
+    /**
+     * Gets adhesion energy for a given voxel.
+     *
+     * @param id  the voxel id
+     * @param x  the x coordinate
+     * @param y  the y coordinate
+     * @param z  the z coordinate
+     * @return  the energy
+     */
+    abstract double getAdhesion(int id, int x, int y, int z);
+    
+    /**
+     * Gets adhesion energy for a given voxel region.
+     *
+     * @param id  the voxel id
+     * @param region  the voxel region
+     * @param x  the x coordinate
+     * @param y  the y coordinate
+     * @param z  the z coordinate
+     * @return  the energy
+     */
+    abstract double getAdhesion(int id, int region, int x, int y, int z);
+    
+    /**
+     * Initializes parameters for surface hamiltonian term.
+     *
+     * @param series  the series instance
+     */
+    void initialize(PottsSeries series) {
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (series.populations == null) {</span>
+<span class="fc" id="L125">            return;</span>
+        }
+        
+<span class="fc" id="L128">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
+<span class="fc" id="L129">        MiniBox parameters = series.potts;</span>
+        
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        for (String key : keySet) {</span>
+<span class="fc" id="L132">            MiniBox population = series.populations.get(key);</span>
+<span class="fc" id="L133">            int pop = population.getInt(&quot;CODE&quot;);</span>
+            
+            // Get adhesion value.
+<span class="fc" id="L136">            double[] adhesion = new double[keySet.size() + 1];</span>
+<span class="fc" id="L137">            adhesion[0] = parameters.getDouble(&quot;adhesion/ADHESION&quot; + TARGET_SEPARATOR</span>
+                    + key + TARGET_SEPARATOR + &quot;*&quot;);
+<span class="fc bfc" id="L139" title="All 2 branches covered.">            for (String p : keySet) {</span>
+<span class="fc" id="L140">                adhesion[series.populations.get(p).getInt(&quot;CODE&quot;)] =</span>
+<span class="fc" id="L141">                        parameters.getDouble(&quot;adhesion/ADHESION&quot; + TARGET_SEPARATOR</span>
+                                + key + TARGET_SEPARATOR + p);
+<span class="fc" id="L143">            }</span>
+            
+<span class="fc" id="L145">            popToAdhesion.put(pop, adhesion);</span>
+            
+<span class="fc" id="L147">            MiniBox regionBox = population.filter(&quot;(REGION)&quot;);</span>
+<span class="fc" id="L148">            ArrayList&lt;Region&gt; regionKeys = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L149">            regionBox.getKeys().forEach(s -&gt; regionKeys.add(Region.valueOf(s)));</span>
+            
+            // Get adhesion value for regions.
+<span class="fc bfc" id="L152" title="All 2 branches covered.">            if (regionKeys.size() &gt; 0) {</span>
+<span class="fc" id="L153">                EnumMap&lt;Region, EnumMap&lt;Region, Double&gt;&gt; adhesionRegion =</span>
+                        new EnumMap&lt;&gt;(Region.class);
+                
+<span class="fc bfc" id="L156" title="All 2 branches covered.">                for (Region source : regionKeys) {</span>
+<span class="fc" id="L157">                    EnumMap&lt;Region, Double&gt; adhesionRegionMap = new EnumMap&lt;&gt;(Region.class);</span>
+                    
+<span class="fc bfc" id="L159" title="All 2 branches covered.">                    for (Region target : regionKeys) {</span>
+<span class="fc" id="L160">                        double regionAdhesion = parameters.getDouble(&quot;adhesion/ADHESION_&quot;</span>
+<span class="fc" id="L161">                                + source.name() + TARGET_SEPARATOR + key</span>
+<span class="fc" id="L162">                                + TARGET_SEPARATOR + target.name());</span>
+<span class="fc" id="L163">                        adhesionRegionMap.put(target, regionAdhesion);</span>
+<span class="fc" id="L164">                    }</span>
+<span class="fc" id="L165">                    adhesionRegion.put(source, adhesionRegionMap);</span>
+<span class="fc" id="L166">                }</span>
+                
+<span class="fc" id="L168">                popToAdhesionRegion.put(pop, adhesionRegion);</span>
+<span class="fc" id="L169">            } else {</span>
+<span class="fc" id="L170">                popToAdhesionRegion.put(pop, null);</span>
+            }
+<span class="fc" id="L172">        }</span>
+<span class="fc" id="L173">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

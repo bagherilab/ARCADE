@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoordinateXYZ.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.location</a> &gt; <span class="el_source">CoordinateXYZ.java</span></div><h1>CoordinateXYZ.java</h1><pre class="source lang-java linenums">package arcade.patch.env.location;
+
+/**
+ * Representation of (x, y, z) coordinates.
+ * &lt;p&gt;
+ * Each coordinate is defined by (x, y, z) values. Two coordinate objects are
+ * considered equal if they have matching (x, y, z) values.
+ */
+
+public final class CoordinateXYZ extends Coordinate {
+    /** Coordinate x value. */
+    public final int x;
+    
+    /** Coordinate y value. */
+    public final int y;
+    
+    /**
+     * Creates an (x, y, z) {@code Coordinate}.
+     *
+     * @param x  the x coordinate value
+     * @param y  the y coordinate value
+     * @param z  the z coordinate value
+     */
+    public CoordinateXYZ(int x, int y, int z) {
+<span class="fc" id="L25">        super(z);</span>
+<span class="fc" id="L26">        this.x = x;</span>
+<span class="fc" id="L27">        this.y = y;</span>
+<span class="fc" id="L28">    }</span>
+    
+    @Override
+    public double calculateDistance() {
+<span class="nc" id="L32">        return Math.sqrt(x * x + y * y);</span>
+    }
+    
+    /**
+     * {@inheritDoc}
+     * &lt;p&gt;
+     * Uses (x, y, z) coordinate values to calculate hash.
+     */
+    @Override
+<span class="nc" id="L41">    public int hashCode() { return x + (y &lt;&lt; 8) + (z &lt;&lt; 16); }</span>
+    
+    @Override
+    public boolean equals(Object obj) {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (!(obj instanceof CoordinateXYZ)) {</span>
+<span class="nc" id="L46">            return false;</span>
+        }
+<span class="nc" id="L48">        CoordinateXYZ coordinate = (CoordinateXYZ) obj;</span>
+<span class="nc bnc" id="L49" title="All 6 branches missed.">        return coordinate.x == x &amp;&amp; coordinate.y == y &amp;&amp; coordinate.z == z;</span>
+    }
+    
+    /**
+     * Returns coordinate as string.
+     *
+     * @return  a string
+     */
+    public String toString() {
+<span class="nc" id="L58">        return String.format(&quot;[%d, %d, %d]&quot;, x, y, z);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

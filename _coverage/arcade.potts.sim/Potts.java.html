@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Potts.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.sim</a> &gt; <span class="el_source">Potts.java</span></div><h1>Potts.java</h1><pre class="source lang-java linenums">package arcade.potts.sim;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import sim.engine.SimState;
+import sim.engine.Steppable;
+import ec.util.MersenneTwisterFast;
+import arcade.core.env.grid.Grid;
+import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.env.location.PottsLocation;
+import arcade.potts.sim.hamiltonian.Hamiltonian;
+import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Term;
+
+/**
+ * Cellular Potts Model (CPM) implementation.
+ * &lt;p&gt;
+ * The potts layer tracks cells in an array of ids that define the morphology of
+ * each cell (alongside non-cell areas). The corresponding array of regions
+ * further defines regions within a given cell.
+ * &lt;p&gt;
+ * The Hamiltonian, which decides which positions in the arrays are flipped,
+ * consists of a series of terms including:
+ * &lt;ul&gt;
+ *     &lt;li&gt;Cell to cell and cell to non-cell adhesion&lt;/li&gt;
+ *     &lt;li&gt;Volume constraint between actual and target volume&lt;/li&gt;
+ *     &lt;li&gt;Surface constraint between actual and target surface&lt;/li&gt;
+ * &lt;/ul&gt;
+ */
+
+public abstract class Potts implements Steppable {
+    /** Length (x direction) of potts array. */
+    public final int length;
+    
+    /** Width (y direction) of potts array. */
+    public final int width;
+    
+    /** Depth (z direction) of potts array. */
+    public final int height;
+    
+    /** Number of steps in Monte Carlo Step. */
+    final int steps;
+    
+    /** Effective cell temperature. */
+    final double temperature;
+    
+    /** {@code true} if potts is single layer, {@code false} otherwise. */
+    final boolean isSingle;
+    
+    /** {@code true} if cells have regions, {@code false} otherwise. */
+    final boolean hasRegions;
+    
+    /** Potts array for ids. */
+    public int[][][] ids;
+    
+    /** Potts array for regions. */
+    public int[][][] regions;
+    
+    /** Grid holding cells. */
+    Grid grid;
+    
+    /** List of Hamiltonian terms. */
+    ArrayList&lt;Hamiltonian&gt; hamiltonian;
+    
+    /**
+     * Creates a cellular {@code Potts} model.
+     *
+     * @param series  the simulation series
+     */
+<span class="fc" id="L70">    public Potts(PottsSeries series) {</span>
+        // Creates potts arrays.
+<span class="fc" id="L72">        ids = new int[series.height][series.length][series.width];</span>
+<span class="fc" id="L73">        regions = new int[series.height][series.length][series.width];</span>
+        
+        // Ensure a 1 voxel border around to avoid boundary checks.
+<span class="fc" id="L76">        length = series.length - 2;</span>
+<span class="fc" id="L77">        width = series.width - 2;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        height = (series.height == 1 ? 1 : series.height - 2);</span>
+        
+        // Number of Monte Carlo steps
+<span class="fc" id="L81">        double mcs = series.potts.getDouble(&quot;MCS&quot;);</span>
+<span class="fc" id="L82">        steps = (int) (mcs * length * width * height);</span>
+        
+        // Get temperature.
+<span class="fc" id="L85">        temperature = series.potts.getDouble(&quot;TEMPERATURE&quot;);</span>
+        
+        // Check if potts is a single layer.
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        isSingle = series.height == 1;</span>
+        
+        // Check if there are regions.
+<span class="fc" id="L91">        hasRegions = series.populations.values().stream()</span>
+<span class="fc" id="L92">                .map(e -&gt; e.filter(&quot;(REGION)&quot;).getKeys().size())</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">                .anyMatch(e -&gt; e &gt; 0);</span>
+        
+        // Initialize hamiltonian list.
+<span class="fc" id="L96">        hamiltonian = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (series.terms != null) {</span>
+<span class="fc" id="L98">            series.terms.stream()</span>
+<span class="fc" id="L99">                    .map(term -&gt; getHamiltonian(term, series))</span>
+<span class="fc" id="L100">                    .forEach(h -&gt; hamiltonian.add(h));</span>
+        }
+<span class="fc" id="L102">    }</span>
+    
+    /**
+     * Registers the cell to all Hamiltonian term instances.
+     *
+     * @param cell  the cell instance
+     */
+    public void register(PottsCell cell) {
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (Hamiltonian h : hamiltonian) {</span>
+<span class="fc" id="L111">            h.register(cell);</span>
+<span class="fc" id="L112">        }</span>
+<span class="fc" id="L113">    }</span>
+    
+    /**
+     * Deregisters the cell from all Hamiltonian term instances.
+     *
+     * @param cell  the cell instance
+     */
+    public void deregister(PottsCell cell) {
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        for (Hamiltonian h : hamiltonian) {</span>
+<span class="fc" id="L122">            h.deregister(cell);</span>
+<span class="fc" id="L123">        }</span>
+<span class="fc" id="L124">    }</span>
+    
+    /**
+     * Gets instance of selected Hamiltonian term.
+     *
+     * @param term  the Hamiltonian term
+     * @param series  the simulation series
+     * @return  the Hamiltonian instance
+     */
+    abstract Hamiltonian getHamiltonian(Term term, PottsSeries series);
+    
+    /**
+     * Steps through array updates for Monte Carlo step.
+     *
+     * @param simstate  the MASON simulation state
+     */
+    @Override
+    public void step(SimState simstate) {
+<span class="fc" id="L142">        MersenneTwisterFast random = simstate.random;</span>
+        double r;
+        int x;
+        int y;
+        int z;
+        
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        for (int step = 0; step &lt; steps; step++) {</span>
+            // Get random coordinate for candidate.
+<span class="fc" id="L150">            x = random.nextInt(length) + 1;</span>
+<span class="fc" id="L151">            y = random.nextInt(width) + 1;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">            z = (random.nextInt(height) + 1) * (isSingle ? 0 : 1);</span>
+<span class="fc" id="L153">            r = random.nextDouble();</span>
+            
+            // Check if cell has regions.
+<span class="fc bfc" id="L156" title="All 4 branches covered.">            boolean hasRegionsCell = (ids[z][x][y] != 0 &amp;&amp; getCell(ids[z][x][y]).hasRegions());</span>
+            
+            // Get unique targets.
+<span class="fc" id="L159">            HashSet&lt;Integer&gt; uniqueIDTargets = getUniqueIDs(x, y, z);</span>
+<span class="fc" id="L160">            HashSet&lt;Integer&gt; uniqueRegionTargets = getUniqueRegions(x, y, z);</span>
+            
+            // Select unique ID (if there is one), otherwise select unique
+            // region (if there is one). If there are neither, then skip.
+<span class="fc bfc" id="L164" title="All 4 branches covered.">            if (hasRegionsCell &amp;&amp; uniqueRegionTargets.size() &gt; 0) {</span>
+<span class="fc" id="L165">                int i = simstate.random.nextInt(uniqueRegionTargets.size());</span>
+<span class="fc" id="L166">                int targetRegion = (int) uniqueRegionTargets.toArray()[i];</span>
+<span class="fc" id="L167">                flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">            } else if (uniqueIDTargets.size() &gt; 0) {</span>
+<span class="fc" id="L169">                int i = simstate.random.nextInt(uniqueIDTargets.size());</span>
+<span class="fc" id="L170">                int targetID = (int) uniqueIDTargets.toArray()[i];</span>
+<span class="fc" id="L171">                flip(ids[z][x][y], targetID, x, y, z, r);</span>
+            }
+        }
+<span class="fc" id="L174">    }</span>
+    
+    /**
+     * Flips connected voxel from source to target id based on Boltzmann
+     * probability.
+     *
+     * @param sourceID  the id of the source voxel
+     * @param targetID  the id of the target voxel
+     * @param x  the x coordinate
+     * @param y  the y coordinate
+     * @param z  the z coordinate
+     * @param r  a random number
+     */
+    void flip(int sourceID, int targetID, int x, int y, int z, double r) {
+<span class="fc bfc" id="L188" title="All 2 branches covered.">        boolean zero = ids[z][x][y] == 0;</span>
+        
+        // Check connectivity of source.
+<span class="fc bfc" id="L191" title="All 2 branches covered.">        if (sourceID &gt; 0) {</span>
+<span class="fc" id="L192">            boolean[][][] neighborhood = getNeighborhood(sourceID, x, y, z);</span>
+<span class="fc" id="L193">            boolean candidateConnected = getConnectivity(neighborhood, zero);</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">            if (!candidateConnected) {</span>
+<span class="fc" id="L195">                return;</span>
+            }
+            
+            // Check connectivity of regions.
+<span class="fc bfc" id="L199" title="All 2 branches covered.">            if (regions[z][x][y] &gt; Region.DEFAULT.ordinal()) {</span>
+<span class="fc" id="L200">                boolean[][][] rNeighborhood = getNeighborhood(sourceID, regions[z][x][y], x, y, z);</span>
+<span class="fc" id="L201">                boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">                if (!candidateRegionConnected) {</span>
+<span class="fc" id="L203">                    return;</span>
+                }
+            }
+        }
+        
+        // Check connectivity of target.
+<span class="fc bfc" id="L209" title="All 2 branches covered.">        if (targetID &gt; 0) {</span>
+<span class="fc" id="L210">            boolean[][][] neighborhood = getNeighborhood(targetID, x, y, z);</span>
+<span class="fc" id="L211">            boolean targetConnected = getConnectivity(neighborhood, zero);</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">            if (!targetConnected) {</span>
+<span class="fc" id="L213">                return;</span>
+            }
+            
+            // Check connectivity of regions.
+<span class="fc bfc" id="L217" title="All 2 branches covered.">            if (regions[z][x][y] &gt; Region.DEFAULT.ordinal()) {</span>
+<span class="fc" id="L218">                boolean[][][] rNeighborhood = getNeighborhood(targetID, regions[z][x][y], x, y, z);</span>
+<span class="fc" id="L219">                boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">                if (!candidateRegionConnected) {</span>
+<span class="fc" id="L221">                    return;</span>
+                }
+            }
+        }
+        
+        // Change the voxel.
+<span class="fc" id="L227">        change(sourceID, targetID, x, y, z, r);</span>
+<span class="fc" id="L228">    }</span>
+    
+    /**
+     * Calculates energy change to decide if a voxel is flipped.
+     *
+     * @param sourceID  the id of the source voxel
+     * @param targetID  the id of the target voxel
+     * @param x  the x coordinate
+     * @param y  the y coordinate
+     * @param z  the z coordinate
+     * @param r  a random number
+     */
+    void change(int sourceID, int targetID, int x, int y, int z, double r) {
+        // Calculate energy change.
+<span class="fc" id="L242">        double dH = 0;</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        for (Hamiltonian h : hamiltonian) {</span>
+<span class="fc" id="L244">            dH += h.getDelta(sourceID, targetID, x, y, z);</span>
+<span class="fc" id="L245">        }</span>
+        
+        // Calculate probability.
+        double p;
+<span class="fc bfc" id="L249" title="All 2 branches covered.">        if (dH &lt; 0) {</span>
+<span class="fc" id="L250">            p = 1;</span>
+        } else {
+<span class="fc" id="L252">            p = Math.exp(-dH / temperature);</span>
+        }
+        
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        if (r &lt; p) {</span>
+<span class="fc" id="L256">            ids[z][x][y] = targetID;</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">            if (hasRegions) {</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">                regions[z][x][y] = (targetID == 0</span>
+<span class="fc" id="L259">                        ? Region.UNDEFINED.ordinal()</span>
+<span class="fc" id="L260">                        : Region.DEFAULT.ordinal());</span>
+            }
+            
+<span class="fc bfc" id="L263" title="All 2 branches covered.">            if (sourceID &gt; 0) {</span>
+<span class="fc" id="L264">                ((PottsLocation) getCell(sourceID).getLocation()).remove(x, y, z);</span>
+            }
+<span class="fc bfc" id="L266" title="All 2 branches covered.">            if (targetID &gt; 0) {</span>
+<span class="fc" id="L267">                ((PottsLocation) getCell(targetID).getLocation()).add(x, y, z);</span>
+            }
+        }
+<span class="fc" id="L270">    }</span>
+    
+    /**
+     * Flips connected voxel from source to target region based on Boltzmann
+     * probability.
+     *
+     * @param id  the voxel id
+     * @param sourceRegion  the region of the source voxel
+     * @param targetRegion  the region of the target voxel
+     * @param x  the x coordinate
+     * @param y  the y coordinate
+     * @param z  the z coordinate
+     * @param r  a random number
+     */
+    void flip(int id, int sourceRegion, int targetRegion, int x, int y, int z, double r) {
+<span class="fc bfc" id="L285" title="All 2 branches covered.">        boolean zero = regions[z][x][y] == Region.DEFAULT.ordinal();</span>
+        
+        // Check connectivity of source.
+<span class="fc bfc" id="L288" title="All 2 branches covered.">        if (sourceRegion &gt; Region.DEFAULT.ordinal()) {</span>
+<span class="fc" id="L289">            boolean[][][] neighborhood = getNeighborhood(id, sourceRegion, x, y, z);</span>
+<span class="fc" id="L290">            boolean candidateConnected = getConnectivity(neighborhood, zero);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">            if (!candidateConnected) {</span>
+<span class="fc" id="L292">                return;</span>
+            }
+        }
+        
+        // Check connectivity of target.
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        if (targetRegion &gt; Region.DEFAULT.ordinal()) {</span>
+<span class="fc" id="L298">            boolean[][][] neighborhood = getNeighborhood(id, targetRegion, x, y, z);</span>
+<span class="fc" id="L299">            boolean targetConnected = getConnectivity(neighborhood, zero);</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">            if (!targetConnected) {</span>
+<span class="fc" id="L301">                return;</span>
+            }
+        }
+        
+        // Change the voxel region.
+<span class="fc" id="L306">        change(id, sourceRegion, targetRegion, x, y, z, r);</span>
+<span class="fc" id="L307">    }</span>
+    
+    /**
+     * Calculates energy change to decide if a voxel region is flipped.
+     *
+     * @param id  the voxel id
+     * @param sourceRegion  the region of the source voxel
+     * @param targetRegion  the region of the target voxel
+     * @param x  the x coordinate
+     * @param y  the y coordinate
+     * @param z  the z coordinate
+     * @param r  a random number
+     */
+    void change(int id, int sourceRegion, int targetRegion, int x, int y, int z, double r) {
+        // Calculate energy change.
+<span class="fc" id="L322">        double dH = 0;</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">        for (Hamiltonian h : hamiltonian) {</span>
+<span class="fc" id="L324">            dH += h.getDelta(id, sourceRegion, targetRegion, x, y, z);</span>
+<span class="fc" id="L325">        }</span>
+        
+        // Calculate probability.
+        double p;
+<span class="fc bfc" id="L329" title="All 2 branches covered.">        if (dH &lt; 0) {</span>
+<span class="fc" id="L330">            p = 1;</span>
+        } else {
+<span class="fc" id="L332">            p = Math.exp(-dH / temperature);</span>
+        }
+        
+<span class="fc bfc" id="L335" title="All 2 branches covered.">        if (r &lt; p) {</span>
+<span class="fc" id="L336">            regions[z][x][y] = targetRegion;</span>
+<span class="fc" id="L337">            PottsCell c = getCell(id);</span>
+<span class="fc" id="L338">            ((PottsLocation) c.getLocation()).remove(Region.values()[sourceRegion], x, y, z);</span>
+<span class="fc" id="L339">            ((PottsLocation) c.getLocation()).add(Region.values()[targetRegion], x, y, z);</span>
+        }
+<span class="fc" id="L341">    }</span>
+    
+    /**
+     * Gets the {@link PottsCell} object for the given id.
+     *
+     * @param id  the cell id
+     * @return  the {@link PottsCell} object, {@code null} if id is zero
+     */
+    public PottsCell getCell(int id) {
+<span class="fc bfc" id="L350" title="All 2 branches covered.">        if (id &gt; 0) {</span>
+<span class="fc" id="L351">            return (PottsCell) grid.getObjectAt(id);</span>
+        } else {
+<span class="fc" id="L353">            return null;</span>
+        }
+    }
+    
+    /**
+     * Gets neighborhood for the given voxel.
+     *
+     * @param id  the voxel id
+     * @param x  the x coordinate
+     * @param y  the y coordinate
+     * @param z  the z coordinate
+     * @return  {@code true} if simply connected, {@code false} otherwise
+     */
+    abstract boolean[][][] getNeighborhood(int id, int x, int y, int z);
+    
+    /**
+     * Gets neighborhood for the given voxel region.
+     *
+     * @param id  the voxel id
+     * @param region  the voxel region
+     * @param x  the x coordinate
+     * @param y  the y coordinate
+     * @param z  the z coordinate
+     * @return  {@code true} if simply connected, {@code false} otherwise
+     */
+    abstract boolean[][][] getNeighborhood(int id, int region, int x, int y, int z);
+    
+    /**
+     * Determines connectivity of given neighborhood.
+     *
+     * @param array  the array of neighbors
+     * @param zero {@code true} if location has zero id, {@code false} otherwise
+     * @return  {@code true} if simply connected, {@code false} otherwise
+     */
+    abstract boolean getConnectivity(boolean[][][] array, boolean zero);
+    
+    /**
+     * Gets unique IDs adjacent to given voxel.
+     *
+     * @param x  the x coordinate
+     * @param y  the y coordinate
+     * @param z  the z coordinate
+     * @return  the list of unique IDs
+     */
+    abstract HashSet&lt;Integer&gt; getUniqueIDs(int x, int y, int z);
+    
+    /**
+     * Gets unique regions adjacent to given voxel.
+     *
+     * @param x  the x coordinate
+     * @param y  the y coordinate
+     * @param z  the z coordinate
+     * @return  the list of unique regions
+     */
+    abstract HashSet&lt;Integer&gt; getUniqueRegions(int x, int y, int z);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

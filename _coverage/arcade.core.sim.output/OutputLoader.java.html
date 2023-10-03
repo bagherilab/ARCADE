@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OutputLoader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.core.sim.output</a> &gt; <span class="el_source">OutputLoader.java</span></div><h1>OutputLoader.java</h1><pre class="source lang-java linenums">package arcade.core.sim.output;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+import com.google.gson.Gson;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.location.LocationContainer;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
+import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
+
+/**
+ * Custom loader for deserializing objects from JSON.
+ * &lt;p&gt;
+ * The loader is associated with an implementation-specific {@code Gson}
+ * instance that defines deserialization of implementation-specific classes. The
+ * associated {@link arcade.core.sim.Series} instance provides any static
+ * series-specific information needed for loading. The equipped
+ * {@link arcade.core.sim.Simulation} instance is called to get the random seed
+ * (if needed) to select the correct files to load. The tag {@code [#]} in the
+ * load path is replaced with the random seed of the simulation instance.
+ */
+
+public abstract class OutputLoader {
+    /** Logger for {@code OutputLoader}. */
+<span class="fc" id="L32">    private static final Logger LOGGER = Logger.getLogger(OutputLoader.class.getName());</span>
+    
+    /** JSON representation. */
+    final Gson gson;
+    
+    /** {@link arcade.core.sim.Series} instance. */
+    final Series series;
+    
+    /** Prefix for loaded files. */
+    public String prefix;
+    
+    /** {@code true} if cells are loaded, {@code false} otherwise. */
+    public boolean loadCells;
+    
+    /** {@code true} if locations are loaded, {@code false} otherwise. */
+    public boolean loadLocations;
+    
+    /** JSON for cells. */
+    String cellJson;
+    
+    /** JSON for locations. */
+    String locationJson;
+    
+    /**
+     * Creates an {@code OutputLoader} for the series.
+     *
+     * @param series  the simulation series
+     */
+<span class="fc" id="L60">    public OutputLoader(Series series) {</span>
+<span class="fc" id="L61">        this.series = series;</span>
+<span class="fc" id="L62">        this.gson = makeGSON();</span>
+<span class="fc" id="L63">    }</span>
+    
+    /**
+     * Creates a {@code Gson} instance for deserializing objects.
+     *
+     * @return  a {@code Gson} instance
+     */
+    protected abstract Gson makeGSON();
+    
+    /**
+     * Equips a {@link arcade.core.sim.Simulation} instance to the loader.
+     *
+     * @param sim  the simulation instance
+     */
+    public void equip(Simulation sim) {
+<span class="fc" id="L78">        String seed = String.format(&quot;%04d&quot;, sim.getSeed());</span>
+<span class="fc" id="L79">        String path = prefix.replace(&quot;[#]&quot;, seed);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        if (loadCells) {</span>
+<span class="fc" id="L81">            this.cellJson = read(path + &quot;.CELLS.json&quot;);</span>
+        }
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (loadLocations) {</span>
+<span class="fc" id="L84">            this.locationJson = read(path + &quot;.LOCATIONS.json&quot;);</span>
+        }
+<span class="fc" id="L86">    }</span>
+    
+    /**
+     * Loads the JSON for a list of {@link CellContainer} objects.
+     *
+     * @return  a list of {@link CellContainer} objects
+     */
+    public ArrayList&lt;CellContainer&gt; loadCells() {
+<span class="fc" id="L94">        return gson.fromJson(cellJson, DEFAULT_CELL_TYPE);</span>
+    }
+    
+    /**
+     * Loads the JSON for a list of {@link LocationContainer} objects.
+     *
+     * @return  a list of {@link LocationContainer} objects
+     */
+    public ArrayList&lt;LocationContainer&gt; loadLocations() {
+<span class="fc" id="L103">        return gson.fromJson(locationJson, DEFAULT_LOCATION_TYPE);</span>
+    }
+    
+    /**
+     * Reads the contents of the given file path.
+     *
+     * @param filepath  the path for the file
+     * @return  the contents of the path, {@code null} if unable to read
+     */
+    String read(String filepath) {
+        try {
+            // Get reader
+<span class="fc" id="L115">            File infile = new File(filepath);</span>
+<span class="fc" id="L116">            FileInputStream fis = new FileInputStream(infile);</span>
+<span class="fc" id="L117">            BufferedReader br = new BufferedReader(new InputStreamReader(fis));</span>
+            
+            // Write contents
+<span class="fc" id="L120">            StringBuilder contents = new StringBuilder();</span>
+            String line;
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            while ((line = br.readLine()) != null) {</span>
+<span class="fc" id="L123">                contents.append(line);</span>
+            }
+            
+            // Close streams.
+<span class="fc" id="L127">            br.close();</span>
+<span class="fc" id="L128">            fis.close();</span>
+            
+<span class="fc" id="L130">            LOGGER.info(&quot;file [ &quot; + filepath + &quot; ] successfully read&quot;);</span>
+<span class="fc" id="L131">            return contents.toString();</span>
+<span class="fc" id="L132">        } catch (IOException ex) {</span>
+<span class="fc" id="L133">            LOGGER.severe(&quot;error reading [ &quot; + filepath + &quot; ] due to &quot; + ex.getClass().getName());</span>
+<span class="fc" id="L134">            ex.printStackTrace();</span>
+<span class="fc" id="L135">            return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

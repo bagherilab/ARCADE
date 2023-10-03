@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchSimulation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.sim</a> &gt; <span class="el_source">PatchSimulation.java</span></div><h1>PatchSimulation.java</h1><pre class="source lang-java linenums">package arcade.patch.sim;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import arcade.core.agent.action.Action;
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.env.component.Component;
+import arcade.core.env.grid.Grid;
+import arcade.core.env.lattice.Lattice;
+import arcade.core.env.location.Location;
+import arcade.core.env.location.LocationContainer;
+import arcade.core.sim.Series;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.agent.cell.PatchCellFactory;
+import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.lattice.PatchLattice;
+import arcade.patch.env.lattice.PatchLatticeFactory;
+import arcade.patch.env.location.PatchLocationFactory;
+
+/**
+ * Abstract implementation for patch {@link Simulation} instances.
+ */
+
+public abstract class PatchSimulation extends SimState implements Simulation {
+    /** {@link arcade.core.sim.Series} object containing this simulation. */
+    final PatchSeries series;
+    
+    /** Random number generator seed for this simulation. */
+    final int seed;
+    
+    /** {@link Grid} containing agents in the simulation. */
+    Grid grid;
+    
+    /** Map of {@link Lattice} objects in the simulation. */
+    HashMap&lt;String, Lattice&gt; lattices;
+    
+    /** Map of {@link Action} instances in the simulation. */
+    HashMap&lt;String, Action&gt; actions;
+    
+    /** Map of {@link Component} instances in the simulation. */
+    HashMap&lt;String, Component&gt; components;
+    
+    /** Cell ID tracker. */
+    int id;
+    
+    /** Location factory instance for the simulation. */
+    public final PatchLocationFactory locationFactory;
+    
+    /** Cell factory instance for the simulation. */
+    public final PatchCellFactory cellFactory;
+    
+    /** Lattice factory instance for the simulation. */
+    public final PatchLatticeFactory latticeFactory;
+    
+    /**
+     * Simulation instance for a {@link Series} for given random seed.
+     *
+     * @param seed  the random seed for random number generator
+     * @param series  the simulation series
+     */
+    public PatchSimulation(long seed, Series series) {
+<span class="fc" id="L68">        super(seed);</span>
+<span class="fc" id="L69">        this.series = (PatchSeries) series;</span>
+<span class="fc" id="L70">        this.seed = (int) seed - Series.SEED_OFFSET;</span>
+        
+<span class="fc" id="L72">        this.locationFactory = makeLocationFactory();</span>
+<span class="fc" id="L73">        this.cellFactory = makeCellFactory();</span>
+<span class="fc" id="L74">        this.latticeFactory = makeLatticeFactory();</span>
+<span class="fc" id="L75">    }</span>
+    
+    @Override
+<span class="nc" id="L78">    public final Series getSeries() { return series; }</span>
+    
+    @Override
+<span class="nc" id="L81">    public final Schedule getSchedule() { return schedule; }</span>
+    
+    @Override
+<span class="fc" id="L84">    public final int getSeed() { return seed; }</span>
+    
+    @Override
+<span class="nc" id="L87">    public final int getID() { return ++id; }</span>
+    
+    @Override
+    public final ArrayList&lt;CellContainer&gt; getCells() {
+<span class="fc" id="L91">        ArrayList&lt;CellContainer&gt; cellContainers = new ArrayList&lt;&gt;();</span>
+        
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">        for (Object obj : grid.getAllObjects()) {</span>
+<span class="nc" id="L94">            Cell cell = (Cell) obj;</span>
+<span class="nc" id="L95">            cellContainers.add(cell.convert());</span>
+<span class="nc" id="L96">        }</span>
+        
+<span class="fc" id="L98">        return cellContainers;</span>
+    }
+    
+    @Override
+    public final ArrayList&lt;LocationContainer&gt; getLocations() {
+<span class="fc" id="L103">        ArrayList&lt;LocationContainer&gt; locationContainers = new ArrayList&lt;&gt;();</span>
+        
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">        for (Object obj : grid.getAllObjects()) {</span>
+<span class="nc" id="L106">            Cell cell = (Cell) obj;</span>
+<span class="nc" id="L107">            locationContainers.add(cell.getLocation().convert(cell.getID()));</span>
+<span class="nc" id="L108">        }</span>
+        
+<span class="fc" id="L110">        return locationContainers;</span>
+    }
+    
+    @Override
+<span class="nc" id="L114">    public final Grid getGrid() { return grid; }</span>
+    
+    @Override
+<span class="nc" id="L117">    public final Lattice getLattice(String key) { return lattices.get(key); }</span>
+    
+    @Override
+<span class="nc" id="L120">    public final Action getAction(String key) { return actions.get(key); }</span>
+    
+    @Override
+<span class="nc" id="L123">    public final Component getComponent(String key) { return components.get(key); }</span>
+    
+    /**
+     * Called at the start of the simulation to set up agents and environment
+     * and schedule actions and components as needed.
+     */
+    @Override
+    public void start() {
+<span class="fc" id="L131">        super.start();</span>
+        
+        // Reset id.
+<span class="fc" id="L134">        id = 0;</span>
+        
+        // Equip simulation to loader.
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">        if (series.loader != null) {</span>
+<span class="nc" id="L138">            series.loader.equip(this);</span>
+        }
+        
+<span class="fc" id="L141">        setupAgents();</span>
+<span class="fc" id="L142">        setupEnvironment();</span>
+        
+<span class="fc" id="L144">        scheduleActions();</span>
+<span class="fc" id="L145">        scheduleComponents();</span>
+        
+        // Equip simulation to saver and schedule.
+<span class="pc bpc" id="L148" title="2 of 4 branches missed.">        if (series.saver != null &amp;&amp; !series.isVis) {</span>
+<span class="fc" id="L149">            series.saver.equip(this);</span>
+<span class="fc" id="L150">            doOutput(true);</span>
+        }
+<span class="fc" id="L152">    }</span>
+    
+    /**
+     * Called at the end of the simulation.
+     */
+    @Override
+    public void finish() {
+<span class="fc" id="L159">        super.finish();</span>
+        
+        // Finalize saver.
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">        if (!series.isVis) {</span>
+<span class="fc" id="L163">            doOutput(false);</span>
+        }
+<span class="fc" id="L165">    }</span>
+    
+    /**
+     * Creates a factory for locations.
+     *
+     * @return  a {@link Location} factory
+     */
+    public abstract PatchLocationFactory makeLocationFactory();
+    
+    /**
+     * Creates a factory for cells.
+     *
+     * @return  a {@link Cell} factory
+     */
+    public abstract PatchCellFactory makeCellFactory();
+    
+    /**
+     * Creates a factory for lattices.
+     *
+     * @return  a {@link Lattice} factory
+     */
+    public abstract PatchLatticeFactory makeLatticeFactory();
+    
+    /**
+     * Creates an instance of the given action.
+     *
+     * @param actionClass  the name of the action class
+     * @param parameters  the dictionary of action parameters
+     * @return  a {@link Action} instance
+     */
+    public abstract Action makeAction(String actionClass, MiniBox parameters);
+    
+    /**
+     * Creates an instance of the given component.
+     *
+     * @param componentClass  the name of the component class
+     * @param parameters  the dictionary of component parameters
+     * @return  a {@link Component} instance
+     */
+    public abstract Component makeComponent(String componentClass, MiniBox parameters);
+    
+    @Override
+    public final void setupAgents() {
+        // Initialize grid for agents.
+<span class="fc" id="L209">        grid = new PatchGrid();</span>
+        
+        // Initialize factories.
+<span class="fc" id="L212">        locationFactory.initialize(series, random);</span>
+<span class="fc" id="L213">        cellFactory.initialize(series, random);</span>
+        
+        // Iterate through each population to create and schedule cells.
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">        for (MiniBox population : series.populations.values()) {</span>
+<span class="nc" id="L217">            int pop = population.getInt(&quot;CODE&quot;);</span>
+<span class="nc" id="L218">            HashSet&lt;Integer&gt; ids = cellFactory.popToIDs.get(pop);</span>
+            
+<span class="nc bnc" id="L220" title="All 2 branches missed.">            for (int i : ids) {</span>
+                // Get location and cell containers.
+<span class="nc" id="L222">                LocationContainer locationContainer = locationFactory.locations.get(i);</span>
+<span class="nc" id="L223">                CellContainer cellContainer = cellFactory.cells.get(i);</span>
+                
+                // Check that we have enough containers.
+<span class="nc bnc" id="L226" title="All 4 branches missed.">                if (locationContainer == null || cellContainer == null) {</span>
+<span class="nc" id="L227">                    break;</span>
+                }
+                
+                // Make the location and cell.
+<span class="nc" id="L231">                Location location = locationContainer.convert(locationFactory, cellContainer);</span>
+<span class="nc" id="L232">                PatchCell cell = (PatchCell) cellContainer.convert(cellFactory, location);</span>
+                
+                // Add and schedule the cell.
+<span class="nc" id="L235">                grid.addObject(cell, location);</span>
+<span class="nc" id="L236">                cell.schedule(schedule);</span>
+                
+                // Update id tracking.
+<span class="nc" id="L239">                id = Math.max(i, id);</span>
+<span class="nc" id="L240">            }</span>
+<span class="nc" id="L241">        }</span>
+<span class="fc" id="L242">    }</span>
+    
+    @Override
+    public final void setupEnvironment() {
+        // Initialize lattice map for layers.
+<span class="fc" id="L247">        lattices = new HashMap&lt;&gt;();</span>
+        
+        // Initialize factory.
+<span class="fc" id="L250">        latticeFactory.initialize(series, random);</span>
+        
+        // Iterate through each layer to create and schedule lattices.
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">        for (String key : series.layers.keySet()) {</span>
+<span class="nc" id="L254">            PatchLattice lattice = latticeFactory.lattices.get(key);</span>
+            
+            // Add and schedule the lattice.
+<span class="nc" id="L257">            lattices.put(key, lattice);</span>
+<span class="nc" id="L258">            lattice.schedule(schedule);</span>
+<span class="nc" id="L259">        }</span>
+<span class="fc" id="L260">    }</span>
+    
+    @Override
+    public final void scheduleActions() {
+<span class="fc" id="L264">        actions = new HashMap&lt;&gt;();</span>
+        
+        // Create all action instances.
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">        for (String actionKey : series.actions.keySet()) {</span>
+<span class="nc" id="L268">            MiniBox actionParameters = series.actions.get(actionKey);</span>
+<span class="nc" id="L269">            String actionClass = actionParameters.get(&quot;CLASS&quot;);</span>
+<span class="nc" id="L270">            Action action = makeAction(actionClass, actionParameters);</span>
+            
+<span class="nc bnc" id="L272" title="All 2 branches missed.">            if (action == null) {</span>
+<span class="nc" id="L273">                continue;</span>
+            }
+            
+<span class="nc" id="L276">            actions.put(actionKey, action);</span>
+<span class="nc" id="L277">        }</span>
+        
+        // Register and schedule actions.
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">        for (String actionKey : actions.keySet()) {</span>
+<span class="nc" id="L281">            MiniBox actionParameters = series.actions.get(actionKey);</span>
+<span class="nc" id="L282">            Action action = actions.get(actionKey);</span>
+            
+<span class="nc" id="L284">            MiniBox registerBox = actionParameters.filter(&quot;(REGISTER)&quot;);</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">            for (String registerKey : registerBox.getKeys()) {</span>
+<span class="nc" id="L286">                action.register(this, registerKey);</span>
+<span class="nc" id="L287">            }</span>
+            
+<span class="nc" id="L289">            action.schedule(schedule);</span>
+<span class="nc" id="L290">        }</span>
+<span class="fc" id="L291">    }</span>
+    
+    @Override
+    public final void scheduleComponents() {
+<span class="fc" id="L295">        components = new HashMap&lt;&gt;();</span>
+        
+        // Create all component instances.
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">        for (String componentKey : series.components.keySet()) {</span>
+<span class="nc" id="L299">            MiniBox componentParameters = series.components.get(componentKey);</span>
+<span class="nc" id="L300">            String componentClass = componentParameters.get(&quot;CLASS&quot;);</span>
+<span class="nc" id="L301">            Component component = makeComponent(componentClass, componentParameters);</span>
+            
+<span class="nc bnc" id="L303" title="All 2 branches missed.">            if (component == null) {</span>
+<span class="nc" id="L304">                continue;</span>
+            }
+            
+<span class="nc" id="L307">            components.put(componentKey, component);</span>
+<span class="nc" id="L308">        }</span>
+        
+        // Register and schedule components.
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">        for (String componentKey : components.keySet()) {</span>
+<span class="nc" id="L312">            MiniBox componentParameters = series.components.get(componentKey);</span>
+<span class="nc" id="L313">            Component component = components.get(componentKey);</span>
+            
+<span class="nc" id="L315">            MiniBox registerBox = componentParameters.filter(&quot;(REGISTER)&quot;);</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">            for (String registerKey : registerBox.getKeys()) {</span>
+<span class="nc" id="L317">                component.register(this, registerKey);</span>
+<span class="nc" id="L318">            }</span>
+            
+<span class="nc" id="L320">            component.schedule(schedule);</span>
+<span class="nc" id="L321">        }</span>
+<span class="fc" id="L322">    }</span>
+    
+    /**
+     * Runs output methods.
+     *
+     * @param isScheduled  {@code true} to schedule output, {@code false} otherwise
+     */
+    public void doOutput(boolean isScheduled) {
+<span class="fc bfc" id="L330" title="All 2 branches covered.">        if (isScheduled) {</span>
+<span class="fc" id="L331">            series.saver.schedule(schedule, series.getInterval());</span>
+        } else {
+<span class="fc" id="L333">            int tick = (int) schedule.getTime() + 1;</span>
+<span class="fc" id="L334">            series.saver.saveCells(tick);</span>
+<span class="fc" id="L335">            series.saver.saveLocations(tick);</span>
+        }
+<span class="fc" id="L337">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

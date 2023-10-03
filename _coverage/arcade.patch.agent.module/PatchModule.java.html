@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchModule.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.agent.module</a> &gt; <span class="el_source">PatchModule.java</span></div><h1>PatchModule.java</h1><pre class="source lang-java linenums">package arcade.patch.agent.module;
+
+import arcade.core.agent.module.Module;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.env.location.PatchLocation;
+
+/**
+ * Abstract implementation of {@link Module} for {@link PatchCell} agents.
+ * &lt;p&gt;
+ * Each module represents the behaviors of a cell in a given state.
+ */
+
+public abstract class PatchModule implements Module {
+    /** The {@link PatchCell} the module is associated with. */
+    final PatchCell cell;
+    
+    /** The {@link PatchLocation} the module is associated with. */
+    final PatchLocation location;
+    
+    /** Tick the {@code Module} was started. */
+    double start;
+    
+    /** Tick the {@code Module} was stopped. */
+    double stop;
+    
+    /**
+     * Creates a module for a {@link PatchCell} state.
+     *
+     * @param cell  the {@link PatchCell} the module is associated with
+     */
+<span class="nc" id="L31">    public PatchModule(PatchCell cell) {</span>
+<span class="nc" id="L32">        this.cell = cell;</span>
+<span class="nc" id="L33">        this.location = (PatchLocation) cell.getLocation();</span>
+<span class="nc" id="L34">    }</span>
+    
+    /**
+     * Gets the module start tick.
+     *
+     * @return  the module start
+     */
+<span class="nc" id="L41">    public double getStart() { return start; }</span>
+    
+    /**
+     * Gets the module start tick.
+     *
+     * @return  the module start
+     */
+<span class="nc" id="L48">    public double getStop() { return stop; }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

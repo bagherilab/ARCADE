@@ -1,0 +1,1187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchComponentSitesGraphFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.component</a> &gt; <span class="el_source">PatchComponentSitesGraphFactory.java</span></div><h1>PatchComponentSitesGraphFactory.java</h1><pre class="source lang-java linenums">package arcade.patch.env.component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import sim.util.Bag;
+import ec.util.MersenneTwisterFast;
+import arcade.core.sim.Series;
+import arcade.core.util.Graph;
+import arcade.core.util.Graph.Node;
+import arcade.core.util.Utilities;
+import static arcade.patch.env.component.PatchComponentSitesGraph.SiteEdge;
+import static arcade.patch.env.component.PatchComponentSitesGraph.SiteNode;
+import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.*;
+
+/**
+ * Factory for building a {@link Graph} for {@link PatchComponentSitesGraph}.
+ * &lt;p&gt;
+ * Graph can be initialized in two ways:
+ * &lt;ul&gt;
+ *     &lt;li&gt;pattern layout that matches the structure used by
+ *     {@link PatchComponentSitesPattern}&lt;/li&gt;
+ *     &lt;li&gt;root layout grown from a specified root system using motifs&lt;/li&gt;
+ * &lt;/ul&gt;
+ */
+
+public abstract class PatchComponentSitesGraphFactory {
+    /** Border directions. */
+<span class="nc" id="L31">    enum Border { LEFT, RIGHT, TOP, BOTTOM }</span>
+    
+    /** Edge types. */
+<span class="nc" id="L34">    enum EdgeType {</span>
+        /** Code for arteriole edge type. */
+<span class="nc" id="L36">        ARTERIOLE(EdgeCategory.ARTERY),</span>
+        
+        /** Code for artery edge type. */
+<span class="nc" id="L39">        ARTERY(EdgeCategory.ARTERY),</span>
+        
+        /** Code for capillary edge type. */
+<span class="nc" id="L42">        CAPILLARY(EdgeCategory.CAPILLARY),</span>
+        
+        /** Code for vein edge type. */
+<span class="nc" id="L45">        VEIN(EdgeCategory.VEIN),</span>
+        
+        /** Code for venule edge type. */
+<span class="nc" id="L48">        VENULE(EdgeCategory.VEIN);</span>
+        
+        /** Edge category corresponding to the edge type. */
+        final EdgeCategory category;
+        
+        /**
+         * Creates an {@code EdgeType} instance.
+         *
+         * @param  category the edge category
+         */
+<span class="nc" id="L58">        EdgeType(EdgeCategory category) {</span>
+<span class="nc" id="L59">            this.category = category;</span>
+<span class="nc" id="L60">        }</span>
+    }
+    
+    /** Edge categories. */
+<span class="nc" id="L64">    enum EdgeCategory {</span>
+        /** Code for artery edge category. */
+<span class="nc" id="L66">        ARTERY(-1),</span>
+        
+        /** Code for capillary edge category. */
+<span class="nc" id="L69">        CAPILLARY(0),</span>
+        
+        /** Code for vein edge category. */
+<span class="nc" id="L72">        VEIN(1);</span>
+        
+        /** Sign corresponding to edge category. */
+        final int sign;
+        
+        /**
+         * Creates an {@code EdgeCategory} instance.
+         *
+         * @param  sign the category sign
+         */
+<span class="nc" id="L82">        EdgeCategory(int sign) {</span>
+<span class="nc" id="L83">            this.sign = sign;</span>
+<span class="nc" id="L84">        }</span>
+    }
+    
+    /** Edge tags. */
+<span class="nc" id="L88">    enum EdgeTag {</span>
+        /** Tag for edge addition in iterative remodeling. */
+<span class="nc" id="L90">        ADD,</span>
+        
+        /** Tag for edge removal in iterative remodeling. */
+<span class="nc" id="L93">        REMOVE,</span>
+    }
+    
+    /** Edge levels. */
+<span class="nc" id="L97">    enum EdgeLevel {</span>
+        /** Code for variable resolution level. */
+<span class="nc" id="L99">        VARIABLE(1),</span>
+        
+        /** Code for level 1 resolution. */
+<span class="nc" id="L102">        LEVEL_1(4),</span>
+        
+        /** Code for level 2 resolution. */
+<span class="nc" id="L105">        LEVEL_2(2);</span>
+        
+        /** Scaling corresponding to edge level. */
+        final int scale;
+        
+        /**
+         * Creates an {@code EdgeLevel} instance.
+         *
+         * @param scale  the level scale
+         */
+<span class="nc" id="L115">        EdgeLevel(int scale) {</span>
+<span class="nc" id="L116">            this.scale = scale;</span>
+<span class="nc" id="L117">        }</span>
+    }
+    
+    /** Edge directions. */
+<span class="nc" id="L121">    enum EdgeDirection {</span>
+        /** Code for undefined edge direction. */
+<span class="nc" id="L123">        UNDEFINED,</span>
+        
+        /** Code for up edge direction. */
+<span class="nc" id="L126">        UP,</span>
+        
+        /** Code for up-right edge direction. */
+<span class="nc" id="L129">        UP_RIGHT,</span>
+        
+        /** Code for right edge direction. */
+<span class="nc" id="L132">        RIGHT,</span>
+        
+        /** Code for down-right edge direction. */
+<span class="nc" id="L135">        DOWN_RIGHT,</span>
+        
+        /** Code for down edge direction. */
+<span class="nc" id="L138">        DOWN,</span>
+        
+        /** Code for down-left edge direction. */
+<span class="nc" id="L141">        DOWN_LEFT,</span>
+        
+        /** Code for left edge direction. */
+<span class="nc" id="L144">        LEFT,</span>
+        
+        /** Code for up-left edge direction. */
+<span class="nc" id="L147">        UP_LEFT,</span>
+    }
+    
+    /** Edge motifs. */
+<span class="nc" id="L151">    enum EdgeMotif {</span>
+        /** Code for triple edge motif. */
+<span class="nc" id="L153">        TRIPLE,</span>
+        
+        /** Code for double edge motif. */
+<span class="nc" id="L156">        DOUBLE,</span>
+        
+        /** Code for single edge motif. */
+<span class="nc" id="L159">        SINGLE,</span>
+    }
+    
+    /** Probability weighting for iterative remodeling. */
+    private static final double PROBABILITY_WEIGHT = 0.2;
+    
+    /** Iterative remodeling fraction. */
+    private static final double REMODELING_FRACTION = 0.05;
+    
+    /** Maximum number of iterations. */
+    private static final int MAX_ITERATIONS = 100;
+    
+    /** Height of the array (z direction). */
+    final int latticeHeight;
+    
+    /** Length of the array (x direction). */
+    final int latticeLength;
+    
+    /** Width of the array (y direction). */
+    final int latticeWidth;
+    
+    /**
+     * Creates a factory for making {@link Graph} sites.
+     *
+     * @param series  the simulation series
+     */
+<span class="nc" id="L185">    public PatchComponentSitesGraphFactory(Series series) {</span>
+<span class="nc" id="L186">        latticeLength = series.length;</span>
+<span class="nc" id="L187">        latticeWidth = series.width;</span>
+<span class="nc" id="L188">        latticeHeight = series.height;</span>
+<span class="nc" id="L189">    }</span>
+    
+    /**
+     * Calculate the offset based on the layer index.
+     *
+     * @param k  the index in the z direction
+     * @return  the lattice offset
+     */
+    abstract int calcOffset(int k);
+    
+    /**
+     * Calculates the column of the pattern based on offset and index.
+     *
+     * @param i  the index in the x direction
+     * @param offset  the lattice offset
+     * @return  the column index
+     */
+    abstract int calcCol(int i, int offset);
+    
+    /**
+     * Calculates the row of the pattern based on offset and index.
+     *
+     * @param i  the index in the x direction
+     * @param j  the index in the y direction
+     * @param offset  the lattice offset
+     * @return  the row index
+     */
+    abstract int calcRow(int i, int j, int offset);
+    
+    /**
+     * Checks if the given node is outside the bounds of the environment.
+     *
+     * @param node  the node to check
+     * @return  {@code true} if node is within bounds, {@code false} otherwise
+     */
+    abstract boolean checkNode(Node node);
+    
+    /**
+     * Gets direction code for an edge between given coordinates.
+     *
+     * @param fromX  the x coordinate of the node the edge is from
+     * @param fromY  the y coordinate of the node the edge is from
+     * @param toX  the x coordinate of the node the edge is to
+     * @param toY  the y coordinate of the node the edge is to
+     * @return  the code for the edge direction
+     */
+    abstract EdgeDirection getDirection(int fromX, int fromY, int toX, int toY);
+    
+    /**
+     * Adds a root motif to the graph.
+     *
+     * @param graph  the graph instance
+     * @param node0  the node the motif starts at
+     * @param dir  the direction code of the root
+     * @param type  the root type
+     * @param offsets  the list of offsets for line roots, null otherwise
+     * @param random  the random number generator
+     * @return  the bag of active edges
+     */
+    abstract Bag addRoot(Graph graph, SiteNode node0, EdgeDirection dir, EdgeType type,
+                         EdgeDirection[] offsets, MersenneTwisterFast random);
+    
+    /**
+     * Adds an edge motif to the graph.
+     *
+     * @param graph  the graph instance
+     * @param node0  the node the motif starts at
+     * @param edge0  the edge the motif is being added to
+     * @param type  the edge type
+     * @param level  the graph resolution level
+     * @param motif  the motif type
+     * @param random  the random number generator
+     * @return  the bag of active edges
+     */
+    abstract Bag addMotif(Graph graph, SiteNode node0, SiteEdge edge0, EdgeType type,
+                          EdgeLevel level, EdgeMotif motif, MersenneTwisterFast random);
+    
+    /**
+     * Adds a capillary segment joining edges of different types to the graph.
+     *
+     * @param graph  the graph instance
+     * @param node0  the node the segment starts at
+     * @param dir  the direction code for the segment
+     * @param level  the graph resolution level
+     * @param random  the random number generator
+     */
+    abstract void addSegment(Graph graph, SiteNode node0, EdgeDirection dir,
+                             EdgeLevel level, MersenneTwisterFast random);
+    
+    /**
+     * Adds a connection joining edges of the same type to the graph.
+     *
+     * @param graph  the graph instance
+     * @param node0  the node the connection starts at
+     * @param dir  the direction code for the segment
+     * @param type  the connection type
+     * @param level  the graph resolution level
+     * @param random  the random number generator
+     */
+    abstract void addConnection(Graph graph, SiteNode node0, EdgeDirection dir, EdgeType type,
+                                EdgeLevel level, MersenneTwisterFast random);
+    
+    /**
+     * Gets list of coordinate changes for to a given offset direction.
+     *
+     * @param offset  the offset code
+     * @return  the list of coordinate changes
+     */
+    abstract int[] getOffset(EdgeDirection offset);
+    
+    /**
+     * Gets the length of the given edge.
+     *
+     * @param edge  the edge object
+     * @param level  the graph resolution level
+     * @return  the length of the edge
+     */
+    abstract double getLength(SiteEdge edge, EdgeLevel level);
+    
+    /**
+     * Creates graph sites using pattern layout.
+     *
+     * @param graph  the graph instance
+     */
+    abstract void createPattern(Graph graph);
+    
+    /**
+     * Creates a {@link Root} for graph sites using a root layout.
+     *
+     * @param border  the border the root extends from
+     * @param percent  the percentage distance along the border
+     * @param type  the root type
+     * @param level  the graph resolution level
+     * @return  a {@link Root} object
+     */
+    abstract Root createRoot(Border border, double percent, EdgeType type, EdgeLevel level);
+    
+    /**
+     * Creates offsets for a {@link Root} for graph sites using a root layout.
+     *
+     * @param border  the border the root extends from
+     * @param percent  the percentage distance in the perpendicular direction
+     * @param level  the graph resolution level
+     * @param random  the random number generator
+     * @return  a list of offsets
+     */
+    abstract EdgeDirection[] createRootOffsets(Border border, double percent, EdgeLevel level,
+                                               MersenneTwisterFast random);
+    
+    /**
+     * Container class for details of root nodes.
+     */
+    static class Root {
+        /** Corresponding node object. */
+        SiteNode node;
+        
+        /** Corresponding edge object. */
+        SiteEdge edge;
+        
+        /** Root type. */
+        final EdgeType type;
+        
+        /** Root direction. */
+        final EdgeDirection dir;
+        
+        /** List of offsets for line roots, null otherwise. */
+        EdgeDirection[] offsets;
+        
+        /**
+         * Creates a {@code Root} object for generating root graphs.
+         *
+         * @param x  the x coordinate
+         * @param y  the y coordinate
+         * @param type  the edge type
+         * @param dir  the direction code of the root
+         */
+<span class="nc" id="L365">        Root(int x, int y, EdgeType type, EdgeDirection dir) {</span>
+<span class="nc" id="L366">            node = new SiteNode(x, y, 0);</span>
+<span class="nc" id="L367">            this.type = type;</span>
+<span class="nc" id="L368">            this.dir = dir;</span>
+<span class="nc" id="L369">        }</span>
+    }
+    
+    /**
+     * Gets direction code for an edge.
+     *
+     * @param edge  the edge object
+     * @param level  the graph resolution level
+     * @return  the code for the edge direction
+     */
+    EdgeDirection getDirection(SiteEdge edge, EdgeLevel level) {
+<span class="nc" id="L380">        return getDirection(edge.getFrom(), edge.getTo(), level);</span>
+    }
+    
+    /**
+     * Gets direction code for an edge.
+     *
+     * @param from  the node the edge is from
+     * @param to  the node the edge is to
+     * @param level  the graph resolution level
+     * @return  the code for the edge direction
+     */
+    EdgeDirection getDirection(SiteNode from, SiteNode to, EdgeLevel level) {
+<span class="nc" id="L392">        int scale = level.scale;</span>
+<span class="nc" id="L393">        return getDirection(from.getX() / scale, from.getY() / scale,</span>
+<span class="nc" id="L394">                to.getX() / scale, to.getY() / scale);</span>
+    }
+    
+    /**
+     * Creates a node offset in the given direction.
+     *
+     * @param node  the node of the initial location
+     * @param offset  the offset direction
+     * @param level  the graph resolution level
+     * @return  an offset node
+     */
+    SiteNode offsetNode(SiteNode node, EdgeDirection offset, EdgeLevel level) {
+<span class="nc" id="L406">        int[] offsets = getOffset(offset);</span>
+<span class="nc" id="L407">        return new SiteNode(</span>
+<span class="nc" id="L408">                node.getX() + offsets[0] * level.scale,</span>
+<span class="nc" id="L409">                node.getY() + offsets[1] * level.scale,</span>
+<span class="nc" id="L410">                node.getZ() + offsets[2] * level.scale</span>
+        );
+    }
+    
+    /**
+     * Initializes graph with edges and nodes in a pattern layout.
+     *
+     * @param random  the random number generator
+     * @return  a graph instance with pattern layout
+     */
+    public Graph initializePatternGraph(MersenneTwisterFast random) {
+<span class="nc" id="L421">        Graph graph = new Graph();</span>
+<span class="nc" id="L422">        createPattern(graph);</span>
+        
+        // Remove edges that were not visited. Need to make a new copy of the
+        // bag otherwise we iterate over an object that is being changed.
+<span class="nc" id="L426">        Bag all = new Bag(graph.getAllEdges());</span>
+<span class="nc bnc" id="L427" title="All 2 branches missed.">        for (Object obj : all) {</span>
+<span class="nc" id="L428">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L429" title="All 2 branches missed.">            if (!edge.isVisited) {</span>
+<span class="nc" id="L430">                graph.removeEdge(edge);</span>
+            } else {
+<span class="nc" id="L432">                edge.isPerfused = true;</span>
+            }
+<span class="nc" id="L434">        }</span>
+        
+        // Traverse graph from capillaries to calculate radii.
+<span class="nc" id="L437">        ArrayList&lt;SiteEdge&gt; caps = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY });</span>
+<span class="nc" id="L438">        updateRadii(graph, caps, CalculationType.UPSTREAM_PATTERN, random);</span>
+<span class="nc" id="L439">        updateRadii(graph, caps, CalculationType.DOWNSTREAM_PATTERN, random);</span>
+        
+<span class="nc" id="L441">        graph.mergeNodes();</span>
+        
+        // Assign pressures.
+<span class="nc bnc" id="L444" title="All 2 branches missed.">        for (Object obj : graph.getAllEdges()) {</span>
+<span class="nc" id="L445">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L446" title="All 4 branches missed.">            if (graph.getInDegree(edge.getFrom()) == 0 &amp;&amp; edge.type == EdgeType.ARTERY) {</span>
+<span class="nc" id="L447">                edge.getFrom().pressure = calculatePressure(edge.radius, edge.type.category);</span>
+<span class="nc" id="L448">                edge.getFrom().isRoot = true;</span>
+            }
+<span class="nc bnc" id="L450" title="All 4 branches missed.">            if (graph.getOutDegree(edge.getTo()) == 0 &amp;&amp; edge.type == EdgeType.VEIN) {</span>
+<span class="nc" id="L451">                edge.getTo().pressure = calculatePressure(edge.radius, edge.type.category);</span>
+<span class="nc" id="L452">                edge.getTo().isRoot = true;</span>
+            }
+<span class="nc" id="L454">        }</span>
+        
+        // Assign lengths to edges and set as perfused.
+<span class="nc bnc" id="L457" title="All 2 branches missed.">        for (Object obj : graph.getAllEdges()) {</span>
+<span class="nc" id="L458">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc" id="L459">            edge.length = getLength(edge, EdgeLevel.VARIABLE);</span>
+<span class="nc" id="L460">            edge.isPerfused = true;</span>
+<span class="nc" id="L461">        }</span>
+        
+        // Merge segments of the same type in the same direction.
+<span class="nc" id="L464">        mergePatternGraph(graph);</span>
+        
+        // Calculate network properties.
+<span class="nc" id="L467">        calculatePressures(graph);</span>
+        
+        // Reverse edges that have negative pressure difference. Recalculate
+        // pressure for updated graph if there were edge reversals.
+<span class="nc" id="L471">        boolean reversed = reversePressures(graph);</span>
+<span class="nc bnc" id="L472" title="All 2 branches missed.">        if (reversed) {</span>
+<span class="nc" id="L473">            calculatePressures(graph);</span>
+        }
+        
+<span class="nc" id="L476">        calculateThicknesses(graph);</span>
+<span class="nc" id="L477">        calculateStresses(graph);</span>
+<span class="nc" id="L478">        calculateFlows(graph);</span>
+        
+<span class="nc" id="L480">        return graph;</span>
+    }
+    
+    /**
+     * Merges the edges in the graph with a pattern layout.
+     *
+     * @param graph  the graph instance
+     */
+    private void mergePatternGraph(Graph graph) {
+<span class="nc" id="L489">        LinkedHashSet&lt;SiteEdge&gt; set = new LinkedHashSet&lt;&gt;();</span>
+<span class="nc" id="L490">        HashMap&lt;SiteEdge, Integer&gt; scales = new HashMap&lt;&gt;();</span>
+        
+        // Create a set with all objects.
+<span class="nc bnc" id="L493" title="All 2 branches missed.">        for (Object obj : graph.getAllEdges()) {</span>
+<span class="nc" id="L494">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc" id="L495">            set.add(edge);</span>
+<span class="nc" id="L496">            scales.put(edge, 1);</span>
+<span class="nc" id="L497">        }</span>
+        
+        int n;
+        
+        do {
+<span class="nc" id="L502">            n = set.size();</span>
+            
+<span class="nc bnc" id="L504" title="All 2 branches missed.">            for (SiteEdge edge1 : set) {</span>
+<span class="nc bnc" id="L505" title="All 2 branches missed.">                if (graph.getOutDegree(edge1.getTo()) == 1) {</span>
+<span class="nc" id="L506">                    int scale1 = scales.get(edge1);</span>
+<span class="nc" id="L507">                    EdgeDirection dir1 = getDirection(</span>
+<span class="nc" id="L508">                            edge1.getFrom().getX() / scale1,</span>
+<span class="nc" id="L509">                            edge1.getFrom().getY() / scale1,</span>
+<span class="nc" id="L510">                            edge1.getTo().getX() / scale1,</span>
+<span class="nc" id="L511">                            edge1.getTo().getY() / scale1</span>
+                    );
+                    
+<span class="nc" id="L514">                    SiteEdge edge2 = (SiteEdge) edge1.getEdgesOut().get(0);</span>
+<span class="nc" id="L515">                    int scale2 = scales.get(edge2);</span>
+<span class="nc" id="L516">                    EdgeDirection dir2 = getDirection(</span>
+<span class="nc" id="L517">                            edge2.getFrom().getX() / scale2,</span>
+<span class="nc" id="L518">                            edge2.getFrom().getY() / scale2,</span>
+<span class="nc" id="L519">                            edge2.getTo().getX() / scale2,</span>
+<span class="nc" id="L520">                            edge2.getTo().getY() / scale2</span>
+                    );
+                    
+                    // Join edges that are the same direction and type.
+<span class="nc bnc" id="L524" title="All 4 branches missed.">                    if (dir1 == dir2 &amp;&amp; edge1.type == edge2.type) {</span>
+<span class="nc" id="L525">                        SiteEdge join = new SiteEdge(edge1.getFrom(), edge2.getTo(),</span>
+                                edge1.type, EdgeLevel.VARIABLE);
+<span class="nc" id="L527">                        scales.put(join, scale1 + scale2);</span>
+                        
+                        // Set length to be sum and radius to be average of the
+                        // two constituent edges.
+<span class="nc" id="L531">                        join.length = edge1.length + edge1.length;</span>
+<span class="nc" id="L532">                        join.radius = (edge1.radius + edge2.radius) / 2;</span>
+<span class="nc" id="L533">                        join.isPerfused = true;</span>
+                        
+                        // Set the node objects.
+<span class="nc" id="L536">                        join.setFrom(edge1.getFrom());</span>
+<span class="nc" id="L537">                        join.setTo(edge2.getTo());</span>
+                        
+                        // Replace the edges in the graph with the joined edge.
+<span class="nc" id="L540">                        graph.removeEdge(edge1);</span>
+<span class="nc" id="L541">                        graph.removeEdge(edge2);</span>
+<span class="nc" id="L542">                        graph.addEdge(join);</span>
+                        
+                        // Update the iteration set.
+<span class="nc" id="L545">                        set.remove(edge1);</span>
+<span class="nc" id="L546">                        set.remove(edge2);</span>
+<span class="nc" id="L547">                        set.add(join);</span>
+                        
+<span class="nc" id="L549">                        break;</span>
+                    }
+                }
+<span class="nc" id="L552">            }</span>
+<span class="nc bnc" id="L553" title="All 2 branches missed.">        } while ((n - set.size()) != 0);</span>
+<span class="nc" id="L554">    }</span>
+    
+    /**
+     * Initializes graph with edges and nodes in a root layout.
+     *
+     * @param random  the random number generator
+     * @param graphLayout  the specification for layout of roots
+     * @return  a graph instance with root layout
+     */
+    public Graph initializeRootGraph(MersenneTwisterFast random, String graphLayout) {
+<span class="nc" id="L564">        ArrayList&lt;Root&gt; roots = parseRoots(graphLayout, random);</span>
+<span class="nc" id="L565">        Graph graph = new Graph();</span>
+        
+        // Iterate through all roots and try to add to the graph.
+<span class="nc" id="L568">        Bag leaves = new Bag();</span>
+<span class="nc" id="L569">        Utilities.shuffleList(roots, random);</span>
+<span class="nc bnc" id="L570" title="All 2 branches missed.">        for (Root root : roots) {</span>
+<span class="nc" id="L571">            Bag bag = addRoot(graph, root.node, root.dir, root.type, root.offsets, random);</span>
+<span class="nc" id="L572">            leaves.addAll(bag);</span>
+<span class="nc" id="L573">        }</span>
+        
+<span class="nc" id="L575">        ArrayList&lt;Root&gt; arteries = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L576">        ArrayList&lt;Root&gt; veins = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L577">        boolean hasArtery = false;</span>
+<span class="nc" id="L578">        boolean hasVein = false;</span>
+        
+        // Iterate through roots and determine which ones were successfully
+        // added. Separate into veins and arteries.
+<span class="nc bnc" id="L582" title="All 2 branches missed.">        for (Root root : roots) {</span>
+<span class="nc" id="L583">            Bag b = graph.getEdgesOut(root.node);</span>
+<span class="nc bnc" id="L584" title="All 4 branches missed.">            if (b != null &amp;&amp; b.numObjs &gt; 0) {</span>
+<span class="nc" id="L585">                root.edge = (SiteEdge) b.objs[0];</span>
+<span class="nc" id="L586">                root.edge.getFrom().isRoot = true;</span>
+<span class="nc bnc" id="L587" title="All 3 branches missed.">                switch (root.type) {</span>
+                    case ARTERY:
+<span class="nc" id="L589">                        arteries.add(root);</span>
+<span class="nc" id="L590">                        hasArtery = true;</span>
+<span class="nc" id="L591">                        break;</span>
+                    case VEIN:
+<span class="nc" id="L593">                        veins.add(root);</span>
+<span class="nc" id="L594">                        hasVein = true;</span>
+<span class="nc" id="L595">                        break;</span>
+                    default:
+                        break;
+                }
+            }
+<span class="nc" id="L600">        }</span>
+        
+        // Check that at least one artery root was added. Exit if there is not
+        // at least one artery and one vein.
+<span class="nc bnc" id="L604" title="All 4 branches missed.">        if (!hasArtery || !hasVein) {</span>
+<span class="nc" id="L605">            return new Graph();</span>
+        }
+        
+        // Add motifs from leaves.
+<span class="nc" id="L609">        Bag leaves1 = addMotifs(graph, leaves, EdgeLevel.LEVEL_1, EdgeMotif.TRIPLE, random);</span>
+<span class="nc" id="L610">        Bag leaves2 = addMotifs(graph, leaves1, EdgeLevel.LEVEL_1, EdgeMotif.DOUBLE, random);</span>
+<span class="nc" id="L611">        addMotifs(graph, leaves2, EdgeLevel.LEVEL_1, EdgeMotif.SINGLE, random);</span>
+        
+        // Calculate radii, pressure, and shears.
+<span class="nc" id="L614">        updateRootGraph(graph, arteries, veins, EdgeLevel.LEVEL_1, random);</span>
+        
+        // Iterative remodeling.
+<span class="nc" id="L617">        int iter = 0;</span>
+<span class="nc" id="L618">        double frac = 1.0;</span>
+<span class="nc bnc" id="L619" title="All 4 branches missed.">        while (frac &gt; REMODELING_FRACTION &amp;&amp; iter &lt; MAX_ITERATIONS) {</span>
+<span class="nc" id="L620">            frac = remodelRootGraph(graph, EdgeLevel.LEVEL_1, random);</span>
+<span class="nc" id="L621">            updateRootGraph(graph, arteries, veins, EdgeLevel.LEVEL_1, random);</span>
+<span class="nc" id="L622">            iter++;</span>
+        }
+        
+        // Prune network for perfused segments and recalculate properties.
+<span class="nc" id="L626">        refineRootGraph(graph, arteries, veins);</span>
+        
+        // Subdivide growth sites and add new motifs.
+<span class="nc" id="L629">        Bag midpoints = subdivideRootGraph(graph, EdgeLevel.LEVEL_1);</span>
+<span class="nc" id="L630">        Bag midpoints1 = addMotifs(graph, midpoints, EdgeLevel.LEVEL_2, EdgeMotif.TRIPLE, random);</span>
+<span class="nc" id="L631">        Bag midpoints2 = addMotifs(graph, midpoints1, EdgeLevel.LEVEL_2, EdgeMotif.DOUBLE, random);</span>
+<span class="nc" id="L632">        addMotifs(graph, midpoints2, EdgeLevel.LEVEL_2, EdgeMotif.SINGLE, random);</span>
+        
+        // Calculate radii, pressure, and shears.
+<span class="nc" id="L635">        updateRootGraph(graph, arteries, veins, EdgeLevel.LEVEL_2, random);</span>
+        
+        // Prune network for perfused segments and recalculate properties.
+<span class="nc" id="L638">        refineRootGraph(graph, arteries, veins);</span>
+        
+<span class="nc" id="L640">        return graph;</span>
+    }
+    
+    /**
+     * Updates hemodynamic properties for graph sites with root layouts.
+     *
+     * @param graph  the graph instance
+     * @param arteries  the list of artery edges
+     * @param veins  the list of vein edges
+     * @param level  the graph resolution level
+     * @param random  the random number generator
+     */
+    private void updateRootGraph(Graph graph, ArrayList&lt;Root&gt; arteries, ArrayList&lt;Root&gt; veins,
+                                 EdgeLevel level, MersenneTwisterFast random) {
+        ArrayList&lt;SiteEdge&gt; list;
+<span class="nc" id="L655">        ArrayList&lt;SiteEdge&gt; caps = new ArrayList&lt;&gt;();</span>
+        
+        // Store upper level capillaries.
+<span class="nc bnc" id="L658" title="All 2 branches missed.">        if (level != EdgeLevel.LEVEL_1) {</span>
+<span class="nc" id="L659">            caps = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY });</span>
+<span class="nc bnc" id="L660" title="All 2 branches missed.">            for (SiteEdge edge : caps) {</span>
+<span class="nc" id="L661">                graph.removeEdge(edge);</span>
+<span class="nc" id="L662">            }</span>
+        }
+        
+        // Get all leaves and update radii.
+<span class="nc" id="L666">        list = getLeavesByType(graph, new EdgeType[] { EdgeType.ARTERY, EdgeType.VEIN });</span>
+<span class="nc" id="L667">        updateRadii(graph, list, CalculationType.UPSTREAM_ALL);</span>
+        
+        // Replace level 1 edges capillaries.
+<span class="nc bnc" id="L670" title="All 2 branches missed.">        if (level != EdgeLevel.LEVEL_1) {</span>
+<span class="nc bnc" id="L671" title="All 2 branches missed.">            for (SiteEdge edge : caps) {</span>
+<span class="nc" id="L672">                graph.addEdge(edge);</span>
+<span class="nc" id="L673">            }</span>
+        }
+        
+<span class="nc" id="L676">        addSegments(graph, level, random);</span>
+<span class="nc" id="L677">        addConnections(graph, level, random);</span>
+        
+<span class="nc" id="L679">        caps = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY });</span>
+        
+        // Get capillaries and arterioles and update radii.
+<span class="nc bnc" id="L682" title="All 3 branches missed.">        switch (level) {</span>
+            case LEVEL_1:
+<span class="nc" id="L684">                list = getEdgeByType(graph,</span>
+                        new EdgeType[] { EdgeType.CAPILLARY, EdgeType.ARTERIOLE });
+<span class="nc" id="L686">                break;</span>
+            case LEVEL_2:
+<span class="nc" id="L688">                list = getEdgeByType(graph,</span>
+                        new EdgeType[] { EdgeType.ARTERIOLE }, level);
+<span class="nc" id="L690">                list.addAll(caps);</span>
+<span class="nc" id="L691">                break;</span>
+            default:
+                break;
+        }
+        
+<span class="nc" id="L696">        updateRadii(graph, list, CalculationType.UPSTREAM_ALL);</span>
+<span class="nc bnc" id="L697" title="All 2 branches missed.">        for (SiteEdge cap : caps) {</span>
+<span class="nc" id="L698">            graph.reverseEdge(cap);</span>
+<span class="nc" id="L699">        }</span>
+        
+        // Get capillaries and venules and update radii.
+<span class="nc bnc" id="L702" title="All 3 branches missed.">        switch (level) {</span>
+            case LEVEL_1:
+<span class="nc" id="L704">                list = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY, EdgeType.VENULE });</span>
+<span class="nc" id="L705">                break;</span>
+            case LEVEL_2:
+<span class="nc" id="L707">                list = getEdgeByType(graph, new EdgeType[] { EdgeType.VENULE }, level);</span>
+<span class="nc" id="L708">                list.addAll(caps);</span>
+<span class="nc" id="L709">                break;</span>
+            default:
+                break;
+        }
+        
+<span class="nc" id="L714">        updateRadii(graph, list, CalculationType.UPSTREAM_ALL);</span>
+<span class="nc bnc" id="L715" title="All 2 branches missed.">        for (SiteEdge cap : caps) {</span>
+<span class="nc" id="L716">            graph.reverseEdge(cap);</span>
+<span class="nc" id="L717">        }</span>
+        
+        // Merge nodes. For level 2, separate graph into sub graphs by level.
+<span class="nc bnc" id="L720" title="All 3 branches missed.">        switch (level) {</span>
+            case LEVEL_1:
+<span class="nc" id="L722">                graph.mergeNodes();</span>
+<span class="nc" id="L723">                break;</span>
+            case LEVEL_2:
+<span class="nc" id="L725">                Graph g1 = new Graph();</span>
+<span class="nc" id="L726">                Graph g2 = new Graph();</span>
+<span class="nc bnc" id="L727" title="All 2 branches missed.">                graph.getSubgraph(g1, e -&gt; ((SiteEdge) e).level == EdgeLevel.LEVEL_1);</span>
+<span class="nc bnc" id="L728" title="All 2 branches missed.">                graph.getSubgraph(g2, e -&gt; ((SiteEdge) e).level == EdgeLevel.LEVEL_2);</span>
+<span class="nc" id="L729">                mergeGraphs(g1, g2);</span>
+<span class="nc" id="L730">                break;</span>
+            default:
+                break;
+        }
+        
+        // Set root edges.
+<span class="nc bnc" id="L736" title="All 3 branches missed.">        switch (level) {</span>
+            case LEVEL_1:
+<span class="nc bnc" id="L738" title="All 2 branches missed.">                for (Root artery : arteries) {</span>
+<span class="nc" id="L739">                    artery.node = artery.edge.getFrom();</span>
+<span class="nc" id="L740">                }</span>
+<span class="nc bnc" id="L741" title="All 2 branches missed.">                for (Root vein : veins) {</span>
+<span class="nc" id="L742">                    vein.node = vein.edge.getFrom();</span>
+<span class="nc" id="L743">                }</span>
+<span class="nc" id="L744">                break;</span>
+            case LEVEL_2:
+<span class="nc bnc" id="L746" title="All 2 branches missed.">                for (Root artery : arteries) {</span>
+<span class="nc" id="L747">                    artery.edge = (SiteEdge) graph.getEdgesOut(artery.node).get(0);</span>
+<span class="nc" id="L748">                }</span>
+<span class="nc bnc" id="L749" title="All 2 branches missed.">                for (Root vein : veins) {</span>
+<span class="nc" id="L750">                    vein.edge = (SiteEdge) graph.getEdgesOut(vein.node).get(0);</span>
+<span class="nc" id="L751">                }</span>
+<span class="nc" id="L752">                break;</span>
+            default:
+                break;
+        }
+        
+        // Assign pressures to roots.
+<span class="nc" id="L758">        double arteryPressure = setRootPressures(arteries, EdgeCategory.ARTERY);</span>
+<span class="nc" id="L759">        double veinPressure = setRootPressures(veins, EdgeCategory.VEIN);</span>
+        
+        // Assign pressures to leaves.
+<span class="nc" id="L762">        setLeafPressures(graph, arteryPressure, veinPressure);</span>
+        
+        // Assign lengths to edges.
+<span class="nc bnc" id="L765" title="All 2 branches missed.">        for (Object obj : graph.getAllEdges()) {</span>
+<span class="nc" id="L766">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc" id="L767">            edge.length = getLength(edge, level);</span>
+<span class="nc" id="L768">        }</span>
+        
+<span class="nc" id="L770">        calculatePressures(graph);</span>
+<span class="nc" id="L771">        calculateStresses(graph);</span>
+<span class="nc" id="L772">    }</span>
+    
+    /**
+     * Refines the graph for graph sites with root layouts.
+     *
+     * @param graph  the graph instance
+     * @param arteries  the list of artery edges
+     * @param veins  the list of vein edges
+     */
+    private void refineRootGraph(Graph graph, ArrayList&lt;Root&gt; arteries, ArrayList&lt;Root&gt; veins) {
+        // Reverse edges that are veins and venules.
+<span class="nc" id="L783">        ArrayList&lt;SiteEdge&gt; reverse = getEdgeByType(graph,</span>
+                new EdgeType[] { EdgeType.VEIN, EdgeType.VENULE });
+<span class="nc bnc" id="L785" title="All 2 branches missed.">        for (SiteEdge edge : reverse) {</span>
+<span class="nc" id="L786">            graph.reverseEdge(edge);</span>
+<span class="nc" id="L787">        }</span>
+        
+        // Reverse edges that have negative pressure difference.
+<span class="nc" id="L790">        reversePressures(graph);</span>
+        
+        // Check for non-connected graph.
+<span class="nc" id="L793">        ArrayList&lt;SiteEdge&gt; caps = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY });</span>
+<span class="nc bnc" id="L794" title="All 2 branches missed.">        if (caps.size() &lt; 1) {</span>
+<span class="nc" id="L795">            graph.clear();</span>
+<span class="nc" id="L796">            return;</span>
+        }
+        
+        // Determine which edges are perfused.
+<span class="nc" id="L800">        checkPerfused(graph, arteries, veins);</span>
+        
+        // Remove edges that are not perfused and reset radii.
+<span class="nc bnc" id="L803" title="All 2 branches missed.">        for (Object obj : new Bag(graph.getAllEdges())) {</span>
+<span class="nc" id="L804">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L805" title="All 2 branches missed.">            if (!edge.isPerfused) {</span>
+<span class="nc" id="L806">                graph.removeEdge(edge);</span>
+            } else {
+<span class="nc" id="L808">                edge.radius = 0;</span>
+            }
+<span class="nc" id="L810">        }</span>
+        
+        // Get all capillaries and update radii.
+<span class="nc" id="L813">        ArrayList&lt;SiteEdge&gt; list = getEdgeByType(graph, new EdgeType[] { EdgeType.CAPILLARY });</span>
+<span class="nc" id="L814">        updateRadii(graph, list, CalculationType.UPSTREAM_ARTERIES);</span>
+<span class="nc" id="L815">        updateRadii(graph, list, CalculationType.DOWNSTREAM_VEINS);</span>
+        
+        // Assign pressures to roots.
+<span class="nc" id="L818">        setRootPressures(arteries, EdgeCategory.ARTERY);</span>
+<span class="nc" id="L819">        setRootPressures(veins, EdgeCategory.VEIN);</span>
+        
+        // Recalculate pressure for updated graph.
+<span class="nc" id="L822">        calculatePressures(graph);</span>
+        
+        // Reverse edges that have negative pressure difference. Recalculate
+        // pressure for updated graph if there were edge reversals.
+<span class="nc" id="L826">        boolean reversed = reversePressures(graph);</span>
+<span class="nc bnc" id="L827" title="All 2 branches missed.">        if (reversed) {</span>
+<span class="nc" id="L828">            calculatePressures(graph);</span>
+        }
+        
+        // Calculate shear and flow.
+<span class="nc" id="L832">        calculateThicknesses(graph);</span>
+<span class="nc" id="L833">        calculateStresses(graph);</span>
+<span class="nc" id="L834">        calculateFlows(graph);</span>
+<span class="nc" id="L835">    }</span>
+    
+    /**
+     * Subdivides the graph edges by splitting each edge in half.
+     *
+     * @param graph  the graph instance
+     * @param level  the graph resolution level
+     * @return  the bag of edge midpoint nodes
+     */
+    private Bag subdivideRootGraph(Graph graph, EdgeLevel level) {
+<span class="nc" id="L845">        Bag midpoints = new Bag();</span>
+<span class="nc" id="L846">        Graph g = new Graph();</span>
+        
+<span class="nc bnc" id="L848" title="All 2 branches missed.">        for (Object obj : graph.getAllEdges()) {</span>
+<span class="nc" id="L849">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc" id="L850">            SiteNode from = edge.getFrom();</span>
+<span class="nc" id="L851">            SiteNode to = edge.getTo();</span>
+            
+            // Calculate mid point.
+<span class="nc" id="L854">            int x = (from.getX() + to.getX()) / 2;</span>
+<span class="nc" id="L855">            int y = (from.getY() + to.getY()) / 2;</span>
+<span class="nc" id="L856">            int z = (from.getZ() + to.getZ()) / 2;</span>
+<span class="nc" id="L857">            SiteNode mid = new SiteNode(x, y, z);</span>
+            
+            // Set pressure to average of two nodes.
+<span class="nc" id="L860">            mid.pressure = (from.pressure + to.pressure) / 2;</span>
+            
+            // Make edges. For veins and venules, reverse the edges.
+<span class="nc" id="L863">            SiteNode nodeA = null;</span>
+<span class="nc" id="L864">            SiteNode nodeB = null;</span>
+            SiteEdge edge1;
+            SiteEdge edge2;
+            
+<span class="nc bnc" id="L868" title="All 3 branches missed.">            switch (edge.type) {</span>
+                case ARTERY:
+                case ARTERIOLE:
+                case CAPILLARY:
+<span class="nc" id="L872">                    nodeA = from;</span>
+<span class="nc" id="L873">                    nodeB = to;</span>
+<span class="nc" id="L874">                    break;</span>
+                case VEIN:
+                case VENULE:
+<span class="nc" id="L877">                    nodeA = to;</span>
+<span class="nc" id="L878">                    nodeB = from;</span>
+<span class="nc" id="L879">                    break;</span>
+                default:
+                    break;
+            }
+            
+<span class="nc" id="L884">            edge1 = new SiteEdge(nodeA, mid, edge.type, level);</span>
+<span class="nc" id="L885">            edge2 = new SiteEdge(mid, nodeB, edge.type, level);</span>
+            
+            // Set node objects.
+<span class="nc" id="L888">            edge1.setFrom(nodeA);</span>
+<span class="nc" id="L889">            edge1.setTo(mid);</span>
+<span class="nc" id="L890">            edge2.setFrom(mid);</span>
+<span class="nc" id="L891">            edge2.setTo(nodeB);</span>
+            
+            // Set radii for arteriole and venules.
+<span class="nc bnc" id="L894" title="All 4 branches missed.">            if (edge.type == EdgeType.ARTERIOLE || edge.type == EdgeType.VENULE) {</span>
+<span class="nc" id="L895">                edge1.radius = edge.radius;</span>
+<span class="nc" id="L896">                edge2.radius = edge.radius;</span>
+            }
+            
+            // Add edges to temporary graph.
+<span class="nc" id="L900">            g.addEdge(edge1);</span>
+<span class="nc" id="L901">            g.addEdge(edge2);</span>
+            
+            // Set edges as perfused.
+<span class="nc" id="L904">            edge1.isPerfused = true;</span>
+<span class="nc" id="L905">            edge2.isPerfused = true;</span>
+            
+            // For arteries and veins, set midpoint as roots.
+<span class="nc bnc" id="L908" title="All 4 branches missed.">            if (edge.type == EdgeType.ARTERY || edge.type == EdgeType.VEIN) {</span>
+<span class="nc" id="L909">                midpoints.add(edge1);</span>
+            }
+<span class="nc" id="L911">        }</span>
+        
+<span class="nc" id="L913">        graph.clear();</span>
+<span class="nc" id="L914">        graph.update(g);</span>
+        
+<span class="nc" id="L916">        return midpoints;</span>
+    }
+    
+    /**
+     * Remodels sites based on shear stress.
+     *
+     * @param graph  the graph instance
+     * @param level  the graph resolution level
+     * @param random  the random number generator
+     * @return  the fraction of edges remodeled
+     */
+    private double remodelRootGraph(Graph graph, EdgeLevel level, MersenneTwisterFast random) {
+        // Remove capillaries, arterioles, and venules.
+<span class="nc" id="L929">        ArrayList&lt;SiteEdge&gt; list = getEdgeByType(graph,</span>
+                new EdgeType[] {
+                        EdgeType.CAPILLARY,
+                        EdgeType.VENULE,
+                        EdgeType.ARTERIOLE
+                });
+<span class="nc bnc" id="L935" title="All 2 branches missed.">        for (SiteEdge edge : list) {</span>
+<span class="nc" id="L936">            graph.removeEdge(edge);</span>
+<span class="nc" id="L937">        }</span>
+        
+        // Reset tags.
+<span class="nc" id="L940">        Bag allEdges = new Bag(graph.getAllEdges());</span>
+<span class="nc bnc" id="L941" title="All 2 branches missed.">        for (Object obj : allEdges) {</span>
+<span class="nc" id="L942">            ((SiteEdge) obj).tag = null;</span>
+<span class="nc" id="L943">        }</span>
+<span class="nc" id="L944">        double total = allEdges.numObjs;</span>
+        
+        // Tag edges to be removed or added.
+<span class="nc" id="L947">        int count = 0;</span>
+<span class="nc bnc" id="L948" title="All 2 branches missed.">        for (Object obj : allEdges) {</span>
+<span class="nc" id="L949">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc" id="L950">            SiteNode to = edge.getTo();</span>
+<span class="nc" id="L951">            double wG = edge.shearScaled + PROBABILITY_WEIGHT;</span>
+<span class="nc" id="L952">            double wD = 1 - edge.shearScaled - PROBABILITY_WEIGHT;</span>
+<span class="nc" id="L953">            double rand = random.nextDouble();</span>
+            
+<span class="nc bnc" id="L955" title="All 2 branches missed.">            if (rand &lt; wD) {</span>
+<span class="nc bnc" id="L956" title="All 4 branches missed.">                if (graph.getOutDegree(to) == 0 &amp;&amp; graph.getInDegree(to) == 0) {</span>
+<span class="nc" id="L957">                    edge.tag = EdgeTag.REMOVE;</span>
+<span class="nc" id="L958">                    count++;</span>
+                }
+<span class="nc bnc" id="L960" title="All 2 branches missed.">            } else if (rand &lt; wG) {</span>
+<span class="nc bnc" id="L961" title="All 2 branches missed.">                if (graph.getOutDegree(to) == 0) {</span>
+<span class="nc" id="L962">                    edge.tag = EdgeTag.ADD;</span>
+<span class="nc" id="L963">                    count++;</span>
+<span class="nc bnc" id="L964" title="All 4 branches missed.">                } else if (graph.getInDegree(to) == 1 &amp;&amp; graph.getOutDegree(to) == 1) {</span>
+<span class="nc" id="L965">                    edge.tag = EdgeTag.ADD;</span>
+<span class="nc" id="L966">                    count++;</span>
+                }
+            }
+<span class="nc" id="L969">        }</span>
+        
+<span class="nc" id="L971">        allEdges = new Bag(graph.getAllEdges());</span>
+<span class="nc" id="L972">        allEdges.shuffle(random);</span>
+        
+<span class="nc bnc" id="L974" title="All 2 branches missed.">        if (count == 0) {</span>
+<span class="nc" id="L975">            return 0;</span>
+        }
+        
+        // Add or remove tagged edges.
+<span class="nc bnc" id="L979" title="All 2 branches missed.">        for (Object obj : allEdges) {</span>
+<span class="nc" id="L980">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L981" title="All 4 branches missed.">            if (edge.tag == EdgeTag.ADD &amp;&amp; graph.getDegree(edge.getTo()) &lt; 3) {</span>
+<span class="nc" id="L982">                Bag bag1 = addMotif(graph, edge.getTo(), edge, edge.type, level,</span>
+                        EdgeMotif.TRIPLE, random);
+                
+<span class="nc" id="L985">                SiteEdge edge1 = (SiteEdge) bag1.get(0);</span>
+<span class="nc" id="L986">                Bag bag2 = addMotif(graph, edge1.getTo(), edge, edge.type, level,</span>
+                        EdgeMotif.DOUBLE, random);
+                
+<span class="nc" id="L989">                SiteEdge edge2 = (SiteEdge) bag2.get(0);</span>
+<span class="nc" id="L990">                addMotif(graph, edge2.getTo(), edge, edge.type, level,</span>
+                        EdgeMotif.SINGLE, random);
+<span class="nc bnc" id="L992" title="All 2 branches missed.">            } else if (edge.tag == EdgeTag.REMOVE) {</span>
+<span class="nc" id="L993">                graph.removeEdge(edge);</span>
+            }
+            
+<span class="nc" id="L996">            edge.tag = null;</span>
+<span class="nc" id="L997">            edge.radius = 0;</span>
+<span class="nc" id="L998">        }</span>
+        
+<span class="nc" id="L1000">        return count / total;</span>
+    }
+    
+    /**
+     * Parses the layout specification to create root objects.
+     *
+     * @param layout  the layout description
+     * @param random  the random number generator
+     * @return  a list of roots
+     */
+    private ArrayList&lt;Root&gt; parseRoots(String layout, MersenneTwisterFast random) {
+<span class="nc" id="L1011">        ArrayList&lt;Root&gt; roots = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L1012">        EdgeLevel level = EdgeLevel.LEVEL_1;</span>
+        
+        // Find and add random roots.
+<span class="nc" id="L1015">        String regexRandom = &quot;(LEFT|RIGHT|TOP|BOTTOM) random (\\d+)&quot;;</span>
+<span class="nc" id="L1016">        Matcher matcherRandom = Pattern.compile(regexRandom).matcher(layout);</span>
+<span class="nc bnc" id="L1017" title="All 2 branches missed.">        while (matcherRandom.find()) {</span>
+<span class="nc" id="L1018">            Border border = Border.valueOf(matcherRandom.group(1));</span>
+<span class="nc" id="L1019">            int n = (Integer.parseInt(matcherRandom.group(2)));</span>
+<span class="nc bnc" id="L1020" title="All 2 branches missed.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="nc" id="L1021">                double percent = random.nextInt(100) / 100.0;</span>
+<span class="nc bnc" id="L1022" title="All 2 branches missed.">                EdgeType type = (random.nextDouble() &lt; 0.5 ? EdgeType.ARTERY : EdgeType.VEIN);</span>
+<span class="nc" id="L1023">                Root root = createRoot(border, percent, type, level);</span>
+<span class="nc" id="L1024">                roots.add(root);</span>
+            }
+<span class="nc" id="L1026">        }</span>
+        
+        // Find and add single roots.
+<span class="nc" id="L1029">        String regexSingle = &quot;(LEFT|RIGHT|TOP|BOTTOM) single (\\d+)([AVav])&quot;;</span>
+<span class="nc" id="L1030">        Matcher matcherSingle = Pattern.compile(regexSingle).matcher(layout);</span>
+<span class="nc bnc" id="L1031" title="All 2 branches missed.">        while (matcherSingle.find()) {</span>
+<span class="nc" id="L1032">            Border border = Border.valueOf(matcherSingle.group(1));</span>
+<span class="nc" id="L1033">            double percent = Integer.parseInt(matcherSingle.group(2)) / 100.0;</span>
+<span class="nc" id="L1034">            EdgeType type = parseType(matcherSingle.group(3));</span>
+<span class="nc" id="L1035">            roots.add(createRoot(border, percent, type, level));</span>
+<span class="nc" id="L1036">        }</span>
+        
+        // Find and add alternating roots.
+<span class="nc" id="L1039">        String regexAlternate = &quot;(LEFT|RIGHT|TOP|BOTTOM) alternate (\\d+)&quot;;</span>
+<span class="nc" id="L1040">        Matcher matcherAlternate = Pattern.compile(regexAlternate).matcher(layout);</span>
+<span class="nc bnc" id="L1041" title="All 2 branches missed.">        while (matcherAlternate.find()) {</span>
+<span class="nc" id="L1042">            Border border = Border.valueOf(matcherAlternate.group(1));</span>
+<span class="nc" id="L1043">            double n = (Integer.parseInt(matcherAlternate.group(2)));</span>
+<span class="nc" id="L1044">            double inc = 100.0 / n;</span>
+            
+<span class="nc bnc" id="L1046" title="All 2 branches missed.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="nc" id="L1047">                double percent = (i * inc + inc / 2) / 100.0;</span>
+<span class="nc bnc" id="L1048" title="All 2 branches missed.">                EdgeType type = (i % 2 == 0 ? EdgeType.ARTERY : EdgeType.VEIN);</span>
+<span class="nc" id="L1049">                roots.add(createRoot(border, percent, type, level));</span>
+            }
+<span class="nc" id="L1051">        }</span>
+        
+        // Find and add line roots.
+<span class="nc" id="L1054">        String regexLine = &quot;(LEFT|RIGHT|TOP|BOTTOM) line (\\d+)([AVav])(\\d+)&quot;;</span>
+<span class="nc" id="L1055">        Matcher matcherLine = Pattern.compile(regexLine).matcher(layout);</span>
+<span class="nc bnc" id="L1056" title="All 2 branches missed.">        while (matcherLine.find()) {</span>
+<span class="nc" id="L1057">            Border border = Border.valueOf(matcherLine.group(1));</span>
+<span class="nc" id="L1058">            double percent = Integer.parseInt(matcherLine.group(2)) / 100.0;</span>
+<span class="nc" id="L1059">            EdgeType type = parseType(matcherLine.group(3));</span>
+<span class="nc" id="L1060">            double fraction = (Integer.parseInt(matcherLine.group(4))) / 100.0;</span>
+<span class="nc" id="L1061">            Root root = createRoot(border, percent, type, level);</span>
+<span class="nc" id="L1062">            root.offsets = createRootOffsets(border, fraction, level, random);</span>
+<span class="nc" id="L1063">            roots.add(root);</span>
+<span class="nc" id="L1064">        }</span>
+        
+<span class="nc" id="L1066">        return roots;</span>
+    }
+    
+    /**
+     * Adds motifs to graph until no additional motifs can be added.
+     *
+     * @param graph  the graph instance
+     * @param bag  the current bag of active edges
+     * @param level  the graph resolution level
+     * @param motif  the motif code
+     * @param random  the random number generator
+     * @return  the updated bag of active edges
+     */
+    private Bag addMotifs(Graph graph, Bag bag, EdgeLevel level,
+                          EdgeMotif motif, MersenneTwisterFast random) {
+<span class="nc" id="L1081">        final int numZeros = 50;</span>
+        int delta;
+<span class="nc" id="L1083">        int zeros = 0;</span>
+        
+        // Keep trying to add tripods until bag size no longer changes.
+<span class="nc bnc" id="L1086" title="All 2 branches missed.">        while (zeros &lt; numZeros) {</span>
+            // Create new bag to track new leaves.
+<span class="nc" id="L1088">            Bag newBag = new Bag();</span>
+            
+            // Stop loop if there are no objects in the bag.
+<span class="nc bnc" id="L1091" title="All 2 branches missed.">            if (bag.numObjs == 0) {</span>
+<span class="nc" id="L1092">                return null;</span>
+            }
+            
+            // Iterate through each leaf in bag.
+<span class="nc bnc" id="L1096" title="All 2 branches missed.">            for (Object obj : bag) {</span>
+                // Get leaf edge from bag.
+<span class="nc" id="L1098">                SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc" id="L1099">                SiteNode node = edge.getTo();</span>
+                
+                // Get current direction and add tripod in random direction.
+<span class="nc" id="L1102">                newBag.addAll(addMotif(graph, node, edge, edge.type, level, motif, random));</span>
+<span class="nc" id="L1103">            }</span>
+            
+            // Calculate change in number of bags.
+<span class="nc" id="L1106">            delta = newBag.numObjs - bag.numObjs;</span>
+<span class="nc bnc" id="L1107" title="All 2 branches missed.">            if (delta == 0) {</span>
+<span class="nc" id="L1108">                zeros++;</span>
+            } else {
+<span class="nc" id="L1110">                zeros--;</span>
+            }
+            
+            // Update bag to new bag of leaves.
+<span class="nc" id="L1114">            bag = newBag;</span>
+<span class="nc" id="L1115">            bag.shuffle(random);</span>
+<span class="nc" id="L1116">        }</span>
+        
+<span class="nc" id="L1118">        return bag;</span>
+    }
+    
+    /**
+     * Adds segments to graph between arteries and veins.
+     *
+     * @param graph  the graph instance
+     * @param level  the graph resolution level
+     * @param random  the random number generator
+     */
+    private void addSegments(Graph graph, EdgeLevel level, MersenneTwisterFast random) {
+<span class="nc" id="L1129">        Bag bag = new Bag(graph.getAllEdges());</span>
+<span class="nc" id="L1130">        bag.shuffle(random);</span>
+<span class="nc bnc" id="L1131" title="All 2 branches missed.">        for (Object obj : bag) {</span>
+<span class="nc" id="L1132">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L1133" title="All 2 branches missed.">            if (edge.type == EdgeType.ARTERY) {</span>
+<span class="nc" id="L1134">                SiteNode to = edge.getTo();</span>
+<span class="nc" id="L1135">                EdgeDirection dir = getDirection(edge, level);</span>
+<span class="nc bnc" id="L1136" title="All 2 branches missed.">                if (graph.getOutDegree(to) == 0) {</span>
+<span class="nc" id="L1137">                    addSegment(graph, to, dir, level, random);</span>
+<span class="nc bnc" id="L1138" title="All 4 branches missed.">                } else if (graph.getInDegree(to) == 1 &amp;&amp; graph.getOutDegree(to) == 1) {</span>
+<span class="nc" id="L1139">                    addSegment(graph, to, dir, level, random);</span>
+                }
+            }
+<span class="nc" id="L1142">        }</span>
+<span class="nc" id="L1143">    }</span>
+    
+    /**
+     * Adds connections to graphs between arteries or between veins.
+     *
+     * @param graph  the graph instance
+     * @param level  the graph resolution level
+     * @param random  the random number generator
+     */
+    private void addConnections(Graph graph, EdgeLevel level, MersenneTwisterFast random) {
+<span class="nc" id="L1153">        Bag bag = new Bag(graph.getAllEdges());</span>
+<span class="nc" id="L1154">        bag.shuffle(random);</span>
+<span class="nc bnc" id="L1155" title="All 2 branches missed.">        for (Object obj : bag) {</span>
+<span class="nc" id="L1156">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc" id="L1157">            SiteNode to = edge.getTo();</span>
+            
+<span class="nc" id="L1159">            EdgeDirection dir = getDirection(edge, level);</span>
+<span class="nc" id="L1160">            EdgeType type = edge.type;</span>
+<span class="nc bnc" id="L1161" title="All 4 branches missed.">            if (type != EdgeType.VEIN &amp;&amp; type != EdgeType.ARTERY) {</span>
+<span class="nc" id="L1162">                continue;</span>
+            }
+            
+<span class="nc bnc" id="L1165" title="All 4 branches missed.">            if (graph.getOutDegree(to) == 0 &amp;&amp; graph.getInDegree(to) == 1) {</span>
+<span class="nc" id="L1166">                addConnection(graph, to, dir, type, level, random);</span>
+<span class="nc bnc" id="L1167" title="All 4 branches missed.">            } else if (graph.getInDegree(to) == 1 &amp;&amp; graph.getOutDegree(to) == 1</span>
+<span class="nc bnc" id="L1168" title="All 2 branches missed.">                    &amp;&amp; ((SiteEdge) graph.getEdgesOut(to).objs[0]).type == type</span>
+<span class="nc bnc" id="L1169" title="All 2 branches missed.">                    &amp;&amp; ((SiteEdge) graph.getEdgesIn(to).objs[0]).type == type) {</span>
+<span class="nc" id="L1170">                addConnection(graph, to, dir, type, level, random);</span>
+<span class="nc bnc" id="L1171" title="All 4 branches missed.">            } else if (graph.getOutDegree(to) == 0 &amp;&amp; graph.getInDegree(to) == 2) {</span>
+<span class="nc" id="L1172">                boolean typeCheck = true;</span>
+<span class="nc bnc" id="L1173" title="All 2 branches missed.">                for (Object in : graph.getEdgesIn(to)) {</span>
+<span class="nc" id="L1174">                    SiteEdge e = (SiteEdge) in;</span>
+<span class="nc bnc" id="L1175" title="All 2 branches missed.">                    if (e.type != type) {</span>
+<span class="nc" id="L1176">                        typeCheck = false;</span>
+<span class="nc" id="L1177">                        break;</span>
+                    }
+<span class="nc" id="L1179">                }</span>
+<span class="nc bnc" id="L1180" title="All 2 branches missed.">                if (typeCheck) {</span>
+<span class="nc" id="L1181">                    addConnection(graph, to, dir, type, level, random);</span>
+                }
+            }
+<span class="nc" id="L1184">        }</span>
+<span class="nc" id="L1185">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
