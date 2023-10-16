@@ -12,11 +12,11 @@ import arcade.potts.sim.PottsSimulation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.agent.module.PottsModule.PoissonFactory;
 import static arcade.potts.agent.module.PottsModuleProliferationSimple.*;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Region;
+import static arcade.potts.util.PottsEnums.State;
 
 public class PottsModuleProliferationSimpleTest {
     private static final double EPSILON = 1E-10;

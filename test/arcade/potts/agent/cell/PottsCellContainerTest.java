@@ -11,10 +11,10 @@ import arcade.potts.env.location.PottsLocation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.agent.cell.PottsCellFactoryTest.*;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Region;
+import static arcade.potts.util.PottsEnums.State;
 
 public class PottsCellContainerTest {
     private static final double EPSILON = 1E-10;
@@ -134,7 +134,7 @@ public class PottsCellContainerTest {
     
     @Test
     public void convert_withRegions_createsObject() {
-        Location location = mock(PottsLocation.class);
+        PottsLocation location = mock(PottsLocation.class);
         PottsCellFactory factory = new PottsCellFactory();
         
         int cellID = randomIntBetween(1, 10);

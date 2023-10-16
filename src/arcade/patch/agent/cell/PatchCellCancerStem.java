@@ -1,9 +1,9 @@
 package arcade.patch.agent.cell;
 
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.Enums.State;
 
 /**
  * Extension of {@link PatchCellCancer} for cancerous stem cells.
@@ -44,7 +44,7 @@ public class PatchCellCancerStem extends PatchCellCancer {
      * @param criticalVolume  the critical cell volume
      * @param criticalHeight  the critical cell height
      */
-    public PatchCellCancerStem(int id, int parent, int pop, State state, int age, int divisions,
+    public PatchCellCancerStem(int id, int parent, int pop, CellState state, int age, int divisions,
                                Location location, MiniBox parameters, double volume, double height,
                                double criticalVolume, double criticalHeight) {
         super(id, parent, pop, state, age, divisions, location, parameters,
@@ -62,7 +62,7 @@ public class PatchCellCancerStem extends PatchCellCancer {
      * Cells have a certain probability of producing another cancer stem cell.
      */
     @Override
-    public PatchCell make(int newID, State newState, Location newLocation,
+    public PatchCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
         return random.nextDouble() < symmetricFraction
                 ? new PatchCellCancerStem(newID, id, pop, newState, age, divisions, newLocation,

@@ -19,7 +19,7 @@ import arcade.patch.env.location.CoordinateUVWZ;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.env.location.PatchLocationContainer;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
-import static arcade.core.util.Enums.State;
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Container class for patch-specific object deserializers.

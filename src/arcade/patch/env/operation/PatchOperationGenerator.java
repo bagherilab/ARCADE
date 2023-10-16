@@ -5,7 +5,7 @@ import arcade.core.env.operation.Operation;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.env.lattice.PatchLattice;
-import static arcade.core.util.Enums.Category;
+import static arcade.patch.util.PatchEnums.Category;
 
 /**
  * Extension of {@link PatchOperation} for generation.

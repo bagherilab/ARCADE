@@ -1,6 +1,8 @@
 package arcade.potts.util;
 
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellState;
+import arcade.core.agent.process.ProcessDomain;
 
 /**
  * Container class for potts-specific enums.
@@ -8,6 +10,9 @@ import ec.util.MersenneTwisterFast;
  * Implemented enums include:
  * <ul>
  *     <li>{@code Ordering} defining simulation stepping order</li>
+ *     <li>{@code State} defining cell states</li>
+ *     <li>{@code Domain} defining domain for a given process</li>
+ *     <li>{@code Region} defining subcellular regions</li>
  *     <li>{@code Term} defining different potts energy terms</li>
  *     <li>{@code Phase} defining phase for a given state</li>
  *     <li>{@code Direction} defining directions in the voxel environment</li>
@@ -22,7 +27,7 @@ public final class PottsEnums {
         throw new UnsupportedOperationException();
     }
     
-    /** Stepping order for simulation. */
+    /** Stepping order for potts simulations. */
     public enum Ordering {
         /** Stepping order for potts. */
         POTTS,
@@ -31,7 +36,66 @@ public final class PottsEnums {
         CELLS
     }
     
-    /** Potts energy terms. */
+    /** Cell state codes for potts simulations. */
+    public enum State implements CellState {
+        /** Code for undefined state. */
+        UNDEFINED,
+        
+        /** Code for quiescent cells. */
+        QUIESCENT,
+        
+        /** Code for proliferative cells. */
+        PROLIFERATIVE,
+        
+        /** Code for apoptotic cells. */
+        APOPTOTIC,
+        
+        /** Code for necrotic cells. */
+        NECROTIC,
+        
+        /** Code for autotic cells. */
+        AUTOTIC;
+        
+        /**
+         * Randomly selects a {@code State}.
+         *
+         * @param rng  the random number generator
+         * @return  a random {@code State}
+         */
+        public static State random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
+    
+    /** Process domain codes for potts simulations. */
+    public enum Domain implements ProcessDomain {
+        /** Code for undefined domain. */
+        UNDEFINED
+    }
+    
+    /** Cell region codes for potts simulations. */
+    public enum Region {
+        /** Undefined region. */
+        UNDEFINED,
+        
+        /** Region for cytoplasm. */
+        DEFAULT,
+        
+        /** Region for nucleus. */
+        NUCLEUS;
+        
+        /**
+         * Randomly selects a {@code Region}.
+         *
+         * @param rng  the random number generator
+         * @return  a random {@code Region}
+         */
+        public static Region random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
+    
+    /** Potts energy terms for potts simulations. */
     public enum Term {
         /** Code for undefined term. */
         UNDEFINED,
@@ -68,7 +132,7 @@ public final class PottsEnums {
         }
     }
     
-    /** Module phase codes. */
+    /** Module phase codes for potts simulations. */
     public enum Phase {
         /** Code for undefined phase. */
         UNDEFINED,
@@ -105,7 +169,7 @@ public final class PottsEnums {
         }
     }
     
-    /** Location split directions. */
+    /** Location split directions for potts simulations. */
     public enum Direction {
         /** Unspecified direction. */
         UNDEFINED,

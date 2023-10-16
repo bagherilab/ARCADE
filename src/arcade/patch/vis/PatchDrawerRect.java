@@ -18,6 +18,7 @@ import arcade.patch.env.location.PatchLocationFactory;
 import arcade.patch.env.location.PatchLocationFactoryRect;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Container for patch-specific {@link arcade.core.vis.Drawer} classes for
@@ -145,7 +146,8 @@ public abstract class PatchDrawerRect extends PatchDrawer {
                             CoordinateXYZ mainCoord = (CoordinateXYZ) coords.get(index);
                             switch (view) {
                                 case STATE:
-                                    arr[mainCoord.x][mainCoord.y] = cell.getState().ordinal();
+                                    arr[mainCoord.x][mainCoord.y] =
+                                            ((State) cell.getState()).ordinal();
                                     break;
                                 case AGE:
                                     arr[mainCoord.x][mainCoord.y] = cell.getAge();

@@ -7,11 +7,12 @@ import sim.engine.SimState;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.env.location.Location;
 import arcade.core.env.operation.Operation;
+import arcade.core.env.operation.OperationCategory;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.env.location.PatchLocation;
-import static arcade.core.util.Enums.Category;
+import static arcade.patch.util.PatchEnums.Category;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**
@@ -107,7 +108,7 @@ public abstract class PatchLattice implements Lattice {
     public int getHeight() { return height; }
     
     @Override
-    public Operation getOperation(Category category) { return operations.get(category); }
+    public Operation getOperation(OperationCategory category) { return operations.get(category); }
     
     @Override
     public MiniBox getParameters() { return parameters; }

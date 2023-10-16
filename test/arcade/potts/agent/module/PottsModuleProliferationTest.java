@@ -13,8 +13,8 @@ import arcade.potts.sim.PottsSimulation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.State;
 
 public class PottsModuleProliferationTest {
     static MersenneTwisterFast randomMock = new MersenneTwisterFast(randomSeed());

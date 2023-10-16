@@ -1,13 +1,15 @@
 package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
-import arcade.core.agent.cell.*;
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactory;
+import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
-import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Implementation of {@link CellContainer} for {@link PottsCell} agents.
@@ -34,7 +36,7 @@ public final class PottsCellContainer implements CellContainer {
     public final int divisions;
     
     /** Cell state. */
-    public final State state;
+    public final CellState state;
     
     /** Cell phase. */
     public final Phase phase;
@@ -74,7 +76,7 @@ public final class PottsCellContainer implements CellContainer {
      * @param criticalHeight  the critical height
      */
     public PottsCellContainer(int id, int parent, int pop, int age, int divisions,
-                              State state, Phase phase, int voxels,
+                              CellState state, Phase phase, int voxels,
                               double criticalVolume, double criticalHeight) {
         this(id, parent, pop, age, divisions, state, phase, voxels,
                 null, criticalVolume, criticalHeight, null, null);
@@ -98,7 +100,7 @@ public final class PottsCellContainer implements CellContainer {
      * @param criticalRegionHeights  the critical surface heights
      */
     public PottsCellContainer(int id, int parent, int pop, int age, int divisions,
-                              State state, Phase phase, int voxels,
+                              CellState state, Phase phase, int voxels,
                               EnumMap<Region, Integer> regionVoxels,
                               double criticalVolume, double criticalHeight,
                               EnumMap<Region, Double> criticalRegionVolumes,

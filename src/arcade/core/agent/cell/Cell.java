@@ -5,11 +5,9 @@ import sim.engine.Steppable;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.module.Module;
 import arcade.core.agent.process.Process;
+import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.Enums.Domain;
-import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
 
 /**
  * A {@code Cell} object represents a cell agent.
@@ -55,7 +53,7 @@ public interface Cell extends Steppable {
      *
      * @return  the cell state
      */
-    State getState();
+    CellState getState();
     
     /**
      * Gets the cell age.
@@ -70,13 +68,6 @@ public interface Cell extends Steppable {
      * @return  the number of divisions
      */
     int getDivisions();
-    
-    /**
-     * Checks if the cell has regions.
-     *
-     * @return  {@code true} if the cell has regions, {@code false} otherwise
-     */
-    boolean hasRegions();
     
     /**
      * Gets the cell location object.
@@ -98,7 +89,7 @@ public interface Cell extends Steppable {
      * @param domain  the process domain
      * @return  the cell process
      */
-    Process getProcess(Domain domain);
+    Process getProcess(ProcessDomain domain);
     
     /**
      * Gets the cell population parameters.
@@ -115,27 +106,11 @@ public interface Cell extends Steppable {
     double getVolume();
     
     /**
-     * Gets the cell volume for a region.
-     *
-     * @param region  the region
-     * @return  the cell region volume
-     */
-    double getVolume(Region region);
-    
-    /**
      * Gets the cell height.
      *
      * @return  the cell height
      */
     double getHeight();
-    
-    /**
-     * Gets the cell height for a region.
-     *
-     * @param region  the region
-     * @return  the cell region height
-     */
-    double getHeight(Region region);
     
     /**
      * Gets the critical volume.
@@ -145,14 +120,6 @@ public interface Cell extends Steppable {
     double getCriticalVolume();
     
     /**
-     * Gets the critical volume for a region.
-     *
-     * @param region  the region
-     * @return  the critical region volume
-     */
-    double getCriticalVolume(Region region);
-    
-    /**
      * Gets the critical height.
      *
      * @return  the critical height
@@ -160,19 +127,11 @@ public interface Cell extends Steppable {
     double getCriticalHeight();
     
     /**
-     * Gets the critical height for a region.
-     *
-     * @param region  the region
-     * @return  the critical region height
-     */
-    double getCriticalHeight(Region region);
-    
-    /**
      * Sets the cell state.
      *
      * @param state  the cell state
      */
-    void setState(State state);
+    void setState(CellState state);
     
     /**
      * Stop the cell from stepping.
@@ -188,7 +147,7 @@ public interface Cell extends Steppable {
      * @param random  the random number generator
      * @return  the new {@code Cell} object
      */
-    Cell make(int id, State state, Location location, MersenneTwisterFast random);
+    Cell make(int id, CellState state, Location location, MersenneTwisterFast random);
     
     /**
      * Schedules the cell in the simulation.

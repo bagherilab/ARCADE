@@ -2,7 +2,7 @@ package arcade.potts.sim.hamiltonian;
 
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
-import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Extension of {@link AdhesionHamiltonian} for 2D.

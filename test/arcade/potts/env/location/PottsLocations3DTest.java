@@ -6,7 +6,7 @@ import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Region;
 
 public class PottsLocations3DTest {
     static MersenneTwisterFast randomDoubleZero;

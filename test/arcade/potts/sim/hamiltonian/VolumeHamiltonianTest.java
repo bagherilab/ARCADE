@@ -10,9 +10,9 @@ import arcade.potts.sim.PottsSeries;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
+import static arcade.potts.util.PottsEnums.Region;
 
 public class VolumeHamiltonianTest {
     private static final double EPSILON = 1E-10;

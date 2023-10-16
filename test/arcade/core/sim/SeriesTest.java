@@ -589,7 +589,7 @@ public class SeriesTest {
     @Test
     public void parseConversion_multipleTerms_returnsValue() {
         int n = randomIntBetween(1, 3);
-        int m = randomIntBetween(3, 5);
+        int m = randomIntBetween(1, 3);
         String ds = String.join(".", Collections.nCopies(m, "DS^" + n));
         String dt = String.join(".", Collections.nCopies(m, "DT^" + n));
         String dz = String.join(".", Collections.nCopies(m, "DZ^" + n));

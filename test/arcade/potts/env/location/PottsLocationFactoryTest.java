@@ -13,8 +13,8 @@ import arcade.core.util.MiniBox;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.util.PottsEnums.Region;
 
 public class PottsLocationFactoryTest {
     final MersenneTwisterFast random = mock(MersenneTwisterFast.class);

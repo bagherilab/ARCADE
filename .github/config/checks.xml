@@ -15,10 +15,6 @@
     <property name="severity" value="error" />
     <property name="fileExtensions" value="java, xml" />
 
-    <module name="BeforeExecutionExclusionFileFilter">
-        <property name="fileNamePattern" value="src/arcade/tissue/*"/>
-    </module>
-
     <!-- Add suppression filter for test classes -->
     <module name="SuppressionFilter">
         <property name="file" value=".github/config/suppressions.xml"/>

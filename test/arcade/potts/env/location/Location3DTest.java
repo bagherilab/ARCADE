@@ -6,9 +6,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.util.Enums.Region;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.util.PottsEnums.Direction;
+import static arcade.potts.util.PottsEnums.Region;
 
 public class Location3DTest {
     private static final double EPSILON = 1E-10;

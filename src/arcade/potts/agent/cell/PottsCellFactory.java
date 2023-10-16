@@ -10,9 +10,9 @@ import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.Distribution;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Region;
+import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Implementation of {@link CellFactory} for {@link PottsCell} agents.

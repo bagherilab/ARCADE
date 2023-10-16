@@ -9,8 +9,10 @@ import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellState;
 import arcade.core.agent.module.Module;
 import arcade.core.agent.process.Process;
+import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
@@ -21,11 +23,10 @@ import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
-import static arcade.core.util.Enums.Domain;
-import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
+import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Implementation of {@link Cell} for generic tissue cell.
@@ -78,7 +79,7 @@ public abstract class PatchCell implements Cell {
     final int pop;
     
     /** Cell state. */
-    State state;
+    CellState state;
     
     /** Cell age [min]. */
     int age;
@@ -120,7 +121,7 @@ public abstract class PatchCell implements Cell {
     protected Module module;
     
     /** Map of process domains and {@link Process} instance. */
-    protected final Map<Domain, Process> processes;
+    protected final Map<ProcessDomain, Process> processes;
     
     /** Cell parameters. */
     final MiniBox parameters;
@@ -152,7 +153,7 @@ public abstract class PatchCell implements Cell {
      * @param criticalVolume  the critical cell volume
      * @param criticalHeight  the critical cell height
      */
-    public PatchCell(int id, int parent, int pop, State state, int age, int divisions,
+    public PatchCell(int id, int parent, int pop, CellState state, int age, int divisions,
                      Location location, MiniBox parameters, double volume, double height,
                      double criticalVolume, double criticalHeight) {
         this.id = id;
@@ -183,7 +184,7 @@ public abstract class PatchCell implements Cell {
         processes = new HashMap<>();
         MiniBox processBox = parameters.filter("(PROCESS)");
         for (String processKey : processBox.getKeys()) {
-            Domain domain = Domain.valueOf(processKey);
+            ProcessDomain domain = Domain.valueOf(processKey);
             String version = processBox.get(processKey);
             Process process = makeProcess(domain, version);
             processes.put(domain, process);
@@ -200,7 +201,7 @@ public abstract class PatchCell implements Cell {
     public int getPop() { return pop; }
     
     @Override
-    public State getState() { return state; }
+    public CellState getState() { return state; }
     
     @Override
     public int getAge() { return age; }
@@ -209,16 +210,13 @@ public abstract class PatchCell implements Cell {
     public int getDivisions() { return divisions; }
     
     @Override
-    public boolean hasRegions() { return false; }
-    
-    @Override
     public Location getLocation() { return location; }
     
     @Override
     public Module getModule() { return module; }
     
     @Override
-    public Process getProcess(Domain domain) { return processes.get(domain); }
+    public Process getProcess(ProcessDomain domain) { return processes.get(domain); }
     
     @Override
     public MiniBox getParameters() { return parameters; }
@@ -227,25 +225,13 @@ public abstract class PatchCell implements Cell {
     public double getVolume() { return volume; }
     
     @Override
-    public double getVolume(Region region) { return getVolume(); }
-    
-    @Override
     public double getHeight() { return height; }
-    
-    @Override
-    public double getHeight(Region region) { return getHeight(); }
     
     @Override
     public double getCriticalVolume() { return criticalVolume; }
     
     @Override
-    public double getCriticalVolume(Region region) { return getCriticalVolume(); }
-    
-    @Override
     public double getCriticalHeight() { return criticalHeight; }
-    
-    @Override
-    public double getCriticalHeight(Region region) { return getCriticalHeight(); }
     
     /**
      * Gets the cell energy level.
@@ -279,11 +265,11 @@ public abstract class PatchCell implements Cell {
     public void stop() { stopper.stop(); }
     
     @Override
-    public void setState(State state) {
+    public void setState(CellState state) {
         this.state = state;
         this.flag = Flag.UNDEFINED;
         
-        switch (state) {
+        switch ((State) state) {
             case PROLIFERATIVE:
                 module = new PatchModuleProliferation(this);
                 break;
@@ -306,8 +292,8 @@ public abstract class PatchCell implements Cell {
      * @param version  the process version
      * @return  the process instance
      */
-    public Process makeProcess(Domain domain, String version) {
-        switch (domain) {
+    public Process makeProcess(ProcessDomain domain, String version) {
+        switch ((Domain) domain) {
             case METABOLISM:
                 return PatchProcessMetabolism.make(this, version);
             case SIGNALING:

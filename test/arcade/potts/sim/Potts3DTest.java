@@ -12,8 +12,8 @@ import arcade.potts.sim.hamiltonian.SubstrateHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian3D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 import static org.junit.Assert.*;
-import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
+import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class Potts3DTest {

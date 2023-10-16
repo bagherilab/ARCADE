@@ -4,7 +4,7 @@ import arcade.core.env.operation.Operation;
 import arcade.core.util.MiniBox;
 import arcade.patch.env.operation.PatchOperationDiffuserTri;
 import arcade.patch.env.operation.PatchOperationGenerator;
-import static arcade.core.util.Enums.Category;
+import arcade.patch.util.PatchEnums.Category;
 
 /**
  * Concrete implementation of {@link PatchLattice} for triangular coordinates.

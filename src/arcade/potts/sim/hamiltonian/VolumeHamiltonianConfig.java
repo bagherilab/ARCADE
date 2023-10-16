@@ -2,7 +2,7 @@ package arcade.potts.sim.hamiltonian;
 
 import java.util.EnumMap;
 import arcade.potts.agent.cell.PottsCell;
-import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Configuration for {@link VolumeHamiltonian} parameters.

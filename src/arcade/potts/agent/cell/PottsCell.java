@@ -7,8 +7,10 @@ import sim.engine.Stoppable;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellState;
 import arcade.core.agent.module.Module;
 import arcade.core.agent.process.Process;
+import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
@@ -19,10 +21,9 @@ import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.location.PottsLocation;
-import static arcade.core.util.Enums.Domain;
-import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Ordering;
+import static arcade.potts.util.PottsEnums.Region;
+import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Implementation of {@link Cell} for potts models.
@@ -62,7 +63,7 @@ public final class PottsCell implements Cell {
     final int pop;
     
     /** Cell state. */
-    private State state;
+    private CellState state;
     
     /** Cell age [ticks]. */
     private int age;
@@ -120,7 +121,7 @@ public final class PottsCell implements Cell {
      * @param criticalRegionVolumes  the map of critical volumes for regions
      * @param criticalRegionHeights  the map of critical heights for regions
      */
-    public PottsCell(int id, int parent, int pop, State state, int age, int divisions,
+    public PottsCell(int id, int parent, int pop, CellState state, int age, int divisions,
                      Location location, boolean hasRegions, MiniBox parameters,
                      double criticalVolume, double criticalHeight,
                      EnumMap<Region, Double> criticalRegionVolumes,
@@ -161,7 +162,7 @@ public final class PottsCell implements Cell {
     public int getPop() { return pop; }
     
     @Override
-    public State getState() { return state; }
+    public CellState getState() { return state; }
     
     @Override
     public int getAge() { return age; }
@@ -170,24 +171,33 @@ public final class PottsCell implements Cell {
     public int getDivisions() { return divisions; }
     
     @Override
-    public boolean hasRegions() { return hasRegions; }
-    
-    @Override
     public Location getLocation() { return location; }
     
     @Override
     public Module getModule() { return module; }
     
     @Override
-    public Process getProcess(Domain domain) { return null; }
+    public Process getProcess(ProcessDomain domain) { return null; }
     
     @Override
     public MiniBox getParameters() { return parameters; }
     
+    /**
+     * Checks if the cell has regions.
+     *
+     * @return  {@code true} if the cell has regions, {@code false} otherwise
+     */
+    public boolean hasRegions() { return hasRegions; }
+    
     @Override
     public double getVolume() { return location.getVolume(); }
     
-    @Override
+    /**
+     * Gets the cell volume for a region.
+     *
+     * @param region  the region
+     * @return  the cell region volume
+     */
     public double getVolume(Region region) {
         return (hasRegions ? location.getVolume(region) : 0);
     }
@@ -195,7 +205,12 @@ public final class PottsCell implements Cell {
     @Override
     public double getHeight() { return location.getHeight(); }
     
-    @Override
+    /**
+     * Gets the cell height for a region.
+     *
+     * @param region  the region
+     * @return  the cell region height
+     */
     public double getHeight(Region region) {
         return (hasRegions ? location.getHeight(region) : 0);
     }
@@ -258,7 +273,12 @@ public final class PottsCell implements Cell {
     @Override
     public double getCriticalVolume() { return criticalVolume; }
     
-    @Override
+    /**
+     * Gets the critical volume for a region.
+     *
+     * @param region  the region
+     * @return  the critical region volume
+     */
     public double getCriticalVolume(Region region) {
         return (hasRegions && criticalRegionVolumes.containsKey(region)
                 ? criticalRegionVolumes.get(region)
@@ -268,7 +288,12 @@ public final class PottsCell implements Cell {
     @Override
     public double getCriticalHeight() { return criticalHeight; }
     
-    @Override
+    /**
+     * Gets the critical height for a region.
+     *
+     * @param region  the region
+     * @return  the critical region height
+     */
     public double getCriticalHeight(Region region) {
         return (hasRegions && criticalRegionHeights.containsKey(region)
                 ? criticalRegionHeights.get(region)
@@ -279,7 +304,7 @@ public final class PottsCell implements Cell {
     public void stop() { stopper.stop(); }
     
     @Override
-    public PottsCell make(int newID, State newState, Location newLocation,
+    public PottsCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
         divisions++;
         return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,
@@ -288,10 +313,10 @@ public final class PottsCell implements Cell {
     }
     
     @Override
-    public void setState(State state) {
+    public void setState(CellState state) {
         this.state = state;
         
-        switch (state) {
+        switch ((State) state) {
             case QUIESCENT:
                 module = new PottsModuleQuiescence(this);
                 break;

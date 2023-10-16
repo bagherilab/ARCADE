@@ -23,7 +23,7 @@ import arcade.core.vis.*;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
-import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Container for potts-specific {@link Drawer} classes.
