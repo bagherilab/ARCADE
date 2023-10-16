@@ -162,7 +162,7 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         // Increase size of cell.
         cell.updateTarget(cellGrowthRate, SIZE_TARGET);
         boolean sizeCheck = cell.getVolume() >= SIZE_CHECKPOINT
-                * SIZE_TARGET *  cell.getCriticalVolume();
+                * SIZE_TARGET * cell.getCriticalVolume();
         
         // Increase size of nucleus (if cell has regions).
         boolean sizeRegionCheck = true;
