@@ -18,8 +18,8 @@ import arcade.potts.sim.hamiltonian.Hamiltonian;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.util.Enums.Region;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsTest {

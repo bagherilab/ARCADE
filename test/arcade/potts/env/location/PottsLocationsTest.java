@@ -9,10 +9,10 @@ import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.util.Enums.Region;
 import static arcade.potts.env.location.PottsLocationTest.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.util.PottsEnums.Direction;
+import static arcade.potts.util.PottsEnums.Region;
 
 public class PottsLocationsTest {
     private static final double EPSILON = 1E-10;

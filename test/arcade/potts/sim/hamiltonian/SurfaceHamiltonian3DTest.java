@@ -5,7 +5,7 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Region;
 
 public class SurfaceHamiltonian3DTest {
     static final int REGION_DEFAULT = Region.DEFAULT.ordinal();

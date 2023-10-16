@@ -22,10 +22,10 @@ import arcade.potts.sim.PottsSeries;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.sim.output.PottsOutputSerializer.*;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Region;
+import static arcade.potts.util.PottsEnums.State;
 
 public class PottsOutputSerializerTest {
     private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomIntBetween(1, 1000));

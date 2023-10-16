@@ -9,8 +9,8 @@ import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian2D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 import static org.junit.Assert.*;
-import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsTest.*;
+import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class Potts2DTest {

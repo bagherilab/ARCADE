@@ -22,12 +22,12 @@ import arcade.potts.sim.PottsSimulation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.util.Enums.Domain;
-import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.agent.cell.PottsCellFactoryTest.*;
+import static arcade.potts.util.PottsEnums.Domain;
 import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Region;
+import static arcade.potts.util.PottsEnums.State;
 
 public class PottsCellTest {
     private static final double EPSILON = 1E-8;
@@ -40,7 +40,7 @@ public class PottsCellTest {
     
     static EnumMap<Region, Double> criticalHeightsRegionMock;
     
-    static Location locationMock;
+    static PottsLocation locationMock;
     
     static int locationVolume;
     
@@ -250,8 +250,7 @@ public class PottsCellTest {
     
     @Test
     public void getProcess_defaultConstructor_returnsNull() {
-        Domain domain = Domain.random(RANDOM);
-        assertNull(cellDefault.getProcess(domain));
+        assertNull(cellDefault.getProcess(Domain.UNDEFINED));
     }
     
     @Test
@@ -604,12 +603,6 @@ public class PottsCellTest {
         PottsCell cell = make(false);
         cell.setState(State.UNDEFINED);
         assertNull(cell.getModule());
-        
-        cell.setState(State.MIGRATORY);
-        assertNull(cell.getModule());
-        
-        cell.setState(State.SENESCENT);
-        assertNull(cell.getModule());
     }
     
     @Test
@@ -651,8 +644,8 @@ public class PottsCellTest {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
-        Location location1 = mock(PottsLocation.class);
-        Location location2 = mock(PottsLocation.class);
+        PottsLocation location1 = mock(PottsLocation.class);
+        PottsLocation location2 = mock(PottsLocation.class);
         EnumMap<Region, Double> criticalVolumesRegion = new EnumMap<>(Region.class);
         EnumMap<Region, Double> criticalHeightsRegion = new EnumMap<>(Region.class);
         
@@ -750,7 +743,7 @@ public class PottsCellTest {
         int volume2 = randomIntBetween(0, 100);
         int surface1 = randomIntBetween(0, 100);
         int surface2 = randomIntBetween(0, 100);
-        Location location = mock(PottsLocation.class);
+        PottsLocation location = mock(PottsLocation.class);
         when(location.getVolume()).thenReturn((double) (volume1 + volume2));
         when(location.getSurface()).thenReturn((double) (surface1 + surface2));
         when(location.getVolume(Region.DEFAULT)).thenReturn((double) volume1);
@@ -1145,7 +1138,7 @@ public class PottsCellTest {
     
     @Test
     public void convert_withRegions_createsContainer() {
-        Location location = mock(PottsLocation.class);
+        PottsLocation location = mock(PottsLocation.class);
         MiniBox parameters = mock(MiniBox.class);
         
         int id = randomIntBetween(1, 10);

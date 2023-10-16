@@ -11,8 +11,8 @@ import arcade.potts.agent.cell.PottsCellContainer;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.core.util.Enums.Region;
 import static arcade.potts.env.location.PottsLocationFactoryTest.PottsLocationFactoryMock;
+import static arcade.potts.util.PottsEnums.Region;
 
 public class PottsLocationContainerTest {
     static final PottsLocationFactory FACTORY = new PottsLocationFactoryMock();
