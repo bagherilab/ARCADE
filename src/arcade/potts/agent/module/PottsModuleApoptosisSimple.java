@@ -105,7 +105,7 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
     void stepLate(MersenneTwisterFast random, Simulation sim) {
         // Decrease size of cell.
         cell.updateTarget(cytoBlebbingRate, LATE_SIZE_TARGET);
-        boolean sizeCheck = cell.getVolume() >= SIZE_CHECKPOINT
+        boolean sizeCheck = cell.getVolume() <= SIZE_CHECKPOINT
                 * LATE_SIZE_TARGET * cell.getCriticalVolume();
         
         // Decrease size of nucleus (if cell has regions).

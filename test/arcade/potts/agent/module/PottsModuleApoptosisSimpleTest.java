@@ -55,6 +55,10 @@ public class PottsModuleApoptosisSimpleTest {
         parameters.put("apoptosis/RATE_LATE", randomDoubleBetween(1, 10));
         parameters.put("apoptosis/STEPS_EARLY", randomIntBetween(1, 100));
         parameters.put("apoptosis/STEPS_LATE", randomIntBetween(1, 100));
+        parameters.put("apoptosis/WATER_LOSS_RATE", randomDoubleBetween(100, 500));
+        parameters.put("apoptosis/CYTOPLASMIC_BLEBBING_RATE", randomDoubleBetween(100, 500));
+        parameters.put("apoptosis/NUCLEUS_PYKNOSIS_RATE", randomDoubleBetween(0, 100));
+        parameters.put("apoptosis/NUCLEUS_FRAGMENTATION_RATE", randomDoubleBetween(0, 100));
     }
     
     @Test
@@ -67,6 +71,11 @@ public class PottsModuleApoptosisSimpleTest {
         assertEquals(parameters.getDouble("apoptosis/RATE_LATE"), module.rateLate, EPSILON);
         assertEquals(parameters.getDouble("apoptosis/STEPS_EARLY"), module.stepsEarly, EPSILON);
         assertEquals(parameters.getDouble("apoptosis/STEPS_LATE"), module.stepsLate, EPSILON);
+        assertEquals(parameters.getDouble("apoptosis/WATER_LOSS_RATE"), module.waterLossRate, EPSILON);
+        assertEquals(parameters.getDouble("apoptosis/CYTOPLASMIC_BLEBBING_RATE"), module.cytoBlebbingRate, EPSILON);
+        assertEquals(parameters.getDouble("apoptosis/NUCLEUS_PYKNOSIS_RATE"), module.nucleusPyknosisRate, EPSILON);
+        assertEquals(parameters.getDouble("apoptosis/NUCLEUS_FRAGMENTATION_RATE"),
+                module.nucleusFragmentationRate, EPSILON);
     }
     
     @Test
@@ -125,7 +134,7 @@ public class PottsModuleApoptosisSimpleTest {
         module.currentSteps = 0;
         module.stepEarly(random);
         
-        verify(cell, times(2)).updateTarget(module.waterLossRate, EARLY_SIZE_CHECKPOINT);
+        verify(cell, times(2)).updateTarget(module.waterLossRate, EARLY_SIZE_TARGET);
     }
     
     @Test
@@ -144,7 +153,7 @@ public class PottsModuleApoptosisSimpleTest {
         module.currentSteps = 0;
         module.stepEarly(random);
         
-        verify(cell, times(2)).updateTarget(Region.NUCLEUS, module.nucleusPyknosisRate, EARLY_SIZE_CHECKPOINT);
+        verify(cell, times(2)).updateTarget(Region.NUCLEUS, module.nucleusPyknosisRate, EARLY_SIZE_TARGET);
     }
     
     @Test
@@ -153,7 +162,7 @@ public class PottsModuleApoptosisSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((volume * LATE_SIZE_CHECKPOINT) - 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT * LATE_SIZE_TARGET) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
@@ -179,7 +188,7 @@ public class PottsModuleApoptosisSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((volume * LATE_SIZE_CHECKPOINT) - 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT * LATE_SIZE_TARGET) - 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
@@ -206,7 +215,7 @@ public class PottsModuleApoptosisSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((volume * LATE_SIZE_CHECKPOINT) + 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT * LATE_SIZE_TARGET) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
@@ -232,7 +241,7 @@ public class PottsModuleApoptosisSimpleTest {
         PottsCell cell = mock(PottsCell.class);
         doReturn(parameters).when(cell).getParameters();
         double volume = randomDoubleBetween(0, 100);
-        doReturn((volume * LATE_SIZE_CHECKPOINT) + 1).when(cell).getVolume();
+        doReturn((volume * SIZE_CHECKPOINT * LATE_SIZE_TARGET) + 1).when(cell).getVolume();
         doReturn(volume).when(cell).getCriticalVolume();
         
         PottsModuleApoptosisSimple module = spy(new PottsModuleApoptosisSimple(cell));
@@ -269,7 +278,7 @@ public class PottsModuleApoptosisSimpleTest {
         module.currentSteps = 0;
         module.stepLate(random, simMock);
         
-        verify(cell, times(2)).updateTarget(module.cytoBlebbingRate, LATE_SIZE_CHECKPOINT);
+        verify(cell, times(2)).updateTarget(module.cytoBlebbingRate, LATE_SIZE_TARGET);
     }
     
     @Test
