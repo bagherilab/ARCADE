@@ -9,7 +9,7 @@ import arcade.core.env.grid.Grid;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
-import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Term;
 
 /**

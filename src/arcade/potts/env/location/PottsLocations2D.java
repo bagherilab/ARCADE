@@ -2,8 +2,8 @@ package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Concrete implementation of {@link PottsLocations} for 2D.

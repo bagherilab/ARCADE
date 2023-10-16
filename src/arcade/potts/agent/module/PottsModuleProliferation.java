@@ -7,8 +7,8 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Extension of {@link PottsModule} for proliferation.

@@ -8,9 +8,9 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.location.PottsLocations;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
-import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Region;
+import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Extension of {@link PottsModuleProliferation} with Poisson transitions.

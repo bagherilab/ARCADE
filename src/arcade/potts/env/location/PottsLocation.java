@@ -8,8 +8,8 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Utilities;
-import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Abstract implementation of {@link Location} for potts models.
@@ -90,25 +90,44 @@ public abstract class PottsLocation implements Location {
      */
     public ArrayList<Voxel> getVoxels(Region region) { return new ArrayList<>(); }
     
-    @Override
+    /**
+     * Gets a set of regions.
+     *
+     * @return  the set of regions
+     */
     public EnumSet<Region> getRegions() { return null; }
     
     @Override
     public final double getVolume() { return volume; }
     
-    @Override
+    /**
+     * Gets the volume of the location for a given region.
+     *
+     * @param region  the region
+     * @return  the location region volume
+     */
     public double getVolume(Region region) { return getVolume(); }
     
     @Override
     public final double getSurface() { return surface; }
     
-    @Override
+    /**
+     * Gets the surface area of the location for a given region.
+     *
+     * @param region  the region
+     * @return  the location region surface area
+     */
     public double getSurface(Region region) { return getSurface(); }
     
     @Override
     public final double getHeight() { return height; }
     
-    @Override
+    /**
+     * Gets the height of the location for a given region.
+     *
+     * @param region  the region
+     * @return  the location height
+     */
     public double getHeight(Region region) { return getHeight(); }
     
     /**
