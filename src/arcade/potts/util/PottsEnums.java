@@ -10,6 +10,9 @@ import arcade.core.agent.process.ProcessDomain;
  * Implemented enums include:
  * <ul>
  *     <li>{@code Ordering} defining simulation stepping order</li>
+ *     <li>{@code State} defining cell states</li>
+ *     <li>{@code Domain} defining domain for a given process</li>
+ *     <li>{@code Region} defining subcellular regions</li>
  *     <li>{@code Term} defining different potts energy terms</li>
  *     <li>{@code Phase} defining phase for a given state</li>
  *     <li>{@code Direction} defining directions in the voxel environment</li>

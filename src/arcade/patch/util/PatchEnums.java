@@ -11,8 +11,10 @@ import arcade.core.env.operation.OperationCategory;
  * Implemented enums include:
  * <ul>
  *     <li>{@code Ordering} defining simulation stepping order</li>
- *     <li>{@code Domain} defining domain for a given module</li>
+ *     <li>{@code State} defining cell states</li>
+ *     <li>{@code Domain} defining domain for a given process</li>
  *     <li>{@code Flag} defining state change flags</li>
+ *     <li>{@code Category} defining operation categories</li>
  * </ul>
  */
 
