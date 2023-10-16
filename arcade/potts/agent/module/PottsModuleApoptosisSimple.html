@@ -164,14 +164,14 @@ extends <a href="../../../../arcade/potts/agent/module/PottsModuleApoptosis.html
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>(package private) static double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/module/PottsModuleApoptosisSimple.html#EARLY_SIZE_CHECKPOINT">EARLY_SIZE_CHECKPOINT</a></span></code>
-<div class="block">Ratio of critical volume for early apoptosis size checkpoint.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/module/PottsModuleApoptosisSimple.html#EARLY_SIZE_TARGET">EARLY_SIZE_TARGET</a></span></code>
+<div class="block">Target ratio of critical volume for early apoptosis size checkpoint.</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>(package private) static double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/module/PottsModuleApoptosisSimple.html#LATE_SIZE_CHECKPOINT">LATE_SIZE_CHECKPOINT</a></span></code>
-<div class="block">Ratio of critical volume for late apoptosis size checkpoint.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/module/PottsModuleApoptosisSimple.html#LATE_SIZE_TARGET">LATE_SIZE_TARGET</a></span></code>
+<div class="block">Target ratio of critical volume for late apoptosis size checkpoint.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -199,18 +199,24 @@ extends <a href="../../../../arcade/potts/agent/module/PottsModuleApoptosis.html
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>(package private) static double</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/module/PottsModuleApoptosisSimple.html#SIZE_CHECKPOINT">SIZE_CHECKPOINT</a></span></code>
+<div class="block">Threshold for critical volume size checkpoint.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/module/PottsModuleApoptosisSimple.html#stepsEarly">stepsEarly</a></span></code>
 <div class="block">Steps for early apoptosis (steps).</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>(package private) int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/module/PottsModuleApoptosisSimple.html#stepsLate">stepsLate</a></span></code>
 <div class="block">Steps for late apoptosis (steps).</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>(package private) double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/module/PottsModuleApoptosisSimple.html#waterLossRate">waterLossRate</a></span></code>
 <div class="block">Rate of cytoplasmic water loss (voxels/tick).</div>
@@ -317,31 +323,31 @@ extends <a href="../../../../arcade/potts/agent/module/PottsModuleApoptosis.html
 <div class="block">Rate of cytoplasmic blebbing (voxels/tick).</div>
 </li>
 </ul>
-<a name="EARLY_SIZE_CHECKPOINT">
+<a name="EARLY_SIZE_TARGET">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>EARLY_SIZE_CHECKPOINT</h4>
-<pre>static final&nbsp;double EARLY_SIZE_CHECKPOINT</pre>
-<div class="block">Ratio of critical volume for early apoptosis size checkpoint.</div>
+<h4>EARLY_SIZE_TARGET</h4>
+<pre>static final&nbsp;double EARLY_SIZE_TARGET</pre>
+<div class="block">Target ratio of critical volume for early apoptosis size checkpoint.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../constant-values.html#arcade.potts.agent.module.PottsModuleApoptosisSimple.EARLY_SIZE_CHECKPOINT">Constant Field Values</a></dd>
+<dd><a href="../../../../constant-values.html#arcade.potts.agent.module.PottsModuleApoptosisSimple.EARLY_SIZE_TARGET">Constant Field Values</a></dd>
 </dl>
 </li>
 </ul>
-<a name="LATE_SIZE_CHECKPOINT">
+<a name="LATE_SIZE_TARGET">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>LATE_SIZE_CHECKPOINT</h4>
-<pre>static final&nbsp;double LATE_SIZE_CHECKPOINT</pre>
-<div class="block">Ratio of critical volume for late apoptosis size checkpoint.</div>
+<h4>LATE_SIZE_TARGET</h4>
+<pre>static final&nbsp;double LATE_SIZE_TARGET</pre>
+<div class="block">Target ratio of critical volume for late apoptosis size checkpoint.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../constant-values.html#arcade.potts.agent.module.PottsModuleApoptosisSimple.LATE_SIZE_CHECKPOINT">Constant Field Values</a></dd>
+<dd><a href="../../../../constant-values.html#arcade.potts.agent.module.PottsModuleApoptosisSimple.LATE_SIZE_TARGET">Constant Field Values</a></dd>
 </dl>
 </li>
 </ul>
@@ -383,6 +389,20 @@ extends <a href="../../../../arcade/potts/agent/module/PottsModuleApoptosis.html
 <h4>rateLate</h4>
 <pre>final&nbsp;double rateLate</pre>
 <div class="block">Event rate for late apoptosis (steps/tick).</div>
+</li>
+</ul>
+<a name="SIZE_CHECKPOINT">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>SIZE_CHECKPOINT</h4>
+<pre>static final&nbsp;double SIZE_CHECKPOINT</pre>
+<div class="block">Threshold for critical volume size checkpoint.</div>
+<dl>
+<dt><span class="seeLabel">See Also:</span></dt>
+<dd><a href="../../../../constant-values.html#arcade.potts.agent.module.PottsModuleApoptosisSimple.SIZE_CHECKPOINT">Constant Field Values</a></dd>
+</dl>
 </li>
 </ul>
 <a name="stepsEarly">
