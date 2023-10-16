@@ -13,6 +13,9 @@ import static arcade.potts.util.PottsEnums.Phase;
  */
 
 public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
+    /** Threshold for critical volume size checkpoint. */
+    static final double SIZE_CHECKPOINT = 0.95;
+    
     /** Target ratio of critical volume for early apoptosis size checkpoint. */
     static final double EARLY_SIZE_TARGET = 0.99;
     
@@ -102,6 +105,8 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
     void stepLate(MersenneTwisterFast random, Simulation sim) {
         // Decrease size of cell.
         cell.updateTarget(cytoBlebbingRate, LATE_SIZE_TARGET);
+        boolean sizeCheck = cell.getVolume() >= SIZE_CHECKPOINT
+                * LATE_SIZE_TARGET * cell.getCriticalVolume();
         
         // Decrease size of nucleus (if cell has regions).
         if (cell.hasRegions()) {
@@ -111,8 +116,7 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
         // Check for completion of late phase.
         Poisson poisson = poissonFactory.createPoisson(rateLate, random);
         currentSteps += poisson.nextInt();
-        if (cell.getVolume() <= LATE_SIZE_TARGET * cell.getCriticalVolume()
-                && currentSteps >= stepsLate) {
+        if (currentSteps >= stepsLate && sizeCheck) {
             removeCell(sim);
             setPhase(Phase.APOPTOSED);
         }
