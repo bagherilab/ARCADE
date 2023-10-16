@@ -13,11 +13,11 @@ import static arcade.potts.util.PottsEnums.Phase;
  */
 
 public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
-    /** Ratio of critical volume for early apoptosis size checkpoint. */
-    static final double EARLY_SIZE_CHECKPOINT = 0.99;
+    /** Target ratio of critical volume for early apoptosis size checkpoint. */
+    static final double EARLY_SIZE_TARGET = 0.99;
     
-    /** Ratio of critical volume for late apoptosis size checkpoint. */
-    static final double LATE_SIZE_CHECKPOINT = 0.25;
+    /** Target ratio of critical volume for late apoptosis size checkpoint. */
+    static final double LATE_SIZE_TARGET = 0.25;
     
     /** Event rate for early apoptosis (steps/tick). */
     final double rateEarly;
@@ -73,11 +73,11 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
     @Override
     void stepEarly(MersenneTwisterFast random) {
         // Decrease size of cell.
-        cell.updateTarget(waterLossRate, EARLY_SIZE_CHECKPOINT);
+        cell.updateTarget(waterLossRate, EARLY_SIZE_TARGET);
         
         // Decrease size of nucleus (if cell has regions).
         if (cell.hasRegions()) {
-            cell.updateTarget(Region.NUCLEUS, nucleusPyknosisRate, EARLY_SIZE_CHECKPOINT);
+            cell.updateTarget(Region.NUCLEUS, nucleusPyknosisRate, EARLY_SIZE_TARGET);
         }
         
         // Check for phase transition.
@@ -101,7 +101,7 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
     @Override
     void stepLate(MersenneTwisterFast random, Simulation sim) {
         // Decrease size of cell.
-        cell.updateTarget(cytoBlebbingRate, LATE_SIZE_CHECKPOINT);
+        cell.updateTarget(cytoBlebbingRate, LATE_SIZE_TARGET);
         
         // Decrease size of nucleus (if cell has regions).
         if (cell.hasRegions()) {
@@ -111,7 +111,7 @@ public class PottsModuleApoptosisSimple extends PottsModuleApoptosis {
         // Check for completion of late phase.
         Poisson poisson = poissonFactory.createPoisson(rateLate, random);
         currentSteps += poisson.nextInt();
-        if (cell.getVolume() <= LATE_SIZE_CHECKPOINT * cell.getCriticalVolume()
+        if (cell.getVolume() <= LATE_SIZE_TARGET * cell.getCriticalVolume()
                 && currentSteps >= stepsLate) {
             removeCell(sim);
             setPhase(Phase.APOPTOSED);
