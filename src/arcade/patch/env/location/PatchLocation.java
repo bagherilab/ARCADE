@@ -1,9 +1,7 @@
 package arcade.patch.env.location;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import arcade.core.env.location.Location;
-import static arcade.core.util.Enums.Region;
 
 /**
  * Abstract implementation of {@link Location} for patch models.
@@ -74,18 +72,6 @@ public abstract class PatchLocation implements Location {
         calculateSubcoordinates();
         calculateChecks();
     }
-    
-    @Override
-    public EnumSet<Region> getRegions() { return null; }
-    
-    @Override
-    public double getVolume(Region region) { return getVolume(); }
-    
-    @Override
-    public double getSurface(Region region) { return getSurface(); }
-    
-    @Override
-    public double getHeight(Region region) { return getHeight(); }
     
     /**
      * Gets the area of the location.

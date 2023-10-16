@@ -8,7 +8,7 @@ import arcade.core.util.MiniBox;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Equations;
 import arcade.patch.agent.cell.PatchCell;
-import static arcade.core.util.Enums.Domain;
+import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 
 /**

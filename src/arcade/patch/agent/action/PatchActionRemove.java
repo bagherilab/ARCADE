@@ -14,8 +14,8 @@ import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.Coordinate;
 import arcade.patch.sim.PatchSeries;
 import arcade.patch.sim.PatchSimulation;
-import static arcade.core.util.Enums.State;
 import static arcade.patch.util.PatchEnums.Ordering;
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Implementation of {@link Action} for removing cell agents.

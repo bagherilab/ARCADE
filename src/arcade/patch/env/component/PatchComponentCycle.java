@@ -10,8 +10,8 @@ import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.env.operation.PatchOperationGenerator;
-import static arcade.core.util.Enums.Category;
 import static arcade.patch.env.component.PatchComponentSites.SiteLayer;
+import static arcade.patch.util.PatchEnums.Category;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**

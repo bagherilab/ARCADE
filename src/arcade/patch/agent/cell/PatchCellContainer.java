@@ -3,9 +3,9 @@ package arcade.patch.agent.cell;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
+import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.Enums.State;
 
 /**
  * Implementation of {@link CellContainer} for {@link PatchCell} agents.
@@ -31,7 +31,7 @@ public final class PatchCellContainer implements CellContainer {
     public final int divisions;
     
     /** Cell state. */
-    public final State state;
+    public final CellState state;
     
     /** Cell volume [um<sup>3</sup>]. */
     public final double volume;
@@ -60,7 +60,7 @@ public final class PatchCellContainer implements CellContainer {
      * @param criticalHeight  the critical height
      */
     public PatchCellContainer(int id, int parent, int pop, int age, int divisions,
-                              State state, double volume, double height,
+                              CellState state, double volume, double height,
                               double criticalVolume, double criticalHeight) {
         this.id = id;
         this.parent = parent;

@@ -21,6 +21,7 @@ import arcade.patch.env.location.CoordinateXYZ;
 import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.PatchSeries;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Container class for patch-specific object serializers.
@@ -142,7 +143,7 @@ public final class PatchOutputSerializer {
             json.addProperty("pop", src.pop);
             json.addProperty("age", src.age);
             json.addProperty("divisions", src.divisions);
-            json.addProperty("state", src.state.name());
+            json.addProperty("state", ((State) src.state).name());
             json.addProperty("volume", src.volume);
             json.addProperty("height", src.height);
             

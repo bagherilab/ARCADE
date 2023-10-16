@@ -11,9 +11,9 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.Enums.Domain;
-import static arcade.core.util.Enums.State;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.patch.util.PatchEnums.Domain;
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Implementation of {@link CellFactory} for {@link PatchCell} agents.
