@@ -17,8 +17,11 @@ import static arcade.potts.util.PottsEnums.Phase;
  */
 
 public class PottsModuleProliferationSimple extends PottsModuleProliferation {
-    /** Ratio of critical volume for size checkpoint. */
-    static final double SIZE_CHECKPOINT = 2 * 0.95;
+    /** Threshold for critical volume size checkpoint. */
+    static final double SIZE_CHECKPOINT = 0.95;
+    
+    /** Target ratio of critical volume for division size checkpoint. */
+    static final double SIZE_TARGET = 2;
     
     /** Event rate for G1 phase (steps/tick). */
     final double rateG1;
@@ -98,12 +101,12 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         }
         
         // Increase size of cell.
-        cell.updateTarget(cellGrowthRate, 2);
+        cell.updateTarget(cellGrowthRate, SIZE_TARGET);
         
         // Increase size of nucleus (if cell has regions).
         if (cell.hasRegions()
                 && cell.getVolume(Region.NUCLEUS) > cell.getCriticalVolume(Region.NUCLEUS)) {
-            cell.updateTarget(Region.NUCLEUS, nucleusGrowthRate, 2);
+            cell.updateTarget(Region.NUCLEUS, nucleusGrowthRate, SIZE_TARGET);
         }
         
         // Check for phase transition.
@@ -124,11 +127,11 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
     @Override
     void stepS(MersenneTwisterFast random) {
         // Increase size of cell.
-        cell.updateTarget(cellGrowthRate, 2);
+        cell.updateTarget(cellGrowthRate, SIZE_TARGET);
         
         // Increase size of nucleus (if cell has regions).
         if (cell.hasRegions()) {
-            cell.updateTarget(Region.NUCLEUS, nucleusGrowthRate, 2);
+            cell.updateTarget(Region.NUCLEUS, nucleusGrowthRate, SIZE_TARGET);
         }
         
         // Check for phase transition.
@@ -157,15 +160,16 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         }
         
         // Increase size of cell.
-        cell.updateTarget(cellGrowthRate, 2);
-        boolean sizeCheck = cell.getVolume() >= SIZE_CHECKPOINT * cell.getCriticalVolume();
+        cell.updateTarget(cellGrowthRate, SIZE_TARGET);
+        boolean sizeCheck = cell.getVolume() >= SIZE_CHECKPOINT
+                * SIZE_TARGET *  cell.getCriticalVolume();
         
         // Increase size of nucleus (if cell has regions).
         boolean sizeRegionCheck = true;
         if (cell.hasRegions()) {
-            cell.updateTarget(Region.NUCLEUS, nucleusGrowthRate, 2);
-            sizeRegionCheck = cell.getVolume(Region.NUCLEUS)
-                    >= SIZE_CHECKPOINT * cell.getCriticalVolume(Region.NUCLEUS);
+            cell.updateTarget(Region.NUCLEUS, nucleusGrowthRate, SIZE_TARGET);
+            sizeRegionCheck = cell.getVolume(Region.NUCLEUS) >= SIZE_CHECKPOINT
+                    * SIZE_TARGET * cell.getCriticalVolume(Region.NUCLEUS);
         }
         
         // Check for phase transition.
@@ -188,7 +192,7 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
     @Override
     void stepM(MersenneTwisterFast random, Simulation sim) {
         // Increase size of cell.
-        cell.updateTarget(cellGrowthRate, 2);
+        cell.updateTarget(cellGrowthRate, SIZE_TARGET);
         
         // Update size of nucleus (if cell has regions).
         if (cell.hasRegions()) {
