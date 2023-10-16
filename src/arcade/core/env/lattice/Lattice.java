@@ -4,8 +4,8 @@ import sim.engine.Schedule;
 import sim.engine.Steppable;
 import arcade.core.env.location.Location;
 import arcade.core.env.operation.Operation;
+import arcade.core.env.operation.OperationCategory;
 import arcade.core.util.MiniBox;
-import static arcade.core.util.Enums.Category;
 
 /**
  * A {@code Lattice} represents an environment layer.
@@ -52,7 +52,7 @@ public interface Lattice extends Steppable {
      * @param category  the operation category
      * @return  the lattice operation
      */
-    Operation getOperation(Category category);
+    Operation getOperation(OperationCategory category);
     
     /**
      * Gets the lattice layer parameters.

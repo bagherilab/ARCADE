@@ -1,8 +1,5 @@
 package arcade.core.env.location;
 
-import java.util.EnumSet;
-import static arcade.core.util.Enums.Region;
-
 /**
  * A {@code Location} object defines the cell location within the environment.
  * <p>
@@ -21,26 +18,11 @@ public interface Location {
     LocationContainer convert(int id);
     
     /**
-     * Gets a set of regions.
-     *
-     * @return  the set of regions
-     */
-    EnumSet<Region> getRegions();
-    
-    /**
      * Gets the volume of the location.
      *
      * @return  the location volume
      */
     double getVolume();
-    
-    /**
-     * Gets the volume of the location for a given region.
-     *
-     * @param region  the region
-     * @return  the location region volume
-     */
-    double getVolume(Region region);
     
     /**
      * Gets the surface area of the location.
@@ -50,25 +32,9 @@ public interface Location {
     double getSurface();
     
     /**
-     * Gets the surface area of the location for a given region.
-     *
-     * @param region  the region
-     * @return  the location region surface area
-     */
-    double getSurface(Region region);
-    
-    /**
      * Gets the height of the location.
      *
      * @return  the location height
      */
     double getHeight();
-    
-    /**
-     * Gets the height of the location for a given region.
-     *
-     * @param region  the region
-     * @return  the location height
-     */
-    double getHeight(Region region);
 }
