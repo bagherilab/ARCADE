@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchLocation.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.location</a> &gt; <span class="el_source">PatchLocation.java</span></div><h1>PatchLocation.java</h1><pre class="source lang-java linenums">package arcade.patch.env.location;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import arcade.core.env.location.Location;
-import static arcade.core.util.Enums.Region;
 
 /**
  * Abstract implementation of {@link Location} for patch models.
@@ -67,25 +65,13 @@ public abstract class PatchLocation implements Location {
      * @param coordinate  the patch coordinate
      * @param n  the number of patch subcoordinates
      */
-<span class="fc" id="L70">    public PatchLocation(Coordinate coordinate, int n) {</span>
-<span class="fc" id="L71">        this.coordinate = coordinate;</span>
-<span class="fc" id="L72">        this.subcoordinates = new ArrayList&lt;&gt;(n);</span>
-<span class="fc" id="L73">        calculateOffset();</span>
-<span class="fc" id="L74">        calculateSubcoordinates();</span>
-<span class="fc" id="L75">        calculateChecks();</span>
-<span class="fc" id="L76">    }</span>
-    
-    @Override
-<span class="nc" id="L79">    public EnumSet&lt;Region&gt; getRegions() { return null; }</span>
-    
-    @Override
-<span class="nc" id="L82">    public double getVolume(Region region) { return getVolume(); }</span>
-    
-    @Override
-<span class="nc" id="L85">    public double getSurface(Region region) { return getSurface(); }</span>
-    
-    @Override
-<span class="nc" id="L88">    public double getHeight(Region region) { return getHeight(); }</span>
+<span class="fc" id="L68">    public PatchLocation(Coordinate coordinate, int n) {</span>
+<span class="fc" id="L69">        this.coordinate = coordinate;</span>
+<span class="fc" id="L70">        this.subcoordinates = new ArrayList&lt;&gt;(n);</span>
+<span class="fc" id="L71">        calculateOffset();</span>
+<span class="fc" id="L72">        calculateSubcoordinates();</span>
+<span class="fc" id="L73">        calculateChecks();</span>
+<span class="fc" id="L74">    }</span>
     
     /**
      * Gets the area of the location.
@@ -102,7 +88,7 @@ public abstract class PatchLocation implements Location {
      *
      * @return  the coordinate
      */
-<span class="nc" id="L105">    public Coordinate getCoordinate() { return coordinate; }</span>
+<span class="nc" id="L91">    public Coordinate getCoordinate() { return coordinate; }</span>
     
     /**
      * Gets the patch subcoordinate in the {@link arcade.core.env.lattice.Lattice}.
@@ -112,7 +98,7 @@ public abstract class PatchLocation implements Location {
      *
      * @return  the subcoordinate
      */
-<span class="nc" id="L115">    public Coordinate getSubcoordinate() { return subcoordinates.get(0); }</span>
+<span class="nc" id="L101">    public Coordinate getSubcoordinate() { return subcoordinates.get(0); }</span>
     
     /**
      * Gets all subcoordinates in the {@link arcade.core.env.lattice.Lattice} that
@@ -120,7 +106,7 @@ public abstract class PatchLocation implements Location {
      *
      * @return  the array of subcoordinates
      */
-<span class="nc" id="L123">    public ArrayList&lt;Coordinate&gt; getSubcoordinates() { return subcoordinates; }</span>
+<span class="nc" id="L109">    public ArrayList&lt;Coordinate&gt; getSubcoordinates() { return subcoordinates; }</span>
     
     /**
      * Gets the {@link arcade.core.env.grid.Grid} coordinate size in the xy
@@ -174,18 +160,18 @@ public abstract class PatchLocation implements Location {
      * @param location  the new location
      */
     public void update(PatchLocation location) {
-<span class="nc" id="L177">        this.coordinate = location.coordinate;</span>
-<span class="nc" id="L178">        this.subcoordinates = new ArrayList&lt;&gt;(location.subcoordinates);</span>
-<span class="nc" id="L179">        this.offset = location.offset;</span>
-<span class="nc" id="L180">        this.check = location.check;</span>
-<span class="nc" id="L181">    }</span>
+<span class="nc" id="L163">        this.coordinate = location.coordinate;</span>
+<span class="nc" id="L164">        this.subcoordinates = new ArrayList&lt;&gt;(location.subcoordinates);</span>
+<span class="nc" id="L165">        this.offset = location.offset;</span>
+<span class="nc" id="L166">        this.check = location.check;</span>
+<span class="nc" id="L167">    }</span>
     
     /**
      * Get unique hash based on location coordinate.
      *
      * @return  the hash
      */
-<span class="nc" id="L188">    public int hashCode() { return coordinate.hashCode(); }</span>
+<span class="nc" id="L174">    public int hashCode() { return coordinate.hashCode(); }</span>
     
     /**
      * Checks if two locations have the same coordinate.
@@ -193,7 +179,7 @@ public abstract class PatchLocation implements Location {
      * @param obj  the location to compare
      * @return  {@code true} if coordinates are equal, {@code false} otherwise
      */
-<span class="nc" id="L196">    public boolean equals(Object obj) { return coordinate.equals(obj); }</span>
+<span class="nc" id="L182">    public boolean equals(Object obj) { return coordinate.equals(obj); }</span>
     
     /**
      * Calculates the perimeter of a cell occupying the location.
@@ -218,10 +204,10 @@ public abstract class PatchLocation implements Location {
      * @return  the offset byte
      */
     byte offsetByte(byte b, int k) {
-<span class="nc" id="L221">        int left = b &gt;&gt; 2 &amp; 0x3F; // left most 6 bits</span>
-<span class="nc" id="L222">        int right = b &amp; 0x3; // right most 2 bits</span>
-<span class="nc" id="L223">        int shifted = (left &lt;&lt; k &amp; 0x3F) | (left &gt;&gt;&gt; (6 - k) &amp; 0x3F);</span>
-<span class="nc" id="L224">        return (byte) (shifted &lt;&lt; 2 | right);</span>
+<span class="nc" id="L207">        int left = b &gt;&gt; 2 &amp; 0x3F; // left most 6 bits</span>
+<span class="nc" id="L208">        int right = b &amp; 0x3; // right most 2 bits</span>
+<span class="nc" id="L209">        int shifted = (left &lt;&lt; k &amp; 0x3F) | (left &gt;&gt;&gt; (6 - k) &amp; 0x3F);</span>
+<span class="nc" id="L210">        return (byte) (shifted &lt;&lt; 2 | right);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

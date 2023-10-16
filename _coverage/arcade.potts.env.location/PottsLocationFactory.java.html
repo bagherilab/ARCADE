@@ -10,7 +10,7 @@ import arcade.core.env.location.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.core.util.Utilities;
-import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Implementation of {@link LocationFactory} for {@link PottsLocation} objects.

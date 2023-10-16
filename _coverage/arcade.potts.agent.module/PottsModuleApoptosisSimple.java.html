@@ -5,8 +5,8 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
-import static arcade.core.util.Enums.Region;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Extension of {@link PottsModuleApoptosis} with Poisson transitions.

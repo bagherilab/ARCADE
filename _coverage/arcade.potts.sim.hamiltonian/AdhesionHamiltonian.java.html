@@ -8,8 +8,8 @@ import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
-import static arcade.core.util.Enums.Region;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Implementation of {@link Hamiltonian} for adhesion energy.

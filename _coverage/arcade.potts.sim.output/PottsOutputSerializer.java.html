@@ -17,8 +17,9 @@ import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.location.PottsLocationContainer;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.PottsSeries;
-import static arcade.core.util.Enums.Region;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
+import static arcade.potts.util.PottsEnums.Region;
+import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Container class for potts-specific object serializers.
@@ -36,8 +37,8 @@ public final class PottsOutputSerializer {
     /**
      * Hidden utility class constructor.
      */
-<span class="fc" id="L39">    protected PottsOutputSerializer() {</span>
-<span class="fc" id="L40">        throw new UnsupportedOperationException();</span>
+<span class="fc" id="L40">    protected PottsOutputSerializer() {</span>
+<span class="fc" id="L41">        throw new UnsupportedOperationException();</span>
     }
     
     /**
@@ -46,20 +47,20 @@ public final class PottsOutputSerializer {
      * @return  a {@code Gson} instance
      */
     static Gson makeGSON() {
-<span class="fc" id="L49">        GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();</span>
-<span class="fc" id="L50">        gsonBuilder.registerTypeAdapter(PottsSeries.class,</span>
+<span class="fc" id="L50">        GsonBuilder gsonBuilder = OutputSerializer.makeGSONBuilder();</span>
+<span class="fc" id="L51">        gsonBuilder.registerTypeAdapter(PottsSeries.class,</span>
                 new PottsSeriesSerializer());
-<span class="fc" id="L52">        gsonBuilder.registerTypeAdapter(CellContainer.class,</span>
+<span class="fc" id="L53">        gsonBuilder.registerTypeAdapter(CellContainer.class,</span>
                 new CellSerializer());
-<span class="fc" id="L54">        gsonBuilder.registerTypeAdapter(PottsCellContainer.class,</span>
+<span class="fc" id="L55">        gsonBuilder.registerTypeAdapter(PottsCellContainer.class,</span>
                 new PottsCellSerializer());
-<span class="fc" id="L56">        gsonBuilder.registerTypeAdapter(LocationContainer.class,</span>
+<span class="fc" id="L57">        gsonBuilder.registerTypeAdapter(LocationContainer.class,</span>
                 new LocationSerializer());
-<span class="fc" id="L58">        gsonBuilder.registerTypeAdapter(PottsLocationContainer.class,</span>
+<span class="fc" id="L59">        gsonBuilder.registerTypeAdapter(PottsLocationContainer.class,</span>
                 new PottsLocationSerializer());
-<span class="fc" id="L60">        gsonBuilder.registerTypeAdapter(Voxel.class,</span>
+<span class="fc" id="L61">        gsonBuilder.registerTypeAdapter(Voxel.class,</span>
                 new VoxelSerializer());
-<span class="fc" id="L62">        return gsonBuilder.create();</span>
+<span class="fc" id="L63">        return gsonBuilder.create();</span>
     }
     
     /**
@@ -77,17 +78,17 @@ public final class PottsOutputSerializer {
      *     ...
      * &lt;/pre&gt;
      */
-<span class="fc" id="L80">    static class PottsSeriesSerializer implements JsonSerializer&lt;PottsSeries&gt; {</span>
+<span class="fc" id="L81">    static class PottsSeriesSerializer implements JsonSerializer&lt;PottsSeries&gt; {</span>
         @Override
         public JsonElement serialize(PottsSeries src, Type typeOfSrc,
                                      JsonSerializationContext context) {
-<span class="fc" id="L84">            JsonObject json = (JsonObject) context.serialize(src, Series.class);</span>
+<span class="fc" id="L85">            JsonObject json = (JsonObject) context.serialize(src, Series.class);</span>
             
             // Add potts parameters.
-<span class="fc" id="L87">            JsonElement potts = context.serialize(src.potts);</span>
-<span class="fc" id="L88">            json.add(&quot;potts&quot;, potts);</span>
+<span class="fc" id="L88">            JsonElement potts = context.serialize(src.potts);</span>
+<span class="fc" id="L89">            json.add(&quot;potts&quot;, potts);</span>
             
-<span class="fc" id="L90">            return json;</span>
+<span class="fc" id="L91">            return json;</span>
         }
     }
     
@@ -97,11 +98,11 @@ public final class PottsOutputSerializer {
      * Uses serialization for {@link PottsCellContainer}.
      * &lt;/p&gt;
      */
-<span class="fc" id="L100">    static class CellSerializer implements JsonSerializer&lt;CellContainer&gt; {</span>
+<span class="fc" id="L101">    static class CellSerializer implements JsonSerializer&lt;CellContainer&gt; {</span>
         @Override
         public JsonElement serialize(CellContainer src, Type typeOfSrc,
                                      JsonSerializationContext context) {
-<span class="fc" id="L104">            return context.serialize(src, PottsCellContainer.class);</span>
+<span class="fc" id="L105">            return context.serialize(src, PottsCellContainer.class);</span>
         }
     }
     
@@ -133,47 +134,47 @@ public final class PottsOutputSerializer {
      * &lt;p&gt;
      * If there are no regions, the regions array is not included.
      */
-<span class="fc" id="L136">    static class PottsCellSerializer implements JsonSerializer&lt;PottsCellContainer&gt; {</span>
+<span class="fc" id="L137">    static class PottsCellSerializer implements JsonSerializer&lt;PottsCellContainer&gt; {</span>
         @Override
         public JsonElement serialize(PottsCellContainer src, Type typeOfSrc,
                                      JsonSerializationContext context) {
-<span class="fc" id="L140">            JsonObject json = new JsonObject();</span>
+<span class="fc" id="L141">            JsonObject json = new JsonObject();</span>
             
-<span class="fc" id="L142">            json.addProperty(&quot;id&quot;, src.id);</span>
-<span class="fc" id="L143">            json.addProperty(&quot;parent&quot;, src.parent);</span>
-<span class="fc" id="L144">            json.addProperty(&quot;pop&quot;, src.pop);</span>
-<span class="fc" id="L145">            json.addProperty(&quot;age&quot;, src.age);</span>
-<span class="fc" id="L146">            json.addProperty(&quot;divisions&quot;, src.divisions);</span>
-<span class="fc" id="L147">            json.addProperty(&quot;state&quot;, src.state.name());</span>
-<span class="fc" id="L148">            json.addProperty(&quot;phase&quot;, src.phase.name());</span>
-<span class="fc" id="L149">            json.addProperty(&quot;voxels&quot;, src.voxels);</span>
+<span class="fc" id="L143">            json.addProperty(&quot;id&quot;, src.id);</span>
+<span class="fc" id="L144">            json.addProperty(&quot;parent&quot;, src.parent);</span>
+<span class="fc" id="L145">            json.addProperty(&quot;pop&quot;, src.pop);</span>
+<span class="fc" id="L146">            json.addProperty(&quot;age&quot;, src.age);</span>
+<span class="fc" id="L147">            json.addProperty(&quot;divisions&quot;, src.divisions);</span>
+<span class="fc" id="L148">            json.addProperty(&quot;state&quot;, ((State) src.state).name());</span>
+<span class="fc" id="L149">            json.addProperty(&quot;phase&quot;, src.phase.name());</span>
+<span class="fc" id="L150">            json.addProperty(&quot;voxels&quot;, src.voxels);</span>
             
-<span class="fc" id="L151">            JsonArray criticals = new JsonArray();</span>
-<span class="fc" id="L152">            criticals.add((int) (100 * src.criticalVolume) / 100.0);</span>
-<span class="fc" id="L153">            criticals.add((int) (100 * src.criticalHeight) / 100.0);</span>
-<span class="fc" id="L154">            json.add(&quot;criticals&quot;, criticals);</span>
+<span class="fc" id="L152">            JsonArray criticals = new JsonArray();</span>
+<span class="fc" id="L153">            criticals.add((int) (100 * src.criticalVolume) / 100.0);</span>
+<span class="fc" id="L154">            criticals.add((int) (100 * src.criticalHeight) / 100.0);</span>
+<span class="fc" id="L155">            json.add(&quot;criticals&quot;, criticals);</span>
             
-<span class="fc bfc" id="L156" title="All 2 branches covered.">            if (src.regionVoxels != null) {</span>
-<span class="fc" id="L157">                JsonArray regions = new JsonArray();</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">                for (Region region : src.regionVoxels.keySet()) {</span>
-<span class="fc" id="L159">                    JsonObject regionObject = new JsonObject();</span>
-<span class="fc" id="L160">                    regionObject.addProperty(&quot;region&quot;, region.name());</span>
-<span class="fc" id="L161">                    regionObject.addProperty(&quot;voxels&quot;, src.regionVoxels.get(region));</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">            if (src.regionVoxels != null) {</span>
+<span class="fc" id="L158">                JsonArray regions = new JsonArray();</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">                for (Region region : src.regionVoxels.keySet()) {</span>
+<span class="fc" id="L160">                    JsonObject regionObject = new JsonObject();</span>
+<span class="fc" id="L161">                    regionObject.addProperty(&quot;region&quot;, region.name());</span>
+<span class="fc" id="L162">                    regionObject.addProperty(&quot;voxels&quot;, src.regionVoxels.get(region));</span>
                     
-<span class="fc" id="L163">                    JsonArray regionCriticals = new JsonArray();</span>
-<span class="fc" id="L164">                    double volume = (int) (100 * src.criticalRegionVolumes.get(region)) / 100.0;</span>
-<span class="fc" id="L165">                    double height = (int) (100 * src.criticalRegionHeights.get(region)) / 100.0;</span>
-<span class="fc" id="L166">                    regionCriticals.add(volume);</span>
-<span class="fc" id="L167">                    regionCriticals.add(height);</span>
-<span class="fc" id="L168">                    regionObject.add(&quot;criticals&quot;, regionCriticals);</span>
+<span class="fc" id="L164">                    JsonArray regionCriticals = new JsonArray();</span>
+<span class="fc" id="L165">                    double volume = (int) (100 * src.criticalRegionVolumes.get(region)) / 100.0;</span>
+<span class="fc" id="L166">                    double height = (int) (100 * src.criticalRegionHeights.get(region)) / 100.0;</span>
+<span class="fc" id="L167">                    regionCriticals.add(volume);</span>
+<span class="fc" id="L168">                    regionCriticals.add(height);</span>
+<span class="fc" id="L169">                    regionObject.add(&quot;criticals&quot;, regionCriticals);</span>
                     
-<span class="fc" id="L170">                    regions.add(regionObject);</span>
-<span class="fc" id="L171">                }</span>
+<span class="fc" id="L171">                    regions.add(regionObject);</span>
+<span class="fc" id="L172">                }</span>
                 
-<span class="fc" id="L173">                json.add(&quot;regions&quot;, regions);</span>
+<span class="fc" id="L174">                json.add(&quot;regions&quot;, regions);</span>
             }
             
-<span class="fc" id="L176">            return json;</span>
+<span class="fc" id="L177">            return json;</span>
         }
     }
     
@@ -183,11 +184,11 @@ public final class PottsOutputSerializer {
      * Uses serialization for {@link PottsLocationContainer}.
      * &lt;/p&gt;
      */
-<span class="fc" id="L186">    static class LocationSerializer implements JsonSerializer&lt;LocationContainer&gt; {</span>
+<span class="fc" id="L187">    static class LocationSerializer implements JsonSerializer&lt;LocationContainer&gt; {</span>
         @Override
         public JsonElement serialize(LocationContainer src, Type typeOfSrc,
                                      JsonSerializationContext context) {
-<span class="fc" id="L190">            return context.serialize(src, PottsLocationContainer.class);</span>
+<span class="fc" id="L191">            return context.serialize(src, PottsLocationContainer.class);</span>
         }
     }
     
@@ -216,48 +217,48 @@ public final class PottsOutputSerializer {
      * If there are no regions, all voxels are listed as one region with the
      * &quot;UNDEFINED&quot; region name.
      */
-<span class="fc" id="L219">    static class PottsLocationSerializer implements JsonSerializer&lt;PottsLocationContainer&gt; {</span>
+<span class="fc" id="L220">    static class PottsLocationSerializer implements JsonSerializer&lt;PottsLocationContainer&gt; {</span>
         @Override
         public JsonElement serialize(PottsLocationContainer src, Type typeOfSrc,
                                      JsonSerializationContext context) {
-<span class="fc" id="L223">            JsonObject json = new JsonObject();</span>
+<span class="fc" id="L224">            JsonObject json = new JsonObject();</span>
             
-<span class="fc" id="L225">            json.addProperty(&quot;id&quot;, src.id);</span>
-<span class="fc" id="L226">            json.add(&quot;center&quot;, context.serialize(src.center));</span>
+<span class="fc" id="L226">            json.addProperty(&quot;id&quot;, src.id);</span>
+<span class="fc" id="L227">            json.add(&quot;center&quot;, context.serialize(src.center));</span>
             
-<span class="fc" id="L228">            JsonArray location = new JsonArray();</span>
+<span class="fc" id="L229">            JsonArray location = new JsonArray();</span>
             
-<span class="fc bfc" id="L230" title="All 2 branches covered.">            if (src.regions == null) {</span>
-<span class="fc" id="L231">                JsonObject obj = new JsonObject();</span>
-<span class="fc" id="L232">                JsonArray array = new JsonArray();</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">            if (src.regions == null) {</span>
+<span class="fc" id="L232">                JsonObject obj = new JsonObject();</span>
+<span class="fc" id="L233">                JsonArray array = new JsonArray();</span>
                 
-<span class="fc" id="L234">                ArrayList&lt;Voxel&gt; voxels = src.allVoxels;</span>
-<span class="fc" id="L235">                voxels.sort(VOXEL_COMPARATOR);</span>
-<span class="fc" id="L236">                voxels.forEach(voxel -&gt; array.add(context.serialize(voxel)));</span>
+<span class="fc" id="L235">                ArrayList&lt;Voxel&gt; voxels = src.allVoxels;</span>
+<span class="fc" id="L236">                voxels.sort(VOXEL_COMPARATOR);</span>
+<span class="fc" id="L237">                voxels.forEach(voxel -&gt; array.add(context.serialize(voxel)));</span>
                 
-<span class="fc" id="L238">                obj.addProperty(&quot;region&quot;, Region.UNDEFINED.name());</span>
-<span class="fc" id="L239">                obj.add(&quot;voxels&quot;, array);</span>
+<span class="fc" id="L239">                obj.addProperty(&quot;region&quot;, Region.UNDEFINED.name());</span>
+<span class="fc" id="L240">                obj.add(&quot;voxels&quot;, array);</span>
                 
-<span class="fc" id="L241">                location.add(obj);</span>
-<span class="fc" id="L242">            } else {</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">                for (Region region : src.regions.keySet()) {</span>
-<span class="fc" id="L244">                    JsonObject obj = new JsonObject();</span>
-<span class="fc" id="L245">                    JsonArray array = new JsonArray();</span>
+<span class="fc" id="L242">                location.add(obj);</span>
+<span class="fc" id="L243">            } else {</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">                for (Region region : src.regions.keySet()) {</span>
+<span class="fc" id="L245">                    JsonObject obj = new JsonObject();</span>
+<span class="fc" id="L246">                    JsonArray array = new JsonArray();</span>
                     
-<span class="fc" id="L247">                    ArrayList&lt;Voxel&gt; voxels = src.regions.get(region);</span>
-<span class="fc" id="L248">                    voxels.sort(VOXEL_COMPARATOR);</span>
-<span class="fc" id="L249">                    voxels.forEach(voxel -&gt; array.add(context.serialize(voxel)));</span>
+<span class="fc" id="L248">                    ArrayList&lt;Voxel&gt; voxels = src.regions.get(region);</span>
+<span class="fc" id="L249">                    voxels.sort(VOXEL_COMPARATOR);</span>
+<span class="fc" id="L250">                    voxels.forEach(voxel -&gt; array.add(context.serialize(voxel)));</span>
                     
-<span class="fc" id="L251">                    obj.addProperty(&quot;region&quot;, region.name());</span>
-<span class="fc" id="L252">                    obj.add(&quot;voxels&quot;, array);</span>
+<span class="fc" id="L252">                    obj.addProperty(&quot;region&quot;, region.name());</span>
+<span class="fc" id="L253">                    obj.add(&quot;voxels&quot;, array);</span>
                     
-<span class="fc" id="L254">                    location.add(obj);</span>
-<span class="fc" id="L255">                }</span>
+<span class="fc" id="L255">                    location.add(obj);</span>
+<span class="fc" id="L256">                }</span>
             }
             
-<span class="fc" id="L258">            json.add(&quot;location&quot;, location);</span>
+<span class="fc" id="L259">            json.add(&quot;location&quot;, location);</span>
             
-<span class="fc" id="L260">            return json;</span>
+<span class="fc" id="L261">            return json;</span>
         }
     }
     
@@ -269,15 +270,15 @@ public final class PottsOutputSerializer {
      *     [(x), (y), (z)]
      * &lt;/pre&gt;
      */
-<span class="fc" id="L272">    static class VoxelSerializer implements JsonSerializer&lt;Voxel&gt; {</span>
+<span class="fc" id="L273">    static class VoxelSerializer implements JsonSerializer&lt;Voxel&gt; {</span>
         @Override
         public JsonElement serialize(Voxel src, Type typeOfSrc,
                                      JsonSerializationContext context) {
-<span class="fc" id="L276">            JsonArray json = new JsonArray();</span>
-<span class="fc" id="L277">            json.add(src.x);</span>
-<span class="fc" id="L278">            json.add(src.y);</span>
-<span class="fc" id="L279">            json.add(src.z);</span>
-<span class="fc" id="L280">            return json;</span>
+<span class="fc" id="L277">            JsonArray json = new JsonArray();</span>
+<span class="fc" id="L278">            json.add(src.x);</span>
+<span class="fc" id="L279">            json.add(src.y);</span>
+<span class="fc" id="L280">            json.add(src.z);</span>
+<span class="fc" id="L281">            return json;</span>
         }
     }
 }

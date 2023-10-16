@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsCellContainer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.agent.cell</a> &gt; <span class="el_source">PottsCellContainer.java</span></div><h1>PottsCellContainer.java</h1><pre class="source lang-java linenums">package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
-import arcade.core.agent.cell.*;
+import arcade.core.agent.cell.Cell;
+import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactory;
+import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
-import static arcade.core.util.Enums.Region;
-import static arcade.core.util.Enums.State;
 import static arcade.potts.util.PottsEnums.Phase;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Implementation of {@link CellContainer} for {@link PottsCell} agents.
@@ -34,7 +36,7 @@ public final class PottsCellContainer implements CellContainer {
     public final int divisions;
     
     /** Cell state. */
-    public final State state;
+    public final CellState state;
     
     /** Cell phase. */
     public final Phase phase;
@@ -74,11 +76,11 @@ public final class PottsCellContainer implements CellContainer {
      * @param criticalHeight  the critical height
      */
     public PottsCellContainer(int id, int parent, int pop, int age, int divisions,
-                              State state, Phase phase, int voxels,
+                              CellState state, Phase phase, int voxels,
                               double criticalVolume, double criticalHeight) {
-<span class="fc" id="L79">        this(id, parent, pop, age, divisions, state, phase, voxels,</span>
+<span class="fc" id="L81">        this(id, parent, pop, age, divisions, state, phase, voxels,</span>
                 null, criticalVolume, criticalHeight, null, null);
-<span class="fc" id="L81">    }</span>
+<span class="fc" id="L83">    }</span>
     
     /**
      * Creates a {@code PottsCellContainer} instance.
@@ -98,32 +100,32 @@ public final class PottsCellContainer implements CellContainer {
      * @param criticalRegionHeights  the critical surface heights
      */
     public PottsCellContainer(int id, int parent, int pop, int age, int divisions,
-                              State state, Phase phase, int voxels,
+                              CellState state, Phase phase, int voxels,
                               EnumMap&lt;Region, Integer&gt; regionVoxels,
                               double criticalVolume, double criticalHeight,
                               EnumMap&lt;Region, Double&gt; criticalRegionVolumes,
-<span class="fc" id="L105">                              EnumMap&lt;Region, Double&gt; criticalRegionHeights) {</span>
-<span class="fc" id="L106">        this.id = id;</span>
-<span class="fc" id="L107">        this.parent = parent;</span>
-<span class="fc" id="L108">        this.pop = pop;</span>
-<span class="fc" id="L109">        this.age = age;</span>
-<span class="fc" id="L110">        this.divisions = divisions;</span>
-<span class="fc" id="L111">        this.state = state;</span>
-<span class="fc" id="L112">        this.phase = phase;</span>
-<span class="fc" id="L113">        this.voxels = voxels;</span>
-<span class="fc" id="L114">        this.regionVoxels = regionVoxels;</span>
-<span class="fc" id="L115">        this.criticalVolume = criticalVolume;</span>
-<span class="fc" id="L116">        this.criticalHeight = criticalHeight;</span>
-<span class="fc" id="L117">        this.criticalRegionVolumes = criticalRegionVolumes;</span>
-<span class="fc" id="L118">        this.criticalRegionHeights = criticalRegionHeights;</span>
-<span class="fc" id="L119">    }</span>
+<span class="fc" id="L107">                              EnumMap&lt;Region, Double&gt; criticalRegionHeights) {</span>
+<span class="fc" id="L108">        this.id = id;</span>
+<span class="fc" id="L109">        this.parent = parent;</span>
+<span class="fc" id="L110">        this.pop = pop;</span>
+<span class="fc" id="L111">        this.age = age;</span>
+<span class="fc" id="L112">        this.divisions = divisions;</span>
+<span class="fc" id="L113">        this.state = state;</span>
+<span class="fc" id="L114">        this.phase = phase;</span>
+<span class="fc" id="L115">        this.voxels = voxels;</span>
+<span class="fc" id="L116">        this.regionVoxels = regionVoxels;</span>
+<span class="fc" id="L117">        this.criticalVolume = criticalVolume;</span>
+<span class="fc" id="L118">        this.criticalHeight = criticalHeight;</span>
+<span class="fc" id="L119">        this.criticalRegionVolumes = criticalRegionVolumes;</span>
+<span class="fc" id="L120">        this.criticalRegionHeights = criticalRegionHeights;</span>
+<span class="fc" id="L121">    }</span>
     
     @Override
-<span class="fc" id="L122">    public int getID() { return id; }</span>
+<span class="fc" id="L124">    public int getID() { return id; }</span>
     
     @Override
     public Cell convert(CellFactory factory, Location location) {
-<span class="fc" id="L126">        return convert((PottsCellFactory) factory, location);</span>
+<span class="fc" id="L128">        return convert((PottsCellFactory) factory, location);</span>
     }
     
     /**
@@ -135,26 +137,26 @@ public final class PottsCellContainer implements CellContainer {
      */
     private Cell convert(PottsCellFactory factory, Location location) {
         // Get parameters for the cell population.
-<span class="fc" id="L138">        MiniBox parameters = factory.popToParameters.get(pop);</span>
+<span class="fc" id="L140">        MiniBox parameters = factory.popToParameters.get(pop);</span>
         
         // Make cell.
         PottsCell cell;
         
-<span class="fc bfc" id="L143" title="All 2 branches covered.">        if (factory.popToRegions.get(pop)) {</span>
-<span class="fc" id="L144">            cell = new PottsCell(id, parent, pop, state, age, divisions,</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        if (factory.popToRegions.get(pop)) {</span>
+<span class="fc" id="L146">            cell = new PottsCell(id, parent, pop, state, age, divisions,</span>
                     location, true, parameters, criticalVolume, criticalHeight,
                     criticalRegionVolumes, criticalRegionHeights);
         } else {
-<span class="fc" id="L148">            cell = new PottsCell(id, parent, pop, state, age, divisions,</span>
+<span class="fc" id="L150">            cell = new PottsCell(id, parent, pop, state, age, divisions,</span>
                     location, false, parameters, criticalVolume, criticalHeight,
                     null, null);
         }
         
         // Update cell module.
-<span class="fc" id="L154">        PottsModule module = (PottsModule) cell.getModule();</span>
-<span class="fc" id="L155">        module.setPhase(phase);</span>
+<span class="fc" id="L156">        PottsModule module = (PottsModule) cell.getModule();</span>
+<span class="fc" id="L157">        module.setPhase(phase);</span>
         
-<span class="fc" id="L157">        return cell;</span>
+<span class="fc" id="L159">        return cell;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

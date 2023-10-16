@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
-import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Abstract extension of {@link PottsLocation} for regions.

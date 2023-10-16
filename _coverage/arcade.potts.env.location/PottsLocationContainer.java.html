@@ -5,7 +5,7 @@ import java.util.EnumMap;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.*;
 import arcade.potts.agent.cell.PottsCellContainer;
-import static arcade.core.util.Enums.Region;
+import static arcade.potts.util.PottsEnums.Region;
 
 /**
  * Implementation of {@link LocationContainer} for {@link PottsLocation}

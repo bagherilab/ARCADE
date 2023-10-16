@@ -5,7 +5,7 @@ import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.env.location.PatchLocation;
-import static arcade.core.util.Enums.State;
+import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Extension of {@link PatchModule} for migration.

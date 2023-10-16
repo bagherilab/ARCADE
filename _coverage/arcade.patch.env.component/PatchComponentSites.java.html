@@ -8,7 +8,7 @@ import arcade.core.env.operation.Operation;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.patch.env.operation.PatchOperationGenerator;
-import static arcade.core.util.Enums.Category;
+import static arcade.patch.util.PatchEnums.Category;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 /**

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatchEnums.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.util</a> &gt; <span class="el_source">PatchEnums.java</span></div><h1>PatchEnums.java</h1><pre class="source lang-java linenums">package arcade.patch.util;
 
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellState;
+import arcade.core.agent.process.ProcessDomain;
+import arcade.core.env.operation.OperationCategory;
 
 /**
  * Container class for patch-specific enums.
@@ -8,8 +11,10 @@ import ec.util.MersenneTwisterFast;
  * Implemented enums include:
  * &lt;ul&gt;
  *     &lt;li&gt;{@code Ordering} defining simulation stepping order&lt;/li&gt;
- *     &lt;li&gt;{@code Domain} defining domain for a given module&lt;/li&gt;
+ *     &lt;li&gt;{@code State} defining cell states&lt;/li&gt;
+ *     &lt;li&gt;{@code Domain} defining domain for a given process&lt;/li&gt;
  *     &lt;li&gt;{@code Flag} defining state change flags&lt;/li&gt;
+ *     &lt;li&gt;{@code Category} defining operation categories&lt;/li&gt;
  * &lt;/ul&gt;
  */
 
@@ -17,65 +22,121 @@ public final class PatchEnums {
     /**
      * Hidden utility class constructor.
      */
-<span class="fc" id="L20">    protected PatchEnums() {</span>
-<span class="fc" id="L21">        throw new UnsupportedOperationException();</span>
+<span class="fc" id="L25">    protected PatchEnums() {</span>
+<span class="fc" id="L26">        throw new UnsupportedOperationException();</span>
     }
     
-    /** Stepping order for simulation. */
-<span class="nc" id="L25">    public enum Ordering {</span>
+    /** Stepping order for patch simulations. */
+<span class="nc" id="L30">    public enum Ordering {</span>
         /** First stepping order (nothing stepped before). */
-<span class="nc" id="L27">        FIRST,</span>
+<span class="nc" id="L32">        FIRST,</span>
         
         /** Stepping order for first action. */
-<span class="nc" id="L30">        FIRST_ACTION,</span>
+<span class="nc" id="L35">        FIRST_ACTION,</span>
         
         /** Stepping order for actions. */
-<span class="nc" id="L33">        ACTIONS,</span>
+<span class="nc" id="L38">        ACTIONS,</span>
         
         /** Stepping order for last action. */
-<span class="nc" id="L36">        LAST_ACTION,</span>
+<span class="nc" id="L41">        LAST_ACTION,</span>
         
         /** Stepping order for first cell. */
-<span class="nc" id="L39">        FIRST_CELL,</span>
+<span class="nc" id="L44">        FIRST_CELL,</span>
         
         /** Stepping order for cells. */
-<span class="nc" id="L42">        CELLS,</span>
+<span class="nc" id="L47">        CELLS,</span>
         
         /** Stepping order for last cell. */
-<span class="nc" id="L45">        LAST_CELL,</span>
+<span class="nc" id="L50">        LAST_CELL,</span>
         
         /** Stepping order for first component. */
-<span class="nc" id="L48">        FIRST_COMPONENT,</span>
+<span class="nc" id="L53">        FIRST_COMPONENT,</span>
         
         /** Stepping order for components. */
-<span class="nc" id="L51">        COMPONENTS,</span>
+<span class="nc" id="L56">        COMPONENTS,</span>
         
         /** Stepping order for last component. */
-<span class="nc" id="L54">        LAST_COMPONENT,</span>
+<span class="nc" id="L59">        LAST_COMPONENT,</span>
         
         /** Stepping order for first lattice. */
-<span class="nc" id="L57">        FIRST_LATTICE,</span>
+<span class="nc" id="L62">        FIRST_LATTICE,</span>
         
         /** Stepping order for lattices. */
-<span class="nc" id="L60">        LATTICES,</span>
+<span class="nc" id="L65">        LATTICES,</span>
         
         /** Stepping order for last lattice. */
-<span class="nc" id="L63">        LAST_LATTICE,</span>
+<span class="nc" id="L68">        LAST_LATTICE,</span>
         
         /** Last stepping order (nothing stepped after). */
-<span class="nc" id="L66">        LAST,</span>
+<span class="nc" id="L71">        LAST,</span>
     }
     
-    /** State change flags. */
-<span class="fc" id="L70">    public enum Flag {</span>
+    /** Cell state codes for patch simulations. */
+<span class="nc" id="L75">    public enum State implements CellState {</span>
+        /** Code for undefined state. */
+<span class="nc" id="L77">        UNDEFINED,</span>
+        
+        /** Code for quiescent cells. */
+<span class="nc" id="L80">        QUIESCENT,</span>
+        
+        /** Code for proliferative cells. */
+<span class="nc" id="L83">        PROLIFERATIVE,</span>
+        
+        /** Code for migratory cells. */
+<span class="nc" id="L86">        MIGRATORY,</span>
+        
+        /** Code for apoptotic cells. */
+<span class="nc" id="L89">        APOPTOTIC,</span>
+        
+        /** Code for necrotic cells. */
+<span class="nc" id="L92">        NECROTIC,</span>
+        
+        /** Code for senescent cells. */
+<span class="nc" id="L95">        SENESCENT;</span>
+        
+        /**
+         * Randomly selects a {@code State}.
+         *
+         * @param rng  the random number generator
+         * @return  a random {@code State}
+         */
+        public static State random(MersenneTwisterFast rng) {
+<span class="nc" id="L104">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+        }
+    }
+    
+    /** Process domain codes for patch simulations. */
+<span class="nc" id="L109">    public enum Domain implements ProcessDomain {</span>
+        /** Code for undefined domain. */
+<span class="nc" id="L111">        UNDEFINED,</span>
+        
+        /** Code for metabolism domain. */
+<span class="nc" id="L114">        METABOLISM,</span>
+        
+        /** Code for signaling domain. */
+<span class="nc" id="L117">        SIGNALING;</span>
+        
+        /**
+         * Randomly selects a {@code Domain}.
+         *
+         * @param rng  the random number generator
+         * @return  a random {@code Domain}
+         */
+        public static Domain random(MersenneTwisterFast rng) {
+<span class="nc" id="L126">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+        }
+    }
+    
+    /** State change flags for patch simulations. */
+<span class="fc" id="L131">    public enum Flag {</span>
         /** Code for undefined flag. */
-<span class="fc" id="L72">        UNDEFINED,</span>
+<span class="fc" id="L133">        UNDEFINED,</span>
         
         /** Code for proliferative flag. */
-<span class="fc" id="L75">        PROLIFERATIVE,</span>
+<span class="fc" id="L136">        PROLIFERATIVE,</span>
         
         /** Code for migratory flag. */
-<span class="fc" id="L78">        MIGRATORY;</span>
+<span class="fc" id="L139">        MIGRATORY;</span>
         
         /**
          * Randomly selects a {@code Flag}.
@@ -84,7 +145,29 @@ public final class PatchEnums {
          * @return  a random {@code Flag}
          */
         public static Flag random(MersenneTwisterFast rng) {
-<span class="fc" id="L87">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L148">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+        }
+    }
+    
+    /** Operation category codes for patch simulations. */
+<span class="nc" id="L153">    public enum Category implements OperationCategory {</span>
+        /** Code for undefined category. */
+<span class="nc" id="L155">        UNDEFINED,</span>
+
+        /** Code for metabolism category. */
+<span class="nc" id="L158">        DIFFUSER,</span>
+
+        /** Code for signaling category. */
+<span class="nc" id="L161">        GENERATOR;</span>
+
+        /**
+         * Randomly selects a {@code Category}.
+         *
+         * @param rng  the random number generator
+         * @return  a random {@code Operation}
+         */
+        public static Category random(MersenneTwisterFast rng) {
+<span class="nc" id="L170">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
 }
