@@ -166,13 +166,13 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>private java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;</code></td>
+<td class="colFirst"><code>private java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#criticalRegionHeights">criticalRegionHeights</a></span></code>
 <div class="block">Critical heights for cell by region [voxels].</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>private java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;</code></td>
+<td class="colFirst"><code>private java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#criticalRegionVolumes">criticalRegionVolumes</a></span></code>
 <div class="block">Critical volumes for cell by region [voxels].</div>
 </td>
@@ -232,7 +232,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>private <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a></code></td>
+<td class="colFirst"><code>private <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#state">state</a></span></code>
 <div class="block">Cell state.</div>
 </td>
@@ -244,13 +244,13 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>private java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;</code></td>
+<td class="colFirst"><code>private java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#targetRegionSurfaces">targetRegionSurfaces</a></span></code>
 <div class="block">Target region cell surfaces [voxels].</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>private java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;</code></td>
+<td class="colFirst"><code>private java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#targetRegionVolumes">targetRegionVolumes</a></span></code>
 <div class="block">Target region cell volumes [voxels].</div>
 </td>
@@ -282,10 +282,10 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#PottsCell-int-int-int-arcade.core.util.Enums.State-int-int-arcade.core.env.location.Location-boolean-arcade.core.util.MiniBox-double-double-java.util.EnumMap-java.util.EnumMap-">PottsCell</a></span>(int&nbsp;id,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#PottsCell-int-int-int-arcade.core.agent.cell.CellState-int-int-arcade.core.env.location.Location-boolean-arcade.core.util.MiniBox-double-double-java.util.EnumMap-java.util.EnumMap-">PottsCell</a></span>(int&nbsp;id,
          int&nbsp;parent,
          int&nbsp;pop,
-         <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state,
+         <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state,
          int&nbsp;age,
          int&nbsp;divisions,
          <a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;location,
@@ -293,8 +293,8 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
          <a href="../../../../arcade/core/util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&nbsp;parameters,
          double&nbsp;criticalVolume,
          double&nbsp;criticalHeight,
-         java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionVolumes,
-         java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionHeights)</code>
+         java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionVolumes,
+         java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionHeights)</code>
 <div class="block">Creates a <code>PottsCell</code> agent.</div>
 </td>
 </tr>
@@ -333,7 +333,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getCriticalHeight-arcade.core.util.Enums.Region-">getCriticalHeight</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getCriticalHeight-arcade.potts.util.PottsEnums.Region-">getCriticalHeight</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets the critical height for a region.</div>
 </td>
 </tr>
@@ -345,7 +345,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getCriticalVolume-arcade.core.util.Enums.Region-">getCriticalVolume</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getCriticalVolume-arcade.potts.util.PottsEnums.Region-">getCriticalVolume</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets the critical volume for a region.</div>
 </td>
 </tr>
@@ -363,7 +363,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getHeight-arcade.core.util.Enums.Region-">getHeight</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getHeight-arcade.potts.util.PottsEnums.Region-">getHeight</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets the cell height for a region.</div>
 </td>
 </tr>
@@ -405,12 +405,12 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getProcess-arcade.core.util.Enums.Domain-">getProcess</a></span>(<a href="../../../../arcade/core/util/Enums.Domain.html" title="enum in arcade.core.util">Enums.Domain</a>&nbsp;domain)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getProcess-arcade.core.agent.process.ProcessDomain-">getProcess</a></span>(<a href="../../../../arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain)</code>
 <div class="block">Gets the cell process object.</div>
 </td>
 </tr>
 <tr id="i16" class="altColor">
-<td class="colFirst"><code><a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a></code></td>
+<td class="colFirst"><code><a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getState--">getState</a></span>()</code>
 <div class="block">Gets the cell state.</div>
 </td>
@@ -423,7 +423,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i18" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getSurface-arcade.core.util.Enums.Region-">getSurface</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getSurface-arcade.potts.util.PottsEnums.Region-">getSurface</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets the cell surface for a region.</div>
 </td>
 </tr>
@@ -435,7 +435,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i20" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getTargetSurface-arcade.core.util.Enums.Region-">getTargetSurface</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getTargetSurface-arcade.potts.util.PottsEnums.Region-">getTargetSurface</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets the target surface for a region.</div>
 </td>
 </tr>
@@ -447,7 +447,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i22" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getTargetVolume-arcade.core.util.Enums.Region-">getTargetVolume</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getTargetVolume-arcade.potts.util.PottsEnums.Region-">getTargetVolume</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets the target volume for a region.</div>
 </td>
 </tr>
@@ -459,7 +459,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i24" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getVolume-arcade.core.util.Enums.Region-">getVolume</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#getVolume-arcade.potts.util.PottsEnums.Region-">getVolume</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets the cell volume for a region.</div>
 </td>
 </tr>
@@ -478,8 +478,8 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i27" class="rowColor">
 <td class="colFirst"><code><a href="../../../../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></span>(int&nbsp;newID,
-    <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;newState,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></span>(int&nbsp;newID,
+    <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState,
     <a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;newLocation,
     ec.util.MersenneTwisterFast&nbsp;random)</code>
 <div class="block">Creates a new cell.</div>
@@ -500,7 +500,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i30" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#setState-arcade.core.util.Enums.State-">setState</a></span>(<a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#setState-arcade.core.agent.cell.CellState-">setState</a></span>(<a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state)</code>
 <div class="block">Sets the cell state.</div>
 </td>
 </tr>
@@ -513,7 +513,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i32" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#setTargets-arcade.core.util.Enums.Region-double-double-">setTargets</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#setTargets-arcade.potts.util.PottsEnums.Region-double-double-">setTargets</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
           double&nbsp;volume,
           double&nbsp;surface)</code>
 <div class="block">Sets the target volume and surface for a region.</div>
@@ -538,7 +538,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i36" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#updateTarget-arcade.core.util.Enums.Region-double-double-">updateTarget</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCell.html#updateTarget-arcade.potts.util.PottsEnums.Region-double-double-">updateTarget</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
             double&nbsp;rate,
             double&nbsp;scale)</code>
 <div class="block">Updates target volume and surface area for a region.</div>
@@ -592,7 +592,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <ul class="blockList">
 <li class="blockList">
 <h4>criticalRegionHeights</h4>
-<pre>private final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt; criticalRegionHeights</pre>
+<pre>private final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt; criticalRegionHeights</pre>
 <div class="block">Critical heights for cell by region [voxels].</div>
 </li>
 </ul>
@@ -602,7 +602,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <ul class="blockList">
 <li class="blockList">
 <h4>criticalRegionVolumes</h4>
-<pre>private final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt; criticalRegionVolumes</pre>
+<pre>private final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt; criticalRegionVolumes</pre>
 <div class="block">Critical volumes for cell by region [voxels].</div>
 </li>
 </ul>
@@ -702,7 +702,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <ul class="blockList">
 <li class="blockList">
 <h4>state</h4>
-<pre>private&nbsp;<a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a> state</pre>
+<pre>private&nbsp;<a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a> state</pre>
 <div class="block">Cell state.</div>
 </li>
 </ul>
@@ -722,7 +722,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <ul class="blockList">
 <li class="blockList">
 <h4>targetRegionSurfaces</h4>
-<pre>private final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt; targetRegionSurfaces</pre>
+<pre>private final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt; targetRegionSurfaces</pre>
 <div class="block">Target region cell surfaces [voxels].</div>
 </li>
 </ul>
@@ -732,7 +732,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <ul class="blockList">
 <li class="blockList">
 <h4>targetRegionVolumes</h4>
-<pre>private final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt; targetRegionVolumes</pre>
+<pre>private final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt; targetRegionVolumes</pre>
 <div class="block">Target region cell volumes [voxels].</div>
 </li>
 </ul>
@@ -764,7 +764,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="PottsCell-int-int-int-arcade.core.util.Enums.State-int-int-arcade.core.env.location.Location-boolean-arcade.core.util.MiniBox-double-double-java.util.EnumMap-java.util.EnumMap-">
+<a name="PottsCell-int-int-int-arcade.core.agent.cell.CellState-int-int-arcade.core.env.location.Location-boolean-arcade.core.util.MiniBox-double-double-java.util.EnumMap-java.util.EnumMap-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -773,7 +773,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <pre>public&nbsp;PottsCell(int&nbsp;id,
                  int&nbsp;parent,
                  int&nbsp;pop,
-                 <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state,
+                 <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state,
                  int&nbsp;age,
                  int&nbsp;divisions,
                  <a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;location,
@@ -781,8 +781,8 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
                  <a href="../../../../arcade/core/util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&nbsp;parameters,
                  double&nbsp;criticalVolume,
                  double&nbsp;criticalHeight,
-                 java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionVolumes,
-                 java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionHeights)</pre>
+                 java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionVolumes,
+                 java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionHeights)</pre>
 <div class="block">Creates a <code>PottsCell</code> agent.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -861,18 +861,15 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="getCriticalHeight-arcade.core.util.Enums.Region-">
+<a name="getCriticalHeight-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getCriticalHeight</h4>
-<pre>public&nbsp;double&nbsp;getCriticalHeight(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getCriticalHeight-arcade.core.util.Enums.Region-">Cell</a></code></span></div>
+<pre>public&nbsp;double&nbsp;getCriticalHeight(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
 <div class="block">Gets the critical height for a region.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getCriticalHeight-arcade.core.util.Enums.Region-">getCriticalHeight</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -897,18 +894,15 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="getCriticalVolume-arcade.core.util.Enums.Region-">
+<a name="getCriticalVolume-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getCriticalVolume</h4>
-<pre>public&nbsp;double&nbsp;getCriticalVolume(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getCriticalVolume-arcade.core.util.Enums.Region-">Cell</a></code></span></div>
+<pre>public&nbsp;double&nbsp;getCriticalVolume(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
 <div class="block">Gets the critical volume for a region.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getCriticalVolume-arcade.core.util.Enums.Region-">getCriticalVolume</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -950,18 +944,15 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="getHeight-arcade.core.util.Enums.Region-">
+<a name="getHeight-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getHeight</h4>
-<pre>public&nbsp;double&nbsp;getHeight(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getHeight-arcade.core.util.Enums.Region-">Cell</a></code></span></div>
+<pre>public&nbsp;double&nbsp;getHeight(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
 <div class="block">Gets the cell height for a region.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getHeight-arcade.core.util.Enums.Region-">getHeight</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -1071,18 +1062,18 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="getProcess-arcade.core.util.Enums.Domain-">
+<a name="getProcess-arcade.core.agent.process.ProcessDomain-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getProcess</h4>
-<pre>public&nbsp;<a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a>&nbsp;getProcess(<a href="../../../../arcade/core/util/Enums.Domain.html" title="enum in arcade.core.util">Enums.Domain</a>&nbsp;domain)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getProcess-arcade.core.util.Enums.Domain-">Cell</a></code></span></div>
+<pre>public&nbsp;<a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a>&nbsp;getProcess(<a href="../../../../arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getProcess-arcade.core.agent.process.ProcessDomain-">Cell</a></code></span></div>
 <div class="block">Gets the cell process object.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getProcess-arcade.core.util.Enums.Domain-">getProcess</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
+<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getProcess-arcade.core.agent.process.ProcessDomain-">getProcess</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>domain</code> - the process domain</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -1096,7 +1087,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <ul class="blockList">
 <li class="blockList">
 <h4>getState</h4>
-<pre>public&nbsp;<a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;getState()</pre>
+<pre>public&nbsp;<a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;getState()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getState--">Cell</a></code></span></div>
 <div class="block">Gets the cell state.</div>
 <dl>
@@ -1121,13 +1112,13 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="getSurface-arcade.core.util.Enums.Region-">
+<a name="getSurface-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getSurface</h4>
-<pre>public&nbsp;double&nbsp;getSurface(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
+<pre>public&nbsp;double&nbsp;getSurface(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
 <div class="block">Gets the cell surface for a region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1151,13 +1142,13 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="getTargetSurface-arcade.core.util.Enums.Region-">
+<a name="getTargetSurface-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getTargetSurface</h4>
-<pre>public&nbsp;double&nbsp;getTargetSurface(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
+<pre>public&nbsp;double&nbsp;getTargetSurface(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
 <div class="block">Gets the target surface for a region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1181,13 +1172,13 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="getTargetVolume-arcade.core.util.Enums.Region-">
+<a name="getTargetVolume-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getTargetVolume</h4>
-<pre>public&nbsp;double&nbsp;getTargetVolume(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
+<pre>public&nbsp;double&nbsp;getTargetVolume(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
 <div class="block">Gets the target volume for a region.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -1214,18 +1205,15 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="getVolume-arcade.core.util.Enums.Region-">
+<a name="getVolume-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getVolume</h4>
-<pre>public&nbsp;double&nbsp;getVolume(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getVolume-arcade.core.util.Enums.Region-">Cell</a></code></span></div>
+<pre>public&nbsp;double&nbsp;getVolume(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
 <div class="block">Gets the cell volume for a region.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getVolume-arcade.core.util.Enums.Region-">getVolume</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -1240,11 +1228,8 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <li class="blockList">
 <h4>hasRegions</h4>
 <pre>public&nbsp;boolean&nbsp;hasRegions()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#hasRegions--">Cell</a></code></span></div>
 <div class="block">Checks if the cell has regions.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#hasRegions--">hasRegions</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd><code>true</code> if the cell has regions, <code>false</code> otherwise</dd>
 </dl>
@@ -1266,21 +1251,21 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">
+<a name="make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>make</h4>
 <pre>public&nbsp;<a href="../../../../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a>&nbsp;make(int&nbsp;newID,
-                      <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;newState,
+                      <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState,
                       <a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;newLocation,
                       ec.util.MersenneTwisterFast&nbsp;random)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">Cell</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">Cell</a></code></span></div>
 <div class="block">Creates a new cell.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
+<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>newID</code> - the new cell ID</dd>
 <dd><code>newState</code> - the new cell state</dd>
@@ -1324,18 +1309,18 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="setState-arcade.core.util.Enums.State-">
+<a name="setState-arcade.core.agent.cell.CellState-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>setState</h4>
-<pre>public&nbsp;void&nbsp;setState(<a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#setState-arcade.core.util.Enums.State-">Cell</a></code></span></div>
+<pre>public&nbsp;void&nbsp;setState(<a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#setState-arcade.core.agent.cell.CellState-">Cell</a></code></span></div>
 <div class="block">Sets the cell state.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#setState-arcade.core.util.Enums.State-">setState</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
+<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#setState-arcade.core.agent.cell.CellState-">setState</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>state</code> - the cell state</dd>
 </dl>
@@ -1357,13 +1342,13 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="setTargets-arcade.core.util.Enums.Region-double-double-">
+<a name="setTargets-arcade.potts.util.PottsEnums.Region-double-double-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>setTargets</h4>
-<pre>public&nbsp;void&nbsp;setTargets(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
+<pre>public&nbsp;void&nbsp;setTargets(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
                        double&nbsp;volume,
                        double&nbsp;surface)</pre>
 <div class="block">Sets the target volume and surface for a region.</div>
@@ -1421,13 +1406,13 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="updateTarget-arcade.core.util.Enums.Region-double-double-">
+<a name="updateTarget-arcade.potts.util.PottsEnums.Region-double-double-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>updateTarget</h4>
-<pre>public&nbsp;void&nbsp;updateTarget(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
+<pre>public&nbsp;void&nbsp;updateTarget(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
                          double&nbsp;rate,
                          double&nbsp;scale)</pre>
 <div class="block">Updates target volume and surface area for a region.

@@ -341,19 +341,19 @@
 <dd>
 <div class="block">Sets the pressure of roots.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/core/agent/cell/Cell.html#setState-arcade.core.util.Enums.State-">setState(Enums.State)</a></span> - Method in interface arcade.core.agent.cell.<a href="../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/core/agent/cell/Cell.html#setState-arcade.core.agent.cell.CellState-">setState(CellState)</a></span> - Method in interface arcade.core.agent.cell.<a href="../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></dt>
 <dd>
 <div class="block">Sets the cell state.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCell.html#setState-arcade.core.util.Enums.State-">setState(Enums.State)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCell.html#setState-arcade.core.agent.cell.CellState-">setState(CellState)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/cell/PottsCell.html#setState-arcade.core.util.Enums.State-">setState(Enums.State)</a></span> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/cell/PottsCell.html#setState-arcade.core.agent.cell.CellState-">setState(CellState)</a></span> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/potts/agent/cell/PottsCell.html#setTargets-double-double-">setTargets(double, double)</a></span> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a></dt>
 <dd>
 <div class="block">Sets the target volume and surface for the cell.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/cell/PottsCell.html#setTargets-arcade.core.util.Enums.Region-double-double-">setTargets(Enums.Region, double, double)</a></span> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/cell/PottsCell.html#setTargets-arcade.potts.util.PottsEnums.Region-double-double-">setTargets(PottsEnums.Region, double, double)</a></span> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a></dt>
 <dd>
 <div class="block">Sets the target volume and surface for a region.</div>
 </dd>
@@ -613,8 +613,6 @@
 <dd>
 <div class="block">Random seed of the first simulation in the series.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/core/util/Enums.State.html#State--">State()</a></span> - Constructor for enum arcade.core.util.<a href="../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a></dt>
-<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCell.html#state">state</a></span> - Variable in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></dt>
 <dd>
 <div class="block">Cell state.</div>
@@ -623,6 +621,8 @@
 <dd>
 <div class="block">Cell state.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/patch/util/PatchEnums.State.html#State--">State()</a></span> - Constructor for enum arcade.patch.util.<a href="../arcade/patch/util/PatchEnums.State.html" title="enum in arcade.patch.util">PatchEnums.State</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/potts/agent/cell/PottsCell.html#state">state</a></span> - Variable in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a></dt>
 <dd>
 <div class="block">Cell state.</div>
@@ -631,6 +631,8 @@
 <dd>
 <div class="block">Cell state.</div>
 </dd>
+<dt><span class="memberNameLink"><a href="../arcade/potts/util/PottsEnums.State.html#State--">State()</a></span> - Constructor for enum arcade.potts.util.<a href="../arcade/potts/util/PottsEnums.State.html" title="enum in arcade.potts.util">PottsEnums.State</a></dt>
+<dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/core/agent/module/Module.html#step-ec.util.MersenneTwisterFast-arcade.core.sim.Simulation-">step(MersenneTwisterFast, Simulation)</a></span> - Method in interface arcade.core.agent.module.<a href="../arcade/core/agent/module/Module.html" title="interface in arcade.core.agent.module">Module</a></dt>
 <dd>
 <div class="block">Performs the actions of the module during the
@@ -945,7 +947,7 @@
 <dd>
 <div class="block">Configuration for <a href="../arcade/potts/sim/hamiltonian/SurfaceHamiltonian.html" title="class in arcade.potts.sim.hamiltonian"><code>SurfaceHamiltonian</code></a> parameters.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/sim/hamiltonian/SurfaceHamiltonianConfig.html#SurfaceHamiltonianConfig-arcade.potts.agent.cell.PottsCell-double-java.util.EnumMap-">SurfaceHamiltonianConfig(PottsCell, double, EnumMap&lt;Enums.Region, Double&gt;)</a></span> - Constructor for class arcade.potts.sim.hamiltonian.<a href="../arcade/potts/sim/hamiltonian/SurfaceHamiltonianConfig.html" title="class in arcade.potts.sim.hamiltonian">SurfaceHamiltonianConfig</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/sim/hamiltonian/SurfaceHamiltonianConfig.html#SurfaceHamiltonianConfig-arcade.potts.agent.cell.PottsCell-double-java.util.EnumMap-">SurfaceHamiltonianConfig(PottsCell, double, EnumMap&lt;PottsEnums.Region, Double&gt;)</a></span> - Constructor for class arcade.potts.sim.hamiltonian.<a href="../arcade/potts/sim/hamiltonian/SurfaceHamiltonianConfig.html" title="class in arcade.potts.sim.hamiltonian">SurfaceHamiltonianConfig</a></dt>
 <dd>
 <div class="block">Creates parameter configuration for <code>SurfaceHamiltonian</code>.</div>
 </dd>

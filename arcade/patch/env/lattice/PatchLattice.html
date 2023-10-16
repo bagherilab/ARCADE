@@ -181,7 +181,7 @@ implements <a href="../../../../arcade/core/env/lattice/Lattice.html" title="int
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected java.util.Map&lt;<a href="../../../../arcade/core/util/Enums.Category.html" title="enum in arcade.core.util">Enums.Category</a>,<a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a>&gt;</code></td>
+<td class="colFirst"><code>protected java.util.Map&lt;<a href="../../../../arcade/patch/util/PatchEnums.Category.html" title="enum in arcade.patch.util">PatchEnums.Category</a>,<a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/lattice/PatchLattice.html#operations">operations</a></span></code>
 <div class="block">Map of operation categories and <a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation"><code>Operation</code></a> instance.</div>
 </td>
@@ -263,7 +263,7 @@ implements <a href="../../../../arcade/core/env/lattice/Lattice.html" title="int
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code><a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getOperation-arcade.core.util.Enums.Category-">getOperation</a></span>(<a href="../../../../arcade/core/util/Enums.Category.html" title="enum in arcade.core.util">Enums.Category</a>&nbsp;category)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getOperation-arcade.core.env.operation.OperationCategory-">getOperation</a></span>(<a href="../../../../arcade/core/env/operation/OperationCategory.html" title="interface in arcade.core.env.operation">OperationCategory</a>&nbsp;category)</code>
 <div class="block">Gets the lattice operation object.</div>
 </td>
 </tr>
@@ -294,7 +294,7 @@ implements <a href="../../../../arcade/core/env/lattice/Lattice.html" title="int
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code>abstract <a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/lattice/PatchLattice.html#makeOperation-arcade.core.util.Enums.Category-java.lang.String-">makeOperation</a></span>(<a href="../../../../arcade/core/util/Enums.Category.html" title="enum in arcade.core.util">Enums.Category</a>&nbsp;category,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/lattice/PatchLattice.html#makeOperation-arcade.patch.util.PatchEnums.Category-java.lang.String-">makeOperation</a></span>(<a href="../../../../arcade/patch/util/PatchEnums.Category.html" title="enum in arcade.patch.util">PatchEnums.Category</a>&nbsp;category,
              java.lang.String&nbsp;version)</code>
 <div class="block">Makes the specified <a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation"><code>Operation</code></a> object.</div>
 </td>
@@ -420,7 +420,7 @@ implements <a href="../../../../arcade/core/env/lattice/Lattice.html" title="int
 <ul class="blockList">
 <li class="blockList">
 <h4>operations</h4>
-<pre>protected final&nbsp;java.util.Map&lt;<a href="../../../../arcade/core/util/Enums.Category.html" title="enum in arcade.core.util">Enums.Category</a>,<a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a>&gt; operations</pre>
+<pre>protected final&nbsp;java.util.Map&lt;<a href="../../../../arcade/patch/util/PatchEnums.Category.html" title="enum in arcade.patch.util">PatchEnums.Category</a>,<a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a>&gt; operations</pre>
 <div class="block">Map of operation categories and <a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation"><code>Operation</code></a> instance.</div>
 </li>
 </ul>
@@ -554,18 +554,18 @@ implements <a href="../../../../arcade/core/env/lattice/Lattice.html" title="int
 </dl>
 </li>
 </ul>
-<a name="getOperation-arcade.core.util.Enums.Category-">
+<a name="getOperation-arcade.core.env.operation.OperationCategory-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getOperation</h4>
-<pre>public&nbsp;<a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a>&nbsp;getOperation(<a href="../../../../arcade/core/util/Enums.Category.html" title="enum in arcade.core.util">Enums.Category</a>&nbsp;category)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/env/lattice/Lattice.html#getOperation-arcade.core.util.Enums.Category-">Lattice</a></code></span></div>
+<pre>public&nbsp;<a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a>&nbsp;getOperation(<a href="../../../../arcade/core/env/operation/OperationCategory.html" title="interface in arcade.core.env.operation">OperationCategory</a>&nbsp;category)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/env/lattice/Lattice.html#getOperation-arcade.core.env.operation.OperationCategory-">Lattice</a></code></span></div>
 <div class="block">Gets the lattice operation object.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/env/lattice/Lattice.html#getOperation-arcade.core.util.Enums.Category-">getOperation</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice">Lattice</a></code></dd>
+<dd><code><a href="../../../../arcade/core/env/lattice/Lattice.html#getOperation-arcade.core.env.operation.OperationCategory-">getOperation</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice">Lattice</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>category</code> - the operation category</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -645,13 +645,13 @@ implements <a href="../../../../arcade/core/env/lattice/Lattice.html" title="int
 </dl>
 </li>
 </ul>
-<a name="makeOperation-arcade.core.util.Enums.Category-java.lang.String-">
+<a name="makeOperation-arcade.patch.util.PatchEnums.Category-java.lang.String-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>makeOperation</h4>
-<pre>public abstract&nbsp;<a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a>&nbsp;makeOperation(<a href="../../../../arcade/core/util/Enums.Category.html" title="enum in arcade.core.util">Enums.Category</a>&nbsp;category,
+<pre>public abstract&nbsp;<a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a>&nbsp;makeOperation(<a href="../../../../arcade/patch/util/PatchEnums.Category.html" title="enum in arcade.patch.util">PatchEnums.Category</a>&nbsp;category,
                                         java.lang.String&nbsp;version)</pre>
 <div class="block">Makes the specified <a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation"><code>Operation</code></a> object.</div>
 <dl>

@@ -181,7 +181,7 @@ extends <a href="../../../../arcade/patch/env/lattice/PatchLattice.html" title="
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code><a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/lattice/PatchLatticeTri.html#makeOperation-arcade.core.util.Enums.Category-java.lang.String-">makeOperation</a></span>(<a href="../../../../arcade/core/util/Enums.Category.html" title="enum in arcade.core.util">Enums.Category</a>&nbsp;category,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/lattice/PatchLatticeTri.html#makeOperation-arcade.patch.util.PatchEnums.Category-java.lang.String-">makeOperation</a></span>(<a href="../../../../arcade/patch/util/PatchEnums.Category.html" title="enum in arcade.patch.util">PatchEnums.Category</a>&nbsp;category,
              java.lang.String&nbsp;version)</code>
 <div class="block">Makes the specified <a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation"><code>Operation</code></a> object.</div>
 </td>
@@ -192,7 +192,7 @@ extends <a href="../../../../arcade/patch/env/lattice/PatchLattice.html" title="
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;arcade.patch.env.lattice.<a href="../../../../arcade/patch/env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice">PatchLattice</a></h3>
-<code><a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getAverageValue-arcade.core.env.location.Location-">getAverageValue</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getField--">getField</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getHeight--">getHeight</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getLength--">getLength</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getOperation-arcade.core.util.Enums.Category-">getOperation</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getParameters--">getParameters</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getTotalValue-arcade.core.env.location.Location-">getTotalValue</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getWidth--">getWidth</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#incrementValue-arcade.core.env.location.Location-double-">incrementValue</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#schedule-sim.engine.Schedule-">schedule</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#setField-double-">setField</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#setField-double:A:A:A-">setField</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#setField-double:A:A-int-">setField</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#setValue-arcade.core.env.location.Location-double-">setValue</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#step-sim.engine.SimState-">step</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#updateValue-arcade.core.env.location.Location-double-">updateValue</a></code></li>
+<code><a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getAverageValue-arcade.core.env.location.Location-">getAverageValue</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getField--">getField</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getHeight--">getHeight</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getLength--">getLength</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getOperation-arcade.core.env.operation.OperationCategory-">getOperation</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getParameters--">getParameters</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getTotalValue-arcade.core.env.location.Location-">getTotalValue</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#getWidth--">getWidth</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#incrementValue-arcade.core.env.location.Location-double-">incrementValue</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#schedule-sim.engine.Schedule-">schedule</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#setField-double-">setField</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#setField-double:A:A:A-">setField</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#setField-double:A:A-int-">setField</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#setValue-arcade.core.env.location.Location-double-">setValue</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#step-sim.engine.SimState-">step</a>, <a href="../../../../arcade/patch/env/lattice/PatchLattice.html#updateValue-arcade.core.env.location.Location-double-">updateValue</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -247,19 +247,19 @@ extends <a href="../../../../arcade/patch/env/lattice/PatchLattice.html" title="
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="makeOperation-arcade.core.util.Enums.Category-java.lang.String-">
+<a name="makeOperation-arcade.patch.util.PatchEnums.Category-java.lang.String-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>makeOperation</h4>
-<pre>public&nbsp;<a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a>&nbsp;makeOperation(<a href="../../../../arcade/core/util/Enums.Category.html" title="enum in arcade.core.util">Enums.Category</a>&nbsp;category,
+<pre>public&nbsp;<a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation">Operation</a>&nbsp;makeOperation(<a href="../../../../arcade/patch/util/PatchEnums.Category.html" title="enum in arcade.patch.util">PatchEnums.Category</a>&nbsp;category,
                                java.lang.String&nbsp;version)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/patch/env/lattice/PatchLattice.html#makeOperation-arcade.core.util.Enums.Category-java.lang.String-">PatchLattice</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/patch/env/lattice/PatchLattice.html#makeOperation-arcade.patch.util.PatchEnums.Category-java.lang.String-">PatchLattice</a></code></span></div>
 <div class="block">Makes the specified <a href="../../../../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation"><code>Operation</code></a> object.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/patch/env/lattice/PatchLattice.html#makeOperation-arcade.core.util.Enums.Category-java.lang.String-">makeOperation</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/patch/env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice">PatchLattice</a></code></dd>
+<dd><code><a href="../../../../arcade/patch/env/lattice/PatchLattice.html#makeOperation-arcade.patch.util.PatchEnums.Category-java.lang.String-">makeOperation</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/patch/env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice">PatchLattice</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>category</code> - the operation category</dd>
 <dd><code>version</code> - the operation version</dd>

@@ -149,13 +149,13 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;</code></td>
+<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCellContainer.html#criticalRegionHeights">criticalRegionHeights</a></span></code>
 <div class="block">Critical region cell heights [voxels].</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;</code></td>
+<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCellContainer.html#criticalRegionVolumes">criticalRegionVolumes</a></span></code>
 <div class="block">Critical region cell volumes [voxels].</div>
 </td>
@@ -197,13 +197,13 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Integer&gt;</code></td>
+<td class="colFirst"><code>java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Integer&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCellContainer.html#regionVoxels">regionVoxels</a></span></code>
 <div class="block">Cell region sizes [voxels].</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a></code></td>
+<td class="colFirst"><code><a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCellContainer.html#state">state</a></span></code>
 <div class="block">Cell state.</div>
 </td>
@@ -229,12 +229,12 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCellContainer.html#PottsCellContainer-int-int-int-int-int-arcade.core.util.Enums.State-arcade.potts.util.PottsEnums.Phase-int-double-double-">PottsCellContainer</a></span>(int&nbsp;id,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCellContainer.html#PottsCellContainer-int-int-int-int-int-arcade.core.agent.cell.CellState-arcade.potts.util.PottsEnums.Phase-int-double-double-">PottsCellContainer</a></span>(int&nbsp;id,
                   int&nbsp;parent,
                   int&nbsp;pop,
                   int&nbsp;age,
                   int&nbsp;divisions,
-                  <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state,
+                  <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state,
                   <a href="../../../../arcade/potts/util/PottsEnums.Phase.html" title="enum in arcade.potts.util">PottsEnums.Phase</a>&nbsp;phase,
                   int&nbsp;voxels,
                   double&nbsp;criticalVolume,
@@ -243,19 +243,19 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCellContainer.html#PottsCellContainer-int-int-int-int-int-arcade.core.util.Enums.State-arcade.potts.util.PottsEnums.Phase-int-java.util.EnumMap-double-double-java.util.EnumMap-java.util.EnumMap-">PottsCellContainer</a></span>(int&nbsp;id,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../arcade/potts/agent/cell/PottsCellContainer.html#PottsCellContainer-int-int-int-int-int-arcade.core.agent.cell.CellState-arcade.potts.util.PottsEnums.Phase-int-java.util.EnumMap-double-double-java.util.EnumMap-java.util.EnumMap-">PottsCellContainer</a></span>(int&nbsp;id,
                   int&nbsp;parent,
                   int&nbsp;pop,
                   int&nbsp;age,
                   int&nbsp;divisions,
-                  <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state,
+                  <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state,
                   <a href="../../../../arcade/potts/util/PottsEnums.Phase.html" title="enum in arcade.potts.util">PottsEnums.Phase</a>&nbsp;phase,
                   int&nbsp;voxels,
-                  java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Integer&gt;&nbsp;regionVoxels,
+                  java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Integer&gt;&nbsp;regionVoxels,
                   double&nbsp;criticalVolume,
                   double&nbsp;criticalHeight,
-                  java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionVolumes,
-                  java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionHeights)</code>
+                  java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionVolumes,
+                  java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionHeights)</code>
 <div class="block">Creates a <code>PottsCellContainer</code> instance.</div>
 </td>
 </tr>
@@ -342,7 +342,7 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
 <ul class="blockList">
 <li class="blockList">
 <h4>criticalRegionHeights</h4>
-<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt; criticalRegionHeights</pre>
+<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt; criticalRegionHeights</pre>
 <div class="block">Critical region cell heights [voxels].</div>
 </li>
 </ul>
@@ -352,7 +352,7 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
 <ul class="blockList">
 <li class="blockList">
 <h4>criticalRegionVolumes</h4>
-<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt; criticalRegionVolumes</pre>
+<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt; criticalRegionVolumes</pre>
 <div class="block">Critical region cell volumes [voxels].</div>
 </li>
 </ul>
@@ -422,7 +422,7 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
 <ul class="blockList">
 <li class="blockList">
 <h4>regionVoxels</h4>
-<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Integer&gt; regionVoxels</pre>
+<pre>public final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Integer&gt; regionVoxels</pre>
 <div class="block">Cell region sizes [voxels].</div>
 </li>
 </ul>
@@ -432,7 +432,7 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
 <ul class="blockList">
 <li class="blockList">
 <h4>state</h4>
-<pre>public final&nbsp;<a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a> state</pre>
+<pre>public final&nbsp;<a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a> state</pre>
 <div class="block">Cell state.</div>
 </li>
 </ul>
@@ -454,7 +454,7 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="PottsCellContainer-int-int-int-int-int-arcade.core.util.Enums.State-arcade.potts.util.PottsEnums.Phase-int-double-double-">
+<a name="PottsCellContainer-int-int-int-int-int-arcade.core.agent.cell.CellState-arcade.potts.util.PottsEnums.Phase-int-double-double-">
 <!--   -->
 </a>
 <ul class="blockList">
@@ -465,7 +465,7 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
                           int&nbsp;pop,
                           int&nbsp;age,
                           int&nbsp;divisions,
-                          <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state,
+                          <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state,
                           <a href="../../../../arcade/potts/util/PottsEnums.Phase.html" title="enum in arcade.potts.util">PottsEnums.Phase</a>&nbsp;phase,
                           int&nbsp;voxels,
                           double&nbsp;criticalVolume,
@@ -488,7 +488,7 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
 </dl>
 </li>
 </ul>
-<a name="PottsCellContainer-int-int-int-int-int-arcade.core.util.Enums.State-arcade.potts.util.PottsEnums.Phase-int-java.util.EnumMap-double-double-java.util.EnumMap-java.util.EnumMap-">
+<a name="PottsCellContainer-int-int-int-int-int-arcade.core.agent.cell.CellState-arcade.potts.util.PottsEnums.Phase-int-java.util.EnumMap-double-double-java.util.EnumMap-java.util.EnumMap-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -499,14 +499,14 @@ implements <a href="../../../../arcade/core/agent/cell/CellContainer.html" title
                           int&nbsp;pop,
                           int&nbsp;age,
                           int&nbsp;divisions,
-                          <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state,
+                          <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state,
                           <a href="../../../../arcade/potts/util/PottsEnums.Phase.html" title="enum in arcade.potts.util">PottsEnums.Phase</a>&nbsp;phase,
                           int&nbsp;voxels,
-                          java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Integer&gt;&nbsp;regionVoxels,
+                          java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Integer&gt;&nbsp;regionVoxels,
                           double&nbsp;criticalVolume,
                           double&nbsp;criticalHeight,
-                          java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionVolumes,
-                          java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionHeights)</pre>
+                          java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionVolumes,
+                          java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&nbsp;criticalRegionHeights)</pre>
 <div class="block">Creates a <code>PottsCellContainer</code> instance.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>

@@ -134,7 +134,7 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>(package private) java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&gt;</code></td>
+<td class="colFirst"><code>(package private) java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/sim/hamiltonian/AdhesionHamiltonianConfig.html#adhesionRegion">adhesionRegion</a></span></code>
 <div class="block">Adhesion values for cell by region.</div>
 </td>
@@ -168,7 +168,7 @@ extends java.lang.Object</pre>
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../../../arcade/potts/sim/hamiltonian/AdhesionHamiltonianConfig.html#AdhesionHamiltonianConfig-arcade.potts.agent.cell.PottsCell-double:A-java.util.EnumMap-">AdhesionHamiltonianConfig</a></span>(<a href="../../../../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a>&nbsp;cell,
                          double[]&nbsp;adhesion,
-                         java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&gt;&nbsp;adhesionRegion)</code>
+                         java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&gt;&nbsp;adhesionRegion)</code>
 <div class="block">Creates parameter configuration for <code>AdhesionHamiltonian</code>.</div>
 </td>
 </tr>
@@ -189,15 +189,15 @@ extends java.lang.Object</pre>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/sim/hamiltonian/AdhesionHamiltonianConfig.html#getAdhesion-arcade.core.util.Enums.Region-arcade.core.util.Enums.Region-">getAdhesion</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region1,
-           <a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region2)</code>
-<div class="block">Gets the adhesion between two regions.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/sim/hamiltonian/AdhesionHamiltonianConfig.html#getAdhesion-int-">getAdhesion</a></span>(int&nbsp;target)</code>
+<div class="block">Gets the adhesion to a cell of the given population.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/sim/hamiltonian/AdhesionHamiltonianConfig.html#getAdhesion-int-">getAdhesion</a></span>(int&nbsp;target)</code>
-<div class="block">Gets the adhesion to a cell of the given population.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/sim/hamiltonian/AdhesionHamiltonianConfig.html#getAdhesion-arcade.potts.util.PottsEnums.Region-arcade.potts.util.PottsEnums.Region-">getAdhesion</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region1,
+           <a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region2)</code>
+<div class="block">Gets the adhesion between two regions.</div>
 </td>
 </tr>
 </table>
@@ -238,7 +238,7 @@ extends java.lang.Object</pre>
 <ul class="blockList">
 <li class="blockList">
 <h4>adhesionRegion</h4>
-<pre>final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&gt; adhesionRegion</pre>
+<pre>final&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&gt; adhesionRegion</pre>
 <div class="block">Adhesion values for cell by region.</div>
 </li>
 </ul>
@@ -278,7 +278,7 @@ extends java.lang.Object</pre>
 <h4>AdhesionHamiltonianConfig</h4>
 <pre>AdhesionHamiltonianConfig(<a href="../../../../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a>&nbsp;cell,
                           double[]&nbsp;adhesion,
-                          java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,java.lang.Double&gt;&gt;&nbsp;adhesionRegion)</pre>
+                          java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,java.lang.Double&gt;&gt;&nbsp;adhesionRegion)</pre>
 <div class="block">Creates parameter configuration for <code>AdhesionHamiltonian</code>.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -296,28 +296,10 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="getAdhesion-arcade.core.util.Enums.Region-arcade.core.util.Enums.Region-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getAdhesion</h4>
-<pre>public&nbsp;double&nbsp;getAdhesion(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region1,
-                          <a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region2)</pre>
-<div class="block">Gets the adhesion between two regions.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>region1</code> - the first region</dd>
-<dd><code>region2</code> - the second region</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the adhesion value</dd>
-</dl>
-</li>
-</ul>
 <a name="getAdhesion-int-">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getAdhesion</h4>
 <pre>public&nbsp;double&nbsp;getAdhesion(int&nbsp;target)</pre>
@@ -325,6 +307,24 @@ extends java.lang.Object</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>target</code> - the target cell population</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the adhesion value</dd>
+</dl>
+</li>
+</ul>
+<a name="getAdhesion-arcade.potts.util.PottsEnums.Region-arcade.potts.util.PottsEnums.Region-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getAdhesion</h4>
+<pre>public&nbsp;double&nbsp;getAdhesion(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region1,
+                          <a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region2)</pre>
+<div class="block">Gets the adhesion between two regions.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>region1</code> - the first region</dd>
+<dd><code>region2</code> - the second region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the adhesion value</dd>
 </dl>

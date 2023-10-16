@@ -79,17 +79,17 @@
 <dd>
 <div class="block">Main function for running ARCADE simulations through the GUI.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/core/agent/cell/Cell.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make(int, Enums.State, Location, MersenneTwisterFast)</a></span> - Method in interface arcade.core.agent.cell.<a href="../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/core/agent/cell/Cell.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make(int, CellState, Location, MersenneTwisterFast)</a></span> - Method in interface arcade.core.agent.cell.<a href="../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></dt>
 <dd>
 <div class="block">Creates a new cell.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCancer.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make(int, Enums.State, Location, MersenneTwisterFast)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCancer.html" title="class in arcade.patch.agent.cell">PatchCellCancer</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCancer.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make(int, CellState, Location, MersenneTwisterFast)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCancer.html" title="class in arcade.patch.agent.cell">PatchCellCancer</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCancerStem.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make(int, Enums.State, Location, MersenneTwisterFast)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCancerStem.html" title="class in arcade.patch.agent.cell">PatchCellCancerStem</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellCancerStem.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make(int, CellState, Location, MersenneTwisterFast)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellCancerStem.html" title="class in arcade.patch.agent.cell">PatchCellCancerStem</a></dt>
 <dd>
 <div class="block">Creates a new cell.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellTissue.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make(int, Enums.State, Location, MersenneTwisterFast)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellTissue.html" title="class in arcade.patch.agent.cell">PatchCellTissue</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCellTissue.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make(int, CellState, Location, MersenneTwisterFast)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCellTissue.html" title="class in arcade.patch.agent.cell">PatchCellTissue</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/agent/process/PatchProcessMetabolism.html#make-arcade.patch.agent.cell.PatchCell-java.lang.String-">make(PatchCell, String)</a></span> - Static method in class arcade.patch.agent.process.<a href="../arcade/patch/agent/process/PatchProcessMetabolism.html" title="class in arcade.patch.agent.process">PatchProcessMetabolism</a></dt>
 <dd>
@@ -99,7 +99,7 @@
 <dd>
 <div class="block">Creates a <code>PatchProcessSignaling</code> for given version.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/potts/agent/cell/PottsCell.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make(int, Enums.State, Location, MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/potts/agent/cell/PottsCell.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make(int, CellState, Location, MersenneTwisterFast)</a></span> - Method in class arcade.potts.agent.cell.<a href="../arcade/potts/agent/cell/PottsCell.html" title="class in arcade.potts.agent.cell">PottsCell</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/patch/sim/PatchSimulation.html#makeAction-java.lang.String-arcade.core.util.MiniBox-">makeAction(String, MiniBox)</a></span> - Method in class arcade.patch.sim.<a href="../arcade/patch/sim/PatchSimulation.html" title="class in arcade.patch.sim">PatchSimulation</a></dt>
 <dd>
@@ -241,13 +241,13 @@
 <dd>
 <div class="block">Creates a <a href="../arcade/core/util/MiniBox.html" title="class in arcade.core.util"><code>MiniBox</code></a> dictionary from attributes.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/patch/env/lattice/PatchLattice.html#makeOperation-arcade.core.util.Enums.Category-java.lang.String-">makeOperation(Enums.Category, String)</a></span> - Method in class arcade.patch.env.lattice.<a href="../arcade/patch/env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice">PatchLattice</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/patch/env/lattice/PatchLattice.html#makeOperation-arcade.patch.util.PatchEnums.Category-java.lang.String-">makeOperation(PatchEnums.Category, String)</a></span> - Method in class arcade.patch.env.lattice.<a href="../arcade/patch/env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice">PatchLattice</a></dt>
 <dd>
 <div class="block">Makes the specified <a href="../arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation"><code>Operation</code></a> object.</div>
 </dd>
-<dt><span class="memberNameLink"><a href="../arcade/patch/env/lattice/PatchLatticeRect.html#makeOperation-arcade.core.util.Enums.Category-java.lang.String-">makeOperation(Enums.Category, String)</a></span> - Method in class arcade.patch.env.lattice.<a href="../arcade/patch/env/lattice/PatchLatticeRect.html" title="class in arcade.patch.env.lattice">PatchLatticeRect</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/patch/env/lattice/PatchLatticeRect.html#makeOperation-arcade.patch.util.PatchEnums.Category-java.lang.String-">makeOperation(PatchEnums.Category, String)</a></span> - Method in class arcade.patch.env.lattice.<a href="../arcade/patch/env/lattice/PatchLatticeRect.html" title="class in arcade.patch.env.lattice">PatchLatticeRect</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/patch/env/lattice/PatchLatticeTri.html#makeOperation-arcade.core.util.Enums.Category-java.lang.String-">makeOperation(Enums.Category, String)</a></span> - Method in class arcade.patch.env.lattice.<a href="../arcade/patch/env/lattice/PatchLatticeTri.html" title="class in arcade.patch.env.lattice">PatchLatticeTri</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/patch/env/lattice/PatchLatticeTri.html#makeOperation-arcade.patch.util.PatchEnums.Category-java.lang.String-">makeOperation(PatchEnums.Category, String)</a></span> - Method in class arcade.patch.env.lattice.<a href="../arcade/patch/env/lattice/PatchLatticeTri.html" title="class in arcade.patch.env.lattice">PatchLatticeTri</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/core/vis/Drawer.html#makePort--">makePort()</a></span> - Method in class arcade.core.vis.<a href="../arcade/core/vis/Drawer.html" title="class in arcade.core.vis">Drawer</a></dt>
 <dd>
@@ -265,7 +265,7 @@
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="../arcade/potts/sim/PottsSimulation3D.html#makePotts--">makePotts()</a></span> - Method in class arcade.potts.sim.<a href="../arcade/potts/sim/PottsSimulation3D.html" title="class in arcade.potts.sim">PottsSimulation3D</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCell.html#makeProcess-arcade.core.util.Enums.Domain-java.lang.String-">makeProcess(Enums.Domain, String)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></dt>
+<dt><span class="memberNameLink"><a href="../arcade/patch/agent/cell/PatchCell.html#makeProcess-arcade.core.agent.process.ProcessDomain-java.lang.String-">makeProcess(ProcessDomain, String)</a></span> - Method in class arcade.patch.agent.cell.<a href="../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></dt>
 <dd>
 <div class="block">Makes the specified <a href="../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process"><code>Process</code></a> object.</div>
 </dd>

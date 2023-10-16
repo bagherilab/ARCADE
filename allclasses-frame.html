@@ -21,6 +21,7 @@
 <li><a href="arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell" target="classFrame"><span class="interfaceName">Cell</span></a></li>
 <li><a href="arcade/core/agent/cell/CellContainer.html" title="interface in arcade.core.agent.cell" target="classFrame"><span class="interfaceName">CellContainer</span></a></li>
 <li><a href="arcade/core/agent/cell/CellFactory.html" title="interface in arcade.core.agent.cell" target="classFrame"><span class="interfaceName">CellFactory</span></a></li>
+<li><a href="arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell" target="classFrame"><span class="interfaceName">CellState</span></a></li>
 <li><a href="arcade/core/util/Colors.html" title="class in arcade.core.util" target="classFrame">Colors</a></li>
 <li><a href="arcade/core/env/component/Component.html" title="interface in arcade.core.env.component" target="classFrame"><span class="interfaceName">Component</span></a></li>
 <li><a href="arcade/patch/env/location/Coordinate.html" title="class in arcade.patch.env.location" target="classFrame">Coordinate</a></li>
@@ -28,11 +29,6 @@
 <li><a href="arcade/patch/env/location/CoordinateXYZ.html" title="class in arcade.patch.env.location" target="classFrame">CoordinateXYZ</a></li>
 <li><a href="arcade/core/util/Distribution.html" title="class in arcade.core.util" target="classFrame">Distribution</a></li>
 <li><a href="arcade/core/vis/Drawer.html" title="class in arcade.core.vis" target="classFrame">Drawer</a></li>
-<li><a href="arcade/core/util/Enums.html" title="class in arcade.core.util" target="classFrame">Enums</a></li>
-<li><a href="arcade/core/util/Enums.Category.html" title="enum in arcade.core.util" target="classFrame">Enums.Category</a></li>
-<li><a href="arcade/core/util/Enums.Domain.html" title="enum in arcade.core.util" target="classFrame">Enums.Domain</a></li>
-<li><a href="arcade/core/util/Enums.Region.html" title="enum in arcade.core.util" target="classFrame">Enums.Region</a></li>
-<li><a href="arcade/core/util/Enums.State.html" title="enum in arcade.core.util" target="classFrame">Enums.State</a></li>
 <li><a href="arcade/core/util/Graph.html" title="class in arcade.core.util" target="classFrame">Graph</a></li>
 <li><a href="arcade/core/util/Graph.Edge.html" title="class in arcade.core.util" target="classFrame">Graph.Edge</a></li>
 <li><a href="arcade/core/util/Graph.GraphFilter.html" title="interface in arcade.core.util" target="classFrame"><span class="interfaceName">Graph.GraphFilter</span></a></li>
@@ -62,6 +58,7 @@
 <li><a href="arcade/core/util/MiniBox.html" title="class in arcade.core.util" target="classFrame">MiniBox</a></li>
 <li><a href="arcade/core/agent/module/Module.html" title="interface in arcade.core.agent.module" target="classFrame"><span class="interfaceName">Module</span></a></li>
 <li><a href="arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation" target="classFrame"><span class="interfaceName">Operation</span></a></li>
+<li><a href="arcade/core/env/operation/OperationCategory.html" title="interface in arcade.core.env.operation" target="classFrame"><span class="interfaceName">OperationCategory</span></a></li>
 <li><a href="arcade/core/sim/output/OutputDeserializer.html" title="class in arcade.core.sim.output" target="classFrame">OutputDeserializer</a></li>
 <li><a href="arcade/core/sim/output/OutputDeserializer.CellListDeserializer.html" title="class in arcade.core.sim.output" target="classFrame">OutputDeserializer.CellListDeserializer</a></li>
 <li><a href="arcade/core/sim/output/OutputDeserializer.LocationListDeserializer.html" title="class in arcade.core.sim.output" target="classFrame">OutputDeserializer.LocationListDeserializer</a></li>
@@ -139,8 +136,11 @@
 <li><a href="arcade/patch/vis/PatchDrawerRect.PatchGrid.html" title="class in arcade.patch.vis" target="classFrame">PatchDrawerRect.PatchGrid</a></li>
 <li><a href="arcade/patch/vis/PatchDrawerRect.PatchLayers.html" title="class in arcade.patch.vis" target="classFrame">PatchDrawerRect.PatchLayers</a></li>
 <li><a href="arcade/patch/util/PatchEnums.html" title="class in arcade.patch.util" target="classFrame">PatchEnums</a></li>
+<li><a href="arcade/patch/util/PatchEnums.Category.html" title="enum in arcade.patch.util" target="classFrame">PatchEnums.Category</a></li>
+<li><a href="arcade/patch/util/PatchEnums.Domain.html" title="enum in arcade.patch.util" target="classFrame">PatchEnums.Domain</a></li>
 <li><a href="arcade/patch/util/PatchEnums.Flag.html" title="enum in arcade.patch.util" target="classFrame">PatchEnums.Flag</a></li>
 <li><a href="arcade/patch/util/PatchEnums.Ordering.html" title="enum in arcade.patch.util" target="classFrame">PatchEnums.Ordering</a></li>
+<li><a href="arcade/patch/util/PatchEnums.State.html" title="enum in arcade.patch.util" target="classFrame">PatchEnums.State</a></li>
 <li><a href="arcade/patch/env/grid/PatchGrid.html" title="class in arcade.patch.env.grid" target="classFrame">PatchGrid</a></li>
 <li><a href="arcade/patch/sim/input/PatchInputBuilder.html" title="class in arcade.patch.sim.input" target="classFrame">PatchInputBuilder</a></li>
 <li><a href="arcade/patch/env/lattice/PatchLattice.html" title="class in arcade.patch.env.lattice" target="classFrame">PatchLattice</a></li>
@@ -212,8 +212,11 @@
 <li><a href="arcade/potts/vis/PottsDrawer.View.html" title="enum in arcade.potts.vis" target="classFrame">PottsDrawer.View</a></li>
 <li><a href="arcade/potts/util/PottsEnums.html" title="class in arcade.potts.util" target="classFrame">PottsEnums</a></li>
 <li><a href="arcade/potts/util/PottsEnums.Direction.html" title="enum in arcade.potts.util" target="classFrame">PottsEnums.Direction</a></li>
+<li><a href="arcade/potts/util/PottsEnums.Domain.html" title="enum in arcade.potts.util" target="classFrame">PottsEnums.Domain</a></li>
 <li><a href="arcade/potts/util/PottsEnums.Ordering.html" title="enum in arcade.potts.util" target="classFrame">PottsEnums.Ordering</a></li>
 <li><a href="arcade/potts/util/PottsEnums.Phase.html" title="enum in arcade.potts.util" target="classFrame">PottsEnums.Phase</a></li>
+<li><a href="arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util" target="classFrame">PottsEnums.Region</a></li>
+<li><a href="arcade/potts/util/PottsEnums.State.html" title="enum in arcade.potts.util" target="classFrame">PottsEnums.State</a></li>
 <li><a href="arcade/potts/util/PottsEnums.Term.html" title="enum in arcade.potts.util" target="classFrame">PottsEnums.Term</a></li>
 <li><a href="arcade/potts/env/grid/PottsGrid.html" title="class in arcade.potts.env.grid" target="classFrame">PottsGrid</a></li>
 <li><a href="arcade/potts/sim/input/PottsInputBuilder.html" title="class in arcade.potts.sim.input" target="classFrame">PottsInputBuilder</a></li>
@@ -255,6 +258,7 @@
 <li><a href="arcade/potts/sim/PottsSimulation3D.html" title="class in arcade.potts.sim" target="classFrame">PottsSimulation3D</a></li>
 <li><a href="arcade/potts/vis/PottsVisualization.html" title="class in arcade.potts.vis" target="classFrame">PottsVisualization</a></li>
 <li><a href="arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process" target="classFrame"><span class="interfaceName">Process</span></a></li>
+<li><a href="arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process" target="classFrame"><span class="interfaceName">ProcessDomain</span></a></li>
 <li><a href="arcade/core/sim/Series.html" title="class in arcade.core.sim" target="classFrame">Series</a></li>
 <li><a href="arcade/core/sim/Simulation.html" title="interface in arcade.core.sim" target="classFrame"><span class="interfaceName">Simulation</span></a></li>
 <li><a href="arcade/core/util/Solver.html" title="class in arcade.core.util" target="classFrame">Solver</a></li>

@@ -155,7 +155,7 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 <th class="colLast" scope="col">Field and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,<a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&gt;</code></td>
+<td class="colFirst"><code>protected java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,<a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#locations">locations</a></span></code>
 <div class="block">Map of region to location.</div>
 </td>
@@ -203,24 +203,24 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#add-arcade.core.util.Enums.Region-int-int-int-">add</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
-   int&nbsp;x,
-   int&nbsp;y,
-   int&nbsp;z)</code>
-<div class="block">Adds a voxel at the given coordinates for given region.</div>
-</td>
-</tr>
-<tr id="i1" class="rowColor">
-<td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#add-int-int-int-">add</a></span>(int&nbsp;x,
    int&nbsp;y,
    int&nbsp;z)</code>
 <div class="block">Adds a voxel at the given coordinates.</div>
 </td>
 </tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#add-arcade.potts.util.PottsEnums.Region-int-int-int-">add</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
+   int&nbsp;x,
+   int&nbsp;y,
+   int&nbsp;z)</code>
+<div class="block">Adds a voxel at the given coordinates for given region.</div>
+</td>
+</tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#assign-arcade.core.util.Enums.Region-arcade.potts.env.location.Voxel-">assign</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#assign-arcade.potts.util.PottsEnums.Region-arcade.potts.env.location.Voxel-">assign</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
       <a href="../../../../arcade/potts/env/location/Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;voxel)</code>
 <div class="block">Assigns the voxel at the given coordinates to the given region.</div>
 </td>
@@ -240,7 +240,7 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#distribute-arcade.core.util.Enums.Region-int-ec.util.MersenneTwisterFast-">distribute</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#distribute-arcade.potts.util.PottsEnums.Region-int-ec.util.MersenneTwisterFast-">distribute</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
           int&nbsp;target,
           ec.util.MersenneTwisterFast&nbsp;random)</code>
 <div class="block">Assigns target number of voxels to given region.</div>
@@ -248,37 +248,37 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code>double[]</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#getCentroid-arcade.core.util.Enums.Region-">getCentroid</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#getCentroid-arcade.potts.util.PottsEnums.Region-">getCentroid</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets the centroid of the location for the region.</div>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#getHeight-arcade.core.util.Enums.Region-">getHeight</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#getHeight-arcade.potts.util.PottsEnums.Region-">getHeight</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets the height of the location for a given region.</div>
 </td>
 </tr>
 <tr id="i8" class="altColor">
-<td class="colFirst"><code>java.util.EnumSet&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&gt;</code></td>
+<td class="colFirst"><code>java.util.EnumSet&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#getRegions--">getRegions</a></span>()</code>
 <div class="block">Gets a set of regions.</div>
 </td>
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#getSurface-arcade.core.util.Enums.Region-">getSurface</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#getSurface-arcade.potts.util.PottsEnums.Region-">getSurface</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets the surface area of the location for a given region.</div>
 </td>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#getVolume-arcade.core.util.Enums.Region-">getVolume</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#getVolume-arcade.potts.util.PottsEnums.Region-">getVolume</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets the volume of the location for a given region.</div>
 </td>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../../../arcade/potts/env/location/Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#getVoxels-arcade.core.util.Enums.Region-">getVoxels</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#getVoxels-arcade.potts.util.PottsEnums.Region-">getVoxels</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</code>
 <div class="block">Gets all voxels for a region.</div>
 </td>
 </tr>
@@ -290,19 +290,19 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#remove-arcade.core.util.Enums.Region-int-int-int-">remove</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
-      int&nbsp;x,
-      int&nbsp;y,
-      int&nbsp;z)</code>
-<div class="block">Removes the voxel at the given coordinates for given region.</div>
-</td>
-</tr>
-<tr id="i14" class="altColor">
-<td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#remove-int-int-int-">remove</a></span>(int&nbsp;x,
       int&nbsp;y,
       int&nbsp;z)</code>
 <div class="block">Removes the voxel at the given coordinates.</div>
+</td>
+</tr>
+<tr id="i14" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/potts/env/location/PottsLocations.html#remove-arcade.potts.util.PottsEnums.Region-int-int-int-">remove</a></span>(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
+      int&nbsp;x,
+      int&nbsp;y,
+      int&nbsp;z)</code>
+<div class="block">Removes the voxel at the given coordinates for given region.</div>
 </td>
 </tr>
 <tr id="i15" class="rowColor">
@@ -356,7 +356,7 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 <ul class="blockListLast">
 <li class="blockList">
 <h4>locations</h4>
-<pre>protected&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>,<a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&gt; locations</pre>
+<pre>protected&nbsp;java.util.EnumMap&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>,<a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a>&gt; locations</pre>
 <div class="block">Map of region to location.</div>
 </li>
 </ul>
@@ -390,29 +390,6 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="add-arcade.core.util.Enums.Region-int-int-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>add</h4>
-<pre>public&nbsp;void&nbsp;add(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
-                int&nbsp;x,
-                int&nbsp;y,
-                int&nbsp;z)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#add-arcade.core.util.Enums.Region-int-int-int-">PottsLocation</a></code></span></div>
-<div class="block">Adds a voxel at the given coordinates for given region.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#add-arcade.core.util.Enums.Region-int-int-int-">add</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>region</code> - the voxel region</dd>
-<dd><code>x</code> - the x coordinate</dd>
-<dd><code>y</code> - the y coordinate</dd>
-<dd><code>z</code> - the z coordinate</dd>
-</dl>
-</li>
-</ul>
 <a name="add-int-int-int-">
 <!--   -->
 </a>
@@ -434,19 +411,42 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </dl>
 </li>
 </ul>
-<a name="assign-arcade.core.util.Enums.Region-arcade.potts.env.location.Voxel-">
+<a name="add-arcade.potts.util.PottsEnums.Region-int-int-int-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>add</h4>
+<pre>public&nbsp;void&nbsp;add(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
+                int&nbsp;x,
+                int&nbsp;y,
+                int&nbsp;z)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#add-arcade.potts.util.PottsEnums.Region-int-int-int-">PottsLocation</a></code></span></div>
+<div class="block">Adds a voxel at the given coordinates for given region.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#add-arcade.potts.util.PottsEnums.Region-int-int-int-">add</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>region</code> - the voxel region</dd>
+<dd><code>x</code> - the x coordinate</dd>
+<dd><code>y</code> - the y coordinate</dd>
+<dd><code>z</code> - the z coordinate</dd>
+</dl>
+</li>
+</ul>
+<a name="assign-arcade.potts.util.PottsEnums.Region-arcade.potts.env.location.Voxel-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>assign</h4>
-<pre>public&nbsp;void&nbsp;assign(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
+<pre>public&nbsp;void&nbsp;assign(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
                    <a href="../../../../arcade/potts/env/location/Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&nbsp;voxel)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#assign-arcade.core.util.Enums.Region-arcade.potts.env.location.Voxel-">PottsLocation</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#assign-arcade.potts.util.PottsEnums.Region-arcade.potts.env.location.Voxel-">PottsLocation</a></code></span></div>
 <div class="block">Assigns the voxel at the given coordinates to the given region.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#assign-arcade.core.util.Enums.Region-arcade.potts.env.location.Voxel-">assign</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
+<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#assign-arcade.potts.util.PottsEnums.Region-arcade.potts.env.location.Voxel-">assign</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - the voxel region</dd>
 <dd><code>voxel</code> - the voxel to assign</dd>
@@ -493,20 +493,20 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </dl>
 </li>
 </ul>
-<a name="distribute-arcade.core.util.Enums.Region-int-ec.util.MersenneTwisterFast-">
+<a name="distribute-arcade.potts.util.PottsEnums.Region-int-ec.util.MersenneTwisterFast-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>distribute</h4>
-<pre>public&nbsp;void&nbsp;distribute(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
+<pre>public&nbsp;void&nbsp;distribute(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
                        int&nbsp;target,
                        ec.util.MersenneTwisterFast&nbsp;random)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#distribute-arcade.core.util.Enums.Region-int-ec.util.MersenneTwisterFast-">PottsLocation</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#distribute-arcade.potts.util.PottsEnums.Region-int-ec.util.MersenneTwisterFast-">PottsLocation</a></code></span></div>
 <div class="block">Assigns target number of voxels to given region.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#distribute-arcade.core.util.Enums.Region-int-ec.util.MersenneTwisterFast-">distribute</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
+<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#distribute-arcade.potts.util.PottsEnums.Region-int-ec.util.MersenneTwisterFast-">distribute</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - the region to assign</dd>
 <dd><code>target</code> - the target number of voxels to assign</dd>
@@ -514,21 +514,21 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </dl>
 </li>
 </ul>
-<a name="getCentroid-arcade.core.util.Enums.Region-">
+<a name="getCentroid-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getCentroid</h4>
-<pre>public&nbsp;double[]&nbsp;getCentroid(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getCentroid-arcade.core.util.Enums.Region-">PottsLocation</a></code></span></div>
+<pre>public&nbsp;double[]&nbsp;getCentroid(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getCentroid-arcade.potts.util.PottsEnums.Region-">PottsLocation</a></code></span></div>
 <div class="block">Gets the centroid of the location for the region.
  <p>
  Note that centroid positions may not be integer values. If a specific
  center voxel is needed, use <code>getCenter()</code> instead.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getCentroid-arcade.core.util.Enums.Region-">getCentroid</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
+<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getCentroid-arcade.potts.util.PottsEnums.Region-">getCentroid</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - the voxel region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -536,20 +536,18 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </dl>
 </li>
 </ul>
-<a name="getHeight-arcade.core.util.Enums.Region-">
+<a name="getHeight-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getHeight</h4>
-<pre>public&nbsp;double&nbsp;getHeight(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html#getHeight-arcade.core.util.Enums.Region-">Location</a></code></span></div>
+<pre>public&nbsp;double&nbsp;getHeight(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getHeight-arcade.potts.util.PottsEnums.Region-">PottsLocation</a></code></span></div>
 <div class="block">Gets the height of the location for a given region.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/env/location/Location.html#getHeight-arcade.core.util.Enums.Region-">getHeight</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></dd>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getHeight-arcade.core.util.Enums.Region-">getHeight</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
+<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getHeight-arcade.potts.util.PottsEnums.Region-">getHeight</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -563,12 +561,10 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 <ul class="blockList">
 <li class="blockList">
 <h4>getRegions</h4>
-<pre>public&nbsp;java.util.EnumSet&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&gt;&nbsp;getRegions()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html#getRegions--">Location</a></code></span></div>
+<pre>public&nbsp;java.util.EnumSet&lt;<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&gt;&nbsp;getRegions()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getRegions--">PottsLocation</a></code></span></div>
 <div class="block">Gets a set of regions.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/env/location/Location.html#getRegions--">getRegions</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></dd>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getRegions--">getRegions</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -576,20 +572,18 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </dl>
 </li>
 </ul>
-<a name="getSurface-arcade.core.util.Enums.Region-">
+<a name="getSurface-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getSurface</h4>
-<pre>public&nbsp;double&nbsp;getSurface(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html#getSurface-arcade.core.util.Enums.Region-">Location</a></code></span></div>
+<pre>public&nbsp;double&nbsp;getSurface(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getSurface-arcade.potts.util.PottsEnums.Region-">PottsLocation</a></code></span></div>
 <div class="block">Gets the surface area of the location for a given region.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/env/location/Location.html#getSurface-arcade.core.util.Enums.Region-">getSurface</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></dd>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getSurface-arcade.core.util.Enums.Region-">getSurface</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
+<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getSurface-arcade.potts.util.PottsEnums.Region-">getSurface</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -597,20 +591,18 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </dl>
 </li>
 </ul>
-<a name="getVolume-arcade.core.util.Enums.Region-">
+<a name="getVolume-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getVolume</h4>
-<pre>public&nbsp;double&nbsp;getVolume(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html#getVolume-arcade.core.util.Enums.Region-">Location</a></code></span></div>
+<pre>public&nbsp;double&nbsp;getVolume(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getVolume-arcade.potts.util.PottsEnums.Region-">PottsLocation</a></code></span></div>
 <div class="block">Gets the volume of the location for a given region.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/env/location/Location.html#getVolume-arcade.core.util.Enums.Region-">getVolume</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></dd>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getVolume-arcade.core.util.Enums.Region-">getVolume</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
+<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getVolume-arcade.potts.util.PottsEnums.Region-">getVolume</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -618,18 +610,18 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </dl>
 </li>
 </ul>
-<a name="getVoxels-arcade.core.util.Enums.Region-">
+<a name="getVoxels-arcade.potts.util.PottsEnums.Region-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getVoxels</h4>
-<pre>public&nbsp;java.util.ArrayList&lt;<a href="../../../../arcade/potts/env/location/Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;&nbsp;getVoxels(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getVoxels-arcade.core.util.Enums.Region-">PottsLocation</a></code></span></div>
+<pre>public&nbsp;java.util.ArrayList&lt;<a href="../../../../arcade/potts/env/location/Voxel.html" title="class in arcade.potts.env.location">Voxel</a>&gt;&nbsp;getVoxels(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getVoxels-arcade.potts.util.PottsEnums.Region-">PottsLocation</a></code></span></div>
 <div class="block">Gets all voxels for a region.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getVoxels-arcade.core.util.Enums.Region-">getVoxels</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
+<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#getVoxels-arcade.potts.util.PottsEnums.Region-">getVoxels</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>region</code> - the region</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -653,29 +645,6 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 </dl>
 </li>
 </ul>
-<a name="remove-arcade.core.util.Enums.Region-int-int-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>remove</h4>
-<pre>public&nbsp;void&nbsp;remove(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region,
-                   int&nbsp;x,
-                   int&nbsp;y,
-                   int&nbsp;z)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#remove-arcade.core.util.Enums.Region-int-int-int-">PottsLocation</a></code></span></div>
-<div class="block">Removes the voxel at the given coordinates for given region.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#remove-arcade.core.util.Enums.Region-int-int-int-">remove</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>region</code> - the voxel region</dd>
-<dd><code>x</code> - the x coordinate</dd>
-<dd><code>y</code> - the y coordinate</dd>
-<dd><code>z</code> - the z coordinate</dd>
-</dl>
-</li>
-</ul>
 <a name="remove-int-int-int-">
 <!--   -->
 </a>
@@ -691,6 +660,29 @@ extends <a href="../../../../arcade/potts/env/location/PottsLocation.html" title
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#remove-int-int-int-">remove</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>x</code> - the x coordinate</dd>
+<dd><code>y</code> - the y coordinate</dd>
+<dd><code>z</code> - the z coordinate</dd>
+</dl>
+</li>
+</ul>
+<a name="remove-arcade.potts.util.PottsEnums.Region-int-int-int-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>remove</h4>
+<pre>public&nbsp;void&nbsp;remove(<a href="../../../../arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util">PottsEnums.Region</a>&nbsp;region,
+                   int&nbsp;x,
+                   int&nbsp;y,
+                   int&nbsp;z)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html#remove-arcade.potts.util.PottsEnums.Region-int-int-int-">PottsLocation</a></code></span></div>
+<div class="block">Removes the voxel at the given coordinates for given region.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../arcade/potts/env/location/PottsLocation.html#remove-arcade.potts.util.PottsEnums.Region-int-int-int-">remove</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/potts/env/location/PottsLocation.html" title="class in arcade.potts.env.location">PottsLocation</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>region</code> - the voxel region</dd>
 <dd><code>x</code> - the x coordinate</dd>
 <dd><code>y</code> - the y coordinate</dd>
 <dd><code>z</code> - the z coordinate</dd>

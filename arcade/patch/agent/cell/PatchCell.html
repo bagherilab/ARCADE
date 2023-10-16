@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":9,"i1":10,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":9,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10};
+var methods = {"i0":9,"i1":10,"i2":9,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":9,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -267,7 +267,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected java.util.Map&lt;<a href="../../../../arcade/core/util/Enums.Domain.html" title="enum in arcade.core.util">Enums.Domain</a>,<a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a>&gt;</code></td>
+<td class="colFirst"><code>protected java.util.Map&lt;<a href="../../../../arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>,<a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#processes">processes</a></span></code>
 <div class="block">Map of process domains and <a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process"><code>Process</code></a> instance.</div>
 </td>
@@ -279,7 +279,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>(package private) <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a></code></td>
+<td class="colFirst"><code>(package private) <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#state">state</a></span></code>
 <div class="block">Cell state.</div>
 </td>
@@ -311,10 +311,10 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#PatchCell-int-int-int-arcade.core.util.Enums.State-int-int-arcade.core.env.location.Location-arcade.core.util.MiniBox-double-double-double-double-">PatchCell</a></span>(int&nbsp;id,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#PatchCell-int-int-int-arcade.core.agent.cell.CellState-int-int-arcade.core.env.location.Location-arcade.core.util.MiniBox-double-double-double-double-">PatchCell</a></span>(int&nbsp;id,
          int&nbsp;parent,
          int&nbsp;pop,
-         <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state,
+         <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state,
          int&nbsp;age,
          int&nbsp;divisions,
          <a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;location,
@@ -376,126 +376,96 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getCriticalHeight-arcade.core.util.Enums.Region-">getCriticalHeight</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
-<div class="block">Gets the critical height for a region.</div>
-</td>
-</tr>
-<tr id="i6" class="altColor">
-<td class="colFirst"><code>double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getCriticalVolume--">getCriticalVolume</a></span>()</code>
 <div class="block">Gets the critical volume.</div>
 </td>
 </tr>
-<tr id="i7" class="rowColor">
-<td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getCriticalVolume-arcade.core.util.Enums.Region-">getCriticalVolume</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
-<div class="block">Gets the critical volume for a region.</div>
-</td>
-</tr>
-<tr id="i8" class="altColor">
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getDivisions--">getDivisions</a></span>()</code>
 <div class="block">Gets the cell divisions.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getEnergy--">getEnergy</a></span>()</code>
 <div class="block">Gets the cell energy level.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getHeight--">getHeight</a></span>()</code>
 <div class="block">Gets the cell height.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
-<td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getHeight-arcade.core.util.Enums.Region-">getHeight</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
-<div class="block">Gets the cell height for a region.</div>
-</td>
-</tr>
-<tr id="i12" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getID--">getID</a></span>()</code>
 <div class="block">Gets the unique cell ID.</div>
 </td>
 </tr>
-<tr id="i13" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code><a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getLocation--">getLocation</a></span>()</code>
 <div class="block">Gets the cell location object.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../../arcade/core/agent/module/Module.html" title="interface in arcade.core.agent.module">Module</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getModule--">getModule</a></span>()</code>
 <div class="block">Gets the cell module object.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="../../../../arcade/core/util/MiniBox.html" title="class in arcade.core.util">MiniBox</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getParameters--">getParameters</a></span>()</code>
 <div class="block">Gets the cell population parameters.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getParent--">getParent</a></span>()</code>
 <div class="block">Gets the cell parent ID.</div>
 </td>
 </tr>
-<tr id="i17" class="rowColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getPop--">getPop</a></span>()</code>
 <div class="block">Gets the cell population index.</div>
 </td>
 </tr>
-<tr id="i18" class="altColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code><a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getProcess-arcade.core.util.Enums.Domain-">getProcess</a></span>(<a href="../../../../arcade/core/util/Enums.Domain.html" title="enum in arcade.core.util">Enums.Domain</a>&nbsp;domain)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getProcess-arcade.core.agent.process.ProcessDomain-">getProcess</a></span>(<a href="../../../../arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain)</code>
 <div class="block">Gets the cell process object.</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
-<td class="colFirst"><code><a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a></code></td>
+<tr id="i16" class="altColor">
+<td class="colFirst"><code><a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getState--">getState</a></span>()</code>
 <div class="block">Gets the cell state.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i17" class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getVolume--">getVolume</a></span>()</code>
 <div class="block">Gets the cell volume.</div>
 </td>
 </tr>
-<tr id="i21" class="rowColor">
-<td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#getVolume-arcade.core.util.Enums.Region-">getVolume</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
-<div class="block">Gets the cell volume for a region.</div>
-</td>
-</tr>
-<tr id="i22" class="altColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#hasRegions--">hasRegions</a></span>()</code>
-<div class="block">Checks if the cell has regions.</div>
-</td>
-</tr>
-<tr id="i23" class="rowColor">
+<tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#makeProcess-arcade.core.util.Enums.Domain-java.lang.String-">makeProcess</a></span>(<a href="../../../../arcade/core/util/Enums.Domain.html" title="enum in arcade.core.util">Enums.Domain</a>&nbsp;domain,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#makeProcess-arcade.core.agent.process.ProcessDomain-java.lang.String-">makeProcess</a></span>(<a href="../../../../arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain,
            java.lang.String&nbsp;version)</code>
 <div class="block">Makes the specified <a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process"><code>Process</code></a> object.</div>
 </td>
 </tr>
-<tr id="i24" class="altColor">
+<tr id="i19" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#schedule-sim.engine.Schedule-">schedule</a></span>(sim.engine.Schedule&nbsp;schedule)</code>
 <div class="block">Schedules the cell in the simulation.</div>
 </td>
 </tr>
-<tr id="i25" class="rowColor">
+<tr id="i20" class="altColor">
 <td class="colFirst"><code>static <a href="../../../../arcade/patch/env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#selectBestLocation-arcade.core.sim.Simulation-arcade.patch.env.location.PatchLocation-double-double-ec.util.MersenneTwisterFast-">selectBestLocation</a></span>(<a href="../../../../arcade/core/sim/Simulation.html" title="interface in arcade.core.sim">Simulation</a>&nbsp;sim,
                   <a href="../../../../arcade/patch/env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a>&nbsp;location,
@@ -505,35 +475,35 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <div class="block">Selects the best location for a cell to be added or move into.</div>
 </td>
 </tr>
-<tr id="i26" class="altColor">
+<tr id="i21" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#setEnergy-double-">setEnergy</a></span>(double&nbsp;energy)</code>
 <div class="block">Sets the cell energy level.</div>
 </td>
 </tr>
-<tr id="i27" class="rowColor">
+<tr id="i22" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#setFlag-arcade.patch.util.PatchEnums.Flag-">setFlag</a></span>(<a href="../../../../arcade/patch/util/PatchEnums.Flag.html" title="enum in arcade.patch.util">PatchEnums.Flag</a>&nbsp;flag)</code>
 <div class="block">Sets the cell flag.</div>
 </td>
 </tr>
-<tr id="i28" class="altColor">
+<tr id="i23" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#setState-arcade.core.util.Enums.State-">setState</a></span>(<a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state)</code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#setState-arcade.core.agent.cell.CellState-">setState</a></span>(<a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state)</code>
 <div class="block">Sets the cell state.</div>
 </td>
 </tr>
-<tr id="i29" class="rowColor">
+<tr id="i24" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#setVolume-double-">setVolume</a></span>(double&nbsp;volume)</code>
 <div class="block">Sets the cell volume.</div>
 </td>
 </tr>
-<tr id="i30" class="altColor">
+<tr id="i25" class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#step-sim.engine.SimState-">step</a></span>(sim.engine.SimState&nbsp;simstate)</code>&nbsp;</td>
 </tr>
-<tr id="i31" class="rowColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCell.html#stop--">stop</a></span>()</code>
 <div class="block">Stop the cell from stepping.</div>
@@ -552,7 +522,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <!--   -->
 </a>
 <h3>Methods inherited from interface&nbsp;arcade.core.agent.cell.<a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></h3>
-<code><a href="../../../../arcade/core/agent/cell/Cell.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></code></li>
+<code><a href="../../../../arcade/core/agent/cell/Cell.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></code></li>
 </ul>
 </li>
 </ul>
@@ -734,7 +704,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <ul class="blockList">
 <li class="blockList">
 <h4>processes</h4>
-<pre>protected final&nbsp;java.util.Map&lt;<a href="../../../../arcade/core/util/Enums.Domain.html" title="enum in arcade.core.util">Enums.Domain</a>,<a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a>&gt; processes</pre>
+<pre>protected final&nbsp;java.util.Map&lt;<a href="../../../../arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>,<a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a>&gt; processes</pre>
 <div class="block">Map of process domains and <a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process"><code>Process</code></a> instance.</div>
 </li>
 </ul>
@@ -754,7 +724,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <ul class="blockList">
 <li class="blockList">
 <h4>state</h4>
-<pre><a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a> state</pre>
+<pre><a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a> state</pre>
 <div class="block">Cell state.</div>
 </li>
 </ul>
@@ -786,7 +756,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="PatchCell-int-int-int-arcade.core.util.Enums.State-int-int-arcade.core.env.location.Location-arcade.core.util.MiniBox-double-double-double-double-">
+<a name="PatchCell-int-int-int-arcade.core.agent.cell.CellState-int-int-arcade.core.env.location.Location-arcade.core.util.MiniBox-double-double-double-double-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -795,7 +765,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <pre>public&nbsp;PatchCell(int&nbsp;id,
                  int&nbsp;parent,
                  int&nbsp;pop,
-                 <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state,
+                 <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state,
                  int&nbsp;age,
                  int&nbsp;divisions,
                  <a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;location,
@@ -930,25 +900,6 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="getCriticalHeight-arcade.core.util.Enums.Region-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getCriticalHeight</h4>
-<pre>public&nbsp;double&nbsp;getCriticalHeight(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getCriticalHeight-arcade.core.util.Enums.Region-">Cell</a></code></span></div>
-<div class="block">Gets the critical height for a region.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getCriticalHeight-arcade.core.util.Enums.Region-">getCriticalHeight</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>region</code> - the region</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the critical region height</dd>
-</dl>
-</li>
-</ul>
 <a name="getCriticalVolume--">
 <!--   -->
 </a>
@@ -963,25 +914,6 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getCriticalVolume--">getCriticalVolume</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the critical volume</dd>
-</dl>
-</li>
-</ul>
-<a name="getCriticalVolume-arcade.core.util.Enums.Region-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getCriticalVolume</h4>
-<pre>public&nbsp;double&nbsp;getCriticalVolume(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getCriticalVolume-arcade.core.util.Enums.Region-">Cell</a></code></span></div>
-<div class="block">Gets the critical volume for a region.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getCriticalVolume-arcade.core.util.Enums.Region-">getCriticalVolume</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>region</code> - the region</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the critical region volume</dd>
 </dl>
 </li>
 </ul>
@@ -1030,25 +962,6 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getHeight--">getHeight</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the cell height</dd>
-</dl>
-</li>
-</ul>
-<a name="getHeight-arcade.core.util.Enums.Region-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getHeight</h4>
-<pre>public&nbsp;double&nbsp;getHeight(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getHeight-arcade.core.util.Enums.Region-">Cell</a></code></span></div>
-<div class="block">Gets the cell height for a region.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getHeight-arcade.core.util.Enums.Region-">getHeight</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>region</code> - the region</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the cell region height</dd>
 </dl>
 </li>
 </ul>
@@ -1154,18 +1067,18 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="getProcess-arcade.core.util.Enums.Domain-">
+<a name="getProcess-arcade.core.agent.process.ProcessDomain-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>getProcess</h4>
-<pre>public&nbsp;<a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a>&nbsp;getProcess(<a href="../../../../arcade/core/util/Enums.Domain.html" title="enum in arcade.core.util">Enums.Domain</a>&nbsp;domain)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getProcess-arcade.core.util.Enums.Domain-">Cell</a></code></span></div>
+<pre>public&nbsp;<a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a>&nbsp;getProcess(<a href="../../../../arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getProcess-arcade.core.agent.process.ProcessDomain-">Cell</a></code></span></div>
 <div class="block">Gets the cell process object.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getProcess-arcade.core.util.Enums.Domain-">getProcess</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
+<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getProcess-arcade.core.agent.process.ProcessDomain-">getProcess</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>domain</code> - the process domain</dd>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -1179,7 +1092,7 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 <ul class="blockList">
 <li class="blockList">
 <h4>getState</h4>
-<pre>public&nbsp;<a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;getState()</pre>
+<pre>public&nbsp;<a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;getState()</pre>
 <div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getState--">Cell</a></code></span></div>
 <div class="block">Gets the cell state.</div>
 <dl>
@@ -1207,49 +1120,13 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="getVolume-arcade.core.util.Enums.Region-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getVolume</h4>
-<pre>public&nbsp;double&nbsp;getVolume(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#getVolume-arcade.core.util.Enums.Region-">Cell</a></code></span></div>
-<div class="block">Gets the cell volume for a region.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#getVolume-arcade.core.util.Enums.Region-">getVolume</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>region</code> - the region</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the cell region volume</dd>
-</dl>
-</li>
-</ul>
-<a name="hasRegions--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>hasRegions</h4>
-<pre>public&nbsp;boolean&nbsp;hasRegions()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#hasRegions--">Cell</a></code></span></div>
-<div class="block">Checks if the cell has regions.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#hasRegions--">hasRegions</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd><code>true</code> if the cell has regions, <code>false</code> otherwise</dd>
-</dl>
-</li>
-</ul>
-<a name="makeProcess-arcade.core.util.Enums.Domain-java.lang.String-">
+<a name="makeProcess-arcade.core.agent.process.ProcessDomain-java.lang.String-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>makeProcess</h4>
-<pre>public&nbsp;<a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a>&nbsp;makeProcess(<a href="../../../../arcade/core/util/Enums.Domain.html" title="enum in arcade.core.util">Enums.Domain</a>&nbsp;domain,
+<pre>public&nbsp;<a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process">Process</a>&nbsp;makeProcess(<a href="../../../../arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>&nbsp;domain,
                            java.lang.String&nbsp;version)</pre>
 <div class="block">Makes the specified <a href="../../../../arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process"><code>Process</code></a> object.</div>
 <dl>
@@ -1333,18 +1210,18 @@ implements <a href="../../../../arcade/core/agent/cell/Cell.html" title="interfa
 </dl>
 </li>
 </ul>
-<a name="setState-arcade.core.util.Enums.State-">
+<a name="setState-arcade.core.agent.cell.CellState-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>setState</h4>
-<pre>public&nbsp;void&nbsp;setState(<a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#setState-arcade.core.util.Enums.State-">Cell</a></code></span></div>
+<pre>public&nbsp;void&nbsp;setState(<a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#setState-arcade.core.agent.cell.CellState-">Cell</a></code></span></div>
 <div class="block">Sets the cell state.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#setState-arcade.core.util.Enums.State-">setState</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
+<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#setState-arcade.core.agent.cell.CellState-">setState</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>state</code> - the cell state</dd>
 </dl>

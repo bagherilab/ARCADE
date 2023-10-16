@@ -176,7 +176,6 @@
 </li>
 </ul>
 </li>
-<li type="circle">arcade.core.util.<a href="arcade/core/util/Enums.html" title="class in arcade.core.util"><span class="typeNameLink">Enums</span></a></li>
 <li type="circle">sim.portrayal.FieldPortrayal
 <ul>
 <li type="circle">sim.portrayal.FieldPortrayal2D (implements sim.portrayal.Portrayal2D)
@@ -512,6 +511,7 @@
 <ul>
 <li type="circle">arcade.core.agent.cell.<a href="arcade/core/agent/cell/CellContainer.html" title="interface in arcade.core.agent.cell"><span class="typeNameLink">CellContainer</span></a></li>
 <li type="circle">arcade.core.agent.cell.<a href="arcade/core/agent/cell/CellFactory.html" title="interface in arcade.core.agent.cell"><span class="typeNameLink">CellFactory</span></a></li>
+<li type="circle">arcade.core.agent.cell.<a href="arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell"><span class="typeNameLink">CellState</span></a></li>
 <li type="circle">arcade.core.util.<a href="arcade/core/util/Graph.GraphFilter.html" title="interface in arcade.core.util"><span class="typeNameLink">Graph.GraphFilter</span></a></li>
 <li type="circle">arcade.core.env.grid.<a href="arcade/core/env/grid/Grid.html" title="interface in arcade.core.env.grid"><span class="typeNameLink">Grid</span></a></li>
 <li type="circle">arcade.potts.sim.hamiltonian.<a href="arcade/potts/sim/hamiltonian/Hamiltonian.html" title="interface in arcade.potts.sim.hamiltonian"><span class="typeNameLink">Hamiltonian</span></a></li>
@@ -523,8 +523,10 @@
 <li type="circle">arcade.core.env.location.<a href="arcade/core/env/location/LocationFactory.html" title="interface in arcade.core.env.location"><span class="typeNameLink">LocationFactory</span></a></li>
 <li type="circle">arcade.core.agent.module.<a href="arcade/core/agent/module/Module.html" title="interface in arcade.core.agent.module"><span class="typeNameLink">Module</span></a></li>
 <li type="circle">arcade.core.env.operation.<a href="arcade/core/env/operation/Operation.html" title="interface in arcade.core.env.operation"><span class="typeNameLink">Operation</span></a></li>
+<li type="circle">arcade.core.env.operation.<a href="arcade/core/env/operation/OperationCategory.html" title="interface in arcade.core.env.operation"><span class="typeNameLink">OperationCategory</span></a></li>
 <li type="circle">arcade.potts.agent.module.<a href="arcade/potts/agent/module/PottsModule.PoissonFactory.html" title="interface in arcade.potts.agent.module"><span class="typeNameLink">PottsModule.PoissonFactory</span></a></li>
 <li type="circle">arcade.core.agent.process.<a href="arcade/core/agent/process/Process.html" title="interface in arcade.core.agent.process"><span class="typeNameLink">Process</span></a></li>
+<li type="circle">arcade.core.agent.process.<a href="arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process"><span class="typeNameLink">ProcessDomain</span></a></li>
 <li type="circle">java.io.Serializable
 <ul>
 <li type="circle">sim.engine.Steppable
@@ -550,7 +552,10 @@
 <li type="circle">arcade.patch.vis.<a href="arcade/patch/vis/PatchDrawer.CellView.html" title="enum in arcade.patch.vis"><span class="typeNameLink">PatchDrawer.CellView</span></a></li>
 <li type="circle">arcade.patch.vis.<a href="arcade/patch/vis/PatchDrawer.LatticeView.html" title="enum in arcade.patch.vis"><span class="typeNameLink">PatchDrawer.LatticeView</span></a></li>
 <li type="circle">arcade.patch.util.<a href="arcade/patch/util/PatchEnums.Ordering.html" title="enum in arcade.patch.util"><span class="typeNameLink">PatchEnums.Ordering</span></a></li>
+<li type="circle">arcade.patch.util.<a href="arcade/patch/util/PatchEnums.State.html" title="enum in arcade.patch.util"><span class="typeNameLink">PatchEnums.State</span></a> (implements arcade.core.agent.cell.<a href="arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>)</li>
+<li type="circle">arcade.patch.util.<a href="arcade/patch/util/PatchEnums.Domain.html" title="enum in arcade.patch.util"><span class="typeNameLink">PatchEnums.Domain</span></a> (implements arcade.core.agent.process.<a href="arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>)</li>
 <li type="circle">arcade.patch.util.<a href="arcade/patch/util/PatchEnums.Flag.html" title="enum in arcade.patch.util"><span class="typeNameLink">PatchEnums.Flag</span></a></li>
+<li type="circle">arcade.patch.util.<a href="arcade/patch/util/PatchEnums.Category.html" title="enum in arcade.patch.util"><span class="typeNameLink">PatchEnums.Category</span></a> (implements arcade.core.env.operation.<a href="arcade/core/env/operation/OperationCategory.html" title="interface in arcade.core.env.operation">OperationCategory</a>)</li>
 <li type="circle">arcade.patch.env.component.<a href="arcade/patch/env/component/PatchComponentSitesPattern.Border.html" title="enum in arcade.patch.env.component"><span class="typeNameLink">PatchComponentSitesPattern.Border</span></a></li>
 <li type="circle">arcade.patch.env.component.<a href="arcade/patch/env/component/PatchComponentSitesGraphFactory.Border.html" title="enum in arcade.patch.env.component"><span class="typeNameLink">PatchComponentSitesGraphFactory.Border</span></a></li>
 <li type="circle">arcade.patch.env.component.<a href="arcade/patch/env/component/PatchComponentSitesGraphFactory.EdgeType.html" title="enum in arcade.patch.env.component"><span class="typeNameLink">PatchComponentSitesGraphFactory.EdgeType</span></a></li>
@@ -564,13 +569,12 @@
 <li type="circle">arcade.potts.vis.<a href="arcade/potts/vis/PottsDrawer.Plane.html" title="enum in arcade.potts.vis"><span class="typeNameLink">PottsDrawer.Plane</span></a></li>
 <li type="circle">arcade.potts.vis.<a href="arcade/potts/vis/PottsDrawer.View.html" title="enum in arcade.potts.vis"><span class="typeNameLink">PottsDrawer.View</span></a></li>
 <li type="circle">arcade.potts.util.<a href="arcade/potts/util/PottsEnums.Ordering.html" title="enum in arcade.potts.util"><span class="typeNameLink">PottsEnums.Ordering</span></a></li>
+<li type="circle">arcade.potts.util.<a href="arcade/potts/util/PottsEnums.State.html" title="enum in arcade.potts.util"><span class="typeNameLink">PottsEnums.State</span></a> (implements arcade.core.agent.cell.<a href="arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>)</li>
+<li type="circle">arcade.potts.util.<a href="arcade/potts/util/PottsEnums.Domain.html" title="enum in arcade.potts.util"><span class="typeNameLink">PottsEnums.Domain</span></a> (implements arcade.core.agent.process.<a href="arcade/core/agent/process/ProcessDomain.html" title="interface in arcade.core.agent.process">ProcessDomain</a>)</li>
+<li type="circle">arcade.potts.util.<a href="arcade/potts/util/PottsEnums.Region.html" title="enum in arcade.potts.util"><span class="typeNameLink">PottsEnums.Region</span></a></li>
 <li type="circle">arcade.potts.util.<a href="arcade/potts/util/PottsEnums.Term.html" title="enum in arcade.potts.util"><span class="typeNameLink">PottsEnums.Term</span></a></li>
 <li type="circle">arcade.potts.util.<a href="arcade/potts/util/PottsEnums.Phase.html" title="enum in arcade.potts.util"><span class="typeNameLink">PottsEnums.Phase</span></a></li>
 <li type="circle">arcade.potts.util.<a href="arcade/potts/util/PottsEnums.Direction.html" title="enum in arcade.potts.util"><span class="typeNameLink">PottsEnums.Direction</span></a></li>
-<li type="circle">arcade.core.util.<a href="arcade/core/util/Enums.State.html" title="enum in arcade.core.util"><span class="typeNameLink">Enums.State</span></a></li>
-<li type="circle">arcade.core.util.<a href="arcade/core/util/Enums.Region.html" title="enum in arcade.core.util"><span class="typeNameLink">Enums.Region</span></a></li>
-<li type="circle">arcade.core.util.<a href="arcade/core/util/Enums.Domain.html" title="enum in arcade.core.util"><span class="typeNameLink">Enums.Domain</span></a></li>
-<li type="circle">arcade.core.util.<a href="arcade/core/util/Enums.Category.html" title="enum in arcade.core.util"><span class="typeNameLink">Enums.Category</span></a></li>
 </ul>
 </li>
 </ul>

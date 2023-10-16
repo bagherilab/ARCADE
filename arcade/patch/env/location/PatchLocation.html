@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":6,"i1":6,"i2":6,"i3":10,"i4":6,"i5":10,"i6":6,"i7":10,"i8":6,"i9":6,"i10":6,"i11":6,"i12":10,"i13":10,"i14":10,"i15":6,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10};
+var methods = {"i0":6,"i1":6,"i2":6,"i3":10,"i4":6,"i5":10,"i6":6,"i7":6,"i8":6,"i9":6,"i10":6,"i11":10,"i12":10,"i13":6,"i14":10,"i15":10,"i16":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -294,87 +294,63 @@ implements <a href="../../../../arcade/core/env/location/Location.html" title="i
 </td>
 </tr>
 <tr id="i7" class="rowColor">
-<td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#getHeight-arcade.core.util.Enums.Region-">getHeight</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
-<div class="block">Gets the height of the location for a given region.</div>
-</td>
-</tr>
-<tr id="i8" class="altColor">
 <td class="colFirst"><code>abstract int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#getMaximum--">getMaximum</a></span>()</code>
 <div class="block">Gets the maximum occupancy of a location.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>abstract java.util.ArrayList&lt;<a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#getNeighbors--">getNeighbors</a></span>()</code>
 <div class="block">Gets the location of the neighbors to the current location.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>abstract double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#getPerimeter-double-">getPerimeter</a></span>(double&nbsp;fraction)</code>
 <div class="block">Calculates the perimeter of a cell occupying the location.</div>
 </td>
 </tr>
-<tr id="i11" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>abstract double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#getRatio--">getRatio</a></span>()</code>
 <div class="block">Gets the ratio of the <a href="../../../../arcade/core/env/grid/Grid.html" title="interface in arcade.core.env.grid"><code>Grid</code></a> z to xy sizes.</div>
 </td>
 </tr>
-<tr id="i12" class="altColor">
-<td class="colFirst"><code>java.util.EnumSet&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#getRegions--">getRegions</a></span>()</code>
-<div class="block">Gets a set of regions.</div>
-</td>
-</tr>
-<tr id="i13" class="rowColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../../arcade/patch/env/location/Coordinate.html" title="class in arcade.patch.env.location">Coordinate</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#getSubcoordinate--">getSubcoordinate</a></span>()</code>
 <div class="block">Gets the patch subcoordinate in the <a href="../../../../arcade/core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice"><code>Lattice</code></a>.</div>
 </td>
 </tr>
-<tr id="i14" class="altColor">
+<tr id="i12" class="altColor">
 <td class="colFirst"><code>java.util.ArrayList&lt;<a href="../../../../arcade/patch/env/location/Coordinate.html" title="class in arcade.patch.env.location">Coordinate</a>&gt;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#getSubcoordinates--">getSubcoordinates</a></span>()</code>
 <div class="block">Gets all subcoordinates in the <a href="../../../../arcade/core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice"><code>Lattice</code></a> that
  correspond to the <a href="../../../../arcade/core/env/grid/Grid.html" title="interface in arcade.core.env.grid"><code>Grid</code></a> location.</div>
 </td>
 </tr>
-<tr id="i15" class="rowColor">
+<tr id="i13" class="rowColor">
 <td class="colFirst"><code>abstract double</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#getSubcoordinateSize--">getSubcoordinateSize</a></span>()</code>
 <div class="block">Gets the <a href="../../../../arcade/core/env/lattice/Lattice.html" title="interface in arcade.core.env.lattice"><code>Lattice</code></a> coordinate size in the xy
  plane.</div>
 </td>
 </tr>
-<tr id="i16" class="altColor">
-<td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#getSurface-arcade.core.util.Enums.Region-">getSurface</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
-<div class="block">Gets the surface area of the location for a given region.</div>
-</td>
-</tr>
-<tr id="i17" class="rowColor">
-<td class="colFirst"><code>double</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#getVolume-arcade.core.util.Enums.Region-">getVolume</a></span>(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</code>
-<div class="block">Gets the volume of the location for a given region.</div>
-</td>
-</tr>
-<tr id="i18" class="altColor">
+<tr id="i14" class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#hashCode--">hashCode</a></span>()</code>
 <div class="block">Get unique hash based on location coordinate.</div>
 </td>
 </tr>
-<tr id="i19" class="rowColor">
+<tr id="i15" class="rowColor">
 <td class="colFirst"><code>(package private) byte</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#offsetByte-byte-int-">offsetByte</a></span>(byte&nbsp;b,
           int&nbsp;k)</code>
 <div class="block">Performs a left circular offset on the first six bits in a byte.</div>
 </td>
 </tr>
-<tr id="i20" class="altColor">
+<tr id="i16" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/env/location/PatchLocation.html#update-arcade.patch.env.location.PatchLocation-">update</a></span>(<a href="../../../../arcade/patch/env/location/PatchLocation.html" title="class in arcade.patch.env.location">PatchLocation</a>&nbsp;location)</code>
 <div class="block">Updates the location coordinates and subcoordinates.</div>
@@ -626,25 +602,6 @@ implements <a href="../../../../arcade/core/env/location/Location.html" title="i
 </dl>
 </li>
 </ul>
-<a name="getHeight-arcade.core.util.Enums.Region-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getHeight</h4>
-<pre>public&nbsp;double&nbsp;getHeight(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html#getHeight-arcade.core.util.Enums.Region-">Location</a></code></span></div>
-<div class="block">Gets the height of the location for a given region.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/env/location/Location.html#getHeight-arcade.core.util.Enums.Region-">getHeight</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>region</code> - the region</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the location height</dd>
-</dl>
-</li>
-</ul>
 <a name="getMaximum--">
 <!--   -->
 </a>
@@ -703,23 +660,6 @@ implements <a href="../../../../arcade/core/env/location/Location.html" title="i
 </dl>
 </li>
 </ul>
-<a name="getRegions--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getRegions</h4>
-<pre>public&nbsp;java.util.EnumSet&lt;<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&gt;&nbsp;getRegions()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html#getRegions--">Location</a></code></span></div>
-<div class="block">Gets a set of regions.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/env/location/Location.html#getRegions--">getRegions</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the set of regions</dd>
-</dl>
-</li>
-</ul>
 <a name="getSubcoordinate--">
 <!--   -->
 </a>
@@ -764,44 +704,6 @@ implements <a href="../../../../arcade/core/env/location/Location.html" title="i
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
 <dd>the subcoordinate size</dd>
-</dl>
-</li>
-</ul>
-<a name="getSurface-arcade.core.util.Enums.Region-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getSurface</h4>
-<pre>public&nbsp;double&nbsp;getSurface(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html#getSurface-arcade.core.util.Enums.Region-">Location</a></code></span></div>
-<div class="block">Gets the surface area of the location for a given region.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/env/location/Location.html#getSurface-arcade.core.util.Enums.Region-">getSurface</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>region</code> - the region</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the location region surface area</dd>
-</dl>
-</li>
-</ul>
-<a name="getVolume-arcade.core.util.Enums.Region-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getVolume</h4>
-<pre>public&nbsp;double&nbsp;getVolume(<a href="../../../../arcade/core/util/Enums.Region.html" title="enum in arcade.core.util">Enums.Region</a>&nbsp;region)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html#getVolume-arcade.core.util.Enums.Region-">Location</a></code></span></div>
-<div class="block">Gets the volume of the location for a given region.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/env/location/Location.html#getVolume-arcade.core.util.Enums.Region-">getVolume</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>region</code> - the region</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>the location region volume</dd>
 </dl>
 </li>
 </ul>

@@ -170,10 +170,10 @@ extends <a href="../../../../arcade/patch/agent/cell/PatchCellTissue.html" title
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCellCancer.html#PatchCellCancer-int-int-int-arcade.core.util.Enums.State-int-int-arcade.core.env.location.Location-arcade.core.util.MiniBox-double-double-double-double-">PatchCellCancer</a></span>(int&nbsp;id,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCellCancer.html#PatchCellCancer-int-int-int-arcade.core.agent.cell.CellState-int-int-arcade.core.env.location.Location-arcade.core.util.MiniBox-double-double-double-double-">PatchCellCancer</a></span>(int&nbsp;id,
                int&nbsp;parent,
                int&nbsp;pop,
-               <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state,
+               <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state,
                int&nbsp;age,
                int&nbsp;divisions,
                <a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;location,
@@ -209,8 +209,8 @@ extends <a href="../../../../arcade/patch/agent/cell/PatchCellTissue.html" title
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCellCancer.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></span>(int&nbsp;newID,
-    <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;newState,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../arcade/patch/agent/cell/PatchCellCancer.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></span>(int&nbsp;newID,
+    <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState,
     <a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;newLocation,
     ec.util.MersenneTwisterFast&nbsp;random)</code>
 <div class="block">Creates a new cell.</div>
@@ -226,7 +226,7 @@ extends <a href="../../../../arcade/patch/agent/cell/PatchCellTissue.html" title
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;arcade.patch.agent.cell.<a href="../../../../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a></h3>
-<code><a href="../../../../arcade/patch/agent/cell/PatchCell.html#calculateTotalVolume-sim.util.Bag-">calculateTotalVolume</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#convert--">convert</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#findFreeLocations-arcade.core.sim.Simulation-arcade.patch.env.location.PatchLocation-double-double-">findFreeLocations</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getAge--">getAge</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getCriticalHeight--">getCriticalHeight</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getCriticalHeight-arcade.core.util.Enums.Region-">getCriticalHeight</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getCriticalVolume--">getCriticalVolume</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getCriticalVolume-arcade.core.util.Enums.Region-">getCriticalVolume</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getDivisions--">getDivisions</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getEnergy--">getEnergy</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getHeight--">getHeight</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getHeight-arcade.core.util.Enums.Region-">getHeight</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getID--">getID</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getLocation--">getLocation</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getModule--">getModule</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getParameters--">getParameters</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getParent--">getParent</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getPop--">getPop</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getProcess-arcade.core.util.Enums.Domain-">getProcess</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getState--">getState</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getVolume--">getVolume</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getVolume-arcade.core.util.Enums.Region-">getVolume</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#hasRegions--">hasRegions</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#makeProcess-arcade.core.util.Enums.Domain-java.lang.String-">makeProcess</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#schedule-sim.engine.Schedule-">schedule</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#selectBestLocation-arcade.core.sim.Simulation-arcade.patch.env.location.PatchLocation-double-double-ec.util.MersenneTwisterFast-">selectBestLocation</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#setEnergy-double-">setEnergy</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#setFlag-arcade.patch.util.PatchEnums.Flag-">setFlag</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#setState-arcade.core.util.Enums.State-">setState</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#setVolume-double-">setVolume</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#stop--">stop</a></code></li>
+<code><a href="../../../../arcade/patch/agent/cell/PatchCell.html#calculateTotalVolume-sim.util.Bag-">calculateTotalVolume</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#convert--">convert</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#findFreeLocations-arcade.core.sim.Simulation-arcade.patch.env.location.PatchLocation-double-double-">findFreeLocations</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getAge--">getAge</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getCriticalHeight--">getCriticalHeight</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getCriticalVolume--">getCriticalVolume</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getDivisions--">getDivisions</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getEnergy--">getEnergy</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getHeight--">getHeight</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getID--">getID</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getLocation--">getLocation</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getModule--">getModule</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getParameters--">getParameters</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getParent--">getParent</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getPop--">getPop</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getProcess-arcade.core.agent.process.ProcessDomain-">getProcess</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getState--">getState</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#getVolume--">getVolume</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#makeProcess-arcade.core.agent.process.ProcessDomain-java.lang.String-">makeProcess</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#schedule-sim.engine.Schedule-">schedule</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#selectBestLocation-arcade.core.sim.Simulation-arcade.patch.env.location.PatchLocation-double-double-ec.util.MersenneTwisterFast-">selectBestLocation</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#setEnergy-double-">setEnergy</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#setFlag-arcade.patch.util.PatchEnums.Flag-">setFlag</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#setState-arcade.core.agent.cell.CellState-">setState</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#setVolume-double-">setVolume</a>, <a href="../../../../arcade/patch/agent/cell/PatchCell.html#stop--">stop</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -249,7 +249,7 @@ extends <a href="../../../../arcade/patch/agent/cell/PatchCellTissue.html" title
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="PatchCellCancer-int-int-int-arcade.core.util.Enums.State-int-int-arcade.core.env.location.Location-arcade.core.util.MiniBox-double-double-double-double-">
+<a name="PatchCellCancer-int-int-int-arcade.core.agent.cell.CellState-int-int-arcade.core.env.location.Location-arcade.core.util.MiniBox-double-double-double-double-">
 <!--   -->
 </a>
 <ul class="blockListLast">
@@ -258,7 +258,7 @@ extends <a href="../../../../arcade/patch/agent/cell/PatchCellTissue.html" title
 <pre>public&nbsp;PatchCellCancer(int&nbsp;id,
                        int&nbsp;parent,
                        int&nbsp;pop,
-                       <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;state,
+                       <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;state,
                        int&nbsp;age,
                        int&nbsp;divisions,
                        <a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;location,
@@ -311,23 +311,23 @@ extends <a href="../../../../arcade/patch/agent/cell/PatchCellTissue.html" title
 </dl>
 </li>
 </ul>
-<a name="make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">
+<a name="make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>make</h4>
 <pre>public&nbsp;<a href="../../../../arcade/patch/agent/cell/PatchCell.html" title="class in arcade.patch.agent.cell">PatchCell</a>&nbsp;make(int&nbsp;newID,
-                      <a href="../../../../arcade/core/util/Enums.State.html" title="enum in arcade.core.util">Enums.State</a>&nbsp;newState,
+                      <a href="../../../../arcade/core/agent/cell/CellState.html" title="interface in arcade.core.agent.cell">CellState</a>&nbsp;newState,
                       <a href="../../../../arcade/core/env/location/Location.html" title="interface in arcade.core.env.location">Location</a>&nbsp;newLocation,
                       ec.util.MersenneTwisterFast&nbsp;random)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">Cell</a></code></span></div>
+<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">Cell</a></code></span></div>
 <div class="block">Creates a new cell.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
+<dd><code><a href="../../../../arcade/core/agent/cell/Cell.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../arcade/core/agent/cell/Cell.html" title="interface in arcade.core.agent.cell">Cell</a></code></dd>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../arcade/patch/agent/cell/PatchCellTissue.html#make-int-arcade.core.util.Enums.State-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/patch/agent/cell/PatchCellTissue.html" title="class in arcade.patch.agent.cell">PatchCellTissue</a></code></dd>
+<dd><code><a href="../../../../arcade/patch/agent/cell/PatchCellTissue.html#make-int-arcade.core.agent.cell.CellState-arcade.core.env.location.Location-ec.util.MersenneTwisterFast-">make</a></code>&nbsp;in class&nbsp;<code><a href="../../../../arcade/patch/agent/cell/PatchCellTissue.html" title="class in arcade.patch.agent.cell">PatchCellTissue</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>newID</code> - the new cell ID</dd>
 <dd><code>newState</code> - the new cell state</dd>
