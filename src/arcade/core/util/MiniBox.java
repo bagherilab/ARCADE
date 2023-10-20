@@ -67,6 +67,18 @@ public class MiniBox {
      */
     public double getDouble(String id) {
         String s = contents.get(id);
+        
+        if (s != null && s.contains("/")) {
+            String[] split = s.split("/", 2);
+            double numerator = (!split[0].matches(NUMBER_REGEX)
+                    ? Double.NaN
+                    : Double.parseDouble(split[0]));
+            double denominator = (!split[1].matches(NUMBER_REGEX)
+                    ? Double.NaN
+                    : Double.parseDouble(split[1]));
+            return (denominator == 0 ? Double.NaN : numerator / denominator);
+        }
+        
         return (s == null || !s.matches(NUMBER_REGEX) ? Double.NaN : Double.parseDouble(s));
     }
     
