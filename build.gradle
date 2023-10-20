@@ -64,7 +64,7 @@ jacocoTestReport {
 jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    archiveFileName.set("${project.name}-${gitVersion()}.jar")
+    archiveFileName.set("${project.name}-${gitVersion().substring(1)}.jar")
     manifest {
         attributes["Main-Class"] = "arcade.core.gui.GUI"
     }
