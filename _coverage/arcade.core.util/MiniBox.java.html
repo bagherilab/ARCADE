@@ -67,7 +67,19 @@ public class MiniBox {
      */
     public double getDouble(String id) {
 <span class="fc" id="L69">        String s = contents.get(id);</span>
-<span class="fc bfc" id="L70" title="All 4 branches covered.">        return (s == null || !s.matches(NUMBER_REGEX) ? Double.NaN : Double.parseDouble(s));</span>
+        
+<span class="fc bfc" id="L71" title="All 4 branches covered.">        if (s != null &amp;&amp; s.contains(&quot;/&quot;)) {</span>
+<span class="fc" id="L72">            String[] split = s.split(&quot;/&quot;, 2);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">            double numerator = (!split[0].matches(NUMBER_REGEX)</span>
+                    ? Double.NaN
+<span class="fc" id="L75">                    : Double.parseDouble(split[0]));</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">            double denominator = (!split[1].matches(NUMBER_REGEX)</span>
+                    ? Double.NaN
+<span class="fc" id="L78">                    : Double.parseDouble(split[1]));</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">            return (denominator == 0 ? Double.NaN : numerator / denominator);</span>
+        }
+        
+<span class="fc bfc" id="L82" title="All 4 branches covered.">        return (s == null || !s.matches(NUMBER_REGEX) ? Double.NaN : Double.parseDouble(s));</span>
     }
     
     /**
@@ -76,7 +88,7 @@ public class MiniBox {
      * @param id  the key
      * @return  {@code true} if the key exists, {@code false} otherwise
      */
-<span class="fc" id="L79">    public boolean contains(String id) { return keys.contains(id); }</span>
+<span class="fc" id="L91">    public boolean contains(String id) { return keys.contains(id); }</span>
     
     /**
      * Adds a key and integer value pair to the map.
@@ -84,7 +96,7 @@ public class MiniBox {
      * @param id  the key
      * @param val  the value
      */
-<span class="fc" id="L87">    public void put(String id, int val) { put(id, String.valueOf(val)); }</span>
+<span class="fc" id="L99">    public void put(String id, int val) { put(id, String.valueOf(val)); }</span>
     
     /**
      * Adds a key and double value pair to the map.
@@ -92,7 +104,7 @@ public class MiniBox {
      * @param id  the key
      * @param val  the value
      */
-<span class="fc" id="L95">    public void put(String id, double val) { put(id, String.valueOf(val)); }</span>
+<span class="fc" id="L107">    public void put(String id, double val) { put(id, String.valueOf(val)); }</span>
     
     /**
      * Adds a key and value pair to the map.
@@ -101,11 +113,11 @@ public class MiniBox {
      * @param val  the value
      */
     public void put(String id, String val) {
-<span class="fc bfc" id="L104" title="All 2 branches covered.">        if (!keys.contains(id)) {</span>
-<span class="fc" id="L105">            keys.add(id);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        if (!keys.contains(id)) {</span>
+<span class="fc" id="L117">            keys.add(id);</span>
         }
-<span class="fc" id="L107">        contents.put(id, val);</span>
-<span class="fc" id="L108">    }</span>
+<span class="fc" id="L119">        contents.put(id, val);</span>
+<span class="fc" id="L120">    }</span>
     
     /**
      * Filters keys by the given code.
@@ -118,14 +130,14 @@ public class MiniBox {
      * @return  the filtered box
      */
     public MiniBox filter(String code) {
-<span class="fc" id="L121">        MiniBox results = new MiniBox();</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">        for (String key : keys) {</span>
-<span class="fc" id="L123">            String[] split = key.split(TAG_SEPARATOR);</span>
-<span class="fc bfc" id="L124" title="All 4 branches covered.">            if (split.length == 2 &amp;&amp; split[0].equals(code)) {</span>
-<span class="fc" id="L125">                results.put(split[1], contents.get(key));</span>
+<span class="fc" id="L133">        MiniBox results = new MiniBox();</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        for (String key : keys) {</span>
+<span class="fc" id="L135">            String[] split = key.split(TAG_SEPARATOR);</span>
+<span class="fc bfc" id="L136" title="All 4 branches covered.">            if (split.length == 2 &amp;&amp; split[0].equals(code)) {</span>
+<span class="fc" id="L137">                results.put(split[1], contents.get(key));</span>
             }
-<span class="fc" id="L127">        }</span>
-<span class="fc" id="L128">        return results;</span>
+<span class="fc" id="L139">        }</span>
+<span class="fc" id="L140">        return results;</span>
     }
     
     /**
@@ -135,23 +147,23 @@ public class MiniBox {
      * @return  {@code true} if entries match, {@code false} otherwise
      */
     public boolean compare(MiniBox box) {
-<span class="fc" id="L138">        HashSet&lt;String&gt; allKeys = new HashSet&lt;&gt;();</span>
-<span class="fc" id="L139">        allKeys.addAll(keys);</span>
-<span class="fc" id="L140">        allKeys.addAll(box.keys);</span>
+<span class="fc" id="L150">        HashSet&lt;String&gt; allKeys = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L151">        allKeys.addAll(keys);</span>
+<span class="fc" id="L152">        allKeys.addAll(box.keys);</span>
         
-<span class="fc bfc" id="L142" title="All 2 branches covered.">        for (String key : allKeys) {</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">            if (!contents.containsKey(key)) {</span>
-<span class="fc" id="L144">                return false;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">        for (String key : allKeys) {</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">            if (!contents.containsKey(key)) {</span>
+<span class="fc" id="L156">                return false;</span>
             }
             
-<span class="fc bfc" id="L147" title="All 2 branches covered.">            if (!box.contents.containsKey(key)) {</span>
-<span class="fc" id="L148">                return false;</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">            } else if (!contents.get(key).equals(box.get(key))) {</span>
-<span class="fc" id="L150">                return false;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            if (!box.contents.containsKey(key)) {</span>
+<span class="fc" id="L160">                return false;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">            } else if (!contents.get(key).equals(box.get(key))) {</span>
+<span class="fc" id="L162">                return false;</span>
             }
-<span class="fc" id="L152">        }</span>
+<span class="fc" id="L164">        }</span>
         
-<span class="fc" id="L154">        return true;</span>
+<span class="fc" id="L166">        return true;</span>
     }
     
     /**
@@ -160,12 +172,12 @@ public class MiniBox {
      * @return  the string
      */
     public String toString() {
-<span class="fc" id="L163">        String format = &quot;%20s : %s\n&quot;;</span>
-<span class="fc" id="L164">        StringBuilder s = new StringBuilder();</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">        for (String id : keys) {</span>
-<span class="fc" id="L166">            s.append(String.format(format, id, contents.get(id)));</span>
-<span class="fc" id="L167">        }</span>
-<span class="fc" id="L168">        return s.toString();</span>
+<span class="fc" id="L175">        String format = &quot;%20s : %s\n&quot;;</span>
+<span class="fc" id="L176">        StringBuilder s = new StringBuilder();</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        for (String id : keys) {</span>
+<span class="fc" id="L178">            s.append(String.format(format, id, contents.get(id)));</span>
+<span class="fc" id="L179">        }</span>
+<span class="fc" id="L180">        return s.toString();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
