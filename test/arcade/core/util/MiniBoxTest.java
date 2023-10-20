@@ -115,6 +115,38 @@ public class MiniBoxTest {
     }
     
     @Test
+    public void getDouble_givenValidKeyGivenValidFraction_returnsValue() {
+        String key = randomString();
+        String[] doubles = new String[] { "1/2", "3/4", "5E-1/10" };
+        double[] values = new double[] { 0.5, 0.75, 0.05 };
+        for (int i = 0; i < doubles.length; i++) {
+            MiniBox box = new MiniBox();
+            box.put(key, doubles[i]);
+            assertEquals(values[i], box.getDouble(key), EPSILON);
+        }
+    }
+    
+    @Test
+    public void getDouble_givenValidKeyGivenInvalidFraction_returnsNaN() {
+        String key = randomString();
+        String[] doubles = new String[] { "1/2/3", "/1", "1/" };
+        for (int i = 0; i < doubles.length; i++) {
+            MiniBox box = new MiniBox();
+            box.put(key, doubles[i]);
+            assertTrue(Double.isNaN(box.getDouble(key)));
+        }
+    }
+    
+    @Test
+    public void getDouble_givenValidKeyGivenZeroFraction_returnsNaN() {
+        MiniBox box = new MiniBox();
+        String key = randomString();
+        String contents = "1/0";
+        box.put(key, contents);
+        assertTrue(Double.isNaN(box.getDouble(key)));
+    }
+    
+    @Test
     public void getDouble_givenInvalidContentsGivenString_returnsNaN() {
         MiniBox box = new MiniBox();
         String key = randomString();
