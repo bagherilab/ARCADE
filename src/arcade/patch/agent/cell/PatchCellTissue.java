@@ -5,6 +5,11 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 
+import sim.engine.SimState;
+import arcade.core.sim.Simulation;
+import static arcade.patch.util.PatchEnums.Domain;
+import static arcade.patch.util.PatchEnums.Flag;
+import static arcade.patch.util.PatchEnums.State;
 /**
  * Extension of {@link PatchCell} for healthy tissue cells.
  */
@@ -39,5 +44,58 @@ public class PatchCellTissue extends PatchCell {
         divisions--;
         return new PatchCellTissue(newID, id, pop, newState, age, divisions, newLocation,
                 parameters, volume, height, criticalVolume, criticalHeight);
+    }
+
+    /* consider making PatchCell parameters protected instead of private */
+    /* make step()  method that overrides main that is moved over from PatchCell */
+    
+    @Override
+    public void step(SimState simstate) {
+        Simulation sim = (Simulation) simstate;
+        
+        // Increase age of cell.
+        super.age++;
+        
+        // TODO: check for death due to age
+        
+        // Step metabolism process.
+        super.processes.get(Domain.METABOLISM).step(simstate.random, sim);
+        
+        // Check energy status. If cell has less energy than threshold, it will
+        // necrose. If overall energy is negative, then cell enters quiescence.
+        if (state != State.APOPTOTIC && energy < 0) {
+            if (super.energy < super.energyThreshold) {
+                if (simstate.random.nextDouble() > super.necroticFraction) {
+                    super.setState(State.APOPTOTIC);
+                } else {
+                    super.setState(State.NECROTIC);
+                }
+            } else if (state != State.QUIESCENT && state != State.SENESCENT) {
+                super.setState(State.QUIESCENT);
+            }
+        }
+        
+        // Step signaling network process.
+        super.processes.get(Domain.SIGNALING).step(simstate.random, sim);
+        
+        // Change state from undefined.
+        if (super.state == State.UNDEFINED) {
+            if (super.flag == Flag.MIGRATORY) {
+                super.setState(State.MIGRATORY);
+            } else if (super.divisions == 0) {
+                if (simstate.random.nextDouble() > super.senescentFraction) {
+                    super.setState(State.APOPTOTIC);
+                } else {
+                    super.setState(State.SENESCENT);
+                }
+            } else {
+                super.setState(State.PROLIFERATIVE);
+            }
+        }
+        
+        // Step the module for the cell state.
+        if (super.module != null) {
+            super.module.step(simstate.random, sim);
+        }
     }
 }

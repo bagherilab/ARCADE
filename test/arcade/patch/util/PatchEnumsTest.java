@@ -1,8 +1,15 @@
 package arcade.patch.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import org.junit.Test;
+
+import arcade.patch.util.PatchEnums.Category;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.Flag;
+import arcade.patch.util.PatchEnums.Ordering;
+import arcade.patch.util.PatchEnums.State;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -100,5 +107,21 @@ public class PatchEnumsTest {
         // Compare resulting sets.
         EnumSet<Category> enumSetRandom = EnumSet.copyOf(enumRandom);
         assertEquals(enumSet, enumSetRandom);
+    }
+
+    @Test
+    public void Ordering_in_expected_order() {
+        // Create list of all values.
+        ArrayList<Ordering> enumList = new ArrayList<Ordering>(Arrays.asList(Ordering.values()));
+        
+        int n = -1;
+        int verify = -2;
+        // Grabbing order of items in enum
+        for (Ordering x: enumList){
+            verify = x.ordinal();
+            n++;
+            // Verify order of enum
+            assertEquals(n, verify);
+        }
     }
 }

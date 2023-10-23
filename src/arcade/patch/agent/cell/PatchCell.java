@@ -3,7 +3,6 @@ package arcade.patch.agent.cell;
 import java.util.HashMap;
 import java.util.Map;
 import sim.engine.Schedule;
-import sim.engine.SimState;
 import sim.engine.Stoppable;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
@@ -85,7 +84,7 @@ public abstract class PatchCell implements Cell {
     int age;
     
     /** Cell energy [fmol ATP]. */
-    private double energy;
+    double energy;
     
     /** Number of divisions. */
     int divisions;
@@ -103,19 +102,19 @@ public abstract class PatchCell implements Cell {
     final double criticalHeight;
     
     /** Cell state change flag. */
-    private Flag flag;
+    Flag flag;
     
     /** Variation in cell agent parameters. */
     private final double heterogeneity;
     
     /** Fraction of necrotic cells that become apoptotic. */
-    private final double necroticFraction;
+    final double necroticFraction;
     
     /** Fraction of senescent cells that become apoptotic. */
-    private final double senescentFraction;
+    final double senescentFraction;
     
     /** Maximum energy deficit before necrosis. */
-    private final double energyThreshold;
+    final double energyThreshold;
     
     /** Cell state module. */
     protected Module module;
@@ -307,56 +306,6 @@ public abstract class PatchCell implements Cell {
     @Override
     public void schedule(Schedule schedule) {
         stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);
-    }
-    
-    @Override
-    public void step(SimState simstate) {
-        Simulation sim = (Simulation) simstate;
-        
-        // Increase age of cell.
-        age++;
-        
-        // TODO: check for death due to age
-        
-        // Step metabolism process.
-        processes.get(Domain.METABOLISM).step(simstate.random, sim);
-        
-        // Check energy status. If cell has less energy than threshold, it will
-        // necrose. If overall energy is negative, then cell enters quiescence.
-        if (state != State.APOPTOTIC && energy < 0) {
-            if (energy < energyThreshold) {
-                if (simstate.random.nextDouble() > necroticFraction) {
-                    setState(State.APOPTOTIC);
-                } else {
-                    setState(State.NECROTIC);
-                }
-            } else if (state != State.QUIESCENT && state != State.SENESCENT) {
-                setState(State.QUIESCENT);
-            }
-        }
-        
-        // Step signaling network process.
-        processes.get(Domain.SIGNALING).step(simstate.random, sim);
-        
-        // Change state from undefined.
-        if (state == State.UNDEFINED) {
-            if (flag == Flag.MIGRATORY) {
-                setState(State.MIGRATORY);
-            } else if (divisions == 0) {
-                if (simstate.random.nextDouble() > senescentFraction) {
-                    setState(State.APOPTOTIC);
-                } else {
-                    setState(State.SENESCENT);
-                }
-            } else {
-                setState(State.PROLIFERATIVE);
-            }
-        }
-        
-        // Step the module for the cell state.
-        if (module != null) {
-            module.step(simstate.random, sim);
-        }
     }
     
     @Override
