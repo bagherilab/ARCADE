@@ -90,6 +90,24 @@ public final class PatchEnums {
         
         /** Code for necrotic cells. */
         NECROTIC,
+
+        /** Code for stimulatory cells. */
+        STIMULATORY,
+
+        /** Code for cytotoxic cells. */
+        CYTOTOXIC,
+
+        /** Code for paused cells. */
+        PAUSED,
+
+        /** Code for exhausted cells. */
+        EXHAUSTED,
+
+        /** Code for anergic cells. */
+        ANERGIC,
+
+        /** Code for starved cells. */
+        STARVED,
         
         /** Code for senescent cells. */
         SENESCENT;
@@ -112,6 +130,9 @@ public final class PatchEnums {
         
         /** Code for metabolism domain. */
         METABOLISM,
+
+        /** Code for inflammation domain. */
+        INFLAMMATION,
         
         /** Code for signaling domain. */
         SIGNALING;
