@@ -107,11 +107,6 @@ public abstract class PatchCell implements Cell {
     /** Variation in cell agent parameters. */
     private final double heterogeneity;
     
-    /** Fraction of necrotic cells that become apoptotic. */
-    final double necroticFraction;
-    
-    /** Fraction of senescent cells that become apoptotic. */
-    final double senescentFraction;
     
     /** Maximum energy deficit before necrosis. */
     final double energyThreshold;
@@ -173,8 +168,6 @@ public abstract class PatchCell implements Cell {
         
         // Set loaded parameters.
         heterogeneity = parameters.getDouble("HETEROGENEITY");
-        necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
-        senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
         energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
         
         // TODO: implement heterogeneity

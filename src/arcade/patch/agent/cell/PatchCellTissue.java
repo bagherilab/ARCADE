@@ -4,7 +4,9 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
-
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.Flag;
+import arcade.patch.util.PatchEnums.State;
 import sim.engine.SimState;
 import arcade.core.sim.Simulation;
 import static arcade.patch.util.PatchEnums.Domain;
@@ -14,9 +16,26 @@ import static arcade.patch.util.PatchEnums.State;
  * Extension of {@link PatchCell} for healthy tissue cells.
  */
 
+
+
 public class PatchCellTissue extends PatchCell {
+    /** Fraction of necrotic cells that become apoptotic. */
+    private final double necroticFraction;
+    
+    /** Fraction of senescent cells that become apoptotic. */
+    private final double senescentFraction;
+
+
     /**
      * Creates a tissue {@code PatchCell} agent.
+     * * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code NECROTIC_FRACTION} = fraction of necrotic cells that
+     *         become apoptotic</li>
+     *     <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that
+     *         become apoptotic</li>
+     * </ul>
      *
      * @param id  the cell ID
      * @param parent  the parent ID
@@ -36,6 +55,10 @@ public class PatchCellTissue extends PatchCell {
                            double criticalVolume, double criticalHeight) {
         super(id, parent, pop, state, age, divisions, location, parameters,
                 volume, height, criticalVolume, criticalHeight);
+        
+        // Set loaded parameters.
+        necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
+        senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
     }
     
     @Override
@@ -48,7 +71,7 @@ public class PatchCellTissue extends PatchCell {
 
     /* consider making PatchCell parameters protected instead of private */
     /* make step()  method that overrides main that is moved over from PatchCell */
-    
+
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
@@ -65,7 +88,7 @@ public class PatchCellTissue extends PatchCell {
         // necrose. If overall energy is negative, then cell enters quiescence.
         if (state != State.APOPTOTIC && energy < 0) {
             if (super.energy < super.energyThreshold) {
-                if (simstate.random.nextDouble() > super.necroticFraction) {
+                if (simstate.random.nextDouble() > necroticFraction) {
                     super.setState(State.APOPTOTIC);
                 } else {
                     super.setState(State.NECROTIC);
@@ -83,7 +106,7 @@ public class PatchCellTissue extends PatchCell {
             if (super.flag == Flag.MIGRATORY) {
                 super.setState(State.MIGRATORY);
             } else if (super.divisions == 0) {
-                if (simstate.random.nextDouble() > super.senescentFraction) {
+                if (simstate.random.nextDouble() > senescentFraction) {
                     super.setState(State.APOPTOTIC);
                 } else {
                     super.setState(State.SENESCENT);
