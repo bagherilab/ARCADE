@@ -6,6 +6,8 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import arcade.patch.util.PatchEnums.State;
+
 import static arcade.patch.util.PatchEnums.State;
 
 /**
@@ -22,6 +24,12 @@ public class PatchCellCancer extends PatchCellTissue {
     /**
      * Creates a tissue {@code PatchCell} agent.
      *
+     * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code CAR_ANTIGENS_CANCER} = Cancer cell specific surface antigen count </li>
+     * </ul>
+     * 
      * @param id  the cell ID
      * @param parent  the parent ID
      * @param pop  the cell population index
@@ -40,6 +48,10 @@ public class PatchCellCancer extends PatchCellTissue {
                            double criticalVolume, double criticalHeight) {
         super(id, parent, pop, state, age, divisions, location, parameters,
                 volume, height, criticalVolume, criticalHeight);
+         
+         // Set loaded parameters.
+         //cancer cells can have tumor specific antigens that are not present on healthy tissue cells
+         super.carAntigens = parameters.getInt("CAR_ANTIGENS_CANCER");
     }
     
     /**

@@ -25,6 +25,12 @@ public class PatchCellTissue extends PatchCell {
     /** Fraction of senescent cells that become apoptotic. */
     private final double senescentFraction;
 
+    /** Cell surface antigen count */
+	protected int carAntigens;
+	
+	/** Cell surface PDL1 count */
+	protected final int selfTargets;
+
 
     /**
      * Creates a tissue {@code PatchCell} agent.
@@ -35,6 +41,8 @@ public class PatchCellTissue extends PatchCell {
      *         become apoptotic</li>
      *     <li>{@code SENESCENT_FRACTION} = fraction of senescent cells that
      *         become apoptotic</li>
+     *     <li>{@code CAR_ANTIGENS} = Cell surface antigen count </li>
+     *     <li>{@code SELF_TARGETS} = Cell surface PDL1 count </li>
      * </ul>
      *
      * @param id  the cell ID
@@ -59,6 +67,8 @@ public class PatchCellTissue extends PatchCell {
         // Set loaded parameters.
         necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
+        carAntigens = parameters.getInt("CAR_ANTIGENS");
+        selfTargets = parameters.getInt("SELF_TARGETS");
     }
     
     @Override

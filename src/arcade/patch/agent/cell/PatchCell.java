@@ -290,6 +290,8 @@ public abstract class PatchCell implements Cell {
                 return PatchProcessMetabolism.make(this, version);
             case SIGNALING:
                 return PatchProcessSignaling.make(this, version);
+            /*case INFLAMMATION:
+                return PatchProcessInflammation.make(this,version);*/
             case UNDEFINED:
             default:
                 return null;
