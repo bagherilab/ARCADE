@@ -52,7 +52,7 @@ import static arcade.patch.util.PatchEnums.State;
  * ({@code HETEROGENEITY}).
  */
 
-public class PatchCellCART extends PatchCell {
+public abstract class PatchCellCART extends PatchCell {
 
      /** Fraction of exhausted cells that become apoptotic. */
      private final double exhaustedFraction;
@@ -89,10 +89,7 @@ public class PatchCellCART extends PatchCell {
      protected final double contactFraction;
      protected final int maxAntigenBinding;
      protected final int cars;
-
-     
-
-     //lastActiveTicker initiated and set to 0 if cell state switches to cytotoxic or stimulatory -> just have it in subclasses for CD4, CD8
+     protected int lastActiveTicker;
 
      /**
       * Creates a tissue {@code PatchCellCART} agent.
@@ -147,6 +144,7 @@ public class PatchCellCART extends PatchCell {
          //initialized non-loaded parameters
          boundAntigensCount = 0;
          boundSelfCount = 0;
+         lastActiveTicker = 0;
 
          // Set loaded parameters.
          exhaustedFraction = parameters.getDouble(  "EXHAUSTED_FRACTION");
@@ -169,15 +167,10 @@ public class PatchCellCART extends PatchCell {
          cars = parameters.getInt("CARS");
      }
 
-    @Override
-    public PatchCell make(int newID, CellState newState, Location newLocation,
-                          MersenneTwisterFast random) {
-        divisions--;
-        return new PatchCellCART(newID, id, pop, newState, age, divisions, newLocation,
-                parameters, volume, height, criticalVolume, criticalHeight);
-    }
-    
     /* need to implement bindTarget equivalent here*/
+
+    //this potentially needs to move to CD4, CD8
+    //all car t cells have either CD4 or CD8 receptors
 
     @Override
     public void step(SimState simstate) {
@@ -200,7 +193,6 @@ public class PatchCellCART extends PatchCell {
                 super.setState(State.STARVED);
             }
         } else {
-            //or whatever the neutral state is lol
             super.setState(State.UNDEFINED);
         }
         
