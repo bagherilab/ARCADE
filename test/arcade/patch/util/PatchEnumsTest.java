@@ -18,6 +18,7 @@ import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Ordering;
 import static arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.Category;
+import static arcade.patch.util.PatchEnums.AntigenFlag;
 
 public class PatchEnumsTest {
     @Test(expected = UnsupportedOperationException.class)
@@ -106,6 +107,27 @@ public class PatchEnumsTest {
         
         // Compare resulting sets.
         EnumSet<Category> enumSetRandom = EnumSet.copyOf(enumRandom);
+        assertEquals(enumSet, enumSetRandom);
+    }
+
+    @Test
+    public void AntigenFlag_random_returnsAntigenFlag() {
+        // Create set of all values.
+        EnumSet<AntigenFlag> enumSet = EnumSet.allOf(AntigenFlag.class);
+        enumSet.remove(AntigenFlag.UNDEFINED);
+        
+        // Create set of all random values.
+        ArrayList<AntigenFlag> enumRandom = new ArrayList<>();
+        
+        int n = AntigenFlag.values().length - 1;
+        for (int i = 0; i < n; i++) {
+            MersenneTwisterFast rng = mock(MersenneTwisterFast.class);
+            doReturn(i).when(rng).nextInt(n);
+            enumRandom.add(AntigenFlag.random(rng));
+        }
+        
+        // Compare resulting sets.
+        EnumSet<AntigenFlag> enumSetRandom = EnumSet.copyOf(enumRandom);
         assertEquals(enumSet, enumSetRandom);
     }
 

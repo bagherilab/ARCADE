@@ -169,6 +169,34 @@ public final class PatchEnums {
             return values()[rng.nextInt(values().length - 1) + 1];
         }
     }
+
+    /**  Antigen binding for CART simulations. */
+    public enum AntigenFlag {
+        /** Code for undefined flag. */
+        UNDEFINED,
+        
+        /** Code for cell bound to antigen. */
+        BOUND_ANTIGEN,
+        
+        /** Code for cell bound to self. */
+        BOUND_CELL_RECEPTOR,
+
+        /** Code for cell bound to self and antigen. */
+        BOUND_ANTIGEN_CELL_RECEPTOR,
+        
+        /** Code for cell bound to nothing. */
+        UNBINDED;
+        
+        /**
+         * Randomly selects a {@code AntigenFlag}.
+         *
+         * @param rng  the random number generator
+         * @return  a random {@code AntigenFlag}
+         */
+        public static AntigenFlag random(MersenneTwisterFast rng) {
+            return values()[rng.nextInt(values().length - 1) + 1];
+        }
+    }
     
     /** Operation category codes for patch simulations. */
     public enum Category implements OperationCategory {

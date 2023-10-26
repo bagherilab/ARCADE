@@ -4,9 +4,6 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
-import arcade.patch.util.PatchEnums.Domain;
-import arcade.patch.util.PatchEnums.Flag;
-import arcade.patch.util.PatchEnums.State;
 import sim.engine.SimState;
 import arcade.core.sim.Simulation;
 import static arcade.patch.util.PatchEnums.Domain;
@@ -80,8 +77,7 @@ public class PatchCellTissue extends PatchCell {
     }
 
     /* consider making PatchCell parameters protected instead of private */
-    /* make step()  method that overrides main that is moved over from PatchCell */
-
+    
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;

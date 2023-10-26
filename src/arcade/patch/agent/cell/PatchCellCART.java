@@ -1,9 +1,13 @@
 package arcade.patch.agent.cell;
 
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
+import javafx.stage.PopupWindow.AnchorLocation;
+import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
+import arcade.patch.util.PatchEnums.AntigenFlag;
 import arcade.patch.util.PatchEnums.Domain;
 import arcade.patch.util.PatchEnums.Flag;
 import arcade.patch.util.PatchEnums.State;
@@ -12,6 +16,7 @@ import arcade.core.sim.Simulation;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.State;
+import static arcade.patch.util.PatchEnums.AntigenFlag;
 
 /**
  * Implementation of {@link Cell} for generic CART cell.
@@ -55,22 +60,28 @@ import static arcade.patch.util.PatchEnums.State;
 public abstract class PatchCellCART extends PatchCell {
 
      /** Fraction of exhausted cells that become apoptotic. */
-     private final double exhaustedFraction;
+     protected final double exhaustedFraction;
     
      /** Fraction of senescent cells that become apoptotic. */
-     private final double senescentFraction;
+     protected final double senescentFraction;
 
      /** Fraction of anergic cells that become apoptotic. */
-     private final double anergicFraction;
+     protected final double anergicFraction;
 
       /** Fraction of proliferative cells that become apoptotic. */
-     private final double proliferativeFraction;
+     protected final double proliferativeFraction;
  
      /** Cell surface antigen count */
      protected int carAntigens;
      
      /** Cell surface PDL1 count */
      protected final int selfTargets;
+
+     /** Cell binding flag */
+     protected AntigenFlag binding;
+
+     /** Cell activation flag */
+     protected boolean activated;
 
     /** lack of documentation so these parameters are TBD */
      protected int selfReceptors;
@@ -145,6 +156,8 @@ public abstract class PatchCellCART extends PatchCell {
          boundAntigensCount = 0;
          boundSelfCount = 0;
          lastActiveTicker = 0;
+         binding = AntigenFlag.UNDEFINED;
+         activated = true;
 
          // Set loaded parameters.
          exhaustedFraction = parameters.getDouble(  "EXHAUSTED_FRACTION");
@@ -168,58 +181,41 @@ public abstract class PatchCellCART extends PatchCell {
      }
 
     /* need to implement bindTarget equivalent here*/
+    /**
+	 * Determines if CAR T cell agent is bound to neighbor through receptor-target binding.
+	 * <p>
+	 * Searches the number of allowed neighbors in series, calculates bound probability to antigen
+	 * and self receptors, compares values to random variable. Sets flags accordingly
+	 * and returns a target cell if one was bound by antigen or self receptor.
+	 * 
+	 * @param state  the MASON simulation state
+	 * @param loc  the location of the CAR T-cell
+	 * @return  target cell if bound one, null otherwise
+	 */
 
-    //this potentially needs to move to CD4, CD8
-    //all car t cells have either CD4 or CD8 receptors
+    public void bindTarget(Simulation sim, Location loc) {
+        double KDCAR = carAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
+		double KDSelf = selfReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
 
-    @Override
-    public void step(SimState simstate) {
-        Simulation sim = (Simulation) simstate;
-        
-        // Increase age of cell.
-        super.age++;
-        
-        // TODO: check for death due to age
-        
-        // Step metabolism process.
-        super.processes.get(Domain.METABOLISM).step(simstate.random, sim);
-        
-        // Check energy status. If cell has less energy than threshold, it will
-        // apoptose. If overall energy is negative, then cell enters quiescence.
-        if (state != State.APOPTOTIC && energy < 0) {
-            if (super.energy < super.energyThreshold) {
-                super.setState(State.APOPTOTIC);
-            } else if (state != State.ANERGIC && state != State.SENESCENT && state != State.EXHAUSTED && state != State.STARVED && state != State.PROLIFERATIVE) {
-                super.setState(State.STARVED);
-            }
-        } else {
-            super.setState(State.UNDEFINED);
-        }
-        
-        // Step inflammation process.
-        //super.processes.get(Domain.INFLAMMATION).step(simstate.random, sim);
+        // Create a bag with all agents in neighboring and current locations inside.
+		// Remove self from bag.
 
-        //every state with fraction will need to check against distribution in proceeding inflammation steps
-        
-        // Change state from undefined.
-        if (super.state == State.UNDEFINED) {
-            if (super.flag == Flag.MIGRATORY) {
-                super.setState(State.MIGRATORY);
-            } else if (super.divisions == 0) {
-                if (simstate.random.nextDouble() > senescentFraction) {
-                    super.setState(State.APOPTOTIC);
-                } else {
-                    super.setState(State.SENESCENT);
-                }
-            } else {
-                super.setState(State.PROLIFERATIVE);
-            }
-        }
-        
-        // Step the module for the cell state.
-        if (super.module != null) {
-            super.module.step(simstate.random, sim);
-        }
+        //get all agents from this location 
+        //Bag allAgents = new Bag(sim.getGrid().getObjectsAtLocation(loc));
+
+        //get all agents from neighboring locations
+        /* for (Location neighborLocation : loc.getNeighbors()) {
+            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation))
+            allAgents = allAgents.union(bag);
+        } */
     }
+    
+    //this method may be unnecessary...
+    /**
+     * Sets the cell binding flag.
+     *
+     * @param antigenFlag  the target cell antigen binding state
+     */
+    public void setAntigenFlag(AntigenFlag flag) { this.binding = flag; }
     
 }
