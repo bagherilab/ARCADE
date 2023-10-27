@@ -10,17 +10,17 @@ import arcade.patch.util.PatchEnums.State;
 import ec.util.MersenneTwisterFast;
 import sim.engine.SimState;
 
-public class PatchCellCARTCD4 extends PatchCellCART{
-
-    /** Fraction of stimulatory cells that become apoptotic. */
-    private final double stimulatoryFraction;
+public class PatchCellCARTCD8 extends PatchCellCART {
+    
+    /** Fraction of cytotoxic cells that become apoptotic. */
+    private final double cytotoxicFraction;
 
     /**
-      * Creates a tissue {@code PatchCellCARTCD4} agent.
+      * Creates a tissue {@code PatchCellCARTCD8} agent.
       * * <p>
       * Loaded parameters include:
       * <ul>
-      *     <li>{@code STIMULATORY_FRACTION} = fraction of stimulatory cells that
+      *     <li>{@code CYTOTOXIC_FRACTION} = fraction of cytotoxic cells that
       *         become apoptotic</li>
       * </ul>
       *
@@ -38,7 +38,7 @@ public class PatchCellCARTCD4 extends PatchCellCART{
       * @param criticalHeight  the critical cell height
       */
 
-       public PatchCellCARTCD4(int id, int parent, int pop, CellState state, int age, int divisions,
+      public PatchCellCARTCD8(int id, int parent, int pop, CellState state, int age, int divisions,
                             Location location, MiniBox parameters, double volume, double height,
                             double criticalVolume, double criticalHeight) {
             
@@ -46,19 +46,20 @@ public class PatchCellCARTCD4 extends PatchCellCART{
                                 volume, height, criticalVolume, criticalHeight);
          
             // Set loaded parameters.
-            stimulatoryFraction = parameters.getDouble(  "STIMULATORY_FRACTION");
+            cytotoxicFraction = parameters.getDouble(  "CYTOTOXIC_FRACTION");
+
+
         }
 
-        
         @Override
-        public PatchCellCARTCD4 make(int newID, CellState newState, Location newLocation,
+        public PatchCellCARTCD8 make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
             
             divisions--;
-            return new PatchCellCARTCD4(newID, id, pop, newState, age, divisions, newLocation,
+            return new PatchCellCARTCD8(newID, id, pop, newState, age, divisions, newLocation,
                 parameters, volume, height, criticalVolume, criticalHeight);
         }
-        
+
         @Override
         public void step(SimState simstate) {
             Simulation sim = (Simulation) simstate;
@@ -128,10 +129,10 @@ public class PatchCellCARTCD4 extends PatchCellCART{
                         }
                     } else {
                         //if CD4 cell is properly activated, it can stimulate
-                        if (simstate.random.nextDouble() > stimulatoryFraction) {
+                        if (simstate.random.nextDouble() > cytotoxicFraction) {
                             super.setState(State.APOPTOTIC);
                         } else {
-                            super.setState(State.STIMULATORY);
+                            super.setState(State.CYTOTOXIC);
                         }
                     }
                 } else if (binding == AntigenFlag.BOUND_CELL_RECEPTOR) {
