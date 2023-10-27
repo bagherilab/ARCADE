@@ -22,11 +22,13 @@ public class PatchCellTissue extends PatchCell {
     /** Fraction of senescent cells that become apoptotic. */
     private final double senescentFraction;
 
+    //these two variables are public bc I don't want to implement setter/getter methods for sims that do not use CART cells.
+    
     /** Cell surface antigen count */
-	protected int carAntigens;
+	int carAntigens;
 	
 	/** Cell surface PDL1 count */
-	protected final int selfTargets;
+	int selfTargets;
 
 
     /**
@@ -77,7 +79,7 @@ public class PatchCellTissue extends PatchCell {
     }
 
     /* consider making PatchCell parameters protected instead of private */
-    
+
     @Override
     public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;

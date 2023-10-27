@@ -7,15 +7,11 @@ import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
-import arcade.patch.util.PatchEnums.AntigenFlag;
-import arcade.patch.util.PatchEnums.Domain;
-import arcade.patch.util.PatchEnums.Flag;
-import arcade.patch.util.PatchEnums.State;
-import sim.engine.SimState;
+import arcade.patch.env.grid.PatchGrid;
+import arcade.patch.env.location.PatchLocation;
 import arcade.core.sim.Simulation;
-import static arcade.patch.util.PatchEnums.Domain;
-import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.State;
+
 import static arcade.patch.util.PatchEnums.AntigenFlag;
 
 /**
@@ -190,27 +186,89 @@ public abstract class PatchCellCART extends PatchCell {
 	 * 
 	 * @param state  the MASON simulation state
 	 * @param loc  the location of the CAR T-cell
-	 * @return  target cell if bound one, null otherwise
+     * @param random  random seed
 	 */
 
-    public void bindTarget(Simulation sim, Location loc) {
+    public void bindTarget(Simulation sim, PatchLocation loc, MersenneTwisterFast random) {
         double KDCAR = carAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
 		double KDSelf = selfReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
-
-        // Create a bag with all agents in neighboring and current locations inside.
-		// Remove self from bag.
+        PatchGrid grid = (PatchGrid) sim.getGrid();
 
         //get all agents from this location 
-        //Bag allAgents = new Bag(sim.getGrid().getObjectsAtLocation(loc));
+        Bag allAgents = new Bag(grid.getObjectsAtLocation(loc));
 
         //get all agents from neighboring locations
-        /* for (Location neighborLocation : loc.getNeighbors()) {
-            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation))
-            allAgents = allAgents.union(bag);
-        } */
+        for (Location neighborLocation : loc.getNeighbors()) {
+            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));
+            for (Object b : bag) {
+                //add all agents from neighboring locations 
+                if (!allAgents.contains(b)) allAgents.add(b);
+            }
+        } 
+
+        //remove self
+        allAgents.remove(this);
+
+        //shuffle bag
+        allAgents.shuffle(random);
+
+        //get number of neighbors
+        int neighbors = allAgents.size();
+
+        // Bind target with some probability if a nearby cell has targets to bind.
+        int maxSearch = 0;
+		if (neighbors == 0) {
+			binding = AntigenFlag.UNBINDED;
+		} else {
+            if (neighbors < searchAbility) {
+                maxSearch = neighbors;
+            } else {
+                maxSearch = (int) searchAbility;
+            }
+        }
+
+        // Within maximum search vicinity, search for neighboring cells to bind to 
+        for (int i = 0; i < maxSearch; i++) {
+            Cell cell = (Cell) allAgents.get(i);
+            if (!(cell instanceof PatchCellCART) && cell.getState() != State.APOPTOTIC && cell.getState() != State.NECROTIC) {
+                PatchCellTissue tissueCell = (PatchCellTissue) cell;
+				double CARAntigens = tissueCell.carAntigens;
+				double selfTargets = tissueCell.selfTargets;
+
+                double hillCAR = (CARAntigens*contactFraction/ (KDCAR*carBeta + CARAntigens*contactFraction))*(cars/50000)*carAlpha;
+				double hillSelf = (selfTargets*contactFraction / (KDSelf*selfBeta + selfTargets*contactFraction))*(selfReceptors/selfReceptorsStart)*selfAlpha;
+
+                double logCAR = 2*(1/(1 + Math.exp(-1*hillCAR))) - 1;
+				double logSelf = 2*(1/(1 + Math.exp(-1*hillSelf))) - 1;
+
+                double randomAntigen = random.nextDouble();
+				double randomSelf = random.nextDouble();
+
+                if (logCAR >= randomAntigen && logSelf < randomSelf ) {
+                    // cell binds to antigen receptor
+                    binding = AntigenFlag.BOUND_ANTIGEN;
+                    boundAntigensCount++;
+                    selfReceptors += (int)((double)selfReceptorsStart * (0.95 + random.nextDouble()/10));
+                } else if ( logCAR >= randomAntigen && logSelf >= randomSelf ) {
+                    // cell binds to antigen receptor and self
+                    binding = AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR;
+                    boundAntigensCount++;
+                    boundSelfCount++;
+                    selfReceptors += (int)((double)selfReceptorsStart * (0.95 + random.nextDouble()/10));
+                } else if ( logCAR < randomAntigen && logSelf >= randomSelf ) {
+                    // cell binds to self
+                    binding = AntigenFlag.BOUND_CELL_RECEPTOR;
+                    boundSelfCount++;
+                } else { 
+                    // cell doesn't bind to anything
+                    binding = AntigenFlag.UNBINDED;
+                }
+            }
+        }
     }
     
-    //this method may be unnecessary...
+    //this method may be unnecessary if only subclasses can set antigen flag
+
     /**
      * Sets the cell binding flag.
      *

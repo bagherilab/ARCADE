@@ -5,11 +5,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import org.junit.Test;
 
-import arcade.patch.util.PatchEnums.Category;
-import arcade.patch.util.PatchEnums.Domain;
-import arcade.patch.util.PatchEnums.Flag;
-import arcade.patch.util.PatchEnums.Ordering;
-import arcade.patch.util.PatchEnums.State;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;

@@ -93,7 +93,6 @@ public class PatchCellCARTCD4 extends PatchCellCART{
             }
             
             // Step inflammation process.
-            
             //super.processes.get(Domain.INFLAMMATION).step(simstate.random, sim);
             
             // Change state from undefined.
@@ -106,8 +105,8 @@ public class PatchCellCARTCD4 extends PatchCellCART{
                     }
                 }
             } else {
-                
-                // bindTarget(super.state, location)
+                // Cell attempts to bind to a target
+                super.bindTarget(sim, location, new MersenneTwisterFast(simstate.seed()));
 
                 //If cell is bound to both antigen and self it will become anergic.
                 if (binding == AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR) {
