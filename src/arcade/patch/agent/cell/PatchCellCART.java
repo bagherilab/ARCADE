@@ -268,6 +268,7 @@ public abstract class PatchCellCART extends PatchCell {
     }
     
     //this method may be unnecessary if only subclasses can set antigen flag
+    //can non-T cells set the antigen binding properties of CART cell?
 
     /**
      * Sets the cell binding flag.
