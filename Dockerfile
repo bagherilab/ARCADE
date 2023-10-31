@@ -9,7 +9,8 @@ RUN yum -y install tar
 RUN yum -y install xz
 
 # Copy model jar
-COPY arcade-3.1.jar ./arcade.jar
+ARG VERSION
+COPY arcade-${VERSION}.jar ./arcade.jar
 
 # Copy entrypoint script and make executable
 COPY arcade.sh ./arcade.sh
