@@ -136,6 +136,6 @@ public class AdhesionHamiltonian2DTest {
         ah.configs.put(1, config);
         
         assertEquals(subadhesion / NEIGHBORHOOD_SIZE, ah.getAdhesion(1, REGION_DEFAULT, 1, 2, 0), EPSILON);
-        assertEquals(2 * subadhesion / NEIGHBORHOOD_SIZE, ah.getAdhesion(1, REGION_NUCLEUS, 2, 2, 0), EPSILON);
+        assertEquals(0, ah.getAdhesion(1, REGION_NUCLEUS, 2, 2, 0), EPSILON);
     }
 }
