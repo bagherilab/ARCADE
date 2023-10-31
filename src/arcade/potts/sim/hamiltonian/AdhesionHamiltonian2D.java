@@ -54,7 +54,7 @@ public class AdhesionHamiltonian2D extends AdhesionHamiltonian {
             for (int j = y - 1; j <= y + 1; j++) {
                 Region xy = Region.values()[regions[z][i][j]];
                 if (!(i == x && j == y) && ids[z][i][j] == id && xy != region
-                        && xy != Region.UNDEFINED && xy != Region.DEFAULT) {
+                        && xy != Region.UNDEFINED) {
                     h += (c.getAdhesion(region, xy) + c.getAdhesion(xy, region)) / 2.0;
                 }
             }
