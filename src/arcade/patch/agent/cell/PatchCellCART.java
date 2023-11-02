@@ -206,6 +206,8 @@ public abstract class PatchCellCART extends PatchCell {
             }
         } 
 
+
+        
         //remove self
         allAgents.remove(this);
 

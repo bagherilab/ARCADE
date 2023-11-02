@@ -66,6 +66,10 @@ public class PatchCellTissue extends PatchCell {
         // Set loaded parameters.
         necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
+        
+        //In component, check if TCells present
+        //check if these values null
+        //double check if getInt fails at runtime for null values
         carAntigens = parameters.getInt("CAR_ANTIGENS");
         selfTargets = parameters.getInt("SELF_TARGETS");
     }
