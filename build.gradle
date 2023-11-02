@@ -75,7 +75,7 @@ task copyJar(type: Copy) {
     into project.projectDir
     doLast {
         println "\nBuild the Docker image using:"
-        println "\ndocker build --build-arg VERSION=${gitVersion()} -t arcade:${gitVersion()} ."
+        println "\ndocker build --build-arg VERSION=${gitVersion().substring(1)} -t arcade:${gitVersion().substring(1)} ."
     }
 }
 
