@@ -1,9 +1,10 @@
 plugins {
     id "java"
     id "jacoco"
+    id "com.palantir.git-version" version "3.0.0"
 }
 
-version = "3.1.1"
+version = "3.1.2"
 sourceCompatibility = 1.8
 
 repositories {
@@ -26,7 +27,7 @@ dependencies {
     implementation "fr.irit.smac.thirdparty.edu.gmu.cs:mason:18"
     implementation "com.formdev:flatlaf:0.36"
     implementation "com.google.code.gson:gson:2.8.6"
-    runtimeOnly group: 'javax.media', name: 'jmf', version: '2.1.1e'
+    runtimeOnly group: "javax.media", name: "jmf", version: "2.1.1e"
     testImplementation "org.mockito:mockito-core:2.23.+"
     testImplementation "org.mockito:mockito-inline:2.23.+"
     testImplementation "junit:junit:4.12"
@@ -63,6 +64,7 @@ jacocoTestReport {
 jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    archiveFileName.set("${project.name}-${gitVersion().substring(1)}.jar")
     manifest {
         attributes["Main-Class"] = "arcade.core.gui.GUI"
     }
@@ -71,8 +73,70 @@ jar {
 task copyJar(type: Copy) {
     from jar
     into project.projectDir
+    doLast {
+        println "\nBuild the Docker image using:"
+        println "\ndocker build --build-arg VERSION=${gitVersion().substring(1)} -t arcade:${gitVersion().substring(1)} ."
+    }
+}
+
+task showVersion (group: "versioning", description: "Display version information") {
+    doLast {
+        def versionFile = file("version.properties")
+        Properties versionProperties = new Properties()
+        versionFile.withInputStream { stream -> versionProperties.load(stream) }
+        println "Version: ${versionProperties.major}.${versionProperties.minor}.${versionProperties.patch}"
+        println "Full version: ${gitVersion()}"
+    }
+}
+
+task bumpMajor(group: "versioning", description: "Bump to next major version") {
+    doFirst {
+        def versionFile = file("version.properties")
+        ant.propertyfile(file: versionFile) {
+            entry(key: "major", type: "int", operation: "+", value: 1)
+            entry(key: "minor", type: "int", operation: "=", value: 0)
+            entry(key: "patch", type: "int", operation: "=", value: 0)
+        }
+    }
+}
+
+task bumpMinor(group: "versioning", description: "Bump to next minor version") {
+    doFirst {
+        def versionFile = file("version.properties")
+        ant.propertyfile(file: versionFile) {
+            entry(key: "major", type: "int", operation: "+", value: 0)
+            entry(key: "minor", type: "int", operation: "+", value: 1)
+            entry(key: "patch", type: "int", operation: "=", value: 0)
+        }
+    }
+}
+
+task bumpPatch(group: "versioning", description: "Bump to next patch version") {
+    doFirst {
+        def versionFile = file("version.properties")
+        ant.propertyfile(file: versionFile) {
+            entry(key: "major", type: "int", operation: "+", value: 0)
+            entry(key: "minor", type: "int", operation: "+", value: 0)
+            entry(key: "patch", type: "int", operation: "+", value: 1)
+        }
+    }
+}
+
+task updateVersion (group: "versioning", description: "Syncs gradle version with properties") {
+    doLast {
+        def versionFile = file("version.properties")
+        Properties versionProperties = new Properties()
+        versionFile.withInputStream { stream -> versionProperties.load(stream) }
+        String newVersion = "${versionProperties.major}.${versionProperties.minor}.${versionProperties.patch}"
+        buildFile.setText(buildFile.getText().replaceFirst("""version = "$version""", """version = "$newVersion"""))
+        println "Bumped version to: ${newVersion}"
+    }
 }
 
 build.dependsOn copyJar
 
 test.finalizedBy jacocoTestReport
+
+bumpMajor.finalizedBy updateVersion
+bumpMinor.finalizedBy updateVersion
+bumpPatch.finalizedBy updateVersion

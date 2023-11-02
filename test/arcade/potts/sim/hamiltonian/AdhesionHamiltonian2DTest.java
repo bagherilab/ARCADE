@@ -111,13 +111,13 @@ public class AdhesionHamiltonian2DTest {
         AdhesionHamiltonian2D ah = new AdhesionHamiltonian2D(mock(PottsSeries.class), potts);
         
         double[][] subadhesions = new double[][] {
-                { Double.NaN, 1 },
-                { 2, Double.NaN, },
+                { Double.NaN, Double.NaN, Double.NaN },
+                { Double.NaN, Double.NaN, 1 },
+                { Double.NaN, 2, Double.NaN },
         };
         
-        int aa = REGION_DEFAULT - 1;
-        int bb = REGION_NUCLEUS - 1;
-        double subadhesion = (subadhesions[aa][bb] + subadhesions[bb][aa]) / 2;
+        double subadhesion = (subadhesions[REGION_DEFAULT][REGION_NUCLEUS]
+                + subadhesions[REGION_NUCLEUS][REGION_DEFAULT]) / 2;
         
         PottsCell cell = mock(PottsCell.class);
         AdhesionHamiltonianConfig config = mock(AdhesionHamiltonianConfig.class);
@@ -127,8 +127,11 @@ public class AdhesionHamiltonian2DTest {
             cellField.set(config, cell);
         } catch (Exception ignored) { }
         
-        doReturn(subadhesions[0][1]).when(config).getAdhesion(Region.DEFAULT, Region.NUCLEUS);
-        doReturn(subadhesions[1][0]).when(config).getAdhesion(Region.NUCLEUS, Region.DEFAULT);
+        doAnswer(invocation -> {
+            int a = ((Region) invocation.getArgument(0)).ordinal();
+            int b = ((Region) invocation.getArgument(1)).ordinal();
+            return subadhesions[a][b];
+        }).when(config).getAdhesion(any(Region.class), any(Region.class));
         
         ah.configs.put(1, config);
         
