@@ -278,5 +278,11 @@ public abstract class PatchCellCART extends PatchCell {
      * @param antigenFlag  the target cell antigen binding state
      */
     public void setAntigenFlag(AntigenFlag flag) { this.binding = flag; }
+
+    
+    /**
+     * Returns activation status
+     */
+    public boolean getActivationStatus(){ return this.activated;}
     
 }
