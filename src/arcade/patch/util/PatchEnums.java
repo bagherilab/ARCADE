@@ -185,7 +185,7 @@ public final class PatchEnums {
         BOUND_ANTIGEN_CELL_RECEPTOR,
         
         /** Code for cell bound to nothing. */
-        UNBINDED;
+        UNBOUND;
         
         /**
          * Randomly selects a {@code AntigenFlag}.

@@ -137,7 +137,7 @@ public class PatchCellCARTCD8 extends PatchCellCART {
                     }
                 } else if (binding == AntigenFlag.BOUND_CELL_RECEPTOR) {
                     //If self binding, unbind
-                    super.setAntigenFlag(AntigenFlag.UNBINDED);
+                    super.setAntigenFlag(AntigenFlag.UNBOUND);
                 } else {
                     // Check activation status. If cell has been activated before,
 					// it will proliferate. If not, it will migrate.

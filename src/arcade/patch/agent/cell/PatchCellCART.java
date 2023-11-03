@@ -220,7 +220,7 @@ public abstract class PatchCellCART extends PatchCell {
         // Bind target with some probability if a nearby cell has targets to bind.
         int maxSearch = 0;
 		if (neighbors == 0) {
-			binding = AntigenFlag.UNBINDED;
+			binding = AntigenFlag.UNBOUND;
 		} else {
             if (neighbors < searchAbility) {
                 maxSearch = neighbors;
@@ -263,7 +263,7 @@ public abstract class PatchCellCART extends PatchCell {
                     boundSelfCount++;
                 } else { 
                     // cell doesn't bind to anything
-                    binding = AntigenFlag.UNBINDED;
+                    binding = AntigenFlag.UNBOUND;
                 }
             }
         }
