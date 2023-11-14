@@ -28,7 +28,7 @@
     
     <!-- substrate term parameters -->
     <potts.term term="substrate" id="HEIGHT_THRESHOLD" value="9" units="um" conversion="DS^-1" />
-    <potts.term term="substrate" id="ADHESION" value="5" />
+    <potts.term term="substrate" id="ADHESION" value="50" />
     
     <!-- persistence term parameters -->
     <potts.term term="persistence" id="LAMBDA" value="0.01" conversion="DS^-2" />
