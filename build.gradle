@@ -67,6 +67,8 @@ jar {
     archiveFileName.set("${project.name}-${gitVersion().substring(1)}.jar")
     manifest {
         attributes["Main-Class"] = "arcade.core.gui.GUI"
+        attributes["Specification-Version"] = project.version
+        attributes["Implementation-Version"] = gitVersion()
     }
 }
 
@@ -81,7 +83,7 @@ task copyJar(type: Copy) {
 
 task showVersion (group: "versioning", description: "Display version information") {
     doLast {
-        def versionFile = file("src/arcade/core/version.properties")
+        def versionFile = file("version.properties")
         Properties versionProperties = new Properties()
         versionFile.withInputStream { stream -> versionProperties.load(stream) }
         println "Version: ${versionProperties.major}.${versionProperties.minor}.${versionProperties.patch}"
@@ -91,7 +93,7 @@ task showVersion (group: "versioning", description: "Display version information
 
 task bumpMajor(group: "versioning", description: "Bump to next major version") {
     doFirst {
-        def versionFile = file("src/arcade/core/version.properties")
+        def versionFile = file("version.properties")
         ant.propertyfile(file: versionFile) {
             entry(key: "major", type: "int", operation: "+", value: 1)
             entry(key: "minor", type: "int", operation: "=", value: 0)
@@ -102,7 +104,7 @@ task bumpMajor(group: "versioning", description: "Bump to next major version") {
 
 task bumpMinor(group: "versioning", description: "Bump to next minor version") {
     doFirst {
-        def versionFile = file("src/arcade/core/version.properties")
+        def versionFile = file("version.properties")
         ant.propertyfile(file: versionFile) {
             entry(key: "major", type: "int", operation: "+", value: 0)
             entry(key: "minor", type: "int", operation: "+", value: 1)
@@ -113,7 +115,7 @@ task bumpMinor(group: "versioning", description: "Bump to next minor version") {
 
 task bumpPatch(group: "versioning", description: "Bump to next patch version") {
     doFirst {
-        def versionFile = file("src/arcade/core/version.properties")
+        def versionFile = file("version.properties")
         ant.propertyfile(file: versionFile) {
             entry(key: "major", type: "int", operation: "+", value: 0)
             entry(key: "minor", type: "int", operation: "+", value: 0)
@@ -124,7 +126,7 @@ task bumpPatch(group: "versioning", description: "Bump to next patch version") {
 
 task updateVersion (group: "versioning", description: "Syncs gradle version with properties") {
     doLast {
-        def versionFile = file("src/arcade/core/version.properties")
+        def versionFile = file("version.properties")
         Properties versionProperties = new Properties()
         versionFile.withInputStream { stream -> versionProperties.load(stream) }
         String newVersion = "${versionProperties.major}.${versionProperties.minor}.${versionProperties.patch}"
