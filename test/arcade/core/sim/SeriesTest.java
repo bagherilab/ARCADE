@@ -193,11 +193,6 @@ public class SeriesTest {
     }
     
     @Test
-    public void constructor_called_setsVersion() {
-        assertEquals(ARCADE.loadVersion(), Series.VERSION);
-    }
-    
-    @Test
     public void constructor_noPrefix_updatesNames() {
         HashMap<String, MiniBox> setupDicts = makeDicts();
         Series series = new SeriesMock(setupDicts, SETUP_LISTS_MOCK, TEST_PATH, PARAMETERS, false);
