@@ -9,6 +9,7 @@ import sim.display.GUIState;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
+import arcade.core.ARCADE;
 import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.component.Component;
@@ -91,7 +92,6 @@ public class SeriesTest {
         HashMap<String, MiniBox> setupDicts = new HashMap<>();
         
         MiniBox set = new MiniBox();
-        set.put("path", TEST_PATH);
         setupDicts.put("set", set);
         
         MiniBox series = new MiniBox();
@@ -190,6 +190,11 @@ public class SeriesTest {
         
         @Override
         protected String getVisClass() { return (invalidVis ? "" : VIS_CONSTRUCTOR_CLASS); }
+    }
+    
+    @Test
+    public void constructor_called_setsVersion() {
+        assertEquals(ARCADE.loadVersion(), Series.VERSION);
     }
     
     @Test
