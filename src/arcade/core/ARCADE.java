@@ -166,7 +166,7 @@ public abstract class ARCADE {
                 return describe.trim().substring(1) + (status.isEmpty() ? "" : ".dirty");
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return "<undefined>";
         }
     }
     
