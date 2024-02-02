@@ -178,6 +178,7 @@ public class OutputSerializerTest {
         };
         
         String expected = "{"
+                + "\"version\":\"" + Series.VERSION + "\","
                 + "\"conversions\":{"
                 + "\"DS\":" + ds + ","
                 + "\"DT\":" + dt

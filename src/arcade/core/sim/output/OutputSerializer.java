@@ -99,6 +99,7 @@ public final class OutputSerializer {
      * The series object is formatted as:
      * <pre>
      *     {
+     *         "version": (version),
      *         "conversions": {
      *             "DS": (ds),
      *             "DT": (dt)
@@ -126,6 +127,8 @@ public final class OutputSerializer {
         public JsonElement serialize(Series src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonObject json = new JsonObject();
+            
+            json.addProperty("version", Series.VERSION);
             
             JsonObject conversions = new JsonObject();
             conversions.addProperty("DS", src.ds);
