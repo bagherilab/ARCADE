@@ -1,10 +1,15 @@
 package arcade.core;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Properties;
+import java.util.Objects;
+import java.util.Scanner;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -96,14 +101,15 @@ public abstract class ARCADE {
         
         // Extract ARCADE type.
         ARCADE arcade;
+        String version = loadVersion();
         
         switch (args[0]) {
             case "patch":
-                logger.info("running ARCADE [ patch ] simulations");
+                logger.info("running ARCADE [ patch | " + version + " ] simulations");
                 arcade = new PatchARCADE();
                 break;
             case "potts":
-                logger.info("running ARCADE [ potts ] simulations");
+                logger.info("running ARCADE [ potts | " + version + " ] simulations");
                 arcade = new PottsARCADE();
                 break;
             default:
@@ -126,21 +132,38 @@ public abstract class ARCADE {
     }
     
     /**
-     * Loads version number from version properties file.
+     * Gets full version number.
+     *
+     * If running with a jar, the version is pulled from the jar manifest.
+     * Otherwise, the version is extracted using git.
      *
      * @return  the version number
      */
     public static String loadVersion() {
+        String className = ARCADE.class.getSimpleName() + ".class";
+        String classPath = Objects.requireNonNull(ARCADE.class.getResource(className)).toString();
+        
         try {
-            Properties properties = new Properties();
-            properties.load(ARCADE.class.getResourceAsStream("version.properties"));
-    
-            String major = properties.getProperty("major");
-            String minor = properties.getProperty("minor");
-            String patch = properties.getProperty("patch");
-    
-            return major + "." + minor + "." + patch;
-        } catch (IOException e) {
+            if (classPath.startsWith("jar")) {
+                String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1)
+                        + "/META-INF/MANIFEST.MF";
+                Manifest manifest = new Manifest(new URL(manifestPath).openStream());
+                Attributes attr = manifest.getMainAttributes();
+                return attr.getValue("Implementation-Version");
+            } else {
+                Runtime runtime = Runtime.getRuntime();
+                
+                InputStream inputStream = runtime.exec("git describe --tags").getInputStream();
+                Scanner scanner = new Scanner(inputStream).useDelimiter("\\A");
+                String describe = scanner.hasNext() ? scanner.next() : "";
+                
+                inputStream = runtime.exec("git status --porcelain").getInputStream();
+                scanner = new Scanner(inputStream).useDelimiter("\\A");
+                String status = scanner.hasNext() ? scanner.next() : "";
+                
+                return describe.trim().substring(1) + (status.isEmpty() ? "" : ".dirty");
+            }
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
