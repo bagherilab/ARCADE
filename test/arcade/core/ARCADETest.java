@@ -82,6 +82,12 @@ public class ARCADETest {
     }
     
     @Test
+    public void loadVersion_call_returnsVersion() {
+        String version = ARCADE.loadVersion();
+        assertEquals("MAJOR.MINOR.PATCH", version);
+    }
+    
+    @Test
     public void loadCommands_called_loadsBox() throws IOException, SAXException {
         File file = folder.newFile("command." + IMPLEMENTATION + ".xml");
         FileUtils.writeStringToFile(file,

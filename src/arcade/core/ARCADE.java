@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Properties;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
@@ -122,6 +123,26 @@ public abstract class ARCADE {
         
         // Run series.
         arcade.runSeries(series, settings);
+    }
+    
+    /**
+     * Loads version number from version properties file.
+     *
+     * @return  the version number
+     */
+    public static String loadVersion() {
+        try {
+            Properties properties = new Properties();
+            properties.load(ARCADE.class.getResourceAsStream("version.properties"));
+    
+            String major = properties.getProperty("major");
+            String minor = properties.getProperty("minor");
+            String patch = properties.getProperty("patch");
+    
+            return major + "." + minor + "." + patch;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     /**
