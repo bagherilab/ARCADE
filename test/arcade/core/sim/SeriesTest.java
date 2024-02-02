@@ -9,7 +9,6 @@ import sim.display.GUIState;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Steppable;
-import arcade.core.ARCADE;
 import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.component.Component;

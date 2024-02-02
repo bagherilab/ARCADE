@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.logging.Logger;
 import sim.display.GUIState;
 import sim.engine.SimState;
-import arcade.core.ARCADE;
 import arcade.core.sim.output.*;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
@@ -35,9 +34,6 @@ public abstract class Series {
     
     /** Offset of random seed to avoid using seed of 0. */
     public static final int SEED_OFFSET = 1000;
-    
-    /** Version number. */
-    public static final String VERSION = ARCADE.loadVersion();
     
     /** {@code true} if {@code Series} is not valid, {@code false} otherwise. */
     public boolean isSkipped;

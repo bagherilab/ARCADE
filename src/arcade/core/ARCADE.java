@@ -53,6 +53,9 @@ public abstract class ARCADE {
     /** Logger for {@code ARCADE}. */
     protected static Logger logger;
     
+    /** Version number. */
+    public static final String VERSION = loadVersion();
+    
     /**
      * Gets the resource relative to the location of the class.
      *
@@ -101,15 +104,14 @@ public abstract class ARCADE {
         
         // Extract ARCADE type.
         ARCADE arcade;
-        String version = loadVersion();
         
         switch (args[0]) {
             case "patch":
-                logger.info("running ARCADE [ patch | " + version + " ] simulations");
+                logger.info("running ARCADE [ patch | " + VERSION + " ] simulations");
                 arcade = new PatchARCADE();
                 break;
             case "potts":
-                logger.info("running ARCADE [ potts | " + version + " ] simulations");
+                logger.info("running ARCADE [ potts | " + VERSION + " ] simulations");
                 arcade = new PottsARCADE();
                 break;
             default:
@@ -139,7 +141,7 @@ public abstract class ARCADE {
      *
      * @return  the version number
      */
-    public static String loadVersion() {
+    static String loadVersion() {
         String className = ARCADE.class.getSimpleName() + ".class";
         String classPath = Objects.requireNonNull(ARCADE.class.getResource(className)).toString();
         
