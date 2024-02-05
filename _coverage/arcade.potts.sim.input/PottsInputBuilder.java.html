@@ -117,17 +117,13 @@ public final class PottsInputBuilder extends InputBuilder {
     public void endElement(String uri, String local, String name) {
 <span class="fc" id="L118">        LOGGER.fine(&quot;end element [ &quot; + name + &quot; ]&quot;);</span>
         
-<span class="fc bfc" id="L120" title="All 2 branches covered.">        switch (name) {</span>
-            case &quot;series&quot;:
-<span class="fc" id="L122">                series.add(new PottsSeries(setupDicts, setupLists, path, parameters, isVis));</span>
-<span class="fc" id="L123">                MiniBox set = setupDicts.get(&quot;set&quot;);</span>
-<span class="fc" id="L124">                setupDicts = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L125">                setupLists = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L126">                setupDicts.put(&quot;set&quot;, set);</span>
-<span class="fc" id="L127">                break;</span>
-            default:
-                break;
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        if (&quot;series&quot;.equals(name)) {</span>
+<span class="fc" id="L121">            series.add(new PottsSeries(setupDicts, setupLists, path, parameters, isVis));</span>
+<span class="fc" id="L122">            MiniBox set = setupDicts.get(&quot;set&quot;);</span>
+<span class="fc" id="L123">            setupDicts = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L124">            setupLists = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L125">            setupDicts.put(&quot;set&quot;, set);</span>
         }
-<span class="fc" id="L131">    }</span>
+<span class="fc" id="L127">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

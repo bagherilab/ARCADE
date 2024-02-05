@@ -161,14 +161,14 @@ public abstract class Potts implements Steppable {
             
             // Select unique ID (if there is one), otherwise select unique
             // region (if there is one). If there are neither, then skip.
-<span class="fc bfc" id="L164" title="All 4 branches covered.">            if (hasRegionsCell &amp;&amp; uniqueRegionTargets.size() &gt; 0) {</span>
-<span class="fc" id="L165">                int i = simstate.random.nextInt(uniqueRegionTargets.size());</span>
-<span class="fc" id="L166">                int targetRegion = (int) uniqueRegionTargets.toArray()[i];</span>
-<span class="fc" id="L167">                flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">            } else if (uniqueIDTargets.size() &gt; 0) {</span>
-<span class="fc" id="L169">                int i = simstate.random.nextInt(uniqueIDTargets.size());</span>
-<span class="fc" id="L170">                int targetID = (int) uniqueIDTargets.toArray()[i];</span>
-<span class="fc" id="L171">                flip(ids[z][x][y], targetID, x, y, z, r);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">            if (uniqueIDTargets.size() &gt; 0) {</span>
+<span class="fc" id="L165">                int i = simstate.random.nextInt(uniqueIDTargets.size());</span>
+<span class="fc" id="L166">                int targetID = (int) uniqueIDTargets.toArray()[i];</span>
+<span class="fc" id="L167">                flip(ids[z][x][y], targetID, x, y, z, r);</span>
+<span class="pc bpc" id="L168" title="1 of 4 branches missed.">            } else if (hasRegionsCell &amp;&amp; uniqueRegionTargets.size() &gt; 0) {</span>
+<span class="fc" id="L169">                int i = simstate.random.nextInt(uniqueRegionTargets.size());</span>
+<span class="fc" id="L170">                int targetRegion = (int) uniqueRegionTargets.toArray()[i];</span>
+<span class="fc" id="L171">                flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);</span>
             }
         }
 <span class="fc" id="L174">    }</span>
