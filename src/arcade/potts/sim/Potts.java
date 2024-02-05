@@ -161,14 +161,14 @@ public abstract class Potts implements Steppable {
             
             // Select unique ID (if there is one), otherwise select unique
             // region (if there is one). If there are neither, then skip.
-            if (hasRegionsCell && uniqueRegionTargets.size() > 0) {
-                int i = simstate.random.nextInt(uniqueRegionTargets.size());
-                int targetRegion = (int) uniqueRegionTargets.toArray()[i];
-                flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);
-            } else if (uniqueIDTargets.size() > 0) {
+            if (uniqueIDTargets.size() > 0) {
                 int i = simstate.random.nextInt(uniqueIDTargets.size());
                 int targetID = (int) uniqueIDTargets.toArray()[i];
                 flip(ids[z][x][y], targetID, x, y, z, r);
+            } else if (hasRegionsCell && uniqueRegionTargets.size() > 0) {
+                int i = simstate.random.nextInt(uniqueRegionTargets.size());
+                int targetRegion = (int) uniqueRegionTargets.toArray()[i];
+                flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);
             }
         }
     }

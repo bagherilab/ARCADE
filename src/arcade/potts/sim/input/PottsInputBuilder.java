@@ -117,16 +117,12 @@ public final class PottsInputBuilder extends InputBuilder {
     public void endElement(String uri, String local, String name) {
         LOGGER.fine("end element [ " + name + " ]");
         
-        switch (name) {
-            case "series":
-                series.add(new PottsSeries(setupDicts, setupLists, path, parameters, isVis));
-                MiniBox set = setupDicts.get("set");
-                setupDicts = new HashMap<>();
-                setupLists = new HashMap<>();
-                setupDicts.put("set", set);
-                break;
-            default:
-                break;
+        if ("series".equals(name)) {
+            series.add(new PottsSeries(setupDicts, setupLists, path, parameters, isVis));
+            MiniBox set = setupDicts.get("set");
+            setupDicts = new HashMap<>();
+            setupLists = new HashMap<>();
+            setupDicts.put("set", set);
         }
     }
 }
