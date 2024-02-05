@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":6,"i2":6,"i3":6,"i4":6,"i5":10,"i6":10,"i7":9,"i8":10,"i9":10,"i10":9};
+var methods = {"i0":10,"i1":6,"i2":6,"i3":6,"i4":6,"i5":10,"i6":10,"i7":9,"i8":9,"i9":10,"i10":10,"i11":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -156,6 +156,12 @@ extends java.lang.Object</pre>
 <div class="block">Logger for <code>ARCADE</code>.</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/core/ARCADE.html#VERSION">VERSION</a></span></code>
+<div class="block">Version number.</div>
+</td>
+</tr>
 </table>
 </li>
 </ul>
@@ -232,26 +238,32 @@ extends java.lang.Object</pre>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
+<td class="colFirst"><code>(package private) static java.lang.String</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/core/ARCADE.html#loadVersion--">loadVersion</a></span>()</code>
+<div class="block">Gets full version number.</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>static void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/core/ARCADE.html#main-java.lang.String:A-">main</a></span>(java.lang.String[]&nbsp;args)</code>
 <div class="block">Main function for running ARCADE simulations.</div>
 </td>
 </tr>
-<tr id="i8" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>(package private) <a href="../../arcade/core/util/MiniBox.html" title="class in arcade.core.util">MiniBox</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/core/ARCADE.html#parseArguments-java.lang.String:A-arcade.core.util.Box-">parseArguments</a></span>(java.lang.String[]&nbsp;args,
               <a href="../../arcade/core/util/Box.html" title="class in arcade.core.util">Box</a>&nbsp;commands)</code>
 <div class="block">Parses arguments using command line parser.</div>
 </td>
 </tr>
-<tr id="i9" class="rowColor">
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>(package private) void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/core/ARCADE.html#runSeries-java.util.ArrayList-arcade.core.util.MiniBox-">runSeries</a></span>(java.util.ArrayList&lt;<a href="../../arcade/core/sim/Series.html" title="class in arcade.core.sim">Series</a>&gt;&nbsp;series,
          <a href="../../arcade/core/util/MiniBox.html" title="class in arcade.core.util">MiniBox</a>&nbsp;settings)</code>
 <div class="block">Runs simulations for each <a href="../../arcade/core/sim/Series.html" title="class in arcade.core.sim"><code>Series</code></a>.</div>
 </td>
 </tr>
-<tr id="i10" class="altColor">
+<tr id="i11" class="rowColor">
 <td class="colFirst"><code>static void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../arcade/core/ARCADE.html#updateLogger--">updateLogger</a></span>()</code>
 <div class="block">Updates the logger handler with custom formatting.</div>
@@ -282,11 +294,21 @@ extends java.lang.Object</pre>
 <a name="logger">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>logger</h4>
 <pre>protected static&nbsp;java.util.logging.Logger logger</pre>
 <div class="block">Logger for <code>ARCADE</code>.</div>
+</li>
+</ul>
+<a name="VERSION">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>VERSION</h4>
+<pre>public static final&nbsp;java.lang.String VERSION</pre>
+<div class="block">Version number.</div>
 </li>
 </ul>
 </li>
@@ -438,6 +460,23 @@ extends java.lang.Object</pre>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.io.IOException</code></dd>
 <dd><code>org.xml.sax.SAXException</code></dd>
+</dl>
+</li>
+</ul>
+<a name="loadVersion--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>loadVersion</h4>
+<pre>static&nbsp;java.lang.String&nbsp;loadVersion()</pre>
+<div class="block">Gets full version number.
+
+ If running with a jar, the version is pulled from the jar manifest.
+ Otherwise, the version is extracted using git.</div>
+<dl>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>the version number</dd>
 </dl>
 </li>
 </ul>
