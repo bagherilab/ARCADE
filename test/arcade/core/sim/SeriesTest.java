@@ -91,7 +91,6 @@ public class SeriesTest {
         HashMap<String, MiniBox> setupDicts = new HashMap<>();
         
         MiniBox set = new MiniBox();
-        set.put("path", TEST_PATH);
         setupDicts.put("set", set);
         
         MiniBox series = new MiniBox();

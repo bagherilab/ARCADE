@@ -67,6 +67,8 @@ jar {
     archiveFileName.set("${project.name}-${gitVersion().substring(1)}.jar")
     manifest {
         attributes["Main-Class"] = "arcade.core.gui.GUI"
+        attributes["Specification-Version"] = project.version
+        attributes["Implementation-Version"] = gitVersion().substring(1)
     }
 }
 

@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.internal.bind.TreeTypeAdapter;
 import com.google.gson.reflect.TypeToken;
+import arcade.core.ARCADE;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
@@ -178,6 +179,7 @@ public class OutputSerializerTest {
         };
         
         String expected = "{"
+                + "\"version\":\"" + ARCADE.VERSION + "\","
                 + "\"conversions\":{"
                 + "\"DS\":" + ds + ","
                 + "\"DT\":" + dt
