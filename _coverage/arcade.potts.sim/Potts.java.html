@@ -159,19 +159,25 @@ public abstract class Potts implements Steppable {
 <span class="fc" id="L159">            HashSet&lt;Integer&gt; uniqueIDTargets = getUniqueIDs(x, y, z);</span>
 <span class="fc" id="L160">            HashSet&lt;Integer&gt; uniqueRegionTargets = getUniqueRegions(x, y, z);</span>
             
-            // Select unique ID (if there is one), otherwise select unique
-            // region (if there is one). If there are neither, then skip.
-<span class="fc bfc" id="L164" title="All 2 branches covered.">            if (uniqueIDTargets.size() &gt; 0) {</span>
-<span class="fc" id="L165">                int i = simstate.random.nextInt(uniqueIDTargets.size());</span>
-<span class="fc" id="L166">                int targetID = (int) uniqueIDTargets.toArray()[i];</span>
-<span class="fc" id="L167">                flip(ids[z][x][y], targetID, x, y, z, r);</span>
-<span class="pc bpc" id="L168" title="1 of 4 branches missed.">            } else if (hasRegionsCell &amp;&amp; uniqueRegionTargets.size() &gt; 0) {</span>
-<span class="fc" id="L169">                int i = simstate.random.nextInt(uniqueRegionTargets.size());</span>
-<span class="fc" id="L170">                int targetRegion = (int) uniqueRegionTargets.toArray()[i];</span>
-<span class="fc" id="L171">                flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);</span>
+            // Check if there are valid unique targets.
+<span class="fc bfc" id="L163" title="All 2 branches covered.">            boolean hasIDTargets = uniqueIDTargets.size() &gt; 0;</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">            boolean hasRegionTargets = uniqueRegionTargets.size() &gt; 0;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">            boolean check = simstate.random.nextDouble() &lt; 0.5;</span>
+            
+            // Select unique ID or unique region (if they exist). If there is
+            // a unique ID and unique region target, then randomly select. If
+            // there are neither, then skip.
+<span class="pc bpc" id="L170" title="3 of 8 branches missed.">            if (hasIDTargets &amp;&amp; (!hasRegionsCell || !hasRegionTargets || check)) {</span>
+<span class="fc" id="L171">                int i = simstate.random.nextInt(uniqueIDTargets.size());</span>
+<span class="fc" id="L172">                int targetID = (int) uniqueIDTargets.toArray()[i];</span>
+<span class="fc" id="L173">                flip(ids[z][x][y], targetID, x, y, z, r);</span>
+<span class="pc bpc" id="L174" title="1 of 4 branches missed.">            } else if (hasRegionsCell &amp;&amp; hasRegionTargets) {</span>
+<span class="fc" id="L175">                int i = simstate.random.nextInt(uniqueRegionTargets.size());</span>
+<span class="fc" id="L176">                int targetRegion = (int) uniqueRegionTargets.toArray()[i];</span>
+<span class="fc" id="L177">                flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);</span>
             }
         }
-<span class="fc" id="L174">    }</span>
+<span class="fc" id="L180">    }</span>
     
     /**
      * Flips connected voxel from source to target id based on Boltzmann
@@ -185,47 +191,47 @@ public abstract class Potts implements Steppable {
      * @param r  a random number
      */
     void flip(int sourceID, int targetID, int x, int y, int z, double r) {
-<span class="fc bfc" id="L188" title="All 2 branches covered.">        boolean zero = ids[z][x][y] == 0;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">        boolean zero = ids[z][x][y] == 0;</span>
         
         // Check connectivity of source.
-<span class="fc bfc" id="L191" title="All 2 branches covered.">        if (sourceID &gt; 0) {</span>
-<span class="fc" id="L192">            boolean[][][] neighborhood = getNeighborhood(sourceID, x, y, z);</span>
-<span class="fc" id="L193">            boolean candidateConnected = getConnectivity(neighborhood, zero);</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">            if (!candidateConnected) {</span>
-<span class="fc" id="L195">                return;</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        if (sourceID &gt; 0) {</span>
+<span class="fc" id="L198">            boolean[][][] neighborhood = getNeighborhood(sourceID, x, y, z);</span>
+<span class="fc" id="L199">            boolean candidateConnected = getConnectivity(neighborhood, zero);</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">            if (!candidateConnected) {</span>
+<span class="fc" id="L201">                return;</span>
             }
             
             // Check connectivity of regions.
-<span class="fc bfc" id="L199" title="All 2 branches covered.">            if (regions[z][x][y] &gt; Region.DEFAULT.ordinal()) {</span>
-<span class="fc" id="L200">                boolean[][][] rNeighborhood = getNeighborhood(sourceID, regions[z][x][y], x, y, z);</span>
-<span class="fc" id="L201">                boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">                if (!candidateRegionConnected) {</span>
-<span class="fc" id="L203">                    return;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">            if (regions[z][x][y] &gt; Region.DEFAULT.ordinal()) {</span>
+<span class="fc" id="L206">                boolean[][][] rNeighborhood = getNeighborhood(sourceID, regions[z][x][y], x, y, z);</span>
+<span class="fc" id="L207">                boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">                if (!candidateRegionConnected) {</span>
+<span class="fc" id="L209">                    return;</span>
                 }
             }
         }
         
         // Check connectivity of target.
-<span class="fc bfc" id="L209" title="All 2 branches covered.">        if (targetID &gt; 0) {</span>
-<span class="fc" id="L210">            boolean[][][] neighborhood = getNeighborhood(targetID, x, y, z);</span>
-<span class="fc" id="L211">            boolean targetConnected = getConnectivity(neighborhood, zero);</span>
-<span class="fc bfc" id="L212" title="All 2 branches covered.">            if (!targetConnected) {</span>
-<span class="fc" id="L213">                return;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">        if (targetID &gt; 0) {</span>
+<span class="fc" id="L216">            boolean[][][] neighborhood = getNeighborhood(targetID, x, y, z);</span>
+<span class="fc" id="L217">            boolean targetConnected = getConnectivity(neighborhood, zero);</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">            if (!targetConnected) {</span>
+<span class="fc" id="L219">                return;</span>
             }
             
             // Check connectivity of regions.
-<span class="fc bfc" id="L217" title="All 2 branches covered.">            if (regions[z][x][y] &gt; Region.DEFAULT.ordinal()) {</span>
-<span class="fc" id="L218">                boolean[][][] rNeighborhood = getNeighborhood(targetID, regions[z][x][y], x, y, z);</span>
-<span class="fc" id="L219">                boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">                if (!candidateRegionConnected) {</span>
-<span class="fc" id="L221">                    return;</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            if (regions[z][x][y] &gt; Region.DEFAULT.ordinal()) {</span>
+<span class="fc" id="L224">                boolean[][][] rNeighborhood = getNeighborhood(targetID, regions[z][x][y], x, y, z);</span>
+<span class="fc" id="L225">                boolean candidateRegionConnected = getConnectivity(rNeighborhood, false);</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">                if (!candidateRegionConnected) {</span>
+<span class="fc" id="L227">                    return;</span>
                 }
             }
         }
         
         // Change the voxel.
-<span class="fc" id="L227">        change(sourceID, targetID, x, y, z, r);</span>
-<span class="fc" id="L228">    }</span>
+<span class="fc" id="L233">        change(sourceID, targetID, x, y, z, r);</span>
+<span class="fc" id="L234">    }</span>
     
     /**
      * Calculates energy change to decide if a voxel is flipped.
@@ -239,35 +245,35 @@ public abstract class Potts implements Steppable {
      */
     void change(int sourceID, int targetID, int x, int y, int z, double r) {
         // Calculate energy change.
-<span class="fc" id="L242">        double dH = 0;</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">        for (Hamiltonian h : hamiltonian) {</span>
-<span class="fc" id="L244">            dH += h.getDelta(sourceID, targetID, x, y, z);</span>
-<span class="fc" id="L245">        }</span>
+<span class="fc" id="L248">        double dH = 0;</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">        for (Hamiltonian h : hamiltonian) {</span>
+<span class="fc" id="L250">            dH += h.getDelta(sourceID, targetID, x, y, z);</span>
+<span class="fc" id="L251">        }</span>
         
         // Calculate probability.
         double p;
-<span class="fc bfc" id="L249" title="All 2 branches covered.">        if (dH &lt; 0) {</span>
-<span class="fc" id="L250">            p = 1;</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        if (dH &lt; 0) {</span>
+<span class="fc" id="L256">            p = 1;</span>
         } else {
-<span class="fc" id="L252">            p = Math.exp(-dH / temperature);</span>
+<span class="fc" id="L258">            p = Math.exp(-dH / temperature);</span>
         }
         
-<span class="fc bfc" id="L255" title="All 2 branches covered.">        if (r &lt; p) {</span>
-<span class="fc" id="L256">            ids[z][x][y] = targetID;</span>
-<span class="fc bfc" id="L257" title="All 2 branches covered.">            if (hasRegions) {</span>
-<span class="fc bfc" id="L258" title="All 2 branches covered.">                regions[z][x][y] = (targetID == 0</span>
-<span class="fc" id="L259">                        ? Region.UNDEFINED.ordinal()</span>
-<span class="fc" id="L260">                        : Region.DEFAULT.ordinal());</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">        if (r &lt; p) {</span>
+<span class="fc" id="L262">            ids[z][x][y] = targetID;</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">            if (hasRegions) {</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">                regions[z][x][y] = (targetID == 0</span>
+<span class="fc" id="L265">                        ? Region.UNDEFINED.ordinal()</span>
+<span class="fc" id="L266">                        : Region.DEFAULT.ordinal());</span>
             }
             
-<span class="fc bfc" id="L263" title="All 2 branches covered.">            if (sourceID &gt; 0) {</span>
-<span class="fc" id="L264">                ((PottsLocation) getCell(sourceID).getLocation()).remove(x, y, z);</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">            if (sourceID &gt; 0) {</span>
+<span class="fc" id="L270">                ((PottsLocation) getCell(sourceID).getLocation()).remove(x, y, z);</span>
             }
-<span class="fc bfc" id="L266" title="All 2 branches covered.">            if (targetID &gt; 0) {</span>
-<span class="fc" id="L267">                ((PottsLocation) getCell(targetID).getLocation()).add(x, y, z);</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">            if (targetID &gt; 0) {</span>
+<span class="fc" id="L273">                ((PottsLocation) getCell(targetID).getLocation()).add(x, y, z);</span>
             }
         }
-<span class="fc" id="L270">    }</span>
+<span class="fc" id="L276">    }</span>
     
     /**
      * Flips connected voxel from source to target region based on Boltzmann
@@ -282,29 +288,29 @@ public abstract class Potts implements Steppable {
      * @param r  a random number
      */
     void flip(int id, int sourceRegion, int targetRegion, int x, int y, int z, double r) {
-<span class="fc bfc" id="L285" title="All 2 branches covered.">        boolean zero = regions[z][x][y] == Region.DEFAULT.ordinal();</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        boolean zero = regions[z][x][y] == Region.DEFAULT.ordinal();</span>
         
         // Check connectivity of source.
-<span class="fc bfc" id="L288" title="All 2 branches covered.">        if (sourceRegion &gt; Region.DEFAULT.ordinal()) {</span>
-<span class="fc" id="L289">            boolean[][][] neighborhood = getNeighborhood(id, sourceRegion, x, y, z);</span>
-<span class="fc" id="L290">            boolean candidateConnected = getConnectivity(neighborhood, zero);</span>
-<span class="fc bfc" id="L291" title="All 2 branches covered.">            if (!candidateConnected) {</span>
-<span class="fc" id="L292">                return;</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">        if (sourceRegion &gt; Region.DEFAULT.ordinal()) {</span>
+<span class="fc" id="L295">            boolean[][][] neighborhood = getNeighborhood(id, sourceRegion, x, y, z);</span>
+<span class="fc" id="L296">            boolean candidateConnected = getConnectivity(neighborhood, zero);</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">            if (!candidateConnected) {</span>
+<span class="fc" id="L298">                return;</span>
             }
         }
         
         // Check connectivity of target.
-<span class="fc bfc" id="L297" title="All 2 branches covered.">        if (targetRegion &gt; Region.DEFAULT.ordinal()) {</span>
-<span class="fc" id="L298">            boolean[][][] neighborhood = getNeighborhood(id, targetRegion, x, y, z);</span>
-<span class="fc" id="L299">            boolean targetConnected = getConnectivity(neighborhood, zero);</span>
-<span class="fc bfc" id="L300" title="All 2 branches covered.">            if (!targetConnected) {</span>
-<span class="fc" id="L301">                return;</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">        if (targetRegion &gt; Region.DEFAULT.ordinal()) {</span>
+<span class="fc" id="L304">            boolean[][][] neighborhood = getNeighborhood(id, targetRegion, x, y, z);</span>
+<span class="fc" id="L305">            boolean targetConnected = getConnectivity(neighborhood, zero);</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">            if (!targetConnected) {</span>
+<span class="fc" id="L307">                return;</span>
             }
         }
         
         // Change the voxel region.
-<span class="fc" id="L306">        change(id, sourceRegion, targetRegion, x, y, z, r);</span>
-<span class="fc" id="L307">    }</span>
+<span class="fc" id="L312">        change(id, sourceRegion, targetRegion, x, y, z, r);</span>
+<span class="fc" id="L313">    }</span>
     
     /**
      * Calculates energy change to decide if a voxel region is flipped.
@@ -319,26 +325,26 @@ public abstract class Potts implements Steppable {
      */
     void change(int id, int sourceRegion, int targetRegion, int x, int y, int z, double r) {
         // Calculate energy change.
-<span class="fc" id="L322">        double dH = 0;</span>
-<span class="fc bfc" id="L323" title="All 2 branches covered.">        for (Hamiltonian h : hamiltonian) {</span>
-<span class="fc" id="L324">            dH += h.getDelta(id, sourceRegion, targetRegion, x, y, z);</span>
-<span class="fc" id="L325">        }</span>
+<span class="fc" id="L328">        double dH = 0;</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">        for (Hamiltonian h : hamiltonian) {</span>
+<span class="fc" id="L330">            dH += h.getDelta(id, sourceRegion, targetRegion, x, y, z);</span>
+<span class="fc" id="L331">        }</span>
         
         // Calculate probability.
         double p;
-<span class="fc bfc" id="L329" title="All 2 branches covered.">        if (dH &lt; 0) {</span>
-<span class="fc" id="L330">            p = 1;</span>
+<span class="fc bfc" id="L335" title="All 2 branches covered.">        if (dH &lt; 0) {</span>
+<span class="fc" id="L336">            p = 1;</span>
         } else {
-<span class="fc" id="L332">            p = Math.exp(-dH / temperature);</span>
+<span class="fc" id="L338">            p = Math.exp(-dH / temperature);</span>
         }
         
-<span class="fc bfc" id="L335" title="All 2 branches covered.">        if (r &lt; p) {</span>
-<span class="fc" id="L336">            regions[z][x][y] = targetRegion;</span>
-<span class="fc" id="L337">            PottsCell c = getCell(id);</span>
-<span class="fc" id="L338">            ((PottsLocation) c.getLocation()).remove(Region.values()[sourceRegion], x, y, z);</span>
-<span class="fc" id="L339">            ((PottsLocation) c.getLocation()).add(Region.values()[targetRegion], x, y, z);</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">        if (r &lt; p) {</span>
+<span class="fc" id="L342">            regions[z][x][y] = targetRegion;</span>
+<span class="fc" id="L343">            PottsCell c = getCell(id);</span>
+<span class="fc" id="L344">            ((PottsLocation) c.getLocation()).remove(Region.values()[sourceRegion], x, y, z);</span>
+<span class="fc" id="L345">            ((PottsLocation) c.getLocation()).add(Region.values()[targetRegion], x, y, z);</span>
         }
-<span class="fc" id="L341">    }</span>
+<span class="fc" id="L347">    }</span>
     
     /**
      * Gets the {@link PottsCell} object for the given id.
@@ -347,10 +353,10 @@ public abstract class Potts implements Steppable {
      * @return  the {@link PottsCell} object, {@code null} if id is zero
      */
     public PottsCell getCell(int id) {
-<span class="fc bfc" id="L350" title="All 2 branches covered.">        if (id &gt; 0) {</span>
-<span class="fc" id="L351">            return (PottsCell) grid.getObjectAt(id);</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">        if (id &gt; 0) {</span>
+<span class="fc" id="L357">            return (PottsCell) grid.getObjectAt(id);</span>
         } else {
-<span class="fc" id="L353">            return null;</span>
+<span class="fc" id="L359">            return null;</span>
         }
     }
     
