@@ -43,7 +43,7 @@ public abstract class Potts implements Steppable {
     public final int height;
     
     /** Number of steps in Monte Carlo Step. */
-    int steps;
+    final int steps;
     
     /** Effective cell temperature. */
     final double temperature;
@@ -146,8 +146,6 @@ public abstract class Potts implements Steppable {
      */
     @Override
     public void step(SimState simstate) {
-//        testing
-//        int steps = 50;
         final MersenneTwisterFast random = simstate.random;
         final SyncronizedSimState syncSimstate = new SyncronizedSimState(simstate);
         final int numberOfJobs = Runtime.getRuntime().availableProcessors();
@@ -172,8 +170,6 @@ public abstract class Potts implements Steppable {
     }
 
     private void populateJobsMap(MersenneTwisterFast random, int stepsPerJob, List<List<SimParams>> jobsMap) {
-//        testing
-//        int steps = 50;
         int x;
         double r;
         int y;
