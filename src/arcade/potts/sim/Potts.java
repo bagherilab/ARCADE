@@ -146,33 +146,42 @@ public abstract class Potts implements Steppable {
      */
     @Override
     public void step(SimState simstate) {
-
-        //For testing
+//        testing
 //        int steps = 50;
-
-        MersenneTwisterFast random = simstate.random;
-        double r;
-        int x;
-        int y;
-        int z;
-
+        final MersenneTwisterFast random = simstate.random;
         final SyncronizedSimState syncSimstate = new SyncronizedSimState(simstate);
-
         final int numberOfJobs = Runtime.getRuntime().availableProcessors();
-        // round down, any remainder steps will go in the final job
-        final int stepsPerJob = (int) Math.floor(steps / numberOfJobs);
+        final int stepsPerJob = (int) Math.floor((float) steps / (float) numberOfJobs); // round down, any remainder steps will go in the final job
+        final List<List<SimParams>> jobsMap = buildJobsMap(numberOfJobs);
 
-        // map a job to the sim params it will work on
-        final List<List<SimParams>> jobBucketList = new ArrayList<>();
+        populateJobsMap(random, stepsPerJob, jobsMap);
+
+        for (List<SimParams> jobTasks : jobsMap)
+            executor.submit(() -> jobTasks.forEach(
+                    params -> executeSimStep(syncSimstate, params.getR(), params.getX(), params.getY(), params.getZ())
+            ));
+    }
+
+    private List<List<SimParams>> buildJobsMap(int numberOfJobs) {
+        final List<List<SimParams>> jobsMap = new ArrayList<>();
         // build the map
         for (int job = 0; job < numberOfJobs; job++){
-            jobBucketList.add(new ArrayList<SimParams>());
+            jobsMap.add(new ArrayList<>());
         }
-        // populate it
+        return jobsMap;
+    }
+
+    private void populateJobsMap(MersenneTwisterFast random, int stepsPerJob, List<List<SimParams>> jobsMap) {
+//        testing
+//        int steps = 50;
+        int x;
+        double r;
+        int y;
+        int z;
         int currentJob = 0;
         int stepOfJob = 0;
         for (int step = 0; step < steps; step++) {
-            if(currentJob +1 != jobBucketList.size() // on the final job, fill it with the remainder
+            if(currentJob +1 != jobsMap.size() // on the final job, fill it with the remainder
                 && stepOfJob == stepsPerJob          // otherwise, stop when it is 'full'
             ) {
                 currentJob ++;
@@ -184,27 +193,12 @@ public abstract class Potts implements Steppable {
             z = (random.nextInt(height) + 1) * (isSingle ? 0 : 1);
             r = random.nextDouble();
             SimParams simParams = new SimParams(r, x, y, z);
-            jobBucketList.get(currentJob).add(simParams);
+            jobsMap.get(currentJob).add(simParams);
             stepOfJob ++;
         }
-        // execute the jobs
-        for (List<SimParams> jobParams : jobBucketList){
-            executor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    exectuteJob(jobParams, syncSimstate);
-                }
-            });
-        }
     }
 
-    private void exectuteJob(List<SimParams> jobParams, SyncronizedSimState syncSimstate) {
-        for(SimParams params : jobParams){
-            executeSimForTheseParams(syncSimstate, params.getR(), params.getX(), params.getY(), params.getZ());
-        }
-    }
-
-    private void executeSimForTheseParams(SyncronizedSimState syncSimstate, double r, int x, int y, int z) {
+    private void executeSimStep(SyncronizedSimState syncSimstate, double r, int x, int y, int z) {
         // Check if cell has regions.
         boolean hasRegionsCell = (ids[z][x][y] != 0 && getCell(ids[z][x][y]).hasRegions());
 
