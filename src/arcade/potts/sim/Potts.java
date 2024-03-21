@@ -2,6 +2,10 @@ package arcade.potts.sim;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import ec.util.MersenneTwisterFast;
@@ -39,7 +43,7 @@ public abstract class Potts implements Steppable {
     public final int height;
     
     /** Number of steps in Monte Carlo Step. */
-    final int steps;
+    int steps;
     
     /** Effective cell temperature. */
     final double temperature;
@@ -67,6 +71,9 @@ public abstract class Potts implements Steppable {
      *
      * @param series  the simulation series
      */
+
+    private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
     public Potts(PottsSeries series) {
         // Creates potts arrays.
         ids = new int[series.height][series.length][series.width];
@@ -139,46 +146,91 @@ public abstract class Potts implements Steppable {
      */
     @Override
     public void step(SimState simstate) {
+
+        //For testing
+//        int steps = 50;
+
         MersenneTwisterFast random = simstate.random;
         double r;
         int x;
         int y;
         int z;
-        
+
+        final SyncronizedSimState syncSimstate = new SyncronizedSimState(simstate);
+
+        final int numberOfJobs = Runtime.getRuntime().availableProcessors();
+        // round down, any remainder steps will go in the final job
+        final int stepsPerJob = (int) Math.floor(steps / numberOfJobs);
+
+        // map a job to the sim params it will work on
+        final List<List<SimParams>> jobBucketList = new ArrayList<>();
+        // build the map
+        for (int job = 0; job < numberOfJobs; job++){
+            jobBucketList.add(new ArrayList<SimParams>());
+        }
+        // populate it
+        int currentJob = 0;
+        int stepOfJob = 0;
         for (int step = 0; step < steps; step++) {
+            if(currentJob +1 != jobBucketList.size() // on the final job, fill it with the remainder
+                && stepOfJob == stepsPerJob          // otherwise, stop when it is 'full'
+            ) {
+                currentJob ++;
+                stepOfJob = 0;
+            }
             // Get random coordinate for candidate.
             x = random.nextInt(length) + 1;
             y = random.nextInt(width) + 1;
             z = (random.nextInt(height) + 1) * (isSingle ? 0 : 1);
             r = random.nextDouble();
-            
-            // Check if cell has regions.
-            boolean hasRegionsCell = (ids[z][x][y] != 0 && getCell(ids[z][x][y]).hasRegions());
-            
-            // Get unique targets.
-            HashSet<Integer> uniqueIDTargets = getUniqueIDs(x, y, z);
-            HashSet<Integer> uniqueRegionTargets = getUniqueRegions(x, y, z);
-            
-            // Check if there are valid unique targets.
-            boolean hasIDTargets = uniqueIDTargets.size() > 0;
-            boolean hasRegionTargets = uniqueRegionTargets.size() > 0;
-            boolean check = simstate.random.nextDouble() < 0.5;
-            
-            // Select unique ID or unique region (if they exist). If there is
-            // a unique ID and unique region target, then randomly select. If
-            // there are neither, then skip.
-            if (hasIDTargets && (!hasRegionsCell || !hasRegionTargets || check)) {
-                int i = simstate.random.nextInt(uniqueIDTargets.size());
-                int targetID = (int) uniqueIDTargets.toArray()[i];
-                flip(ids[z][x][y], targetID, x, y, z, r);
-            } else if (hasRegionsCell && hasRegionTargets) {
-                int i = simstate.random.nextInt(uniqueRegionTargets.size());
-                int targetRegion = (int) uniqueRegionTargets.toArray()[i];
-                flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);
-            }
+            SimParams simParams = new SimParams(r, x, y, z);
+            jobBucketList.get(currentJob).add(simParams);
+            stepOfJob ++;
+        }
+        // execute the jobs
+        for (List<SimParams> jobParams : jobBucketList){
+            executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    exectuteJob(jobParams, syncSimstate);
+                }
+            });
         }
     }
-    
+
+    private void exectuteJob(List<SimParams> jobParams, SyncronizedSimState syncSimstate) {
+        for(SimParams params : jobParams){
+            executeSimForTheseParams(syncSimstate, params.getR(), params.getX(), params.getY(), params.getZ());
+        }
+    }
+
+    private void executeSimForTheseParams(SyncronizedSimState syncSimstate, double r, int x, int y, int z) {
+        // Check if cell has regions.
+        boolean hasRegionsCell = (ids[z][x][y] != 0 && getCell(ids[z][x][y]).hasRegions());
+
+        // Get unique targets.
+        HashSet<Integer> uniqueIDTargets = getUniqueIDs(x, y, z);
+        HashSet<Integer> uniqueRegionTargets = getUniqueRegions(x, y, z);
+
+        // Check if there are valid unique targets.
+        boolean hasIDTargets = uniqueIDTargets.size() > 0;
+        boolean hasRegionTargets = uniqueRegionTargets.size() > 0;
+        boolean check = syncSimstate.getSimState().random.nextDouble() < 0.5;
+
+        // Select unique ID or unique region (if they exist). If there is
+        // a unique ID and unique region target, then randomly select. If
+        // there are neither, then skip.
+        if (hasIDTargets && (!hasRegionsCell || !hasRegionTargets || check)) {
+            int i = syncSimstate.getSimState().random.nextInt(uniqueIDTargets.size());
+            int targetID = (int) uniqueIDTargets.toArray()[i];
+            flip(ids[z][x][y], targetID, x, y, z, r);
+        } else if (hasRegionsCell && hasRegionTargets) {
+            int i = syncSimstate.getSimState().random.nextInt(uniqueRegionTargets.size());
+            int targetRegion = (int) uniqueRegionTargets.toArray()[i];
+            flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);
+        }
+    }
+
     /**
      * Flips connected voxel from source to target id based on Boltzmann
      * probability.
@@ -411,4 +463,47 @@ public abstract class Potts implements Steppable {
      * @return  the list of unique regions
      */
     abstract HashSet<Integer> getUniqueRegions(int x, int y, int z);
+
+    private class SyncronizedSimState {
+
+        private SimState simState;
+
+        public SyncronizedSimState(SimState simState) {
+            this.simState = simState;
+        }
+
+        public synchronized SimState getSimState(){
+            return simState;
+        }
+    }
+
+    private class SimParams {
+        double r;
+        int x;
+        int y;
+        int z;
+
+        public SimParams(double r, int x, int y, int z) {
+            this.r = r;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public double getR() {
+            return r;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public int getZ() {
+            return z;
+        }
+    }
 }
