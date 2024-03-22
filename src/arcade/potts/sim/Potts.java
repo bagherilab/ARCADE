@@ -2,6 +2,10 @@ package arcade.potts.sim;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import sim.engine.SimState;
 import sim.engine.Steppable;
 import ec.util.MersenneTwisterFast;
@@ -67,6 +71,9 @@ public abstract class Potts implements Steppable {
      *
      * @param series  the simulation series
      */
+
+    private final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
     public Potts(PottsSeries series) {
         // Creates potts arrays.
         ids = new int[series.height][series.length][series.width];
@@ -139,46 +146,81 @@ public abstract class Potts implements Steppable {
      */
     @Override
     public void step(SimState simstate) {
-        MersenneTwisterFast random = simstate.random;
-        double r;
+        final MersenneTwisterFast random = simstate.random;
+        final SynchronizedState state = new SynchronizedState(simstate, regions, ids);
+        final int numberOfChunks = Runtime.getRuntime().availableProcessors();
+        final int stepsPerJob = (int) Math.floor((float) steps / (float) numberOfChunks); // round down, any remainder steps will go in the final job
         int x;
+        double r;
         int y;
         int z;
-        
+        int currentJob = 0;
+        int stepOfJob = 0;
+        final List<List<SimParams>> locationChunksMap = buildLocationChunksMap(numberOfChunks);
         for (int step = 0; step < steps; step++) {
+            if(currentJob +1 != locationChunksMap.size() // on the final job, fill it with the remainder
+                && stepOfJob == stepsPerJob          // otherwise, stop when it is 'full'
+            ) {
+                currentJob ++;
+                stepOfJob = 0;
+            }
             // Get random coordinate for candidate.
             x = random.nextInt(length) + 1;
             y = random.nextInt(width) + 1;
             z = (random.nextInt(height) + 1) * (isSingle ? 0 : 1);
             r = random.nextDouble();
-            
-            // Check if cell has regions.
-            boolean hasRegionsCell = (ids[z][x][y] != 0 && getCell(ids[z][x][y]).hasRegions());
-            
-            // Get unique targets.
-            HashSet<Integer> uniqueIDTargets = getUniqueIDs(x, y, z);
-            HashSet<Integer> uniqueRegionTargets = getUniqueRegions(x, y, z);
-            
-            // Check if there are valid unique targets.
-            boolean hasIDTargets = uniqueIDTargets.size() > 0;
-            boolean hasRegionTargets = uniqueRegionTargets.size() > 0;
-            boolean check = simstate.random.nextDouble() < 0.5;
-            
-            // Select unique ID or unique region (if they exist). If there is
-            // a unique ID and unique region target, then randomly select. If
-            // there are neither, then skip.
-            if (hasIDTargets && (!hasRegionsCell || !hasRegionTargets || check)) {
-                int i = simstate.random.nextInt(uniqueIDTargets.size());
-                int targetID = (int) uniqueIDTargets.toArray()[i];
-                flip(ids[z][x][y], targetID, x, y, z, r);
-            } else if (hasRegionsCell && hasRegionTargets) {
-                int i = simstate.random.nextInt(uniqueRegionTargets.size());
-                int targetRegion = (int) uniqueRegionTargets.toArray()[i];
-                flip(ids[z][x][y], regions[z][x][y], targetRegion, x, y, z, r);
-            }
+            SimParams simParams = new SimParams(r, x, y, z);
+            locationChunksMap.get(currentJob).add(simParams);
+            stepOfJob ++;
+        }
+
+        for (List<SimParams> locations : locationChunksMap)
+            executor.submit(() -> locations.forEach(
+                    locationParams -> updateLatticeLocation(state, locationParams.getR(), locationParams.getX(), locationParams.getY(), locationParams.getZ())
+            ));
+    }
+
+    private List<List<SimParams>> buildLocationChunksMap(int numberOfJobs) {
+        final List<List<SimParams>> jobsMap = new ArrayList<>();
+        // build the map
+        for (int job = 0; job < numberOfJobs; job++){
+            jobsMap.add(new ArrayList<>());
+        }
+        return jobsMap;
+    }
+
+    private void updateLatticeLocation(SynchronizedState state, double r, int x, int y, int z) {  //TODO is concurrent access to this entire block a problem (even if individual reads/updates to state are atomic)?
+        // Check if cell has regions.
+        //TODO atomically get state
+        int id = state.getId(z, y, x);
+        int region = state.getRegion(z, y, x);
+
+        //TODO I think getCell will nee to by synchronized
+        boolean hasRegionsCell = (id != 0 && getCell(id).hasRegions());
+
+        // Get unique targets.
+        HashSet<Integer> uniqueIDTargets = getUniqueIDs(x, y, z); //TODO check if synchronization is needed
+        HashSet<Integer> uniqueRegionTargets = getUniqueRegions(x, y, z);
+
+        // Check if there are valid unique targets.
+        boolean hasIDTargets = uniqueIDTargets.size() > 0;
+        boolean hasRegionTargets = uniqueRegionTargets.size() > 0;
+        boolean check = state.nextDouble() < 0.5;
+
+        // Select unique ID or unique region (if they exist). If there is
+        // a unique ID and unique region target, then randomly select. If
+        // there are neither, then skip.
+        if (hasIDTargets && (!hasRegionsCell || !hasRegionTargets || check)) {
+            int i = state.nextInt(uniqueIDTargets.size());
+            int targetID = (int) uniqueIDTargets.toArray()[i];
+            flip(id, targetID, x, y, z, r);
+        } else if (hasRegionsCell && hasRegionTargets) {
+            int i = state.nextInt(uniqueRegionTargets.size());
+            int targetRegion = (int) uniqueRegionTargets.toArray()[i];
+            flip(id, region, targetRegion, x, y, z, r);
         }
     }
-    
+
     /**
      * Flips connected voxel from source to target id based on Boltzmann
      * probability.
@@ -243,11 +285,12 @@ public abstract class Potts implements Steppable {
      * @param z  the z coordinate
      * @param r  a random number
      */
+    // TODO all access to state in this needs to by syncronized.  Should i use volatile to ensure updates are seen?
     void change(int sourceID, int targetID, int x, int y, int z, double r) {
         // Calculate energy change.
         double dH = 0;
         for (Hamiltonian h : hamiltonian) {
-            dH += h.getDelta(sourceID, targetID, x, y, z);
+            dH += h.getDelta(sourceID, targetID, x, y, z); //TODO concurrency safe?
         }
         
         // Calculate probability.
@@ -259,7 +302,7 @@ public abstract class Potts implements Steppable {
         }
         
         if (r < p) {
-            ids[z][x][y] = targetID;
+            ids[z][x][y] = targetID;  //TODO NM, it gets updated right here.  These must be atomic.
             if (hasRegions) {
                 regions[z][x][y] = (targetID == 0
                         ? Region.UNDEFINED.ordinal()
@@ -323,11 +366,12 @@ public abstract class Potts implements Steppable {
      * @param z  the z coordinate
      * @param r  a random number
      */
+    // TODO review syncronization
     void change(int id, int sourceRegion, int targetRegion, int x, int y, int z, double r) {
         // Calculate energy change.
         double dH = 0;
         for (Hamiltonian h : hamiltonian) {
-            dH += h.getDelta(id, sourceRegion, targetRegion, x, y, z);
+            dH += h.getDelta(id, sourceRegion, targetRegion, x, y, z); //TODO concurrency safe?
         }
         
         // Calculate probability.
@@ -339,7 +383,7 @@ public abstract class Potts implements Steppable {
         }
         
         if (r < p) {
-            regions[z][x][y] = targetRegion;
+            regions[z][x][y] = targetRegion;  //TODO is region the only state that gets updated?   Maybe i dont need to worry about ids?
             PottsCell c = getCell(id);
             ((PottsLocation) c.getLocation()).remove(Region.values()[sourceRegion], x, y, z);
             ((PottsLocation) c.getLocation()).add(Region.values()[targetRegion], x, y, z);
@@ -411,4 +455,34 @@ public abstract class Potts implements Steppable {
      * @return  the list of unique regions
      */
     abstract HashSet<Integer> getUniqueRegions(int x, int y, int z);
+
+    private class SimParams {
+        double r;
+        int x;
+        int y;
+        int z;
+
+        public SimParams(double r, int x, int y, int z) {
+            this.r = r;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+
+        public double getR() {
+            return r;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public int getZ() {
+            return z;
+        }
+    }
 }
