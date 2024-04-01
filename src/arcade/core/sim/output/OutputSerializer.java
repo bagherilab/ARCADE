@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import arcade.core.ARCADE;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
@@ -99,6 +100,7 @@ public final class OutputSerializer {
      * The series object is formatted as:
      * <pre>
      *     {
+     *         "version": (version),
      *         "conversions": {
      *             "DS": (ds),
      *             "DT": (dt)
@@ -126,6 +128,8 @@ public final class OutputSerializer {
         public JsonElement serialize(Series src, Type typeOfSrc,
                                      JsonSerializationContext context) {
             JsonObject json = new JsonObject();
+            
+            json.addProperty("version", ARCADE.VERSION);
             
             JsonObject conversions = new JsonObject();
             conversions.addProperty("DS", src.ds);

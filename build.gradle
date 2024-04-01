@@ -4,7 +4,7 @@ plugins {
     id "com.palantir.git-version" version "3.0.0"
 }
 
-version = "3.1.2"
+version = "3.1.4"
 sourceCompatibility = 1.8
 
 repositories {
@@ -67,6 +67,8 @@ jar {
     archiveFileName.set("${project.name}-${gitVersion().substring(1)}.jar")
     manifest {
         attributes["Main-Class"] = "arcade.core.gui.GUI"
+        attributes["Specification-Version"] = project.version
+        attributes["Implementation-Version"] = gitVersion().substring(1)
     }
 }
 
