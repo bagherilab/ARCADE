@@ -2,6 +2,9 @@ package arcade.util;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
+
+import arcade.util.Matrix.Value;
+
 import static arcade.util.Matrix.*;
 
 /**
@@ -339,13 +342,18 @@ public class Solver {
 	 * @return  the root of the function
 	 */
 	public static double bisection(Function func, double a, double b) {
+        return bisection(func, a, b, DELTA);
+	}
+
+    public static double bisection(Function func, double a, double b, double delta){
 		double c, fc;
 		int i = 0;
 		
 		// Check that given bounds are opposite signs.
 		if (Math.signum(func.f(a)) == Math.signum(func.f(b))) {
-			LOGGER.severe("bisection unable to find root");
-			System.exit(-1);
+			LOGGER.severe("bisection unable to find root, delta: " + delta);
+            return a;
+			// System.exit(-1);
 		}
 		
 		while (i < MAX_ITERS) {
@@ -354,7 +362,7 @@ public class Solver {
 			fc = func.f(c);
 			
 			// Check for exit conditions.
-			if (fc == 0 || (b - a)/2 < DELTA) { return c; }
+			if (fc == 0 || (b - a)/2 < delta) { return c; }
 			else {
 				if (Math.signum(fc) == Math.signum(func.f(a))) { a = c; }
 				else { b = c; }
@@ -363,5 +371,67 @@ public class Solver {
 		}
 		
 		return Double.NaN;
-	}
+    }
+
+
+    public static double newtonsMethod(Function func, Function der, double x0) {
+        return newtonsMethod(func, der, x0, MAX_ITERS, TOLERANCE);
+    }
+
+    public static double newtonsMethod(Function func, Function der, double x0, int max_iters, double tol) {
+        double x = x0;
+        double fx = func.f(x);
+        double dfx = der.f(x);
+        int i = 0;
+
+        while (i < max_iters && Math.abs(fx) > tol) {
+            x = x - fx/dfx;
+            fx = func.f(x);
+            dfx = der.f(x);
+            i++;
+        }
+
+        return x;
+    }
+
+    public static double computeGradient(Function func, double x){
+        return computeGradient(func, x, 0.00001);
+    }
+
+    public static double computeGradient(Function func, double x, double h){
+        return (func.f(x) - func.f(x-h)) / (h);
+    }
+
+    public static double boundedGradientDescent(Function func, double x0, double alpha, double a, double b, int max_iters, double tol) {
+        double x = x0;
+        double fx = func.f(x);
+        double nextX;
+        int i = 0;
+
+        while (i < max_iters && Math.abs(fx) > 1e-6) {
+            if (Double.isNaN(x)){
+                alpha = alpha / 10;
+                i = 0;
+            }
+            nextX = x - alpha * computeGradient(func, x);
+            x = Math.max(a, Math.min(b, x));
+            if (Math.abs(nextX - x) < tol) {
+                break;
+            }
+            x = nextX;
+            i++;
+        }
+
+        if (i == max_iters){
+            LOGGER.warning("Gradient descent did not converge");
+            return Double.NaN;
+        }
+        return x;
+    }
+
+    public static double boundedGradientDescent(Function func, double x0, double alpha, double a, double b) {
+        return boundedGradientDescent(func, x0, alpha, a, b, 100*MAX_ITERS, TOLERANCE);
+    }
+
+
 }

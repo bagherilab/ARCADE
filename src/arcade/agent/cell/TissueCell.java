@@ -231,8 +231,6 @@ public abstract class TissueCell implements Cell {
 	 */
 	public void step(SimState state) {
 		Simulation sim = (Simulation) state;
-
-        modules.get("sensing").stepModule(sim);
 		
 		// Increase age.
 		age++;
@@ -263,6 +261,9 @@ public abstract class TissueCell implements Cell {
 			else if (divisions == 0) { senesce(sim); }
 			else { proliferate(sim); }
 		}
+
+        modules.get("sensing").stepModule(sim);
+
 	}
 	
 	/**

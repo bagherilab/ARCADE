@@ -1,17 +1,28 @@
 package arcade.env.comp;
 
 import static arcade.env.comp.GraphSites.CAP_RADIUS;
+import static arcade.env.comp.GraphSites.CAP_RADIUS_MIN;
+import static arcade.env.comp.GraphSites.CAP_RADIUS_MAX;
 
 import static arcade.env.comp.GraphSitesUtilities.calcThickness;
 import static arcade.env.comp.GraphSitesUtilities.path;
+import static arcade.env.comp.GraphSitesUtilities.reversePressures;
+import static arcade.env.comp.GraphSitesUtilities.getPath;
 import static arcade.env.comp.GraphSitesUtilities.updateGraph;
+import static arcade.env.comp.GraphSitesUtilities.calcFlows;
 import static arcade.env.comp.GraphSitesUtilities.calcPressure;
+import static arcade.env.comp.GraphSitesUtilities.calcPressures;
+import static arcade.env.comp.GraphSitesUtilities.calcStress;
+import static arcade.env.comp.GraphSitesUtilities.calculateLocalFlow;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import arcade.env.comp.GraphSites.Root;
 import arcade.env.comp.GraphSites.SiteEdge;
 import arcade.env.comp.GraphSites.SiteNode;
 import arcade.env.lat.Lattice;
@@ -19,6 +30,8 @@ import arcade.env.loc.Location;
 import arcade.sim.Simulation;
 import arcade.util.Graph;
 import arcade.util.MiniBox;
+import arcade.util.Solver;
+import arcade.util.Solver.Function;
 import ec.util.MersenneTwisterFast;
 import sim.util.Bag;
 import sim.engine.SimState;
@@ -59,7 +72,7 @@ public class GrowthComponent implements Component {
 
     private int[][] offsets;
     private final int level = 1;
-    private final int type = 0; //Capillary type
+    private final int default_type = 0; //Capillary type
 
     private final MiniBox specs;
 
@@ -99,14 +112,15 @@ public class GrowthComponent implements Component {
         edgeSize = sites.getGridSize();
         maxEdges = (int) Math.floor(maxLength / edgeSize);
         interval = calculateInterval();
-        ((SimState)sim).schedule.scheduleRepeating(1, Simulation.ORDERING_COMPONENT - 1, this, interval);
-        ((SimState)sim).schedule.scheduleOnce((state) -> graph = sites.getGraph(), Simulation.ORDERING_COMPONENT - 1);
+        ((SimState)sim).schedule.scheduleRepeating(1, Simulation.ORDERING_COMPONENT - 3, this, interval);
+        ((SimState)sim).schedule.scheduleOnce((state) -> graph = sites.getGraph(), Simulation.ORDERING_COMPONENT - 3);
     }
 
     private int calculateInterval() {
         if (migrationRate < edgeSize) {
             return 60;
         } else {
+
             return 30;
         }
     }
@@ -126,27 +140,38 @@ public class GrowthComponent implements Component {
         ArrayList<SiteNode> nodesToRemove = new ArrayList<>();
 
         final double tick = sim.getTime();
-        boolean updated = false;
 
         if (((int) tick - 1) % (12*60) == 0) {
             LOGGER.info((int)(tick - 1) + " | number of nodes to check: " +  graph.getAllNodes().size());
         }
 
+		LinkedHashSet<SiteNode> set = new LinkedHashSet<>();
 
-        for (final Object nodeObj : graph.getAllNodes()) {
 
-            final SiteNode node = (SiteNode) nodeObj;
-            if (checkNodeSkipStatus(node)) { continue; }
+		for (Object obj : graph.getAllEdges()) {
+			SiteEdge edge = (SiteEdge)obj;
+			if (edge.isIgnored) { continue; }
+			SiteNode from = edge.getFrom();
+			SiteNode to = edge.getTo();
+			from.id = -1;
+			to.id = -1;
+
+			if ((graph.getDegree(from) < 3) && !from.isRoot && !(graph.getInDegree(from) == 0 && graph.getOutDegree(from) == 1)) { set.add(from); }
+			if ((graph.getDegree(to) < 3) && !to.isRoot && !(graph.getInDegree(to) == 1 && graph.getOutDegree(to) == 0)) { set.add(to); }
+		}
+
+        for (SiteNode node : set) {
+            if (checkNodeSkipStatus(node, tick)) { continue; }
 
             ArrayList<ArrayList<Double>> vegfList = getVEGFList(vegf_lattice, node);
 
             if (averageListArrays(vegfList) > vegfThreshold) {
-                node.isAngio = true;
                 angioMap.put(node, new ArrayList<>());
                 ArrayList<Integer> skipDirList = new ArrayList<Integer>();
 
                 Bag in = graph.getEdgesIn(node);
                 Bag out = graph.getEdgesOut(node);
+
                 if (in != null){
                     for (Object edge : in){
                         SiteEdge inEdge = (SiteEdge)edge;
@@ -188,6 +213,12 @@ public class GrowthComponent implements Component {
         for (Map.Entry<SiteNode, ArrayList<SiteEdge>> entry : angioMap.entrySet()){
             //grab final node in each list and add edge, check for perfusion
             SiteNode keyNode = entry.getKey();
+
+            if (checkForIgnoredEdges(keyNode)) {
+                nodesToRemove.add(keyNode);
+                continue;
+            }
+
             ArrayList<SiteEdge> edgeList = entry.getValue();
             SiteNode tipNode;
             SiteEdge newEdge;
@@ -200,8 +231,8 @@ public class GrowthComponent implements Component {
 
             newEdge = createNewEdge(keyNode.sproutDir, tipNode, tick);
 
-            if (edgeList.size() > maxEdges || newEdge == null) {
-                LOGGER.info("Removing " + keyNode + " from angiomap, unsuccessful perfusion.");
+            if (edgeList.size() > maxEdges || newEdge == null || graph.getDegree(keyNode) > 3 ) {
+                // LOGGER.info("Removing " + keyNode + " from angiomap, unsuccessful perfusion.");
                 nodesToRemove.add(keyNode);
             }
             else {
@@ -217,43 +248,76 @@ public class GrowthComponent implements Component {
 
         if (addFlag) {
             added.clear();
-            LOGGER.info("*****Adding edges to graph.****** Time: " + tick);
-            LOGGER.info("Current graph size: " + graph.getAllEdges().size());
+            // LOGGER.info("*****Adding edges to graph.****** Time: " + tick);
+            // LOGGER.info("Current graph size: " + graph.getAllEdges().size());
             for (SiteNode sproutNode : angioMap.keySet()) {
                 if (nodesToRemove.contains(sproutNode)) { continue; }
                 if (sproutNode.anastomosis) {
-                    SiteNode finalNode = angioMap.get(sproutNode).get(angioMap.get(sproutNode).size() - 1).getTo();
+                    int leadingIndex = angioMap.get(sproutNode).size() - 1;
+                    if (leadingIndex < 0) {
+                        nodesToRemove.add(sproutNode);
+                        continue;
+                    }
+                    SiteNode finalNode = angioMap.get(sproutNode).get(leadingIndex).getTo();
+                    SiteNode init, fin;
+
+                    calcPressures(graph);
+                    boolean reversed = reversePressures(graph);
+                    if (reversed) { calcPressures(graph); }
+                    calcFlows(graph, sites);
+                    calcStress(graph);
 
                     // maybe try to redo by iterating through list rather than using final node
-                    if (finalNode.isAngio){
-                        LOGGER.info("CONNECTING TWO ANGIOGENIC NODES");
-                        SiteNode targetNode = findKeyNodeInMap(finalNode);
-                        path(graph, targetNode, sproutNode);
-                        if (sproutNode.prev != null) {
-                            LOGGER.info("SWAPPING SPROUT NODE");
+                    if (!graph.containsNode(finalNode)){
+                        // LOGGER.info("CONNECTING TWO ANGIOGENIC NODES");
+                        SiteNode targetNode = findKeyNodeInMap(finalNode, sproutNode);
+                        if (targetNode == null) {
+                            // LOGGER.info("Likely removed node - skipping");
+                            sproutNode.anastomosis = false;
+                            continue;
+                        }
+                        // path(graph, targetNode, sproutNode);
+                        if (sproutNode.pressure < targetNode.pressure) {
+                            // LOGGER.info("SWAPPING SPROUT NODE");
                             reverseAllEdges(sproutNode);
+                            init = targetNode;
+                            fin = sproutNode;
                         } else {
-                            LOGGER.info("SWAPPING TARGET NODE");
+                            // LOGGER.info("SWAPPING TARGET NODE");
                             reverseAllEdges(targetNode);
+                            init = sproutNode;
+                            fin = targetNode;
                         }
                         angioMap.get(sproutNode).addAll(angioMap.get(targetNode));
-                        addEdgeList(angioMap.get(sproutNode), true);
-                        updated = true;
+
                         nodesToRemove.add(sproutNode);
                         nodesToRemove.add(targetNode);
                     }
                     else {
-                        path(graph, finalNode, sproutNode);
-                        if (sproutNode.prev != null) {
-                            LOGGER.info("SWAPPING NODE");
-                            reverseAllEdges(sproutNode);
-                        } else {
-                            LOGGER.info("DID NOT SWAP");
+                        if (sproutNode.pressure == 0) {
+                            if (graph.getEdgesOut(sproutNode) != null) {sproutNode = ((SiteEdge) graph.getEdgesOut(sproutNode).get(0)).getFrom();}
                         }
-                        addEdgeList(angioMap.get(sproutNode), true);
-                        updated = true;
+                        if (finalNode.pressure == 0) {
+                            if (graph.getEdgesOut(finalNode) != null) {finalNode = ((SiteEdge) graph.getEdgesOut(finalNode).get(0)).getFrom();}
+                        }
+                        // path(graph, finalNode, sproutNode);
+                        if (sproutNode.pressure < finalNode.pressure) {
+                            // LOGGER.info("SWAPPING NODE");
+                            reverseAllEdges(sproutNode);
+                            init = finalNode;
+                            fin = sproutNode;
+                        } else {
+                            // LOGGER.info("DID NOT SWAP");
+                            init = sproutNode;
+                            fin = finalNode;
+                        }
                         nodesToRemove.add(sproutNode);
                     }
+                    if (init.pressure == 0 || fin.pressure == 0) {
+                        LOGGER.info("Pressure is 0, skipping");
+                        continue;
+                    }
+                    addAngioEdges(angioMap.get(sproutNode), init, fin, tick);
                 }
             }
         }
@@ -263,16 +327,34 @@ public class GrowthComponent implements Component {
         }
         // If any edges are removed, update the graph edges that are ignored.
         // Otherwise, recalculate calculate stresses.
-        if (updated) {
-            LOGGER.info("" + angioMap);
+        if (!added.isEmpty()) {
+            LOGGER.info("*****Updating graph.****** Time: " + tick);
             updateGraph(graph, sites, added);
         }
     }
 
-    private boolean checkNodeSkipStatus(SiteNode node) {
-            if (graph.getInDegree(node) == 0 || graph.getOutDegree(node) == 0) { return true; }
-            if (graph.getDegree(node) > 2) { return true; }
+    private boolean checkForIgnoredEdges(SiteNode node){
+        Bag in = graph.getEdgesIn(node);
+        Bag out = graph.getEdgesOut(node);
+        if (in != null){
+            for (Object edge : in){
+                SiteEdge inEdge = (SiteEdge)edge;
+                if (inEdge.isIgnored) { return true; }
+            }
+        }
+        if (out != null){
+            for (Object edge : out){
+                SiteEdge outEdge = (SiteEdge)edge;
+                if (outEdge.isIgnored) { return true; }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkNodeSkipStatus(SiteNode node, double tick) {
             if (angioMap.keySet().contains(node)) { return true; }
+            if (node.isRoot) {return true; }
+            if ((tick - node.addTime ) < (72*60)) { return true; }
             return false;
     }
 
@@ -284,8 +366,10 @@ public class GrowthComponent implements Component {
     }
 
 
-    private SiteNode findKeyNodeInMap(SiteNode targetNode){
+    private SiteNode findKeyNodeInMap(SiteNode targetNode, SiteNode skipNode){
         for (SiteNode keyNode : angioMap.keySet()) {
+            if (keyNode == skipNode) { continue; }
+            if (keyNode == targetNode ) { return keyNode; }
             if (edgeListContainsNode(angioMap.get(keyNode), targetNode)) {
                 return keyNode;
             }
@@ -438,49 +522,250 @@ public class GrowthComponent implements Component {
     }
 
     private void addEdgeList(final ArrayList<SiteEdge> list, boolean updateProperties) {
-        addEdgeList(list, updateProperties, type);
+        addEdgeList(list, updateProperties, default_type);
+    }
+
+    private void addAngioEdges(ArrayList<SiteEdge> list, SiteNode start, SiteNode end, double tick) {
+
+        ArrayList<SiteEdge> added = new ArrayList<>();
+
+        //check for cycle
+        path(graph, end, start);
+        if (end.prev != null) {
+            // LOGGER.info("Cycle detected, not adding edge");
+            return;
+        }
+
+        Graph tempG = sites.newGraph();
+        for (SiteEdge e : list){
+            tempG.addEdge(e);
+        }
+        // LOGGER.info("" + tempG);
+        path(tempG, start, end);
+        SiteNode n = end;
+        while (n != start){
+            added.add(new SiteEdge(n.prev, n, 0, level, false));
+            n = n.prev;
+            if (n != start) {
+                if (n== null) {
+                    return;
+                }
+                n.addTime = tick;
+            }
+        }
+
+
+        double otherRadius = 0;
+        Bag outEdges = graph.getEdgesOut(start);
+        if (outEdges != null){
+                otherRadius = ((SiteEdge)outEdges.get(0)).radius;
+        }
+        else { return; }
+
+        for (SiteEdge edge : added) {
+            edge.isAngiogenic = true;
+            edge.radius = (otherRadius > CAP_RADIUS) ? CAP_RADIUS : calculateEvenSplitRadius((SiteEdge) outEdges.get(0));
+            edge.wall = calcThickness(edge.radius);
+            edge.span = sites.getSpan(edge.getFrom(), edge.getTo());
+            edge.length = sites.getLength(edge, 1);
+
+            //update later (updateSpans method should take care of most of these, need to check for perfusion first)
+            edge.isPerfused = true;
+            edge.fraction = new double[sites.NUM_MOLECULES];
+            edge.transport = new double[sites.NUM_MOLECULES];
+            for (int[] coor: edge.span){ //i don't think i need this?
+                int i = coor[0];
+                int j = coor[1];
+                int k = coor[2];
+                sites.sites[k][i][j]++;
+            }
+        }
+
+
+        if (start.pressure * end.pressure <= 0) {
+            return;
+        }
+
+        addEdgeList(added);
+        SiteNode intersection = (SiteNode) graph.findIntersection(start);
+        if (intersection != null){
+            recalcRadii(added, start, end, intersection);
+        }
+        else {
+            removeEdgeList(added);
+        }
+
+    }
+
+    private double calculateEvenSplitRadius(SiteEdge edge){
+        double radius = edge.radius;
+        double length = edge.length;
+        double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
+        double flow = calculateLocalFlow(radius, length, deltaP);
+        double newRadius = Solver.bisection((double r) -> flow - 2 * calculateLocalFlow(r, length, deltaP), 1E-6, 5*CAP_RADIUS_MAX, 1E-6);
+        // LOGGER.info("splitting radius, for checking if it happens directly before bisection failing");
+        // double newRadius = Solver.bisection((double r) -> Math.pow(flow - 2 * calculateLocalFlow(r, length, deltaP), 2), 0, CAP_RADIUS_MAX);
+        // double newRadius = Solver.boundedGradientDescent((double r) -> Math.pow(flow - 2 * calculateLocalFlow(r, length, deltaP), 2), radius, 1E-17, CAP_RADIUS_MIN, CAP_RADIUS_MAX);
+        return newRadius;
+    }
+
+
+    private void recalcRadii(ArrayList<SiteEdge> ignoredEdges, SiteNode start, SiteNode end, SiteNode intersection){
+
+        updateGraph(graph, sites);
+        Bag edges = graph.getEdgesOut(start);
+
+        if (edges == null) {
+            return;
+        }
+        if (edges.size() < 2 ) {
+            return;
+        }
+        // if (((SiteEdge) edges.get(0)).isIgnored || ((SiteEdge) edges.get(1)).isIgnored) {
+        //     return;
+        // }
+
+        Integer angioIndex = ignoredEdges.contains(edges.get(0)) ? 0 : 1;
+        Integer nonAngioIndex = angioIndex ^ 1;
+        double deltaP = start.pressure - end.pressure;
+        // double deltaP = ((SiteNode) graph.lookupNode(start)).pressure - ((SiteNode) graph.lookupNode(end)).pressure;
+        Double divertedFlow = calculateLocalFlow(CAP_RADIUS, ignoredEdges, deltaP);
+        Double originalFlow = ((SiteEdge) edges.get(nonAngioIndex)).flow;
+        if (divertedFlow > originalFlow) {return ;}
+        if (intersection != null) {
+            if (intersection.isRoot) {
+                updateRadiusToRoot((SiteEdge) edges.get(angioIndex), sites.veins.get(0).node, divertedFlow, false, ignoredEdges);
+                return;
+                // updateRadiusToRoot((SiteEdge) edges.get(angioIndex), intersection, divertedFlow, false, ignoredEdges);
+                // updateRadiusToRoot((SiteEdge) edges.get(nonAngioIndex), intersection, divertedFlow, true, ignoredEdges);
+            }
+
+            if (updateRadius((SiteEdge) edges.get(nonAngioIndex), intersection, divertedFlow, true, ignoredEdges) == -1){
+                return;
+            };
+
+            if (updateRadius((SiteEdge) edges.get(angioIndex), intersection, divertedFlow, false, ignoredEdges) == -1){
+                LOGGER.info("Failed to update radius when increasing size, something seems up");
+            };
+        }
+        else {
+            // maybe also TODO: check for perfusion first
+            // TODO: check to add flow to radius with new flow after changes to other potential edge, need to do this math out?
+            // this should only work for single vein simulations
+            SiteNode boundary = sites.veins.get(0).node;
+            path(graph, start, boundary);
+            if (boundary.prev != null && ((SiteEdge) edges.get(angioIndex)).radius > CAP_RADIUS_MIN) {
+                LOGGER.info("Calculating additional flow to vein");
+                updateRadiusToRoot((SiteEdge) edges.get(angioIndex), sites.veins.get(0).node, divertedFlow, false, ignoredEdges);
+            }
+            else{
+                return;
+            }
+            // updateRadiusToRoot((SiteEdge) edges.get(nonAngioIndex), intersection, divertedFlow, true, ignoredEdges);
+        }
+
+    }
+
+    private int updateRadius(SiteEdge edge, SiteNode intersection, double flow, boolean decrease, ArrayList<SiteEdge> ignored){
+        ArrayList<SiteEdge> edgesToUpdate = getPath(graph, edge.getTo(), intersection);
+        ArrayList<Double> oldRadii = new ArrayList<>();
+        edgesToUpdate.add(0, edge);
+
+        for (SiteEdge e : edgesToUpdate){
+            oldRadii.add(e.radius);
+            if (ignored.contains(e)) { continue; }
+            if (calculateRadius(e, flow, decrease) == -1) {
+                for (int i = 0; i < edgesToUpdate.indexOf(e); i++){
+                    edgesToUpdate.get(i).radius = oldRadii.get(i);
+                }
+                return -1;
+            }
+        }
+        return 0;
+    }
+
+    private int calculateRadius(SiteEdge edge, double flow, boolean decrease){
+        int sign = decrease ? -1 : 1;
+        double original_radius = edge.radius;
+        double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
+        double originalFlow = calculateLocalFlow(original_radius, edge.length, deltaP);
+        Function f = (double r) -> originalFlow + sign * flow - calculateLocalFlow(r, edge.length, deltaP);
+        // Function f = (double r) -> Math.pow(originalFlow + sign * flow - calculateLocalFlow(r, edge.length, deltaP), 2);
+        double newRadius;
+        newRadius = Solver.bisection(f, 1E-6, 5*CAP_RADIUS_MAX, 1E-6);
+        if (newRadius == 1E-6) {
+            return -1;
+        }
+        edge.radius = newRadius;
+        return 0;
+        // if (decrease) {
+        //     if (original_radius < CAP_RADIUS){newRadius = Solver.boundedGradientDescent(f, original_radius, 1E-17, CAP_RADIUS_MIN, CAP_RADIUS);}
+        //     else {newRadius = Solver.boundedGradientDescent(f, original_radius, 1E-17, CAP_RADIUS_MIN, CAP_RADIUS);}
+        // }
+        // else {newRadius = Solver.boundedGradientDescent(f, original_radius, 1E-17, original_radius, original_radius + CAP_RADIUS);}
+        // edge.radius = newRadius;
+    }
+
+    private void calculateRootRadius(SiteEdge edge, double flow, boolean decrease){
+        int sign = decrease ? -1 : 1;
+        double original_radius = edge.radius;
+        double deltaP = edge.getFrom().pressure - edge.getTo().pressure;
+        double originalFlow = calculateLocalFlow(original_radius, edge.length, deltaP);
+
+        Function f = (double r) -> originalFlow + sign * flow - calculateLocalFlow(r, edge.length, edge.getFrom().pressure - calcPressure(edge.radius, edge.type));
+        // Function f = (double r) -> Math.pow(originalFlow + sign * flow - calculateLocalFlow(r, edge.length, edge.getFrom().pressure - calcPressure(edge.radius, edge.type)), 2);
+
+        double newRadius = Solver.bisection(f, 1E-6, 5*CAP_RADIUS_MAX, 1E-6);
+        // double newRadius = Solver.boundedGradientDescent(f, original_radius, 1E-17, original_radius, original_radius + CAP_RADIUS);
+
+        edge.radius = newRadius;
+    }
+
+    private void updateRadiusToRoot(SiteEdge edge, SiteNode intersection, double flow, boolean decrease, ArrayList<SiteEdge> ignored){
+        ArrayList<Root> veins = sites.veins;
+        for (Root vein: veins){
+            ArrayList<SiteEdge> path = getPath(graph, edge.getTo(), vein.node);
+            if (path.isEmpty()) {continue;}
+            path.add(0, edge);
+            for (SiteEdge e: path){
+                if (ignored.contains(e)) { continue; }
+                if (e.getTo().isRoot){
+                    calculateRootRadius(e, flow, decrease);
+                }
+                else {
+                    if (calculateRadius(e, flow, decrease) == -1) { return; }
+                }
+            }
+            break;
+        }
     }
 
     private void addEdgeList(final ArrayList<SiteEdge> list, boolean updateProperties, int edgeType) {
         for (SiteEdge edge : list) {
-            if (updateProperties){
-                LOGGER.info("BEFORE | to: " + edge.getTo().pressure + "from: " + edge.getFrom().pressure);
-                edge.type = edgeType;
-                edge.isAngiogenic = true;
-                edge.radius = CAP_RADIUS;
-                edge.wall = calcThickness(edge.radius);
-                edge.span = sites.getSpan(edge.getFrom(), edge.getTo());
-                edge.length = sites.getLength(edge, 1);
-                edge.getTo().pressure = calcPressure(edge.radius, type);
-                edge.getFrom().pressure = calcPressure(edge.radius, type);
-                LOGGER.info("AFTER | to: " + edge.getTo().pressure + "from: " + edge.getFrom().pressure);
-                edge.fraction = new double[sites.NUM_MOLECULES];
-                edge.transport = new double[sites.NUM_MOLECULES];
-                for (int[] coor: edge.span){ //i don't think i need this?
-                    int i = coor[0];
-                    int j = coor[1];
-                    int k = coor[2];
-                    sites.sites[k][i][j]++;
-                }
-                added.add(edge);
-            }
             graph.addEdge(edge);
         }
     }
 
     private SiteEdge createNewEdge(final int dir, final SiteNode node, final double tick) {
-        final SiteNode proposed = sites.offsetNode(node, dir, level);
+        SiteNode proposed = sites.offsetNode(node, dir, level);
         proposed.lastUpdate = tick;
-        if (sites.checkNode(proposed) && graph.getDegree(node) < 4) {
-            SiteEdge edge = new SiteEdge(node, proposed, type, level);
-            edge.getTo().isAngio = true;
-            if (graph.containsNode(edge.getTo())){
+        if (sites.checkNode(proposed) && graph.getDegree(node) < 3) {
+            SiteEdge edge;
+            if (graph.containsNode(proposed)){
+                if (graph.getDegree(proposed) > 2 || graph.getEdgesOut(proposed) == null || graph.getEdgesIn(proposed) == null) { return null; }
+                SiteNode existing = (SiteNode) graph.lookupNode(proposed);
+                edge = new SiteEdge(node, existing, default_type, level, false);
                 edge.isAnastomotic = true;
+                return edge;
             }
+            edge = new SiteEdge(node, proposed, default_type, level, false);
+
             return edge;
         }
         return null;
     }
+
+
 
     /**
 	 * {@inheritDoc}

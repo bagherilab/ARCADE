@@ -180,6 +180,9 @@ public class Series {
 	/** List of series {@link arcade.sim.checkpoint.Checkpoint} objects */
 	public ArrayList<Checkpoint> _checkpoints;
 	
+    /** Map of Component Parameters */
+    private HashMap<String, MiniBox> compParams;
+
 	/**
 	 * Creates a {@code Series} object given setup information parsed from XML.
 	 * 
@@ -283,6 +286,11 @@ public class Series {
 		if (pop >= _pops) { return Double.NaN; }
 		return variableParams[pop].getDouble(key);
 	}
+
+    public double getParam(String comp, String key) {
+        if (!compParams.containsKey(comp)) { return Double.NaN; }
+        return compParams.get(comp).getDouble(key);
+    }
 	
 	/**
 	 * Gets the parameters filtered by the given code.
@@ -582,6 +590,8 @@ public class Series {
 	 */
 	private void updateComponents(ArrayList<MiniBox> components, Box parameters, ArrayList<ArrayList<MiniBox>> specifications) {
 		_components = new ArrayList<>();
+        compParams = new HashMap<String, MiniBox>();
+
 		if (components == null) {
 			MiniBox minibox = new MiniBox();
 			minibox.put("X_SPACING", "*");
@@ -608,7 +618,10 @@ public class Series {
 			// Update specifications.
 			for (MiniBox box : specifications.get(i)) { c.put(box.get("id"), box.get("value")); }
 			
-			switch (c.get("type").toLowerCase()) {
+            String type = c.get("type").toLowerCase();
+            compParams.put(type, c);
+
+			switch (type) {
 				case "sites":
 					String site = c.get("class");
 					switch (site) {
@@ -940,8 +953,8 @@ public class Series {
 		String title = "cells";
 		for (int i = 0; i < _pops; i++) {
 			MiniBox box = _popBoxes[i];
-			cells += String.format("\t%10s : %s (meta = %s, sig = %s) (%.2f", title,
-					_popCons[i].getName(), box.get("metabolism"), box.get("signaling"),
+			cells += String.format("\t%10s : %s (meta = %s, sig = %s, sense = %s) (%.2f", title,
+					_popCons[i].getName(), box.get("metabolism"), box.get("signaling"), box.get("sensing"),
 					100*_popFrac[i]) + "%)\n";
 			if (i == 0) { title = ""; }
 		}

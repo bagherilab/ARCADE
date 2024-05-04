@@ -190,6 +190,11 @@ public abstract class GraphSites extends Sites {
     /** List of graph roots */
     private String[] siteSetup;
 
+    public ArrayList<Root> arteries;
+
+    public ArrayList<Root> veins;
+
+
     /** Environment border locations. */
     enum Border {
         /** Left side of environment (-x direction) */
@@ -857,8 +862,6 @@ public abstract class GraphSites extends Sites {
         /** {@code true} if the node is a root, {@code false} otherwise */
         public boolean isRoot;
 
-        public boolean isAngio;
-
         public int sproutDir;
 
         public boolean anastomosis;
@@ -874,7 +877,7 @@ public abstract class GraphSites extends Sites {
 
         /** Tick for the last update during growth. */
         double lastUpdate;
-
+        double addTime;
         /** Parent node */
         SiteNode prev;
 
@@ -894,9 +897,9 @@ public abstract class GraphSites extends Sites {
             pressure = 0;
             isRoot = false;
             oxygen = -1;
-            isAngio = false;
             anastomosis = false;
             sproutDir = -1;
+            addTime = 0.0;
         }
 
         public Node duplicate() {
@@ -997,13 +1000,18 @@ public abstract class GraphSites extends Sites {
          * @param level
          *            the graph resolution level
          */
-        SiteEdge(Node from, Node to, int type, int level) {
-            super(from, to);
+        SiteEdge(Node from, Node to, int type, int level){
+            this(from, to, type, level, true);
+        }
+
+        SiteEdge(Node from, Node to, int type, int level, boolean duplicate) {
+            super(from, to, duplicate);
             this.type = type;
             this.level = level;
             isVisited = false;
             isPerfused = false;
             isIgnored = false;
+            radius = 0;
         }
 
         public SiteNode getFrom() {
@@ -1524,8 +1532,8 @@ public abstract class GraphSites extends Sites {
             addRoot(root.node, root.dir, root.type, leaves, SCALE_LEVEL_1, LEVEL_1, root.offsets);
         }
 
-        ArrayList<Root> arteries = new ArrayList<>();
-        ArrayList<Root> veins = new ArrayList<>();
+        arteries = new ArrayList<>();
+        veins = new ArrayList<>();
         boolean hasArtery = false;
         boolean hasVein = false;
 
@@ -1862,13 +1870,19 @@ public abstract class GraphSites extends Sites {
      * @param scale
      *            the graph resolution scaling
      * @return an offset node
-     */
+     * */
+
     SiteNode offsetNode(SiteNode node, int offset, int scale) {
         int[] offsets = getOffset(offset);
-        return new SiteNode(
-                node.getX() + offsets[0] * scale,
-                node.getY() + offsets[1] * scale,
-                node.getZ() + offsets[2] * scale);
+        int x = node.getX() + offsets[0] * scale;
+        int y = node.getY() + offsets[1] * scale;
+        int z = node.getZ() + offsets[2] * scale;
+
+        SiteNode n = (SiteNode) G.lookupNode(x,y,z);
+
+        if (n != null) { return n; }
+
+        return new SiteNode(x, y, z);
     }
 
     /**

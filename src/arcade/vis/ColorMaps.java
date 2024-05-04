@@ -88,6 +88,8 @@ class ColorMaps {
 	
 	/** Color map for TGFa concentration */
 	final Colors MAP_TGF;
+
+    final Colors MAP_VEGF;
 	
 	/**
 	 * Creates {@code ColorMaps} for the given series.
@@ -126,7 +128,16 @@ class ColorMaps {
 				new Color(179,0,0),
 				new Color(0,0,0)
 		}, new double[] { 0, 0.5*tgfa, tgfa, 1.5*tgfa, 2*tgfa});
-		
+
+		double vegf = series.getParam("growth", "VEGF_THRESHOLD");
+		MAP_VEGF = new Colors(new Color[] {
+				new Color(255,255,255),
+				new Color(124,255,255),
+				new Color(0,124,255),
+				new Color(0,0,124),
+				new Color(0,0,0)
+		}, new double[] { 2*vegf, 0.8*vegf, 0.6*vegf, 0.4*vegf, 0.2*vegf, 0 });
+
 		double vol = series.getParam(0, "CELL_VOL_AVG");
 		MAP_VOLUME = new Colors(new Color[] {
 				new Color(0,0,0),

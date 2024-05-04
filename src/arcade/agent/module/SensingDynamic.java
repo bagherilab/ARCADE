@@ -1,6 +1,7 @@
 package arcade.agent.module;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import arcade.agent.cell.Cell;
 import arcade.sim.Simulation;
@@ -9,6 +10,8 @@ import arcade.util.Solver.Equations;
 import arcade.env.lat.Lattice;
 
 public class SensingDynamic extends Sensing {
+	private static Logger LOGGER = Logger.getLogger(SensingDynamic.class.getName());
+
     /** Number of components in signaling network. */
     private static final int NUM_COMPONENTS = 17;
     
@@ -111,7 +114,7 @@ public class SensingDynamic extends Sensing {
     private static final double k_28 = 0.0001;       
 
     /**  VEGF export rate  */
-    private static final double k_29 = 0.2;
+    private static final double k_29 = 0.0005 * 0.00034;
 
     /* Concentration of FIH in cytoplasm */
     private static final double FIH = 110;       
@@ -260,7 +263,8 @@ public class SensingDynamic extends Sensing {
     @Override
     public void stepModule(Simulation sim) {
         double currO2 = sim.getEnvironment("oxygen").getAverageVal(loc);
-        O2 = 100*(1.0 - currO2/160.0);
+
+        O2 = 100*(1.0 - (160-currO2)/160.0);
 
         concs = Solver.euler(equations, 0, concs, 60, STEP_SIZE);
         double vol = c.getVolume();

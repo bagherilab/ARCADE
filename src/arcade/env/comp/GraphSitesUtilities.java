@@ -1,6 +1,7 @@
 package arcade.env.comp;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.logging.Logger;
 import java.util.HashSet;
@@ -104,11 +105,16 @@ abstract class GraphSitesUtilities {
 	 * @param edge  the edge
 	 * @return  the flow rate coefficient
 	 */
-	private static double getCoeff(SiteEdge edge) {
-		double mu = PLASMA_VISCOSITY*calcViscosity(edge.radius)/60;
-		return (Math.PI*Math.pow(edge.radius,4))/(8*mu*edge.length);
-	}
-	
+    private static double getCoeff(SiteEdge edge) {
+        return getCoeff(edge.radius, edge.length);
+    }
+
+    private static double getCoeff(double radius, double length) {
+        double mu = PLASMA_VISCOSITY
+                * calcViscosity(radius) / 60;
+        return (Math.PI * Math.pow(radius, 4)) / (8 * mu * length);
+    }
+
 	/**
 	 * Gets the oxygen partial pressure for an edge.
 	 * 
@@ -708,6 +714,25 @@ abstract class GraphSitesUtilities {
 		}
 	}
 	
+    static ArrayList<SiteEdge> getPath(Graph G, SiteNode start, SiteNode end){
+        path(G, start, end);
+        ArrayList<SiteEdge> path = new ArrayList<>();
+        SiteNode node = end;
+        while (node != null && node != start) {
+            Bag b = G.getEdgesIn(node);
+            if (b.numObjs == 1) {  path.add((SiteEdge)b.objs[0]); }
+            else if (b.numObjs == 2) {
+                SiteEdge edgeA = ((SiteEdge)b.objs[0]);
+                SiteEdge edgeB = ((SiteEdge)b.objs[1]);
+                if (edgeA.getFrom() == node.prev) { path.add(edgeA); }
+                else { path.add(edgeB); }
+            }
+            node = node.prev;
+        }
+        Collections.reverse(path);
+        return path;
+    }
+
 	/**
 	 * Traverses through graph to find perfused paths.
 	 * 
@@ -835,9 +860,6 @@ abstract class GraphSitesUtilities {
 		Graph gCurr = G;
 
         LOGGER.info("Updating graph with " + add.toString());
-        for (SiteEdge a : add){
-            LOGGER.info("Edge -  " + a + "in graph: " + gCurr.getAllEdges().contains(a));
-        }
 
 		do {
 			Graph gNew = gs.newGraph();
@@ -861,7 +883,6 @@ abstract class GraphSitesUtilities {
 
 			// Update leaves to be ignored.
 			for (SiteEdge edge : list) {
-                LOGGER.info("Ignoring " + edge);
 				edge.isIgnored = true;
 				edge.getFrom().pressure = Double.NaN;
 				edge.getTo().pressure = Double.NaN;
@@ -870,11 +891,7 @@ abstract class GraphSitesUtilities {
 			gCurr = gNew;
 		} while (list.size() != 0);
 
-        LOGGER.info("AFTER TRYING TO ADD " + add.toString());
-        for (SiteEdge a : add){
-            a.getTo().pressure = calcPressure(a.radius, 0);
-            a.getFrom().pressure = calcPressure(a.radius, 0);
-        }
+        // gs.recalcGrowthSites(add);
 
 		calcPressures(G);
 		boolean reversed = reversePressures(G);
@@ -948,6 +965,24 @@ abstract class GraphSitesUtilities {
 		}
 	}
 	
+    /**
+     * Solve for Radius while maintaining mass balance
+     */
+    static double calculateLocalFlow(double radius, ArrayList<SiteEdge> edges, double deltaP){
+        double length = 0;
+
+        for (SiteEdge edge : edges) {
+            length += edge.length;
+        }
+
+        return getCoeff(radius, length) * (deltaP);
+    }
+
+    static double calculateLocalFlow(double radius, double length, double deltaP){
+        return getCoeff(radius, length) * deltaP;
+    }
+
+
 	/**
 	 * Iterates through nodes to eliminate low flow edges preventing graph traversal.
 	 *

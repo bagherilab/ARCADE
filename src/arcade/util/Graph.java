@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import sim.util.Bag;
@@ -46,6 +48,8 @@ public class Graph implements Serializable {
 	
 	/** Map of {@code Node} IN to bag of {@code Edge} objects */
 	private final Map<Node, Bag> nodeToInBag;
+
+    private Map<String, Node> allNodes;
 	
 	/** Array of in degree for node coordinates */
 	private final int[][] inDegree;
@@ -63,6 +67,7 @@ public class Graph implements Serializable {
 		allEdges = new Bag();
 		nodeToOutBag = new HashMap<>();
 		nodeToInBag = new HashMap<>();
+        allNodes = new HashMap<>();
 		inDegree = new int[length][width];
 		outDegree = new int[length][width];
 	}
@@ -132,7 +137,7 @@ public class Graph implements Serializable {
 	
 	/** Defines a filter for edges in a graph */
 	public interface Filter { boolean filter(Edge edge); }
-	
+
 	/**
 	 * Filters this graph for edges and copies them to the given graph object.
 	 * <p>
@@ -181,6 +186,9 @@ public class Graph implements Serializable {
 					e.setTo(join);
 				}
 			}
+
+            allNodes.put(join.toString(), join);
+
 		}
 	}
 	
@@ -195,8 +203,26 @@ public class Graph implements Serializable {
 		setInMap(edge.getTo(), edge);
 		setLinks(edge);
 		updateDegrees(edge, ADD);
+        addNodes(edge);
 	}
 	
+    private void addNodes(Edge edge){
+        Node from = edge.getFrom();
+        Node to = edge.getTo();
+        if (!allNodes.containsKey(from.toString())){
+            allNodes.put(from.toString(), from);
+        }
+        else {
+            from = allNodes.get(from.toString());
+        }
+        if (!allNodes.containsKey(to.toString())){
+            allNodes.put(to.toString(), to);
+        }
+        else {
+            to = allNodes.get(to.toString());
+        }
+    }
+
 	/**
 	 * Adds the edge to the bag for the mapping of OUT node to edge.
 	 * 
@@ -264,7 +290,15 @@ public class Graph implements Serializable {
 		unsetLinks(edge);
 		updateDegrees(edge, REMOVE);
 	}
+
+    public Node lookupNode(int x, int y, int z){
+        return allNodes.get("(" + x + "," + y + "," + z + ")");
+    }
 	
+    public Node lookupNode(Node node){
+        return allNodes.get(node.toString());
+    }
+
 	/**
 	 * Removes the edge from the bag for the mapping of OUT node to edge.
 	 *
@@ -273,6 +307,7 @@ public class Graph implements Serializable {
 	 */
 	private void unsetOutMap(Node node, Edge edge) {
 		Bag objs = nodeToOutBag.get(node);
+        if (objs == null) { return; }
 		objs.remove(edge);
 		if (objs.numObjs == 0) { nodeToOutBag.remove(node); }
 	}
@@ -285,6 +320,7 @@ public class Graph implements Serializable {
 	 */
 	private void unsetInMap(Node node, Edge edge) {
 		Bag objs = nodeToInBag.get(node);
+        if (objs == null) { return; }
 		objs.remove(edge);
 		if (objs.numObjs == 0) { nodeToInBag.remove(node); }
 	}
@@ -337,6 +373,9 @@ public class Graph implements Serializable {
 		addEdge(edge.reverse());
 	}
 	
+    public boolean containsNode(Node node) {
+        return nodeToOutBag.containsKey(node) || nodeToInBag.containsKey(node);
+    }
 
     private Set<Node> retrieveNodes() {
         Set<Node> sOut = nodeToOutBag.keySet();
@@ -348,6 +387,73 @@ public class Graph implements Serializable {
             }
         };
         return set;
+    }
+
+    public Bag getAllDownstream(Node node){
+        Bag out = getEdgesOut(node);
+        if (out == null){
+            return null;
+        }
+        Bag visited = new Bag();
+        Queue<Node> queue = new LinkedList<>();
+        for (Object e:out){
+            Edge edge = (Edge) e;
+            queue.add((Node) edge.getTo());
+        }
+
+        while (!queue.isEmpty()) {
+            Node active = queue.poll();
+            if (!visited.contains(active)) {
+                visited.add(active);
+                if (getEdgesOut(active) == null){ continue; }
+                for (Object nextOut : getEdgesOut(active)) {
+                    Edge edge = (Edge) nextOut;
+                    if (!visited.contains(edge)) {
+                        queue.add(edge.getTo());
+                    }
+                }
+            }
+        }
+        return visited;
+    }
+
+    private Node breadthFirstSearch(Edge edge, Bag targetsBag){
+        Bag out = getEdgesOut(edge.getTo());
+        if (out == null){
+            return null;
+        }
+        Queue<Node> queue = new LinkedList<>();
+        for (Object obj:out){
+            Edge e = (Edge) obj;
+            queue.add(e.getTo());
+        }
+        while (!queue.isEmpty()) {
+            Node next = queue.poll();
+            if (targetsBag.contains(next)){
+                return next;
+            }
+            if (getEdgesOut(next) == null){continue;}
+            for (Object obj: getEdgesOut(next)){
+                Edge e = (Edge) obj;
+                queue.add(e.getTo());
+            }
+        }
+        return null;
+    }
+
+    public Node findIntersection(Node node){
+        Bag out = getEdgesOut(node);
+        if (out.numObjs < 2){
+            return null;
+        }
+        Edge first_edge = (Edge) out.get(0);
+        Bag allDownstream = getAllDownstream(first_edge.getTo());
+        if (allDownstream == null){
+            return null;
+        }
+        Edge second_edge = (Edge) out.get(1);
+        Node intersection = breadthFirstSearch(second_edge, allDownstream);
+        return intersection;
     }
 
 	/**
@@ -516,12 +622,21 @@ public class Graph implements Serializable {
 		 * @param to  the node the edge is to
 		 */
 		public Edge(Node from, Node to) {
-			this.from = from.duplicate();
-			this.to = to.duplicate();
-			edgesIn = new ArrayList<>();
-			edgesOut = new ArrayList<>();
+            this(from, to, true);
 		}
 		
+        public Edge(Node from, Node to, boolean duplicate) {
+            if (!duplicate){
+                this.from = from;
+                this.to = to;
+            }
+            else {
+                this.from = from.duplicate();
+                this.to = to.duplicate();}
+            edgesIn = new ArrayList<>();
+            edgesOut = new ArrayList<>();
+        }
+
 		/**
 		 * Gets the node the edge points from.
 		 * 
@@ -583,7 +698,7 @@ public class Graph implements Serializable {
 		 * 
 		 * @return  the reversed edge
 		 */
-		Edge reverse() {
+		public Edge reverse() {
 			Node tempTo = to;
 			Node tempFrom = from;
 			to = tempFrom;
@@ -602,5 +717,18 @@ public class Graph implements Serializable {
 		public String toString() {
 			return "[" + from.toString() + "~" + to.toString() + "]";
 		}
+
+        public boolean equals(Object obj) {
+            if (obj instanceof Edge) {
+                Edge edge = (Edge)obj;
+                return edge.from.equals(from) && edge.to.equals(to);
+            }
+            return false;
+        }
+
+        public int hashCode() {
+            return from.hashCode() + to.hashCode();
+        }
+
 	}
 }
