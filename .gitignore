@@ -4,6 +4,7 @@
 *.txt
 *.json
 *.csv
+run.sh
 .gradle
 bin/
 lib/
