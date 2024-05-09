@@ -1,8 +1,17 @@
 package arcade.core.util;
 
+import static arcade.core.util.Matrix.add;
+import static arcade.core.util.Matrix.forwardSubstitution;
+import static arcade.core.util.Matrix.multiply;
+import static arcade.core.util.Matrix.normalize;
+import static arcade.core.util.Matrix.scale;
+import static arcade.core.util.Matrix.subtract;
+import static arcade.core.util.Matrix.toSparse;
+
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import static arcade.core.util.Matrix.*;
+
+import arcade.core.util.Matrix.Value;
 
 /**
  * Static utility class implementing various numerical solvers.
@@ -23,31 +32,31 @@ public class Solver {
     
     /** Error tolerance for Cash-Karp. */
     private static final double ERROR = 1E-5;
-    
+
     /** Epsilon value for Cash-Karp. */
     private static final double EPSILON = 1E-10;
-    
+
     /** Maximum number of steps for Cash-Karp. */
     private static final int MAX_STEPS = 100;
-    
+
     /** Safety value for Cash-Karp. */
     private static final double SAFETY = 0.9;
-    
+
     /** Relaxation factor for SOR. */
     private static final double OMEGA = 1.4;
-    
+
     /** Maximum number of iterations. */
     private static final int MAX_ITERS = 10000;
-    
+
     /** Error tolerance for SOR. */
     private static final double TOLERANCE = 1E-8;
-    
+
     /** Convergence delta for bisection method. */
     private static final double DELTA = 1E-5;
-    
+
     /** Matrix size threshold for dense representation. */
     private static final int MATRIX_THRESHOLD = 100;
-    
+
     /** Defines ODE equations for numerical solvers. */
     public interface Equations {
         /**
@@ -59,7 +68,7 @@ public class Solver {
          */
         double[] dydt(double t, double[] y);
     }
-    
+
     /** Defines a continuous function. */
     public interface Function {
         /**
@@ -70,14 +79,14 @@ public class Solver {
          */
         double f(double x);
     }
-    
+
     /**
      * Hidden constructor for {@code Solver} utility class.
      */
     protected Solver() {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Solves a system of ODEs using forward Euler.
      *
@@ -93,11 +102,11 @@ public class Solver {
         double t = t0;
         double[] dydt = new double[n];
         double[] y = y0.clone();
-        
+
         // Adjust number of steps.
         int nSteps = (int) ((tf - t0) / h);
         h = (tf - t0) / nSteps;
-        
+
         // Iterate through steps.
         for (int j = 0; j < nSteps; j++) {
             t = t0 + j * h;
@@ -106,10 +115,10 @@ public class Solver {
                 y[i] += h * dydt[i];
             }
         }
-        
+
         return y;
     }
-    
+
     /**
      * Solves a system of ODEs using classic Runge-Kutta.
      *
@@ -130,43 +139,43 @@ public class Solver {
         double[] dydt = new double[n];
         double[] y = y0.clone();
         double[] w = new double[n];
-        
+
         // Adjust number of steps.
         int nSteps = (int) ((tf - t0) / h);
         h = (tf - t0) / nSteps;
-        
+
         // Iterate through steps.
         for (int j = 0; j < nSteps; j++) {
             t = t0 + j * h;
-            
+
             dydt = eq.dydt(t, y);
             for (int i = 0; i < n; i++) {
                 k1[i] = h * dydt[i];
                 w[i] = y[i] + k1[i] / 2;
             }
-            
+
             dydt = eq.dydt(t + h / 2, w);
             for (int i = 0; i < n; i++) {
                 k2[i] = h * dydt[i];
                 w[i] = y[i] + k2[i] / 2;
             }
-            
+
             dydt = eq.dydt(t + h / 2, w);
             for (int i = 0; i < n; i++) {
                 k3[i] = h * dydt[i];
                 w[i] = y[i] + k3[i];
             }
-            
+
             dydt = eq.dydt(t + h, w);
             for (int i = 0; i < n; i++) {
                 k4[i] = h * dydt[i];
                 y[i] += k1[i] / 6 + k2[i] / 3 + k3[i] / 3 + k4[i] / 6;
             }
         }
-        
+
         return y;
     }
-    
+
     /**
      * Solves a system of ODEs using adaptive timestep Cash-Karp.
      *
@@ -195,42 +204,42 @@ public class Solver {
         double err;
         double maxErr;
         double tol;
-        
+
         while (t < tf && steps < MAX_STEPS) {
             steps++;
-            
+
             dydt = eq.dydt(t, y);
             for (int i = 0; i < n; i++) {
                 k1[i] = h * dydt[i];
                 w[i] = y[i] + k1[i] / 5.0;
             }
-            
+
             dydt = eq.dydt(t + h / 5.0, w);
             for (int i = 0; i < n; i++) {
                 k2[i] = h * dydt[i];
                 w[i] = y[i] + (3 * k1[i] + 9 * k2[i]) / 40.0;
             }
-            
+
             dydt = eq.dydt(t + 3 * h / 10.0, w);
             for (int i = 0; i < n; i++) {
                 k3[i] = h * dydt[i];
                 w[i] = y[i] + (3 * k1[i] - 9 * k2[i] + 12 * k3[i]) / 10.0;
             }
-            
+
             dydt = eq.dydt(t + 3 * h / 5.0, w);
             for (int i = 0; i < n; i++) {
                 k4[i] = h * dydt[i];
                 w[i] = y[i] - 11 * k1[i] / 54.0 + 5 * k2[i] / 2.0 - 70 * k3[i]
                         / 27.0 + 35 * k4[i] / 27.0;
             }
-            
+
             dydt = eq.dydt(t + h, w);
             for (int i = 0; i < n; i++) {
                 k5[i] = h * dydt[i];
                 w[i] = y[i] + 1631 * k1[i] / 55296.0 + 175 * k2[i] / 512.0
                     + 575 * k3[i] / 13824.0 + 44275 * k4[i] / 110592.0 + 253 * k5[i] / 4096.0;
             }
-            
+
             dydt = eq.dydt(t + 7 * h / 8.0, w);
             maxErr = 0.0;
             for (int i = 0; i < n; i++) {
@@ -243,7 +252,7 @@ public class Solver {
                 tol = Math.abs(y5[i]) * ERROR + EPSILON;
                 maxErr = Math.max(maxErr, err / tol);
             }
-            
+
             if (maxErr > 1) { // reduce step size with max 10-fold reduction
                 h *= Math.max(0.1, SAFETY * Math.pow(maxErr, -0.25));
             } else { // increase step size with max 5-fold increase
@@ -253,10 +262,10 @@ public class Solver {
                 y = y5.clone();
             }
         }
-        
+
         return y;
     }
-    
+
     /**
      * Solves a linear system of equations using successive over-relaxation.
      * <p>
@@ -275,7 +284,7 @@ public class Solver {
             return sparseSOR(mat, vec, x0);
         }
     }
-    
+
     /**
      * Solves linear system of equations using SOR with dense matrix representation.
      *
@@ -287,33 +296,33 @@ public class Solver {
     private static double[] denseSOR(double[][] mat, double[] vec, double[] x0) {
         int i = 0;
         double error = Double.POSITIVE_INFINITY;
-        
+
         // Calculate iteration factors
         double[] c = forwardSubstitution(mat, vec);
         double[][] t = forwardSubstitution(mat);
         t = scale(t, -1);
-        
+
         // Set initial guess.
         double[] xCurr = x0;
         double[] xPrev = x0;
-        
+
         // Iterate until convergence.
         while (i < MAX_ITERS && error > TOLERANCE) {
             // Calculate new guess for x.
             xCurr = add(scale(add(multiply(t, xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));
-            
+
             // Set previous to copy of current and increment iteration count.
             xPrev = xCurr;
             i++;
-            
+
             // Calculate L2 norm of residuals to check for convergence.
             double[] r = subtract(vec, multiply(mat, xCurr));
             error = normalize(r);
         }
-        
+
         return xCurr;
     }
-    
+
     /**
      * Solves linear system of equations using SOR with sparse matrix representation.
      *
@@ -325,36 +334,36 @@ public class Solver {
     private static double[] sparseSOR(double[][] mat, double[] vec, double[] x0) {
         int i = 0;
         double error = Double.POSITIVE_INFINITY;
-        
+
         // Convert to sparse representation.
         ArrayList<Value> sparseA = toSparse(mat);
-        
+
         // Calculate iteration factors
         double[] c = forwardSubstitution(sparseA, vec);
         ArrayList<Value> t = forwardSubstitution(sparseA);
         t = scale(t, -1);
-        
+
         // Set initial guess.
         double[] xCurr = x0;
         double[] xPrev = x0;
-        
+
         // Iterate until convergence.
         while (i < MAX_ITERS && error > TOLERANCE) {
             // Calculate new guess for x.
             xCurr = add(scale(add(multiply(t, xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));
-            
+
             // Set previous to copy of current and increment iteration count.
             xPrev = xCurr;
             i++;
-            
+
             // Calculate L2 norm of residuals to check for convergence.
             double[] r = subtract(vec, multiply(sparseA, xCurr));
             error = normalize(r);
         }
-        
+
         return xCurr;
     }
-    
+
     /**
      * Finds root using bisection method.
      * <p>
@@ -371,18 +380,18 @@ public class Solver {
         double c;
         double fc;
         int i = 0;
-        
+
         // Check that given bounds are opposite signs.
         if (Math.signum(func.f(a)) == Math.signum(func.f(b))) {
             LOGGER.severe("bisection unable to find root");
             System.exit(-1);
         }
-        
+
         while (i < MAX_ITERS) {
             // Calculate new midpoint.
             c = (a + b) / 2;
             fc = func.f(c);
-            
+
             // Check for exit conditions.
             if (fc == 0 || (b - a) / 2 < DELTA) {
                 return c;
@@ -392,11 +401,63 @@ public class Solver {
                 } else {
                     b = c;
                 }
-                
+
                 i++;
             }
         }
-        
+
         return Double.NaN;
     }
+
+    public static double newtonsMethod(Function func, Function der, double x0) {
+        return newtonsMethod(func, der, x0, MAX_ITERS, TOLERANCE);
+    }
+
+    public static double newtonsMethod(Function func, Function der, double x0, int max_iters, double tol) {
+        double x = x0;
+        double fx = func.f(x);
+        double dfx = der.f(x);
+        int i = 0;
+
+        while (i < max_iters && Math.abs(fx) > tol) {
+            x = x - fx/dfx;
+            fx = func.f(x);
+            dfx = der.f(x);
+            i++;
+        }
+
+        return x;
+    }
+
+    public static double computeGradient(Function func, double x){
+        return computeGradient(func, x, 0.00001);
+    }
+
+    public static double computeGradient(Function func, double x, double h){
+        return (func.f(x) - func.f(x-h)) / (h);
+    }
+
+    public static double boundedGradientDescent(Function func, double x0, double alpha, double a, double b, int max_iters, double tol) {
+        double x = x0;
+        double fx = func.f(x);
+        double nextX;
+        int i = 0;
+
+        while (i < max_iters && Math.abs(fx) > tol) {
+            nextX = x - alpha * computeGradient(func, x);
+            x = Math.max(a, Math.min(b, x));
+            if (Math.abs(nextX - x) < 1e-6) {
+                break;
+            }
+            x = nextX;
+            i++;
+        }
+
+        return x;
+    }
+
+    public static double boundedGradientDescent(Function func, double x0, double alpha, double a, double b) {
+        return boundedGradientDescent(func, x0, alpha, a, b, MAX_ITERS, TOLERANCE);
+    }
+
 }

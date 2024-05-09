@@ -8,7 +8,7 @@ import org.mockito.stubbing.Answer;
 import sim.engine.Schedule;
 import sim.engine.Stoppable;
 import ec.util.MersenneTwisterFast;
-import arcade.core.agent.module.*;
+import arcade.core.agent.module.Module;
 import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;

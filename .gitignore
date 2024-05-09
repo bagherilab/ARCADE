@@ -5,10 +5,12 @@
 *.json
 *.csv
 .gradle
+.vs_code
 bin/
 lib/
 build/
-docs/javadoc
 working/
+docs/javadoc
 .DS_Store
 MANIFEST.MF
+java-formatter.xml
