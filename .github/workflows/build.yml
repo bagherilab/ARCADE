@@ -62,8 +62,8 @@ jobs:
         target-folder: _badges
         clean: false
 
-  result:
-    if: ${{ always() }}
+  build_result:
+    if: ${{ always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
 
     runs-on: ubuntu-latest
 
