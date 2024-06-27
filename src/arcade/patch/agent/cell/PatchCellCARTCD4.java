@@ -1,6 +1,9 @@
 package arcade.patch.agent.cell;
 
+import java.util.Set;
+
 import arcade.core.agent.cell.CellState;
+import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
@@ -92,7 +95,7 @@ public class PatchCellCARTCD4 extends PatchCellCART{
             }
             
             // Step inflammation process.
-            //super.processes.get(Domain.INFLAMMATION).step(simstate.random, sim);
+            super.processes.get(Domain.INFLAMMATION).step(simstate.random, sim);
             
             // Change state from undefined.
             if (super.state == State.UNDEFINED || super.state == State.PAUSED) {

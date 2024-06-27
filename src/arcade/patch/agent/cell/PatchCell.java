@@ -18,6 +18,7 @@ import arcade.core.util.MiniBox;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.agent.process.PatchProcessInflammation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
@@ -119,6 +120,9 @@ public abstract class PatchCell implements Cell {
     
     /** Cell parameters. */
     final MiniBox parameters;
+
+     /** If cell is stopped in the simulation */
+     private boolean isStopped;
     
     /**
      * Creates a {@code PatchCell} agent.
@@ -163,6 +167,7 @@ public abstract class PatchCell implements Cell {
         this.criticalHeight = criticalHeight;
         this.flag = Flag.UNDEFINED;
         this.parameters = parameters;
+        this.isStopped = false;
         
         setState(state);
         
@@ -256,7 +261,12 @@ public abstract class PatchCell implements Cell {
     public void setEnergy(double energy) { this.energy = energy; }
     
     @Override
-    public void stop() { stopper.stop(); }
+    public void stop() { 
+        stopper.stop(); 
+        isStopped = true;
+    }
+
+    public boolean isStopped(){ return isStopped;}
     
     @Override
     public void setState(CellState state) {
@@ -292,8 +302,8 @@ public abstract class PatchCell implements Cell {
                 return PatchProcessMetabolism.make(this, version);
             case SIGNALING:
                 return PatchProcessSignaling.make(this, version);
-            /*case INFLAMMATION:
-                return PatchProcessInflammation.make(this,version);*/
+            case INFLAMMATION:
+                return PatchProcessInflammation.make(this,version);
             case UNDEFINED:
             default:
                 return null;

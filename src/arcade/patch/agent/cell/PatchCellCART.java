@@ -2,7 +2,7 @@ package arcade.patch.agent.cell;
 
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
-import javafx.stage.PopupWindow.AnchorLocation;
+//import javafx.stage.PopupWindow.AnchorLocation;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
@@ -74,7 +74,7 @@ public abstract class PatchCellCART extends PatchCell {
      protected final int selfTargets;
 
      /** Cell binding flag */
-     protected AntigenFlag binding;
+     public AntigenFlag binding;
 
      /** Cell activation flag */
      protected boolean activated;
@@ -163,7 +163,7 @@ public abstract class PatchCellCART extends PatchCell {
          carAntigens = parameters.getInt("CAR_ANTIGENS");
          selfTargets = parameters.getInt("SELF_TARGETS");
          selfReceptors = parameters.getInt("SELF_RECEPTORS");
-         selfReceptorsStart = parameters.getInt("SELF_RECEPTORS_START");
+         selfReceptorsStart = selfReceptors;
          searchAbility = parameters.getDouble("SEARCH_ABILITY");
          carAffinity = parameters.getDouble("CAR_AFFINITY");
          carAlpha = parameters.getDouble("CAR_ALPHA");
@@ -269,9 +269,6 @@ public abstract class PatchCellCART extends PatchCell {
         }
     }
     
-    //this method may be unnecessary if only subclasses can set antigen flag
-    //can non-T cells set the antigen binding properties of CART cell?
-
     /**
      * Sets the cell binding flag.
      *
@@ -279,6 +276,12 @@ public abstract class PatchCellCART extends PatchCell {
      */
     public void setAntigenFlag(AntigenFlag flag) { this.binding = flag; }
 
+     /**
+     * Returns the cell binding flag.
+     *
+     * @return the cell antigen binding state
+     */
+    public AntigenFlag getAntigenFlag() { return this.binding; }
     
     /**
      * Returns activation status
