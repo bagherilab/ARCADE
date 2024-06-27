@@ -87,7 +87,7 @@ public final class PatchSeries extends Series {
         MiniBox actionDefaults = parameters.getIdValForTag("ACTION");
         ArrayList<Box> actionsBox = setupLists.get("actions");
         updateActions(actionsBox, actionDefaults);
-        
+
         // Add components.
         MiniBox componentDefaults = parameters.getIdValForTag("COMPONENT");
         ArrayList<Box> componentsBox = setupLists.get("components");
@@ -97,6 +97,7 @@ public final class PatchSeries extends Series {
         MiniBox patchDefaults = parameters.getIdValForTag("PATCH");
         ArrayList<Box> patchBox = setupLists.get("patch");
         updatePatch(patchBox, patchDefaults);
+
     }
     
     /**
