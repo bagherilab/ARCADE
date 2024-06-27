@@ -1,5 +1,8 @@
 package arcade.patch.agent.process;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 import arcade.core.agent.process.Process;
 import arcade.core.util.MiniBox;
 import arcade.core.sim.Simulation;
@@ -43,10 +46,13 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
 		super(c);
 
 		// Set parameters.
+
+		//TODO: parameters are not grabbing here
 		MiniBox parameters = cell.getParameters();
-		this.IL2_PROD_RATE_IL2 = parameters.getDouble( "IL2_PROD_RATE_IL2");
-		this.IL2_PROD_RATE_ACTIVE = parameters.getDouble("IL2_PROD_RATE_ACTIVE");
-		this.IL2_SYNTHESIS_DELAY = parameters.getInt("IL2_SYNTHESIS_DELAY");
+		ArrayList<String> keys = parameters.getKeys();
+		this.IL2_PROD_RATE_IL2 = parameters.getDouble( "inflammation/IL2_PROD_RATE_IL2");
+		this.IL2_PROD_RATE_ACTIVE = parameters.getDouble("inflammation/IL2_PROD_RATE_ACTIVE");
+		this.IL2_SYNTHESIS_DELAY = parameters.getInt("inflammation/IL2_SYNTHESIS_DELAY");
 		IL2ProdRate = 0;
 	}
     

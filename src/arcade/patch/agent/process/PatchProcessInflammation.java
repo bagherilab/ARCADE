@@ -7,11 +7,12 @@ import java.util.List;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 import arcade.core.sim.Simulation;
-import arcade.util.Solver.Equations;
+import arcade.core.util.Solver.Equations;
 import ec.util.MersenneTwisterFast;
+import arcade.patch.agent.cell.PatchCell;
 import arcade.patch.agent.cell.PatchCellCART;
 import arcade.patch.env.lattice.PatchLattice;
-import arcade.util.Solver;
+import arcade.core.util.Solver;
 /**
  * Implementation of {@link arcade.patch.agent.process.Process} for inflammation type modules
  * in which IL-2 is taken up and cytotoxic/stimulatory functions are modified.
@@ -260,12 +261,12 @@ public abstract class PatchProcessInflammation extends PatchProcess{
      * @param version  the process version
      * @return  the process instance
      */
-    public static PatchProcess make(PatchCellCART cell, String version) {
+    public static PatchProcess make(PatchCell cell, String version) {
         switch (version.toUpperCase()) {
             case "CD4":
-                return new PatchProcessInflammationCD4(cell);
+                return new PatchProcessInflammationCD4((PatchCellCART) cell);
             case "CD8":
-                return new PatchProcessInflammationCD8(cell);
+                return new PatchProcessInflammationCD8((PatchCellCART) cell);
             default:
                 return null;
         }

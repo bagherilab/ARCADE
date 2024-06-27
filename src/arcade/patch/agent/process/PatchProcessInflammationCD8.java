@@ -30,7 +30,7 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
 		
 		// Set parameters.
 		MiniBox parameters = cell.getParameters();
-		this.GRANZ_SYNTHESIS_DELAY =  parameters.getInt("GRANZ_SYNTHESIS_DELAY");
+		this.GRANZ_SYNTHESIS_DELAY =  parameters.getInt("inflammation/GRANZ_SYNTHESIS_DELAY");
 		this.priorIL2granz = 0;
 		
 		// Initialize internal, external, and uptake concentration arrays.
