@@ -389,6 +389,7 @@ abstract class GraphSitesUtilities {
 			}
 			
 			if (div != 0) { x0[id] /= div; }
+            if (node.pressure > 0 && !Double.isNaN(node.pressure)) x0[id] = node.pressure;
 		}
 		
 		double[][] sA = Matrix.scale(A, 1E-7);

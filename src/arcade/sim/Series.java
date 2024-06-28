@@ -76,7 +76,7 @@ public class Series {
 	private static final String MODULE_DEFAULT_SIGNALING = "COMPLEX";
 
     /** Default sensing module version */
-	private static final String MODULE_DEFAULT_SENSING = "DYNAMIC";
+	private static final String MODULE_DEFAULT_SENSING = "SIMPLE";
 	
 	/** Format for console output of simulation time */
 	private final static DecimalFormat f = new DecimalFormat("#.0000");
@@ -424,6 +424,7 @@ public class Series {
                         case "sensing":
                             switch (version.toUpperCase().substring(0,1)) {
                                 case "R": version = "RANDOM"; break;
+                                case "S": version = "SIMPLE"; break;
                                 case "P": version = "PROPORTIONAL"; break;
                                 case "D": version = "DYNAMIC"; break;
                             }

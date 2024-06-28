@@ -18,7 +18,6 @@ public class SensingProportional extends Sensing {
         Double VEGF = sim.getEnvironment("vegf").getAverageVal(loc);
         Double newVEGF = VEGF + proportionalFactor * O2;
         sim.getEnvironment("vegf").setVal(loc, newVEGF);
-
     }
 
     @Override

@@ -46,7 +46,7 @@ public class Solver {
 	private static final int MAX_ITERS = 10000;
 	
 	/** Error tolerance for SOR */
-	private static final double TOLERANCE = 1E-8;
+	private static final double TOLERANCE = 1E-4;
 	
 	/** Convergence delta for bisection method */
 	private static final double DELTA = 1E-5;
@@ -275,7 +275,6 @@ public class Solver {
 		while (i < MAX_ITERS && error > TOLERANCE) {
 			// Calculate new guess for x.
 			xCurr = add(scale(add(multiply(T, xPrev), C), OMEGA), scale(xPrev, 1 - OMEGA));
-			
 			// Set previous to copy of current and increment iteration count.
 			xPrev = xCurr;
 			i++;
@@ -307,7 +306,8 @@ public class Solver {
 		double[] C = forwardSubstitution(sparseA, b);
 		ArrayList<Value> T = forwardSubstitution(sparseA);
 		T = scale(T, -1);
-		
+		MatrixArray TArray = new MatrixArray(T, A.length, A[0].length);
+
 		// Set initial guess.
 		double[] xCurr = x0;
 		double[] xPrev = x0;
@@ -315,7 +315,8 @@ public class Solver {
 		// Iterate until convergence.
 		while (i < MAX_ITERS && error > TOLERANCE) {
 			// Calculate new guess for x.
-			xCurr = add(scale(add(multiply(T, xPrev), C), OMEGA), scale(xPrev, 1 - OMEGA));
+            xCurr = add(scale(add(TArray.multiply(xPrev), C), OMEGA), scale(xPrev, 1 - OMEGA));
+			// xCurr = add(scale(add(multiply(T, xPrev), C), OMEGA), scale(xPrev, 1 - OMEGA));
 			
 			// Set previous to copy of current and increment iteration count.
 			xPrev = xCurr;

@@ -9,6 +9,7 @@ import arcade.agent.module.MetabolismRandom;
 import arcade.agent.module.MetabolismSimple;
 import arcade.agent.module.Module;
 import arcade.agent.module.SensingDynamic;
+import arcade.agent.module.SensingSimple;
 import arcade.agent.module.SensingProportional;
 import arcade.agent.module.SensingRandom;
 import arcade.agent.module.SignalingComplex;
@@ -87,6 +88,9 @@ public class TissueHCell extends TissueCell {
 		switch (box.get("sensing")) {
 			case "RANDOM":
 				modules.put("sensing", new SensingRandom(this, sim));
+				break;
+            case "SIMPLE":
+				modules.put("sensing", new SensingSimple(this, sim));
 				break;
 			case "PROPORTIONAL":
 				modules.put("sensing", new SensingProportional(this, sim));

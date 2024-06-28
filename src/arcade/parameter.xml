@@ -104,7 +104,7 @@
 
     <!-- graph growth -->
     <specification.component id="MIGRATION_RATE" value="10.0" type="growth" units="um/hr" description="migration rate of tip cell" />
-    <specification.component id="VEGF_THRESHOLD" value="0.001" type="growth" units="nM"  description="concentration of VEGF required to sprout" />
+    <specification.component id="VEGF_THRESHOLD" value="100" type="growth" units="pg/ml"  description="concentration of VEGF required to sprout" />
     <specification.component id="WALK_TYPE" value="MAX" type="growth" description="type of chemotaxic propensity to VEGF"/>
     <specification.component id="MAX_LENGTH" value="200" type="growth" units="um" description="maximum length of sprout" />
 

@@ -71,7 +71,7 @@ public class Main {
 		
 		logger.addHandler(handler);
 		LOGGER = Logger.getLogger(Main.class.getName());
-		
+		LOGGER.info("Max JVM memory: " + Runtime.getRuntime().maxMemory());
 		// Load XML files specifying command line parser and default parameters.
 		LOGGER.info("loading XML files");
 		Loader loader = new Loader();
