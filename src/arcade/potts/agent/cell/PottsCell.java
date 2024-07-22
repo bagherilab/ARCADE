@@ -313,15 +313,15 @@ public final class PottsCell implements Cell {
     public PottsCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
         setDivisions(getDivisions() + 1);
-        return new PottsCell(newID, getID(), getPop(), newState, getAge(), getDivisions(), newLocation,
-                hasRegions(), getParameters(), getCriticalVolume(), getCriticalHeight(),
-                getCriticalRegionVolumes(), getCriticalRegionHeights());
+        return new PottsCell(newID, getID(), getPop(), newState, getAge(), getDivisions(),
+                newLocation, hasRegions(), getParameters(), getCriticalVolume(),
+                getCriticalHeight(), getCriticalRegionVolumes(), getCriticalRegionHeights());
     }
     
     @Override
-    public void setState(CellState state) {
-        this.state = state;
-        setStateModule(state);
+    public void setState(CellState newState) {
+        this.state = newState;
+        setStateModule(newState);
     }
 
     /**
