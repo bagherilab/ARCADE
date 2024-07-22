@@ -19,7 +19,14 @@ import arcade.potts.agent.module.PottsModuleProliferation;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.PottsSimulation;
+import arcade.potts.util.PottsEnums.Domain;
+import arcade.potts.util.PottsEnums.Ordering;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.Region;
+import arcade.potts.util.PottsEnums.State;
+
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.agent.cell.PottsCellFactoryTest.*;
@@ -225,6 +232,14 @@ public class PottsCellTest {
         PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, divisions,
                 locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
                 null, null);
+        assertEquals(divisions, cell.getDivisions());
+    }
+
+    @Test
+    public void setDivisions_validValue_assignsValue() {
+        PottsCell cell = make(false);
+        int divisions = randomIntBetween(0, 100);
+        cell.setDivisions(divisions);
         assertEquals(divisions, cell.getDivisions());
     }
     
@@ -556,6 +571,36 @@ public class PottsCellTest {
         for (Region region : regionList) {
             assertEquals(0, cell.getCriticalHeight(region), EPSILON);
         }
+    }
+
+    @Test
+    public void getCriticalRegionVolumes_withRegions_returnsVolumes() {
+        EnumMap<Region, Double> expectedVolumes = new EnumMap<>(Region.class);
+        for (Region region : regionList) {
+            expectedVolumes.put(region, criticalVolumesRegionMock.get(region));
+        }
+        PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+                locationMock, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                expectedVolumes, criticalHeightsRegionMock);
+
+        EnumMap<Region, Double> actualVolumes = cell.getCriticalRegionVolumes();
+
+        assertEquals(expectedVolumes, actualVolumes);
+    }
+
+    @Test
+    public void getCriticalRegionHeights_withRegions_returnsHeights() {
+        EnumMap<Region, Double> expectedHeights = new EnumMap<>(Region.class);
+        for (Region region : regionList) {
+            expectedHeights.put(region, criticalHeightsRegionMock.get(region));
+        }
+        PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+                locationMock, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                criticalVolumesRegionMock, expectedHeights);
+
+        EnumMap<Region, Double> actualHeights = cell.getCriticalRegionHeights();
+
+        assertEquals(expectedHeights, actualHeights);
     }
     
     @Test

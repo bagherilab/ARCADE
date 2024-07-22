@@ -345,7 +345,7 @@ public final class PottsCell implements Cell {
     /**
      * Sets the state module for the cell.
      *
-     * @param state  the cell state
+     * @param newState  the cell state
      */
     public void setStateModule(CellState newState) {
         switch ((State) newState) {
