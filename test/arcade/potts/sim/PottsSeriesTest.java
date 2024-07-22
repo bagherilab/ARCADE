@@ -611,6 +611,18 @@ public class PottsSeriesTest {
         assertNotNull(series.populations.get(POPULATION_ID_1));
         assertEquals(1, series.populations.get(POPULATION_ID_1).getInt("CODE"));
     }
+
+    @Test
+    public void updatePopulation_onePopulationWithClass_createsMap() {
+        Box[] boxes = new Box[] { new Box() };
+        boxes[0].add("id", POPULATION_ID_1);
+        boxes[0].add("class", POPULATION_CLASS_1);
+        PottsSeries series = makeSeriesForPopulation(boxes);
+        assertEquals(1, series.populations.size());
+        assertNotNull(series.populations.get(POPULATION_ID_1));
+        assertEquals(1, series.populations.get(POPULATION_ID_1).getInt("CODE"));
+        assertEquals(POPULATION_CLASS_1, series.populations.get(POPULATION_ID_1).get("CLASS"));
+    }
     
     @Test
     public void updatePopulation_multiplePopulations_createsMap() {
