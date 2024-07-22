@@ -301,6 +301,10 @@ public final class PottsCell implements Cell {
                 ? criticalRegionHeights.get(region)
                 : 0);
     }
+
+    public EnumMap<Region, Double> getCriticalRegionVolumes() { return criticalRegionVolumes; }
+
+    public EnumMap<Region, Double> getCriticalRegionHeights() { return criticalRegionHeights; }
     
     @Override
     public void stop() { stopper.stop(); }
@@ -308,10 +312,10 @@ public final class PottsCell implements Cell {
     @Override
     public PottsCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
-        divisions++;
-        return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,
-                hasRegions, parameters, criticalVolume, criticalHeight,
-                criticalRegionVolumes, criticalRegionHeights);
+        setDivisions(getDivisions() + 1);
+        return new PottsCell(newID, getID(), getPop(), newState, getAge(), getDivisions(), newLocation,
+                hasRegions(), getParameters(), getCriticalVolume(), getCriticalHeight(),
+                getCriticalRegionVolumes(), getCriticalRegionHeights());
     }
     
     @Override
