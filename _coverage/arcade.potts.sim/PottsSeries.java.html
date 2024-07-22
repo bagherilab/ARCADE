@@ -182,68 +182,70 @@ public final class PottsSeries extends Series {
         // Iterate through each setup dictionary to build population settings.
 <span class="fc bfc" id="L183" title="All 2 branches covered.">        for (Box box : populationsBox) {</span>
 <span class="fc" id="L184">            String id = box.getValue(&quot;id&quot;);</span>
+<span class="fc" id="L185">            String populationClass = box.getValue(&quot;class&quot;);</span>
             
             // Create new population and update code.
-<span class="fc" id="L187">            MiniBox population = new MiniBox();</span>
-<span class="fc" id="L188">            population.put(&quot;CODE&quot;, code++);</span>
-<span class="fc" id="L189">            this.populations.put(id, population);</span>
+<span class="fc" id="L188">            MiniBox population = new MiniBox();</span>
+<span class="fc" id="L189">            population.put(&quot;CODE&quot;, code++);</span>
+<span class="fc" id="L190">            population.put(&quot;CLASS&quot;, populationClass);</span>
+<span class="fc" id="L191">            this.populations.put(id, population);</span>
             
             // Add population init if given. If not given or invalid, set to zero.
-<span class="fc bfc" id="L192" title="All 4 branches covered.">            if (box.contains(&quot;init&quot;) &amp;&amp; box.getValue(&quot;init&quot;).contains(&quot;:&quot;)) {</span>
-<span class="fc" id="L193">                String[] initString = box.getValue(&quot;init&quot;).split(&quot;:&quot;);</span>
+<span class="fc bfc" id="L194" title="All 4 branches covered.">            if (box.contains(&quot;init&quot;) &amp;&amp; box.getValue(&quot;init&quot;).contains(&quot;:&quot;)) {</span>
+<span class="fc" id="L195">                String[] initString = box.getValue(&quot;init&quot;).split(&quot;:&quot;);</span>
                 
-<span class="fc" id="L195">                box.add(&quot;init&quot;, initString[0]);</span>
-<span class="fc" id="L196">                box.add(&quot;padding&quot;, initString[1]);</span>
+<span class="fc" id="L197">                box.add(&quot;init&quot;, initString[0]);</span>
+<span class="fc" id="L198">                box.add(&quot;padding&quot;, initString[1]);</span>
                 
-<span class="fc bfc" id="L198" title="All 2 branches covered.">                int padding = (isValidNumber(box, &quot;padding&quot;)</span>
-<span class="fc" id="L199">                        ? (int) Double.parseDouble(box.getValue(&quot;padding&quot;)) : 0);</span>
-<span class="fc" id="L200">                population.put(&quot;PADDING&quot;, padding);</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">                int padding = (isValidNumber(box, &quot;padding&quot;)</span>
+<span class="fc" id="L201">                        ? (int) Double.parseDouble(box.getValue(&quot;padding&quot;)) : 0);</span>
+<span class="fc" id="L202">                population.put(&quot;PADDING&quot;, padding);</span>
             }
             
-<span class="fc bfc" id="L203" title="All 2 branches covered.">            int init = (isValidNumber(box, &quot;init&quot;)</span>
-<span class="fc" id="L204">                    ? (int) Double.parseDouble(box.getValue(&quot;init&quot;)) : 0);</span>
-<span class="fc" id="L205">            population.put(&quot;INIT&quot;, init);</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">            int init = (isValidNumber(box, &quot;init&quot;)</span>
+<span class="fc" id="L206">                    ? (int) Double.parseDouble(box.getValue(&quot;init&quot;)) : 0);</span>
+<span class="fc" id="L207">            population.put(&quot;INIT&quot;, init);</span>
             
             // Get default parameters and any parameter adjustments.
-<span class="fc" id="L208">            Box parameters = box.filterBoxByTag(&quot;PARAMETER&quot;);</span>
-<span class="fc" id="L209">            MiniBox parameterValues = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;value&quot;);</span>
-<span class="fc" id="L210">            MiniBox parameterScales = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;scale&quot;);</span>
+<span class="fc" id="L210">            Box parameters = box.filterBoxByTag(&quot;PARAMETER&quot;);</span>
+<span class="fc" id="L211">            MiniBox parameterValues = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;value&quot;);</span>
+<span class="fc" id="L212">            MiniBox parameterScales = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;scale&quot;);</span>
             
             // Add in parameters. Start with value (if given) or default (if not
             // given). Then apply any scaling.
-<span class="fc bfc" id="L214" title="All 2 branches covered.">            for (String parameter : populationDefaults.getKeys()) {</span>
-<span class="fc" id="L215">                parseParameter(population, parameter, populationDefaults.get(parameter),</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">            for (String parameter : populationDefaults.getKeys()) {</span>
+<span class="fc" id="L217">                parseParameter(population, parameter, populationDefaults.get(parameter),</span>
                         parameterValues, parameterScales);
-<span class="fc" id="L217">            }</span>
+<span class="fc" id="L219">            }</span>
             
             // Get list of regions, if valid.
-<span class="fc" id="L220">            HashSet&lt;String&gt; regions = box.filterTags(&quot;REGION&quot;);</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">            for (String region : regions) {</span>
-<span class="fc" id="L222">                population.put(&quot;(REGION)&quot; + TAG_SEPARATOR + region, &quot;&quot;);</span>
-<span class="fc" id="L223">            }</span>
+<span class="fc" id="L222">            HashSet&lt;String&gt; regions = box.filterTags(&quot;REGION&quot;);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">            for (String region : regions) {</span>
+<span class="fc" id="L224">                population.put(&quot;(REGION)&quot; + TAG_SEPARATOR + region, &quot;&quot;);</span>
+<span class="fc" id="L225">            }</span>
             
             // Apply conversion factors.
-<span class="fc bfc" id="L226" title="All 2 branches covered.">            for (String convert : populationConversions.getKeys()) {</span>
-<span class="fc" id="L227">                double conversion = parseConversion(populationConversions.get(convert), ds, dt);</span>
-<span class="fc" id="L228">                population.put(convert, population.getDouble(convert) * conversion);</span>
-<span class="fc" id="L229">            }</span>
-<span class="fc" id="L230">        }</span>
-<span class="fc" id="L231">    }</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">            for (String convert : populationConversions.getKeys()) {</span>
+<span class="fc" id="L229">                double conversion = parseConversion(populationConversions.get(convert), ds, dt);</span>
+<span class="fc" id="L230">                population.put(convert, population.getDouble(convert) * conversion);</span>
+<span class="fc" id="L231">            }</span>
+<span class="fc" id="L232">        }</span>
+<span class="fc" id="L233">    }</span>
     
     @Override
     protected void updateLayers(ArrayList&lt;Box&gt; layersBox, MiniBox layerDefaults,
                                 MiniBox layerConversions) {
         // TODO
-<span class="fc" id="L237">    }</span>
+<span class="fc" id="L239">    }</span>
     
     @Override
     protected void updateActions(ArrayList&lt;Box&gt; actionsBox, MiniBox actionDefaults) {
         // TODO
-<span class="fc" id="L242">    }</span>
+<span class="fc" id="L244">    }</span>
     
     @Override
     protected void updateComponents(ArrayList&lt;Box&gt; componentsBox, MiniBox componentDefaults) {
         // TODO
-<span class="fc" id="L247">    }</span>
+<span class="fc" id="L249">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
