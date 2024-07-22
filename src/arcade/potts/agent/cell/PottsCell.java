@@ -315,7 +315,15 @@ public final class PottsCell implements Cell {
     @Override
     public void setState(CellState state) {
         this.state = state;
-        
+        setStateModule(state);
+    }
+
+    /**
+     * Sets the state module for the cell.
+     *
+     * @param state  the cell state
+     */
+    public void setStateModule(CellState state) {
         switch ((State) state) {
             case QUIESCENT:
                 module = new PottsModuleQuiescence(this);
