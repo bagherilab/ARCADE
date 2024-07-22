@@ -24,7 +24,6 @@ import arcade.potts.util.PottsEnums.Ordering;
 import arcade.potts.util.PottsEnums.Phase;
 import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
-
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.*;
