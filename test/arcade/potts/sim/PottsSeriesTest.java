@@ -606,7 +606,6 @@ public class PottsSeriesTest {
     public void updatePopulation_onePopulation_createsMap() {
         Box[] boxes = new Box[] { new Box() };
         boxes[0].add("id", POPULATION_ID_1);
-        boxes[0].add("class", POPULATION_CLASS_1);
         PottsSeries series = makeSeriesForPopulation(boxes);
         assertEquals(1, series.populations.size());
         assertNotNull(series.populations.get(POPULATION_ID_1));
