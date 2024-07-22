@@ -24,7 +24,6 @@ import arcade.potts.env.location.PottsLocation;
 import arcade.potts.util.PottsEnums.Ordering;
 import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
-
 import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
@@ -348,8 +347,8 @@ public final class PottsCell implements Cell {
      *
      * @param state  the cell state
      */
-    public void setStateModule(CellState state) {
-        switch ((State) state) {
+    public void setStateModule(CellState newState) {
+        switch ((State) newState) {
             case QUIESCENT:
                 module = new PottsModuleQuiescence(this);
                 break;
