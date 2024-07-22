@@ -169,6 +169,8 @@ public final class PottsCell implements Cell {
     
     @Override
     public int getDivisions() { return divisions; }
+
+    public void setDivisions(int divisions) { this.divisions = divisions; }
     
     @Override
     public Location getLocation() { return location; }
@@ -346,7 +348,7 @@ public final class PottsCell implements Cell {
                 break;
         }
     }
-    
+
     @Override
     public void schedule(Schedule schedule) {
         stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);
