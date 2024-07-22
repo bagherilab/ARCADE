@@ -21,6 +21,10 @@ import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.location.PottsLocation;
+import arcade.potts.util.PottsEnums.Ordering;
+import arcade.potts.util.PottsEnums.Region;
+import arcade.potts.util.PottsEnums.State;
+
 import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
@@ -170,6 +174,11 @@ public final class PottsCell implements Cell {
     @Override
     public int getDivisions() { return divisions; }
 
+    /**
+     * Sets the number of divisions.
+     *
+     * @param divisions  the number of divisions
+     */
     public void setDivisions(int divisions) { this.divisions = divisions; }
     
     @Override
@@ -302,8 +311,18 @@ public final class PottsCell implements Cell {
                 : 0);
     }
 
+    /**
+     * Returns the critical volumes for each region.
+     *
+     * @return An {@link EnumMap} mapping regions to their critical volumes.
+     */
     public EnumMap<Region, Double> getCriticalRegionVolumes() { return criticalRegionVolumes; }
 
+    /**
+     * Returns the critical heights for each region.
+     *
+     * @return An {@link EnumMap} mapping regions to their critical heights.
+     */
     public EnumMap<Region, Double> getCriticalRegionHeights() { return criticalRegionHeights; }
     
     @Override
