@@ -107,15 +107,27 @@ public class PottsSeriesTest {
     };
     
     private static final String POPULATION_ID_1 = randomString();
+
+    private static final String POPULATION_CLASS_1 = randomString();
     
     private static final String POPULATION_ID_2 = randomString();
+
+    private static final String POPULATION_CLASS_2 = randomString();
     
     private static final String POPULATION_ID_3 = randomString();
+
+    private static final String POPULATION_CLASS_3 = randomString();
     
     private static final String[] POPULATION_KEYS = new String[] {
             POPULATION_ID_1,
             POPULATION_ID_2,
             POPULATION_ID_3,
+    };
+
+    private static final String[] POPULATION_CLASSES = new String[] {
+            POPULATION_CLASS_1,
+            POPULATION_CLASS_2,
+            POPULATION_CLASS_3,
     };
     
     private static final MiniBox POTTS = new MiniBox();
@@ -600,8 +612,8 @@ public class PottsSeriesTest {
     public void updatePopulation_onePopulation_createsMap() {
         Box[] boxes = new Box[] { new Box() };
         boxes[0].add("id", POPULATION_ID_1);
+        boxes[0].add("class", POPULATION_CLASS_1);
         PottsSeries series = makeSeriesForPopulation(boxes);
-        
         assertEquals(1, series.populations.size());
         assertNotNull(series.populations.get(POPULATION_ID_1));
         assertEquals(1, series.populations.get(POPULATION_ID_1).getInt("CODE"));
@@ -622,6 +634,29 @@ public class PottsSeriesTest {
         assertEquals(1, series.populations.get(POPULATION_ID_1).getInt("CODE"));
         assertEquals(2, series.populations.get(POPULATION_ID_2).getInt("CODE"));
         assertEquals(3, series.populations.get(POPULATION_ID_3).getInt("CODE"));
+    }
+
+    @Test
+    public void updatePopulation_multiplePopulationsWithClass_createsMap() {
+        Box[] boxes = new Box[] { new Box(), new Box(), new Box() };
+        boxes[0].add("id", POPULATION_ID_1);
+        boxes[0].add("class", POPULATION_CLASS_1);
+        boxes[1].add("id", POPULATION_ID_2);
+        boxes[1].add("class", POPULATION_CLASS_2);
+        boxes[2].add("id", POPULATION_ID_3);
+        boxes[2].add("class", POPULATION_CLASS_3);
+        PottsSeries series = makeSeriesForPopulation(boxes);
+        
+        assertEquals(3, series.populations.size());
+        assertNotNull(series.populations.get(POPULATION_ID_1));
+        assertNotNull(series.populations.get(POPULATION_ID_2));
+        assertNotNull(series.populations.get(POPULATION_ID_3));
+        assertEquals(1, series.populations.get(POPULATION_ID_1).getInt("CODE"));
+        assertEquals(2, series.populations.get(POPULATION_ID_2).getInt("CODE"));
+        assertEquals(3, series.populations.get(POPULATION_ID_3).getInt("CODE"));
+        assertEquals(POPULATION_CLASS_1, series.populations.get(POPULATION_ID_1).get("CLASS"));
+        assertEquals(POPULATION_CLASS_2, series.populations.get(POPULATION_ID_2).get("CLASS"));
+        assertEquals(POPULATION_CLASS_3, series.populations.get(POPULATION_ID_3).get("CLASS"));
     }
     
     @Test
