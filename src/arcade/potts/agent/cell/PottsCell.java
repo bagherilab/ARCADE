@@ -72,7 +72,7 @@ public final class PottsCell implements Cell {
     private int age;
     
     /** Number of divisions. */
-    private int divisions;
+    int divisions;
     
     /** {@code true} if the cell has regions, {@code false} otherwise. */
     private final boolean hasRegions;
@@ -96,10 +96,10 @@ public final class PottsCell implements Cell {
     private final EnumMap<Region, Double> criticalRegionVolumes;
     
     /** Critical height for cell [voxels]. */
-    private final double criticalHeight;
+    final double criticalHeight;
     
     /** Critical heights for cell by region [voxels]. */
-    private final EnumMap<Region, Double> criticalRegionHeights;
+    final EnumMap<Region, Double> criticalRegionHeights;
     
     /** Cell state module. */
     protected Module module;
@@ -172,13 +172,6 @@ public final class PottsCell implements Cell {
     
     @Override
     public int getDivisions() { return divisions; }
-
-    /**
-     * Sets the number of divisions.
-     *
-     * @param divisions  the number of divisions
-     */
-    public void setDivisions(int divisions) { this.divisions = divisions; }
     
     @Override
     public Location getLocation() { return location; }
@@ -309,20 +302,6 @@ public final class PottsCell implements Cell {
                 ? criticalRegionHeights.get(region)
                 : 0);
     }
-
-    /**
-     * Returns the critical volumes for each region.
-     *
-     * @return An {@link EnumMap} mapping regions to their critical volumes.
-     */
-    public EnumMap<Region, Double> getCriticalRegionVolumes() { return criticalRegionVolumes; }
-
-    /**
-     * Returns the critical heights for each region.
-     *
-     * @return An {@link EnumMap} mapping regions to their critical heights.
-     */
-    public EnumMap<Region, Double> getCriticalRegionHeights() { return criticalRegionHeights; }
     
     @Override
     public void stop() { stopper.stop(); }
@@ -330,10 +309,10 @@ public final class PottsCell implements Cell {
     @Override
     public PottsCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
-        setDivisions(getDivisions() + 1);
-        return new PottsCell(newID, getID(), getPop(), newState, getAge(), getDivisions(),
-                newLocation, hasRegions(), getParameters(), getCriticalVolume(),
-                getCriticalHeight(), getCriticalRegionVolumes(), getCriticalRegionHeights());
+        divisions++;
+        return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,
+        hasRegions, parameters, criticalVolume, criticalHeight,
+        criticalRegionVolumes, criticalRegionHeights);
     }
     
     @Override

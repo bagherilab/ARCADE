@@ -233,14 +233,6 @@ public class PottsCellTest {
                 null, null);
         assertEquals(divisions, cell.getDivisions());
     }
-
-    @Test
-    public void setDivisions_validValue_assignsValue() {
-        PottsCell cell = make(false);
-        int divisions = randomIntBetween(0, 100);
-        cell.setDivisions(divisions);
-        assertEquals(divisions, cell.getDivisions());
-    }
     
     @Test
     public void hasRegions_withoutRegions_returnsFalse() {
@@ -570,36 +562,6 @@ public class PottsCellTest {
         for (Region region : regionList) {
             assertEquals(0, cell.getCriticalHeight(region), EPSILON);
         }
-    }
-
-    @Test
-    public void getCriticalRegionVolumes_withRegions_returnsVolumes() {
-        EnumMap<Region, Double> expectedVolumes = new EnumMap<>(Region.class);
-        for (Region region : regionList) {
-            expectedVolumes.put(region, criticalVolumesRegionMock.get(region));
-        }
-        PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                locationMock, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                expectedVolumes, criticalHeightsRegionMock);
-
-        EnumMap<Region, Double> actualVolumes = cell.getCriticalRegionVolumes();
-
-        assertEquals(expectedVolumes, actualVolumes);
-    }
-
-    @Test
-    public void getCriticalRegionHeights_withRegions_returnsHeights() {
-        EnumMap<Region, Double> expectedHeights = new EnumMap<>(Region.class);
-        for (Region region : regionList) {
-            expectedHeights.put(region, criticalHeightsRegionMock.get(region));
-        }
-        PottsCell cell = new PottsCell(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                locationMock, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                criticalVolumesRegionMock, expectedHeights);
-
-        EnumMap<Region, Double> actualHeights = cell.getCriticalRegionHeights();
-
-        assertEquals(expectedHeights, actualHeights);
     }
     
     @Test
