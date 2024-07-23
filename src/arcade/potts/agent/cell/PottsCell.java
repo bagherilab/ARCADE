@@ -317,7 +317,7 @@ public final class PottsCell implements Cell {
         this.state = newState;
         setStateModule(newState);
     }
-
+    
     /**
      * Sets the state module for the cell.
      *
@@ -346,7 +346,7 @@ public final class PottsCell implements Cell {
                 break;
         }
     }
-
+    
     @Override
     public void schedule(Schedule schedule) {
         stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);
