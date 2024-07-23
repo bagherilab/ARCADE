@@ -66,13 +66,13 @@ public final class PottsCell implements Cell {
     private CellState state;
     
     /** Cell age [ticks]. */
-    private int age;
+    int age;
     
     /** Number of divisions. */
-    private int divisions;
+    int divisions;
     
     /** {@code true} if the cell has regions, {@code false} otherwise. */
-    private final boolean hasRegions;
+    final boolean hasRegions;
     
     /** Target cell volume [voxels]. */
     private double targetVolume;
@@ -87,16 +87,16 @@ public final class PottsCell implements Cell {
     private final EnumMap&lt;Region, Double&gt; targetRegionSurfaces;
     
     /** Critical volume for cell [voxels]. */
-    private final double criticalVolume;
+    final double criticalVolume;
     
     /** Critical volumes for cell by region [voxels]. */
-    private final EnumMap&lt;Region, Double&gt; criticalRegionVolumes;
+    final EnumMap&lt;Region, Double&gt; criticalRegionVolumes;
     
     /** Critical height for cell [voxels]. */
-    private final double criticalHeight;
+    final double criticalHeight;
     
     /** Critical heights for cell by region [voxels]. */
-    private final EnumMap&lt;Region, Double&gt; criticalRegionHeights;
+    final EnumMap&lt;Region, Double&gt; criticalRegionHeights;
     
     /** Cell state module. */
     protected Module module;
@@ -308,41 +308,49 @@ public final class PottsCell implements Cell {
                           MersenneTwisterFast random) {
 <span class="fc" id="L309">        divisions++;</span>
 <span class="fc" id="L310">        return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,</span>
-                hasRegions, parameters, criticalVolume, criticalHeight,
-                criticalRegionVolumes, criticalRegionHeights);
+                            hasRegions, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
     }
     
     @Override
-    public void setState(CellState state) {
-<span class="fc" id="L317">        this.state = state;</span>
-        
-<span class="fc bfc" id="L319" title="All 6 branches covered.">        switch ((State) state) {</span>
+    public void setState(CellState newState) {
+<span class="fc" id="L317">        this.state = newState;</span>
+<span class="fc" id="L318">        setStateModule(newState);</span>
+<span class="fc" id="L319">    }</span>
+    
+    /**
+     * Sets the state module for the cell.
+     *
+     * @param newState  the cell state
+     */
+    public void setStateModule(CellState newState) {
+<span class="fc bfc" id="L327" title="All 6 branches covered.">        switch ((State) newState) {</span>
             case QUIESCENT:
-<span class="fc" id="L321">                module = new PottsModuleQuiescence(this);</span>
-<span class="fc" id="L322">                break;</span>
+<span class="fc" id="L329">                module = new PottsModuleQuiescence(this);</span>
+<span class="fc" id="L330">                break;</span>
             case PROLIFERATIVE:
-<span class="fc" id="L324">                module = new PottsModuleProliferationSimple(this);</span>
-<span class="fc" id="L325">                break;</span>
+<span class="fc" id="L332">                module = new PottsModuleProliferationSimple(this);</span>
+<span class="fc" id="L333">                break;</span>
             case APOPTOTIC:
-<span class="fc" id="L327">                module = new PottsModuleApoptosisSimple(this);</span>
-<span class="fc" id="L328">                break;</span>
+<span class="fc" id="L335">                module = new PottsModuleApoptosisSimple(this);</span>
+<span class="fc" id="L336">                break;</span>
             case NECROTIC:
-<span class="fc" id="L330">                module = new PottsModuleNecrosis(this);</span>
-<span class="fc" id="L331">                break;</span>
+<span class="fc" id="L338">                module = new PottsModuleNecrosis(this);</span>
+<span class="fc" id="L339">                break;</span>
             case AUTOTIC:
-<span class="fc" id="L333">                module = new PottsModuleAutosis(this);</span>
-<span class="fc" id="L334">                break;</span>
+<span class="fc" id="L341">                module = new PottsModuleAutosis(this);</span>
+<span class="fc" id="L342">                break;</span>
             default:
                 // State must be one of the above cases.
-<span class="fc" id="L337">                module = null;</span>
+<span class="fc" id="L345">                module = null;</span>
                 break;
         }
-<span class="fc" id="L340">    }</span>
+<span class="fc" id="L348">    }</span>
     
     @Override
     public void schedule(Schedule schedule) {
-<span class="fc" id="L344">        stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);</span>
-<span class="fc" id="L345">    }</span>
+<span class="fc" id="L352">        stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);</span>
+<span class="fc" id="L353">    }</span>
     
     /**
      * Initializes the potts arrays with the cell.
@@ -351,20 +359,20 @@ public final class PottsCell implements Cell {
      * @param regions  the {@link arcade.potts.sim.Potts} array for regions
      */
     public void initialize(int[][][] ids, int[][][] regions) {
-<span class="fc" id="L354">        location.update(id, ids, regions);</span>
+<span class="fc" id="L362">        location.update(id, ids, regions);</span>
         
-<span class="fc" id="L356">        targetVolume = location.getVolume();</span>
-<span class="fc" id="L357">        targetSurface = location.getSurface();</span>
+<span class="fc" id="L364">        targetVolume = location.getVolume();</span>
+<span class="fc" id="L365">        targetSurface = location.getSurface();</span>
         
-<span class="fc bfc" id="L359" title="All 2 branches covered.">        if (!hasRegions) {</span>
-<span class="fc" id="L360">            return;</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">        if (!hasRegions) {</span>
+<span class="fc" id="L368">            return;</span>
         }
         
-<span class="fc bfc" id="L363" title="All 2 branches covered.">        for (Region region : location.getRegions()) {</span>
-<span class="fc" id="L364">            targetRegionVolumes.put(region, location.getVolume(region));</span>
-<span class="fc" id="L365">            targetRegionSurfaces.put(region, location.getSurface(region));</span>
-<span class="fc" id="L366">        }</span>
-<span class="fc" id="L367">    }</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">        for (Region region : location.getRegions()) {</span>
+<span class="fc" id="L372">            targetRegionVolumes.put(region, location.getVolume(region));</span>
+<span class="fc" id="L373">            targetRegionSurfaces.put(region, location.getSurface(region));</span>
+<span class="fc" id="L374">        }</span>
+<span class="fc" id="L375">    }</span>
     
     /**
      * Resets the potts arrays with the cell.
@@ -373,33 +381,33 @@ public final class PottsCell implements Cell {
      * @param regions  the {@link arcade.potts.sim.Potts} array for regions
      */
     public void reset(int[][][] ids, int[][][] regions) {
-<span class="fc" id="L376">        location.update(id, ids, regions);</span>
+<span class="fc" id="L384">        location.update(id, ids, regions);</span>
         
-<span class="fc" id="L378">        targetVolume = criticalVolume;</span>
-<span class="fc" id="L379">        targetSurface = location.convertSurface(targetVolume, criticalHeight);</span>
+<span class="fc" id="L386">        targetVolume = criticalVolume;</span>
+<span class="fc" id="L387">        targetSurface = location.convertSurface(targetVolume, criticalHeight);</span>
         
-<span class="fc bfc" id="L381" title="All 2 branches covered.">        if (!hasRegions) {</span>
-<span class="fc" id="L382">            return;</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">        if (!hasRegions) {</span>
+<span class="fc" id="L390">            return;</span>
         }
         
-<span class="fc bfc" id="L385" title="All 2 branches covered.">        for (Region region : location.getRegions()) {</span>
-<span class="fc" id="L386">            double regionHeight = criticalRegionHeights.get(region);</span>
-<span class="fc" id="L387">            double regionVolume = criticalRegionVolumes.get(region);</span>
-<span class="fc" id="L388">            targetRegionVolumes.put(region, regionVolume);</span>
-<span class="fc" id="L389">            targetRegionSurfaces.put(region, location.convertSurface(regionVolume, regionHeight));</span>
-<span class="fc" id="L390">        }</span>
-<span class="fc" id="L391">    }</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">        for (Region region : location.getRegions()) {</span>
+<span class="fc" id="L394">            double regionHeight = criticalRegionHeights.get(region);</span>
+<span class="fc" id="L395">            double regionVolume = criticalRegionVolumes.get(region);</span>
+<span class="fc" id="L396">            targetRegionVolumes.put(region, regionVolume);</span>
+<span class="fc" id="L397">            targetRegionSurfaces.put(region, location.convertSurface(regionVolume, regionHeight));</span>
+<span class="fc" id="L398">        }</span>
+<span class="fc" id="L399">    }</span>
     
     @Override
     public void step(SimState simstate) {
-<span class="fc" id="L395">        Simulation sim = (Simulation) simstate;</span>
+<span class="fc" id="L403">        Simulation sim = (Simulation) simstate;</span>
         
         // Increase age of cell.
-<span class="fc" id="L398">        age++;</span>
+<span class="fc" id="L406">        age++;</span>
         
         // Step the module for the cell state.
-<span class="fc" id="L401">        module.step(simstate.random, sim);</span>
-<span class="fc" id="L402">    }</span>
+<span class="fc" id="L409">        module.step(simstate.random, sim);</span>
+<span class="fc" id="L410">    }</span>
     
     /**
      * Sets the target volume and surface for the cell.
@@ -408,9 +416,9 @@ public final class PottsCell implements Cell {
      * @param surface  the target surface
      */
     public void setTargets(double volume, double surface) {
-<span class="fc" id="L411">        targetVolume = volume;</span>
-<span class="fc" id="L412">        targetSurface = surface;</span>
-<span class="fc" id="L413">    }</span>
+<span class="fc" id="L419">        targetVolume = volume;</span>
+<span class="fc" id="L420">        targetSurface = surface;</span>
+<span class="fc" id="L421">    }</span>
     
     /**
      * Sets the target volume and surface for a region.
@@ -420,9 +428,9 @@ public final class PottsCell implements Cell {
      * @param surface  the target surface
      */
     public void setTargets(Region region, double volume, double surface) {
-<span class="fc" id="L423">        targetRegionVolumes.put(region, volume);</span>
-<span class="fc" id="L424">        targetRegionSurfaces.put(region, surface);</span>
-<span class="fc" id="L425">    }</span>
+<span class="fc" id="L431">        targetRegionVolumes.put(region, volume);</span>
+<span class="fc" id="L432">        targetRegionSurfaces.put(region, surface);</span>
+<span class="fc" id="L433">    }</span>
     
     /**
      * Updates target volume and surface area. When scale is greater than one,
@@ -433,37 +441,37 @@ public final class PottsCell implements Cell {
      * @param scale  the relative final size scaling
      */
     public void updateTarget(double rate, double scale) {
-<span class="fc bfc" id="L436" title="All 2 branches covered.">        if (scale == 1) {</span>
-<span class="fc" id="L437">            return;</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">        if (scale == 1) {</span>
+<span class="fc" id="L445">            return;</span>
         }
         
-<span class="fc bfc" id="L440" title="All 2 branches covered.">        if (hasRegions) {</span>
-<span class="fc bfc" id="L441" title="All 2 branches covered.">            if (scale &lt; 1) {</span>
-<span class="fc" id="L442">                rate = Math.min(rate, targetRegionVolumes.get(Region.DEFAULT));</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">        if (hasRegions) {</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">            if (scale &lt; 1) {</span>
+<span class="fc" id="L450">                rate = Math.min(rate, targetRegionVolumes.get(Region.DEFAULT));</span>
             }
-<span class="fc" id="L444">            double updateVolume = targetRegionVolumes.get(Region.DEFAULT) - targetVolume;</span>
-<span class="fc" id="L445">            targetRegionVolumes.put(Region.DEFAULT, updateVolume);</span>
+<span class="fc" id="L452">            double updateVolume = targetRegionVolumes.get(Region.DEFAULT) - targetVolume;</span>
+<span class="fc" id="L453">            targetRegionVolumes.put(Region.DEFAULT, updateVolume);</span>
         }
         
-<span class="fc bfc" id="L448" title="All 2 branches covered.">        if (scale &gt; 1) {</span>
-<span class="fc" id="L449">            targetVolume += rate;</span>
-<span class="fc" id="L450">            targetVolume = Math.min(targetVolume, scale * criticalVolume);</span>
+<span class="fc bfc" id="L456" title="All 2 branches covered.">        if (scale &gt; 1) {</span>
+<span class="fc" id="L457">            targetVolume += rate;</span>
+<span class="fc" id="L458">            targetVolume = Math.min(targetVolume, scale * criticalVolume);</span>
         } else {
-<span class="fc" id="L452">            targetVolume -= rate;</span>
-<span class="fc" id="L453">            targetVolume = Math.max(targetVolume, scale * criticalVolume);</span>
+<span class="fc" id="L460">            targetVolume -= rate;</span>
+<span class="fc" id="L461">            targetVolume = Math.max(targetVolume, scale * criticalVolume);</span>
         }
         
-<span class="fc" id="L456">        targetSurface = location.convertSurface(targetVolume, criticalHeight);</span>
+<span class="fc" id="L464">        targetSurface = location.convertSurface(targetVolume, criticalHeight);</span>
         
-<span class="fc bfc" id="L458" title="All 2 branches covered.">        if (hasRegions) {</span>
-<span class="fc" id="L459">            double updateVolume = targetRegionVolumes.get(Region.DEFAULT) + targetVolume;</span>
-<span class="fc" id="L460">            targetRegionVolumes.put(Region.DEFAULT, updateVolume);</span>
+<span class="fc bfc" id="L466" title="All 2 branches covered.">        if (hasRegions) {</span>
+<span class="fc" id="L467">            double updateVolume = targetRegionVolumes.get(Region.DEFAULT) + targetVolume;</span>
+<span class="fc" id="L468">            targetRegionVolumes.put(Region.DEFAULT, updateVolume);</span>
             
-<span class="fc" id="L462">            double criticalRegionHeight = criticalRegionHeights.get(Region.DEFAULT);</span>
-<span class="fc" id="L463">            double updateSurface = location.convertSurface(updateVolume, criticalRegionHeight);</span>
-<span class="fc" id="L464">            targetRegionSurfaces.put(Region.DEFAULT, updateSurface);</span>
+<span class="fc" id="L470">            double criticalRegionHeight = criticalRegionHeights.get(Region.DEFAULT);</span>
+<span class="fc" id="L471">            double updateSurface = location.convertSurface(updateVolume, criticalRegionHeight);</span>
+<span class="fc" id="L472">            targetRegionSurfaces.put(Region.DEFAULT, updateSurface);</span>
         }
-<span class="fc" id="L466">    }</span>
+<span class="fc" id="L474">    }</span>
     
     /**
      * Updates target volume and surface area for a region.
@@ -476,61 +484,61 @@ public final class PottsCell implements Cell {
      * @param scale  the relative final size scaling
      */
     public void updateTarget(Region region, double rate, double scale) {
-<span class="fc bfc" id="L479" title="All 4 branches covered.">        if (!hasRegions || scale == 1) {</span>
-<span class="fc" id="L480">            return;</span>
+<span class="fc bfc" id="L487" title="All 4 branches covered.">        if (!hasRegions || scale == 1) {</span>
+<span class="fc" id="L488">            return;</span>
         }
         
-<span class="fc bfc" id="L483" title="All 2 branches covered.">        if (region == Region.DEFAULT) {</span>
-<span class="fc" id="L484">            updateTarget(rate, scale);</span>
-<span class="fc" id="L485">            return;</span>
+<span class="fc bfc" id="L491" title="All 2 branches covered.">        if (region == Region.DEFAULT) {</span>
+<span class="fc" id="L492">            updateTarget(rate, scale);</span>
+<span class="fc" id="L493">            return;</span>
         }
         
-<span class="fc bfc" id="L488" title="All 2 branches covered.">        if (scale &gt; 1) {</span>
-<span class="fc" id="L489">            rate = Math.min(rate, targetRegionVolumes.get(Region.DEFAULT));</span>
+<span class="fc bfc" id="L496" title="All 2 branches covered.">        if (scale &gt; 1) {</span>
+<span class="fc" id="L497">            rate = Math.min(rate, targetRegionVolumes.get(Region.DEFAULT));</span>
         }
         
-<span class="fc" id="L492">        double criticalRegionVolume = criticalRegionVolumes.get(region);</span>
-<span class="fc" id="L493">        double criticalRegionHeight = criticalRegionHeights.get(region);</span>
+<span class="fc" id="L500">        double criticalRegionVolume = criticalRegionVolumes.get(region);</span>
+<span class="fc" id="L501">        double criticalRegionHeight = criticalRegionHeights.get(region);</span>
         
-<span class="fc" id="L495">        double updateVolume = targetRegionVolumes.get(region);</span>
+<span class="fc" id="L503">        double updateVolume = targetRegionVolumes.get(region);</span>
         
-<span class="fc" id="L497">        double preUpdateVolume = targetRegionVolumes.get(Region.DEFAULT) + updateVolume;</span>
-<span class="fc" id="L498">        targetRegionVolumes.put(Region.DEFAULT, preUpdateVolume);</span>
+<span class="fc" id="L505">        double preUpdateVolume = targetRegionVolumes.get(Region.DEFAULT) + updateVolume;</span>
+<span class="fc" id="L506">        targetRegionVolumes.put(Region.DEFAULT, preUpdateVolume);</span>
         
-<span class="fc bfc" id="L500" title="All 2 branches covered.">        if (scale &gt; 1) {</span>
-<span class="fc" id="L501">            updateVolume += rate;</span>
-<span class="fc" id="L502">            updateVolume = Math.min(updateVolume, scale * criticalRegionVolume);</span>
+<span class="fc bfc" id="L508" title="All 2 branches covered.">        if (scale &gt; 1) {</span>
+<span class="fc" id="L509">            updateVolume += rate;</span>
+<span class="fc" id="L510">            updateVolume = Math.min(updateVolume, scale * criticalRegionVolume);</span>
         } else {
-<span class="fc" id="L504">            updateVolume -= rate;</span>
-<span class="fc" id="L505">            updateVolume = Math.max(updateVolume, scale * criticalRegionVolume);</span>
+<span class="fc" id="L512">            updateVolume -= rate;</span>
+<span class="fc" id="L513">            updateVolume = Math.max(updateVolume, scale * criticalRegionVolume);</span>
         }
         
-<span class="fc" id="L508">        targetRegionVolumes.put(region, updateVolume);</span>
-<span class="fc" id="L509">        double updateSurface = location.convertSurface(updateVolume, criticalRegionHeight);</span>
-<span class="fc" id="L510">        targetRegionSurfaces.put(region, updateSurface);</span>
+<span class="fc" id="L516">        targetRegionVolumes.put(region, updateVolume);</span>
+<span class="fc" id="L517">        double updateSurface = location.convertSurface(updateVolume, criticalRegionHeight);</span>
+<span class="fc" id="L518">        targetRegionSurfaces.put(region, updateSurface);</span>
         
-<span class="fc" id="L512">        double postUpdateVolume = targetRegionVolumes.get(Region.DEFAULT) - updateVolume;</span>
-<span class="fc" id="L513">        targetRegionVolumes.put(Region.DEFAULT, postUpdateVolume);</span>
+<span class="fc" id="L520">        double postUpdateVolume = targetRegionVolumes.get(Region.DEFAULT) - updateVolume;</span>
+<span class="fc" id="L521">        targetRegionVolumes.put(Region.DEFAULT, postUpdateVolume);</span>
         
-<span class="fc" id="L515">        double defaultRegionHeight = criticalRegionHeights.get(Region.DEFAULT);</span>
-<span class="fc" id="L516">        double postUpdateSurface = location.convertSurface(postUpdateVolume, defaultRegionHeight);</span>
-<span class="fc" id="L517">        targetRegionSurfaces.put(Region.DEFAULT, postUpdateSurface);</span>
-<span class="fc" id="L518">    }</span>
+<span class="fc" id="L523">        double defaultRegionHeight = criticalRegionHeights.get(Region.DEFAULT);</span>
+<span class="fc" id="L524">        double postUpdateSurface = location.convertSurface(postUpdateVolume, defaultRegionHeight);</span>
+<span class="fc" id="L525">        targetRegionSurfaces.put(Region.DEFAULT, postUpdateSurface);</span>
+<span class="fc" id="L526">    }</span>
     
     @Override
     public CellContainer convert() {
-<span class="fc bfc" id="L522" title="All 2 branches covered.">        if (hasRegions) {</span>
-<span class="fc" id="L523">            EnumMap&lt;Region, Integer&gt; regionVolumes = new EnumMap&lt;&gt;(Region.class);</span>
-<span class="fc bfc" id="L524" title="All 2 branches covered.">            for (Region region : location.getRegions()) {</span>
-<span class="fc" id="L525">                regionVolumes.put(region, (int) location.getVolume(region));</span>
-<span class="fc" id="L526">            }</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">        if (hasRegions) {</span>
+<span class="fc" id="L531">            EnumMap&lt;Region, Integer&gt; regionVolumes = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc bfc" id="L532" title="All 2 branches covered.">            for (Region region : location.getRegions()) {</span>
+<span class="fc" id="L533">                regionVolumes.put(region, (int) location.getVolume(region));</span>
+<span class="fc" id="L534">            }</span>
             
-<span class="fc" id="L528">            return new PottsCellContainer(id, parent, pop, age, divisions, state,</span>
-<span class="fc" id="L529">                    ((PottsModule) module).getPhase(), (int) getVolume(), regionVolumes,</span>
+<span class="fc" id="L536">            return new PottsCellContainer(id, parent, pop, age, divisions, state,</span>
+<span class="fc" id="L537">                    ((PottsModule) module).getPhase(), (int) getVolume(), regionVolumes,</span>
                     criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
         } else {
-<span class="fc" id="L532">            return new PottsCellContainer(id, parent, pop, age, divisions, state,</span>
-<span class="fc" id="L533">                    ((PottsModule) module).getPhase(), (int) getVolume(),</span>
+<span class="fc" id="L540">            return new PottsCellContainer(id, parent, pop, age, divisions, state,</span>
+<span class="fc" id="L541">                    ((PottsModule) module).getPhase(), (int) getVolume(),</span>
                     criticalVolume, criticalHeight);
         }
     }
