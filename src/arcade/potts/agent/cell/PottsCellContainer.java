@@ -142,9 +142,6 @@ public final class PottsCellContainer implements CellContainer {
         // Make cell.
         PottsCell cell;
         String pottsCellClass = parameters.get("CLASS");
-        if (pottsCellClass == null) {
-            pottsCellClass = "stem";
-        }
         switch (pottsCellClass) {
             default:
             case "stem":
