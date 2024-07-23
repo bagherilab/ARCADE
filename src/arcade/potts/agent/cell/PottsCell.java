@@ -61,11 +61,14 @@ public abstract class PottsCell implements Cell {
     
     /** Cell age [ticks]. */
     int age;
+    int age;
     
     /** Number of divisions. */
     int divisions;
+    int divisions;
     
     /** {@code true} if the cell has regions, {@code false} otherwise. */
+    final boolean hasRegions;
     final boolean hasRegions;
     
     /** Target cell volume [voxels]. */
@@ -82,14 +85,18 @@ public abstract class PottsCell implements Cell {
     
     /** Critical volume for cell [voxels]. */
     final double criticalVolume;
+    final double criticalVolume;
     
     /** Critical volumes for cell by region [voxels]. */
+    final EnumMap<Region, Double> criticalRegionVolumes;
     final EnumMap<Region, Double> criticalRegionVolumes;
     
     /** Critical height for cell [voxels]. */
     final double criticalHeight;
+    final double criticalHeight;
     
     /** Critical heights for cell by region [voxels]. */
+    final EnumMap<Region, Double> criticalRegionHeights;
     final EnumMap<Region, Double> criticalRegionHeights;
     
     /** Cell state module. */
