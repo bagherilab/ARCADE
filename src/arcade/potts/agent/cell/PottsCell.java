@@ -66,13 +66,13 @@ public final class PottsCell implements Cell {
     private CellState state;
     
     /** Cell age [ticks]. */
-    private int age;
+    int age;
     
     /** Number of divisions. */
-    private int divisions;
+    int divisions;
     
     /** {@code true} if the cell has regions, {@code false} otherwise. */
-    private final boolean hasRegions;
+    final boolean hasRegions;
     
     /** Target cell volume [voxels]. */
     private double targetVolume;
@@ -87,16 +87,16 @@ public final class PottsCell implements Cell {
     private final EnumMap<Region, Double> targetRegionSurfaces;
     
     /** Critical volume for cell [voxels]. */
-    private final double criticalVolume;
+    final double criticalVolume;
     
     /** Critical volumes for cell by region [voxels]. */
-    private final EnumMap<Region, Double> criticalRegionVolumes;
+    final EnumMap<Region, Double> criticalRegionVolumes;
     
     /** Critical height for cell [voxels]. */
-    private final double criticalHeight;
+    final double criticalHeight;
     
     /** Critical heights for cell by region [voxels]. */
-    private final EnumMap<Region, Double> criticalRegionHeights;
+    final EnumMap<Region, Double> criticalRegionHeights;
     
     /** Cell state module. */
     protected Module module;
@@ -308,15 +308,23 @@ public final class PottsCell implements Cell {
                           MersenneTwisterFast random) {
         divisions++;
         return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,
-                hasRegions, parameters, criticalVolume, criticalHeight,
-                criticalRegionVolumes, criticalRegionHeights);
+                            hasRegions, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
     }
     
     @Override
-    public void setState(CellState state) {
-        this.state = state;
-        
-        switch ((State) state) {
+    public void setState(CellState newState) {
+        this.state = newState;
+        setStateModule(newState);
+    }
+    
+    /**
+     * Sets the state module for the cell.
+     *
+     * @param newState  the cell state
+     */
+    public void setStateModule(CellState newState) {
+        switch ((State) newState) {
             case QUIESCENT:
                 module = new PottsModuleQuiescence(this);
                 break;
