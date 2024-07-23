@@ -21,9 +21,6 @@ import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.location.PottsLocation;
-import arcade.potts.util.PottsEnums.Ordering;
-import arcade.potts.util.PottsEnums.Region;
-import arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
@@ -311,8 +308,8 @@ public final class PottsCell implements Cell {
                           MersenneTwisterFast random) {
         divisions++;
         return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,
-        hasRegions, parameters, criticalVolume, criticalHeight,
-        criticalRegionVolumes, criticalRegionHeights);
+                            hasRegions, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
     }
     
     @Override
