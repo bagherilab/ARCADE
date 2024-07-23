@@ -8,6 +8,10 @@ import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.env.location.PottsLocation;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.Region;
+import arcade.potts.util.PottsEnums.State;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -109,6 +113,8 @@ public class PottsCellContainerTest {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
+        // Set up the mock to return "stem" when get("CLASS") is called
+        when(parameters.get("CLASS")).thenReturn("stem");
         
         factory.popToParameters.put(cellPop, parameters);
         factory.popToRegions.put(cellPop, false);
@@ -147,6 +153,8 @@ public class PottsCellContainerTest {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
+        // Set up the mock to return "stem" when get("CLASS") is called
+        when(parameters.get("CLASS")).thenReturn("stem");
         
         EnumSet<Region> regionList = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
         doReturn(regionList).when(location).getRegions();
