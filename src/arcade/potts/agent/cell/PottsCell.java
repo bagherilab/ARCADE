@@ -46,7 +46,7 @@ import static arcade.potts.util.PottsEnums.State;
  * by the specific Hamiltonian class instance.
  */
 
-public final class PottsCell implements Cell {
+public abstract class PottsCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule. */
     Stoppable stopper;
     
@@ -66,13 +66,13 @@ public final class PottsCell implements Cell {
     private CellState state;
     
     /** Cell age [ticks]. */
-    private int age;
+    int age;
     
     /** Number of divisions. */
     int divisions;
     
     /** {@code true} if the cell has regions, {@code false} otherwise. */
-    private final boolean hasRegions;
+    final boolean hasRegions;
     
     /** Target cell volume [voxels]. */
     private double targetVolume;
@@ -87,10 +87,10 @@ public final class PottsCell implements Cell {
     private final EnumMap<Region, Double> targetRegionSurfaces;
     
     /** Critical volume for cell [voxels]. */
-    private final double criticalVolume;
+    final double criticalVolume;
     
     /** Critical volumes for cell by region [voxels]. */
-    private final EnumMap<Region, Double> criticalRegionVolumes;
+    final EnumMap<Region, Double> criticalRegionVolumes;
     
     /** Critical height for cell [voxels]. */
     final double criticalHeight;
