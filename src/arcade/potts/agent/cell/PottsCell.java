@@ -46,7 +46,7 @@ import static arcade.potts.util.PottsEnums.State;
  * by the specific Hamiltonian class instance.
  */
 
-public abstract class PottsCell implements Cell {
+public final class PottsCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule. */
     Stoppable stopper;
     
