@@ -10,8 +10,11 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
+import arcade.potts.util.PottsEnums.Term;
 import arcade.potts.vis.PottsVisualization;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
@@ -768,6 +771,7 @@ public class PottsSeriesTest {
         for (String parameter : POPULATION_PARAMETER_NAMES) {
             assertEquals(POPULATION.get(parameter), box.get(parameter));
         }
+        assertEquals("stem", box.get("CLASS"));
     }
     
     @Test
@@ -776,6 +780,7 @@ public class PottsSeriesTest {
             for (String populationParameter2 : POPULATION_PARAMETER_NAMES) {
                 Box[] boxes = new Box[] { new Box() };
                 boxes[0].add("id", POPULATION_ID_1);
+                boxes[0].addTag("stem", "CLASS");
                 
                 double value = randomDoubleBetween(1, 100);
                 double scale = randomDoubleBetween(1, 100);
@@ -796,6 +801,7 @@ public class PottsSeriesTest {
                         expected *= scale;
                     }
                     assertEquals(expected, box.getDouble(parameter), EPSILON);
+                    assertEquals("stem", box.get("CLASS"));
                 }
             }
         }
@@ -817,6 +823,9 @@ public class PottsSeriesTest {
             assertEquals(POPULATION.get(parameter), box2.get(parameter));
             assertEquals(POPULATION.get(parameter), box3.get(parameter));
         }
+        assertEquals("stem", box1.get("CLASS"));
+        assertEquals("stem", box2.get("CLASS"));
+        assertEquals("stem", box3.get("CLASS"));
     }
     
     @Test
