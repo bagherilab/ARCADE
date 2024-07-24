@@ -29,6 +29,9 @@ public class PottsSeriesTest {
     private static final double DT = randomDoubleBetween(0.5, 2);
     
     private static final Box PARAMETERS = new Box();
+
+    /** Default cell class. */
+    public static final String DEFAULT_CELL_CLASS = "stem";
     
     private static final String[] REGION_IDS = new String[] {
             randomString().toUpperCase(),
@@ -642,6 +645,9 @@ public class PottsSeriesTest {
         assertEquals(1, series.populations.get(POPULATION_ID_1).getInt("CODE"));
         assertEquals(2, series.populations.get(POPULATION_ID_2).getInt("CODE"));
         assertEquals(3, series.populations.get(POPULATION_ID_3).getInt("CODE"));
+        assertEquals(DEFAULT_CELL_CLASS, series.populations.get(POPULATION_ID_1).get("CLASS"));
+        assertEquals(DEFAULT_CELL_CLASS, series.populations.get(POPULATION_ID_2).get("CLASS"));
+        assertEquals(DEFAULT_CELL_CLASS, series.populations.get(POPULATION_ID_3).get("CLASS"));
     }
 
     @Test
@@ -771,7 +777,7 @@ public class PottsSeriesTest {
         for (String parameter : POPULATION_PARAMETER_NAMES) {
             assertEquals(POPULATION.get(parameter), box.get(parameter));
         }
-        assertEquals("stem", box.get("CLASS"));
+        assertEquals(DEFAULT_CELL_CLASS, box.get("CLASS"));
     }
     
     @Test
@@ -780,7 +786,7 @@ public class PottsSeriesTest {
             for (String populationParameter2 : POPULATION_PARAMETER_NAMES) {
                 Box[] boxes = new Box[] { new Box() };
                 boxes[0].add("id", POPULATION_ID_1);
-                boxes[0].addTag("stem", "CLASS");
+                boxes[0].addTag(DEFAULT_CELL_CLASS, "CLASS");
                 
                 double value = randomDoubleBetween(1, 100);
                 double scale = randomDoubleBetween(1, 100);
@@ -801,7 +807,7 @@ public class PottsSeriesTest {
                         expected *= scale;
                     }
                     assertEquals(expected, box.getDouble(parameter), EPSILON);
-                    assertEquals("stem", box.get("CLASS"));
+                    assertEquals(DEFAULT_CELL_CLASS, box.get("CLASS"));
                 }
             }
         }
@@ -823,9 +829,9 @@ public class PottsSeriesTest {
             assertEquals(POPULATION.get(parameter), box2.get(parameter));
             assertEquals(POPULATION.get(parameter), box3.get(parameter));
         }
-        assertEquals("stem", box1.get("CLASS"));
-        assertEquals("stem", box2.get("CLASS"));
-        assertEquals("stem", box3.get("CLASS"));
+        assertEquals(DEFAULT_CELL_CLASS, box1.get("CLASS"));
+        assertEquals(DEFAULT_CELL_CLASS, box2.get("CLASS"));
+        assertEquals(DEFAULT_CELL_CLASS, box3.get("CLASS"));
     }
     
     @Test
