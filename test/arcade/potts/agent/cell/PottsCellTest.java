@@ -15,7 +15,6 @@ import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.PottsSimulation;
-
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.*;

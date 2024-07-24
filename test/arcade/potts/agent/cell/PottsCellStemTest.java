@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import sim.engine.Schedule;
 import sim.engine.Stoppable;
-import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModuleApoptosis;
@@ -16,7 +15,6 @@ import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferation;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.location.PottsLocation;
-
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.*;
@@ -144,7 +142,7 @@ public class PottsCellStemTest {
                     criticalVolumesRegionMock, criticalHeightsRegionMock);
         }
     }
-    
+
     @Test
     public void setState_givenState_assignsValue() {
         PottsCellStem cell = make(false);
@@ -227,7 +225,6 @@ public class PottsCellStemTest {
         assertNotNull(cell.stopper);
     }
     
-
     @Test
     public void make_hasRegions_setsFields() {
         double criticalVolume = randomDoubleBetween(10, 100);

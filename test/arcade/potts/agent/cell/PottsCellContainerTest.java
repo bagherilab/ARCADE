@@ -8,10 +8,6 @@ import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.env.location.PottsLocation;
-import arcade.potts.util.PottsEnums.Phase;
-import arcade.potts.util.PottsEnums.Region;
-import arcade.potts.util.PottsEnums.State;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
