@@ -16,8 +16,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
-import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 import static arcade.potts.sim.PottsSeries.DEFAULT_CELL_CLASS;
+import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsSeriesTest {
