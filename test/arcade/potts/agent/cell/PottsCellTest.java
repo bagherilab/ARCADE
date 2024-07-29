@@ -13,9 +13,11 @@ import arcade.core.agent.module.*;
 import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
+import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.agent.cell.PottsCellFactoryTest.*;
@@ -84,7 +86,7 @@ public class PottsCellTest {
                       EnumMap<Region, Double> criticalRegionHeights) {
             super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
             criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-            
+
         }
 
         @Override
@@ -97,7 +99,11 @@ public class PottsCellTest {
         
         @Override
         public void setStateModule(CellState newState) {
-            module = mock(PottsModule.class);
+            if (newState == State.PROLIFERATIVE) {
+                module = new PottsModuleProliferationSimple(this);
+            } else {
+                module = mock(PottsModule.class);
+            }
         }
     }
     
@@ -1110,6 +1116,8 @@ public class PottsCellTest {
         assertEquals(pop, container.pop);
         assertEquals(age, container.age);
         assertEquals(divisions, container.divisions);
+        assertEquals(state, container.state);
+        assertEquals(phase, container.phase);
         assertEquals(voxels, container.voxels);
         assertEquals(criticalVolume, container.criticalVolume, EPSILON);
         assertEquals(criticalHeight, container.criticalHeight, EPSILON);
