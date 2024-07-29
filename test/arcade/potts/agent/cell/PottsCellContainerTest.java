@@ -109,7 +109,6 @@ public class PottsCellContainerTest {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
-        // Set up the mock to return "stem" when get("CLASS") is called
         when(parameters.get("CLASS")).thenReturn("");
         
         factory.popToParameters.put(cellPop, parameters);
@@ -149,8 +148,7 @@ public class PottsCellContainerTest {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
-        // Set up the mock to return "stem" when get("CLASS") is called
-        when(parameters.get("CLASS")).thenReturn("stem");
+        when(parameters.get("CLASS")).thenReturn("");
         
         EnumSet<Region> regionList = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
         doReturn(regionList).when(location).getRegions();
