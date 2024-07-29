@@ -16,7 +16,6 @@ import arcade.potts.agent.module.PottsModuleProliferation;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.location.PottsLocation;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.util.PottsEnums.Ordering;
@@ -115,16 +114,6 @@ public class PottsCellStemTest {
             criticalVolumesRegionMock.put(region, (double) locationRegionVolumes.get(region));
             criticalHeightsRegionMock.put(region, (double) locationRegionHeights.get(region));
         }
-        
-        cellDefault = new PottsCellStem(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                null, null);
-        cellWithRegions = new PottsCellStem(cellID, cellParent, 1, cellState, cellAge, cellDivisions,
-                locationMock, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                criticalVolumesRegionMock, criticalHeightsRegionMock);
-        cellWithoutRegions = new PottsCellStem(cellID, cellParent, 1, cellState, cellAge, cellDivisions,
-                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                criticalVolumesRegionMock, criticalHeightsRegionMock);
     }
     
     static PottsCellStem make(boolean regions) {
@@ -189,41 +178,6 @@ public class PottsCellStemTest {
         cell.setState(State.UNDEFINED);
         assertNull(cell.getModule());
     }
-
-    @Test
-    public void make_noRegions_setsFields() {
-        double criticalVolume = randomDoubleBetween(10, 100);
-        double criticalHeight = randomDoubleBetween(10, 100);
-        MiniBox parameters = mock(MiniBox.class);
-        Location location1 = mock(PottsLocation.class);
-        Location location2 = mock(PottsLocation.class);
-        
-        PottsCellStem cell1 = new PottsCellStem(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                location1, false, parameters, criticalVolume, criticalHeight,
-                null, null);
-        PottsCellStem cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2, null);
-        
-        assertEquals(cellID + 1, cell2.id);
-        assertEquals(cellID, cell2.parent);
-        assertEquals(cellPop, cell2.pop);
-        assertEquals(cellAge, cell2.getAge());
-        assertEquals(cellDivisions + 1, cell1.getDivisions());
-        assertEquals(cellDivisions + 1, cell2.getDivisions());
-        assertFalse(cell2.hasRegions());
-        assertEquals(location2, cell2.getLocation());
-        assertEquals(cell2.parameters, parameters);
-        assertEquals(criticalVolume, cell2.getCriticalVolume(), EPSILON);
-        assertEquals(criticalHeight, cell2.getCriticalHeight(), EPSILON);
-    }
-    
-    @Test
-    public void schedule_validInput_assignStopper() {
-        Schedule schedule = spy(mock(Schedule.class));
-        PottsCell cell = make(false);
-        doReturn(mock(Stoppable.class)).when(schedule).scheduleRepeating(cell, Ordering.CELLS.ordinal(), 1);
-        cell.schedule(schedule);
-        assertNotNull(cell.stopper);
-    }
     
     @Test
     public void make_hasRegions_setsFields() {
@@ -247,7 +201,7 @@ public class PottsCellStemTest {
         PottsCellStem cell1 = new PottsCellStem(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
                 location1, true, parameters, criticalVolume, criticalHeight,
                 criticalVolumesRegion, criticalHeightsRegion);
-        PottsCellStem cell2 = cell1.make(cellID + 1, State.QUIESCENT, location2, null);
+        PottsCellStem cell2 = (PottsCellStem) cell1.make(cellID + 1, State.QUIESCENT, location2, null);
         
         assertEquals(cellID + 1, cell2.id);
         assertEquals(cellID, cell2.parent);

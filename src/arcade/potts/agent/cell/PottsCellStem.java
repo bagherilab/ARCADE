@@ -10,32 +10,35 @@ import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.agent.module.PottsModuleQuiescence;
+import arcade.potts.util.PottsEnums.Region;
+import arcade.potts.util.PottsEnums.State;
+
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
 /**
- * Implementation of {@link PottsCell} for stem cells.
+ * Extension of {@link PottsCell} for stem cells.
  * <p>
  * This is the default cell type for Potts models.
  */
-public class PottsCellStem extends PottsCell {
+public final class PottsCellStem extends PottsCell {
     
     /**
-     * Creates a {@code PottsCellStem} object.
+     * Creates a {@code PottsCellStem} agent.
      *
      * @param id  the cell ID
-     * @param parent  the parent cell ID
+     * @param parent  the parent ID
      * @param pop  the cell population index
      * @param state  the cell state
      * @param age  the cell age
-     * @param divisions  the number of divisions
-     * @param location  the cell location
-     * @param hasRegions  whether the cell has regions
-     * @param parameters  the cell parameters
+     * @param divisions  the number of cell divisions
+     * @param location  the {@link Location} of the cell
+     * @param hasRegions  {@code true} if cell has regions, {@code false} otherwise
+     * @param parameters  the dictionary of parameters
      * @param criticalVolume  the critical cell volume
      * @param criticalHeight  the critical cell height
-     * @param criticalRegionVolumes  the critical region cell volumes
-     * @param criticalRegionHeights  the critical region cell heights
+     * @param criticalRegionVolumes  the map of critical volumes for regions
+     * @param criticalRegionHeights  the map of critical heights for regions
      */
     public PottsCellStem(int id, int parent, int pop, CellState state, int age, int divisions,
             Location location, boolean hasRegions, MiniBox parameters,
@@ -47,7 +50,7 @@ public class PottsCellStem extends PottsCell {
     }
 
     @Override
-    public PottsCellStem make(int newID, CellState newState, Location newLocation,
+    public PottsCell make(int newID, CellState newState, Location newLocation,
                     MersenneTwisterFast random) {
         divisions++;
         return new PottsCellStem(newID, id, pop, newState, age, divisions, newLocation,
@@ -55,11 +58,7 @@ public class PottsCellStem extends PottsCell {
                             criticalRegionVolumes, criticalRegionHeights);
     }
 
-    /**
-     * Sets the state module for the cell.
-     *
-     * @param newState  the cell state
-     */
+    @Override
     public void setStateModule(CellState newState) {
         switch ((State) newState) {
             case QUIESCENT:

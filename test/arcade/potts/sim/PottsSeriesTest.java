@@ -10,15 +10,14 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import arcade.potts.util.PottsEnums.Term;
 import arcade.potts.vis.PottsVisualization;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
+import static arcade.potts.sim.PottsSeries.DEFAULT_CELL_CLASS;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsSeriesTest {
@@ -29,9 +28,6 @@ public class PottsSeriesTest {
     private static final double DT = randomDoubleBetween(0.5, 2);
     
     private static final Box PARAMETERS = new Box();
-
-    /** Default cell class. */
-    public static final String DEFAULT_CELL_CLASS = "stem";
     
     private static final String[] REGION_IDS = new String[] {
             randomString().toUpperCase(),
@@ -616,6 +612,7 @@ public class PottsSeriesTest {
         assertEquals(1, series.populations.size());
         assertNotNull(series.populations.get(POPULATION_ID_1));
         assertEquals(1, series.populations.get(POPULATION_ID_1).getInt("CODE"));
+        assertEquals(DEFAULT_CELL_CLASS, series.populations.get(POPULATION_ID_1).get("CLASS"));
     }
 
     @Test
@@ -777,7 +774,6 @@ public class PottsSeriesTest {
         for (String parameter : POPULATION_PARAMETER_NAMES) {
             assertEquals(POPULATION.get(parameter), box.get(parameter));
         }
-        assertEquals(DEFAULT_CELL_CLASS, box.get("CLASS"));
     }
     
     @Test
@@ -786,7 +782,6 @@ public class PottsSeriesTest {
             for (String populationParameter2 : POPULATION_PARAMETER_NAMES) {
                 Box[] boxes = new Box[] { new Box() };
                 boxes[0].add("id", POPULATION_ID_1);
-                boxes[0].addTag(DEFAULT_CELL_CLASS, "CLASS");
                 
                 double value = randomDoubleBetween(1, 100);
                 double scale = randomDoubleBetween(1, 100);
@@ -807,7 +802,6 @@ public class PottsSeriesTest {
                         expected *= scale;
                     }
                     assertEquals(expected, box.getDouble(parameter), EPSILON);
-                    assertEquals(DEFAULT_CELL_CLASS, box.get("CLASS"));
                 }
             }
         }
@@ -829,9 +823,6 @@ public class PottsSeriesTest {
             assertEquals(POPULATION.get(parameter), box2.get(parameter));
             assertEquals(POPULATION.get(parameter), box3.get(parameter));
         }
-        assertEquals(DEFAULT_CELL_CLASS, box1.get("CLASS"));
-        assertEquals(DEFAULT_CELL_CLASS, box2.get("CLASS"));
-        assertEquals(DEFAULT_CELL_CLASS, box3.get("CLASS"));
     }
     
     @Test

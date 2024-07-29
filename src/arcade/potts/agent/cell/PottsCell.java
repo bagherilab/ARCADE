@@ -307,7 +307,7 @@ public abstract class PottsCell implements Cell {
      *
      * @param newState  the cell state
      */
-    public abstract void setStateModule(CellState newState);
+    abstract void setStateModule(CellState newState);
 
     @Override
     public void schedule(Schedule schedule) {

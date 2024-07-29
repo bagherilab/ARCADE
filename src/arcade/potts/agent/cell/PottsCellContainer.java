@@ -141,8 +141,7 @@ public final class PottsCellContainer implements CellContainer {
         
         // Make cell.
         PottsCell cell;
-        String pottsCellClass = parameters.get("CLASS");
-        switch (pottsCellClass) {
+        switch (parameters.get("CLASS")) {
             default:
             case "stem":
                 if (factory.popToRegions.get(pop)) {

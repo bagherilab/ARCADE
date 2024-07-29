@@ -110,7 +110,7 @@ public class PottsCellContainerTest {
         double criticalHeight = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
         // Set up the mock to return "stem" when get("CLASS") is called
-        when(parameters.get("CLASS")).thenReturn("stem");
+        when(parameters.get("CLASS")).thenReturn("");
         
         factory.popToParameters.put(cellPop, parameters);
         factory.popToRegions.put(cellPop, false);
