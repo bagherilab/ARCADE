@@ -13,7 +13,6 @@ import arcade.core.agent.module.*;
 import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
-import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.PottsSimulation;
 import static org.junit.Assert.*;
@@ -98,11 +97,7 @@ public class PottsCellTest {
         
         @Override
         public void setStateModule(CellState newState) {
-            if (newState == State.PROLIFERATIVE) {
-                module = new PottsModuleProliferationSimple(this);
-            } else {
-                module = mock(PottsModule.class);
-            }
+            module = mock(PottsModule.class);
         }
     }
     
@@ -1044,15 +1039,16 @@ public class PottsCellTest {
         int pop = randomIntBetween(1, 10);
         int age = randomIntBetween(1, 100);
         int divisions = randomIntBetween(1, 100);
-        State state = State.PROLIFERATIVE;
-        Phase phase = Phase.PROLIFERATIVE_S;
+        State state = State.random(RANDOM);
+        Phase phase = Phase.random(RANDOM);
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         
         PottsCell cell = new PottsCellMock(id, parent, pop, state, age, divisions, location,
                 false, parameters, criticalVolume, criticalHeight,
                 null, null);
-        ((PottsModule) cell.getModule()).setPhase(phase);
+        
+        doReturn(phase).when((PottsModule) cell.getModule()).getPhase();
         
         int voxels = randomIntBetween(1, 100);
         doReturn((double) voxels).when(location).getVolume();
@@ -1064,6 +1060,8 @@ public class PottsCellTest {
         assertEquals(pop, container.pop);
         assertEquals(age, container.age);
         assertEquals(divisions, container.divisions);
+        assertEquals(state, container.state);
+        assertEquals(phase, container.phase);
         assertEquals(voxels, container.voxels);
         assertNull(container.regionVoxels);
         assertEquals(criticalVolume, container.criticalVolume, EPSILON);
@@ -1082,8 +1080,8 @@ public class PottsCellTest {
         int pop = randomIntBetween(1, 10);
         int age = randomIntBetween(1, 100);
         int divisions = randomIntBetween(1, 100);
-        State state = State.PROLIFERATIVE;
-        Phase phase = Phase.PROLIFERATIVE_S;
+        State state = State.random(RANDOM);
+        Phase phase = Phase.random(RANDOM);
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         
@@ -1096,7 +1094,8 @@ public class PottsCellTest {
         PottsCell cell = new PottsCellMock(id, parent, pop, state, age, divisions, location, true,
                 parameters, criticalVolume, criticalHeight,
                 criticalRegionVolumes, criticalRegionHeights);
-        ((PottsModule) cell.getModule()).setPhase(phase);
+
+        doReturn(phase).when((PottsModule) cell.getModule()).getPhase();
         
         int voxels = randomIntBetween(1, 100);
         doReturn((double) voxels).when(location).getVolume();
