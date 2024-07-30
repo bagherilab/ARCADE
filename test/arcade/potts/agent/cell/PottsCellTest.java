@@ -157,7 +157,7 @@ public class PottsCellTest {
                 locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
                 criticalVolumesRegionMock, criticalHeightsRegionMock);
     }
-
+    
     static PottsCell make(boolean regions) {
         return make(locationMock, regions);
     }
@@ -586,7 +586,7 @@ public class PottsCellTest {
         cell.stop();
         verify(cell.stopper).stop();
     }
-    
+
     @Test
     public void make_noRegions_setsFields() {
         double criticalVolume = randomDoubleBetween(10, 100);
