@@ -45,7 +45,7 @@ public final class PottsCellStem extends PottsCell {
         super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
                 criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
     }
-
+    
     @Override
     public PottsCell make(int newID, CellState newState, Location newLocation,
                     MersenneTwisterFast random) {
