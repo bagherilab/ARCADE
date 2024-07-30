@@ -586,7 +586,7 @@ public class PottsCellTest {
         cell.stop();
         verify(cell.stopper).stop();
     }
-
+    
     @Test
     public void make_noRegions_setsFields() {
         double criticalVolume = randomDoubleBetween(10, 100);
@@ -1049,7 +1049,7 @@ public class PottsCellTest {
                 null, null);
         
         doReturn(phase).when((PottsModule) cell.getModule()).getPhase();
-        
+
         int voxels = randomIntBetween(1, 100);
         doReturn((double) voxels).when(location).getVolume();
         
