@@ -128,7 +128,7 @@ public class PottsCellStemTest {
                     criticalVolumesRegionMock, criticalHeightsRegionMock);
         }
     }
-
+    
     @Test
     public void setState_givenState_assignsValue() {
         PottsCellStem cell = make(false);

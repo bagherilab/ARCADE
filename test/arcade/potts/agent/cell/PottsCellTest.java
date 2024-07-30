@@ -157,7 +157,7 @@ public class PottsCellTest {
                 locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
                 criticalVolumesRegionMock, criticalHeightsRegionMock);
     }
-    
+
     static PottsCell make(boolean regions) {
         return make(locationMock, regions);
     }
@@ -621,7 +621,7 @@ public class PottsCellTest {
         cell.schedule(schedule);
         verify(schedule).scheduleRepeating(cell, Ordering.CELLS.ordinal(), 1);
     }
-
+    
     @Test
     public void schedule_validInput_assignStopper() {
         Schedule schedule = spy(mock(Schedule.class));
