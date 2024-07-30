@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsCellStem.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.agent.cell</a> &gt; <span class="el_source">PottsCellStem.java</span></div><h1>PottsCellStem.java</h1><pre class="source lang-java linenums">package arcade.potts.agent.cell;
+
+import java.util.EnumMap;
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellState;
+import arcade.core.env.location.Location;
+import arcade.core.util.MiniBox;
+import arcade.potts.agent.module.PottsModuleApoptosisSimple;
+import arcade.potts.agent.module.PottsModuleAutosis;
+import arcade.potts.agent.module.PottsModuleNecrosis;
+import arcade.potts.agent.module.PottsModuleProliferationSimple;
+import arcade.potts.agent.module.PottsModuleQuiescence;
+import static arcade.potts.util.PottsEnums.Region;
+import static arcade.potts.util.PottsEnums.State;
+
+/**
+ * Extension of {@link PottsCell} for stem cells.
+ * &lt;p&gt;
+ * This is the default cell type for Potts models.
+ */
+public final class PottsCellStem extends PottsCell {
+    
+    /**
+     * Creates a {@code PottsCellStem} agent.
+     *
+     * @param id  the cell ID
+     * @param parent  the parent ID
+     * @param pop  the cell population index
+     * @param state  the cell state
+     * @param age  the cell age
+     * @param divisions  the number of cell divisions
+     * @param location  the {@link Location} of the cell
+     * @param hasRegions  {@code true} if cell has regions, {@code false} otherwise
+     * @param parameters  the dictionary of parameters
+     * @param criticalVolume  the critical cell volume
+     * @param criticalHeight  the critical cell height
+     * @param criticalRegionVolumes  the map of critical volumes for regions
+     * @param criticalRegionHeights  the map of critical heights for regions
+     */
+    public PottsCellStem(int id, int parent, int pop, CellState state, int age, int divisions,
+                         Location location, boolean hasRegions, MiniBox parameters,
+                         double criticalVolume, double criticalHeight,
+                         EnumMap&lt;Region, Double&gt; criticalRegionVolumes,
+                         EnumMap&lt;Region, Double&gt; criticalRegionHeights) {
+<span class="fc" id="L45">        super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,</span>
+                criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+<span class="fc" id="L47">    }</span>
+    
+    @Override
+    public PottsCell make(int newID, CellState newState, Location newLocation,
+                          MersenneTwisterFast random) {
+<span class="fc" id="L52">        divisions++;</span>
+<span class="fc" id="L53">        return new PottsCellStem(newID, id, pop, newState, age, divisions, newLocation,</span>
+                hasRegions, parameters, criticalVolume, criticalHeight,
+                criticalRegionVolumes, criticalRegionHeights);
+    }
+    
+    @Override
+    void setStateModule(CellState newState) {
+<span class="fc bfc" id="L60" title="All 6 branches covered.">        switch ((State) newState) {</span>
+            case QUIESCENT:
+<span class="fc" id="L62">                module = new PottsModuleQuiescence(this);</span>
+<span class="fc" id="L63">                break;</span>
+            case PROLIFERATIVE:
+<span class="fc" id="L65">                module = new PottsModuleProliferationSimple(this);</span>
+<span class="fc" id="L66">                break;</span>
+            case APOPTOTIC:
+<span class="fc" id="L68">                module = new PottsModuleApoptosisSimple(this);</span>
+<span class="fc" id="L69">                break;</span>
+            case NECROTIC:
+<span class="fc" id="L71">                module = new PottsModuleNecrosis(this);</span>
+<span class="fc" id="L72">                break;</span>
+            case AUTOTIC:
+<span class="fc" id="L74">                module = new PottsModuleAutosis(this);</span>
+<span class="fc" id="L75">                break;</span>
+            default:
+                // State must be one of the above cases.
+<span class="fc" id="L78">                module = null;</span>
+                break;
+        }
+<span class="fc" id="L81">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

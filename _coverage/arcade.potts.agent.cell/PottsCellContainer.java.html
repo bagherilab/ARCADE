@@ -141,22 +141,25 @@ public final class PottsCellContainer implements CellContainer {
         
         // Make cell.
         PottsCell cell;
-        
-<span class="fc bfc" id="L145" title="All 2 branches covered.">        if (factory.popToRegions.get(pop)) {</span>
-<span class="fc" id="L146">            cell = new PottsCell(id, parent, pop, state, age, divisions,</span>
-                    location, true, parameters, criticalVolume, criticalHeight,
-                    criticalRegionVolumes, criticalRegionHeights);
-        } else {
-<span class="fc" id="L150">            cell = new PottsCell(id, parent, pop, state, age, divisions,</span>
-                    location, false, parameters, criticalVolume, criticalHeight,
-                    null, null);
+<span class="fc" id="L144">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
+            default:
+            case &quot;stem&quot;:
+<span class="fc bfc" id="L147" title="All 2 branches covered.">                if (factory.popToRegions.get(pop)) {</span>
+<span class="fc" id="L148">                    cell = new PottsCellStem(id, parent, pop, state, age, divisions,</span>
+                            location, true, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
+                } else {
+<span class="fc" id="L152">                    cell = new PottsCellStem(id, parent, pop, state, age, divisions,</span>
+                            location, false, parameters, criticalVolume, criticalHeight,
+                            null, null);
+                }
         }
         
         // Update cell module.
-<span class="fc" id="L156">        PottsModule module = (PottsModule) cell.getModule();</span>
-<span class="fc" id="L157">        module.setPhase(phase);</span>
+<span class="fc" id="L159">        PottsModule module = (PottsModule) cell.getModule();</span>
+<span class="fc" id="L160">        module.setPhase(phase);</span>
         
-<span class="fc" id="L159">        return cell;</span>
+<span class="fc" id="L162">        return cell;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
