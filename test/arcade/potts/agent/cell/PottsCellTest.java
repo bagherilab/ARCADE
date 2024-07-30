@@ -86,7 +86,7 @@ public class PottsCellTest {
             criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
 
         }
-
+        
         @Override
         public PottsCellMock make(int newID, CellState newState, Location newLocation,
                               MersenneTwisterFast random) {
