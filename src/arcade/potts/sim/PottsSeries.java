@@ -17,6 +17,9 @@ public final class PottsSeries extends Series {
     /** Separator character for targets. */
     public static final String TARGET_SEPARATOR = ":";
     
+    /** Default cell class. */
+    public static final String DEFAULT_CELL_CLASS = "stem";
+    
     /** Map of potts settings. */
     public MiniBox potts;
     
@@ -183,6 +186,12 @@ public final class PottsSeries extends Series {
         for (Box box : populationsBox) {
             String id = box.getValue("id");
             String populationClass = box.getValue("class");
+            
+            if (populationClass == null) {
+                populationClass = DEFAULT_CELL_CLASS;
+            }
+            
+            // TODO: Use logger to print message when default class is used.
             
             // Create new population and update code.
             MiniBox population = new MiniBox();

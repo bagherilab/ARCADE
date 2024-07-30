@@ -15,6 +15,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
+import static arcade.potts.sim.PottsSeries.DEFAULT_CELL_CLASS;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Term;
 
@@ -610,6 +611,7 @@ public class PottsSeriesTest {
         assertEquals(1, series.populations.size());
         assertNotNull(series.populations.get(POPULATION_ID_1));
         assertEquals(1, series.populations.get(POPULATION_ID_1).getInt("CODE"));
+        assertEquals(DEFAULT_CELL_CLASS, series.populations.get(POPULATION_ID_1).get("CLASS"));
     }
 
     @Test
@@ -639,6 +641,9 @@ public class PottsSeriesTest {
         assertEquals(1, series.populations.get(POPULATION_ID_1).getInt("CODE"));
         assertEquals(2, series.populations.get(POPULATION_ID_2).getInt("CODE"));
         assertEquals(3, series.populations.get(POPULATION_ID_3).getInt("CODE"));
+        assertEquals(DEFAULT_CELL_CLASS, series.populations.get(POPULATION_ID_1).get("CLASS"));
+        assertEquals(DEFAULT_CELL_CLASS, series.populations.get(POPULATION_ID_2).get("CLASS"));
+        assertEquals(DEFAULT_CELL_CLASS, series.populations.get(POPULATION_ID_3).get("CLASS"));
     }
 
     @Test
