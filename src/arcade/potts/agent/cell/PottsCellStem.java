@@ -38,25 +38,25 @@ public final class PottsCellStem extends PottsCell {
      * @param criticalRegionHeights  the map of critical heights for regions
      */
     public PottsCellStem(int id, int parent, int pop, CellState state, int age, int divisions,
-            Location location, boolean hasRegions, MiniBox parameters,
-            double criticalVolume, double criticalHeight,
-            EnumMap<Region, Double> criticalRegionVolumes,
-            EnumMap<Region, Double> criticalRegionHeights) {
+                         Location location, boolean hasRegions, MiniBox parameters,
+                         double criticalVolume, double criticalHeight,
+                         EnumMap<Region, Double> criticalRegionVolumes,
+                         EnumMap<Region, Double> criticalRegionHeights) {
         super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
                 criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
     }
     
     @Override
     public PottsCell make(int newID, CellState newState, Location newLocation,
-                    MersenneTwisterFast random) {
+                          MersenneTwisterFast random) {
         divisions++;
         return new PottsCellStem(newID, id, pop, newState, age, divisions, newLocation,
-                            hasRegions, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
+                hasRegions, parameters, criticalVolume, criticalHeight,
+                criticalRegionVolumes, criticalRegionHeights);
     }
-
+    
     @Override
-    public void setStateModule(CellState newState) {
+    void setStateModule(CellState newState) {
         switch ((State) newState) {
             case QUIESCENT:
                 module = new PottsModuleQuiescence(this);

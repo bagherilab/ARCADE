@@ -308,7 +308,7 @@ public abstract class PottsCell implements Cell {
      * @param newState  the cell state
      */
     abstract void setStateModule(CellState newState);
-
+    
     @Override
     public void schedule(Schedule schedule) {
         stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);

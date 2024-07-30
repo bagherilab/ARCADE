@@ -12,7 +12,6 @@ import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import arcade.potts.vis.PottsVisualization;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;

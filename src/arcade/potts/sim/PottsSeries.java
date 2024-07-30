@@ -19,7 +19,7 @@ public final class PottsSeries extends Series {
     
     /** Default cell class. */
     public static final String DEFAULT_CELL_CLASS = "stem";
-
+    
     /** Map of potts settings. */
     public MiniBox potts;
     
@@ -190,8 +190,9 @@ public final class PottsSeries extends Series {
             if (populationClass == null) {
                 populationClass = DEFAULT_CELL_CLASS;
             }
-            //TODO: Use logger to print message when default class is used.
-
+            
+            // TODO: Use logger to print message when default class is used.
+            
             // Create new population and update code.
             MiniBox population = new MiniBox();
             population.put("CODE", code++);

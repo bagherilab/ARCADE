@@ -56,12 +56,6 @@ public class PottsCellStemTest {
     
     static State cellState = State.QUIESCENT;
     
-    static PottsCell cellDefault;
-    
-    static PottsCell cellWithRegions;
-    
-    static PottsCell cellWithoutRegions;
-    
     static EnumSet<Region> regionList;
     
     static MiniBox parametersMock;
@@ -174,6 +168,32 @@ public class PottsCellStemTest {
         PottsCellStem cell = make(false);
         cell.setState(State.UNDEFINED);
         assertNull(cell.getModule());
+    }
+    
+    @Test
+    public void make_noRegions_setsFields() {
+        double criticalVolume = randomDoubleBetween(10, 100);
+        double criticalHeight = randomDoubleBetween(10, 100);
+        MiniBox parameters = mock(MiniBox.class);
+        Location location1 = mock(PottsLocation.class);
+        Location location2 = mock(PottsLocation.class);
+        
+        PottsCellStem cell1 = new PottsCellStem(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+                location1, false, parameters, criticalVolume, criticalHeight,
+                null, null);
+        PottsCellStem cell2 = (PottsCellStem) cell1.make(cellID + 1, State.QUIESCENT, location2, null);
+        
+        assertEquals(cellID + 1, cell2.id);
+        assertEquals(cellID, cell2.parent);
+        assertEquals(cellPop, cell2.pop);
+        assertEquals(cellAge, cell2.getAge());
+        assertEquals(cellDivisions + 1, cell1.getDivisions());
+        assertEquals(cellDivisions + 1, cell2.getDivisions());
+        assertFalse(cell2.hasRegions());
+        assertEquals(location2, cell2.getLocation());
+        assertEquals(cell2.parameters, parameters);
+        assertEquals(criticalVolume, cell2.getCriticalVolume(), EPSILON);
+        assertEquals(criticalHeight, cell2.getCriticalHeight(), EPSILON);
     }
     
     @Test
