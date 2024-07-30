@@ -109,6 +109,7 @@ public class PottsCellContainerTest {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
+        when(parameters.get("CLASS")).thenReturn("");
         
         factory.popToParameters.put(cellPop, parameters);
         factory.popToRegions.put(cellPop, false);
@@ -147,6 +148,7 @@ public class PottsCellContainerTest {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
         MiniBox parameters = mock(MiniBox.class);
+        when(parameters.get("CLASS")).thenReturn("");
         
         EnumSet<Region> regionList = EnumSet.of(Region.NUCLEUS, Region.UNDEFINED);
         doReturn(regionList).when(location).getRegions();

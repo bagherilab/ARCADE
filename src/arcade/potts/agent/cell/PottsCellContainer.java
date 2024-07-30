@@ -141,15 +141,18 @@ public final class PottsCellContainer implements CellContainer {
         
         // Make cell.
         PottsCell cell;
-        
-        if (factory.popToRegions.get(pop)) {
-            cell = new PottsCell(id, parent, pop, state, age, divisions,
-                    location, true, parameters, criticalVolume, criticalHeight,
-                    criticalRegionVolumes, criticalRegionHeights);
-        } else {
-            cell = new PottsCell(id, parent, pop, state, age, divisions,
-                    location, false, parameters, criticalVolume, criticalHeight,
-                    null, null);
+        switch (parameters.get("CLASS")) {
+            default:
+            case "stem":
+                if (factory.popToRegions.get(pop)) {
+                    cell = new PottsCellStem(id, parent, pop, state, age, divisions,
+                            location, true, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
+                } else {
+                    cell = new PottsCellStem(id, parent, pop, state, age, divisions,
+                            location, false, parameters, criticalVolume, criticalHeight,
+                            null, null);
+                }
         }
         
         // Update cell module.

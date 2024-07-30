@@ -4,7 +4,6 @@ import java.util.EnumMap;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import sim.engine.Stoppable;
-import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellState;
@@ -15,15 +14,9 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
-import arcade.potts.agent.module.PottsModuleApoptosisSimple;
-import arcade.potts.agent.module.PottsModuleAutosis;
-import arcade.potts.agent.module.PottsModuleNecrosis;
-import arcade.potts.agent.module.PottsModuleProliferationSimple;
-import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.env.location.PottsLocation;
 import static arcade.potts.util.PottsEnums.Ordering;
 import static arcade.potts.util.PottsEnums.Region;
-import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Implementation of {@link Cell} for potts models.
@@ -46,7 +39,7 @@ import static arcade.potts.util.PottsEnums.State;
  * by the specific Hamiltonian class instance.
  */
 
-public final class PottsCell implements Cell {
+public abstract class PottsCell implements Cell {
     /** Stopper used to stop this agent from being stepped in the schedule. */
     Stoppable stopper;
     
@@ -304,15 +297,6 @@ public final class PottsCell implements Cell {
     public void stop() { stopper.stop(); }
     
     @Override
-    public PottsCell make(int newID, CellState newState, Location newLocation,
-                          MersenneTwisterFast random) {
-        divisions++;
-        return new PottsCell(newID, id, pop, newState, age, divisions, newLocation,
-                            hasRegions, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
-    }
-    
-    @Override
     public void setState(CellState newState) {
         this.state = newState;
         setStateModule(newState);
@@ -323,29 +307,7 @@ public final class PottsCell implements Cell {
      *
      * @param newState  the cell state
      */
-    public void setStateModule(CellState newState) {
-        switch ((State) newState) {
-            case QUIESCENT:
-                module = new PottsModuleQuiescence(this);
-                break;
-            case PROLIFERATIVE:
-                module = new PottsModuleProliferationSimple(this);
-                break;
-            case APOPTOTIC:
-                module = new PottsModuleApoptosisSimple(this);
-                break;
-            case NECROTIC:
-                module = new PottsModuleNecrosis(this);
-                break;
-            case AUTOTIC:
-                module = new PottsModuleAutosis(this);
-                break;
-            default:
-                // State must be one of the above cases.
-                module = null;
-                break;
-        }
-    }
+    abstract void setStateModule(CellState newState);
     
     @Override
     public void schedule(Schedule schedule) {
