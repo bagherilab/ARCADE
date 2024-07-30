@@ -86,7 +86,7 @@ public class PottsCellTest {
             criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
 
         }
-        
+
         @Override
         public PottsCellMock make(int newID, CellState newState, Location newLocation,
                               MersenneTwisterFast random) {
@@ -586,7 +586,7 @@ public class PottsCellTest {
         cell.stop();
         verify(cell.stopper).stop();
     }
-
+    
     @Test
     public void make_noRegions_setsFields() {
         double criticalVolume = randomDoubleBetween(10, 100);
