@@ -8,6 +8,8 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Utilities;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -380,6 +382,78 @@ public abstract class PottsLocation implements Location {
     return (random.nextDouble() < voxelListSelectionProbability)
     ? separateVoxels(voxelsA, voxelsB, random)
     : separateVoxels(voxelsB, voxelsA, random);
+    }
+
+    public Location splitHalvesVertically(MersenneTwisterFast random) {
+        // Get center voxel.
+        Voxel center = getCenter();
+        
+        // Initialize lists of split voxels.
+        ArrayList<Voxel> voxelsA = new ArrayList<>();
+        ArrayList<Voxel> voxelsB = new ArrayList<>();
+        
+        // Get split direction.
+        Direction direction = Direction.YZ_PLANE;
+        splitVoxels(direction, voxels, voxelsA, voxelsB, center, random);
+        
+        // Ensure that voxel split is connected and balanced.
+        connectVoxels(voxelsA, voxelsB, this, random);
+        balanceVoxels(voxelsA, voxelsB, this, random);
+        
+        // Select one split to keep for this location and return the other.
+        if (random.nextDouble() < 0.5) {
+            return separateVoxels(voxelsA, voxelsB, random);
+        } else {
+            return separateVoxels(voxelsB, voxelsA, random);
+        }
+    }
+
+
+    public Location splitTwoThirdsOneThirdKeepTopTwoThirds(MersenneTwisterFast random) {
+        // Get voxel x centered y 2/3 down.
+        Voxel splitPoint = getTopThird();
+
+        // Initialize lists of split voxels.
+        ArrayList<Voxel> voxelsA = new ArrayList<>();
+        ArrayList<Voxel> voxelsB = new ArrayList<>();
+        
+        // Get split direction.
+        Direction direction = Direction.ZX_PLANE;
+        splitVoxels(direction, voxels, voxelsA, voxelsB, splitPoint, random);
+        
+        // Ensure that voxel split is connected and balanced.
+        connectVoxels(voxelsA, voxelsB, this, random);
+        
+        // Keep the 2/3 region for this location, return other.
+        return separateVoxels(voxelsA, voxelsB, random);
+    }
+
+    public Voxel getTopThird() {
+        if (voxels.size() == 0) {
+            return null;
+        }
+        
+        // get min y voxel
+        //get max y voxel
+        int minVoxelY = Integer.MAX_VALUE;
+        int maxVoxelY = Integer.MIN_VALUE;
+
+        for (Voxel voxel : voxels) {
+            if (voxel.y < minVoxelY) {
+                minVoxelY = voxel.y;
+            }
+            if (voxel.y > maxVoxelY) {
+                maxVoxelY = voxel.y;
+            }
+        }
+
+        double twoThirdsDownY = minVoxelY + (maxVoxelY - minVoxelY) * 2.0 / 3.0;
+
+        int x = (int) Math.round(cx);
+        int y = (int) Math.round(twoThirdsDownY);
+        int z = (int) Math.round(cz);
+        
+        return new Voxel(x, y, z);
     }
     
     /**

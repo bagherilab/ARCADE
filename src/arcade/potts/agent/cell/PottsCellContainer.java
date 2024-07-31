@@ -153,6 +153,28 @@ public final class PottsCellContainer implements CellContainer {
                             location, false, parameters, criticalVolume, criticalHeight,
                             null, null);
                 }
+                break;
+            case "flystem-mudmut-onestemdaughter":
+                if (factory.popToRegions.get(pop)) {
+                    cell = new PottsCellFlyStemMUDMutOneStemDaughter(id, parent, pop, state, age, divisions,
+                            location, true, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
+                } else {
+                    cell = new PottsCellFlyStemMUDMutOneStemDaughter(id, parent, pop, state, age, divisions,
+                            location, false, parameters, criticalVolume, criticalHeight,
+                            null, null);
+                }
+                break;
+            case "flystemwt":
+                if (factory.popToRegions.get(pop)) {
+                    cell = new PottsCellFlyStemWT(id, parent, pop, state, age, divisions,
+                            location, true, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
+                } else {
+                    cell = new PottsCellFlyStemWT(id, parent, pop, state, age, divisions,
+                            location, false, parameters, criticalVolume, criticalHeight,
+                            null, null);
+                }
         }
         
         // Update cell module.
