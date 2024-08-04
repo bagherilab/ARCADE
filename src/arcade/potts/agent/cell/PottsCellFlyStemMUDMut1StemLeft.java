@@ -7,17 +7,17 @@ import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModuleApoptosisSimple;
 import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
-import arcade.potts.agent.module.PottsModuleProliferationFlyStemMUDMutOneStemDaughter;
+import arcade.potts.agent.module.PottsModuleProliferationFlyStemVerticalSplitLeftReturn;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
 import ec.util.MersenneTwisterFast;
 
-public final class PottsCellFlyStemMUDMutOneStemDaughter extends PottsCell{
+public final class PottsCellFlyStemMUDMut1StemLeft extends PottsCell{
 
     public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
 
-    public PottsCellFlyStemMUDMutOneStemDaughter(int id, int parent, int pop, CellState state, int age, int divisions,
+    public PottsCellFlyStemMUDMut1StemLeft(int id, int parent, int pop, CellState state, int age, int divisions,
                          Location location, boolean hasRegions, MiniBox parameters,
                          double criticalVolume, double criticalHeight,
                          EnumMap<Region, Double> criticalRegionVolumes,
@@ -30,7 +30,10 @@ public final class PottsCellFlyStemMUDMutOneStemDaughter extends PottsCell{
     public PottsCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
         divisions++;
-        MiniBox newParameters = this.getParameters();
+        MiniBox newParameters = new MiniBox();
+        for (String key : this.getParameters().getKeys()) {
+            newParameters.put(key, this.getParameters().get(key));
+        }
         newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
         return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
                 hasRegions, newParameters, criticalVolume, criticalHeight,
@@ -44,7 +47,7 @@ public final class PottsCellFlyStemMUDMutOneStemDaughter extends PottsCell{
                 module = new PottsModuleQuiescence(this);
                 break;
             case PROLIFERATIVE:
-                module = new PottsModuleProliferationFlyStemMUDMutOneStemDaughter(this);
+                module = new PottsModuleProliferationFlyStemVerticalSplitLeftReturn(this);
                 break;
             case APOPTOTIC:
                 module = new PottsModuleApoptosisSimple(this);

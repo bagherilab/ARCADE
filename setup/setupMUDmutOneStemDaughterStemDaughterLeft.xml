@@ -9,7 +9,7 @@
         </potts>
         <agents>
             <populations>
-                <population id="mudmut" class="flystem-mudmut-onestemdaughter" init="1" >
+                <population id="mudmut" class="flystem-mudmut-onestemdaughter-stemdaughterleft" init="1" >
                     <population.parameter id="CRITICAL_VOLUME_MEAN" value="30" units="um^3" conversion="DS^-3" />
                     <population.parameter id="CRITICAL_VOLUME_STDEV" value="5" units="um^3" conversion="DS^-3" />
                 </population>

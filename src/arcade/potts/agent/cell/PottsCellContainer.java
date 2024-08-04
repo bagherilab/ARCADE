@@ -154,13 +154,37 @@ public final class PottsCellContainer implements CellContainer {
                             null, null);
                 }
                 break;
-            case "flystem-mudmut-onestemdaughter":
+            case "flystem-mudmut-onestemdaughter-stemdaughterrandom":
                 if (factory.popToRegions.get(pop)) {
-                    cell = new PottsCellFlyStemMUDMutOneStemDaughter(id, parent, pop, state, age, divisions,
+                    cell = new PottsCellFlyStemMUDMut1StemRandom(id, parent, pop, state, age, divisions,
                             location, true, parameters, criticalVolume, criticalHeight,
                             criticalRegionVolumes, criticalRegionHeights);
                 } else {
-                    cell = new PottsCellFlyStemMUDMutOneStemDaughter(id, parent, pop, state, age, divisions,
+                    cell = new PottsCellFlyStemMUDMut1StemRandom(id, parent, pop, state, age, divisions,
+                            location, false, parameters, criticalVolume, criticalHeight,
+                            null, null);
+                }
+                break;
+            case "flystem-mudmut-onestemdaughter-stemdaughterleft":
+                if (factory.popToRegions.get(pop)) {
+                    cell = new PottsCellFlyStemMUDMut1StemLeft(id, parent, pop, state, age, divisions,
+                            location, true, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
+                } else {
+                    cell = new PottsCellFlyStemMUDMut1StemLeft(id, parent, pop, state, age, divisions,
+                            location, false, parameters, criticalVolume, criticalHeight,
+                            null, null);
+                }
+                break;
+            case "flystem-mudmut-twostemdaughters-stemdaughterrandom":
+                // print("flystem-mudmut-twostemdaughters-stemdaughterrandom")
+                System.out.println("flystem-mudmut-twostemdaughters-stemdaughterrandom");
+                if (factory.popToRegions.get(pop)) {
+                    cell = new PottsCellFlyStemMUDMut2StemRandom(id, parent, pop, state, age, divisions,
+                            location, true, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
+                } else {
+                    cell = new PottsCellFlyStemMUDMut2StemRandom(id, parent, pop, state, age, divisions,
                             location, false, parameters, criticalVolume, criticalHeight,
                             null, null);
                 }

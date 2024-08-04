@@ -18,7 +18,7 @@ import static arcade.potts.util.PottsEnums.State;
  * Extension of {@link PottsModuleProliferation} with Poisson transitions.
  */
 
-public class PottsModuleProliferationFlyStemMUDMutOneStemDaughter extends PottsModuleProliferation {
+public class PottsModuleProliferationFlyStemVerticalSplitLeftReturn extends PottsModuleProliferation {
     /** Threshold for critical volume size checkpoint. */
     static final double SIZE_CHECKPOINT = 0.95;
     
@@ -67,9 +67,9 @@ public class PottsModuleProliferationFlyStemMUDMutOneStemDaughter extends PottsM
      *
      * @param cell  the {@link PottsCell} the module is associated with
      */
-    public PottsModuleProliferationFlyStemMUDMutOneStemDaughter(PottsCell cell) {
+    public PottsModuleProliferationFlyStemVerticalSplitLeftReturn(PottsCell cell) {
         super(cell);
-        System.out.println("PottsModuleProliferationFlyStemMUDMut");
+
         MiniBox parameters = cell.getParameters();
         rateG1 = parameters.getDouble("proliferation/RATE_G1");
         rateS = parameters.getDouble("proliferation/RATE_S");
@@ -230,7 +230,7 @@ public class PottsModuleProliferationFlyStemMUDMutOneStemDaughter extends PottsM
         Potts potts = ((PottsSimulation) sim).getPotts();
         
         // Split current location.
-        Location newLocation = ((PottsLocation) cell.getLocation()).splitHalvesVertically(random); //TODO: SOPHIA CHANGE THIS
+        Location newLocation = ((PottsLocation) cell.getLocation()).splitHalvesVerticallyReturnLeftHalf(random);
         
         // Reset current cell.
         cell.reset(potts.ids, potts.regions);
