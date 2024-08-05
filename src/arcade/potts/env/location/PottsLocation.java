@@ -424,9 +424,6 @@ public abstract class PottsLocation implements Location {
         connectVoxels(voxelsA, voxelsB, this, random);
         balanceVoxels(voxelsA, voxelsB, this, random);
 
-        // Print that we are in this function
-        System.out.println("Splitting vertically and returning left half");
-        
         // Return left half
         return separateVoxels(voxelsA, voxelsB, random);
     }
@@ -434,7 +431,7 @@ public abstract class PottsLocation implements Location {
 
     public Location splitTwoThirdsOneThirdKeepTopTwoThirds(MersenneTwisterFast random) { //TODO: SOPHIA MOVE THIS OUT OF POTTSLOCATION
         // Get voxel x centered y 2/3 down.
-        Voxel splitPoint = getTopThird();
+        Voxel splitPoint = getTopTwoThirds();
 
         // Initialize lists of split voxels.
         ArrayList<Voxel> voxelsA = new ArrayList<>();
@@ -451,7 +448,7 @@ public abstract class PottsLocation implements Location {
         return separateVoxels(voxelsA, voxelsB, random);
     }
 
-    public Voxel getTopThird() {
+    public Voxel getTopTwoThirds() {
         if (voxels.size() == 0) {
             return null;
         }
@@ -477,6 +474,53 @@ public abstract class PottsLocation implements Location {
         int z = (int) Math.round(cz);
         
         return new Voxel(x, y, z);
+    }
+
+    public Voxel getTopOneThird(){
+        if (voxels.size() == 0) {
+            return null;
+        }
+        
+        // get min y voxel
+        //get max y voxel
+        int minVoxelY = Integer.MAX_VALUE;
+        int maxVoxelY = Integer.MIN_VALUE;
+
+        for (Voxel voxel : voxels) {
+            if (voxel.y < minVoxelY) {
+                minVoxelY = voxel.y;
+            }
+            if (voxel.y > maxVoxelY) {
+                maxVoxelY = voxel.y;
+            }
+        }
+
+        double oneThirdDownY = minVoxelY + (maxVoxelY - minVoxelY) * 1.0 / 3.0;
+
+        int x = (int) Math.round(cx);
+        int y = (int) Math.round(oneThirdDownY);
+        int z = (int) Math.round(cz);
+        
+        return new Voxel(x, y, z);
+    }
+
+    public Location splitOneThirdTwoThirdsKeepBottomTwoThirds(MersenneTwisterFast random) { //TODO: SOPHIA MOVE THIS OUT OF POTTSLOCATION
+        // Get voxel x centered y 2/3 down.
+        Voxel splitPoint = getTopOneThird();
+
+        // Initialize lists of split voxels.
+        ArrayList<Voxel> voxelsA = new ArrayList<>();
+        ArrayList<Voxel> voxelsB = new ArrayList<>();
+        
+        // Get split direction.
+        Direction direction = Direction.ZX_PLANE;
+        splitVoxels(direction, voxels, voxelsA, voxelsB, splitPoint, random);
+        
+        // Ensure that voxel split is connected and balanced.
+        connectVoxels(voxelsA, voxelsB, this, random);
+        
+        // Keep the 2/3 region for this location, return other.
+        return separateVoxels(voxelsB, voxelsA, random);
     }
     
     /**

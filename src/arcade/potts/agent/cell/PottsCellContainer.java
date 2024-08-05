@@ -189,7 +189,29 @@ public final class PottsCellContainer implements CellContainer {
                             null, null);
                 }
                 break;
-            case "flystemwt":
+            case "flystem-invert-onestemdaughter-stemdaughterbasal":
+                if (factory.popToRegions.get(pop)) {
+                    cell = new PottsCellFlyStemInvert1StemBasal(id, parent, pop, state, age, divisions,
+                            location, true, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
+                } else {
+                    cell = new PottsCellFlyStemInvert1StemBasal(id, parent, pop, state, age, divisions,
+                            location, false, parameters, criticalVolume, criticalHeight,
+                            null, null);
+                }
+                break;
+            case "flystem-invert-twostemdaughters-stemdaughterbasalorboth":
+                if (factory.popToRegions.get(pop)) {
+                    cell = new PottsCellFlyStemInvert2StemBasalOrBoth(id, parent, pop, state, age, divisions,
+                            location, true, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
+                } else {
+                    cell = new PottsCellFlyStemInvert2StemBasalOrBoth(id, parent, pop, state, age, divisions,
+                            location, false, parameters, criticalVolume, criticalHeight,
+                            null, null);
+                }
+                break;
+            case "flystem-wt":
                 if (factory.popToRegions.get(pop)) {
                     cell = new PottsCellFlyStemWT(id, parent, pop, state, age, divisions,
                             location, true, parameters, criticalVolume, criticalHeight,

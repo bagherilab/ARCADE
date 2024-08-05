@@ -5,15 +5,19 @@
         <potts>
             <potts.term id="volume" />
             <potts.term id="adhesion" />
-            <potts.parameter term="adhesion" id="ADHESION" value="150" target="mudmut" />
+            <potts.parameter term="adhesion" id="ADHESION" value="150" target="mudmut2" />
         </potts>
         <agents>
             <populations>
-                <population id="mudmut" class="flystem-mudmut-twostemdaughters-stemdaughterrandom" init="1" >
+                <population id="mudmut2" class="flystem-mudmut-twostemdaughters-stemdaughterrandom" init="1" >
                     <population.parameter id="CRITICAL_VOLUME_MEAN" value="30" units="um^3" conversion="DS^-3" />
                     <population.parameter id="CRITICAL_VOLUME_STDEV" value="5" units="um^3" conversion="DS^-3" />
                 </population>
-                <population id="neuron" class="flyneuronwt" init="0">
+                <population id="neuron" init="0">
+                </population>
+                <population id="mudmut1" class="flystem-mudmut-onestemdaughter-stemdaughterrandom" init="0" >
+                    <population.parameter id="CRITICAL_VOLUME_MEAN" value="30" units="um^3" conversion="DS^-3" />
+                    <population.parameter id="CRITICAL_VOLUME_STDEV" value="5" units="um^3" conversion="DS^-3" />
                 </population>
             </populations>
         </agents>

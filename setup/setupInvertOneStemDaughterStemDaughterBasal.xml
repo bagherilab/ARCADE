@@ -5,11 +5,11 @@
         <potts>
             <potts.term id="volume" />
             <potts.term id="adhesion" />
-            <potts.parameter term="adhesion" id="ADHESION" value="150" target="mudmut" />
+            <potts.parameter term="adhesion" id="ADHESION" value="150" target="invert" />
         </potts>
         <agents>
             <populations>
-                <population id="mudmut" class="flystem-mudmut-onestemdaughter-stemdaughterleft" init="1" >
+                <population id="invert" class="flystem-invert-onestemdaughter-stemdaughterbasal" init="1" >
                     <population.parameter id="CRITICAL_VOLUME_MEAN" value="30" units="um^3" conversion="DS^-3" />
                     <population.parameter id="CRITICAL_VOLUME_STDEV" value="5" units="um^3" conversion="DS^-3" />
                 </population>

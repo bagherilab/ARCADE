@@ -9,11 +9,11 @@
         </potts>
         <agents>
             <populations>
-                <population id="flystem" class="flystemwt" init="1" >
+                <population id="flystem" class="flystem-wt" init="1" >
                     <population.parameter id="CRITICAL_VOLUME_MEAN" value="30" units="um^3" conversion="DS^-3" />
                     <population.parameter id="CRITICAL_VOLUME_STDEV" value="5" units="um^3" conversion="DS^-3" />
                 </population>
-                <population id="neuron" class="flyneuronwt" init="0">
+                <population id="neuron" init="0">
                 </population>
             </populations>
         </agents>
