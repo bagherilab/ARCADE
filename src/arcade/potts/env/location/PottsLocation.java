@@ -384,6 +384,26 @@ public abstract class PottsLocation implements Location {
     : separateVoxels(voxelsB, voxelsA, random);
     }
 
+    public Location splitHalvesHorizontallyReturnBasalHalf(MersenneTwisterFast random) {
+        // Get center voxel.
+        Voxel center = getCenter();
+        
+        // Initialize lists of split voxels.
+        ArrayList<Voxel> voxelsA = new ArrayList<>();
+        ArrayList<Voxel> voxelsB = new ArrayList<>();
+        
+        // Get split direction.
+        Direction direction = Direction.ZX_PLANE;
+        splitVoxels(direction, voxels, voxelsA, voxelsB, center, random);
+        
+        // Ensure that voxel split is connected and balanced.
+        connectVoxels(voxelsA, voxelsB, this, random);
+        balanceVoxels(voxelsA, voxelsB, this, random);
+        
+        // Return Apical voxels.
+        return separateVoxels(voxelsA, voxelsB, random);
+    }
+
     public Location splitHalvesVerticallyReturnRandomHalf(MersenneTwisterFast random) { //TODO: SOPHIA MOVE THIS OUT OF POTTSLOCATION
         // Get center voxel.
         Voxel center = getCenter();

@@ -13,11 +13,11 @@ import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
 import ec.util.MersenneTwisterFast;
 
-public final class PottsCellFlyStemWT extends PottsCell{
+public final class PottsCellFlyStemSymmetric2StemApicalOrBoth extends PottsCell{
 
     public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
 
-    public PottsCellFlyStemWT(int id, int parent, int pop, CellState state, int age, int divisions,
+    public PottsCellFlyStemSymmetric2StemApicalOrBoth(int id, int parent, int pop, CellState state, int age, int divisions,
                          Location location, boolean hasRegions, MiniBox parameters,
                          double criticalVolume, double criticalHeight,
                          EnumMap<Region, Double> criticalRegionVolumes,
@@ -30,13 +30,21 @@ public final class PottsCellFlyStemWT extends PottsCell{
     public PottsCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
         divisions++;
-        MiniBox newParameters = new MiniBox();
-        for (String key : this.getParameters().getKeys()) {
-            newParameters.put(key, this.getParameters().get(key));
+        // 50% chance daughter is PottsCellFlyStemSymmetric1StemApical, 50% chance it is neuron
+        if (random.nextBoolean()) {
+            return new PottsCellFlyStemSymmetric2StemApicalOrBoth(newID, id, pop, newState, age, divisions, newLocation,
+                    hasRegions, this.getParameters(), criticalVolume, criticalHeight,
+                    criticalRegionVolumes, criticalRegionHeights);
+        } else {
+            MiniBox newParameters = new MiniBox();
+            for (String key : this.getParameters().getKeys()) {
+                newParameters.put(key, this.getParameters().get(key));
+            }
+            newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
+            return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
+                    hasRegions, newParameters, criticalVolume, criticalHeight,
+                    criticalRegionVolumes, criticalRegionHeights);
         }
-        return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
-                hasRegions, newParameters, criticalVolume, criticalHeight,
-                criticalRegionVolumes, criticalRegionHeights);
     }
     
     @Override

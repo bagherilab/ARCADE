@@ -211,6 +211,28 @@ public final class PottsCellContainer implements CellContainer {
                             null, null);
                 }
                 break;
+            case "flystem-symmetric-onestemdaughter-stemdaughterapical":
+                if (factory.popToRegions.get(pop)) {
+                    cell = new PottsCellFlyStemSymmetric1StemApical(id, parent, pop, state, age, divisions,
+                            location, true, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
+                } else {
+                    cell = new PottsCellFlyStemSymmetric1StemApical(id, parent, pop, state, age, divisions,
+                            location, false, parameters, criticalVolume, criticalHeight,
+                            null, null);
+                }
+                break;
+            case "flystem-symmetric-twostemdaughters-stemdaughterapicalorboth":
+                if (factory.popToRegions.get(pop)) {
+                    cell = new PottsCellFlyStemSymmetric2StemApicalOrBoth(id, parent, pop, state, age, divisions,
+                            location, true, parameters, criticalVolume, criticalHeight,
+                            criticalRegionVolumes, criticalRegionHeights);
+                } else {
+                    cell = new PottsCellFlyStemSymmetric2StemApicalOrBoth(id, parent, pop, state, age, divisions,
+                            location, false, parameters, criticalVolume, criticalHeight,
+                            null, null);
+                }
+                break;
             case "flystem-wt":
                 if (factory.popToRegions.get(pop)) {
                     cell = new PottsCellFlyStemWT(id, parent, pop, state, age, divisions,
