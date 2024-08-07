@@ -15,6 +15,7 @@
                 </population>
                 <population id="neuron" init="0">
                 </population>
+                <population id="stemdaughter" init="0" class="flystem-symmetric-onestemdaughter-stemdaughterapical" />
             </populations>
         </agents>
     </series>

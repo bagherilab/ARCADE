@@ -30,7 +30,7 @@ public final class PottsCellFlyStemSymmetric2StemApicalOrBoth extends PottsCell{
     public PottsCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
         divisions++;
-        // 50% chance daughter is PottsCellFlyStemSymmetric1StemApical, 50% chance it is neuron
+        // 50% chance daughter is PottsCellFlyStemSymmetric2StemApical, 50% chance it is neuron
         if (random.nextBoolean()) {
             return new PottsCellFlyStemSymmetric2StemApicalOrBoth(newID, id, pop, newState, age, divisions, newLocation,
                     hasRegions, this.getParameters(), criticalVolume, criticalHeight,

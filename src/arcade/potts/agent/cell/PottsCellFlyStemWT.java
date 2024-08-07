@@ -34,6 +34,7 @@ public final class PottsCellFlyStemWT extends PottsCell{
         for (String key : this.getParameters().getKeys()) {
             newParameters.put(key, this.getParameters().get(key));
         }
+        newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
         return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
                 hasRegions, newParameters, criticalVolume, criticalHeight,
                 criticalRegionVolumes, criticalRegionHeights);
