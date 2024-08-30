@@ -7,6 +7,7 @@ import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModuleApoptosisSimple;
 import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
+import arcade.potts.agent.module.PottsModuleProliferationFlyStemHorizontalSplitBasalReturn;
 import arcade.potts.agent.module.PottsModuleProliferationFlyStemTwoThirdsSplitApicalReturn;
 import arcade.potts.agent.module.PottsModuleQuiescence;
 import arcade.potts.util.PottsEnums.Region;
@@ -47,7 +48,7 @@ public final class PottsCellFlyStemSymmetric1StemApical extends PottsCell{
                 module = new PottsModuleQuiescence(this);
                 break;
             case PROLIFERATIVE:
-                module = new PottsModuleProliferationFlyStemTwoThirdsSplitApicalReturn(this);
+                module = new PottsModuleProliferationFlyStemHorizontalSplitBasalReturn(this);
                 break;
             case APOPTOTIC:
                 module = new PottsModuleApoptosisSimple(this);
