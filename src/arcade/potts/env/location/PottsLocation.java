@@ -8,8 +8,6 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Utilities;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -384,7 +382,7 @@ public abstract class PottsLocation implements Location {
     : separateVoxels(voxelsB, voxelsA, random);
     }
 
-    public Location splitHalvesHorizontallyReturnBasalHalf(MersenneTwisterFast random) {
+    public Location splitHalvesHorizontallyReturnBasalHalf(MersenneTwisterFast random) { //TODO: SOPHIA MOVE THIS OUT OF POTTSLOCATION
         // Get center voxel.
         Voxel center = getCenter();
         

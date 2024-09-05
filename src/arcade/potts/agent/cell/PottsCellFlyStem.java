@@ -5,7 +5,6 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.*;
-import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
 import ec.util.MersenneTwisterFast;
@@ -303,10 +302,10 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
     }
 
-    public static final class PottsCellStemSymmetric1StemApical extends PottsCellFlyStem {
+    public static final class PottsCellFlyStemSymmetric1StemApical extends PottsCellFlyStem {
         public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
 
-        public PottsCellStemSymmetric1StemApical(int id, int parent, int pop, CellState state, int age, int divisions,
+        public PottsCellFlyStemSymmetric1StemApical(int id, int parent, int pop, CellState state, int age, int divisions,
                              Location location, boolean hasRegions, MiniBox parameters,
                              double criticalVolume, double criticalHeight,
                              EnumMap<Region, Double> criticalRegionVolumes,

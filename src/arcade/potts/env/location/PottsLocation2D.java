@@ -2,6 +2,8 @@ package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import arcade.core.env.location.Location;
+import arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Direction;
 
 /**
