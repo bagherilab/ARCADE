@@ -6,19 +6,22 @@ import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
-import arcade.potts.env.location.PottsLocation;
+import arcade.potts.agent.cell.PottsCellFlyStem;
+import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.env.location.PottsLocations;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
+import static arcade.potts.util.PottsEnums.Direction;
+import static arcade.potts.util.PottsFlyEnums.StemDaughter;
 
 /**
  * Extension of {@link PottsModuleProliferation} with Poisson transitions.
  */
 
-public class PottsModuleProliferationFlyStemVerticalSplitLeftReturn extends PottsModuleProliferation {
+public class PottsModuleProliferationFlyStem extends PottsModuleProliferation {
     /** Threshold for critical volume size checkpoint. */
     static final double SIZE_CHECKPOINT = 0.95;
     
@@ -65,11 +68,11 @@ public class PottsModuleProliferationFlyStemVerticalSplitLeftReturn extends Pott
      * Creates a simple proliferation {@code Module} for the given
      * {@link PottsCell}.
      *
-     * @param cell  the {@link PottsCell} the module is associated with
+     * @param cell  the {@link PottsCellFlyStem} the module is associated with
      */
-    public PottsModuleProliferationFlyStemVerticalSplitLeftReturn(PottsCell cell) {
+    public PottsModuleProliferationFlyStem(PottsCellFlyStem cell) {
         super(cell);
-
+        
         MiniBox parameters = cell.getParameters();
         rateG1 = parameters.getDouble("proliferation/RATE_G1");
         rateS = parameters.getDouble("proliferation/RATE_S");
@@ -229,8 +232,12 @@ public class PottsModuleProliferationFlyStemVerticalSplitLeftReturn extends Pott
     void addCell(MersenneTwisterFast random, Simulation sim) {
         Potts potts = ((PottsSimulation) sim).getPotts();
         
+        PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
+        int splitOffset = flyStemCell.splitOffsetPercent;
+        Direction splitDirection = flyStemCell.splitDirection;
+        StemDaughter stemDaughter = flyStemCell.getStemDaughter();
         // Split current location.
-        Location newLocation = ((PottsLocation) cell.getLocation()).splitHalvesVerticallyReturnLeftHalf(random);
+        Location newLocation = ((PottsLocation2D) cell.getLocation()).splitFly(random, splitOffset, splitDirection, stemDaughter);
         
         // Reset current cell.
         cell.reset(potts.ids, potts.regions);

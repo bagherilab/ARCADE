@@ -9,13 +9,14 @@ import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
 import ec.util.MersenneTwisterFast;
 import static arcade.potts.util.PottsEnums.Direction;
+import static arcade.potts.util.PottsFlyEnums.StemDaughter;
 
 public abstract class PottsCellFlyStem extends PottsCell {
     /** Percentage offset from cell edge where division will occur */
-    final int splitOffsetPercent;
+    public final int splitOffsetPercent;
 
     /** Direction of division */
-    final Direction splitDirection;
+    public final Direction splitDirection;
 
     public PottsCellFlyStem(int id, int parent, int pop, CellState state, int age, int divisions,
                          Location location, boolean hasRegions, MiniBox parameters,
@@ -28,6 +29,8 @@ public abstract class PottsCellFlyStem extends PottsCell {
         this.splitOffsetPercent = splitOffsetPercent;
         this.splitDirection = splitDirection;
     }
+
+    public abstract StemDaughter getStemDaughter();
 
     public abstract PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
                                                MersenneTwisterFast random);
@@ -45,7 +48,7 @@ public abstract class PottsCellFlyStem extends PottsCell {
                 module = new PottsModuleQuiescence(this);
                 break;
             case PROLIFERATIVE:
-                module = getProliferationModule();
+                module = new PottsModuleProliferationFlyStem(this);
                 break;
             case APOPTOTIC:
                 module = new PottsModuleApoptosisSimple(this);
@@ -62,8 +65,6 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
     }
 
-    protected abstract PottsModule getProliferationModule();
-
     public static final class PottsCellFlyStemWT extends PottsCellFlyStem {
         public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
 
@@ -79,8 +80,8 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        protected PottsModule getProliferationModule() {
-            return new PottsModuleProliferationFlyStemTwoThirdsSplitApicalReturn(this);
+        public StemDaughter getStemDaughter() {
+            return StemDaughter.APICAL;
         }
 
         @Override
@@ -113,8 +114,8 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        protected PottsModule getProliferationModule() {
-            return new PottsModuleProliferationFlyStemVerticalSplitRandomReturn(this);
+        public StemDaughter getStemDaughter() {
+            return StemDaughter.RANDOM;
         }
 
         @Override
@@ -147,8 +148,8 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        protected PottsModule getProliferationModule() {
-            return new PottsModuleProliferationFlyStemVerticalSplitLeftReturn(this);
+        public StemDaughter getStemDaughter() {
+            return StemDaughter.LEFT;
         }
 
         @Override
@@ -182,8 +183,8 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        protected PottsModule getProliferationModule() {
-            return new PottsModuleProliferationFlyStemVerticalSplitRandomReturn(this);
+        public StemDaughter getStemDaughter() {
+            return StemDaughter.RANDOM;
         }
 
         @Override
@@ -232,8 +233,8 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        protected PottsModule getProliferationModule() {
-            return new PottsModuleProliferationFlyStemOneThirdSplitBasalReturn(this);
+        public StemDaughter getStemDaughter() {
+            return StemDaughter.BASAL;
         }
 
         @Override
@@ -267,8 +268,8 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        protected PottsModule getProliferationModule() {
-            return new PottsModuleProliferationFlyStemOneThirdSplitBasalReturn(this);
+        public StemDaughter getStemDaughter() {
+            return StemDaughter.BASAL;
         }
 
         @Override
@@ -317,8 +318,8 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        protected PottsModule getProliferationModule() {
-            return new PottsModuleProliferationFlyStemHorizontalSplitBasalReturn(this);
+        public StemDaughter getStemDaughter() {
+            return StemDaughter.APICAL;
         }
 
         @Override
@@ -351,8 +352,8 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        protected PottsModule getProliferationModule() {
-            return new PottsModuleProliferationFlyStemHorizontalSplitBasalReturn(this);
+        public StemDaughter getStemDaughter() {
+            return StemDaughter.APICAL;
         }
 
         @Override
