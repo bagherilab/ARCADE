@@ -259,16 +259,14 @@ public final class PottsCellContainer implements CellContainer {
                 }
                 break;
             case "flystem-wt":
-                splitOffsetPercent = 66;
-                splitDirection = Direction.ZX_PLANE;
                 if (factory.popToRegions.get(pop)) {
                     cell = new PottsCellFlyStemWT(id, parent, pop, state, age, divisions,
                             location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights, splitOffsetPercent, splitDirection);
+                            criticalRegionVolumes, criticalRegionHeights);
                 } else {
                     cell = new PottsCellFlyStemWT(id, parent, pop, state, age, divisions,
                             location, false, parameters, criticalVolume, criticalHeight,
-                            null, null, splitOffsetPercent, splitDirection);
+                            null, null);
                 }
         }
         

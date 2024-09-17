@@ -5,8 +5,10 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.*;
+import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
+import arcade.potts.util.PottsFlyEnums.StemDaughter;
 import ec.util.MersenneTwisterFast;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsFlyEnums.StemDaughter;
@@ -18,6 +20,8 @@ public abstract class PottsCellFlyStem extends PottsCell {
     /** Direction of division */
     public final Direction splitDirection;
 
+    public final StemDaughter stemDaughter;
+
     public PottsCellFlyStem(int id, int parent, int pop, CellState state, int age, int divisions,
                          Location location, boolean hasRegions, MiniBox parameters,
                          double criticalVolume, double criticalHeight,
@@ -26,11 +30,16 @@ public abstract class PottsCellFlyStem extends PottsCell {
                          int splitOffsetPercent, Direction splitDirection) {
         super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
                 criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        this.splitOffsetPercent = splitOffsetPercent;
-        this.splitDirection = splitDirection;
+        this.splitOffsetPercent = getSplitOffsetPercent();
+        this.splitDirection = getSplitDirection();
+        this.stemDaughter = getStemDaughter();
     }
 
-    public abstract StemDaughter getStemDaughter();
+    abstract int getSplitOffsetPercent();
+
+    abstract Direction getSplitDirection();
+
+    abstract StemDaughter getStemDaughter();
 
     public abstract PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
                                                MersenneTwisterFast random);
@@ -44,21 +53,13 @@ public abstract class PottsCellFlyStem extends PottsCell {
     @Override
     void setStateModule(CellState newState) {
         switch ((State) newState) {
-            case QUIESCENT:
-                module = new PottsModuleQuiescence(this);
-                break;
             case PROLIFERATIVE:
                 module = new PottsModuleProliferationFlyStem(this);
                 break;
+            case QUIESCENT:
             case APOPTOTIC:
-                module = new PottsModuleApoptosisSimple(this);
-                break;
             case NECROTIC:
-                module = new PottsModuleNecrosis(this);
-                break;
             case AUTOTIC:
-                module = new PottsModuleAutosis(this);
-                break;
             default:
                 module = null;
                 break;
@@ -67,6 +68,8 @@ public abstract class PottsCellFlyStem extends PottsCell {
 
     public static final class PottsCellFlyStemWT extends PottsCellFlyStem {
         public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
+        public static final int SPLIT_OFFSET_PERCENT = 66;
+        public static final Direction SPLIT_DIRECTION = Direction.ZX_PLANE;
 
         public PottsCellFlyStemWT(int id, int parent, int pop, CellState state, int age, int divisions,
                              Location location, boolean hasRegions, MiniBox parameters,
@@ -77,6 +80,16 @@ public abstract class PottsCellFlyStem extends PottsCell {
             super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
                     criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
                     splitOffsetPercent, splitDirection);
+        }
+
+        @Override
+        int getSplitOffsetPercent() {
+            return SPLIT_OFFSET_PERCENT;
+        }
+
+        @Override
+        Direction getSplitDirection() {
+            return SPLIT_DIRECTION;
         }
 
         @Override
