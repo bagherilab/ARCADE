@@ -1,6 +1,7 @@
 package arcade.potts.env.location;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ec.util.MersenneTwisterFast;
@@ -277,5 +278,21 @@ public class PottsLocation2DTest {
         
         assertEquals(locVoxels, loc.voxels);
         assertEquals(splitVoxels, split.voxels);
+    }
+
+    @Test
+    public void getSplitpoint_correctOffsets_returnsSplitpoint() {
+        PottsLocation2D location = new PottsLocation2D(voxelListAB);
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(20, 50));
+        Voxel splitpoint = location.getSplitpoint(offsets);
+        assertNotNull(splitpoint);
+        assertEquals(new Voxel(1, 1, 0), splitpoint); 
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getSplitpoint_incorrectOffsetSize_throwsIllegalArgumentException() {
+        PottsLocation2D location = new PottsLocation2D(voxelListAB);
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(50)); // Only 1 offset
+        location.getSplitpoint(offsets);
     }
 }

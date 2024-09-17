@@ -2,6 +2,7 @@ package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Direction;
 
 /**
@@ -64,5 +65,13 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
     @Override
     ArrayList<Voxel> getSelected(Voxel focus, double n) {
         return Location2D.getSelected(voxels, focus, n);
+    }
+    
+    public Voxel getSplitpoint(ArrayList<Integer> offset_percents){
+        if (offset_percents == null || offset_percents.size() != 2) {
+            throw new IllegalArgumentException("PottsLocation2D offsets must be an ArrayList containing exactly 2 integers.");
+        }
+        offset_percents.add(0);
+        return super.getSplitpoint(offset_percents);
     }
 }
