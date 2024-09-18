@@ -287,7 +287,6 @@ public abstract class PottsLocation implements Location {
      * @return  a location with the split voxels
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsetPercents) {
-        // Get splitpoint voxel.
         Voxel splitpoint = getSplitpoint(offsetPercents);
         return performSplit(random, splitpoint);
     }
