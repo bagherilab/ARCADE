@@ -601,7 +601,7 @@ public class PottsLocationTest {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         assertNull(loc.getCenter());
     }
-
+    
     @Test
     public void getSplitpoint_noOffsets_returnsCenter() {
         ArrayList<Voxel> voxels = new ArrayList<>();
@@ -616,7 +616,7 @@ public class PottsLocationTest {
         assertEquals(8 / 4., loc.cz, EPSILON);
         assertEquals(new Voxel(1, 2, 2), loc.getSplitpoint());
     }
-
+    
     @Test
     public void getSplitpoint_50percentOffsets_returnsValue() {
         ArrayList<Voxel> voxels = new ArrayList<>();
@@ -660,7 +660,7 @@ public class PottsLocationTest {
 
         assertEquals(new Voxel(expectedX, expectedY, expectedZ), loc.getSplitpoint(offsets));
     }
-
+    
     @Test(expected = IllegalArgumentException.class)
     public void getSplitpoint_invalidOffsetPercentLength_raisesException() {
         ArrayList<Voxel> voxels = new ArrayList<>();
@@ -1303,7 +1303,7 @@ public class PottsLocationTest {
         assertEquals(1. / 3, split.cy, EPSILON);
         assertEquals(3. / 3, split.cz, EPSILON);
     }
-
+    
     @Test
     public void split_noOffsets_callsPerformSplit() {
         PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
@@ -1312,7 +1312,7 @@ public class PottsLocationTest {
         verify(spy).getSplitpoint();
         verify(spy).performSplit(eq(randomDoubleZero), any(Voxel.class));
     }
-
+    
     @Test
     public void split_withOffsets_callsPerformSplit() {
         ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(50, 50, 50));
@@ -1322,7 +1322,7 @@ public class PottsLocationTest {
         verify(spy).getSplitpoint(offsets);
         verify(spy).performSplit(eq(randomDoubleZero), any(Voxel.class));
     }
-
+    
     @Test
     public void performSplit_noOffsets_splitsVoxelsCorrectly() {
         PottsLocation location = new PottsLocationMock(voxelListAB);
@@ -1336,7 +1336,7 @@ public class PottsLocationTest {
         assertTrue(Math.abs(location.voxels.size() - splitLocation.voxels.size()) <= 1);
         assertEquals(voxelListAB.size(), location.voxels.size() + splitLocation.voxels.size());
     }
-
+    
     @Test
     public void performSplit_withOffsets_splitsVoxelsCorrectly() {
         PottsLocation location = new PottsLocationMock(voxelListAB);
