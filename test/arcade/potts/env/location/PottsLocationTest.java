@@ -5,8 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.Region;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -1332,10 +1330,11 @@ public class PottsLocationTest {
         Voxel splitpoint = location.getSplitpoint();
         PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint);
         assertNotNull(splitLocation);
-        assertTrue(location.voxels.size() > 0); // Ensure some voxels are left in the original location
-        assertTrue(splitLocation.voxels.size() > 0); // Ensure some voxels are in the split location
-        assertTrue(Math.abs(location.voxels.size() - splitLocation.voxels.size()) <= 1); // Ensure location.voxels.size() is roughly equal to splitLocation.voxels.size()
-        assertEquals(voxelListAB.size(), location.voxels.size() + splitLocation.voxels.size()); // Ensure no voxel is lost
+        assertTrue(location.voxels.size() > 0);
+        assertTrue(splitLocation.voxels.size() > 0);
+        // Ensure location.voxels.size() is roughly equal to splitLocation.voxels.size()
+        assertTrue(Math.abs(location.voxels.size() - splitLocation.voxels.size()) <= 1);
+        assertEquals(voxelListAB.size(), location.voxels.size() + splitLocation.voxels.size());
     }
 
     @Test
@@ -1346,9 +1345,9 @@ public class PottsLocationTest {
         Voxel splitpoint = location.getSplitpoint(offsets);
         PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint);
         assertNotNull(splitLocation);
-        assertTrue(location.voxels.size() > 0); // Ensure some voxels are left in the original location
-        assertTrue(splitLocation.voxels.size() > 0); // Ensure some voxels are in the split location
-        assertEquals(voxelListAB.size(), location.voxels.size() + splitLocation.voxels.size()); // Ensure no voxel is lost
+        assertTrue(location.voxels.size() > 0);
+        assertTrue(splitLocation.voxels.size() > 0);
+        assertEquals(voxelListAB.size(), location.voxels.size() + splitLocation.voxels.size());
         // Check that one location is approximately 1/3 the size of the other
         int locationSize = location.voxels.size();
         int splitLocationSize = splitLocation.voxels.size();
