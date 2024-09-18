@@ -300,7 +300,8 @@ public abstract class PottsLocation implements Location {
      *
      * @param random the seeded random number generator used to determine the split direction
      * @param splitpoint the voxel that determines where the split occurs
-     * @return a {@code Location} containing the split voxels that are not assigned to the current location
+     * @return a {@code Location} containing the split voxels that are not
+     *         assigned to the current location
      */
     Location performSplit(MersenneTwisterFast random, Voxel splitpoint) {
         // Initialize lists of split voxels.
@@ -368,14 +369,15 @@ public abstract class PottsLocation implements Location {
      * For example, an offset of [50, 50, 50] will return the center voxel.
      * <p>
      *
-     * <p><b>Note:</b> The {@code offset_percents} list must contain exactly 3 integers representing the
-     * percentage offsets for the X, Y, and Z axes. Each value should be between 0 and 100.
+     * <p><b>Note:</b> The {@code offset_percents} list must contain exactly 3
+     * integers representing the percentage offsets for the X, Y, and Z axes.
      *
      * @param offsetPercents An {@code ArrayList<Integer>} containing exactly 3 integers,
      *                        which represent the percentage offsets in the X, Y, and Z
      *                        directions. Each percentage should be in the range [0, 100].
      * @return The voxel located at the calculated offset position.
-     * @throws IllegalArgumentException If {@code offset_percents} is {@code null} or does not contain exactly 3 integers.
+     * @throws IllegalArgumentException If {@code offset_percents} is {@code null} or
+     *                                  does not contain exactly 3 integers.
      */
     public Voxel getSplitpoint(ArrayList<Integer> offsetPercents) {
         if (offsetPercents == null || offsetPercents.size() != 3) {
