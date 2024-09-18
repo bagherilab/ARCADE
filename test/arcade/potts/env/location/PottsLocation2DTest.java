@@ -286,7 +286,7 @@ public class PottsLocation2DTest {
         ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(20, 50));
         Voxel splitpoint = location.getSplitpoint(offsets);
         assertNotNull(splitpoint);
-        assertEquals(new Voxel(1, 1, 0), splitpoint); 
+        assertEquals(new Voxel(1, 1, 0), splitpoint);
     }
 
     @Test(expected = IllegalArgumentException.class)
