@@ -2,7 +2,6 @@ package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Direction;
 
 /**
@@ -85,6 +84,7 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
      * @return The voxel located at the calculated offset position.
      * @throws IllegalArgumentException If {@code offset_percents} is {@code null} or does not contain exactly 2 integers.
      */
+    @Override
     public Voxel getSplitpoint(ArrayList<Integer> offsetPercents) {
         if (offsetPercents == null || offsetPercents.size() != 2) {
             throw new IllegalArgumentException(
