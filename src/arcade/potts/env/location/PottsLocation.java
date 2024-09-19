@@ -41,7 +41,8 @@ public abstract class PottsLocation implements Location {
     /** Relative padding for selecting maximum diameter. */
     private static final double DIAMETER_RATIO = 0.9;
 
-    private static final double DEFAULT_SPLIT_PROBABILITY = 0.5;
+    /** Default probability first voxel list is kept in split function. */
+    static final double DEFAULT_SPLIT_PROBABILITY = 0.5;
     
     /** List of voxels for the location. */
     final ArrayList<Voxel> voxels;
