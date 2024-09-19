@@ -8,6 +8,8 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Utilities;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -257,71 +259,122 @@ public abstract class PottsLocation implements Location {
     }
     
     /**
-     * Splits the voxels of this location into two lists along
-     * direction with the shortest diameter.
+     * Splits the location voxels into two lists.
      * <p>
-     * The location are split along the direction with the shortest diameter.
-     * The lists of locations are guaranteed to be connected, and generally will
-     * be balanced in size. One of the splits is assigned to the current
-     * location and the other is returned.
+     * The split occurs along the direction with the shortest diameter, or a
+     * specified direction. The lists of voxels are guaranteed to be connected,
+     * and generally will be balanced in size. One of the splits is assigned
+     * to the current location and the other is returned.
      *
-     * @param random  the seeded random number generator
-     * @return  a location with the split voxels
+     * @param random the seeded random number generator
+     * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random) {
-        // Get center voxel.
-        Voxel splitpoint = getSplitpoint();
-        return performSplit(random, splitpoint);
+        return split(random, null, null);
     }
-
+    
     /**
-     * Splits the location voxels into two lists at point specified by offset_percents.
+     * Splits the location voxels into two lists at the point specified by
+     * offsetPercents and along the shortest diameter.
      * <p>
-     * The location are split along the direction with the shortest diameter.
-     * The lists of locations are guaranteed to be connected, and generally will
-     * be balanced in size. One of the splits is assigned to the current
-     * location and the other is returned.
+     * The lists of voxels are guaranteed to be connected and balanced.
      *
-     * @param random  the seeded random number generator
-     * @param offsetPercents  the percentage offset in each direction for the split point
-     * @return  a location with the split voxels
+     * @param random         the seeded random number generator
+     * @param offsetPercents the percentage offset in each direction for the split point
+     * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsetPercents) {
-        Voxel splitpoint = getSplitpoint(offsetPercents);
-        return performSplit(random, splitpoint);
+        return split(random, offsetPercents, null);
     }
-
+    
+    /**
+     * Splits the location voxels into two lists at point specified by
+     * offsetPercents and along the shortest diameter if no direction is provided.
+     * If direction is provided, the split will occur along that direction.
+     * <p>
+     * The lists of voxels are guaranteed to be connected and balanced if no
+     * direction is provided. If a direction is provided, the split occurs
+     * without balancing.
+     *
+     * @param random         the seeded random number generator
+     * @param offsetPercents the percentage offset in each direction for the split point
+     * @param direction      the direction of the split, or null if using shortest diameter
+     * @return a location with the split voxels
+     */
+    public Location split(MersenneTwisterFast random, ArrayList<Integer> offsetPercents, Direction direction) {
+        Voxel splitpoint = (offsetPercents != null) ? getSplitpoint(offsetPercents) : getSplitpoint();
+        
+        // Check if the direction is specified, if not use default behavior with balancing
+        if (direction == null) {
+            return performSplit(random, splitpoint); // This will balance voxels
+        } else {
+            return performSplit(random, splitpoint, direction); // This will skip balancing
+        }
+    }
+    
     /**
      * Performs the voxel split based on a given split point.
      * <p>
      * Splits the voxels of the location into two balanced, connected groups on
      * either side of split point. Split occurs along the direction with
-     * shortest diameter.
+     * the shortest diameter.
      *
-     * @param random the seeded random number generator used to determine the split direction
+     * @param random the seeded random number generator
      * @param splitpoint the voxel that determines where the split occurs
-     * @return a {@code Location} containing the split voxels that are not
-     *         assigned to the current location
+     * @return a {@code Location} containing the split voxels that are not assigned to the current location
      */
     Location performSplit(MersenneTwisterFast random, Voxel splitpoint) {
-        // Initialize lists of split voxels.
+        return performSplit(random, splitpoint, getDirection(random), true);
+    }
+    
+    /**
+     * Performs the voxel split based on a given split point and direction.
+     * <p>
+     * Splits the voxels of the location into two connected groups on
+     * either side of split point. Balancing is skipped.
+     *
+     * @param random     the seeded random number generator
+     * @param splitpoint the voxel that determines where the split occurs
+     * @param direction  the direction of the split
+     * @return a {@code Location} containing the split voxels that are not assigned to the current location
+     */
+    Location performSplit(MersenneTwisterFast random, Voxel splitpoint, Direction direction) {
+        // Calls performSplit without balancing
+        return performSplit(random, splitpoint, direction, false);
+    }
+    
+    /**
+     * Performs the voxel split based on a given split point, direction,
+     * and whether to balance the voxels.
+     * <p>
+     * Splits the voxels of the location into two connected groups on
+     * either side of split point. Balancing is optional based on the
+     * shouldBalance parameter.
+     *
+     * @param random     the seeded random number generator
+     * @param splitpoint the voxel that determines where the split occurs
+     * @param direction  the direction of the split
+     * @param shouldBalance indicates whether voxels should be balanced
+     * @return a {@code Location} containing the split voxels that are not assigned to the current location
+     */
+    Location performSplit(MersenneTwisterFast random, Voxel splitpoint, Direction direction, boolean shouldBalance) {
+        // Initialize lists of split voxels
         ArrayList<Voxel> voxelsA = new ArrayList<>();
         ArrayList<Voxel> voxelsB = new ArrayList<>();
         
-        // Get split direction.
-        Direction direction = getDirection(random);
+        // Perform the split along the specified direction
         splitVoxels(direction, voxels, voxelsA, voxelsB, splitpoint, random);
         
-        // Ensure that voxel split is connected and balanced.
+        // Ensure that voxel split is connected
         connectVoxels(voxelsA, voxelsB, this, random);
-        balanceVoxels(voxelsA, voxelsB, this, random);
         
-        // Select one split to keep for this location and return the other.
-        if (random.nextDouble() < 0.5) {
-            return separateVoxels(voxelsA, voxelsB, random);
-        } else {
-            return separateVoxels(voxelsB, voxelsA, random);
+        // Only balance if 'shouldBalance' is true
+        if (shouldBalance) {
+            balanceVoxels(voxelsA, voxelsB, this, random);
         }
+        
+        // Select one split to keep for this location and return the other
+        return (random.nextDouble() < 0.5) ? separateVoxels(voxelsA, voxelsB, random) : separateVoxels(voxelsB, voxelsA, random);
     }
     
     /**
