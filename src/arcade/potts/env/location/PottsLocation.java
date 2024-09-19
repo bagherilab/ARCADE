@@ -8,6 +8,8 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Utilities;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -261,11 +263,15 @@ public abstract class PottsLocation implements Location {
     
     /**
      * Splits the location voxels into two lists.
+     * Splits the location voxels into two lists.
      * <p>
      * The split occurs along the direction with the shortest diameter, or a
-     * specified direction. One of the splits is assigned to the current
-     * location and the other is returned.
+     * specified direction. The lists of voxels are guaranteed to be connected,
+     * and generally will be balanced in size. One of the splits is assigned
+     * to the current location and the other is returned.
      *
+     * @param random the seeded random number generator
+     * @return a location with the split voxels
      * @param random the seeded random number generator
      * @return a location with the split voxels
      */

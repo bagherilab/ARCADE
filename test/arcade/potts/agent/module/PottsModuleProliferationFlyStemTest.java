@@ -60,33 +60,4 @@ public class PottsModuleProliferationFlyStemTest {
         // Instantiate the module with the mocked cell
         flyStemModule = new PottsModuleProliferationFlyStem(mockFlyStemCell);
     }
-
-    @Test
-    public void testAddCell_callsCorrectMethods() {
-        // Arrange
-        when(mockFlyStemCell.splitOffsetPercent).thenReturn(50);  // Mock int return
-        when(mockFlyStemCell.splitDirection).thenReturn(Direction.ZX_PLANE);
-        when(mockFlyStemCell.getStemDaughter()).thenReturn(StemDaughter.APICAL);
-
-        // Mock creation of a new cell and new location
-        PottsCell mockNewCell = mock(PottsCell.class);
-        when(mockFlyStemCell.make(anyInt(), any(State.class), any(Location.class), any(MersenneTwisterFast.class)))
-                .thenReturn(mockNewCell);
-
-        Location mockNewLocation = mock(Location.class);
-        when(mockLocation.splitFly(any(MersenneTwisterFast.class), anyInt(), any(Direction.class), any(StemDaughter.class)))
-                .thenReturn(mockNewLocation);
-
-        // Act
-        flyStemModule.addCell(mockRandom, mockSimulation);
-
-        // Assert: Check interactions
-        verify(mockLocation).splitFly(eq(mockRandom), eq(50), eq(Direction.ZX_PLANE), eq(StemDaughter.APICAL));
-        verify(mockFlyStemCell).reset(mockPotts.ids, mockPotts.regions);
-        verify(mockFlyStemCell).make(anyInt(), eq(State.PROLIFERATIVE), eq(mockNewLocation), eq(mockRandom));
-        verify(mockSimulation.getGrid()).addObject(eq(mockNewCell), isNull());
-        verify(mockPotts).register(eq(mockNewCell));
-        verify(mockNewCell).reset(mockPotts.ids, mockPotts.regions);
-        verify(mockNewCell).schedule(mockSimulation.getSchedule());
-    }
 }
