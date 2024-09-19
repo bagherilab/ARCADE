@@ -1413,8 +1413,8 @@ public class PottsLocationTest {
         MersenneTwisterFast random = new MersenneTwisterFast(12345);
         Voxel splitpoint = location.getSplitpoint();
         PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint,
-                                                                            eq(null), eq(true),
-                                                                            eq(PottsLocation.DEFAULT_SPLIT_PROBABILITY));
+                                                                            null, true,
+                                                                            PottsLocation.DEFAULT_SPLIT_PROBABILITY);
         assertNotNull(splitLocation);
         assertTrue(location.voxels.size() > 0);
         assertTrue(splitLocation.voxels.size() > 0);
@@ -1433,8 +1433,8 @@ public class PottsLocationTest {
         ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(33, 33, 33)); // 33% offsets
         Voxel splitpoint = location.getSplitpoint(offsets);
         PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint,
-                                                                            eq(null), eq(false),
-                                                                            eq(PottsLocation.DEFAULT_SPLIT_PROBABILITY));
+                                                                            null, false,
+                                                                            PottsLocation.DEFAULT_SPLIT_PROBABILITY);
         assertNotNull(splitLocation);
         assertTrue(location.voxels.size() > 0);
         assertTrue(splitLocation.voxels.size() > 0);
