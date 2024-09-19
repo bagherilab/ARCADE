@@ -298,7 +298,9 @@ public abstract class PottsLocation implements Location {
      * @param direction      the direction of the split, or null if using shortest diameter
      * @return a location with the split voxels
      */
-    public Location split(MersenneTwisterFast random, ArrayList<Integer> offsetPercents, Direction direction) {
+    public Location split(MersenneTwisterFast random,
+                          ArrayList<Integer> offsetPercents,
+                          Direction direction) {
         Voxel splitpoint;
         boolean shouldBalance;
     
@@ -306,14 +308,12 @@ public abstract class PottsLocation implements Location {
         if (offsetPercents != null) {
             splitpoint = getSplitpoint(offsetPercents);
             shouldBalance = false;
-        }
         // Case 2: If direction is provided and no offsetPercents, balance the voxels
-        else if (direction != null) {
+        } else if (direction != null) {
             splitpoint = getSplitpoint();
             shouldBalance = true;
-        }
         // Default Case: Neither offsetPercents nor direction are provided, balance the voxels
-        else {
+        } else {
             splitpoint = getSplitpoint();
             shouldBalance = true; // This can be changed if needed
         }
@@ -333,9 +333,12 @@ public abstract class PottsLocation implements Location {
      * @param splitpoint the voxel that determines where the split occurs
      * @param direction the direction of the split (can be null)
      * @param shouldBalance indicates whether voxels should be balanced
-     * @return a {@code Location} containing the split voxels that are not assigned to the current location
+     * @return a {@code Location} containing the split voxels that are not
+     *         assigned to the current location
      */
-    Location performSplit(MersenneTwisterFast random, Voxel splitpoint, Direction direction, boolean shouldBalance) {
+    Location performSplit(MersenneTwisterFast random,
+                          Voxel splitpoint, Direction direction,
+                          boolean shouldBalance) {
         // Initialize lists of split voxels
         ArrayList<Voxel> voxelsA = new ArrayList<>();
         ArrayList<Voxel> voxelsB = new ArrayList<>();
@@ -353,7 +356,9 @@ public abstract class PottsLocation implements Location {
         }
 
         // Select one split to keep for this location and return the other
-        return (random.nextDouble() < 0.5) ? separateVoxels(voxelsA, voxelsB, random) : separateVoxels(voxelsB, voxelsA, random);
+        return (random.nextDouble() < 0.5)
+            ? separateVoxels(voxelsA, voxelsB, random)
+            : separateVoxels(voxelsB, voxelsA, random);
     }
     
     /**
