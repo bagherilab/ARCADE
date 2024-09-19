@@ -1,6 +1,5 @@
 package arcade.potts.env.location;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -1312,8 +1311,14 @@ public class PottsLocationTest {
     @Test
     public void split_noOffsets_callsPerformSplit() {
         PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
-        doCallRealMethod().when(spy).performSplit(any(MersenneTwisterFast.class), any(Voxel.class), any(Direction.class), anyBoolean());
-        spy.split(randomDoubleZero);
+        doCallRealMethod()
+            .when(spy)
+            .performSplit(
+                any(MersenneTwisterFast.class),
+                any(Voxel.class),
+                any(Direction.class),
+                anyBoolean()
+            );        spy.split(randomDoubleZero);
         verify(spy).getSplitpoint();
         verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(null), eq(true));
     }
@@ -1322,7 +1327,14 @@ public class PottsLocationTest {
     public void split_withOffsets_callsPerformSplit() {
         ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(50, 50, 50));
         PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
-        doCallRealMethod().when(spy).performSplit(any(MersenneTwisterFast.class), any(Voxel.class), any(Direction.class), anyBoolean());
+        doCallRealMethod()
+            .when(spy)
+            .performSplit(
+                any(MersenneTwisterFast.class),
+                any(Voxel.class),
+                any(Direction.class),
+                anyBoolean()
+            );
         spy.split(randomDoubleZero, offsets);
         verify(spy).getSplitpoint(offsets);
         verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(null), eq(false));    }
@@ -1361,8 +1373,12 @@ public class PottsLocationTest {
         int totalSize = locationSize + splitLocationSize;
         double expectedOneThird = totalSize / 3.0;
         double expectedTwoThirds = 2 * totalSize / 3.0;
-        boolean locationIsOneThird = Math.abs(locationSize - expectedOneThird) <= 1 && Math.abs(splitLocationSize - expectedTwoThirds) <= 1;
-        boolean locationIsTwoThirds = Math.abs(locationSize - expectedTwoThirds) <= 1 && Math.abs(splitLocationSize - expectedOneThird) <= 1;
+        boolean locationIsOneThird =
+            Math.abs(locationSize - expectedOneThird) <= 1 &&
+            Math.abs(splitLocationSize - expectedTwoThirds) <= 1;
+        boolean locationIsTwoThirds =
+            Math.abs(locationSize - expectedTwoThirds) <= 1 &&
+            Math.abs(splitLocationSize - expectedOneThird) <= 1;
         assertTrue(locationIsOneThird || locationIsTwoThirds);
     }
 }
