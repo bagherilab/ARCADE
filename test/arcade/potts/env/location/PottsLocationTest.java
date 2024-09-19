@@ -6,8 +6,6 @@ import java.util.HashMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.Region;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -1374,11 +1372,11 @@ public class PottsLocationTest {
         double expectedOneThird = totalSize / 3.0;
         double expectedTwoThirds = 2 * totalSize / 3.0;
         boolean locationIsOneThird =
-            Math.abs(locationSize - expectedOneThird) <= 1 &&
-            Math.abs(splitLocationSize - expectedTwoThirds) <= 1;
+            Math.abs(locationSize - expectedOneThird) <= 1
+            && Math.abs(splitLocationSize - expectedTwoThirds) <= 1;
         boolean locationIsTwoThirds =
-            Math.abs(locationSize - expectedTwoThirds) <= 1 &&
-            Math.abs(splitLocationSize - expectedOneThird) <= 1;
+            Math.abs(locationSize - expectedTwoThirds) <= 1
+            && Math.abs(splitLocationSize - expectedOneThird) <= 1;
         assertTrue(locationIsOneThird || locationIsTwoThirds);
     }
 }
