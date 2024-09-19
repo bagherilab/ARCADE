@@ -1315,10 +1315,11 @@ public class PottsLocationTest {
                 any(MersenneTwisterFast.class),
                 any(Voxel.class),
                 any(Direction.class),
-                anyBoolean()
+                anyBoolean(),
+                anyDouble()
             );        spy.split(randomDoubleZero);
         verify(spy).getSplitpoint();
-        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(null), eq(true));
+        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(null), eq(true), eq(0.5));
     }
     
     @Test
@@ -1331,18 +1332,19 @@ public class PottsLocationTest {
                 any(MersenneTwisterFast.class),
                 any(Voxel.class),
                 any(Direction.class),
-                anyBoolean()
+                anyBoolean(),
+                anyDouble()
             );
         spy.split(randomDoubleZero, offsets);
         verify(spy).getSplitpoint(offsets);
-        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(null), eq(false));    }
+        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(null), eq(false), eq(0.5));    }
     
     @Test
     public void performSplit_noOffsets_splitsVoxelsCorrectly() {
         PottsLocation location = new PottsLocationMock(voxelListAB);
         MersenneTwisterFast random = new MersenneTwisterFast(12345);
         Voxel splitpoint = location.getSplitpoint();
-        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, null, true);
+        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, null, true, .5);
         assertNotNull(splitLocation);
         assertTrue(location.voxels.size() > 0);
         assertTrue(splitLocation.voxels.size() > 0);
@@ -1360,7 +1362,7 @@ public class PottsLocationTest {
         location.add(4, 4, 4);
         ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(33, 33, 33)); // 33% offsets
         Voxel splitpoint = location.getSplitpoint(offsets);
-        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, null, false);
+        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, null, false, .5);
         assertNotNull(splitLocation);
         assertTrue(location.voxels.size() > 0);
         assertTrue(splitLocation.voxels.size() > 0);
