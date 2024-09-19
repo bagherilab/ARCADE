@@ -1360,7 +1360,8 @@ public class PottsLocationTest {
             );
         spy.split(randomDoubleZero, offsets, null, customSplitProbability);
         verify(spy).getSplitpoint(offsets);
-        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(null), eq(false), eq(customSplitProbability));
+        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class),
+                                 eq(null), eq(false), eq(customSplitProbability));
     }
     
     @Test
@@ -1404,7 +1405,8 @@ public class PottsLocationTest {
         
         spy.split(randomDoubleZero, offsets, customDirection, customSplitProbability);
         verify(spy).getSplitpoint(offsets);
-        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(customDirection), eq(false), eq(customSplitProbability));
+        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(customDirection),
+                                                                   eq(false), eq(customSplitProbability));
     }
     
     @Test
@@ -1563,7 +1565,8 @@ public class PottsLocationTest {
 
         // Mock random to return a value less than customProbability (expecting voxelsA to be kept)
         when(random.nextDouble()).thenReturn(0.75);  // This should trigger the voxelsA to be returned
-        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, direction, false, customProbability);
+        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, direction,
+                                                                            false, customProbability);
 
         // Assert the number of voxels in location is larger than splitLocation due to 90% offset
         assertTrue(location.voxels.size() > splitLocation.voxels.size());
@@ -1571,7 +1574,8 @@ public class PottsLocationTest {
         // Mock random to return a value greater than customProbability (expecting voxelsB to be kept)
         when(random.nextDouble()).thenReturn(0.85);  // This should trigger the voxelsB to be returned
         PottsLocation newLocation = new PottsLocationMock(voxelListAB);
-        PottsLocation newSplitLocation = (PottsLocation) newLocation.performSplit(random, splitpoint, direction, false, customProbability);
+        PottsLocation newSplitLocation = (PottsLocation) newLocation.performSplit(random, splitpoint, direction,
+                                                                                  false, customProbability);
 
         // Assert the number of voxels in newLocation is smaller than newSplitLocation
         assertTrue(newLocation.voxels.size() < newSplitLocation.voxels.size());
@@ -1588,7 +1592,9 @@ public class PottsLocationTest {
         Voxel splitpoint = location.getSplitpoint();
         
         // Perform the split without a direction and without balancing
-        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, null, false, PottsLocation.DEFAULT_SPLIT_PROBABILITY);
+        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, null,
+                                                                            false,
+                                                                            PottsLocation.DEFAULT_SPLIT_PROBABILITY);
         
         assertNotNull(splitLocation);
         assertTrue(location.voxels.size() > 0);
