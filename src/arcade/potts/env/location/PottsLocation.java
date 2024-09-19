@@ -262,9 +262,8 @@ public abstract class PottsLocation implements Location {
      * Splits the location voxels into two lists.
      * <p>
      * The split occurs along the direction with the shortest diameter, or a
-     * specified direction. The lists of voxels are guaranteed to be connected,
-     * and generally will be balanced in size. One of the splits is assigned
-     * to the current location and the other is returned.
+     * specified direction. One of the splits is assigned to the current
+     * location and the other is returned.
      *
      * @param random the seeded random number generator
      * @return a location with the split voxels
@@ -276,8 +275,6 @@ public abstract class PottsLocation implements Location {
     /**
      * Splits the location voxels into two lists at the point specified by
      * offsetPercents and along the shortest diameter.
-     * <p>
-     * The lists of voxels are guaranteed to be connected and balanced.
      *
      * @param random         the seeded random number generator
      * @param offsetPercents the percentage offset in each direction for the split point
@@ -294,7 +291,7 @@ public abstract class PottsLocation implements Location {
      * <p>
      * The lists of voxels are guaranteed to be connected and balanced if no
      * direction is provided. If a direction is provided, the split occurs
-     * without balancing.
+     * without connecting or balancing.
      *
      * @param random         the seeded random number generator
      * @param offsetPercents the percentage offset in each direction for the split point
@@ -302,45 +299,26 @@ public abstract class PottsLocation implements Location {
      * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsetPercents, Direction direction) {
-        Voxel splitpoint = (offsetPercents != null) ? getSplitpoint(offsetPercents) : getSplitpoint();
-        
-        // Check if the direction is specified, if not use default behavior with balancing
-        if (direction == null) {
-            return performSplit(random, splitpoint); // This will balance voxels
-        } else {
-            return performSplit(random, splitpoint, direction); // This will skip balancing
+        Voxel splitpoint;
+        boolean shouldBalance;
+    
+        // Case 1: If offsetPercents are provided, don't balance the voxels
+        if (offsetPercents != null) {
+            splitpoint = getSplitpoint(offsetPercents);
+            shouldBalance = false;
         }
-    }
+        // Case 2: If direction is provided and no offsetPercents, balance the voxels
+        else if (direction != null) {
+            splitpoint = getSplitpoint();
+            shouldBalance = true;
+        }
+        // Default Case: Neither offsetPercents nor direction are provided, balance the voxels
+        else {
+            splitpoint = getSplitpoint();
+            shouldBalance = true; // This can be changed if needed
+        }
     
-    /**
-     * Performs the voxel split based on a given split point.
-     * <p>
-     * Splits the voxels of the location into two balanced, connected groups on
-     * either side of split point. Split occurs along the direction with
-     * the shortest diameter.
-     *
-     * @param random the seeded random number generator
-     * @param splitpoint the voxel that determines where the split occurs
-     * @return a {@code Location} containing the split voxels that are not assigned to the current location
-     */
-    Location performSplit(MersenneTwisterFast random, Voxel splitpoint) {
-        return performSplit(random, splitpoint, getDirection(random), true);
-    }
-    
-    /**
-     * Performs the voxel split based on a given split point and direction.
-     * <p>
-     * Splits the voxels of the location into two connected groups on
-     * either side of split point. Balancing is skipped.
-     *
-     * @param random     the seeded random number generator
-     * @param splitpoint the voxel that determines where the split occurs
-     * @param direction  the direction of the split
-     * @return a {@code Location} containing the split voxels that are not assigned to the current location
-     */
-    Location performSplit(MersenneTwisterFast random, Voxel splitpoint, Direction direction) {
-        // Calls performSplit without balancing
-        return performSplit(random, splitpoint, direction, false);
+        return performSplit(random, splitpoint, direction, shouldBalance);
     }
     
     /**
@@ -348,12 +326,12 @@ public abstract class PottsLocation implements Location {
      * and whether to balance the voxels.
      * <p>
      * Splits the voxels of the location into two connected groups on
-     * either side of split point. Balancing is optional based on the
+     * either side of split point. Balancing and connecting is optional based on the
      * shouldBalance parameter.
      *
-     * @param random     the seeded random number generator
+     * @param random the seeded random number generator
      * @param splitpoint the voxel that determines where the split occurs
-     * @param direction  the direction of the split
+     * @param direction the direction of the split (can be null)
      * @param shouldBalance indicates whether voxels should be balanced
      * @return a {@code Location} containing the split voxels that are not assigned to the current location
      */
@@ -361,18 +339,19 @@ public abstract class PottsLocation implements Location {
         // Initialize lists of split voxels
         ArrayList<Voxel> voxelsA = new ArrayList<>();
         ArrayList<Voxel> voxelsB = new ArrayList<>();
-        
+
         // Perform the split along the specified direction
+        if (direction == null) {
+            direction = getDirection(random);
+        }
         splitVoxels(direction, voxels, voxelsA, voxelsB, splitpoint, random);
-        
-        // Ensure that voxel split is connected
-        connectVoxels(voxelsA, voxelsB, this, random);
-        
+
         // Only balance if 'shouldBalance' is true
         if (shouldBalance) {
+            connectVoxels(voxelsA, voxelsB, this, random);
             balanceVoxels(voxelsA, voxelsB, this, random);
         }
-        
+
         // Select one split to keep for this location and return the other
         return (random.nextDouble() < 0.5) ? separateVoxels(voxelsA, voxelsB, random) : separateVoxels(voxelsB, voxelsA, random);
     }
