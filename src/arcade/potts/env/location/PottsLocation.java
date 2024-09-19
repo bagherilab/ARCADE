@@ -8,8 +8,6 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Utilities;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -42,6 +40,8 @@ public abstract class PottsLocation implements Location {
     
     /** Relative padding for selecting maximum diameter. */
     private static final double DIAMETER_RATIO = 0.9;
+
+    private static final double DEFAULT_SPLIT_PROBABILITY = 0.5;
     
     /** List of voxels for the location. */
     final ArrayList<Voxel> voxels;
@@ -269,7 +269,7 @@ public abstract class PottsLocation implements Location {
      * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random) {
-        return split(random, null, null);
+        return split(random, null, null, DEFAULT_SPLIT_PROBABILITY);
     }
     
     /**
@@ -281,7 +281,22 @@ public abstract class PottsLocation implements Location {
      * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsetPercents) {
-        return split(random, offsetPercents, null);
+        return split(random, offsetPercents, null, DEFAULT_SPLIT_PROBABILITY);
+    }
+
+    /**
+     * Splits the location voxels into two lists at the point specified by
+     * offsetPercents and along the specified direction.
+     *
+     * @param random         the seeded random number generator
+     * @param offsetPercents the percentage offset in each direction for the split point
+     * @param direction      the direction of the split
+     * @return a location with the split voxels
+     */
+    public Location split(MersenneTwisterFast random,
+                      ArrayList<Integer> offsetPercents,
+                      Direction direction) {
+        return split(random, offsetPercents, direction, DEFAULT_SPLIT_PROBABILITY);
     }
     
     /**
@@ -296,14 +311,17 @@ public abstract class PottsLocation implements Location {
      * @param random         the seeded random number generator
      * @param offsetPercents the percentage offset in each direction for the split point
      * @param direction      the direction of the split, or null if using shortest diameter
+     * @param splitProbability The probability to decide which group to keep.
      * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random,
-                          ArrayList<Integer> offsetPercents,
-                          Direction direction) {
+                        ArrayList<Integer> offsetPercents,
+                        Direction direction,
+                        Double splitProbability) {
         Voxel splitpoint;
         boolean shouldBalance;
-    
+        double probability = splitProbability;
+        
         // Case 1: If offsetPercents are provided, don't balance the voxels
         if (offsetPercents != null) {
             splitpoint = getSplitpoint(offsetPercents);
@@ -317,8 +335,8 @@ public abstract class PottsLocation implements Location {
             splitpoint = getSplitpoint();
             shouldBalance = true; // This can be changed if needed
         }
-    
-        return performSplit(random, splitpoint, direction, shouldBalance);
+
+        return performSplit(random, splitpoint, direction, shouldBalance, probability);
     }
     
     /**
@@ -333,32 +351,34 @@ public abstract class PottsLocation implements Location {
      * @param splitpoint the voxel that determines where the split occurs
      * @param direction the direction of the split (can be null)
      * @param shouldBalance indicates whether voxels should be balanced
+     * @param splitProbability indicates the probability voxelsA are returned vs voxelsB.
+     *                         Determines which voxels are kept in the original location.
      * @return a {@code Location} containing the split voxels that are not
      *         assigned to the current location
      */
     Location performSplit(MersenneTwisterFast random,
-                          Voxel splitpoint, Direction direction,
-                          boolean shouldBalance) {
-        // Initialize lists of split voxels
-        ArrayList<Voxel> voxelsA = new ArrayList<>();
-        ArrayList<Voxel> voxelsB = new ArrayList<>();
-
-        // Perform the split along the specified direction
-        if (direction == null) {
-            direction = getDirection(random);
-        }
-        splitVoxels(direction, voxels, voxelsA, voxelsB, splitpoint, random);
-
-        // Only balance if 'shouldBalance' is true
-        if (shouldBalance) {
-            connectVoxels(voxelsA, voxelsB, this, random);
-            balanceVoxels(voxelsA, voxelsB, this, random);
-        }
-
-        // Select one split to keep for this location and return the other
-        return (random.nextDouble() < 0.5)
-            ? separateVoxels(voxelsA, voxelsB, random)
-            : separateVoxels(voxelsB, voxelsA, random);
+    Voxel splitpoint, Direction direction,
+    boolean shouldBalance, double splitProbability) {
+    // Initialize lists of split voxels
+    ArrayList<Voxel> voxelsA = new ArrayList<>();
+    ArrayList<Voxel> voxelsB = new ArrayList<>();
+    
+    // Perform the split along the specified direction
+    if (direction == null) {
+    direction = getDirection(random);
+    }
+    splitVoxels(direction, voxels, voxelsA, voxelsB, splitpoint, random);
+    
+    // Only balance if 'shouldBalance' is true
+    if (shouldBalance) {
+    connectVoxels(voxelsA, voxelsB, this, random);
+    balanceVoxels(voxelsA, voxelsB, this, random);
+    }
+    
+    // Use the user-specified or default probability to determine the split
+    return (random.nextDouble() < splitProbability)
+    ? separateVoxels(voxelsA, voxelsB, random)
+    : separateVoxels(voxelsB, voxelsA, random);
     }
     
     /**
@@ -381,7 +401,7 @@ public abstract class PottsLocation implements Location {
         
         return new Voxel(x, y, z);
     }
-
+    
     /**
      * Gets the center voxel where location will split if no offset percents specified.
      * <p>
@@ -394,7 +414,7 @@ public abstract class PottsLocation implements Location {
     public Voxel getSplitpoint() {
         return getCenter();
     }
-
+    
     /**
      * Calculates and returns the voxel at specified percentage offset from
      * the boundaries of the location.
