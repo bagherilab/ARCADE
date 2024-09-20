@@ -1,5 +1,6 @@
 package arcade.potts.agent.module;
 
+import java.util.ArrayList;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
@@ -10,7 +11,6 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
 import static arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.Direction;
-import static arcade.potts.util.PottsFlyEnums.StemDaughter;
 
 /**
  * Extension of {@link PottsModuleProliferationSimple} with a custom addCell
@@ -39,13 +39,13 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         Potts potts = ((PottsSimulation) sim).getPotts();
         
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
-        int splitOffset = flyStemCell.splitOffsetPercent;
+        ArrayList<Integer> splitOffsetPercent = flyStemCell.getSplitOffsetPercent();
         Direction splitDirection = flyStemCell.splitDirection;
-        StemDaughter stemDaughter = flyStemCell.stemDaughter;
+        double splitProbability = flyStemCell.splitProbability;
 
         // Split current location using splitFly method
         Location newLocation = ((PottsLocation2D) cell.getLocation())
-                .splitFly(random, splitOffset, splitDirection, stemDaughter);
+                .split(random, splitOffsetPercent, splitDirection, splitProbability);
         
         // Reset current cell
         cell.reset(potts.ids, potts.regions);

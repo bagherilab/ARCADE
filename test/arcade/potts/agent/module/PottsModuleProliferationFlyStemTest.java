@@ -1,27 +1,13 @@
 package arcade.potts.agent.module;
 
-import arcade.core.env.location.Location;
-import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
-import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.agent.cell.PottsCellFlyStem;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.State;
-import arcade.potts.util.PottsFlyEnums.StemDaughter;
 import ec.util.MersenneTwisterFast;
 import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
 
-import static arcade.potts.util.PottsEnums.State;
-import static arcade.potts.util.PottsEnums.Direction;
-import static arcade.potts.util.PottsFlyEnums.StemDaughter;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 

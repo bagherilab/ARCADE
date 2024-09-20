@@ -4,20 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsFlyEnums.StemDaughter;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
-import static arcade.potts.util.PottsEnums.Direction;
-import arcade.core.env.location.Location;
 
 public class PottsLocation2DTest {
     static MersenneTwisterFast randomDoubleZero;

@@ -16,7 +16,6 @@ import arcade.potts.agent.cell.PottsCellFlyStem.PottsCellFlyStemSymmetric1StemAp
 import arcade.potts.agent.cell.PottsCellFlyStem.PottsCellFlyStemSymmetric2StemApicalOrBoth;
 import arcade.potts.agent.cell.PottsCellFlyStem.PottsCellFlyStemWT;
 import arcade.potts.agent.module.PottsModule;
-import arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -150,8 +149,6 @@ public final class PottsCellContainer implements CellContainer {
         
         // Make cell.
         PottsCell cell;
-        int splitOffsetPercent;
-        Direction splitDirection;
         switch (parameters.get("CLASS")) {
             default:
             case "stem":
@@ -166,96 +163,80 @@ public final class PottsCellContainer implements CellContainer {
                 }
                 break;
             case "flystem-mudmut-onestemdaughter-stemdaughterrandom":
-                splitOffsetPercent = 50;
-                splitDirection = Direction.YZ_PLANE;
                 if (factory.popToRegions.get(pop)) {
                     cell = new PottsCellFlyStemMUDMut1StemRandom(id, parent, pop, state, age, divisions,
                             location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights, splitOffsetPercent, splitDirection);
+                            criticalRegionVolumes, criticalRegionHeights);
                 } else {
                     cell = new PottsCellFlyStemMUDMut1StemRandom(id, parent, pop, state, age, divisions,
                             location, false, parameters, criticalVolume, criticalHeight,
-                            null, null, splitOffsetPercent, splitDirection);
+                            null, null);
                 }
                 break;
             case "flystem-mudmut-onestemdaughter-stemdaughterleft":
-                splitOffsetPercent = 50;
-                splitDirection = Direction.YZ_PLANE;
                 if (factory.popToRegions.get(pop)) {
                     cell = new PottsCellFlyStemMUDMut1StemLeft(id, parent, pop, state, age, divisions,
                             location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights, splitOffsetPercent, splitDirection);
+                            criticalRegionVolumes, criticalRegionHeights);
                 } else {
                     cell = new PottsCellFlyStemMUDMut1StemLeft(id, parent, pop, state, age, divisions,
                             location, false, parameters, criticalVolume, criticalHeight,
-                            null, null, splitOffsetPercent, splitDirection);
+                            null, null);
                 }
                 break;
             case "flystem-mudmut-twostemdaughters-stemdaughterrandom":
-                splitOffsetPercent = 50;
-                splitDirection = Direction.YZ_PLANE;
                 if (factory.popToRegions.get(pop)) {
                     cell = new PottsCellFlyStemMUDMut2StemRandom(id, parent, pop, state, age, divisions,
                             location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights, splitOffsetPercent, splitDirection);
+                            criticalRegionVolumes, criticalRegionHeights);
                 } else {
                     cell = new PottsCellFlyStemMUDMut2StemRandom(id, parent, pop, state, age, divisions,
                             location, false, parameters, criticalVolume, criticalHeight,
-                            null, null, splitOffsetPercent, splitDirection);
+                            null, null);
                 }
                 break;
             case "flystem-invert-onestemdaughter-stemdaughterbasal":
-                splitOffsetPercent = 33;
-                splitDirection = Direction.ZX_PLANE;
                 if (factory.popToRegions.get(pop)) {
                     cell = new PottsCellFlyStemInvert1StemBasal(id, parent, pop, state, age, divisions,
                             location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights, splitOffsetPercent, splitDirection);
+                            criticalRegionVolumes, criticalRegionHeights);
                 } else {
-                    splitOffsetPercent = 33;
-                    splitDirection = Direction.ZX_PLANE;
                     cell = new PottsCellFlyStemInvert1StemBasal(id, parent, pop, state, age, divisions,
                             location, false, parameters, criticalVolume, criticalHeight,
-                            null, null, splitOffsetPercent, splitDirection);
+                            null, null);
                 }
                 break;
             case "flystem-invert-twostemdaughters-stemdaughterbasalorboth":
-                splitOffsetPercent = 33;
-                splitDirection = Direction.ZX_PLANE;
                 if (factory.popToRegions.get(pop)) {
                     cell = new PottsCellFlyStemInvert2StemBasalOrBoth(id, parent, pop, state, age, divisions,
                             location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights, splitOffsetPercent, splitDirection);
+                            criticalRegionVolumes, criticalRegionHeights);
                 } else {
                     cell = new PottsCellFlyStemInvert2StemBasalOrBoth(id, parent, pop, state, age, divisions,
                             location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights, splitOffsetPercent, splitDirection);
+                            criticalRegionVolumes, criticalRegionHeights);
                 }
                 break;
             case "flystem-symmetric-onestemdaughter-stemdaughterapical":
-                splitOffsetPercent = 50;
-                splitDirection = Direction.ZX_PLANE;
                 if (factory.popToRegions.get(pop)) {
                     cell = new PottsCellFlyStemSymmetric1StemApical(id, parent, pop, state, age, divisions,
                             location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights, splitOffsetPercent, splitDirection);
+                            criticalRegionVolumes, criticalRegionHeights);
                 } else {
                     cell = new PottsCellFlyStemSymmetric1StemApical(id, parent, pop, state, age, divisions,
                             location, false, parameters, criticalVolume, criticalHeight,
-                            null, null, splitOffsetPercent, splitDirection);
+                            null, null);
                 }
                 break;
             case "flystem-symmetric-twostemdaughters-stemdaughterapicalorboth":
-                splitOffsetPercent = 50;
-                splitDirection = Direction.ZX_PLANE;
                 if (factory.popToRegions.get(pop)) {
                     cell = new PottsCellFlyStemSymmetric2StemApicalOrBoth(id, parent, pop, state, age, divisions,
                             location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights, splitOffsetPercent, splitDirection);
+                            criticalRegionVolumes, criticalRegionHeights);
                 } else {
                     cell = new PottsCellFlyStemSymmetric2StemApicalOrBoth(id, parent, pop, state, age, divisions,
                             location, false, parameters, criticalVolume, criticalHeight,
-                            null, null, splitOffsetPercent, splitDirection);
+                            null, null);
                 }
                 break;
             case "flystem-wt":
