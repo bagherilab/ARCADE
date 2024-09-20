@@ -7,15 +7,9 @@ import arcade.core.agent.cell.CellFactory;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
-import arcade.potts.agent.cell.PottsCellFlyStem.PottsCellFlyStemInvert1StemBasal;
-import arcade.potts.agent.cell.PottsCellFlyStem.PottsCellFlyStemInvert2StemBasalOrBoth;
-import arcade.potts.agent.cell.PottsCellFlyStem.PottsCellFlyStemMUDMut1StemLeft;
-import arcade.potts.agent.cell.PottsCellFlyStem.PottsCellFlyStemMUDMut1StemRandom;
-import arcade.potts.agent.cell.PottsCellFlyStem.PottsCellFlyStemMUDMut2StemRandom;
-import arcade.potts.agent.cell.PottsCellFlyStem.PottsCellFlyStemSymmetric1StemApical;
-import arcade.potts.agent.cell.PottsCellFlyStem.PottsCellFlyStemSymmetric2StemApicalOrBoth;
-import arcade.potts.agent.cell.PottsCellFlyStem.PottsCellFlyStemWT;
 import arcade.potts.agent.module.PottsModule;
+import arcade.potts.util.PottsEnums.Phase;
+import arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -144,117 +138,76 @@ public final class PottsCellContainer implements CellContainer {
      * @return  a {@link PottsCell} instance
      */
     private Cell convert(PottsCellFactory factory, Location location) {
-        // Get parameters for the cell population.
-        MiniBox parameters = factory.popToParameters.get(pop);
-        
-        // Make cell.
-        PottsCell cell;
-        switch (parameters.get("CLASS")) {
-            default:
-            case "stem":
-                if (factory.popToRegions.get(pop)) {
-                    cell = new PottsCellStem(id, parent, pop, state, age, divisions,
-                            location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
-                } else {
-                    cell = new PottsCellStem(id, parent, pop, state, age, divisions,
-                            location, false, parameters, criticalVolume, criticalHeight,
-                            null, null);
-                }
-                break;
-            case "flystem-mudmut-onestemdaughter-stemdaughterrandom":
-                if (factory.popToRegions.get(pop)) {
-                    cell = new PottsCellFlyStemMUDMut1StemRandom(id, parent, pop, state, age, divisions,
-                            location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
-                } else {
-                    cell = new PottsCellFlyStemMUDMut1StemRandom(id, parent, pop, state, age, divisions,
-                            location, false, parameters, criticalVolume, criticalHeight,
-                            null, null);
-                }
-                break;
-            case "flystem-mudmut-onestemdaughter-stemdaughterleft":
-                if (factory.popToRegions.get(pop)) {
-                    cell = new PottsCellFlyStemMUDMut1StemLeft(id, parent, pop, state, age, divisions,
-                            location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
-                } else {
-                    cell = new PottsCellFlyStemMUDMut1StemLeft(id, parent, pop, state, age, divisions,
-                            location, false, parameters, criticalVolume, criticalHeight,
-                            null, null);
-                }
-                break;
-            case "flystem-mudmut-twostemdaughters-stemdaughterrandom":
-                if (factory.popToRegions.get(pop)) {
-                    cell = new PottsCellFlyStemMUDMut2StemRandom(id, parent, pop, state, age, divisions,
-                            location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
-                } else {
-                    cell = new PottsCellFlyStemMUDMut2StemRandom(id, parent, pop, state, age, divisions,
-                            location, false, parameters, criticalVolume, criticalHeight,
-                            null, null);
-                }
-                break;
-            case "flystem-invert-onestemdaughter-stemdaughterbasal":
-                if (factory.popToRegions.get(pop)) {
-                    cell = new PottsCellFlyStemInvert1StemBasal(id, parent, pop, state, age, divisions,
-                            location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
-                } else {
-                    cell = new PottsCellFlyStemInvert1StemBasal(id, parent, pop, state, age, divisions,
-                            location, false, parameters, criticalVolume, criticalHeight,
-                            null, null);
-                }
-                break;
-            case "flystem-invert-twostemdaughters-stemdaughterbasalorboth":
-                if (factory.popToRegions.get(pop)) {
-                    cell = new PottsCellFlyStemInvert2StemBasalOrBoth(id, parent, pop, state, age, divisions,
-                            location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
-                } else {
-                    cell = new PottsCellFlyStemInvert2StemBasalOrBoth(id, parent, pop, state, age, divisions,
-                            location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
-                }
-                break;
-            case "flystem-symmetric-onestemdaughter-stemdaughterapical":
-                if (factory.popToRegions.get(pop)) {
-                    cell = new PottsCellFlyStemSymmetric1StemApical(id, parent, pop, state, age, divisions,
-                            location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
-                } else {
-                    cell = new PottsCellFlyStemSymmetric1StemApical(id, parent, pop, state, age, divisions,
-                            location, false, parameters, criticalVolume, criticalHeight,
-                            null, null);
-                }
-                break;
-            case "flystem-symmetric-twostemdaughters-stemdaughterapicalorboth":
-                if (factory.popToRegions.get(pop)) {
-                    cell = new PottsCellFlyStemSymmetric2StemApicalOrBoth(id, parent, pop, state, age, divisions,
-                            location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
-                } else {
-                    cell = new PottsCellFlyStemSymmetric2StemApicalOrBoth(id, parent, pop, state, age, divisions,
-                            location, false, parameters, criticalVolume, criticalHeight,
-                            null, null);
-                }
-                break;
-            case "flystem-wt":
-                if (factory.popToRegions.get(pop)) {
-                    cell = new PottsCellFlyStemWT(id, parent, pop, state, age, divisions,
-                            location, true, parameters, criticalVolume, criticalHeight,
-                            criticalRegionVolumes, criticalRegionHeights);
-                } else {
-                    cell = new PottsCellFlyStemWT(id, parent, pop, state, age, divisions,
-                            location, false, parameters, criticalVolume, criticalHeight,
-                            null, null);
-                }
-        }
-        
-        // Update cell module.
-        PottsModule module = (PottsModule) cell.getModule();
-        module.setPhase(phase);
-        
-        return cell;
+    // Get parameters for the cell population.
+    MiniBox parameters = factory.popToParameters.get(pop);
+
+    // Determine if the cell has regions.
+    boolean hasRegions = factory.popToRegions.get(pop);
+
+    // Make cell.
+    PottsCell cell;
+    switch (parameters.get("CLASS")) {
+        default:
+        case "stem":
+            cell = new PottsCellStem(id, parent, pop, state, age, divisions,
+                    location, hasRegions, parameters, criticalVolume, criticalHeight,
+                    hasRegions ? criticalRegionVolumes : null,
+                    hasRegions ? criticalRegionHeights : null);
+            break;
+        case "flystem-wt":
+            cell = PottsCellFlyStem.createPottsCellFlyStemWT(id, parent, pop, state, age, divisions,
+                    location, hasRegions, parameters, criticalVolume, criticalHeight,
+                    hasRegions ? criticalRegionVolumes : null,
+                    hasRegions ? criticalRegionHeights : null);
+            break;
+        case "flystem-mudmut-onestemdaughter-stemdaughterrandom":
+            cell = PottsCellFlyStem.createPottsCellFlyStemMUDMut1StemRandom(id, parent, pop, state, age, divisions,
+                    location, hasRegions, parameters, criticalVolume, criticalHeight,
+                    hasRegions ? criticalRegionVolumes : null,
+                    hasRegions ? criticalRegionHeights : null);
+            break;
+        case "flystem-mudmut-onestemdaughter-stemdaughterleft":
+            cell = PottsCellFlyStem.createPottsCellFlyStemMUDMut1StemLeft(id, parent, pop, state, age, divisions,
+                    location, hasRegions, parameters, criticalVolume, criticalHeight,
+                    hasRegions ? criticalRegionVolumes : null,
+                    hasRegions ? criticalRegionHeights : null);
+            break;
+        case "flystem-mudmut-twostemdaughters-stemdaughterrandom":
+            cell = PottsCellFlyStem.createPottsCellFlyStemMUDMut2StemRandom(id, parent, pop, state, age, divisions,
+                    location, hasRegions, parameters, criticalVolume, criticalHeight,
+                    hasRegions ? criticalRegionVolumes : null,
+                    hasRegions ? criticalRegionHeights : null);
+            break;
+        case "flystem-invert-onestemdaughter-stemdaughterbasal":
+            cell = PottsCellFlyStem.createPottsCellFlyStemInvert1StemBasal(id, parent, pop, state, age, divisions,
+                    location, hasRegions, parameters, criticalVolume, criticalHeight,
+                    hasRegions ? criticalRegionVolumes : null,
+                    hasRegions ? criticalRegionHeights : null);
+            break;
+        case "flystem-invert-twostemdaughters-stemdaughterbasalorboth":
+            cell = PottsCellFlyStem.createPottsCellFlyStemInvert2StemBasalOrBoth(id, parent, pop, state, age, divisions,
+                    location, hasRegions, parameters, criticalVolume, criticalHeight,
+                    hasRegions ? criticalRegionVolumes : null,
+                    hasRegions ? criticalRegionHeights : null);
+            break;
+        case "flystem-symmetric-onestemdaughter-stemdaughterapical":
+            cell = PottsCellFlyStem.createPottsCellFlyStemSymmetric1StemApical(id, parent, pop, state, age, divisions,
+                    location, hasRegions, parameters, criticalVolume, criticalHeight,
+                    hasRegions ? criticalRegionVolumes : null,
+                    hasRegions ? criticalRegionHeights : null);
+            break;
+        case "flystem-symmetric-twostemdaughters-stemdaughterapicalorboth":
+            cell = PottsCellFlyStem.createPottsCellFlyStemSymmetric2StemApicalOrBoth(id, parent, pop, state, age, divisions,
+                    location, hasRegions, parameters, criticalVolume, criticalHeight,
+                    hasRegions ? criticalRegionVolumes : null,
+                    hasRegions ? criticalRegionHeights : null);
+            break;
     }
+
+    // Update cell module.
+    PottsModule module = (PottsModule) cell.getModule();
+    module.setPhase(phase);
+
+    return cell;
+}
 }

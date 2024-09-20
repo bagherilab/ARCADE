@@ -11,12 +11,12 @@ import arcade.potts.util.PottsEnums.State;
 import ec.util.MersenneTwisterFast;
 import static arcade.potts.util.PottsEnums.Direction;
 
-public abstract class PottsCellFlyStem extends PottsCell {
+public class PottsCellFlyStem extends PottsCell {
     /** Percentage offset from cell edge where division will occur */
-    public final ArrayList<Integer> splitOffsetPercent;
+    private final ArrayList<Integer> splitOffsetPercent;
 
     /** Direction of division */
-    public final Direction splitDirection;
+    private final Direction splitDirection;
 
     /**
      * The probability that the first set of voxels is returned during the split operation.
@@ -24,34 +24,50 @@ public abstract class PottsCellFlyStem extends PottsCell {
      * This parameter allows for the specification of which group of voxels (geometrically)
      * remains as the stem cell, and which group differentiates into the daughter cell type.
     */
-    public final double splitProbability;
+    private final double splitProbability;
+
+    /** Function to create daughter cells */
+    private final DaughterCellMaker daughterCellMaker;
 
     public PottsCellFlyStem(int id, int parent, int pop, CellState state, int age, int divisions,
-                         Location location, boolean hasRegions, MiniBox parameters,
-                         double criticalVolume, double criticalHeight,
-                         EnumMap<Region, Double> criticalRegionVolumes,
-                         EnumMap<Region, Double> criticalRegionHeights) {
+                            Location location, boolean hasRegions, MiniBox parameters,
+                            double criticalVolume, double criticalHeight,
+                            EnumMap<Region, Double> criticalRegionVolumes,
+                            EnumMap<Region, Double> criticalRegionHeights,
+                            int splitOffsetPercentX, int splitOffsetPercentY,
+                            Direction splitDirection, double splitProbability,
+                            DaughterCellMaker daughterCellMaker) {
         super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
                 criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        this.splitOffsetPercent = getSplitOffsetPercent();
-        this.splitDirection = getSplitDirection();
-        this.splitProbability = getSplitProbability();
+        this.splitOffsetPercent = new ArrayList<>();
+        this.splitOffsetPercent.add(splitOffsetPercentX);
+        this.splitOffsetPercent.add(splitOffsetPercentY);
+        this.splitDirection = splitDirection;
+        this.splitProbability = splitProbability;
+        this.daughterCellMaker = daughterCellMaker;
     }
 
-    abstract public ArrayList<Integer> getSplitOffsetPercent();
+    public ArrayList<Integer> getSplitOffsetPercent() {
+        return splitOffsetPercent;
+    }
 
-    abstract public Direction getSplitDirection();
+    public Direction getSplitDirection() {
+        return splitDirection;
+    }
 
-    abstract public double getSplitProbability();
+    public double getSplitProbability() {
+        return splitProbability;
+    }
 
-    public abstract PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
-                                               MersenneTwisterFast random);
+    public PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
+                                      MersenneTwisterFast random) {
+        return daughterCellMaker.makeDaughterCell(this, newID, newState, newLocation, random);
+    }
 
     @Override
-    public PottsCell make(int newID, CellState newState, Location newLocation,
-                                   MersenneTwisterFast random){
-            return makeDaughterCell(newID, newState, newLocation, random);
-        }
+    public PottsCell make(int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
+        return makeDaughterCell(newID, newState, newLocation, random);
+    }
 
     @Override
     void setStateModule(CellState newState) {
@@ -69,449 +85,301 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
     }
 
-    public static final class PottsCellFlyStemWT extends PottsCellFlyStem {
-        public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
-        public static final int SPLIT_OFFSET_PERCENT_X = 50;
-        public static final int SPLIT_OFFSET_PERCENT_Y = 66;
-        public static final Direction SPLIT_DIRECTION = Direction.ZX_PLANE;
-        // Split Probability 1 with ZX_PLANE divixion ensures apical cell remains stem
-        public static final double SPLIT_PROBABILITY = 1;
-
-        public PottsCellFlyStemWT(int id, int parent, int pop, CellState state, int age, int divisions,
-                             Location location, boolean hasRegions, MiniBox parameters,
-                             double criticalVolume, double criticalHeight,
-                             EnumMap<Region, Double> criticalRegionVolumes,
-                             EnumMap<Region, Double> criticalRegionHeights) {
-            super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        }
-
-        @Override
-        public ArrayList<Integer> getSplitOffsetPercent() {
-            ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_X);
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_Y);
-            return splitOffsetPercent;
-        }
-
-        @Override
-        public Direction getSplitDirection() {
-            return SPLIT_DIRECTION;
-        }
-
-        @Override
-        public double getSplitProbability() {
-            return SPLIT_PROBABILITY;
-        }
-
-        @Override
-        public PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
-                                          MersenneTwisterFast random) {
-            divisions++;
-            MiniBox newParameters = new MiniBox();
-            for (String key : this.getParameters().getKeys()) {
-                newParameters.put(key, this.getParameters().get(key));
-            }
-            newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP,
-                                            newState, age, divisions, newLocation,
-                                            hasRegions, newParameters, criticalVolume, criticalHeight,
-                                            criticalRegionVolumes, criticalRegionHeights);
-        }
+    @FunctionalInterface
+    public interface DaughterCellMaker {
+        PottsCell makeDaughterCell(PottsCellFlyStem parentCell, int newID, CellState newState,
+                                   Location newLocation, MersenneTwisterFast random);
     }
 
-    public static final class PottsCellFlyStemMUDMut1StemRandom extends PottsCellFlyStem {
-        public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
-        public static final int POTTS_STEM_1_POP = 1;
-        public static final int SPLIT_OFFSET_PERCENT_X = 50;
-        public static final int SPLIT_OFFSET_PERCENT_Y = 50;
-        public static final Direction SPLIT_DIRECTION = Direction.YZ_PLANE;
-        // Split Probability .5 with ZX_PLANE division makes stem daughter cell random
-        public static final double SPLIT_PROBABILITY = 0.5;
+    // Factory methods for each configuration
 
-        public PottsCellFlyStemMUDMut1StemRandom(int id, int parent, int pop, CellState state, int age, int divisions,
-                             Location location, boolean hasRegions, MiniBox parameters,
-                             double criticalVolume, double criticalHeight,
-                             EnumMap<Region, Double> criticalRegionVolumes,
-                             EnumMap<Region, Double> criticalRegionHeights) {
-            super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        }
+    // 1. PottsCellFlyStemWT
+    public static PottsCellFlyStem createPottsCellFlyStemWT(int id, int parent, int pop, CellState state, int age,
+                                                            int divisions, Location location, boolean hasRegions,
+                                                            MiniBox parameters, double criticalVolume, double criticalHeight,
+                                                            EnumMap<Region, Double> criticalRegionVolumes,
+                                                            EnumMap<Region, Double> criticalRegionHeights) {
+        int splitOffsetPercentX = 50;
+        int splitOffsetPercentY = 66;
+        Direction splitDirection = Direction.ZX_PLANE;
+        // Apical daughter always stem
+        double splitProbability = 1.0;
+        int pottsCellFlyNeuronWTPop = 2;
 
-        @Override
-        public ArrayList<Integer> getSplitOffsetPercent() {
-            ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_X);
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_Y);
-            return splitOffsetPercent;
-        }
-
-        @Override
-        public Direction getSplitDirection() {
-            return SPLIT_DIRECTION;
-        }
-
-        @Override
-        public double getSplitProbability() {
-            return SPLIT_PROBABILITY;
-        }
-
-        @Override
-        public PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
-                                          MersenneTwisterFast random) {
-            divisions++;
+        DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
+            parentCell.divisions++;
             MiniBox newParameters = new MiniBox();
-            for (String key : this.getParameters().getKeys()) {
-                newParameters.put(key, this.getParameters().get(key));
+            for (String key : parentCell.getParameters().getKeys()) {
+                newParameters.put(key, parentCell.getParameters().get(key));
             }
             newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
-                    hasRegions, newParameters, criticalVolume, criticalHeight,
-                    criticalRegionVolumes, criticalRegionHeights);
-        }
+            return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
+                    newState, parentCell.age, parentCell.divisions, newLocation,
+                    parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
+                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+        };
+
+        return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
+                criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                splitOffsetPercentX, splitOffsetPercentY, splitDirection, splitProbability, daughterCellMaker);
     }
 
-    public static final class PottsCellFlyStemMUDMut1StemLeft extends PottsCellFlyStem {
-        public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
-        public static final int SPLIT_OFFSET_PERCENT_X = 50;
-        public static final int SPLIT_OFFSET_PERCENT_Y = 50;
-        public static final Direction SPLIT_DIRECTION = Direction.YZ_PLANE;
-        // Split Probability 1 with ZX_PLANE division ensures stem daughter cell is left daughter
-        public static final double SPLIT_PROBABILITY = 1;
+    // 2. PottsCellFlyStemMUDMut1StemRandom
+    public static PottsCellFlyStem createPottsCellFlyStemMUDMut1StemRandom(int id, int parent, int pop, CellState state, int age,
+                                                                           int divisions, Location location, boolean hasRegions,
+                                                                           MiniBox parameters, double criticalVolume, double criticalHeight,
+                                                                           EnumMap<Region, Double> criticalRegionVolumes,
+                                                                           EnumMap<Region, Double> criticalRegionHeights) {
+        int splitOffsetPercentX = 50;
+        int splitOffsetPercentY = 50;
+        Direction splitDirection = Direction.YZ_PLANE;
+        // Random daughter will remain stem
+        double splitProbability = 0.5;
+        int pottsCellFlyNeuronWTPop = 2;
 
-
-        public PottsCellFlyStemMUDMut1StemLeft(int id, int parent, int pop, CellState state, int age, int divisions,
-                             Location location, boolean hasRegions, MiniBox parameters,
-                             double criticalVolume, double criticalHeight,
-                             EnumMap<Region, Double> criticalRegionVolumes,
-                             EnumMap<Region, Double> criticalRegionHeights) {
-            super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        }
-
-        @Override
-        public ArrayList<Integer> getSplitOffsetPercent() {
-            ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_X);
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_Y);
-            return splitOffsetPercent;
-        }
-
-        @Override
-        public Direction getSplitDirection() {
-            return SPLIT_DIRECTION;
-        }
-
-        @Override
-        public double getSplitProbability() {
-            return SPLIT_PROBABILITY;
-        }
-
-        @Override
-        public PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
-                                          MersenneTwisterFast random) {
-            divisions++;
+        DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
+            parentCell.divisions++;
             MiniBox newParameters = new MiniBox();
-            for (String key : this.getParameters().getKeys()) {
-                newParameters.put(key, this.getParameters().get(key));
+            for (String key : parentCell.getParameters().getKeys()) {
+                newParameters.put(key, parentCell.getParameters().get(key));
             }
             newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
-                    hasRegions, newParameters, criticalVolume, criticalHeight,
-                    criticalRegionVolumes, criticalRegionHeights);
-        }
+            return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
+                    newState, parentCell.age, parentCell.divisions, newLocation,
+                    parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
+                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+        };
+
+        return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
+                criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                splitOffsetPercentX, splitOffsetPercentY, splitDirection, splitProbability, daughterCellMaker);
     }
 
-    public static final class PottsCellFlyStemMUDMut2StemRandom extends PottsCellFlyStem {
-        public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
-        public static final int POTTS_STEM_1_POP = 1;
-        public static final int SPLIT_OFFSET_PERCENT_X = 50;
-        public static final int SPLIT_OFFSET_PERCENT_Y = 50;
-        public static final Direction SPLIT_DIRECTION = Direction.YZ_PLANE;
-        // Split Probability .5 with ZX_PLANE division makes stem daughter cell random
-        public static final double SPLIT_PROBABILITY = 0.5;
+    // 3. PottsCellFlyStemMUDMut1StemLeft
+    public static PottsCellFlyStem createPottsCellFlyStemMUDMut1StemLeft(int id, int parent, int pop, CellState state, int age,
+                                                                         int divisions, Location location, boolean hasRegions,
+                                                                         MiniBox parameters, double criticalVolume, double criticalHeight,
+                                                                         EnumMap<Region, Double> criticalRegionVolumes,
+                                                                         EnumMap<Region, Double> criticalRegionHeights) {
+        int splitOffsetPercentX = 50;
+        int splitOffsetPercentY = 50;
+        Direction splitDirection = Direction.YZ_PLANE;
+        // Left daughter always stem
+        double splitProbability = 1.0;
+        int pottsCellFlyNeuronWTPop = 2;
 
-        public PottsCellFlyStemMUDMut2StemRandom(int id, int parent, int pop, CellState state, int age, int divisions,
-                             Location location, boolean hasRegions, MiniBox parameters,
-                             double criticalVolume, double criticalHeight,
-                             EnumMap<Region, Double> criticalRegionVolumes,
-                             EnumMap<Region, Double> criticalRegionHeights) {
-            super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        }
+        DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
+            parentCell.divisions++;
+            MiniBox newParameters = new MiniBox();
+            for (String key : parentCell.getParameters().getKeys()) {
+                newParameters.put(key, parentCell.getParameters().get(key));
+            }
+            newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
+            return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
+                    newState, parentCell.age, parentCell.divisions, newLocation,
+                    parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
+                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+        };
 
-        @Override
-        public ArrayList<Integer> getSplitOffsetPercent() {
-            ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_X);
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_Y);
-            return splitOffsetPercent;
-        }
+        return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
+                criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                splitOffsetPercentX, splitOffsetPercentY, splitDirection, splitProbability, daughterCellMaker);
+    }
 
-        @Override
-        public Direction getSplitDirection() {
-            return SPLIT_DIRECTION;
-        }
+    // 4. PottsCellFlyStemMUDMut2StemRandom
+    public static PottsCellFlyStem createPottsCellFlyStemMUDMut2StemRandom(int id, int parent, int pop, CellState state, int age,
+                                                                           int divisions, Location location, boolean hasRegions,
+                                                                           MiniBox parameters, double criticalVolume, double criticalHeight,
+                                                                           EnumMap<Region, Double> criticalRegionVolumes,
+                                                                           EnumMap<Region, Double> criticalRegionHeights) {
+        int splitOffsetPercentX = 50;
+        int splitOffsetPercentY = 50;
+        Direction splitDirection = Direction.YZ_PLANE;
+        // Random daughter will remain stem
+        double splitProbability = 0.5;
+        int pottsCellFlyNeuronWTPop = 2;
+        int pottsStem1Pop = 1;
 
-        @Override
-        public double getSplitProbability() {
-            return SPLIT_PROBABILITY;
-        }
-
-        @Override
-        public PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
-                                          MersenneTwisterFast random) {
-            divisions++;
-            // 25% chance of making MUDMut2StemRandom, 25% chance of making MUDMut1StemRandom, 50% chance of making FlyNeuronWT
-            if (random.nextDouble() < 0.25) {
+        DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
+            parentCell.divisions++;
+            double rand = random.nextDouble();
+            if (rand < 0.25) {
                 System.out.println("Making new MUDMut2StemRandom");
-                System.out.println("Inside make method, growth rate is " + this.getParameters().get("proliferation/CELL_GROWTH_RATE"));
-                return new PottsCellFlyStemMUDMut2StemRandom(newID, id, pop, newState, age, divisions, newLocation,
-                        hasRegions, this.getParameters(), criticalVolume, criticalHeight,
-                        criticalRegionVolumes, criticalRegionHeights);
-            } else if (random.nextDouble() < 0.5) {
+                return createPottsCellFlyStemMUDMut2StemRandom(newID, parentCell.getID(), parentCell.pop, newState, parentCell.age,
+                        parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                        parentCell.criticalVolume, parentCell.criticalHeight,
+                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+            } else if (rand < 0.5) {
                 System.out.println("Making new MUDMut1StemRandom");
-                System.out.println("Inside make method, growth rate is " + this.getParameters().get("proliferation/CELL_GROWTH_RATE"));
-                return new PottsCellFlyStemMUDMut1StemRandom(newID, id, POTTS_STEM_1_POP, newState, age, divisions, newLocation,
-                        hasRegions, this.getParameters(), criticalVolume, criticalHeight,
-                        criticalRegionVolumes, criticalRegionHeights);
+                return createPottsCellFlyStemMUDMut1StemRandom(newID, parentCell.getID(), pottsStem1Pop, newState, parentCell.age,
+                        parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                        parentCell.criticalVolume, parentCell.criticalHeight,
+                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             } else {
                 System.out.println("Making new FlyNeuronWT");
                 MiniBox newParameters = new MiniBox();
-                for (String key : this.getParameters().getKeys()) {
-                    newParameters.put(key, this.getParameters().get(key));
+                for (String key : parentCell.getParameters().getKeys()) {
+                    newParameters.put(key, parentCell.getParameters().get(key));
                 }
                 newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-                return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
-                        hasRegions, newParameters, criticalVolume, criticalHeight,
-                        criticalRegionVolumes, criticalRegionHeights);
+                return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
+                        newState, parentCell.age, parentCell.divisions, newLocation,
+                        parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
+                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             }
-        }
+        };
+
+        return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
+                criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                splitOffsetPercentX, splitOffsetPercentY, splitDirection, splitProbability, daughterCellMaker);
     }
 
-    public static final class PottsCellFlyStemInvert1StemBasal extends PottsCellFlyStem {
-        public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
-        public static final int SPLIT_OFFSET_PERCENT_X = 50;
-        public static final int SPLIT_OFFSET_PERCENT_Y = 33;
-        public static final Direction SPLIT_DIRECTION = Direction.ZX_PLANE;
-        // Split Probability 0 with ZX_PLANE division ensures basal cell remains stem
-        public static final double SPLIT_PROBABILITY = 0;
+    // 5. PottsCellFlyStemInvert1StemBasal
+    public static PottsCellFlyStem createPottsCellFlyStemInvert1StemBasal(int id, int parent, int pop, CellState state, int age,
+                                                                          int divisions, Location location, boolean hasRegions,
+                                                                          MiniBox parameters, double criticalVolume, double criticalHeight,
+                                                                          EnumMap<Region, Double> criticalRegionVolumes,
+                                                                          EnumMap<Region, Double> criticalRegionHeights) {
+        int splitOffsetPercentX = 50;
+        int splitOffsetPercentY = 33;
+        Direction splitDirection = Direction.ZX_PLANE;
+        // Basal daughter always stem
+        double splitProbability = 0.0;
+        int pottsCellFlyNeuronWTPop = 2;
 
-        public PottsCellFlyStemInvert1StemBasal(int id, int parent, int pop, CellState state, int age, int divisions,
-                             Location location, boolean hasRegions, MiniBox parameters,
-                             double criticalVolume, double criticalHeight,
-                             EnumMap<Region, Double> criticalRegionVolumes,
-                             EnumMap<Region, Double> criticalRegionHeights) {
-            super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        }
-
-        @Override
-        public ArrayList<Integer> getSplitOffsetPercent() {
-            ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_X);
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_Y);
-            return splitOffsetPercent;
-        }
-
-        @Override
-        public Direction getSplitDirection() {
-            return SPLIT_DIRECTION;
-        }
-
-        @Override
-        public double getSplitProbability() {
-            return SPLIT_PROBABILITY;
-        }
-
-        @Override
-        public PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
-                                          MersenneTwisterFast random) {
-            divisions++;
+        DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
+            parentCell.divisions++;
             MiniBox newParameters = new MiniBox();
-            for (String key : this.getParameters().getKeys()) {
-                newParameters.put(key, this.getParameters().get(key));
+            for (String key : parentCell.getParameters().getKeys()) {
+                newParameters.put(key, parentCell.getParameters().get(key));
             }
             newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
-                    hasRegions, newParameters, criticalVolume, criticalHeight,
-                    criticalRegionVolumes, criticalRegionHeights);
-        }
+            return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
+                    newState, parentCell.age, parentCell.divisions, newLocation,
+                    parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
+                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+        };
+
+        return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
+                criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                splitOffsetPercentX, splitOffsetPercentY, splitDirection, splitProbability, daughterCellMaker);
     }
 
-    public static final class PottsCellFlyStemInvert2StemBasalOrBoth extends PottsCellFlyStem {
-        public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
-        public static final int SPLIT_OFFSET_PERCENT_X = 50;
-        public static final int SPLIT_OFFSET_PERCENT_Y = 33;
-        public static final Direction SPLIT_DIRECTION = Direction.ZX_PLANE;
-        // Split Probability 0 with ZX_PLANE division ensures basal cell remains stem
-        public static final double SPLIT_PROBABILITY = 0;
+    // 6. PottsCellFlyStemInvert2StemBasalOrBoth
+    public static PottsCellFlyStem createPottsCellFlyStemInvert2StemBasalOrBoth(int id, int parent, int pop, CellState state, int age,
+                                                                                int divisions, Location location, boolean hasRegions,
+                                                                                MiniBox parameters, double criticalVolume, double criticalHeight,
+                                                                                EnumMap<Region, Double> criticalRegionVolumes,
+                                                                                EnumMap<Region, Double> criticalRegionHeights) {
+        int splitOffsetPercentX = 50;
+        int splitOffsetPercentY = 33;
+        Direction splitDirection = Direction.ZX_PLANE;
+        // Basal daughter always stem
+        double splitProbability = 0.0;
+        int pottsCellFlyNeuronWTPop = 2;
 
-        public PottsCellFlyStemInvert2StemBasalOrBoth(int id, int parent, int pop, CellState state, int age, int divisions,
-                             Location location, boolean hasRegions, MiniBox parameters,
-                             double criticalVolume, double criticalHeight,
-                             EnumMap<Region, Double> criticalRegionVolumes,
-                             EnumMap<Region, Double> criticalRegionHeights) {
-            super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        }
-
-        @Override
-        public ArrayList<Integer> getSplitOffsetPercent() {
-            ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_X);
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_Y);
-            return splitOffsetPercent;
-        }
-
-        @Override
-        public Direction getSplitDirection() {
-            return SPLIT_DIRECTION;
-        }
-
-        @Override
-        public double getSplitProbability() {
-            return SPLIT_PROBABILITY;
-        }
-
-        @Override
-        public PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
-                                          MersenneTwisterFast random) {
-            divisions++;
-            // 25% chance of making PottsCellFlyStemWT, 25% chance of making PottsCellFlyStemInvert2StemRandom 50% chance of making FlyNeuronWT
-            if (random.nextDouble() < 0.25) {
+        DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
+            parentCell.divisions++;
+            double rand = random.nextDouble();
+            if (rand < 0.25) {
                 System.out.println("Making new PottsCellFlyStemWT");
-                System.out.println("Inside make method, growth rate is " + this.getParameters().get("proliferation/CELL_GROWTH_RATE"));
-                return new PottsCellFlyStemWT(newID, id, pop, newState, age, divisions, newLocation,
-                        hasRegions, this.getParameters(), criticalVolume, criticalHeight,
-                        criticalRegionVolumes, criticalRegionHeights);
-            } else if (random.nextDouble() < 0.5) {
-                System.out.println("Making new PottsCellFlyStemInvert2StemRandom");
-                System.out.println("Inside make method, growth rate is " + this.getParameters().get("proliferation/CELL_GROWTH_RATE"));
-                return new PottsCellFlyStemInvert2StemBasalOrBoth(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
-                        hasRegions, this.getParameters(), criticalVolume, criticalHeight,
-                        criticalRegionVolumes, criticalRegionHeights);
+                return createPottsCellFlyStemWT(newID, parentCell.getID(), parentCell.pop, newState, parentCell.age,
+                        parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                        parentCell.criticalVolume, parentCell.criticalHeight,
+                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+            } else if (rand < 0.5) {
+                System.out.println("Making new PottsCellFlyStemInvert2StemBasalOrBoth");
+                return createPottsCellFlyStemInvert2StemBasalOrBoth(newID, parentCell.getID(), pottsCellFlyNeuronWTPop, newState, parentCell.age,
+                        parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                        parentCell.criticalVolume, parentCell.criticalHeight,
+                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             } else {
                 System.out.println("Making new FlyNeuronWT");
                 MiniBox newParameters = new MiniBox();
-                for (String key : this.getParameters().getKeys()) {
-                    newParameters.put(key, this.getParameters().get(key));
+                for (String key : parentCell.getParameters().getKeys()) {
+                    newParameters.put(key, parentCell.getParameters().get(key));
                 }
                 newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-                return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
-                        hasRegions, newParameters, criticalVolume, criticalHeight,
-                        criticalRegionVolumes, criticalRegionHeights);
+                return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
+                        newState, parentCell.age, parentCell.divisions, newLocation,
+                        parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
+                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             }
-        }
+        };
+
+        return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
+                criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                splitOffsetPercentX, splitOffsetPercentY, splitDirection, splitProbability, daughterCellMaker);
     }
 
-    public static final class PottsCellFlyStemSymmetric1StemApical extends PottsCellFlyStem {
-        public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
-        public static final int SPLIT_OFFSET_PERCENT_X = 50;
-        public static final int SPLIT_OFFSET_PERCENT_Y = 50;
-        public static final Direction SPLIT_DIRECTION = Direction.ZX_PLANE;
-        // Split Probability 1 with ZX_PLANE division ensures apical cell remains stem
-        public static final double SPLIT_PROBABILITY = 1;
+    // 7. PottsCellFlyStemSymmetric1StemApical
+    public static PottsCellFlyStem createPottsCellFlyStemSymmetric1StemApical(int id, int parent, int pop, CellState state, int age,
+                                                                              int divisions, Location location, boolean hasRegions,
+                                                                              MiniBox parameters, double criticalVolume, double criticalHeight,
+                                                                              EnumMap<Region, Double> criticalRegionVolumes,
+                                                                              EnumMap<Region, Double> criticalRegionHeights) {
+        int splitOffsetPercentX = 50;
+        int splitOffsetPercentY = 50;
+        Direction splitDirection = Direction.ZX_PLANE;
+        // Apical daughter always stem
+        double splitProbability = 1.0;
+        int pottsCellFlyNeuronWTPop = 2;
 
-        public PottsCellFlyStemSymmetric1StemApical(int id, int parent, int pop, CellState state, int age, int divisions,
-                             Location location, boolean hasRegions, MiniBox parameters,
-                             double criticalVolume, double criticalHeight,
-                             EnumMap<Region, Double> criticalRegionVolumes,
-                             EnumMap<Region, Double> criticalRegionHeights) {
-            super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        }
-
-        @Override
-        public ArrayList<Integer> getSplitOffsetPercent() {
-            ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_X);
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_Y);
-            return splitOffsetPercent;
-        }
-
-        @Override
-        public Direction getSplitDirection() {
-            return SPLIT_DIRECTION;
-        }
-
-        @Override
-        public double getSplitProbability() {
-            return SPLIT_PROBABILITY;
-        }
-
-        @Override
-        public PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
-                                          MersenneTwisterFast random) {
-            divisions++;
+        DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
+            parentCell.divisions++;
             MiniBox newParameters = new MiniBox();
-            for (String key : this.getParameters().getKeys()) {
-                newParameters.put(key, this.getParameters().get(key));
+            for (String key : parentCell.getParameters().getKeys()) {
+                newParameters.put(key, parentCell.getParameters().get(key));
             }
             newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
-                    hasRegions, newParameters, criticalVolume, criticalHeight,
-                    criticalRegionVolumes, criticalRegionHeights);
-        }
+            return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
+                    newState, parentCell.age, parentCell.divisions, newLocation,
+                    parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
+                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+        };
+
+        return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
+                criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                splitOffsetPercentX, splitOffsetPercentY, splitDirection, splitProbability, daughterCellMaker);
     }
 
-    public static final class PottsCellFlyStemSymmetric2StemApicalOrBoth extends PottsCellFlyStem {
-        public static final int POTTS_CELL_FLY_NEURON_WT_POP = 2;
-        public static final int SPLIT_OFFSET_PERCENT_X = 50;
-        public static final int SPLIT_OFFSET_PERCENT_Y = 50;
-        public static final Direction SPLIT_DIRECTION = Direction.ZX_PLANE;
-        // Split Probability 1 with ZX_PLANE division ensures apical cell remains stem
-        public static final double SPLIT_PROBABILITY = 1;
+    // 8. PottsCellFlyStemSymmetric2StemApicalOrBoth
+    public static PottsCellFlyStem createPottsCellFlyStemSymmetric2StemApicalOrBoth(int id, int parent, int pop, CellState state, int age,
+                                                                                    int divisions, Location location, boolean hasRegions,
+                                                                                    MiniBox parameters, double criticalVolume, double criticalHeight,
+                                                                                    EnumMap<Region, Double> criticalRegionVolumes,
+                                                                                    EnumMap<Region, Double> criticalRegionHeights) {
+        int splitOffsetPercentX = 50;
+        int splitOffsetPercentY = 50;
+        Direction splitDirection = Direction.ZX_PLANE;
+        // Apical daughter always stem
+        double splitProbability = 1.0;
+        int pottsCellFlyNeuronWTPop = 2;
 
-
-        public PottsCellFlyStemSymmetric2StemApicalOrBoth(int id, int parent, int pop, CellState state, int age, int divisions,
-                             Location location, boolean hasRegions, MiniBox parameters,
-                             double criticalVolume, double criticalHeight,
-                             EnumMap<Region, Double> criticalRegionVolumes,
-                             EnumMap<Region, Double> criticalRegionHeights) {
-            super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        }
-
-        @Override
-        public ArrayList<Integer> getSplitOffsetPercent() {
-            ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_X);
-            splitOffsetPercent.add(SPLIT_OFFSET_PERCENT_Y);
-            return splitOffsetPercent;
-        }
-
-        @Override
-        public Direction getSplitDirection() {
-            return SPLIT_DIRECTION;
-        }
-
-        @Override
-        public double getSplitProbability() {
-            return SPLIT_PROBABILITY;
-        }
-
-        @Override
-        public PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
-                                          MersenneTwisterFast random) {
-            divisions++;
-            // 50% chance daughter is PottsCellFlyStemSymmetric2StemApical, 50% chance it is neuron
+        DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
+            parentCell.divisions++;
             if (random.nextBoolean()) {
-                return new PottsCellFlyStemSymmetric2StemApicalOrBoth(newID, id, pop, newState, age,
-                                                                      divisions, newLocation, hasRegions,
-                                                                      this.getParameters(), criticalVolume,
-                                                                      criticalHeight, criticalRegionVolumes,
-                                                                      criticalRegionHeights);
+                // 50% chance to create another stem cell
+                return createPottsCellFlyStemSymmetric2StemApicalOrBoth(newID, parentCell.getID(), parentCell.pop,
+                        newState, parentCell.age, parentCell.divisions, newLocation,
+                        parentCell.hasRegions, parentCell.getParameters(), parentCell.criticalVolume,
+                        parentCell.criticalHeight, parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             } else {
+                // 50% chance to create neuron
                 MiniBox newParameters = new MiniBox();
-                for (String key : this.getParameters().getKeys()) {
-                    newParameters.put(key, this.getParameters().get(key));
+                for (String key : parentCell.getParameters().getKeys()) {
+                    newParameters.put(key, parentCell.getParameters().get(key));
                 }
                 newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-                return new PottsCellFlyNeuronWT(newID, id, POTTS_CELL_FLY_NEURON_WT_POP, newState, age, divisions, newLocation,
-                        hasRegions, newParameters, criticalVolume, criticalHeight,
-                        criticalRegionVolumes, criticalRegionHeights);
+                return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
+                        newState, parentCell.age, parentCell.divisions, newLocation,
+                        parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
+                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             }
-        }
+        };
+
+        return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
+                criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                splitOffsetPercentX, splitOffsetPercentY, splitDirection, splitProbability, daughterCellMaker);
     }
 }
