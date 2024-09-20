@@ -40,9 +40,9 @@ public abstract class PottsCellFlyStem extends PottsCell {
 
     abstract public ArrayList<Integer> getSplitOffsetPercent();
 
-    abstract Direction getSplitDirection();
+    abstract public Direction getSplitDirection();
 
-    abstract double getSplitProbability();
+    abstract public double getSplitProbability();
 
     public abstract PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
                                                MersenneTwisterFast random);
@@ -95,7 +95,7 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        Direction getSplitDirection() {
+        public Direction getSplitDirection() {
             return SPLIT_DIRECTION;
         }
 
@@ -147,7 +147,7 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        Direction getSplitDirection() {
+        public Direction getSplitDirection() {
             return SPLIT_DIRECTION;
         }
 
@@ -198,7 +198,7 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        Direction getSplitDirection() {
+        public Direction getSplitDirection() {
             return SPLIT_DIRECTION;
         }
 
@@ -249,7 +249,7 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        Direction getSplitDirection() {
+        public Direction getSplitDirection() {
             return SPLIT_DIRECTION;
         }
 
@@ -315,7 +315,7 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        Direction getSplitDirection() {
+        public Direction getSplitDirection() {
             return SPLIT_DIRECTION;
         }
 
@@ -365,7 +365,7 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        Direction getSplitDirection() {
+        public Direction getSplitDirection() {
             return SPLIT_DIRECTION;
         }
 
@@ -431,7 +431,7 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        Direction getSplitDirection() {
+        public Direction getSplitDirection() {
             return SPLIT_DIRECTION;
         }
 
@@ -482,7 +482,7 @@ public abstract class PottsCellFlyStem extends PottsCell {
         }
 
         @Override
-        Direction getSplitDirection() {
+        public Direction getSplitDirection() {
             return SPLIT_DIRECTION;
         }
 
