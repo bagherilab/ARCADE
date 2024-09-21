@@ -108,15 +108,12 @@ public class PottsCellFlyStem extends PottsCell {
 
         DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
             parentCell.divisions++;
-            MiniBox newParameters = new MiniBox();
-            for (String key : parentCell.getParameters().getKeys()) {
-                newParameters.put(key, parentCell.getParameters().get(key));
-            }
-            newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
-                    newState, parentCell.age, parentCell.divisions, newLocation,
-                    parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
-                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+            parentCell.divisions++;
+            return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                newID, parentCell.getID(), pottsCellFlyNeuronWTPop, newState, parentCell.age,
+                parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                parentCell.criticalVolume, parentCell.criticalHeight,
+                parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
         };
 
         return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
@@ -139,15 +136,11 @@ public class PottsCellFlyStem extends PottsCell {
 
         DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
             parentCell.divisions++;
-            MiniBox newParameters = new MiniBox();
-            for (String key : parentCell.getParameters().getKeys()) {
-                newParameters.put(key, parentCell.getParameters().get(key));
-            }
-            newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
-                    newState, parentCell.age, parentCell.divisions, newLocation,
-                    parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
-                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+            return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                newID, parentCell.getID(), pottsCellFlyNeuronWTPop, newState, parentCell.age,
+                parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                parentCell.criticalVolume, parentCell.criticalHeight,
+                parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
         };
 
         return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
@@ -170,15 +163,11 @@ public class PottsCellFlyStem extends PottsCell {
 
         DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
             parentCell.divisions++;
-            MiniBox newParameters = new MiniBox();
-            for (String key : parentCell.getParameters().getKeys()) {
-                newParameters.put(key, parentCell.getParameters().get(key));
-            }
-            newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
-                    newState, parentCell.age, parentCell.divisions, newLocation,
-                    parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
-                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+            return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                newID, parentCell.getID(), pottsCellFlyNeuronWTPop, newState, parentCell.age,
+                parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                parentCell.criticalVolume, parentCell.criticalHeight,
+                parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
         };
 
         return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
@@ -217,15 +206,11 @@ public class PottsCellFlyStem extends PottsCell {
                         parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             } else {
                 System.out.println("Making new FlyNeuronWT");
-                MiniBox newParameters = new MiniBox();
-                for (String key : parentCell.getParameters().getKeys()) {
-                    newParameters.put(key, parentCell.getParameters().get(key));
-                }
-                newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-                return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
-                        newState, parentCell.age, parentCell.divisions, newLocation,
-                        parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
-                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                newID, parentCell.getID(), pottsCellFlyNeuronWTPop, newState, parentCell.age,
+                parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                parentCell.criticalVolume, parentCell.criticalHeight,
+                parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             }
         };
 
@@ -249,15 +234,11 @@ public class PottsCellFlyStem extends PottsCell {
 
         DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
             parentCell.divisions++;
-            MiniBox newParameters = new MiniBox();
-            for (String key : parentCell.getParameters().getKeys()) {
-                newParameters.put(key, parentCell.getParameters().get(key));
-            }
-            newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
-                    newState, parentCell.age, parentCell.divisions, newLocation,
-                    parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
-                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+            return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                newID, parentCell.getID(), pottsCellFlyNeuronWTPop, newState, parentCell.age,
+                parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                parentCell.criticalVolume, parentCell.criticalHeight,
+                parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
         };
 
         return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
@@ -295,22 +276,19 @@ public class PottsCellFlyStem extends PottsCell {
                         parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             } else {
                 System.out.println("Making new FlyNeuronWT");
-                MiniBox newParameters = new MiniBox();
-                for (String key : parentCell.getParameters().getKeys()) {
-                    newParameters.put(key, parentCell.getParameters().get(key));
-                }
-                newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-                return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
-                        newState, parentCell.age, parentCell.divisions, newLocation,
-                        parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
-                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                    newID, parentCell.getID(), pottsCellFlyNeuronWTPop, newState, parentCell.age,
+                    parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                    parentCell.criticalVolume, parentCell.criticalHeight,
+                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             }
         };
 
         return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
                 criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
                 splitOffsetPercentX, splitOffsetPercentY, splitDirection, splitProbability, daughterCellMaker);
-    }
+        };
+    
 
     // 7. PottsCellFlyStemSymmetric1StemApical
     public static PottsCellFlyStem createPottsCellFlyStemSymmetric1StemApical(int id, int parent, int pop, CellState state, int age,
@@ -327,15 +305,11 @@ public class PottsCellFlyStem extends PottsCell {
 
         DaughterCellMaker daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
             parentCell.divisions++;
-            MiniBox newParameters = new MiniBox();
-            for (String key : parentCell.getParameters().getKeys()) {
-                newParameters.put(key, parentCell.getParameters().get(key));
-            }
-            newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
-                    newState, parentCell.age, parentCell.divisions, newLocation,
-                    parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
-                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+            return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                newID, parentCell.getID(), pottsCellFlyNeuronWTPop, newState, parentCell.age,
+                parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                parentCell.criticalVolume, parentCell.criticalHeight,
+                parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
         };
 
         return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
@@ -366,15 +340,11 @@ public class PottsCellFlyStem extends PottsCell {
                         parentCell.criticalHeight, parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             } else {
                 // 50% chance to create neuron
-                MiniBox newParameters = new MiniBox();
-                for (String key : parentCell.getParameters().getKeys()) {
-                    newParameters.put(key, parentCell.getParameters().get(key));
-                }
-                newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
-                return new PottsCellFlyNeuronWT(newID, parentCell.getID(), pottsCellFlyNeuronWTPop,
-                        newState, parentCell.age, parentCell.divisions, newLocation,
-                        parentCell.hasRegions, newParameters, parentCell.criticalVolume, parentCell.criticalHeight,
-                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
+                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                    newID, parentCell.getID(), pottsCellFlyNeuronWTPop, newState, parentCell.age,
+                    parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
+                    parentCell.criticalVolume, parentCell.criticalHeight,
+                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
             }
         };
 
