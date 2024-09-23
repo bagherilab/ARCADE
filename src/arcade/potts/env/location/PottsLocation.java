@@ -42,7 +42,7 @@ public abstract class PottsLocation implements Location {
     private static final double DIAMETER_RATIO = 0.9;
 
     /** Default probability first voxel list is kept in split function. */
-    static final double DEFAULT_SPLIT_PROBABILITY = 0.5;
+    static final double DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY = 0.5;
     
     /** List of voxels for the location. */
     final ArrayList<Voxel> voxels;
@@ -270,7 +270,7 @@ public abstract class PottsLocation implements Location {
      * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random) {
-        return split(random, null, null, DEFAULT_SPLIT_PROBABILITY);
+        return split(random, null, null, DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
     }
     
     /**
@@ -282,7 +282,7 @@ public abstract class PottsLocation implements Location {
      * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsetPercents) {
-        return split(random, offsetPercents, null, DEFAULT_SPLIT_PROBABILITY);
+        return split(random, offsetPercents, null, DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
     }
 
     /**
@@ -297,7 +297,7 @@ public abstract class PottsLocation implements Location {
     public Location split(MersenneTwisterFast random,
                       ArrayList<Integer> offsetPercents,
                       Direction direction) {
-        return split(random, offsetPercents, direction, DEFAULT_SPLIT_PROBABILITY);
+        return split(random, offsetPercents, direction, DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
     }
     
     /**
@@ -312,16 +312,16 @@ public abstract class PottsLocation implements Location {
      * @param random         the seeded random number generator
      * @param offsetPercents the percentage offset in each direction for the split point
      * @param direction      the direction of the split, or null if using shortest diameter
-     * @param splitProbability The probability to decide which group to keep.
+     * @param voxelListSelectionProbability The probability to decide which group to keep.
      * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random,
                         ArrayList<Integer> offsetPercents,
                         Direction direction,
-                        Double splitProbability) {
+                        Double voxelListSelectionProbability) {
         Voxel splitpoint;
         boolean shouldBalance;
-        double probability = splitProbability;
+        double probability = voxelListSelectionProbability;
         
         // Case 1: If offsetPercents are provided, don't balance the voxels
         if (offsetPercents != null) {
@@ -352,14 +352,14 @@ public abstract class PottsLocation implements Location {
      * @param splitpoint the voxel that determines where the split occurs
      * @param direction the direction of the split (can be null)
      * @param shouldBalance indicates whether voxels should be balanced
-     * @param splitProbability indicates the probability voxelsA are returned vs voxelsB.
-     *                         Determines which voxels are kept in the original location.
+     * @param voxelListSelectionProbability indicates the probability voxelsA are returned
+     *                      vs voxelsB. Determines which voxels are kept in the original location.
      * @return a {@code Location} containing the split voxels that are not
      *         assigned to the current location
      */
     Location performSplit(MersenneTwisterFast random,
     Voxel splitpoint, Direction direction,
-    boolean shouldBalance, double splitProbability) {
+    boolean shouldBalance, double voxelListSelectionProbability) {
     // Initialize lists of split voxels
     ArrayList<Voxel> voxelsA = new ArrayList<>();
     ArrayList<Voxel> voxelsB = new ArrayList<>();
@@ -377,7 +377,7 @@ public abstract class PottsLocation implements Location {
     }
     
     // Use the user-specified or default probability to determine the split
-    return (random.nextDouble() < splitProbability)
+    return (random.nextDouble() < voxelListSelectionProbability)
     ? separateVoxels(voxelsA, voxelsB, random)
     : separateVoxels(voxelsB, voxelsA, random);
     }
