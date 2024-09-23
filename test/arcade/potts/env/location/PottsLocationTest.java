@@ -1322,7 +1322,7 @@ public class PottsLocationTest {
         spy.split(randomDoubleZero);
         verify(spy).getSplitpoint();
         verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class),
-                                 eq(null), eq(true), eq(PottsLocation.DEFAULT_SPLIT_PROBABILITY));
+                                 eq(null), eq(true), eq(PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY));
     }
     
     @Test
@@ -1341,13 +1341,13 @@ public class PottsLocationTest {
         spy.split(randomDoubleZero, offsets);
         verify(spy).getSplitpoint(offsets);
         verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class),
-                                 eq(null), eq(false), eq(PottsLocation.DEFAULT_SPLIT_PROBABILITY));
+                                 eq(null), eq(false), eq(PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY));
     }
     
     @Test
     public void split_withOffsetsAndCustomProbability_callsPerformSplitWithCustomProbability() {
         ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(33, 33, 33));
-        double customSplitProbability = 0.75;
+        double customVoxelSelectionProbability = 0.75;
         PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
         doCallRealMethod()
             .when(spy)
@@ -1358,10 +1358,10 @@ public class PottsLocationTest {
                 anyBoolean(),
                 anyDouble()
             );
-        spy.split(randomDoubleZero, offsets, null, customSplitProbability);
+        spy.split(randomDoubleZero, offsets, null, customVoxelSelectionProbability);
         verify(spy).getSplitpoint(offsets);
         verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class),
-                                 eq(null), eq(false), eq(customSplitProbability));
+                                 eq(null), eq(false), eq(customVoxelSelectionProbability));
     }
     
     @Test
@@ -1383,14 +1383,14 @@ public class PottsLocationTest {
         spy.split(randomDoubleZero, offsets, customDirection);
         verify(spy).getSplitpoint(offsets);
         verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(customDirection),
-                                 eq(false), eq(PottsLocation.DEFAULT_SPLIT_PROBABILITY));
+                                 eq(false), eq(PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY));
     }
     
     @Test
     public void split_withOffsetsDirectionAndCustomProbability_callsPerformSplitWithCustomProbability() {
         ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(33, 33, 33));
         Direction customDirection = Direction.XY_PLANE; // Custom direction
-        double customSplitProbability = 0.25;  // Custom probability
+        double customVoxelSelectionProbability = 0.25;  // Custom probability
         PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
         
         doCallRealMethod()
@@ -1403,10 +1403,10 @@ public class PottsLocationTest {
                 anyDouble()
             );
         
-        spy.split(randomDoubleZero, offsets, customDirection, customSplitProbability);
+        spy.split(randomDoubleZero, offsets, customDirection, customVoxelSelectionProbability);
         verify(spy).getSplitpoint(offsets);
         verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(customDirection),
-                                                                   eq(false), eq(customSplitProbability));
+                                                                   eq(false), eq(customVoxelSelectionProbability));
     }
     
     @Test
@@ -1416,7 +1416,7 @@ public class PottsLocationTest {
         Voxel splitpoint = location.getSplitpoint();
         PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint,
                                                                             null, true,
-                                                                            PottsLocation.DEFAULT_SPLIT_PROBABILITY);
+                                                                            PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
         assertNotNull(splitLocation);
         assertTrue(location.voxels.size() > 0);
         assertTrue(splitLocation.voxels.size() > 0);
@@ -1436,7 +1436,7 @@ public class PottsLocationTest {
         Voxel splitpoint = location.getSplitpoint(offsets);
         PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint,
                                                                             null, false,
-                                                                            PottsLocation.DEFAULT_SPLIT_PROBABILITY);
+                                                                            PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
         assertNotNull(splitLocation);
         assertTrue(location.voxels.size() > 0);
         assertTrue(splitLocation.voxels.size() > 0);
@@ -1535,7 +1535,7 @@ public class PottsLocationTest {
         Direction direction = location.getDirection(random);
         
         PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, direction,
-                                                              true, PottsLocation.DEFAULT_SPLIT_PROBABILITY);
+                                                              true, PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
         
         assertNotNull(splitLocation);
         assertTrue(location.voxels.size() > 0);
@@ -1594,7 +1594,7 @@ public class PottsLocationTest {
         // Perform the split without a direction and without balancing
         PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, null,
                                                                             false,
-                                                                            PottsLocation.DEFAULT_SPLIT_PROBABILITY);
+                                                                            PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
         
         assertNotNull(splitLocation);
         assertTrue(location.voxels.size() > 0);
