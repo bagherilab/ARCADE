@@ -260,7 +260,7 @@ public class PottsCellFlyStemTest {
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
         assertEquals(Integer.valueOf(66), cell.getSplitOffsetPercent().get(1));
         assertEquals(Direction.ZX_PLANE, cell.getSplitDirection());
-        assertEquals(1.0, cell.getSplitProbability(), EPSILON);
+        assertEquals(1.0, cell.getVoxelGroupSelectionProbability(), EPSILON);
     }
 
     @Test
@@ -270,7 +270,7 @@ public class PottsCellFlyStemTest {
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(1));
         assertEquals(Direction.YZ_PLANE, cell.getSplitDirection());
-        assertEquals(0.5, cell.getSplitProbability(), EPSILON);
+        assertEquals(0.5, cell.getVoxelGroupSelectionProbability(), EPSILON);
     }
 
     @Test
@@ -280,7 +280,7 @@ public class PottsCellFlyStemTest {
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(1));
         assertEquals(Direction.YZ_PLANE, cell.getSplitDirection());
-        assertEquals(1, cell.getSplitProbability(), EPSILON);
+        assertEquals(1, cell.getVoxelGroupSelectionProbability(), EPSILON);
     }
 
     @Test
@@ -290,7 +290,7 @@ public class PottsCellFlyStemTest {
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(1));
         assertEquals(Direction.YZ_PLANE, cell.getSplitDirection());
-        assertEquals(0.5, cell.getSplitProbability(), EPSILON);
+        assertEquals(0.5, cell.getVoxelGroupSelectionProbability(), EPSILON);
     }
 
     @Test
@@ -300,7 +300,7 @@ public class PottsCellFlyStemTest {
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
         assertEquals(Integer.valueOf(33), cell.getSplitOffsetPercent().get(1));
         assertEquals(Direction.ZX_PLANE, cell.getSplitDirection());
-        assertEquals(0, cell.getSplitProbability(), EPSILON);
+        assertEquals(0, cell.getVoxelGroupSelectionProbability(), EPSILON);
     }
 
     @Test 
@@ -310,7 +310,7 @@ public class PottsCellFlyStemTest {
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
         assertEquals(Integer.valueOf(33), cell.getSplitOffsetPercent().get(1));
         assertEquals(Direction.ZX_PLANE, cell.getSplitDirection());
-        assertEquals(0.0, cell.getSplitProbability(), EPSILON);
+        assertEquals(0.0, cell.getVoxelGroupSelectionProbability(), EPSILON);
     }
 
     @Test
@@ -320,7 +320,7 @@ public class PottsCellFlyStemTest {
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(1));
         assertEquals(Direction.ZX_PLANE, cell.getSplitDirection());
-        assertEquals(1.0, cell.getSplitProbability(), EPSILON);
+        assertEquals(1.0, cell.getVoxelGroupSelectionProbability(), EPSILON);
     }
 
     @Test
@@ -330,7 +330,7 @@ public class PottsCellFlyStemTest {
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
         assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(1));
         assertEquals(Direction.ZX_PLANE, cell.getSplitDirection());
-        assertEquals(1, cell.getSplitProbability(), EPSILON);
+        assertEquals(1, cell.getVoxelGroupSelectionProbability(), EPSILON);
     }
 
     @Test
@@ -511,7 +511,7 @@ public class PottsCellFlyStemTest {
         assertTrue(daughterCell1 instanceof PottsCellFlyStem);
         PottsCellFlyStem daughterStem1 = (PottsCellFlyStem) daughterCell1;
         // Verify that it has the correct configuration (configuration 4)
-        assertEquals(0.5, daughterStem1.getSplitProbability(), EPSILON);
+        assertEquals(0.5, daughterStem1.getVoxelGroupSelectionProbability(), EPSILON);
         assertEquals(Direction.YZ_PLANE, daughterStem1.getSplitDirection());
         // Additional assertions can be added as needed
 
@@ -524,7 +524,7 @@ public class PottsCellFlyStemTest {
         assertTrue(daughterCell2 instanceof PottsCellFlyStem);
         PottsCellFlyStem daughterStem2 = (PottsCellFlyStem) daughterCell2;
         // Verify that it has the correct configuration (configuration 2)
-        assertEquals(0.5, daughterStem2.getSplitProbability(), EPSILON);
+        assertEquals(0.5, daughterStem2.getVoxelGroupSelectionProbability(), EPSILON);
         assertEquals(Direction.YZ_PLANE, daughterStem2.getSplitDirection());
         // Additional assertions can be added as needed
 
@@ -649,7 +649,7 @@ public class PottsCellFlyStemTest {
         assertEquals(Integer.valueOf(50), daughterStem1.getSplitOffsetPercent().get(0));
         assertEquals(Integer.valueOf(66), daughterStem1.getSplitOffsetPercent().get(1));
         assertEquals(Direction.ZX_PLANE, daughterStem1.getSplitDirection());
-        assertEquals(1.0, daughterStem1.getSplitProbability(), EPSILON);
+        assertEquals(1.0, daughterStem1.getVoxelGroupSelectionProbability(), EPSILON);
 
         // Test case where 0.25 <= random.nextDouble() < 0.5
         when(random.nextDouble()).thenReturn(0.3);
@@ -663,7 +663,7 @@ public class PottsCellFlyStemTest {
         assertEquals(Integer.valueOf(50), daughterStem2.getSplitOffsetPercent().get(0));
         assertEquals(Integer.valueOf(33), daughterStem2.getSplitOffsetPercent().get(1));
         assertEquals(Direction.ZX_PLANE, daughterStem2.getSplitDirection());
-        assertEquals(0.0, daughterStem2.getSplitProbability(), EPSILON);
+        assertEquals(0.0, daughterStem2.getVoxelGroupSelectionProbability(), EPSILON);
 
         // Test case where random.nextDouble() >= 0.5
         when(random.nextDouble()).thenReturn(0.6);
@@ -787,7 +787,7 @@ public class PottsCellFlyStemTest {
         assertEquals(Integer.valueOf(50), daughterStem1.getSplitOffsetPercent().get(0));
         assertEquals(Integer.valueOf(50), daughterStem1.getSplitOffsetPercent().get(1));
         assertEquals(Direction.ZX_PLANE, daughterStem1.getSplitDirection());
-        assertEquals(1.0, daughterStem1.getSplitProbability(), EPSILON);
+        assertEquals(1.0, daughterStem1.getVoxelGroupSelectionProbability(), EPSILON);
 
         // Additional property verifications can be added as needed
         assertEquals(newID, daughterStem1.id);

@@ -41,7 +41,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
         ArrayList<Integer> splitOffsetPercent = flyStemCell.getSplitOffsetPercent();
         Direction splitDirection = flyStemCell.getSplitDirection();
-        double splitProbability = flyStemCell.getSplitProbability();
+        double splitProbability = flyStemCell.getVoxelGroupSelectionProbability();
 
         // Split current location using splitFly method
         Location newLocation = ((PottsLocation2D) cell.getLocation())

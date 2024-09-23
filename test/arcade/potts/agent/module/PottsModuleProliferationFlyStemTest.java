@@ -69,7 +69,7 @@ public class PottsModuleProliferationFlyStemTest {
 
         when(mockFlyStemCell.getSplitOffsetPercent()).thenReturn(splitOffsetPercent);
         when(mockFlyStemCell.getSplitDirection()).thenReturn(splitDirection);
-        when(mockFlyStemCell.getSplitProbability()).thenReturn(splitProbability);
+        when(mockFlyStemCell.getVoxelGroupSelectionProbability()).thenReturn(splitProbability);
 
         // Mock the split method to return a new location
         PottsLocation2D newLocation = mock(PottsLocation2D.class);

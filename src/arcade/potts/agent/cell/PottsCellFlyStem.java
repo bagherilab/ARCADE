@@ -24,7 +24,7 @@ public class PottsCellFlyStem extends PottsCell {
      * This parameter allows for the specification of which group of voxels (geometrically)
      * remains as the stem cell, and which group differentiates into the daughter cell type.
     */
-    private final double splitProbability;
+    private final double voxelGroupSelectionProbability;
 
     /** Function to create daughter cells */
     private final DaughterCellMaker daughterCellMaker;
@@ -43,7 +43,7 @@ public class PottsCellFlyStem extends PottsCell {
         this.splitOffsetPercent.add(splitOffsetPercentX);
         this.splitOffsetPercent.add(splitOffsetPercentY);
         this.splitDirection = splitDirection;
-        this.splitProbability = splitProbability;
+        this.voxelGroupSelectionProbability = splitProbability;
         this.daughterCellMaker = daughterCellMaker;
     }
 
@@ -55,8 +55,8 @@ public class PottsCellFlyStem extends PottsCell {
         return splitDirection;
     }
 
-    public double getSplitProbability() {
-        return splitProbability;
+    public double getVoxelGroupSelectionProbability() {
+        return voxelGroupSelectionProbability;
     }
 
     public PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,

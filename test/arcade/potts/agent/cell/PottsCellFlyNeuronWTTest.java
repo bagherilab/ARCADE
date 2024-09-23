@@ -2,7 +2,6 @@ package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.ArrayList;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import arcade.core.agent.cell.CellState;
