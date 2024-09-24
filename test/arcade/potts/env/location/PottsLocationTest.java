@@ -5,13 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 import ec.util.MersenneTwisterFast;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyDouble;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
@@ -20,6 +15,8 @@ import static arcade.potts.util.PottsEnums.Region;
 
 public class PottsLocationTest {
     private static final double EPSILON = 1E-10;
+    
+    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
     
     static MersenneTwisterFast randomDoubleZero;
     
@@ -88,7 +85,7 @@ public class PottsLocationTest {
     
     static class PottsLocationMock extends PottsLocation {
         HashMap<Direction, Integer> diameterMap;
-                
+        
         PottsLocationMock(ArrayList<Voxel> voxels) { super(voxels); }
         
         @Override
@@ -606,79 +603,70 @@ public class PottsLocationTest {
     }
     
     @Test
-    public void getSplitpoint_noOffsets_returnsCenter() {
-        ArrayList<Voxel> voxels = new ArrayList<>();
-        voxels.add(new Voxel(0, 1, 1));
-        voxels.add(new Voxel(1, 1, 2));
-        voxels.add(new Voxel(2, 2, 2));
-        voxels.add(new Voxel(2, 3, 3));
-        PottsLocationMock loc = new PottsLocationMock(voxels);
-        
-        assertEquals(5 / 4., loc.cx, EPSILON);
-        assertEquals(7 / 4., loc.cy, EPSILON);
-        assertEquals(8 / 4., loc.cz, EPSILON);
-        assertEquals(new Voxel(1, 2, 2), loc.getSplitpoint());
+    public void getOffset_noVoxels_returnsNull() {
+        PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
+        assertNull(loc.getOffset(null));
     }
     
     @Test
-    public void getSplitpoint_50percentOffsets_returnsValue() {
+    public void getOffset_oneOffset_returnsValue() {
         ArrayList<Voxel> voxels = new ArrayList<>();
-        voxels.add(new Voxel(0, 1, 1));
-        voxels.add(new Voxel(1, 1, 2));
-        voxels.add(new Voxel(2, 2, 2));
-        voxels.add(new Voxel(2, 3, 3));
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
         PottsLocationMock loc = new PottsLocationMock(voxels);
-        
-        assertEquals(5 / 4., loc.cx, EPSILON);
-        assertEquals(7 / 4., loc.cy, EPSILON);
-        assertEquals(8 / 4., loc.cz, EPSILON);
-        ArrayList<Integer> offsets = new ArrayList<>();
-        offsets.add(50);
-        offsets.add(50);
-        offsets.add(50);
-        assertEquals(new Voxel(1, 2, 2), loc.getSplitpoint(offsets));
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(25));
+        assertEquals(new Voxel(25, 125, 225), loc.getOffset(offsets));
     }
     
     @Test
-    public void getSplitpoint_33percentOffsets_returnsValue() {
+    public void getOffset_twoOffsets_returnsValue() {
         ArrayList<Voxel> voxels = new ArrayList<>();
-        voxels.add(new Voxel(0, 1, 1));
-        voxels.add(new Voxel(1, 1, 2));
-        voxels.add(new Voxel(2, 2, 2));
-        voxels.add(new Voxel(2, 3, 3));
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
         PottsLocationMock loc = new PottsLocationMock(voxels);
-
-        assertEquals(5 / 4., loc.cx, EPSILON);
-        assertEquals(7 / 4., loc.cy, EPSILON);
-        assertEquals(8 / 4., loc.cz, EPSILON);
-
-        ArrayList<Integer> offsets = new ArrayList<>();
-        offsets.add(33);
-        offsets.add(33);
-        offsets.add(33);
-
-        int expectedX = (int) Math.round(0 + (2 - 0) * (33 / 100.0)); // 33% of the range [0, 2]
-        int expectedY = (int) Math.round(1 + (3 - 1) * (33 / 100.0)); // 33% of the range [1, 3]
-        int expectedZ = (int) Math.round(1 + (3 - 1) * (33 / 100.0)); // 33% of the range [1, 3]
-
-        assertEquals(new Voxel(expectedX, expectedY, expectedZ), loc.getSplitpoint(offsets));
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(33, 66));
+        assertEquals(new Voxel(33, 166, 200), loc.getOffset(offsets));
+    }
+    
+    @Test
+    public void getOffset_threeOffsets_returnsValue() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(50, 50, 50));
+        assertEquals(new Voxel(50, 150, 250), loc.getOffset(offsets));
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void getSplitpoint_invalidOffsetPercentLength_raisesException() {
+    public void getOffset_noOffsets_raisesException() {
         ArrayList<Voxel> voxels = new ArrayList<>();
-        voxels.add(new Voxel(0, 1, 1));
-        voxels.add(new Voxel(1, 1, 2));
-        voxels.add(new Voxel(2, 2, 2));
-        voxels.add(new Voxel(2, 3, 3));
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
         PottsLocationMock loc = new PottsLocationMock(voxels);
-    
-        ArrayList<Integer> wrongOffsets = new ArrayList<>();
-        wrongOffsets.add(50); // Only one element
-    
-        loc.getSplitpoint(wrongOffsets);
+        ArrayList<Integer> offsets = new ArrayList<>();
+        loc.getOffset(offsets);
     }
-
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void getOffset_invalidOffsets_raisesException() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(0, 0, 0, 0));
+        loc.getOffset(offsets);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void getOffset_nullOffsets_raisesException() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        loc.getOffset(null);
+    }
+    
     @Test
     public void getCentroid_hasVoxels_returnsArray() {
         ArrayList<Voxel> voxels = new ArrayList<>();
@@ -1308,302 +1296,63 @@ public class PottsLocationTest {
     }
     
     @Test
-    public void split_noOffsets_callsPerformSplit() {
+    public void split_noOffsetsNoDirection_callsMethods() {
         PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
-        doCallRealMethod()
-            .when(spy)
-            .performSplit(
-                any(MersenneTwisterFast.class),
-                any(Voxel.class),
-                any(Direction.class),
-                anyBoolean(),
-                anyDouble()
-            );
-        spy.split(randomDoubleZero);
-        verify(spy).getSplitpoint();
-        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class),
-                                 eq(null), eq(true), eq(PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY));
+        spy.split(RANDOM);
+        verify(spy).split(eq(RANDOM), eq(null), eq(null), eq(0.5));
     }
     
     @Test
-    public void split_withOffsets_callsPerformSplit() {
-        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(50, 50, 50));
+    public void split_withOffsetsNoDirection_callsMethods() {
+        ArrayList<Integer> offsets = new ArrayList<>(0);
+        offsets.add(0);
         PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
-        doCallRealMethod()
-            .when(spy)
-            .performSplit(
-                any(MersenneTwisterFast.class),
-                any(Voxel.class),
-                any(Direction.class),
-                anyBoolean(),
-                anyDouble()
-            );
-        spy.split(randomDoubleZero, offsets);
-        verify(spy).getSplitpoint(offsets);
-        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class),
-                                 eq(null), eq(false), eq(PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY));
+        spy.split(RANDOM, offsets);
+        verify(spy).split(eq(RANDOM), eq(offsets), eq(null), eq(0.5));
     }
     
     @Test
-    public void split_withOffsetsAndCustomProbability_callsPerformSplitWithCustomProbability() {
-        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(33, 33, 33));
-        double customVoxelSelectionProbability = 0.75;
+    public void split_withOffsetsWithDirection_callsMethods() {
+        ArrayList<Integer> offsets = new ArrayList<>(0);
+        offsets.add(0);
+        Direction direction = Direction.random(RANDOM);
         PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
-        doCallRealMethod()
-            .when(spy)
-            .performSplit(
-                any(MersenneTwisterFast.class),
-                any(Voxel.class),
-                any(Direction.class),
-                anyBoolean(),
-                anyDouble()
-            );
-        spy.split(randomDoubleZero, offsets, null, customVoxelSelectionProbability);
-        verify(spy).getSplitpoint(offsets);
-        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class),
-                                 eq(null), eq(false), eq(customVoxelSelectionProbability));
+        spy.split(RANDOM, offsets, direction);
+        verify(spy).split(eq(RANDOM), eq(offsets), eq(direction), eq(0.5));
     }
     
     @Test
-    public void split_withOffsetsAndDirection_callsPerformSplitWithDirection() {
-        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(33, 33, 33));
-        Direction customDirection = Direction.XY_PLANE; // Custom direction
-        PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
+    public void split_withOffsetsWithDirectionWithProbability_splitsVoxelsCorrectly() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
         
-        doCallRealMethod()
-            .when(spy)
-            .performSplit(
-                any(MersenneTwisterFast.class),
-                any(Voxel.class),
-                any(Direction.class),
-                anyBoolean(),
-                anyDouble()
-            );
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++) {
+                    voxels.add(new Voxel(i, j, k));
+                }
+            }
+        }
         
-        spy.split(randomDoubleZero, offsets, customDirection);
-        verify(spy).getSplitpoint(offsets);
-        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(customDirection),
-                                 eq(false), eq(PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY));
-    }
-    
-    @Test
-    public void split_withOffsetsDirectionAndCustomProbability_callsPerformSplitWithCustomProbability() {
-        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(33, 33, 33));
-        Direction customDirection = Direction.XY_PLANE; // Custom direction
-        double customVoxelSelectionProbability = 0.25;  // Custom probability
-        PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
+        ArrayList<Voxel> locVoxels = new ArrayList<>();
+        locVoxels.add(new Voxel(0, 2, 0));
+        locVoxels.add(new Voxel(0, 2, 1));
+        locVoxels.add(new Voxel(0, 2, 2));
+        ArrayList<Voxel> splitVoxels = new ArrayList<>(voxels);
+        splitVoxels.removeAll(locVoxels);
         
-        doCallRealMethod()
-            .when(spy)
-            .performSplit(
-                any(MersenneTwisterFast.class),
-                any(Voxel.class),
-                any(Direction.class),
-                anyBoolean(),
-                anyDouble()
-            );
+        PottsLocation loc = new PottsLocationMock(voxels);
+        Direction direction = Direction.POSITIVE_XY;
+        double probability = 0.0;
         
-        spy.split(randomDoubleZero, offsets, customDirection, customVoxelSelectionProbability);
-        verify(spy).getSplitpoint(offsets);
-        verify(spy).performSplit(eq(randomDoubleZero), Mockito.any(Voxel.class), eq(customDirection),
-                                                                   eq(false), eq(customVoxelSelectionProbability));
-    }
-    
-    @Test
-    public void performSplit_noOffsets_splitsVoxelsCorrectly() {
-        PottsLocation location = new PottsLocationMock(voxelListAB);
-        MersenneTwisterFast random = new MersenneTwisterFast(12345);
-        Voxel splitpoint = location.getSplitpoint();
-        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint,
-                                                                            null, true,
-                                                                            PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
-        assertNotNull(splitLocation);
-        assertTrue(location.voxels.size() > 0);
-        assertTrue(splitLocation.voxels.size() > 0);
-        // Ensure location.voxels.size() is roughly equal to splitLocation.voxels.size()
-        assertTrue(Math.abs(location.voxels.size() - splitLocation.voxels.size()) <= 1);
-        assertEquals(voxelListAB.size(), location.voxels.size() + splitLocation.voxels.size());
-    }
-    
-    @Test
-    public void performSplit_withOffsets_splitsVoxelsCorrectly() {
-        PottsLocation location = new PottsLocationMock(voxelListAB);
-        MersenneTwisterFast random = new MersenneTwisterFast(12345);
-        // Add two voxels to the location bringing total to 9
-        location.add(3, 3, 3);
-        location.add(4, 4, 4);
-        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(33, 33, 33)); // 33% offsets
-        Voxel splitpoint = location.getSplitpoint(offsets);
-        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint,
-                                                                            null, false,
-                                                                            PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
-        assertNotNull(splitLocation);
-        assertTrue(location.voxels.size() > 0);
-        assertTrue(splitLocation.voxels.size() > 0);
-        assertEquals(voxelListAB.size() + 2, location.voxels.size() + splitLocation.voxels.size());
-        // Check that one location is approximately 1/3 the size of the other
-        int locationSize = location.voxels.size();
-        int splitLocationSize = splitLocation.voxels.size();
-        int totalSize = locationSize + splitLocationSize;
-        double expectedOneThird = totalSize / 3.0;
-        double expectedTwoThirds = 2 * totalSize / 3.0;
-        boolean locationIsOneThird =
-            Math.abs(locationSize - expectedOneThird) <= 1
-            && Math.abs(splitLocationSize - expectedTwoThirds) <= 1;
-        boolean locationIsTwoThirds =
-            Math.abs(locationSize - expectedTwoThirds) <= 1
-            && Math.abs(splitLocationSize - expectedOneThird) <= 1;
-        assertTrue(locationIsOneThird || locationIsTwoThirds);
-    }
-    
-    @Test
-    public void performSplit_withAllDirections_splitsVoxelsCorrectly() {
-        PottsLocation location = new PottsLocationMock(voxelListAB);
-        MersenneTwisterFast random = new MersenneTwisterFast(12345);
-        Voxel center = location.getSplitpoint();
-
-        ArrayList<Voxel> voxelsA = new ArrayList<>();
-        ArrayList<Voxel> voxelsB = new ArrayList<>();
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(0, 100, 50));
+        PottsLocation split = (PottsLocation) loc.split(randomDoubleZero, offsets, direction, probability);
         
-        // Test ZX_PLANE
-        PottsLocation.splitVoxels(Direction.ZX_PLANE, voxelListAB, voxelsA, voxelsB, center, random);
-        assertTrue(voxelsA.stream().allMatch(v -> v.y <= center.y));
-        assertTrue(voxelsB.stream().allMatch(v -> v.y >= center.y));
-        voxelsA.clear();
-        voxelsB.clear();
+        locVoxels.sort(VOXEL_COMPARATOR);
+        loc.voxels.sort(VOXEL_COMPARATOR);
+        splitVoxels.sort(VOXEL_COMPARATOR);
+        split.voxels.sort(VOXEL_COMPARATOR);
         
-        // Test YZ_PLANE
-        PottsLocation.splitVoxels(Direction.YZ_PLANE, voxelListAB, voxelsA, voxelsB, center, random);
-        assertTrue(voxelsA.stream().allMatch(v -> v.x <= center.x));
-        assertTrue(voxelsB.stream().allMatch(v -> v.x >= center.x));
-        voxelsA.clear();
-        voxelsB.clear();
-        
-        // Test XY_PLANE
-        PottsLocation.splitVoxels(Direction.XY_PLANE, voxelListAB, voxelsA, voxelsB, center, random);
-        assertTrue(voxelsA.stream().allMatch(v -> v.z <= center.z));
-        assertTrue(voxelsB.stream().allMatch(v -> v.z >= center.z));
-        voxelsA.clear();
-        voxelsB.clear();
-        
-        // Test NEGATIVE_XY
-        PottsLocation.splitVoxels(Direction.NEGATIVE_XY, voxelListAB, voxelsA, voxelsB, center, random);
-        assertTrue(voxelsA.stream().allMatch(v -> (v.x - center.x) >= (center.y - v.y)));
-        assertTrue(voxelsB.stream().allMatch(v -> (v.x - center.x) <= (center.y - v.y)));
-        voxelsA.clear();
-        voxelsB.clear();
-        
-        // Test POSITIVE_XY
-        PottsLocation.splitVoxels(Direction.POSITIVE_XY, voxelListAB, voxelsA, voxelsB, center, random);
-        assertTrue(voxelsA.stream().allMatch(v -> (v.x - center.x) >= (v.y - center.y)));
-        assertTrue(voxelsB.stream().allMatch(v -> (v.x - center.x) <= (v.y - center.y)));
-        voxelsA.clear();
-        voxelsB.clear();
-        
-        // Test NEGATIVE_YZ
-        PottsLocation.splitVoxels(Direction.NEGATIVE_YZ, voxelListAB, voxelsA, voxelsB, center, random);
-        assertTrue(voxelsA.stream().allMatch(v -> (v.y - center.y) >= (center.z - v.z)));
-        assertTrue(voxelsB.stream().allMatch(v -> (v.y - center.y) <= (center.z - v.z)));
-        voxelsA.clear();
-        voxelsB.clear();
-        
-        // Test POSITIVE_YZ
-        PottsLocation.splitVoxels(Direction.POSITIVE_YZ, voxelListAB, voxelsA, voxelsB, center, random);
-        assertTrue(voxelsA.stream().allMatch(v -> (v.y - center.y) >= (v.z - center.z)));
-        assertTrue(voxelsB.stream().allMatch(v -> (v.y - center.y) < (v.z - center.z)));
-        voxelsA.clear();
-        voxelsB.clear();
-        
-        // Test NEGATIVE_ZX
-        PottsLocation.splitVoxels(Direction.NEGATIVE_ZX, voxelListAB, voxelsA, voxelsB, center, random);
-        assertTrue(voxelsA.stream().allMatch(v -> (v.z - center.z) >= (center.x - v.x)));
-        assertTrue(voxelsB.stream().allMatch(v -> (v.z - center.z) < (center.x - v.x)));
-        voxelsA.clear();
-        voxelsB.clear();
-        
-        // Test POSITIVE_ZX
-        PottsLocation.splitVoxels(Direction.POSITIVE_ZX, voxelListAB, voxelsA, voxelsB, center, random);
-        assertTrue(voxelsA.stream().allMatch(v -> (v.z - center.z) >= (v.x - center.x)));
-        assertTrue(voxelsB.stream().allMatch(v -> (v.z - center.z) < (v.x - center.x)));
-    }
-    
-    @Test
-    public void performSplit_withBalancing_balancesVoxelsCorrectly() {
-        PottsLocation location = new PottsLocationMock(voxelListAB);
-        MersenneTwisterFast random = new MersenneTwisterFast(12345);
-        Voxel splitpoint = location.getSplitpoint();
-        Direction direction = location.getDirection(random);
-        
-        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, direction,
-                                                              true, PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
-        
-        assertNotNull(splitLocation);
-        assertTrue(location.voxels.size() > 0);
-        assertTrue(splitLocation.voxels.size() > 0);
-        
-        int locationSize = location.voxels.size();
-        int splitLocationSize = splitLocation.voxels.size();
-        
-        // After balancing, the sizes should be within 1 voxel of each other
-        assertTrue(Math.abs(locationSize - splitLocationSize) <= 1);
-        
-        // Ensure the total voxel count remains consistent
-        assertEquals(voxelListAB.size(), location.voxels.size() + splitLocation.voxels.size());
-    }
-    
-    @Test
-    public void performSplit_withCustomProbabilityAndOffset_splitsBasedOnProbability() {
-        PottsLocation location = new PottsLocationMock(voxelListAB);
-        MersenneTwisterFast random = mock(MersenneTwisterFast.class); // Mock the random generator
-        
-        // Create an offset that will result in an uneven split (90% of voxels in one half)
-        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(90, 90, 90));  // 90% offset
-        
-        Voxel splitpoint = location.getSplitpoint(offsets);
-        Direction direction = location.getDirection(random);
-        double customProbability = 0.8;  // Custom probability
-
-        // Mock random to return a value less than customProbability (expecting voxelsA to be kept)
-        when(random.nextDouble()).thenReturn(0.75);  // This should trigger the voxelsA to be returned
-        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, direction,
-                                                                            false, customProbability);
-
-        // Assert the number of voxels in location is larger than splitLocation due to 90% offset
-        assertTrue(location.voxels.size() > splitLocation.voxels.size());
-
-        // Mock random to return a value greater than customProbability (expecting voxelsB to be kept)
-        when(random.nextDouble()).thenReturn(0.85);  // This should trigger the voxelsB to be returned
-        PottsLocation newLocation = new PottsLocationMock(voxelListAB);
-        PottsLocation newSplitLocation = (PottsLocation) newLocation.performSplit(random, splitpoint, direction,
-                                                                                  false, customProbability);
-
-        // Assert the number of voxels in newLocation is smaller than newSplitLocation
-        assertTrue(newLocation.voxels.size() < newSplitLocation.voxels.size());
-
-        // Ensure the total voxel count remains consistent
-        assertEquals(voxelListAB.size(), location.voxels.size() + splitLocation.voxels.size());
-        assertEquals(voxelListAB.size(), newLocation.voxels.size() + newSplitLocation.voxels.size());
-    }
-    
-    @Test
-    public void performSplit_withoutDirectionOrBalancing_splitsWithoutBalancing() {
-        PottsLocation location = new PottsLocationMock(voxelListAB);
-        MersenneTwisterFast random = new MersenneTwisterFast(12345);
-        Voxel splitpoint = location.getSplitpoint();
-        
-        // Perform the split without a direction and without balancing
-        PottsLocation splitLocation = (PottsLocation) location.performSplit(random, splitpoint, null,
-                                                                            false,
-                                                                            PottsLocation.DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
-        
-        assertNotNull(splitLocation);
-        assertTrue(location.voxels.size() > 0);
-        assertTrue(splitLocation.voxels.size() > 0);
-        
-        // Indirectly verify that no balancing occurred by ensuring the voxel sizes differ
-        assertNotEquals(location.voxels.size(), splitLocation.voxels.size());
-
-        // Ensure the total voxel count remains consistent
-        assertEquals(voxelListAB.size(), location.voxels.size() + splitLocation.voxels.size());
+        assertEquals(locVoxels, loc.voxels);
+        assertEquals(splitVoxels, split.voxels);
     }
 }
