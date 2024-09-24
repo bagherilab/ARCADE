@@ -393,9 +393,8 @@ public abstract class PottsLocation implements Location {
      * The voxel is not guaranteed to exist in the location. If the voxel must
      * exist, use {@code adjust()} to get the closest voxel that exists.
      *
-     * @param offsets the percentage offset in each direction for split
-     *         point
-     * @return the offset voxel, returns {@code null} if there are no voxels
+     * @param offsets  the percentage offset in each direction for split point
+     * @return  the offset voxel, returns {@code null} if there are no voxels
      */
     public Voxel getOffset(ArrayList<Integer> offsets) {
         if (voxels.size() == 0) {
