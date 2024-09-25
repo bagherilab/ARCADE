@@ -1,6 +1,7 @@
 package arcade.potts.env.location;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,6 +15,8 @@ import static arcade.potts.util.PottsEnums.Region;
 
 public class PottsLocationTest {
     private static final double EPSILON = 1E-10;
+    
+    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
     
     static MersenneTwisterFast randomDoubleZero;
     
@@ -82,7 +85,7 @@ public class PottsLocationTest {
     
     static class PottsLocationMock extends PottsLocation {
         HashMap<Direction, Integer> diameterMap;
-                
+        
         PottsLocationMock(ArrayList<Voxel> voxels) { super(voxels); }
         
         @Override
@@ -597,6 +600,71 @@ public class PottsLocationTest {
     public void getCenter_noVoxels_returnsNull() {
         PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
         assertNull(loc.getCenter());
+    }
+    
+    @Test
+    public void getOffset_noVoxels_returnsNull() {
+        PottsLocationMock loc = new PottsLocationMock(new ArrayList<>());
+        assertNull(loc.getOffset(null));
+    }
+    
+    @Test
+    public void getOffset_oneOffset_returnsValue() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(25));
+        assertEquals(new Voxel(25, 125, 225), loc.getOffset(offsets));
+    }
+    
+    @Test
+    public void getOffset_twoOffsets_returnsValue() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(33, 66));
+        assertEquals(new Voxel(33, 166, 200), loc.getOffset(offsets));
+    }
+    
+    @Test
+    public void getOffset_threeOffsets_returnsValue() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(50, 50, 50));
+        assertEquals(new Voxel(50, 150, 250), loc.getOffset(offsets));
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void getOffset_noOffsets_raisesException() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        ArrayList<Integer> offsets = new ArrayList<>();
+        loc.getOffset(offsets);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void getOffset_invalidOffsets_raisesException() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(0, 0, 0, 0));
+        loc.getOffset(offsets);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void getOffset_nullOffsets_raisesException() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        voxels.add(new Voxel(0, 100, 200));
+        voxels.add(new Voxel(100, 200, 300));
+        PottsLocationMock loc = new PottsLocationMock(voxels);
+        loc.getOffset(null);
     }
     
     @Test
@@ -1228,16 +1296,98 @@ public class PottsLocationTest {
     }
     
     @Test
-    public void split_randomZero_callsMethods() {
+    public void split_noOffsetsNoDirection_callsMethods() {
         PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
-        spy.split(randomDoubleZero);
-        verify(spy).separateVoxels(any(ArrayList.class), any(ArrayList.class), eq(randomDoubleZero));
+        spy.split(RANDOM);
+        verify(spy).split(eq(RANDOM), eq(null), eq(null), eq(0.5));
     }
     
     @Test
-    public void split_randomOne_callsMethods() {
+    public void split_withOffsetsNoDirection_callsMethods() {
+        ArrayList<Integer> offsets = new ArrayList<>(0);
+        offsets.add(0);
         PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
-        spy.split(randomDoubleOne);
-        verify(spy).separateVoxels(any(ArrayList.class), any(ArrayList.class), eq(randomDoubleOne));
+        spy.split(RANDOM, offsets);
+        verify(spy).split(eq(RANDOM), eq(offsets), eq(null), eq(0.5));
+    }
+    
+    @Test
+    public void split_withOffsetsWithDirection_callsMethods() {
+        ArrayList<Integer> offsets = new ArrayList<>(0);
+        offsets.add(0);
+        Direction direction = Direction.random(RANDOM);
+        PottsLocation spy = spy(new PottsLocationMock(voxelListAB));
+        spy.split(RANDOM, offsets, direction);
+        verify(spy).split(eq(RANDOM), eq(offsets), eq(direction), eq(0.5));
+    }
+    
+    @Test
+    public void split_withOffsetsWithXYDirectionWithProbability_splitsVoxelsCorrectly() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++) {
+                    voxels.add(new Voxel(i, j, k));
+                }
+            }
+        }
+        
+        ArrayList<Voxel> locVoxels = new ArrayList<>();
+        locVoxels.add(new Voxel(0, 2, 0));
+        locVoxels.add(new Voxel(0, 2, 1));
+        locVoxels.add(new Voxel(0, 2, 2));
+        ArrayList<Voxel> splitVoxels = new ArrayList<>(voxels);
+        splitVoxels.removeAll(locVoxels);
+        
+        PottsLocation loc = new PottsLocationMock(voxels);
+        Direction direction = Direction.POSITIVE_XY;
+        double probability = 0.0;
+        
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(0, 100, 50));
+        PottsLocation split = (PottsLocation) loc.split(randomDoubleZero, offsets, direction, probability);
+        
+        locVoxels.sort(VOXEL_COMPARATOR);
+        loc.voxels.sort(VOXEL_COMPARATOR);
+        splitVoxels.sort(VOXEL_COMPARATOR);
+        split.voxels.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(locVoxels, loc.voxels);
+        assertEquals(splitVoxels, split.voxels);
+    }
+    
+    @Test
+    public void split_withOffsetsWithZXDirectionWithProbability_splitsVoxelsCorrectly() {
+        ArrayList<Voxel> voxels = new ArrayList<>();
+        
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++) {
+                    voxels.add(new Voxel(i, j, k));
+                }
+            }
+        }
+        
+        ArrayList<Voxel> splitVoxels = new ArrayList<>();
+        splitVoxels.add(new Voxel(0, 0, 2));
+        splitVoxels.add(new Voxel(0, 1, 2));
+        splitVoxels.add(new Voxel(0, 2, 2));
+        ArrayList<Voxel> locVoxels = new ArrayList<>(voxels);
+        locVoxels.removeAll(splitVoxels);
+        
+        PottsLocation loc = new PottsLocationMock(voxels);
+        Direction direction = Direction.POSITIVE_ZX;
+        double probability = 0.0;
+        
+        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(0, 100, 50));
+        PottsLocation split = (PottsLocation) loc.split(randomDoubleZero, offsets, direction, probability);
+        
+        locVoxels.sort(VOXEL_COMPARATOR);
+        loc.voxels.sort(VOXEL_COMPARATOR);
+        splitVoxels.sort(VOXEL_COMPARATOR);
+        split.voxels.sort(VOXEL_COMPARATOR);
+        
+        assertEquals(locVoxels, loc.voxels);
+        assertEquals(splitVoxels, split.voxels);
     }
 }

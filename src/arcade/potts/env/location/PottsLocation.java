@@ -41,6 +41,9 @@ public abstract class PottsLocation implements Location {
     /** Relative padding for selecting maximum diameter. */
     private static final double DIAMETER_RATIO = 0.9;
     
+    /** Default probability first voxel list is kept in split function. */
+    private static final double DEFAULT_SPLIT_SELECTION_PROBABILITY = 0.5;
+    
     /** List of voxels for the location. */
     final ArrayList<Voxel> voxels;
     
@@ -257,9 +260,9 @@ public abstract class PottsLocation implements Location {
     }
     
     /**
-     * Splits the location voxels into two lists.
+     * Splits location voxels into two approximately equal lists.
      * <p>
-     * The location are split along the direction with the shortest diameter.
+     * The location is split along the direction with the shortest diameter.
      * The lists of locations are guaranteed to be connected, and generally will
      * be balanced in size. One of the splits is assigned to the current
      * location and the other is returned.
@@ -268,27 +271,86 @@ public abstract class PottsLocation implements Location {
      * @return  a location with the split voxels
      */
     public Location split(MersenneTwisterFast random) {
-        // Get center voxel.
-        Voxel center = getCenter();
-        
-        // Initialize lists of split voxels.
+        return split(random, null, null, DEFAULT_SPLIT_SELECTION_PROBABILITY);
+    }
+    
+    /**
+     * Splits location voxels into two lists with given offset.
+     * <p>
+     * The location is split at the point specified by offsets along the
+     * direction with the shortest diameter. The lists of locations are
+     * guaranteed to be connected. One of the splits is assigned to the current
+     * location and the other is returned.
+     *
+     * @param random  the seeded random number generator
+     * @param offsets  the percentage offset in each direction for split point
+     * @return  a location with the split voxels
+     */
+    public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets) {
+        return split(random, offsets, null, DEFAULT_SPLIT_SELECTION_PROBABILITY);
+    }
+    
+    /**
+     * Splits location voxels into two lists with given offset and direction.
+     * <p>
+     * The location is split at the point specified by offsets along the given
+     * direction. The lists of locations are guaranteed to be connected. One of
+     * the splits is assigned to the current location and the other is
+     * returned.
+     *
+     * @param random  the seeded random number generator
+     * @param offsets  the percentage offset in each direction for split point
+     * @param direction  the direction of the split
+     * @return  a location with the split voxels
+     */
+    public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
+                          Direction direction) {
+        return split(random, offsets, direction, DEFAULT_SPLIT_SELECTION_PROBABILITY);
+    }
+    
+    /**
+     * Splits location voxels into two lists.
+     * <p>
+     * The location is split at the point specified by offsets along the given
+     * direction. One of the splits is assigned to the current location and the
+     * other is returned with the given probability.
+     * <p>
+     * If offsets not are provided, the resulting lists are guaranteed to be
+     * connected, and generally will be balanced in size. If offsets is
+     * provided, the resulting lists are guaranteed to be connected but will not
+     * necessarily be balanced in size.
+     *
+     * @param random  the seeded random number generator
+     * @param offsets  the percentage offset in each direction for split point
+     * @param direction  the direction of the split
+     * @param probability  the probability to decide which split to return
+     * @return  a location with the split voxels
+     */
+    public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
+                          Direction direction, Double probability) {
+        // Initialize lists of split voxels
         ArrayList<Voxel> voxelsA = new ArrayList<>();
         ArrayList<Voxel> voxelsB = new ArrayList<>();
         
-        // Get split direction.
-        Direction direction = getDirection(random);
-        splitVoxels(direction, voxels, voxelsA, voxelsB, center, random);
+        // Calculate split point.
+        Voxel splitpoint = offsets == null ? getCenter() : getOffset(offsets);
         
-        // Ensure that voxel split is connected and balanced.
-        connectVoxels(voxelsA, voxelsB, this, random);
-        balanceVoxels(voxelsA, voxelsB, this, random);
-        
-        // Select one split to keep for this location and return the other.
-        if (random.nextDouble() < 0.5) {
-            return separateVoxels(voxelsA, voxelsB, random);
-        } else {
-            return separateVoxels(voxelsB, voxelsA, random);
+        // Perform the split along the specified direction
+        if (direction == null) {
+            direction = getDirection(random);
         }
+        
+        splitVoxels(direction, voxels, voxelsA, voxelsB, splitpoint, random);
+        connectVoxels(voxelsA, voxelsB, this, random);
+        
+        if (offsets == null) {
+            balanceVoxels(voxelsA, voxelsB, this, random);
+        }
+        
+        // Use the user-specified or default probability to determine the split
+        return random.nextDouble() < probability
+                ? separateVoxels(voxelsA, voxelsB, random)
+                : separateVoxels(voxelsB, voxelsA, random);
     }
     
     /**
@@ -310,6 +372,60 @@ public abstract class PottsLocation implements Location {
         int z = (int) Math.round(cz);
         
         return new Voxel(x, y, z);
+    }
+    
+    /**
+     * Calculates the voxel at specified offsets from location bounds.
+     * <p>
+     * The voxel position is calculated as percentage offsets using the minimum
+     * and maximum bounds of the current location in the X, Y, and Z dimensions.
+     * Offsets should be passed as percentages in the range [0, 100]. Offsets
+     * may be given as one percentage N1 (interpreted as [x = N, y = N, z = N]),
+     * two percentages N1 and N2 (interpreted as [x = N1, y = N2, z = 0]), or
+     * three percentages N1, N2, and N3 (interpreted as [x = N1, y = N2, z = N3]).
+     * <p>
+     * For example, offsets of [50, 50, 50] will return the voxel located 50%
+     * between the minimum and maximum in each direction. Note that [50, 50, 50]
+     * is not necessarily equivalent to the center of the location, which is
+     * calculated as the arithmetic mean in each direction. To get the center,
+     * use {@code getCenter()} instead.
+     * <p>
+     * The voxel is not guaranteed to exist in the location. If the voxel must
+     * exist, use {@code adjust()} to get the closest voxel that exists.
+     *
+     * @param offsets  the percentage offset in each direction for split point
+     * @return  the offset voxel, returns {@code null} if there are no voxels
+     */
+    public Voxel getOffset(ArrayList<Integer> offsets) {
+        if (voxels.size() == 0) {
+            return null;
+        }
+        
+        if (offsets == null || offsets.size() == 0 || offsets.size() > 3) {
+            throw new IllegalArgumentException(
+                    "Offsets must be an ArrayList containing exactly 1, 2 or 3 integers."
+            );
+        }
+        
+        if (offsets.size() == 1) {
+            offsets.add(offsets.get(0));
+            offsets.add(offsets.get(1));
+        } else if (offsets.size() == 2) {
+            offsets.add(0);
+        }
+        
+        int minX = voxels.stream().mapToInt(voxel -> voxel.x).min().getAsInt();
+        int maxX = voxels.stream().mapToInt(voxel -> voxel.x).max().getAsInt();
+        int minY = voxels.stream().mapToInt(voxel -> voxel.y).min().getAsInt();
+        int maxY = voxels.stream().mapToInt(voxel -> voxel.y).max().getAsInt();
+        int minZ = voxels.stream().mapToInt(voxel -> voxel.z).min().getAsInt();
+        int maxZ = voxels.stream().mapToInt(voxel -> voxel.z).max().getAsInt();
+        
+        int offsetX = (int) Math.round(minX + (maxX - minX) * (offsets.get(0) / 100.0));
+        int offsetY = (int) Math.round(minY + (maxY - minY) * (offsets.get(1) / 100.0));
+        int offsetZ = (int) Math.round(minZ + (maxZ - minZ) * (offsets.get(2) / 100.0));
+        
+        return new Voxel(offsetX, offsetY, offsetZ);
     }
     
     /**
