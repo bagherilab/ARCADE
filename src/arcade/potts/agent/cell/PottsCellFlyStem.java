@@ -11,7 +11,7 @@ import arcade.potts.util.PottsEnums.State;
 import ec.util.MersenneTwisterFast;
 import static arcade.potts.util.PottsEnums.Direction;
 
-public class PottsCellFlyStem extends PottsCell {
+public abstract class PottsCellFlyStem extends PottsCell {
     /** Percentage offset from cell edge where division will occur */
     private final ArrayList<Integer> splitOffsetPercent;
 

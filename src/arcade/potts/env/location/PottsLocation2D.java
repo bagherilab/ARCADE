@@ -88,7 +88,6 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
 
      @Override
      public Voxel getSplitpoint(ArrayList<Integer> offsetPercents) {
-         System.out.println("PottsLocation2D.getSplitpoint, offsetPercents: " + offsetPercents);
          if (offsetPercents == null || offsetPercents.size() != 2) {
              throw new IllegalArgumentException(
                  "PottsLocation2D offsets must be an ArrayList containing exactly 2 integers."
