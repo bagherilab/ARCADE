@@ -92,4 +92,20 @@ public class PlaneTest {
 
         assertFalse(plane.isOnPlane(pointToTest));
     }
+
+    @Test
+    public void equals_givenDifferentPlane_returnsFalse() {
+        Plane plane1 = new Plane(new Point3D(1, 2, 3), new Vector3D(4, 5, 6));
+        Plane plane2 = new Plane(new Point3D(4, 5, 6), new Vector3D(7, 8, 9));
+
+        assertFalse(plane1.equals(plane2));
+    }
+
+    @Test
+    public void equals_givenSamePlane_returnsTrue() {
+        Plane plane1 = new Plane(new Point3D(1, 2, 3), new Vector3D(4, 5, 6));
+        Plane plane2 = new Plane(new Point3D(1, 2, 3), new Vector3D(4, 5, 6));
+
+        assertTrue(plane1.equals(plane2));
+    }
 }

@@ -39,4 +39,20 @@ public class Vector3DTest {
 
         assertEquals(6, vector.getC());
     }
+
+    @Test
+    public void equals_givenDifferentVector_returnsFalse() {
+        Vector3D vector1 = new Vector3D(1, 2, 3);
+        Vector3D vector2 = new Vector3D(4, 5, 6);
+
+        assertFalse(vector1.equals(vector2));
+    }
+
+    @Test
+    public void equals_givenSameVector_returnsTrue() {
+        Vector3D vector1 = new Vector3D(1, 2, 3);
+        Vector3D vector2 = new Vector3D(1, 2, 3);
+
+        assertTrue(vector1.equals(vector2));
+    }
 }

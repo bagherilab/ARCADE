@@ -23,4 +23,19 @@ public class Vector3D {
     public int getA() { return a; }
     public int getB() { return b; }
     public int getC() { return c; }
+
+    /**
+     * Determines if two vectors have the same (a, b, c) components.
+     * 
+     * @param obj  the vector to compare
+     * @return {@code true} if the vectors are equal, {@code false} otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Vector3D other = (Vector3D) obj;
+        return a == other.a && b == other.b && c == other.c;
+    }
 }

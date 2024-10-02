@@ -51,4 +51,20 @@ public class Point3DTest {
 
         assertEquals(9, point.getZ());
     }
+
+    @Test
+    public void equals_givenDifferentPoint_returnsFalse() {
+        Point3D point1 = new Point3D(1, 2, 3);
+        Point3D point2 = new Point3D(4, 5, 6);
+
+        assertFalse(point1.equals(point2));
+    }
+
+    @Test
+    public void equals_givenSamePoint_returnsTrue() {
+        Point3D point1 = new Point3D(1, 2, 3);
+        Point3D point2 = new Point3D(1, 2, 3);
+
+        assertTrue(point1.equals(point2));
+    }
 }

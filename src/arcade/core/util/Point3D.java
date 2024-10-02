@@ -30,4 +30,19 @@ public class Point3D {
     public int getX() { return x; }
     public int getY() { return y; }
     public int getZ() { return z; }
+
+    /**
+     * Checks if two points have the same (x, y, z) coordinates.
+     * 
+     * @param obj  the point to compare
+     * @return {@code true} if coordinates are the same, {@code false} otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Point3D other = (Point3D) obj;
+        return x == other.x && y == other.y && z == other.z;
+    }
 }

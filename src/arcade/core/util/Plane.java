@@ -48,4 +48,19 @@ public class Plane {
                 + (p.getY() - point.getY()) * normalVector.getB()
                 + (p.getZ() - point.getZ()) * normalVector.getC() == 0;
     }
+
+    /** 
+     * Determines if two planes are equal.
+     * 
+     * @param obj  the plane to compare
+     * @return {@code true} if the planes are equal, {@code false} otherwise
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Plane other = (Plane) obj;
+        return point.equals(other.point) && normalVector.equals(other.normalVector);
+    }
 }
