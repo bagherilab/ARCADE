@@ -35,4 +35,17 @@ public class Plane {
                 + (p.getY() - point.getY()) * normalVector.getB()
                 + (p.getZ() - point.getZ()) * normalVector.getC() > 0;
     }
+
+    /**
+     * Determines whether a point is on the plane.
+     * 
+     * @param p  the point to test
+     * @return  {@code true} if the point is on the plane
+     *        {@code false} otherwise
+     */
+    public boolean isOnPlane(Point3D p) {
+        return (p.getX() - point.getX()) * normalVector.getA()
+                + (p.getY() - point.getY()) * normalVector.getB()
+                + (p.getZ() - point.getZ()) * normalVector.getC() == 0;
+    }
 }
