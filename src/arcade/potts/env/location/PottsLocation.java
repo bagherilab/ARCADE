@@ -569,7 +569,8 @@ public abstract class PottsLocation implements Location {
     abstract ArrayList<Voxel> getSelected(Voxel focus, double n);
     
     /**
-     * Gets the direction of the slice.
+     * Gets the direction of the slice through the location that
+     * has the smallest diameter.
      *
      * @param random  the seeded random number generator
      * @return  the direction of the slice
