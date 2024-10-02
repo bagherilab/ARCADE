@@ -17,83 +17,6 @@ public class PlaneTest {
     }
 
     @Test
-    public void isOnSide_givenPointOnSameSide_returnsTrue() {
-        Point3D pointOnPlane = new Point3D(0, 0, 0);
-        Vector3D normalVector = new Vector3D(1, 0, 0);
-        Plane plane = new Plane(pointOnPlane, normalVector);
-
-        Point3D pointToTest = new Point3D(1, 0, 0);  // Point is on the side where normal vector points
-
-        assertTrue(plane.isOnSide(pointToTest));
-    }
-
-    @Test
-    public void isOnSide_givenPointOnOppositeSide_returnsFalse() {
-        Point3D pointOnPlane = new Point3D(0, 0, 0);
-        Vector3D normalVector = new Vector3D(1, 0, 0);
-        Plane plane = new Plane(pointOnPlane, normalVector);
-
-        Point3D pointToTest = new Point3D(-1, 0, 0);  // Point is on the opposite side
-
-        assertFalse(plane.isOnSide(pointToTest));
-    }
-
-    @Test
-    public void isOnSide_givenPointOnPlane_returnsFalse() {
-        Point3D pointOnPlane = new Point3D(0, 0, 0);
-        Vector3D normalVector = new Vector3D(1, 0, 0);
-        Plane plane = new Plane(pointOnPlane, normalVector);
-
-        Point3D pointToTest = new Point3D(0, 0, 0);  // Point is on the plane
-
-        assertFalse(plane.isOnSide(pointToTest));
-    }
-
-    @Test
-    public void isOnPlane_givenPointOnPlane_returnsTrue() {
-        Point3D pointOnPlane = new Point3D(0, 0, 0);
-        Vector3D normalVector = new Vector3D(1, 0, 0);
-        Plane plane = new Plane(pointOnPlane, normalVector);
-
-        Point3D pointToTest = new Point3D(0, 0, 0);  // Point is exactly on the plane
-
-        assertTrue(plane.isOnPlane(pointToTest));
-    }
-
-    @Test
-    public void isOnPlane_givenPointOffPlane_returnsFalse() {
-        Point3D pointOnPlane = new Point3D(0, 0, 0);
-        Vector3D normalVector = new Vector3D(1, 0, 0);
-        Plane plane = new Plane(pointOnPlane, normalVector);
-
-        Point3D pointToTest = new Point3D(1, 1, 1);  // Point is not on the plane
-
-        assertFalse(plane.isOnPlane(pointToTest));
-    }
-
-    @Test
-    public void isOnPlane_givenPointFarAwayOnPlane_returnsTrue() {
-        Point3D pointOnPlane = new Point3D(1, 1, 1);
-        Vector3D normalVector = new Vector3D(1, 0, 0);
-        Plane plane = new Plane(pointOnPlane, normalVector);
-
-        Point3D pointToTest = new Point3D(1, 100, 200);  // Same x-coordinate, lies on the plane
-
-        assertTrue(plane.isOnPlane(pointToTest));
-    }
-
-    @Test
-    public void isOnPlane_givenPointCloseToPlaneButNotOnIt_returnsFalse() {
-        Point3D pointOnPlane = new Point3D(0, 0, 0);
-        Vector3D normalVector = new Vector3D(1, 1, 1);
-        Plane plane = new Plane(pointOnPlane, normalVector);
-
-        Point3D pointToTest = new Point3D(1, 1, 2);  // Close, but not on the plane
-
-        assertFalse(plane.isOnPlane(pointToTest));
-    }
-
-    @Test
     public void equals_givenDifferentPlane_returnsFalse() {
         Plane plane1 = new Plane(new Point3D(1, 2, 3), new Vector3D(4, 5, 6));
         Plane plane2 = new Plane(new Point3D(4, 5, 6), new Vector3D(7, 8, 9));
@@ -107,5 +30,38 @@ public class PlaneTest {
         Plane plane2 = new Plane(new Point3D(1, 2, 3), new Vector3D(4, 5, 6));
 
         assertTrue(plane1.equals(plane2));
+    }
+
+    @Test
+    public void distanceToPlane_givenPointOnPlane_returnsZero() {
+        Point3D pointOnPlane = new Point3D(0, 0, 0);
+        Vector3D normalVector = new Vector3D(1, 0, 0);
+        Plane plane = new Plane(pointOnPlane, normalVector);
+
+        Point3D pointToTest = new Point3D(0, 0, 0);  // Point is on the plane
+
+        assertEquals(0, plane.distanceToPlane(pointToTest), 0.0001);
+    }
+
+    @Test
+    public void distanceToPlane_givenPointOnNormalSideOfPlane_returnsCorrectPositiveDistance() {
+        Point3D pointOnPlane = new Point3D(0, 0, 0);
+        Vector3D normalVector = new Vector3D(1, 0, 0);
+        Plane plane = new Plane(pointOnPlane, normalVector);
+
+        Point3D pointToTest = new Point3D(1, 1, 1);  // Point is not on the plane
+
+        assertEquals(1, plane.distanceToPlane(pointToTest), 0.0001);
+    }
+
+    @Test
+    public void distanceToPlane_givenPointOnOppositeSideOfPlane_returnsCorrectNegativeDistance() {
+        Point3D pointOnPlane = new Point3D(0, 0, 0);
+        Vector3D normalVector = new Vector3D(1, 0, 0);
+        Plane plane = new Plane(pointOnPlane, normalVector);
+
+        Point3D pointToTest = new Point3D(-1, -1, -1);  // Point is not on the plane
+
+        assertEquals(-1, plane.distanceToPlane(pointToTest), 0.0001);
     }
 }
