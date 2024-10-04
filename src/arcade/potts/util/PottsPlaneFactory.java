@@ -10,7 +10,7 @@ import static arcade.potts.util.PottsEnums.Direction;
 /**
  * Factory class for creating Potts Planes based on a Direction and a given point.
  */
-public class PottsPlaneFactory {
+public final class PottsPlaneFactory {
 
     // Mapping between Direction Enum and normal vectors
     private static final Map<Direction, Vector3D> normalVectorMap = new EnumMap<>(Direction.class);

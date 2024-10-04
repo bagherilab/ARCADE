@@ -1,8 +1,8 @@
 package arcade.core.util;
 
-import arcade.potts.env.location.Voxel;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import arcade.potts.env.location.Voxel;
 
 /**
  * Unit tests for the Point3D class.
@@ -11,7 +11,9 @@ public class Point3DTest {
 
     @Test
     public void constructor_givenInts_returnsCorrectPoint() {
-        int x = 1, y = 2, z = 3;
+        int x = 1;
+        int y = 2;
+        int z = 3;
 
         Point3D point = new Point3D(x, y, z);
 

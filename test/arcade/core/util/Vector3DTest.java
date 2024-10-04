@@ -10,7 +10,9 @@ public class Vector3DTest {
 
     @Test
     public void constructor_givenInts_returnsCorrectVector() {
-        int a = 1, b = 2, c = 3;
+        int a = 1;
+        int b = 2;
+        int c = 3;
 
         Vector3D vector = new Vector3D(a, b, c);
 

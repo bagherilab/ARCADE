@@ -5,10 +5,10 @@ package arcade.core.util;
  */
 
 public class Plane {
-    /** A point on the plane */
+    /** A point on the plane. */
     public final Point3D point;
 
-    /** The normal to the plane */
+    /** The normal to the plane. */
     public final Vector3D normalVector;
 
     /**
@@ -63,5 +63,18 @@ public class Plane {
         }
         Plane other = (Plane) obj;
         return point.equals(other.point) && normalVector.equals(other.normalVector);
+    }
+    
+    /**
+     * Returns a hash code for the plane.
+     *
+     * @return  a hash code for the plane
+     */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 97 * hash + (this.point != null ? this.point.hashCode() : 0);
+        hash = 97 * hash + (this.normalVector != null ? this.normalVector.hashCode() : 0);
+        return hash;
     }
 }

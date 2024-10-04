@@ -1,10 +1,10 @@
 package arcade.potts.util;
 
+import org.junit.Test;
 import arcade.core.util.Plane;
 import arcade.core.util.Point3D;
 import arcade.core.util.Vector3D;
 import arcade.potts.util.PottsEnums.Direction;
-import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class PottsPlaneFactoryTest {
