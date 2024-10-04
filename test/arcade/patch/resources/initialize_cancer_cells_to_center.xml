@@ -1,0 +1,24 @@
+<set>
+    <series name="initialize_cancer_cells_to_center"
+            start="0" end="0" ticks="1" interval="1"
+            radius="5" margin="0" depth="1">
+        <patch>
+            <patch.parameter id="GEOMETRY" value="hex" />
+        </patch>
+        <agents>
+            <populations>
+                <population id="POPULATION_X" init="7" class="cancer" />
+            </populations>
+        </agents>
+        <environments>
+            <layers>
+                <layer id="GLUCOSE" />
+                <layer id="OXYGEN" />
+                <layer id="TGFA" />
+            </layers>
+            <components>
+                <component id="SITES" class="source_sites" />
+            </components>
+        </environments>
+    </series>
+</set>

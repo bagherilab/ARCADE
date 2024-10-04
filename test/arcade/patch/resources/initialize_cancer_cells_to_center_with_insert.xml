@@ -1,0 +1,32 @@
+<set>
+    <series name="initialize_cancer_cells_to_center_with_insert"
+            start="0" end="0" ticks="4" interval="1"
+            radius="5" margin="0" depth="1">
+        <patch>
+            <patch.parameter id="GEOMETRY" value="hex" />
+        </patch>
+        <agents>
+            <populations>
+                <population id="POPULATION_X" init="0" class="cancer" />
+            </populations>
+        </agents>
+        <actions>
+            <action id="INSERT_CANCER_CELLS" class="insert">
+                <action.parameter id="TIME_DELAY" value="2" />
+                <action.parameter id="INSERT_NUMBER" value="7" />
+                <action.parameter id="INSERT_RADIUS" value="2" />
+                <action.register id="POPULATION_X" />
+            </action>
+        </actions>
+        <environments>
+            <layers>
+                <layer id="GLUCOSE" />
+                <layer id="OXYGEN" />
+                <layer id="TGFA" />
+            </layers>
+            <components>
+                <component id="SITES" class="source_sites" />
+            </components>
+        </environments>
+    </series>
+</set>
