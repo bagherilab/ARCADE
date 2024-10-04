@@ -276,7 +276,7 @@ public abstract class PottsLocation implements Location {
      * @return  a location with the split voxels
      */
     public Location split(MersenneTwisterFast random) {
-        Plane divisionPlane = PottsPlaneFactory.createPlane(getDirection(random), new Point3D(getCenter()));
+        Plane divisionPlane = PottsPlaneFactory.createPlane(new Point3D(getCenter()), getDirection(random));
         return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
     }
     
@@ -293,7 +293,7 @@ public abstract class PottsLocation implements Location {
      * @return  a location with the split voxels
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets) {
-        Plane divisionPlane = PottsPlaneFactory.createPlane(getDirection(random), new Point3D(getOffset(offsets)));
+        Plane divisionPlane = PottsPlaneFactory.createPlane(new Point3D(getOffset(offsets)), getDirection(random));
         return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
     }
     
@@ -312,8 +312,29 @@ public abstract class PottsLocation implements Location {
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
                           Direction direction) {
-        Plane divisionPlane = PottsPlaneFactory.createPlane(direction, new Point3D(getOffset(offsets)));
+        Plane divisionPlane = PottsPlaneFactory.createPlane(new Point3D(getOffset(offsets)), direction);
         return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
+    }
+
+    /**
+     * Splits location voxels into two lists with given offset, direction, and probability.
+     * <p>
+     * The location is split at the point specified by offsets along the given
+     * direction. The lists of locations are guaranteed to be connected. One of
+     * the splits is assigned to the current location and the other is
+     * returned. One of the splits is assigned to the current location and the
+     * other returned with the given probability
+     *
+     * @param random  the seeded random number generator
+     * @param offsets  the percentage offset in each direction for split point
+     * @param direction  the direction of the split
+     * @param probability  the probability to decide which split to return
+     * @return  a location with the split voxels
+     */
+    public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
+                          Direction direction, Double probability) {
+        Plane divisionPlane = PottsPlaneFactory.createPlane(new Point3D(getOffset(offsets)), direction);
+        return split(random, divisionPlane, probability);
     }
     
     /**
@@ -342,8 +363,8 @@ public abstract class PottsLocation implements Location {
         
         splitVoxels(plane, voxels, voxelsA, voxelsB, random);
         connectVoxels(voxelsA, voxelsB, this, random);
-        
-        if (plane.point == new Point3D(getCenter())) {
+
+        if (plane.point.equals(new Point3D(getCenter()))) {
             balanceVoxels(voxelsA, voxelsB, this, random);
         }
         

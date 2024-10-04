@@ -19,12 +19,12 @@ public class PottsPlaneFactory {
         normalVectorMap.put(Direction.YZ_PLANE, new Vector3D(1, 0, 0));
         normalVectorMap.put(Direction.ZX_PLANE, new Vector3D(0, 1, 0));
         normalVectorMap.put(Direction.XY_PLANE, new Vector3D(0, 0, 1));
-        normalVectorMap.put(Direction.POSITIVE_XY, new Vector3D(1, 1, 0));
-        normalVectorMap.put(Direction.NEGATIVE_XY, new Vector3D(-1, 1, 0));
-        normalVectorMap.put(Direction.POSITIVE_YZ, new Vector3D(0, 1, 1));
-        normalVectorMap.put(Direction.NEGATIVE_YZ, new Vector3D(0, -1, 1));
-        normalVectorMap.put(Direction.POSITIVE_ZX, new Vector3D(1, 0, 1));
-        normalVectorMap.put(Direction.NEGATIVE_ZX, new Vector3D(-1, 0, 1));
+        normalVectorMap.put(Direction.POSITIVE_XY, new Vector3D(-1, 1, 0));
+        normalVectorMap.put(Direction.NEGATIVE_XY, new Vector3D(-1, -1, 0));
+        normalVectorMap.put(Direction.POSITIVE_YZ, new Vector3D(0, -1, 1));
+        normalVectorMap.put(Direction.NEGATIVE_YZ, new Vector3D(0, -1, -1));
+        normalVectorMap.put(Direction.POSITIVE_ZX, new Vector3D(1, 0, -1));
+        normalVectorMap.put(Direction.NEGATIVE_ZX, new Vector3D(-1, 0, -1));
     }
 
     /**
@@ -34,7 +34,7 @@ public class PottsPlaneFactory {
      * @param point      the point on the plane
      * @return  a Plane
      */
-    public static Plane createPlane(Direction direction, Point3D point) {
+    public static Plane createPlane(Point3D point, Direction direction) {
         Vector3D normalVector = normalVectorMap.get(direction);
         if (normalVector == null) {
             throw new IllegalArgumentException("No normal vector associated with this direction");
