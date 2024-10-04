@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ec.util.MersenneTwisterFast;
 import sim.util.Int3D;
+import ec.util.MersenneTwisterFast;
 import arcade.core.util.Plane;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -14,6 +14,7 @@ import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
+
 
 public class PottsLocationTest {
     private static final double EPSILON = 1E-10;
