@@ -170,7 +170,7 @@ public final class PottsEnums {
         }
     }
     
-    /** Location split directions for Potts simulations. */
+    /** Location split directions for potts simulations. */
     public enum Direction {
         /** Unspecified direction. */
         UNDEFINED(null),

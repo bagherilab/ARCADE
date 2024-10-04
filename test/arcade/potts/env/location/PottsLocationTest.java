@@ -3,7 +3,6 @@ package arcade.potts.env.location;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import javax.xml.bind.annotation.XmlElement.DEFAULT;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sim.util.Int3D;
@@ -15,7 +14,6 @@ import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
-
 
 public class PottsLocationTest {
     private static final double EPSILON = 1E-10;
