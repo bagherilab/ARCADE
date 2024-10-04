@@ -170,44 +170,50 @@ public final class PottsEnums {
         }
     }
     
-   /** Location split directions for Potts simulations. */
+    /** Location split directions for Potts simulations. */
     public enum Direction {
         /** Unspecified direction. */
         UNDEFINED(null),
-
+        
         /** Direction along the yz plane (y = 0, z = 0). */
         YZ_PLANE(new Int3D(1, 0, 0)),
-
+        
         /** Direction along the zx plane (z = 0, x = 0). */
         ZX_PLANE(new Int3D(0, 1, 0)),
-
+        
         /** Direction along the xy plane (x = 0, y = 0). */
         XY_PLANE(new Int3D(0, 0, 1)),
-
+        
         /** Direction along the positive xy axis (x = y, z = 0). */
         POSITIVE_XY(new Int3D(-1, 1, 0)),
-
+        
         /** Direction along the negative xy axis (x = -y, z = 0). */
         NEGATIVE_XY(new Int3D(-1, -1, 0)),
-
+        
         /** Direction along the positive yz axis (y = z, x = 0). */
         POSITIVE_YZ(new Int3D(0, -1, 1)),
-
+        
         /** Direction along the negative yz axis (y = -z, x = 0). */
         NEGATIVE_YZ(new Int3D(0, -1, -1)),
-
+        
         /** Direction along the positive zx axis (z = x, y = 0). */
         POSITIVE_ZX(new Int3D(1, 0, -1)),
-
+        
         /** Direction along the negative zx axis (z = -x, y = 0). */
         NEGATIVE_ZX(new Int3D(-1, 0, -1));
-
+        
+        /** The normal vector of the plane in this direction. */
         private final Int3D vector;
-
-        private Direction(Int3D vector) {
+        
+        /**
+         * Creates a new {@code Direction} with the given vector.
+         *
+         * @param vector the vector associated with this direction
+         */
+        Direction(Int3D vector) {
             this.vector = vector;
         }
-
+        
         /**
          * Returns the vector associated with this direction.
          *
@@ -216,7 +222,7 @@ public final class PottsEnums {
         public Int3D getVector() {
             return vector;
         }
-
+        
         /**
          * Randomly selects a {@code Direction}, excluding {@code UNDEFINED}.
          *
@@ -229,6 +235,4 @@ public final class PottsEnums {
             return directions[rng.nextInt(directions.length - 1) + 1];
         }
     }
-
-
 }

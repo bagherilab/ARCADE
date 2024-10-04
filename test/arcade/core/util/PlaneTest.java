@@ -1,8 +1,8 @@
 package arcade.core.util;
 
+import sim.util.Int3D;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import sim.util.Int3D;
 
 public class PlaneTest {
 

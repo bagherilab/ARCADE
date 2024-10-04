@@ -60,22 +60,24 @@ public class PottsEnumsTest {
     
     @Test
     public void Direction_random_returnsDirection() {
-        // Create set of all values.
-        EnumSet<Direction> enumSet = EnumSet.allOf(Direction.class);
-        enumSet.remove(Direction.UNDEFINED);
-        
-        // Create set of all random values.
-        ArrayList<Direction> enumRandom = new ArrayList<>();
-        
-        int n = Direction.values().length - 1;
+        // Create a set of all Direction values excluding UNDEFINED
+        EnumSet<Direction> expectedDirections = EnumSet.complementOf(EnumSet.of(Direction.UNDEFINED));
+
+        // Create a set to hold the Directions returned by Direction.random
+        EnumSet<Direction> randomDirections = EnumSet.noneOf(Direction.class);
+
+        int n = Direction.values().length - 1; // Excluding UNDEFINED
+
+        // Loop over all possible values that rng.nextInt(n) can return
         for (int i = 0; i < n; i++) {
             MersenneTwisterFast rng = mock(MersenneTwisterFast.class);
             doReturn(i).when(rng).nextInt(n);
-            enumRandom.add(Direction.random(rng));
+
+            Direction direction = Direction.random(rng);
+            randomDirections.add(direction);
         }
-        
-        // Compare resulting sets.
-        EnumSet<Direction> enumSetRandom = EnumSet.copyOf(enumRandom);
-        assertEquals(enumSet, enumSetRandom);
+
+        // Assert that the set of random directions equals the expected set
+        assertEquals(expectedDirections, randomDirections);
     }
 }
