@@ -6,9 +6,11 @@ import arcade.potts.env.location.Voxel;
  * A point in 3D space.
  */
 public class Point3D {
-
+    /** The x coordinate of the point */
     private final int x;
+    /** The y coordinate of the point */
     private final int y;
+    /** The z coordinate of the point */
     private final int z;
 
     /**
@@ -51,6 +53,7 @@ public class Point3D {
 
     /**
      * Retrieves the z coordinate of the point.
+     *
      * @return the z coordinate
      */
     public int getZ() { return z; }
@@ -72,6 +75,7 @@ public class Point3D {
 
     /**
      * Retrieves the hash code of the point.
+     *
      * @return the hash code
      */
     @Override

@@ -4,11 +4,11 @@ package arcade.core.util;
  * A plane in 3D space.
  */
 
-public class Plane {
+public final class Plane {
     /** A point on the plane. */
     public final Point3D point;
 
-    /** The normal to the plane. */
+    /** The normal vector to the plane. */
     public final Vector3D normalVector;
 
     /**
@@ -64,7 +64,7 @@ public class Plane {
         Plane other = (Plane) obj;
         return point.equals(other.point) && normalVector.equals(other.normalVector);
     }
-    
+
     /**
      * Returns a hash code for the plane.
      *

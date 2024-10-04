@@ -4,7 +4,10 @@ package arcade.core.util;
  * Container class for a plane.
  */
 public class PlaneContainer {
+    /** A point on the plane */
     private final Point3D point;
+
+    /** The normal vector to the plane */
     private final Vector3D normalVector;
     
     /**
@@ -20,6 +23,7 @@ public class PlaneContainer {
     
     /**
      * Retrieves the point on the plane.
+     *
      * @return the point
      */
     public Point3D getPoint() {
@@ -28,6 +32,7 @@ public class PlaneContainer {
     
     /**
      * Retrieves the normal vector to the plane.
+     *
      * @return the normal vector
      */
     public Vector3D getNormalVector() {
@@ -36,6 +41,7 @@ public class PlaneContainer {
     
     /**
      * Converts the PlaneContainer to a Plane.
+     *
      * @return the Plane
      */
     public Plane toPlane() {

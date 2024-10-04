@@ -9,8 +9,8 @@ import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Utilities;
 import arcade.core.util.Plane;
-import arcade.potts.util.PottsPlaneFactory;
 import arcade.core.util.Point3D;
+import arcade.potts.util.PottsPlaneFactory;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 

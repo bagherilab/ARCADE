@@ -12,19 +12,24 @@ import static arcade.potts.util.PottsEnums.Direction;
  */
 public final class PottsPlaneFactory {
 
-    // Mapping between Direction Enum and normal vectors
-    private static final Map<Direction, Vector3D> normalVectorMap = new EnumMap<>(Direction.class);
+    /** Mapping between Direction Enum and normal vectors */
+    private static final Map<Direction, Vector3D> NORMAL_VECTOR_MAP = new EnumMap<>(Direction.class);
 
     static {
-        normalVectorMap.put(Direction.YZ_PLANE, new Vector3D(1, 0, 0));
-        normalVectorMap.put(Direction.ZX_PLANE, new Vector3D(0, 1, 0));
-        normalVectorMap.put(Direction.XY_PLANE, new Vector3D(0, 0, 1));
-        normalVectorMap.put(Direction.POSITIVE_XY, new Vector3D(-1, 1, 0));
-        normalVectorMap.put(Direction.NEGATIVE_XY, new Vector3D(-1, -1, 0));
-        normalVectorMap.put(Direction.POSITIVE_YZ, new Vector3D(0, -1, 1));
-        normalVectorMap.put(Direction.NEGATIVE_YZ, new Vector3D(0, -1, -1));
-        normalVectorMap.put(Direction.POSITIVE_ZX, new Vector3D(1, 0, -1));
-        normalVectorMap.put(Direction.NEGATIVE_ZX, new Vector3D(-1, 0, -1));
+        NORMAL_VECTOR_MAP.put(Direction.YZ_PLANE, new Vector3D(1, 0, 0));
+        NORMAL_VECTOR_MAP.put(Direction.ZX_PLANE, new Vector3D(0, 1, 0));
+        NORMAL_VECTOR_MAP.put(Direction.XY_PLANE, new Vector3D(0, 0, 1));
+        NORMAL_VECTOR_MAP.put(Direction.POSITIVE_XY, new Vector3D(-1, 1, 0));
+        NORMAL_VECTOR_MAP.put(Direction.NEGATIVE_XY, new Vector3D(-1, -1, 0));
+        NORMAL_VECTOR_MAP.put(Direction.POSITIVE_YZ, new Vector3D(0, -1, 1));
+        NORMAL_VECTOR_MAP.put(Direction.NEGATIVE_YZ, new Vector3D(0, -1, -1));
+        NORMAL_VECTOR_MAP.put(Direction.POSITIVE_ZX, new Vector3D(1, 0, -1));
+        NORMAL_VECTOR_MAP.put(Direction.NEGATIVE_ZX, new Vector3D(-1, 0, -1));
+    }
+
+    /** Private constructor to prevent instantiation */
+    private PottsPlaneFactory() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
     /**
@@ -35,7 +40,7 @@ public final class PottsPlaneFactory {
      * @return  a Plane
      */
     public static Plane createPlane(Point3D point, Direction direction) {
-        Vector3D normalVector = normalVectorMap.get(direction);
+        Vector3D normalVector = NORMAL_VECTOR_MAP.get(direction);
         if (normalVector == null) {
             throw new IllegalArgumentException("No normal vector associated with this direction");
         }
@@ -49,6 +54,6 @@ public final class PottsPlaneFactory {
      * @return  the normal vector
      */
     public static Vector3D getNormalVector(Direction direction) {
-        return normalVectorMap.get(direction);
+        return NORMAL_VECTOR_MAP.get(direction);
     }
 }

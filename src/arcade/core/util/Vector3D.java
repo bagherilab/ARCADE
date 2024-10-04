@@ -4,9 +4,11 @@ package arcade.core.util;
  * A 3D vector.
  */
 public class Vector3D {
-
+    /** The x component of the vector */
     private final int a;
+    /** The y component of the vector */
     private final int b;
+    /** The z component of the vector */
     private final int c;
 
     /**
