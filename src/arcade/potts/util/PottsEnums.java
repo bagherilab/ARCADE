@@ -1,6 +1,7 @@
 package arcade.potts.util;
 
 import ec.util.MersenneTwisterFast;
+import sim.util.Int3D;
 import arcade.core.agent.cell.CellState;
 import arcade.core.agent.process.ProcessDomain;
 
@@ -169,46 +170,65 @@ public final class PottsEnums {
         }
     }
     
-    /** Location split directions for potts simulations. */
+   /** Location split directions for Potts simulations. */
     public enum Direction {
         /** Unspecified direction. */
-        UNDEFINED,
-        
+        UNDEFINED(null),
+
         /** Direction along the yz plane (y = 0, z = 0). */
-        YZ_PLANE,
-        
+        YZ_PLANE(new Int3D(1, 0, 0)),
+
         /** Direction along the zx plane (z = 0, x = 0). */
-        ZX_PLANE,
-        
+        ZX_PLANE(new Int3D(0, 1, 0)),
+
         /** Direction along the xy plane (x = 0, y = 0). */
-        XY_PLANE,
-        
+        XY_PLANE(new Int3D(0, 0, 1)),
+
         /** Direction along the positive xy axis (x = y, z = 0). */
-        POSITIVE_XY,
-        
+        POSITIVE_XY(new Int3D(-1, 1, 0)),
+
         /** Direction along the negative xy axis (x = -y, z = 0). */
-        NEGATIVE_XY,
-        
+        NEGATIVE_XY(new Int3D(-1, -1, 0)),
+
         /** Direction along the positive yz axis (y = z, x = 0). */
-        POSITIVE_YZ,
-        
+        POSITIVE_YZ(new Int3D(0, -1, 1)),
+
         /** Direction along the negative yz axis (y = -z, x = 0). */
-        NEGATIVE_YZ,
-        
+        NEGATIVE_YZ(new Int3D(0, -1, -1)),
+
         /** Direction along the positive zx axis (z = x, y = 0). */
-        POSITIVE_ZX,
-        
+        POSITIVE_ZX(new Int3D(1, 0, -1)),
+
         /** Direction along the negative zx axis (z = -x, y = 0). */
-        NEGATIVE_ZX;
-        
+        NEGATIVE_ZX(new Int3D(-1, 0, -1));
+
+        private final Int3D vector;
+
+        private Direction(Int3D vector) {
+            this.vector = vector;
+        }
+
         /**
-         * Randomly selects a {@code Direction}.
+         * Returns the vector associated with this direction.
          *
-         * @param rng  the random number generator
-         * @return  a random {@code Direction}
+         * @return the associated {@code Int3D}, or {@code null} if undefined
+         */
+        public Int3D getVector() {
+            return vector;
+        }
+
+        /**
+         * Randomly selects a {@code Direction}, excluding {@code UNDEFINED}.
+         *
+         * @param rng the random number generator
+         * @return a random {@code Direction}
          */
         public static Direction random(MersenneTwisterFast rng) {
-            return values()[rng.nextInt(values().length - 1) + 1];
+            Direction[] directions = values();
+            // Exclude UNDEFINED from the random selection
+            return directions[rng.nextInt(directions.length - 1) + 1];
         }
     }
+
+
 }

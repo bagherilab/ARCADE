@@ -1,15 +1,17 @@
 package arcade.core.util;
 
+import sim.util.Int3D;
+
 /**
  * A plane in 3D space.
  */
 
 public final class Plane {
     /** A point on the plane. */
-    public final Point3D point;
+    public final Int3D point;
 
     /** The normal vector to the plane. */
-    public final Vector3D normalVector;
+    public final Int3D normalVector;
 
     /**
      * Creates a plane from a point and a vector.
@@ -17,7 +19,7 @@ public final class Plane {
      * @param point  a point on the plane
      * @param normalVector  the normal vector to the plane
      */
-    public Plane(Point3D point, Vector3D normalVector) {
+    public Plane(Int3D point, Int3D normalVector) {
         this.point = point;
         this.normalVector = normalVector;
     }
@@ -29,10 +31,10 @@ public final class Plane {
      * @return  {@code true} if the point is on the plane
      *        {@code false} otherwise
      */
-    public boolean isOnPlane(Point3D p) {
-        return (p.getX() - point.getX()) * normalVector.getA()
-                + (p.getY() - point.getY()) * normalVector.getB()
-                + (p.getZ() - point.getZ()) * normalVector.getC() == 0;
+    public boolean isOnPlane(Int3D p) {
+        return (p.getX() - point.getX()) * normalVector.getX()
+                + (p.getY() - point.getY()) * normalVector.getY()
+                + (p.getZ() - point.getZ()) * normalVector.getZ() == 0;
     }
 
     /**
@@ -44,10 +46,10 @@ public final class Plane {
      *          the same side of the plane as the normal vector
      *         and negative if it is on the opposite side.
      */
-    public double distanceToPlane(Point3D p) {
-        return (p.getX() - point.getX()) * normalVector.getA()
-                + (p.getY() - point.getY()) * normalVector.getB()
-                + (p.getZ() - point.getZ()) * normalVector.getC();
+    public double distanceToPlane(Int3D p) {
+        return (p.getX() - point.getX()) * normalVector.getX()
+                + (p.getY() - point.getY()) * normalVector.getY()
+                + (p.getZ() - point.getZ()) * normalVector.getZ();
     }
 
     /**

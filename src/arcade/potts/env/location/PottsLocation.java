@@ -5,12 +5,11 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import ec.util.MersenneTwisterFast;
+import sim.util.Int3D;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Utilities;
 import arcade.core.util.Plane;
-import arcade.core.util.Point3D;
-import arcade.potts.util.PottsPlaneFactory;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -274,8 +273,10 @@ public abstract class PottsLocation implements Location {
      * @return  a location with the split voxels
      */
     public Location split(MersenneTwisterFast random) {
-        Plane divisionPlane = PottsPlaneFactory.createPlane(new Point3D(getCenter()),
-                                                            getDirection(random));
+        Voxel center = getCenter();
+        Direction splitDirection = getDirection(random);
+        Plane divisionPlane = new Plane(new Int3D(center.x, center.y, center.z),
+                                                  splitDirection.getVector());
         return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
     }
     
@@ -292,8 +293,10 @@ public abstract class PottsLocation implements Location {
      * @return  a location with the split voxels
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets) {
-        Plane divisionPlane = PottsPlaneFactory.createPlane(new Point3D(getOffset(offsets)),
-                                                                getDirection(random));
+        Voxel splitPoint = getOffset(offsets);
+        Direction splitDirection = getDirection(random);
+        Plane divisionPlane = new Plane(new Int3D(splitPoint.x, splitPoint.y, splitPoint.z),
+                                                  splitDirection.getVector());
         return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
     }
     
@@ -312,8 +315,9 @@ public abstract class PottsLocation implements Location {
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
                           Direction direction) {
-        Plane divisionPlane = PottsPlaneFactory.createPlane(new Point3D(getOffset(offsets)),
-                                                                direction);
+        Voxel splitPoint = getOffset(offsets);
+        Plane divisionPlane = new Plane(new Int3D(splitPoint.x, splitPoint.y, splitPoint.z),
+                                                    direction.getVector());
         return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
     }
 
@@ -334,8 +338,9 @@ public abstract class PottsLocation implements Location {
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
                           Direction direction, Double probability) {
-        Plane divisionPlane = PottsPlaneFactory.createPlane(new Point3D(getOffset(offsets)),
-                                                                direction);
+        Voxel splitPoint = getOffset(offsets);
+        Plane divisionPlane = new Plane(new Int3D(splitPoint.x, splitPoint.y, splitPoint.z),
+                                                    direction.getVector());
         return split(random, divisionPlane, probability);
     }
     
@@ -365,7 +370,8 @@ public abstract class PottsLocation implements Location {
         splitVoxels(plane, voxels, voxelsA, voxelsB, random);
         connectVoxels(voxelsA, voxelsB, this, random);
 
-        if (plane.point.equals(new Point3D(getCenter()))) {
+        Voxel center = getCenter();
+        if (plane.point.equals(new Int3D(center.x, center.y, center.z))) {
             balanceVoxels(voxelsA, voxelsB, this, random);
         }
         
@@ -669,9 +675,9 @@ public abstract class PottsLocation implements Location {
                             ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
                             MersenneTwisterFast random) {
         for (Voxel voxel : voxels) {
-            if (plane.distanceToPlane(new Point3D(voxel)) < 0) {
+            if (plane.distanceToPlane(new Int3D(voxel.x, voxel.y, voxel.z)) < 0) {
                 voxelsA.add(voxel);
-            } else if (plane.distanceToPlane(new Point3D(voxel)) > 0) {
+            } else if (plane.distanceToPlane(new Int3D(voxel.x, voxel.y, voxel.z)) > 0) {
                 voxelsB.add(voxel);
             } else {
                 if (random.nextDouble() > 0.5) {
