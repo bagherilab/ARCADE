@@ -1,0 +1,33 @@
+<set prefix="SITE_ARCHITECTURE_" path="/path/for/outputs/">
+    <series name="CH_PATTERN" start="0" end="10" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="FULL">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="migra_threshold" scale="0.5" />
+                    </variables>
+                </population>
+                <population type="H" fraction="1.0" />
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.05"/>
+            </helpers>
+        </agents>
+        <environment>
+            <components>
+                <component type="sites" class="pattern">
+                    <specifications>
+                        <specification id="RELATIVE_FRACTION" value="0" />
+                    </specifications>
+                </component>
+            </components>
+        </environment>
+    </series>
+</set>

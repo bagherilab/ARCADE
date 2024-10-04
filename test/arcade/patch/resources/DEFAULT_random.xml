@@ -1,0 +1,17 @@
+<set prefix="DEFAULT_" path="/projects/p20519/abm/">
+    <series name="random_R{bounds_1}" start="0" end="50" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0" />
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="{bounds::(0.01|0.12)}" NAME="{bounds::(1|5)}" />
+            </helpers>
+        </agents>
+    </series>
+</set>

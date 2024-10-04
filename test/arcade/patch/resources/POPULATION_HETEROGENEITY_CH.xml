@@ -1,0 +1,45 @@
+<set prefix="POPULATION_HETEROGENEITY_" path="/projects/p20519/abm/">
+    <series name="CH_{pops_0}_{het_0|100,2}_{tissue|100,2}" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="parameter" interval="720" suffix=".PARAM" />
+            </profilers>
+        </simulation>
+        <agents initialization="FULL">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="heterogeneity" value="{het::(0.0|0.1|0.2|0.3|0.4|0.5)}" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="heterogeneity" value="{het::(0.0|0.1|0.2|0.3|0.4|0.5)}" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="heterogeneity" value="{het::(0.0|0.1|0.2|0.3|0.4|0.5)}" />
+                    </variables>
+                </population>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="heterogeneity" value="{het::(0.0|0.1|0.2|0.3|0.4|0.5)}" />
+                    </variables>
+                </population>
+                <population type="H" fraction="1.0">
+                    <variables>
+                        <variable id="heterogeneity" value="{tissue::(0.0|0.1|0.2|0.3|0.4|0.5)}" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" NAMES="{pops::(X|A|B|C|XA|XB|XC|AB|AC|BC|XAB|XAC|ABC|XBC|XABC)}" populations="{pops::(0|1|2|3|0,1|0,2|0,3|1,2|1,3|2,3|0,1,2|0,1,3|1,2,3|0,2,3|0,1,2,3)}" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+</set>

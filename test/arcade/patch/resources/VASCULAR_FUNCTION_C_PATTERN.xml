@@ -1,0 +1,31 @@
+<set prefix="VASCULAR_FUNCTION_" path="/path/for/outputs/">
+    <series name="C_PATTERN" start="0" end="10" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="graph" interval="720" suffix=".GRAPH" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="migra_threshold" scale="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.05"/>
+            </helpers>
+        </agents>
+        <environment>
+            <components>
+                <component type="sites" class="graph" />
+                <component type="remodel" interval="60" />
+                <component type="degrade" interval="1" />
+            </components>
+        </environment>
+    </series>
+</set>

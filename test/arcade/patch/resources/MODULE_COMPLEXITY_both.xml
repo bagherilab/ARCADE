@@ -1,0 +1,22 @@
+<set prefix="MODULE_COMPLEXITY_" path="/projects/p20519/abm/">
+    <series name="both_{metabolism}_{signaling}" start="0" end="20" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <modules>
+                        <module type="metabolism" version="{metabolism::(C|M|S|R)}" />
+                        <module type="signaling" version="{signaling::(C|M|S|R)}" />
+                    </modules>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.12"/>
+            </helpers>
+        </agents>
+    </series>
+</set>

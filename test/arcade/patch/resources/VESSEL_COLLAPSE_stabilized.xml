@@ -1,0 +1,48 @@
+<set prefix="VESSEL_COLLAPSE_" path="/path/for/outputs/">
+    <series name="stabilized_{stabilized|100,3}_{layout}" start="0" end="10" days="22">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+                <profiler type="graph" interval="720" suffix=".GRAPH" />
+            </profilers>
+            <checkpoints>
+                <checkpoint type="graph" class="load" name="Savav_{layout::(A|B|C|D|E|F|G|H|I|J)}_stabilized" path="/path/for/checkpoints/" day="0" />
+            </checkpoints>
+        </simulation>
+        <agents initialization="FULL">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="migra_threshold" scale="0.5" />
+                    </variables>
+                </population>
+                <population type="H" fraction="1.0" />
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.05"/>
+            </helpers>
+        </agents>
+        <environment>
+            <components>
+                <component type="sites" class="graph">
+                    <specifications>
+                        <specification id="GRAPH_LAYOUT" value="(S)" />
+                        <specification id="ROOTS_LEFT" value="(50A)" />
+                        <specification id="ROOTS_RIGHT" value="(50A)" />
+                        <specification id="ROOTS_TOP" value="(50V)" />
+                        <specification id="ROOTS_BOTTOM" value="(50V)" />
+                    </specifications>
+                </component>
+                <component type="remodel" interval="60" />
+                <component type="degrade" interval="1">
+                    <specifications>
+                        <specification id="STABILIZED_STEP" value="11520" />
+                        <specification id="STABILIZED_FRACTION" value="{stabilized::(0.0|0.1|0.2|0.3|0.4|0.5|0.6|0.7|0.8|0.9|1.0)}" />
+                    </specifications>
+                </component>
+            </components>
+        </environment>
+    </series>
+</set>

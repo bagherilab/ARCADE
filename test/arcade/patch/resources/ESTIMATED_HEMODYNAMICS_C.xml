@@ -1,0 +1,32 @@
+<set prefix="ESTIMATED_HEMODYNAMICS_" path="/path/for/outputs/">
+    <series name="C_{id_0}_{scale|10,3}" start="0" end="10" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="migra_threshold" scale="0.5" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.05"/>
+            </helpers>
+        </agents>
+        <environment>
+            <components>
+                <component type="sites" class="pattern">
+                    <specifications>
+                        <specification NAME="{id::(weight_gradient|weight_local|weight_flow)}" id="{id::(WEIGHT_GRADIENT|WEIGHT_LOCAL|WEIGHT_FLOW)}" value="{scale::(0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20)}" />
+                    </specifications>
+                </component>
+            </components>
+        </environment>
+    </series>
+</set>

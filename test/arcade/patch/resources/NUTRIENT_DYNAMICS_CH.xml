@@ -1,0 +1,33 @@
+<set prefix="NUTRIENT_DYNAMICS_" path="/projects/p20519/abm/">
+    <series name="CH_{scale_0}_{comp}" start="0" end="50" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="180" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="FULL">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="migra_threshold" scale="0.5" />
+                    </variables>
+                </population>
+                <population type="H" fraction="1.0" />
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.05"/>
+            </helpers>
+        </agents>
+        <environment coordinate="hex">
+            <globals>
+                <global id="CONCENTRATION_GLUCOSE" SCALE_NAME="{scale::(LOW|BASAL|HIGH)}" scale="{scale::(0.5|1.0|2.0)}" />
+            </globals>
+            <components>
+                <component type="sites" class="source" />
+                <component type="{comp::(pulse|cycle)}" />
+            </components>
+        </environment>
+    </series>
+</set>

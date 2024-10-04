@@ -1,0 +1,30 @@
+<set prefix="CELL_VARIABILITY_" path="/projects/p20519/abm/">
+    <series name="C_A{age|1,1}_V{volume|1,1}" start="0" end="50" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="180" suffix="" />
+            </profilers>
+        </simulation>
+        <agents initialization="0">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="migra_threshold" scale="0.5" />
+                        <variable id="CELL_VOL_RANGE" scale="{volume::(0.0|1.0)}" />
+                        <variable id="CELL_AGE_MAX" scale="{age::(0.0|1.0)}" />
+                    </variables>
+                </population>
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.05"/>
+            </helpers>
+        </agents>
+        <environment coordinate="hex">
+            <components>
+                <component type="sites" class="source" />
+            </components>
+        </environment>
+    </series>
+</set>

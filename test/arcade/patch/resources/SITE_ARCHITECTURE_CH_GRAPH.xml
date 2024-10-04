@@ -1,0 +1,40 @@
+<set prefix="SITE_ARCHITECTURE_" path="/path/for/outputs/">
+    <series name="CH_GRAPH_{site_0}" start="0" end="10" days="15">
+        <simulation type="growth">
+            <profilers>
+                <profiler type="growth" interval="720" suffix="" />
+            </profilers>
+            <checkpoints>
+                <checkpoint type="graph" class="load" name="{site_0}" path="/path/for/checkpoints/" day="0" />
+            </checkpoints>
+        </simulation>
+        <agents initialization="FULL">
+            <populations>
+                <population type="C" fraction="0.0">
+                    <variables>
+                        <variable id="max_height" scale="1.5" />
+                        <variable id="meta_pref" scale="1.5" />
+                        <variable id="migra_threshold" scale="0.5" />
+                    </variables>
+                </population>
+                <population type="H" fraction="1.0" />
+            </populations>
+            <helpers>
+                <helper type="insert" delay="1440" populations="0" bounds="0.05"/>
+            </helpers>
+        </agents>
+        <environment>
+            <components>
+                <component NAME="{site::(Lav|Lava|Lvav|Sav|Savav)}" type="sites" class="graph" complexity="simple">
+                    <specifications>
+                        <specification id="GRAPH_LAYOUT" value="{site::((L)|(L)|(L)|(S)|(S))}" />
+                        <specification id="ROOTS_LEFT" value="{site::(20A80|20A80,80A80|20V80,80V80|50A|50A)}" />
+                        <specification id="ROOTS_RIGHT" value="{site::(80V80|50V80|50A80|50V|50A)}" />
+                        <specification id="ROOTS_TOP" value="{site::(x|x|x|x|50V)}" />
+                        <specification id="ROOTS_BOTTOM" value="{site::(x|x|x|x|50V)}" />
+                    </specifications>
+                </component>
+            </components>
+        </environment>
+    </series>
+</set>
