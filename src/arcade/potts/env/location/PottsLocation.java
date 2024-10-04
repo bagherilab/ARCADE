@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import ec.util.MersenneTwisterFast;
 import sim.util.Int3D;
+import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
-import arcade.core.util.Utilities;
 import arcade.core.util.Plane;
+import arcade.core.util.Utilities;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 

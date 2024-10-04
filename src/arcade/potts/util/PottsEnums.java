@@ -1,7 +1,7 @@
 package arcade.potts.util;
 
-import ec.util.MersenneTwisterFast;
 import sim.util.Int3D;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.agent.process.ProcessDomain;
 
