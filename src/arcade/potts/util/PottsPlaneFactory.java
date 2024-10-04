@@ -12,8 +12,12 @@ import static arcade.potts.util.PottsEnums.Direction;
  */
 public final class PottsPlaneFactory {
 
-    /** Mapping between Direction Enum and normal vectors */
-    private static final Map<Direction, Vector3D> NORMAL_VECTOR_MAP = new EnumMap<>(Direction.class);
+    /**
+     * The mapping between the Direction Enum and normal vectors of
+     * each direction's plane.
+     */
+    private static final Map<Direction, Vector3D> NORMAL_VECTOR_MAP =
+                                                  new EnumMap<>(Direction.class);
 
     static {
         NORMAL_VECTOR_MAP.put(Direction.YZ_PLANE, new Vector3D(1, 0, 0));
@@ -27,9 +31,10 @@ public final class PottsPlaneFactory {
         NORMAL_VECTOR_MAP.put(Direction.NEGATIVE_ZX, new Vector3D(-1, 0, -1));
     }
 
-    /** Private constructor to prevent instantiation */
+    /** Private constructor to prevent instantiation. */
     private PottsPlaneFactory() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+        throw new UnsupportedOperationException(
+            "This is a utility class and cannot be instantiated");
     }
 
     /**

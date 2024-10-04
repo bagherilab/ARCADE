@@ -6,11 +6,13 @@ import arcade.potts.env.location.Voxel;
  * A point in 3D space.
  */
 public class Point3D {
-    /** The x coordinate of the point */
+    /** The x coordinate of the point. */
     private final int x;
-    /** The y coordinate of the point */
+
+    /** The y coordinate of the point. */
     private final int y;
-    /** The z coordinate of the point */
+    
+    /** The z coordinate of the point. */
     private final int z;
 
     /**

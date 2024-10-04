@@ -1,24 +1,16 @@
 package arcade.potts.env.location;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Plane;
 import arcade.core.util.Point3D;
 import arcade.core.util.Vector3D;
-import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.Region;
-import arcade.potts.sim.Potts;
 import arcade.potts.util.PottsPlaneFactory;
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
@@ -27,8 +19,6 @@ import static arcade.potts.util.PottsEnums.Region;
 
 public class PottsLocationTest {
     private static final double EPSILON = 1E-10;
-    
-    private static final MersenneTwisterFast RANDOM = new MersenneTwisterFast(randomSeed());
     
     static MersenneTwisterFast randomDoubleZero;
     
@@ -972,7 +962,7 @@ public class PottsLocationTest {
         voxelsASplit.add(new Voxel(2, 2, 2));
         voxelsBSplit.add(new Voxel(2, 2, 0));
 
-        Plane negativeYZPlane = PottsPlaneFactory.createPlane(new Point3D(loc.getCenter()), Direction.NEGATIVE_YZ);;
+        Plane negativeYZPlane = PottsPlaneFactory.createPlane(new Point3D(loc.getCenter()), Direction.NEGATIVE_YZ);
         
         PottsLocation.splitVoxels(negativeYZPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);
@@ -997,7 +987,7 @@ public class PottsLocationTest {
         voxelsBSplit.add(new Voxel(2, 2, 2));
         voxelsASplit.add(new Voxel(2, 2, 0));
 
-        Plane positiveYZPlane = PottsPlaneFactory.createPlane(new Point3D(loc.getCenter()), Direction.POSITIVE_YZ);;
+        Plane positiveYZPlane = PottsPlaneFactory.createPlane(new Point3D(loc.getCenter()), Direction.POSITIVE_YZ);
         
         PottsLocation.splitVoxels(positiveYZPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);

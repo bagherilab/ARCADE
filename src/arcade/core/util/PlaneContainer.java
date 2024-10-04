@@ -4,10 +4,10 @@ package arcade.core.util;
  * Container class for a plane.
  */
 public class PlaneContainer {
-    /** A point on the plane */
+    /** A point on the plane. */
     private final Point3D point;
 
-    /** The normal vector to the plane */
+    /** The normal vector to the plane. */
     private final Vector3D normalVector;
     
     /**

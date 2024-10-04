@@ -1,8 +1,8 @@
 package arcade.core.util;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 import arcade.potts.env.location.Voxel;
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for the Point3D class.
