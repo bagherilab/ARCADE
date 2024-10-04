@@ -45,7 +45,7 @@ public final class PottsOutputDeserializer {
      *
      * @return  a {@code Gson} instance
      */
-    static Gson makeGSON() {
+    public static Gson makeGSON() {
         GsonBuilder gsonBuilder = OutputDeserializer.makeGSONBuilder();
         gsonBuilder.registerTypeAdapter(CellContainer.class,
                 new PottsCellDeserializer());

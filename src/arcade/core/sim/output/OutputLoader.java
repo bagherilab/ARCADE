@@ -109,7 +109,7 @@ public abstract class OutputLoader {
      * @param filepath  the path for the file
      * @return  the contents of the path, {@code null} if unable to read
      */
-    String read(String filepath) {
+    public static String read(String filepath) {
         try {
             // Get reader
             File infile = new File(filepath);
