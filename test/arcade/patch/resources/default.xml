@@ -1,0 +1,5 @@
+<set>
+    <series name="default" ticks="1" interval="1" start="0" end="0">
+        <patch />
+    </series>
+</set>

@@ -14,55 +14,47 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class PatchARCADETest {
-    static String makeSetup(String name) {
-        return "<set>"
-                + "<series name=\"" + name + "\" ticks=\"1\" interval=\"1\" start=\"0\" end=\"0\">"
-                + "<patch /></series></set>";
-    }
-    
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
     
     @Test
     public void main_noVis_savesFiles() throws Exception {
-        String name = "main_noVis_savesFiles";
-        File setupFile = folder.newFile("setup.xml");
-        FileUtils.writeStringToFile(setupFile, makeSetup(name), "UTF-8");
+        String series = "default";
+        String setupFile = "test/arcade/patch/resources/" + series + ".xml";
         
-        String[] args = new String[] { "patch", setupFile.getPath(), folder.getRoot().getAbsolutePath() };
+        String[] args = new String[] { "patch", setupFile, folder.getRoot().getAbsolutePath() };
         ARCADE.main(args);
         
-        File mainOutput = new File(folder.getRoot() + "/" + name + ".json");
+        File mainOutput = new File(folder.getRoot() + "/" + series + ".json");
         assertTrue(mainOutput.exists());
         
         String[] timepoints = new String[] { "0000_000000", "0000_000001" };
         for (String tp : timepoints) {
-            File cellOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".CELLS.json");
+            File cellOutput = new File(folder.getRoot() + "/" + series + "_" + tp + ".CELLS.json");
             assertTrue(cellOutput.exists());
-            File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".LOCATIONS.json");
+            File locationOutput = new File(folder.getRoot() + "/" + series + "_" + tp + ".LOCATIONS.json");
             assertTrue(locationOutput.exists());
         }
     }
     
     @Test
     public void main_withVis_savesNothing() throws Exception {
-        String name = "main_withVis_savesNothing";
-        File setupFile = folder.newFile("setup.xml");
-        FileUtils.writeStringToFile(setupFile, makeSetup(name), "UTF-8");
+        String series = "default";
+        String setupFile = "test/arcade/patch/resources/" + series + ".xml";
         
         System.setProperty("java.awt.headless", "true");
         
-        String[] args = new String[] { "patch", setupFile.getPath(), folder.getRoot().getAbsolutePath(), "--vis" };
+        String[] args = new String[] { "patch", setupFile, folder.getRoot().getAbsolutePath(), "--vis" };
         ARCADE.main(args);
         
-        File mainOutput = new File(folder.getRoot() + "/" + name + ".json");
+        File mainOutput = new File(folder.getRoot() + "/" + series + ".json");
         assertFalse(mainOutput.exists());
         
         String[] timepoints = new String[] { "0000_000000", "0000_000001" };
         for (String tp : timepoints) {
-            File cellOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".CELLS.json");
+            File cellOutput = new File(folder.getRoot() + "/" + series + "_" + tp + ".CELLS.json");
             assertFalse(cellOutput.exists());
-            File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".LOCATIONS.json");
+            File locationOutput = new File(folder.getRoot() + "/" + series + "_" + tp + ".LOCATIONS.json");
             assertFalse(locationOutput.exists());
         }
     }
