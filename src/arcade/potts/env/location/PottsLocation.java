@@ -301,27 +301,6 @@ public abstract class PottsLocation implements Location {
     }
     
     /**
-     * Splits location voxels into two lists with given offset and direction.
-     * <p>
-     * The location is split at the point specified by offsets along the given
-     * direction. The lists of locations are guaranteed to be connected. One of
-     * the splits is assigned to the current location and the other is
-     * returned.
-     *
-     * @param random  the seeded random number generator
-     * @param offsets  the percentage offset in each direction for split point
-     * @param direction  the direction of the split
-     * @return  a location with the split voxels
-     */
-    public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
-                          Direction direction) {
-        Voxel splitPoint = getOffset(offsets);
-        Plane divisionPlane = new Plane(new Int3D(splitPoint.x, splitPoint.y, splitPoint.z),
-                                                    direction.getVector());
-        return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
-    }
-
-    /**
      * Splits location voxels into two lists with given offset, direction, and probability.
      * <p>
      * The location is split at the point specified by offsets along the given

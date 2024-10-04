@@ -3,6 +3,7 @@ package arcade.potts.env.location;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import javax.xml.bind.annotation.XmlElement.DEFAULT;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import sim.util.Int3D;
@@ -1434,7 +1435,7 @@ public class PottsLocationTest {
     }
     
     @Test
-    public void split_withOffsetsWithDirection_splitsVoxelsCorrectly() {
+    public void split_withOffsetsWithDirectionWithProbability_splitsVoxelsCorrectly() {
         ArrayList<Voxel> voxels = new ArrayList<>();
         ArrayList<Voxel> locVoxels = new ArrayList<>();
         ArrayList<Voxel> splitVoxels = new ArrayList<>();
@@ -1469,9 +1470,10 @@ public class PottsLocationTest {
         }
 
         PottsLocation location = new PottsLocationMock(voxels);
-
+        double probability = 0.5;
         // Call split
-        PottsLocation splitLocation = (PottsLocation) location.split(randomDoubleZero, offsets, Direction.POSITIVE_XY);
+        PottsLocation splitLocation = (PottsLocation) location.split(randomDoubleZero, offsets,
+                                                                     Direction.POSITIVE_XY, probability);
 
         // Verify the split occurred as expected
         int totalVoxels = location.voxels.size() + splitLocation.voxels.size();
