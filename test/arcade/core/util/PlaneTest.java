@@ -65,4 +65,49 @@ public class PlaneTest {
 
         assertEquals(-1, plane.distanceToPlane(pointToTest), 0.0001);
     }
+//simpler numbers
+    @Test
+    public void testSignedDistanceToPlane() {
+        Int3D point = new Int3D(0, 0, 0);
+        Int3D normalVector = new Int3D(0, 0, 1);
+        Plane plane = new Plane(point, normalVector);
+
+        Int3D testPoint = new Int3D(0, 0, 5);
+    
+        // The distance should be 5, since the point is 5 units above the plane
+        assertEquals(5.0, plane.signedDistanceToPlane(testPoint), 0.001);
+    }
+//more complicated numbers
+    @Test
+    public void complexTestSignedDistanceToPlane() {
+        Int3D point = new Int3D(1, 1, 2);
+        Int3D normalVector = new Int3D(1, 2, 2);
+        Plane plane = new Plane(point, normalVector);
+
+        Int3D testPoint = new Int3D(2, 2, 5);
+    
+        // The distance should be 5, since the point is 5 units above the plane
+        assertEquals(3.0, plane.signedDistanceToPlane(testPoint), 0.001);
+    }
+
+    @Test
+    public void constructor_givenUnitNormalVector_doesNotChangeVector() {
+        Int3D point = new Int3D(1, 2, 3);
+        Int3D unitNormalVector = new Int3D(1, 0, 0);  // Already normalized
+
+        Plane plane = new Plane(point, unitNormalVector);
+
+        assertEquals(unitNormalVector, plane.normalVector);  // No change in vector
+    }
+
+    @Test
+    public void testHashCodeConsistency() {
+        Int3D point = new Int3D(1, 2, 3);
+        Int3D normalVector = new Int3D(4, 5, 6);
+
+        Plane plane1 = new Plane(point, normalVector);
+        Plane plane2 = new Plane(point, normalVector);
+
+        assertEquals(plane1.hashCode(), plane2.hashCode());
+    }
 }

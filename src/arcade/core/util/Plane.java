@@ -22,7 +22,24 @@ public final class Plane {
     public Plane(Int3D point, Int3D normalVector) {
         this.point = point;
         this.normalVector = normalVector;
+    //I believe the vector needs to be normalized (DV) 
+    //The normal vector can't be an Int3D
+        // double magnitude = Math.sqrt(normalVector.getX() * normalVector.getX()
+        //                         + normalVector.getY() * normalVector.getY()
+        //                         + normalVector.getZ() * normalVector.getZ());
+
+        // if (magnitude != 0) {
+        //     this.normalVector = new Int3D(
+        //         (int) (normalVector.getX() / magnitude),
+        //         (int) (normalVector.getY() / magnitude),
+        //         (int) (normalVector.getZ() / magnitude)
+        //     );
+        // } else {
+        //     throw new IllegalArgumentException("Cannot use a 0 length vector");
+        //     // Handle the case of a zero-length normal vector (e.g., throw an exception)
+        // }
     }
+
 
     /**
      * Determines whether a point is on the plane.
@@ -46,11 +63,19 @@ public final class Plane {
      *          the same side of the plane as the normal vector
      *         and negative if it is on the opposite side.
      */
-    public double distanceToPlane(Int3D p) {
-        return (p.getX() - point.getX()) * normalVector.getX()
+    public double signedDistanceToPlane(Int3D p) { 
+        double dotProduct;
+        double normalVectorMagnitude;
+
+        dotProduct = (p.getX() - point.getX()) * normalVector.getX()
                 + (p.getY() - point.getY()) * normalVector.getY()
                 + (p.getZ() - point.getZ()) * normalVector.getZ();
+        normalVectorMagnitude = Math.sqrt(normalVector.getX()*normalVector.getX()
+                                    + normalVector.getY()*normalVector.getY()
+                                    + normalVector.getZ()*normalVector.getZ());
+        return dotProduct/normalVectorMagnitude;
     }
+
 
     /**
      * Determines if two planes are equal.
