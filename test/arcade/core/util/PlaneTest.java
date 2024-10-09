@@ -41,7 +41,7 @@ public class PlaneTest {
 
         Int3D pointToTest = new Int3D(0, 0, 0);  // Point is on the plane
 
-        assertEquals(0, plane.distanceToPlane(pointToTest), 0.0001);
+        assertEquals(0, plane.signedDistanceToPlane(pointToTest), 0.0001);
     }
 
     @Test
@@ -52,7 +52,7 @@ public class PlaneTest {
 
         Int3D pointToTest = new Int3D(1, 1, 1);  // Point is not on the plane
 
-        assertEquals(1, plane.distanceToPlane(pointToTest), 0.0001);
+        assertEquals(1, plane.signedDistanceToPlane(pointToTest), 0.0001);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class PlaneTest {
 
         Int3D pointToTest = new Int3D(-1, -1, -1);  // Point is not on the plane
 
-        assertEquals(-1, plane.distanceToPlane(pointToTest), 0.0001);
+        assertEquals(-1, plane.signedDistanceToPlane(pointToTest), 0.0001);
     }
 //simpler numbers
     @Test
