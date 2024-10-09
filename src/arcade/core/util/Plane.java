@@ -56,7 +56,7 @@ public final class Plane {
         normalVectorMagnitude = Math.sqrt(normalVector.getX() * normalVector.getX()
                                     + normalVector.getY() * normalVector.getY()
                                     + normalVector.getZ() * normalVector.getZ());
-        return dotProduct/normalVectorMagnitude;
+        return dotProduct / normalVectorMagnitude;
     }
     
     /**
