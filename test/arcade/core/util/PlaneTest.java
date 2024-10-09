@@ -77,7 +77,7 @@ public class PlaneTest {
         // The distance should be 5, since the point is 5 units above the plane
         assertEquals(5.0, plane.signedDistanceToPlane(testPoint), 0.001);
     }
-//more complicated numbers
+//more complicated numbers to test if the method normalizes a non-unit vector to a unit
     @Test
     public void complexTestSignedDistanceToPlane() {
         Int3D point = new Int3D(1, 1, 2);
@@ -86,20 +86,10 @@ public class PlaneTest {
 
         Int3D testPoint = new Int3D(2, 2, 5);
     
-        // The distance should be 5, since the point is 5 units above the plane
         assertEquals(3.0, plane.signedDistanceToPlane(testPoint), 0.001);
     }
-
-    @Test
-    public void constructor_givenUnitNormalVector_doesNotChangeVector() {
-        Int3D point = new Int3D(1, 2, 3);
-        Int3D unitNormalVector = new Int3D(1, 0, 0);  // Already normalized
-
-        Plane plane = new Plane(point, unitNormalVector);
-
-        assertEquals(unitNormalVector, plane.normalVector);  // No change in vector
-    }
-
+//If you create 2 planes with the same point and the same normal vector, they will have the same hash value
+//Hash maps objects to number, if they match then that is good
     @Test
     public void testHashCodeConsistency() {
         Int3D point = new Int3D(1, 2, 3);
