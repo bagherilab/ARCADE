@@ -9,10 +9,10 @@ import sim.util.Int3D;
 public final class Plane {
     /** A point on the plane. */
     public final Int3D point;
-
+    
     /** The normal vector to the plane. */
     public final Int3D normalVector;
-
+    
     /**
      * Creates a plane from a point and a vector.
      *
@@ -23,8 +23,7 @@ public final class Plane {
         this.point = point;
         this.normalVector = normalVector;
     }
-
-
+    
     /**
      * Determines whether a point is on the plane.
      *
@@ -37,7 +36,7 @@ public final class Plane {
                 + (p.getY() - point.getY()) * normalVector.getY()
                 + (p.getZ() - point.getZ()) * normalVector.getZ() == 0;
     }
-
+    
     /**
      * Determines distance from a point to the plane.
      *
@@ -47,10 +46,10 @@ public final class Plane {
      *          the same side of the plane as the normal vector
      *         and negative if it is on the opposite side.
      */
-    public double signedDistanceToPlane(Int3D p) { 
+    public double signedDistanceToPlane(Int3D p) {
         double dotProduct;
         double normalVectorMagnitude;
-
+        
         dotProduct = (p.getX() - point.getX()) * normalVector.getX()
                 + (p.getY() - point.getY()) * normalVector.getY()
                 + (p.getZ() - point.getZ()) * normalVector.getZ();
@@ -59,8 +58,7 @@ public final class Plane {
                                     + normalVector.getZ() * normalVector.getZ());
         return dotProduct/normalVectorMagnitude;
     }
-
-
+    
     /**
      * Determines if two planes are equal.
      *
@@ -75,7 +73,7 @@ public final class Plane {
         Plane other = (Plane) obj;
         return point.equals(other.point) && normalVector.equals(other.normalVector);
     }
-
+    
     /**
      * Returns a hash code for the plane.
      *
