@@ -654,9 +654,9 @@ public abstract class PottsLocation implements Location {
                             ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
                             MersenneTwisterFast random) {
         for (Voxel voxel : voxels) {
-            if (plane.distanceToPlane(new Int3D(voxel.x, voxel.y, voxel.z)) < 0) {
+            if (plane.signedDistanceToPlane(new Int3D(voxel.x, voxel.y, voxel.z)) < 0) {
                 voxelsA.add(voxel);
-            } else if (plane.distanceToPlane(new Int3D(voxel.x, voxel.y, voxel.z)) > 0) {
+            } else if (plane.signedDistanceToPlane(new Int3D(voxel.x, voxel.y, voxel.z)) > 0) {
                 voxelsB.add(voxel);
             } else {
                 if (random.nextDouble() > 0.5) {
