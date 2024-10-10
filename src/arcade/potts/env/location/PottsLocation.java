@@ -346,8 +346,8 @@ public abstract class PottsLocation implements Location {
         splitVoxels(plane, voxels, voxelsA, voxelsB, random);
         connectVoxels(voxelsA, voxelsB, this, random);
 
-        Voxel center = getCenter();
-        if (plane.referencePoint.equals(center)) {
+        Voxel locCenter = getCenter();
+        if (plane.referencePoint.equals(locCenter)) {
             balanceVoxels(voxelsA, voxelsB, this, random);
         }
         
@@ -651,9 +651,10 @@ public abstract class PottsLocation implements Location {
                             ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
                             MersenneTwisterFast random) {
         for (Voxel voxel : voxels) {
-            if (plane.signedDistanceToPlane(new Int3D(voxel.x, voxel.y, voxel.z)) < 0) {
+            double distance = plane.signedDistanceToPlane(voxel);
+            if (distance < 0) {
                 voxelsA.add(voxel);
-            } else if (plane.signedDistanceToPlane(new Int3D(voxel.x, voxel.y, voxel.z)) > 0) {
+            } else if (distance > 0) {
                 voxelsB.add(voxel);
             } else {
                 if (random.nextDouble() > 0.5) {

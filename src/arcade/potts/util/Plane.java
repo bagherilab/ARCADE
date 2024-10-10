@@ -10,10 +10,10 @@ import arcade.potts.env.location.Voxel;
 public final class Plane {
     /** A point on the plane. */
     public final Voxel referencePoint;
-
+    
     /** The normal vector to the plane. */
     public final Int3D normalVector;
-
+    
     /**
      * Creates a plane from a point and a vector.
      *
@@ -24,7 +24,7 @@ public final class Plane {
         this.referencePoint = voxel;
         this.normalVector = normalVector;
     }
-
+    
     /**
      * Determines distance from a point to the plane.
      *
@@ -34,19 +34,19 @@ public final class Plane {
      *          the same side of the plane as the normal vector
      *         and negative if it is on the opposite side.
      */
-    public double signedDistanceToPlane(Int3D p) {
+    public double signedDistanceToPlane(Voxel p) {
         double dotProduct;
         double normalVectorMagnitude;
         
-        dotProduct = (p.getX() - referencePoint.x) * normalVector.getX()
-                + (p.getY() - referencePoint.y) * normalVector.getY()
-                + (p.getZ() - referencePoint.z) * normalVector.getZ();
+        dotProduct = (p.x - referencePoint.x) * normalVector.getX()
+                + (p.y - referencePoint.y) * normalVector.getY()
+                + (p.z - referencePoint.z) * normalVector.getZ();
         normalVectorMagnitude = Math.sqrt(normalVector.getX() * normalVector.getX()
                                     + normalVector.getY() * normalVector.getY()
                                     + normalVector.getZ() * normalVector.getZ());
         return dotProduct / normalVectorMagnitude;
     }
-
+    
     /**
      * Determines if two planes are equal.
      *
@@ -61,7 +61,7 @@ public final class Plane {
         Plane other = (Plane) obj;
         return referencePoint.equals(other.referencePoint) && normalVector.equals(other.normalVector);
     }
-
+    
     /**
      * Returns a hash code for the plane.
      *

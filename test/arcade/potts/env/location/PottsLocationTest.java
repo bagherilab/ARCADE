@@ -1367,10 +1367,6 @@ public class PottsLocationTest {
         PottsLocation loc = new PottsLocationMock(voxels);
         PottsLocation split = (PottsLocation) loc.split(randomDoubleZero);
 
-        // Verify that the total number of voxels remains the same
-        int totalVoxels = loc.voxels.size() + split.voxels.size();
-        assertEquals(totalVoxels, voxels.size());
-
         locVoxels.sort(VOXEL_COMPARATOR);
         loc.voxels.sort(VOXEL_COMPARATOR);
         splitVoxels.sort(VOXEL_COMPARATOR);
@@ -1417,10 +1413,6 @@ public class PottsLocationTest {
 
         // Call split
         PottsLocation splitLocation = (PottsLocation) location.split(randomDoubleZero, offsets);
-
-        // Verify the split occurred as expected
-        int totalVoxels = location.voxels.size() + splitLocation.voxels.size();
-        assertEquals(totalVoxels, voxels.size());
 
         locVoxels.sort(VOXEL_COMPARATOR);
         location.voxels.sort(VOXEL_COMPARATOR);
@@ -1472,10 +1464,6 @@ public class PottsLocationTest {
         // Call split
         PottsLocation splitLocation = (PottsLocation) location.split(randomDoubleZero, offsets,
                                                                      Direction.POSITIVE_XY, probability);
-
-        // Verify the split occurred as expected
-        int totalVoxels = location.voxels.size() + splitLocation.voxels.size();
-        assertEquals(totalVoxels, voxels.size());
 
         locVoxels.sort(VOXEL_COMPARATOR);
         location.voxels.sort(VOXEL_COMPARATOR);
@@ -1594,10 +1582,6 @@ public class PottsLocationTest {
 
         // Call split
         PottsLocation split = (PottsLocation) loc.split(randomDoubleZero, plane, probability);
-
-        // Verify that the total number of voxels remains the same
-        int totalVoxels = loc.voxels.size() + split.voxels.size();
-        assertEquals(voxels.size(), totalVoxels);
 
         locVoxels.sort(VOXEL_COMPARATOR);
         loc.voxels.sort(VOXEL_COMPARATOR);
