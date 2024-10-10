@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import sim.util.Int3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
@@ -316,7 +315,7 @@ public abstract class PottsLocation implements Location {
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
                           Direction direction, Double probability) {
         Voxel splitPoint = getOffset(offsets);
-        Plane divisionPlane = new Plane(splitPoint,direction.getVector());
+        Plane divisionPlane = new Plane(splitPoint, direction.getVector());
         return split(random, divisionPlane, probability);
     }
     

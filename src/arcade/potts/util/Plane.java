@@ -17,7 +17,7 @@ public final class Plane {
     /**
      * Creates a plane from a point and a vector.
      *
-     * @param point  a point on the plane
+     * @param voxel  a point on the plane
      * @param normalVector  the normal vector to the plane
      */
     public Plane(Voxel voxel, Int3D normalVector) {
@@ -59,7 +59,8 @@ public final class Plane {
             return false;
         }
         Plane other = (Plane) obj;
-        return referencePoint.equals(other.referencePoint) && normalVector.equals(other.normalVector);
+        return referencePoint.equals(other.referencePoint)
+                                     && normalVector.equals(other.normalVector);
     }
     
     /**

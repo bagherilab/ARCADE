@@ -230,9 +230,7 @@ public final class PottsEnums {
          * @return a random {@code Direction}
          */
         public static Direction random(MersenneTwisterFast rng) {
-            Direction[] directions = values();
-            // Exclude UNDEFINED from the random selection
-            return directions[rng.nextInt(directions.length - 1) + 1];
+            return values()[rng.nextInt(values().length - 1) + 1];
         }
     }
 }
