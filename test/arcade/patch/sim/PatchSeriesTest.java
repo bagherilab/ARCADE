@@ -238,22 +238,53 @@ public class PatchSeriesTest {
         PatchSeries series = makeSeriesForPopulation(boxes);
         
         MiniBox box = series.populations.get(POPULATION_ID_1);
-        assertEquals(0, box.getDouble("INIT"), EPSILON);
+        assertEquals(0, box.getDouble("COUNT"), EPSILON);
     }
     
     @Test
-    public void updatePopulation_givenInit_setsValue() {
-        String[] fractions = new String[] { "0", "10", "1E2" };
-        int[] values = new int[] { 0, 10, 100 };
+    public void updatePopulation_givenInvalidInit_setsValue() {
+        String[] invalid = new String[] { "", "a", "5%5", "-2", "5.5%" };
         
-        for (int i = 0; i < fractions.length; i++) {
+        for (int i = 0; i < invalid.length; i++) {
             Box[] boxes = new Box[] { new Box() };
             boxes[0].add("id", POPULATION_ID_1);
-            boxes[0].add("init", fractions[i]);
+            boxes[0].add("init", invalid[i]);
             PatchSeries series = makeSeriesForPopulation(boxes);
             
             MiniBox box = series.populations.get(POPULATION_ID_1);
-            assertEquals(values[i], box.getInt("INIT"));
+            assertEquals(0, box.getInt("COUNT"));
+        }
+    }
+    
+    @Test
+    public void updatePopulation_givenNumberInit_setsValue() {
+        String[] numbers = new String[] { "0", "10", "1E2" };
+        int[] values = new int[] { 0, 10, 100 };
+        
+        for (int i = 0; i < numbers.length; i++) {
+            Box[] boxes = new Box[] { new Box() };
+            boxes[0].add("id", POPULATION_ID_1);
+            boxes[0].add("init", numbers[i]);
+            PatchSeries series = makeSeriesForPopulation(boxes);
+            
+            MiniBox box = series.populations.get(POPULATION_ID_1);
+            assertEquals(values[i], box.getInt("COUNT"));
+        }
+    }
+    
+    @Test
+    public void updatePopulation_givenPercentInit_setsValue() {
+        String[] percents = new String[] { "0%", "50%", "100%" };
+        int[] values = new int[] { 0, 50, 100 };
+        
+        for (int i = 0; i < percents.length; i++) {
+            Box[] boxes = new Box[] { new Box() };
+            boxes[0].add("id", POPULATION_ID_1);
+            boxes[0].add("init", percents[i]);
+            PatchSeries series = makeSeriesForPopulation(boxes);
+            
+            MiniBox box = series.populations.get(POPULATION_ID_1);
+            assertEquals(values[i], box.getInt("PERCENT"));
         }
     }
     
