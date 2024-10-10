@@ -34,10 +34,17 @@ public final class Plane {
      *          the same side of the plane as the normal vector
      *         and negative if it is on the opposite side.
      */
-    public double distanceToPlane(Int3D p) {
-        return (p.getX() - referencePoint.x) * normalVector.getX()
+    public double signedDistanceToPlane(Int3D p) {
+        double dotProduct;
+        double normalVectorMagnitude;
+        
+        dotProduct = (p.getX() - referencePoint.x) * normalVector.getX()
                 + (p.getY() - referencePoint.y) * normalVector.getY()
                 + (p.getZ() - referencePoint.z) * normalVector.getZ();
+        normalVectorMagnitude = Math.sqrt(normalVector.getX() * normalVector.getX()
+                                    + normalVector.getY() * normalVector.getY()
+                                    + normalVector.getZ() * normalVector.getZ());
+        return dotProduct / normalVectorMagnitude;
     }
 
     /**

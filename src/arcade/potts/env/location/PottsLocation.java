@@ -347,7 +347,7 @@ public abstract class PottsLocation implements Location {
         connectVoxels(voxelsA, voxelsB, this, random);
 
         Voxel center = getCenter();
-        if (plane.referencePoint.equals(new Int3D(center.x, center.y, center.z))) {
+        if (plane.referencePoint.equals(center)) {
             balanceVoxels(voxelsA, voxelsB, this, random);
         }
         

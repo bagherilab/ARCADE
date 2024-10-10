@@ -42,7 +42,7 @@ public class PlaneTest {
 
         Int3D pointToTest = new Int3D(0, 0, 0);  // Point is on the plane
 
-        assertEquals(0, plane.distanceToPlane(pointToTest), 0.0001);
+        assertEquals(0, plane.signedDistanceToPlane(pointToTest), 0.0001);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class PlaneTest {
 
         Int3D pointToTest = new Int3D(1, 1, 1);  // Point is not on the plane
 
-        assertEquals(1, plane.distanceToPlane(pointToTest), 0.0001);
+        assertEquals(1, plane.signedDistanceToPlane(pointToTest), 0.0001);
     }
 
     @Test
@@ -64,6 +64,44 @@ public class PlaneTest {
 
         Int3D pointToTest = new Int3D(-1, -1, -1);  // Point is not on the plane
 
-        assertEquals(-1, plane.distanceToPlane(pointToTest), 0.0001);
+        assertEquals(-1, plane.signedDistanceToPlane(pointToTest), 0.0001);
+    }
+
+    @Test
+    public void signedDistanceToPlane_givenPointOnAxis_returnsCorrectSignedDistance() {
+        Voxel point = new Voxel(0, 0, 0);
+        Int3D normalVector = new Int3D(0, 0, 1);
+        Plane plane = new Plane(point, normalVector);
+        
+        Int3D posTestPoint = new Int3D(0, 0, 5);
+        Int3D negTestPoint = new Int3D(0, 0, -5);
+        
+        assertEquals(5.0, plane.signedDistanceToPlane(posTestPoint), 0.001);
+        assertEquals(-5.0, plane.signedDistanceToPlane(negTestPoint), 0.001);
+    }
+    
+    @Test
+    public void signedDistanceToPlane_givenPointOffAxis_returnsCorrectSignedDistance() {
+        Voxel point = new Voxel(1, 1, 2);
+        Int3D normalVector = new Int3D(1, 2, 2);
+        Plane plane = new Plane(point, normalVector);
+        
+        Int3D postestPoint = new Int3D(2, 2, 5);
+        Int3D negtestPoint = new Int3D(0, 0, -1);
+        
+        assertEquals(3.0, plane.signedDistanceToPlane(postestPoint), 0.001);
+        assertEquals(-3.0, plane.signedDistanceToPlane(negtestPoint), 0.001);
+    }
+
+    @Test
+    public void testHashCodeConsistency() {
+        // Two planes with the same point and normal vector should have the same hash code
+        Voxel point = new Voxel(1, 2, 3);
+        Int3D normalVector = new Int3D(4, 5, 6);
+        
+        Plane plane1 = new Plane(point, normalVector);
+        Plane plane2 = new Plane(point, normalVector);
+        
+        assertEquals(plane1.hashCode(), plane2.hashCode());
     }
 }
