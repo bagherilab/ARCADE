@@ -1,6 +1,7 @@
-package arcade.core.util;
+package arcade.potts.util;
 
 import sim.util.Int3D;
+import arcade.potts.env.location.Voxel;
 
 /**
  * A plane in 3D space.
@@ -8,35 +9,22 @@ import sim.util.Int3D;
 
 public final class Plane {
     /** A point on the plane. */
-    public final Int3D point;
-    
+    public final Voxel referencePoint;
+
     /** The normal vector to the plane. */
     public final Int3D normalVector;
-    
+
     /**
      * Creates a plane from a point and a vector.
      *
      * @param point  a point on the plane
      * @param normalVector  the normal vector to the plane
      */
-    public Plane(Int3D point, Int3D normalVector) {
-        this.point = point;
+    public Plane(Voxel voxel, Int3D normalVector) {
+        this.referencePoint = voxel;
         this.normalVector = normalVector;
     }
-    
-    /**
-     * Determines whether a point is on the plane.
-     *
-     * @param p  the point to test
-     * @return  {@code true} if the point is on the plane
-     *        {@code false} otherwise
-     */
-    public boolean isOnPlane(Int3D p) {
-        return (p.getX() - point.getX()) * normalVector.getX()
-                + (p.getY() - point.getY()) * normalVector.getY()
-                + (p.getZ() - point.getZ()) * normalVector.getZ() == 0;
-    }
-    
+
     /**
      * Determines distance from a point to the plane.
      *
@@ -46,19 +34,12 @@ public final class Plane {
      *          the same side of the plane as the normal vector
      *         and negative if it is on the opposite side.
      */
-    public double signedDistanceToPlane(Int3D p) {
-        double dotProduct;
-        double normalVectorMagnitude;
-        
-        dotProduct = (p.getX() - point.getX()) * normalVector.getX()
-                + (p.getY() - point.getY()) * normalVector.getY()
-                + (p.getZ() - point.getZ()) * normalVector.getZ();
-        normalVectorMagnitude = Math.sqrt(normalVector.getX() * normalVector.getX()
-                                    + normalVector.getY() * normalVector.getY()
-                                    + normalVector.getZ() * normalVector.getZ());
-        return dotProduct / normalVectorMagnitude;
+    public double distanceToPlane(Int3D p) {
+        return (p.getX() - referencePoint.x) * normalVector.getX()
+                + (p.getY() - referencePoint.y) * normalVector.getY()
+                + (p.getZ() - referencePoint.z) * normalVector.getZ();
     }
-    
+
     /**
      * Determines if two planes are equal.
      *
@@ -71,9 +52,9 @@ public final class Plane {
             return false;
         }
         Plane other = (Plane) obj;
-        return point.equals(other.point) && normalVector.equals(other.normalVector);
+        return referencePoint.equals(other.referencePoint) && normalVector.equals(other.normalVector);
     }
-    
+
     /**
      * Returns a hash code for the plane.
      *
@@ -82,7 +63,7 @@ public final class Plane {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 97 * hash + (this.point != null ? this.point.hashCode() : 0);
+        hash = 97 * hash + (this.referencePoint != null ? this.referencePoint.hashCode() : 0);
         hash = 97 * hash + (this.normalVector != null ? this.normalVector.hashCode() : 0);
         return hash;
     }

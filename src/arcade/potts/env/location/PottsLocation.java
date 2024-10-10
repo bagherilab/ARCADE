@@ -8,8 +8,8 @@ import sim.util.Int3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
-import arcade.core.util.Plane;
 import arcade.core.util.Utilities;
+import arcade.potts.util.Plane;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -275,8 +275,7 @@ public abstract class PottsLocation implements Location {
     public Location split(MersenneTwisterFast random) {
         Voxel center = getCenter();
         Direction splitDirection = getDirection(random);
-        Plane divisionPlane = new Plane(new Int3D(center.x, center.y, center.z),
-                                                  splitDirection.getVector());
+        Plane divisionPlane = new Plane(center, splitDirection.getVector());
         return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
     }
     
@@ -295,8 +294,7 @@ public abstract class PottsLocation implements Location {
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets) {
         Voxel splitPoint = getOffset(offsets);
         Direction splitDirection = getDirection(random);
-        Plane divisionPlane = new Plane(new Int3D(splitPoint.x, splitPoint.y, splitPoint.z),
-                                                  splitDirection.getVector());
+        Plane divisionPlane = new Plane(splitPoint, splitDirection.getVector());
         return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
     }
     
@@ -318,8 +316,7 @@ public abstract class PottsLocation implements Location {
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
                           Direction direction, Double probability) {
         Voxel splitPoint = getOffset(offsets);
-        Plane divisionPlane = new Plane(new Int3D(splitPoint.x, splitPoint.y, splitPoint.z),
-                                                    direction.getVector());
+        Plane divisionPlane = new Plane(splitPoint,direction.getVector());
         return split(random, divisionPlane, probability);
     }
     
@@ -350,7 +347,7 @@ public abstract class PottsLocation implements Location {
         connectVoxels(voxelsA, voxelsB, this, random);
 
         Voxel center = getCenter();
-        if (plane.point.equals(new Int3D(center.x, center.y, center.z))) {
+        if (plane.referencePoint.equals(new Int3D(center.x, center.y, center.z))) {
             balanceVoxels(voxelsA, voxelsB, this, random);
         }
         
