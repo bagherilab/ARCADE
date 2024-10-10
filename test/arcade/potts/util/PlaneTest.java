@@ -40,7 +40,7 @@ public class PlaneTest {
         Int3D normalVector = new Int3D(1, 0, 0);
         Plane plane = new Plane(pointOnPlane, normalVector);
 
-        Int3D pointToTest = new Int3D(0, 0, 0);  // Point is on the plane
+        Voxel pointToTest = new Voxel(0, 0, 0);  // Point is on the plane
 
         assertEquals(0, plane.signedDistanceToPlane(pointToTest), 0.0001);
     }
@@ -51,7 +51,7 @@ public class PlaneTest {
         Int3D normalVector = new Int3D(1, 0, 0);
         Plane plane = new Plane(pointOnPlane, normalVector);
 
-        Int3D pointToTest = new Int3D(1, 1, 1);  // Point is not on the plane
+        Voxel pointToTest = new Voxel(1, 1, 1);  // Point is not on the plane
 
         assertEquals(1, plane.signedDistanceToPlane(pointToTest), 0.0001);
     }
@@ -62,7 +62,7 @@ public class PlaneTest {
         Int3D normalVector = new Int3D(1, 0, 0);
         Plane plane = new Plane(pointOnPlane, normalVector);
 
-        Int3D pointToTest = new Int3D(-1, -1, -1);  // Point is not on the plane
+        Voxel pointToTest = new Voxel(-1, -1, -1);  // Point is not on the plane
 
         assertEquals(-1, plane.signedDistanceToPlane(pointToTest), 0.0001);
     }
@@ -73,8 +73,8 @@ public class PlaneTest {
         Int3D normalVector = new Int3D(0, 0, 1);
         Plane plane = new Plane(point, normalVector);
         
-        Int3D posTestPoint = new Int3D(0, 0, 5);
-        Int3D negTestPoint = new Int3D(0, 0, -5);
+        Voxel posTestPoint = new Voxel(0, 0, 5);
+        Voxel negTestPoint = new Voxel(0, 0, -5);
         
         assertEquals(5.0, plane.signedDistanceToPlane(posTestPoint), 0.001);
         assertEquals(-5.0, plane.signedDistanceToPlane(negTestPoint), 0.001);
@@ -86,8 +86,8 @@ public class PlaneTest {
         Int3D normalVector = new Int3D(1, 2, 2);
         Plane plane = new Plane(point, normalVector);
         
-        Int3D postestPoint = new Int3D(2, 2, 5);
-        Int3D negtestPoint = new Int3D(0, 0, -1);
+        Voxel postestPoint = new Voxel(2, 2, 5);
+        Voxel negtestPoint = new Voxel(0, 0, -1);
         
         assertEquals(3.0, plane.signedDistanceToPlane(postestPoint), 0.001);
         assertEquals(-3.0, plane.signedDistanceToPlane(negtestPoint), 0.001);
