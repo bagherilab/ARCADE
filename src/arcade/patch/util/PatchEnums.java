@@ -115,6 +115,9 @@ public final class PatchEnums {
         
         /** Code for signaling domain. */
         SIGNALING;
+
+        /** Code for chemotherapy domain. */
+        CHEMOTHERAPY;
         
         /**
          * Randomly selects a {@code Domain}.
