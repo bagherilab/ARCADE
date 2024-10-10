@@ -2,12 +2,12 @@ package arcade.patch.agent.cell;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import arcade.patch.sim.PatchSeries;
 import org.junit.Test;
 import sim.util.distribution.Normal;
 import sim.util.distribution.Uniform;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import arcade.patch.sim.PatchSeries;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -165,7 +165,8 @@ public class PatchCellFactoryTest {
         int percent2 = randomIntBetween(40, 50);
         int init2 = (int) Math.round(percent2 * totalPatches / 100.0);
         int count3 = randomIntBetween(1, 10);
-        PatchSeries series = createSeries(new int[] { count1, percent2, count3 }, new String[] {"COUNT", "PERCENT", "COUNT"});
+        PatchSeries series = createSeries(new int[] { count1, percent2, count3 },
+                new String[] {"COUNT", "PERCENT", "COUNT"});
         
         series.patch = new MiniBox();
         series.patch.put("TOTAL_PATCHES", totalPatches);
