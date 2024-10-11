@@ -23,7 +23,7 @@ public class PottsModuleProliferationFlyStemTest {
     static MiniBox parameters;
     
     static Potts pottsMock;
-
+    
     @BeforeClass
     public static void setupMocks() {
         random = mock(MersenneTwisterFast.class);
@@ -37,7 +37,7 @@ public class PottsModuleProliferationFlyStemTest {
         simMock = mock(PottsSimulation.class);
         doReturn(pottsMock).when(simMock).getPotts();
     }
-
+    
     @Test
     public void addCell_called_dividesCellAddsDaughterToGrid() {
         //TODO: Implement test

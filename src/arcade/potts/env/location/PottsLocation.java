@@ -268,10 +268,8 @@ public abstract class PottsLocation implements Location {
      * be balanced in size. One of the splits is assigned to the current
      * location and the other is returned.
      *
-     * @param random the seeded random number generator
-     * @return a location with the split voxels
-     * @param random the seeded random number generator
-     * @return a location with the split voxels
+     * @param random  the seeded random number generator
+     * @return  a location with the split voxels
      */
     public Location split(MersenneTwisterFast random) {
         Plane divisionPlane = new Plane(getCenter(), getDirection(random));
