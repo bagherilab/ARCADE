@@ -65,36 +65,4 @@ public final class PottsLocation2D extends PottsLocation implements Location2D {
     ArrayList<Voxel> getSelected(Voxel focus, double n) {
         return Location2D.getSelected(voxels, focus, n);
     }
-    
-    /**
-     * Calculates and returns the voxel at the specified percentage offset from
-     * the boundaries of the location, in the X and Y dimensions.
-     * <p>
-     * The offset percentages determine the relative position of the returned voxel
-     * within the location. For example, an offset of [50, 50] will return the voxel
-     * closest to the center of the location in the X and Y directions.
-     *
-     * <p><b>Note:</b> The {@code offsetPercents} list must contain exactly 2 integers
-     * representing the percentage offsets for the X and Y axes. A third offset of 0 is
-     * automatically added for the Z axis.
-     *
-     * @param offsetPercents An {@code ArrayList<Integer>} containing exactly 2 integers,
-     *                        which represent the percentage offsets in the X and Y
-     *                        directions. Each percentage should be in the range [0, 100].
-     * @return The voxel located at the calculated offset position.
-     * @throws IllegalArgumentException If {@code offset_percents} is {@code null} or
-     *                                  does not contain exactly 2 integers.
-     */
-
-     @Override
-     public Voxel getSplitpoint(ArrayList<Integer> offsetPercents) {
-         if (offsetPercents == null || offsetPercents.size() != 2) {
-             throw new IllegalArgumentException(
-                 "PottsLocation2D offsets must be an ArrayList containing exactly 2 integers."
-             );
-         }
-         ArrayList<Integer> fullOffsetPercents = new ArrayList<>(offsetPercents);
-         fullOffsetPercents.add(0);
-        return super.getSplitpoint(fullOffsetPercents);
-    }
 }
