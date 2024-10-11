@@ -1,13 +1,13 @@
 <set>
     <series name="initialize_healthy_cells_to_full"
             start="0" end="0" ticks="1" interval="1"
-            radius="5" margin="0" depth="1">
+            radius="4" margin="0" depth="1">
         <patch>
             <patch.parameter id="GEOMETRY" value="rect" />
         </patch>
         <agents>
             <populations>
-                <population id="POPULATION_0" init="FULL" class="healthy" />
+                <population id="POPULATION_0" init="100%" class="healthy" />
             </populations>
         </agents>
         <environments>

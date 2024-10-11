@@ -1,7 +1,7 @@
 <set>
     <series name="initialize_cancer_cells_to_center_with_insert"
             start="0" end="0" ticks="4" interval="1"
-            radius="5" margin="0" depth="1">
+            radius="4" margin="0" depth="1">
         <patch>
             <patch.parameter id="GEOMETRY" value="hex" />
         </patch>

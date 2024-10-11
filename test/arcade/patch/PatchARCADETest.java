@@ -115,8 +115,8 @@ public class PatchARCADETest {
         Set<Coordinate> expectedCoords = new HashSet<>();
         int id = 0;
         
-        for (int i = -2; i < 3; i++) {
-            for (int j = -2; j < 3; j++) {
+        for (int i = -3; i < 4; i++) {
+            for (int j = -3; j < 4; j++) {
                 expectedIDs.add(++id);
                 expectedCoords.add(new CoordinateXYZ(i, j, 0));
             }
