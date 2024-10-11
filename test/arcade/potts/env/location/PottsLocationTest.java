@@ -830,7 +830,7 @@ public class PottsLocationTest {
         voxelsBSplit.add(new Voxel(2, 2, 0));
         
         Voxel center = loc.getCenter();
-        Plane yzPlane = new Plane(center, Direction.YZ_PLANE.vector);
+        Plane yzPlane = new Plane(center, Direction.YZ_PLANE);
         
         PottsLocation.splitVoxels(yzPlane, voxels, voxelsA, voxelsB, randomDoubleZero);
         assertEquals(voxelsASplit, voxelsA);
