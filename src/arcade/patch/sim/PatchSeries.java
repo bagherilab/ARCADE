@@ -153,10 +153,18 @@ public final class PatchSeries extends Series {
             population.put("CLASS", populationClass);
             this.populations.put(id, population);
             
-            // Add population init if given. If not given or invalid, set to zero.
+            // Add population init if given. If value ends with percentage (%),
+            // use the PERCENT initialization type instead of the COUNT
+            // initialization type. If not given or invalid, set to zero.
+            String initType = "COUNT";
+            if (box.getValue("init") != null && box.getValue("init").endsWith("%")) {
+                box.add("init", box.getValue("init").replace("%", ""));
+                initType = "PERCENT";
+            }
             int init = (isValidNumber(box, "init")
-                    ? (int) Double.parseDouble(box.getValue("init")) : 0);
-            population.put("INIT", init);
+                    ? (int) Double.parseDouble(box.getValue("init")) : 0
+            );
+            population.put(initType, init);
             
             // Get default parameters and any parameter adjustments.
             Box parameters = box.filterBoxByTag("PARAMETER");
