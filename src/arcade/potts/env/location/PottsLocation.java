@@ -309,7 +309,7 @@ public abstract class PottsLocation implements Location {
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
                           Direction direction, Double probability) {
-        Plane divisionPlane = new Plane(getOffset(offsets), direction.vector);
+        Plane divisionPlane = new Plane(getOffset(offsets), direction);
         return split(random, divisionPlane, probability);
     }
     
