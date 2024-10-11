@@ -297,7 +297,7 @@ public class PottsCellFlyStemTest {
     }
 
     @Test
-    public void testPottsCellFlyStemWT_makeDaughterCell_makesCorrectDaughterCell() {
+    public void testPottsCellFlyStemWT_make_makesCorrectDaughterCell() {
         // Configuration 1 corresponds to PottsCellFlyStemWT
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
@@ -308,7 +308,7 @@ public class PottsCellFlyStemTest {
         PottsLocation newLocation = mock(PottsLocation.class);
         MersenneTwisterFast random = new MersenneTwisterFast(12345);
 
-        PottsCell daughterCell = cell.makeDaughterCell(newID, newState, newLocation, random);
+        PottsCell daughterCell = cell.make(newID, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyNeuronWT
         assertTrue(daughterCell instanceof PottsCellFlyNeuronWT);
@@ -352,7 +352,7 @@ public class PottsCellFlyStemTest {
     }
 
     @Test
-    public void testPottsCellFlyStemMUDMut1StemRandom_makeDaughterCell_makesCorrectDaughterCell() {
+    public void testPottsCellFlyStemMUDMut1StemRandom_make_makesCorrectDaughterCell() {
         // Configuration 2 corresponds to PottsCellFlyStemMUDMut1StemRandom
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
@@ -363,7 +363,7 @@ public class PottsCellFlyStemTest {
         PottsLocation newLocation = mock(PottsLocation.class);
         MersenneTwisterFast random = new MersenneTwisterFast(12345);
 
-        PottsCell daughterCell = cell.makeDaughterCell(newID, newState, newLocation, random);
+        PottsCell daughterCell = cell.make(newID, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyNeuronWT
         assertTrue(daughterCell instanceof PottsCellFlyNeuronWT);
@@ -407,7 +407,7 @@ public class PottsCellFlyStemTest {
     }
 
     @Test
-    public void testPottsCellFlyStemMUDMut1StemLeft_makeDaughterCell_makesCorrectDaughterCell() {
+    public void testPottsCellFlyStemMUDMut1StemLeft_make_makesCorrectDaughterCell() {
         // Configuration 3 corresponds to PottsCellFlyStemMUDMut1StemLeft
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
@@ -418,7 +418,7 @@ public class PottsCellFlyStemTest {
         PottsLocation newLocation = mock(PottsLocation.class);
         MersenneTwisterFast random = new MersenneTwisterFast(12345);
 
-        PottsCell daughterCell = cell.makeDaughterCell(newID, newState, newLocation, random);
+        PottsCell daughterCell = cell.make(newID, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyNeuronWT
         assertTrue(daughterCell instanceof PottsCellFlyNeuronWT);
@@ -462,7 +462,7 @@ public class PottsCellFlyStemTest {
     }
 
     @Test
-    public void testPottsCellFlyStemMUDMut2StemRandom_makeDaughterCell_makesCorrectDaughterCell() {
+    public void testPottsCellFlyStemMUDMut2StemRandom_make_makesCorrectDaughterCell() {
         // Configuration 4 corresponds to PottsCellFlyStemMUDMut2StemRandom
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
@@ -476,7 +476,7 @@ public class PottsCellFlyStemTest {
         // Test case where random.nextDouble() < 0.25
         when(random.nextDouble()).thenReturn(0.2);
 
-        PottsCell daughterCell1 = cell.makeDaughterCell(newID, newState, newLocation, random);
+        PottsCell daughterCell1 = cell.make(newID, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyStemMUDMut2StemRandom
         assertTrue(daughterCell1 instanceof PottsCellFlyStem);
@@ -489,7 +489,7 @@ public class PottsCellFlyStemTest {
         // Test case where 0.25 <= random.nextDouble() < 0.5
         when(random.nextDouble()).thenReturn(0.3);
 
-        PottsCell daughterCell2 = cell.makeDaughterCell(newID + 1, newState, newLocation, random);
+        PottsCell daughterCell2 = cell.make(newID + 1, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyStemMUDMut1StemRandom
         assertTrue(daughterCell2 instanceof PottsCellFlyStem);
@@ -502,7 +502,7 @@ public class PottsCellFlyStemTest {
         // Test case where random.nextDouble() >= 0.5
         when(random.nextDouble()).thenReturn(0.6);
 
-        PottsCell daughterCell3 = cell.makeDaughterCell(newID + 2, newState, newLocation, random);
+        PottsCell daughterCell3 = cell.make(newID + 2, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyNeuronWT
         assertTrue(daughterCell3 instanceof PottsCellFlyNeuronWT);
@@ -546,7 +546,7 @@ public class PottsCellFlyStemTest {
     }
 
     @Test
-    public void testPottsCellFlyStemInvert1StemBasal_makeDaughterCell_makesCorrectDaughterCell() {
+    public void testPottsCellFlyStemInvert1StemBasal_make_makesCorrectDaughterCell() {
         // Configuration 5 corresponds to PottsCellFlyStemInvert1StemBasal
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
@@ -557,7 +557,7 @@ public class PottsCellFlyStemTest {
         PottsLocation newLocation = mock(PottsLocation.class);
         MersenneTwisterFast random = new MersenneTwisterFast(12345);
 
-        PottsCell daughterCell = cell.makeDaughterCell(newID, newState, newLocation, random);
+        PottsCell daughterCell = cell.make(newID, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyNeuronWT
         assertTrue(daughterCell instanceof PottsCellFlyNeuronWT);
@@ -601,7 +601,7 @@ public class PottsCellFlyStemTest {
     }
 
     @Test
-    public void testPottsCellFlyStemInvert2StemBasalOrBoth_makeDaughterCell_makesCorrectDaughterCell() {
+    public void testPottsCellFlyStemInvert2StemBasalOrBoth_make_makesCorrectDaughterCell() {
         // Configuration 6 corresponds to PottsCellFlyStemInvert2StemBasalOrBoth
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
@@ -615,7 +615,7 @@ public class PottsCellFlyStemTest {
         // Test case where random.nextDouble() < 0.25
         when(random.nextDouble()).thenReturn(0.2);
 
-        PottsCell daughterCell1 = cell.makeDaughterCell(newID, newState, newLocation, random);
+        PottsCell daughterCell1 = cell.make(newID, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyStemWT (configuration 1)
         assertTrue(daughterCell1 instanceof PottsCellFlyStem);
@@ -629,7 +629,7 @@ public class PottsCellFlyStemTest {
         // Test case where 0.25 <= random.nextDouble() < 0.5
         when(random.nextDouble()).thenReturn(0.3);
 
-        PottsCell daughterCell2 = cell.makeDaughterCell(newID + 1, newState, newLocation, random);
+        PottsCell daughterCell2 = cell.make(newID + 1, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyStemInvert2StemBasalOrBoth (configuration 6)
         assertTrue(daughterCell2 instanceof PottsCellFlyStem);
@@ -643,7 +643,7 @@ public class PottsCellFlyStemTest {
         // Test case where random.nextDouble() >= 0.5
         when(random.nextDouble()).thenReturn(0.6);
 
-        PottsCell daughterCell3 = cell.makeDaughterCell(newID + 2, newState, newLocation, random);
+        PottsCell daughterCell3 = cell.make(newID + 2, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyNeuronWT
         assertTrue(daughterCell3 instanceof PottsCellFlyNeuronWT);
@@ -687,7 +687,7 @@ public class PottsCellFlyStemTest {
     }
 
     @Test
-    public void testPottsCellFlyStemSymmetric1StemApical_makeDaughterCell_makesCorrectDaughterCell() {
+    public void testPottsCellFlyStemSymmetric1StemApical_make_makesCorrectDaughterCell() {
         // Configuration 7 corresponds to PottsCellFlyStemSymmetric1StemApical
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
@@ -698,7 +698,7 @@ public class PottsCellFlyStemTest {
         PottsLocation newLocation = mock(PottsLocation.class);
         MersenneTwisterFast random = new MersenneTwisterFast(12345);
 
-        PottsCell daughterCell = cell.makeDaughterCell(newID, newState, newLocation, random);
+        PottsCell daughterCell = cell.make(newID, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyNeuronWT
         assertTrue(daughterCell instanceof PottsCellFlyNeuronWT);
@@ -742,7 +742,7 @@ public class PottsCellFlyStemTest {
     }
 
     @Test
-    public void testPottsCellFlyStemSymmetric2StemApicalOrBoth_makeDaughterCell_makesCorrectDaughterCell() {
+    public void testPottsCellFlyStemSymmetric2StemApicalOrBoth_make_makesCorrectDaughterCell() {
         // Configuration 8 corresponds to PottsCellFlyStemSymmetric2StemApicalOrBoth
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
@@ -756,7 +756,7 @@ public class PottsCellFlyStemTest {
         // Test case where random.nextBoolean() returns true (daughter is a stem cell)
         when(random.nextBoolean()).thenReturn(true);
 
-        PottsCell daughterCell1 = cell.makeDaughterCell(newID, newState, newLocation, random);
+        PottsCell daughterCell1 = cell.make(newID, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyStem (configuration 8)
         assertTrue(daughterCell1 instanceof PottsCellFlyStem);
@@ -780,7 +780,7 @@ public class PottsCellFlyStemTest {
         // Test case where random.nextBoolean() returns false (daughter is a neuron)
         when(random.nextBoolean()).thenReturn(false);
 
-        PottsCell daughterCell2 = cell.makeDaughterCell(newID + 1, newState, newLocation, random);
+        PottsCell daughterCell2 = cell.make(newID + 1, newState, newLocation, random);
 
         // Verify that the daughter cell is a PottsCellFlyNeuronWT
         assertTrue(daughterCell2 instanceof PottsCellFlyNeuronWT);
