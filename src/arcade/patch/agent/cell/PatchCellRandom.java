@@ -11,7 +11,7 @@ import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Extension of {@link PatchCell} for cells with randomly assigned states.
- * 
+ *
  * These agents will simulate their metabolism and signaling processes, like
  * {@link PatchCellTissue}, but cell states are randomly selected from all
  * possible states, rather than following specific rules that guide

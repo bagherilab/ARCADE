@@ -13,8 +13,8 @@ import arcade.patch.sim.PatchSimulation;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
-import static arcade.patch.util.PatchEnums.State;
 import static arcade.patch.util.PatchEnums.Domain;
+import static arcade.patch.util.PatchEnums.State;
 
 public class PatchCellRandomTest {
     private static final double EPSILON = 1E-8;
