@@ -58,7 +58,7 @@ public class PatchCellCancer extends PatchCellTissue {
     @Override
     public PatchCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
-        divisions--;
+        divisions++;
         return new PatchCellTissue(newID, id, pop, newState, age, divisions, newLocation,
                 parameters, volume, height, criticalVolume, criticalHeight);
     }
