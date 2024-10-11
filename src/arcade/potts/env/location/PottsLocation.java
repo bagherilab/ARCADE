@@ -8,7 +8,6 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Utilities;
-import arcade.potts.util.Plane;
 import static arcade.potts.util.PottsEnums.Direction;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -272,9 +271,7 @@ public abstract class PottsLocation implements Location {
      * @return  a location with the split voxels
      */
     public Location split(MersenneTwisterFast random) {
-        Voxel center = getCenter();
-        Direction splitDirection = getDirection(random);
-        Plane divisionPlane = new Plane(center, splitDirection.getVector());
+        Plane divisionPlane = new Plane(getCenter(), getDirection(random));
         return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
     }
     
@@ -291,20 +288,18 @@ public abstract class PottsLocation implements Location {
      * @return  a location with the split voxels
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets) {
-        Voxel splitPoint = getOffset(offsets);
-        Direction splitDirection = getDirection(random);
-        Plane divisionPlane = new Plane(splitPoint, splitDirection.getVector());
+        Plane divisionPlane = new Plane(getOffset(offsets), getDirection(random));
         return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
     }
     
     /**
-     * Splits location voxels into two lists with given offset, direction, and probability.
+     * Splits location voxels into two lists with given offset, direction,
+     * and probability.
      * <p>
      * The location is split at the point specified by offsets along the given
      * direction. The lists of locations are guaranteed to be connected. One of
      * the splits is assigned to the current location and the other is
-     * returned. One of the splits is assigned to the current location and the
-     * other returned with the given probability
+     * returned.
      *
      * @param random  the seeded random number generator
      * @param offsets  the percentage offset in each direction for split point
@@ -314,22 +309,22 @@ public abstract class PottsLocation implements Location {
      */
     public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
                           Direction direction, Double probability) {
-        Voxel splitPoint = getOffset(offsets);
-        Plane divisionPlane = new Plane(splitPoint, direction.getVector());
+        Plane divisionPlane = new Plane(getOffset(offsets), direction.vector);
         return split(random, divisionPlane, probability);
     }
     
     /**
      * Splits location voxels into two lists.
      * <p>
-     * The location is split at the point specified by offsets along the given
-     * direction. One of the splits is assigned to the current location and the
-     * other is returned with the given probability.
+     * The location is split along the provided plane. One of the splits is
+     * assigned to the current location and the other is returned with the
+     * given probability.
      * <p>
-     * If offsets not are provided, the resulting lists are guaranteed to be
-     * connected, and generally will be balanced in size. If offsets is
-     * provided, the resulting lists are guaranteed to be connected but will not
-     * necessarily be balanced in size.
+     * If the plane of division is through the center of the location, the
+     * resulting lists are guaranteed to be connected, and generally will be
+     * balanced in size. If the plane of division is not through the center
+     * of the location, the resulting lists are guaranteed to be connected
+     * but will not necessarily be balanced in size.
      *
      * @param random  the seeded random number generator
      * @param plane  the plane of the split
@@ -572,8 +567,8 @@ public abstract class PottsLocation implements Location {
     abstract ArrayList<Voxel> getSelected(Voxel focus, double n);
     
     /**
-     * Gets the direction of the slice through the location that
-     * has the smallest diameter.
+     * Gets the direction of the slice orthagonal to the direction with
+     * the smallest diameter.
      *
      * @param random  the seeded random number generator
      * @return  the direction of the slice
@@ -633,17 +628,15 @@ public abstract class PottsLocation implements Location {
     }
 
     /**
-     * Divides the voxels in the location into two lists along a given plane.
+     * Splits the voxels in the location into two lists along a given plane.
      * <p>
      * The voxels are split into two lists based on their position relative to
      * the plane. Voxels on the plane are randomly assigned to one of the lists.
      *
-     * @param plane  the plane to split the voxels along
+     * @param plane the plane to split the voxels along
      * @param voxels the list of voxels to split
-     * @param voxelsA the container list for the first half of the split.
-     *                These voxels are on the side of the plane opposite the normal.
-     * @param voxelsB the container list for the second half of the split.
-     *                These voxels are on the side of the plane the normal points to.
+     * @param voxelsA list of voxels  on side of plane the opposite the normal
+     * @param voxelsB list of voxels on side of plane the same as the normal
      * @param random the seeded random number generator
      */
     static void splitVoxels(Plane plane, ArrayList<Voxel> voxels,

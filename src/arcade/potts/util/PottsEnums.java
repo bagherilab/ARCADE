@@ -203,7 +203,7 @@ public final class PottsEnums {
         NEGATIVE_ZX(new Int3D(-1, 0, -1));
         
         /** The normal vector of the plane in this direction. */
-        private final Int3D vector;
+        public final Int3D vector;
         
         /**
          * Creates a new {@code Direction} with the given vector.
@@ -212,15 +212,6 @@ public final class PottsEnums {
          */
         Direction(Int3D vector) {
             this.vector = vector;
-        }
-        
-        /**
-         * Returns the vector associated with this direction.
-         *
-         * @return the associated {@code Int3D}, or {@code null} if undefined
-         */
-        public Int3D getVector() {
-            return vector;
         }
         
         /**
