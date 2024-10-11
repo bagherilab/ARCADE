@@ -5,12 +5,14 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 import sim.util.distribution.Normal;
 import sim.util.distribution.Uniform;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import arcade.patch.sim.PatchSeries;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
@@ -32,6 +34,9 @@ import static arcade.patch.util.PatchEnums.State;
  */
 
 public final class PatchCellFactory implements CellFactory {
+    /** Logger for {@code PatchCellFactory}. */
+    private static final Logger LOGGER = Logger.getLogger(PatchCellFactory.class.getName());
+    
     /** Random number generator instance. */
     MersenneTwisterFast random;
     
@@ -51,7 +56,7 @@ public final class PatchCellFactory implements CellFactory {
     HashMap<Integer, Integer> popToDivisions;
     
     /** Map of population to compression tolerance [um]. */
-    HashMap<Integer, Integer> popToCompression;
+    HashMap<Integer, Double> popToCompression;
     
     /** Map of population to process versions. */
     HashMap<Integer, EnumMap<Domain, String>> popToProcessVersions;
@@ -131,10 +136,22 @@ public final class PatchCellFactory implements CellFactory {
         
         // Create containers for each population.
         for (MiniBox population : series.populations.values()) {
-            int n = population.getInt("INIT");
+            int init = 0;
+            
+            if (population.contains("PERCENT")) {
+                int totalPatches = ((PatchSeries) series).patch.getInt("TOTAL_PATCHES");
+                int percent = population.getInt("PERCENT");
+                init = Math.min((int) Math.round(percent * totalPatches / 100.0), totalPatches);
+            } else if (population.contains("COUNT")) {
+                init = population.getInt("COUNT");
+            } else {
+                LOGGER.severe("Population must contain PERCENT or COUNT initialization key");
+                System.exit(-1);
+            }
+            
             int pop = population.getInt("CODE");
             
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < init; i++) {
                 PatchCellContainer container = createCellForPopulation(id, pop);
                 cells.put(container.id, container);
                 popToIDs.get(pop).add(container.id);
@@ -201,7 +218,7 @@ public final class PatchCellFactory implements CellFactory {
             popToAges.put(pop, new Uniform(population.getDouble("CELL_AGE_MIN"),
                     population.getDouble("CELL_AGE_MAX"), random));
             popToDivisions.put(pop, population.getInt("DIVISION_POTENTIAL"));
-            popToCompression.put(pop, population.getInt("COMPRESSION_TOLERANCE"));
+            popToCompression.put(pop, population.getDouble("COMPRESSION_TOLERANCE"));
             
             // Set process versions if not specified.
             MiniBox parameters = series.populations.get(key);
