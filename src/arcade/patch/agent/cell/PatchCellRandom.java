@@ -44,7 +44,7 @@ public class PatchCellRandom extends PatchCell {
     @Override
     public PatchCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
-        divisions++;
+        divisions--;
         return new PatchCellRandom(newID, id, pop, newState, age, divisions, newLocation,
                 parameters, volume, height, criticalVolume, criticalHeight);
     }
