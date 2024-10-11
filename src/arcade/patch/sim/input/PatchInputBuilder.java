@@ -203,17 +203,20 @@ public final class PatchInputBuilder extends InputBuilder {
         geometry = geometry.toUpperCase();
         
         PatchLocation location;
+        int totalPatches;
         
         if (geometry.equals("RECT")) {
             series.put("length", 4 * radiusBounds - 2);
             series.put("width", 4 * radiusBounds - 2);
             series.put("height", 2 * depthBounds - 1);
+            totalPatches = (2 * radius - 1) * (2 * radius - 1) * depth;
             CoordinateXYZ coordinate = new CoordinateXYZ(0, 0, 0);
             location = new PatchLocationRect(coordinate);
         } else if (geometry.equals("HEX")) {
             series.put("length", 6 * radiusBounds - 3);
             series.put("width", 4 * radiusBounds - 2);
             series.put("height", 2 * depthBounds - 1);
+            totalPatches = (1 + 3 * radius * (radius - 1)) * depth;
             CoordinateUVWZ coordinate = new CoordinateUVWZ(0, 0, 0, 0);
             location = new PatchLocationHex(coordinate);
         } else {
@@ -227,5 +230,6 @@ public final class PatchInputBuilder extends InputBuilder {
         patch.add("GRID_AREA", String.valueOf(location.getArea()));
         patch.add("LATTICE_VOLUME", String.valueOf(location.getVolume() / location.getMaximum()));
         patch.add("LATTICE_AREA", String.valueOf(location.getArea() / location.getMaximum()));
+        patch.add("TOTAL_PATCHES", String.valueOf(totalPatches));
     }
 }

@@ -44,6 +44,9 @@ public abstract class PottsLocation implements Location {
     /** Default probability first voxel list is kept in split function. */
     static final double DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY = 0.5;
     
+    /** Default probability first voxel list is kept in split function. */
+    private static final double DEFAULT_SPLIT_SELECTION_PROBABILITY = 0.5;
+    
     /** List of voxels for the location. */
     final ArrayList<Voxel> voxels;
     
@@ -260,6 +263,7 @@ public abstract class PottsLocation implements Location {
     }
     
     /**
+<<<<<<< HEAD
      * Splits the location voxels into two lists.
      * Splits the location voxels into two lists.
      * <p>
@@ -267,6 +271,14 @@ public abstract class PottsLocation implements Location {
      * specified direction. The lists of voxels are guaranteed to be connected,
      * and generally will be balanced in size. One of the splits is assigned
      * to the current location and the other is returned.
+=======
+     * Splits location voxels into two approximately equal lists.
+     * <p>
+     * The location is split along the direction with the shortest diameter.
+     * The lists of locations are guaranteed to be connected, and generally will
+     * be balanced in size. One of the splits is assigned to the current
+     * location and the other is returned.
+>>>>>>> develop
      *
      * @param random the seeded random number generator
      * @return a location with the split voxels
@@ -274,6 +286,7 @@ public abstract class PottsLocation implements Location {
      * @return a location with the split voxels
      */
     public Location split(MersenneTwisterFast random) {
+<<<<<<< HEAD
         return split(random, null, null, DEFAULT_VOXEL_LIST_SELECTION_PROBABILITY);
     }
     
@@ -384,6 +397,86 @@ public abstract class PottsLocation implements Location {
     return (random.nextDouble() < voxelListSelectionProbability)
     ? separateVoxels(voxelsA, voxelsB, random)
     : separateVoxels(voxelsB, voxelsA, random);
+=======
+        Plane divisionPlane = new Plane(getCenter(), getDirection(random));
+        return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
+    }
+    
+    /**
+     * Splits location voxels into two lists with given offset.
+     * <p>
+     * The location is split at the point specified by offsets along the
+     * direction with the shortest diameter. The lists of locations are
+     * guaranteed to be connected. One of the splits is assigned to the current
+     * location and the other is returned.
+     *
+     * @param random  the seeded random number generator
+     * @param offsets  the percentage offset in each direction for split point
+     * @return  a location with the split voxels
+     */
+    public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets) {
+        Plane divisionPlane = new Plane(getOffset(offsets), getDirection(random));
+        return split(random, divisionPlane, DEFAULT_SPLIT_SELECTION_PROBABILITY);
+    }
+    
+    /**
+     * Splits location voxels into two lists with given offset, direction,
+     * and probability.
+     * <p>
+     * The location is split at the point specified by offsets along the given
+     * direction. The lists of locations are guaranteed to be connected. One of
+     * the splits is assigned to the current location and the other is
+     * returned.
+     *
+     * @param random  the seeded random number generator
+     * @param offsets  the percentage offset in each direction for split point
+     * @param direction  the direction of the split
+     * @param probability  the probability to decide which split to return
+     * @return  a location with the split voxels
+     */
+    public Location split(MersenneTwisterFast random, ArrayList<Integer> offsets,
+                          Direction direction, Double probability) {
+        Plane divisionPlane = new Plane(getOffset(offsets), direction);
+        return split(random, divisionPlane, probability);
+    }
+    
+    /**
+     * Splits location voxels into two lists.
+     * <p>
+     * The location is split along the provided plane. One of the splits is
+     * assigned to the current location and the other is returned with the
+     * given probability.
+     * <p>
+     * If the plane of division is through the center of the location, the
+     * resulting lists are guaranteed to be connected, and generally will be
+     * balanced in size. If the plane of division is not through the center
+     * of the location, the resulting lists are guaranteed to be connected
+     * but will not necessarily be balanced in size.
+     *
+     * @param random  the seeded random number generator
+     * @param plane  the plane of the split
+     * @param probability  the probability to decide which split to return
+     * @return  a location with the split voxels
+     */
+    public Location split(MersenneTwisterFast random,
+                          Plane plane, Double probability) {
+        // Initialize lists of split voxels
+        ArrayList<Voxel> voxelsA = new ArrayList<>();
+        ArrayList<Voxel> voxelsB = new ArrayList<>();
+        
+        splitVoxels(plane, voxels, voxelsA, voxelsB, random);
+        connectVoxels(voxelsA, voxelsB, this, random);
+
+        Voxel locCenter = getCenter();
+        if (plane.referencePoint.equals(locCenter)) {
+            balanceVoxels(voxelsA, voxelsB, this, random);
+        }
+        
+        // Use the user-specified or default probability to determine the split
+        return random.nextDouble() < probability
+                ? separateVoxels(voxelsA, voxelsB, random)
+                : separateVoxels(voxelsB, voxelsA, random);
+>>>>>>> develop
     }
     
     /**
@@ -408,6 +501,7 @@ public abstract class PottsLocation implements Location {
     }
     
     /**
+<<<<<<< HEAD
      * Gets the center voxel where location will split if no offset percents specified.
      * <p>
      * The center voxel is not guaranteed to exist in the location. If the
@@ -447,15 +541,64 @@ public abstract class PottsLocation implements Location {
                 "PottsLocation offsets must be an ArrayList containing exactly 3 integers."
             );
         }
+=======
+     * Calculates the voxel at specified offsets from location bounds.
+     * <p>
+     * The voxel position is calculated as percentage offsets using the minimum
+     * and maximum bounds of the current location in the X, Y, and Z dimensions.
+     * Offsets should be passed as percentages in the range [0, 100]. Offsets
+     * may be given as one percentage N1 (interpreted as [x = N, y = N, z = N]),
+     * two percentages N1 and N2 (interpreted as [x = N1, y = N2, z = 0]), or
+     * three percentages N1, N2, and N3 (interpreted as [x = N1, y = N2, z = N3]).
+     * <p>
+     * For example, offsets of [50, 50, 50] will return the voxel located 50%
+     * between the minimum and maximum in each direction. Note that [50, 50, 50]
+     * is not necessarily equivalent to the center of the location, which is
+     * calculated as the arithmetic mean in each direction. To get the center,
+     * use {@code getCenter()} instead.
+     * <p>
+     * The voxel is not guaranteed to exist in the location. If the voxel must
+     * exist, use {@code adjust()} to get the closest voxel that exists.
+     *
+     * @param offsets  the percentage offset in each direction for split point
+     * @return  the offset voxel, returns {@code null} if there are no voxels
+     */
+    public Voxel getOffset(ArrayList<Integer> offsets) {
+        if (voxels.size() == 0) {
+            return null;
+        }
+        
+        if (offsets == null || offsets.size() == 0 || offsets.size() > 3) {
+            throw new IllegalArgumentException(
+                    "Offsets must be an ArrayList containing exactly 1, 2 or 3 integers."
+            );
+        }
+        
+        if (offsets.size() == 1) {
+            offsets.add(offsets.get(0));
+            offsets.add(offsets.get(1));
+        } else if (offsets.size() == 2) {
+            offsets.add(0);
+        }
+        
+>>>>>>> develop
         int minX = voxels.stream().mapToInt(voxel -> voxel.x).min().getAsInt();
         int maxX = voxels.stream().mapToInt(voxel -> voxel.x).max().getAsInt();
         int minY = voxels.stream().mapToInt(voxel -> voxel.y).min().getAsInt();
         int maxY = voxels.stream().mapToInt(voxel -> voxel.y).max().getAsInt();
         int minZ = voxels.stream().mapToInt(voxel -> voxel.z).min().getAsInt();
         int maxZ = voxels.stream().mapToInt(voxel -> voxel.z).max().getAsInt();
+<<<<<<< HEAD
         int offsetX = (int) Math.round(minX + (maxX - minX) * (offsetPercents.get(0) / 100.0));
         int offsetY = (int) Math.round(minY + (maxY - minY) * (offsetPercents.get(1) / 100.0));
         int offsetZ = (int) Math.round(minZ + (maxZ - minZ) * (offsetPercents.get(2) / 100.0));
+=======
+        
+        int offsetX = (int) Math.round(minX + (maxX - minX) * (offsets.get(0) / 100.0));
+        int offsetY = (int) Math.round(minY + (maxY - minY) * (offsets.get(1) / 100.0));
+        int offsetZ = (int) Math.round(minZ + (maxZ - minZ) * (offsets.get(2) / 100.0));
+        
+>>>>>>> develop
         return new Voxel(offsetX, offsetY, offsetZ);
     }
     
@@ -600,7 +743,8 @@ public abstract class PottsLocation implements Location {
     abstract ArrayList<Voxel> getSelected(Voxel focus, double n);
     
     /**
-     * Gets the direction of the slice.
+     * Gets the direction of the slice orthagonal to the direction with
+     * the smallest diameter.
      *
      * @param random  the seeded random number generator
      * @return  the direction of the slice
@@ -658,141 +802,34 @@ public abstract class PottsLocation implements Location {
         calculateCenter();
         return makeLocation(voxelsB);
     }
-    
+
     /**
-     * Splits the voxels in the location along a given direction.
+     * Splits the voxels in the location into two lists along a given plane.
+     * <p>
+     * The voxels are split into two lists based on their position relative to
+     * the plane. Voxels on the plane are randomly assigned to one of the lists.
      *
-     * @param direction  the direction of the slice
-     * @param voxels  the list of voxels
-     * @param voxelsA  the container list for the first half of the split
-     * @param voxelsB  the container list for the second half of the split
-     * @param center  the center voxel
-     * @param random  the seeded random number generator
+     * @param plane the plane to split the voxels along
+     * @param voxels the list of voxels to split
+     * @param voxelsA list of voxels  on side of plane the opposite the normal
+     * @param voxelsB list of voxels on side of plane the same as the normal
+     * @param random the seeded random number generator
      */
-    static void splitVoxels(Direction direction, ArrayList<Voxel> voxels,
+    static void splitVoxels(Plane plane, ArrayList<Voxel> voxels,
                             ArrayList<Voxel> voxelsA, ArrayList<Voxel> voxelsB,
-                            Voxel center, MersenneTwisterFast random) {
+                            MersenneTwisterFast random) {
         for (Voxel voxel : voxels) {
-            switch (direction) {
-                case ZX_PLANE:
-                    if (voxel.y < center.y) {
-                        voxelsA.add(voxel);
-                    } else if (voxel.y > center.y) {
-                        voxelsB.add(voxel);
-                    } else {
-                        if (random.nextDouble() > 0.5) {
-                            voxelsA.add(voxel);
-                        } else {
-                            voxelsB.add(voxel);
-                        }
-                    }
-                    break;
-                case YZ_PLANE:
-                    if (voxel.x < center.x) {
-                        voxelsA.add(voxel);
-                    } else if (voxel.x > center.x) {
-                        voxelsB.add(voxel);
-                    } else {
-                        if (random.nextDouble() > 0.5) {
-                            voxelsA.add(voxel);
-                        } else {
-                            voxelsB.add(voxel);
-                        }
-                    }
-                    break;
-                case XY_PLANE:
-                    if (voxel.z < center.z) {
-                        voxelsA.add(voxel);
-                    } else if (voxel.z > center.z) {
-                        voxelsB.add(voxel);
-                    } else {
-                        if (random.nextDouble() > 0.5) {
-                            voxelsA.add(voxel);
-                        } else {
-                            voxelsB.add(voxel);
-                        }
-                    }
-                    break;
-                case NEGATIVE_XY:
-                    if (voxel.x - center.x > center.y - voxel.y) {
-                        voxelsA.add(voxel);
-                    } else if (voxel.x - center.x < center.y - voxel.y) {
-                        voxelsB.add(voxel);
-                    } else {
-                        if (random.nextDouble() > 0.5) {
-                            voxelsA.add(voxel);
-                        } else {
-                            voxelsB.add(voxel);
-                        }
-                    }
-                    break;
-                case POSITIVE_XY:
-                    if (voxel.x - center.x > voxel.y - center.y) {
-                        voxelsA.add(voxel);
-                    } else if (voxel.x - center.x < voxel.y - center.y) {
-                        voxelsB.add(voxel);
-                    } else {
-                        if (random.nextDouble() > 0.5) {
-                            voxelsA.add(voxel);
-                        } else {
-                            voxelsB.add(voxel);
-                        }
-                    }
-                    break;
-                case NEGATIVE_YZ:
-                    if (voxel.y - center.y > center.z - voxel.z) {
-                        voxelsA.add(voxel);
-                    } else if (voxel.y - center.y < center.z - voxel.z) {
-                        voxelsB.add(voxel);
-                    } else {
-                        if (random.nextDouble() > 0.5) {
-                            voxelsA.add(voxel);
-                        } else {
-                            voxelsB.add(voxel);
-                        }
-                    }
-                    break;
-                case POSITIVE_YZ:
-                    if (voxel.y - center.y > voxel.z - center.z) {
-                        voxelsA.add(voxel);
-                    } else if (voxel.y - center.y < voxel.z - center.z) {
-                        voxelsB.add(voxel);
-                    } else {
-                        if (random.nextDouble() > 0.5) {
-                            voxelsA.add(voxel);
-                        } else {
-                            voxelsB.add(voxel);
-                        }
-                    }
-                    break;
-                case NEGATIVE_ZX:
-                    if (voxel.z - center.z > center.x - voxel.x) {
-                        voxelsA.add(voxel);
-                    } else if (voxel.z - center.z < center.x - voxel.x) {
-                        voxelsB.add(voxel);
-                    } else {
-                        if (random.nextDouble() > 0.5) {
-                            voxelsA.add(voxel);
-                        } else {
-                            voxelsB.add(voxel);
-                        }
-                    }
-                    break;
-                case POSITIVE_ZX:
-                    if (voxel.z - center.z > voxel.x - center.x) {
-                        voxelsA.add(voxel);
-                    } else if (voxel.z - center.z < voxel.x - center.x) {
-                        voxelsB.add(voxel);
-                    } else {
-                        if (random.nextDouble() > 0.5) {
-                            voxelsA.add(voxel);
-                        } else {
-                            voxelsB.add(voxel);
-                        }
-                    }
-                    break;
-                default:
-                    break;
+            double distance = plane.signedDistanceToPlane(voxel);
+            if (distance < 0) {
+                voxelsA.add(voxel);
+            } else if (distance > 0) {
+                voxelsB.add(voxel);
+            } else {
+                if (random.nextDouble() > 0.5) {
+                    voxelsA.add(voxel);
+                } else {
+                    voxelsB.add(voxel);
+                }
             }
         }
     }
