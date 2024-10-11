@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PottsEnums.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.potts.util</a> &gt; <span class="el_source">PottsEnums.java</span></div><h1>PottsEnums.java</h1><pre class="source lang-java linenums">package arcade.potts.util;
 
+import sim.util.Int3D;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.agent.process.ProcessDomain;
@@ -23,38 +24,38 @@ public final class PottsEnums {
     /**
      * Hidden utility class constructor.
      */
-<span class="fc" id="L26">    protected PottsEnums() {</span>
-<span class="fc" id="L27">        throw new UnsupportedOperationException();</span>
+<span class="fc" id="L27">    protected PottsEnums() {</span>
+<span class="fc" id="L28">        throw new UnsupportedOperationException();</span>
     }
     
     /** Stepping order for potts simulations. */
-<span class="fc" id="L31">    public enum Ordering {</span>
+<span class="fc" id="L32">    public enum Ordering {</span>
         /** Stepping order for potts. */
-<span class="fc" id="L33">        POTTS,</span>
+<span class="fc" id="L34">        POTTS,</span>
         
         /** Stepping order for cells. */
-<span class="fc" id="L36">        CELLS</span>
+<span class="fc" id="L37">        CELLS</span>
     }
     
     /** Cell state codes for potts simulations. */
-<span class="fc" id="L40">    public enum State implements CellState {</span>
+<span class="fc" id="L41">    public enum State implements CellState {</span>
         /** Code for undefined state. */
-<span class="fc" id="L42">        UNDEFINED,</span>
+<span class="fc" id="L43">        UNDEFINED,</span>
         
         /** Code for quiescent cells. */
-<span class="fc" id="L45">        QUIESCENT,</span>
+<span class="fc" id="L46">        QUIESCENT,</span>
         
         /** Code for proliferative cells. */
-<span class="fc" id="L48">        PROLIFERATIVE,</span>
+<span class="fc" id="L49">        PROLIFERATIVE,</span>
         
         /** Code for apoptotic cells. */
-<span class="fc" id="L51">        APOPTOTIC,</span>
+<span class="fc" id="L52">        APOPTOTIC,</span>
         
         /** Code for necrotic cells. */
-<span class="fc" id="L54">        NECROTIC,</span>
+<span class="fc" id="L55">        NECROTIC,</span>
         
         /** Code for autotic cells. */
-<span class="fc" id="L57">        AUTOTIC;</span>
+<span class="fc" id="L58">        AUTOTIC;</span>
         
         /**
          * Randomly selects a {@code State}.
@@ -63,26 +64,26 @@ public final class PottsEnums {
          * @return  a random {@code State}
          */
         public static State random(MersenneTwisterFast rng) {
-<span class="fc" id="L66">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L67">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
     
     /** Process domain codes for potts simulations. */
-<span class="fc" id="L71">    public enum Domain implements ProcessDomain {</span>
+<span class="fc" id="L72">    public enum Domain implements ProcessDomain {</span>
         /** Code for undefined domain. */
-<span class="fc" id="L73">        UNDEFINED</span>
+<span class="fc" id="L74">        UNDEFINED</span>
     }
     
     /** Cell region codes for potts simulations. */
-<span class="fc" id="L77">    public enum Region {</span>
+<span class="fc" id="L78">    public enum Region {</span>
         /** Undefined region. */
-<span class="fc" id="L79">        UNDEFINED,</span>
+<span class="fc" id="L80">        UNDEFINED,</span>
         
         /** Region for cytoplasm. */
-<span class="fc" id="L82">        DEFAULT,</span>
+<span class="fc" id="L83">        DEFAULT,</span>
         
         /** Region for nucleus. */
-<span class="fc" id="L85">        NUCLEUS;</span>
+<span class="fc" id="L86">        NUCLEUS;</span>
         
         /**
          * Randomly selects a {@code Region}.
@@ -91,35 +92,35 @@ public final class PottsEnums {
          * @return  a random {@code Region}
          */
         public static Region random(MersenneTwisterFast rng) {
-<span class="nc" id="L94">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="nc" id="L95">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
     
     /** Potts energy terms for potts simulations. */
-<span class="fc" id="L99">    public enum Term {</span>
+<span class="fc" id="L100">    public enum Term {</span>
         /** Code for undefined term. */
-<span class="fc" id="L101">        UNDEFINED,</span>
+<span class="fc" id="L102">        UNDEFINED,</span>
         
         /** Code for adhesion term. */
-<span class="fc" id="L104">        ADHESION,</span>
+<span class="fc" id="L105">        ADHESION,</span>
         
         /** Code for volume term. */
-<span class="fc" id="L107">        VOLUME,</span>
+<span class="fc" id="L108">        VOLUME,</span>
         
         /** Code for surface term. */
-<span class="fc" id="L110">        SURFACE,</span>
+<span class="fc" id="L111">        SURFACE,</span>
         
         /** Code for height term. */
-<span class="fc" id="L113">        HEIGHT,</span>
+<span class="fc" id="L114">        HEIGHT,</span>
         
         /** Code for junction term. */
-<span class="fc" id="L116">        JUNCTION,</span>
+<span class="fc" id="L117">        JUNCTION,</span>
         
         /** Code for substrate term. */
-<span class="fc" id="L119">        SUBSTRATE,</span>
+<span class="fc" id="L120">        SUBSTRATE,</span>
         
         /** Code for persistence term. */
-<span class="fc" id="L122">        PERSISTENCE;</span>
+<span class="fc" id="L123">        PERSISTENCE;</span>
         
         /**
          * Randomly selects a {@code Term}.
@@ -128,35 +129,35 @@ public final class PottsEnums {
          * @return  a random {@code Term}
          */
         public static Term random(MersenneTwisterFast rng) {
-<span class="fc" id="L131">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L132">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
     
     /** Module phase codes for potts simulations. */
-<span class="fc" id="L136">    public enum Phase {</span>
+<span class="fc" id="L137">    public enum Phase {</span>
         /** Code for undefined phase. */
-<span class="fc" id="L138">        UNDEFINED,</span>
+<span class="fc" id="L139">        UNDEFINED,</span>
         
         /** Code for proliferative G1 phase. */
-<span class="fc" id="L141">        PROLIFERATIVE_G1,</span>
+<span class="fc" id="L142">        PROLIFERATIVE_G1,</span>
         
         /** Code for proliferative S phase. */
-<span class="fc" id="L144">        PROLIFERATIVE_S,</span>
+<span class="fc" id="L145">        PROLIFERATIVE_S,</span>
         
         /** Code for proliferative G2 phase. */
-<span class="fc" id="L147">        PROLIFERATIVE_G2,</span>
+<span class="fc" id="L148">        PROLIFERATIVE_G2,</span>
         
         /** Code for proliferative M phase. */
-<span class="fc" id="L150">        PROLIFERATIVE_M,</span>
+<span class="fc" id="L151">        PROLIFERATIVE_M,</span>
         
         /** Code for early apoptosis phase. */
-<span class="fc" id="L153">        APOPTOTIC_EARLY,</span>
+<span class="fc" id="L154">        APOPTOTIC_EARLY,</span>
         
         /** Code for late apoptosis phase. */
-<span class="fc" id="L156">        APOPTOTIC_LATE,</span>
+<span class="fc" id="L157">        APOPTOTIC_LATE,</span>
         
         /** Code for apoptosed cell. */
-<span class="fc" id="L159">        APOPTOSED;</span>
+<span class="fc" id="L160">        APOPTOSED;</span>
         
         /**
          * Randomly selects a {@code Phase}.
@@ -165,50 +166,62 @@ public final class PottsEnums {
          * @return  a random {@code Phase}
          */
         public static Phase random(MersenneTwisterFast rng) {
-<span class="fc" id="L168">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L169">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
     
     /** Location split directions for potts simulations. */
-<span class="fc" id="L173">    public enum Direction {</span>
+<span class="fc" id="L174">    public enum Direction {</span>
         /** Unspecified direction. */
-<span class="fc" id="L175">        UNDEFINED,</span>
+<span class="fc" id="L176">        UNDEFINED(null),</span>
         
         /** Direction along the yz plane (y = 0, z = 0). */
-<span class="fc" id="L178">        YZ_PLANE,</span>
+<span class="fc" id="L179">        YZ_PLANE(new Int3D(1, 0, 0)),</span>
         
         /** Direction along the zx plane (z = 0, x = 0). */
-<span class="fc" id="L181">        ZX_PLANE,</span>
+<span class="fc" id="L182">        ZX_PLANE(new Int3D(0, 1, 0)),</span>
         
         /** Direction along the xy plane (x = 0, y = 0). */
-<span class="fc" id="L184">        XY_PLANE,</span>
+<span class="fc" id="L185">        XY_PLANE(new Int3D(0, 0, 1)),</span>
         
         /** Direction along the positive xy axis (x = y, z = 0). */
-<span class="fc" id="L187">        POSITIVE_XY,</span>
+<span class="fc" id="L188">        POSITIVE_XY(new Int3D(-1, 1, 0)),</span>
         
         /** Direction along the negative xy axis (x = -y, z = 0). */
-<span class="fc" id="L190">        NEGATIVE_XY,</span>
+<span class="fc" id="L191">        NEGATIVE_XY(new Int3D(-1, -1, 0)),</span>
         
         /** Direction along the positive yz axis (y = z, x = 0). */
-<span class="fc" id="L193">        POSITIVE_YZ,</span>
+<span class="fc" id="L194">        POSITIVE_YZ(new Int3D(0, -1, 1)),</span>
         
         /** Direction along the negative yz axis (y = -z, x = 0). */
-<span class="fc" id="L196">        NEGATIVE_YZ,</span>
+<span class="fc" id="L197">        NEGATIVE_YZ(new Int3D(0, -1, -1)),</span>
         
         /** Direction along the positive zx axis (z = x, y = 0). */
-<span class="fc" id="L199">        POSITIVE_ZX,</span>
+<span class="fc" id="L200">        POSITIVE_ZX(new Int3D(1, 0, -1)),</span>
         
         /** Direction along the negative zx axis (z = -x, y = 0). */
-<span class="fc" id="L202">        NEGATIVE_ZX;</span>
+<span class="fc" id="L203">        NEGATIVE_ZX(new Int3D(-1, 0, -1));</span>
+        
+        /** The normal vector of the plane in this direction. */
+        public final Int3D vector;
         
         /**
-         * Randomly selects a {@code Direction}.
+         * Creates a new {@code Direction} with the given vector.
          *
-         * @param rng  the random number generator
-         * @return  a random {@code Direction}
+         * @param vector the vector associated with this direction
+         */
+<span class="fc" id="L213">        Direction(Int3D vector) {</span>
+<span class="fc" id="L214">            this.vector = vector;</span>
+<span class="fc" id="L215">        }</span>
+        
+        /**
+         * Randomly selects a {@code Direction}, excluding {@code UNDEFINED}.
+         *
+         * @param rng the random number generator
+         * @return a random {@code Direction}
          */
         public static Direction random(MersenneTwisterFast rng) {
-<span class="fc" id="L211">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L224">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
 }
