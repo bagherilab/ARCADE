@@ -638,7 +638,7 @@ public abstract class PottsLocation implements Location {
      * The voxels are split into two lists based on their position relative to
      * the plane. Voxels on the plane are randomly assigned to one of the lists.
      *
-     * @param plane the plane to split the voxels along
+     * @param plane  the plane to split the voxels along
      * @param voxels the list of voxels to split
      * @param voxelsA the container list for the first half of the split.
      *                These voxels are on the side of the plane opposite the normal.
