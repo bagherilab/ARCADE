@@ -5,12 +5,14 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 import sim.util.distribution.Normal;
 import sim.util.distribution.Uniform;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import arcade.patch.sim.PatchSeries;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
@@ -32,6 +34,9 @@ import static arcade.patch.util.PatchEnums.State;
  */
 
 public final class PatchCellFactory implements CellFactory {
+    /** Logger for {@code PatchCellFactory}. */
+<span class="fc" id="L38">    private static final Logger LOGGER = Logger.getLogger(PatchCellFactory.class.getName());</span>
+    
     /** Random number generator instance. */
     MersenneTwisterFast random;
     
@@ -51,7 +56,7 @@ public final class PatchCellFactory implements CellFactory {
     HashMap&lt;Integer, Integer&gt; popToDivisions;
     
     /** Map of population to compression tolerance [um]. */
-    HashMap&lt;Integer, Integer&gt; popToCompression;
+    HashMap&lt;Integer, Double&gt; popToCompression;
     
     /** Map of population to process versions. */
     HashMap&lt;Integer, EnumMap&lt;Domain, String&gt;&gt; popToProcessVersions;
@@ -65,28 +70,28 @@ public final class PatchCellFactory implements CellFactory {
     /**
      * Creates a factory for making {@link PatchCell} instances.
      */
-<span class="fc" id="L68">    public PatchCellFactory() {</span>
-<span class="fc" id="L69">        cells = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L70">        popToCriticalVolumes = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L71">        popToCriticalHeights = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L72">        popToParameters = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L73">        popToAges = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L74">        popToDivisions = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L75">        popToCompression = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L76">        popToProcessVersions = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L77">        popToIDs = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L78">    }</span>
+<span class="fc" id="L73">    public PatchCellFactory() {</span>
+<span class="fc" id="L74">        cells = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L75">        popToCriticalVolumes = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L76">        popToCriticalHeights = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L77">        popToParameters = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L78">        popToAges = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L79">        popToDivisions = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L80">        popToCompression = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L81">        popToProcessVersions = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L82">        popToIDs = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L83">    }</span>
     
     @Override
     public void initialize(Series series, MersenneTwisterFast random) {
-<span class="fc" id="L82">        this.random = random;</span>
-<span class="fc" id="L83">        parseValues(series);</span>
-<span class="pc bpc" id="L84" title="3 of 4 branches missed.">        if (series.loader != null &amp;&amp; series.loader.loadCells) {</span>
-<span class="nc" id="L85">            loadCells(series);</span>
+<span class="fc" id="L87">        this.random = random;</span>
+<span class="fc" id="L88">        parseValues(series);</span>
+<span class="pc bpc" id="L89" title="3 of 4 branches missed.">        if (series.loader != null &amp;&amp; series.loader.loadCells) {</span>
+<span class="nc" id="L90">            loadCells(series);</span>
         } else {
-<span class="fc" id="L87">            createCells(series);</span>
+<span class="fc" id="L92">            createCells(series);</span>
         }
-<span class="fc" id="L89">    }</span>
+<span class="fc" id="L94">    }</span>
     
     /**
      * {@inheritDoc}
@@ -98,26 +103,26 @@ public final class PatchCellFactory implements CellFactory {
     @Override
     public void loadCells(Series series) {
         // Load cells.
-<span class="nc" id="L101">        ArrayList&lt;CellContainer&gt; containers = series.loader.loadCells();</span>
+<span class="nc" id="L106">        ArrayList&lt;CellContainer&gt; containers = series.loader.loadCells();</span>
         
         // Population sizes.
-<span class="nc" id="L104">        HashMap&lt;Integer, Integer&gt; popToSize = new HashMap&lt;&gt;();</span>
-<span class="nc bnc" id="L105" title="All 2 branches missed.">        for (MiniBox population : series.populations.values()) {</span>
-<span class="nc" id="L106">            int n = population.getInt(&quot;INIT&quot;);</span>
-<span class="nc" id="L107">            int pop = population.getInt(&quot;CODE&quot;);</span>
-<span class="nc" id="L108">            popToSize.put(pop, n);</span>
-<span class="nc" id="L109">        }</span>
+<span class="nc" id="L109">        HashMap&lt;Integer, Integer&gt; popToSize = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        for (MiniBox population : series.populations.values()) {</span>
+<span class="nc" id="L111">            int n = population.getInt(&quot;INIT&quot;);</span>
+<span class="nc" id="L112">            int pop = population.getInt(&quot;CODE&quot;);</span>
+<span class="nc" id="L113">            popToSize.put(pop, n);</span>
+<span class="nc" id="L114">        }</span>
         
         // Map loaded container to factory.
-<span class="nc bnc" id="L112" title="All 2 branches missed.">        for (CellContainer container : containers) {</span>
-<span class="nc" id="L113">            PatchCellContainer cellContainer = (PatchCellContainer) container;</span>
-<span class="nc" id="L114">            int pop = cellContainer.pop;</span>
-<span class="nc bnc" id="L115" title="All 4 branches missed.">            if (popToIDs.containsKey(pop) &amp;&amp; popToIDs.get(pop).size() &lt; popToSize.get(pop)) {</span>
-<span class="nc" id="L116">                cells.put(cellContainer.id, cellContainer);</span>
-<span class="nc" id="L117">                popToIDs.get(pop).add(cellContainer.id);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        for (CellContainer container : containers) {</span>
+<span class="nc" id="L118">            PatchCellContainer cellContainer = (PatchCellContainer) container;</span>
+<span class="nc" id="L119">            int pop = cellContainer.pop;</span>
+<span class="nc bnc" id="L120" title="All 4 branches missed.">            if (popToIDs.containsKey(pop) &amp;&amp; popToIDs.get(pop).size() &lt; popToSize.get(pop)) {</span>
+<span class="nc" id="L121">                cells.put(cellContainer.id, cellContainer);</span>
+<span class="nc" id="L122">                popToIDs.get(pop).add(cellContainer.id);</span>
             }
-<span class="nc" id="L119">        }</span>
-<span class="nc" id="L120">    }</span>
+<span class="nc" id="L124">        }</span>
+<span class="nc" id="L125">    }</span>
     
     /**
      * {@inheritDoc}
@@ -127,21 +132,33 @@ public final class PatchCellFactory implements CellFactory {
      */
     @Override
     public void createCells(Series series) {
-<span class="fc" id="L130">        int id = 1;</span>
+<span class="fc" id="L135">        int id = 1;</span>
         
         // Create containers for each population.
-<span class="pc bpc" id="L133" title="1 of 2 branches missed.">        for (MiniBox population : series.populations.values()) {</span>
-<span class="nc" id="L134">            int n = population.getInt(&quot;INIT&quot;);</span>
-<span class="nc" id="L135">            int pop = population.getInt(&quot;CODE&quot;);</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
+<span class="fc" id="L139">            int init = 0;</span>
             
-<span class="nc bnc" id="L137" title="All 2 branches missed.">            for (int i = 0; i &lt; n; i++) {</span>
-<span class="nc" id="L138">                PatchCellContainer container = createCellForPopulation(id, pop);</span>
-<span class="nc" id="L139">                cells.put(container.id, container);</span>
-<span class="nc" id="L140">                popToIDs.get(pop).add(container.id);</span>
-<span class="nc" id="L141">                id++;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">            if (population.contains(&quot;PERCENT&quot;)) {</span>
+<span class="fc" id="L142">                int totalPatches = ((PatchSeries) series).patch.getInt(&quot;TOTAL_PATCHES&quot;);</span>
+<span class="fc" id="L143">                int percent = population.getInt(&quot;PERCENT&quot;);</span>
+<span class="fc" id="L144">                init = Math.min((int) Math.round(percent * totalPatches / 100.0), totalPatches);</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">            } else if (population.contains(&quot;COUNT&quot;)) {</span>
+<span class="fc" id="L146">                init = population.getInt(&quot;COUNT&quot;);</span>
+            } else {
+<span class="nc" id="L148">                LOGGER.severe(&quot;Population must contain PERCENT or COUNT initialization key&quot;);</span>
+<span class="nc" id="L149">                System.exit(-1);</span>
             }
-<span class="nc" id="L143">        }</span>
-<span class="fc" id="L144">    }</span>
+            
+<span class="fc" id="L152">            int pop = population.getInt(&quot;CODE&quot;);</span>
+            
+<span class="fc bfc" id="L154" title="All 2 branches covered.">            for (int i = 0; i &lt; init; i++) {</span>
+<span class="fc" id="L155">                PatchCellContainer container = createCellForPopulation(id, pop);</span>
+<span class="fc" id="L156">                cells.put(container.id, container);</span>
+<span class="fc" id="L157">                popToIDs.get(pop).add(container.id);</span>
+<span class="fc" id="L158">                id++;</span>
+            }
+<span class="fc" id="L160">        }</span>
+<span class="fc" id="L161">    }</span>
     
     /**
      * Create a {@link CellContainer} for a cell in given population.
@@ -151,18 +168,18 @@ public final class PatchCellFactory implements CellFactory {
      * @return  the cell container
      */
     public PatchCellContainer createCellForPopulation(int id, int pop) {
-<span class="nc" id="L154">        Normal volumes = popToCriticalVolumes.get(pop);</span>
-<span class="nc" id="L155">        Normal heights = popToCriticalHeights.get(pop);</span>
-<span class="nc" id="L156">        Uniform ages = popToAges.get(pop);</span>
+<span class="fc" id="L171">        Normal volumes = popToCriticalVolumes.get(pop);</span>
+<span class="fc" id="L172">        Normal heights = popToCriticalHeights.get(pop);</span>
+<span class="fc" id="L173">        Uniform ages = popToAges.get(pop);</span>
         
-<span class="nc" id="L158">        int divisions = popToDivisions.get(pop);</span>
-<span class="nc" id="L159">        double compression = popToCompression.get(pop);</span>
+<span class="fc" id="L175">        int divisions = popToDivisions.get(pop);</span>
+<span class="fc" id="L176">        double compression = popToCompression.get(pop);</span>
         
-<span class="nc" id="L161">        double volume = volumes.nextDouble();</span>
-<span class="nc" id="L162">        double height = heights.nextDouble();</span>
-<span class="nc" id="L163">        int age = ages.nextInt();</span>
+<span class="fc" id="L178">        double volume = volumes.nextDouble();</span>
+<span class="fc" id="L179">        double height = heights.nextDouble();</span>
+<span class="fc" id="L180">        int age = ages.nextInt();</span>
         
-<span class="nc" id="L165">        return new PatchCellContainer(id, 0, pop, age, divisions, State.UNDEFINED,</span>
+<span class="fc" id="L182">        return new PatchCellContainer(id, 0, pop, age, divisions, State.UNDEFINED,</span>
                 volume, height, volume, height + compression);
     }
     
@@ -187,37 +204,37 @@ public final class PatchCellFactory implements CellFactory {
      * @param series  the simulation series
      */
     void parseValues(Series series) {
-<span class="fc" id="L190">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
+<span class="fc" id="L207">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
         
-<span class="pc bpc" id="L192" title="1 of 2 branches missed.">        for (String key : keySet) {</span>
-<span class="nc" id="L193">            MiniBox population = series.populations.get(key);</span>
-<span class="nc" id="L194">            int pop = population.getInt(&quot;CODE&quot;);</span>
-<span class="nc" id="L195">            popToIDs.put(pop, new HashSet&lt;&gt;());</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        for (String key : keySet) {</span>
+<span class="nc" id="L210">            MiniBox population = series.populations.get(key);</span>
+<span class="nc" id="L211">            int pop = population.getInt(&quot;CODE&quot;);</span>
+<span class="nc" id="L212">            popToIDs.put(pop, new HashSet&lt;&gt;());</span>
             
-<span class="nc" id="L197">            popToCriticalVolumes.put(pop, new Normal(population.getDouble(&quot;CELL_VOLUME_MEAN&quot;),</span>
-<span class="nc" id="L198">                    population.getDouble(&quot;CELL_VOLUME_STDEV&quot;), random));</span>
-<span class="nc" id="L199">            popToCriticalHeights.put(pop, new Normal(population.getDouble(&quot;CELL_HEIGHT_MEAN&quot;),</span>
-<span class="nc" id="L200">                    population.getDouble(&quot;CELL_HEIGHT_STDEV&quot;), random));</span>
-<span class="nc" id="L201">            popToAges.put(pop, new Uniform(population.getDouble(&quot;CELL_AGE_MIN&quot;),</span>
-<span class="nc" id="L202">                    population.getDouble(&quot;CELL_AGE_MAX&quot;), random));</span>
-<span class="nc" id="L203">            popToDivisions.put(pop, population.getInt(&quot;DIVISION_POTENTIAL&quot;));</span>
-<span class="nc" id="L204">            popToCompression.put(pop, population.getInt(&quot;COMPRESSION_TOLERANCE&quot;));</span>
+<span class="nc" id="L214">            popToCriticalVolumes.put(pop, new Normal(population.getDouble(&quot;CELL_VOLUME_MEAN&quot;),</span>
+<span class="nc" id="L215">                    population.getDouble(&quot;CELL_VOLUME_STDEV&quot;), random));</span>
+<span class="nc" id="L216">            popToCriticalHeights.put(pop, new Normal(population.getDouble(&quot;CELL_HEIGHT_MEAN&quot;),</span>
+<span class="nc" id="L217">                    population.getDouble(&quot;CELL_HEIGHT_STDEV&quot;), random));</span>
+<span class="nc" id="L218">            popToAges.put(pop, new Uniform(population.getDouble(&quot;CELL_AGE_MIN&quot;),</span>
+<span class="nc" id="L219">                    population.getDouble(&quot;CELL_AGE_MAX&quot;), random));</span>
+<span class="nc" id="L220">            popToDivisions.put(pop, population.getInt(&quot;DIVISION_POTENTIAL&quot;));</span>
+<span class="nc" id="L221">            popToCompression.put(pop, population.getDouble(&quot;COMPRESSION_TOLERANCE&quot;));</span>
             
             // Set process versions if not specified.
-<span class="nc" id="L207">            MiniBox parameters = series.populations.get(key);</span>
+<span class="nc" id="L224">            MiniBox parameters = series.populations.get(key);</span>
             
-<span class="nc" id="L209">            String metabolismVersionKey = &quot;(PROCESS)&quot; + TAG_SEPARATOR + Domain.METABOLISM.name();</span>
-<span class="nc bnc" id="L210" title="All 2 branches missed.">            if (!parameters.contains(metabolismVersionKey)) {</span>
-<span class="nc" id="L211">                parameters.put(metabolismVersionKey, &quot;random&quot;);</span>
+<span class="nc" id="L226">            String metabolismVersionKey = &quot;(PROCESS)&quot; + TAG_SEPARATOR + Domain.METABOLISM.name();</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">            if (!parameters.contains(metabolismVersionKey)) {</span>
+<span class="nc" id="L228">                parameters.put(metabolismVersionKey, &quot;random&quot;);</span>
             }
             
-<span class="nc" id="L214">            String signalingVersionKey = &quot;(PROCESS)&quot; + TAG_SEPARATOR + Domain.SIGNALING.name();</span>
-<span class="nc bnc" id="L215" title="All 2 branches missed.">            if (!parameters.contains(signalingVersionKey)) {</span>
-<span class="nc" id="L216">                parameters.put(signalingVersionKey, &quot;random&quot;);</span>
+<span class="nc" id="L231">            String signalingVersionKey = &quot;(PROCESS)&quot; + TAG_SEPARATOR + Domain.SIGNALING.name();</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">            if (!parameters.contains(signalingVersionKey)) {</span>
+<span class="nc" id="L233">                parameters.put(signalingVersionKey, &quot;random&quot;);</span>
             }
             
-<span class="nc" id="L219">            popToParameters.put(pop, parameters);</span>
-<span class="nc" id="L220">        }</span>
-<span class="fc" id="L221">    }</span>
+<span class="nc" id="L236">            popToParameters.put(pop, parameters);</span>
+<span class="nc" id="L237">        }</span>
+<span class="fc" id="L238">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
