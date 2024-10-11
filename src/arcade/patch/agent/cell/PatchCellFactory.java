@@ -215,6 +215,11 @@ public final class PatchCellFactory implements CellFactory {
             if (!parameters.contains(signalingVersionKey)) {
                 parameters.put(signalingVersionKey, "random");
             }
+
+            String chemotherapyVersionKey = "(PROCESS)" + TAG_SEPARATOR + Domain.CHEMOTHERAPY.name();
+            if (!parameters.contains(chemotherapyVersionKey)) {
+                parameters.put(chemotherapyVersionKey, "random");
+            }
             
             popToParameters.put(pop, parameters);
         }

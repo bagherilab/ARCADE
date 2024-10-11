@@ -21,6 +21,7 @@ import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleProliferation;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
+import arcade.patch.agent.process.PatchProcessChemotherapy;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
 import static arcade.patch.util.PatchEnums.Domain;
@@ -298,6 +299,8 @@ public abstract class PatchCell implements Cell {
                 return PatchProcessMetabolism.make(this, version);
             case SIGNALING:
                 return PatchProcessSignaling.make(this, version);
+            case CHEMOTHERAPY:
+                return PatchProcessChemotherapy.make(this, version)
             case UNDEFINED:
             default:
                 return null;
