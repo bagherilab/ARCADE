@@ -96,7 +96,7 @@ public abstract class PottsModuleProliferation extends PottsModule {
         Potts potts = ((PottsSimulation) sim).getPotts();
         
         // Split current location.
-        Location newLocation = ((PottsLocation) cell.getLocation()).split(random); //TODO: SOPHIA CHANGE THIS
+        Location newLocation = ((PottsLocation) cell.getLocation()).split(random);
         
         // Reset current cell.
         cell.reset(potts.ids, potts.regions);
