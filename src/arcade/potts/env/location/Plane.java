@@ -39,9 +39,10 @@ public final class Plane {
     /**
      * Determines the magnitude of the normal vector.
      *
+     * @param normalVector  the normal vector
      * @return  the magnitude of the normal vector
      */
-    static public double getNormalVectorMagnitude(Int3D normalVector) {
+    static double getNormalVectorMagnitude(Int3D normalVector) {
         return Math.sqrt(normalVector.getX() * normalVector.getX()
                         + normalVector.getY() * normalVector.getY()
                         + normalVector.getZ() * normalVector.getZ());
@@ -50,9 +51,10 @@ public final class Plane {
     /**
      * Scales the normal vector to a unit vector.
      *
+     * @param normalVector  the normal vector
      * @return  the unit normal vector
      */
-    static public Double3D scaleNormalVector(Int3D normalVector) {
+    static Double3D scaleNormalVector(Int3D normalVector) {
         double magnitude = getNormalVectorMagnitude(normalVector);
         double scaledX = normalVector.getX() / magnitude;
         double scaledY = normalVector.getY() / magnitude;
@@ -67,8 +69,8 @@ public final class Plane {
      * The distance is positive if the point is on the same side of the plane
      * as the normal vector and negative if it is on the opposite side.
      *
-     * @param p  the point
-     * @return  the distance from the point to the plane.
+     * @param point the point
+     * @return the distance from the point to the plane.
      *
      */
     public double signedDistanceToPlane(Voxel point) {

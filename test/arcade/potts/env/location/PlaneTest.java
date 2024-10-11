@@ -24,10 +24,10 @@ public class PlaneTest {
         
         Plane plane = new Plane(point, normalVector);
         
-        double expectedX = normalVector.getX()/3.0;
-        double expectedY = normalVector.getY()/3.0;
-        double expectedZ = normalVector.getZ()/3.0;
-        Double3D expectedUnitNormal = new Double3D(expectedX,expectedY,expectedZ);
+        double expectedX = normalVector.getX() / 3.0;
+        double expectedY = normalVector.getY() / 3.0;
+        double expectedZ = normalVector.getZ() / 3.0;
+        Double3D expectedUnitNormal = new Double3D(expectedX, expectedY, expectedZ);
         assertEquals(point, plane.referencePoint);
         assertEquals(expectedUnitNormal, plane.unitNormalVector);
     }
