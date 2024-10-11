@@ -9,6 +9,7 @@ import arcade.potts.agent.cell.PottsCellFlyStem;
 import arcade.potts.env.location.PottsLocation2D;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
+import static arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import static arcade.potts.util.PottsEnums.State;
 import static arcade.potts.util.PottsEnums.Direction;
 
@@ -32,16 +33,21 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
      * {@inheritDoc}
      * <p>
      * The addCell method is overridden to implement specific behavior for
-     * fly stem cells in the proliferation process.
+     * fly stem cells in the proliferation process. Parameters are passed
+     * to the {@link PottsLocation2D#split} method according to the
+     * {@link PottsCellFlyStem} {@link StemType}
      */
     @Override
     void addCell(MersenneTwisterFast random, Simulation sim) {
         Potts potts = ((PottsSimulation) sim).getPotts();
         
         PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
-        ArrayList<Integer> splitOffsetPercent = flyStemCell.getSplitOffsetPercent();
-        Direction splitDirection = flyStemCell.getSplitDirection();
-        double splitProbability = flyStemCell.getVoxelGroupSelectionProbability();
+        StemType stemtype = flyStemCell.stemType;
+        ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
+        splitOffsetPercent.add(stemtype.splitOffsetPercentX);
+        splitOffsetPercent.add(stemtype.splitOffsetPercentY);
+        Direction splitDirection = stemtype.splitDirection;
+        double splitProbability = stemtype.splitSelectionProbability;
 
         // Split current location using splitFly method
         Location newLocation = ((PottsLocation2D) cell.getLocation())
