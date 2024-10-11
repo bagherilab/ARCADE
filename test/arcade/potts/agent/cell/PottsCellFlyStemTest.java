@@ -7,7 +7,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import arcade.core.util.MiniBox;
 import arcade.core.agent.cell.CellState;
-import arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import arcade.potts.agent.module.*;
 import arcade.potts.env.location.PottsLocation;
 import static org.junit.Assert.*;
@@ -206,10 +205,7 @@ public class PottsCellFlyStemTest {
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.WT);;
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
-        assertEquals(Integer.valueOf(66), cell.getSplitOffsetPercent().get(1));
-        assertEquals(Direction.ZX_PLANE, cell.getSplitDirection());
-        assertEquals(1.0, cell.getVoxelGroupSelectionProbability(), EPSILON);
+        assertEquals(cell.stemType, StemType.WT);
     }
 
     @Test
@@ -217,11 +213,8 @@ public class PottsCellFlyStemTest {
         // PottsCellFlyStemMUDMut1StemRandom
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMut1Random);
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(1));
-        assertEquals(Direction.YZ_PLANE, cell.getSplitDirection());
-        assertEquals(0.5, cell.getVoxelGroupSelectionProbability(), EPSILON);
+        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_RANDOM);
+        assertEquals(cell.stemType, StemType.MUDMUT1_RANDOM);
     }
 
     @Test
@@ -229,11 +222,8 @@ public class PottsCellFlyStemTest {
         // PottsCellFlyStemMUDMut1StemLeft
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMut1Left);
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(1));
-        assertEquals(Direction.YZ_PLANE, cell.getSplitDirection());
-        assertEquals(1, cell.getVoxelGroupSelectionProbability(), EPSILON);
+        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_LEFT);
+        assertEquals(cell.stemType, StemType.MUDMUT1_LEFT);
     }
 
     @Test
@@ -241,11 +231,8 @@ public class PottsCellFlyStemTest {
         // PottsCellFlyStemMUDMut2StemRandom
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMut2Random);
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(1));
-        assertEquals(Direction.YZ_PLANE, cell.getSplitDirection());
-        assertEquals(0.5, cell.getVoxelGroupSelectionProbability(), EPSILON);
+        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT2_RANDOM);
+        assertEquals(cell.stemType, StemType.MUDMUT2_RANDOM);
     }
 
     @Test
@@ -253,11 +240,8 @@ public class PottsCellFlyStemTest {
         // PottsCellFlyStemInvert1StemBasal
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.Invert1Basal);
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
-        assertEquals(Integer.valueOf(33), cell.getSplitOffsetPercent().get(1));
-        assertEquals(Direction.ZX_PLANE, cell.getSplitDirection());
-        assertEquals(0, cell.getVoxelGroupSelectionProbability(), EPSILON);
+        criticalRegionVolumes, criticalRegionHeights, StemType.INVERT1_BASAL);
+        assertEquals(cell.stemType, StemType.INVERT1_BASAL);
     }
 
     @Test 
@@ -265,11 +249,8 @@ public class PottsCellFlyStemTest {
         // PottsCellFlyStemInvert2StemBasalOrBoth
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.Invert2BasalOrBoth);
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
-        assertEquals(Integer.valueOf(33), cell.getSplitOffsetPercent().get(1));
-        assertEquals(Direction.ZX_PLANE, cell.getSplitDirection());
-        assertEquals(0.0, cell.getVoxelGroupSelectionProbability(), EPSILON);
+        criticalRegionVolumes, criticalRegionHeights, StemType.INVERT2BASAL_OR_BOTH);
+        assertEquals(cell.stemType, StemType.INVERT2BASAL_OR_BOTH);
     }
 
     @Test
@@ -277,11 +258,8 @@ public class PottsCellFlyStemTest {
         // PottsCellFlyStemSymmetric1StemApical
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.Symmetric1Apical);
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(1));
-        assertEquals(Direction.ZX_PLANE, cell.getSplitDirection());
-        assertEquals(1.0, cell.getVoxelGroupSelectionProbability(), EPSILON);
+        criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC1_APICAL);
+        assertEquals(cell.stemType, StemType.SYMMETRIC1_APICAL);
     }
 
     @Test
@@ -289,11 +267,8 @@ public class PottsCellFlyStemTest {
         // PottsCellFlyStemSymmetric2StemApicalOrBoth
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.Symmetric2ApicalOrBoth);
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(0));
-        assertEquals(Integer.valueOf(50), cell.getSplitOffsetPercent().get(1));
-        assertEquals(Direction.ZX_PLANE, cell.getSplitDirection());
-        assertEquals(1, cell.getVoxelGroupSelectionProbability(), EPSILON);
+        criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC2APICAL_OR_BOTH);
+        assertEquals(cell.stemType, StemType.SYMMETRIC2APICAL_OR_BOTH);
     }
 
     @Test
@@ -356,7 +331,7 @@ public class PottsCellFlyStemTest {
         // Configuration 2 corresponds to PottsCellFlyStemMUDMut1StemRandom
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMut1Random);
+        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_RANDOM);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -411,7 +386,7 @@ public class PottsCellFlyStemTest {
         // Configuration 3 corresponds to PottsCellFlyStemMUDMut1StemLeft
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMut1Left);
+        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_LEFT);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -466,7 +441,7 @@ public class PottsCellFlyStemTest {
         // Configuration 4 corresponds to PottsCellFlyStemMUDMut2StemRandom
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMut2Random);
+        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT2_RANDOM);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -482,8 +457,8 @@ public class PottsCellFlyStemTest {
         assertTrue(daughterCell1 instanceof PottsCellFlyStem);
         PottsCellFlyStem daughterStem1 = (PottsCellFlyStem) daughterCell1;
         // Verify that it has the correct configuration (configuration 4)
-        assertEquals(0.5, daughterStem1.getVoxelGroupSelectionProbability(), EPSILON);
-        assertEquals(Direction.YZ_PLANE, daughterStem1.getSplitDirection());
+        assertEquals(0.5, daughterStem1.stemType.splitSelectionProbability, EPSILON);
+        assertEquals(Direction.YZ_PLANE, daughterStem1.stemType.splitDirection);
         // Additional assertions can be added as needed
 
         // Test case where 0.25 <= random.nextDouble() < 0.5
@@ -495,8 +470,8 @@ public class PottsCellFlyStemTest {
         assertTrue(daughterCell2 instanceof PottsCellFlyStem);
         PottsCellFlyStem daughterStem2 = (PottsCellFlyStem) daughterCell2;
         // Verify that it has the correct configuration (configuration 2)
-        assertEquals(0.5, daughterStem2.getVoxelGroupSelectionProbability(), EPSILON);
-        assertEquals(Direction.YZ_PLANE, daughterStem2.getSplitDirection());
+        assertEquals(0.5, daughterStem2.stemType.splitSelectionProbability, EPSILON);
+        assertEquals(Direction.YZ_PLANE, daughterStem2.stemType.splitDirection);
         // Additional assertions can be added as needed
 
         // Test case where random.nextDouble() >= 0.5
@@ -550,7 +525,7 @@ public class PottsCellFlyStemTest {
         // Configuration 5 corresponds to PottsCellFlyStemInvert1StemBasal
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.Invert1Basal);
+        criticalRegionVolumes, criticalRegionHeights, StemType.INVERT1_BASAL);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -605,7 +580,7 @@ public class PottsCellFlyStemTest {
         // Configuration 6 corresponds to PottsCellFlyStemInvert2StemBasalOrBoth
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.Invert2BasalOrBoth);
+        criticalRegionVolumes, criticalRegionHeights, StemType.INVERT2BASAL_OR_BOTH);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -617,28 +592,26 @@ public class PottsCellFlyStemTest {
 
         PottsCell daughterCell1 = cell.make(newID, newState, newLocation, random);
 
-        // Verify that the daughter cell is a PottsCellFlyStemWT (configuration 1)
+        // Verify that the daughter cell is a PottsCellFlyStemWT
         assertTrue(daughterCell1 instanceof PottsCellFlyStem);
         PottsCellFlyStem daughterStem1 = (PottsCellFlyStem) daughterCell1;
-        // Verify that it has the properties of configuration 1
-        assertEquals(Integer.valueOf(50), daughterStem1.getSplitOffsetPercent().get(0));
-        assertEquals(Integer.valueOf(66), daughterStem1.getSplitOffsetPercent().get(1));
-        assertEquals(Direction.ZX_PLANE, daughterStem1.getSplitDirection());
-        assertEquals(1.0, daughterStem1.getVoxelGroupSelectionProbability(), EPSILON);
+        assertEquals(50, daughterStem1.stemType.splitOffsetPercentX);
+        assertEquals(66, daughterStem1.stemType.splitOffsetPercentY);
+        assertEquals(Direction.ZX_PLANE, daughterStem1.stemType.splitDirection);
+        assertEquals(1.0, daughterStem1.stemType.splitSelectionProbability, EPSILON);
 
         // Test case where 0.25 <= random.nextDouble() < 0.5
         when(random.nextDouble()).thenReturn(0.3);
 
         PottsCell daughterCell2 = cell.make(newID + 1, newState, newLocation, random);
 
-        // Verify that the daughter cell is a PottsCellFlyStemInvert2StemBasalOrBoth (configuration 6)
+        // Verify that the daughter cell is a PottsCellFlyStemInvert2StemBasalOrBoth
         assertTrue(daughterCell2 instanceof PottsCellFlyStem);
         PottsCellFlyStem daughterStem2 = (PottsCellFlyStem) daughterCell2;
-        // Verify that it has the properties of configuration 6
-        assertEquals(Integer.valueOf(50), daughterStem2.getSplitOffsetPercent().get(0));
-        assertEquals(Integer.valueOf(33), daughterStem2.getSplitOffsetPercent().get(1));
-        assertEquals(Direction.ZX_PLANE, daughterStem2.getSplitDirection());
-        assertEquals(0.0, daughterStem2.getVoxelGroupSelectionProbability(), EPSILON);
+        assertEquals(50, daughterStem2.stemType.splitOffsetPercentX);
+        assertEquals(33, daughterStem2.stemType.splitOffsetPercentY);
+        assertEquals(Direction.ZX_PLANE, daughterStem2.stemType.splitDirection);
+        assertEquals(0.0, daughterStem2.stemType.splitSelectionProbability, EPSILON);
 
         // Test case where random.nextDouble() >= 0.5
         when(random.nextDouble()).thenReturn(0.6);
@@ -691,7 +664,7 @@ public class PottsCellFlyStemTest {
         // Configuration 7 corresponds to PottsCellFlyStemSymmetric1StemApical
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.Symmetric1Apical);
+        criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC1_APICAL);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -746,7 +719,7 @@ public class PottsCellFlyStemTest {
         // Configuration 8 corresponds to PottsCellFlyStemSymmetric2StemApicalOrBoth
         PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.Symmetric2ApicalOrBoth);
+        criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC2APICAL_OR_BOTH);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -758,15 +731,13 @@ public class PottsCellFlyStemTest {
 
         PottsCell daughterCell1 = cell.make(newID, newState, newLocation, random);
 
-        // Verify that the daughter cell is a PottsCellFlyStem (configuration 8)
+        // Verify that the daughter cell is a PottsCellFlyStem
         assertTrue(daughterCell1 instanceof PottsCellFlyStem);
         PottsCellFlyStem daughterStem1 = (PottsCellFlyStem) daughterCell1;
-
-        // Verify that it has the properties of configuration 8
-        assertEquals(Integer.valueOf(50), daughterStem1.getSplitOffsetPercent().get(0));
-        assertEquals(Integer.valueOf(50), daughterStem1.getSplitOffsetPercent().get(1));
-        assertEquals(Direction.ZX_PLANE, daughterStem1.getSplitDirection());
-        assertEquals(1.0, daughterStem1.getVoxelGroupSelectionProbability(), EPSILON);
+        assertEquals(50, daughterStem1.stemType.splitOffsetPercentX);
+        assertEquals(50, daughterStem1.stemType.splitOffsetPercentY);
+        assertEquals(Direction.ZX_PLANE, daughterStem1.stemType.splitDirection);
+        assertEquals(1.0, daughterStem1.stemType.splitSelectionProbability, EPSILON);
 
         // Additional property verifications can be added as needed
         assertEquals(newID, daughterStem1.id);

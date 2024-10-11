@@ -12,36 +12,34 @@ import arcade.potts.util.PottsEnums.State;
 import ec.util.MersenneTwisterFast;
 
 public class PottsCellFlyStem extends PottsCell {
-    /** Percentage offset from cell edge where division will occur */
-    private final ArrayList<Integer> splitOffsetPercent;
-
-    /** Direction of division */
-    private final Direction splitDirection;
-
-    /**
-     * The probability that the first set of voxels is returned during the split operation.
-     * <p>
-     * This parameter allows for the specification of which group of voxels (geometrically)
-     * remains as the stem cell, and which group differentiates into the daughter cell type.
-     */
-    private final double voxelGroupSelectionProbability;
 
     /** Enum outlining parameters for each cell type */
     public enum StemType {
         WT(50, 66, Direction.ZX_PLANE, 1.0),
-        MUDMut1Random(50, 50, Direction.YZ_PLANE, 0.5),
-        MUDMut1Left(50, 50, Direction.YZ_PLANE, 1.0),
-        MUDMut2Random(50, 50, Direction.YZ_PLANE, 0.5),
-        Invert1Basal(50, 33, Direction.ZX_PLANE, 0.0),
-        Invert2BasalOrBoth(50, 33, Direction.ZX_PLANE, 0.0),
-        Symmetric1Apical(50, 50, Direction.ZX_PLANE, 1.0),
-        Symmetric2ApicalOrBoth(50, 50, Direction.ZX_PLANE, 1.0);
+        MUDMUT1_RANDOM(50, 50, Direction.YZ_PLANE, 0.5),
+        MUDMUT1_LEFT(50, 50, Direction.YZ_PLANE, 1.0),
+        MUDMUT2_RANDOM(50, 50, Direction.YZ_PLANE, 0.5),
+        INVERT1_BASAL(50, 33, Direction.ZX_PLANE, 0.0),
+        INVERT2BASAL_OR_BOTH(50, 33, Direction.ZX_PLANE, 0.0),
+        SYMMETRIC1_APICAL(50, 50, Direction.ZX_PLANE, 1.0),
+        SYMMETRIC2APICAL_OR_BOTH(50, 50, Direction.ZX_PLANE, 1.0);
 
-        // Fields for configuration
+        /** Percentage x offset from cell edge where division will occur */
         public final int splitOffsetPercentX;
+
+        /** Percentage y offset from cell edge where division will occur */
         public final int splitOffsetPercentY;
+
+        /** Direction of division */
         public final Direction splitDirection;
-        public final double voxelGroupSelectionProbability;
+
+        /**
+         * The probability that the first set of voxels is returned during the split operation.
+         * <p>
+         * This parameter allows for the specification of which group of voxels (geometrically)
+         * remains as the stem cell, and which group differentiates into the daughter cell type.
+         */
+        public final double splitSelectionProbability;
 
         // Constructor
         StemType(int splitOffsetPercentX, int splitOffsetPercentY, Direction splitDirection,
@@ -49,11 +47,11 @@ public class PottsCellFlyStem extends PottsCell {
             this.splitOffsetPercentX = splitOffsetPercentX;
             this.splitOffsetPercentY = splitOffsetPercentY;
             this.splitDirection = splitDirection;
-            this.voxelGroupSelectionProbability = voxelGroupSelectionProbability;
+            this.splitSelectionProbability = voxelGroupSelectionProbability;
         }
     }
 
-    private final StemType stemType;
+    public final StemType stemType;
 
     public PottsCellFlyStem(int id, int parent, int pop, CellState state, int age, int divisions,
                             Location location, boolean hasRegions, MiniBox parameters,
@@ -63,24 +61,7 @@ public class PottsCellFlyStem extends PottsCell {
                             StemType stemType) {
         super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
               criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        this.splitOffsetPercent = new ArrayList<>();
-        this.splitOffsetPercent.add(stemType.splitOffsetPercentX);
-        this.splitOffsetPercent.add(stemType.splitOffsetPercentY);
-        this.splitDirection = stemType.splitDirection;
-        this.voxelGroupSelectionProbability = stemType.voxelGroupSelectionProbability;
         this.stemType = stemType;
-    }
-
-    public ArrayList<Integer> getSplitOffsetPercent() {
-        return splitOffsetPercent;
-    }
-
-    public Direction getSplitDirection() {
-        return splitDirection;
-    }
-
-    public double getVoxelGroupSelectionProbability() {
-        return voxelGroupSelectionProbability;
     }
 
     @Override
@@ -93,42 +74,42 @@ public class PottsCellFlyStem extends PottsCell {
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
                     criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-            case MUDMut1Random:
+            case MUDMUT1_RANDOM:
                 return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
                     criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-            case MUDMut1Left:
+            case MUDMUT1_LEFT:
                 return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
                     criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-            case MUDMut2Random:
+            case MUDMUT2_RANDOM:
                 double rand = random.nextDouble();
                 if (rand < 0.25) {
                     return PottsCellFlyStem.createPottsCellFlyStem(
                         newID, getID(), getPop(), newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
-                        StemType.MUDMut2Random);
+                        StemType.MUDMUT2_RANDOM);
                 } else if (rand < 0.5) {
                     return PottsCellFlyStem.createPottsCellFlyStem(
                         newID, getID(), 1, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
-                        StemType.MUDMut1Random);
+                        StemType.MUDMUT1_RANDOM);
                 } else {
                     return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
                         newID, getID(), 2, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
                 }
-            case Invert1Basal:
+            case INVERT1_BASAL:
                 return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
                     criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-            case Invert2BasalOrBoth:
+            case INVERT2BASAL_OR_BOTH:
                 double randInvert = random.nextDouble();
                 if (randInvert < 0.25) {
                     return PottsCellFlyStem.createPottsCellFlyStem(
@@ -141,25 +122,25 @@ public class PottsCellFlyStem extends PottsCell {
                         newID, getID(), 2, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
-                        StemType.Invert2BasalOrBoth);
+                        StemType.INVERT2BASAL_OR_BOTH);
                 } else {
                     return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
                         newID, getID(), 2, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
                 }
-            case Symmetric1Apical:
+            case SYMMETRIC1_APICAL:
                 return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
                     criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-            case Symmetric2ApicalOrBoth:
+            case SYMMETRIC2APICAL_OR_BOTH:
                 if (random.nextBoolean()) {
                     return PottsCellFlyStem.createPottsCellFlyStem(
                         newID, getID(), getPop(), newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
-                        StemType.Symmetric2ApicalOrBoth);
+                        StemType.SYMMETRIC2APICAL_OR_BOTH);
                 } else {
                     return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
                         newID, getID(), 2, newState, getAge(),

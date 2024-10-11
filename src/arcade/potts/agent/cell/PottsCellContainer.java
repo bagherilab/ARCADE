@@ -167,49 +167,49 @@ public final class PottsCellContainer implements CellContainer {
                     location, hasRegions, parameters, criticalVolume, criticalHeight,
                     hasRegions ? criticalRegionVolumes : null,
                     hasRegions ? criticalRegionHeights : null,
-                    StemType.MUDMut1Random);
+                    StemType.MUDMUT1_RANDOM);
             break;
         case "flystem-mudmut-onestemdaughter-stemdaughterleft":
             cell = PottsCellFlyStem.createPottsCellFlyStem(id, parent, pop, state, age, divisions,
                     location, hasRegions, parameters, criticalVolume, criticalHeight,
                     hasRegions ? criticalRegionVolumes : null,
                     hasRegions ? criticalRegionHeights : null,
-                    StemType.MUDMut1Left);
+                    StemType.MUDMUT1_LEFT);
             break;
         case "flystem-mudmut-twostemdaughters-stemdaughterrandom":
             cell = PottsCellFlyStem.createPottsCellFlyStem(id, parent, pop, state, age, divisions,
                     location, hasRegions, parameters, criticalVolume, criticalHeight,
                     hasRegions ? criticalRegionVolumes : null,
                     hasRegions ? criticalRegionHeights : null,
-                    StemType.MUDMut2Random);
+                    StemType.MUDMUT2_RANDOM);
             break;
         case "flystem-invert-onestemdaughter-stemdaughterbasal":
             cell = PottsCellFlyStem.createPottsCellFlyStem(id, parent, pop, state, age, divisions,
                     location, hasRegions, parameters, criticalVolume, criticalHeight,
                     hasRegions ? criticalRegionVolumes : null,
                     hasRegions ? criticalRegionHeights : null,
-                    StemType.Invert1Basal);
+                    StemType.INVERT1_BASAL);
             break;
         case "flystem-invert-twostemdaughters-stemdaughterbasalorboth":
             cell = PottsCellFlyStem.createPottsCellFlyStem(id, parent, pop, state, age, divisions,
                     location, hasRegions, parameters, criticalVolume, criticalHeight,
                     hasRegions ? criticalRegionVolumes : null,
                     hasRegions ? criticalRegionHeights : null,
-                    StemType.Invert2BasalOrBoth);
+                    StemType.INVERT2BASAL_OR_BOTH);
             break;
         case "flystem-symmetric-onestemdaughter-stemdaughterapical":
             cell = PottsCellFlyStem.createPottsCellFlyStem(id, parent, pop, state, age, divisions,
                     location, hasRegions, parameters, criticalVolume, criticalHeight,
                     hasRegions ? criticalRegionVolumes : null,
                     hasRegions ? criticalRegionHeights : null,
-                    StemType.Symmetric1Apical);
+                    StemType.SYMMETRIC1_APICAL);
             break;
         case "flystem-symmetric-twostemdaughters-stemdaughterapicalorboth":
             cell = PottsCellFlyStem.createPottsCellFlyStem(id, parent, pop, state, age, divisions,
                     location, hasRegions, parameters, criticalVolume, criticalHeight,
                     hasRegions ? criticalRegionVolumes : null,
                     hasRegions ? criticalRegionHeights : null,
-                    StemType.Symmetric2ApicalOrBoth);
+                    StemType.SYMMETRIC2APICAL_OR_BOTH);
             break;
     }
 
