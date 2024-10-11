@@ -69,8 +69,8 @@ public class PatchCellRandomTest {
         assertEquals(cellID, cell2.parent);
         assertEquals(cellPop, cell2.pop);
         assertEquals(cellAge, cell2.getAge());
-        assertEquals(cellDivisions + 1, cell1.getDivisions());
-        assertEquals(cellDivisions + 1, cell2.getDivisions());
+        assertEquals(cellDivisions - 1, cell1.getDivisions());
+        assertEquals(cellDivisions - 1, cell2.getDivisions());
         assertEquals(location2, cell2.getLocation());
         assertEquals(cell2.parameters, parameters);
         assertEquals(volume, cell2.getVolume(), EPSILON);
