@@ -26,10 +26,7 @@ public class PottsCellFlyStem extends PottsCell {
      */
     private final double voxelGroupSelectionProbability;
 
-    /** Function to create daughter cells */
-    private final DaughterCellMaker daughterCellMaker;
-
-    /** Enum outlining parameters and daughterCellMaker for each cell type */
+    /** Enum outlining parameters for each cell type */
     public enum StemType {
         WT(50, 66, Direction.ZX_PLANE, 1.0),
         MUDMut1Random(50, 50, Direction.YZ_PLANE, 0.5),
@@ -45,7 +42,6 @@ public class PottsCellFlyStem extends PottsCell {
         public final int splitOffsetPercentY;
         public final Direction splitDirection;
         public final double voxelGroupSelectionProbability;
-        public DaughterCellMaker daughterCellMaker;
 
         // Constructor
         StemType(int splitOffsetPercentX, int splitOffsetPercentY, Direction splitDirection,
@@ -55,118 +51,9 @@ public class PottsCellFlyStem extends PottsCell {
             this.splitDirection = splitDirection;
             this.voxelGroupSelectionProbability = voxelGroupSelectionProbability;
         }
-
-        // Assign DaughterCellMaker Lambdas for each cell type
-        static {
-            WT.daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
-                parentCell.divisions++;
-                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
-                    newID, parentCell.getID(), 2, newState, parentCell.getAge(),
-                    parentCell.getDivisions(), newLocation, parentCell.hasRegions(), parentCell.getParameters(),
-                    parentCell.criticalVolume, parentCell.criticalHeight,
-                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
-            };
-            MUDMut1Random.daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
-                parentCell.divisions++;
-                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
-                    newID, parentCell.getID(), 2, newState, parentCell.getAge(),
-                    parentCell.getDivisions(), newLocation, parentCell.hasRegions(), parentCell.getParameters(),
-                    parentCell.criticalVolume, parentCell.criticalHeight,
-                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
-            };
-            MUDMut1Left.daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
-                parentCell.divisions++;
-                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
-                    newID, parentCell.getID(), 2, newState, parentCell.getAge(),
-                    parentCell.getDivisions(), newLocation, parentCell.hasRegions(), parentCell.getParameters(),
-                    parentCell.criticalVolume, parentCell.criticalHeight,
-                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
-            };
-            MUDMut2Random.daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
-                parentCell.divisions++;
-                double rand = random.nextDouble();
-                if (rand < 0.25) {
-                    return PottsCellFlyStem.createPottsCellFlyStem(
-                        newID, parentCell.getID(), parentCell.getPop(), newState, parentCell.getAge(),
-                        parentCell.getDivisions(), newLocation, parentCell.hasRegions(), parentCell.getParameters(),
-                        parentCell.criticalVolume, parentCell.criticalHeight,
-                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights,
-                        StemType.MUDMut2Random);
-                } else if (rand < 0.5) {
-                    return PottsCellFlyStem.createPottsCellFlyStem(
-                        newID, parentCell.getID(), 1, newState, parentCell.getAge(),
-                        parentCell.getDivisions(), newLocation, parentCell.hasRegions(), parentCell.getParameters(),
-                        parentCell.getCriticalVolume(), parentCell.getCriticalHeight(),
-                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights,
-                        StemType.MUDMut1Random);
-                } else {
-                    return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
-                        newID, parentCell.getID(), 2, newState, parentCell.getAge(),
-                        parentCell.getDivisions(), newLocation, parentCell.hasRegions(), parentCell.getParameters(),
-                        parentCell.getCriticalVolume(), parentCell.getCriticalHeight(),
-                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
-                }
-            };
-            Invert1Basal.daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
-                parentCell.divisions++;
-                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
-                    newID, parentCell.getID(), 2, newState, parentCell.getAge(),
-                    parentCell.getDivisions(), newLocation, parentCell.hasRegions(), parentCell.getParameters(),
-                    parentCell.getCriticalVolume(), parentCell.getCriticalHeight(),
-                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
-            };
-            Invert2BasalOrBoth.daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
-                parentCell.divisions++;
-                double rand = random.nextDouble();
-                if (rand < 0.25) {
-                    return PottsCellFlyStem.createPottsCellFlyStem(
-                        newID, parentCell.getID(), parentCell.getPop(), newState, parentCell.getAge(),
-                        parentCell.getDivisions(), newLocation, parentCell.hasRegions(), parentCell.getParameters(),
-                        parentCell.getCriticalVolume(), parentCell.getCriticalHeight(),
-                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights,
-                        StemType.WT);
-                } else if (rand < 0.5) {
-                    return PottsCellFlyStem.createPottsCellFlyStem(
-                        newID, parentCell.getID(), 2, newState, parentCell.getAge(),
-                        parentCell.getDivisions(), newLocation, parentCell.hasRegions(), parentCell.getParameters(),
-                        parentCell.getCriticalVolume(), parentCell.getCriticalHeight(),
-                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights,
-                        StemType.Invert2BasalOrBoth);
-                } else {
-                    return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
-                        newID, parentCell.getID(), 2, newState, parentCell.age,
-                        parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
-                        parentCell.criticalVolume, parentCell.criticalHeight,
-                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
-                }
-            };
-            Symmetric1Apical.daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
-                parentCell.divisions++;
-                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
-                    newID, parentCell.getID(), 2, newState, parentCell.age,
-                    parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
-                    parentCell.criticalVolume, parentCell.criticalHeight,
-                    parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
-            };
-            Symmetric2ApicalOrBoth.daughterCellMaker = (parentCell, newID, newState, newLocation, random) -> {
-                parentCell.divisions++;
-                if (random.nextBoolean()) {
-                    return PottsCellFlyStem.createPottsCellFlyStem(
-                        newID, parentCell.getID(), parentCell.getPop(),
-                        newState, parentCell.getAge(), parentCell.getDivisions(), newLocation,
-                        parentCell.hasRegions(), parentCell.getParameters(), parentCell.getCriticalVolume(),
-                        parentCell.getCriticalHeight(), parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights,
-                        StemType.Symmetric2ApicalOrBoth);
-                } else {
-                    return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
-                        newID, parentCell.getID(), 2, newState, parentCell.age,
-                        parentCell.divisions, newLocation, parentCell.hasRegions, parentCell.getParameters(),
-                        parentCell.criticalVolume, parentCell.criticalHeight,
-                        parentCell.criticalRegionVolumes, parentCell.criticalRegionHeights);
-                }
-            };
-        }
     }
+
+    private final StemType stemType;
 
     public PottsCellFlyStem(int id, int parent, int pop, CellState state, int age, int divisions,
                             Location location, boolean hasRegions, MiniBox parameters,
@@ -181,7 +68,7 @@ public class PottsCellFlyStem extends PottsCell {
         this.splitOffsetPercent.add(stemType.splitOffsetPercentY);
         this.splitDirection = stemType.splitDirection;
         this.voxelGroupSelectionProbability = stemType.voxelGroupSelectionProbability;
-        this.daughterCellMaker = stemType.daughterCellMaker;
+        this.stemType = stemType;
     }
 
     public ArrayList<Integer> getSplitOffsetPercent() {
@@ -196,14 +83,92 @@ public class PottsCellFlyStem extends PottsCell {
         return voxelGroupSelectionProbability;
     }
 
-    public PottsCell makeDaughterCell(int newID, CellState newState, Location newLocation,
-                                      MersenneTwisterFast random) {
-        return daughterCellMaker.makeDaughterCell(this, newID, newState, newLocation, random);
-    }
-
     @Override
-    public PottsCell make(int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
-        return makeDaughterCell(newID, newState, newLocation, random);
+    public PottsCell make(int newID, CellState newState, Location newLocation,
+                                      MersenneTwisterFast random) {
+        divisions++;
+        switch (stemType) {
+            case WT:
+                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                    newID, getID(), 2, newState, getAge(),
+                    getDivisions(), newLocation, hasRegions(), getParameters(),
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+            case MUDMut1Random:
+                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                    newID, getID(), 2, newState, getAge(),
+                    getDivisions(), newLocation, hasRegions(), getParameters(),
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+            case MUDMut1Left:
+                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                    newID, getID(), 2, newState, getAge(),
+                    getDivisions(), newLocation, hasRegions(), getParameters(),
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+            case MUDMut2Random:
+                double rand = random.nextDouble();
+                if (rand < 0.25) {
+                    return PottsCellFlyStem.createPottsCellFlyStem(
+                        newID, getID(), getPop(), newState, getAge(),
+                        getDivisions(), newLocation, hasRegions(), getParameters(),
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                        StemType.MUDMut2Random);
+                } else if (rand < 0.5) {
+                    return PottsCellFlyStem.createPottsCellFlyStem(
+                        newID, getID(), 1, newState, getAge(),
+                        getDivisions(), newLocation, hasRegions(), getParameters(),
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                        StemType.MUDMut1Random);
+                } else {
+                    return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                        newID, getID(), 2, newState, getAge(),
+                        getDivisions(), newLocation, hasRegions(), getParameters(),
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+                }
+            case Invert1Basal:
+                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                    newID, getID(), 2, newState, getAge(),
+                    getDivisions(), newLocation, hasRegions(), getParameters(),
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+            case Invert2BasalOrBoth:
+                double randInvert = random.nextDouble();
+                if (randInvert < 0.25) {
+                    return PottsCellFlyStem.createPottsCellFlyStem(
+                        newID, getID(), getPop(), newState, getAge(),
+                        getDivisions(), newLocation, hasRegions(), getParameters(),
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                        StemType.WT);
+                } else if (randInvert < 0.5) {
+                    return PottsCellFlyStem.createPottsCellFlyStem(
+                        newID, getID(), 2, newState, getAge(),
+                        getDivisions(), newLocation, hasRegions(), getParameters(),
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                        StemType.Invert2BasalOrBoth);
+                } else {
+                    return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                        newID, getID(), 2, newState, getAge(),
+                        getDivisions(), newLocation, hasRegions(), getParameters(),
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+                }
+            case Symmetric1Apical:
+                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                    newID, getID(), 2, newState, getAge(),
+                    getDivisions(), newLocation, hasRegions(), getParameters(),
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+            case Symmetric2ApicalOrBoth:
+                if (random.nextBoolean()) {
+                    return PottsCellFlyStem.createPottsCellFlyStem(
+                        newID, getID(), getPop(), newState, getAge(),
+                        getDivisions(), newLocation, hasRegions(), getParameters(),
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
+                        StemType.Symmetric2ApicalOrBoth);
+                } else {
+                    return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                        newID, getID(), 2, newState, getAge(),
+                        getDivisions(), newLocation, hasRegions(), getParameters(),
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+                }
+            default:
+                throw new IllegalArgumentException("Unknown StemType: " + stemType);
+        }
     }
 
     @Override
@@ -216,12 +181,6 @@ public class PottsCellFlyStem extends PottsCell {
                 module = null;
                 break;
         }
-    }
-
-    @FunctionalInterface
-    public interface DaughterCellMaker {
-        PottsCell makeDaughterCell(PottsCellFlyStem parentCell, int newID, CellState newState,
-                                   Location newLocation, MersenneTwisterFast random);
     }
 
     public static PottsCellFlyStem createPottsCellFlyStem(int id, int parent, int pop, CellState state, int age,
