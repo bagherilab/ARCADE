@@ -114,7 +114,7 @@ public final class PatchEnums {
         METABOLISM,
         
         /** Code for signaling domain. */
-        SIGNALING;
+        SIGNALING,
 
         /** Code for chemotherapy domain. */
         CHEMOTHERAPY;
