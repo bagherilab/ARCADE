@@ -58,6 +58,7 @@ public class PottsCellFlyStemTest {
 
         when(parametersMock.getKeys()).thenReturn(new ArrayList<String>());
         when(parametersMock.get("CLASS")).thenReturn("flystem-wt");
+        when(parametersMock.get("proliferation/CELL_GROWTH_RATE")).thenReturn("80");
 
         // Set up regions
         regionList = EnumSet.of(Region.DEFAULT, Region.NUCLEUS);

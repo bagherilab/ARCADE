@@ -49,12 +49,17 @@ public final class PottsCellFlyNeuronWT extends PottsCell {
         super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
                 criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
         this.neuronGeneration = neuronGeneration;
-        if (neuronGeneration == 2) {
+        
+        if (neuronGeneration == 1) {
+            // get cell growth rate from parameters and set it to current_value/2
+            double cellGrowthRate = Double.parseDouble(parameters.get("proliferation/CELL_GROWTH_RATE"));
+            parameters.put("proliferation/CELL_GROWTH_RATE", Double.toString(cellGrowthRate / 2));
+        }
+        else if (neuronGeneration == 2) {
             parameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            // Ensure the cell growth rate is zero
-            if (!"0".equals(parameters.get("proliferation/CELL_GROWTH_RATE"))) {
-                throw new IllegalArgumentException("Terminally differentiated PottsCellFlyNeuronWT agents must have a growth rate of 0");
             }
+        else {
+            throw new UnsupportedOperationException("Invalid neuron generation, neuronGeneration must be 1 or 2");
         }
     }
     
@@ -65,7 +70,7 @@ public final class PottsCellFlyNeuronWT extends PottsCell {
             this.neuronGeneration = 2;
             parameters.put("proliferation/CELL_GROWTH_RATE", "0");
             return new PottsCellFlyNeuronWT(
-                    newID, getID(), 2, newState, getAge(),
+                    newID, getID(), 3, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
                     criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
                     neuronGeneration);

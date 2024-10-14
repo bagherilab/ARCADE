@@ -11,7 +11,7 @@ import arcade.potts.util.PottsEnums.State;
 import ec.util.MersenneTwisterFast;
 
 public class PottsCellFlyStem extends PottsCell {
-
+    
     /** Enum outlining parameters for each cell type */
     public enum StemType {
         WT(50, 66, Direction.ZX_PLANE, 1.0),
@@ -22,16 +22,16 @@ public class PottsCellFlyStem extends PottsCell {
         INVERT2BASAL_OR_BOTH(50, 33, Direction.ZX_PLANE, 0.0),
         SYMMETRIC1_APICAL(50, 50, Direction.ZX_PLANE, 1.0),
         SYMMETRIC2APICAL_OR_BOTH(50, 50, Direction.ZX_PLANE, 1.0);
-
+        
         /** Percentage x offset from cell edge where division will occur */
         public final int splitOffsetPercentX;
-
+        
         /** Percentage y offset from cell edge where division will occur */
         public final int splitOffsetPercentY;
-
+        
         /** Direction of division */
         public final Direction splitDirection;
-
+        
         /**
          * The probability that the first set of voxels is returned during the split operation.
          * <p>
@@ -39,7 +39,7 @@ public class PottsCellFlyStem extends PottsCell {
          * remains as the stem cell, and which group differentiates into the daughter cell type.
          */
         public final double splitSelectionProbability;
-
+        
         // Constructor
         StemType(int splitOffsetPercentX, int splitOffsetPercentY, Direction splitDirection,
                  double voxelGroupSelectionProbability) {
@@ -49,9 +49,9 @@ public class PottsCellFlyStem extends PottsCell {
             this.splitSelectionProbability = voxelGroupSelectionProbability;
         }
     }
-
+    
     public final StemType stemType;
-
+    
     public PottsCellFlyStem(int id, int parent, int pop, CellState state, int age, int divisions,
                             Location location, boolean hasRegions, MiniBox parameters,
                             double criticalVolume, double criticalHeight,
@@ -62,7 +62,7 @@ public class PottsCellFlyStem extends PottsCell {
               criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
         this.stemType = stemType;
     }
-
+    
     @Override
     public PottsCell make(int newID, CellState newState, Location newLocation,
                                       MersenneTwisterFast random) {
@@ -150,7 +150,7 @@ public class PottsCellFlyStem extends PottsCell {
                 throw new IllegalArgumentException("Unknown StemType: " + stemType);
         }
     }
-
+    
     @Override
     void setStateModule(CellState newState) {
         switch ((State) newState) {
