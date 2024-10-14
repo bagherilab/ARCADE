@@ -74,7 +74,7 @@ public class PottsCellFlyStemTest {
 
     @Test
     public void setState_givenState_assignsValue() {
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
                 cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
                 criticalRegionVolumes, criticalRegionHeights, StemType.WT);
 
@@ -96,7 +96,7 @@ public class PottsCellFlyStemTest {
 
     @Test
     public void setState_givenState_updatesModule() {
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
                 cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
                 criticalRegionVolumes, criticalRegionHeights, StemType.WT);
 
@@ -118,7 +118,7 @@ public class PottsCellFlyStemTest {
 
     @Test
     public void setState_invalidState_setsNull() {
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
                 cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
                 criticalRegionVolumes, criticalRegionHeights, StemType.WT);
         cell.setState(State.UNDEFINED);
@@ -127,7 +127,7 @@ public class PottsCellFlyStemTest {
 
     @Test
     public void make_noRegions_setsFields() {
-        PottsCellFlyStem cell1 = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell1 = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
                 cellAge, cellDivisions, locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
                 criticalRegionVolumes, criticalRegionHeights, StemType.WT);
 
@@ -150,7 +150,6 @@ public class PottsCellFlyStemTest {
         for (String key : cell1.getParameters().getKeys()) {
             newParameters.put(key, cell1.getParameters().get(key));
         }
-        newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
         assertEquals(newParameters.getKeys(), cell2.getParameters().getKeys());
         for (String key : newParameters.getKeys()) {
             assertEquals(newParameters.get(key), cell2.getParameters().get(key));
@@ -162,7 +161,7 @@ public class PottsCellFlyStemTest {
 
     @Test
     public void make_hasRegions_setsFields() {
-        PottsCellFlyStem cell1 = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell1 = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.WT);
 
@@ -185,7 +184,6 @@ public class PottsCellFlyStemTest {
         for (String key : cell1.getParameters().getKeys()) {
             newParameters.put(key, cell1.getParameters().get(key));
         }
-        newParameters.put("proliferation/CELL_GROWTH_RATE", "0");
         assertEquals(newParameters.getKeys(), cell2.getParameters().getKeys());
         for (String key : newParameters.getKeys()) {
             assertEquals(newParameters.get(key), cell2.getParameters().get(key));
@@ -202,7 +200,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemWT_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemWT
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.WT);;
         assertEquals(cell.stemType, StemType.WT);
@@ -211,7 +209,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemMUDMut1StemRandom_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemMUDMut1StemRandom
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_RANDOM);
         assertEquals(cell.stemType, StemType.MUDMUT1_RANDOM);
@@ -220,7 +218,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemMUDMut1StemLeft_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemMUDMut1StemLeft
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_LEFT);
         assertEquals(cell.stemType, StemType.MUDMUT1_LEFT);
@@ -229,7 +227,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemMUDMut2StemRandom_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemMUDMut2StemRandom
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT2_RANDOM);
         assertEquals(cell.stemType, StemType.MUDMUT2_RANDOM);
@@ -238,7 +236,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemInvert1StemBasal_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemInvert1StemBasal
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.INVERT1_BASAL);
         assertEquals(cell.stemType, StemType.INVERT1_BASAL);
@@ -247,7 +245,7 @@ public class PottsCellFlyStemTest {
     @Test 
     public void testPottsCellFlyStemInvert2StemBasalOrBoth_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemInvert2StemBasalOrBoth
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.INVERT2BASAL_OR_BOTH);
         assertEquals(cell.stemType, StemType.INVERT2BASAL_OR_BOTH);
@@ -256,7 +254,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemSymmetric1StemApical_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemSymmetric1StemApical
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC1_APICAL);
         assertEquals(cell.stemType, StemType.SYMMETRIC1_APICAL);
@@ -265,7 +263,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemSymmetric2StemApicalOrBoth_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemSymmetric2StemApicalOrBoth
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC2APICAL_OR_BOTH);
         assertEquals(cell.stemType, StemType.SYMMETRIC2APICAL_OR_BOTH);
@@ -274,7 +272,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemWT_make_makesCorrectDaughterCell() {
         // Configuration 1 corresponds to PottsCellFlyStemWT
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.WT);
 
@@ -297,12 +295,10 @@ public class PottsCellFlyStemTest {
         assertEquals(newLocation, daughterCell.getLocation());
         assertEquals(cell.hasRegions(), daughterCell.hasRegions());
 
-        // Verify that the CELL_GROWTH_RATE parameter is set to "0" in the daughter's parameters
         MiniBox expectedParameters = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
             expectedParameters.put(key, cell.getParameters().get(key));
         }
-        expectedParameters.put("proliferation/CELL_GROWTH_RATE", "0");
 
         MiniBox actualParameters = daughterCell.getParameters();
 
@@ -329,7 +325,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemMUDMut1StemRandom_make_makesCorrectDaughterCell() {
         // Configuration 2 corresponds to PottsCellFlyStemMUDMut1StemRandom
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_RANDOM);
 
@@ -352,12 +348,10 @@ public class PottsCellFlyStemTest {
         assertEquals(newLocation, daughterCell.getLocation());
         assertEquals(cell.hasRegions(), daughterCell.hasRegions());
 
-        // Verify that the CELL_GROWTH_RATE parameter is set to "0" in the daughter's parameters
         MiniBox expectedParameters = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
             expectedParameters.put(key, cell.getParameters().get(key));
         }
-        expectedParameters.put("proliferation/CELL_GROWTH_RATE", "0");
 
         MiniBox actualParameters = daughterCell.getParameters();
 
@@ -384,7 +378,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemMUDMut1StemLeft_make_makesCorrectDaughterCell() {
         // Configuration 3 corresponds to PottsCellFlyStemMUDMut1StemLeft
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_LEFT);
 
@@ -407,12 +401,10 @@ public class PottsCellFlyStemTest {
         assertEquals(newLocation, daughterCell.getLocation());
         assertEquals(cell.hasRegions(), daughterCell.hasRegions());
 
-        // Verify that the CELL_GROWTH_RATE parameter is set to "0" in the daughter's parameters
         MiniBox expectedParameters = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
             expectedParameters.put(key, cell.getParameters().get(key));
         }
-        expectedParameters.put("proliferation/CELL_GROWTH_RATE", "0");
 
         MiniBox actualParameters = daughterCell.getParameters();
 
@@ -439,7 +431,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemMUDMut2StemRandom_make_makesCorrectDaughterCell() {
         // Configuration 4 corresponds to PottsCellFlyStemMUDMut2StemRandom
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT2_RANDOM);
 
@@ -491,12 +483,10 @@ public class PottsCellFlyStemTest {
         assertEquals(newLocation, daughterCell3.getLocation());
         assertEquals(cell.hasRegions(), daughterCell3.hasRegions());
 
-        // Verify that the CELL_GROWTH_RATE parameter is set to "0" in the daughter's parameters
         MiniBox expectedParametersNeuron = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
             expectedParametersNeuron.put(key, cell.getParameters().get(key));
         }
-        expectedParametersNeuron.put("proliferation/CELL_GROWTH_RATE", "0");
 
         MiniBox actualParametersNeuron = daughterCell3.getParameters();
 
@@ -523,7 +513,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemInvert1StemBasal_make_makesCorrectDaughterCell() {
         // Configuration 5 corresponds to PottsCellFlyStemInvert1StemBasal
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.INVERT1_BASAL);
 
@@ -546,12 +536,10 @@ public class PottsCellFlyStemTest {
         assertEquals(newLocation, daughterCell.getLocation());
         assertEquals(cell.hasRegions(), daughterCell.hasRegions());
 
-        // Verify that the CELL_GROWTH_RATE parameter is set to "0" in the daughter's parameters
         MiniBox expectedParameters = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
             expectedParameters.put(key, cell.getParameters().get(key));
         }
-        expectedParameters.put("proliferation/CELL_GROWTH_RATE", "0");
 
         MiniBox actualParameters = daughterCell.getParameters();
 
@@ -578,7 +566,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemInvert2StemBasalOrBoth_make_makesCorrectDaughterCell() {
         // Configuration 6 corresponds to PottsCellFlyStemInvert2StemBasalOrBoth
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.INVERT2BASAL_OR_BOTH);
 
@@ -630,13 +618,11 @@ public class PottsCellFlyStemTest {
         assertEquals(newLocation, daughterCell3.getLocation());
         assertEquals(cell.hasRegions(), daughterCell3.hasRegions());
 
-        // Verify that the CELL_GROWTH_RATE parameter is set to "0" in the daughter's parameters
+
         MiniBox expectedParametersNeuron = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
             expectedParametersNeuron.put(key, cell.getParameters().get(key));
         }
-        expectedParametersNeuron.put("proliferation/CELL_GROWTH_RATE", "0");
-
         MiniBox actualParametersNeuron = daughterCell3.getParameters();
 
         // Compare the keys
@@ -662,7 +648,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemSymmetric1StemApical_make_makesCorrectDaughterCell() {
         // Configuration 7 corresponds to PottsCellFlyStemSymmetric1StemApical
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC1_APICAL);
 
@@ -685,12 +671,10 @@ public class PottsCellFlyStemTest {
         assertEquals(newLocation, daughterCell.getLocation());
         assertEquals(cell.hasRegions(), daughterCell.hasRegions());
 
-        // Verify that the CELL_GROWTH_RATE parameter is set to "0" in the daughter's parameters
         MiniBox expectedParameters = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
             expectedParameters.put(key, cell.getParameters().get(key));
         }
-        expectedParameters.put("proliferation/CELL_GROWTH_RATE", "0");
 
         MiniBox actualParameters = daughterCell.getParameters();
 
@@ -717,7 +701,7 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemSymmetric2StemApicalOrBoth_make_makesCorrectDaughterCell() {
         // Configuration 8 corresponds to PottsCellFlyStemSymmetric2StemApicalOrBoth
-        PottsCellFlyStem cell = PottsCellFlyStem.createPottsCellFlyStem(cellID, cellParent, cellPop, cellState,
+        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
         cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
         criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC2APICAL_OR_BOTH);
 
@@ -765,12 +749,10 @@ public class PottsCellFlyStemTest {
         assertEquals(newLocation, daughterCell2.getLocation());
         assertEquals(cell.hasRegions(), daughterCell2.hasRegions());
 
-        // Verify that the CELL_GROWTH_RATE parameter is set to "0" in the daughter's parameters
         MiniBox expectedParametersNeuron = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
             expectedParametersNeuron.put(key, cell.getParameters().get(key));
         }
-        expectedParametersNeuron.put("proliferation/CELL_GROWTH_RATE", "0");
 
         MiniBox actualParametersNeuron = daughterCell2.getParameters();
 
