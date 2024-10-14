@@ -49,7 +49,7 @@ public class PottsModuleProliferationFlyStem extends PottsModuleProliferationSim
         Direction splitDirection = stemtype.splitDirection;
         double splitProbability = stemtype.splitSelectionProbability;
         
-        // Split current location using splitFly method
+        // Split current location
         Location newLocation = ((PottsLocation2D) cell.getLocation())
                 .split(random, splitOffsetPercent, splitDirection, splitProbability);
         

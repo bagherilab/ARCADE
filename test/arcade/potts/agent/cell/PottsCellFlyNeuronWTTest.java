@@ -17,8 +17,6 @@ import ec.util.MersenneTwisterFast;
 
 public class PottsCellFlyNeuronWTTest {
     private static final double EPSILON = 1E-8;
-
-    // Static variables for test data
     static int cellID;
     static int cellParent;
     static int cellPop;
@@ -27,16 +25,14 @@ public class PottsCellFlyNeuronWTTest {
     static CellState cellState;
     static double cellCriticalVolume;
     static double cellCriticalHeight;
-
     static PottsLocation locationMock;
     static MiniBox parametersMock;
-
     static boolean hasRegions;
     static EnumMap<Region, Double> criticalRegionVolumes;
     static EnumMap<Region, Double> criticalRegionHeights;
-
     static EnumSet<Region> regionList;
-
+    static int neuronGeneration;
+    
     @BeforeClass
     public static void setupMocks() {
         // Initialize static variables with random or default values
@@ -48,7 +44,8 @@ public class PottsCellFlyNeuronWTTest {
         cellState = State.QUIESCENT;
         cellCriticalVolume = randomDoubleBetween(10, 100);
         cellCriticalHeight = randomDoubleBetween(10, 100);
-
+        neuronGeneration = 2;
+        
         // Initialize mocks
         locationMock = mock(PottsLocation.class);
         parametersMock = mock(MiniBox.class);
@@ -56,35 +53,26 @@ public class PottsCellFlyNeuronWTTest {
         // Use a real MiniBox instead of a mock
         parametersMock = new MiniBox();
         parametersMock.put("CLASS", "flyneuron-wt");
-
+        
         // Set up regions
         regionList = EnumSet.of(Region.DEFAULT, Region.NUCLEUS);
         hasRegions = true;
-
+        
         criticalRegionVolumes = new EnumMap<>(Region.class);
         criticalRegionHeights = new EnumMap<>(Region.class);
-
+        
         for (Region region : regionList) {
             criticalRegionVolumes.put(region, randomDoubleBetween(10, 100));
             criticalRegionHeights.put(region, randomDoubleBetween(10, 100));
         }
     }
-
-    /**
-     * Creates a PottsCellFlyNeuronWT instance using the factory method.
-     *
-     * @return A PottsCellFlyNeuronWT instance.
-     */
-    static PottsCellFlyNeuronWT make() {
-        return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
-                cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                criticalRegionVolumes, criticalRegionHeights);
-    }
-
+    
     @Test
     public void constructor_givenValidParameters_createsInstance() {
-        PottsCellFlyNeuronWT cell = make();
+        PottsCellFlyNeuronWT cell = new PottsCellFlyNeuronWT(
+            cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+            locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
+            criticalRegionVolumes, criticalRegionHeights, neuronGeneration);
         assertEquals(cellID, cell.id);
         assertEquals(cellParent, cell.parent);
         assertEquals(cellPop, cell.pop);
@@ -95,7 +83,7 @@ public class PottsCellFlyNeuronWTTest {
         assertEquals(hasRegions, cell.hasRegions());
         assertEquals(cellCriticalVolume, cell.getCriticalVolume(), EPSILON);
         assertEquals(cellCriticalHeight, cell.getCriticalHeight(), EPSILON);
-
+        
         // Check Parameters
         MiniBox expectedParameters = new MiniBox();
         for (String key : parametersMock.getKeys()) {
@@ -108,83 +96,110 @@ public class PottsCellFlyNeuronWTTest {
             assertEquals(expectedParameters.get(key), actualParameters.get(key));
         }
     }
-
+    
     @Test
     public void constructor_givenNonZeroGrowthRate_makesGrowthRateZero() {
         parametersMock.put("proliferation/CELL_GROWTH_RATE", "1");
-        PottsCellFlyNeuronWT cell = make();
+        PottsCellFlyNeuronWT cell = new PottsCellFlyNeuronWT(
+            cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+            locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
+            criticalRegionVolumes, criticalRegionHeights, neuronGeneration);
         assertEquals("0", cell.getParameters().get("proliferation/CELL_GROWTH_RATE"));
     }
-
+    
     @Test
     public void setState_givenValidState_assignsModule() {
-        PottsCellFlyNeuronWT cell = make();
-
+        PottsCellFlyNeuronWT cell = new PottsCellFlyNeuronWT(
+            cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+            locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
+            criticalRegionVolumes, criticalRegionHeights, neuronGeneration);
+        
         cell.setState(State.QUIESCENT);
-        assertTrue(cell.getModule() instanceof PottsModuleQuiescence);
-
+        assertNull(cell.getModule());
+        
         cell.setState(State.PROLIFERATIVE);
-        assertTrue(cell.getModule() instanceof PottsModuleProliferationSimple);
-
+        assertTrue(cell.getModule() instanceof PottsModuleProliferationFlyNeuron);
+        
         cell.setState(State.APOPTOTIC);
-        assertTrue(cell.getModule() instanceof PottsModuleApoptosisSimple);
-
+        assertNull(cell.getModule());
+        
         cell.setState(State.NECROTIC);
-        assertTrue(cell.getModule() instanceof PottsModuleNecrosis);
-
+        assertNull(cell.getModule());
+        
         cell.setState(State.AUTOTIC);
-        assertTrue(cell.getModule() instanceof PottsModuleAutosis);
+        assertNull(cell.getModule());
     }
-
+    
     @Test(expected = UnsupportedOperationException.class)
     public void make_called_throwsUnsupportedOperationException() {
-        PottsCellFlyNeuronWT cell = make();
-
+        PottsCellFlyNeuronWT cell = new PottsCellFlyNeuronWT(
+            cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+            locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
+            criticalRegionVolumes, criticalRegionHeights, neuronGeneration);
+        
         int newID = cellID + 1;
         CellState newState = State.QUIESCENT;
         PottsLocation newLocation = mock(PottsLocation.class);
         MersenneTwisterFast random = new MersenneTwisterFast(12345);
-
+        
         cell.make(newID, newState, newLocation, random);
     }
-
+    
     @Test
     public void getCriticalVolume_returnsCorrectValue() {
-        PottsCellFlyNeuronWT cell = make();
+        PottsCellFlyNeuronWT cell = new PottsCellFlyNeuronWT(
+            cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+            locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
+            criticalRegionVolumes, criticalRegionHeights, neuronGeneration);
         assertEquals(cellCriticalVolume, cell.getCriticalVolume(), EPSILON);
     }
-
+    
     @Test
     public void getCriticalHeight_returnsCorrectValue() {
-        PottsCellFlyNeuronWT cell = make();
+        PottsCellFlyNeuronWT cell = new PottsCellFlyNeuronWT(
+            cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+            locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
+            criticalRegionVolumes, criticalRegionHeights, neuronGeneration);
         assertEquals(cellCriticalHeight, cell.getCriticalHeight(), EPSILON);
     }
-
+    
     @Test
     public void hasRegions_returnsCorrectValue() {
-        PottsCellFlyNeuronWT cell = make();
+        PottsCellFlyNeuronWT cell = new PottsCellFlyNeuronWT(
+            cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+            locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
+            criticalRegionVolumes, criticalRegionHeights, neuronGeneration);
         assertEquals(hasRegions, cell.hasRegions());
     }
-
+    
     @Test
     public void getCriticalVolume_withRegion_returnsCorrectValue() {
-        PottsCellFlyNeuronWT cell = make();
+        PottsCellFlyNeuronWT cell = new PottsCellFlyNeuronWT(
+            cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+            locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
+            criticalRegionVolumes, criticalRegionHeights, neuronGeneration);
         for (Region region : regionList) {
             assertEquals(criticalRegionVolumes.get(region), cell.getCriticalVolume(region), EPSILON);
         }
     }
-
+    
     @Test
     public void getCriticalHeight_withRegion_returnsCorrectValue() {
-        PottsCellFlyNeuronWT cell = make();
+        PottsCellFlyNeuronWT cell = new PottsCellFlyNeuronWT(
+            cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+            locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
+            criticalRegionVolumes, criticalRegionHeights, neuronGeneration);
         for (Region region : regionList) {
             assertEquals(criticalRegionHeights.get(region), cell.getCriticalHeight(region), EPSILON);
         }
     }
-
+    
     @Test
     public void getParameters_returnsParameters() {
-        PottsCellFlyNeuronWT cell = make();
+        PottsCellFlyNeuronWT cell = new PottsCellFlyNeuronWT(
+            cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+            locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
+            criticalRegionVolumes, criticalRegionHeights, neuronGeneration);
     
         // Since cell.getParameters() is a copy with "proliferation/CELL_GROWTH_RATE" set to "0",
         // we need to create an expected MiniBox to compare contents.
@@ -206,10 +221,12 @@ public class PottsCellFlyNeuronWTTest {
         }
     }
     
-
     @Test (expected = IllegalArgumentException.class)
     public void setState_invalidState_throwsException() {
-        PottsCellFlyNeuronWT cell = make();
+        PottsCellFlyNeuronWT cell = new PottsCellFlyNeuronWT(
+            cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+            locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
+            criticalRegionVolumes, criticalRegionHeights, neuronGeneration);
         cell.setState(null);
         assertNull(cell.getModule());
     }

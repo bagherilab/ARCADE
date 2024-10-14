@@ -1,6 +1,5 @@
 package arcade.potts.agent.cell;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
@@ -70,82 +69,82 @@ public class PottsCellFlyStem extends PottsCell {
         divisions++;
         switch (stemType) {
             case WT:
-                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                return new PottsCellFlyNeuronWT(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
             case MUDMUT1_RANDOM:
-                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                return new PottsCellFlyNeuronWT(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
             case MUDMUT1_LEFT:
-                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                return new PottsCellFlyNeuronWT(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
             case MUDMUT2_RANDOM:
                 double rand = random.nextDouble();
                 if (rand < 0.25) {
-                    return PottsCellFlyStem.createPottsCellFlyStem(
+                    return new PottsCellFlyStem(
                         newID, getID(), getPop(), newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
                         StemType.MUDMUT2_RANDOM);
                 } else if (rand < 0.5) {
-                    return PottsCellFlyStem.createPottsCellFlyStem(
+                    return new PottsCellFlyStem(
                         newID, getID(), 1, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
                         StemType.MUDMUT1_RANDOM);
                 } else {
-                    return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                    return new PottsCellFlyNeuronWT(
                         newID, getID(), 2, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
-                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
                 }
             case INVERT1_BASAL:
-                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                return new PottsCellFlyNeuronWT(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
             case INVERT2BASAL_OR_BOTH:
                 double randInvert = random.nextDouble();
                 if (randInvert < 0.25) {
-                    return PottsCellFlyStem.createPottsCellFlyStem(
+                    return new PottsCellFlyStem(
                         newID, getID(), getPop(), newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
                         StemType.WT);
                 } else if (randInvert < 0.5) {
-                    return PottsCellFlyStem.createPottsCellFlyStem(
+                    return new PottsCellFlyStem(
                         newID, getID(), 2, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
                         StemType.INVERT2BASAL_OR_BOTH);
                 } else {
-                    return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                    return new PottsCellFlyNeuronWT(
                         newID, getID(), 2, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
-                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
                 }
             case SYMMETRIC1_APICAL:
-                return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                return new PottsCellFlyNeuronWT(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
             case SYMMETRIC2APICAL_OR_BOTH:
                 if (random.nextBoolean()) {
-                    return PottsCellFlyStem.createPottsCellFlyStem(
+                    return new PottsCellFlyStem(
                         newID, getID(), getPop(), newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
                         StemType.SYMMETRIC2APICAL_OR_BOTH);
                 } else {
-                    return PottsCellFlyNeuronWT.createPottsCellFlyNeuronWT(
+                    return new PottsCellFlyNeuronWT(
                         newID, getID(), 2, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
-                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
                 }
             default:
                 throw new IllegalArgumentException("Unknown StemType: " + stemType);
@@ -162,16 +161,5 @@ public class PottsCellFlyStem extends PottsCell {
                 module = null;
                 break;
         }
-    }
-
-    public static PottsCellFlyStem createPottsCellFlyStem(int id, int parent, int pop, CellState state, int age,
-                                                          int divisions, Location location, boolean hasRegions,
-                                                          MiniBox parameters, double criticalVolume, double criticalHeight,
-                                                          EnumMap<Region, Double> criticalRegionVolumes,
-                                                          EnumMap<Region, Double> criticalRegionHeights,
-                                                          StemType stemType) {
-        return new PottsCellFlyStem(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
-                                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
-                                    stemType);
     }
 }
