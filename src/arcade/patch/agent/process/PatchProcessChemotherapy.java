@@ -1,112 +1,116 @@
-package abm.agent.module;
+package arcade.patch.agent.process;
 
-import java.util.ArrayList;
-import abm.sim.*;
-import abm.agent.cell.*;
-import abm.env.loc.Location;
-import abm.env.lat.Lattice;
-import abm.util.MiniBox;
 import sim.util.Bag;
+import ec.util.MersenneTwisterFast;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.env.grid.PatchGrid;
 
-public abstract class Chemotherapy extends PatchProcess {
-    protected final double CHEMOTHERAPY_THRESHOLD;
-    protected ArrayList<MiniBox> drugs;
-    protected double[] internal;
-    protected int n;
+
+/**
+ * Implementation of {@link Process} for cell chemotherapy.
+ * <p>
+ * The {@code PatchProcessChemotherapy} process:
+ * <ul>
+ *     <li>gets available drugs from the environment</li>
+ *     <li>calculates drug uptake given cell size and state</li>
+ *     <li>steps the chemotherapy process to determine changes to internal drug concentration</li>
+ *     <li>updates drug environment with uptake and decay</li>
+ *     <li> determines whether cell should apoptose due to chemotherapy</li>
+ * </ul>
+ */
+
+public abstract class PatchProcessChemotherapy extends PatchProcess {
+    /** Threshold at which cells undergo apoptosis. */
+    protected final double chemotherapyThreshold;
+
+    /** Drug ID associated with this process. */
+    static final int DRUG = 0;
+
+    /** Internal concentration of the drug. */
+    protected double internalConc;
+
+    /** External concentration of the drug. */
+    protected double externalConc;
+
+    /** Uptake of the drug in the current step. */
+    protected double uptakeConc;
+
+    /** Whether the cell was killed by chemotherapy. */
     protected boolean wasChemo;
 
-    /** Cell population index */
-    protected final int pop;
+    /** TODO */
+    protected final double surfaceArea;
 
-    public Chemotherapy(PatchCell cell, Simulation sim) {
+
+    /**
+     * Creates a chemotherapy {@code Process} for the given {@link PatchCell}.
+     *
+     * @param cell  the {@link PatchCell} the process is associated with
+     */
+    PatchProcessChemotherapy(PatchCell cell) {
         super(cell);
 
-		// Set parameters.
-        Series series = sim.getSeries();
-        this.pop = cell.getPop();
-        this.drugs = ((TreatmentSimulation)sim).drugs;
-        this.CHEMOTHERAPY_THRESHOLD = series.getParam(pop, "CHEMOTHERAPY_THRESHOLD");
+        // Set parameters.
+        MiniBox parameters = cell.getParameters();
+        chemotherapyThreshold = parameters.getDouble("chemotherapy/CHEMOTHERAPY_THRESHOLD");
+        surfaceArea = cell.getSurfaceArea();
 
-        // Initialize internal concentration array.
-        n = drugs.size();
-        internal = new double[n];
+        // Initialize concentrations.
+        internalConc = 0.0;
+        externalConc = 0.0;
+        uptakeConc = 0.0;
+    }
+
+    /**
+     * Steps the chemotherapy process.
+     *
+     * @param random  the random number generator
+     * @param sim  the simulation instance
+     */
+    abstract void stepProcess(MersenneTwisterFast random, Simulation sim);
+
+    /**
+     * Gets the external drug concentrations from the environment.
+     *
+     * @param sim  the simulation instance
+     */
+    private void updateExternal(Simulation sim) {
+        externalConc = sim.getLattice("DRUG").getAverageValue(location)
+                        * location.getVolume();
     }
 
     @Override
-    public void stepProcess(Simulation sim) {
-        Location loc = cell.getLocation();
-        
-        // Calculate relative surface area of cell.
-        Bag bag = sim.getAgents().getObjectsAtLocation(loc);
-        double f = cell.getVolume() / PatchCell.calcTotalVolume(bag);
-        double area = loc.getArea() * f;
-        double surfaceArea = area * 2 + (cell.getVolume() / area) * loc.calcPerimeter(f);
+    public void step(MersenneTwisterFast random, Simulation sim) {
+        // Calculate fraction of volume occupied by cell.
+        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
+        double totalVolume = PatchCell.calculateTotalVolume(bag);
+        double f = volume / totalVolume;
 
-        for (int i = 0; i < n; i++) {
-            MiniBox drug = drugs.get(i);
-            Lattice lat = sim.getEnvironment(drug.get("id"));
+        updateExternal(sim);
 
-            // Abstracted uptake logic to be implemented by subclasses
-            double uptake = calculateUptake(drug, lat, loc, surfaceArea, i, sim);
-            internal[i] += uptake;
+        // Calculate drug uptake and internal concentration.
+        stepProcess(random, sim);
 
-            // Update environment.
-            lat.updateVal(loc, 1.0 - uptake / lat.getAverageVal(loc));
-
-            // Abstracted apoptosis logic to be implemented by subclasses
-            if (shouldApoptose(i, sim)) {
-                cell.apoptose(sim);
-                wasChemo = true;
-            }
-
-            // Drug removal (decay of concentration)
-            internal[i] = Math.exp(-drug.getDouble("REMOVAL")) * internal[i];
-        }
-
-        // Record chemotherapy event if apoptosis happened due to chemotherapy
-        logEvent(sim);
+        // Update environment for the drug.
+        sim.getLattice("DRUG").updateValue(location, 1.0 - uptakeConc / externalConc);
     }
 
-    @Override
-    public void updateProcess(PatchProcess mod, double f) {
-        Chemotherapy chemotherapy = (Chemotherapy) mod;
-        for (int i = 0; i < n; i++) {
-            this.internal[i] = chemotherapy.internal[i] * f;
-            chemotherapy.internal[i] *= (1 - f);
-        }
-    }
-
-    public double getInternal(String key) {
-        for (int i = 0; i < n; i++) {
-            if (drugs.get(i).get("id").equals(key)) {
-                return internal[i];
-            }
-        }
-        return Double.NaN;
-    }
-
-    @Override
-    public String toJSON() {
-        StringBuilder concs = new StringBuilder();
-        for (int i = 0; i < n; i++) {
-            concs.append(internal[i]).append(",");
-        }
-        return "[" + concs.toString().replaceFirst(",$", "") + "]";
-    }
-
-    // Abstract methods to be implemented by subclasses
-    protected abstract double calculateUptake(MiniBox drug, Lattice lat, Location loc, double surfaceArea, int index, Simulation sim);
-
-    protected abstract boolean shouldApoptose(int drugIndex, Simulation sim);
-
-    protected void logEvent(Simulation sim) {
-        if (sim instanceof TreatmentSimulation && wasChemo) {
-            StringBuilder cloc = new StringBuilder();
-            for (int i : cell.getLocation().getGridLocation()) {
-                cloc.append(i).append(",");
-            }
-            cloc.append(cell.getLocation().getGridZ());
-            ((TreatmentSimulation) sim).addEvent("*chemotherapy", pop + ",[" + cloc.toString() + "]");
+    /**
+     * Creates a {@code PatchProcessChemotherapy} for the given version.
+     *
+     * @param cell  the {@link PatchCell} the process is associated with
+     * @param version  the process version
+     * @return  the process instance
+     */
+    public static PatchProcess make(PatchCell cell, String version) {
+        switch (version.toUpperCase()) {
+            /** TODO: Implement other cases */
+            case "SIMPLE":
+                return new PatchProcessChemotherapySimple(cell);
+            default:
+                return null;
         }
     }
 }

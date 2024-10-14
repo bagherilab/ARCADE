@@ -1,26 +1,91 @@
-package abm.agent.module;
+package arcade.patch.agent.process;
 
-import abm.sim.*;
-import abm.env.loc.Location;
-import abm.env.lat.Lattice;
-import abm.util.MiniBox;
+import ec.util.MersenneTwisterFast;
+import arcade.core.agent.process.Process;
+import arcade.core.sim.Simulation;
+import arcade.core.util.MiniBox;
+import arcade.patch.agent.cell.PatchCell;
+import static arcade.patch.util.PatchEnums.Flag;
+import static arcade.patch.util.PatchEnums.State;
 
-public class SimpleChemotherapy extends Chemotherapy {
+/**
+ * Extension of {@link PatchProcessChemotherapy} for simple chemotherapy.
+ * <p>
+ * {@code PatchProcessChemotherapySimple} assumes a constant drug uptake rate
+ * and a threshold for apoptosis.
+ */
 
-    public SimpleChemotherapy(PatchCell cell, Simulation sim) {
-        super(cell, sim);
+public class PatchProcessChemotherapySimple extends PatchProcessChemotherapy {
+    /** Constant drug uptake rate [TODO: Rate] for the drug. */
+    private final double drugUptakeRate;
+    
+    /** Kill threshold concentration [TODO: Concentration] for the drug. */
+    private final double killThreshold;
+    
+    /** Constant kill rate [cells/min]. */
+    private final double killRate;
+
+    /**
+     * Creates a simple chemotherapy {@code Process} for the given {@link PatchCell}.
+     * <p>
+     * Loaded parameters include:
+     * <ul>
+     *     <li>{@code CONSTANT_DRUG_UPTAKE_RATE} = constant drug uptake rate</li>
+     *     <li>{@code KILL_THRESHOLD} = drug kill threshold concentration</li>
+     *     <li>{@code KILL_RATE} = constant kill rate</li>
+     * </ul>
+     *
+     * @param cell  the {@link PatchCell} the process is associated with
+     */
+    public PatchProcessChemotherapySimple(PatchCell cell) {
+        super(cell);
+        
+        // Load parameters from the MiniBox.
+        MiniBox parameters = cell.getParameters();
+        drugUptakeRate = parameters.getDouble("chemotherapy/CONSTANT_DRUG_UPTAKE_RATE");
+        killThreshold = parameters.getDouble("chemotherapy/KILL_THRESHOLD");
+        killRate = parameters.getDouble("chemotherapy/KILL_RATE");
     }
-
+    
     @Override
-    protected double calculateUptake(MiniBox drug, Lattice lat, Location loc, double surfaceArea, int index, Simulation sim) {
-        double external = lat.getAverageVal(loc) * loc.getVolume();
-        double gradient = (external / loc.getVolume()) - (internal[index] / cell.getVolume());
-        gradient *= gradient < 1E-10 ? 0 : 1;
-        return drug.getDouble("UPTAKE") * surfaceArea * gradient;
+    public void stepProcess(MersenneTwisterFast random, Simulation sim) {
+        double totalCellsKilled = 0.0;
+        Location location = cell.getLocation();
+
+        Lattice lat = sim.getEnvironment().getLattice("DRUG");
+        double externalConc = lat.getAverageValue(location) * location.getVolume();
+
+        // Calculate drug uptake rate based on concentration gradient.
+        double drugGrad = (externalConc / location.getVolume()) - (internalConc / volume);
+        drugGrad *= drugGrad < 1E-10 ? 0 : 1;
+        
+        // Apply drug uptake.
+        double drugUptake = drugUptakeRate * drugGrad;
+        internalConc += drugUptake;
+
+        // If drug concentration exceeds kill threshold, apply kill rate.
+        if (cell.getState() == Flag.PROLIFERATIVE && internalConc > killThreshold) {
+            if (random.nextDoube < killRate) {
+                cell.setState(State.APOPTOTIC);
+            }
+            
+        }
+
+        // Update the uptake concentration for use in environment update.
+        uptakeConc = drugUptake;
     }
-
+    
     @Override
-    protected boolean shouldApoptose(int drugIndex, Simulation sim) {
-        return internal[drugIndex] > CHEMOTHERAPY_THRESHOLD;
+    public void update(Process process) {
+        PatchProcessChemotherapySimple chemo = (PatchProcessChemotherapySimple) process;
+        double split = this.cell.getVolume() / this.volume;
+        
+        // Update this process as split of given process.
+        this.volume = this.cell.getVolume();
+        this.mass = this.volume * cellDensity;
+        
+        // Update internal drug amounts based on split.
+        this.internalConc = chemo.internalConc * split;
+        chemo.internalConc *= (1 - split);  // Update remaining split in the other process.
     }
 }
