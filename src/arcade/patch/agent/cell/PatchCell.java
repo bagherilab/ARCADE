@@ -300,7 +300,7 @@ public abstract class PatchCell implements Cell {
             case SIGNALING:
                 return PatchProcessSignaling.make(this, version);
             case CHEMOTHERAPY:
-                return PatchProcessChemotherapy.make(this, version)
+                return PatchProcessChemotherapy.make(this, version);
             case UNDEFINED:
             default:
                 return null;
