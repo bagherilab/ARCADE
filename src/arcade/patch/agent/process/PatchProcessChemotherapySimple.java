@@ -49,43 +49,36 @@ public class PatchProcessChemotherapySimple extends PatchProcessChemotherapy {
     
     @Override
     public void stepProcess(MersenneTwisterFast random, Simulation sim) {
-        double totalCellsKilled = 0.0;
-        Location location = cell.getLocation();
-
-        Lattice lat = sim.getEnvironment().getLattice("DRUG");
-        double externalConc = lat.getAverageValue(location) * location.getVolume();
+        double drugInt = intAmt;
+        double drugExt = extAmt;
 
         // Calculate drug uptake rate based on concentration gradient.
-        double drugGrad = (externalConc / location.getVolume()) - (internalConc / volume);
+        double drugGrad = (extAmt / location.getVolume()) - (drugInt / volume);
         drugGrad *= drugGrad < 1E-10 ? 0 : 1;
-        
-        // Apply drug uptake.
         double drugUptake = drugUptakeRate * drugGrad;
-        internalConc += drugUptake;
+        drugInt += drugUptake;
 
         // If drug concentration exceeds kill threshold, apply kill rate.
-        if (cell.getState() == Flag.PROLIFERATIVE && internalConc > killThreshold) {
-            if (random.nextDoube < killRate) {
+        if (cell.getState() == State.PROLIFERATIVE && drugInt > killThreshold) {
+            if (random.nextDouble() < killRate) {
                 cell.setState(State.APOPTOTIC);
             }
-            
         }
 
-        // Update the uptake concentration for use in environment update.
-        uptakeConc = drugUptake;
+        intAmt = drugInt;
+        uptakeAmt = drugUptake;
     }
     
     @Override
     public void update(Process process) {
-        PatchProcessChemotherapySimple chemo = (PatchProcessChemotherapySimple) process;
+        PatchProcessChemotherapySimple chemotherapy = (PatchProcessChemotherapySimple) process;
         double split = this.cell.getVolume() / this.volume;
         
         // Update this process as split of given process.
         this.volume = this.cell.getVolume();
-        this.mass = this.volume * cellDensity;
-        
-        // Update internal drug amounts based on split.
-        this.internalConc = chemo.internalConc * split;
-        chemo.internalConc *= (1 - split);  // Update remaining split in the other process.
+        this.intAmt = chemotherapy.intAmt * split;
+
+        chemotherapy.intAmt *= (1 - split);
+
     }
 }

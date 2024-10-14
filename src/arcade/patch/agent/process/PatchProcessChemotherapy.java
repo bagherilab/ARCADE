@@ -25,23 +25,20 @@ public abstract class PatchProcessChemotherapy extends PatchProcess {
     /** Threshold at which cells undergo apoptosis. */
     protected final double chemotherapyThreshold;
 
-    /** Drug ID associated with this process. */
-    static final int DRUG = 0;
+    /** Volume of cell [um<sup>3</sup>]. */
+    double volume;
 
-    /** Internal concentration of the drug. */
-    protected double internalConc;
+    /** Internal amount of the drug. */
+    protected double intAmt;
 
-    /** External concentration of the drug. */
-    protected double externalConc;
+    /** External amout of the drug. */
+    protected double extAmt;
 
     /** Uptake of the drug in the current step. */
-    protected double uptakeConc;
+    protected double uptakeAmt;
 
     /** Whether the cell was killed by chemotherapy. */
     protected boolean wasChemo;
-
-    /** TODO */
-    protected final double surfaceArea;
 
 
     /**
@@ -52,15 +49,16 @@ public abstract class PatchProcessChemotherapy extends PatchProcess {
     PatchProcessChemotherapy(PatchCell cell) {
         super(cell);
 
-        // Set parameters.
+        // Initialize process
+        volume = cell.getVolume();
+
+        // Set loaded parameters.
         MiniBox parameters = cell.getParameters();
         chemotherapyThreshold = parameters.getDouble("chemotherapy/CHEMOTHERAPY_THRESHOLD");
-        surfaceArea = cell.getSurfaceArea();
 
-        // Initialize concentrations.
-        internalConc = 0.0;
-        externalConc = 0.0;
-        uptakeConc = 0.0;
+        // Initial internal concentrations.
+        intAmt = 0.0;
+
     }
 
     /**
@@ -77,24 +75,20 @@ public abstract class PatchProcessChemotherapy extends PatchProcess {
      * @param sim  the simulation instance
      */
     private void updateExternal(Simulation sim) {
-        externalConc = sim.getLattice("DRUG").getAverageValue(location)
+        extAmt = sim.getLattice("DRUG").getAverageValue(location)
                         * location.getVolume();
     }
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-        // Calculate fraction of volume occupied by cell.
-        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
-        double totalVolume = PatchCell.calculateTotalVolume(bag);
-        double f = volume / totalVolume;
-
+        // Get external drug concentration.
         updateExternal(sim);
 
         // Calculate drug uptake and internal concentration.
         stepProcess(random, sim);
 
         // Update environment for the drug.
-        sim.getLattice("DRUG").updateValue(location, 1.0 - uptakeConc / externalConc);
+        sim.getLattice("DRUG").updateValue(location, 1.0 - uptakeAmt / extAmt);
     }
 
     /**
