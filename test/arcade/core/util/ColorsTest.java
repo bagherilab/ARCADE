@@ -1,7 +1,8 @@
 package arcade.core.util;
 
-import org.junit.Test;
 import java.awt.Color;
+
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ColorsTest {
@@ -15,7 +16,7 @@ public class ColorsTest {
     }
 
     @Test
-    public void getRGB_calledDoubles_returnsRoundedDownColor(){
+    public void getRGB_calledDoubles_returnsRoundedDownColor() {
         Color[] colors = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
         Colors colors1 = new Colors(colors);
         assertEquals(colors[0].getRGB(), colors1.getRGB(0.5));
