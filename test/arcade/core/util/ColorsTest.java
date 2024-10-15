@@ -5,6 +5,24 @@ import java.awt.Color;
 import static org.junit.Assert.*;
 
 public class ColorsTest {
+
+    @Test
+    public void getRGB_calledIndices_returnsColors() {
+        Color[] colors = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
+        Colors colors1 = new Colors(colors);
+        assertEquals(colors[0].getRGB(), colors1.getRGB(0));
+        assertEquals(colors[1].getRGB(), colors1.getRGB(1));
+    }
+
+    @Test
+    public void getRGB_calledDoubles_returnsRoundedDownColor(){
+        Color[] colors = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
+        Colors colors1 = new Colors(colors);
+        assertEquals(colors[0].getRGB(), colors1.getRGB(0.5));
+        assertEquals(colors[0].getRGB(), colors1.getRGB(0.99));
+        assertEquals(colors[1].getRGB(), colors1.getRGB(1.1));
+    }
+
     @Test
     public void getAlpha_called_returnsValid() {
         Color color1 = new Color(0, 0, 0, 0);
@@ -64,4 +82,15 @@ public class ColorsTest {
         assertEquals(new Color(151, 151, 151, 1).getRGB(), colors.getRGB(0.75));
     }
 
+    @Test
+    public void getRGB_calledWithMod_returnsCorrectColor() {
+        Colors colors = new Colors(new Color[] {
+            new Color(0, 0, 0, 0),
+            new Color(100, 100, 100, 0),
+            new Color(200, 200, 200, 200),
+        }, 3);
+        assertEquals(new Color(0, 0, 0, 0).getRGB(), colors.getRGB(3));
+        assertEquals(new Color(100, 100, 100, 0).getRGB(), colors.getRGB(4));
+        assertEquals(new Color(200, 200, 200, 200).getRGB(), colors.getRGB(5));
+    }
 }
