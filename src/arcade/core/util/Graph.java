@@ -72,6 +72,7 @@ public final class Graph {
      *
      * @param node
      *            the node to add
+     * @return {@code true} if node exists in graph, {@code false} otherwise
      */
     public boolean contains(Node node) {
         return getAllNodes().contains(node);
@@ -82,11 +83,11 @@ public final class Graph {
      *
      * @param edge
      *            the edge to add
+     * @return {@code true} if edge exists in graph, {@code false} otherwise
      */
     public boolean contains(Edge edge) {
         return checkEdge(edge);
     }
-
 
     /**
      * Gets all edges in the graph.
@@ -413,6 +414,7 @@ public final class Graph {
      *
      * @param node
      *           the node to start from
+     * @return a bag of all downstream {@code Node} objects
      */
     private Bag getAllDownstream(Node node) {
         Bag out = getEdgesOut(node);
