@@ -93,4 +93,22 @@ public class ColorsTest {
         assertEquals(new Color(100, 100, 100, 0).getRGB(), colors.getRGB(4));
         assertEquals(new Color(200, 200, 200, 200).getRGB(), colors.getRGB(5));
     }
+
+    @Test
+    public void getRGB_NonlinearColorsCalledBetweenMinAndMax_returnsInterpolatedColor() {
+        Colors colors = new Colors(new Color[] {
+            new Color(0, 0, 0, 0),
+            new Color(100, 100, 100, 0),
+            new Color(200, 200, 200, 200),
+        }, new double[] { 0, 0.1, 1});
+
+        assertEquals(new Color(0, 0, 0, 0).getRGB(), colors.getRGB(0));
+
+        assertEquals(new Color(50, 50, 50, 0).getRGB(), colors.getRGB(0.05));
+        assertEquals(new Color(100, 100, 100, 0).getRGB(), colors.getRGB(0.1));
+        assertEquals(new Color(200, 200, 200, 125).getRGB(), colors.getRGB(0.55));
+
+        assertEquals(new Color(200, 200, 200, 200).getRGB(), colors.getRGB(1));
+    }
+
 }
