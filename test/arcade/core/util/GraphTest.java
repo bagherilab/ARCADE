@@ -3,8 +3,8 @@ package arcade.core.util;
 import java.util.HashSet;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import arcade.core.util.Graph.Edge;
-import arcade.core.util.Graph.Node;
+import static arcade.core.util.Graph.Edge;
+import static arcade.core.util.Graph.Node;
 
 public class GraphTest {
     @Test
