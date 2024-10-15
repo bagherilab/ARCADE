@@ -1,12 +1,10 @@
 package arcade.core.util;
 
 import java.util.HashSet;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
-
-import arcade.core.util.Graph.*;
-
+import arcade.core.util.Graph.Edge;
+import arcade.core.util.Graph.Node;
 
 public class GraphTest {
     @Test
@@ -56,7 +54,7 @@ public class GraphTest {
 
         assertTrue(graph.getAllEdges().isEmpty());
         assertTrue(graph.getAllNodes().isEmpty());
-    } 
+    }
 
     @Test
     public void getAllNodes_called_expectedSet() {
@@ -112,10 +110,10 @@ public class GraphTest {
         graph.addEdge(edge2);
         graph.removeEdge(edge2);
 
-        assertFalse(graph.checkEdge(edge2));
+        assertFalse(graph.contains(edge2));
     }
 
-    @Test  
+    @Test
     public void removeEdge_called_nodesRemoved() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
@@ -127,7 +125,7 @@ public class GraphTest {
 
         assertFalse(graph.contains(node1));
         assertFalse(graph.contains(node2));
-    }    
+    }
 
     @Test
     public void removeEdge_called_preservesFromNode() {
@@ -172,7 +170,7 @@ public class GraphTest {
         graph.addEdge(edge);
         graph.reverseEdge(edge);
 
-        assertTrue(graph.checkEdge(new Edge(node2, node1)));
+        assertTrue(graph.contains(new Edge(node2, node1)));
     }
 
     @Test
@@ -188,7 +186,7 @@ public class GraphTest {
         graph.addEdge(edge2);
         graph.reverseEdge(edge2);
 
-        assertTrue(graph.checkEdge(edge1));
+        assertTrue(graph.contains(edge1));
     }
 
     @Test
@@ -232,7 +230,7 @@ public class GraphTest {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2A = new Node(1, 1, 0);
-        Node node2B= new Node(1, 1, 0);
+        Node node2B = new Node(1, 1, 0);
         Node node3 = new Node(2, 2, 0);
 
         Edge edge1 = new Edge(node1, node2A);
@@ -493,8 +491,8 @@ public class GraphTest {
         graph.getSubgraph(subgraph, e -> ((Edge) e).from.getX() == 0);
 
         assertEquals(subgraph.getAllEdges().numObjs, 2);
-        assertTrue(subgraph.checkEdge(edge1));
-        assertTrue(subgraph.checkEdge(edge3));
+        assertTrue(subgraph.contains(edge1));
+        assertTrue(subgraph.contains(edge3));
     }
 
 }

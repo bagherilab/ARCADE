@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-
 import sim.util.Bag;
 
 /**
@@ -59,19 +58,35 @@ public final class Graph {
         nodeToInBag.clear();
     }
 
+    /**
+     * Gets all nodes in the graph.
+     *
+     * @return a set containing the nodes
+     */
     public Set<Node> getAllNodes() {
         return retrieveNodes();
     }
 
-    public boolean contains(Object o) {
-        if (o instanceof Node) {
-            return getAllNodes().contains((Node) o);
-        } else if (o instanceof Edge) {
-            return checkEdge((Edge) o);
-        } else {
-            return false;
-        }
+    /**
+     * Check to see if a graph contains a node.
+     *
+     * @param node
+     *            the node to add
+     */
+    public boolean contains(Node node) {
+        return getAllNodes().contains(node);
     }
+
+    /**
+     * Check to see if a graph contains an edge.
+     *
+     * @param edge
+     *            the edge to add
+     */
+    public boolean contains(Edge edge) {
+        return checkEdge(edge);
+    }
+
 
     /**
      * Gets all edges in the graph.
@@ -158,7 +173,7 @@ public final class Graph {
      *            the edge
      * @return {@code true} if edge exists, {@code false} otherwise
      */
-    public boolean checkEdge(Edge edge) {
+    private boolean checkEdge(Edge edge) {
         return allEdges.contains(edge);
     }
 
@@ -195,6 +210,11 @@ public final class Graph {
         }
     }
 
+    /**
+     * Retrieves all nodes in the graph.
+     *
+     * @return a set containing the nodes
+     */
     private Set<Node> retrieveNodes() {
         Set<Node> sOut = nodeToOutBag.keySet();
         Set<Node> sIn = nodeToInBag.keySet();
@@ -388,14 +408,20 @@ public final class Graph {
         }
     }
 
-    private Bag getAllDownstream(Node node){
+    /**
+     * Get all the downstream nodes from a given node.
+     *
+     * @param node
+     *           the node to start from
+     */
+    private Bag getAllDownstream(Node node) {
         Bag out = getEdgesOut(node);
-        if (out == null){
+        if (out == null) {
             return null;
         }
         Bag visited = new Bag();
         Queue<Node> queue = new LinkedList<>();
-        for (Object e:out){
+        for (Object e:out) {
             Edge edge = (Edge) e;
             queue.add((Node) edge.getTo());
         }
@@ -404,7 +430,7 @@ public final class Graph {
             Node active = queue.poll();
             if (!visited.contains(active)) {
                 visited.add(active);
-                if (getEdgesOut(active) == null){ continue; }
+                if (getEdgesOut(active) == null) { continue; }
                 for (Object nextOut : getEdgesOut(active)) {
                     Edge edge = (Edge) nextOut;
                     if (!visited.contains(edge)) {
@@ -416,23 +442,33 @@ public final class Graph {
         return visited;
     }
 
-    private Node breadthFirstSearch(Edge edge, Bag targetsBag){
+    /**
+     * Breadth first search for a subset of target node.
+     *
+     * @param edge
+     *           the edge to start from
+     * @param targetsBag
+     *          the bag of potential intersection nodes
+     *
+     * @return the target node or null if not found
+     */
+    private Node breadthFirstSearch(Edge edge, Bag targetsBag) {
         Bag out = getEdgesOut(edge.getTo());
-        if (out == null){
+        if (out == null) {
             return null;
         }
         Queue<Node> queue = new LinkedList<>();
-        for (Object obj:out){
+        for (Object obj:out) {
             Edge e = (Edge) obj;
             queue.add(e.getTo());
         }
         while (!queue.isEmpty()) {
             Node next = queue.poll();
-            if (targetsBag.contains(next)){
+            if (targetsBag.contains(next)) {
                 return next;
             }
-            if (getEdgesOut(next) == null){continue;}
-            for (Object obj: getEdgesOut(next)){
+            if (getEdgesOut(next) == null) { continue; }
+            for (Object obj: getEdgesOut(next)) {
                 Edge e = (Edge) obj;
                 queue.add(e.getTo());
             }
@@ -440,16 +476,23 @@ public final class Graph {
         return null;
     }
 
-    public Node findIntersection(Node node){
+    /**
+     * Find the intersection of two edges from a starting node.
+     *
+     * @param node
+     *            the node to start from
+     * @return the intersection node or null if no intersection
+     */
+    public Node findIntersection(Node node) {
         Bag out = getEdgesOut(node);
-        if (out.numObjs < 2){
+        if (out.numObjs < 2) {
             return null;
         }
-        Edge first_edge = (Edge) out.get(0);
-        Bag allDownstream = getAllDownstream(first_edge.getTo());
+        Edge firstEdge = (Edge) out.get(0);
+        Bag allDownstream = getAllDownstream(firstEdge.getTo());
 
-        Edge second_edge = (Edge) out.get(1);
-        Node intersection = breadthFirstSearch(second_edge, allDownstream);
+        Edge secondEdge = (Edge) out.get(1);
+        Node intersection = breadthFirstSearch(secondEdge, allDownstream);
         return intersection;
 
     }
@@ -766,12 +809,20 @@ public final class Graph {
          *         otherwise
          */
         public boolean equals(Object obj) {
-            System.out.println("equals");
             if (obj instanceof Edge) {
                 Edge edge = (Edge) obj;
                 return to.equals(edge.to) && from.equals(edge.from);
             }
             return false;
+        }
+
+        /**
+         * Specifies object hashing based on from and to coordinates.
+         *
+         * @return a hash based on coordinates
+         */
+        public final int hashCode() {
+            return this.from.hashCode() << 16 + this.to.hashCode() << 16;
         }
 
     }
