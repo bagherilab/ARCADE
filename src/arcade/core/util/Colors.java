@@ -13,35 +13,35 @@ import sim.util.gui.ColorMap;
 public class Colors implements ColorMap {
     /** Number of bins. */
     private static final int BINS = 256;
-    
+
     /** Color with no alpha. */
     private static final Color EMPTY = new Color(0, 0, 0, 0);
-    
+
     /** Color map. */
     private final Color[] colors;
-    
+
     /** Minimum value. */
     private final double min;
-    
+
     /** Maximum value. */
     private final double max;
-    
+
     /** Number of colors in the color map. */
     private final int len;
-    
+
     /** Default value. */
     private final double defaultValue;
-    
+
     /** Modulo on index, 0 if no modulo is applied. */
     private final int mod;
-    
+
     /**
      * Creates {@code Colors} table.
      *
      * @param colors the table of colors
      */
     public Colors(Color[] colors) { this(colors, 0); }
-    
+
     /**
      * Creates {@code Colors} table with modulo index.
      *
@@ -56,7 +56,7 @@ public class Colors implements ColorMap {
         this.defaultValue = -1;
         this.mod = mod;
     }
-    
+
     /**
      * Creates {@code Colors} between two values.
      *
@@ -68,7 +68,7 @@ public class Colors implements ColorMap {
     public Colors(Color minCol, Color maxCol, double minVal, double maxVal) {
         this(new Color[] { minCol, maxCol }, new double[] { minVal, maxVal });
     }
-    
+
     /**
      * Creates {@code Colors} between multiple values.
      *
@@ -83,19 +83,19 @@ public class Colors implements ColorMap {
         this.len = BINS;
         this.defaultValue = min - 1;
         this.mod = 0;
-        
+
         int sum = 0;
         for (int i = 0; i < n; i++) {
             int bin = (int) Math.round(BINS * (vals[i + 1] - vals[i]) / (max - min));
             interpColors(colors[i], colors[i + 1], sum, sum + bin);
             sum += bin;
         }
-        
+
         for (int i = Math.min(BINS, sum); i < BINS + 1; i++) {
             this.colors[i] = colors[n];
         }
     }
-    
+
     /**
      * Interpolates between two colors.
      *
@@ -111,7 +111,7 @@ public class Colors implements ColorMap {
         int b;
         int a;
         double delta;
-        
+
         // Create color array.
         int minR = minCol.getRed();
         int minG = minCol.getGreen();
@@ -121,7 +121,7 @@ public class Colors implements ColorMap {
         int maxG = maxCol.getGreen();
         int maxB = maxCol.getBlue();
         int maxA = maxCol.getAlpha();
-        
+
         // Increment color between bounds.
         for (int i = 0; i < n; i++) {
             delta = (double) i / n;
@@ -132,7 +132,7 @@ public class Colors implements ColorMap {
             colors[i + start] = new Color(r, g, b, a);
         }
     }
-    
+
     /**
      * Gets color map index for given number value.
      * <p>
@@ -147,7 +147,7 @@ public class Colors implements ColorMap {
         int index = (int) (len * (((mod == 0 ? level : level % mod) - min) / (max - min)));
         return index < 0 ? 0 : Math.min(index, len);
     }
-    
+
     /**
      * Gets the color corresponding to level.
      *
@@ -161,7 +161,7 @@ public class Colors implements ColorMap {
         }
         return colors[getIndex(level)];
     }
-    
+
     /**
      * Gets RGB corresponding to level.
      *
@@ -170,12 +170,12 @@ public class Colors implements ColorMap {
      */
     @Override
     public int getRGB(double level) {
-        if (level == defaultValue) {
+        if (level <= defaultValue) {
             return EMPTY.getRGB();
         }
         return colors[getIndex(level)].getRGB();
     }
-    
+
     /**
      * Gets the alpha corresponding to level.
      *
@@ -189,7 +189,7 @@ public class Colors implements ColorMap {
         }
         return colors[getIndex(level)].getAlpha();
     }
-    
+
     /**
      * Checks if the number value is between the minimum and maximum.
      *
@@ -198,7 +198,7 @@ public class Colors implements ColorMap {
      */
     @Override
     public boolean validLevel(double level) { return level >= min && level <= max; }
-    
+
     /**
      * Gets default value.
      *
