@@ -21,37 +21,34 @@ import arcade.patch.env.location.PatchLocationFactory;
 import arcade.patch.env.location.PatchLocationFactoryRect;
 import arcade.patch.env.location.PatchLocationRect;
 
-/**
- * Extension of {@link PatchSimulation} for rectangular geometry.
- */
-
+/** Extension of {@link PatchSimulation} for rectangular geometry. */
 public final class PatchSimulationRect extends PatchSimulation {
     /**
      * Rectangular simulation for a {@link Series} for given random seed.
      *
-     * @param seed  the random seed for random number generator
-     * @param series  the simulation series
+     * @param seed the random seed for random number generator
+     * @param series the simulation series
      */
     public PatchSimulationRect(long seed, Series series) {
         super(seed, series);
         PatchLocationRect.updateConfigs((PatchSeries) series);
     }
-    
+
     @Override
     public PatchLocationFactory makeLocationFactory() {
         return new PatchLocationFactoryRect();
     }
-    
+
     @Override
     public PatchCellFactory makeCellFactory() {
         return new PatchCellFactory();
     }
-    
+
     @Override
     public PatchLatticeFactory makeLatticeFactory() {
         return new PatchLatticeFactoryRect();
     }
-    
+
     @Override
     public Action makeAction(String actionClass, MiniBox parameters) {
         switch (actionClass) {
@@ -65,7 +62,7 @@ public final class PatchSimulationRect extends PatchSimulation {
                 return null;
         }
     }
-    
+
     @Override
     public Component makeComponent(String componentClass, MiniBox parameters) {
         switch (componentClass) {

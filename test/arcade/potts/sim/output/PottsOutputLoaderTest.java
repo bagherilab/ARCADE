@@ -1,6 +1,6 @@
 package arcade.potts.sim.output;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputDeserializerTest;
