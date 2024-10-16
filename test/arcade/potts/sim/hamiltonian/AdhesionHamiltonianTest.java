@@ -2,12 +2,12 @@ package arcade.potts.sim.hamiltonian;
 
 import java.util.EnumMap;
 import java.util.HashMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;

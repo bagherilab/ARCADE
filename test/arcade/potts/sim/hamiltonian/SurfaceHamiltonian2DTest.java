@@ -1,9 +1,9 @@
 package arcade.potts.sim.hamiltonian;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.potts.util.PottsEnums.Region;
 

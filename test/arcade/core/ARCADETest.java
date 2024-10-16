@@ -1,14 +1,13 @@
 package arcade.core;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.xml.sax.SAXException;
 import arcade.core.sim.Series;
 import arcade.core.sim.input.InputBuilder;
@@ -16,31 +15,34 @@ import arcade.core.sim.output.OutputLoader;
 import arcade.core.sim.output.OutputSaver;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 
 public class ARCADETest {
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-    
     private static final String XML = randomString();
     
     private static final String PATH = randomString();
     
     private static final String IMPLEMENTATION = randomString();
     
-    @BeforeClass
+    @BeforeAll
     public static void setFields() { ARCADE.logger = mock(Logger.class); }
     
     class MockARCADE extends ARCADE {
         ArrayList<Series> seriesList;
         
+        String resource = "";
+        
         MockARCADE() { }
+        
+        MockARCADE(Path path) {
+            resource = path.toAbsolutePath().toString();
+        }
         
         @Override
         protected String getResource(String s) {
-            return folder.getRoot().getAbsolutePath() + "/" + s;
+            return resource + "/" + s;
         }
         
         @Override
@@ -69,25 +71,29 @@ public class ARCADETest {
         protected OutputSaver getSaver(Series series) { return mock(OutputSaver.class); }
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void main_noArgs_throwsException() throws Exception {
-        String[] args = new String[] { };
-        ARCADE.main(args);
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void main_invalidType_throwsException() throws Exception {
-        String[] args = new String[] { "*" };
-        ARCADE.main(args);
+    @Test
+    public void main_noArgs_throwsException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            String[] args = new String[] { };
+            ARCADE.main(args);
+        });
     }
     
     @Test
-    public void loadCommands_called_loadsBox() throws IOException, SAXException {
-        File file = folder.newFile("command." + IMPLEMENTATION + ".xml");
-        FileUtils.writeStringToFile(file,
-                "<commands><switch id=\"MOCK\" /></commands>", "UTF-8");
+    public void main_invalidType_throwsException() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            String[] args = new String[] { "*" };
+            ARCADE.main(args);
+        });
+    }
+    
+    @Test
+    public void loadCommands_called_loadsBox(@TempDir Path path) throws IOException, SAXException {
+        Path file = Files.createFile(path.resolve("command." + IMPLEMENTATION + ".xml"));
+        Files.writeString(file,
+                "<commands><switch id=\"MOCK\" /></commands>");
         
-        ARCADE arcade = new MockARCADE();
+        ARCADE arcade = new MockARCADE(path);
         Box commands = arcade.loadCommands(IMPLEMENTATION);
         
         assertEquals("POSITION", commands.getTag("ARCADE"));
@@ -95,12 +101,12 @@ public class ARCADETest {
     }
     
     @Test
-    public void loadParameters_called_loadsBox() throws IOException, SAXException {
-        File file = folder.newFile("parameter." + IMPLEMENTATION + ".xml");
-        FileUtils.writeStringToFile(file,
-                "<parameter><mockparameter id=\"MOCK\" value=\"MOCK_VALUE\" /></parameter>", "UTF-8");
+    public void loadParameters_called_loadsBox(@TempDir Path path) throws IOException, SAXException {
+        Path file = Files.createFile(path.resolve("parameter." + IMPLEMENTATION + ".xml"));
+        Files.writeString(file,
+                "<parameter><mockparameter id=\"MOCK\" value=\"MOCK_VALUE\" /></parameter>");
         
-        ARCADE arcade = new MockARCADE();
+        ARCADE arcade = new MockARCADE(path);
         Box parameters = arcade.loadParameters(IMPLEMENTATION);
         
         assertEquals("DEFAULT", parameters.getTag("START_SEED"));
@@ -121,13 +127,15 @@ public class ARCADETest {
         assertEquals(args[0], settings.get("POSITION_ARG"));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void parseArguments_invalidArguments_parsesArguments() {
-        Box commands = new Box();
-        String[] args = new String[] { };
-        commands.addTag("POSITION_ARG", "POSITION");
-        ARCADE arcade = new MockARCADE();
-        arcade.parseArguments(args, commands);
+        assertThrows(IllegalArgumentException.class, () -> {
+            Box commands = new Box();
+            String[] args = new String[] { };
+            commands.addTag("POSITION_ARG", "POSITION");
+            ARCADE arcade = new MockARCADE();
+            arcade.parseArguments(args, commands);
+        });
     }
     
     @Test

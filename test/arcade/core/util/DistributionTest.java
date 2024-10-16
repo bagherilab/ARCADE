@@ -1,8 +1,8 @@
 package arcade.core.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
 
 public class DistributionTest {

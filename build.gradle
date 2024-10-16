@@ -30,8 +30,13 @@ dependencies {
     runtimeOnly group: "javax.media", name: "jmf", version: "2.1.1e"
     testImplementation "org.mockito:mockito-core:5.14.+"
     testImplementation "org.mockito:mockito-inline:5.2.+"
-    testImplementation "junit:junit:4.12"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.11.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.11.2"
     testImplementation "commons-io:commons-io:2.8.0"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 javadoc {

@@ -1,9 +1,9 @@
 package arcade.potts.env.location;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import sim.util.Double3D;
 import sim.util.Int3D;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlaneTest {
     static final double EPSILON = 0.0001;

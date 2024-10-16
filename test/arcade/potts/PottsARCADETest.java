@@ -1,16 +1,16 @@
 package arcade.potts;
 
 import java.io.File;
-import org.apache.commons.io.FileUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import arcade.core.ARCADE;
 import arcade.core.sim.Series;
 import arcade.potts.sim.input.PottsInputBuilder;
 import arcade.potts.sim.output.PottsOutputLoader;
 import arcade.potts.sim.output.PottsOutputSaver;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class PottsARCADETest {
@@ -20,49 +20,46 @@ public class PottsARCADETest {
                 + "</series></set>";
     }
     
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-    
     @Test
-    public void main_noVis_savesFiles() throws Exception {
+    public void main_noVis_savesFiles(@TempDir Path path) throws Exception {
         String name = "main_noVis_savesFiles";
-        File setupFile = folder.newFile("setup.xml");
-        FileUtils.writeStringToFile(setupFile, makeSetup(name), "UTF-8");
+        Path setupFile = Files.createFile(path.resolve("setup.xml"));
+        Files.writeString(setupFile, makeSetup(name));
         
-        String[] args = new String[] { "potts", setupFile.getPath(), folder.getRoot().getAbsolutePath() };
+        String[] args = new String[] { "potts", setupFile.toString(), path.toAbsolutePath().toString() };
         ARCADE.main(args);
         
-        File mainOutput = new File(folder.getRoot() + "/" + name + ".json");
+        File mainOutput = new File(path.toAbsolutePath() + "/" + name + ".json");
         assertTrue(mainOutput.exists());
         
         String[] timepoints = new String[] { "0000_000000", "0000_000001" };
         for (String tp : timepoints) {
-            File cellOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".CELLS.json");
+            File cellOutput = new File(path.toAbsolutePath() + "/" + name + "_" + tp + ".CELLS.json");
             assertTrue(cellOutput.exists());
-            File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".LOCATIONS.json");
+            File locationOutput = new File(path.toAbsolutePath() + "/" + name + "_" + tp + ".LOCATIONS.json");
             assertTrue(locationOutput.exists());
         }
     }
     
     @Test
-    public void main_withVis_savesNothing() throws Exception {
+    public void main_withVis_savesNothing(@TempDir Path path) throws Exception {
         String name = "main_withVis_savesNothing";
-        File setupFile = folder.newFile("setup.xml");
-        FileUtils.writeStringToFile(setupFile, makeSetup(name), "UTF-8");
+        Path setupFile = Files.createFile(path.resolve("setup.xml"));
+        Files.writeString(setupFile, makeSetup(name));
         
         System.setProperty("java.awt.headless", "true");
         
-        String[] args = new String[] { "potts", setupFile.getPath(), folder.getRoot().getAbsolutePath(), "--vis" };
+        String[] args = new String[] { "potts", setupFile.toString(), path.toAbsolutePath().toString(), "--vis" };
         ARCADE.main(args);
         
-        File mainOutput = new File(folder.getRoot() + "/" + name + ".json");
+        File mainOutput = new File(path.toAbsolutePath() + "/" + name + ".json");
         assertFalse(mainOutput.exists());
         
         String[] timepoints = new String[] { "0000_000000", "0000_000001" };
         for (String tp : timepoints) {
-            File cellOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".CELLS.json");
+            File cellOutput = new File(path.toAbsolutePath() + "/" + name + "_" + tp + ".CELLS.json");
             assertFalse(cellOutput.exists());
-            File locationOutput = new File(folder.getRoot() + "/" + name + "_" + tp + ".LOCATIONS.json");
+            File locationOutput = new File(path.toAbsolutePath() + "/" + name + "_" + tp + ".LOCATIONS.json");
             assertFalse(locationOutput.exists());
         }
     }

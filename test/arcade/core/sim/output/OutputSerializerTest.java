@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -17,7 +17,7 @@ import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.output.OutputSerializer.*;
@@ -63,9 +63,9 @@ public class OutputSerializerTest {
         assertSame(gson.getAdapter(locationContainerList).getClass(), TreeTypeAdapter.class);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void constructor_called_throwsException() {
-        OutputSerializer serializer = new OutputSerializer();
+        assertThrows(UnsupportedOperationException.class, OutputSerializer::new);
     }
     
     @Test

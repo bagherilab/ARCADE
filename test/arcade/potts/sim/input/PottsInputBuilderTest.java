@@ -3,13 +3,11 @@ package arcade.potts.sim.input;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.IntStream;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.Attributes;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
@@ -23,9 +21,6 @@ public class PottsInputBuilderTest {
     private static final String LIST_NAME = randomString();
     
     private static final String TAG_NAME = randomString();
-    
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
     
     private static Attributes makeAttributesMock(int n) {
         Attributes attributes = mock(Attributes.class);

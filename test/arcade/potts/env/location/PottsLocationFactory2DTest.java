@@ -2,9 +2,9 @@ package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;

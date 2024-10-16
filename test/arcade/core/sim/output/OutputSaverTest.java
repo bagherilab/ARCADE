@@ -1,29 +1,25 @@
 package arcade.core.sim.output;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import org.apache.commons.io.FileUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import com.google.gson.Gson;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Simulation.DEFAULT_CELL_TYPE;
 import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
 public class OutputSaverTest {
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-    
     static class OutputSaverMock extends OutputSaver {
         OutputSaverMock(Series series) { super(series); }
         
@@ -216,31 +212,31 @@ public class OutputSaverTest {
     }
     
     @Test
-    public void write_validPath_savesFile() throws IOException {
+    public void write_validPath_savesFile(@TempDir Path path) throws IOException {
         String contents = randomString();
-        File file = folder.newFile("write_validPath_savesFile.json");
-        String filepath = file.getAbsolutePath();
+        Path file = Files.createFile(path.resolve("write_validPath_savesFile.json"));
+        String filepath = file.toAbsolutePath().toString();
         
         Series series = mock(Series.class);
         OutputSaver saver = new OutputSaverMock(series);
         saver.write(filepath, contents);
         
-        String string = FileUtils.readFileToString(file, "UTF-8");
+        String string = Files.readString(file);
         assertEquals(contents, string);
     }
     
     @Test
-    public void write_invalidPath_killsSeries() throws IOException {
+    public void write_invalidPath_killsSeries(@TempDir Path path) throws IOException {
         String contents = randomString();
-        File file = folder.newFile("write_invalidPath_killsSeries.json");
-        String filepath = file.getParent();
+        Path file = Files.createFile(path.resolve("write_invalidPath_killsSeries.json"));
+        String filepath = file.getParent().toString();
         
         Series series = mock(Series.class);
         series.isSkipped = false;
         OutputSaver saver = new OutputSaverMock(series);
         saver.write(filepath + "/", contents);
         
-        String string = FileUtils.readFileToString(file, "UTF-8");
+        String string = Files.readString(file);
         assertEquals("", string);
         assertTrue(saver.series.isSkipped);
     }

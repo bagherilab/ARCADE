@@ -2,9 +2,9 @@ package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;
 import static arcade.potts.util.PottsEnums.Direction;
@@ -48,7 +48,7 @@ public class Location2DTest {
             { 2809, 237 },
     };
     
-    @BeforeClass
+    @BeforeAll
     public static void setupLists() {
         voxelListForDiameters = new ArrayList<>();
         voxelListForDiameters.add(new Voxel(5, 3, 0));

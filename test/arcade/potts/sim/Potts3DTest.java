@@ -1,8 +1,8 @@
 package arcade.potts.sim;
 
 import java.util.HashSet;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian3D;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
 import arcade.potts.sim.hamiltonian.HeightHamiltonian;
@@ -11,7 +11,7 @@ import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
 import arcade.potts.sim.hamiltonian.SubstrateHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian3D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static arcade.potts.sim.PottsTest.*;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Term;
@@ -40,7 +40,7 @@ public class Potts3DTest {
     
     enum Axis { X_AXIS, Y_AXIS, Z_AXIS }
     
-    @BeforeClass
+    @BeforeAll
     public static void setupGrid() {
         PottsSeries series = makeSeries();
         potts = new Potts3D(series);
@@ -1776,7 +1776,7 @@ public class Potts3DTest {
     
     private static final int[][] COMBOS_FIVE_NEIGHBORS_EIGHT_LINKS = new int[1][6];
     
-    @BeforeClass
+    @BeforeAll
     public static void createFiveNeighborCombos() {
         populate(COMBOS_FIVE_NEIGHBORS_ONE_LINK, 8, 1);
         populate(COMBOS_FIVE_NEIGHBORS_TWO_LINKS, 8, 2);

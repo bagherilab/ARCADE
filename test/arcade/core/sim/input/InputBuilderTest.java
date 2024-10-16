@@ -1,19 +1,18 @@
 package arcade.core.sim.input;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.stream.IntStream;
-import org.apache.commons.io.FileUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import arcade.core.sim.Series;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 
@@ -21,9 +20,6 @@ public class InputBuilderTest {
     private static final String ATT_QNAME = randomString();
     
     private static final String ATT_VALUE = randomString();
-    
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
     
     private static Attributes makeAttributesMock(int n) {
         Attributes attributes = mock(Attributes.class);
@@ -58,32 +54,34 @@ public class InputBuilderTest {
     }
     
     @Test
-    public void build_validInput_createsEmpty() throws IOException, SAXException {
-        File file = folder.newFile("build_validInput_createsEmpty.xml");
-        FileUtils.writeStringToFile(file, "<set />", "UTF-8");
+    public void build_validInput_createsEmpty(@TempDir Path path) throws IOException, SAXException {
+        Path file = Files.createFile(path.resolve("build.xml"));
+        Files.writeString(file, "<set />");
         
         InputBuilder builder = new InputBuilderMock();
-        ArrayList<Series> series = builder.build(file.getAbsolutePath());
+        ArrayList<Series> series = builder.build(file.toAbsolutePath().toString());
         
         assertEquals(0, series.size());
     }
     
     @Test
-    public void build_validInput_createsList() throws IOException, SAXException {
-        File file = folder.newFile("build_validInput_createsList.xml");
-        FileUtils.writeStringToFile(file, "<set />", "UTF-8");
+    public void build_validInput_createsList(@TempDir Path path) throws IOException, SAXException {
+        Path file = Files.createFile(path.resolve("build.xml"));
+        Files.writeString(file, "<set />");
         
         InputBuilder builder = new InputBuilderMock();
-        builder.build(file.getAbsolutePath());
+        builder.build(file.toAbsolutePath().toString());
         
         assertNotNull(builder.series);
     }
     
-    @Test(expected = SAXException.class)
-    public void build_invalid_throwsException() throws IOException, SAXException {
-        File file = folder.newFile("build_invalid_throwsException.xml");
-        InputBuilder builder = new InputBuilderMock();
-        builder.build(file.getAbsolutePath());
+    @Test
+    public void build_invalid_throwsException(@TempDir Path path) {
+        assertThrows(SAXException.class, () -> {
+            Path file = Files.createFile(path.resolve("build.xml"));
+            InputBuilder builder = new InputBuilderMock();
+            builder.build(file.toAbsolutePath().toString());
+        });
     }
     
     @Test
