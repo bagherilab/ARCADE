@@ -769,7 +769,7 @@ public class SeriesTest {
         series.visCons = spy(series.visCons);
         
         Simulation simstate = mock(Simulation.class);
-        GUIState guistate = spy(mock(GUIState.class));
+        GUIState guistate = mock(GUIState.class);
         
         doReturn(null).when(guistate).createController();
         doReturn(simstate).when(series.simCons).newInstance(any(int.class), eq(series));
@@ -792,7 +792,7 @@ public class SeriesTest {
         series.visCons = spy(series.visCons);
         
         Simulation simstate = mock(Simulation.class);
-        GUIState guistate = spy(mock(GUIState.class));
+        GUIState guistate = mock(GUIState.class);
         
         doReturn(null).when(guistate).createController();
         doReturn(simstate).when(series.simCons).newInstance(any(int.class), eq(series));
@@ -815,7 +815,7 @@ public class SeriesTest {
         series.visCons = spy(series.visCons);
         
         Simulation simstate = mock(Simulation.class);
-        GUIState guistate = spy(mock(GUIState.class));
+        GUIState guistate = mock(GUIState.class);
         
         doReturn(null).when(guistate).createController();
         doReturn(simstate).when(series.simCons).newInstance(any(int.class), eq(series));
