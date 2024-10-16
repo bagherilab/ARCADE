@@ -1,7 +1,7 @@
 package arcade.potts.agent.module;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.MiniBox;
@@ -9,7 +9,7 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.location.PottsLocations;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.agent.module.PottsModule.PoissonFactory;
@@ -35,7 +35,7 @@ public class PottsModuleProliferationSimpleTest {
     
     static Potts pottsMock;
     
-    @BeforeClass
+    @BeforeAll
     public static void setupMocks() {
         random = mock(MersenneTwisterFast.class);
         doReturn(R).when(random).nextDouble();

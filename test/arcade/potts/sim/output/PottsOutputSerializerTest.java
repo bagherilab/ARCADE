@@ -3,7 +3,7 @@ package arcade.potts.sim.output;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.EnumMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -19,7 +19,7 @@ import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.location.PottsLocationContainer;
 import arcade.potts.env.location.Voxel;
 import arcade.potts.sim.PottsSeries;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.sim.output.PottsOutputSerializer.*;
@@ -63,9 +63,9 @@ public class PottsOutputSerializerTest {
         assertSame(gson.getAdapter(voxel).getClass(), TreeTypeAdapter.class);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void constructor_called_throwsException() {
-        PottsOutputSerializer serializer = new PottsOutputSerializer();
+        assertThrows(UnsupportedOperationException.class, PottsOutputSerializer::new);
     }
     
     @Test

@@ -2,16 +2,16 @@ package arcade.patch.util;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.patch.util.PatchEnums.Flag;
 
 public class PatchEnumsTest {
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void constructor_called_throwsException() {
-        PatchEnums enums = new PatchEnums();
+        assertThrows(UnsupportedOperationException.class, PatchEnums::new);
     }
     
     @Test

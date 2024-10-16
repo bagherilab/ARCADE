@@ -2,13 +2,13 @@ package arcade.patch.agent.cell;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import sim.util.distribution.Normal;
 import sim.util.distribution.Uniform;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
 import arcade.patch.sim.PatchSeries;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 

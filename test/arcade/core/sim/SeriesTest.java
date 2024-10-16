@@ -3,8 +3,8 @@ package arcade.core.sim;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import sim.display.GUIState;
 import sim.engine.Schedule;
 import sim.engine.SimState;
@@ -18,7 +18,7 @@ import arcade.core.env.location.LocationContainer;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import arcade.core.vis.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.SEED_OFFSET;
@@ -60,7 +60,7 @@ public class SeriesTest {
     
     private static final HashMap<String, ArrayList<Box>> SETUP_LISTS_MOCK = mock(HashMap.class);
     
-    @BeforeClass
+    @BeforeAll
     public static void setupParameters() {
         // DEFAULTS
         PARAMETERS.addTag("START_SEED", "DEFAULT");

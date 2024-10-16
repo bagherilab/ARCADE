@@ -4,8 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
@@ -22,7 +22,7 @@ import arcade.potts.env.location.PottsLocation;
 import arcade.potts.env.location.PottsLocationContainer;
 import arcade.potts.env.location.PottsLocationFactory;
 import arcade.potts.env.location.Voxel;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Series.SEED_OFFSET;
@@ -66,7 +66,7 @@ public class PottsSimulationTest {
         return series;
     }
     
-    @BeforeClass
+    @BeforeAll
     public static void setupSeries() {
         // Zero populations.
         seriesZeroPop = createSeries(new int[0], new String[0]);

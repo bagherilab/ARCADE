@@ -1,14 +1,14 @@
 package arcade.potts.sim;
 
 import java.util.HashSet;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian2D;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
 import arcade.potts.sim.hamiltonian.PersistenceHamiltonian;
 import arcade.potts.sim.hamiltonian.SurfaceHamiltonian2D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static arcade.potts.sim.PottsTest.*;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.Term;
@@ -29,7 +29,7 @@ public class Potts2DTest {
             { 2449, 15.706243 }, { 2617, 16.242202 }, { 2809, 16.834856 },
     };
     
-    @BeforeClass
+    @BeforeAll
     public static void setupGrid() {
         PottsSeries series = makeSeries();
         potts = new Potts2D(series);

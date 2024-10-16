@@ -1,9 +1,9 @@
 package arcade.potts.env.grid;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import sim.util.Bag;
 import arcade.core.agent.cell.Cell;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class PottsGridTest {

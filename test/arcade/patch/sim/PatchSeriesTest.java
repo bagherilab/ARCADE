@@ -3,12 +3,12 @@ package arcade.patch.sim;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import arcade.patch.vis.PatchVisualization;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
@@ -65,7 +65,7 @@ public class PatchSeriesTest {
     
     private static final MiniBox POPULATION = new MiniBox();
     
-    @BeforeClass
+    @BeforeAll
     public static void setupParameters() {
         // DEFAULTS
         PARAMETERS.addTag("DS", "DEFAULT");

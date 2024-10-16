@@ -1,9 +1,9 @@
 package arcade.core.sim.input;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.input.InputParser.*;
 
@@ -231,14 +231,16 @@ public class InputParserTest {
         assertTrue(parsed.compare(new MiniBox()));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void parse_withPositionNoArgs_throwsException() {
-        Box box = new Box();
-        box.addTag(COMMAND_ID_1, "POSITION");
-        
-        InputParser parser = new InputParser(box);
-        MiniBox parsed = parser.parse(new String[] { });
-        assertTrue(parsed.compare(new MiniBox()));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Box box = new Box();
+            box.addTag(COMMAND_ID_1, "POSITION");
+    
+            InputParser parser = new InputParser(box);
+            MiniBox parsed = parser.parse(new String[] { });
+            assertTrue(parsed.compare(new MiniBox()));
+        });
     }
     
     @Test
