@@ -1,13 +1,12 @@
 package arcade.core.sim.output;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import org.apache.commons.io.FileUtils;
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.io.TempDir;
 import com.google.gson.Gson;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
@@ -18,9 +17,6 @@ import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.Simulation.*;
 
 public class OutputLoaderTest {
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
-    
     static class OutputLoaderMock extends OutputLoader {
         OutputLoaderMock(Series series) { super(series); }
         
@@ -37,11 +33,12 @@ public class OutputLoaderTest {
     }
     
     @Test
-    public void equip_noCellsNoLocations_loadsNone() {
+    public void equip_noCellsNoLocations_loadsNone(@TempDir Path path) {
         Series series = mock(Series.class);
         Simulation sim = mock(Simulation.class);
         
-        String prefix = folder.getRoot().getAbsolutePath() + "/equip_noCellsNoLocations_loadsNone";
+        String prefix = path.toAbsolutePath() + "/equip";
+        
         OutputLoader loader = new OutputLoaderMock(series);
         loader.prefix = prefix;
         loader.loadCells = false;
@@ -53,12 +50,12 @@ public class OutputLoaderTest {
     }
     
     @Test
-    public void equip_loadCellsNoLocations_loadsCells() throws IOException {
+    public void equip_loadCellsNoLocations_loadsCells(@TempDir Path path) throws IOException {
         Series series = mock(Series.class);
         Simulation sim = mock(Simulation.class);
         
-        folder.newFile("equip_loadCellsNoLocations_loadsCells.CELLS.json");
-        String prefix = folder.getRoot().getAbsolutePath() + "/equip_loadCellsNoLocations_loadsCells";
+        Files.createFile(path.resolve("equip.CELLS.json"));
+        String prefix = path.toAbsolutePath() + "/equip";
         OutputLoader loader = new OutputLoaderMock(series);
         loader.prefix = prefix;
         loader.loadCells = true;
@@ -70,12 +67,12 @@ public class OutputLoaderTest {
     }
     
     @Test
-    public void equip_noCellsLoadLocations_loadsLocations() throws IOException {
+    public void equip_noCellsLoadLocations_loadsLocations(@TempDir Path path) throws IOException {
         Series series = mock(Series.class);
         Simulation sim = mock(Simulation.class);
         
-        folder.newFile("equip_noCellsLoadLocations_loadsLocations.LOCATIONS.json");
-        String prefix = folder.getRoot().getAbsolutePath() + "/equip_noCellsLoadLocations_loadsLocations";
+        Files.createFile(path.resolve("equip.LOCATIONS.json"));
+        String prefix = path.toAbsolutePath() + "/equip";
         OutputLoader loader = new OutputLoaderMock(series);
         loader.prefix = prefix;
         loader.loadCells = false;
@@ -87,13 +84,13 @@ public class OutputLoaderTest {
     }
     
     @Test
-    public void equip_loadCellsLoadLocations_loadsBoth() throws IOException {
+    public void equip_loadCellsLoadLocations_loadsBoth(@TempDir Path path) throws IOException {
         Series series = mock(Series.class);
         Simulation sim = mock(Simulation.class);
         
-        folder.newFile("equip_loadCellsLoadLocations_loadsBoth.CELLS.json");
-        folder.newFile("equip_loadCellsLoadLocations_loadsBoth.LOCATIONS.json");
-        String prefix = folder.getRoot().getAbsolutePath() + "/equip_loadCellsLoadLocations_loadsBoth";
+        Files.createFile(path.resolve("equip.CELLS.json"));
+        Files.createFile(path.resolve("equip.LOCATIONS.json"));
+        String prefix = path.toAbsolutePath() + "/equip";
         OutputLoader loader = new OutputLoaderMock(series);
         loader.prefix = prefix;
         loader.loadCells = true;
@@ -105,17 +102,17 @@ public class OutputLoaderTest {
     }
     
     @Test
-    public void equip_loadBothWithSeed_loadsSeed() throws IOException {
+    public void equip_loadBothWithSeed_loadsSeed(@TempDir Path path) throws IOException {
         Series series = mock(Series.class);
         Simulation sim = mock(Simulation.class);
         
         int seed = randomSeed();
         doReturn(seed).when(sim).getSeed();
         
-        folder.newFile(String.format("equip_loadBothWithSeed_loadsSeed_%04d.CELLS.json", seed));
-        folder.newFile(String.format("equip_loadBothWithSeed_loadsSeed_%04d.LOCATIONS.json", seed));
+        Files.createFile(path.resolve(String.format("equip_%04d.CELLS.json", seed)));
+        Files.createFile(path.resolve(String.format("equip_%04d.LOCATIONS.json", seed)));
         
-        String prefix = folder.getRoot().getAbsolutePath() + "/equip_loadBothWithSeed_loadsSeed_[#]";
+        String prefix = path.toAbsolutePath() + "/equip_[#]";
         OutputLoader loader = new OutputLoaderMock(series);
         loader.prefix = prefix;
         loader.loadCells = true;
@@ -169,11 +166,11 @@ public class OutputLoaderTest {
     }
     
     @Test
-    public void read_validPath_loadsFile() throws IOException {
+    public void read_validPath_loadsFile(@TempDir Path path) throws IOException {
         String contents = randomString() + "\n" + randomString();
-        File file = folder.newFile("read_validPath_loadsFile.json");
-        String filepath = file.getAbsolutePath();
-        FileUtils.writeStringToFile(file, contents, "UTF-8");
+        Path file = Files.createFile(path.resolve("valid.json"));
+        String filepath = file.toAbsolutePath().toString();
+        Files.writeString(file, contents);
         
         Series series = mock(Series.class);
         OutputLoader loader = new OutputLoaderMock(series);
@@ -186,9 +183,9 @@ public class OutputLoaderTest {
     }
     
     @Test
-    public void read_invalidPath_returnsNUll() throws IOException {
-        File file = folder.newFile("read_validPath_loadsFile.json");
-        String filepath = file.getAbsolutePath();
+    public void read_invalidPath_returnsNull(@TempDir Path path) throws IOException {
+        Path file = Files.createFile(path.resolve("valid.json"));
+        String filepath = file.toAbsolutePath().toString();
         
         Series series = mock(Series.class);
         OutputLoader loader = new OutputLoaderMock(series);
