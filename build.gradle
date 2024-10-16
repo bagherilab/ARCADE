@@ -28,8 +28,8 @@ dependencies {
     implementation "com.formdev:flatlaf:0.36"
     implementation "com.google.code.gson:gson:2.8.6"
     runtimeOnly group: "javax.media", name: "jmf", version: "2.1.1e"
-    testImplementation "org.mockito:mockito-core:2.23.+"
-    testImplementation "org.mockito:mockito-inline:2.23.+"
+    testImplementation "org.mockito:mockito-core:5.14.+"
+    testImplementation "org.mockito:mockito-inline:5.2.+"
     testImplementation "junit:junit:4.12"
     testImplementation "commons-io:commons-io:2.8.0"
 }
