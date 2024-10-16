@@ -8,33 +8,32 @@ import arcade.potts.sim.hamiltonian.SurfaceHamiltonian2D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 import static arcade.potts.util.PottsEnums.Term;
 
-/**
- * Extension of {@link Potts} for 2D.
- */
-
+/** Extension of {@link Potts} for 2D. */
 public final class Potts2D extends Potts {
     /** Number of neighbors. */
     public static final int NUMBER_NEIGHBORS = 4;
-    
+
     /** List of x direction movements (N, E, S, W). */
-    public static final int[] MOVES_X = { 0, 1, 0, -1 };
-    
+    public static final int[] MOVES_X = {0, 1, 0, -1};
+
     /** List of y direction movements (N, E, S, W). */
-    public static final int[] MOVES_Y = { -1, 0, 1, 0 };
-    
+    public static final int[] MOVES_Y = {-1, 0, 1, 0};
+
     /** List of x direction corner movements (NE, SE, SW, NW). */
-    private static final int[] CORNER_X = { 1, 1, -1, -1 };
-    
+    private static final int[] CORNER_X = {1, 1, -1, -1};
+
     /** List of y direction corner movements (NE, SE, SW, NW). */
-    private static final int[] CORNER_Y = { -1, 1, 1, -1 };
-    
+    private static final int[] CORNER_Y = {-1, 1, 1, -1};
+
     /**
      * Creates a cellular {@code Potts} model in 2D.
      *
-     * @param series  the simulation series
+     * @param series the simulation series
      */
-    public Potts2D(PottsSeries series) { super(series); }
-    
+    public Potts2D(PottsSeries series) {
+        super(series);
+    }
+
     @Override
     Hamiltonian getHamiltonian(Term term, PottsSeries series) {
         switch (term) {
@@ -50,7 +49,7 @@ public final class Potts2D extends Potts {
                 return null;
         }
     }
-    
+
     @Override
     boolean[][][] getNeighborhood(int id, int x, int y, int z) {
         boolean[][] array = new boolean[3][3];
@@ -59,21 +58,22 @@ public final class Potts2D extends Potts {
                 array[i][j] = ids[0][i + x - 1][j + y - 1] == id;
             }
         }
-        return new boolean[][][] { array };
+        return new boolean[][][] {array};
     }
-    
+
     @Override
     boolean[][][] getNeighborhood(int id, int region, int x, int y, int z) {
         boolean[][] array = new boolean[3][3];
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                array[i][j] = ids[0][i + x - 1][j + y - 1] == id
-                        && regions[0][i + x - 1][j + y - 1] == region;
+                array[i][j] =
+                        ids[0][i + x - 1][j + y - 1] == id
+                                && regions[0][i + x - 1][j + y - 1] == region;
             }
         }
-        return new boolean[][][] { array };
+        return new boolean[][][] {array};
     }
-    
+
     @Override
     boolean getConnectivity(boolean[][][] array, boolean zero) {
         boolean[][] subarray = array[0];
@@ -83,7 +83,7 @@ public final class Potts2D extends Potts {
                 links++;
             }
         }
-        
+
         switch (links) {
             case 1:
                 return true;
@@ -97,12 +97,12 @@ public final class Potts2D extends Potts {
                 return false;
         }
     }
-    
+
     /**
      * Determines simple connectivity for a position with two neighbors.
      *
-     * @param subarray  the local neighborhood array
-     * @return  {@code true} if simply connected, {@code false} otherwise
+     * @param subarray the local neighborhood array
+     * @return {@code true} if simply connected, {@code false} otherwise
      */
     private boolean getConnectivityTwoNeighbors(boolean[][] subarray) {
         if (subarray[1][2] && subarray[1][0]) {
@@ -115,8 +115,9 @@ public final class Potts2D extends Potts {
             // Check for corners
             for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
                 boolean check1 = subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]];
-                boolean check2 = subarray[1 + MOVES_X[(i + 1) % NUMBER_NEIGHBORS]]
-                        [1 + MOVES_Y[(i + 1) % NUMBER_NEIGHBORS]];
+                boolean check2 =
+                        subarray[1 + MOVES_X[(i + 1) % NUMBER_NEIGHBORS]][
+                                1 + MOVES_Y[(i + 1) % NUMBER_NEIGHBORS]];
                 boolean check3 = subarray[1 + CORNER_X[i]][1 + CORNER_Y[i]];
                 if (check1 && check2 && check3) {
                     return true;
@@ -125,20 +126,22 @@ public final class Potts2D extends Potts {
             return false;
         }
     }
-    
+
     /**
      * Determines simple connectivity for a position with three neighbors.
      *
-     * @param subarray  the local neighborhood array
-     * @return  {@code true} if simply connected, {@code false} otherwise
+     * @param subarray the local neighborhood array
+     * @return {@code true} if simply connected, {@code false} otherwise
      */
     private boolean getConnectivityThreeNeighbors(boolean[][] subarray) {
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
             if (!subarray[1 + MOVES_X[i]][1 + MOVES_Y[i]]) {
-                boolean check1 = subarray[1 + CORNER_X[(i + 1) % NUMBER_NEIGHBORS]]
-                        [1 + CORNER_Y[(i + 1) % NUMBER_NEIGHBORS]];
-                boolean check2 = subarray[1 + CORNER_X[(i + 2) % NUMBER_NEIGHBORS]]
-                        [1 + CORNER_Y[(i + 2) % NUMBER_NEIGHBORS]];
+                boolean check1 =
+                        subarray[1 + CORNER_X[(i + 1) % NUMBER_NEIGHBORS]][
+                                1 + CORNER_Y[(i + 1) % NUMBER_NEIGHBORS]];
+                boolean check2 =
+                        subarray[1 + CORNER_X[(i + 2) % NUMBER_NEIGHBORS]][
+                                1 + CORNER_Y[(i + 2) % NUMBER_NEIGHBORS]];
                 if (check1 && check2) {
                     return true;
                 }
@@ -146,12 +149,12 @@ public final class Potts2D extends Potts {
         }
         return false;
     }
-    
+
     @Override
     HashSet<Integer> getUniqueIDs(int x, int y, int z) {
         int id = ids[z][x][y];
         HashSet<Integer> unique = new HashSet<>();
-        
+
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
             int neighbor = ids[z][x + MOVES_X[i]][y + MOVES_Y[i]];
             if (id != neighbor) {
@@ -160,17 +163,17 @@ public final class Potts2D extends Potts {
         }
         return unique;
     }
-    
+
     @Override
     HashSet<Integer> getUniqueRegions(int x, int y, int z) {
         int id = ids[z][x][y];
         int region = regions[z][x][y];
         HashSet<Integer> unique = new HashSet<>();
-        
+
         for (int i = 0; i < NUMBER_NEIGHBORS; i++) {
             int neighborID = ids[z][x + MOVES_X[i]][y + MOVES_Y[i]];
             int neighborRegion = regions[z][x + MOVES_X[i]][y + MOVES_Y[i]];
-            
+
             if (neighborID != id) {
                 continue;
             }
@@ -178,7 +181,7 @@ public final class Potts2D extends Potts {
                 unique.add(neighborRegion);
             }
         }
-        
+
         return unique;
     }
 }

@@ -8,7 +8,7 @@
     <default id="WIDTH" value="100" units="voxels" description="y size of the simulation" />
     <default id="HEIGHT" value="1" units="voxels" description="z size of the simulation" />
     <default id="MARGIN" value="0" units="voxels" description="margin for the simulation" />
-    
+
     <!-- default conversion factors -->
     <default id="DS" value="1" units="um/voxel" description="spatial conversion factor" />
     <default id="DZ" value="1" units="um/voxel" description="spatial conversion factor in z" />

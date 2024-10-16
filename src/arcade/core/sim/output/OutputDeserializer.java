@@ -16,28 +16,25 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
 /**
  * Container class for object deserializers.
- * <p>
- * Generic deserializers include:
+ *
+ * <p>Generic deserializers include:
+ *
  * <ul>
- *     <li>{@link CellListDeserializer} for deserializing a list of
- *     {@link CellContainer} instances</li>
- *     <li>{@link LocationListDeserializer} for deserializing a list of
- *     {@link LocationContainer} instances</li>
+ *   <li>{@link CellListDeserializer} for deserializing a list of {@link CellContainer} instances
+ *   <li>{@link LocationListDeserializer} for deserializing a list of {@link LocationContainer}
+ *       instances
  * </ul>
  */
-
 public final class OutputDeserializer {
-    /**
-     * Hidden utility class constructor.
-     */
+    /** Hidden utility class constructor. */
     protected OutputDeserializer() {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Creates a {@code GsonBuilder} with generic adaptors.
      *
-     * @return  a {@code GsonBuilder} instance
+     * @return a {@code GsonBuilder} instance
      */
     public static GsonBuilder makeGSONBuilder() {
         GsonBuilder gsonBuilder = new GsonBuilder();
@@ -45,47 +42,43 @@ public final class OutputDeserializer {
         gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE, new LocationListDeserializer());
         return gsonBuilder;
     }
-    
-    /**
-     * Deserializer for a list of {@link CellContainer} objects.
-     */
+
+    /** Deserializer for a list of {@link CellContainer} objects. */
     public static final class CellListDeserializer
             implements JsonDeserializer<ArrayList<CellContainer>> {
         @Override
-        public ArrayList<CellContainer> deserialize(JsonElement json, Type typeOfT,
-                                                    JsonDeserializationContext context)
+        public ArrayList<CellContainer> deserialize(
+                JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
             ArrayList<CellContainer> cells = new ArrayList<>();
             JsonArray jsonArray = json.getAsJsonArray();
-            
+
             for (JsonElement element : jsonArray) {
                 JsonObject cell = element.getAsJsonObject();
                 CellContainer cont = context.deserialize(cell, CellContainer.class);
                 cells.add(cont);
             }
-            
+
             return cells;
         }
     }
-    
-    /**
-     * Deserializer for a list of {@link LocationContainer} objects.
-     */
+
+    /** Deserializer for a list of {@link LocationContainer} objects. */
     public static final class LocationListDeserializer
             implements JsonDeserializer<ArrayList<LocationContainer>> {
         @Override
-        public ArrayList<LocationContainer> deserialize(JsonElement json, Type typeOfT,
-                                                        JsonDeserializationContext context)
+        public ArrayList<LocationContainer> deserialize(
+                JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
             ArrayList<LocationContainer> locations = new ArrayList<>();
             JsonArray jsonArray = json.getAsJsonArray();
-            
+
             for (JsonElement element : jsonArray) {
                 JsonObject location = element.getAsJsonObject();
                 LocationContainer cont = context.deserialize(location, LocationContainer.class);
                 locations.add(cont);
             }
-            
+
             return locations;
         }
     }

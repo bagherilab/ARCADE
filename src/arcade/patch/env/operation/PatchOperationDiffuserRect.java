@@ -2,31 +2,27 @@ package arcade.patch.env.operation;
 
 import arcade.patch.env.lattice.PatchLattice;
 
-/**
- * Extension of {@link PatchOperationDiffuser} for rectangular lattices.
- */
-
+/** Extension of {@link PatchOperationDiffuser} for rectangular lattices. */
 public class PatchOperationDiffuserRect extends PatchOperationDiffuser {
     /**
      * Creates a {@link PatchOperationDiffuser} for rectangular lattices.
-     * <p>
-     * Constructor calculates rate and multipliers for diffusion on the
-     * rectangular lattice given diffusivity of the molecule. If the finite
-     * different approximation is not stable, the multipliers are adjusted to
-     * use a pseudo-steady state approximation.
      *
-     * @param lattice  the {@link PatchLattice} the operation is associated with
-     * @param ds  the spatial scaling (x and y directions)
-     * @param dz  the spatial scaling (z direction)
+     * <p>Constructor calculates rate and multipliers for diffusion on the rectangular lattice given
+     * diffusivity of the molecule. If the finite different approximation is not stable, the
+     * multipliers are adjusted to use a pseudo-steady state approximation.
+     *
+     * @param lattice the {@link PatchLattice} the operation is associated with
+     * @param ds the spatial scaling (x and y directions)
+     * @param dz the spatial scaling (z direction)
      */
     public PatchOperationDiffuserRect(PatchLattice lattice, double ds, double dz) {
         super(lattice);
-        
+
         // Calculate dimensionless rate and various multipliers.
         rate = (diffusivity) / (ds * ds);
         alpha = (latticeHeight > 1 ? (2 * ds * ds) / (dz * dz) : 0);
         beta = 4 + 2 * alpha;
-        
+
         // Determine if solution is stable. If no, adjust for pseudo-steady.
         double lambda = rate * beta;
         if (lambda >= 1 | lambda < 0) {
@@ -36,7 +32,7 @@ public class PatchOperationDiffuserRect extends PatchOperationDiffuser {
             adjust = 1;
         }
     }
-    
+
     @Override
     public double calcSum(int i, int j, double[][] field) {
         // Calculate sum of concentrations of four neighbors. First add left,

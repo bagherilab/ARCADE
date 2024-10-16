@@ -7,44 +7,49 @@ import sim.util.gui.ColorMap;
 
 /**
  * Visualization for simulation objects.
- * <p>
- * {@code Drawer} objects convert simulation objects into
- * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> Portrayals,
- * which can then be displayed.
+ *
+ * <p>{@code Drawer} objects convert simulation objects into <a
+ * href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> Portrayals, which can then be
+ * displayed.
  */
-
 public abstract class Drawer implements Steppable {
     /** Portrayal. */
     protected final Portrayal port;
-    
+
     /** Name of drawing. */
     protected final String name;
-    
+
     /** Color map for drawing. */
     protected final ColorMap map;
-    
+
     /** Length of the array (x direction). */
     protected final int length;
-    
+
     /** Width of the array (y direction). */
     protected final int width;
-    
+
     /** Height of the array (z direction). */
     protected final int height;
-    
+
     /**
      * Creates a {@code Drawer} and attaches it to the panel.
      *
-     * @param panel  the panel the drawer is attached to
-     * @param name  the name of the drawer
-     * @param length  the length of array (x direction)
-     * @param width  the width of array (y direction)
-     * @param height  the height of array (z direction)
-     * @param map  the color map for the array
-     * @param bounds  the size of the drawer within the panel
+     * @param panel the panel the drawer is attached to
+     * @param name the name of the drawer
+     * @param length the length of array (x direction)
+     * @param width the width of array (y direction)
+     * @param height the height of array (z direction)
+     * @param map the color map for the array
+     * @param bounds the size of the drawer within the panel
      */
-    public Drawer(Panel panel, String name, int length, int width, int height,
-                  ColorMap map, Rectangle2D.Double bounds) {
+    public Drawer(
+            Panel panel,
+            String name,
+            int length,
+            int width,
+            int height,
+            ColorMap map,
+            Rectangle2D.Double bounds) {
         this.name = name;
         this.length = length;
         this.width = width;
@@ -53,18 +58,20 @@ public abstract class Drawer implements Steppable {
         this.port = makePort();
         panel.attach(this, name, bounds);
     }
-    
+
     /**
      * Gets the portrayal.
      *
-     * @return  the portrayal
+     * @return the portrayal
      */
-    public Portrayal getPortrayal() { return port; }
-    
+    public Portrayal getPortrayal() {
+        return port;
+    }
+
     /**
      * Creates the portrayal and underlying array objects.
      *
-     * @return  the portrayal
+     * @return the portrayal
      */
     public abstract Portrayal makePort();
 }

@@ -6,8 +6,9 @@ import arcade.core.util.MiniBox;
 
 /**
  * Extension of {@link PatchComponentSitesPattern} for triangular geometry.
- * <p>
- * The pattern unit cell is given by:
+ *
+ * <p>The pattern unit cell is given by:
+ *
  * <pre>
  *    -----------------------------
  *    \   / \   / \ 2 / \   / \   /
@@ -30,56 +31,55 @@ import arcade.core.util.MiniBox;
  *    -----------------------------
  * </pre>
  */
-
 public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
     /**
      * Creates a {@link PatchComponentSitesPattern} for triangular geometry.
      *
-     * @param series  the simulation series
-     * @param parameters  the component parameters dictionary
+     * @param series the simulation series
+     * @param parameters the component parameters dictionary
      */
     public PatchComponentSitesPatternTri(Series series, MiniBox parameters) {
         super(series, parameters);
     }
-    
+
     /**
      * Calculate the offset based on the layer index.
      *
-     * @param k  the index in the z direction
-     * @return  the lattice offset
+     * @param k the index in the z direction
+     * @return the lattice offset
      */
     private int calcOffset(int k) {
         return (latticeHeight - k / 2 - 1) % 3;
     }
-    
+
     /**
      * Calculates column of the triangular pattern based on offset and index.
      *
-     * @param i  the index in the x direction
-     * @param offset  the lattice offset
-     * @return  the column index
+     * @param i the index in the x direction
+     * @param offset the lattice offset
+     * @return the column index
      */
     private int calcCol(int i, int offset) {
         return (i + 6 * offset) % 9;
     }
-    
+
     /**
      * Calculates row of the triangular pattern based on offset and index.
      *
-     * @param i  the index in the x direction
-     * @param j  the index in the y direction
-     * @param offset  the lattice offset
-     * @return  the row index
+     * @param i the index in the x direction
+     * @param j the index in the y direction
+     * @param offset the lattice offset
+     * @return the row index
      */
     private int calcRow(int i, int j, int offset) {
         return (j + (((i + 6 * offset) / 9 & 1) == 0 ? 0 : 3)) % 6;
     }
-    
+
     @Override
     double calculateAverage(int i, int j, int k, double[][] delta) {
         double average = delta[i][j];
         int offset = calcOffset(k);
-        
+
         switch (calcCol(i, offset)) {
             case 0:
             case 7:
@@ -101,17 +101,22 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
             default:
                 break;
         }
-        
+
         return average;
     }
-    
+
     @Override
-    public void calculateFlow(int i, int j, int k, double[][] flow, double[][] delta,
-                              EnumMap<Border, Boolean> borders) {
+    public void calculateFlow(
+            int i,
+            int j,
+            int k,
+            double[][] flow,
+            double[][] delta,
+            EnumMap<Border, Boolean> borders) {
         double total = 0;
         double val = calculateAverage(i, j, k, delta);
         int offset = calcOffset(k);
-        
+
         switch (calcCol(i, offset)) {
             case 0:
             case 7:
@@ -127,8 +132,11 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
                 flow[i + (borders.get(Border.RIGHT) ? 0 : 1)][j] = total;
                 break;
             case 5:
-                total = (flow[i - 1][j + (1 - (borders.get(Border.TOP) ? 0 : 1))]
-                        + flow[i - 1][j + (j > latticeWidth - 3 ? 0 : 1)]) / 2 + val;
+                total =
+                        (flow[i - 1][j + (1 - (borders.get(Border.TOP) ? 0 : 1))]
+                                                + flow[i - 1][j + (j > latticeWidth - 3 ? 0 : 1)])
+                                        / 2
+                                + val;
                 flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;
                 break;
             case 2:
@@ -154,15 +162,15 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
             default:
                 break;
         }
-        
+
         flow[i][j] = total;
     }
-    
+
     @Override
     public void calculateDamage(int i, int j, int k) {
         double total = damageSingle[k][i][j];
         int offset = calcOffset(k);
-        
+
         switch (calcCol(i, offset)) {
             case 0:
             case 7:
@@ -185,21 +193,21 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
             default:
                 break;
         }
-        
+
         damageTotal[k][i][j] = total;
     }
-    
+
     @Override
     void initializePatternArray() {
         byte[][] unit = {
-                { 0, 0, 0, 1, 2, 1, 0, 1, 0 },
-                { 0, 0, 0, 1, 2, 2, 0, 2, 0 },
-                { 0, 0, 1, 2, 0, 0, 0, 0, 0 },
-                { 1, 1, 2, 0, 0, 0, 0, 0, 0 },
-                { 2, 1, 2, 0, 0, 0, 0, 0, 0 },
-                { 0, 0, 1, 2, 0, 0, 0, 0, 0 }
+            {0, 0, 0, 1, 2, 1, 0, 1, 0},
+            {0, 0, 0, 1, 2, 2, 0, 2, 0},
+            {0, 0, 1, 2, 0, 0, 0, 0, 0},
+            {1, 1, 2, 0, 0, 0, 0, 0, 0},
+            {2, 1, 2, 0, 0, 0, 0, 0, 0},
+            {0, 0, 1, 2, 0, 0, 0, 0, 0}
         };
-        
+
         for (int k = 0; k < latticeHeight; k += 2) {
             int offset = calcOffset(k);
             for (int i = 0; i < latticeLength; i++) {

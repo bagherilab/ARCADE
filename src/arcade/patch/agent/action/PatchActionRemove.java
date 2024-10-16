@@ -19,35 +19,33 @@ import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Implementation of {@link Action} for removing cell agents.
- * <p>
- * The action is stepped once after {@code TIME_DELAY}. The action will remove
- * all cell agents within the specified radius {@code REMOVE_RADIUS} from the
- * center of the simulation. Quiescent cells bordering the removal site are set
- * to undefined state.
+ *
+ * <p>The action is stepped once after {@code TIME_DELAY}. The action will remove all cell agents
+ * within the specified radius {@code REMOVE_RADIUS} from the center of the simulation. Quiescent
+ * cells bordering the removal site are set to undefined state.
  */
-
 public class PatchActionRemove implements Action {
     /** Time delay before calling the action [min]. */
     private final int timeDelay;
-    
+
     /** Grid radius that cells are removed from. */
     private final int removeRadius;
-    
+
     /** Grid depth that cells are removed from. */
     private final int removeDepth;
-    
+
     /**
      * Creates a {@link Action} for removing cell agents.
-     * <p>
-     * Loaded parameters include:
+     *
+     * <p>Loaded parameters include:
+     *
      * <ul>
-     *     <li>{@code TIME_DELAY} = time delay before calling the action</li>
-     *     <li>{@code REMOVE_RADIUS} = grid radius that cells are removed
-     *         from</li>
+     *   <li>{@code TIME_DELAY} = time delay before calling the action
+     *   <li>{@code REMOVE_RADIUS} = grid radius that cells are removed from
      * </ul>
      *
-     * @param series  the simulation series
-     * @param parameters  the component parameters dictionary
+     * @param series the simulation series
+     * @param parameters the component parameters dictionary
      */
     public PatchActionRemove(Series series, MiniBox parameters) {
         // Set loaded parameters.
@@ -55,32 +53,32 @@ public class PatchActionRemove implements Action {
         removeRadius = parameters.getInt("REMOVE_RADIUS");
         removeDepth = ((PatchSeries) series).depth;
     }
-    
+
     @Override
     public void schedule(Schedule schedule) {
         schedule.scheduleOnce(timeDelay, Ordering.ACTIONS.ordinal(), this);
     }
-    
+
     @Override
-    public void register(Simulation sim, String population) { }
-    
+    public void register(Simulation sim, String population) {}
+
     @Override
     public void step(SimState simstate) {
         PatchSimulation sim = (PatchSimulation) simstate;
         PatchGrid grid = (PatchGrid) sim.getGrid();
-        
+
         // Select valid coordinates to remove from.
         ArrayList<Coordinate> coordinates =
                 sim.locationFactory.getCoordinates(removeRadius, removeDepth);
-        
+
         // Remove all cells in removal area.
         for (Coordinate coordinate : coordinates) {
             Bag bag = (Bag) grid.getObjectAt(coordinate.hashCode());
-            
+
             if (bag == null) {
                 continue;
             }
-            
+
             for (Object obj : bag) {
                 Cell cell = (Cell) obj;
                 Location location = cell.getLocation();
@@ -88,17 +86,17 @@ public class PatchActionRemove implements Action {
                 cell.stop();
             }
         }
-        
+
         // Bring agents along edge out of quiescence.
         ArrayList<Coordinate> edgeCoordinates =
                 sim.locationFactory.getCoordinates(removeRadius + 1, removeDepth);
         for (Coordinate coordinate : edgeCoordinates) {
             Bag bag = (Bag) grid.getObjectAt(coordinate.hashCode());
-            
+
             if (bag == null) {
                 continue;
             }
-            
+
             for (Object obj : bag) {
                 Cell cell = (Cell) obj;
                 if (cell.getState() == State.QUIESCENT) {

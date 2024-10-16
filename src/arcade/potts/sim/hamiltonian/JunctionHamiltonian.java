@@ -8,34 +8,31 @@ import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSeries;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 
-/**
- * Implementation of {@link Hamiltonian} for tight junction energy.
- */
-
+/** Implementation of {@link Hamiltonian} for tight junction energy. */
 public class JunctionHamiltonian implements Hamiltonian {
     /** Map of hamiltonian config objects. */
     final HashMap<Integer, JunctionHamiltonianConfig> configs;
-    
+
     /** Map of population to lambda values. */
     final HashMap<Integer, Double> popToLambda;
-    
+
     /** Potts array for ids. */
     final int[][][] ids;
-    
+
     /**
      * Creates the junction energy term for the {@code Potts} Hamiltonian.
      *
-     * @param series  the associated Series instance
-     * @param potts  the associated Potts instance
+     * @param series the associated Series instance
+     * @param potts the associated Potts instance
      */
     public JunctionHamiltonian(PottsSeries series, Potts potts) {
         configs = new HashMap<>();
         popToLambda = new HashMap<>();
         initialize(series);
-        
+
         this.ids = potts.ids;
     }
-    
+
     @Override
     public void register(PottsCell cell) {
         int pop = cell.getPop();
@@ -43,60 +40,60 @@ public class JunctionHamiltonian implements Hamiltonian {
         JunctionHamiltonianConfig config = new JunctionHamiltonianConfig(lambda);
         configs.put(cell.getID(), config);
     }
-    
+
     @Override
     public void deregister(PottsCell cell) {
         configs.remove(cell.getID());
     }
-    
+
     /**
      * {@inheritDoc}
-     * <p>
-     * Junction energy is calculated only for the case where both the source
-     * and the target are not media (id =/= 0).
+     *
+     * <p>Junction energy is calculated only for the case where both the source and the target are
+     * not media (id =/= 0).
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
         if (sourceID == 0 || targetID == 0) {
             return 0;
         }
-        
+
         double lambda = configs.get(targetID).getLambda();
-        
+
         if (ids[z - 1][x][y] == targetID) {
             return -lambda;
         }
-        
+
         return lambda;
     }
-    
+
     /**
      * {@inheritDoc}
-     * <p>
-     * Junction energy is set to zero. Region voxels do not form junctions.
+     *
+     * <p>Junction energy is set to zero. Region voxels do not form junctions.
      */
     @Override
     public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
         return 0;
     }
-    
+
     /**
      * Initializes parameters for junction hamiltonian term.
      *
-     * @param series  the series instance
+     * @param series the series instance
      */
     void initialize(PottsSeries series) {
         if (series.populations == null) {
             return;
         }
-        
+
         Set<String> keySet = series.populations.keySet();
         MiniBox parameters = series.potts;
-        
+
         for (String key : keySet) {
             MiniBox population = series.populations.get(key);
             int pop = population.getInt("CODE");
-            
+
             // Get lambda value.
             double lambda = parameters.getDouble("junction/LAMBDA" + TARGET_SEPARATOR + key);
             popToLambda.put(pop, lambda);
