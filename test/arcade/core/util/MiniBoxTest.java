@@ -3,8 +3,8 @@ package arcade.core.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 

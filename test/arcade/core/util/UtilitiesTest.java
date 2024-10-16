@@ -2,9 +2,9 @@ package arcade.core.util;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.util.Utilities.*;
 

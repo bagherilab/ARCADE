@@ -1,6 +1,6 @@
 package arcade.potts.agent.module;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.core.sim.Simulation;
@@ -9,7 +9,7 @@ import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.util.PottsEnums.Phase;

@@ -3,8 +3,8 @@ package arcade.core.util;
 import java.util.ArrayList;
 import java.util.Comparator;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.util.Matrix.*;
 
 public class MatrixTest {

@@ -1,6 +1,6 @@
 package arcade.patch.agent.cell;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
@@ -10,7 +10,7 @@ import arcade.patch.agent.process.PatchProcessMetabolismMedium;
 import arcade.patch.agent.process.PatchProcessSignalingSimple;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.patch.util.PatchEnums.Domain;

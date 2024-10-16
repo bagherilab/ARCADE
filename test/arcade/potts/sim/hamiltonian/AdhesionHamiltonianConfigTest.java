@@ -2,9 +2,9 @@ package arcade.potts.sim.hamiltonian;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import arcade.potts.agent.cell.PottsCell;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.util.PottsEnums.Region;

@@ -2,7 +2,7 @@ package arcade.potts.sim.output;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -18,7 +18,7 @@ import arcade.core.env.location.LocationContainer;
 import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.location.PottsLocationContainer;
 import arcade.potts.env.location.Voxel;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.env.location.Voxel.VOXEL_COMPARATOR;

@@ -1,9 +1,9 @@
 package arcade.core.sim.input;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
 import static arcade.core.sim.input.InputParser.*;
 
