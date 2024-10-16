@@ -1,12 +1,5 @@
 package arcade.patch.agent.cell;
 
-import java.util.HashMap;
-import java.util.Map;
-import sim.engine.Schedule;
-import sim.engine.SimState;
-import sim.engine.Stoppable;
-import sim.util.Bag;
-import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellState;
@@ -19,11 +12,18 @@ import arcade.core.util.MiniBox;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.agent.process.PatchProcessChemotherapy;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
-import arcade.patch.agent.process.PatchProcessChemotherapy;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+import ec.util.MersenneTwisterFast;
+import java.util.HashMap;
+import java.util.Map;
+import sim.engine.Schedule;
+import sim.engine.SimState;
+import sim.engine.Stoppable;
+import sim.util.Bag;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.Flag;
 import static arcade.patch.util.PatchEnums.Ordering;
@@ -355,6 +355,9 @@ public abstract class PatchCell implements Cell {
                 setState(State.PROLIFERATIVE);
             }
         }
+
+        //Step chemotherapy process.
+        processes.get(Domain.CHEMOTHERAPY).step(simstate.random, sim);
         
         // Step the module for the cell state.
         if (module != null) {
