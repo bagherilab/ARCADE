@@ -1,7 +1,6 @@
 package arcade.core.util;
 
 import java.awt.Color;
-
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -9,42 +8,42 @@ public class ColorsTest {
 
     @Test
     public void getColor_calledIndices_returnsColors() {
-        Color[] color_array = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
-        Colors colors = new Colors(color_array);
-        assertEquals(color_array[0], colors.getColor(0));
-        assertEquals(color_array[1], colors.getColor(1));
+        Color[] colorArray = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
+        Colors colors = new Colors(colorArray);
+        assertEquals(colorArray[0], colors.getColor(0));
+        assertEquals(colorArray[1], colors.getColor(1));
     }
 
     @Test
     public void getRGB_calledIndices_returnsRGB() {
-        Color[] color_array = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
-        Colors colors = new Colors(color_array);
-        assertEquals(color_array[0].getRGB(), colors.getRGB(0));
-        assertEquals(color_array[1].getRGB(), colors.getRGB(1));
+        Color[] colorArray = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
+        Colors colors = new Colors(colorArray);
+        assertEquals(colorArray[0].getRGB(), colors.getRGB(0));
+        assertEquals(colorArray[1].getRGB(), colors.getRGB(1));
     }
 
     @Test
     public void getColor_calledDoubles_returnsRoundedDownColor() {
-        Color[] color_array = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
-        Colors colors = new Colors(color_array);
-        assertEquals(color_array[0], colors.getColor(0.5));
-        assertEquals(color_array[0], colors.getColor(0.99));
-        assertEquals(color_array[1], colors.getColor(1.1));
+        Color[] colorArray = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
+        Colors colors = new Colors(colorArray);
+        assertEquals(colorArray[0], colors.getColor(0.5));
+        assertEquals(colorArray[0], colors.getColor(0.99));
+        assertEquals(colorArray[1], colors.getColor(1.1));
     }
 
     @Test
     public void getRGB_calledDoubles_returnsRoundedDownColor() {
-        Color[] color_array = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
-        Colors colors = new Colors(color_array);
-        assertEquals(color_array[0].getRGB(), colors.getRGB(0.5));
-        assertEquals(color_array[0].getRGB(), colors.getRGB(0.99));
-        assertEquals(color_array[1].getRGB(), colors.getRGB(1.1));
+        Color[] colorArray = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
+        Colors colors = new Colors(colorArray);
+        assertEquals(colorArray[0].getRGB(), colors.getRGB(0.5));
+        assertEquals(colorArray[0].getRGB(), colors.getRGB(0.99));
+        assertEquals(colorArray[1].getRGB(), colors.getRGB(1.1));
     }
 
     @Test
     public void getAlpha_called_returnsValid() {
-        Color[] color_array = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
-        Colors colors = new Colors(color_array);
+        Color[] colorArray = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 1)};
+        Colors colors = new Colors(colorArray);
         assertEquals(1, colors.getAlpha(0.0));
 
 
