@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
 import sim.util.Bag;
@@ -66,7 +66,7 @@ public class PottsSimulationTest {
         return series;
     }
     
-    @BeforeClass
+    @BeforeAll
     public static void setupSeries() {
         // Zero populations.
         seriesZeroPop = createSeries(new int[0], new String[0]);

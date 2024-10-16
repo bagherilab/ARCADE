@@ -3,7 +3,7 @@ package arcade.patch.sim;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
@@ -65,7 +65,7 @@ public class PatchSeriesTest {
     
     private static final MiniBox POPULATION = new MiniBox();
     
-    @BeforeClass
+    @BeforeAll
     public static void setupParameters() {
         // DEFAULTS
         PARAMETERS.addTag("DS", "DEFAULT");

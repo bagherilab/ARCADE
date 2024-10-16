@@ -1,6 +1,6 @@
 package arcade.potts.agent.module;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
@@ -35,7 +35,7 @@ public class PottsModuleProliferationSimpleTest {
     
     static Potts pottsMock;
     
-    @BeforeClass
+    @BeforeAll
     public static void setupMocks() {
         random = mock(MersenneTwisterFast.class);
         doReturn(R).when(random).nextDouble();

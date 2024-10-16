@@ -1,7 +1,7 @@
 package arcade.potts.env.location;
 
 import java.util.ArrayList;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,7 +13,7 @@ public class PottsLocations3DTest {
     
     static MersenneTwisterFast randomDoubleOne;
     
-    @BeforeClass
+    @BeforeAll
     public static void setupMocks() {
         randomDoubleZero = mock(MersenneTwisterFast.class);
         when(randomDoubleZero.nextDouble()).thenReturn(0.0);

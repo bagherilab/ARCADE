@@ -1,7 +1,7 @@
 package arcade.potts.sim;
 
 import java.util.HashSet;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian2D;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
@@ -29,7 +29,7 @@ public class Potts2DTest {
             { 2449, 15.706243 }, { 2617, 16.242202 }, { 2809, 16.834856 },
     };
     
-    @BeforeClass
+    @BeforeAll
     public static void setupGrid() {
         PottsSeries series = makeSeries();
         potts = new Potts2D(series);

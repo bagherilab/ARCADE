@@ -3,7 +3,7 @@ package arcade.core.sim;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.display.GUIState;
 import sim.engine.Schedule;
@@ -60,7 +60,7 @@ public class SeriesTest {
     
     private static final HashMap<String, ArrayList<Box>> SETUP_LISTS_MOCK = mock(HashMap.class);
     
-    @BeforeClass
+    @BeforeAll
     public static void setupParameters() {
         // DEFAULTS
         PARAMETERS.addTag("START_SEED", "DEFAULT");

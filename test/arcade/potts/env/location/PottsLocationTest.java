@@ -3,7 +3,7 @@ package arcade.potts.env.location;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import sim.util.Int3D;
 import ec.util.MersenneTwisterFast;
@@ -37,7 +37,7 @@ public class PottsLocationTest {
     
     static ArrayList<Voxel> voxelListAB;
     
-    @BeforeClass
+    @BeforeAll
     public static void setupMocks() {
         randomDoubleZero = mock(MersenneTwisterFast.class);
         when(randomDoubleZero.nextDouble()).thenReturn(0.0);
@@ -46,7 +46,7 @@ public class PottsLocationTest {
         when(randomDoubleOne.nextDouble()).thenReturn(1.0);
     }
     
-    @BeforeClass
+    @BeforeAll
     public static void setupLists() {
         voxelListForAddRemove = new ArrayList<>();
         voxelListForAddRemove.add(new Voxel(0, 0, 0));

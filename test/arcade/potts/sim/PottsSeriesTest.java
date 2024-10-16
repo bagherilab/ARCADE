@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Series;
@@ -129,7 +129,7 @@ public class PottsSeriesTest {
     
     private static final MiniBox POPULATION = new MiniBox();
     
-    @BeforeClass
+    @BeforeAll
     public static void setupParameters() {
         // DEFAULTS
         PARAMETERS.addTag("DS", "DEFAULT");

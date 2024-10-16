@@ -2,7 +2,7 @@ package arcade.potts.env.location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -487,7 +487,7 @@ public class Location3DTest {
             { 84270, 30, 12700 },
     };
     
-    @BeforeClass
+    @BeforeAll
     public static void setupLists() {
         int[][] diameter = new int[][] {
                 { 5, 6, 7, 5, 6, 7, 5, 7, 8, 8, 5, 6, 7, 5, 6, 7 },

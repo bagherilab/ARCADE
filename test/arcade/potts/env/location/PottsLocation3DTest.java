@@ -1,7 +1,7 @@
 package arcade.potts.env.location;
 
 import java.util.ArrayList;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +27,7 @@ public class PottsLocation3DTest {
     
     static ArrayList<Voxel> voxelListAB;
     
-    @BeforeClass
+    @BeforeAll
     public static void setupMocks() {
         randomDoubleZero = mock(MersenneTwisterFast.class);
         when(randomDoubleZero.nextDouble()).thenReturn(0.0);
@@ -36,7 +36,7 @@ public class PottsLocation3DTest {
         when(randomDoubleOne.nextDouble()).thenReturn(1.0);
     }
     
-    @BeforeClass
+    @BeforeAll
     public static void setupLists() {
         /*
          * Lattice site shape:

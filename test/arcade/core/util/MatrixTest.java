@@ -2,7 +2,7 @@ package arcade.core.util;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.util.Matrix.*;
@@ -48,7 +48,7 @@ public class MatrixTest {
             ? Integer.compare(v1.i, v2.i) : v1.j != v2.j
             ? Integer.compare(v1.j, v2.j) : Double.compare(v1.v, v2.v);
     
-    @BeforeClass
+    @BeforeAll
     public static void setupMatrices() {
         A1S.add(new Value(0, 0, 1));
         A1S.add(new Value(0, 1, 2));

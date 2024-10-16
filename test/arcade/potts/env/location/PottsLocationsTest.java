@@ -3,7 +3,7 @@ package arcade.potts.env.location;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,7 +47,7 @@ public class PottsLocationsTest {
     
     static final int LOCATIONS_HEIGHT = randomIntBetween(0, 100);
     
-    @BeforeClass
+    @BeforeAll
     public static void setupMocks() {
         randomDoubleZero = mock(MersenneTwisterFast.class);
         when(randomDoubleZero.nextDouble()).thenReturn(0.0);
@@ -56,7 +56,7 @@ public class PottsLocationsTest {
         when(randomDoubleOne.nextDouble()).thenReturn(1.0);
     }
     
-    @BeforeClass
+    @BeforeAll
     public static void setupLists() {
         voxelListForVolumeSurfaceHeight = new ArrayList<>();
         voxelListForVolumeSurfaceHeight.add(new Voxel(0, 0, 0));

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
@@ -30,7 +30,7 @@ public class ARCADETest {
     
     private static final String IMPLEMENTATION = randomString();
     
-    @BeforeClass
+    @BeforeAll
     public static void setFields() { ARCADE.logger = mock(Logger.class); }
     
     class MockARCADE extends ARCADE {

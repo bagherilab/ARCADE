@@ -3,7 +3,7 @@ package arcade.potts.env.location;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.location.Location;
@@ -21,7 +21,7 @@ public class PottsLocationContainerTest {
     
     static final PottsLocationFactory3D FACTORY_3D = mock(PottsLocationFactory3D.class, CALLS_REAL_METHODS);
     
-    @BeforeClass
+    @BeforeAll
     public static void setupMocks() {
         FACTORY.random = mock(MersenneTwisterFast.class);
         FACTORY_2D.random = mock(MersenneTwisterFast.class);

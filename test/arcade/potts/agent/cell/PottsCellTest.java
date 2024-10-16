@@ -2,7 +2,7 @@ package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
 import sim.engine.Schedule;
@@ -100,7 +100,7 @@ public class PottsCellTest {
         }
     }
     
-    @BeforeClass
+    @BeforeAll
     public static void setupMocks() {
         parametersMock = mock(MiniBox.class);
         locationMock = mock(PottsLocation.class);

@@ -1,7 +1,7 @@
 package arcade.potts.sim;
 
 import java.util.HashSet;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import arcade.potts.sim.hamiltonian.AdhesionHamiltonian3D;
 import arcade.potts.sim.hamiltonian.Hamiltonian;
@@ -40,7 +40,7 @@ public class Potts3DTest {
     
     enum Axis { X_AXIS, Y_AXIS, Z_AXIS }
     
-    @BeforeClass
+    @BeforeAll
     public static void setupGrid() {
         PottsSeries series = makeSeries();
         potts = new Potts3D(series);
@@ -1776,7 +1776,7 @@ public class Potts3DTest {
     
     private static final int[][] COMBOS_FIVE_NEIGHBORS_EIGHT_LINKS = new int[1][6];
     
-    @BeforeClass
+    @BeforeAll
     public static void createFiveNeighborCombos() {
         populate(COMBOS_FIVE_NEIGHBORS_ONE_LINK, 8, 1);
         populate(COMBOS_FIVE_NEIGHBORS_TWO_LINKS, 8, 2);
