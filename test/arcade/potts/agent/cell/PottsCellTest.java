@@ -113,7 +113,7 @@ public class PottsCellTest {
             Double value2 = invocation.getArgument(1);
             return value1 * value2;
         };
-        when(((PottsLocation) locationMock).convertSurface(anyDouble(), anyDouble())).thenAnswer(answer);
+        when((locationMock).convertSurface(anyDouble(), anyDouble())).thenAnswer(answer);
         
         locationRegionVolumes = new EnumMap<>(Region.class);
         locationRegionHeights = new EnumMap<>(Region.class);
