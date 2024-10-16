@@ -637,33 +637,39 @@ public class PottsLocationTest {
         assertEquals(new Voxel(50, 150, 250), loc.getOffset(offsets));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getOffset_noOffsets_raisesException() {
-        ArrayList<Voxel> voxels = new ArrayList<>();
-        voxels.add(new Voxel(0, 100, 200));
-        voxels.add(new Voxel(100, 200, 300));
-        PottsLocationMock loc = new PottsLocationMock(voxels);
-        ArrayList<Integer> offsets = new ArrayList<>();
-        loc.getOffset(offsets);
+        assertThrows(IllegalArgumentException.class, () -> {
+            ArrayList<Voxel> voxels = new ArrayList<>();
+            voxels.add(new Voxel(0, 100, 200));
+            voxels.add(new Voxel(100, 200, 300));
+            PottsLocationMock loc = new PottsLocationMock(voxels);
+            ArrayList<Integer> offsets = new ArrayList<>();
+            loc.getOffset(offsets);
+        });
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void getOffset_invalidOffsets_raisesException() {
-        ArrayList<Voxel> voxels = new ArrayList<>();
-        voxels.add(new Voxel(0, 100, 200));
-        voxels.add(new Voxel(100, 200, 300));
-        PottsLocationMock loc = new PottsLocationMock(voxels);
-        ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(0, 0, 0, 0));
-        loc.getOffset(offsets);
+        assertThrows(IllegalArgumentException.class, () -> {
+            ArrayList<Voxel> voxels = new ArrayList<>();
+            voxels.add(new Voxel(0, 100, 200));
+            voxels.add(new Voxel(100, 200, 300));
+            PottsLocationMock loc = new PottsLocationMock(voxels);
+            ArrayList<Integer> offsets = new ArrayList<>(Arrays.asList(0, 0, 0, 0));
+            loc.getOffset(offsets);
+        });
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test()
     public void getOffset_nullOffsets_raisesException() {
-        ArrayList<Voxel> voxels = new ArrayList<>();
-        voxels.add(new Voxel(0, 100, 200));
-        voxels.add(new Voxel(100, 200, 300));
-        PottsLocationMock loc = new PottsLocationMock(voxels);
-        loc.getOffset(null);
+        assertThrows(IllegalArgumentException.class, () -> {
+            ArrayList<Voxel> voxels = new ArrayList<>();
+            voxels.add(new Voxel(0, 100, 200));
+            voxels.add(new Voxel(100, 200, 300));
+            PottsLocationMock loc = new PottsLocationMock(voxels);
+            loc.getOffset(null);
+        });
     }
     
     @Test

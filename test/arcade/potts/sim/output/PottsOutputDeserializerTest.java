@@ -78,9 +78,9 @@ public class PottsOutputDeserializerTest {
         assertSame(gson.getAdapter(pottsLocation).getClass(), TreeTypeAdapter.class);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void constructor_called_throwsException() {
-        PottsOutputDeserializer deserializer = new PottsOutputDeserializer();
+        assertThrows(UnsupportedOperationException.class, PottsOutputDeserializer::new);
     }
     
     @Test

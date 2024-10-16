@@ -121,9 +121,9 @@ public class MatrixTest {
         B1S.add(new Value(0, 4, 2));
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void constructor_called_throwsException() {
-        Matrix matrix = new Matrix();
+        assertThrows(UnsupportedOperationException.class, Matrix::new);
     }
     
     @Test

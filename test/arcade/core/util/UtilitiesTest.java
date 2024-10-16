@@ -11,9 +11,9 @@ import static arcade.core.util.Utilities.*;
 public class UtilitiesTest {
     private static final double EPSILON = 1E-10;
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void constructor_called_throwsException() {
-        Utilities utilities = new Utilities();
+        assertThrows(UnsupportedOperationException.class, Utilities::new);
     }
     
     @Test

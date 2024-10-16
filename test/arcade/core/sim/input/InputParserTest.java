@@ -231,14 +231,16 @@ public class InputParserTest {
         assertTrue(parsed.compare(new MiniBox()));
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void parse_withPositionNoArgs_throwsException() {
-        Box box = new Box();
-        box.addTag(COMMAND_ID_1, "POSITION");
-        
-        InputParser parser = new InputParser(box);
-        MiniBox parsed = parser.parse(new String[] { });
-        assertTrue(parsed.compare(new MiniBox()));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Box box = new Box();
+            box.addTag(COMMAND_ID_1, "POSITION");
+    
+            InputParser parser = new InputParser(box);
+            MiniBox parsed = parser.parse(new String[] { });
+            assertTrue(parsed.compare(new MiniBox()));
+        });
     }
     
     @Test

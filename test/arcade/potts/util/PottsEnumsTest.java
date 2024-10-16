@@ -11,9 +11,9 @@ import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Term;
 
 public class PottsEnumsTest {
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void constructor_called_throwsException() {
-        PottsEnums enums = new PottsEnums();
+        assertThrows(UnsupportedOperationException.class, PottsEnums::new);
     }
     
     @Test

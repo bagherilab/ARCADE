@@ -63,9 +63,9 @@ public class PottsOutputSerializerTest {
         assertSame(gson.getAdapter(voxel).getClass(), TreeTypeAdapter.class);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void constructor_called_throwsException() {
-        PottsOutputSerializer serializer = new PottsOutputSerializer();
+        assertThrows(UnsupportedOperationException.class, PottsOutputSerializer::new);
     }
     
     @Test

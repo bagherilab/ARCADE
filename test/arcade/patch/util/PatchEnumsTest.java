@@ -9,9 +9,9 @@ import static org.mockito.Mockito.*;
 import static arcade.patch.util.PatchEnums.Flag;
 
 public class PatchEnumsTest {
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void constructor_called_throwsException() {
-        PatchEnums enums = new PatchEnums();
+        assertThrows(UnsupportedOperationException.class, PatchEnums::new);
     }
     
     @Test

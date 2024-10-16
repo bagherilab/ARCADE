@@ -63,9 +63,9 @@ public class OutputSerializerTest {
         assertSame(gson.getAdapter(locationContainerList).getClass(), TreeTypeAdapter.class);
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void constructor_called_throwsException() {
-        OutputSerializer serializer = new OutputSerializer();
+        assertThrows(UnsupportedOperationException.class, OutputSerializer::new);
     }
     
     @Test
