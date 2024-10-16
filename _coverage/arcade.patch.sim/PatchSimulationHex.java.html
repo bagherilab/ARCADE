@@ -21,72 +21,69 @@ import arcade.patch.env.location.PatchLocationFactory;
 import arcade.patch.env.location.PatchLocationFactoryHex;
 import arcade.patch.env.location.PatchLocationHex;
 
-/**
- * Extension of {@link PatchSimulation} for hexagonal geometry.
- */
-
+/** Extension of {@link PatchSimulation} for hexagonal geometry. */
 public final class PatchSimulationHex extends PatchSimulation {
     /**
      * Hexagonal simulation for a {@link Series} for given random seed.
      *
-     * @param seed  the random seed for random number generator
-     * @param series  the simulation series
+     * @param seed the random seed for random number generator
+     * @param series the simulation series
      */
     public PatchSimulationHex(long seed, Series series) {
-<span class="fc" id="L36">        super(seed, series);</span>
-<span class="fc" id="L37">        PatchLocationHex.updateConfigs((PatchSeries) series);</span>
-<span class="fc" id="L38">    }</span>
-    
+<span class="fc" id="L33">        super(seed, series);</span>
+<span class="fc" id="L34">        PatchLocationHex.updateConfigs((PatchSeries) series);</span>
+<span class="fc" id="L35">    }</span>
+
     @Override
     public PatchLocationFactory makeLocationFactory() {
-<span class="fc" id="L42">        return new PatchLocationFactoryHex();</span>
+<span class="fc" id="L39">        return new PatchLocationFactoryHex();</span>
     }
-    
+
     @Override
     public PatchCellFactory makeCellFactory() {
-<span class="fc" id="L47">        return new PatchCellFactory();</span>
+<span class="fc" id="L44">        return new PatchCellFactory();</span>
     }
-    
+
     @Override
     public PatchLatticeFactory makeLatticeFactory() {
-<span class="fc" id="L52">        return new PatchLatticeFactoryTri();</span>
+<span class="fc" id="L49">        return new PatchLatticeFactoryTri();</span>
     }
-    
+
     @Override
     public Action makeAction(String actionClass, MiniBox parameters) {
-<span class="nc bnc" id="L57" title="All 4 branches missed.">        switch (actionClass) {</span>
+<span class="nc bnc" id="L54" title="All 4 branches missed.">        switch (actionClass) {</span>
             case &quot;insert&quot;:
-<span class="nc" id="L59">                return new PatchActionInsert(series, parameters);</span>
+<span class="nc" id="L56">                return new PatchActionInsert(series, parameters);</span>
             case &quot;remove&quot;:
-<span class="nc" id="L61">                return new PatchActionRemove(series, parameters);</span>
+<span class="nc" id="L58">                return new PatchActionRemove(series, parameters);</span>
             case &quot;convert&quot;:
-<span class="nc" id="L63">                return new PatchActionConvert(series, parameters);</span>
+<span class="nc" id="L60">                return new PatchActionConvert(series, parameters);</span>
             default:
-<span class="nc" id="L65">                return null;</span>
+<span class="nc" id="L62">                return null;</span>
         }
     }
-    
+
     @Override
     public Component makeComponent(String componentClass, MiniBox parameters) {
-<span class="nc bnc" id="L71" title="All 9 branches missed.">        switch (componentClass) {</span>
+<span class="nc bnc" id="L68" title="All 9 branches missed.">        switch (componentClass) {</span>
             case &quot;source_sites&quot;:
-<span class="nc" id="L73">                return new PatchComponentSitesSource(series, parameters);</span>
+<span class="nc" id="L70">                return new PatchComponentSitesSource(series, parameters);</span>
             case &quot;pattern_sites&quot;:
-<span class="nc" id="L75">                return new PatchComponentSitesPatternTri(series, parameters);</span>
+<span class="nc" id="L72">                return new PatchComponentSitesPatternTri(series, parameters);</span>
             case &quot;graph_sites_simple&quot;:
-<span class="nc" id="L77">                return new PatchComponentSitesGraphTri.Simple(series, parameters, random);</span>
+<span class="nc" id="L74">                return new PatchComponentSitesGraphTri.Simple(series, parameters, random);</span>
             case &quot;graph_sites_complex&quot;:
-<span class="nc" id="L79">                return new PatchComponentSitesGraphTri.Complex(series, parameters, random);</span>
+<span class="nc" id="L76">                return new PatchComponentSitesGraphTri.Complex(series, parameters, random);</span>
             case &quot;pulse&quot;:
-<span class="nc" id="L81">                return new PatchComponentPulse(series, parameters);</span>
+<span class="nc" id="L78">                return new PatchComponentPulse(series, parameters);</span>
             case &quot;cycle&quot;:
-<span class="nc" id="L83">                return new PatchComponentCycle(series, parameters);</span>
+<span class="nc" id="L80">                return new PatchComponentCycle(series, parameters);</span>
             case &quot;degrade&quot;:
-<span class="nc" id="L85">                return new PatchComponentDegrade(series, parameters);</span>
+<span class="nc" id="L82">                return new PatchComponentDegrade(series, parameters);</span>
             case &quot;remodel&quot;:
-<span class="nc" id="L87">                return new PatchComponentRemodel(series, parameters);</span>
+<span class="nc" id="L84">                return new PatchComponentRemodel(series, parameters);</span>
             default:
-<span class="nc" id="L89">                return null;</span>
+<span class="nc" id="L86">                return null;</span>
         }
     }
 }

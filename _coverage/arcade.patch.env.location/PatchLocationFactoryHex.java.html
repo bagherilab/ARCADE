@@ -3,42 +3,39 @@
 import java.util.ArrayList;
 
 /**
- * Concrete implementation of {@link PatchLocationFactory} for hexagonal
- * geometry.
- * &lt;p&gt;
- * Cell agents exist on a hexagonal grid and molecules in the environment
- * diffuse on a triangular lattice, such that each hexagon corresponds to 6
- * triangles. The hexagonal locations are defined in the (u, v, w, z) coordinate
- * space such that (0,0,0,0) is the hexagon in the center of the simulation. The
- * triangular locations are defined in the (x, y, z) coordinate space such that
- * (0,0,0) is the triangle in the top left of the center slice of the
- * simulation. Because environment radius is guaranteed to be even, the top left
- * triangle of the corresponding triangular lattices is always pointed down.
+ * Concrete implementation of {@link PatchLocationFactory} for hexagonal geometry.
+ *
+ * &lt;p&gt;Cell agents exist on a hexagonal grid and molecules in the environment diffuse on a triangular
+ * lattice, such that each hexagon corresponds to 6 triangles. The hexagonal locations are defined
+ * in the (u, v, w, z) coordinate space such that (0,0,0,0) is the hexagon in the center of the
+ * simulation. The triangular locations are defined in the (x, y, z) coordinate space such that
+ * (0,0,0) is the triangle in the top left of the center slice of the simulation. Because
+ * environment radius is guaranteed to be even, the top left triangle of the corresponding
+ * triangular lattices is always pointed down.
  */
-
 public final class PatchLocationFactoryHex extends PatchLocationFactory {
-    /**
-     * Creates a factory for hexagonal {@link PatchLocation} instances.
-     */
-<span class="fc" id="L23">    public PatchLocationFactoryHex() { super(); }</span>
-    
+    /** Creates a factory for hexagonal {@link PatchLocation} instances. */
+    public PatchLocationFactoryHex() {
+<span class="fc" id="L19">        super();</span>
+<span class="fc" id="L20">    }</span>
+
     @Override
     public ArrayList&lt;Coordinate&gt; getCoordinates(int radius, int depth) {
-<span class="fc" id="L27">        ArrayList&lt;Coordinate&gt; coordinates = new ArrayList&lt;&gt;();</span>
-        
-<span class="fc bfc" id="L29" title="All 2 branches covered.">        for (int u = 1 - radius; u &lt; radius; u++) {</span>
-<span class="fc bfc" id="L30" title="All 2 branches covered.">            for (int v = 1 - radius; v &lt; radius; v++) {</span>
-<span class="fc bfc" id="L31" title="All 2 branches covered.">                for (int w = 1 - radius; w &lt; radius; w++) {</span>
-<span class="fc bfc" id="L32" title="All 2 branches covered.">                    if (u + v + w == 0) {</span>
-<span class="fc bfc" id="L33" title="All 2 branches covered.">                        for (int z = 1 - depth; z &lt; depth; z++) {</span>
-<span class="fc" id="L34">                            coordinates.add(new CoordinateUVWZ(u, v, w, z));</span>
+<span class="fc" id="L24">        ArrayList&lt;Coordinate&gt; coordinates = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        for (int u = 1 - radius; u &lt; radius; u++) {</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">            for (int v = 1 - radius; v &lt; radius; v++) {</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">                for (int w = 1 - radius; w &lt; radius; w++) {</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">                    if (u + v + w == 0) {</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">                        for (int z = 1 - depth; z &lt; depth; z++) {</span>
+<span class="fc" id="L31">                            coordinates.add(new CoordinateUVWZ(u, v, w, z));</span>
                         }
                     }
                 }
             }
         }
-        
-<span class="fc" id="L41">        return coordinates;</span>
+
+<span class="fc" id="L38">        return coordinates;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

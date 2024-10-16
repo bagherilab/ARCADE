@@ -4,28 +4,25 @@ import sim.util.Double3D;
 import sim.util.Int3D;
 import arcade.potts.util.PottsEnums.Direction;
 
-/**
- * A plane in 3D space.
- */
-
+/** A plane in 3D space. */
 public final class Plane {
     /** A point on the plane. */
     public final Voxel referencePoint;
-    
+
     /** The unit normal vector to the plane. */
     public final Double3D unitNormalVector;
-    
+
     /**
      * Creates a plane from a point and a vector.
      *
-     * @param voxel  a point on the plane
-     * @param normalVector  the normal vector to the plane
+     * @param voxel a point on the plane
+     * @param normalVector the normal vector to the plane
      */
-<span class="fc" id="L24">    public Plane(Voxel voxel, Int3D normalVector) {</span>
-<span class="fc" id="L25">        this.referencePoint = voxel;</span>
-<span class="fc" id="L26">        this.unitNormalVector = scaleNormalVector(normalVector);</span>
-<span class="fc" id="L27">    }</span>
-    
+<span class="fc" id="L21">    public Plane(Voxel voxel, Int3D normalVector) {</span>
+<span class="fc" id="L22">        this.referencePoint = voxel;</span>
+<span class="fc" id="L23">        this.unitNormalVector = scaleNormalVector(normalVector);</span>
+<span class="fc" id="L24">    }</span>
+
     /**
      * Creates a plane from a point and a direction.
      *
@@ -33,82 +30,83 @@ public final class Plane {
      * @param direction the direction of the plane
      */
     public Plane(Voxel voxel, Direction direction) {
-<span class="fc" id="L36">        this(voxel, direction.vector);</span>
-<span class="fc" id="L37">    }</span>
-    
+<span class="fc" id="L33">        this(voxel, direction.vector);</span>
+<span class="fc" id="L34">    }</span>
+
     /**
      * Determines the magnitude of the normal vector.
      *
-     * @param normalVector  the normal vector
-     * @return  the magnitude of the normal vector
+     * @param normalVector the normal vector
+     * @return the magnitude of the normal vector
      */
     static double getNormalVectorMagnitude(Int3D normalVector) {
-<span class="fc" id="L46">        return Math.sqrt(normalVector.getX() * normalVector.getX()</span>
-<span class="fc" id="L47">                        + normalVector.getY() * normalVector.getY()</span>
-<span class="fc" id="L48">                        + normalVector.getZ() * normalVector.getZ());</span>
+<span class="fc" id="L43">        return Math.sqrt(</span>
+<span class="fc" id="L44">                normalVector.getX() * normalVector.getX()</span>
+<span class="fc" id="L45">                        + normalVector.getY() * normalVector.getY()</span>
+<span class="fc" id="L46">                        + normalVector.getZ() * normalVector.getZ());</span>
     }
-    
+
     /**
      * Scales the normal vector to a unit vector.
      *
-     * @param normalVector  the normal vector
-     * @return  the unit normal vector
+     * @param normalVector the normal vector
+     * @return the unit normal vector
      */
     static Double3D scaleNormalVector(Int3D normalVector) {
-<span class="fc" id="L58">        double magnitude = getNormalVectorMagnitude(normalVector);</span>
-<span class="fc" id="L59">        double scaledX = normalVector.getX() / magnitude;</span>
-<span class="fc" id="L60">        double scaledY = normalVector.getY() / magnitude;</span>
-<span class="fc" id="L61">        double scaledZ = normalVector.getZ() / magnitude;</span>
-<span class="fc" id="L62">        Double3D unitNormalVector = new Double3D(scaledX, scaledY, scaledZ);</span>
-<span class="fc" id="L63">        return unitNormalVector;</span>
+<span class="fc" id="L56">        double magnitude = getNormalVectorMagnitude(normalVector);</span>
+<span class="fc" id="L57">        double scaledX = normalVector.getX() / magnitude;</span>
+<span class="fc" id="L58">        double scaledY = normalVector.getY() / magnitude;</span>
+<span class="fc" id="L59">        double scaledZ = normalVector.getZ() / magnitude;</span>
+<span class="fc" id="L60">        Double3D unitNormalVector = new Double3D(scaledX, scaledY, scaledZ);</span>
+<span class="fc" id="L61">        return unitNormalVector;</span>
     }
-    
+
     /**
      * Determines distance from a point to the plane.
      *
-     * The distance is positive if the point is on the same side of the plane
-     * as the normal vector and negative if it is on the opposite side.
+     * &lt;p&gt;The distance is positive if the point is on the same side of the plane as the normal
+     * vector and negative if it is on the opposite side.
      *
      * @param point the point
      * @return the distance from the point to the plane.
-     *
      */
     public double signedDistanceToPlane(Voxel point) {
-<span class="fc" id="L77">        double dotProduct = (point.x - referencePoint.x) * unitNormalVector.getX()</span>
-<span class="fc" id="L78">                + (point.y - referencePoint.y) * unitNormalVector.getY()</span>
-<span class="fc" id="L79">                + (point.z - referencePoint.z) * unitNormalVector.getZ();</span>
-<span class="fc" id="L80">        return dotProduct;</span>
+<span class="fc" id="L74">        double dotProduct =</span>
+<span class="fc" id="L75">                (point.x - referencePoint.x) * unitNormalVector.getX()</span>
+<span class="fc" id="L76">                        + (point.y - referencePoint.y) * unitNormalVector.getY()</span>
+<span class="fc" id="L77">                        + (point.z - referencePoint.z) * unitNormalVector.getZ();</span>
+<span class="fc" id="L78">        return dotProduct;</span>
     }
-    
+
     /**
      * Determines if two planes are equal.
      *
-     * @param obj  the plane to compare
+     * @param obj the plane to compare
      * @return {@code true} if the planes are equal, {@code false} otherwise
      */
     @Override
     public boolean equals(Object obj) {
-<span class="pc bpc" id="L91" title="2 of 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) {</span>
-<span class="nc" id="L92">            return false;</span>
+<span class="pc bpc" id="L89" title="2 of 4 branches missed.">        if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="nc" id="L90">            return false;</span>
         }
-<span class="fc" id="L94">        Plane other = (Plane) obj;</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">        return referencePoint.equals(other.referencePoint)</span>
-<span class="pc bpc" id="L96" title="1 of 2 branches missed.">                                     &amp;&amp; unitNormalVector.equals(other.unitNormalVector);</span>
+<span class="fc" id="L92">        Plane other = (Plane) obj;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        return referencePoint.equals(other.referencePoint)</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">                &amp;&amp; unitNormalVector.equals(other.unitNormalVector);</span>
     }
-    
+
     /**
      * Returns a hash code for the plane.
      *
-     * @return  a hash code for the plane
+     * @return a hash code for the plane
      */
     @Override
     public int hashCode() {
-<span class="fc" id="L106">        int hash = 7;</span>
-<span class="fc" id="L107">        hash = 31 * hash + referencePoint.hashCode();</span>
-<span class="fc" id="L108">        hash = 31 * hash + Double.hashCode(unitNormalVector.getX());</span>
-<span class="fc" id="L109">        hash = 31 * hash + Double.hashCode(unitNormalVector.getY());</span>
-<span class="fc" id="L110">        hash = 31 * hash + Double.hashCode(unitNormalVector.getZ());</span>
-<span class="fc" id="L111">        return hash;</span>
+<span class="fc" id="L104">        int hash = 7;</span>
+<span class="fc" id="L105">        hash = 31 * hash + referencePoint.hashCode();</span>
+<span class="fc" id="L106">        hash = 31 * hash + Double.hashCode(unitNormalVector.getX());</span>
+<span class="fc" id="L107">        hash = 31 * hash + Double.hashCode(unitNormalVector.getY());</span>
+<span class="fc" id="L108">        hash = 31 * hash + Double.hashCode(unitNormalVector.getZ());</span>
+<span class="fc" id="L109">        return hash;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

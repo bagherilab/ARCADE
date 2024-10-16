@@ -3,36 +3,33 @@
 import java.util.ArrayList;
 
 /**
- * Concrete implementation of {@link PatchLocationFactory} for rectangular
- * geometry.
- * &lt;p&gt;
- * Cell agents exist on a rectangular grid and molecules in the environment
- * diffuse on a smaller rectangular lattice, such that each grid rectangle
- * corresponds to 4 lattice rectangles. The rectangular locations are defined in
- * the (x, y, z) coordinate space such that (0,0,0) is the rectangle in the
- * center of the simulation (for the grid) and the left rectangle of the center
+ * Concrete implementation of {@link PatchLocationFactory} for rectangular geometry.
+ *
+ * &lt;p&gt;Cell agents exist on a rectangular grid and molecules in the environment diffuse on a smaller
+ * rectangular lattice, such that each grid rectangle corresponds to 4 lattice rectangles. The
+ * rectangular locations are defined in the (x, y, z) coordinate space such that (0,0,0) is the
+ * rectangle in the center of the simulation (for the grid) and the left rectangle of the center
  * slice (for the lattices).
  */
-
 public final class PatchLocationFactoryRect extends PatchLocationFactory {
-    /**
-     * Creates a factory for rectangular {@link PatchLocation} instances.
-     */
-<span class="nc" id="L21">    public PatchLocationFactoryRect() { super(); }</span>
-    
+    /** Creates a factory for rectangular {@link PatchLocation} instances. */
+    public PatchLocationFactoryRect() {
+<span class="nc" id="L17">        super();</span>
+<span class="nc" id="L18">    }</span>
+
     @Override
     public ArrayList&lt;Coordinate&gt; getCoordinates(int radius, int depth) {
-<span class="nc" id="L25">        ArrayList&lt;Coordinate&gt; coordinates = new ArrayList&lt;&gt;();</span>
-        
-<span class="nc bnc" id="L27" title="All 2 branches missed.">        for (int x = 1 - radius; x &lt; radius; x++) {</span>
-<span class="nc bnc" id="L28" title="All 2 branches missed.">            for (int y = 1 - radius; y &lt; radius; y++) {</span>
-<span class="nc bnc" id="L29" title="All 2 branches missed.">                for (int z = 1 - depth; z &lt; depth; z++) {</span>
-<span class="nc" id="L30">                    coordinates.add(new CoordinateXYZ(x, y, z));</span>
+<span class="nc" id="L22">        ArrayList&lt;Coordinate&gt; coordinates = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L24" title="All 2 branches missed.">        for (int x = 1 - radius; x &lt; radius; x++) {</span>
+<span class="nc bnc" id="L25" title="All 2 branches missed.">            for (int y = 1 - radius; y &lt; radius; y++) {</span>
+<span class="nc bnc" id="L26" title="All 2 branches missed.">                for (int z = 1 - depth; z &lt; depth; z++) {</span>
+<span class="nc" id="L27">                    coordinates.add(new CoordinateXYZ(x, y, z));</span>
                 }
             }
         }
-        
-<span class="nc" id="L35">        return coordinates;</span>
+
+<span class="nc" id="L32">        return coordinates;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

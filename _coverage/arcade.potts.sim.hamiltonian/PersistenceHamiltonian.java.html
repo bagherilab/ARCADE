@@ -12,189 +12,184 @@ import arcade.potts.sim.PottsSeries;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Region;
 
-/**
- * Implementation of {@link Hamiltonian} for persistence energy.
- */
-
+/** Implementation of {@link Hamiltonian} for persistence energy. */
 public class PersistenceHamiltonian implements Hamiltonian {
     /** Map of hamiltonian config objects. */
     final HashMap&lt;Integer, PersistenceHamiltonianConfig&gt; configs;
-    
+
     /** Map of population to lambda values. */
     final HashMap&lt;Integer, Double&gt; popToLambda;
-    
+
     /** Map of population to decay values. */
     final HashMap&lt;Integer, Double&gt; popToDecay;
-    
+
     /** Map of population to lambda values for regions. */
     final HashMap&lt;Integer, EnumMap&lt;Region, Double&gt;&gt; popToLambdasRegion;
-    
+
     /** Volume threshold for scaling vector in z direction. */
     double threshold;
-    
+
     /**
      * Creates the persistence energy term for the {@code Potts} Hamiltonian.
      *
-     * @param series  the associated Series instance
+     * @param series the associated Series instance
      */
-<span class="fc" id="L40">    public PersistenceHamiltonian(PottsSeries series) {</span>
-<span class="fc" id="L41">        configs = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L42">        popToLambda = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L43">        popToDecay = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L44">        popToLambdasRegion = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L45">        initialize(series);</span>
-<span class="fc" id="L46">    }</span>
-    
+<span class="fc" id="L37">    public PersistenceHamiltonian(PottsSeries series) {</span>
+<span class="fc" id="L38">        configs = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L39">        popToLambda = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L40">        popToDecay = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L41">        popToLambdasRegion = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L42">        initialize(series);</span>
+<span class="fc" id="L43">    }</span>
+
     @Override
     public void register(PottsCell cell) {
-<span class="fc" id="L50">        int pop = cell.getPop();</span>
-<span class="fc" id="L51">        double lambda = popToLambda.get(pop);</span>
-<span class="fc" id="L52">        EnumMap&lt;Region, Double&gt; lambdasRegion = popToLambdasRegion.get(pop);</span>
-<span class="fc" id="L53">        double decay = popToDecay.get(pop);</span>
-<span class="fc" id="L54">        PottsLocation loc = (PottsLocation) cell.getLocation();</span>
-<span class="fc" id="L55">        PersistenceHamiltonianConfig config = new PersistenceHamiltonianConfig(loc,</span>
-                lambda, lambdasRegion, decay, threshold);
-<span class="fc" id="L57">        configs.put(cell.getID(), config);</span>
-<span class="fc" id="L58">    }</span>
-    
+<span class="fc" id="L47">        int pop = cell.getPop();</span>
+<span class="fc" id="L48">        double lambda = popToLambda.get(pop);</span>
+<span class="fc" id="L49">        EnumMap&lt;Region, Double&gt; lambdasRegion = popToLambdasRegion.get(pop);</span>
+<span class="fc" id="L50">        double decay = popToDecay.get(pop);</span>
+<span class="fc" id="L51">        PottsLocation loc = (PottsLocation) cell.getLocation();</span>
+<span class="fc" id="L52">        PersistenceHamiltonianConfig config =</span>
+                new PersistenceHamiltonianConfig(loc, lambda, lambdasRegion, decay, threshold);
+<span class="fc" id="L54">        configs.put(cell.getID(), config);</span>
+<span class="fc" id="L55">    }</span>
+
     @Override
     public void deregister(PottsCell cell) {
-<span class="fc" id="L62">        configs.remove(cell.getID());</span>
-<span class="fc" id="L63">    }</span>
-    
+<span class="fc" id="L59">        configs.remove(cell.getID());</span>
+<span class="fc" id="L60">    }</span>
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Persistence energy is calculated by taking the sum of source and target
-     * persistence energies. Source energy is calculated from displacement when
-     * a voxel is removed. Target energy is calculated from displacement when a
-     * voxel is added.
+     *
+     * &lt;p&gt;Persistence energy is calculated by taking the sum of source and target persistence
+     * energies. Source energy is calculated from displacement when a voxel is removed. Target
+     * energy is calculated from displacement when a voxel is added.
      */
     @Override
     public double getDelta(int sourceID, int targetID, int x, int y, int z) {
-<span class="fc" id="L75">        double source = getPersistence(sourceID, x, y, z, -1);</span>
-<span class="fc" id="L76">        double target = getPersistence(targetID, x, y, z, 1);</span>
-<span class="fc" id="L77">        return source + target;</span>
+<span class="fc" id="L71">        double source = getPersistence(sourceID, x, y, z, -1);</span>
+<span class="fc" id="L72">        double target = getPersistence(targetID, x, y, z, 1);</span>
+<span class="fc" id="L73">        return source + target;</span>
     }
-    
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Persistence energy is calculated by taking the sum of source and target
-     * persistence energies for the region. Source energy is calculated from
-     * displacement when a voxel is removed. Target energy is calculated from
-     * displacement when a voxel is added.
+     *
+     * &lt;p&gt;Persistence energy is calculated by taking the sum of source and target persistence
+     * energies for the region. Source energy is calculated from displacement when a voxel is
+     * removed. Target energy is calculated from displacement when a voxel is added.
      */
     @Override
     public double getDelta(int id, int sourceRegion, int targetRegion, int x, int y, int z) {
-<span class="fc" id="L90">        double source = getPersistence(id, sourceRegion, x, y, z, -1);</span>
-<span class="fc" id="L91">        double target = getPersistence(id, targetRegion, x, y, z, 1);</span>
-<span class="fc" id="L92">        return source + target;</span>
+<span class="fc" id="L85">        double source = getPersistence(id, sourceRegion, x, y, z, -1);</span>
+<span class="fc" id="L86">        double target = getPersistence(id, targetRegion, x, y, z, 1);</span>
+<span class="fc" id="L87">        return source + target;</span>
     }
-    
+
     /**
      * Gets persistence energy for voxel added or removed.
-     * &lt;p&gt;
-     * Persistence for non-cell voxels is zero.
      *
-     * @param id  the voxel id
-     * @param x  the x coordinate
-     * @param y  the y coordinate
-     * @param z  the z coordinate
-     * @param change  the direction of change (add = +1, remove = -1)
-     * @return  the energy
+     * &lt;p&gt;Persistence for non-cell voxels is zero.
+     *
+     * @param id the voxel id
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     * @param change the direction of change (add = +1, remove = -1)
+     * @return the energy
      */
     double getPersistence(int id, int x, int y, int z, int change) {
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (id &lt;= 0) {</span>
-<span class="fc" id="L109">            return 0;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (id &lt;= 0) {</span>
+<span class="fc" id="L104">            return 0;</span>
         }
-        
-<span class="fc" id="L112">        PersistenceHamiltonianConfig config = configs.get(id);</span>
-        
-<span class="fc" id="L114">        double[] vector = config.getVector();</span>
-<span class="fc" id="L115">        double[] displacement = config.getDisplacement(x, y, z, change);</span>
-        
-<span class="fc" id="L117">        double dot = Matrix.dot(vector, displacement);</span>
-<span class="fc" id="L118">        double lambda = config.getLambda();</span>
-        
-<span class="fc" id="L120">        return -lambda * dot * config.location.getSurface();</span>
+
+<span class="fc" id="L107">        PersistenceHamiltonianConfig config = configs.get(id);</span>
+
+<span class="fc" id="L109">        double[] vector = config.getVector();</span>
+<span class="fc" id="L110">        double[] displacement = config.getDisplacement(x, y, z, change);</span>
+
+<span class="fc" id="L112">        double dot = Matrix.dot(vector, displacement);</span>
+<span class="fc" id="L113">        double lambda = config.getLambda();</span>
+
+<span class="fc" id="L115">        return -lambda * dot * config.location.getSurface();</span>
     }
-    
+
     /**
      * Gets the persistence energy for voxel added or removed in a region.
-     * &lt;p&gt;
-     * Persistence for the default region is zero. Calculating persistence for a
-     * region does not update the target vector or displacement vectors for the
-     * cell.
      *
-     * @param id  the voxel id
-     * @param t  the voxel region
-     * @param x  the x coordinate
-     * @param y  the y coordinate
-     * @param z  the z coordinate
-     * @param change  the direction of change (add = +1, remove = -1)
-     * @return  the energy
+     * &lt;p&gt;Persistence for the default region is zero. Calculating persistence for a region does not
+     * update the target vector or displacement vectors for the cell.
+     *
+     * @param id the voxel id
+     * @param t the voxel region
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     * @param change the direction of change (add = +1, remove = -1)
+     * @return the energy
      */
     double getPersistence(int id, int t, int x, int y, int z, int change) {
-<span class="fc" id="L139">        Region region = Region.values()[t];</span>
-<span class="fc bfc" id="L140" title="All 4 branches covered.">        if (id == 0 || region == Region.DEFAULT) {</span>
-<span class="fc" id="L141">            return 0;</span>
+<span class="fc" id="L133">        Region region = Region.values()[t];</span>
+<span class="fc bfc" id="L134" title="All 4 branches covered.">        if (id == 0 || region == Region.DEFAULT) {</span>
+<span class="fc" id="L135">            return 0;</span>
         }
-        
-<span class="fc" id="L144">        PersistenceHamiltonianConfig config = configs.get(id);</span>
-<span class="fc" id="L145">        double[] displacement = config.getDisplacement(x, y, z, change, region);</span>
-        
-<span class="fc" id="L147">        double dot = Matrix.dot(config.vector, displacement);</span>
-<span class="fc" id="L148">        double lambda = config.getLambda(region);</span>
-        
-<span class="fc" id="L150">        return -lambda * dot * config.location.getSurface(region);</span>
+
+<span class="fc" id="L138">        PersistenceHamiltonianConfig config = configs.get(id);</span>
+<span class="fc" id="L139">        double[] displacement = config.getDisplacement(x, y, z, change, region);</span>
+
+<span class="fc" id="L141">        double dot = Matrix.dot(config.vector, displacement);</span>
+<span class="fc" id="L142">        double lambda = config.getLambda(region);</span>
+
+<span class="fc" id="L144">        return -lambda * dot * config.location.getSurface(region);</span>
     }
-    
+
     /**
      * Initializes parameters for persistence hamiltonian term.
      *
-     * @param series  the series instance
+     * @param series the series instance
      */
     void initialize(PottsSeries series) {
-<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (series.populations == null) {</span>
-<span class="fc" id="L160">            return;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        if (series.populations == null) {</span>
+<span class="fc" id="L154">            return;</span>
         }
-        
-<span class="fc" id="L163">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
-<span class="fc" id="L164">        MiniBox parameters = series.potts;</span>
-        
-<span class="fc bfc" id="L166" title="All 2 branches covered.">        for (String key : keySet) {</span>
-<span class="fc" id="L167">            MiniBox population = series.populations.get(key);</span>
-<span class="fc" id="L168">            int pop = population.getInt(&quot;CODE&quot;);</span>
-            
+
+<span class="fc" id="L157">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
+<span class="fc" id="L158">        MiniBox parameters = series.potts;</span>
+
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        for (String key : keySet) {</span>
+<span class="fc" id="L161">            MiniBox population = series.populations.get(key);</span>
+<span class="fc" id="L162">            int pop = population.getInt(&quot;CODE&quot;);</span>
+
             // Get lambda value.
-<span class="fc" id="L171">            double lambda = parameters.getDouble(&quot;persistence/LAMBDA&quot; + TARGET_SEPARATOR + key);</span>
-<span class="fc" id="L172">            popToLambda.put(pop, lambda);</span>
-            
+<span class="fc" id="L165">            double lambda = parameters.getDouble(&quot;persistence/LAMBDA&quot; + TARGET_SEPARATOR + key);</span>
+<span class="fc" id="L166">            popToLambda.put(pop, lambda);</span>
+
             // Get persistence decay rate.
-<span class="fc" id="L175">            double substrate = parameters.getDouble(&quot;persistence/DECAY&quot; + TARGET_SEPARATOR + key);</span>
-<span class="fc" id="L176">            popToDecay.put(pop, substrate);</span>
-            
-<span class="fc" id="L178">            MiniBox regionBox = population.filter(&quot;(REGION)&quot;);</span>
-<span class="fc" id="L179">            ArrayList&lt;Region&gt; regionKeys = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L180">            regionBox.getKeys().forEach(s -&gt; regionKeys.add(Region.valueOf(s)));</span>
-            
+<span class="fc" id="L169">            double substrate = parameters.getDouble(&quot;persistence/DECAY&quot; + TARGET_SEPARATOR + key);</span>
+<span class="fc" id="L170">            popToDecay.put(pop, substrate);</span>
+
+<span class="fc" id="L172">            MiniBox regionBox = population.filter(&quot;(REGION)&quot;);</span>
+<span class="fc" id="L173">            ArrayList&lt;Region&gt; regionKeys = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L174">            regionBox.getKeys().forEach(s -&gt; regionKeys.add(Region.valueOf(s)));</span>
+
             // Get lambda values for regions.
-<span class="fc bfc" id="L183" title="All 2 branches covered.">            if (regionKeys.size() &gt; 0) {</span>
-<span class="fc" id="L184">                EnumMap&lt;Region, Double&gt; lambdasRegion = new EnumMap&lt;&gt;(Region.class);</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">                for (Region region : regionKeys) {</span>
-<span class="fc" id="L186">                    double lambdaRegion = parameters.getDouble(&quot;persistence/LAMBDA_&quot;</span>
-<span class="fc" id="L187">                            + region.name() + TARGET_SEPARATOR + key);</span>
-<span class="fc" id="L188">                    lambdasRegion.put(region, lambdaRegion);</span>
-<span class="fc" id="L189">                }</span>
-<span class="fc" id="L190">                popToLambdasRegion.put(pop, lambdasRegion);</span>
-<span class="fc" id="L191">            } else {</span>
-<span class="fc" id="L192">                popToLambdasRegion.put(pop, null);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">            if (regionKeys.size() &gt; 0) {</span>
+<span class="fc" id="L178">                EnumMap&lt;Region, Double&gt; lambdasRegion = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">                for (Region region : regionKeys) {</span>
+<span class="fc" id="L180">                    double lambdaRegion =</span>
+<span class="fc" id="L181">                            parameters.getDouble(</span>
+<span class="fc" id="L182">                                    &quot;persistence/LAMBDA_&quot; + region.name() + TARGET_SEPARATOR + key);</span>
+<span class="fc" id="L183">                    lambdasRegion.put(region, lambdaRegion);</span>
+<span class="fc" id="L184">                }</span>
+<span class="fc" id="L185">                popToLambdasRegion.put(pop, lambdasRegion);</span>
+<span class="fc" id="L186">            } else {</span>
+<span class="fc" id="L187">                popToLambdasRegion.put(pop, null);</span>
             }
-<span class="fc" id="L194">        }</span>
-        
+<span class="fc" id="L189">        }</span>
+
         // Set term parameters.
-<span class="fc" id="L197">        threshold = parameters.getDouble(&quot;persistence/VOLUME_THRESHOLD&quot;);</span>
-<span class="fc" id="L198">    }</span>
+<span class="fc" id="L192">        threshold = parameters.getDouble(&quot;persistence/VOLUME_THRESHOLD&quot;);</span>
+<span class="fc" id="L193">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -2,53 +2,49 @@
 
 import arcade.patch.env.lattice.PatchLattice;
 
-/**
- * Extension of {@link PatchOperationDiffuser} for rectangular lattices.
- */
-
+/** Extension of {@link PatchOperationDiffuser} for rectangular lattices. */
 public class PatchOperationDiffuserRect extends PatchOperationDiffuser {
     /**
      * Creates a {@link PatchOperationDiffuser} for rectangular lattices.
-     * &lt;p&gt;
-     * Constructor calculates rate and multipliers for diffusion on the
-     * rectangular lattice given diffusivity of the molecule. If the finite
-     * different approximation is not stable, the multipliers are adjusted to
-     * use a pseudo-steady state approximation.
      *
-     * @param lattice  the {@link PatchLattice} the operation is associated with
-     * @param ds  the spatial scaling (x and y directions)
-     * @param dz  the spatial scaling (z direction)
+     * &lt;p&gt;Constructor calculates rate and multipliers for diffusion on the rectangular lattice given
+     * diffusivity of the molecule. If the finite different approximation is not stable, the
+     * multipliers are adjusted to use a pseudo-steady state approximation.
+     *
+     * @param lattice the {@link PatchLattice} the operation is associated with
+     * @param ds the spatial scaling (x and y directions)
+     * @param dz the spatial scaling (z direction)
      */
     public PatchOperationDiffuserRect(PatchLattice lattice, double ds, double dz) {
-<span class="nc" id="L23">        super(lattice);</span>
-        
+<span class="nc" id="L19">        super(lattice);</span>
+
         // Calculate dimensionless rate and various multipliers.
-<span class="nc" id="L26">        rate = (diffusivity) / (ds * ds);</span>
-<span class="nc bnc" id="L27" title="All 2 branches missed.">        alpha = (latticeHeight &gt; 1 ? (2 * ds * ds) / (dz * dz) : 0);</span>
-<span class="nc" id="L28">        beta = 4 + 2 * alpha;</span>
-        
+<span class="nc" id="L22">        rate = (diffusivity) / (ds * ds);</span>
+<span class="nc bnc" id="L23" title="All 2 branches missed.">        alpha = (latticeHeight &gt; 1 ? (2 * ds * ds) / (dz * dz) : 0);</span>
+<span class="nc" id="L24">        beta = 4 + 2 * alpha;</span>
+
         // Determine if solution is stable. If no, adjust for pseudo-steady.
-<span class="nc" id="L31">        double lambda = rate * beta;</span>
-<span class="nc bnc" id="L32" title="All 6 branches missed.">        if (lambda &gt;= 1 | lambda &lt; 0) {</span>
-<span class="nc" id="L33">            rate = 1.0 / beta; // rate is now an average of neighbors</span>
-<span class="nc" id="L34">            adjust = 0; // adjust old concentration in calculation</span>
+<span class="nc" id="L27">        double lambda = rate * beta;</span>
+<span class="nc bnc" id="L28" title="All 6 branches missed.">        if (lambda &gt;= 1 | lambda &lt; 0) {</span>
+<span class="nc" id="L29">            rate = 1.0 / beta; // rate is now an average of neighbors</span>
+<span class="nc" id="L30">            adjust = 0; // adjust old concentration in calculation</span>
         } else {
-<span class="nc" id="L36">            adjust = 1;</span>
+<span class="nc" id="L32">            adjust = 1;</span>
         }
-<span class="nc" id="L38">    }</span>
-    
+<span class="nc" id="L34">    }</span>
+
     @Override
     public double calcSum(int i, int j, double[][] field) {
         // Calculate sum of concentrations of four neighbors. First add left,
         // right, top, and bottom neighbor. Check if located at left hand side
         // (for left), right hand side (for right), top side (for top), or
         // bottom side (for bottom).
-<span class="nc" id="L46">        double sumConc = 0;</span>
-<span class="nc" id="L47">        sumConc += field[i - leftBorder[i]][j];</span>
-<span class="nc" id="L48">        sumConc += field[i + rightBorder[i]][j];</span>
-<span class="nc" id="L49">        sumConc += field[i][j - topBorder[j]];</span>
-<span class="nc" id="L50">        sumConc += field[i][j + bottomBorder[j]];</span>
-<span class="nc" id="L51">        return sumConc;</span>
+<span class="nc" id="L42">        double sumConc = 0;</span>
+<span class="nc" id="L43">        sumConc += field[i - leftBorder[i]][j];</span>
+<span class="nc" id="L44">        sumConc += field[i + rightBorder[i]][j];</span>
+<span class="nc" id="L45">        sumConc += field[i][j - topBorder[j]];</span>
+<span class="nc" id="L46">        sumConc += field[i][j + bottomBorder[j]];</span>
+<span class="nc" id="L47">        return sumConc;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

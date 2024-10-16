@@ -4,66 +4,65 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import static arcade.potts.util.PottsEnums.Direction;
 
-/**
- * Concrete implementation of {@link PottsLocation} for 3D.
- */
-
+/** Concrete implementation of {@link PottsLocation} for 3D. */
 public final class PottsLocation3D extends PottsLocation implements Location3D {
     /**
      * Creates a 3D {@link PottsLocation} for a list of voxels.
      *
-     * @param voxels  the list of voxels
+     * @param voxels the list of voxels
      */
-<span class="fc" id="L17">    public PottsLocation3D(ArrayList&lt;Voxel&gt; voxels) { super(voxels); }</span>
-    
+    public PottsLocation3D(ArrayList&lt;Voxel&gt; voxels) {
+<span class="fc" id="L15">        super(voxels);</span>
+<span class="fc" id="L16">    }</span>
+
     @Override
     PottsLocation makeLocation(ArrayList&lt;Voxel&gt; voxels) {
-<span class="fc" id="L21">        return new PottsLocation3D(voxels);</span>
+<span class="fc" id="L20">        return new PottsLocation3D(voxels);</span>
     }
-    
+
     @Override
     ArrayList&lt;Voxel&gt; getNeighbors(Voxel focus) {
-<span class="fc" id="L26">        return Location3D.getNeighbors(focus);</span>
+<span class="fc" id="L25">        return Location3D.getNeighbors(focus);</span>
     }
-    
+
     @Override
     public double convertSurface(double volume, double height) {
-<span class="fc" id="L31">        return Location3D.convertSurface(volume, height);</span>
+<span class="fc" id="L30">        return Location3D.convertSurface(volume, height);</span>
     }
-    
+
     @Override
     int calculateSurface() {
-<span class="fc" id="L36">        return Location3D.calculateSurface(voxels);</span>
+<span class="fc" id="L35">        return Location3D.calculateSurface(voxels);</span>
     }
-    
+
     @Override
     int calculateHeight() {
-<span class="fc" id="L41">        return Location3D.calculateHeight(voxels);</span>
+<span class="fc" id="L40">        return Location3D.calculateHeight(voxels);</span>
     }
-    
+
     @Override
     int updateSurface(Voxel voxel) {
-<span class="fc" id="L46">        return Location3D.updateSurface(voxels, voxel);</span>
+<span class="fc" id="L45">        return Location3D.updateSurface(voxels, voxel);</span>
     }
-    
+
     @Override
     int updateHeight(Voxel voxel) {
-<span class="fc" id="L51">        return Location3D.updateHeight(voxels, voxel);</span>
+<span class="fc" id="L50">        return Location3D.updateHeight(voxels, voxel);</span>
     }
-    
+
     @Override
     HashMap&lt;Direction, Integer&gt; getDiameters() {
-<span class="fc" id="L56">        return Location3D.getDiameters(voxels, getCenter());</span>
+<span class="fc" id="L55">        return Location3D.getDiameters(voxels, getCenter());</span>
     }
-    
+
     @Override
     Direction getSlice(Direction direction, HashMap&lt;Direction, Integer&gt; diameters) {
-<span class="fc" id="L61">        return Location3D.getSlice(direction, diameters);</span>
+<span class="fc" id="L60">        return Location3D.getSlice(direction, diameters);</span>
     }
-    
+
     @Override
     ArrayList&lt;Voxel&gt; getSelected(Voxel focus, double n) {
-<span class="fc" id="L66">        return Location3D.getSelected(voxels, focus, n);</span>
+<span class="fc" id="L65">        return Location3D.getSelected(voxels, focus, n);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

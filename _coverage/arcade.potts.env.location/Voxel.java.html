@@ -4,67 +4,72 @@ import java.util.Comparator;
 
 /**
  * Representation of a voxel for locations.
- * &lt;p&gt;
- * Each voxel is defined by (x, y, z) coordinates. Two voxels objects are
- * considered equal if they have matching (x, y, z) coordinates.
+ *
+ * &lt;p&gt;Each voxel is defined by (x, y, z) coordinates. Two voxels objects are considered equal if
+ * they have matching (x, y, z) coordinates.
  */
-
 public final class Voxel {
     /** Comparator for voxels. */
-<span class="fc bfc" id="L14" title="All 2 branches covered.">    public static final Comparator&lt;Voxel&gt; VOXEL_COMPARATOR = (v1, v2) -&gt; v1.z != v2.z</span>
-<span class="fc bfc" id="L15" title="All 2 branches covered.">            ? Integer.compare(v1.z, v2.z) : v1.x != v2.x</span>
-<span class="fc" id="L16">            ? Integer.compare(v1.x, v2.x) : Integer.compare(v1.y, v2.y);</span>
-    
+<span class="fc" id="L13">    public static final Comparator&lt;Voxel&gt; VOXEL_COMPARATOR =</span>
+            (v1, v2) -&gt;
+<span class="fc bfc" id="L15" title="All 2 branches covered.">                    v1.z != v2.z</span>
+<span class="fc" id="L16">                            ? Integer.compare(v1.z, v2.z)</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">                            : v1.x != v2.x</span>
+<span class="fc" id="L18">                                    ? Integer.compare(v1.x, v2.x)</span>
+<span class="fc" id="L19">                                    : Integer.compare(v1.y, v2.y);</span>
+
     /** Voxel x coordinate. */
     public final int x;
-    
+
     /** Voxel y coordinate. */
     public final int y;
-    
+
     /** Voxel z coordinate. */
     public final int z;
-    
+
     /**
      * Creates a {@code Voxel} at the given coordinates.
      *
-     * @param x  the x coordinate
-     * @param y  the y coordinate
-     * @param z  the z coordinate
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
      */
-<span class="fc" id="L34">    public Voxel(int x, int y, int z) {</span>
-<span class="fc" id="L35">        this.x = x;</span>
-<span class="fc" id="L36">        this.y = y;</span>
-<span class="fc" id="L37">        this.z = z;</span>
-<span class="fc" id="L38">    }</span>
-    
+<span class="fc" id="L37">    public Voxel(int x, int y, int z) {</span>
+<span class="fc" id="L38">        this.x = x;</span>
+<span class="fc" id="L39">        this.y = y;</span>
+<span class="fc" id="L40">        this.z = z;</span>
+<span class="fc" id="L41">    }</span>
+
     /**
      * Gets hash based on (x, y, z) coordinates.
      *
-     * @return  the hash
+     * @return the hash
      */
-<span class="fc" id="L45">    public int hashCode() { return x + (y &lt;&lt; 8) + (z &lt;&lt; 16); }</span>
-    
+    public int hashCode() {
+<span class="fc" id="L49">        return x + (y &lt;&lt; 8) + (z &lt;&lt; 16);</span>
+    }
+
     /**
      * Checks if two locations have the same (x, y, z) coordinates.
      *
-     * @param obj  the voxel to compare
+     * @param obj the voxel to compare
      * @return {@code true} if coordinates are the same, {@code false} otherwise
      */
     public boolean equals(Object obj) {
-<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (!(obj instanceof Voxel)) {</span>
-<span class="fc" id="L55">            return false;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (!(obj instanceof Voxel)) {</span>
+<span class="fc" id="L60">            return false;</span>
         }
-<span class="fc" id="L57">        Voxel voxel = (Voxel) obj;</span>
-<span class="fc bfc" id="L58" title="All 6 branches covered.">        return voxel.x == x &amp;&amp; voxel.y == y &amp;&amp; voxel.z == z;</span>
+<span class="fc" id="L62">        Voxel voxel = (Voxel) obj;</span>
+<span class="fc bfc" id="L63" title="All 6 branches covered.">        return voxel.x == x &amp;&amp; voxel.y == y &amp;&amp; voxel.z == z;</span>
     }
-    
+
     /**
      * Returns voxel as string.
      *
-     * @return  a string
+     * @return a string
      */
     public String toString() {
-<span class="fc" id="L67">        return String.format(&quot;[%d, %d, %d]&quot;, x, y, z);</span>
+<span class="fc" id="L72">        return String.format(&quot;[%d, %d, %d]&quot;, x, y, z);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

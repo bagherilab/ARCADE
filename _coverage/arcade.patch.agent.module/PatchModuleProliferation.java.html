@@ -13,82 +13,82 @@ import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Extension of {@link PatchModule} for proliferation.
- * &lt;p&gt;
- * During proliferation, the module is repeatedly stepped from its creation
- * until either the cell is no longer able to proliferate or it has successfully
- * doubled in size and is able to create a new cell object. The module will wait
- * for at least {@code SYNTHESIS_DURATION} ticks to pass before creating a new
- * cell.
+ *
+ * &lt;p&gt;During proliferation, the module is repeatedly stepped from its creation until either the cell
+ * is no longer able to proliferate or it has successfully doubled in size and is able to create a
+ * new cell object. The module will wait for at least {@code SYNTHESIS_DURATION} ticks to pass
+ * before creating a new cell.
  */
-
 public class PatchModuleProliferation extends PatchModule {
     /** Tracker for duration of cell cycle. */
     private int ticker;
-    
+
     /** Target volume for division. */
     private final double targetVolume;
-    
+
     /** Maximum tolerable height for cell. */
     private final double maxHeight;
-    
+
     /** Time required for DNA synthesis [min]. */
     private final double synthesisDuration;
-    
+
     /**
      * Creates a proliferation {@link PatchModule} for the given cell.
-     * &lt;p&gt;
-     * Loaded parameters include:
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
      * &lt;ul&gt;
-     *     &lt;li&gt;{@code SYNTHESIS_DURATION} = time required for DNA synthesis&lt;/li&gt;
+     *   &lt;li&gt;{@code SYNTHESIS_DURATION} = time required for DNA synthesis
      * &lt;/ul&gt;
      *
-     * @param cell  the {@link PatchCell} the module is associated with
+     * @param cell the {@link PatchCell} the module is associated with
      */
     public PatchModuleProliferation(PatchCell cell) {
-<span class="fc" id="L48">        super(cell);</span>
-        
+<span class="fc" id="L47">        super(cell);</span>
+
         // Calculate thresholds.
-<span class="fc" id="L51">        targetVolume = 2 * cell.getCriticalVolume();</span>
-<span class="fc" id="L52">        maxHeight = cell.getCriticalHeight();</span>
-        
+<span class="fc" id="L50">        targetVolume = 2 * cell.getCriticalVolume();</span>
+<span class="fc" id="L51">        maxHeight = cell.getCriticalHeight();</span>
+
         // Set loaded parameters.
-<span class="fc" id="L55">        MiniBox parameters = cell.getParameters();</span>
-<span class="fc" id="L56">        synthesisDuration = parameters.getInt(&quot;proliferation/SYNTHESIS_DURATION&quot;);</span>
-<span class="fc" id="L57">    }</span>
-    
+<span class="fc" id="L54">        MiniBox parameters = cell.getParameters();</span>
+<span class="fc" id="L55">        synthesisDuration = parameters.getInt(&quot;proliferation/SYNTHESIS_DURATION&quot;);</span>
+<span class="fc" id="L56">    }</span>
+
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="nc" id="L61">        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);</span>
-<span class="nc" id="L62">        double totalVolume = PatchCell.calculateTotalVolume(bag);</span>
-<span class="nc" id="L63">        double currentHeight = totalVolume / location.getArea();</span>
-        
+<span class="nc" id="L60">        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);</span>
+<span class="nc" id="L61">        double totalVolume = PatchCell.calculateTotalVolume(bag);</span>
+<span class="nc" id="L62">        double currentHeight = totalVolume / location.getArea();</span>
+
         // Check if cell is no longer able to proliferate due to (i) other
         // condition that has caused its type to no longer be proliferative,
         // (ii) cell no longer exists at a tolerable height, or (iii) no
         // space in neighborhood to divide into. Otherwise, check if double
         // volume has been reached, and if so, create a new cell.
-<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (currentHeight &gt; maxHeight) {</span>
-<span class="nc" id="L71">            cell.setState(State.QUIESCENT);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (currentHeight &gt; maxHeight) {</span>
+<span class="nc" id="L70">            cell.setState(State.QUIESCENT);</span>
         } else {
-<span class="nc" id="L73">            PatchLocation newLocation = PatchCell.selectBestLocation(sim, location,</span>
-<span class="nc" id="L74">                    cell.getVolume() * 0.5, maxHeight, random);</span>
-            
+<span class="nc" id="L72">            PatchLocation newLocation =</span>
+<span class="nc" id="L73">                    PatchCell.selectBestLocation(</span>
+<span class="nc" id="L74">                            sim, location, cell.getVolume() * 0.5, maxHeight, random);</span>
+
 <span class="nc bnc" id="L76" title="All 2 branches missed.">            if (newLocation == null) {</span>
 <span class="nc" id="L77">                cell.setState(State.QUIESCENT);</span>
 <span class="nc bnc" id="L78" title="All 2 branches missed.">            } else if (cell.getVolume() &gt;= targetVolume) {</span>
 <span class="nc bnc" id="L79" title="All 2 branches missed.">                if (ticker &gt; synthesisDuration) {</span>
                     // TODO: ADD CYCLE TIME TO TRACKER.
-                    
+
                     // Reset current cell.
 <span class="nc" id="L83">                    cell.setState(State.UNDEFINED);</span>
-                    
+
                     // Create and schedule new cell.
 <span class="nc" id="L86">                    int newID = sim.getID();</span>
-<span class="nc" id="L87">                    PatchCell newCell = (PatchCell) cell.make(newID, State.UNDEFINED,</span>
-                            newLocation, random);
+<span class="nc" id="L87">                    PatchCell newCell =</span>
+<span class="nc" id="L88">                            (PatchCell) cell.make(newID, State.UNDEFINED, newLocation, random);</span>
 <span class="nc" id="L89">                    sim.getGrid().addObject(newCell, newLocation);</span>
 <span class="nc" id="L90">                    newCell.schedule(sim.getSchedule());</span>
-                    
+
                     // Update cell volume and energy based on split.
 <span class="nc" id="L93">                    double split = (random.nextDouble() / 10 + 0.45);</span>
 <span class="nc" id="L94">                    double volume = cell.getVolume();</span>
@@ -97,13 +97,13 @@ public class PatchModuleProliferation extends PatchModule {
 <span class="nc" id="L97">                    cell.setEnergy(energy * split);</span>
 <span class="nc" id="L98">                    newCell.setVolume(volume * (1 - split));</span>
 <span class="nc" id="L99">                    newCell.setEnergy(energy * (1 - split));</span>
-                    
+
                     // Update processes.
 <span class="nc" id="L102">                    PatchProcess metabolism = (PatchProcess) newCell.getProcess(Domain.METABOLISM);</span>
 <span class="nc" id="L103">                    metabolism.update(cell.getProcess(Domain.METABOLISM));</span>
 <span class="nc" id="L104">                    PatchProcess signaling = (PatchProcess) newCell.getProcess(Domain.SIGNALING);</span>
 <span class="nc" id="L105">                    signaling.update(cell.getProcess(Domain.SIGNALING));</span>
-                    
+
                     // TODO: Update environment generator sites.
 <span class="nc" id="L108">                } else {</span>
 <span class="nc" id="L109">                    ticker++;</span>

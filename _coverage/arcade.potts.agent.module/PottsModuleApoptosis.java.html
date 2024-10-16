@@ -10,76 +10,75 @@ import static arcade.potts.util.PottsEnums.Phase;
 
 /**
  * Extension of {@link PottsModule} for apoptosis.
- * &lt;p&gt;
- * During apoptosis, cells cycle through early and late phases. Once the cell
- * completes the late phase, it is removed from the simulation.
+ *
+ * &lt;p&gt;During apoptosis, cells cycle through early and late phases. Once the cell completes the late
+ * phase, it is removed from the simulation.
  */
-
 public abstract class PottsModuleApoptosis extends PottsModule {
     /**
      * Creates an apoptosis {@code Module} for the given {@link PottsCell}.
      *
-     * @param cell  the {@link PottsCell} the module is associated with
+     * @param cell the {@link PottsCell} the module is associated with
      */
     public PottsModuleApoptosis(PottsCell cell) {
-<span class="fc" id="L25">        super(cell);</span>
-<span class="fc" id="L26">        setPhase(Phase.APOPTOTIC_EARLY);</span>
-<span class="fc" id="L27">    }</span>
-    
+<span class="fc" id="L24">        super(cell);</span>
+<span class="fc" id="L25">        setPhase(Phase.APOPTOTIC_EARLY);</span>
+<span class="fc" id="L26">    }</span>
+
     /**
      * Calls the step method for the current simple phase.
      *
-     * @param random  the random number generator
-     * @param sim  the simulation instance
+     * @param random the random number generator
+     * @param sim the simulation instance
      */
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="fc bfc" id="L36" title="All 3 branches covered.">        switch (phase) {</span>
+<span class="fc bfc" id="L35" title="All 3 branches covered.">        switch (phase) {</span>
             case APOPTOTIC_EARLY:
-<span class="fc" id="L38">                stepEarly(random);</span>
-<span class="fc" id="L39">                break;</span>
+<span class="fc" id="L37">                stepEarly(random);</span>
+<span class="fc" id="L38">                break;</span>
             case APOPTOTIC_LATE:
-<span class="fc" id="L41">                stepLate(random, sim);</span>
-<span class="fc" id="L42">                break;</span>
+<span class="fc" id="L40">                stepLate(random, sim);</span>
+<span class="fc" id="L41">                break;</span>
             default:
                 break;
         }
-<span class="fc" id="L46">    }</span>
-    
+<span class="fc" id="L45">    }</span>
+
     /**
      * Performs actions for early apoptosis phase.
      *
-     * @param random  the random number generator
+     * @param random the random number generator
      */
     abstract void stepEarly(MersenneTwisterFast random);
-    
+
     /**
      * Performs actions for late apoptosis phase.
      *
-     * @param random  the random number generator
-     * @param sim  the simulation instance
+     * @param random the random number generator
+     * @param sim the simulation instance
      */
     abstract void stepLate(MersenneTwisterFast random, Simulation sim);
-    
+
     /**
      * Removes a cell from the simulation.
-     * &lt;p&gt;
-     * The location is cleared, along with any regions. The cell is then removed
-     * from the grid and simulation schedule.
      *
-     * @param sim  the simulation instance
+     * &lt;p&gt;The location is cleared, along with any regions. The cell is then removed from the grid
+     * and simulation schedule.
+     *
+     * @param sim the simulation instance
      */
     void removeCell(Simulation sim) {
-<span class="fc" id="L72">        Potts potts = ((PottsSimulation) sim).getPotts();</span>
-        
+<span class="fc" id="L71">        Potts potts = ((PottsSimulation) sim).getPotts();</span>
+
         // Clear the location.
-<span class="fc" id="L75">        ((PottsLocation) cell.getLocation()).clear(potts.ids, potts.regions);</span>
-        
+<span class="fc" id="L74">        ((PottsLocation) cell.getLocation()).clear(potts.ids, potts.regions);</span>
+
         // Remove the cell from the grid.
-<span class="fc" id="L78">        sim.getGrid().removeObject(cell, null);</span>
-<span class="fc" id="L79">        potts.deregister(cell);</span>
-        
+<span class="fc" id="L77">        sim.getGrid().removeObject(cell, null);</span>
+<span class="fc" id="L78">        potts.deregister(cell);</span>
+
         // Stop stepping the cell.
-<span class="fc" id="L82">        cell.stop();</span>
-<span class="fc" id="L83">    }</span>
+<span class="fc" id="L81">        cell.stop();</span>
+<span class="fc" id="L82">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

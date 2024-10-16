@@ -8,57 +8,55 @@ import arcade.core.env.location.Location;
 
 /**
  * Implementation of {@link Grid} for potts models.
- * &lt;p&gt;
- * {@code PottsGrid} uses the cell id as the index to map to agents. Index 0 is
- * reserved for a {@code null} object representing non-cell voxels in the potts
- * layer.
+ *
+ * &lt;p&gt;{@code PottsGrid} uses the cell id as the index to map to agents. Index 0 is reserved for a
+ * {@code null} object representing non-cell voxels in the potts layer.
  */
-
 public final class PottsGrid implements Grid {
     /** Map of ID to object. */
     final HashMap&lt;Integer, Object&gt; objects;
-    
+
     /** Collection of all objects in the grid. */
     final Bag allObjects;
-    
-    /**
-     * Creates a {@link arcade.core.env.grid.Grid} for potts.
-     */
-<span class="fc" id="L27">    public PottsGrid() {</span>
-<span class="fc" id="L28">        objects = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L29">        allObjects = new Bag();</span>
-<span class="fc" id="L30">        objects.put(0, null);</span>
-<span class="fc" id="L31">    }</span>
-    
+
+    /** Creates a {@link arcade.core.env.grid.Grid} for potts. */
+<span class="fc" id="L23">    public PottsGrid() {</span>
+<span class="fc" id="L24">        objects = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L25">        allObjects = new Bag();</span>
+<span class="fc" id="L26">        objects.put(0, null);</span>
+<span class="fc" id="L27">    }</span>
+
     @Override
-<span class="fc" id="L34">    public Bag getAllObjects() { return allObjects; }</span>
-    
+    public Bag getAllObjects() {
+<span class="fc" id="L31">        return allObjects;</span>
+    }
+
     @Override
     public void addObject(Object object, Location location) {
-<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (object == null) {</span>
-<span class="fc" id="L39">            return;</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (object == null) {</span>
+<span class="fc" id="L37">            return;</span>
         }
-<span class="fc" id="L41">        int index = ((Cell) object).getID();</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (objects.containsKey(index)) {</span>
-<span class="fc" id="L43">            return;</span>
+<span class="fc" id="L39">        int index = ((Cell) object).getID();</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (objects.containsKey(index)) {</span>
+<span class="fc" id="L41">            return;</span>
         }
-<span class="fc" id="L45">        allObjects.add(object);</span>
-<span class="fc" id="L46">        objects.put(index, object);</span>
-<span class="fc" id="L47">    }</span>
-    
+<span class="fc" id="L43">        allObjects.add(object);</span>
+<span class="fc" id="L44">        objects.put(index, object);</span>
+<span class="fc" id="L45">    }</span>
+
     @Override
     public void removeObject(Object object, Location location) {
-<span class="fc" id="L51">        int index = ((Cell) object).getID();</span>
-<span class="fc" id="L52">        allObjects.remove(object);</span>
-<span class="fc" id="L53">        objects.remove(index);</span>
-<span class="fc" id="L54">    }</span>
-    
+<span class="fc" id="L49">        int index = ((Cell) object).getID();</span>
+<span class="fc" id="L50">        allObjects.remove(object);</span>
+<span class="fc" id="L51">        objects.remove(index);</span>
+<span class="fc" id="L52">    }</span>
+
     @Override
-<span class="fc" id="L57">    public void moveObject(Object object, Location fromLocation, Location toLocation) { }</span>
-    
+<span class="fc" id="L55">    public void moveObject(Object object, Location fromLocation, Location toLocation) {}</span>
+
     @Override
     public Object getObjectAt(int index) {
-<span class="fc" id="L61">        return objects.get(index);</span>
+<span class="fc" id="L59">        return objects.get(index);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

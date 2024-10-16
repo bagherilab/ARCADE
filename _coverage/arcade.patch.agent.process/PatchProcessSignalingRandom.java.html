@@ -9,43 +9,41 @@ import static arcade.patch.util.PatchEnums.Flag;
 
 /**
  * Extension of {@link PatchProcessSignaling} for random EGFR signaling.
- * &lt;p&gt;
- * {@code PatchModuleSignalingRandom} randomly sets the migratory flag based on
- * {@code MIGRATORY_PROBABILITY}.
+ *
+ * &lt;p&gt;{@code PatchModuleSignalingRandom} randomly sets the migratory flag based on {@code
+ * MIGRATORY_PROBABILITY}.
  */
-
 public class PatchProcessSignalingRandom extends PatchProcessSignaling {
     /** Probability of migration instead of proliferation. */
     private final double migratoryProbability;
-    
+
     /**
-     * Creates a random signaling {@code Process} for the given
-     * {@link PatchCell}.
-     * &lt;p&gt;
-     * Loaded parameters include:
+     * Creates a random signaling {@code Process} for the given {@link PatchCell}.
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
      * &lt;ul&gt;
-     *     &lt;li&gt;{@code MIGRATORY_PROBABILITY} = probability of migration instead
-     *         of proliferation&lt;/li&gt;
+     *   &lt;li&gt;{@code MIGRATORY_PROBABILITY} = probability of migration instead of proliferation
      * &lt;/ul&gt;
      *
-     * @param cell  the {@link PatchCell} the process is associated with
+     * @param cell the {@link PatchCell} the process is associated with
      */
     public PatchProcessSignalingRandom(PatchCell cell) {
-<span class="nc" id="L34">        super(cell);</span>
-        
+<span class="nc" id="L32">        super(cell);</span>
+
         // Set loaded parameters.
         // TODO: pull migratory threshold from distribution
-<span class="nc" id="L38">        MiniBox parameters = cell.getParameters();</span>
-<span class="nc" id="L39">        migratoryProbability = parameters.getDouble(&quot;metabolism/MIGRATORY_PROBABILITY&quot;);</span>
-<span class="nc" id="L40">    }</span>
-    
+<span class="nc" id="L36">        MiniBox parameters = cell.getParameters();</span>
+<span class="nc" id="L37">        migratoryProbability = parameters.getDouble(&quot;metabolism/MIGRATORY_PROBABILITY&quot;);</span>
+<span class="nc" id="L38">    }</span>
+
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="nc bnc" id="L44" title="All 2 branches missed.">        cell.setFlag(random.nextDouble() &lt; migratoryProbability</span>
-<span class="nc" id="L45">                ? Flag.MIGRATORY : Flag.PROLIFERATIVE);</span>
-<span class="nc" id="L46">    }</span>
-    
+<span class="nc" id="L42">        cell.setFlag(</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">                random.nextDouble() &lt; migratoryProbability ? Flag.MIGRATORY : Flag.PROLIFERATIVE);</span>
+<span class="nc" id="L44">    }</span>
+
     @Override
-<span class="nc" id="L49">    public void update(Process process) { }</span>
+<span class="nc" id="L47">    public void update(Process process) {}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

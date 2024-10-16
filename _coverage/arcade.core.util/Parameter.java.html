@@ -6,101 +6,103 @@ import ec.util.MersenneTwisterFast;
 
 /**
  * Container class for parameter with normal distribution and bound checks.
- * &lt;p&gt;
- * Each {@code Parameter} is associated with a random number generator to select
- * additional parameter values from a normal distribution.
- * For parameters that are fractions (bounded between 0 and 1), the tails of the
- * distribution are truncated.
+ *
+ * &lt;p&gt;Each {@code Parameter} is associated with a random number generator to select additional
+ * parameter values from a normal distribution. For parameters that are fractions (bounded between 0
+ * and 1), the tails of the distribution are truncated.
  */
-
 public class Parameter implements Serializable {
     /** Random number generator. */
     private final MersenneTwisterFast random;
-    
+
     /** Normal distribution. */
     private final Normal normal;
-    
+
     /** Values for truncated distributions. */
     private final double[] tails;
-    
+
     /** {@code true} if parameter is a fraction between 0 and 1, {@code false} otherwise. */
     private final boolean isFrac;
-    
+
     /** Mean of the distribution. */
     private final double mu;
-    
+
     /** Standard deviation of the distribution. */
     private final double sigma;
-    
+
     /** Heterogeneity of the parameter. */
     private final double h;
-    
+
     /**
      * Creates a {@code Parameter} normal distribution.
      *
-     * @param mu  the mean of parameter normal distribution
-     * @param h  the amount of heterogeneity where standard deviation sigma = h*mu
-     * @param isFrac  indicates if distribution is truncated between 0 and 1
-     * @param random  the random number generator
+     * @param mu the mean of parameter normal distribution
+     * @param h the amount of heterogeneity where standard deviation sigma = h*mu
+     * @param isFrac indicates if distribution is truncated between 0 and 1
+     * @param random the random number generator
      */
-<span class="nc" id="L46">    public Parameter(double mu, double h, boolean isFrac, MersenneTwisterFast random) {</span>
-<span class="nc" id="L47">        this.h = h;</span>
-<span class="nc" id="L48">        this.isFrac = isFrac;</span>
-<span class="nc" id="L49">        this.random = random;</span>
-<span class="nc" id="L50">        this.mu = mu;</span>
-<span class="nc" id="L51">        this.sigma = mu * h;</span>
-        
-<span class="nc" id="L53">        normal = new Normal(mu, Math.abs(sigma), random);</span>
-<span class="nc" id="L54">        tails = new double[2];</span>
-<span class="nc bnc" id="L55" title="All 2 branches missed.">        tails[(mu &lt; 0 ? 1 : 0)] = mu + 2 * sigma;</span>
-<span class="nc bnc" id="L56" title="All 2 branches missed.">        tails[(mu &lt; 0 ? 0 : 1)] = mu - 2 * sigma;</span>
-        
-<span class="nc bnc" id="L58" title="All 2 branches missed.">        if (isFrac) {</span>
-<span class="nc" id="L59">            tails[0] = Math.min(tails[0], 1.0);</span>
-<span class="nc" id="L60">            tails[1] = Math.max(tails[1], 0.0);</span>
+<span class="nc" id="L44">    public Parameter(double mu, double h, boolean isFrac, MersenneTwisterFast random) {</span>
+<span class="nc" id="L45">        this.h = h;</span>
+<span class="nc" id="L46">        this.isFrac = isFrac;</span>
+<span class="nc" id="L47">        this.random = random;</span>
+<span class="nc" id="L48">        this.mu = mu;</span>
+<span class="nc" id="L49">        this.sigma = mu * h;</span>
+
+<span class="nc" id="L51">        normal = new Normal(mu, Math.abs(sigma), random);</span>
+<span class="nc" id="L52">        tails = new double[2];</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        tails[(mu &lt; 0 ? 1 : 0)] = mu + 2 * sigma;</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        tails[(mu &lt; 0 ? 0 : 1)] = mu - 2 * sigma;</span>
+
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (isFrac) {</span>
+<span class="nc" id="L57">            tails[0] = Math.min(tails[0], 1.0);</span>
+<span class="nc" id="L58">            tails[1] = Math.max(tails[1], 0.0);</span>
         }
-<span class="nc" id="L62">    }</span>
-    
+<span class="nc" id="L60">    }</span>
+
     /**
      * Gets the mean of the distribution.
      *
-     * @return  the distribution mean
+     * @return the distribution mean
      */
-<span class="nc" id="L69">    public double getMu() { return mu; }</span>
-    
+    public double getMu() {
+<span class="nc" id="L68">        return mu;</span>
+    }
+
     /**
      * Gets the standard deviation of the distribution.
      *
-     * @return  the distribution standard deviation
+     * @return the distribution standard deviation
      */
-<span class="nc" id="L76">    public double getSigma() { return sigma; }</span>
-    
+    public double getSigma() {
+<span class="nc" id="L77">        return sigma;</span>
+    }
+
     /**
      * Creates a new parameter with updated mean.
      *
-     * @param mean  the mean of the new parameter
-     * @return  a parameter instance with the new mean
+     * @param mean the mean of the new parameter
+     * @return a parameter instance with the new mean
      */
     public Parameter update(double mean) {
-<span class="nc" id="L85">        return new Parameter(mean, h, isFrac, random);</span>
+<span class="nc" id="L87">        return new Parameter(mean, h, isFrac, random);</span>
     }
-    
+
     /**
      * Draws a double from the bounded normal distribution.
      *
-     * @return  a double drawn from the distribution
+     * @return a double drawn from the distribution
      */
     public double nextDouble() {
-<span class="nc" id="L94">        return Math.max(Math.min(normal.nextDouble(), tails[0]), tails[1]);</span>
+<span class="nc" id="L96">        return Math.max(Math.min(normal.nextDouble(), tails[0]), tails[1]);</span>
     }
-    
+
     /**
      * Draws a integer from the bounded normal distribution.
      *
-     * @return  an integer drawn from the distribution
+     * @return an integer drawn from the distribution
      */
     public int nextInt() {
-<span class="nc" id="L103">        return (int) nextDouble();</span>
+<span class="nc" id="L105">        return (int) nextDouble();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

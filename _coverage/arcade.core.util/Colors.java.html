@@ -5,154 +5,154 @@ import sim.util.gui.ColorMap;
 
 /**
  * Implementation of {@code ColorMap} for discrete and continuous colors.
- * &lt;p&gt;
- * Custom color map management for use with visualization classes in
- * &lt;a href=&quot;https://cs.gmu.edu/~eclab/projects/mason/&quot;&gt;MASON&lt;/a&gt; library.
+ *
+ * &lt;p&gt;Custom color map management for use with visualization classes in &lt;a
+ * href=&quot;https://cs.gmu.edu/~eclab/projects/mason/&quot;&gt;MASON&lt;/a&gt; library.
  */
-
 public class Colors implements ColorMap {
     /** Number of bins. */
     private static final int BINS = 256;
-    
+
     /** Color with no alpha. */
-<span class="nc" id="L18">    private static final Color EMPTY = new Color(0, 0, 0, 0);</span>
-    
+<span class="nc" id="L17">    private static final Color EMPTY = new Color(0, 0, 0, 0);</span>
+
     /** Color map. */
     private final Color[] colors;
-    
+
     /** Minimum value. */
     private final double min;
-    
+
     /** Maximum value. */
     private final double max;
-    
+
     /** Number of colors in the color map. */
     private final int len;
-    
+
     /** Default value. */
     private final double defaultValue;
-    
+
     /** Modulo on index, 0 if no modulo is applied. */
     private final int mod;
-    
+
     /**
      * Creates {@code Colors} table.
      *
      * @param colors the table of colors
      */
-<span class="nc" id="L43">    public Colors(Color[] colors) { this(colors, 0); }</span>
-    
+    public Colors(Color[] colors) {
+<span class="nc" id="L43">        this(colors, 0);</span>
+<span class="nc" id="L44">    }</span>
+
     /**
      * Creates {@code Colors} table with modulo index.
      *
-     * @param colors  the table of colors
-     * @param mod  the value of modulo on index before selecting color
+     * @param colors the table of colors
+     * @param mod the value of modulo on index before selecting color
      */
-<span class="nc" id="L51">    public Colors(Color[] colors, int mod) {</span>
-<span class="nc" id="L52">        this.colors = colors;</span>
-<span class="nc" id="L53">        this.min = 0;</span>
-<span class="nc" id="L54">        this.max = colors.length;</span>
-<span class="nc" id="L55">        this.len = colors.length;</span>
-<span class="nc" id="L56">        this.defaultValue = -1;</span>
-<span class="nc" id="L57">        this.mod = mod;</span>
-<span class="nc" id="L58">    }</span>
-    
+<span class="nc" id="L52">    public Colors(Color[] colors, int mod) {</span>
+<span class="nc" id="L53">        this.colors = colors;</span>
+<span class="nc" id="L54">        this.min = 0;</span>
+<span class="nc" id="L55">        this.max = colors.length;</span>
+<span class="nc" id="L56">        this.len = colors.length;</span>
+<span class="nc" id="L57">        this.defaultValue = -1;</span>
+<span class="nc" id="L58">        this.mod = mod;</span>
+<span class="nc" id="L59">    }</span>
+
     /**
      * Creates {@code Colors} between two values.
      *
-     * @param minCol  the color associated with the lower bound
-     * @param maxCol  the color associated with the upper bound
-     * @param minVal  the value of the lower bound
-     * @param maxVal  the value of the upper bound
+     * @param minCol the color associated with the lower bound
+     * @param maxCol the color associated with the upper bound
+     * @param minVal the value of the lower bound
+     * @param maxVal the value of the upper bound
      */
     public Colors(Color minCol, Color maxCol, double minVal, double maxVal) {
-<span class="nc" id="L69">        this(new Color[] { minCol, maxCol }, new double[] { minVal, maxVal });</span>
-<span class="nc" id="L70">    }</span>
-    
+<span class="nc" id="L70">        this(new Color[] {minCol, maxCol}, new double[] {minVal, maxVal});</span>
+<span class="nc" id="L71">    }</span>
+
     /**
      * Creates {@code Colors} between multiple values.
      *
-     * @param colors  the array of colors associated with each bound
-     * @param vals  the list of values at each bound
+     * @param colors the array of colors associated with each bound
+     * @param vals the list of values at each bound
      */
-<span class="nc" id="L78">    public Colors(Color[] colors, double[] vals) {</span>
-<span class="nc" id="L79">        int n = vals.length - 1;</span>
-<span class="nc" id="L80">        this.colors = new Color[BINS + 1];</span>
-<span class="nc" id="L81">        this.min = vals[0];</span>
-<span class="nc" id="L82">        this.max = vals[n];</span>
-<span class="nc" id="L83">        this.len = BINS;</span>
-<span class="nc" id="L84">        this.defaultValue = min - 1;</span>
-<span class="nc" id="L85">        this.mod = 0;</span>
-        
-<span class="nc" id="L87">        int sum = 0;</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="nc" id="L89">            int bin = (int) Math.round(BINS * (vals[i + 1] - vals[i]) / (max - min));</span>
-<span class="nc" id="L90">            interpColors(colors[i], colors[i + 1], sum, sum + bin);</span>
-<span class="nc" id="L91">            sum += bin;</span>
+<span class="nc" id="L79">    public Colors(Color[] colors, double[] vals) {</span>
+<span class="nc" id="L80">        int n = vals.length - 1;</span>
+<span class="nc" id="L81">        this.colors = new Color[BINS + 1];</span>
+<span class="nc" id="L82">        this.min = vals[0];</span>
+<span class="nc" id="L83">        this.max = vals[n];</span>
+<span class="nc" id="L84">        this.len = BINS;</span>
+<span class="nc" id="L85">        this.defaultValue = min - 1;</span>
+<span class="nc" id="L86">        this.mod = 0;</span>
+
+<span class="nc" id="L88">        int sum = 0;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="nc" id="L90">            int bin = (int) Math.round(BINS * (vals[i + 1] - vals[i]) / (max - min));</span>
+<span class="nc" id="L91">            interpColors(colors[i], colors[i + 1], sum, sum + bin);</span>
+<span class="nc" id="L92">            sum += bin;</span>
         }
-        
-<span class="nc bnc" id="L94" title="All 2 branches missed.">        for (int i = Math.min(BINS, sum); i &lt; BINS + 1; i++) {</span>
-<span class="nc" id="L95">            this.colors[i] = colors[n];</span>
+
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        for (int i = Math.min(BINS, sum); i &lt; BINS + 1; i++) {</span>
+<span class="nc" id="L96">            this.colors[i] = colors[n];</span>
         }
-<span class="nc" id="L97">    }</span>
-    
+<span class="nc" id="L98">    }</span>
+
     /**
      * Interpolates between two colors.
      *
-     * @param minCol  the minimum color
-     * @param maxCol  the maximum color
-     * @param start  the starting value
-     * @param end  the ending value
+     * @param minCol the minimum color
+     * @param maxCol the maximum color
+     * @param start the starting value
+     * @param end the ending value
      */
     private void interpColors(Color minCol, Color maxCol, int start, int end) {
-<span class="nc" id="L108">        int n = (Math.min(end, BINS)) - start;</span>
+<span class="nc" id="L109">        int n = (Math.min(end, BINS)) - start;</span>
         int r;
         int g;
         int b;
         int a;
         double delta;
-        
+
         // Create color array.
-<span class="nc" id="L116">        int minR = minCol.getRed();</span>
-<span class="nc" id="L117">        int minG = minCol.getGreen();</span>
-<span class="nc" id="L118">        int minB = minCol.getBlue();</span>
-<span class="nc" id="L119">        int minA = minCol.getAlpha();</span>
-<span class="nc" id="L120">        int maxR = maxCol.getRed();</span>
-<span class="nc" id="L121">        int maxG = maxCol.getGreen();</span>
-<span class="nc" id="L122">        int maxB = maxCol.getBlue();</span>
-<span class="nc" id="L123">        int maxA = maxCol.getAlpha();</span>
-        
+<span class="nc" id="L117">        int minR = minCol.getRed();</span>
+<span class="nc" id="L118">        int minG = minCol.getGreen();</span>
+<span class="nc" id="L119">        int minB = minCol.getBlue();</span>
+<span class="nc" id="L120">        int minA = minCol.getAlpha();</span>
+<span class="nc" id="L121">        int maxR = maxCol.getRed();</span>
+<span class="nc" id="L122">        int maxG = maxCol.getGreen();</span>
+<span class="nc" id="L123">        int maxB = maxCol.getBlue();</span>
+<span class="nc" id="L124">        int maxA = maxCol.getAlpha();</span>
+
         // Increment color between bounds.
-<span class="nc bnc" id="L126" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="nc" id="L127">            delta = (double) i / n;</span>
-<span class="nc" id="L128">            r = (int) (minR + (maxR - minR) * delta);</span>
-<span class="nc" id="L129">            g = (int) (minG + (maxG - minG) * delta);</span>
-<span class="nc" id="L130">            b = (int) (minB + (maxB - minB) * delta);</span>
-<span class="nc" id="L131">            a = (int) (minA + (maxA - minA) * delta);</span>
-<span class="nc" id="L132">            colors[i + start] = new Color(r, g, b, a);</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="nc" id="L128">            delta = (double) i / n;</span>
+<span class="nc" id="L129">            r = (int) (minR + (maxR - minR) * delta);</span>
+<span class="nc" id="L130">            g = (int) (minG + (maxG - minG) * delta);</span>
+<span class="nc" id="L131">            b = (int) (minB + (maxB - minB) * delta);</span>
+<span class="nc" id="L132">            a = (int) (minA + (maxA - minA) * delta);</span>
+<span class="nc" id="L133">            colors[i + start] = new Color(r, g, b, a);</span>
         }
-<span class="nc" id="L134">    }</span>
-    
+<span class="nc" id="L135">    }</span>
+
     /**
      * Gets color map index for given number value.
-     * &lt;p&gt;
-     * Applies modulo if the {@code mod} is not zero. Index is determined as
-     * (length of bins in the colormap)*(level scaled between the minimum and
-     * maximum).
      *
-     * @param level  the number value
-     * @return  the color map index
+     * &lt;p&gt;Applies modulo if the {@code mod} is not zero. Index is determined as (length of bins in
+     * the colormap)*(level scaled between the minimum and maximum).
+     *
+     * @param level the number value
+     * @return the color map index
      */
     private int getIndex(double level) {
 <span class="nc bnc" id="L147" title="All 2 branches missed.">        int index = (int) (len * (((mod == 0 ? level : level % mod) - min) / (max - min)));</span>
 <span class="nc bnc" id="L148" title="All 2 branches missed.">        return index &lt; 0 ? 0 : Math.min(index, len);</span>
     }
-    
+
     /**
      * Gets the color corresponding to level.
      *
-     * @param level  the number value
-     * @return  the color
+     * @param level the number value
+     * @return the color
      */
     @Override
     public Color getColor(double level) {
@@ -161,12 +161,12 @@ public class Colors implements ColorMap {
         }
 <span class="nc" id="L162">        return colors[getIndex(level)];</span>
     }
-    
+
     /**
      * Gets RGB corresponding to level.
      *
-     * @param level  the number value
-     * @return  the RGB value
+     * @param level the number value
+     * @return the RGB value
      */
     @Override
     public int getRGB(double level) {
@@ -175,12 +175,12 @@ public class Colors implements ColorMap {
         }
 <span class="nc" id="L176">        return colors[getIndex(level)].getRGB();</span>
     }
-    
+
     /**
      * Gets the alpha corresponding to level.
      *
-     * @param level  the number value
-     * @return  the alpha value
+     * @param level the number value
+     * @return the alpha value
      */
     @Override
     public int getAlpha(double level) {
@@ -189,22 +189,26 @@ public class Colors implements ColorMap {
         }
 <span class="nc" id="L190">        return colors[getIndex(level)].getAlpha();</span>
     }
-    
+
     /**
      * Checks if the number value is between the minimum and maximum.
      *
-     * @param level  the number value
-     * @return  {@code true} if level is valid, {@code false} otherwise
+     * @param level the number value
+     * @return {@code true} if level is valid, {@code false} otherwise
      */
     @Override
-<span class="nc bnc" id="L200" title="All 4 branches missed.">    public boolean validLevel(double level) { return level &gt;= min &amp;&amp; level &lt;= max; }</span>
-    
+    public boolean validLevel(double level) {
+<span class="nc bnc" id="L201" title="All 4 branches missed.">        return level &gt;= min &amp;&amp; level &lt;= max;</span>
+    }
+
     /**
      * Gets default value.
      *
-     * @return  the default number value
+     * @return the default number value
      */
     @Override
-<span class="nc" id="L208">    public double defaultValue() { return defaultValue; }</span>
+    public double defaultValue() {
+<span class="nc" id="L211">        return defaultValue;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

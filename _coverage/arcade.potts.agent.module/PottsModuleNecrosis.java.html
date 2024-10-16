@@ -4,19 +4,18 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.potts.agent.cell.PottsCell;
 
-/**
- * Extension of {@link PottsModule} for necrosis.
- */
-
+/** Extension of {@link PottsModule} for necrosis. */
 public class PottsModuleNecrosis extends PottsModule {
     /**
      * Creates a necrosis {@code Module} for the given {@link PottsCell}.
      *
-     * @param cell  the {@link PottsCell} the module is associated with
+     * @param cell the {@link PottsCell} the module is associated with
      */
-<span class="fc" id="L17">    public PottsModuleNecrosis(PottsCell cell) { super(cell); }</span>
-    
+    public PottsModuleNecrosis(PottsCell cell) {
+<span class="fc" id="L15">        super(cell);</span>
+<span class="fc" id="L16">    }</span>
+
     @Override
-<span class="nc" id="L20">    public void step(MersenneTwisterFast random, Simulation sim) { }</span>
+<span class="nc" id="L19">    public void step(MersenneTwisterFast random, Simulation sim) {}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

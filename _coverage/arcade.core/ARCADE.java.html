@@ -28,294 +28,303 @@ import arcade.potts.PottsARCADE;
 
 /**
  * Entry point class for ARCADE simulations.
- * &lt;p&gt;
- * The class loads two XML files {@code command.xml} and {@code parameter.xml}
- * that specify the command line parser options and the default parameter
- * values, respectively. The setup XML file is then parsed to produce an array
- * of {@link Series} objects, each of which defines replicates (differing only
- * in random seed) of {@link arcade.core.sim.Simulation} instances to run.
- * &lt;p&gt;
- * If the visualization flag is used, only the first valid {@link Series} in the
- * array is run. Otherwise, all valid {@code Series} are run.
- * &lt;p&gt;
- * An implementing package {@code &lt;implementation&gt;} extends this class to define
- * implementation specific:
+ *
+ * &lt;p&gt;The class loads two XML files {@code command.xml} and {@code parameter.xml} that specify the
+ * command line parser options and the default parameter values, respectively. The setup XML file is
+ * then parsed to produce an array of {@link Series} objects, each of which defines replicates
+ * (differing only in random seed) of {@link arcade.core.sim.Simulation} instances to run.
+ *
+ * &lt;p&gt;If the visualization flag is used, only the first valid {@link Series} in the array is run.
+ * Otherwise, all valid {@code Series} are run.
+ *
+ * &lt;p&gt;An implementing package {@code &lt;implementation&gt;} extends this class to define implementation
+ * specific:
+ *
  * &lt;ul&gt;
- *     &lt;li&gt;{@code command.&lt;implementation&gt;.xml} with custom command line parameters&lt;/li&gt;
- *     &lt;li&gt;{@code parameter.&lt;implementation&gt;.xml} with new default parameter values&lt;/li&gt;
- *     &lt;li&gt;{@link InputBuilder} for building implementation series from the setup XML&lt;/li&gt;
- *     &lt;li&gt;{@link OutputLoader} for loading classes&lt;/li&gt;
- *     &lt;li&gt;{@link OutputSaver} for saving classes&lt;/li&gt;
+ *   &lt;li&gt;{@code command.&lt;implementation&gt;.xml} with custom command line parameters
+ *   &lt;li&gt;{@code parameter.&lt;implementation&gt;.xml} with new default parameter values
+ *   &lt;li&gt;{@link InputBuilder} for building implementation series from the setup XML
+ *   &lt;li&gt;{@link OutputLoader} for loading classes
+ *   &lt;li&gt;{@link OutputSaver} for saving classes
  * &lt;/ul&gt;
  */
-
-<span class="fc" id="L52">public abstract class ARCADE {</span>
+<span class="fc" id="L51">public abstract class ARCADE {</span>
     /** Logger for {@code ARCADE}. */
     protected static Logger logger;
-    
+
     /** Version number. */
-<span class="fc" id="L57">    public static final String VERSION = loadVersion();</span>
-    
+<span class="fc" id="L56">    public static final String VERSION = loadVersion();</span>
+
     /**
      * Gets the resource relative to the location of the class.
      *
-     * @param s  the resource name
-     * @return  the resource location
+     * @param s the resource name
+     * @return the resource location
      */
     protected abstract String getResource(String s);
-    
+
     /**
      * Gets an {@link InputBuilder} instance.
      *
-     * @return  an {@link InputBuilder} instance
+     * @return an {@link InputBuilder} instance
      */
     protected abstract InputBuilder getBuilder();
-    
+
     /**
      * Gets an {@link OutputLoader} instance for the series.
      *
-     * @param series  the {@link Series} instance
-     * @return  an {@link OutputLoader} instance
+     * @param series the {@link Series} instance
+     * @return an {@link OutputLoader} instance
      */
     protected abstract OutputLoader getLoader(Series series);
-    
+
     /**
      * Gets an {@link OutputSaver} instance for the series.
      *
-     * @param series  the {@link Series} instance
-     * @return  an {@link OutputSaver} instance
+     * @param series the {@link Series} instance
+     * @return an {@link OutputSaver} instance
      */
     protected abstract OutputSaver getSaver(Series series);
-    
+
     /**
      * Main function for running ARCADE simulations.
      *
-     * @param args  list of command line arguments
+     * @param args list of command line arguments
      */
     public static void main(String[] args) throws Exception {
-<span class="fc" id="L96">        updateLogger();</span>
-<span class="fc" id="L97">        logger = Logger.getLogger(ARCADE.class.getName());</span>
-        
+<span class="fc" id="L95">        updateLogger();</span>
+<span class="fc" id="L96">        logger = Logger.getLogger(ARCADE.class.getName());</span>
+
         // Check that arguments includes at least one entry.
-<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (args.length == 0) {</span>
-<span class="fc" id="L101">            logger.warning(&quot;ARCADE simulation type must be specified&quot;);</span>
-<span class="fc" id="L102">            throw new InvalidParameterException();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (args.length == 0) {</span>
+<span class="fc" id="L100">            logger.warning(&quot;ARCADE simulation type must be specified&quot;);</span>
+<span class="fc" id="L101">            throw new InvalidParameterException();</span>
         }
-        
+
         // Extract ARCADE type.
         ARCADE arcade;
-        
-<span class="fc bfc" id="L108" title="All 3 branches covered.">        switch (args[0]) {</span>
+
+<span class="fc bfc" id="L107" title="All 3 branches covered.">        switch (args[0]) {</span>
             case &quot;patch&quot;:
-<span class="fc" id="L110">                logger.info(&quot;running ARCADE [ patch | &quot; + VERSION + &quot; ] simulations&quot;);</span>
-<span class="fc" id="L111">                arcade = new PatchARCADE();</span>
-<span class="fc" id="L112">                break;</span>
+<span class="fc" id="L109">                logger.info(&quot;running ARCADE [ patch | &quot; + VERSION + &quot; ] simulations&quot;);</span>
+<span class="fc" id="L110">                arcade = new PatchARCADE();</span>
+<span class="fc" id="L111">                break;</span>
             case &quot;potts&quot;:
-<span class="fc" id="L114">                logger.info(&quot;running ARCADE [ potts | &quot; + VERSION + &quot; ] simulations&quot;);</span>
-<span class="fc" id="L115">                arcade = new PottsARCADE();</span>
-<span class="fc" id="L116">                break;</span>
+<span class="fc" id="L113">                logger.info(&quot;running ARCADE [ potts | &quot; + VERSION + &quot; ] simulations&quot;);</span>
+<span class="fc" id="L114">                arcade = new PottsARCADE();</span>
+<span class="fc" id="L115">                break;</span>
             default:
-<span class="fc" id="L118">                logger.warning(&quot;ARCADE [ &quot; + args[0] + &quot; ] does not exist&quot;);</span>
-<span class="fc" id="L119">                throw new InvalidParameterException();</span>
+<span class="fc" id="L117">                logger.warning(&quot;ARCADE [ &quot; + args[0] + &quot; ] does not exist&quot;);</span>
+<span class="fc" id="L118">                throw new InvalidParameterException();</span>
         }
-        
+
         // Load command and parameter XML files.
-<span class="fc" id="L123">        Box commands = arcade.loadCommands(args[0]);</span>
-<span class="fc" id="L124">        Box parameters = arcade.loadParameters(args[0]);</span>
-        
+<span class="fc" id="L122">        Box commands = arcade.loadCommands(args[0]);</span>
+<span class="fc" id="L123">        Box parameters = arcade.loadParameters(args[0]);</span>
+
         // Parse arguments from command line.
-<span class="fc" id="L127">        MiniBox settings = arcade.parseArguments(args, commands);</span>
-        
+<span class="fc" id="L126">        MiniBox settings = arcade.parseArguments(args, commands);</span>
+
         // Build series
-<span class="fc" id="L130">        ArrayList&lt;Series&gt; series = arcade.buildSeries(parameters, settings);</span>
-        
+<span class="fc" id="L129">        ArrayList&lt;Series&gt; series = arcade.buildSeries(parameters, settings);</span>
+
         // Run series.
-<span class="fc" id="L133">        arcade.runSeries(series, settings);</span>
-<span class="fc" id="L134">    }</span>
-    
+<span class="fc" id="L132">        arcade.runSeries(series, settings);</span>
+<span class="fc" id="L133">    }</span>
+
     /**
      * Gets full version number.
      *
-     * If running with a jar, the version is pulled from the jar manifest.
-     * Otherwise, the version is extracted using git.
+     * &lt;p&gt;If running with a jar, the version is pulled from the jar manifest. Otherwise, the version
+     * is extracted using git.
      *
-     * @return  the version number
+     * @return the version number
      */
     static String loadVersion() {
-<span class="fc" id="L145">        String className = ARCADE.class.getSimpleName() + &quot;.class&quot;;</span>
-<span class="fc" id="L146">        String classPath = Objects.requireNonNull(ARCADE.class.getResource(className)).toString();</span>
-        
+<span class="fc" id="L144">        String className = ARCADE.class.getSimpleName() + &quot;.class&quot;;</span>
+<span class="fc" id="L145">        String classPath = Objects.requireNonNull(ARCADE.class.getResource(className)).toString();</span>
+
         try {
-<span class="pc bpc" id="L149" title="1 of 2 branches missed.">            if (classPath.startsWith(&quot;jar&quot;)) {</span>
-<span class="nc" id="L150">                String manifestPath = classPath.substring(0, classPath.lastIndexOf(&quot;!&quot;) + 1)</span>
-                        + &quot;/META-INF/MANIFEST.MF&quot;;
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">            if (classPath.startsWith(&quot;jar&quot;)) {</span>
+<span class="nc" id="L149">                String manifestPath =</span>
+<span class="nc" id="L150">                        classPath.substring(0, classPath.lastIndexOf(&quot;!&quot;) + 1)</span>
+                                + &quot;/META-INF/MANIFEST.MF&quot;;
 <span class="nc" id="L152">                Manifest manifest = new Manifest(new URL(manifestPath).openStream());</span>
 <span class="nc" id="L153">                Attributes attr = manifest.getMainAttributes();</span>
 <span class="nc" id="L154">                return attr.getValue(&quot;Implementation-Version&quot;);</span>
             } else {
 <span class="fc" id="L156">                Runtime runtime = Runtime.getRuntime();</span>
-                
+
 <span class="fc" id="L158">                InputStream inputStream = runtime.exec(&quot;git describe --tags&quot;).getInputStream();</span>
 <span class="fc" id="L159">                Scanner scanner = new Scanner(inputStream).useDelimiter(&quot;\\A&quot;);</span>
 <span class="pc bpc" id="L160" title="1 of 2 branches missed.">                String describe = scanner.hasNext() ? scanner.next() : &quot;&quot;;</span>
-                
+
 <span class="fc" id="L162">                inputStream = runtime.exec(&quot;git status --porcelain&quot;).getInputStream();</span>
 <span class="fc" id="L163">                scanner = new Scanner(inputStream).useDelimiter(&quot;\\A&quot;);</span>
 <span class="pc bpc" id="L164" title="1 of 2 branches missed.">                String status = scanner.hasNext() ? scanner.next() : &quot;&quot;;</span>
-                
+
 <span class="nc bnc" id="L166" title="All 2 branches missed.">                return describe.trim().substring(1) + (status.isEmpty() ? &quot;&quot; : &quot;.dirty&quot;);</span>
             }
 <span class="fc" id="L168">        } catch (Exception e) {</span>
 <span class="fc" id="L169">            return &quot;&lt;undefined&gt;&quot;;</span>
         }
     }
-    
+
     /**
      * Loads command line parser from {@code command.xml} files.
      *
-     * @param implementation  the implementation name
-     * @return  a container of command line settings
+     * @param implementation the implementation name
+     * @return a container of command line settings
      */
     Box loadCommands(String implementation) throws IOException, SAXException {
 <span class="fc" id="L180">        InputLoader loader = new InputLoader();</span>
-        
+
 <span class="fc" id="L182">        logger.info(&quot;loading framework command line parser from [ command.xml ]&quot;);</span>
 <span class="fc" id="L183">        Box commands = loader.load(ARCADE.class.getResource(&quot;command.xml&quot;).toString());</span>
-        
-<span class="fc" id="L185">        logger.info(&quot;loading implementation [ &quot; + this.getClass().getSimpleName() + &quot; ]&quot;</span>
-                + &quot; command line parser from [ command.&quot; + implementation + &quot;.xml ]&quot;);
-<span class="fc" id="L187">        loader.load(this.getResource(&quot;command.&quot; + implementation + &quot;.xml&quot;), commands);</span>
-        
-<span class="fc" id="L189">        return commands;</span>
+
+<span class="fc" id="L185">        logger.info(</span>
+                &quot;loading implementation [ &quot;
+<span class="fc" id="L187">                        + this.getClass().getSimpleName()</span>
+                        + &quot; ]&quot;
+                        + &quot; command line parser from [ command.&quot;
+                        + implementation
+                        + &quot;.xml ]&quot;);
+<span class="fc" id="L192">        loader.load(this.getResource(&quot;command.&quot; + implementation + &quot;.xml&quot;), commands);</span>
+
+<span class="fc" id="L194">        return commands;</span>
     }
-    
+
     /**
      * Loads default parameter from {@code parameter.xml} files.
      *
-     * @param implementation  the implementation name
-     * @return  a container of default parameter values
+     * @param implementation the implementation name
+     * @return a container of default parameter values
      */
     Box loadParameters(String implementation) throws IOException, SAXException {
-<span class="fc" id="L199">        InputLoader loader = new InputLoader();</span>
-        
-<span class="fc" id="L201">        logger.info(&quot;loading framework default parameters from [ parameter.xml ]&quot;);</span>
-<span class="fc" id="L202">        Box parameters = loader.load(ARCADE.class.getResource(&quot;parameter.xml&quot;).toString());</span>
-        
-<span class="fc" id="L204">        logger.info(&quot;loading implementation [ &quot; + this.getClass().getSimpleName() + &quot; ]&quot;</span>
-                + &quot; default parameters from [ parameter.&quot; + implementation + &quot;.xml ]&quot;);
-<span class="fc" id="L206">        loader.load(this.getResource(&quot;parameter.&quot; + implementation + &quot;.xml&quot;), parameters);</span>
-        
-<span class="fc" id="L208">        return parameters;</span>
+<span class="fc" id="L204">        InputLoader loader = new InputLoader();</span>
+
+<span class="fc" id="L206">        logger.info(&quot;loading framework default parameters from [ parameter.xml ]&quot;);</span>
+<span class="fc" id="L207">        Box parameters = loader.load(ARCADE.class.getResource(&quot;parameter.xml&quot;).toString());</span>
+
+<span class="fc" id="L209">        logger.info(</span>
+                &quot;loading implementation [ &quot;
+<span class="fc" id="L211">                        + this.getClass().getSimpleName()</span>
+                        + &quot; ]&quot;
+                        + &quot; default parameters from [ parameter.&quot;
+                        + implementation
+                        + &quot;.xml ]&quot;);
+<span class="fc" id="L216">        loader.load(this.getResource(&quot;parameter.&quot; + implementation + &quot;.xml&quot;), parameters);</span>
+
+<span class="fc" id="L218">        return parameters;</span>
     }
-    
+
     /**
      * Parses arguments using command line parser.
      *
-     * @param args  the list of arguments
-     * @param commands  the command line parser settings
-     * @return  the container of parsed arguments
+     * @param args the list of arguments
+     * @param commands the command line parser settings
+     * @return the container of parsed arguments
      */
     MiniBox parseArguments(String[] args, Box commands) {
         // Parse command line arguments.
-<span class="fc" id="L220">        logger.info(&quot;parsing command line arguments&quot;);</span>
-<span class="fc" id="L221">        InputParser parser = new InputParser(commands);</span>
-<span class="fc" id="L222">        return parser.parse(args);</span>
+<span class="fc" id="L230">        logger.info(&quot;parsing command line arguments&quot;);</span>
+<span class="fc" id="L231">        InputParser parser = new InputParser(commands);</span>
+<span class="fc" id="L232">        return parser.parse(args);</span>
     }
-    
+
     /**
      * Builds series based on setup file.
      *
-     * @param parameters  a container of default parameter values
-     * @param settings  a container of parsed arguments
-     * @return  a list of {@link Series} instances
+     * @param parameters a container of default parameter values
+     * @param settings a container of parsed arguments
+     * @return a list of {@link Series} instances
      */
     ArrayList&lt;Series&gt; buildSeries(Box parameters, MiniBox settings)
             throws IOException, SAXException {
-<span class="fc" id="L234">        String xml = settings.get(&quot;XML&quot;);</span>
-<span class="fc" id="L235">        String path = settings.get(&quot;PATH&quot;);</span>
-<span class="fc" id="L236">        boolean isVis = settings.contains(&quot;VIS&quot;);</span>
-        
-<span class="fc" id="L238">        InputBuilder builder = this.getBuilder();</span>
-<span class="fc bfc" id="L239" title="All 2 branches covered.">        builder.path = path.endsWith(&quot;/&quot;) ? path : (path + &quot;/&quot;);</span>
-<span class="fc" id="L240">        builder.parameters = parameters;</span>
-<span class="fc" id="L241">        builder.isVis = isVis;</span>
-        
-<span class="fc" id="L243">        return builder.build(xml);</span>
+<span class="fc" id="L244">        String xml = settings.get(&quot;XML&quot;);</span>
+<span class="fc" id="L245">        String path = settings.get(&quot;PATH&quot;);</span>
+<span class="fc" id="L246">        boolean isVis = settings.contains(&quot;VIS&quot;);</span>
+
+<span class="fc" id="L248">        InputBuilder builder = this.getBuilder();</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">        builder.path = path.endsWith(&quot;/&quot;) ? path : (path + &quot;/&quot;);</span>
+<span class="fc" id="L250">        builder.parameters = parameters;</span>
+<span class="fc" id="L251">        builder.isVis = isVis;</span>
+
+<span class="fc" id="L253">        return builder.build(xml);</span>
     }
-    
+
     /**
      * Runs simulations for each {@link Series}.
-     * &lt;p&gt;
-     * If the {@code --vis} flag is set, then only the first valid series is
-     * run. Otherwise, all valid series in the list are run.
      *
-     * @param series  the list of {@link Series} instances
-     * @param settings  a container of parsed arguments
+     * &lt;p&gt;If the {@code --vis} flag is set, then only the first valid series is run. Otherwise, all
+     * valid series in the list are run.
+     *
+     * @param series the list of {@link Series} instances
+     * @param settings a container of parsed arguments
      */
     void runSeries(ArrayList&lt;Series&gt; series, MiniBox settings) throws Exception {
-<span class="fc" id="L256">        boolean isVis = settings.contains(&quot;VIS&quot;);</span>
-<span class="fc" id="L257">        String loadPath = settings.get(&quot;LOADPATH&quot;);</span>
-<span class="fc" id="L258">        boolean loadCells = settings.contains(&quot;LOADCELLS&quot;);</span>
-<span class="fc" id="L259">        boolean loadLocations = settings.contains(&quot;LOADLOCATIONS&quot;);</span>
-        
+<span class="fc" id="L266">        boolean isVis = settings.contains(&quot;VIS&quot;);</span>
+<span class="fc" id="L267">        String loadPath = settings.get(&quot;LOADPATH&quot;);</span>
+<span class="fc" id="L268">        boolean loadCells = settings.contains(&quot;LOADCELLS&quot;);</span>
+<span class="fc" id="L269">        boolean loadLocations = settings.contains(&quot;LOADLOCATIONS&quot;);</span>
+
         // Iterate through each series and run.
-<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (Series s : series) {</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">        for (Series s : series) {</span>
             // Create saver and save series JSON (for non-vis only)
-<span class="fc bfc" id="L264" title="All 2 branches covered.">            if (!isVis) {</span>
-<span class="fc" id="L265">                s.saver = this.getSaver(s);</span>
-<span class="fc" id="L266">                s.saver.saveSeries();</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">            if (!isVis) {</span>
+<span class="fc" id="L275">                s.saver = this.getSaver(s);</span>
+<span class="fc" id="L276">                s.saver.saveSeries();</span>
             }
-            
+
             // Create loader if flagged.
-<span class="fc bfc" id="L270" title="All 4 branches covered.">            if (loadCells || loadLocations) {</span>
-<span class="fc" id="L271">                s.loader = this.getLoader(s);</span>
-<span class="fc" id="L272">                s.loader.prefix = loadPath;</span>
-<span class="fc" id="L273">                s.loader.loadCells = loadCells;</span>
-<span class="fc" id="L274">                s.loader.loadLocations = loadLocations;</span>
+<span class="fc bfc" id="L280" title="All 4 branches covered.">            if (loadCells || loadLocations) {</span>
+<span class="fc" id="L281">                s.loader = this.getLoader(s);</span>
+<span class="fc" id="L282">                s.loader.prefix = loadPath;</span>
+<span class="fc" id="L283">                s.loader.loadCells = loadCells;</span>
+<span class="fc" id="L284">                s.loader.loadLocations = loadLocations;</span>
             }
-            
+
             // Skip simulations if there is an error in the series.
-<span class="fc bfc" id="L278" title="All 2 branches covered.">            if (s.isSkipped) {</span>
-<span class="fc" id="L279">                continue;</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">            if (s.isSkipped) {</span>
+<span class="fc" id="L289">                continue;</span>
             }
-            
+
             // Run with visualization if requested, otherwise run command line.
-<span class="fc bfc" id="L283" title="All 2 branches covered.">            if (isVis) {</span>
-<span class="fc" id="L284">                logger.info(&quot;running simulation with visualization&quot;);</span>
-<span class="fc" id="L285">                s.runVis();</span>
-<span class="fc" id="L286">                break;</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            if (isVis) {</span>
+<span class="fc" id="L294">                logger.info(&quot;running simulation with visualization&quot;);</span>
+<span class="fc" id="L295">                s.runVis();</span>
+<span class="fc" id="L296">                break;</span>
             } else {
-<span class="fc" id="L288">                logger.info(&quot;running simulation series [ &quot; + s.getName() + &quot; ]&quot;);</span>
-<span class="fc" id="L289">                s.runSims();</span>
+<span class="fc" id="L298">                logger.info(&quot;running simulation series [ &quot; + s.getName() + &quot; ]&quot;);</span>
+<span class="fc" id="L299">                s.runSims();</span>
             }
-<span class="fc" id="L291">        }</span>
-<span class="fc" id="L292">    }</span>
-    
-    /**
-     * Updates the logger handler with custom formatting.
-     */
+<span class="fc" id="L301">        }</span>
+<span class="fc" id="L302">    }</span>
+
+    /** Updates the logger handler with custom formatting. */
     public static void updateLogger() {
         // Setup logger.
-<span class="fc" id="L299">        Logger classLogger = Logger.getLogger(&quot;arcade&quot;);</span>
-<span class="fc" id="L300">        classLogger.setUseParentHandlers(false);</span>
-        
+<span class="fc" id="L307">        Logger classLogger = Logger.getLogger(&quot;arcade&quot;);</span>
+<span class="fc" id="L308">        classLogger.setUseParentHandlers(false);</span>
+
         // Change logger display format.
-<span class="fc" id="L303">        ConsoleHandler handler = new ConsoleHandler();</span>
-<span class="fc" id="L304">        handler.setFormatter(new SimpleFormatter() {</span>
-            private static final String FORMAT = &quot;%1$tF %1$tT %2$-7s %3$-35s : %4$s %n&quot;;
-            
-            @Override
-            public synchronized String format(LogRecord lr) {
-<span class="fc" id="L309">                return String.format(FORMAT,</span>
-<span class="fc" id="L310">                        new Date(lr.getMillis()),</span>
-<span class="fc" id="L311">                        lr.getLevel().getLocalizedName(),</span>
-<span class="fc" id="L312">                        lr.getSourceClassName(),</span>
-<span class="fc" id="L313">                        lr.getMessage()</span>
-                );
-            }
-        });
-        
-<span class="fc" id="L318">        classLogger.addHandler(handler);</span>
-<span class="fc" id="L319">    }</span>
+<span class="fc" id="L311">        ConsoleHandler handler = new ConsoleHandler();</span>
+<span class="fc" id="L312">        handler.setFormatter(</span>
+<span class="fc" id="L313">                new SimpleFormatter() {</span>
+                    private static final String FORMAT = &quot;%1$tF %1$tT %2$-7s %3$-35s : %4$s %n&quot;;
+
+                    @Override
+                    public synchronized String format(LogRecord lr) {
+<span class="fc" id="L318">                        return String.format(</span>
+                                FORMAT,
+<span class="fc" id="L320">                                new Date(lr.getMillis()),</span>
+<span class="fc" id="L321">                                lr.getLevel().getLocalizedName(),</span>
+<span class="fc" id="L322">                                lr.getSourceClassName(),</span>
+<span class="fc" id="L323">                                lr.getMessage());</span>
+                    }
+                });
+
+<span class="fc" id="L327">        classLogger.addHandler(handler);</span>
+<span class="fc" id="L328">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

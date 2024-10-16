@@ -2,51 +2,49 @@
 
 import java.util.ArrayList;
 
-/**
- * Concrete implementation of {@link PottsLocationFactory} for 2D.
- */
-
+/** Concrete implementation of {@link PottsLocationFactory} for 2D. */
 public final class PottsLocationFactory2D extends PottsLocationFactory {
-    /**
-     * Creates a factory for making 2D {@link PottsLocation} instances.
-     */
-<span class="fc" id="L13">    public PottsLocationFactory2D() { super(); }</span>
-    
+    /** Creates a factory for making 2D {@link PottsLocation} instances. */
+    public PottsLocationFactory2D() {
+<span class="fc" id="L9">        super();</span>
+<span class="fc" id="L10">    }</span>
+
     @Override
     ArrayList&lt;Voxel&gt; getSelected(ArrayList&lt;Voxel&gt; voxels, Voxel focus, double n) {
-<span class="fc" id="L17">        return Location2D.getSelected(voxels, focus, n);</span>
+<span class="fc" id="L14">        return Location2D.getSelected(voxels, focus, n);</span>
     }
-    
+
     @Override
     ArrayList&lt;Voxel&gt; getPossible(Voxel focus, int sideRange, int heightRange) {
-<span class="fc" id="L22">        ArrayList&lt;Voxel&gt; voxels = new ArrayList&lt;&gt;();</span>
-        
-<span class="fc bfc" id="L24" title="All 2 branches covered.">        for (int i = 0; i &lt; sideRange; i++) {</span>
-<span class="fc bfc" id="L25" title="All 2 branches covered.">            for (int j = 0; j &lt; sideRange; j++) {</span>
-<span class="fc" id="L26">                voxels.add(new Voxel(</span>
-                        focus.x + i - (sideRange - 1) / 2,
-                        focus.y + j - (sideRange - 1) / 2,
-                        0));
+<span class="fc" id="L19">        ArrayList&lt;Voxel&gt; voxels = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        for (int i = 0; i &lt; sideRange; i++) {</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">            for (int j = 0; j &lt; sideRange; j++) {</span>
+<span class="fc" id="L23">                voxels.add(</span>
+                        new Voxel(
+                                focus.x + i - (sideRange - 1) / 2,
+                                focus.y + j - (sideRange - 1) / 2,
+                                0));
             }
         }
-        
-<span class="fc" id="L33">        return voxels;</span>
+
+<span class="fc" id="L31">        return voxels;</span>
     }
-    
+
     @Override
-    ArrayList&lt;Voxel&gt; getCenters(int length, int width, int height, int margin,
-                                int sideRange, int heightRange) {
-<span class="fc" id="L39">        ArrayList&lt;Voxel&gt; centers = new ArrayList&lt;&gt;();</span>
-        
-<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (int i = 0; i &lt; (length - 2 - 2 * margin) / sideRange; i++) {</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">            for (int j = 0; j &lt; (width - 2 - 2 * margin) / sideRange; j++) {</span>
-<span class="fc" id="L43">                int cx = i * sideRange + (sideRange + 1) / 2 + margin;</span>
-<span class="fc" id="L44">                int cy = j * sideRange + (sideRange + 1) / 2 + margin;</span>
-<span class="fc" id="L45">                centers.add(new Voxel(cx, cy, 0));</span>
+    ArrayList&lt;Voxel&gt; getCenters(
+            int length, int width, int height, int margin, int sideRange, int heightRange) {
+<span class="fc" id="L37">        ArrayList&lt;Voxel&gt; centers = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        for (int i = 0; i &lt; (length - 2 - 2 * margin) / sideRange; i++) {</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">            for (int j = 0; j &lt; (width - 2 - 2 * margin) / sideRange; j++) {</span>
+<span class="fc" id="L41">                int cx = i * sideRange + (sideRange + 1) / 2 + margin;</span>
+<span class="fc" id="L42">                int cy = j * sideRange + (sideRange + 1) / 2 + margin;</span>
+<span class="fc" id="L43">                centers.add(new Voxel(cx, cy, 0));</span>
             }
         }
-        
-<span class="fc" id="L49">        return centers;</span>
+
+<span class="fc" id="L47">        return centers;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

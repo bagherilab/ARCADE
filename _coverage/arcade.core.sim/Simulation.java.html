@@ -13,135 +13,130 @@ import arcade.core.env.location.LocationContainer;
 
 /**
  * A {@code Simulation} sets up agents and environments for a simulation.
- * &lt;p&gt;
- * A {@code Simulation} consists of stepping the model for a given random seed.
- * At the start, agents and environments are added the instance and scheduled.
- * Any additional steppables, including actions and components, are also
- * scheduled.
- * &lt;p&gt;
- * A {@code Simulation} should also extend {@code SimState} from the
- * &lt;a href=&quot;https://cs.gmu.edu/~eclab/projects/mason/&quot;&gt;MASON&lt;/a&gt; library.
- * {@code SimState} manages the actual &quot;stepping&quot; of the model, while the
- * {@code Simulation} interface ensures the model can interact with other
- * interfaces and classes in the package.
+ *
+ * &lt;p&gt;A {@code Simulation} consists of stepping the model for a given random seed. At the start,
+ * agents and environments are added the instance and scheduled. Any additional steppables,
+ * including actions and components, are also scheduled.
+ *
+ * &lt;p&gt;A {@code Simulation} should also extend {@code SimState} from the &lt;a
+ * href=&quot;https://cs.gmu.edu/~eclab/projects/mason/&quot;&gt;MASON&lt;/a&gt; library. {@code SimState} manages the
+ * actual &quot;stepping&quot; of the model, while the {@code Simulation} interface ensures the model can
+ * interact with other interfaces and classes in the package.
  */
-
 public interface Simulation {
     /** Default type for cell container list. */
-<span class="fc" id="L31">    Type DEFAULT_CELL_TYPE = new TypeToken&lt;ArrayList&lt;CellContainer&gt;&gt;() { }.getType();</span>
-    
+<span class="fc" id="L28">    Type DEFAULT_CELL_TYPE = new TypeToken&lt;ArrayList&lt;CellContainer&gt;&gt;() {}.getType();</span>
+
     /** Default type for location container list. */
-<span class="fc" id="L34">    Type DEFAULT_LOCATION_TYPE = new TypeToken&lt;ArrayList&lt;LocationContainer&gt;&gt;() { }.getType();</span>
-    
+<span class="fc" id="L31">    Type DEFAULT_LOCATION_TYPE = new TypeToken&lt;ArrayList&lt;LocationContainer&gt;&gt;() {}.getType();</span>
+
     /**
      * Gets the {@link Series} object for the current simulation.
-     * &lt;p&gt;
-     * The {@link Series} object can be further queried for information on
-     * configuration and parameters.
      *
-     * @return  the {@link Series} instance
+     * &lt;p&gt;The {@link Series} object can be further queried for information on configuration and
+     * parameters.
+     *
+     * @return the {@link Series} instance
      */
     Series getSeries();
-    
+
     /**
      * Gets the current schedule for the simulation.
      *
-     * @return  the schedule instance
+     * @return the schedule instance
      */
     Schedule getSchedule();
-    
+
     /**
      * Gets the random number generator seed.
      *
-     * @return  the random seed
+     * @return the random seed
      */
     int getSeed();
-    
+
     /**
      * Gets the next available ID in the simulation.
      *
-     * @return  the id
+     * @return the id
      */
     int getID();
-    
+
     /**
      * Gets the list of {@link CellContainer} objects.
      *
-     * @return  a list of {@link CellContainer} objects
+     * @return a list of {@link CellContainer} objects
      */
     ArrayList&lt;CellContainer&gt; getCells();
-    
+
     /**
      * Gets the list of {@link LocationContainer} objects.
      *
-     * @return  a list of {@link LocationContainer} objects
+     * @return a list of {@link LocationContainer} objects
      */
     ArrayList&lt;LocationContainer&gt; getLocations();
-    
+
     /**
      * Gets the {@link Grid} object.
      *
-     * @return  the {@link Grid} object
+     * @return the {@link Grid} object
      */
     Grid getGrid();
-    
+
     /**
      * Gets the {@link Lattice} object for a given key.
      *
-     * @param key  the name of the lattice
-     * @return  the {@link Lattice} object
+     * @param key the name of the lattice
+     * @return the {@link Lattice} object
      */
     Lattice getLattice(String key);
-    
+
     /**
      * Gets the {@link Action} object for a given key.
      *
-     * @param key  the name of the action
-     * @return  the {@link Action} object
+     * @param key the name of the action
+     * @return the {@link Action} object
      */
     Action getAction(String key);
-    
+
     /**
      * Gets the {@link Component} object for a given key.
      *
-     * @param key  the name of the component
-     * @return  the {@link Component} object
+     * @param key the name of the component
+     * @return the {@link Component} object
      */
     Component getComponent(String key);
-    
+
     /**
      * Sets up the agents in the grid for the simulation.
-     * &lt;p&gt;
-     * The concrete implementing class calls this and other setup methods from
-     * the MASON library {@code start()} method, which is called before the
-     * schedule starts stepping the simulation.
+     *
+     * &lt;p&gt;The concrete implementing class calls this and other setup methods from the MASON library
+     * {@code start()} method, which is called before the schedule starts stepping the simulation.
      */
     void setupAgents();
-    
+
     /**
      * Sets up the environment using lattices for the simulation.
-     * &lt;p&gt;
-     * The concrete implementing class calls this and other setup methods from
-     * the MASON library {@code start()} method, which is called before the
-     * schedule starts stepping the simulation.
+     *
+     * &lt;p&gt;The concrete implementing class calls this and other setup methods from the MASON library
+     * {@code start()} method, which is called before the schedule starts stepping the simulation.
      */
     void setupEnvironment();
-    
+
     /**
      * Schedules any {@link Action} instances.
-     * &lt;p&gt;
-     * The concrete implementing class calls this and other schedule methods
-     * from the MASON library {@code start()} method, which is called before the
-     * schedule starts stepping the simulation.
+     *
+     * &lt;p&gt;The concrete implementing class calls this and other schedule methods from the MASON
+     * library {@code start()} method, which is called before the schedule starts stepping the
+     * simulation.
      */
     void scheduleActions();
-    
+
     /**
      * Schedules any {@link Component} instances.
-     * &lt;p&gt;
-     * The concrete implementing class calls this and other schedule methods
-     * from the MASON library {@code start()} method, which is called before the
-     * schedule starts stepping the simulation.
+     *
+     * &lt;p&gt;The concrete implementing class calls this and other schedule methods from the MASON
+     * library {@code start()} method, which is called before the schedule starts stepping the
+     * simulation.
      */
     void scheduleComponents();
 }

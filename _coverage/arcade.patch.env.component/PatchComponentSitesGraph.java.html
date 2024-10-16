@@ -22,151 +22,151 @@ import static arcade.patch.env.component.PatchComponentSitesGraphUtilities.*;
 
 /**
  * Extension of {@link PatchComponentSites} for graph sites.
- * &lt;p&gt;
- * Layout of the underlying graph is specified by {@code GRAPH_LAYOUT}. The
- * pattern layout is specified by using {@code &quot;*&quot;}. The root layout is
- * specified by specifying roots:
+ *
+ * &lt;p&gt;Layout of the underlying graph is specified by {@code GRAPH_LAYOUT}. The pattern layout is
+ * specified by using {@code &quot;*&quot;}. The root layout is specified by specifying roots:
+ *
  * &lt;ul&gt;
- *     &lt;li&gt;{@code [&lt;BORDER&gt; random &lt;#&gt;]} = random roots with {@code &lt;#&gt;}
- *     randomly spaced roots, randomly assigned as artery or vein&lt;/li&gt;
- *     &lt;li&gt;{@code [&lt;BORDER&gt; alternate &lt;#&gt;]} = alternating roots with {@code &lt;#&gt;}
- *     evenly spaced roots, alternating between arteries and veins&lt;/li&gt;
- *     &lt;li&gt;{@code [&lt;BORDER&gt; single &lt;#&gt;&lt;TYPE&gt;]} = single {@code &lt;TYPE&gt;} root
- *     placed a distance {@code &lt;#&gt;} percent across the specified border
- *     &lt;li&gt;{@code [&lt;BORDER&gt; line &lt;#&gt;&lt;TYPE&gt;&lt;#&gt;]} = line {@code &lt;TYPE&gt;} root
- *     placed a distance {@code &lt;#&gt;} (first number) percent across the specified
- *     border that spans a distance {@code &lt;#&gt;} (second number) percent across
- *     the environment in the direction normal to the specified border
+ *   &lt;li&gt;{@code [&lt;BORDER&gt; random &lt;#&gt;]} = random roots with {@code &lt;#&gt;} randomly spaced roots,
+ *       randomly assigned as artery or vein
+ *   &lt;li&gt;{@code [&lt;BORDER&gt; alternate &lt;#&gt;]} = alternating roots with {@code &lt;#&gt;} evenly spaced roots,
+ *       alternating between arteries and veins
+ *   &lt;li&gt;{@code [&lt;BORDER&gt; single &lt;#&gt;&lt;TYPE&gt;]} = single {@code &lt;TYPE&gt;} root placed a distance {@code
+ *       &lt;#&gt;} percent across the specified border
+ *   &lt;li&gt;{@code [&lt;BORDER&gt; line &lt;#&gt;&lt;TYPE&gt;&lt;#&gt;]} = line {@code &lt;TYPE&gt;} root placed a distance {@code
+ *       &lt;#&gt;} (first number) percent across the specified border that spans a distance {@code &lt;#&gt;}
+ *       (second number) percent across the environment in the direction normal to the specified
+ *       border
  * &lt;/ul&gt;
- * &lt;p&gt;
- * The border {@code &lt;BORDER&gt;} can be {@code LEFT} (-x direction), {@code RIGHT}
- * (+x direction), {@code TOP} (-y direction), or {@code BOTTOM} (+y direction).
- * The type {@code &lt;TYPE&gt;} can be {@code A} / {@code a} for an artery or
- * {@code V} / {@code v} for a vein.
+ *
+ * &lt;p&gt;The border {@code &lt;BORDER&gt;} can be {@code LEFT} (-x direction), {@code RIGHT} (+x direction),
+ * {@code TOP} (-y direction), or {@code BOTTOM} (+y direction). The type {@code &lt;TYPE&gt;} can be
+ * {@code A} / {@code a} for an artery or {@code V} / {@code v} for a vein.
  */
-
 public abstract class PatchComponentSitesGraph extends PatchComponentSites {
     /** Tolerance for difference in internal and external concentrations. */
     private static final double DELTA_TOLERANCE = 1E-8;
-    
+
     /** Maximum number of iterations. */
     private static final int MAXIMUM_ITERATIONS = 100;
-    
+
     /** Minimum flow rate [um&lt;sup&gt;3&lt;/sup&gt;/s]. */
     private static final double MINIMUM_FLOW = 2000;
-    
+
     /** Maximum oxygen partial pressure [mmHg]. */
     private static final double MAX_OXYGEN_PARTIAL_PRESSURE = 100;
-    
+
     /** Graph layout description. */
     private final String graphLayout;
-    
+
     /** Solubility of oxygen in plasma [fmol O2/(um&lt;sup&gt;3&lt;/sup&gt; mmHg)]. */
     private final double oxySoluPlasma;
-    
+
     /** Solubility of oxygen in tissue [fmol O2/(um&lt;sup&gt;3&lt;/sup&gt; mmHg)]. */
     private final double oxySoluTissue;
-    
+
     /** Volume of individual lattice patch [um&lt;sup&gt;3&lt;/sup&gt;]. */
     private final double latticePatchVolume;
-    
+
     /** Location factory instance for the simulation. */
     final PatchComponentSitesGraphFactory graphFactory;
-    
+
     /** Graph representing the sites. */
     final Graph graph;
-    
+
     /**
      * Creates a {@link PatchComponentSites} using graph sites.
-     * &lt;p&gt;
-     * Loaded parameters include:
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
      * &lt;ul&gt;
-     *     &lt;li&gt;{@code GRAPH_LAYOUT} = graph layout type&lt;/li&gt;
-     *     &lt;li&gt;{@code OXYGEN_SOLUBILITY_PLASMA} = solubility of oxygen in plasma&lt;/li&gt;
-     *     &lt;li&gt;{@code OXYGEN_SOLUBILITY_TISSUE} = solubility of oxygen in tissue&lt;/li&gt;
+     *   &lt;li&gt;{@code GRAPH_LAYOUT} = graph layout type
+     *   &lt;li&gt;{@code OXYGEN_SOLUBILITY_PLASMA} = solubility of oxygen in plasma
+     *   &lt;li&gt;{@code OXYGEN_SOLUBILITY_TISSUE} = solubility of oxygen in tissue
      * &lt;/ul&gt;
      *
-     * @param series  the simulation series
-     * @param parameters  the component parameters dictionary
-     * @param random  the random number generator
+     * @param series the simulation series
+     * @param parameters the component parameters dictionary
+     * @param random the random number generator
      */
-    public PatchComponentSitesGraph(Series series, MiniBox parameters,
-                                    MersenneTwisterFast random) {
-<span class="nc" id="L95">        super(series);</span>
-        
+    public PatchComponentSitesGraph(Series series, MiniBox parameters, MersenneTwisterFast random) {
+<span class="nc" id="L93">        super(series);</span>
+
         // Set loaded parameters.
-<span class="nc" id="L98">        graphLayout = parameters.get(&quot;GRAPH_LAYOUT&quot;);</span>
-<span class="nc" id="L99">        oxySoluPlasma = parameters.getDouble(&quot;OXYGEN_SOLUBILITY_PLASMA&quot;);</span>
-<span class="nc" id="L100">        oxySoluTissue = parameters.getDouble(&quot;OXYGEN_SOLUBILITY_TISSUE&quot;);</span>
-        
+<span class="nc" id="L96">        graphLayout = parameters.get(&quot;GRAPH_LAYOUT&quot;);</span>
+<span class="nc" id="L97">        oxySoluPlasma = parameters.getDouble(&quot;OXYGEN_SOLUBILITY_PLASMA&quot;);</span>
+<span class="nc" id="L98">        oxySoluTissue = parameters.getDouble(&quot;OXYGEN_SOLUBILITY_TISSUE&quot;);</span>
+
         // Set patch parameters.
-<span class="nc" id="L103">        MiniBox patch = ((PatchSeries) series).patch;</span>
-<span class="nc" id="L104">        latticePatchVolume = patch.getDouble(&quot;LATTICE_VOLUME&quot;);</span>
-        
+<span class="nc" id="L101">        MiniBox patch = ((PatchSeries) series).patch;</span>
+<span class="nc" id="L102">        latticePatchVolume = patch.getDouble(&quot;LATTICE_VOLUME&quot;);</span>
+
         // Create graph.
-<span class="nc" id="L107">        graphFactory = makeGraphFactory(series);</span>
-<span class="nc" id="L108">        graph = initializeGraph(random);</span>
-<span class="nc" id="L109">    }</span>
-    
+<span class="nc" id="L105">        graphFactory = makeGraphFactory(series);</span>
+<span class="nc" id="L106">        graph = initializeGraph(random);</span>
+<span class="nc" id="L107">    }</span>
+
     /**
      * Gets the {@link Graph} representing the sites.
      *
-     * @return  the graph object
+     * @return the graph object
      */
-<span class="nc" id="L116">    public Graph getGraph() { return graph; }</span>
-    
+    public Graph getGraph() {
+<span class="nc" id="L115">        return graph;</span>
+    }
+
     /**
      * Creates a factory for graphs.
      *
-     * @param series  the simulation series
-     * @return  a {@link Graph} factory
+     * @param series the simulation series
+     * @return a {@link Graph} factory
      */
     abstract PatchComponentSitesGraphFactory makeGraphFactory(Series series);
-    
+
     /**
      * Gets the lattice coordinates spanned by an edge between two nodes.
      *
-     * @param from  the node the edge extends from
-     * @param to  the node the edge extends to
-     * @return  the list of span coordinates
+     * @param from the node the edge extends from
+     * @param to the node the edge extends to
+     * @return the list of span coordinates
      */
     abstract ArrayList&lt;CoordinateXYZ&gt; getSpan(SiteNode from, SiteNode to);
-    
+
     /**
      * Checks if given coordinates are within the environment to add to list.
      *
-     * @param s  the list of valid coordinates
-     * @param x  the coordinate in the x direction
-     * @param y  the coordinate in the y direction
-     * @param z  the coordinate in the z direction
+     * @param s the list of valid coordinates
+     * @param x the coordinate in the x direction
+     * @param y the coordinate in the y direction
+     * @param z the coordinate in the z direction
      */
     void checkSite(ArrayList&lt;CoordinateXYZ&gt; s, int x, int y, int z) {
 <span class="nc bnc" id="L144" title="All 8 branches missed.">        if (x &gt;= 0 &amp;&amp; x &lt; latticeLength &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; latticeWidth) {</span>
 <span class="nc" id="L145">            s.add(new CoordinateXYZ(x, y, z));</span>
         }
 <span class="nc" id="L147">    }</span>
-    
+
     /**
      * Converts the given span coordinate to the corresponding location.
      *
-     * @param span  the span coordinate
-     * @return  a location object
+     * @param span the span coordinate
+     * @return a location object
      */
     abstract Location getLocation(CoordinateXYZ span);
-    
+
     /**
      * Initializes graph for representing sites.
-     * &lt;p&gt;
-     * Calls the correct method to populate the graph with edges (either pattern
-     * or root layout). After the graph is defined, the corresponding indices in
-     * the lattice adjacent to edges are marked.
      *
-     * @param random  the random number generator
-     * @return  an initialized graph object
+     * &lt;p&gt;Calls the correct method to populate the graph with edges (either pattern or root layout).
+     * After the graph is defined, the corresponding indices in the lattice adjacent to edges are
+     * marked.
+     *
+     * @param random the random number generator
+     * @return an initialized graph object
      */
     Graph initializeGraph(MersenneTwisterFast random) {
         Graph initGraph;
-        
+
 <span class="nc bnc" id="L170" title="All 2 branches missed.">        if (graphLayout.equals(&quot;*&quot;)) {</span>
 <span class="nc" id="L171">            initGraph = graphFactory.initializePatternGraph(random);</span>
         } else {
@@ -176,35 +176,35 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
 <span class="nc" id="L176">                iter++;</span>
 <span class="nc bnc" id="L177" title="All 4 branches missed.">            } while (initGraph.getAllEdges().numObjs == 0 &amp;&amp; iter &lt; MAXIMUM_ITERATIONS);</span>
         }
-        
+
 <span class="nc bnc" id="L180" title="All 2 branches missed.">        for (Object obj : initGraph.getAllEdges()) {</span>
 <span class="nc" id="L181">            SiteEdge edge = (SiteEdge) obj;</span>
 <span class="nc" id="L182">            edge.span = getSpan(edge.getFrom(), edge.getTo());</span>
 <span class="nc" id="L183">            edge.transport.putIfAbsent(&quot;GLUCOSE&quot;, 0.);</span>
 <span class="nc" id="L184">            edge.transport.putIfAbsent(&quot;OXYGEN&quot;, 0.);</span>
 <span class="nc" id="L185">        }</span>
-        
+
 <span class="nc" id="L187">        return initGraph;</span>
     }
-    
+
     /**
      * Graph step that only considers differences in concentration.
-     * &lt;p&gt;
-     * Method is equivalent to the step used with
-     * {@link arcade.patch.env.component.PatchComponentSitesSource} and
-     * {@link arcade.patch.env.component.PatchComponentSitesPattern} where the amount
-     * of concentration added is the difference between the source concentration
-     * and the current concentration for a given molecule.
+     *
+     * &lt;p&gt;Method is equivalent to the step used with {@link
+     * arcade.patch.env.component.PatchComponentSitesSource} and {@link
+     * arcade.patch.env.component.PatchComponentSitesPattern} where the amount of concentration
+     * added is the difference between the source concentration and the current concentration for a
+     * given molecule.
      */
     void simpleStep() {
 <span class="nc" id="L200">        Bag allEdges = new Bag(graph.getAllEdges());</span>
-        
+
         // Iterate through each molecule.
 <span class="nc bnc" id="L203" title="All 2 branches missed.">        for (SiteLayer layer : layers) {</span>
 <span class="nc" id="L204">            double[][][] delta = layer.delta;</span>
 <span class="nc" id="L205">            double[][][] previous = layer.previous;</span>
 <span class="nc" id="L206">            double concentration = layer.concentration;</span>
-            
+
             // Clear lattice values.
 <span class="nc bnc" id="L209" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k++) {</span>
 <span class="nc bnc" id="L210" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
@@ -213,13 +213,13 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
                     }
                 }
             }
-            
+
 <span class="nc bnc" id="L217" title="All 2 branches missed.">            for (Object obj : allEdges) {</span>
 <span class="nc" id="L218">                SiteEdge edge = (SiteEdge) obj;</span>
 <span class="nc bnc" id="L219" title="All 2 branches missed.">                if (edge.isIgnored) {</span>
 <span class="nc" id="L220">                    continue;</span>
                 }
-                
+
 <span class="nc bnc" id="L223" title="All 2 branches missed.">                for (CoordinateXYZ coordinate : edge.span) {</span>
 <span class="nc" id="L224">                    int i = coordinate.x;</span>
 <span class="nc" id="L225">                    int j = coordinate.y;</span>
@@ -229,115 +229,115 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
 <span class="nc" id="L229">            }</span>
 <span class="nc" id="L230">        }</span>
 <span class="nc" id="L231">    }</span>
-    
+
     /**
      * Graph step that uses traversals to calculate exact hemodynamics.
-     * &lt;p&gt;
-     * Traversing the graph updates the concentrations of molecules in each
-     * edge. The amount of concentration added is a function of flow rate and
-     * permeability to the given molecule.
      *
-     * @param random  the random number generator
+     * &lt;p&gt;Traversing the graph updates the concentrations of molecules in each edge. The amount of
+     * concentration added is a function of flow rate and permeability to the given molecule.
+     *
+     * @param random the random number generator
      */
     void complexStep(MersenneTwisterFast random) {
-<span class="nc" id="L243">        Bag allEdges = new Bag(graph.getAllEdges());</span>
-        
+<span class="nc" id="L242">        Bag allEdges = new Bag(graph.getAllEdges());</span>
+
         // Check if graph has become unconnected.
-<span class="nc" id="L246">        boolean isConnected = false;</span>
-<span class="nc bnc" id="L247" title="All 2 branches missed.">        for (Object obj : allEdges) {</span>
-<span class="nc" id="L248">            SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc bnc" id="L249" title="All 4 branches missed.">            if (edge.getFrom().isRoot &amp;&amp; !edge.isIgnored) {</span>
-<span class="nc" id="L250">                isConnected = true;</span>
-<span class="nc" id="L251">                break;</span>
+<span class="nc" id="L245">        boolean isConnected = false;</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        for (Object obj : allEdges) {</span>
+<span class="nc" id="L247">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L248" title="All 4 branches missed.">            if (edge.getFrom().isRoot &amp;&amp; !edge.isIgnored) {</span>
+<span class="nc" id="L249">                isConnected = true;</span>
+<span class="nc" id="L250">                break;</span>
             }
-<span class="nc" id="L253">        }</span>
-<span class="nc bnc" id="L254" title="All 2 branches missed.">        if (!isConnected) {</span>
-<span class="nc bnc" id="L255" title="All 2 branches missed.">            for (SiteLayer layer : layers) {</span>
-<span class="nc bnc" id="L256" title="All 2 branches missed.">                for (int k = 0; k &lt; latticeHeight; k++) {</span>
-<span class="nc bnc" id="L257" title="All 2 branches missed.">                    for (int i = 0; i &lt; latticeLength; i++) {</span>
-<span class="nc bnc" id="L258" title="All 2 branches missed.">                        for (int j = 0; j &lt; latticeWidth; j++) {</span>
-<span class="nc" id="L259">                            layer.delta[k][i][j] = 0;</span>
+<span class="nc" id="L252">        }</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">        if (!isConnected) {</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">            for (SiteLayer layer : layers) {</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">                for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">                    for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">                        for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc" id="L258">                            layer.delta[k][i][j] = 0;</span>
                         }
                     }
                 }
-<span class="nc" id="L263">            }</span>
-<span class="nc" id="L264">            return;</span>
+<span class="nc" id="L262">            }</span>
+<span class="nc" id="L263">            return;</span>
         }
-        
+
         // Iterate through each molecule.
-<span class="nc bnc" id="L268" title="All 2 branches missed.">        for (SiteLayer layer : layers) {</span>
-<span class="nc" id="L269">            double[][][] delta = layer.delta;</span>
-<span class="nc" id="L270">            double[][][] current = layer.current;</span>
-<span class="nc" id="L271">            double concentration = layer.concentration;</span>
-<span class="nc" id="L272">            double permeability = layer.permeability;</span>
-            
-<span class="nc" id="L274">            stepGraph(layer.name);</span>
-            
+<span class="nc bnc" id="L267" title="All 2 branches missed.">        for (SiteLayer layer : layers) {</span>
+<span class="nc" id="L268">            double[][][] delta = layer.delta;</span>
+<span class="nc" id="L269">            double[][][] current = layer.current;</span>
+<span class="nc" id="L270">            double concentration = layer.concentration;</span>
+<span class="nc" id="L271">            double permeability = layer.permeability;</span>
+
+<span class="nc" id="L273">            stepGraph(layer.name);</span>
+
             // Clear lattice values.
-<span class="nc bnc" id="L277" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k++) {</span>
-<span class="nc bnc" id="L278" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
-<span class="nc bnc" id="L279" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
-<span class="nc" id="L280">                        delta[k][i][j] = 0;</span>
+<span class="nc bnc" id="L276" title="All 2 branches missed.">            for (int k = 0; k &lt; latticeHeight; k++) {</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">                for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">                    for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc" id="L279">                        delta[k][i][j] = 0;</span>
                     }
                 }
             }
-            
-<span class="nc" id="L285">            allEdges.shuffle(random);</span>
-            
+
+<span class="nc" id="L284">            allEdges.shuffle(random);</span>
+
             // Iterate through each edge in graph.
-<span class="nc bnc" id="L288" title="All 2 branches missed.">            for (Object obj : allEdges) {</span>
-<span class="nc" id="L289">                SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc bnc" id="L290" title="All 2 branches missed.">                if (edge.isIgnored) {</span>
-<span class="nc" id="L291">                    continue;</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">            for (Object obj : allEdges) {</span>
+<span class="nc" id="L288">                SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">                if (edge.isIgnored) {</span>
+<span class="nc" id="L290">                    continue;</span>
                 }
-<span class="nc" id="L293">                SiteNode from = edge.getFrom();</span>
-<span class="nc" id="L294">                SiteNode to = edge.getTo();</span>
-<span class="nc" id="L295">                edge.transport.put(layer.name, 0.0);</span>
-                
+<span class="nc" id="L292">                SiteNode from = edge.getFrom();</span>
+<span class="nc" id="L293">                SiteNode to = edge.getTo();</span>
+<span class="nc" id="L294">                edge.transport.put(layer.name, 0.0);</span>
+
                 double extConc;
                 double intConc;
                 double dmdt;
                 double intConcNew;
                 double extConcNew;
-                
+
                 // Get average external concentration across spanning locations.
-<span class="nc" id="L304">                extConc = 0;</span>
-<span class="nc bnc" id="L305" title="All 2 branches missed.">                for (CoordinateXYZ coordinate : edge.span) {</span>
-<span class="nc" id="L306">                    int i = coordinate.x;</span>
-<span class="nc" id="L307">                    int j = coordinate.y;</span>
-<span class="nc" id="L308">                    int k = coordinate.z;</span>
-<span class="nc" id="L309">                    extConc += current[k][i][j] + delta[k][i][j];</span>
-<span class="nc" id="L310">                }</span>
-<span class="nc" id="L311">                extConc /= edge.span.size();</span>
-                
+<span class="nc" id="L303">                extConc = 0;</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">                for (CoordinateXYZ coordinate : edge.span) {</span>
+<span class="nc" id="L305">                    int i = coordinate.x;</span>
+<span class="nc" id="L306">                    int j = coordinate.y;</span>
+<span class="nc" id="L307">                    int k = coordinate.z;</span>
+<span class="nc" id="L308">                    extConc += current[k][i][j] + delta[k][i][j];</span>
+<span class="nc" id="L309">                }</span>
+<span class="nc" id="L310">                extConc /= edge.span.size();</span>
+
                 // Note permeability values are assumed to be for 1 um thickness.
                 // Here we multiply by (1 um) and then redivide by the actual
                 // thickness of the edge.
-<span class="nc" id="L316">                double flow = edge.flow / 60; // um^3/sec</span>
-<span class="nc" id="L317">                double pa = edge.area * permeability / edge.wall; // um^3/sec</span>
-                
+<span class="nc" id="L315">                double flow = edge.flow / 60; // um^3/sec</span>
+<span class="nc" id="L316">                double pa = edge.area * permeability / edge.wall; // um^3/sec</span>
+
                 // Skip if flow is less than a certain speed.
-<span class="nc bnc" id="L320" title="All 2 branches missed.">                if (flow &lt; MINIMUM_FLOW) {</span>
-<span class="nc" id="L321">                    continue;</span>
+<span class="nc bnc" id="L319" title="All 2 branches missed.">                if (flow &lt; MINIMUM_FLOW) {</span>
+<span class="nc" id="L320">                    continue;</span>
                 }
-                
-<span class="nc bnc" id="L324" title="All 2 branches missed.">                if (layer.name.equalsIgnoreCase(&quot;OXYGEN&quot;)) {</span>
-<span class="nc" id="L325">                    extConc = oxySoluTissue * extConc; // mmHg -&gt; fmol/um^3</span>
-<span class="nc" id="L326">                    intConc = oxySoluPlasma * (from.oxygen + to.oxygen) / 2; // mmHg -&gt; fmol/um^3</span>
-<span class="nc" id="L327">                    intConcNew = intConc;</span>
-<span class="nc" id="L328">                    extConcNew = extConc;</span>
+
+<span class="nc bnc" id="L323" title="All 2 branches missed.">                if (layer.name.equalsIgnoreCase(&quot;OXYGEN&quot;)) {</span>
+<span class="nc" id="L324">                    extConc = oxySoluTissue * extConc; // mmHg -&gt; fmol/um^3</span>
+<span class="nc" id="L325">                    intConc = oxySoluPlasma * (from.oxygen + to.oxygen) / 2; // mmHg -&gt; fmol/um^3</span>
+<span class="nc" id="L326">                    intConcNew = intConc;</span>
+<span class="nc" id="L327">                    extConcNew = extConc;</span>
                 } else {
-<span class="nc" id="L330">                    intConc = edge.fraction.get(layer.name) * concentration; // fmol/um^3</span>
-<span class="nc" id="L331">                    intConcNew = intConc; // fmol/um^3</span>
-<span class="nc" id="L332">                    extConcNew = extConc; // fmol/um^3</span>
+<span class="nc" id="L329">                    intConc = edge.fraction.get(layer.name) * concentration; // fmol/um^3</span>
+<span class="nc" id="L330">                    intConcNew = intConc; // fmol/um^3</span>
+<span class="nc" id="L331">                    extConcNew = extConc; // fmol/um^3</span>
                 }
-                
-<span class="nc bnc" id="L335" title="All 2 branches missed.">                if (Math.abs(intConc - extConc) &gt; DELTA_TOLERANCE) {</span>
+
+<span class="nc bnc" id="L334" title="All 2 branches missed.">                if (Math.abs(intConc - extConc) &gt; DELTA_TOLERANCE) {</span>
                     // Check for stability.
-<span class="nc" id="L337">                    double max = latticePatchVolume / edge.area;</span>
-<span class="nc bnc" id="L338" title="All 2 branches missed.">                    if (permeability &gt; max) {</span>
-<span class="nc" id="L339">                        intConcNew = (intConcNew * flow + latticePatchVolume * extConcNew)</span>
-                                / (flow + latticePatchVolume);
+<span class="nc" id="L336">                    double max = latticePatchVolume / edge.area;</span>
+<span class="nc bnc" id="L337" title="All 2 branches missed.">                    if (permeability &gt; max) {</span>
+<span class="nc" id="L338">                        intConcNew =</span>
+                                (intConcNew * flow + latticePatchVolume * extConcNew)
+                                        / (flow + latticePatchVolume);
 <span class="nc" id="L341">                        extConcNew = intConcNew;</span>
                     } else {
                         // Iterate for each second in the minute time step.
@@ -347,443 +347,459 @@ public abstract class PatchComponentSitesGraph extends PatchComponentSites {
 <span class="nc" id="L347">                            extConcNew += dmdt / latticePatchVolume;</span>
                         }
                     }
-                    
+
                     // Update external concentrations.
 <span class="nc bnc" id="L352" title="All 2 branches missed.">                    for (CoordinateXYZ coordinate : edge.span) {</span>
 <span class="nc" id="L353">                        int i = coordinate.x;</span>
 <span class="nc" id="L354">                        int j = coordinate.y;</span>
 <span class="nc" id="L355">                        int k = coordinate.z;</span>
-                        
+
 <span class="nc bnc" id="L357" title="All 2 branches missed.">                        if (layer.name.equalsIgnoreCase(&quot;OXYGEN&quot;)) {</span>
-<span class="nc" id="L358">                            delta[k][i][j] += Math.max((extConcNew / oxySoluTissue</span>
-                                    - (current[k][i][j] + delta[k][i][j])), 0);
+<span class="nc" id="L358">                            delta[k][i][j] +=</span>
+<span class="nc" id="L359">                                    Math.max(</span>
+                                            (extConcNew / oxySoluTissue
+                                                    - (current[k][i][j] + delta[k][i][j])),
+                                            0);
                         } else {
-<span class="nc" id="L361">                            delta[k][i][j] += Math.max((extConcNew - (current[k][i][j]</span>
-                                    + delta[k][i][j])), 0);
+<span class="nc" id="L364">                            delta[k][i][j] +=</span>
+<span class="nc" id="L365">                                    Math.max((extConcNew - (current[k][i][j] + delta[k][i][j])), 0);</span>
                         }
-<span class="nc" id="L364">                    }</span>
-                    
+<span class="nc" id="L367">                    }</span>
+
                     // Set transport of edge (for graph step).
-<span class="nc bnc" id="L367" title="All 2 branches missed.">                    if (layer.name.equalsIgnoreCase(&quot;OXYGEN&quot;)) {</span>
-<span class="nc" id="L368">                        edge.transport.put(layer.name, (intConc - intConcNew) * edge.flow);</span>
+<span class="nc bnc" id="L370" title="All 2 branches missed.">                    if (layer.name.equalsIgnoreCase(&quot;OXYGEN&quot;)) {</span>
+<span class="nc" id="L371">                        edge.transport.put(layer.name, (intConc - intConcNew) * edge.flow);</span>
                     } else {
-<span class="nc" id="L370">                        edge.transport.put(layer.name, (intConc - intConcNew) / concentration);</span>
+<span class="nc" id="L373">                        edge.transport.put(layer.name, (intConc - intConcNew) / concentration);</span>
                     }
                 }
-<span class="nc" id="L373">            }</span>
-<span class="nc" id="L374">        }</span>
-<span class="nc" id="L375">    }</span>
-    
+<span class="nc" id="L376">            }</span>
+<span class="nc" id="L377">        }</span>
+<span class="nc" id="L378">    }</span>
+
     /**
      * Extension of {@link arcade.core.util.Graph.Node} for site nodes.
-     * &lt;p&gt;
-     * Node tracks additional hemodynamic properties including pressure and
-     * oxygen.
+     *
+     * &lt;p&gt;Node tracks additional hemodynamic properties including pressure and oxygen.
      */
     public static class SiteNode extends Node {
         /** Node ID. */
         int id;
-        
+
         /** {@code true} if the node is a root, {@code false} otherwise. */
         boolean isRoot;
-        
+
         /** Pressure of the node. */
         double pressure;
-        
+
         /** Oxygen partial pressure of the node. */
         double oxygen;
-        
+
         /** Distance for Dijkstra's algorithm. */
         int distance;
-        
+
         /** Parent node. */
         SiteNode prev;
-        
+
         /**
          * Creates a {@link Node} for graph sites.
          *
-         * @param x  the x coordinate
-         * @param y  the y coordinate
-         * @param z  the z coordinate
+         * @param x the x coordinate
+         * @param y the y coordinate
+         * @param z the z coordinate
          */
         SiteNode(int x, int y, int z) {
-<span class="nc" id="L410">            super(x, y, z);</span>
-<span class="nc" id="L411">            pressure = 0;</span>
-<span class="nc" id="L412">            isRoot = false;</span>
-<span class="nc" id="L413">        }</span>
-        
+<span class="nc" id="L412">            super(x, y, z);</span>
+<span class="nc" id="L413">            pressure = 0;</span>
+<span class="nc" id="L414">            isRoot = false;</span>
+<span class="nc" id="L415">        }</span>
+
         @Override
         public Node duplicate() {
-<span class="nc" id="L417">            return new SiteNode(x, y, z);</span>
+<span class="nc" id="L419">            return new SiteNode(x, y, z);</span>
         }
-        
+
         /**
          * Gets the root type of the node.
          *
-         * @return  {@code true} if node is root, {@code false} otherwise
+         * @return {@code true} if node is root, {@code false} otherwise
          */
-<span class="nc" id="L425">        public boolean getRoot() { return isRoot; }</span>
-        
+        public boolean getRoot() {
+<span class="nc" id="L428">            return isRoot;</span>
+        }
+
         /**
          * Get the pressure of the node.
          *
-         * @return  the node pressure
+         * @return the node pressure
          */
-<span class="nc" id="L432">        public double getPressure() { return pressure; }</span>
+        public double getPressure() {
+<span class="nc" id="L437">            return pressure;</span>
+        }
     }
-    
+
     /**
      * Extension of {@link arcade.core.util.Graph.Edge} for site edges.
-     * &lt;p&gt;
-     * Node tracks additional hemodynamic properties including radius, length,
-     * wall thickness, shear stress, circumferential stress, and volumetric flow
-     * rate.
+     *
+     * &lt;p&gt;Node tracks additional hemodynamic properties including radius, length, wall thickness,
+     * shear stress, circumferential stress, and volumetric flow rate.
      */
     public static class SiteEdge extends Edge {
         /** List of lattice coordinates spanned by edge. */
         ArrayList&lt;CoordinateXYZ&gt; span;
-        
+
         /** {@code true} if edge as been visited, {@code false} otherwise. */
         boolean isVisited;
-        
+
         /** {@code true} if edge is perfused {@code false} otherwise. */
         boolean isPerfused;
-        
+
         /** {@code true} if edge is ignored, {@code false} otherwise. */
         boolean isIgnored;
-        
+
         /** Edge type. */
         final EdgeType type;
-        
+
         /** Edge resolution level. */
         final EdgeLevel level;
-        
+
         /** Edge tag for iterative remodeling. */
         EdgeTag tag;
-        
+
         /** Internal radius [um]. */
         double radius;
-        
+
         /** Vessel length [um]. */
         double length;
-        
+
         /** Wall thickness [um]. */
         double wall;
-        
+
         /** Shear stress in edge [mmHg]. */
         double shear;
-        
+
         /** Circumferential stress in edge [mmHg]. */
         double circum;
-        
+
         /** Volumetric flow rate in edge [um&lt;sup&gt;3&lt;/sup&gt;/min]. */
         double flow;
-        
+
         /** Cross-sectional area of edge [um&lt;sup&gt;2&lt;/sup&gt;]. */
         double area;
-        
+
         /** Scaled shear stress. */
         double shearScaled;
-        
+
         /** Concentration fraction in edge. */
         HashMap&lt;String, Double&gt; fraction;
-        
+
         /** Concentration fraction transported out. */
         HashMap&lt;String, Double&gt; transport;
-        
+
         /**
          * Creates a {@link Edge} for graph sites.
          *
-         * @param from  the node the edge is from
-         * @param to  the node the edge is to
-         * @param type  the edge type
-         * @param level  the graph resolution level
+         * @param from the node the edge is from
+         * @param to the node the edge is to
+         * @param type the edge type
+         * @param level the graph resolution level
          */
         SiteEdge(Node from, Node to, EdgeType type, EdgeLevel level) {
-<span class="nc" id="L503">            super(from, to);</span>
-<span class="nc" id="L504">            this.type = type;</span>
-<span class="nc" id="L505">            this.level = level;</span>
-<span class="nc" id="L506">            isVisited = false;</span>
-<span class="nc" id="L507">            isPerfused = false;</span>
-<span class="nc" id="L508">            isIgnored = false;</span>
-<span class="nc" id="L509">            fraction = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L510">            transport = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L511">        }</span>
-        
+<span class="nc" id="L508">            super(from, to);</span>
+<span class="nc" id="L509">            this.type = type;</span>
+<span class="nc" id="L510">            this.level = level;</span>
+<span class="nc" id="L511">            isVisited = false;</span>
+<span class="nc" id="L512">            isPerfused = false;</span>
+<span class="nc" id="L513">            isIgnored = false;</span>
+<span class="nc" id="L514">            fraction = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L515">            transport = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L516">        }</span>
+
         @Override
-<span class="nc" id="L514">        public SiteNode getFrom() { return (SiteNode) from; }</span>
-        
+        public SiteNode getFrom() {
+<span class="nc" id="L520">            return (SiteNode) from;</span>
+        }
+
         @Override
-<span class="nc" id="L517">        public SiteNode getTo() { return (SiteNode) to; }</span>
-        
+        public SiteNode getTo() {
+<span class="nc" id="L525">            return (SiteNode) to;</span>
+        }
+
         /**
          * Gets the sign type of the radius.
          *
-         * @return  the edge type sign
+         * @return the edge type sign
          */
-<span class="nc" id="L524">        public int getSign() { return type.category.sign; }</span>
-        
+        public int getSign() {
+<span class="nc" id="L534">            return type.category.sign;</span>
+        }
+
         /**
          * Get the radius of the edge.
          *
-         * @return  the edge radius
+         * @return the edge radius
          */
-<span class="nc" id="L531">        public double getRadius() { return radius; }</span>
-        
+        public double getRadius() {
+<span class="nc" id="L543">            return radius;</span>
+        }
+
         /**
          * Get the wall thickness of the edge.
          *
-         * @return  the edge wall thickness
+         * @return the edge wall thickness
          */
-<span class="nc" id="L538">        public double getWall() { return wall; }</span>
+        public double getWall() {
+<span class="nc" id="L552">            return wall;</span>
+        }
     }
-    
+
     /**
      * Steps through graph to calculate concentrations and partial pressures.
      *
-     * @param code  the molecule code
+     * @param code the molecule code
      */
     private void stepGraph(String code) {
-<span class="nc" id="L547">        ArrayList&lt;SiteNode&gt; inlets = new ArrayList&lt;&gt;();</span>
-        
+<span class="nc" id="L562">        ArrayList&lt;SiteNode&gt; inlets = new ArrayList&lt;&gt;();</span>
+
         // Reset calculations in all edges and get list of inlets.
-<span class="nc bnc" id="L550" title="All 2 branches missed.">        for (Object obj : graph.getAllEdges()) {</span>
-<span class="nc" id="L551">            SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc" id="L552">            SiteNode from = edge.getFrom();</span>
-            
-<span class="nc bnc" id="L554" title="All 2 branches missed.">            if (code.equalsIgnoreCase(&quot;OXYGEN&quot;)) {</span>
-<span class="nc bnc" id="L555" title="All 2 branches missed.">                from.oxygen = (Double.isNaN(from.oxygen) ? Double.NaN : -1.0);</span>
+<span class="nc bnc" id="L565" title="All 2 branches missed.">        for (Object obj : graph.getAllEdges()) {</span>
+<span class="nc" id="L566">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc" id="L567">            SiteNode from = edge.getFrom();</span>
+
+<span class="nc bnc" id="L569" title="All 2 branches missed.">            if (code.equalsIgnoreCase(&quot;OXYGEN&quot;)) {</span>
+<span class="nc bnc" id="L570" title="All 2 branches missed.">                from.oxygen = (Double.isNaN(from.oxygen) ? Double.NaN : -1.0);</span>
             } else {
-<span class="nc" id="L557">                edge.isVisited = edge.isIgnored;</span>
-<span class="nc" id="L558">                edge.fraction.put(code, -1.0);</span>
+<span class="nc" id="L572">                edge.isVisited = edge.isIgnored;</span>
+<span class="nc" id="L573">                edge.fraction.put(code, -1.0);</span>
             }
-            
-<span class="nc bnc" id="L561" title="All 4 branches missed.">            if (from.isRoot &amp;&amp; !edge.isIgnored) {</span>
-<span class="nc" id="L562">                inlets.add(from);</span>
+
+<span class="nc bnc" id="L576" title="All 4 branches missed.">            if (from.isRoot &amp;&amp; !edge.isIgnored) {</span>
+<span class="nc" id="L577">                inlets.add(from);</span>
             }
-<span class="nc" id="L564">        }</span>
-        
+<span class="nc" id="L579">        }</span>
+
         ArrayList&lt;SiteNode&gt; nextList;
         LinkedHashSet&lt;SiteNode&gt; nextSet;
-<span class="nc" id="L568">        LinkedHashSet&lt;SiteNode&gt; currSet = new LinkedHashSet&lt;&gt;();</span>
-        
+<span class="nc" id="L583">        LinkedHashSet&lt;SiteNode&gt; currSet = new LinkedHashSet&lt;&gt;();</span>
+
         // Assign values to inlet nodes and make first set.
-<span class="nc bnc" id="L571" title="All 2 branches missed.">        for (SiteNode inlet : inlets) {</span>
-<span class="nc" id="L572">            Bag out = graph.getEdgesOut(inlet);</span>
-<span class="nc bnc" id="L573" title="All 2 branches missed.">            if (out != null) {</span>
-<span class="nc bnc" id="L574" title="All 2 branches missed.">                for (Object obj : out) {</span>
-<span class="nc" id="L575">                    SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc" id="L576">                    SiteNode from = edge.getFrom();</span>
-<span class="nc" id="L577">                    SiteNode to = edge.getTo();</span>
-                    
-<span class="nc bnc" id="L579" title="All 2 branches missed.">                    if (code.equalsIgnoreCase(&quot;OXYGEN&quot;)) {</span>
-<span class="nc" id="L580">                        from.oxygen = getPartial(edge);</span>
-<span class="nc" id="L581">                        nextList = traverseNode(to, code);</span>
+<span class="nc bnc" id="L586" title="All 2 branches missed.">        for (SiteNode inlet : inlets) {</span>
+<span class="nc" id="L587">            Bag out = graph.getEdgesOut(inlet);</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">            if (out != null) {</span>
+<span class="nc bnc" id="L589" title="All 2 branches missed.">                for (Object obj : out) {</span>
+<span class="nc" id="L590">                    SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc" id="L591">                    SiteNode from = edge.getFrom();</span>
+<span class="nc" id="L592">                    SiteNode to = edge.getTo();</span>
+
+<span class="nc bnc" id="L594" title="All 2 branches missed.">                    if (code.equalsIgnoreCase(&quot;OXYGEN&quot;)) {</span>
+<span class="nc" id="L595">                        from.oxygen = getPartial(edge);</span>
+<span class="nc" id="L596">                        nextList = traverseNode(to, code);</span>
                     } else {
-<span class="nc" id="L583">                        edge.isVisited = true;</span>
-<span class="nc" id="L584">                        edge.fraction.put(code, 1.0);</span>
-<span class="nc" id="L585">                        nextList = traverseEdge(to, code);</span>
+<span class="nc" id="L598">                        edge.isVisited = true;</span>
+<span class="nc" id="L599">                        edge.fraction.put(code, 1.0);</span>
+<span class="nc" id="L600">                        nextList = traverseEdge(to, code);</span>
                     }
-<span class="nc" id="L587">                    currSet.addAll(nextList);</span>
-<span class="nc" id="L588">                }</span>
+<span class="nc" id="L602">                    currSet.addAll(nextList);</span>
+<span class="nc" id="L603">                }</span>
             }
-<span class="nc" id="L590">        }</span>
-        
-<span class="nc" id="L592">        LinkedHashSet&lt;SiteNode&gt; firstSet = currSet;</span>
-<span class="nc" id="L593">        int counter = 0;</span>
-<span class="nc" id="L594">        int stops = 0;</span>
+<span class="nc" id="L605">        }</span>
+
+<span class="nc" id="L607">        LinkedHashSet&lt;SiteNode&gt; firstSet = currSet;</span>
+<span class="nc" id="L608">        int counter = 0;</span>
+<span class="nc" id="L609">        int stops = 0;</span>
         int prevSize;
-<span class="nc" id="L596">        int currSize = currSet.size();</span>
-        
+<span class="nc" id="L611">        int currSize = currSet.size();</span>
+
         // Traverse the graph breadth first.
-<span class="nc bnc" id="L599" title="All 2 branches missed.">        while (currSize &gt; 0) {</span>
-<span class="nc" id="L600">            nextSet = new LinkedHashSet&lt;&gt;();</span>
-<span class="nc bnc" id="L601" title="All 2 branches missed.">            for (SiteNode node : currSet) {</span>
-<span class="nc bnc" id="L602" title="All 2 branches missed.">                if (code.equalsIgnoreCase(&quot;OXYGEN&quot;)) {</span>
-<span class="nc" id="L603">                    nextList = traverseNode(node, code);</span>
+<span class="nc bnc" id="L614" title="All 2 branches missed.">        while (currSize &gt; 0) {</span>
+<span class="nc" id="L615">            nextSet = new LinkedHashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L616" title="All 2 branches missed.">            for (SiteNode node : currSet) {</span>
+<span class="nc bnc" id="L617" title="All 2 branches missed.">                if (code.equalsIgnoreCase(&quot;OXYGEN&quot;)) {</span>
+<span class="nc" id="L618">                    nextList = traverseNode(node, code);</span>
                 } else {
-<span class="nc" id="L605">                    nextList = traverseEdge(node, code);</span>
+<span class="nc" id="L620">                    nextList = traverseEdge(node, code);</span>
                 }
-<span class="nc" id="L607">                nextSet.addAll(nextList);</span>
-<span class="nc" id="L608">            }</span>
-            
-<span class="nc" id="L610">            currSet = nextSet;</span>
-<span class="nc" id="L611">            prevSize = currSize;</span>
-<span class="nc" id="L612">            currSize = currSet.size();</span>
-            
+<span class="nc" id="L622">                nextSet.addAll(nextList);</span>
+<span class="nc" id="L623">            }</span>
+
+<span class="nc" id="L625">            currSet = nextSet;</span>
+<span class="nc" id="L626">            prevSize = currSize;</span>
+<span class="nc" id="L627">            currSize = currSet.size();</span>
+
             // Track iterations without change in the size of the node set.
-<span class="nc bnc" id="L615" title="All 2 branches missed.">            if (currSize == prevSize) {</span>
-<span class="nc" id="L616">                counter++;</span>
+<span class="nc bnc" id="L630" title="All 2 branches missed.">            if (currSize == prevSize) {</span>
+<span class="nc" id="L631">                counter++;</span>
             } else {
-<span class="nc" id="L618">                counter = 0;</span>
-            }
-            
-            // If the graph cannot be traversed, try eliminating edges. Reset
-            // counter and the starting node set to recalculate flows.
-<span class="nc bnc" id="L623" title="All 2 branches missed.">            if (counter &gt; MAXIMUM_ITERATIONS) {</span>
-<span class="nc" id="L624">                updateTraverse(graph, currSet, false);</span>
-<span class="nc" id="L625">                stops++;</span>
-                
-<span class="nc bnc" id="L627" title="All 2 branches missed.">                if (stops &gt; MAXIMUM_ITERATIONS) {</span>
-<span class="nc" id="L628">                    updateTraverse(graph, currSet, true);</span>
-<span class="nc" id="L629">                    stops = 0;</span>
-                }
-                
-<span class="nc" id="L632">                currSet = firstSet;</span>
 <span class="nc" id="L633">                counter = 0;</span>
             }
+
+            // If the graph cannot be traversed, try eliminating edges. Reset
+            // counter and the starting node set to recalculate flows.
+<span class="nc bnc" id="L638" title="All 2 branches missed.">            if (counter &gt; MAXIMUM_ITERATIONS) {</span>
+<span class="nc" id="L639">                updateTraverse(graph, currSet, false);</span>
+<span class="nc" id="L640">                stops++;</span>
+
+<span class="nc bnc" id="L642" title="All 2 branches missed.">                if (stops &gt; MAXIMUM_ITERATIONS) {</span>
+<span class="nc" id="L643">                    updateTraverse(graph, currSet, true);</span>
+<span class="nc" id="L644">                    stops = 0;</span>
+                }
+
+<span class="nc" id="L647">                currSet = firstSet;</span>
+<span class="nc" id="L648">                counter = 0;</span>
+            }
         }
-<span class="nc" id="L636">    }</span>
-    
+<span class="nc" id="L651">    }</span>
+
     /**
      * Traverses through the graph based on edges.
      *
-     * @param node  the current node being traversed
-     * @param code  the molecule code
-     * @return  a list of children nodes to traverse
+     * @param node the current node being traversed
+     * @param code the molecule code
+     * @return a list of children nodes to traverse
      */
     private ArrayList&lt;SiteNode&gt; traverseEdge(SiteNode node, String code) {
-<span class="nc" id="L646">        ArrayList&lt;SiteNode&gt; children = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L647">        Bag out = graph.getEdgesOut(node);</span>
-<span class="nc" id="L648">        Bag in = graph.getEdgesIn(node);</span>
-        
-<span class="nc bnc" id="L650" title="All 2 branches missed.">        if (in == null) {</span>
-<span class="nc" id="L651">            return children;</span>
+<span class="nc" id="L661">        ArrayList&lt;SiteNode&gt; children = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L662">        Bag out = graph.getEdgesOut(node);</span>
+<span class="nc" id="L663">        Bag in = graph.getEdgesIn(node);</span>
+
+<span class="nc bnc" id="L665" title="All 2 branches missed.">        if (in == null) {</span>
+<span class="nc" id="L666">            return children;</span>
         }
-        
+
         // Check that all inlet edges have been visited.
-<span class="nc bnc" id="L655" title="All 2 branches missed.">        for (Object obj : in) {</span>
-<span class="nc" id="L656">            SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc bnc" id="L657" title="All 2 branches missed.">            if (!edge.isVisited) {</span>
-<span class="nc" id="L658">                children.add(node);</span>
-<span class="nc" id="L659">                return children;</span>
+<span class="nc bnc" id="L670" title="All 2 branches missed.">        for (Object obj : in) {</span>
+<span class="nc" id="L671">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L672" title="All 2 branches missed.">            if (!edge.isVisited) {</span>
+<span class="nc" id="L673">                children.add(node);</span>
+<span class="nc" id="L674">                return children;</span>
             }
-<span class="nc" id="L661">        }</span>
-        
+<span class="nc" id="L676">        }</span>
+
         // Calculate total mass in.
-<span class="nc" id="L664">        double mass = 0;</span>
-<span class="nc bnc" id="L665" title="All 2 branches missed.">        for (Object obj : in) {</span>
-<span class="nc" id="L666">            SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc bnc" id="L667" title="All 2 branches missed.">            if (!edge.isIgnored) {</span>
-<span class="nc" id="L668">                mass += (edge.fraction.get(code) - edge.transport.get(code)) * edge.flow;</span>
+<span class="nc" id="L679">        double mass = 0;</span>
+<span class="nc bnc" id="L680" title="All 2 branches missed.">        for (Object obj : in) {</span>
+<span class="nc" id="L681">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L682" title="All 2 branches missed.">            if (!edge.isIgnored) {</span>
+<span class="nc" id="L683">                mass += (edge.fraction.get(code) - edge.transport.get(code)) * edge.flow;</span>
             }
-<span class="nc" id="L670">        }</span>
-        
+<span class="nc" id="L685">        }</span>
+
         // Set negative input mass to zero. Cause by higher transport out (calculated
         // from previous fraction in the step) than current fraction (calculated
         // from upstream consumption.
-<span class="nc bnc" id="L675" title="All 2 branches missed.">        if (mass &lt; 0) {</span>
-<span class="nc" id="L676">            mass = 0;</span>
+<span class="nc bnc" id="L690" title="All 2 branches missed.">        if (mass &lt; 0) {</span>
+<span class="nc" id="L691">            mass = 0;</span>
         }
-        
+
         // Update concentration for edge(s) out. For two edges out, the fraction
         // of mass entering each edge is equivalent to the fraction of total
         // flow rate for that edge.
-<span class="nc bnc" id="L682" title="All 2 branches missed.">        if (out != null) {</span>
-<span class="nc" id="L683">            double flowOut = 0;</span>
-            
+<span class="nc bnc" id="L697" title="All 2 branches missed.">        if (out != null) {</span>
+<span class="nc" id="L698">            double flowOut = 0;</span>
+
             // Calculate total flow out.
-<span class="nc bnc" id="L686" title="All 2 branches missed.">            for (Object obj : out) {</span>
-<span class="nc" id="L687">                SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc bnc" id="L688" title="All 2 branches missed.">                if (!edge.isIgnored) {</span>
-<span class="nc" id="L689">                    flowOut += edge.flow;</span>
+<span class="nc bnc" id="L701" title="All 2 branches missed.">            for (Object obj : out) {</span>
+<span class="nc" id="L702">                SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L703" title="All 2 branches missed.">                if (!edge.isIgnored) {</span>
+<span class="nc" id="L704">                    flowOut += edge.flow;</span>
                 }
-<span class="nc" id="L691">            }</span>
-            
+<span class="nc" id="L706">            }</span>
+
             // Assign new fractions.
-<span class="nc bnc" id="L694" title="All 2 branches missed.">            for (Object obj : out) {</span>
-<span class="nc" id="L695">                SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc" id="L696">                edge.fraction.put(code, Math.min(mass / flowOut, 1));</span>
-<span class="nc" id="L697">                edge.isVisited = true;</span>
-<span class="nc" id="L698">                children.add(edge.getTo());</span>
-<span class="nc" id="L699">            }</span>
+<span class="nc bnc" id="L709" title="All 2 branches missed.">            for (Object obj : out) {</span>
+<span class="nc" id="L710">                SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc" id="L711">                edge.fraction.put(code, Math.min(mass / flowOut, 1));</span>
+<span class="nc" id="L712">                edge.isVisited = true;</span>
+<span class="nc" id="L713">                children.add(edge.getTo());</span>
+<span class="nc" id="L714">            }</span>
         }
-        
-<span class="nc" id="L702">        return children;</span>
+
+<span class="nc" id="L717">        return children;</span>
     }
-    
+
     /**
      * Traverse through the graph based on nodes.
      *
-     * @param node  the current node being traversed
-     * @param code  the molecule code
-     * @return  a list of children nodes to traverse
+     * @param node the current node being traversed
+     * @param code the molecule code
+     * @return a list of children nodes to traverse
      */
     private ArrayList&lt;SiteNode&gt; traverseNode(SiteNode node, String code) {
-<span class="nc" id="L713">        ArrayList&lt;SiteNode&gt; children = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L714">        Bag out = graph.getEdgesOut(node);</span>
-<span class="nc" id="L715">        Bag in = graph.getEdgesIn(node);</span>
-        
+<span class="nc" id="L728">        ArrayList&lt;SiteNode&gt; children = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L729">        Bag out = graph.getEdgesOut(node);</span>
+<span class="nc" id="L730">        Bag in = graph.getEdgesIn(node);</span>
+
         // Check that all inlet nodes have been visited.
-<span class="nc bnc" id="L718" title="All 2 branches missed.">        for (Object obj : in) {</span>
-<span class="nc" id="L719">            SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc bnc" id="L720" title="All 2 branches missed.">            if (edge.getFrom().oxygen &lt; 0) {</span>
-<span class="nc" id="L721">                children.add(node);</span>
-<span class="nc" id="L722">                return children;</span>
+<span class="nc bnc" id="L733" title="All 2 branches missed.">        for (Object obj : in) {</span>
+<span class="nc" id="L734">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L735" title="All 2 branches missed.">            if (edge.getFrom().oxygen &lt; 0) {</span>
+<span class="nc" id="L736">                children.add(node);</span>
+<span class="nc" id="L737">                return children;</span>
             }
-<span class="nc" id="L724">        }</span>
-        
+<span class="nc" id="L739">        }</span>
+
         // Calculate total mass in.
-<span class="nc" id="L727">        double massIn = 0;</span>
-<span class="nc bnc" id="L728" title="All 2 branches missed.">        for (Object obj : in) {</span>
-<span class="nc" id="L729">            SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc bnc" id="L730" title="All 2 branches missed.">            if (!edge.isIgnored) {</span>
-<span class="nc" id="L731">                massIn += edge.flow * getTotal(edge.getFrom().oxygen, oxySoluPlasma)</span>
-<span class="nc" id="L732">                        - edge.transport.get(code);</span>
+<span class="nc" id="L742">        double massIn = 0;</span>
+<span class="nc bnc" id="L743" title="All 2 branches missed.">        for (Object obj : in) {</span>
+<span class="nc" id="L744">            SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L745" title="All 2 branches missed.">            if (!edge.isIgnored) {</span>
+<span class="nc" id="L746">                massIn +=</span>
+<span class="nc" id="L747">                        edge.flow * getTotal(edge.getFrom().oxygen, oxySoluPlasma)</span>
+<span class="nc" id="L748">                                - edge.transport.get(code);</span>
             }
-<span class="nc" id="L734">        }</span>
-        
+<span class="nc" id="L750">        }</span>
+
         // Check for negative mass.
-<span class="nc bnc" id="L737" title="All 2 branches missed.">        if (massIn &lt; 0) {</span>
-<span class="nc" id="L738">            node.oxygen = 0;</span>
-<span class="nc bnc" id="L739" title="All 2 branches missed.">            if (out != null) {</span>
-<span class="nc bnc" id="L740" title="All 2 branches missed.">                for (Object obj : out) {</span>
-<span class="nc" id="L741">                    SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc bnc" id="L742" title="All 2 branches missed.">                    if (!edge.isIgnored) {</span>
-<span class="nc" id="L743">                        children.add(edge.getTo());</span>
+<span class="nc bnc" id="L753" title="All 2 branches missed.">        if (massIn &lt; 0) {</span>
+<span class="nc" id="L754">            node.oxygen = 0;</span>
+<span class="nc bnc" id="L755" title="All 2 branches missed.">            if (out != null) {</span>
+<span class="nc bnc" id="L756" title="All 2 branches missed.">                for (Object obj : out) {</span>
+<span class="nc" id="L757">                    SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L758" title="All 2 branches missed.">                    if (!edge.isIgnored) {</span>
+<span class="nc" id="L759">                        children.add(edge.getTo());</span>
                     }
-<span class="nc" id="L745">                }</span>
+<span class="nc" id="L761">                }</span>
             }
-<span class="nc" id="L747">            return children;</span>
+<span class="nc" id="L763">            return children;</span>
         }
-        
-<span class="nc" id="L750">        final double finalMassIn = massIn;</span>
-        
-<span class="nc bnc" id="L752" title="All 2 branches missed.">        if (out != null) {</span>
-<span class="nc" id="L753">            double flowOut = 0;</span>
-            
+
+<span class="nc" id="L766">        final double finalMassIn = massIn;</span>
+
+<span class="nc bnc" id="L768" title="All 2 branches missed.">        if (out != null) {</span>
+<span class="nc" id="L769">            double flowOut = 0;</span>
+
             // Calculate total flow out.
-<span class="nc bnc" id="L756" title="All 2 branches missed.">            for (Object obj : out) {</span>
-<span class="nc" id="L757">                SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc bnc" id="L758" title="All 2 branches missed.">                if (!edge.isIgnored) {</span>
-<span class="nc" id="L759">                    flowOut += edge.flow;</span>
+<span class="nc bnc" id="L772" title="All 2 branches missed.">            for (Object obj : out) {</span>
+<span class="nc" id="L773">                SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L774" title="All 2 branches missed.">                if (!edge.isIgnored) {</span>
+<span class="nc" id="L775">                    flowOut += edge.flow;</span>
                 }
-<span class="nc" id="L761">            }</span>
-            
+<span class="nc" id="L777">            }</span>
+
             // Solve for oxygen partial pressure.
-<span class="nc" id="L764">            final double finalFlowOut = flowOut;</span>
-<span class="nc" id="L765">            Function func = (p) -&gt; finalFlowOut * getTotal(p, oxySoluPlasma) - finalMassIn;</span>
-            
+<span class="nc" id="L780">            final double finalFlowOut = flowOut;</span>
+<span class="nc" id="L781">            Function func = (p) -&gt; finalFlowOut * getTotal(p, oxySoluPlasma) - finalMassIn;</span>
+
             // Check for same sign.
-<span class="nc bnc" id="L768" title="All 4 branches missed.">            if (Math.signum(func.f(MAX_OXYGEN_PARTIAL_PRESSURE)) == -1 || finalFlowOut == 0) {</span>
-<span class="nc" id="L769">                node.oxygen = MAX_OXYGEN_PARTIAL_PRESSURE;</span>
+<span class="nc bnc" id="L784" title="All 4 branches missed.">            if (Math.signum(func.f(MAX_OXYGEN_PARTIAL_PRESSURE)) == -1 || finalFlowOut == 0) {</span>
+<span class="nc" id="L785">                node.oxygen = MAX_OXYGEN_PARTIAL_PRESSURE;</span>
             } else {
-<span class="nc" id="L771">                node.oxygen = Solver.bisection(func, 0, MAX_OXYGEN_PARTIAL_PRESSURE);</span>
+<span class="nc" id="L787">                node.oxygen = Solver.bisection(func, 0, MAX_OXYGEN_PARTIAL_PRESSURE);</span>
             }
-            
+
             // Recurse through output edges.
-<span class="nc bnc" id="L775" title="All 2 branches missed.">            for (Object obj : out) {</span>
-<span class="nc" id="L776">                SiteEdge edge = (SiteEdge) obj;</span>
-<span class="nc bnc" id="L777" title="All 2 branches missed.">                if (!edge.isIgnored) {</span>
-<span class="nc" id="L778">                    children.add(edge.getTo());</span>
+<span class="nc bnc" id="L791" title="All 2 branches missed.">            for (Object obj : out) {</span>
+<span class="nc" id="L792">                SiteEdge edge = (SiteEdge) obj;</span>
+<span class="nc bnc" id="L793" title="All 2 branches missed.">                if (!edge.isIgnored) {</span>
+<span class="nc" id="L794">                    children.add(edge.getTo());</span>
                 }
-<span class="nc" id="L780">            }</span>
-<span class="nc bnc" id="L781" title="All 2 branches missed.">        } else if (in.numObjs == 1) {</span>
-<span class="nc" id="L782">            SiteEdge e = (SiteEdge) in.objs[0];</span>
-<span class="nc" id="L783">            node.oxygen = e.getFrom().oxygen;</span>
+<span class="nc" id="L796">            }</span>
+<span class="nc bnc" id="L797" title="All 2 branches missed.">        } else if (in.numObjs == 1) {</span>
+<span class="nc" id="L798">            SiteEdge e = (SiteEdge) in.objs[0];</span>
+<span class="nc" id="L799">            node.oxygen = e.getFrom().oxygen;</span>
         }
-        
-<span class="nc" id="L786">        return children;</span>
+
+<span class="nc" id="L802">        return children;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

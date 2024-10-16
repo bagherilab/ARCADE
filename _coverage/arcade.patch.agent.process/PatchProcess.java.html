@@ -6,31 +6,30 @@ import arcade.patch.env.location.PatchLocation;
 
 /**
  * Abstract implementation of {@link Process} for {@link PatchCell} agents.
- * &lt;p&gt;
- * Each process represents internal cell mechanisms.
+ *
+ * &lt;p&gt;Each process represents internal cell mechanisms.
  */
-
 public abstract class PatchProcess implements Process {
     /** The {@link PatchCell} the process is associated with. */
     final PatchCell cell;
-    
+
     /** The {@link PatchLocation} the process is associated with. */
     final PatchLocation location;
-    
+
     /**
      * Creates a module for a {@link PatchCell} state.
      *
-     * @param cell  the {@link PatchCell} the process is associated with
+     * @param cell the {@link PatchCell} the process is associated with
      */
-<span class="fc" id="L25">    public PatchProcess(PatchCell cell) {</span>
-<span class="fc" id="L26">        this.cell = cell;</span>
-<span class="fc" id="L27">        this.location = (PatchLocation) cell.getLocation();</span>
-<span class="fc" id="L28">    }</span>
-    
+<span class="fc" id="L24">    public PatchProcess(PatchCell cell) {</span>
+<span class="fc" id="L25">        this.cell = cell;</span>
+<span class="fc" id="L26">        this.location = (PatchLocation) cell.getLocation();</span>
+<span class="fc" id="L27">    }</span>
+
     /**
      * Update the process with values from the given process.
      *
-     * @param process  the reference process.
+     * @param process the reference process.
      */
     public abstract void update(Process process);
 }

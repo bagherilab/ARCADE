@@ -4,66 +4,66 @@ import java.util.EnumMap;
 import arcade.potts.agent.cell.PottsCell;
 import static arcade.potts.util.PottsEnums.Region;
 
-/**
- * Configuration for {@link AdhesionHamiltonian} parameters.
- */
-
+/** Configuration for {@link AdhesionHamiltonian} parameters. */
 class AdhesionHamiltonianConfig {
     /** Associated {@link PottsCell} instance. */
     final PottsCell cell;
-    
+
     /** Adhesion values for cell. */
     final double[] adhesion;
-    
+
     /** Adhesion values for cell by region. */
     final EnumMap&lt;Region, EnumMap&lt;Region, Double&gt;&gt; adhesionRegion;
-    
+
     /** {@code true} if the cell has regions, {@code false} otherwise. */
     final boolean hasRegions;
-    
+
     /**
      * Creates parameter configuration for {@code AdhesionHamiltonian}.
      *
-     * @param cell  the associated cell instance
-     * @param adhesion  the list of adhesion values
-     * @param adhesionRegion  the map of adhesion values for regions
+     * @param cell the associated cell instance
+     * @param adhesion the list of adhesion values
+     * @param adhesionRegion the map of adhesion values for regions
      */
-    AdhesionHamiltonianConfig(PottsCell cell, double[] adhesion,
-<span class="fc" id="L32">                              EnumMap&lt;Region, EnumMap&lt;Region, Double&gt;&gt; adhesionRegion) {</span>
-<span class="fc" id="L33">        this.cell = cell;</span>
-<span class="fc" id="L34">        this.adhesion = adhesion.clone();</span>
-<span class="fc bfc" id="L35" title="All 4 branches covered.">        this.hasRegions = (adhesionRegion != null) &amp;&amp; (adhesionRegion.keySet().size() &gt; 0);</span>
-        
-<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (hasRegions) {</span>
-<span class="fc" id="L38">            this.adhesionRegion = new EnumMap&lt;&gt;(Region.class);</span>
-<span class="fc bfc" id="L39" title="All 2 branches covered.">            for (Region region : adhesionRegion.keySet()) {</span>
-<span class="fc" id="L40">                this.adhesionRegion.put(region, adhesionRegion.get(region).clone());</span>
-<span class="fc" id="L41">            }</span>
+    AdhesionHamiltonianConfig(
+            PottsCell cell,
+            double[] adhesion,
+<span class="fc" id="L31">            EnumMap&lt;Region, EnumMap&lt;Region, Double&gt;&gt; adhesionRegion) {</span>
+<span class="fc" id="L32">        this.cell = cell;</span>
+<span class="fc" id="L33">        this.adhesion = adhesion.clone();</span>
+<span class="fc bfc" id="L34" title="All 4 branches covered.">        this.hasRegions = (adhesionRegion != null) &amp;&amp; (adhesionRegion.keySet().size() &gt; 0);</span>
+
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (hasRegions) {</span>
+<span class="fc" id="L37">            this.adhesionRegion = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">            for (Region region : adhesionRegion.keySet()) {</span>
+<span class="fc" id="L39">                this.adhesionRegion.put(region, adhesionRegion.get(region).clone());</span>
+<span class="fc" id="L40">            }</span>
         } else {
-<span class="fc" id="L43">            this.adhesionRegion = null;</span>
+<span class="fc" id="L42">            this.adhesionRegion = null;</span>
         }
-<span class="fc" id="L45">    }</span>
-    
+<span class="fc" id="L44">    }</span>
+
     /**
      * Gets the adhesion to a cell of the given population.
      *
-     * @param target  the target cell population
-     * @return  the adhesion value
+     * @param target the target cell population
+     * @return the adhesion value
      */
     public double getAdhesion(int target) {
-<span class="fc" id="L54">        return adhesion[target];</span>
+<span class="fc" id="L53">        return adhesion[target];</span>
     }
-    
+
     /**
      * Gets the adhesion between two regions.
      *
-     * @param region1  the first region
-     * @param region2  the second region
-     * @return  the adhesion value
+     * @param region1 the first region
+     * @param region2 the second region
+     * @return the adhesion value
      */
     public double getAdhesion(Region region1, Region region2) {
-<span class="fc bfc" id="L65" title="All 2 branches covered.">        return (hasRegions &amp;&amp; adhesionRegion.containsKey(region1)</span>
-<span class="fc bfc" id="L66" title="All 4 branches covered.">                &amp;&amp; adhesionRegion.containsKey(region2)</span>
+<span class="fc" id="L64">        return (hasRegions</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">                        &amp;&amp; adhesionRegion.containsKey(region1)</span>
+<span class="fc bfc" id="L66" title="All 4 branches covered.">                        &amp;&amp; adhesionRegion.containsKey(region2)</span>
 <span class="fc" id="L67">                ? adhesionRegion.get(region1).get(region2)</span>
 <span class="fc" id="L68">                : Double.NaN);</span>
     }

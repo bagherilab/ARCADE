@@ -11,58 +11,57 @@ import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Extension of {@link PatchModule} for apoptosis.
- * &lt;p&gt;
- * During apoptosis, the module is stepped once after the number of ticks
- * corresponding to the duration of apoptosis ({@code DEATH_DURATION}) has
- * passed. The module will remove the cell from the simulation and induce one of
- * the quiescent neighboring cells to proliferate.
+ *
+ * &lt;p&gt;During apoptosis, the module is stepped once after the number of ticks corresponding to the
+ * duration of apoptosis ({@code DEATH_DURATION}) has passed. The module will remove the cell from
+ * the simulation and induce one of the quiescent neighboring cells to proliferate.
  */
-
 public class PatchModuleApoptosis extends PatchModule {
     /** Tracker for duration of cell death. */
     private int ticker;
-    
+
     /** Time required for cell death [min]. */
     private final double deathDuration;
-    
+
     /**
      * Creates an apoptosis {@link PatchModule} for the given cell.
-     * &lt;p&gt;
-     * Loaded parameters include:
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
      * &lt;ul&gt;
-     *     &lt;li&gt;{@code DEATH_DURATION} = time required for cell death&lt;/li&gt;
+     *   &lt;li&gt;{@code DEATH_DURATION} = time required for cell death
      * &lt;/ul&gt;
      *
-     * @param cell  the {@link PatchCell} the module is associated with
+     * @param cell the {@link PatchCell} the module is associated with
      */
     public PatchModuleApoptosis(PatchCell cell) {
-<span class="nc" id="L39">        super(cell);</span>
-        
+<span class="nc" id="L38">        super(cell);</span>
+
         // Set loaded parameters.
-<span class="nc" id="L42">        MiniBox parameters = cell.getParameters();</span>
-<span class="nc" id="L43">        deathDuration = parameters.getInt(&quot;apoptosis/DEATH_DURATION&quot;);</span>
-<span class="nc" id="L44">    }</span>
-    
+<span class="nc" id="L41">        MiniBox parameters = cell.getParameters();</span>
+<span class="nc" id="L42">        deathDuration = parameters.getInt(&quot;apoptosis/DEATH_DURATION&quot;);</span>
+<span class="nc" id="L43">    }</span>
+
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (ticker &gt; deathDuration) {</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if (ticker &gt; deathDuration) {</span>
             // Induce one neighboring quiescent cell to proliferate.
-<span class="nc" id="L50">            Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocations(location.getNeighbors());</span>
-<span class="nc" id="L51">            bag.shuffle(random);</span>
-<span class="nc bnc" id="L52" title="All 2 branches missed.">            for (Object obj : bag) {</span>
-<span class="nc" id="L53">                Cell neighbor = (Cell) obj;</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">                if (neighbor.getState() == State.QUIESCENT) {</span>
-<span class="nc" id="L55">                    neighbor.setState(State.PROLIFERATIVE);</span>
-<span class="nc" id="L56">                    break;</span>
+<span class="nc" id="L49">            Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocations(location.getNeighbors());</span>
+<span class="nc" id="L50">            bag.shuffle(random);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">            for (Object obj : bag) {</span>
+<span class="nc" id="L52">                Cell neighbor = (Cell) obj;</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">                if (neighbor.getState() == State.QUIESCENT) {</span>
+<span class="nc" id="L54">                    neighbor.setState(State.PROLIFERATIVE);</span>
+<span class="nc" id="L55">                    break;</span>
                 }
-<span class="nc" id="L58">            }</span>
-            
+<span class="nc" id="L57">            }</span>
+
             // Remove current cell from simulation and schedule.
-<span class="nc" id="L61">            sim.getGrid().removeObject(cell, location);</span>
-<span class="nc" id="L62">            cell.stop();</span>
-<span class="nc" id="L63">        } else {</span>
-<span class="nc" id="L64">            ticker++;</span>
+<span class="nc" id="L60">            sim.getGrid().removeObject(cell, location);</span>
+<span class="nc" id="L61">            cell.stop();</span>
+<span class="nc" id="L62">        } else {</span>
+<span class="nc" id="L63">            ticker++;</span>
         }
-<span class="nc" id="L66">    }</span>
+<span class="nc" id="L65">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -20,50 +20,47 @@ import static arcade.core.sim.Simulation.DEFAULT_LOCATION_TYPE;
 
 /**
  * Container class for object serializers.
- * &lt;p&gt;
- * Generic serializers include:
+ *
+ * &lt;p&gt;Generic serializers include:
+ *
  * &lt;ul&gt;
- *     &lt;li&gt;{@code SeriesSerializer} for serializing {@link Series}&lt;/li&gt;
- *     &lt;li&gt;{@code MiniBoxSerializer} for serializing {@link MiniBox}&lt;/li&gt;
- *     &lt;li&gt;{@code CellListSerializer} for serializing a list of
- *     {@link CellContainer}&lt;/li&gt;
- *     &lt;li&gt;{@code LocationListSerializer} for serializing a list of
- *     {@link LocationContainer}&lt;/li&gt;
+ *   &lt;li&gt;{@code SeriesSerializer} for serializing {@link Series}
+ *   &lt;li&gt;{@code MiniBoxSerializer} for serializing {@link MiniBox}
+ *   &lt;li&gt;{@code CellListSerializer} for serializing a list of {@link CellContainer}
+ *   &lt;li&gt;{@code LocationListSerializer} for serializing a list of {@link LocationContainer}
  * &lt;/ul&gt;
  */
-
 public final class OutputSerializer {
     /** Regular expression for fractions. */
     public static final String DOUBLE_REGEX = &quot;^(-?\\d*\\.\\d*)$|^(-?\\d*\\.\\d*E-?\\d+)$&quot;;
-    
+
     /** Regular expression for integers. */
     public static final String INTEGER_REGEX = &quot;^(-?\\d+)$|^(-?\\d+E-?\\d+)$&quot;;
-    
-    /**
-     * Hidden utility class constructor.
-     */
-<span class="fc" id="L45">    protected OutputSerializer() {</span>
-<span class="fc" id="L46">        throw new UnsupportedOperationException();</span>
+
+    /** Hidden utility class constructor. */
+<span class="fc" id="L41">    protected OutputSerializer() {</span>
+<span class="fc" id="L42">        throw new UnsupportedOperationException();</span>
     }
-    
+
     /**
      * Creates a {@code GsonBuilder} with generic adaptors.
      *
-     * @return  a {@code GsonBuilder} instance
+     * @return a {@code GsonBuilder} instance
      */
     public static GsonBuilder makeGSONBuilder() {
-<span class="fc" id="L55">        GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();</span>
-<span class="fc" id="L56">        gsonBuilder.registerTypeAdapter(Series.class, new SeriesSerializer());</span>
-<span class="fc" id="L57">        gsonBuilder.registerTypeAdapter(MiniBox.class, new MiniBoxSerializer());</span>
-<span class="fc" id="L58">        gsonBuilder.registerTypeAdapter(DEFAULT_CELL_TYPE, new CellListSerializer());</span>
-<span class="fc" id="L59">        gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE, new LocationListSerializer());</span>
-<span class="fc" id="L60">        return gsonBuilder;</span>
+<span class="fc" id="L51">        GsonBuilder gsonBuilder = new GsonBuilder().setPrettyPrinting();</span>
+<span class="fc" id="L52">        gsonBuilder.registerTypeAdapter(Series.class, new SeriesSerializer());</span>
+<span class="fc" id="L53">        gsonBuilder.registerTypeAdapter(MiniBox.class, new MiniBoxSerializer());</span>
+<span class="fc" id="L54">        gsonBuilder.registerTypeAdapter(DEFAULT_CELL_TYPE, new CellListSerializer());</span>
+<span class="fc" id="L55">        gsonBuilder.registerTypeAdapter(DEFAULT_LOCATION_TYPE, new LocationListSerializer());</span>
+<span class="fc" id="L56">        return gsonBuilder;</span>
     }
-    
+
     /**
      * Serializer for {@link MiniBox} objects.
-     * &lt;p&gt;
-     * The contents of the box are formatted as:
+     *
+     * &lt;p&gt;The contents of the box are formatted as:
+     *
      * &lt;pre&gt;
      *     {
      *         &quot;(key)&quot; : (value),
@@ -72,32 +69,33 @@ public final class OutputSerializer {
      *     }
      * &lt;/pre&gt;
      */
-<span class="fc" id="L75">    public static final class MiniBoxSerializer implements JsonSerializer&lt;MiniBox&gt; {</span>
+<span class="fc" id="L72">    public static final class MiniBoxSerializer implements JsonSerializer&lt;MiniBox&gt; {</span>
         @Override
-        public JsonElement serialize(MiniBox src, Type typeOfSrc,
-                                     JsonSerializationContext context) {
-<span class="fc" id="L79">            JsonObject json = new JsonObject();</span>
-            
-<span class="fc bfc" id="L81" title="All 2 branches covered.">            for (String key : src.getKeys()) {</span>
-<span class="fc" id="L82">                String value = src.get(key);</span>
-                
-<span class="fc bfc" id="L84" title="All 2 branches covered.">                if (value.matches(INTEGER_REGEX)) {</span>
-<span class="fc" id="L85">                    json.addProperty(key, src.getInt(key));</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">                } else if (value.matches(DOUBLE_REGEX)) {</span>
-<span class="fc" id="L87">                    json.addProperty(key, src.getDouble(key));</span>
+        public JsonElement serialize(
+                MiniBox src, Type typeOfSrc, JsonSerializationContext context) {
+<span class="fc" id="L76">            JsonObject json = new JsonObject();</span>
+
+<span class="fc bfc" id="L78" title="All 2 branches covered.">            for (String key : src.getKeys()) {</span>
+<span class="fc" id="L79">                String value = src.get(key);</span>
+
+<span class="fc bfc" id="L81" title="All 2 branches covered.">                if (value.matches(INTEGER_REGEX)) {</span>
+<span class="fc" id="L82">                    json.addProperty(key, src.getInt(key));</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">                } else if (value.matches(DOUBLE_REGEX)) {</span>
+<span class="fc" id="L84">                    json.addProperty(key, src.getDouble(key));</span>
                 } else {
-<span class="fc" id="L89">                    json.addProperty(key, value);</span>
+<span class="fc" id="L86">                    json.addProperty(key, value);</span>
                 }
-<span class="fc" id="L91">            }</span>
-            
-<span class="fc" id="L93">            return json;</span>
+<span class="fc" id="L88">            }</span>
+
+<span class="fc" id="L90">            return json;</span>
         }
     }
-    
+
     /**
      * Serializer for {@link Series} objects.
-     * &lt;p&gt;
-     * The series object is formatted as:
+     *
+     * &lt;p&gt;The series object is formatted as:
+     *
      * &lt;pre&gt;
      *     {
      *         &quot;version&quot;: (version),
@@ -123,46 +121,46 @@ public final class OutputSerializer {
      *     }
      * &lt;/pre&gt;
      */
-<span class="fc" id="L126">    public static final class SeriesSerializer implements JsonSerializer&lt;Series&gt; {</span>
+<span class="fc" id="L124">    public static final class SeriesSerializer implements JsonSerializer&lt;Series&gt; {</span>
         @Override
-        public JsonElement serialize(Series src, Type typeOfSrc,
-                                     JsonSerializationContext context) {
-<span class="fc" id="L130">            JsonObject json = new JsonObject();</span>
-            
-<span class="fc" id="L132">            json.addProperty(&quot;version&quot;, ARCADE.VERSION);</span>
-            
-<span class="fc" id="L134">            JsonObject conversions = new JsonObject();</span>
-<span class="fc" id="L135">            conversions.addProperty(&quot;DS&quot;, src.ds);</span>
-<span class="fc" id="L136">            conversions.addProperty(&quot;DT&quot;, src.dt);</span>
-<span class="fc" id="L137">            json.add(&quot;conversions&quot;, conversions);</span>
-            
-<span class="fc" id="L139">            json.addProperty(&quot;ticks&quot;, src.getTicks());</span>
-            
-<span class="fc" id="L141">            JsonObject size = new JsonObject();</span>
-<span class="fc" id="L142">            size.addProperty(&quot;length&quot;, src.length);</span>
-<span class="fc" id="L143">            size.addProperty(&quot;width&quot;, src.width);</span>
-<span class="fc" id="L144">            size.addProperty(&quot;height&quot;, src.height);</span>
-<span class="fc" id="L145">            size.addProperty(&quot;margin&quot;, src.margin);</span>
-<span class="fc" id="L146">            json.add(&quot;size&quot;, size);</span>
-            
+        public JsonElement serialize(Series src, Type typeOfSrc, JsonSerializationContext context) {
+<span class="fc" id="L127">            JsonObject json = new JsonObject();</span>
+
+<span class="fc" id="L129">            json.addProperty(&quot;version&quot;, ARCADE.VERSION);</span>
+
+<span class="fc" id="L131">            JsonObject conversions = new JsonObject();</span>
+<span class="fc" id="L132">            conversions.addProperty(&quot;DS&quot;, src.ds);</span>
+<span class="fc" id="L133">            conversions.addProperty(&quot;DT&quot;, src.dt);</span>
+<span class="fc" id="L134">            json.add(&quot;conversions&quot;, conversions);</span>
+
+<span class="fc" id="L136">            json.addProperty(&quot;ticks&quot;, src.getTicks());</span>
+
+<span class="fc" id="L138">            JsonObject size = new JsonObject();</span>
+<span class="fc" id="L139">            size.addProperty(&quot;length&quot;, src.length);</span>
+<span class="fc" id="L140">            size.addProperty(&quot;width&quot;, src.width);</span>
+<span class="fc" id="L141">            size.addProperty(&quot;height&quot;, src.height);</span>
+<span class="fc" id="L142">            size.addProperty(&quot;margin&quot;, src.margin);</span>
+<span class="fc" id="L143">            json.add(&quot;size&quot;, size);</span>
+
             // Add population parameters.
-<span class="fc" id="L149">            JsonObject populations = new JsonObject();</span>
-<span class="fc" id="L150">            List&lt;String&gt; keys = new ArrayList&lt;&gt;(src.populations.keySet());</span>
-<span class="fc" id="L151">            Collections.sort(keys);</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">            for (String pop : keys) {</span>
-<span class="fc" id="L153">                JsonElement population = context.serialize(src.populations.get(pop));</span>
-<span class="fc" id="L154">                populations.add(pop, population);</span>
-<span class="fc" id="L155">            }</span>
-<span class="fc" id="L156">            json.add(&quot;populations&quot;, populations);</span>
-            
-<span class="fc" id="L158">            return json;</span>
+<span class="fc" id="L146">            JsonObject populations = new JsonObject();</span>
+<span class="fc" id="L147">            List&lt;String&gt; keys = new ArrayList&lt;&gt;(src.populations.keySet());</span>
+<span class="fc" id="L148">            Collections.sort(keys);</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">            for (String pop : keys) {</span>
+<span class="fc" id="L150">                JsonElement population = context.serialize(src.populations.get(pop));</span>
+<span class="fc" id="L151">                populations.add(pop, population);</span>
+<span class="fc" id="L152">            }</span>
+<span class="fc" id="L153">            json.add(&quot;populations&quot;, populations);</span>
+
+<span class="fc" id="L155">            return json;</span>
         }
     }
-    
+
     /**
      * Serializer for a list of {@link CellContainer} objects.
-     * &lt;p&gt;
-     * The series object is formatted as:
+     *
+     * &lt;p&gt;The series object is formatted as:
+     *
      * &lt;pre&gt;
      *     [
      *         (serialized cell container),
@@ -171,26 +169,27 @@ public final class OutputSerializer {
      *     ]
      * &lt;/pre&gt;
      */
-<span class="fc" id="L174">    public static final class CellListSerializer</span>
+<span class="fc" id="L172">    public static final class CellListSerializer</span>
             implements JsonSerializer&lt;ArrayList&lt;CellContainer&gt;&gt; {
         @Override
-        public JsonElement serialize(ArrayList&lt;CellContainer&gt; src, Type typeOfSrc,
-                                     JsonSerializationContext context) {
-<span class="fc" id="L179">            JsonArray json = new JsonArray();</span>
-            
-<span class="fc bfc" id="L181" title="All 2 branches covered.">            for (CellContainer cellContainer : src) {</span>
-<span class="fc" id="L182">                JsonElement cell = context.serialize(cellContainer, CellContainer.class);</span>
-<span class="fc" id="L183">                json.add(cell);</span>
-<span class="fc" id="L184">            }</span>
-            
-<span class="fc" id="L186">            return json;</span>
+        public JsonElement serialize(
+                ArrayList&lt;CellContainer&gt; src, Type typeOfSrc, JsonSerializationContext context) {
+<span class="fc" id="L177">            JsonArray json = new JsonArray();</span>
+
+<span class="fc bfc" id="L179" title="All 2 branches covered.">            for (CellContainer cellContainer : src) {</span>
+<span class="fc" id="L180">                JsonElement cell = context.serialize(cellContainer, CellContainer.class);</span>
+<span class="fc" id="L181">                json.add(cell);</span>
+<span class="fc" id="L182">            }</span>
+
+<span class="fc" id="L184">            return json;</span>
         }
     }
-    
+
     /**
      * Serializer for a list of {@link LocationContainer} objects.
-     * &lt;p&gt;
-     * The series object is formatted as:
+     *
+     * &lt;p&gt;The series object is formatted as:
+     *
      * &lt;pre&gt;
      *     [
      *         (serialized location container),
@@ -199,20 +198,22 @@ public final class OutputSerializer {
      *     ]
      * &lt;/pre&gt;
      */
-<span class="fc" id="L202">    public static final class LocationListSerializer</span>
+<span class="fc" id="L201">    public static final class LocationListSerializer</span>
             implements JsonSerializer&lt;ArrayList&lt;LocationContainer&gt;&gt; {
         @Override
-        public JsonElement serialize(ArrayList&lt;LocationContainer&gt; src, Type typeOfSrc,
-                                     JsonSerializationContext context) {
-<span class="fc" id="L207">            JsonArray json = new JsonArray();</span>
-            
-<span class="fc bfc" id="L209" title="All 2 branches covered.">            for (LocationContainer locationContainer : src) {</span>
-<span class="fc" id="L210">                JsonElement location = context.serialize(locationContainer,</span>
-                        LocationContainer.class);
-<span class="fc" id="L212">                json.add(location);</span>
-<span class="fc" id="L213">            }</span>
-            
-<span class="fc" id="L215">            return json;</span>
+        public JsonElement serialize(
+                ArrayList&lt;LocationContainer&gt; src,
+                Type typeOfSrc,
+                JsonSerializationContext context) {
+<span class="fc" id="L208">            JsonArray json = new JsonArray();</span>
+
+<span class="fc bfc" id="L210" title="All 2 branches covered.">            for (LocationContainer locationContainer : src) {</span>
+<span class="fc" id="L211">                JsonElement location =</span>
+<span class="fc" id="L212">                        context.serialize(locationContainer, LocationContainer.class);</span>
+<span class="fc" id="L213">                json.add(location);</span>
+<span class="fc" id="L214">            }</span>
+
+<span class="fc" id="L216">            return json;</span>
         }
     }
 }

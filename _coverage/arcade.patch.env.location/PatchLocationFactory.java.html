@@ -10,82 +10,76 @@ import arcade.core.sim.Series;
 import arcade.core.util.Utilities;
 import arcade.patch.sim.PatchSeries;
 
-/**
- * Implementation of {@link LocationFactory} for {@link PatchLocation} objects.
- */
-
+/** Implementation of {@link LocationFactory} for {@link PatchLocation} objects. */
 public abstract class PatchLocationFactory implements LocationFactory {
     /** Random number generator instance. */
     MersenneTwisterFast random;
-    
+
     /** Map of id to location. */
     public final HashMap&lt;Integer, PatchLocationContainer&gt; locations;
-    
-    /**
-     * Creates a factory for making {@link PatchLocation} instances.
-     */
-<span class="fc" id="L27">    public PatchLocationFactory() {</span>
-<span class="fc" id="L28">        locations = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L29">    }</span>
-    
+
+    /** Creates a factory for making {@link PatchLocation} instances. */
+<span class="fc" id="L22">    public PatchLocationFactory() {</span>
+<span class="fc" id="L23">        locations = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L24">    }</span>
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * For series with no loader, a list of available patches are created based
-     * on population settings. For series with a loader, the specified file is
-     * loaded into the factory.
+     *
+     * &lt;p&gt;For series with no loader, a list of available patches are created based on population
+     * settings. For series with a loader, the specified file is loaded into the factory.
      */
     @Override
     public void initialize(Series series, MersenneTwisterFast random) {
-<span class="fc" id="L40">        this.random = random;</span>
-<span class="pc bpc" id="L41" title="3 of 4 branches missed.">        if (series.loader != null &amp;&amp; series.loader.loadLocations) {</span>
-<span class="nc" id="L42">            loadLocations(series);</span>
+<span class="fc" id="L34">        this.random = random;</span>
+<span class="pc bpc" id="L35" title="3 of 4 branches missed.">        if (series.loader != null &amp;&amp; series.loader.loadLocations) {</span>
+<span class="nc" id="L36">            loadLocations(series);</span>
         } else {
-<span class="fc" id="L44">            createLocations(series);</span>
+<span class="fc" id="L38">            createLocations(series);</span>
         }
-<span class="fc" id="L46">    }</span>
-    
+<span class="fc" id="L40">    }</span>
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Loaded locations are mapped by their id.
+     *
+     * &lt;p&gt;Loaded locations are mapped by their id.
      */
     @Override
     public void loadLocations(Series series) {
         // Load locations.
-<span class="nc" id="L56">        ArrayList&lt;LocationContainer&gt; containers = series.loader.loadLocations();</span>
-        
+<span class="nc" id="L50">        ArrayList&lt;LocationContainer&gt; containers = series.loader.loadLocations();</span>
+
         // Map loaded container to factory.
-<span class="nc bnc" id="L59" title="All 2 branches missed.">        for (LocationContainer container : containers) {</span>
-<span class="nc" id="L60">            PatchLocationContainer locationContainer = (PatchLocationContainer) container;</span>
-<span class="nc" id="L61">            locations.put(locationContainer.id, locationContainer);</span>
-<span class="nc" id="L62">        }</span>
-<span class="nc" id="L63">    }</span>
-    
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        for (LocationContainer container : containers) {</span>
+<span class="nc" id="L54">            PatchLocationContainer locationContainer = (PatchLocationContainer) container;</span>
+<span class="nc" id="L55">            locations.put(locationContainer.id, locationContainer);</span>
+<span class="nc" id="L56">        }</span>
+<span class="nc" id="L57">    }</span>
+
     @Override
     public void createLocations(Series series) {
-<span class="fc" id="L67">        PatchSeries patchSeries = (PatchSeries) series;</span>
-        
+<span class="fc" id="L61">        PatchSeries patchSeries = (PatchSeries) series;</span>
+
         // Get all valid coordinates.
-<span class="fc" id="L70">        ArrayList&lt;Coordinate&gt; coordinates = getCoordinates(patchSeries.radius, patchSeries.depth);</span>
-<span class="fc" id="L71">        Utilities.shuffleList(coordinates, random);</span>
-<span class="fc" id="L72">        coordinates.sort(Comparator.comparingDouble(Coordinate::calculateDistance));</span>
-        
+<span class="fc" id="L64">        ArrayList&lt;Coordinate&gt; coordinates = getCoordinates(patchSeries.radius, patchSeries.depth);</span>
+<span class="fc" id="L65">        Utilities.shuffleList(coordinates, random);</span>
+<span class="fc" id="L66">        coordinates.sort(Comparator.comparingDouble(Coordinate::calculateDistance));</span>
+
         // Create containers for each coordinate.
-<span class="fc" id="L75">        int id = 1;</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">        for (Coordinate coordinate : coordinates) {</span>
-<span class="fc" id="L77">            PatchLocationContainer container = new PatchLocationContainer(id, coordinate);</span>
-<span class="fc" id="L78">            locations.put(id, container);</span>
-<span class="fc" id="L79">            id++;</span>
-<span class="fc" id="L80">        }</span>
-<span class="fc" id="L81">    }</span>
-    
+<span class="fc" id="L69">        int id = 1;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        for (Coordinate coordinate : coordinates) {</span>
+<span class="fc" id="L71">            PatchLocationContainer container = new PatchLocationContainer(id, coordinate);</span>
+<span class="fc" id="L72">            locations.put(id, container);</span>
+<span class="fc" id="L73">            id++;</span>
+<span class="fc" id="L74">        }</span>
+<span class="fc" id="L75">    }</span>
+
     /**
      * Gets all coordinates for the given range.
      *
-     * @param radius  the bound on the radius
-     * @param depth  the bound on the depth
-     * @return  a list of location coordinates
+     * @param radius the bound on the radius
+     * @param depth the bound on the depth
+     * @return a list of location coordinates
      */
     public abstract ArrayList&lt;Coordinate&gt; getCoordinates(int radius, int depth);
 }

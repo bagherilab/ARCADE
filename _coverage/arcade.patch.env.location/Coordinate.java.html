@@ -1,41 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Coordinate.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">arcade</a> &gt; <a href="index.source.html" class="el_package">arcade.patch.env.location</a> &gt; <span class="el_source">Coordinate.java</span></div><h1>Coordinate.java</h1><pre class="source lang-java linenums">package arcade.patch.env.location;
 
-/**
- * Representation of a coordinate.
- */
-
+/** Representation of a coordinate. */
 public abstract class Coordinate {
     /** Coordinate z value. */
     public final int z;
-    
+
     /**
      * Creates a {@code Coordinate}.
      *
-     * @param z  the z coordinate value
+     * @param z the z coordinate value
      */
-<span class="fc" id="L16">    public Coordinate(int z) {</span>
-<span class="fc" id="L17">        this.z = z;</span>
-<span class="fc" id="L18">    }</span>
-    
+<span class="fc" id="L13">    public Coordinate(int z) {</span>
+<span class="fc" id="L14">        this.z = z;</span>
+<span class="fc" id="L15">    }</span>
+
     /**
      * Calculates the distance of the coordinate from the center.
      *
-     * @return  the distance from the center
+     * @return the distance from the center
      */
     public abstract double calculateDistance();
-    
+
     /**
      * Gets hash based on coordinate.
      *
-     * @return  the hash
+     * @return the hash
      */
     public abstract int hashCode();
-    
+
     /**
      * Checks if two coordinates have the same coordinate values.
      *
-     * @param obj  the coordinate to compare
-     * @return  {@code true} if coordinates are equal, {@code false} otherwise
+     * @param obj the coordinate to compare
+     * @return {@code true} if coordinates are equal, {@code false} otherwise
      */
     public abstract boolean equals(Object obj);
 }

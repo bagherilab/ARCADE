@@ -9,105 +9,158 @@ import arcade.core.util.MiniBox;
 
 /**
  * Implementation of {@link CellContainer} for {@link PatchCell} agents.
- * &lt;p&gt;
- * Cell parameters are drawn from the associated {@link PatchCellFactory}
- * instance for the given population.
+ *
+ * &lt;p&gt;Cell parameters are drawn from the associated {@link PatchCellFactory} instance for the given
+ * population.
  */
-
 public final class PatchCellContainer implements CellContainer {
     /** Unique cell container ID. */
     public final int id;
-    
+
     /** Cell parent ID. */
     public final int parent;
-    
+
     /** Cell population index. */
     public final int pop;
-    
+
     /** Cell age [min]. */
     public final int age;
-    
+
     /** Number of divisions. */
     public final int divisions;
-    
+
     /** Cell state. */
     public final CellState state;
-    
+
     /** Cell volume [um&lt;sup&gt;3&lt;/sup&gt;]. */
     public final double volume;
-    
+
     /** Cell height [um]. */
     public final double height;
-    
+
     /** Critical cell volume [um&lt;sup&gt;3&lt;/sup&gt;]. */
     public final double criticalVolume;
-    
+
     /** Critical cell height [um]. */
     public final double criticalHeight;
-    
+
     /**
      * Creates a {@code PatchCellContainer} instance.
      *
-     * @param id  the cell ID
-     * @param parent  the parent ID
-     * @param pop  the cell population index
-     * @param age  the cell age
-     * @param divisions  the number of cell divisions
-     * @param state  the cell state
-     * @param volume  the cell volume
-     * @param height  the cell height
-     * @param criticalVolume  the critical volume
-     * @param criticalHeight  the critical height
+     * @param id the cell ID
+     * @param parent the parent ID
+     * @param pop the cell population index
+     * @param age the cell age
+     * @param divisions the number of cell divisions
+     * @param state the cell state
+     * @param volume the cell volume
+     * @param height the cell height
+     * @param criticalVolume the critical volume
+     * @param criticalHeight the critical height
      */
-    public PatchCellContainer(int id, int parent, int pop, int age, int divisions,
-                              CellState state, double volume, double height,
-<span class="fc" id="L64">                              double criticalVolume, double criticalHeight) {</span>
-<span class="fc" id="L65">        this.id = id;</span>
-<span class="fc" id="L66">        this.parent = parent;</span>
-<span class="fc" id="L67">        this.pop = pop;</span>
-<span class="fc" id="L68">        this.age = age;</span>
-<span class="fc" id="L69">        this.divisions = divisions;</span>
-<span class="fc" id="L70">        this.state = state;</span>
-<span class="fc" id="L71">        this.volume = volume;</span>
-<span class="fc" id="L72">        this.height = height;</span>
-<span class="fc" id="L73">        this.criticalVolume = criticalVolume;</span>
-<span class="fc" id="L74">        this.criticalHeight = criticalHeight;</span>
-<span class="fc" id="L75">    }</span>
-    
+    public PatchCellContainer(
+            int id,
+            int parent,
+            int pop,
+            int age,
+            int divisions,
+            CellState state,
+            double volume,
+            double height,
+            double criticalVolume,
+<span class="fc" id="L71">            double criticalHeight) {</span>
+<span class="fc" id="L72">        this.id = id;</span>
+<span class="fc" id="L73">        this.parent = parent;</span>
+<span class="fc" id="L74">        this.pop = pop;</span>
+<span class="fc" id="L75">        this.age = age;</span>
+<span class="fc" id="L76">        this.divisions = divisions;</span>
+<span class="fc" id="L77">        this.state = state;</span>
+<span class="fc" id="L78">        this.volume = volume;</span>
+<span class="fc" id="L79">        this.height = height;</span>
+<span class="fc" id="L80">        this.criticalVolume = criticalVolume;</span>
+<span class="fc" id="L81">        this.criticalHeight = criticalHeight;</span>
+<span class="fc" id="L82">    }</span>
+
     @Override
-<span class="nc" id="L78">    public int getID() { return id; }</span>
-    
+    public int getID() {
+<span class="nc" id="L86">        return id;</span>
+    }
+
     @Override
     public Cell convert(CellFactory factory, Location location) {
-<span class="nc" id="L82">        return convert((PatchCellFactory) factory, location);</span>
+<span class="nc" id="L91">        return convert((PatchCellFactory) factory, location);</span>
     }
-    
+
     /**
      * Converts the cell container into a {@link PatchCell}.
      *
-     * @param factory  the cell factory instance
-     * @param location  the cell location
-     * @return  a {@link PatchCell} instance
+     * @param factory the cell factory instance
+     * @param location the cell location
+     * @return a {@link PatchCell} instance
      */
     private Cell convert(PatchCellFactory factory, Location location) {
         // Get parameters for the cell population.
-<span class="nc" id="L94">        MiniBox parameters = factory.popToParameters.get(pop);</span>
-        
+<span class="nc" id="L103">        MiniBox parameters = factory.popToParameters.get(pop);</span>
+
         // Make cell.
-<span class="nc bnc" id="L97" title="All 4 branches missed.">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
+<span class="nc bnc" id="L106" title="All 4 branches missed.">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
             default:
             case &quot;tissue&quot;:
-<span class="nc" id="L100">                return new PatchCellTissue(id, parent, pop, state, age, divisions, location,</span>
-                        parameters, volume, height, criticalVolume, criticalHeight);
+<span class="nc" id="L109">                return new PatchCellTissue(</span>
+                        id,
+                        parent,
+                        pop,
+                        state,
+                        age,
+                        divisions,
+                        location,
+                        parameters,
+                        volume,
+                        height,
+                        criticalVolume,
+                        criticalHeight);
             case &quot;cancer&quot;:
-<span class="nc" id="L103">                return new PatchCellCancer(id, parent, pop, state, age, divisions, location,</span>
-                        parameters, volume, height, criticalVolume, criticalHeight);
+<span class="nc" id="L123">                return new PatchCellCancer(</span>
+                        id,
+                        parent,
+                        pop,
+                        state,
+                        age,
+                        divisions,
+                        location,
+                        parameters,
+                        volume,
+                        height,
+                        criticalVolume,
+                        criticalHeight);
             case &quot;cancer_stem&quot;:
-<span class="nc" id="L106">                return new PatchCellCancerStem(id, parent, pop, state, age, divisions, location,</span>
-                        parameters, volume, height, criticalVolume, criticalHeight);
+<span class="nc" id="L137">                return new PatchCellCancerStem(</span>
+                        id,
+                        parent,
+                        pop,
+                        state,
+                        age,
+                        divisions,
+                        location,
+                        parameters,
+                        volume,
+                        height,
+                        criticalVolume,
+                        criticalHeight);
             case &quot;random&quot;:
-<span class="nc" id="L109">                return new PatchCellRandom(id, parent, pop, state, age, divisions, location,</span>
-                        parameters, volume, height, criticalVolume, criticalHeight);
+<span class="nc" id="L151">                return new PatchCellRandom(</span>
+                        id,
+                        parent,
+                        pop,
+                        state,
+                        age,
+                        divisions,
+                        location,
+                        parameters,
+                        volume,
+                        height,
+                        criticalVolume,
+                        criticalHeight);
         }
     }
 }

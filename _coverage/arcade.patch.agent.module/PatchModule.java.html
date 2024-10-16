@@ -6,45 +6,48 @@ import arcade.patch.env.location.PatchLocation;
 
 /**
  * Abstract implementation of {@link Module} for {@link PatchCell} agents.
- * &lt;p&gt;
- * Each module represents the behaviors of a cell in a given state.
+ *
+ * &lt;p&gt;Each module represents the behaviors of a cell in a given state.
  */
-
 public abstract class PatchModule implements Module {
     /** The {@link PatchCell} the module is associated with. */
     final PatchCell cell;
-    
+
     /** The {@link PatchLocation} the module is associated with. */
     final PatchLocation location;
-    
+
     /** Tick the {@code Module} was started. */
     double start;
-    
+
     /** Tick the {@code Module} was stopped. */
     double stop;
-    
+
     /**
      * Creates a module for a {@link PatchCell} state.
      *
-     * @param cell  the {@link PatchCell} the module is associated with
+     * @param cell the {@link PatchCell} the module is associated with
      */
-<span class="fc" id="L31">    public PatchModule(PatchCell cell) {</span>
-<span class="fc" id="L32">        this.cell = cell;</span>
-<span class="fc" id="L33">        this.location = (PatchLocation) cell.getLocation();</span>
-<span class="fc" id="L34">    }</span>
-    
+<span class="fc" id="L30">    public PatchModule(PatchCell cell) {</span>
+<span class="fc" id="L31">        this.cell = cell;</span>
+<span class="fc" id="L32">        this.location = (PatchLocation) cell.getLocation();</span>
+<span class="fc" id="L33">    }</span>
+
     /**
      * Gets the module start tick.
      *
-     * @return  the module start
+     * @return the module start
      */
-<span class="nc" id="L41">    public double getStart() { return start; }</span>
-    
+    public double getStart() {
+<span class="nc" id="L41">        return start;</span>
+    }
+
     /**
      * Gets the module start tick.
      *
-     * @return  the module start
+     * @return the module start
      */
-<span class="nc" id="L48">    public double getStop() { return stop; }</span>
+    public double getStop() {
+<span class="nc" id="L50">        return stop;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

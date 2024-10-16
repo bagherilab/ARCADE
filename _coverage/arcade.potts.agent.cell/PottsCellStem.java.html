@@ -15,69 +15,101 @@ import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Extension of {@link PottsCell} for stem cells.
- * &lt;p&gt;
- * This is the default cell type for Potts models.
+ *
+ * &lt;p&gt;This is the default cell type for Potts models.
  */
 public final class PottsCellStem extends PottsCell {
-    
+
     /**
      * Creates a {@code PottsCellStem} agent.
      *
-     * @param id  the cell ID
-     * @param parent  the parent ID
-     * @param pop  the cell population index
-     * @param state  the cell state
-     * @param age  the cell age
-     * @param divisions  the number of cell divisions
-     * @param location  the {@link Location} of the cell
-     * @param hasRegions  {@code true} if cell has regions, {@code false} otherwise
-     * @param parameters  the dictionary of parameters
-     * @param criticalVolume  the critical cell volume
-     * @param criticalHeight  the critical cell height
-     * @param criticalRegionVolumes  the map of critical volumes for regions
-     * @param criticalRegionHeights  the map of critical heights for regions
+     * @param id the cell ID
+     * @param parent the parent ID
+     * @param pop the cell population index
+     * @param state the cell state
+     * @param age the cell age
+     * @param divisions the number of cell divisions
+     * @param location the {@link Location} of the cell
+     * @param hasRegions {@code true} if cell has regions, {@code false} otherwise
+     * @param parameters the dictionary of parameters
+     * @param criticalVolume the critical cell volume
+     * @param criticalHeight the critical cell height
+     * @param criticalRegionVolumes the map of critical volumes for regions
+     * @param criticalRegionHeights the map of critical heights for regions
      */
-    public PottsCellStem(int id, int parent, int pop, CellState state, int age, int divisions,
-                         Location location, boolean hasRegions, MiniBox parameters,
-                         double criticalVolume, double criticalHeight,
-                         EnumMap&lt;Region, Double&gt; criticalRegionVolumes,
-                         EnumMap&lt;Region, Double&gt; criticalRegionHeights) {
-<span class="fc" id="L45">        super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,</span>
-                criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-<span class="fc" id="L47">    }</span>
-    
+    public PottsCellStem(
+            int id,
+            int parent,
+            int pop,
+            CellState state,
+            int age,
+            int divisions,
+            Location location,
+            boolean hasRegions,
+            MiniBox parameters,
+            double criticalVolume,
+            double criticalHeight,
+            EnumMap&lt;Region, Double&gt; criticalRegionVolumes,
+            EnumMap&lt;Region, Double&gt; criticalRegionHeights) {
+<span class="fc" id="L54">        super(</span>
+                id,
+                parent,
+                pop,
+                state,
+                age,
+                divisions,
+                location,
+                hasRegions,
+                parameters,
+                criticalVolume,
+                criticalHeight,
+                criticalRegionVolumes,
+                criticalRegionHeights);
+<span class="fc" id="L68">    }</span>
+
     @Override
-    public PottsCell make(int newID, CellState newState, Location newLocation,
-                          MersenneTwisterFast random) {
-<span class="fc" id="L52">        divisions++;</span>
-<span class="fc" id="L53">        return new PottsCellStem(newID, id, pop, newState, age, divisions, newLocation,</span>
-                hasRegions, parameters, criticalVolume, criticalHeight,
-                criticalRegionVolumes, criticalRegionHeights);
+    public PottsCell make(
+            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
+<span class="fc" id="L73">        divisions++;</span>
+<span class="fc" id="L74">        return new PottsCellStem(</span>
+                newID,
+                id,
+                pop,
+                newState,
+                age,
+                divisions,
+                newLocation,
+                hasRegions,
+                parameters,
+                criticalVolume,
+                criticalHeight,
+                criticalRegionVolumes,
+                criticalRegionHeights);
     }
-    
+
     @Override
     void setStateModule(CellState newState) {
-<span class="fc bfc" id="L60" title="All 6 branches covered.">        switch ((State) newState) {</span>
+<span class="fc bfc" id="L92" title="All 6 branches covered.">        switch ((State) newState) {</span>
             case QUIESCENT:
-<span class="fc" id="L62">                module = new PottsModuleQuiescence(this);</span>
-<span class="fc" id="L63">                break;</span>
+<span class="fc" id="L94">                module = new PottsModuleQuiescence(this);</span>
+<span class="fc" id="L95">                break;</span>
             case PROLIFERATIVE:
-<span class="fc" id="L65">                module = new PottsModuleProliferationSimple(this);</span>
-<span class="fc" id="L66">                break;</span>
+<span class="fc" id="L97">                module = new PottsModuleProliferationSimple(this);</span>
+<span class="fc" id="L98">                break;</span>
             case APOPTOTIC:
-<span class="fc" id="L68">                module = new PottsModuleApoptosisSimple(this);</span>
-<span class="fc" id="L69">                break;</span>
+<span class="fc" id="L100">                module = new PottsModuleApoptosisSimple(this);</span>
+<span class="fc" id="L101">                break;</span>
             case NECROTIC:
-<span class="fc" id="L71">                module = new PottsModuleNecrosis(this);</span>
-<span class="fc" id="L72">                break;</span>
+<span class="fc" id="L103">                module = new PottsModuleNecrosis(this);</span>
+<span class="fc" id="L104">                break;</span>
             case AUTOTIC:
-<span class="fc" id="L74">                module = new PottsModuleAutosis(this);</span>
-<span class="fc" id="L75">                break;</span>
+<span class="fc" id="L106">                module = new PottsModuleAutosis(this);</span>
+<span class="fc" id="L107">                break;</span>
             default:
                 // State must be one of the above cases.
-<span class="fc" id="L78">                module = null;</span>
+<span class="fc" id="L110">                module = null;</span>
                 break;
         }
-<span class="fc" id="L81">    }</span>
+<span class="fc" id="L113">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

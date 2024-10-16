@@ -16,224 +16,229 @@ import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Implementation of {@link CellFactory} for {@link PottsCell} agents.
- * &lt;p&gt;
- * For a given {@link Series}, the factory parses out parameter values into a
- * series of maps from population to the parameter values. These maps are then
- * combined with a {@link PottsCellContainer} to instantiate a {@link PottsCell}
- * agent.
+ *
+ * &lt;p&gt;For a given {@link Series}, the factory parses out parameter values into a series of maps from
+ * population to the parameter values. These maps are then combined with a {@link
+ * PottsCellContainer} to instantiate a {@link PottsCell} agent.
  */
-
 public final class PottsCellFactory implements CellFactory {
     /** Random number generator instance. */
     MersenneTwisterFast random;
-    
+
     /** Map of population to critical volumes. */
     HashMap&lt;Integer, Distribution&gt; popToCriticalVolumes;
-    
+
     /** Map of population to critical heights. */
     HashMap&lt;Integer, Distribution&gt; popToCriticalHeights;
-    
+
     /** Map of population to parameters. */
     HashMap&lt;Integer, MiniBox&gt; popToParameters;
-    
+
     /** Map of population to number of regions. */
     HashMap&lt;Integer, Boolean&gt; popToRegions;
-    
+
     /** Map of population to region critical volumes. */
     HashMap&lt;Integer, EnumMap&lt;Region, Distribution&gt;&gt; popToCriticalRegionVolumes;
-    
+
     /** Map of population to region critical heights. */
     HashMap&lt;Integer, EnumMap&lt;Region, Distribution&gt;&gt; popToCriticalRegionHeights;
-    
+
     /** Map of population to list of ids. */
     public final HashMap&lt;Integer, HashSet&lt;Integer&gt;&gt; popToIDs;
-    
+
     /** Map of id to cell. */
     public final HashMap&lt;Integer, PottsCellContainer&gt; cells;
-    
-    /**
-     * Creates a factory for making {@link PottsCell} instances.
-     */
-<span class="fc" id="L57">    public PottsCellFactory() {</span>
-<span class="fc" id="L58">        cells = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L59">        popToCriticalVolumes = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L60">        popToCriticalHeights = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L61">        popToParameters = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L62">        popToRegions = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L63">        popToCriticalRegionVolumes = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L64">        popToCriticalRegionHeights = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L65">        popToIDs = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L66">    }</span>
-    
+
+    /** Creates a factory for making {@link PottsCell} instances. */
+<span class="fc" id="L53">    public PottsCellFactory() {</span>
+<span class="fc" id="L54">        cells = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L55">        popToCriticalVolumes = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L56">        popToCriticalHeights = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L57">        popToParameters = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L58">        popToRegions = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L59">        popToCriticalRegionVolumes = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L60">        popToCriticalRegionHeights = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L61">        popToIDs = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L62">    }</span>
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Regardless of loader, the population settings are parsed to get critical,
-     * values used for instantiating cells.
+     *
+     * &lt;p&gt;Regardless of loader, the population settings are parsed to get critical, values used for
+     * instantiating cells.
      */
     @Override
     public void initialize(Series series, MersenneTwisterFast random) {
-<span class="fc" id="L76">        this.random = random;</span>
-<span class="fc" id="L77">        parseValues(series);</span>
-<span class="fc bfc" id="L78" title="All 4 branches covered.">        if (series.loader != null &amp;&amp; series.loader.loadCells) {</span>
-<span class="fc" id="L79">            loadCells(series);</span>
+<span class="fc" id="L72">        this.random = random;</span>
+<span class="fc" id="L73">        parseValues(series);</span>
+<span class="fc bfc" id="L74" title="All 4 branches covered.">        if (series.loader != null &amp;&amp; series.loader.loadCells) {</span>
+<span class="fc" id="L75">            loadCells(series);</span>
         } else {
-<span class="fc" id="L81">            createCells(series);</span>
+<span class="fc" id="L77">            createCells(series);</span>
         }
-<span class="fc" id="L83">    }</span>
-    
+<span class="fc" id="L79">    }</span>
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Population sizes are determined from the given series. The list of loaded
-     * containers is filtered by population code and population size so that
-     * extra containers are discarded.
+     *
+     * &lt;p&gt;Population sizes are determined from the given series. The list of loaded containers is
+     * filtered by population code and population size so that extra containers are discarded.
      */
     @Override
     public void loadCells(Series series) {
         // Load cells.
-<span class="fc" id="L95">        ArrayList&lt;CellContainer&gt; containers = series.loader.loadCells();</span>
-        
+<span class="fc" id="L90">        ArrayList&lt;CellContainer&gt; containers = series.loader.loadCells();</span>
+
         // Population sizes.
-<span class="fc" id="L98">        HashMap&lt;Integer, Integer&gt; popToSize = new HashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
-<span class="fc" id="L100">            int n = population.getInt(&quot;INIT&quot;);</span>
-<span class="fc" id="L101">            int pop = population.getInt(&quot;CODE&quot;);</span>
-<span class="fc" id="L102">            popToSize.put(pop, n);</span>
-<span class="fc" id="L103">        }</span>
-        
+<span class="fc" id="L93">        HashMap&lt;Integer, Integer&gt; popToSize = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
+<span class="fc" id="L95">            int n = population.getInt(&quot;INIT&quot;);</span>
+<span class="fc" id="L96">            int pop = population.getInt(&quot;CODE&quot;);</span>
+<span class="fc" id="L97">            popToSize.put(pop, n);</span>
+<span class="fc" id="L98">        }</span>
+
         // Map loaded container to factory.
-<span class="fc bfc" id="L106" title="All 2 branches covered.">        for (CellContainer container : containers) {</span>
-<span class="fc" id="L107">            PottsCellContainer cellContainer = (PottsCellContainer) container;</span>
-<span class="fc" id="L108">            int pop = cellContainer.pop;</span>
-<span class="fc bfc" id="L109" title="All 4 branches covered.">            if (popToIDs.containsKey(pop) &amp;&amp; popToIDs.get(pop).size() &lt; popToSize.get(pop)) {</span>
-<span class="fc" id="L110">                cells.put(cellContainer.id, cellContainer);</span>
-<span class="fc" id="L111">                popToIDs.get(pop).add(cellContainer.id);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (CellContainer container : containers) {</span>
+<span class="fc" id="L102">            PottsCellContainer cellContainer = (PottsCellContainer) container;</span>
+<span class="fc" id="L103">            int pop = cellContainer.pop;</span>
+<span class="fc bfc" id="L104" title="All 4 branches covered.">            if (popToIDs.containsKey(pop) &amp;&amp; popToIDs.get(pop).size() &lt; popToSize.get(pop)) {</span>
+<span class="fc" id="L105">                cells.put(cellContainer.id, cellContainer);</span>
+<span class="fc" id="L106">                popToIDs.get(pop).add(cellContainer.id);</span>
             }
-<span class="fc" id="L113">        }</span>
-<span class="fc" id="L114">    }</span>
-    
+<span class="fc" id="L108">        }</span>
+<span class="fc" id="L109">    }</span>
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * For each population specified in the given series, containers are created
-     * until the population size is met. Containers are assigned regions if they
-     * exist.
+     *
+     * &lt;p&gt;For each population specified in the given series, containers are created until the
+     * population size is met. Containers are assigned regions if they exist.
      */
     @Override
     public void createCells(Series series) {
-<span class="fc" id="L125">        int id = 1;</span>
-        
+<span class="fc" id="L119">        int id = 1;</span>
+
         // Create containers for each population.
-<span class="fc bfc" id="L128" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
-<span class="fc" id="L129">            int n = population.getInt(&quot;INIT&quot;);</span>
-<span class="fc" id="L130">            int pop = population.getInt(&quot;CODE&quot;);</span>
-<span class="fc" id="L131">            boolean regions = popToRegions.get(pop);</span>
-            
-<span class="fc" id="L133">            Distribution volumes = popToCriticalVolumes.get(pop);</span>
-<span class="fc" id="L134">            Distribution heights = popToCriticalHeights.get(pop);</span>
-<span class="fc" id="L135">            EnumMap&lt;Region, Distribution&gt; regionVolumes = popToCriticalRegionVolumes.get(pop);</span>
-<span class="fc" id="L136">            EnumMap&lt;Region, Distribution&gt; regionHeights = popToCriticalRegionHeights.get(pop);</span>
-            
-<span class="fc bfc" id="L138" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
-<span class="fc" id="L139">                double criticalVolume = volumes.nextDouble();</span>
-<span class="fc" id="L140">                double criticalHeight = heights.nextDouble();</span>
-<span class="fc" id="L141">                EnumMap&lt;Region, Double&gt; criticalRegionVolumes = null;</span>
-<span class="fc" id="L142">                EnumMap&lt;Region, Double&gt; criticalRegionHeights = null;</span>
-                
-<span class="fc" id="L144">                int voxels = (int) Math.round(criticalVolume);</span>
-<span class="fc" id="L145">                EnumMap&lt;Region, Integer&gt; regionVoxels = null;</span>
-                
-<span class="fc bfc" id="L147" title="All 2 branches covered.">                if (regions) {</span>
-<span class="fc" id="L148">                    regionVoxels = new EnumMap&lt;&gt;(Region.class);</span>
-<span class="fc" id="L149">                    criticalRegionVolumes = new EnumMap&lt;&gt;(Region.class);</span>
-<span class="fc" id="L150">                    criticalRegionHeights = new EnumMap&lt;&gt;(Region.class);</span>
-                    
-<span class="fc bfc" id="L152" title="All 2 branches covered.">                    for (Region region : Region.values()) {</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">                        if (region == Region.UNDEFINED) {</span>
-<span class="fc" id="L154">                            continue;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
+<span class="fc" id="L123">            int n = population.getInt(&quot;INIT&quot;);</span>
+<span class="fc" id="L124">            int pop = population.getInt(&quot;CODE&quot;);</span>
+<span class="fc" id="L125">            boolean regions = popToRegions.get(pop);</span>
+
+<span class="fc" id="L127">            Distribution volumes = popToCriticalVolumes.get(pop);</span>
+<span class="fc" id="L128">            Distribution heights = popToCriticalHeights.get(pop);</span>
+<span class="fc" id="L129">            EnumMap&lt;Region, Distribution&gt; regionVolumes = popToCriticalRegionVolumes.get(pop);</span>
+<span class="fc" id="L130">            EnumMap&lt;Region, Distribution&gt; regionHeights = popToCriticalRegionHeights.get(pop);</span>
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L133">                double criticalVolume = volumes.nextDouble();</span>
+<span class="fc" id="L134">                double criticalHeight = heights.nextDouble();</span>
+<span class="fc" id="L135">                EnumMap&lt;Region, Double&gt; criticalRegionVolumes = null;</span>
+<span class="fc" id="L136">                EnumMap&lt;Region, Double&gt; criticalRegionHeights = null;</span>
+
+<span class="fc" id="L138">                int voxels = (int) Math.round(criticalVolume);</span>
+<span class="fc" id="L139">                EnumMap&lt;Region, Integer&gt; regionVoxels = null;</span>
+
+<span class="fc bfc" id="L141" title="All 2 branches covered.">                if (regions) {</span>
+<span class="fc" id="L142">                    regionVoxels = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc" id="L143">                    criticalRegionVolumes = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc" id="L144">                    criticalRegionHeights = new EnumMap&lt;&gt;(Region.class);</span>
+
+<span class="fc bfc" id="L146" title="All 2 branches covered.">                    for (Region region : Region.values()) {</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">                        if (region == Region.UNDEFINED) {</span>
+<span class="fc" id="L148">                            continue;</span>
                         }
-                        
-<span class="fc" id="L157">                        double criticalRegionVolume = regionVolumes.get(region).nextDouble();</span>
-<span class="fc" id="L158">                        double criticalRegionHeight = regionHeights.get(region).nextDouble();</span>
-                        
-<span class="fc bfc" id="L160" title="All 2 branches covered.">                        if (region == Region.DEFAULT) {</span>
-<span class="fc" id="L161">                            criticalRegionVolume = criticalVolume;</span>
-<span class="fc" id="L162">                            criticalRegionHeight = criticalHeight;</span>
+
+<span class="fc" id="L151">                        double criticalRegionVolume = regionVolumes.get(region).nextDouble();</span>
+<span class="fc" id="L152">                        double criticalRegionHeight = regionHeights.get(region).nextDouble();</span>
+
+<span class="fc bfc" id="L154" title="All 2 branches covered.">                        if (region == Region.DEFAULT) {</span>
+<span class="fc" id="L155">                            criticalRegionVolume = criticalVolume;</span>
+<span class="fc" id="L156">                            criticalRegionHeight = criticalHeight;</span>
                         }
-                        
-<span class="fc" id="L165">                        criticalRegionVolumes.put(region, criticalRegionVolume);</span>
-<span class="fc" id="L166">                        criticalRegionHeights.put(region, criticalRegionHeight);</span>
-<span class="fc" id="L167">                        regionVoxels.put(region, (int) Math.round(criticalRegionVolume));</span>
+
+<span class="fc" id="L159">                        criticalRegionVolumes.put(region, criticalRegionVolume);</span>
+<span class="fc" id="L160">                        criticalRegionHeights.put(region, criticalRegionHeight);</span>
+<span class="fc" id="L161">                        regionVoxels.put(region, (int) Math.round(criticalRegionVolume));</span>
                     }
                 }
-                
-<span class="fc" id="L171">                PottsCellContainer container = new PottsCellContainer(id, 0, pop, 0, 0,</span>
-                        State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels, regionVoxels,
-                        criticalVolume, criticalHeight,
-                        criticalRegionVolumes, criticalRegionHeights);
-<span class="fc" id="L175">                cells.put(id, container);</span>
-<span class="fc" id="L176">                popToIDs.get(container.pop).add(container.id);</span>
-<span class="fc" id="L177">                id++;</span>
+
+<span class="fc" id="L165">                PottsCellContainer container =</span>
+                        new PottsCellContainer(
+                                id,
+                                0,
+                                pop,
+                                0,
+                                0,
+                                State.PROLIFERATIVE,
+                                Phase.PROLIFERATIVE_G1,
+                                voxels,
+                                regionVoxels,
+                                criticalVolume,
+                                criticalHeight,
+                                criticalRegionVolumes,
+                                criticalRegionHeights);
+<span class="fc" id="L180">                cells.put(id, container);</span>
+<span class="fc" id="L181">                popToIDs.get(container.pop).add(container.id);</span>
+<span class="fc" id="L182">                id++;</span>
             }
-<span class="fc" id="L179">        }</span>
-<span class="fc" id="L180">    }</span>
-    
+<span class="fc" id="L184">        }</span>
+<span class="fc" id="L185">    }</span>
+
     /**
      * Parses population settings into maps from population to parameter value.
      *
-     * @param series  the simulation series
+     * @param series the simulation series
      */
     void parseValues(Series series) {
-<span class="fc" id="L188">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
-        
-<span class="fc bfc" id="L190" title="All 2 branches covered.">        for (String key : keySet) {</span>
-<span class="fc" id="L191">            MiniBox population = series.populations.get(key);</span>
-<span class="fc" id="L192">            int pop = population.getInt(&quot;CODE&quot;);</span>
-<span class="fc" id="L193">            popToIDs.put(pop, new HashSet&lt;&gt;());</span>
-<span class="fc" id="L194">            popToParameters.put(pop, series.populations.get(key));</span>
-            
-<span class="fc" id="L196">            double muVolume = population.getDouble(&quot;CRITICAL_VOLUME_MEAN&quot;);</span>
-<span class="fc" id="L197">            double sigmaVolume = population.getDouble(&quot;CRITICAL_VOLUME_STDEV&quot;);</span>
-<span class="fc" id="L198">            popToCriticalVolumes.put(pop, new Distribution(muVolume, sigmaVolume, random));</span>
-            
-<span class="fc" id="L200">            double muHeight = population.getDouble(&quot;CRITICAL_HEIGHT_MEAN&quot;);</span>
-<span class="fc" id="L201">            double sigmaHeight = population.getDouble(&quot;CRITICAL_HEIGHT_STDEV&quot;);</span>
-<span class="fc" id="L202">            popToCriticalHeights.put(pop, new Distribution(muHeight, sigmaHeight, random));</span>
-            
-<span class="fc" id="L204">            popToRegions.put(pop, false);</span>
-            
+<span class="fc" id="L193">        Set&lt;String&gt; keySet = series.populations.keySet();</span>
+
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        for (String key : keySet) {</span>
+<span class="fc" id="L196">            MiniBox population = series.populations.get(key);</span>
+<span class="fc" id="L197">            int pop = population.getInt(&quot;CODE&quot;);</span>
+<span class="fc" id="L198">            popToIDs.put(pop, new HashSet&lt;&gt;());</span>
+<span class="fc" id="L199">            popToParameters.put(pop, series.populations.get(key));</span>
+
+<span class="fc" id="L201">            double muVolume = population.getDouble(&quot;CRITICAL_VOLUME_MEAN&quot;);</span>
+<span class="fc" id="L202">            double sigmaVolume = population.getDouble(&quot;CRITICAL_VOLUME_STDEV&quot;);</span>
+<span class="fc" id="L203">            popToCriticalVolumes.put(pop, new Distribution(muVolume, sigmaVolume, random));</span>
+
+<span class="fc" id="L205">            double muHeight = population.getDouble(&quot;CRITICAL_HEIGHT_MEAN&quot;);</span>
+<span class="fc" id="L206">            double sigmaHeight = population.getDouble(&quot;CRITICAL_HEIGHT_STDEV&quot;);</span>
+<span class="fc" id="L207">            popToCriticalHeights.put(pop, new Distribution(muHeight, sigmaHeight, random));</span>
+
+<span class="fc" id="L209">            popToRegions.put(pop, false);</span>
+
             // Get regions (if they exist).
-<span class="fc" id="L207">            MiniBox regionBox = population.filter(&quot;(REGION)&quot;);</span>
-<span class="fc" id="L208">            ArrayList&lt;String&gt; regionKeys = regionBox.getKeys();</span>
-            
-<span class="fc bfc" id="L210" title="All 2 branches covered.">            if (regionKeys.size() &gt; 0) {</span>
-<span class="fc" id="L211">                popToRegions.put(pop, true);</span>
-<span class="fc" id="L212">                EnumMap&lt;Region, Distribution&gt; criticalRegionVolumes = new EnumMap&lt;&gt;(Region.class);</span>
-<span class="fc" id="L213">                EnumMap&lt;Region, Distribution&gt; criticalRegionHeights = new EnumMap&lt;&gt;(Region.class);</span>
-                
-<span class="fc bfc" id="L215" title="All 2 branches covered.">                for (String regionKey : regionKeys) {</span>
-<span class="fc" id="L216">                    Region region = Region.valueOf(regionKey);</span>
-                    
-<span class="fc" id="L218">                    double muVolumeRegion =</span>
-<span class="fc" id="L219">                            population.getDouble(&quot;CRITICAL_VOLUME_MEAN_&quot; + regionKey);</span>
-<span class="fc" id="L220">                    double sigmaVolumeRegion =</span>
-<span class="fc" id="L221">                            population.getDouble(&quot;CRITICAL_VOLUME_STDEV_&quot; + regionKey);</span>
-<span class="fc" id="L222">                    criticalRegionVolumes.put(region,</span>
-                            new Distribution(muVolumeRegion, sigmaVolumeRegion, random));
-                    
-<span class="fc" id="L225">                    double muHeightRegion =</span>
-<span class="fc" id="L226">                            population.getDouble(&quot;CRITICAL_HEIGHT_MEAN_&quot; + regionKey);</span>
-<span class="fc" id="L227">                    double sigmaHeightRegion =</span>
-<span class="fc" id="L228">                            population.getDouble(&quot;CRITICAL_HEIGHT_STDEV_&quot; + regionKey);</span>
-<span class="fc" id="L229">                    criticalRegionHeights.put(region,</span>
-                            new Distribution(muHeightRegion, sigmaHeightRegion, random));
-<span class="fc" id="L231">                }</span>
-                
-<span class="fc" id="L233">                popToCriticalRegionVolumes.put(pop, criticalRegionVolumes);</span>
-<span class="fc" id="L234">                popToCriticalRegionHeights.put(pop, criticalRegionHeights);</span>
+<span class="fc" id="L212">            MiniBox regionBox = population.filter(&quot;(REGION)&quot;);</span>
+<span class="fc" id="L213">            ArrayList&lt;String&gt; regionKeys = regionBox.getKeys();</span>
+
+<span class="fc bfc" id="L215" title="All 2 branches covered.">            if (regionKeys.size() &gt; 0) {</span>
+<span class="fc" id="L216">                popToRegions.put(pop, true);</span>
+<span class="fc" id="L217">                EnumMap&lt;Region, Distribution&gt; criticalRegionVolumes = new EnumMap&lt;&gt;(Region.class);</span>
+<span class="fc" id="L218">                EnumMap&lt;Region, Distribution&gt; criticalRegionHeights = new EnumMap&lt;&gt;(Region.class);</span>
+
+<span class="fc bfc" id="L220" title="All 2 branches covered.">                for (String regionKey : regionKeys) {</span>
+<span class="fc" id="L221">                    Region region = Region.valueOf(regionKey);</span>
+
+<span class="fc" id="L223">                    double muVolumeRegion =</span>
+<span class="fc" id="L224">                            population.getDouble(&quot;CRITICAL_VOLUME_MEAN_&quot; + regionKey);</span>
+<span class="fc" id="L225">                    double sigmaVolumeRegion =</span>
+<span class="fc" id="L226">                            population.getDouble(&quot;CRITICAL_VOLUME_STDEV_&quot; + regionKey);</span>
+<span class="fc" id="L227">                    criticalRegionVolumes.put(</span>
+                            region, new Distribution(muVolumeRegion, sigmaVolumeRegion, random));
+
+<span class="fc" id="L230">                    double muHeightRegion =</span>
+<span class="fc" id="L231">                            population.getDouble(&quot;CRITICAL_HEIGHT_MEAN_&quot; + regionKey);</span>
+<span class="fc" id="L232">                    double sigmaHeightRegion =</span>
+<span class="fc" id="L233">                            population.getDouble(&quot;CRITICAL_HEIGHT_STDEV_&quot; + regionKey);</span>
+<span class="fc" id="L234">                    criticalRegionHeights.put(</span>
+                            region, new Distribution(muHeightRegion, sigmaHeightRegion, random));
+<span class="fc" id="L236">                }</span>
+
+<span class="fc" id="L238">                popToCriticalRegionVolumes.put(pop, criticalRegionVolumes);</span>
+<span class="fc" id="L239">                popToCriticalRegionHeights.put(pop, criticalRegionHeights);</span>
             }
-<span class="fc" id="L236">        }</span>
-<span class="fc" id="L237">    }</span>
+<span class="fc" id="L241">        }</span>
+<span class="fc" id="L242">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

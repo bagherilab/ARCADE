@@ -10,72 +10,104 @@ import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Extension of {@link PatchCellTissue} for cancerous tissue cells.
- * &lt;p&gt;
- * {@code PatchCellCancer} agents are modified from their superclass:
+ *
+ * &lt;p&gt;{@code PatchCellCancer} agents are modified from their superclass:
+ *
  * &lt;ul&gt;
- *     &lt;li&gt;If cell is quiescent, they may exit out of quiescence into undefined
- *     if there is space in their neighborhood&lt;/li&gt;
+ *   &lt;li&gt;If cell is quiescent, they may exit out of quiescence into undefined if there is space in
+ *       their neighborhood
  * &lt;/ul&gt;
  */
-
 public class PatchCellCancer extends PatchCellTissue {
     /**
      * Creates a tissue {@code PatchCell} agent.
      *
-     * @param id  the cell ID
-     * @param parent  the parent ID
-     * @param pop  the cell population index
-     * @param state  the cell state
-     * @param age  the cell age
-     * @param divisions  the number of cell divisions
-     * @param location  the {@link Location} of the cell
-     * @param parameters  the dictionary of parameters
-     * @param volume  the cell volume
-     * @param height  the cell height
-     * @param criticalVolume  the critical cell volume
-     * @param criticalHeight  the critical cell height
+     * @param id the cell ID
+     * @param parent the parent ID
+     * @param pop the cell population index
+     * @param state the cell state
+     * @param age the cell age
+     * @param divisions the number of cell divisions
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param volume the cell volume
+     * @param height the cell height
+     * @param criticalVolume the critical cell volume
+     * @param criticalHeight the critical cell height
      */
-    public PatchCellCancer(int id, int parent, int pop, CellState state, int age, int divisions,
-                           Location location, MiniBox parameters, double volume, double height,
-                           double criticalVolume, double criticalHeight) {
-<span class="nc" id="L41">        super(id, parent, pop, state, age, divisions, location, parameters,</span>
-                volume, height, criticalVolume, criticalHeight);
-<span class="nc" id="L43">    }</span>
-    
+    public PatchCellCancer(
+            int id,
+            int parent,
+            int pop,
+            CellState state,
+            int age,
+            int divisions,
+            Location location,
+            MiniBox parameters,
+            double volume,
+            double height,
+            double criticalVolume,
+            double criticalHeight) {
+<span class="nc" id="L51">        super(</span>
+                id,
+                parent,
+                pop,
+                state,
+                age,
+                divisions,
+                location,
+                parameters,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
+<span class="nc" id="L64">    }</span>
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Quiescent cells will check their neighborhood for free locations.
+     *
+     * &lt;p&gt;Quiescent cells will check their neighborhood for free locations.
      */
     @Override
     public void step(SimState simstate) {
-<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (state == State.QUIESCENT) {</span>
-<span class="nc" id="L53">            checkNeighborhood(simstate, this);</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (state == State.QUIESCENT) {</span>
+<span class="nc" id="L74">            checkNeighborhood(simstate, this);</span>
         }
-<span class="nc" id="L55">        super.step(simstate);</span>
-<span class="nc" id="L56">    }</span>
-    
+<span class="nc" id="L76">        super.step(simstate);</span>
+<span class="nc" id="L77">    }</span>
+
     @Override
-    public PatchCell make(int newID, CellState newState, Location newLocation,
-                          MersenneTwisterFast random) {
-<span class="nc" id="L61">        divisions--;</span>
-<span class="nc" id="L62">        return new PatchCellTissue(newID, id, pop, newState, age, divisions, newLocation,</span>
-                parameters, volume, height, criticalVolume, criticalHeight);
+    public PatchCell make(
+            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
+<span class="nc" id="L82">        divisions--;</span>
+<span class="nc" id="L83">        return new PatchCellTissue(</span>
+                newID,
+                id,
+                pop,
+                newState,
+                age,
+                divisions,
+                newLocation,
+                parameters,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
     }
-    
+
     /**
      * Checks neighborhood for free locations.
-     * &lt;p&gt;
-     * If there is at least one free location, cell state becomes undefined.
      *
-     * @param simstate  the MASON simulation state
-     * @param cell  the reference cell
+     * &lt;p&gt;If there is at least one free location, cell state becomes undefined.
+     *
+     * @param simstate the MASON simulation state
+     * @param cell the reference cell
      */
     private static void checkNeighborhood(SimState simstate, PatchCell cell) {
-<span class="nc" id="L75">        Simulation sim = (Simulation) simstate;</span>
-<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() &gt; 0) {</span>
-<span class="nc" id="L77">            cell.setState(State.UNDEFINED);</span>
+<span class="nc" id="L107">        Simulation sim = (Simulation) simstate;</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() &gt; 0) {</span>
+<span class="nc" id="L109">            cell.setState(State.UNDEFINED);</span>
         }
-<span class="nc" id="L79">    }</span>
+<span class="nc" id="L111">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

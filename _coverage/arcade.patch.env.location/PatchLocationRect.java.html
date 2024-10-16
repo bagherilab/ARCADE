@@ -6,14 +6,14 @@ import arcade.core.env.location.LocationContainer;
 import arcade.patch.sim.PatchSeries;
 
 /**
- * Concrete implementation of {@link PatchLocation} for rectangular
- * {@link arcade.core.env.grid.Grid} to a rectangular
- * {@link arcade.core.env.lattice.Lattice}.
- * &lt;p&gt;
- * {@link arcade.core.env.grid.Grid} coordinates are in terms of (x, y) and the
- * {@link arcade.core.env.lattice.Lattice} coordinates are in (a, b).
- * Rectangular {@link arcade.core.env.lattice.Lattice} subcoordinates are
- * ordered 0 - 3, with 0 at the top left and going clockwise around.
+ * Concrete implementation of {@link PatchLocation} for rectangular {@link
+ * arcade.core.env.grid.Grid} to a rectangular {@link arcade.core.env.lattice.Lattice}.
+ *
+ * &lt;p&gt;{@link arcade.core.env.grid.Grid} coordinates are in terms of (x, y) and the {@link
+ * arcade.core.env.lattice.Lattice} coordinates are in (a, b). Rectangular {@link
+ * arcade.core.env.lattice.Lattice} subcoordinates are ordered 0 - 3, with 0 at the top left and
+ * going clockwise around.
+ *
  * &lt;pre&gt;
  *     ---------
  *     | 0 | 1 |
@@ -21,242 +21,257 @@ import arcade.patch.sim.PatchSeries;
  *     | 2 | 3 |
  *     ---------
  * &lt;/pre&gt;
- * For simulations with {@code DEPTH} &amp;#62; 0 (3D simulations), each the
- * rectangular grid is offset in relative to the rectangular lattice. Therefore,
- * each cell in a location has four neighboring locations in the same layer,
- * four neighboring locations in the layer above, and four neighboring locations
- * in the layer below. Simulations with {@code DEPTH} &amp;#62; 1 must have a
- * {@code MARGIN} &amp;#62; 0, otherwise the offset location coordinates will be
- * associated with lattice coordinates that are out of bounds of the array.
+ *
+ * For simulations with {@code DEPTH} &amp;#62; 0 (3D simulations), each the rectangular grid is offset
+ * in relative to the rectangular lattice. Therefore, each cell in a location has four neighboring
+ * locations in the same layer, four neighboring locations in the layer above, and four neighboring
+ * locations in the layer below. Simulations with {@code DEPTH} &amp;#62; 1 must have a {@code MARGIN}
+ * &amp;#62; 0, otherwise the offset location coordinates will be associated with lattice coordinates
+ * that are out of bounds of the array.
  */
-
 public final class PatchLocationRect extends PatchLocation {
     /** Size of rectangle patch from side to side [um]. */
     private static final double RECT_SIZE = 30.0;
-    
+
     /** Height of rectangle patch [um]. */
     private static final double RECT_DEPTH = 8.7;
-    
+
     /** Perimeter of rectangle patch [um]. */
     private static final double RECT_PERIMETER = 4 * RECT_SIZE;
-    
+
     /** Area of rectangle patch [um&lt;sup&gt;2&lt;/sup&gt;]. */
     private static final double RECT_AREA = RECT_SIZE * RECT_SIZE;
-    
+
     /** Surface area of rectangle patch [um&lt;sup&gt;2&lt;/sup&gt;]. */
     private static final double RECT_SURFACE = 2 * RECT_AREA + RECT_DEPTH * RECT_PERIMETER;
-    
+
     /** Volume of rectangle patch [um&lt;sup&gt;3&lt;/sup&gt;]. */
     private static final double RECT_VOLUME = RECT_AREA * RECT_DEPTH;
-    
+
     /** Ratio of rectangle location height to size. */
     private static final double RECT_RATIO = RECT_DEPTH / RECT_SIZE;
-    
+
     /** Size of the subrectangle position [um]. */
     private static final double SUBRECT_SIZE = RECT_SIZE / 2.0;
-    
+
     /** Number of rectangular subcoordinates. */
     private static final int NUM_SUBCOORDINATES = 4;
-    
+
     /** Relative rectangular subcoordinate offsets in the x direction. */
-<span class="nc" id="L62">    private static final byte[] X_OFF = new byte[] { 0, 1, 0, 1 };</span>
-    
+<span class="nc" id="L61">    private static final byte[] X_OFF = new byte[] {0, 1, 0, 1};</span>
+
     /** Relative rectangular subcoordinate offsets in the y direction. */
-<span class="nc" id="L65">    private static final byte[] Y_OFF = new byte[] { 0, 0, 1, 1 };</span>
-    
+<span class="nc" id="L64">    private static final byte[] Y_OFF = new byte[] {0, 0, 1, 1};</span>
+
     /** List of relative rectangular neighbor locations. */
-<span class="nc" id="L68">    private static final byte[] MOVES = new byte[] {</span>
-<span class="nc" id="L69">            (byte) Integer.parseInt(&quot;00001000&quot;, 2), // up</span>
-<span class="nc" id="L70">            (byte) Integer.parseInt(&quot;00000100&quot;, 2), // down</span>
-<span class="nc" id="L71">            (byte) Integer.parseInt(&quot;00100000&quot;, 2), // right</span>
-<span class="nc" id="L72">            (byte) Integer.parseInt(&quot;00010000&quot;, 2), // left</span>
-<span class="nc" id="L73">            (byte) Integer.parseInt(&quot;00000010&quot;, 2), // vert up</span>
-<span class="nc" id="L74">            (byte) Integer.parseInt(&quot;00000001&quot;, 2), // vert down</span>
-<span class="nc" id="L75">            (byte) Integer.parseInt(&quot;00010010&quot;, 2), // vert up clockwise 1</span>
-<span class="nc" id="L76">            (byte) Integer.parseInt(&quot;00010110&quot;, 2), // vert up clockwise 2</span>
-<span class="nc" id="L77">            (byte) Integer.parseInt(&quot;00000110&quot;, 2), // vert up clockwise 3</span>
-<span class="nc" id="L78">            (byte) Integer.parseInt(&quot;00010001&quot;, 2), // vert down clockwise 1</span>
-<span class="nc" id="L79">            (byte) Integer.parseInt(&quot;00010101&quot;, 2), // vert down clockwise 2</span>
-<span class="nc" id="L80">            (byte) Integer.parseInt(&quot;00000101&quot;, 2), // vert down clockwise 3</span>
-    };
-    
+<span class="nc" id="L67">    private static final byte[] MOVES =</span>
+            new byte[] {
+<span class="nc" id="L69">                (byte) Integer.parseInt(&quot;00001000&quot;, 2), // up</span>
+<span class="nc" id="L70">                (byte) Integer.parseInt(&quot;00000100&quot;, 2), // down</span>
+<span class="nc" id="L71">                (byte) Integer.parseInt(&quot;00100000&quot;, 2), // right</span>
+<span class="nc" id="L72">                (byte) Integer.parseInt(&quot;00010000&quot;, 2), // left</span>
+<span class="nc" id="L73">                (byte) Integer.parseInt(&quot;00000010&quot;, 2), // vert up</span>
+<span class="nc" id="L74">                (byte) Integer.parseInt(&quot;00000001&quot;, 2), // vert down</span>
+<span class="nc" id="L75">                (byte) Integer.parseInt(&quot;00010010&quot;, 2), // vert up clockwise 1</span>
+<span class="nc" id="L76">                (byte) Integer.parseInt(&quot;00010110&quot;, 2), // vert up clockwise 2</span>
+<span class="nc" id="L77">                (byte) Integer.parseInt(&quot;00000110&quot;, 2), // vert up clockwise 3</span>
+<span class="nc" id="L78">                (byte) Integer.parseInt(&quot;00010001&quot;, 2), // vert down clockwise 1</span>
+<span class="nc" id="L79">                (byte) Integer.parseInt(&quot;00010101&quot;, 2), // vert down clockwise 2</span>
+<span class="nc" id="L80">                (byte) Integer.parseInt(&quot;00000101&quot;, 2), // vert down clockwise 3</span>
+            };
+
     /**
      * Creates a {@code PatchLocationRect} object for given coordinates.
      *
-     * @param x  the coordinate in x direction
-     * @param y  the coordinate in y direction
-     * @param z  the coordinate in z direction
+     * @param x the coordinate in x direction
+     * @param y the coordinate in y direction
+     * @param z the coordinate in z direction
      */
     public PatchLocationRect(int x, int y, int z) {
 <span class="nc" id="L91">        this(new CoordinateXYZ(x, y, z));</span>
 <span class="nc" id="L92">    }</span>
-    
+
     /**
      * Creates a {@code PatchLocationRect} object at given coordinate.
      *
-     * @param coordinate  the patch coordinate
+     * @param coordinate the patch coordinate
      */
     public PatchLocationRect(CoordinateXYZ coordinate) {
 <span class="nc" id="L100">        super(coordinate, NUM_SUBCOORDINATES);</span>
 <span class="nc" id="L101">    }</span>
-    
+
     @Override
-<span class="nc" id="L104">    public double getVolume() { return RECT_VOLUME; }</span>
-    
+    public double getVolume() {
+<span class="nc" id="L105">        return RECT_VOLUME;</span>
+    }
+
     @Override
-<span class="nc" id="L107">    public double getSurface() { return RECT_SURFACE; }</span>
-    
+    public double getSurface() {
+<span class="nc" id="L110">        return RECT_SURFACE;</span>
+    }
+
     @Override
-<span class="nc" id="L110">    public double getHeight() { return RECT_DEPTH; }</span>
-    
+    public double getHeight() {
+<span class="nc" id="L115">        return RECT_DEPTH;</span>
+    }
+
     @Override
-<span class="nc" id="L113">    public double getArea() { return RECT_AREA; }</span>
-    
+    public double getArea() {
+<span class="nc" id="L120">        return RECT_AREA;</span>
+    }
+
     @Override
-<span class="nc" id="L116">    public double getCoordinateSize() { return RECT_SIZE; }</span>
-    
+    public double getCoordinateSize() {
+<span class="nc" id="L125">        return RECT_SIZE;</span>
+    }
+
     @Override
-<span class="nc" id="L119">    public double getSubcoordinateSize() { return SUBRECT_SIZE; }</span>
-    
+    public double getSubcoordinateSize() {
+<span class="nc" id="L130">        return SUBRECT_SIZE;</span>
+    }
+
     @Override
-<span class="nc" id="L122">    public double getRatio() { return RECT_RATIO; }</span>
-    
+    public double getRatio() {
+<span class="nc" id="L135">        return RECT_RATIO;</span>
+    }
+
     @Override
-<span class="nc" id="L125">    public int getMaximum() { return NUM_SUBCOORDINATES; }</span>
-    
+    public int getMaximum() {
+<span class="nc" id="L140">        return NUM_SUBCOORDINATES;</span>
+    }
+
     /**
      * Updates static configuration variables.
-     * &lt;p&gt;
-     * Environment sizes are not set until the simulation series is created.
-     * Calculations for coordinates depend on these sizes, so the
-     * {@code Location} needs to be updated based on the series configuration.
      *
-     * @param series  the current simulation series
+     * &lt;p&gt;Environment sizes are not set until the simulation series is created. Calculations for
+     * coordinates depend on these sizes, so the {@code Location} needs to be updated based on the
+     * series configuration.
+     *
+     * @param series the current simulation series
      */
     public static void updateConfigs(PatchSeries series) {
-<span class="nc" id="L137">        radius = series.radius;</span>
-<span class="nc" id="L138">        depth = series.depth;</span>
-<span class="nc" id="L139">        radiusBounds = series.radiusBounds;</span>
-<span class="nc" id="L140">        depthBounds = series.depthBounds;</span>
-<span class="nc" id="L141">        heightOffset = series.height % 2 - series.height;</span>
-<span class="nc" id="L142">    }</span>
-    
+<span class="nc" id="L153">        radius = series.radius;</span>
+<span class="nc" id="L154">        depth = series.depth;</span>
+<span class="nc" id="L155">        radiusBounds = series.radiusBounds;</span>
+<span class="nc" id="L156">        depthBounds = series.depthBounds;</span>
+<span class="nc" id="L157">        heightOffset = series.height % 2 - series.height;</span>
+<span class="nc" id="L158">    }</span>
+
     @Override
     void calculateOffset() {
-<span class="nc" id="L146">        offset = (byte) (Math.abs(heightOffset + coordinate.z) % 2);</span>
-<span class="nc" id="L147">    }</span>
-    
+<span class="nc" id="L162">        offset = (byte) (Math.abs(heightOffset + coordinate.z) % 2);</span>
+<span class="nc" id="L163">    }</span>
+
     @Override
     void calculateSubcoordinates() {
-<span class="nc" id="L151">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
-        
+<span class="nc" id="L167">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
+
         // Calculate coordinate of top right subrectangle.
-<span class="nc" id="L154">        int x = 2 * (rect.x + radiusBounds - 1) + offset;</span>
-<span class="nc" id="L155">        int y = 2 * (rect.y + radiusBounds - 1) + offset;</span>
-<span class="nc" id="L156">        int z = depthBounds + rect.z - 1;</span>
-        
+<span class="nc" id="L170">        int x = 2 * (rect.x + radiusBounds - 1) + offset;</span>
+<span class="nc" id="L171">        int y = 2 * (rect.y + radiusBounds - 1) + offset;</span>
+<span class="nc" id="L172">        int z = depthBounds + rect.z - 1;</span>
+
         // Set coordinates of subrectangles clockwise from top left.
-<span class="nc bnc" id="L159" title="All 2 branches missed.">        for (int i = 0; i &lt; NUM_SUBCOORDINATES; i++) {</span>
-<span class="nc" id="L160">            subcoordinates.add(i, new CoordinateXYZ(x + X_OFF[i], y + Y_OFF[i], z));</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">        for (int i = 0; i &lt; NUM_SUBCOORDINATES; i++) {</span>
+<span class="nc" id="L176">            subcoordinates.add(i, new CoordinateXYZ(x + X_OFF[i], y + Y_OFF[i], z));</span>
         }
-<span class="nc" id="L162">    }</span>
-    
+<span class="nc" id="L178">    }</span>
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Each direction of movement ({@code +x, -x, +y, -y, +z, -z}) is tracked by
-     * each bit within a byte.
+     *
+     * &lt;p&gt;Each direction of movement ({@code +x, -x, +y, -y, +z, -z}) is tracked by each bit within
+     * a byte.
      */
     @Override
     void calculateChecks() {
-<span class="nc" id="L172">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
-<span class="nc" id="L173">        check = (byte) (</span>
-<span class="nc bnc" id="L174" title="All 2 branches missed.">                (rect.x == radius - 1 ? 0 : 1 &lt;&lt; 5)</span>
-<span class="nc bnc" id="L175" title="All 2 branches missed.">                        + (rect.x == 1 - radius ? 0 : 1 &lt;&lt; 4)</span>
-<span class="nc bnc" id="L176" title="All 2 branches missed.">                        + (rect.y == radius - 1 ? 0 : 1 &lt;&lt; 3)</span>
-<span class="nc bnc" id="L177" title="All 2 branches missed.">                        + (rect.y == 1 - radius ? 0 : 1 &lt;&lt; 2)</span>
-<span class="nc bnc" id="L178" title="All 2 branches missed.">                        + (rect.z == depth - 1 ? 0 : 1 &lt;&lt; 1)</span>
-<span class="nc bnc" id="L179" title="All 2 branches missed.">                        + (rect.z == 1 - depth ? 0 : 1 &lt;&lt; 0));</span>
-<span class="nc" id="L180">    }</span>
-    
+<span class="nc" id="L188">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
+<span class="nc" id="L189">        check =</span>
+                (byte)
+<span class="nc bnc" id="L191" title="All 2 branches missed.">                        ((rect.x == radius - 1 ? 0 : 1 &lt;&lt; 5)</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">                                + (rect.x == 1 - radius ? 0 : 1 &lt;&lt; 4)</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">                                + (rect.y == radius - 1 ? 0 : 1 &lt;&lt; 3)</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">                                + (rect.y == 1 - radius ? 0 : 1 &lt;&lt; 2)</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">                                + (rect.z == depth - 1 ? 0 : 1 &lt;&lt; 1)</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">                                + (rect.z == 1 - depth ? 0 : 1 &lt;&lt; 0));</span>
+<span class="nc" id="L197">    }</span>
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Estimates the perimeter of cell occupying the rectangular location.
-     * Volume fraction used to take fraction of the perimeter of the rectangle.
-     * If fraction is not 1 (i.e. at least two cells in the location), then an
-     * additional inner segment is added.
+     *
+     * &lt;p&gt;Estimates the perimeter of cell occupying the rectangular location. Volume fraction used
+     * to take fraction of the perimeter of the rectangle. If fraction is not 1 (i.e. at least two
+     * cells in the location), then an additional inner segment is added.
      */
     @Override
     public double getPerimeter(double f) {
-<span class="nc bnc" id="L192" title="All 2 branches missed.">        return f * RECT_PERIMETER + (f == 1 ? 0 : RECT_SIZE);</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">        return f * RECT_PERIMETER + (f == 1 ? 0 : RECT_SIZE);</span>
     }
-    
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * We check if a neighbor location is valid by comparing the movement checks
-     * byte with the neighbor location byte. Neighbor list includes the current
-     * location.
+     *
+     * &lt;p&gt;We check if a neighbor location is valid by comparing the movement checks byte with the
+     * neighbor location byte. Neighbor list includes the current location.
      */
     @Override
     public ArrayList&lt;Location&gt; getNeighbors() {
-<span class="nc" id="L204">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
-<span class="nc" id="L205">        ArrayList&lt;Location&gt; neighbors = new ArrayList&lt;&gt;(MOVES.length + 1);</span>
+<span class="nc" id="L219">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
+<span class="nc" id="L220">        ArrayList&lt;Location&gt; neighbors = new ArrayList&lt;&gt;(MOVES.length + 1);</span>
         byte b;
-        
+
         // Add neighbor locations.
-<span class="nc bnc" id="L209" title="All 2 branches missed.">        for (int i = 0; i &lt; MOVES.length; i++) {</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">        for (int i = 0; i &lt; MOVES.length; i++) {</span>
             // Adjust byte for vertical offset.
-<span class="nc bnc" id="L211" title="All 2 branches missed.">            if (i &gt; 5) {</span>
-<span class="nc" id="L212">                b = offsetByte(MOVES[i], offset);</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">            if (i &gt; 5) {</span>
+<span class="nc" id="L227">                b = offsetByte(MOVES[i], offset);</span>
             } else {
-<span class="nc" id="L214">                b = MOVES[i];</span>
+<span class="nc" id="L229">                b = MOVES[i];</span>
             }
-            
+
             // Add location if possible to move there.
-<span class="nc bnc" id="L218" title="All 2 branches missed.">            if ((b &amp; check ^ b) == 0) {</span>
-<span class="nc" id="L219">                neighbors.add(new PatchLocationRect(</span>
-                        rect.x + (b &gt;&gt; 5 &amp; 1) - (b &gt;&gt; 4 &amp; 1),
-                        rect.y + (b &gt;&gt; 3 &amp; 1) - (b &gt;&gt; 2 &amp; 1),
-                        rect.z + (b &gt;&gt; 1 &amp; 1) - (b &gt;&gt; 0 &amp; 1))
-                );
+<span class="nc bnc" id="L233" title="All 2 branches missed.">            if ((b &amp; check ^ b) == 0) {</span>
+<span class="nc" id="L234">                neighbors.add(</span>
+                        new PatchLocationRect(
+                                rect.x + (b &gt;&gt; 5 &amp; 1) - (b &gt;&gt; 4 &amp; 1),
+                                rect.y + (b &gt;&gt; 3 &amp; 1) - (b &gt;&gt; 2 &amp; 1),
+                                rect.z + (b &gt;&gt; 1 &amp; 1) - (b &gt;&gt; 0 &amp; 1)));
             }
         }
-        
+
         // Add current location.
-<span class="nc" id="L228">        neighbors.add(new PatchLocationRect(rect));</span>
-        
-<span class="nc" id="L230">        return neighbors;</span>
+<span class="nc" id="L243">        neighbors.add(new PatchLocationRect(rect));</span>
+
+<span class="nc" id="L245">        return neighbors;</span>
     }
-    
+
     @Override
     public LocationContainer convert(int id) {
-<span class="nc" id="L235">        return new PatchLocationContainer(id, coordinate);</span>
+<span class="nc" id="L250">        return new PatchLocationContainer(id, coordinate);</span>
     }
-    
+
     /**
-     * Converts rectangular {@link arcade.core.env.lattice.Lattice} coordinates
-     * into a rectangular {@link arcade.core.env.grid.Grid} coordinate.
+     * Converts rectangular {@link arcade.core.env.lattice.Lattice} coordinates into a rectangular
+     * {@link arcade.core.env.grid.Grid} coordinate.
      *
-     * @param coordinate  the rectangular coordinate
-     * @return  the corresponding rectangular coordinate
+     * @param coordinate the rectangular coordinate
+     * @return the corresponding rectangular coordinate
      */
     public static CoordinateXYZ translate(CoordinateXYZ coordinate) {
-<span class="nc" id="L246">        int z = coordinate.z - depthBounds + 1;</span>
-<span class="nc" id="L247">        int zo = (byte) (Math.abs(heightOffset + z) % 2);</span>
-        
+<span class="nc" id="L261">        int z = coordinate.z - depthBounds + 1;</span>
+<span class="nc" id="L262">        int zo = (byte) (Math.abs(heightOffset + z) % 2);</span>
+
         // Calculate a and b coordinates
-<span class="nc" id="L250">        double xx = (coordinate.x - zo) / 2.0 + 1 - radiusBounds;</span>
-<span class="nc" id="L251">        int x = (int) Math.floor(xx);</span>
-<span class="nc" id="L252">        double yy = (coordinate.y - zo) / 2.0 + 1 - radiusBounds;</span>
-<span class="nc" id="L253">        int y = (int) Math.floor(yy);</span>
-        
+<span class="nc" id="L265">        double xx = (coordinate.x - zo) / 2.0 + 1 - radiusBounds;</span>
+<span class="nc" id="L266">        int x = (int) Math.floor(xx);</span>
+<span class="nc" id="L267">        double yy = (coordinate.y - zo) / 2.0 + 1 - radiusBounds;</span>
+<span class="nc" id="L268">        int y = (int) Math.floor(yy);</span>
+
         // Check if out of bounds.
-<span class="nc bnc" id="L256" title="All 4 branches missed.">        if (Math.abs(x) &gt;= radius || Math.abs(y) &gt;= radius) {</span>
-<span class="nc" id="L257">            return null;</span>
+<span class="nc bnc" id="L271" title="All 4 branches missed.">        if (Math.abs(x) &gt;= radius || Math.abs(y) &gt;= radius) {</span>
+<span class="nc" id="L272">            return null;</span>
         }
-<span class="nc" id="L259">        return new CoordinateXYZ(x, y, z);</span>
+<span class="nc" id="L274">        return new CoordinateXYZ(x, y, z);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

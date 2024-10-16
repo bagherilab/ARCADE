@@ -8,335 +8,333 @@ import static arcade.potts.util.PottsEnums.Direction;
 
 /**
  * Static location methods for 3D.
- * &lt;p&gt;
- * Interface defines generalized 3D voxel methods that can be applied for both
- * {@link PottsLocation} objects (without regions) and {@link PottsLocations}
- * objects (with regions).
+ *
+ * &lt;p&gt;Interface defines generalized 3D voxel methods that can be applied for both {@link
+ * PottsLocation} objects (without regions) and {@link PottsLocations} objects (with regions).
  */
-
 public interface Location3D {
     /** Equation power for surface area conversion. */
     double EQUATION_PARAMETER_N = 0.50931200;
-    
+
     /** Equation coefficient for surface area conversion. */
     double EQUATION_PARAMETER_A = 0.79295247;
-    
+
     /** Equation offset for surface area conversion. */
     double EQUATION_PARAMETER_B = -1.54292969;
-    
+
     /** List of valid 3D directions. */
-<span class="fc" id="L28">    Direction[] DIRECTIONS = new Direction[] {</span>
-            Direction.YZ_PLANE,
-            Direction.ZX_PLANE,
-            Direction.XY_PLANE,
-            Direction.POSITIVE_XY,
-            Direction.NEGATIVE_XY,
-            Direction.POSITIVE_YZ,
-            Direction.NEGATIVE_YZ,
-            Direction.POSITIVE_ZX,
-            Direction.NEGATIVE_ZX,
-    };
-    
+<span class="fc" id="L26">    Direction[] DIRECTIONS =</span>
+            new Direction[] {
+                Direction.YZ_PLANE,
+                Direction.ZX_PLANE,
+                Direction.XY_PLANE,
+                Direction.POSITIVE_XY,
+                Direction.NEGATIVE_XY,
+                Direction.POSITIVE_YZ,
+                Direction.NEGATIVE_YZ,
+                Direction.POSITIVE_ZX,
+                Direction.NEGATIVE_ZX,
+            };
+
     /**
      * Calculate correction factor for surface area conversion.
      *
-     * @param volume  the volume
-     * @param height  the height
-     * @return  the correction factor
+     * @param volume the volume
+     * @param height the height
+     * @return the correction factor
      */
     static double getCorrection(double volume, double height) {
-<span class="fc" id="L48">        double vh = volume * height;</span>
-<span class="fc" id="L49">        return EQUATION_PARAMETER_A * Math.pow(vh, EQUATION_PARAMETER_N) + EQUATION_PARAMETER_B;</span>
+<span class="fc" id="L47">        double vh = volume * height;</span>
+<span class="fc" id="L48">        return EQUATION_PARAMETER_A * Math.pow(vh, EQUATION_PARAMETER_N) + EQUATION_PARAMETER_B;</span>
     }
-    
+
     /**
      * Gets list of neighbors of a given voxel.
      *
-     * @param focus  the focus voxel
-     * @return  the list of neighbor voxels
+     * @param focus the focus voxel
+     * @return the list of neighbor voxels
      */
     static ArrayList&lt;Voxel&gt; getNeighbors(Voxel focus) {
-<span class="fc" id="L59">        ArrayList&lt;Voxel&gt; neighbors = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
-<span class="fc" id="L61">            Voxel v = new Voxel(focus.x + MOVES_X[i], focus.y + MOVES_Y[i], focus.z + MOVES_Z[i]);</span>
-<span class="fc" id="L62">            neighbors.add(v);</span>
+<span class="fc" id="L58">        ArrayList&lt;Voxel&gt; neighbors = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
+<span class="fc" id="L60">            Voxel v = new Voxel(focus.x + MOVES_X[i], focus.y + MOVES_Y[i], focus.z + MOVES_Z[i]);</span>
+<span class="fc" id="L61">            neighbors.add(v);</span>
         }
-<span class="fc" id="L64">        return neighbors;</span>
+<span class="fc" id="L63">        return neighbors;</span>
     }
-    
+
     /**
      * Converts volume and height to surface area.
      *
-     * @param volume  the volume
-     * @param height  the height
-     * @return  the surface area
+     * @param volume the volume
+     * @param height the height
+     * @return the surface area
      */
     static double convertSurface(double volume, double height) {
-<span class="fc" id="L75">        double surface = 2 * volume / height + 2 * Math.sqrt(Math.PI) * Math.sqrt(volume * height);</span>
-<span class="fc" id="L76">        double correction = getCorrection(volume, height);</span>
-<span class="fc" id="L77">        return Math.ceil(surface + correction);</span>
+<span class="fc" id="L74">        double surface = 2 * volume / height + 2 * Math.sqrt(Math.PI) * Math.sqrt(volume * height);</span>
+<span class="fc" id="L75">        double correction = getCorrection(volume, height);</span>
+<span class="fc" id="L76">        return Math.ceil(surface + correction);</span>
     }
-    
+
     /**
      * Calculates surface of location.
      *
-     * @param voxels  the list of voxels
-     * @return  the surface
+     * @param voxels the list of voxels
+     * @return the surface
      */
     static int calculateSurface(ArrayList&lt;Voxel&gt; voxels) {
-<span class="fc" id="L87">        int surface = 0;</span>
-        
-<span class="fc bfc" id="L89" title="All 2 branches covered.">        for (Voxel v : voxels) {</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
-<span class="fc" id="L91">                Voxel voxel = new Voxel(v.x + MOVES_X[i], v.y + MOVES_Y[i], v.z + MOVES_Z[i]);</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">                if (!voxels.contains(voxel)) {</span>
-<span class="fc" id="L93">                    surface++;</span>
+<span class="fc" id="L86">        int surface = 0;</span>
+
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        for (Voxel v : voxels) {</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
+<span class="fc" id="L90">                Voxel voxel = new Voxel(v.x + MOVES_X[i], v.y + MOVES_Y[i], v.z + MOVES_Z[i]);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">                if (!voxels.contains(voxel)) {</span>
+<span class="fc" id="L92">                    surface++;</span>
                 }
             }
-<span class="fc" id="L96">        }</span>
-        
-<span class="fc" id="L98">        return surface;</span>
+<span class="fc" id="L95">        }</span>
+
+<span class="fc" id="L97">        return surface;</span>
     }
-    
+
     /**
      * Calculates height of location (z axis).
      *
-     * @param voxels  the list of voxels
-     * @return  the height
+     * @param voxels the list of voxels
+     * @return the height
      */
     static int calculateHeight(ArrayList&lt;Voxel&gt; voxels) {
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
-<span class="fc" id="L109">            return 0;</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
+<span class="fc" id="L108">            return 0;</span>
         }
-<span class="fc" id="L111">        OptionalInt max = voxels.stream().mapToInt(voxel -&gt; voxel.z).max();</span>
-<span class="fc" id="L112">        OptionalInt min = voxels.stream().mapToInt(voxel -&gt; voxel.z).min();</span>
-<span class="fc" id="L113">        return max.getAsInt() - min.getAsInt() + 1;</span>
+<span class="fc" id="L110">        OptionalInt max = voxels.stream().mapToInt(voxel -&gt; voxel.z).max();</span>
+<span class="fc" id="L111">        OptionalInt min = voxels.stream().mapToInt(voxel -&gt; voxel.z).min();</span>
+<span class="fc" id="L112">        return max.getAsInt() - min.getAsInt() + 1;</span>
     }
-    
+
     /**
      * Calculates the local change in surface of the location.
      *
-     * @param voxels  the list of voxels
-     * @param voxel  the voxel the update is centered in
-     * @return  the change in surface
+     * @param voxels the list of voxels
+     * @param voxel the voxel the update is centered in
+     * @return the change in surface
      */
     static int updateSurface(ArrayList&lt;Voxel&gt; voxels, Voxel voxel) {
-<span class="fc" id="L124">        int change = 0;</span>
-        
-<span class="fc bfc" id="L126" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
-<span class="fc" id="L127">            Voxel v = new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z + MOVES_Z[i]);</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">            if (!voxels.contains(v)) {</span>
-<span class="fc" id="L129">                change++;</span>
+<span class="fc" id="L123">        int change = 0;</span>
+
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
+<span class="fc" id="L126">            Voxel v = new Voxel(voxel.x + MOVES_X[i], voxel.y + MOVES_Y[i], voxel.z + MOVES_Z[i]);</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">            if (!voxels.contains(v)) {</span>
+<span class="fc" id="L128">                change++;</span>
             } else {
-<span class="fc" id="L131">                change--;</span>
+<span class="fc" id="L130">                change--;</span>
             }
         }
-        
-<span class="fc" id="L135">        return change;</span>
+
+<span class="fc" id="L134">        return change;</span>
     }
-    
+
     /**
      * Calculates the local change in height of the location.
      *
-     * @param voxels  the list of voxels
-     * @param voxel  the voxel the update is centered in
-     * @return  the change in height
+     * @param voxels the list of voxels
+     * @param voxel the voxel the update is centered in
+     * @return the change in height
      */
     static int updateHeight(ArrayList&lt;Voxel&gt; voxels, Voxel voxel) {
-<span class="fc bfc" id="L146" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
-<span class="fc" id="L147">            return 1;</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        if (voxels.size() == 0) {</span>
+<span class="fc" id="L146">            return 1;</span>
         }
-<span class="fc bfc" id="L149" title="All 4 branches covered.">        if (voxels.size() == 1 &amp;&amp; voxels.contains(voxel)) {</span>
-<span class="fc" id="L150">            return 1;</span>
+<span class="fc bfc" id="L148" title="All 4 branches covered.">        if (voxels.size() == 1 &amp;&amp; voxels.contains(voxel)) {</span>
+<span class="fc" id="L149">            return 1;</span>
         }
-        
-<span class="fc bfc" id="L153" title="All 2 branches covered.">        OptionalInt max = voxels.stream().filter(v -&gt; !v.equals(voxel)).mapToInt(v -&gt; v.z).max();</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">        OptionalInt min = voxels.stream().filter(v -&gt; !v.equals(voxel)).mapToInt(v -&gt; v.z).min();</span>
-        
-<span class="fc bfc" id="L156" title="All 2 branches covered.">        if (voxel.z &gt; max.getAsInt()) {</span>
-<span class="fc" id="L157">            return voxel.z - max.getAsInt();</span>
+
+<span class="fc bfc" id="L152" title="All 2 branches covered.">        OptionalInt max = voxels.stream().filter(v -&gt; !v.equals(voxel)).mapToInt(v -&gt; v.z).max();</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        OptionalInt min = voxels.stream().filter(v -&gt; !v.equals(voxel)).mapToInt(v -&gt; v.z).min();</span>
+
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if (voxel.z &gt; max.getAsInt()) {</span>
+<span class="fc" id="L156">            return voxel.z - max.getAsInt();</span>
         }
-<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (voxel.z &lt; min.getAsInt()) {</span>
-<span class="fc" id="L160">            return min.getAsInt() - voxel.z;</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        if (voxel.z &lt; min.getAsInt()) {</span>
+<span class="fc" id="L159">            return min.getAsInt() - voxel.z;</span>
         }
-        
-<span class="fc" id="L163">        return 0;</span>
+
+<span class="fc" id="L162">        return 0;</span>
     }
-    
+
     /**
      * Calculates diameters in each direction.
      *
-     * @param voxels  the list of voxels
-     * @param focus  the focus voxel
-     * @return  the map of direction to diameter
+     * @param voxels the list of voxels
+     * @param focus the focus voxel
+     * @return the map of direction to diameter
      */
     static HashMap&lt;Direction, Integer&gt; getDiameters(ArrayList&lt;Voxel&gt; voxels, Voxel focus) {
-<span class="fc" id="L174">        HashMap&lt;Direction, Integer&gt; minValueMap = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L175">        HashMap&lt;Direction, Integer&gt; maxValueMap = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L176">        HashMap&lt;Direction, Boolean&gt; existsMap = new HashMap&lt;&gt;();</span>
-        
+<span class="fc" id="L173">        HashMap&lt;Direction, Integer&gt; minValueMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L174">        HashMap&lt;Direction, Integer&gt; maxValueMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L175">        HashMap&lt;Direction, Boolean&gt; existsMap = new HashMap&lt;&gt;();</span>
+
         // Initialized entries into direction maps.
-<span class="fc bfc" id="L179" title="All 2 branches covered.">        for (Direction direction : DIRECTIONS) {</span>
-<span class="fc" id="L180">            minValueMap.put(direction, Integer.MAX_VALUE);</span>
-<span class="fc" id="L181">            maxValueMap.put(direction, Integer.MIN_VALUE);</span>
-<span class="fc" id="L182">            existsMap.put(direction, false);</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">        for (Direction direction : DIRECTIONS) {</span>
+<span class="fc" id="L179">            minValueMap.put(direction, Integer.MAX_VALUE);</span>
+<span class="fc" id="L180">            maxValueMap.put(direction, Integer.MIN_VALUE);</span>
+<span class="fc" id="L181">            existsMap.put(direction, false);</span>
         }
-        
+
         Direction dir;
         int v;
-        
+
         // Iterate through all the voxels for the location to update minimum and
         // maximum values in each direction.
-<span class="fc bfc" id="L190" title="All 2 branches covered.">        for (Voxel voxel : voxels) {</span>
-<span class="fc" id="L191">            int i = voxel.x - focus.x;</span>
-<span class="fc" id="L192">            int j = voxel.y - focus.y;</span>
-<span class="fc" id="L193">            int k = voxel.z - focus.z;</span>
-            
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        for (Voxel voxel : voxels) {</span>
+<span class="fc" id="L190">            int i = voxel.x - focus.x;</span>
+<span class="fc" id="L191">            int j = voxel.y - focus.y;</span>
+<span class="fc" id="L192">            int k = voxel.z - focus.z;</span>
+
             // Need to update all directions if at the center.
-<span class="fc bfc" id="L196" title="All 6 branches covered.">            if (i == 0 &amp;&amp; j == 0 &amp;&amp; k == 0) {</span>
-<span class="fc" id="L197">                v = 0;</span>
-                
-<span class="fc bfc" id="L199" title="All 2 branches covered.">                for (Direction direction : DIRECTIONS) {</span>
-<span class="fc" id="L200">                    existsMap.put(direction, true);</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">                    if (v &gt; maxValueMap.get(direction)) {</span>
-<span class="fc" id="L202">                        maxValueMap.put(direction, v);</span>
+<span class="fc bfc" id="L195" title="All 6 branches covered.">            if (i == 0 &amp;&amp; j == 0 &amp;&amp; k == 0) {</span>
+<span class="fc" id="L196">                v = 0;</span>
+
+<span class="fc bfc" id="L198" title="All 2 branches covered.">                for (Direction direction : DIRECTIONS) {</span>
+<span class="fc" id="L199">                    existsMap.put(direction, true);</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">                    if (v &gt; maxValueMap.get(direction)) {</span>
+<span class="fc" id="L201">                        maxValueMap.put(direction, v);</span>
                     }
-<span class="fc bfc" id="L204" title="All 2 branches covered.">                    if (v &lt; minValueMap.get(direction)) {</span>
-<span class="fc" id="L205">                        minValueMap.put(direction, v);</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">                    if (v &lt; minValueMap.get(direction)) {</span>
+<span class="fc" id="L204">                        minValueMap.put(direction, v);</span>
                     }
                 }
-                
-<span class="fc" id="L209">                continue;</span>
-<span class="fc bfc" id="L210" title="All 4 branches covered.">            } else if (j == 0 &amp;&amp; k == 0) {</span>
-<span class="fc" id="L211">                dir = Direction.YZ_PLANE;</span>
-<span class="fc" id="L212">                v = i;</span>
-<span class="fc bfc" id="L213" title="All 4 branches covered.">            } else if (k == 0 &amp;&amp; i == 0) {</span>
-<span class="fc" id="L214">                dir = Direction.ZX_PLANE;</span>
-<span class="fc" id="L215">                v = j;</span>
-<span class="fc bfc" id="L216" title="All 4 branches covered.">            } else if (i == 0 &amp;&amp; j == 0) {</span>
-<span class="fc" id="L217">                dir = Direction.XY_PLANE;</span>
-<span class="fc" id="L218">                v = k;</span>
-<span class="fc bfc" id="L219" title="All 4 branches covered.">            } else if (i == j &amp;&amp; k == 0) {</span>
-<span class="fc" id="L220">                dir = Direction.POSITIVE_XY;</span>
-<span class="fc" id="L221">                v = i;</span>
-<span class="fc bfc" id="L222" title="All 4 branches covered.">            } else if (i == -j &amp;&amp; k == 0) {</span>
-<span class="fc" id="L223">                dir = Direction.NEGATIVE_XY;</span>
-<span class="fc" id="L224">                v = i;</span>
-<span class="fc bfc" id="L225" title="All 4 branches covered.">            } else if (j == k &amp;&amp; i == 0) {</span>
-<span class="fc" id="L226">                dir = Direction.POSITIVE_YZ;</span>
-<span class="fc" id="L227">                v = j;</span>
-<span class="fc bfc" id="L228" title="All 4 branches covered.">            } else if (j == -k &amp;&amp; i == 0) {</span>
-<span class="fc" id="L229">                dir = Direction.NEGATIVE_YZ;</span>
-<span class="fc" id="L230">                v = j;</span>
-<span class="fc bfc" id="L231" title="All 4 branches covered.">            } else if (k == i &amp;&amp; j == 0) {</span>
-<span class="fc" id="L232">                dir = Direction.POSITIVE_ZX;</span>
-<span class="fc" id="L233">                v = k;</span>
-<span class="fc bfc" id="L234" title="All 4 branches covered.">            } else if (k == -i &amp;&amp; j == 0) {</span>
-<span class="fc" id="L235">                dir = Direction.NEGATIVE_ZX;</span>
-<span class="fc" id="L236">                v = k;</span>
+
+<span class="fc" id="L208">                continue;</span>
+<span class="fc bfc" id="L209" title="All 4 branches covered.">            } else if (j == 0 &amp;&amp; k == 0) {</span>
+<span class="fc" id="L210">                dir = Direction.YZ_PLANE;</span>
+<span class="fc" id="L211">                v = i;</span>
+<span class="fc bfc" id="L212" title="All 4 branches covered.">            } else if (k == 0 &amp;&amp; i == 0) {</span>
+<span class="fc" id="L213">                dir = Direction.ZX_PLANE;</span>
+<span class="fc" id="L214">                v = j;</span>
+<span class="fc bfc" id="L215" title="All 4 branches covered.">            } else if (i == 0 &amp;&amp; j == 0) {</span>
+<span class="fc" id="L216">                dir = Direction.XY_PLANE;</span>
+<span class="fc" id="L217">                v = k;</span>
+<span class="fc bfc" id="L218" title="All 4 branches covered.">            } else if (i == j &amp;&amp; k == 0) {</span>
+<span class="fc" id="L219">                dir = Direction.POSITIVE_XY;</span>
+<span class="fc" id="L220">                v = i;</span>
+<span class="fc bfc" id="L221" title="All 4 branches covered.">            } else if (i == -j &amp;&amp; k == 0) {</span>
+<span class="fc" id="L222">                dir = Direction.NEGATIVE_XY;</span>
+<span class="fc" id="L223">                v = i;</span>
+<span class="fc bfc" id="L224" title="All 4 branches covered.">            } else if (j == k &amp;&amp; i == 0) {</span>
+<span class="fc" id="L225">                dir = Direction.POSITIVE_YZ;</span>
+<span class="fc" id="L226">                v = j;</span>
+<span class="fc bfc" id="L227" title="All 4 branches covered.">            } else if (j == -k &amp;&amp; i == 0) {</span>
+<span class="fc" id="L228">                dir = Direction.NEGATIVE_YZ;</span>
+<span class="fc" id="L229">                v = j;</span>
+<span class="fc bfc" id="L230" title="All 4 branches covered.">            } else if (k == i &amp;&amp; j == 0) {</span>
+<span class="fc" id="L231">                dir = Direction.POSITIVE_ZX;</span>
+<span class="fc" id="L232">                v = k;</span>
+<span class="fc bfc" id="L233" title="All 4 branches covered.">            } else if (k == -i &amp;&amp; j == 0) {</span>
+<span class="fc" id="L234">                dir = Direction.NEGATIVE_ZX;</span>
+<span class="fc" id="L235">                v = k;</span>
             } else {
                 continue;
             }
-            
-<span class="fc" id="L241">            existsMap.put(dir, true);</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">            if (v &gt; maxValueMap.get(dir)) {</span>
-<span class="fc" id="L243">                maxValueMap.put(dir, v);</span>
+
+<span class="fc" id="L240">            existsMap.put(dir, true);</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">            if (v &gt; maxValueMap.get(dir)) {</span>
+<span class="fc" id="L242">                maxValueMap.put(dir, v);</span>
             }
-<span class="fc bfc" id="L245" title="All 2 branches covered.">            if (v &lt; minValueMap.get(dir)) {</span>
-<span class="fc" id="L246">                minValueMap.put(dir, v);</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">            if (v &lt; minValueMap.get(dir)) {</span>
+<span class="fc" id="L245">                minValueMap.put(dir, v);</span>
             }
-<span class="fc" id="L248">        }</span>
-        
-<span class="fc" id="L250">        HashMap&lt;Direction, Integer&gt; diameterMap = new HashMap&lt;&gt;();</span>
-        
+<span class="fc" id="L247">        }</span>
+
+<span class="fc" id="L249">        HashMap&lt;Direction, Integer&gt; diameterMap = new HashMap&lt;&gt;();</span>
+
         // Calculate diameter in each direction.
-<span class="fc bfc" id="L253" title="All 2 branches covered.">        for (Direction direction : DIRECTIONS) {</span>
-<span class="fc" id="L254">            int diameter = maxValueMap.get(direction) - minValueMap.get(direction) + 1;</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">            diameterMap.put(direction, existsMap.get(direction) ? diameter : 0);</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">        for (Direction direction : DIRECTIONS) {</span>
+<span class="fc" id="L253">            int diameter = maxValueMap.get(direction) - minValueMap.get(direction) + 1;</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">            diameterMap.put(direction, existsMap.get(direction) ? diameter : 0);</span>
         }
-        
-<span class="fc" id="L258">        return diameterMap;</span>
+
+<span class="fc" id="L257">        return diameterMap;</span>
     }
-    
+
     /**
      * Selects the slice direction for a given minimum diameter direction.
      *
-     * @param direction  the direction of the minimum diameter
-     * @param diameters  the list of diameters
-     * @return  the slice direction
+     * @param direction the direction of the minimum diameter
+     * @param diameters the list of diameters
+     * @return the slice direction
      */
     static Direction getSlice(Direction direction, HashMap&lt;Direction, Integer&gt; diameters) {
-<span class="fc bfc" id="L269" title="All 10 branches covered.">        switch (direction) {</span>
+<span class="fc bfc" id="L268" title="All 10 branches covered.">        switch (direction) {</span>
             case YZ_PLANE:
-<span class="fc" id="L271">                return Direction.YZ_PLANE;</span>
+<span class="fc" id="L270">                return Direction.YZ_PLANE;</span>
             case ZX_PLANE:
-<span class="fc" id="L273">                return Direction.ZX_PLANE;</span>
+<span class="fc" id="L272">                return Direction.ZX_PLANE;</span>
             case XY_PLANE:
-<span class="fc" id="L275">                return Direction.XY_PLANE;</span>
+<span class="fc" id="L274">                return Direction.XY_PLANE;</span>
             case POSITIVE_XY:
-<span class="fc bfc" id="L277" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.XY_PLANE)) {</span>
-<span class="fc" id="L278">                    return Direction.NEGATIVE_XY;</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.XY_PLANE)) {</span>
+<span class="fc" id="L277">                    return Direction.NEGATIVE_XY;</span>
                 } else {
-<span class="fc" id="L280">                    return Direction.XY_PLANE;</span>
+<span class="fc" id="L279">                    return Direction.XY_PLANE;</span>
                 }
             case NEGATIVE_XY:
-<span class="fc bfc" id="L283" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.XY_PLANE)) {</span>
-<span class="fc" id="L284">                    return Direction.POSITIVE_XY;</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.XY_PLANE)) {</span>
+<span class="fc" id="L283">                    return Direction.POSITIVE_XY;</span>
                 } else {
-<span class="fc" id="L286">                    return Direction.XY_PLANE;</span>
+<span class="fc" id="L285">                    return Direction.XY_PLANE;</span>
                 }
             case POSITIVE_YZ:
-<span class="fc bfc" id="L289" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.YZ_PLANE)) {</span>
-<span class="fc" id="L290">                    return Direction.NEGATIVE_YZ;</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.YZ_PLANE)) {</span>
+<span class="fc" id="L289">                    return Direction.NEGATIVE_YZ;</span>
                 } else {
-<span class="fc" id="L292">                    return Direction.YZ_PLANE;</span>
+<span class="fc" id="L291">                    return Direction.YZ_PLANE;</span>
                 }
             case NEGATIVE_YZ:
-<span class="fc bfc" id="L295" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.YZ_PLANE)) {</span>
-<span class="fc" id="L296">                    return Direction.POSITIVE_YZ;</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.YZ_PLANE)) {</span>
+<span class="fc" id="L295">                    return Direction.POSITIVE_YZ;</span>
                 } else {
-<span class="fc" id="L298">                    return Direction.YZ_PLANE;</span>
+<span class="fc" id="L297">                    return Direction.YZ_PLANE;</span>
                 }
             case POSITIVE_ZX:
-<span class="fc bfc" id="L301" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.ZX_PLANE)) {</span>
-<span class="fc" id="L302">                    return Direction.NEGATIVE_ZX;</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.ZX_PLANE)) {</span>
+<span class="fc" id="L301">                    return Direction.NEGATIVE_ZX;</span>
                 } else {
-<span class="fc" id="L304">                    return Direction.ZX_PLANE;</span>
+<span class="fc" id="L303">                    return Direction.ZX_PLANE;</span>
                 }
             case NEGATIVE_ZX:
-<span class="fc bfc" id="L307" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.ZX_PLANE)) {</span>
-<span class="fc" id="L308">                    return Direction.POSITIVE_ZX;</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">                if (diameters.get(direction) &gt;= diameters.get(Direction.ZX_PLANE)) {</span>
+<span class="fc" id="L307">                    return Direction.POSITIVE_ZX;</span>
                 } else {
-<span class="fc" id="L310">                    return Direction.ZX_PLANE;</span>
+<span class="fc" id="L309">                    return Direction.ZX_PLANE;</span>
                 }
             default:
-<span class="fc" id="L313">                return null;</span>
+<span class="fc" id="L312">                return null;</span>
         }
     }
-    
+
     /**
      * Selects specified number of voxels from a focus voxel.
      *
-     * @param voxels  the list of voxels
-     * @param focus  the focus voxel
-     * @param n  the number of voxels to select
-     * @return  the list of selected voxels
+     * @param voxels the list of voxels
+     * @param focus the focus voxel
+     * @param n the number of voxels to select
+     * @return the list of selected voxels
      */
     static ArrayList&lt;Voxel&gt; getSelected(ArrayList&lt;Voxel&gt; voxels, Voxel focus, double n) {
-<span class="fc" id="L326">        ArrayList&lt;Voxel&gt; selected = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L327">        double h = calculateHeight(voxels);</span>
-<span class="fc" id="L328">        double r = Math.sqrt(n / h / Math.PI);</span>
-        
+<span class="fc" id="L325">        ArrayList&lt;Voxel&gt; selected = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L326">        double h = calculateHeight(voxels);</span>
+<span class="fc" id="L327">        double r = Math.sqrt(n / h / Math.PI);</span>
+
         // Select voxels within given radius.
-<span class="fc bfc" id="L331" title="All 2 branches covered.">        for (Voxel voxel : voxels) {</span>
-<span class="fc" id="L332">            double d = Math.sqrt(Math.pow(focus.x - voxel.x, 2)</span>
-<span class="fc" id="L333">                    + Math.pow(focus.y - voxel.y, 2));</span>
-<span class="fc bfc" id="L334" title="All 2 branches covered.">            if (d &lt; r) {</span>
-<span class="fc" id="L335">                selected.add(voxel);</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">        for (Voxel voxel : voxels) {</span>
+<span class="fc" id="L331">            double d = Math.sqrt(Math.pow(focus.x - voxel.x, 2) + Math.pow(focus.y - voxel.y, 2));</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">            if (d &lt; r) {</span>
+<span class="fc" id="L333">                selected.add(voxel);</span>
             }
-<span class="fc" id="L337">        }</span>
-        
-<span class="fc" id="L339">        return selected;</span>
+<span class="fc" id="L335">        }</span>
+
+<span class="fc" id="L337">        return selected;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

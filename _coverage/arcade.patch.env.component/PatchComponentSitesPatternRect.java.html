@@ -6,8 +6,9 @@ import arcade.core.util.MiniBox;
 
 /**
  * Extension of {@link PatchComponentSitesPattern} for rectangular geometry.
- * &lt;p&gt;
- * The pattern unit cell is given by:
+ *
+ * &lt;p&gt;The pattern unit cell is given by:
+ *
  * &lt;pre&gt;
  *    -------------------------
  *    |   |   |   |   | 1 | 2 |
@@ -24,56 +25,55 @@ import arcade.core.util.MiniBox;
  *    -------------------------
  * &lt;/pre&gt;
  */
-
 public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
     /**
      * Creates a {@link PatchComponentSitesPattern} for rectangular geometry.
      *
-     * @param series  the simulation series
-     * @param parameters  the component parameters dictionary
+     * @param series the simulation series
+     * @param parameters the component parameters dictionary
      */
     public PatchComponentSitesPatternRect(Series series, MiniBox parameters) {
 <span class="nc" id="L36">        super(series, parameters);</span>
 <span class="nc" id="L37">    }</span>
-    
+
     /**
      * Calculate the offset based on the layer index.
      *
-     * @param k  the index in the z direction
-     * @return  the lattice offset
+     * @param k the index in the z direction
+     * @return the lattice offset
      */
     private int calcOffset(int k) {
 <span class="nc" id="L46">        return (latticeHeight - k / 2 + 1 - ((latticeHeight - 1) / 4) % 2) % 2;</span>
     }
-    
+
     /**
      * Calculates column of the rectangular pattern based on offset and index.
      *
-     * @param i  the index in the x direction
-     * @param offset  the lattice offset
-     * @return  the column index
+     * @param i the index in the x direction
+     * @param offset the lattice offset
+     * @return the column index
      */
     private int calcCol(int i, int offset) {
 <span class="nc" id="L57">        return (i + 4 * offset) % 6;</span>
     }
-    
+
     /**
      * Calculates row of the rectangular pattern based on offset and index.
      *
-     * @param i  the index in the x direction
-     * @param j  the index in the y direction
-     * @param offset  the lattice offset
-     * @return  the row index
+     * @param i the index in the x direction
+     * @param j the index in the y direction
+     * @param offset the lattice offset
+     * @return the row index
      */
     private int calcRow(int i, int j, int offset) {
 <span class="nc bnc" id="L69" title="All 2 branches missed.">        return (j + offset + (((i + 4 * offset) / 6 &amp; 1) == 0 ? 0 : 3)) % 6;</span>
     }
-    
+
     @Override
     double calculateAverage(int i, int j, int k, double[][] delta) {
 <span class="nc" id="L74">        double average = delta[i][j];</span>
 <span class="nc" id="L75">        int offset = calcOffset(k);</span>
-        
+
 <span class="nc bnc" id="L77" title="All 3 branches missed.">        switch (calcCol(i, offset)) {</span>
             case 0:
             case 1:
@@ -94,132 +94,138 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
             default:
                 break;
         }
-        
+
 <span class="nc" id="L98">        return average;</span>
     }
-    
+
     @Override
-    public void calculateFlow(int i, int j, int k, double[][] flow, double[][] delta,
-                              EnumMap&lt;Border, Boolean&gt; borders) {
-<span class="nc" id="L104">        double total = 0;</span>
-<span class="nc" id="L105">        double val = calculateAverage(i, j, k, delta);</span>
-<span class="nc" id="L106">        int offset = calcOffset(k);</span>
-        
-<span class="nc bnc" id="L108" title="All 4 branches missed.">        switch (calcCol(i, offset)) {</span>
+    public void calculateFlow(
+            int i,
+            int j,
+            int k,
+            double[][] flow,
+            double[][] delta,
+            EnumMap&lt;Border, Boolean&gt; borders) {
+<span class="nc" id="L109">        double total = 0;</span>
+<span class="nc" id="L110">        double val = calculateAverage(i, j, k, delta);</span>
+<span class="nc" id="L111">        int offset = calcOffset(k);</span>
+
+<span class="nc bnc" id="L113" title="All 4 branches missed.">        switch (calcCol(i, offset)) {</span>
             case 0:
-<span class="nc bnc" id="L110" title="All 4 branches missed.">                if (i == 0 || i == 1) {</span>
-<span class="nc" id="L111">                    total = val;</span>
+<span class="nc bnc" id="L115" title="All 4 branches missed.">                if (i == 0 || i == 1) {</span>
+<span class="nc" id="L116">                    total = val;</span>
                 } else {
-<span class="nc" id="L113">                    total = (flow[i - 1][j]</span>
-<span class="nc bnc" id="L114" title="All 2 branches missed.">                            + flow[i - 1][j + (j == latticeWidth - 1 ? 0 : 1)]) / 2 + val;</span>
+<span class="nc" id="L118">                    total =</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                            (flow[i - 1][j] + flow[i - 1][j + (j == latticeWidth - 1 ? 0 : 1)]) / 2</span>
+                                    + val;
                 }
-<span class="nc bnc" id="L116" title="All 2 branches missed.">                flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;</span>
-<span class="nc" id="L117">                break;</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;</span>
+<span class="nc" id="L123">                break;</span>
             case 1:
             case 2:
             case 3:
-<span class="nc bnc" id="L121" title="All 2 branches missed.">                if (i == 0) {</span>
-<span class="nc" id="L122">                    total = val;</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                if (i == 0) {</span>
+<span class="nc" id="L128">                    total = val;</span>
                 } else {
-<span class="nc" id="L124">                    total = flow[i - 1][j] + val;</span>
+<span class="nc" id="L130">                    total = flow[i - 1][j] + val;</span>
                 }
-<span class="nc bnc" id="L126" title="All 2 branches missed.">                flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;</span>
-<span class="nc" id="L127">                break;</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">                flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;</span>
+<span class="nc" id="L133">                break;</span>
             case 4:
             case 5:
-<span class="nc bnc" id="L130" title="All 8 branches missed.">                switch ((j + ((i / 6 &amp; 1) == 0 ? 0 : 3) + offset) % 6) {</span>
+<span class="nc bnc" id="L136" title="All 8 branches missed.">                switch ((j + ((i / 6 &amp; 1) == 0 ? 0 : 3) + offset) % 6) {</span>
                     case 0:
-<span class="nc bnc" id="L132" title="All 2 branches missed.">                        if (j != 0) {</span>
-<span class="nc" id="L133">                            total = flow[i][j - 1] + val;</span>
-<span class="nc bnc" id="L134" title="All 2 branches missed.">                            flow[i + (borders.get(Border.BOTTOM) ? 0 : 1)][j] = total;</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">                        if (j != 0) {</span>
+<span class="nc" id="L139">                            total = flow[i][j - 1] + val;</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                            flow[i + (borders.get(Border.BOTTOM) ? 0 : 1)][j] = total;</span>
                         }
                         break;
                     case 1:
-<span class="nc bnc" id="L138" title="All 4 branches missed.">                        if (j != 0 &amp;&amp; i != 0) {</span>
-<span class="nc" id="L139">                            total = flow[i - 1][j - 1] + val;</span>
+<span class="nc bnc" id="L144" title="All 4 branches missed.">                        if (j != 0 &amp;&amp; i != 0) {</span>
+<span class="nc" id="L145">                            total = flow[i - 1][j - 1] + val;</span>
                         }
                         break;
                     case 2:
-<span class="nc bnc" id="L143" title="All 4 branches missed.">                        if (j != latticeWidth - 1 &amp;&amp; i != 0) {</span>
-<span class="nc" id="L144">                            total = flow[i - 1][j + 1] + val;</span>
+<span class="nc bnc" id="L149" title="All 4 branches missed.">                        if (j != latticeWidth - 1 &amp;&amp; i != 0) {</span>
+<span class="nc" id="L150">                            total = flow[i - 1][j + 1] + val;</span>
                         }
                         break;
                     case 3:
-<span class="nc bnc" id="L148" title="All 4 branches missed.">                        if (j != latticeWidth - 1 &amp;&amp; i != 0) {</span>
-<span class="nc" id="L149">                            total = flow[i - 1][j + 1] + calculateAverage(i, j + 1, k, delta) + val;</span>
-<span class="nc bnc" id="L150" title="All 2 branches missed.">                            flow[i + (borders.get(Border.BOTTOM) ? 0 : 1)][j] = total;</span>
+<span class="nc bnc" id="L154" title="All 4 branches missed.">                        if (j != latticeWidth - 1 &amp;&amp; i != 0) {</span>
+<span class="nc" id="L155">                            total = flow[i - 1][j + 1] + calculateAverage(i, j + 1, k, delta) + val;</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">                            flow[i + (borders.get(Border.BOTTOM) ? 0 : 1)][j] = total;</span>
                         }
                         break;
                     case 4:
                     case 5:
-<span class="nc bnc" id="L155" title="All 2 branches missed.">                        if (i != 0) {</span>
-<span class="nc" id="L156">                            total = flow[i - 1][j] + val;</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">                        if (i != 0) {</span>
+<span class="nc" id="L162">                            total = flow[i - 1][j] + val;</span>
                         }
                         break;
                     default:
-<span class="nc" id="L160">                        break;</span>
+<span class="nc" id="L166">                        break;</span>
                 }
                 break;
             default:
                 break;
         }
-        
-<span class="nc" id="L167">        flow[i][j] = total;</span>
-<span class="nc" id="L168">    }</span>
-    
+
+<span class="nc" id="L173">        flow[i][j] = total;</span>
+<span class="nc" id="L174">    }</span>
+
     @Override
     public void calculateDamage(int i, int j, int k) {
-<span class="nc" id="L172">        double total = damageSingle[k][i][j];</span>
-<span class="nc" id="L173">        int offset = calcOffset(k);</span>
-        
-<span class="nc bnc" id="L175" title="All 3 branches missed.">        switch (calcCol(i, offset)) {</span>
+<span class="nc" id="L178">        double total = damageSingle[k][i][j];</span>
+<span class="nc" id="L179">        int offset = calcOffset(k);</span>
+
+<span class="nc bnc" id="L181" title="All 3 branches missed.">        switch (calcCol(i, offset)) {</span>
             case 0:
             case 1:
             case 2:
             case 3:
-<span class="nc bnc" id="L180" title="All 2 branches missed.">                if (j != latticeWidth - 1) {</span>
-<span class="nc" id="L181">                    total += damageSingle[k][i][j + 1];</span>
-<span class="nc" id="L182">                    total /= 2;</span>
-<span class="nc" id="L183">                    damageTotal[k][i][j + 1] = total;</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">                if (j != latticeWidth - 1) {</span>
+<span class="nc" id="L187">                    total += damageSingle[k][i][j + 1];</span>
+<span class="nc" id="L188">                    total /= 2;</span>
+<span class="nc" id="L189">                    damageTotal[k][i][j + 1] = total;</span>
                 }
                 break;
             case 4:
             case 5:
-<span class="nc bnc" id="L188" title="All 4 branches missed.">                if (i != latticeLength - 1 &amp;&amp; calcRow(i, j, offset) % 3 == 0) {</span>
-<span class="nc" id="L189">                    total += damageSingle[k][i + 1][j];</span>
-<span class="nc" id="L190">                    total /= 2;</span>
-<span class="nc" id="L191">                    damageTotal[k][i + 1][j] = total;</span>
+<span class="nc bnc" id="L194" title="All 4 branches missed.">                if (i != latticeLength - 1 &amp;&amp; calcRow(i, j, offset) % 3 == 0) {</span>
+<span class="nc" id="L195">                    total += damageSingle[k][i + 1][j];</span>
+<span class="nc" id="L196">                    total /= 2;</span>
+<span class="nc" id="L197">                    damageTotal[k][i + 1][j] = total;</span>
                 }
                 break;
             default:
                 break;
         }
-        
-<span class="nc" id="L198">        damageTotal[k][i][j] = total;</span>
-<span class="nc" id="L199">    }</span>
-    
+
+<span class="nc" id="L204">        damageTotal[k][i][j] = total;</span>
+<span class="nc" id="L205">    }</span>
+
     @Override
     void initializePatternArray() {
-<span class="nc" id="L203">        byte[][] unit = {</span>
-                { 0, 0, 0, 0, 1, 2 },
-                { 0, 0, 0, 0, 0, 1 },
-                { 0, 0, 0, 0, 0, 1 },
-                { 0, 0, 0, 0, 1, 2 },
-                { 1, 1, 1, 1, 1, 0 },
-                { 2, 2, 2, 2, 1, 0 }
+<span class="nc" id="L209">        byte[][] unit = {</span>
+            {0, 0, 0, 0, 1, 2},
+            {0, 0, 0, 0, 0, 1},
+            {0, 0, 0, 0, 0, 1},
+            {0, 0, 0, 0, 1, 2},
+            {1, 1, 1, 1, 1, 0},
+            {2, 2, 2, 2, 1, 0}
         };
-        
-<span class="nc bnc" id="L212" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k += 2) {</span>
-<span class="nc" id="L213">            int offset = calcOffset(k);</span>
-<span class="nc bnc" id="L214" title="All 2 branches missed.">            for (int i = 0; i &lt; latticeLength; i++) {</span>
-<span class="nc bnc" id="L215" title="All 2 branches missed.">                for (int j = 0; j &lt; latticeWidth; j++) {</span>
-<span class="nc" id="L216">                    int col = calcCol(i, offset);</span>
-<span class="nc" id="L217">                    int row = calcRow(i, j, offset);</span>
-<span class="nc bnc" id="L218" title="All 2 branches missed.">                    patterns[k][i][j] = (unit[row][col] != 0);</span>
-<span class="nc bnc" id="L219" title="All 2 branches missed.">                    anchors[k][i][j] = (unit[row][col] == 1);</span>
+
+<span class="nc bnc" id="L218" title="All 2 branches missed.">        for (int k = 0; k &lt; latticeHeight; k += 2) {</span>
+<span class="nc" id="L219">            int offset = calcOffset(k);</span>
+<span class="nc bnc" id="L220" title="All 2 branches missed.">            for (int i = 0; i &lt; latticeLength; i++) {</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">                for (int j = 0; j &lt; latticeWidth; j++) {</span>
+<span class="nc" id="L222">                    int col = calcCol(i, offset);</span>
+<span class="nc" id="L223">                    int row = calcRow(i, j, offset);</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">                    patterns[k][i][j] = (unit[row][col] != 0);</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">                    anchors[k][i][j] = (unit[row][col] == 1);</span>
                 }
             }
         }
-<span class="nc" id="L223">    }</span>
+<span class="nc" id="L229">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -10,120 +10,118 @@ import arcade.potts.sim.PottsSeries;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.sim.PottsSeries.TARGET_SEPARATOR;
 
-/**
- * Custom builder for potts-specific simulation setup XMLs.
- */
-
+/** Custom builder for potts-specific simulation setup XMLs. */
 public final class PottsInputBuilder extends InputBuilder {
+    /** Creates a {@code PottsInputBuilder} instance. */
+    public PottsInputBuilder() {
+<span class="fc" id="L17">        super();</span>
+<span class="fc" id="L18">    }</span>
+
     /**
-     * Creates a {@code PottsInputBuilder} instance.
-     */
-<span class="fc" id="L21">    public PottsInputBuilder() { super(); }</span>
-    
-    /**
-     * Updates a {@link arcade.core.util.Box} dictionary with tagged
-     * attributes.
-     * &lt;p&gt;
-     * Attributes are added to the last entry in the list of dictionaries. One
-     * of the attributes must be &quot;id&quot; which is used as the id for the entry.
-     * Attributes &quot;tag&quot; and &quot;target&quot; are concatenated to the id as
-     * tag/id:target.
+     * Updates a {@link arcade.core.util.Box} dictionary with tagged attributes.
      *
-     * @param list  the list the box is in
-     * @param tag  the entry tag
-     * @param atts  the attributes to add
+     * &lt;p&gt;Attributes are added to the last entry in the list of dictionaries. One of the attributes
+     * must be &quot;id&quot; which is used as the id for the entry. Attributes &quot;tag&quot; and &quot;target&quot; are
+     * concatenated to the id as tag/id:target.
+     *
+     * @param list the list the box is in
+     * @param tag the entry tag
+     * @param atts the attributes to add
      */
     void updateBox(String list, String tag, Attributes atts) {
-<span class="fc bfc" id="L37" title="All 2 branches covered.">        String listName = list + (list.equals(&quot;potts&quot;) ? &quot;&quot; : &quot;s&quot;);</span>
-<span class="fc" id="L38">        ArrayList&lt;Box&gt; lists = setupLists.get(listName);</span>
-<span class="fc" id="L39">        Box box = lists.get(lists.size() - 1);</span>
-        
-<span class="fc" id="L41">        int numAtts = atts.getLength();</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        String listName = list + (list.equals(&quot;potts&quot;) ? &quot;&quot; : &quot;s&quot;);</span>
+<span class="fc" id="L33">        ArrayList&lt;Box&gt; lists = setupLists.get(listName);</span>
+<span class="fc" id="L34">        Box box = lists.get(lists.size() - 1);</span>
+
+<span class="fc" id="L36">        int numAtts = atts.getLength();</span>
         String id;
         String module;
         String target;
         String term;
-        
-<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (numAtts &gt; 0) {</span>
+
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (numAtts &gt; 0) {</span>
             // Entry can have at most one of the following tags: module, term.
-<span class="fc bfc" id="L49" title="All 2 branches covered.">            boolean hasModule = atts.getValue(&quot;module&quot;) != null;</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">            boolean hasTerm = atts.getValue(&quot;term&quot;) != null;</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">            if (hasModule &amp; hasTerm) {</span>
-<span class="fc" id="L52">                return;</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">            boolean hasModule = atts.getValue(&quot;module&quot;) != null;</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">            boolean hasTerm = atts.getValue(&quot;term&quot;) != null;</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">            if (hasModule &amp; hasTerm) {</span>
+<span class="fc" id="L47">                return;</span>
             }
-            
+
             // Get any tags (module or term) or target.
-<span class="fc bfc" id="L56" title="All 2 branches covered.">            term = (atts.getValue(&quot;term&quot;) == null</span>
-<span class="fc" id="L57">                    ? &quot;&quot;</span>
-<span class="fc" id="L58">                    : atts.getValue(&quot;term&quot;).toLowerCase() + TAG_SEPARATOR);</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">            module = (atts.getValue(&quot;module&quot;) == null</span>
-<span class="fc" id="L60">                    ? &quot;&quot;</span>
-<span class="fc" id="L61">                    : atts.getValue(&quot;module&quot;).toLowerCase() + TAG_SEPARATOR);</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">            target = (atts.getValue(&quot;target&quot;) == null</span>
-<span class="fc" id="L63">                    ? &quot;&quot;</span>
-<span class="fc" id="L64">                    : TARGET_SEPARATOR + atts.getValue(&quot;target&quot;));</span>
-            
+            term =
+<span class="fc bfc" id="L52" title="All 2 branches covered.">                    (atts.getValue(&quot;term&quot;) == null</span>
+<span class="fc" id="L53">                            ? &quot;&quot;</span>
+<span class="fc" id="L54">                            : atts.getValue(&quot;term&quot;).toLowerCase() + TAG_SEPARATOR);</span>
+            module =
+<span class="fc bfc" id="L56" title="All 2 branches covered.">                    (atts.getValue(&quot;module&quot;) == null</span>
+<span class="fc" id="L57">                            ? &quot;&quot;</span>
+<span class="fc" id="L58">                            : atts.getValue(&quot;module&quot;).toLowerCase() + TAG_SEPARATOR);</span>
+            target =
+<span class="fc bfc" id="L60" title="All 2 branches covered.">                    (atts.getValue(&quot;target&quot;) == null</span>
+<span class="fc" id="L61">                            ? &quot;&quot;</span>
+<span class="fc" id="L62">                            : TARGET_SEPARATOR + atts.getValue(&quot;target&quot;));</span>
+
             // Create id by combining tags, id, and target.
-<span class="fc" id="L67">            id = module + term + atts.getValue(&quot;id&quot;) + target;</span>
-<span class="fc" id="L68">            box.addTag(id, tag.toUpperCase());</span>
-            
-<span class="fc bfc" id="L70" title="All 2 branches covered.">            for (int i = 0; i &lt; numAtts; i++) {</span>
-<span class="fc" id="L71">                String name = atts.getQName(i);</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">                switch (name) {</span>
+<span class="fc" id="L65">            id = module + term + atts.getValue(&quot;id&quot;) + target;</span>
+<span class="fc" id="L66">            box.addTag(id, tag.toUpperCase());</span>
+
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            for (int i = 0; i &lt; numAtts; i++) {</span>
+<span class="fc" id="L69">                String name = atts.getQName(i);</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">                switch (name) {</span>
                     case &quot;id&quot;:
                     case &quot;module&quot;:
                     case &quot;target&quot;:
                     case &quot;term&quot;:
-<span class="fc" id="L77">                        break;</span>
+<span class="fc" id="L75">                        break;</span>
                     default:
-<span class="fc" id="L79">                        box.addAtt(id, name, atts.getValue(i));</span>
+<span class="fc" id="L77">                        box.addAtt(id, name, atts.getValue(i));</span>
                 }
             }
         }
-<span class="fc" id="L83">    }</span>
-    
+<span class="fc" id="L81">    }</span>
+
     @Override
     public void startElement(String uri, String local, String name, Attributes atts) {
-<span class="fc" id="L87">        LOGGER.fine(&quot;start element [ &quot; + name + &quot; ]&quot;);</span>
-        
-<span class="fc bfc" id="L89" title="All 5 branches covered.">        switch (name) {</span>
+<span class="fc" id="L85">        LOGGER.fine(&quot;start element [ &quot; + name + &quot; ]&quot;);</span>
+
+<span class="fc bfc" id="L87" title="All 5 branches covered.">        switch (name) {</span>
             case &quot;set&quot;:
             case &quot;series&quot;:
-<span class="fc" id="L92">                MiniBox minibox = makeMiniBox(atts);</span>
-<span class="fc" id="L93">                setupDicts.put(name, minibox);</span>
-<span class="fc" id="L94">                break;</span>
+<span class="fc" id="L90">                MiniBox minibox = makeMiniBox(atts);</span>
+<span class="fc" id="L91">                setupDicts.put(name, minibox);</span>
+<span class="fc" id="L92">                break;</span>
             case &quot;potts&quot;:
-<span class="fc" id="L96">                setupLists.put(name, new ArrayList&lt;&gt;());</span>
-<span class="fc" id="L97">                setupLists.get(name).add(new Box());</span>
-<span class="fc" id="L98">                break;</span>
+<span class="fc" id="L94">                setupLists.put(name, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L95">                setupLists.get(name).add(new Box());</span>
+<span class="fc" id="L96">                break;</span>
             case &quot;populations&quot;:
-<span class="fc" id="L100">                setupLists.put(name, new ArrayList&lt;&gt;());</span>
-<span class="fc" id="L101">                break;</span>
+<span class="fc" id="L98">                setupLists.put(name, new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L99">                break;</span>
             case &quot;population&quot;:
-<span class="fc" id="L103">                Box box = makeBox(atts);</span>
-<span class="fc" id="L104">                setupLists.get(name + &quot;s&quot;).add(box);</span>
-<span class="fc" id="L105">                break;</span>
+<span class="fc" id="L101">                Box box = makeBox(atts);</span>
+<span class="fc" id="L102">                setupLists.get(name + &quot;s&quot;).add(box);</span>
+<span class="fc" id="L103">                break;</span>
             default:
                 break;
         }
-        
-<span class="fc" id="L110">        String[] split = name.split(&quot;\\.&quot;);</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (split.length == 2) {</span>
-<span class="fc" id="L112">            updateBox(split[0], split[1], atts);</span>
+
+<span class="fc" id="L108">        String[] split = name.split(&quot;\\.&quot;);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (split.length == 2) {</span>
+<span class="fc" id="L110">            updateBox(split[0], split[1], atts);</span>
         }
-<span class="fc" id="L114">    }</span>
-    
+<span class="fc" id="L112">    }</span>
+
     @Override
     public void endElement(String uri, String local, String name) {
-<span class="fc" id="L118">        LOGGER.fine(&quot;end element [ &quot; + name + &quot; ]&quot;);</span>
-        
-<span class="fc bfc" id="L120" title="All 2 branches covered.">        if (&quot;series&quot;.equals(name)) {</span>
-<span class="fc" id="L121">            series.add(new PottsSeries(setupDicts, setupLists, path, parameters, isVis));</span>
-<span class="fc" id="L122">            MiniBox set = setupDicts.get(&quot;set&quot;);</span>
-<span class="fc" id="L123">            setupDicts = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L124">            setupLists = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L125">            setupDicts.put(&quot;set&quot;, set);</span>
+<span class="fc" id="L116">        LOGGER.fine(&quot;end element [ &quot; + name + &quot; ]&quot;);</span>
+
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (&quot;series&quot;.equals(name)) {</span>
+<span class="fc" id="L119">            series.add(new PottsSeries(setupDicts, setupLists, path, parameters, isVis));</span>
+<span class="fc" id="L120">            MiniBox set = setupDicts.get(&quot;set&quot;);</span>
+<span class="fc" id="L121">            setupDicts = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L122">            setupLists = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L123">            setupDicts.put(&quot;set&quot;, set);</span>
         }
-<span class="fc" id="L127">    }</span>
+<span class="fc" id="L125">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

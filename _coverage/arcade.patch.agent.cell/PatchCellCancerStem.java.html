@@ -7,68 +7,110 @@ import arcade.core.util.MiniBox;
 
 /**
  * Extension of {@link PatchCellCancer} for cancerous stem cells.
- * &lt;p&gt;
- * {@code PatchCellCancerStem} agents are modified from their superclass:
+ *
+ * &lt;p&gt;{@code PatchCellCancerStem} agents are modified from their superclass:
+ *
  * &lt;ul&gt;
- *     &lt;li&gt;Cells are immortal (death age set to maximum)&lt;/li&gt;
- *     &lt;li&gt;Asymmetric division with probability ({@code SYMMETRIC_FRACTION}) of
- *     producing another stem cell ({@code PatchCellCancerStem}) or a cancerous
- *     cell ({@code PatchCellCancer})&lt;/li&gt;
- *     &lt;li&gt;No division limit&lt;/li&gt;
+ *   &lt;li&gt;Cells are immortal (death age set to maximum)
+ *   &lt;li&gt;Asymmetric division with probability ({@code SYMMETRIC_FRACTION}) of producing another stem
+ *       cell ({@code PatchCellCancerStem}) or a cancerous cell ({@code PatchCellCancer})
+ *   &lt;li&gt;No division limit
  * &lt;/ul&gt;
  */
-
 public class PatchCellCancerStem extends PatchCellCancer {
     /** Fraction of divisions that are symmetric. */
     private final double symmetricFraction;
-    
+
     /**
      * Creates a tissue {@code PatchCell} agent.
-     * &lt;p&gt;
-     * Loaded parameters include:
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
      * &lt;ul&gt;
-     *     &lt;li&gt;{@code SYMMETRIC_FRACTION} = fraction of divisions that are
-     *         symmetric&lt;/li&gt;
+     *   &lt;li&gt;{@code SYMMETRIC_FRACTION} = fraction of divisions that are symmetric
      * &lt;/ul&gt;
      *
-     * @param id  the cell ID
-     * @param parent  the parent ID
-     * @param pop  the cell population index
-     * @param state  the cell state
-     * @param age  the cell age
-     * @param divisions  the number of cell divisions
-     * @param location  the {@link Location} of the cell
-     * @param parameters  the dictionary of parameters
-     * @param volume  the cell volume
-     * @param height  the cell height
-     * @param criticalVolume  the critical cell volume
-     * @param criticalHeight  the critical cell height
+     * @param id the cell ID
+     * @param parent the parent ID
+     * @param pop the cell population index
+     * @param state the cell state
+     * @param age the cell age
+     * @param divisions the number of cell divisions
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param volume the cell volume
+     * @param height the cell height
+     * @param criticalVolume the critical cell volume
+     * @param criticalHeight the critical cell height
      */
-    public PatchCellCancerStem(int id, int parent, int pop, CellState state, int age, int divisions,
-                               Location location, MiniBox parameters, double volume, double height,
-                               double criticalVolume, double criticalHeight) {
-<span class="nc" id="L50">        super(id, parent, pop, state, age, divisions, location, parameters,</span>
-                volume, height, criticalVolume, criticalHeight);
-        
+    public PatchCellCancerStem(
+            int id,
+            int parent,
+            int pop,
+            CellState state,
+            int age,
+            int divisions,
+            Location location,
+            MiniBox parameters,
+            double volume,
+            double height,
+            double criticalVolume,
+            double criticalHeight) {
+<span class="nc" id="L59">        super(</span>
+                id,
+                parent,
+                pop,
+                state,
+                age,
+                divisions,
+                location,
+                parameters,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
+
         // Set loaded parameters.
-<span class="nc" id="L54">        symmetricFraction = parameters.getDouble(&quot;SYMMETRIC_FRACTION&quot;);</span>
-        
+<span class="nc" id="L74">        symmetricFraction = parameters.getDouble(&quot;SYMMETRIC_FRACTION&quot;);</span>
+
         // TODO: set death age
-<span class="nc" id="L57">    }</span>
-    
+<span class="nc" id="L77">    }</span>
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Cells have a certain probability of producing another cancer stem cell.
+     *
+     * &lt;p&gt;Cells have a certain probability of producing another cancer stem cell.
      */
     @Override
-    public PatchCell make(int newID, CellState newState, Location newLocation,
-                          MersenneTwisterFast random) {
-<span class="nc bnc" id="L67" title="All 2 branches missed.">        return random.nextDouble() &lt; symmetricFraction</span>
-<span class="nc" id="L68">                ? new PatchCellCancerStem(newID, id, pop, newState, age, divisions, newLocation,</span>
-                parameters, volume, height, criticalVolume, criticalHeight)
-<span class="nc" id="L70">                : new PatchCellCancer(newID, id, pop, newState, age, divisions - 1, newLocation,</span>
-                parameters, volume, height, criticalVolume, criticalHeight);
+    public PatchCell make(
+            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        return random.nextDouble() &lt; symmetricFraction</span>
+<span class="nc" id="L88">                ? new PatchCellCancerStem(</span>
+                        newID,
+                        id,
+                        pop,
+                        newState,
+                        age,
+                        divisions,
+                        newLocation,
+                        parameters,
+                        volume,
+                        height,
+                        criticalVolume,
+                        criticalHeight)
+<span class="nc" id="L101">                : new PatchCellCancer(</span>
+                        newID,
+                        id,
+                        pop,
+                        newState,
+                        age,
+                        divisions - 1,
+                        newLocation,
+                        parameters,
+                        volume,
+                        height,
+                        criticalVolume,
+                        criticalHeight);
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -12,102 +12,100 @@ import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Extension of {@link PottsModule} for proliferation.
- * &lt;p&gt;
- * During proliferation, cells cycle through G1, S, G2, and M phases. Once the
- * cell complete M phase, it divides to create a new daughter cell.
+ *
+ * &lt;p&gt;During proliferation, cells cycle through G1, S, G2, and M phases. Once the cell complete M
+ * phase, it divides to create a new daughter cell.
  */
-
 public abstract class PottsModuleProliferation extends PottsModule {
     /**
      * Creates a proliferation {@code Module} for the given {@link PottsCell}.
      *
-     * @param cell  the {@link PottsCell} the module is associated with
+     * @param cell the {@link PottsCell} the module is associated with
      */
     public PottsModuleProliferation(PottsCell cell) {
-<span class="fc" id="L27">        super(cell);</span>
-<span class="fc" id="L28">        setPhase(Phase.PROLIFERATIVE_G1);</span>
-<span class="fc" id="L29">    }</span>
-    
+<span class="fc" id="L26">        super(cell);</span>
+<span class="fc" id="L27">        setPhase(Phase.PROLIFERATIVE_G1);</span>
+<span class="fc" id="L28">    }</span>
+
     /**
      * Calls the step method for the current simple phase.
      *
-     * @param random  the random number generator
-     * @param sim  the simulation instance
+     * @param random the random number generator
+     * @param sim the simulation instance
      */
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="fc bfc" id="L38" title="All 5 branches covered.">        switch (phase) {</span>
+<span class="fc bfc" id="L37" title="All 5 branches covered.">        switch (phase) {</span>
             case PROLIFERATIVE_G1:
-<span class="fc" id="L40">                stepG1(random);</span>
-<span class="fc" id="L41">                break;</span>
+<span class="fc" id="L39">                stepG1(random);</span>
+<span class="fc" id="L40">                break;</span>
             case PROLIFERATIVE_S:
-<span class="fc" id="L43">                stepS(random);</span>
-<span class="fc" id="L44">                break;</span>
+<span class="fc" id="L42">                stepS(random);</span>
+<span class="fc" id="L43">                break;</span>
             case PROLIFERATIVE_G2:
-<span class="fc" id="L46">                stepG2(random);</span>
-<span class="fc" id="L47">                break;</span>
+<span class="fc" id="L45">                stepG2(random);</span>
+<span class="fc" id="L46">                break;</span>
             case PROLIFERATIVE_M:
-<span class="fc" id="L49">                stepM(random, sim);</span>
-<span class="fc" id="L50">                break;</span>
+<span class="fc" id="L48">                stepM(random, sim);</span>
+<span class="fc" id="L49">                break;</span>
             default:
                 break;
         }
-<span class="fc" id="L54">    }</span>
-    
+<span class="fc" id="L53">    }</span>
+
     /**
      * Performs actions for G1 phase.
      *
-     * @param random  the random number generator
+     * @param random the random number generator
      */
     abstract void stepG1(MersenneTwisterFast random);
-    
+
     /**
      * Performs actions for S phase.
      *
-     * @param random  the random number generator
+     * @param random the random number generator
      */
     abstract void stepS(MersenneTwisterFast random);
-    
+
     /**
      * Performs actions for G2 phase.
      *
-     * @param random  the random number generator
+     * @param random the random number generator
      */
     abstract void stepG2(MersenneTwisterFast random);
-    
+
     /**
      * Performs actions for M phase.
      *
-     * @param random  the random number generator
-     * @param sim  the simulation instance
+     * @param random the random number generator
+     * @param sim the simulation instance
      */
     abstract void stepM(MersenneTwisterFast random, Simulation sim);
-    
+
     /**
      * Adds a cell to the simulation.
-     * &lt;p&gt;
-     * The cell location is split, along with any regions. The new cell is
-     * created, initialized, and added to the schedule. Both cells are reset and
-     * remain in the proliferative state.
      *
-     * @param random  the random number generator
-     * @param sim  the simulation instance
+     * &lt;p&gt;The cell location is split, along with any regions. The new cell is created, initialized,
+     * and added to the schedule. Both cells are reset and remain in the proliferative state.
+     *
+     * @param random the random number generator
+     * @param sim the simulation instance
      */
     void addCell(MersenneTwisterFast random, Simulation sim) {
-<span class="fc" id="L96">        Potts potts = ((PottsSimulation) sim).getPotts();</span>
-        
+<span class="fc" id="L94">        Potts potts = ((PottsSimulation) sim).getPotts();</span>
+
         // Split current location.
-<span class="fc" id="L99">        Location newLocation = ((PottsLocation) cell.getLocation()).split(random);</span>
-        
+<span class="fc" id="L97">        Location newLocation = ((PottsLocation) cell.getLocation()).split(random);</span>
+
         // Reset current cell.
-<span class="fc" id="L102">        cell.reset(potts.ids, potts.regions);</span>
-        
+<span class="fc" id="L100">        cell.reset(potts.ids, potts.regions);</span>
+
         // Create and schedule new cell.
-<span class="fc" id="L105">        int newID = sim.getID();</span>
-<span class="fc" id="L106">        PottsCell newCell = (PottsCell) cell.make(newID, State.PROLIFERATIVE, newLocation, random);</span>
-<span class="fc" id="L107">        sim.getGrid().addObject(newCell, null);</span>
-<span class="fc" id="L108">        potts.register(newCell);</span>
-<span class="fc" id="L109">        newCell.reset(potts.ids, potts.regions);</span>
-<span class="fc" id="L110">        newCell.schedule(sim.getSchedule());</span>
-<span class="fc" id="L111">    }</span>
+<span class="fc" id="L103">        int newID = sim.getID();</span>
+<span class="fc" id="L104">        PottsCell newCell = (PottsCell) cell.make(newID, State.PROLIFERATIVE, newLocation, random);</span>
+<span class="fc" id="L105">        sim.getGrid().addObject(newCell, null);</span>
+<span class="fc" id="L106">        potts.register(newCell);</span>
+<span class="fc" id="L107">        newCell.reset(potts.ids, potts.regions);</span>
+<span class="fc" id="L108">        newCell.schedule(sim.getSchedule());</span>
+<span class="fc" id="L109">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

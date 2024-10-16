@@ -8,70 +8,68 @@ import arcade.core.util.MiniBox;
 
 /**
  * Implementation of{@link LatticeFactory} for {@link PatchLattice} objects.
- * &lt;p&gt;
- * Each lattice is initialized to {@code INITIAL_CONCENTRATION}.
+ *
+ * &lt;p&gt;Each lattice is initialized to {@code INITIAL_CONCENTRATION}.
  */
-
 public abstract class PatchLatticeFactory implements LatticeFactory {
     /** Random number generator instance. */
     MersenneTwisterFast random;
-    
+
     /** Map of id to lattice. */
     public final HashMap&lt;String, PatchLattice&gt; lattices;
-    
-    /**
-     * Creates a factory for making {@link PatchLattice} instances.
-     */
-<span class="fc" id="L25">    public PatchLatticeFactory() {</span>
-<span class="fc" id="L26">        lattices = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L27">    }</span>
-    
+
+    /** Creates a factory for making {@link PatchLattice} instances. */
+<span class="fc" id="L22">    public PatchLatticeFactory() {</span>
+<span class="fc" id="L23">        lattices = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L24">    }</span>
+
     @Override
     public void initialize(Series series, MersenneTwisterFast random) {
-<span class="fc" id="L31">        this.random = random;</span>
-<span class="fc" id="L32">        createLattices(series);</span>
-<span class="fc" id="L33">    }</span>
-    
+<span class="fc" id="L28">        this.random = random;</span>
+<span class="fc" id="L29">        createLattices(series);</span>
+<span class="fc" id="L30">    }</span>
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Loaded parameters include:
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
      * &lt;ul&gt;
-     *     &lt;li&gt;{@code INITIAL_CONCENTRATION} = initial layer concentration&lt;/li&gt;
+     *   &lt;li&gt;{@code INITIAL_CONCENTRATION} = initial layer concentration
      * &lt;/ul&gt;
      */
     @Override
     public void createLattices(Series series) {
-<span class="fc" id="L45">        int length = series.length;</span>
-<span class="fc" id="L46">        int width = series.width;</span>
-<span class="fc" id="L47">        int height = series.height;</span>
-<span class="fc" id="L48">        double ds = series.ds;</span>
-<span class="fc" id="L49">        double dz = series.dz;</span>
-        
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        for (String key : series.layers.keySet()) {</span>
-<span class="nc" id="L52">            MiniBox layer = series.layers.get(key);</span>
-<span class="nc" id="L53">            PatchLattice lattice = getLattice(length, width, height, ds, dz, layer);</span>
-            
+<span class="fc" id="L43">        int length = series.length;</span>
+<span class="fc" id="L44">        int width = series.width;</span>
+<span class="fc" id="L45">        int height = series.height;</span>
+<span class="fc" id="L46">        double ds = series.ds;</span>
+<span class="fc" id="L47">        double dz = series.dz;</span>
+
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">        for (String key : series.layers.keySet()) {</span>
+<span class="nc" id="L50">            MiniBox layer = series.layers.get(key);</span>
+<span class="nc" id="L51">            PatchLattice lattice = getLattice(length, width, height, ds, dz, layer);</span>
+
             // Set initial lattice value.
-<span class="nc" id="L56">            double initialValue = layer.getDouble(&quot;INITIAL_CONCENTRATION&quot;);</span>
-<span class="nc" id="L57">            lattice.setField(initialValue);</span>
-            
-<span class="nc" id="L59">            lattices.put(key, lattice);</span>
-<span class="nc" id="L60">        }</span>
-<span class="fc" id="L61">    }</span>
-    
+<span class="nc" id="L54">            double initialValue = layer.getDouble(&quot;INITIAL_CONCENTRATION&quot;);</span>
+<span class="nc" id="L55">            lattice.setField(initialValue);</span>
+
+<span class="nc" id="L57">            lattices.put(key, lattice);</span>
+<span class="nc" id="L58">        }</span>
+<span class="fc" id="L59">    }</span>
+
     /**
      * Creates a new {@link PatchLattice} instance.
      *
-     * @param length  the length of array (x direction)
-     * @param width  the width of array (y direction)
-     * @param height  the height of array (z direction)
-     * @param ds  the spatial scaling (x and y directions)
-     * @param dz  the spatial scaling (z direction)
-     * @param parameters  the dictionary of parameters
-     * @return  the lattice instance
+     * @param length the length of array (x direction)
+     * @param width the width of array (y direction)
+     * @param height the height of array (z direction)
+     * @param ds the spatial scaling (x and y directions)
+     * @param dz the spatial scaling (z direction)
+     * @param parameters the dictionary of parameters
+     * @return the lattice instance
      */
-    public abstract PatchLattice getLattice(int length, int width, int height,
-                                            double ds, double dz, MiniBox parameters);
+    public abstract PatchLattice getLattice(
+            int length, int width, int height, double ds, double dz, MiniBox parameters);
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

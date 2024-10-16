@@ -10,129 +10,128 @@ import arcade.patch.env.location.PatchLocation;
 
 /**
  * Implementation of {@link Grid} for patch models.
- * &lt;p&gt;
- * {@code PatchGrid} uses the location hash to map to bags of agents.
+ *
+ * &lt;p&gt;{@code PatchGrid} uses the location hash to map to bags of agents.
  */
-
 public class PatchGrid implements Grid {
     /** Initial bag capacity. */
     private static final int INITIAL_CAPACITY = 6;
-    
+
     /** Map of ID to object. */
     final HashMap&lt;Integer, Object&gt; objects;
-    
+
     /** Collection of all objects in the grid. */
     final Bag allObjects;
-    
-    /**
-     * Creates a {@link Grid} for patch.
-     */
-<span class="fc" id="L30">    public PatchGrid() {</span>
-<span class="fc" id="L31">        objects = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L32">        allObjects = new Bag();</span>
-<span class="fc" id="L33">    }</span>
-    
+
+    /** Creates a {@link Grid} for patch. */
+<span class="fc" id="L27">    public PatchGrid() {</span>
+<span class="fc" id="L28">        objects = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L29">        allObjects = new Bag();</span>
+<span class="fc" id="L30">    }</span>
+
     @Override
-<span class="fc" id="L36">    public Bag getAllObjects() { return allObjects; }</span>
-    
+    public Bag getAllObjects() {
+<span class="fc" id="L34">        return allObjects;</span>
+    }
+
     @Override
     public void addObject(Object object, Location location) {
-<span class="nc" id="L40">        int index = location.hashCode();</span>
-<span class="nc" id="L41">        allObjects.add(object);</span>
-        
-<span class="nc" id="L43">        Bag bag = (Bag) objects.get(index);</span>
-        
-<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (bag == null) {</span>
-<span class="nc" id="L46">            bag = new Bag(INITIAL_CAPACITY);</span>
-<span class="nc" id="L47">            objects.put(index, bag);</span>
+<span class="nc" id="L39">        int index = location.hashCode();</span>
+<span class="nc" id="L40">        allObjects.add(object);</span>
+
+<span class="nc" id="L42">        Bag bag = (Bag) objects.get(index);</span>
+
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (bag == null) {</span>
+<span class="nc" id="L45">            bag = new Bag(INITIAL_CAPACITY);</span>
+<span class="nc" id="L46">            objects.put(index, bag);</span>
         }
-        
-<span class="nc" id="L50">        bag.add(object);</span>
-<span class="nc" id="L51">    }</span>
-    
+
+<span class="nc" id="L49">        bag.add(object);</span>
+<span class="nc" id="L50">    }</span>
+
     @Override
     public void removeObject(Object object, Location location) {
-<span class="nc" id="L55">        int index = location.hashCode();</span>
-<span class="nc" id="L56">        allObjects.remove(object);</span>
-        
-<span class="nc" id="L58">        Bag bag = (Bag) objects.get(index);</span>
-<span class="nc" id="L59">        bag.remove(object);</span>
-        
-<span class="nc bnc" id="L61" title="All 2 branches missed.">        if (bag.numObjs == 0) {</span>
-<span class="nc" id="L62">            objects.remove(index);</span>
+<span class="nc" id="L54">        int index = location.hashCode();</span>
+<span class="nc" id="L55">        allObjects.remove(object);</span>
+
+<span class="nc" id="L57">        Bag bag = (Bag) objects.get(index);</span>
+<span class="nc" id="L58">        bag.remove(object);</span>
+
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (bag.numObjs == 0) {</span>
+<span class="nc" id="L61">            objects.remove(index);</span>
         }
-<span class="nc" id="L64">    }</span>
-    
+<span class="nc" id="L63">    }</span>
+
     @Override
     public Object getObjectAt(int index) {
-<span class="nc" id="L68">        return objects.get(index);</span>
+<span class="nc" id="L67">        return objects.get(index);</span>
     }
-    
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Maintains the old location object.
+     *
+     * &lt;p&gt;Maintains the old location object.
      */
     @Override
     public void moveObject(Object object, Location fromLocation, Location toLocation) {
         // Remove object from old location.
-<span class="nc" id="L79">        int fromIndex = fromLocation.hashCode();</span>
-<span class="nc" id="L80">        Bag fromBag = (Bag) objects.get(fromIndex);</span>
-<span class="nc" id="L81">        fromBag.remove(object);</span>
-        
-<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (fromBag.numObjs == 0) {</span>
-<span class="nc" id="L84">            objects.remove(fromIndex);</span>
+<span class="nc" id="L78">        int fromIndex = fromLocation.hashCode();</span>
+<span class="nc" id="L79">        Bag fromBag = (Bag) objects.get(fromIndex);</span>
+<span class="nc" id="L80">        fromBag.remove(object);</span>
+
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if (fromBag.numObjs == 0) {</span>
+<span class="nc" id="L83">            objects.remove(fromIndex);</span>
         }
-        
+
         // Add to new location.
-<span class="nc" id="L88">        int toIndex = toLocation.hashCode();</span>
-<span class="nc" id="L89">        Bag toBag = (Bag) objects.get(toIndex);</span>
-        
-<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (toBag == null) {</span>
-<span class="nc" id="L92">            toBag = new Bag(INITIAL_CAPACITY);</span>
-<span class="nc" id="L93">            objects.put(toIndex, toBag);</span>
+<span class="nc" id="L87">        int toIndex = toLocation.hashCode();</span>
+<span class="nc" id="L88">        Bag toBag = (Bag) objects.get(toIndex);</span>
+
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (toBag == null) {</span>
+<span class="nc" id="L91">            toBag = new Bag(INITIAL_CAPACITY);</span>
+<span class="nc" id="L92">            objects.put(toIndex, toBag);</span>
         }
-        
-<span class="nc" id="L96">        toBag.add(object);</span>
-        
+
+<span class="nc" id="L95">        toBag.add(object);</span>
+
         // Update location object.
-<span class="nc" id="L99">        PatchLocation location = (PatchLocation) ((Cell) object).getLocation();</span>
-<span class="nc" id="L100">        location.update((PatchLocation) toLocation);</span>
-<span class="nc" id="L101">    }</span>
-    
+<span class="nc" id="L98">        PatchLocation location = (PatchLocation) ((Cell) object).getLocation();</span>
+<span class="nc" id="L99">        location.update((PatchLocation) toLocation);</span>
+<span class="nc" id="L100">    }</span>
+
     /**
      * Gets all objects at a location.
      *
-     * @param location  the location
-     * @return  a bag of objects at the given location
+     * @param location the location
+     * @return a bag of objects at the given location
      */
     public Bag getObjectsAtLocation(Location location) {
-<span class="nc" id="L110">        Bag bag = (Bag) objects.get(location.hashCode());</span>
-<span class="nc bnc" id="L111" title="All 4 branches missed.">        if (bag == null || bag.numObjs == 0) {</span>
-<span class="nc" id="L112">            return null;</span>
+<span class="nc" id="L109">        Bag bag = (Bag) objects.get(location.hashCode());</span>
+<span class="nc bnc" id="L110" title="All 4 branches missed.">        if (bag == null || bag.numObjs == 0) {</span>
+<span class="nc" id="L111">            return null;</span>
         } else {
-<span class="nc" id="L114">            return bag;</span>
+<span class="nc" id="L113">            return bag;</span>
         }
     }
-    
+
     /**
      * Gets all objects at all the given locations.
      *
-     * @param locations  the locations
-     * @return  a bag of objects at the given locations
+     * @param locations the locations
+     * @return a bag of objects at the given locations
      */
     public Bag getObjectsAtLocations(ArrayList&lt;Location&gt; locations) {
-<span class="nc" id="L125">        Bag bag = new Bag();</span>
-<span class="nc bnc" id="L126" title="All 2 branches missed.">        for (Location location : locations) {</span>
-<span class="nc" id="L127">            Bag temp = getObjectsAtLocation(location);</span>
-<span class="nc bnc" id="L128" title="All 2 branches missed.">            if (temp == null) {</span>
-<span class="nc" id="L129">                continue;</span>
+<span class="nc" id="L124">        Bag bag = new Bag();</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        for (Location location : locations) {</span>
+<span class="nc" id="L126">            Bag temp = getObjectsAtLocation(location);</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">            if (temp == null) {</span>
+<span class="nc" id="L128">                continue;</span>
             }
-<span class="nc bnc" id="L131" title="All 2 branches missed.">            for (Object object : temp) {</span>
-<span class="nc" id="L132">                bag.add(object);</span>
-<span class="nc" id="L133">            }</span>
-<span class="nc" id="L134">        }</span>
-<span class="nc" id="L135">        return bag;</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">            for (Object object : temp) {</span>
+<span class="nc" id="L131">                bag.add(object);</span>
+<span class="nc" id="L132">            }</span>
+<span class="nc" id="L133">        }</span>
+<span class="nc" id="L134">        return bag;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

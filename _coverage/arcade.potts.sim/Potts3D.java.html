@@ -11,94 +11,94 @@ import arcade.potts.sim.hamiltonian.SurfaceHamiltonian3D;
 import arcade.potts.sim.hamiltonian.VolumeHamiltonian;
 import static arcade.potts.util.PottsEnums.Term;
 
-/**
- * Extension of {@link Potts} for 3D.
- */
-
+/** Extension of {@link Potts} for 3D. */
 public final class Potts3D extends Potts {
     /** Number of neighbors. */
     public static final int NUMBER_NEIGHBORS = 6;
-    
+
     /** List of x direction movements (N, E, S, W, U, D). */
-<span class="fc" id="L23">    public static final int[] MOVES_X = { 0, 1, 0, -1, 0, 0 };</span>
-    
+<span class="fc" id="L20">    public static final int[] MOVES_X = {0, 1, 0, -1, 0, 0};</span>
+
     /** List of y direction movements (N, E, S, W, U, D). */
-<span class="fc" id="L26">    public static final int[] MOVES_Y = { -1, 0, 1, 0, 0, 0 };</span>
-    
+<span class="fc" id="L23">    public static final int[] MOVES_Y = {-1, 0, 1, 0, 0, 0};</span>
+
     /** List of z direction movements (N, E, S, W, U, D). */
-<span class="fc" id="L29">    public static final int[] MOVES_Z = { 0, 0, 0, 0, 1, -1 };</span>
-    
+<span class="fc" id="L26">    public static final int[] MOVES_Z = {0, 0, 0, 0, 1, -1};</span>
+
     /** Number of neighbors in plane. */
     private static final int NUMBER_PLANE = 4;
-    
+
     /** List of plane movements for first coordinate. */
-<span class="fc" id="L35">    private static final int[] PLANE_A = { 0, 1, 0, -1 };</span>
-    
+<span class="fc" id="L32">    private static final int[] PLANE_A = {0, 1, 0, -1};</span>
+
     /** List of plane movements for second coordinate. */
-<span class="fc" id="L38">    private static final int[] PLANE_B = { -1, 0, 1, 0 };</span>
-    
+<span class="fc" id="L35">    private static final int[] PLANE_B = {-1, 0, 1, 0};</span>
+
     /** List of a direction corner movements. */
-<span class="fc" id="L41">    private static final int[] CORNER_A = { 1, 1, -1, -1 };</span>
-    
+<span class="fc" id="L38">    private static final int[] CORNER_A = {1, 1, -1, -1};</span>
+
     /** List of b direction corner movements. */
-<span class="fc" id="L44">    private static final int[] CORNER_B = { -1, 1, 1, -1 };</span>
-    
+<span class="fc" id="L41">    private static final int[] CORNER_B = {-1, 1, 1, -1};</span>
+
     /**
      * Creates a cellular {@code Potts} model in 3D.
      *
-     * @param series  the simulation series
+     * @param series the simulation series
      */
-<span class="fc" id="L51">    public Potts3D(PottsSeries series) { super(series); }</span>
-    
+    public Potts3D(PottsSeries series) {
+<span class="fc" id="L49">        super(series);</span>
+<span class="fc" id="L50">    }</span>
+
     @Override
     Hamiltonian getHamiltonian(Term term, PottsSeries series) {
-<span class="fc bfc" id="L55" title="All 8 branches covered.">        switch (term) {</span>
+<span class="fc bfc" id="L54" title="All 8 branches covered.">        switch (term) {</span>
             case ADHESION:
-<span class="fc" id="L57">                return new AdhesionHamiltonian3D(series, this);</span>
+<span class="fc" id="L56">                return new AdhesionHamiltonian3D(series, this);</span>
             case VOLUME:
-<span class="fc" id="L59">                return new VolumeHamiltonian(series);</span>
+<span class="fc" id="L58">                return new VolumeHamiltonian(series);</span>
             case SURFACE:
-<span class="fc" id="L61">                return new SurfaceHamiltonian3D(series, this);</span>
+<span class="fc" id="L60">                return new SurfaceHamiltonian3D(series, this);</span>
             case HEIGHT:
-<span class="fc" id="L63">                return new HeightHamiltonian(series);</span>
+<span class="fc" id="L62">                return new HeightHamiltonian(series);</span>
             case JUNCTION:
-<span class="fc" id="L65">                return new JunctionHamiltonian(series, this);</span>
+<span class="fc" id="L64">                return new JunctionHamiltonian(series, this);</span>
             case SUBSTRATE:
-<span class="fc" id="L67">                return new SubstrateHamiltonian(series, this);</span>
+<span class="fc" id="L66">                return new SubstrateHamiltonian(series, this);</span>
             case PERSISTENCE:
-<span class="fc" id="L69">                return new PersistenceHamiltonian(series);</span>
+<span class="fc" id="L68">                return new PersistenceHamiltonian(series);</span>
             default:
-<span class="fc" id="L71">                return null;</span>
+<span class="fc" id="L70">                return null;</span>
         }
     }
-    
+
     @Override
     boolean[][][] getNeighborhood(int id, int x, int y, int z) {
-<span class="fc" id="L77">        boolean[][][] array = new boolean[3][3][3];</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">        for (int k = 0; k &lt; 3; k++) {</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">            for (int i = 0; i &lt; 3; i++) {</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">                for (int j = 0; j &lt; 3; j++) {</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">                    array[k][i][j] = ids[k + z - 1][i + x - 1][j + y - 1] == id;</span>
+<span class="fc" id="L76">        boolean[][][] array = new boolean[3][3][3];</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        for (int k = 0; k &lt; 3; k++) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">            for (int i = 0; i &lt; 3; i++) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">                for (int j = 0; j &lt; 3; j++) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">                    array[k][i][j] = ids[k + z - 1][i + x - 1][j + y - 1] == id;</span>
                 }
             }
         }
-<span class="fc" id="L85">        return array;</span>
+<span class="fc" id="L84">        return array;</span>
     }
-    
+
     @Override
     boolean[][][] getNeighborhood(int id, int region, int x, int y, int z) {
-<span class="fc" id="L90">        boolean[][][] array = new boolean[3][3][3];</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">        for (int k = 0; k &lt; 3; k++) {</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">            for (int i = 0; i &lt; 3; i++) {</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">                for (int j = 0; j &lt; 3; j++) {</span>
-<span class="fc bfc" id="L94" title="All 4 branches covered.">                    array[k][i][j] = ids[k + z - 1][i + x - 1][j + y - 1] == id</span>
-                            &amp;&amp; regions[k + z - 1][i + x - 1][j + y - 1] == region;
+<span class="fc" id="L89">        boolean[][][] array = new boolean[3][3][3];</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        for (int k = 0; k &lt; 3; k++) {</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">            for (int i = 0; i &lt; 3; i++) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">                for (int j = 0; j &lt; 3; j++) {</span>
+<span class="fc bfc" id="L93" title="All 4 branches covered.">                    array[k][i][j] =</span>
+                            ids[k + z - 1][i + x - 1][j + y - 1] == id
+                                    &amp;&amp; regions[k + z - 1][i + x - 1][j + y - 1] == region;
                 }
             }
         }
 <span class="fc" id="L99">        return array;</span>
     }
-    
+
     @Override
     boolean getConnectivity(boolean[][][] array, boolean zero) {
 <span class="fc" id="L104">        int links = 0;</span>
@@ -107,7 +107,7 @@ public final class Potts3D extends Potts {
 <span class="fc" id="L107">                links++;</span>
             }
         }
-        
+
 <span class="fc bfc" id="L111" title="All 7 branches covered.">        switch (links) {</span>
             case 1:
 <span class="fc" id="L113">                return true;</span>
@@ -125,12 +125,12 @@ public final class Potts3D extends Potts {
 <span class="fc" id="L125">                return false;</span>
         }
     }
-    
+
     /**
      * Determines simple connectivity for a position with two neighbors.
      *
-     * @param array  the local neighborhood array
-     * @return  {@code true} if simply connected, {@code false} otherwise
+     * @param array the local neighborhood array
+     * @return {@code true} if simply connected, {@code false} otherwise
      */
     private boolean getConnectivityTwoNeighbors(boolean[][][] array) {
 <span class="fc bfc" id="L136" title="All 4 branches covered.">        if (array[1][1][0] &amp;&amp; array[1][1][2]) {</span>
@@ -147,335 +147,356 @@ public final class Potts3D extends Potts {
 <span class="fc bfc" id="L147" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
                 // XY plane
 <span class="fc" id="L149">                boolean xy1 = array[1][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
-<span class="fc" id="L150">                boolean xy2 = array[1][1 + PLANE_A[(i + 1) % NUMBER_PLANE]]</span>
-                        [1 + PLANE_B[(i + 1) % NUMBER_PLANE]];
-<span class="fc" id="L152">                boolean xy3 = array[1][1 + CORNER_A[i]][1 + CORNER_B[i]];</span>
-<span class="fc bfc" id="L153" title="All 6 branches covered.">                if (xy1 &amp;&amp; xy2 &amp;&amp; xy3) {</span>
-<span class="fc" id="L154">                    return true;</span>
+<span class="fc" id="L150">                boolean xy2 =</span>
+                        array[1][1 + PLANE_A[(i + 1) % NUMBER_PLANE]][
+                                1 + PLANE_B[(i + 1) % NUMBER_PLANE]];
+<span class="fc" id="L153">                boolean xy3 = array[1][1 + CORNER_A[i]][1 + CORNER_B[i]];</span>
+<span class="fc bfc" id="L154" title="All 6 branches covered.">                if (xy1 &amp;&amp; xy2 &amp;&amp; xy3) {</span>
+<span class="fc" id="L155">                    return true;</span>
                 }
-                
+
                 // YZ plane
-<span class="fc" id="L158">                boolean yz1 = array[1 + PLANE_B[i]][1][1 + PLANE_A[i]];</span>
-<span class="fc" id="L159">                boolean yz2 = array[1 + PLANE_B[(i + 1) % NUMBER_PLANE]]</span>
-                        [1][1 + PLANE_A[(i + 1) % NUMBER_PLANE]];
-<span class="fc" id="L161">                boolean yz3 = array[1 + CORNER_B[i]][1][1 + CORNER_A[i]];</span>
-<span class="fc bfc" id="L162" title="All 6 branches covered.">                if (yz1 &amp;&amp; yz2 &amp;&amp; yz3) {</span>
-<span class="fc" id="L163">                    return true;</span>
+<span class="fc" id="L159">                boolean yz1 = array[1 + PLANE_B[i]][1][1 + PLANE_A[i]];</span>
+<span class="fc" id="L160">                boolean yz2 =</span>
+                        array[1 + PLANE_B[(i + 1) % NUMBER_PLANE]][1][
+                                1 + PLANE_A[(i + 1) % NUMBER_PLANE]];
+<span class="fc" id="L163">                boolean yz3 = array[1 + CORNER_B[i]][1][1 + CORNER_A[i]];</span>
+<span class="fc bfc" id="L164" title="All 6 branches covered.">                if (yz1 &amp;&amp; yz2 &amp;&amp; yz3) {</span>
+<span class="fc" id="L165">                    return true;</span>
                 }
-                
+
                 // ZX plane
-<span class="fc" id="L167">                boolean zx1 = array[1 + PLANE_A[i]][1 + PLANE_B[i]][1];</span>
-<span class="fc" id="L168">                boolean zx2 = array[1 + PLANE_A[(i + 1) % NUMBER_PLANE]]</span>
-                        [1 + PLANE_B[(i + 1) % NUMBER_PLANE]][1];
-<span class="fc" id="L170">                boolean zx3 = array[1 + CORNER_A[i]][1 + CORNER_B[i]][1];</span>
-<span class="fc bfc" id="L171" title="All 6 branches covered.">                if (zx1 &amp;&amp; zx2 &amp;&amp; zx3) {</span>
-<span class="fc" id="L172">                    return true;</span>
+<span class="fc" id="L169">                boolean zx1 = array[1 + PLANE_A[i]][1 + PLANE_B[i]][1];</span>
+<span class="fc" id="L170">                boolean zx2 =</span>
+                        array[1 + PLANE_A[(i + 1) % NUMBER_PLANE]][
+                                1 + PLANE_B[(i + 1) % NUMBER_PLANE]][1];
+<span class="fc" id="L173">                boolean zx3 = array[1 + CORNER_A[i]][1 + CORNER_B[i]][1];</span>
+<span class="fc bfc" id="L174" title="All 6 branches covered.">                if (zx1 &amp;&amp; zx2 &amp;&amp; zx3) {</span>
+<span class="fc" id="L175">                    return true;</span>
                 }
             }
-<span class="fc" id="L175">            return false;</span>
+<span class="fc" id="L178">            return false;</span>
         }
     }
-    
+
     /**
      * Determines simple connectivity for a position with three neighbors.
      *
-     * @param array  the local neighborhood array
-     * @return  {@code true} if simply connected, {@code false} otherwise
+     * @param array the local neighborhood array
+     * @return {@code true} if simply connected, {@code false} otherwise
      */
     private boolean getConnectivityThreeNeighbors(boolean[][][] array) {
-<span class="fc bfc" id="L186" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
             // XY plane
-<span class="fc" id="L188">            boolean xy1 = array[1][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
-<span class="fc bfc" id="L189" title="All 6 branches covered.">            if (!xy1 &amp;&amp; !array[0][1][1] &amp;&amp; !array[2][1][1]) {</span>
-<span class="fc" id="L190">                boolean xy2 = array[1][1 + CORNER_A[(i + 1) % NUMBER_PLANE]]</span>
-                        [1 + CORNER_B[(i + 1) % NUMBER_PLANE]];
-<span class="fc" id="L192">                boolean xy3 = array[1][1 + CORNER_A[(i + 2) % NUMBER_PLANE]]</span>
-                        [1 + CORNER_B[(i + 2) % NUMBER_PLANE]];
-<span class="fc bfc" id="L194" title="All 4 branches covered.">                if (xy2 &amp;&amp; xy3) {</span>
-<span class="fc" id="L195">                    return true;</span>
+<span class="fc" id="L191">            boolean xy1 = array[1][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
+<span class="fc bfc" id="L192" title="All 6 branches covered.">            if (!xy1 &amp;&amp; !array[0][1][1] &amp;&amp; !array[2][1][1]) {</span>
+<span class="fc" id="L193">                boolean xy2 =</span>
+                        array[1][1 + CORNER_A[(i + 1) % NUMBER_PLANE]][
+                                1 + CORNER_B[(i + 1) % NUMBER_PLANE]];
+<span class="fc" id="L196">                boolean xy3 =</span>
+                        array[1][1 + CORNER_A[(i + 2) % NUMBER_PLANE]][
+                                1 + CORNER_B[(i + 2) % NUMBER_PLANE]];
+<span class="fc bfc" id="L199" title="All 4 branches covered.">                if (xy2 &amp;&amp; xy3) {</span>
+<span class="fc" id="L200">                    return true;</span>
                 }
             }
-            
+
             // YZ plane
-<span class="fc" id="L200">            boolean yz1 = array[1 + PLANE_B[i]][1][1 + PLANE_A[i]];</span>
-<span class="fc bfc" id="L201" title="All 6 branches covered.">            if (!yz1 &amp;&amp; !array[1][0][1] &amp;&amp; !array[1][2][1]) {</span>
-<span class="fc" id="L202">                boolean yz2 = array[1 + CORNER_B[(i + 1) % NUMBER_PLANE]][1]</span>
-                        [1 + CORNER_A[(i + 1) % NUMBER_PLANE]];
-<span class="fc" id="L204">                boolean yz3 = array[1 + CORNER_B[(i + 2) % NUMBER_PLANE]][1]</span>
-                        [1 + CORNER_A[(i + 2) % NUMBER_PLANE]];
-<span class="fc bfc" id="L206" title="All 4 branches covered.">                if (yz2 &amp;&amp; yz3) {</span>
-<span class="fc" id="L207">                    return true;</span>
+<span class="fc" id="L205">            boolean yz1 = array[1 + PLANE_B[i]][1][1 + PLANE_A[i]];</span>
+<span class="fc bfc" id="L206" title="All 6 branches covered.">            if (!yz1 &amp;&amp; !array[1][0][1] &amp;&amp; !array[1][2][1]) {</span>
+<span class="fc" id="L207">                boolean yz2 =</span>
+                        array[1 + CORNER_B[(i + 1) % NUMBER_PLANE]][1][
+                                1 + CORNER_A[(i + 1) % NUMBER_PLANE]];
+<span class="fc" id="L210">                boolean yz3 =</span>
+                        array[1 + CORNER_B[(i + 2) % NUMBER_PLANE]][1][
+                                1 + CORNER_A[(i + 2) % NUMBER_PLANE]];
+<span class="fc bfc" id="L213" title="All 4 branches covered.">                if (yz2 &amp;&amp; yz3) {</span>
+<span class="fc" id="L214">                    return true;</span>
                 }
             }
-            
+
             // ZX plane
-<span class="fc" id="L212">            boolean zx1 = array[1 + PLANE_A[i]][1 + PLANE_B[i]][1];</span>
-<span class="fc bfc" id="L213" title="All 6 branches covered.">            if (!zx1 &amp;&amp; !array[1][1][0] &amp;&amp; !array[1][1][2]) {</span>
-<span class="fc" id="L214">                boolean zx2 = array[1 + CORNER_A[(i + 1) % NUMBER_PLANE]]</span>
-                        [1 + CORNER_B[(i + 1) % NUMBER_PLANE]][1];
-<span class="fc" id="L216">                boolean zx3 = array[1 + CORNER_A[(i + 2) % NUMBER_PLANE]]</span>
-                        [1 + CORNER_B[(i + 2) % NUMBER_PLANE]][1];
-<span class="fc bfc" id="L218" title="All 4 branches covered.">                if (zx2 &amp;&amp; zx3) {</span>
-<span class="fc" id="L219">                    return true;</span>
+<span class="fc" id="L219">            boolean zx1 = array[1 + PLANE_A[i]][1 + PLANE_B[i]][1];</span>
+<span class="fc bfc" id="L220" title="All 6 branches covered.">            if (!zx1 &amp;&amp; !array[1][1][0] &amp;&amp; !array[1][1][2]) {</span>
+<span class="fc" id="L221">                boolean zx2 =</span>
+                        array[1 + CORNER_A[(i + 1) % NUMBER_PLANE]][
+                                1 + CORNER_B[(i + 1) % NUMBER_PLANE]][1];
+<span class="fc" id="L224">                boolean zx3 =</span>
+                        array[1 + CORNER_A[(i + 2) % NUMBER_PLANE]][
+                                1 + CORNER_B[(i + 2) % NUMBER_PLANE]][1];
+<span class="fc bfc" id="L227" title="All 4 branches covered.">                if (zx2 &amp;&amp; zx3) {</span>
+<span class="fc" id="L228">                    return true;</span>
                 }
             }
-            
+
             // XYZ corners
-<span class="fc" id="L224">            boolean xyz1 = array[1][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
-<span class="fc" id="L225">            boolean xyz2 = array[1][1 + PLANE_A[(i + 1) % NUMBER_PLANE]]</span>
-                    [1 + PLANE_B[(i + 1) % NUMBER_PLANE]];
-<span class="fc bfc" id="L227" title="All 4 branches covered.">            if (xyz1 &amp;&amp; xyz2) {</span>
-<span class="fc" id="L228">                boolean xyz3 = array[1][1 + CORNER_A[i]][1 + CORNER_B[i]];</span>
-                
-<span class="fc" id="L230">                boolean xyz4a1 = array[0][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
-<span class="fc" id="L231">                boolean xyz4a2 = array[0][1 + PLANE_A[(i + 1) % NUMBER_PLANE]]</span>
-                        [1 + PLANE_B[(i + 1) % NUMBER_PLANE]];
-<span class="fc bfc" id="L233" title="All 12 branches covered.">                if (array[0][1][1] &amp;&amp; (xyz3 ? (xyz4a1 || xyz4a2) : (xyz4a1 &amp;&amp; xyz4a2))) {</span>
-<span class="fc" id="L234">                    return true;</span>
+<span class="fc" id="L233">            boolean xyz1 = array[1][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
+<span class="fc" id="L234">            boolean xyz2 =</span>
+                    array[1][1 + PLANE_A[(i + 1) % NUMBER_PLANE]][
+                            1 + PLANE_B[(i + 1) % NUMBER_PLANE]];
+<span class="fc bfc" id="L237" title="All 4 branches covered.">            if (xyz1 &amp;&amp; xyz2) {</span>
+<span class="fc" id="L238">                boolean xyz3 = array[1][1 + CORNER_A[i]][1 + CORNER_B[i]];</span>
+
+<span class="fc" id="L240">                boolean xyz4a1 = array[0][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
+<span class="fc" id="L241">                boolean xyz4a2 =</span>
+                        array[0][1 + PLANE_A[(i + 1) % NUMBER_PLANE]][
+                                1 + PLANE_B[(i + 1) % NUMBER_PLANE]];
+<span class="fc bfc" id="L244" title="All 12 branches covered.">                if (array[0][1][1] &amp;&amp; (xyz3 ? (xyz4a1 || xyz4a2) : (xyz4a1 &amp;&amp; xyz4a2))) {</span>
+<span class="fc" id="L245">                    return true;</span>
                 }
-                
-<span class="fc" id="L237">                boolean xyz4b1 = array[2][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
-<span class="fc" id="L238">                boolean xyz4b2 = array[2][1 + PLANE_A[(i + 1) % NUMBER_PLANE]]</span>
-                        [1 + PLANE_B[(i + 1) % NUMBER_PLANE]];
-<span class="fc bfc" id="L240" title="All 12 branches covered.">                if (array[2][1][1] &amp;&amp; (xyz3 ? (xyz4b1 || xyz4b2) : (xyz4b1 &amp;&amp; xyz4b2))) {</span>
-<span class="fc" id="L241">                    return true;</span>
+
+<span class="fc" id="L248">                boolean xyz4b1 = array[2][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
+<span class="fc" id="L249">                boolean xyz4b2 =</span>
+                        array[2][1 + PLANE_A[(i + 1) % NUMBER_PLANE]][
+                                1 + PLANE_B[(i + 1) % NUMBER_PLANE]];
+<span class="fc bfc" id="L252" title="All 12 branches covered.">                if (array[2][1][1] &amp;&amp; (xyz3 ? (xyz4b1 || xyz4b2) : (xyz4b1 &amp;&amp; xyz4b2))) {</span>
+<span class="fc" id="L253">                    return true;</span>
                 }
             }
         }
-<span class="fc" id="L245">        return false;</span>
+<span class="fc" id="L257">        return false;</span>
     }
-    
+
     /**
      * Determines simple connectivity for a position with four neighbors.
      *
-     * @param array  the local neighborhood array
-     * @return  {@code true} if simply connected, {@code false} otherwise
+     * @param array the local neighborhood array
+     * @return {@code true} if simply connected, {@code false} otherwise
      */
     private boolean getConnectivityFourNeighbors(boolean[][][] array) {
-<span class="fc bfc" id="L255" title="All 4 branches covered.">        if (!array[0][1][1] &amp;&amp; !array[2][1][1]) {</span>
+<span class="fc bfc" id="L267" title="All 4 branches covered.">        if (!array[0][1][1] &amp;&amp; !array[2][1][1]) {</span>
             // Check for XY plane
-<span class="fc" id="L257">            int n = 0;</span>
-<span class="fc bfc" id="L258" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
-<span class="fc bfc" id="L259" title="All 2 branches covered.">                n += (array[1][1 + CORNER_A[i]][1 + CORNER_B[i]] ? 1 : 0);</span>
+<span class="fc" id="L269">            int n = 0;</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">                n += (array[1][1 + CORNER_A[i]][1 + CORNER_B[i]] ? 1 : 0);</span>
             }
-<span class="fc bfc" id="L261" title="All 2 branches covered.">            return n &gt; 2;</span>
-<span class="fc bfc" id="L262" title="All 4 branches covered.">        } else if (!array[1][0][1] &amp;&amp; !array[1][2][1]) {</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">            return n &gt; 2;</span>
+<span class="fc bfc" id="L274" title="All 4 branches covered.">        } else if (!array[1][0][1] &amp;&amp; !array[1][2][1]) {</span>
             // Check for YZ plane
-<span class="fc" id="L264">            int n = 0;</span>
-<span class="fc bfc" id="L265" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
-<span class="fc bfc" id="L266" title="All 2 branches covered.">                n += (array[1 + CORNER_B[i]][1][1 + CORNER_A[i]] ? 1 : 0);</span>
+<span class="fc" id="L276">            int n = 0;</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">                n += (array[1 + CORNER_B[i]][1][1 + CORNER_A[i]] ? 1 : 0);</span>
             }
-<span class="fc bfc" id="L268" title="All 2 branches covered.">            return n &gt; 2;</span>
-<span class="fc bfc" id="L269" title="All 4 branches covered.">        } else if (!array[1][1][0] &amp;&amp; !array[1][1][2]) {</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">            return n &gt; 2;</span>
+<span class="fc bfc" id="L281" title="All 4 branches covered.">        } else if (!array[1][1][0] &amp;&amp; !array[1][1][2]) {</span>
             // Check for ZX plane
-<span class="fc" id="L271">            int n = 0;</span>
-<span class="fc bfc" id="L272" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
-<span class="fc bfc" id="L273" title="All 2 branches covered.">                n += (array[1 + CORNER_A[i]][1 + CORNER_B[i]][1] ? 1 : 0);</span>
+<span class="fc" id="L283">            int n = 0;</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">                n += (array[1 + CORNER_A[i]][1 + CORNER_B[i]][1] ? 1 : 0);</span>
             }
-<span class="fc bfc" id="L275" title="All 2 branches covered.">            return n &gt; 2;</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">            return n &gt; 2;</span>
         } else {
-<span class="fc" id="L277">            boolean[] planeA = new boolean[2];</span>
-<span class="fc" id="L278">            boolean[] planeB = new boolean[2];</span>
-<span class="fc" id="L279">            boolean corner = false;</span>
-            
-<span class="fc bfc" id="L281" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
+<span class="fc" id="L289">            boolean[] planeA = new boolean[2];</span>
+<span class="fc" id="L290">            boolean[] planeB = new boolean[2];</span>
+<span class="fc" id="L291">            boolean corner = false;</span>
+
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
                 // Check for X
-<span class="fc" id="L283">                boolean x1 = array[1 + PLANE_B[i]][1][1 + PLANE_A[i]];</span>
-<span class="fc" id="L284">                boolean x2 = array[1 + PLANE_B[(i + 1) % NUMBER_PLANE]]</span>
-                        [1][1 + PLANE_A[(i + 1) % NUMBER_PLANE]];
-<span class="fc bfc" id="L286" title="All 8 branches covered.">                if (array[1][0][1] &amp;&amp; array[1][2][1] &amp;&amp; x1 &amp;&amp; x2) {</span>
-<span class="fc" id="L287">                    planeA = new boolean[] {</span>
-                            array[1 + PLANE_B[i]][0][1 + PLANE_A[i]],
-                            array[1 + PLANE_B[i]][2][1 + PLANE_A[i]]
-                    };
-<span class="fc" id="L291">                    planeB = new boolean[] {</span>
-                            array[1 + PLANE_B[(i + 1) % NUMBER_PLANE]][0]
-                                    [1 + PLANE_A[(i + 1) % NUMBER_PLANE]],
-                            array[1 + PLANE_B[(i + 1) % NUMBER_PLANE]][2]
-                                    [1 + PLANE_A[(i + 1) % NUMBER_PLANE]]
-                    };
-<span class="fc" id="L297">                    corner = array[1 + CORNER_B[i]][1][1 + CORNER_A[i]];</span>
-<span class="fc" id="L298">                    break;</span>
+<span class="fc" id="L295">                boolean x1 = array[1 + PLANE_B[i]][1][1 + PLANE_A[i]];</span>
+<span class="fc" id="L296">                boolean x2 =</span>
+                        array[1 + PLANE_B[(i + 1) % NUMBER_PLANE]][1][
+                                1 + PLANE_A[(i + 1) % NUMBER_PLANE]];
+<span class="fc bfc" id="L299" title="All 8 branches covered.">                if (array[1][0][1] &amp;&amp; array[1][2][1] &amp;&amp; x1 &amp;&amp; x2) {</span>
+<span class="fc" id="L300">                    planeA =</span>
+                            new boolean[] {
+                                array[1 + PLANE_B[i]][0][1 + PLANE_A[i]],
+                                array[1 + PLANE_B[i]][2][1 + PLANE_A[i]]
+                            };
+<span class="fc" id="L305">                    planeB =</span>
+                            new boolean[] {
+                                array[1 + PLANE_B[(i + 1) % NUMBER_PLANE]][0][
+                                        1 + PLANE_A[(i + 1) % NUMBER_PLANE]],
+                                array[1 + PLANE_B[(i + 1) % NUMBER_PLANE]][2][
+                                        1 + PLANE_A[(i + 1) % NUMBER_PLANE]]
+                            };
+<span class="fc" id="L312">                    corner = array[1 + CORNER_B[i]][1][1 + CORNER_A[i]];</span>
+<span class="fc" id="L313">                    break;</span>
                 }
-                
+
                 // Check for Y
-<span class="fc" id="L302">                boolean y1 = array[1 + PLANE_A[i]][1 + PLANE_B[i]][1];</span>
-<span class="fc" id="L303">                boolean y2 = array[1 + PLANE_A[(i + 1) % NUMBER_PLANE]]</span>
-                        [1 + PLANE_B[(i + 1) % NUMBER_PLANE]][1];
-<span class="fc bfc" id="L305" title="All 8 branches covered.">                if (array[1][1][0] &amp;&amp; array[1][1][2] &amp;&amp; y1 &amp;&amp; y2) {</span>
-<span class="fc" id="L306">                    planeA = new boolean[] {</span>
-                            array[1 + PLANE_A[i]][1 + PLANE_B[i]][0],
-                            array[1 + PLANE_A[i]][1 + PLANE_B[i]][2]
-                    };
-<span class="fc" id="L310">                    planeB = new boolean[] {</span>
-                            array[1 + PLANE_A[(i + 1) % NUMBER_PLANE]]
-                                    [1 + PLANE_B[(i + 1) % NUMBER_PLANE]][0],
-                            array[1 + PLANE_A[(i + 1) % NUMBER_PLANE]]
-                                    [1 + PLANE_B[(i + 1) % NUMBER_PLANE]][2]
-                    };
-<span class="fc" id="L316">                    corner = array[1 + CORNER_A[i]][1 + CORNER_B[i]][1];</span>
-<span class="fc" id="L317">                    break;</span>
+<span class="fc" id="L317">                boolean y1 = array[1 + PLANE_A[i]][1 + PLANE_B[i]][1];</span>
+<span class="fc" id="L318">                boolean y2 =</span>
+                        array[1 + PLANE_A[(i + 1) % NUMBER_PLANE]][
+                                1 + PLANE_B[(i + 1) % NUMBER_PLANE]][1];
+<span class="fc bfc" id="L321" title="All 8 branches covered.">                if (array[1][1][0] &amp;&amp; array[1][1][2] &amp;&amp; y1 &amp;&amp; y2) {</span>
+<span class="fc" id="L322">                    planeA =</span>
+                            new boolean[] {
+                                array[1 + PLANE_A[i]][1 + PLANE_B[i]][0],
+                                array[1 + PLANE_A[i]][1 + PLANE_B[i]][2]
+                            };
+<span class="fc" id="L327">                    planeB =</span>
+                            new boolean[] {
+                                array[1 + PLANE_A[(i + 1) % NUMBER_PLANE]][
+                                        1 + PLANE_B[(i + 1) % NUMBER_PLANE]][0],
+                                array[1 + PLANE_A[(i + 1) % NUMBER_PLANE]][
+                                        1 + PLANE_B[(i + 1) % NUMBER_PLANE]][2]
+                            };
+<span class="fc" id="L334">                    corner = array[1 + CORNER_A[i]][1 + CORNER_B[i]][1];</span>
+<span class="fc" id="L335">                    break;</span>
                 }
-                
+
                 // Check for Z
-<span class="fc" id="L321">                boolean z1 = array[1][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
-<span class="fc" id="L322">                boolean z2 = array[1][1 + PLANE_A[(i + 1) % NUMBER_PLANE]]</span>
-                        [1 + PLANE_B[(i + 1) % NUMBER_PLANE]];
-<span class="fc bfc" id="L324" title="All 8 branches covered.">                if (array[0][1][1] &amp;&amp; array[2][1][1] &amp;&amp; z1 &amp;&amp; z2) {</span>
-<span class="fc" id="L325">                    planeA = new boolean[] {</span>
-                            array[0][1 + PLANE_A[i]][1 + PLANE_B[i]],
-                            array[2][1 + PLANE_A[i]][1 + PLANE_B[i]]
-                    };
-<span class="fc" id="L329">                    planeB = new boolean[] {</span>
-                            array[0][1 + PLANE_A[(i + 1) % NUMBER_PLANE]]
-                                    [1 + PLANE_B[(i + 1) % NUMBER_PLANE]],
-                            array[2][1 + PLANE_A[(i + 1) % NUMBER_PLANE]]
-                                    [1 + PLANE_B[(i + 1) % NUMBER_PLANE]]
-                    };
-<span class="fc" id="L335">                    corner = array[1][1 + CORNER_A[i]][1 + CORNER_B[i]];</span>
+<span class="fc" id="L339">                boolean z1 = array[1][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
+<span class="fc" id="L340">                boolean z2 =</span>
+                        array[1][1 + PLANE_A[(i + 1) % NUMBER_PLANE]][
+                                1 + PLANE_B[(i + 1) % NUMBER_PLANE]];
+<span class="fc bfc" id="L343" title="All 8 branches covered.">                if (array[0][1][1] &amp;&amp; array[2][1][1] &amp;&amp; z1 &amp;&amp; z2) {</span>
+<span class="fc" id="L344">                    planeA =</span>
+                            new boolean[] {
+                                array[0][1 + PLANE_A[i]][1 + PLANE_B[i]],
+                                array[2][1 + PLANE_A[i]][1 + PLANE_B[i]]
+                            };
+<span class="fc" id="L349">                    planeB =</span>
+                            new boolean[] {
+                                array[0][1 + PLANE_A[(i + 1) % NUMBER_PLANE]][
+                                        1 + PLANE_B[(i + 1) % NUMBER_PLANE]],
+                                array[2][1 + PLANE_A[(i + 1) % NUMBER_PLANE]][
+                                        1 + PLANE_B[(i + 1) % NUMBER_PLANE]]
+                            };
+<span class="fc" id="L356">                    corner = array[1][1 + CORNER_A[i]][1 + CORNER_B[i]];</span>
                 }
             }
-            
-<span class="fc bfc" id="L339" title="All 10 branches covered.">            if (planeA[0] &amp;&amp; planeA[1] &amp;&amp; (planeB[0] || planeB[1] || corner)) {</span>
-<span class="fc" id="L340">                return true;</span>
-<span class="fc bfc" id="L341" title="All 10 branches covered.">            } else if (planeB[0] &amp;&amp; planeB[1] &amp;&amp; (planeA[0] || planeA[1] || corner)) {</span>
-<span class="fc" id="L342">                return true;</span>
+
+<span class="fc bfc" id="L360" title="All 10 branches covered.">            if (planeA[0] &amp;&amp; planeA[1] &amp;&amp; (planeB[0] || planeB[1] || corner)) {</span>
+<span class="fc" id="L361">                return true;</span>
+<span class="fc bfc" id="L362" title="All 10 branches covered.">            } else if (planeB[0] &amp;&amp; planeB[1] &amp;&amp; (planeA[0] || planeA[1] || corner)) {</span>
+<span class="fc" id="L363">                return true;</span>
             } else {
-<span class="fc bfc" id="L344" title="All 10 branches covered.">                return corner &amp;&amp; ((planeA[0] &amp;&amp; planeB[1]) || (planeA[1] &amp;&amp; planeB[0]));</span>
+<span class="fc bfc" id="L365" title="All 10 branches covered.">                return corner &amp;&amp; ((planeA[0] &amp;&amp; planeB[1]) || (planeA[1] &amp;&amp; planeB[0]));</span>
             }
         }
     }
-    
+
     /**
      * Determines simple connectivity for a position with five neighbors.
      *
-     * @param array  the local neighborhood array
-     * @return  {@code true} if simply connected, {@code false} otherwise
+     * @param array the local neighborhood array
+     * @return {@code true} if simply connected, {@code false} otherwise
      */
     private boolean getConnectivityFiveNeighbors(boolean[][][] array) {
-<span class="fc" id="L356">        boolean[] plane = new boolean[NUMBER_PLANE];</span>
-<span class="fc" id="L357">        boolean[] corner = new boolean[NUMBER_PLANE];</span>
-<span class="fc" id="L358">        int nPlane = 0;</span>
-<span class="fc" id="L359">        int nCorner = 0;</span>
-        
-<span class="fc bfc" id="L361" title="All 4 branches covered.">        if (!array[0][1][1] || !array[2][1][1]) {</span>
+<span class="fc" id="L377">        boolean[] plane = new boolean[NUMBER_PLANE];</span>
+<span class="fc" id="L378">        boolean[] corner = new boolean[NUMBER_PLANE];</span>
+<span class="fc" id="L379">        int nPlane = 0;</span>
+<span class="fc" id="L380">        int nCorner = 0;</span>
+
+<span class="fc bfc" id="L382" title="All 4 branches covered.">        if (!array[0][1][1] || !array[2][1][1]) {</span>
             // Check XY
-<span class="fc bfc" id="L363" title="All 2 branches covered.">            int z = (array[0][1][1] ? 0 : 2);</span>
-<span class="fc bfc" id="L364" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
-<span class="fc" id="L365">                corner[i] = array[1][1 + CORNER_A[i]][1 + CORNER_B[i]];</span>
-<span class="fc" id="L366">                plane[i] = array[z][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">                if (corner[i]) {</span>
-<span class="fc" id="L368">                    nCorner++;</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">            int z = (array[0][1][1] ? 0 : 2);</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
+<span class="fc" id="L386">                corner[i] = array[1][1 + CORNER_A[i]][1 + CORNER_B[i]];</span>
+<span class="fc" id="L387">                plane[i] = array[z][1 + PLANE_A[i]][1 + PLANE_B[i]];</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">                if (corner[i]) {</span>
+<span class="fc" id="L389">                    nCorner++;</span>
                 }
-<span class="fc bfc" id="L370" title="All 2 branches covered.">                if (plane[i]) {</span>
-<span class="fc" id="L371">                    nPlane++;</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">                if (plane[i]) {</span>
+<span class="fc" id="L392">                    nPlane++;</span>
                 }
             }
-<span class="fc bfc" id="L374" title="All 4 branches covered.">        } else if (!array[1][0][1] || !array[1][2][1]) {</span>
+<span class="fc bfc" id="L395" title="All 4 branches covered.">        } else if (!array[1][0][1] || !array[1][2][1]) {</span>
             // Check YZ
-<span class="fc bfc" id="L376" title="All 2 branches covered.">            int x = (array[1][0][1] ? 0 : 2);</span>
-<span class="fc bfc" id="L377" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
-<span class="fc" id="L378">                corner[i] = array[1 + CORNER_A[i]][1][1 + CORNER_B[i]];</span>
-<span class="fc" id="L379">                plane[i] = array[1 + PLANE_A[i]][x][1 + PLANE_B[i]];</span>
-<span class="fc bfc" id="L380" title="All 2 branches covered.">                if (corner[i]) {</span>
-<span class="fc" id="L381">                    nCorner++;</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">            int x = (array[1][0][1] ? 0 : 2);</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
+<span class="fc" id="L399">                corner[i] = array[1 + CORNER_A[i]][1][1 + CORNER_B[i]];</span>
+<span class="fc" id="L400">                plane[i] = array[1 + PLANE_A[i]][x][1 + PLANE_B[i]];</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">                if (corner[i]) {</span>
+<span class="fc" id="L402">                    nCorner++;</span>
                 }
-<span class="fc bfc" id="L383" title="All 2 branches covered.">                if (plane[i]) {</span>
-<span class="fc" id="L384">                    nPlane++;</span>
+<span class="fc bfc" id="L404" title="All 2 branches covered.">                if (plane[i]) {</span>
+<span class="fc" id="L405">                    nPlane++;</span>
                 }
             }
-<span class="fc" id="L387">        } else { // !array[1][1][0] || !array[1][1][2]</span>
+<span class="fc" id="L408">        } else { // !array[1][1][0] || !array[1][1][2]</span>
             // Check ZX
-<span class="fc bfc" id="L389" title="All 2 branches covered.">            int y = (array[1][1][0] ? 0 : 2);</span>
-<span class="fc bfc" id="L390" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
-<span class="fc" id="L391">                corner[i] = array[1 + CORNER_A[i]][1 + CORNER_B[i]][1];</span>
-<span class="fc" id="L392">                plane[i] = array[1 + PLANE_A[i]][1 + PLANE_B[i]][y];</span>
-<span class="fc bfc" id="L393" title="All 2 branches covered.">                if (corner[i]) {</span>
-<span class="fc" id="L394">                    nCorner++;</span>
+<span class="fc bfc" id="L410" title="All 2 branches covered.">            int y = (array[1][1][0] ? 0 : 2);</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
+<span class="fc" id="L412">                corner[i] = array[1 + CORNER_A[i]][1 + CORNER_B[i]][1];</span>
+<span class="fc" id="L413">                plane[i] = array[1 + PLANE_A[i]][1 + PLANE_B[i]][y];</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">                if (corner[i]) {</span>
+<span class="fc" id="L415">                    nCorner++;</span>
                 }
-<span class="fc bfc" id="L396" title="All 2 branches covered.">                if (plane[i]) {</span>
-<span class="fc" id="L397">                    nPlane++;</span>
+<span class="fc bfc" id="L417" title="All 2 branches covered.">                if (plane[i]) {</span>
+<span class="fc" id="L418">                    nPlane++;</span>
                 }
             }
         }
-        
-<span class="fc bfc" id="L402" title="All 2 branches covered.">        if (nCorner + nPlane &lt; 4) {</span>
-<span class="fc" id="L403">            return false;</span>
-<span class="fc bfc" id="L404" title="All 4 branches covered.">        } else if (nPlane == 4 || nCorner + nPlane &gt; 5) {</span>
-<span class="fc" id="L405">            return true;</span>
-<span class="fc bfc" id="L406" title="All 2 branches covered.">        } else if (nCorner &gt; 2) {</span>
-<span class="fc bfc" id="L407" title="All 2 branches covered.">            return nPlane &gt; 0;</span>
-<span class="fc bfc" id="L408" title="All 2 branches covered.">        } else if (nCorner == 1) { // nPlane == 3</span>
-<span class="fc bfc" id="L409" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
-<span class="fc bfc" id="L410" title="All 6 branches covered.">                if (!plane[i] &amp;&amp; (corner[i] || corner[(i + 3) % NUMBER_PLANE])) {</span>
-<span class="fc" id="L411">                    return true;</span>
+
+<span class="fc bfc" id="L423" title="All 2 branches covered.">        if (nCorner + nPlane &lt; 4) {</span>
+<span class="fc" id="L424">            return false;</span>
+<span class="fc bfc" id="L425" title="All 4 branches covered.">        } else if (nPlane == 4 || nCorner + nPlane &gt; 5) {</span>
+<span class="fc" id="L426">            return true;</span>
+<span class="fc bfc" id="L427" title="All 2 branches covered.">        } else if (nCorner &gt; 2) {</span>
+<span class="fc bfc" id="L428" title="All 2 branches covered.">            return nPlane &gt; 0;</span>
+<span class="fc bfc" id="L429" title="All 2 branches covered.">        } else if (nCorner == 1) { // nPlane == 3</span>
+<span class="fc bfc" id="L430" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
+<span class="fc bfc" id="L431" title="All 6 branches covered.">                if (!plane[i] &amp;&amp; (corner[i] || corner[(i + 3) % NUMBER_PLANE])) {</span>
+<span class="fc" id="L432">                    return true;</span>
                 }
             }
-<span class="fc" id="L414">            return false;</span>
-<span class="fc bfc" id="L415" title="All 2 branches covered.">        } else if (nPlane == 2) { // nCorner == 2</span>
-<span class="fc" id="L416">            boolean isAdjacent = false;</span>
-<span class="fc" id="L417">            int index = NUMBER_PLANE;</span>
-<span class="fc bfc" id="L418" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
-<span class="fc bfc" id="L419" title="All 4 branches covered.">                if (plane[i] &amp;&amp; plane[(i + 1) % NUMBER_PLANE]) {</span>
-<span class="fc" id="L420">                    isAdjacent = true;</span>
-<span class="fc" id="L421">                    index = i;</span>
-<span class="fc bfc" id="L422" title="All 4 branches covered.">                } else if (plane[i] &amp;&amp; plane[(i + 2) % NUMBER_PLANE]) {</span>
-<span class="fc" id="L423">                    index = i;</span>
+<span class="fc" id="L435">            return false;</span>
+<span class="fc bfc" id="L436" title="All 2 branches covered.">        } else if (nPlane == 2) { // nCorner == 2</span>
+<span class="fc" id="L437">            boolean isAdjacent = false;</span>
+<span class="fc" id="L438">            int index = NUMBER_PLANE;</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
+<span class="fc bfc" id="L440" title="All 4 branches covered.">                if (plane[i] &amp;&amp; plane[(i + 1) % NUMBER_PLANE]) {</span>
+<span class="fc" id="L441">                    isAdjacent = true;</span>
+<span class="fc" id="L442">                    index = i;</span>
+<span class="fc bfc" id="L443" title="All 4 branches covered.">                } else if (plane[i] &amp;&amp; plane[(i + 2) % NUMBER_PLANE]) {</span>
+<span class="fc" id="L444">                    index = i;</span>
                 }
             }
-            
-<span class="fc bfc" id="L427" title="All 2 branches covered.">            if (isAdjacent) {</span>
-<span class="fc bfc" id="L428" title="All 2 branches covered.">                return !corner[index];</span>
+
+<span class="fc bfc" id="L448" title="All 2 branches covered.">            if (isAdjacent) {</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">                return !corner[index];</span>
             } else {
-<span class="fc" id="L430">                boolean corner1 = corner[(index + 1) % NUMBER_PLANE];</span>
-<span class="fc" id="L431">                boolean corner2 = corner[(index + 2) % NUMBER_PLANE];</span>
-<span class="fc" id="L432">                boolean corner3 = corner[(index + 3) % NUMBER_PLANE];</span>
-<span class="fc bfc" id="L433" title="All 8 branches covered.">                return (!corner[index] || !corner1) &amp;&amp; (!corner2 || !corner3);</span>
+<span class="fc" id="L451">                boolean corner1 = corner[(index + 1) % NUMBER_PLANE];</span>
+<span class="fc" id="L452">                boolean corner2 = corner[(index + 2) % NUMBER_PLANE];</span>
+<span class="fc" id="L453">                boolean corner3 = corner[(index + 3) % NUMBER_PLANE];</span>
+<span class="fc bfc" id="L454" title="All 8 branches covered.">                return (!corner[index] || !corner1) &amp;&amp; (!corner2 || !corner3);</span>
             }
         } else { // nCorner == 2 &amp;&amp; nPlane == 3
-<span class="fc" id="L436">            int index = NUMBER_PLANE;</span>
-<span class="fc bfc" id="L437" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
-<span class="fc bfc" id="L438" title="All 2 branches covered.">                if (!plane[i]) {</span>
-<span class="fc" id="L439">                    index = i;</span>
+<span class="fc" id="L457">            int index = NUMBER_PLANE;</span>
+<span class="fc bfc" id="L458" title="All 2 branches covered.">            for (int i = 0; i &lt; NUMBER_PLANE; i++) {</span>
+<span class="fc bfc" id="L459" title="All 2 branches covered.">                if (!plane[i]) {</span>
+<span class="fc" id="L460">                    index = i;</span>
                 }
             }
-<span class="fc bfc" id="L442" title="All 4 branches covered.">            return corner[index] || corner[(index + 3) % NUMBER_PLANE];</span>
+<span class="fc bfc" id="L463" title="All 4 branches covered.">            return corner[index] || corner[(index + 3) % NUMBER_PLANE];</span>
         }
     }
-    
+
     @Override
     HashSet&lt;Integer&gt; getUniqueIDs(int x, int y, int z) {
-<span class="fc" id="L448">        int id = ids[z][x][y];</span>
-<span class="fc" id="L449">        HashSet&lt;Integer&gt; unique = new HashSet&lt;&gt;();</span>
-        
-<span class="fc bfc" id="L451" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
-<span class="fc" id="L452">            int neighbor = ids[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];</span>
-<span class="fc bfc" id="L453" title="All 2 branches covered.">            if (id != neighbor) {</span>
-<span class="fc" id="L454">                unique.add(neighbor);</span>
+<span class="fc" id="L469">        int id = ids[z][x][y];</span>
+<span class="fc" id="L470">        HashSet&lt;Integer&gt; unique = new HashSet&lt;&gt;();</span>
+
+<span class="fc bfc" id="L472" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
+<span class="fc" id="L473">            int neighbor = ids[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];</span>
+<span class="fc bfc" id="L474" title="All 2 branches covered.">            if (id != neighbor) {</span>
+<span class="fc" id="L475">                unique.add(neighbor);</span>
             }
         }
-<span class="fc" id="L457">        return unique;</span>
+<span class="fc" id="L478">        return unique;</span>
     }
-    
+
     @Override
     HashSet&lt;Integer&gt; getUniqueRegions(int x, int y, int z) {
-<span class="fc" id="L462">        int id = ids[z][x][y];</span>
-<span class="fc" id="L463">        int region = regions[z][x][y];</span>
-<span class="fc" id="L464">        HashSet&lt;Integer&gt; unique = new HashSet&lt;&gt;();</span>
-        
-<span class="fc bfc" id="L466" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
-<span class="fc" id="L467">            int neighborID = ids[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];</span>
-<span class="fc" id="L468">            int neighborRegion = regions[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];</span>
-            
-<span class="fc bfc" id="L470" title="All 2 branches covered.">            if (neighborID != id) {</span>
-<span class="fc" id="L471">                continue;</span>
+<span class="fc" id="L483">        int id = ids[z][x][y];</span>
+<span class="fc" id="L484">        int region = regions[z][x][y];</span>
+<span class="fc" id="L485">        HashSet&lt;Integer&gt; unique = new HashSet&lt;&gt;();</span>
+
+<span class="fc bfc" id="L487" title="All 2 branches covered.">        for (int i = 0; i &lt; NUMBER_NEIGHBORS; i++) {</span>
+<span class="fc" id="L488">            int neighborID = ids[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];</span>
+<span class="fc" id="L489">            int neighborRegion = regions[z + MOVES_Z[i]][x + MOVES_X[i]][y + MOVES_Y[i]];</span>
+
+<span class="fc bfc" id="L491" title="All 2 branches covered.">            if (neighborID != id) {</span>
+<span class="fc" id="L492">                continue;</span>
             }
-<span class="fc bfc" id="L473" title="All 2 branches covered.">            if (region != neighborRegion) {</span>
-<span class="fc" id="L474">                unique.add(neighborRegion);</span>
+<span class="fc bfc" id="L494" title="All 2 branches covered.">            if (region != neighborRegion) {</span>
+<span class="fc" id="L495">                unique.add(neighborRegion);</span>
             }
         }
-        
-<span class="fc" id="L478">        return unique;</span>
+
+<span class="fc" id="L499">        return unique;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -2,21 +2,17 @@
 
 import arcade.core.util.MiniBox;
 
-/**
- * Concrete implementation of {@link PatchLatticeFactory} for triangular
- * geometry.
- */
-
+/** Concrete implementation of {@link PatchLatticeFactory} for triangular geometry. */
 public final class PatchLatticeFactoryTri extends PatchLatticeFactory {
-    /**
-     * Creates a factory for making triangular {@link PatchLattice} instances.
-     */
-<span class="fc" id="L14">    public PatchLatticeFactoryTri() { super(); }</span>
-    
+    /** Creates a factory for making triangular {@link PatchLattice} instances. */
+    public PatchLatticeFactoryTri() {
+<span class="fc" id="L9">        super();</span>
+<span class="fc" id="L10">    }</span>
+
     @Override
-    public PatchLattice getLattice(int length, int width, int height,
-                                   double ds, double dz, MiniBox parameters) {
-<span class="nc" id="L19">        return new PatchLatticeTri(length, width, height, ds, dz, parameters);</span>
+    public PatchLattice getLattice(
+            int length, int width, int height, double ds, double dz, MiniBox parameters) {
+<span class="nc" id="L15">        return new PatchLatticeTri(length, width, height, ds, dz, parameters);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

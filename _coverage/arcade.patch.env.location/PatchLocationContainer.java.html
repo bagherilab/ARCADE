@@ -5,45 +5,43 @@ import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.env.location.LocationFactory;
 
-/**
- * Implementation of {@link LocationContainer} for {@link PatchLocation}
- * objects.
- */
-
+/** Implementation of {@link LocationContainer} for {@link PatchLocation} objects. */
 public final class PatchLocationContainer implements LocationContainer {
     /** Unique location container ID. */
     public final int id;
-    
+
     /** Location coordinate. */
     public final Coordinate coordinate;
-    
+
     /**
      * Creates a {@code PatchLocationContainer} instance.
-     * &lt;p&gt;
-     * The container does not have any regions.
      *
-     * @param id  the location ID
-     * @param coordinate  the location coordinate
+     * &lt;p&gt;The container does not have any regions.
+     *
+     * @param id the location ID
+     * @param coordinate the location coordinate
      */
-<span class="fc" id="L28">    public PatchLocationContainer(int id, Coordinate coordinate) {</span>
-<span class="fc" id="L29">        this.id = id;</span>
-<span class="fc" id="L30">        this.coordinate = coordinate;</span>
-<span class="fc" id="L31">    }</span>
-    
+<span class="fc" id="L24">    public PatchLocationContainer(int id, Coordinate coordinate) {</span>
+<span class="fc" id="L25">        this.id = id;</span>
+<span class="fc" id="L26">        this.coordinate = coordinate;</span>
+<span class="fc" id="L27">    }</span>
+
     @Override
-<span class="nc" id="L34">    public int getID() { return id; }</span>
-    
+    public int getID() {
+<span class="nc" id="L31">        return id;</span>
+    }
+
     @Override
     public Location convert(LocationFactory factory, CellContainer cell) {
         PatchLocation location;
-        
-<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (factory instanceof PatchLocationFactoryRect) {</span>
-<span class="nc" id="L41">            location = new PatchLocationRect((CoordinateXYZ) coordinate);</span>
+
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        if (factory instanceof PatchLocationFactoryRect) {</span>
+<span class="nc" id="L39">            location = new PatchLocationRect((CoordinateXYZ) coordinate);</span>
         } else {
-<span class="nc" id="L43">            location = new PatchLocationHex((CoordinateUVWZ) coordinate);</span>
+<span class="nc" id="L41">            location = new PatchLocationHex((CoordinateUVWZ) coordinate);</span>
         }
-        
-<span class="nc" id="L46">        return location;</span>
+
+<span class="nc" id="L44">        return location;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

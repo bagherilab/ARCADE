@@ -9,26 +9,29 @@ import arcade.potts.sim.input.PottsInputBuilder;
 import arcade.potts.sim.output.PottsOutputLoader;
 import arcade.potts.sim.output.PottsOutputSaver;
 
-/**
- * Implementation of ARCADE for potts models.
- */
-
+/** Implementation of ARCADE for potts models. */
 public final class PottsARCADE extends ARCADE {
-    /**
-     * ARCADE model with potts.
-     */
-<span class="fc" id="L20">    public PottsARCADE() { }</span>
-    
+    /** ARCADE model with potts. */
+<span class="fc" id="L15">    public PottsARCADE() {}</span>
+
     @Override
-<span class="fc" id="L23">    public String getResource(String s) { return PottsARCADE.class.getResource(s).toString(); }</span>
-    
+    public String getResource(String s) {
+<span class="fc" id="L19">        return PottsARCADE.class.getResource(s).toString();</span>
+    }
+
     @Override
-<span class="fc" id="L26">    public InputBuilder getBuilder() { return new PottsInputBuilder(); }</span>
-    
+    public InputBuilder getBuilder() {
+<span class="fc" id="L24">        return new PottsInputBuilder();</span>
+    }
+
     @Override
-<span class="fc" id="L29">    public OutputLoader getLoader(Series series) { return new PottsOutputLoader(series); }</span>
-    
+    public OutputLoader getLoader(Series series) {
+<span class="fc" id="L29">        return new PottsOutputLoader(series);</span>
+    }
+
     @Override
-<span class="fc" id="L32">    public OutputSaver getSaver(Series series) { return new PottsOutputSaver(series); }</span>
+    public OutputSaver getSaver(Series series) {
+<span class="fc" id="L34">        return new PottsOutputSaver(series);</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

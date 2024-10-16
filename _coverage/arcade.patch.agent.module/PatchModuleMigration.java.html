@@ -9,54 +9,54 @@ import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Extension of {@link PatchModule} for migration.
- * &lt;p&gt;
- * During migration, the module is stepped once after the number of ticks
- * corresponding to (distance to move) / {@code MIGRATION_RATE} has passed. The
- * module will move the cell from one location to the best valid location in the
- * neighborhood.
+ *
+ * &lt;p&gt;During migration, the module is stepped once after the number of ticks corresponding to
+ * (distance to move) / {@code MIGRATION_RATE} has passed. The module will move the cell from one
+ * location to the best valid location in the neighborhood.
  */
-
 public class PatchModuleMigration extends PatchModule {
     /** Tracker for duration of cell movement. */
     private int ticker;
-    
+
     /** Cell migration rate [um/min]. */
     private final double migrationRate;
-    
+
     /** Time required for cell migration [min]. */
     private final double movementDuration;
-    
+
     /**
      * Creates a migration {@link PatchModule} for the given cell.
-     * &lt;p&gt;
-     * Loaded parameters include:
+     *
+     * &lt;p&gt;Loaded parameters include:
+     *
      * &lt;ul&gt;
-     *     &lt;li&gt;{@code MIGRATION_RATE} = cell migration rate&lt;/li&gt;
+     *   &lt;li&gt;{@code MIGRATION_RATE} = cell migration rate
      * &lt;/ul&gt;
      *
-     * @param cell  the {@link PatchCell} the module is associated with
+     * @param cell the {@link PatchCell} the module is associated with
      */
     public PatchModuleMigration(PatchCell cell) {
-<span class="nc" id="L40">        super(cell);</span>
-        
+<span class="nc" id="L39">        super(cell);</span>
+
         // Set loaded parameters.
-<span class="nc" id="L43">        MiniBox parameters = cell.getParameters();</span>
-<span class="nc" id="L44">        migrationRate = parameters.getDouble(&quot;migration/MIGRATION_RATE&quot;);</span>
-<span class="nc" id="L45">        movementDuration = Math.round(location.getCoordinateSize() / migrationRate);</span>
-<span class="nc" id="L46">    }</span>
-    
+<span class="nc" id="L42">        MiniBox parameters = cell.getParameters();</span>
+<span class="nc" id="L43">        migrationRate = parameters.getDouble(&quot;migration/MIGRATION_RATE&quot;);</span>
+<span class="nc" id="L44">        movementDuration = Math.round(location.getCoordinateSize() / migrationRate);</span>
+<span class="nc" id="L45">    }</span>
+
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
-<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (ticker &gt; movementDuration) {</span>
-<span class="nc" id="L51">            PatchLocation newLocation = PatchCell.selectBestLocation(sim, location,</span>
-<span class="nc" id="L52">                    cell.getVolume(), cell.getCriticalHeight(), random);</span>
-            
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (ticker &gt; movementDuration) {</span>
+<span class="nc" id="L50">            PatchLocation newLocation =</span>
+<span class="nc" id="L51">                    PatchCell.selectBestLocation(</span>
+<span class="nc" id="L52">                            sim, location, cell.getVolume(), cell.getCriticalHeight(), random);</span>
+
 <span class="nc bnc" id="L54" title="All 2 branches missed.">            if (newLocation == null) {</span>
 <span class="nc" id="L55">                cell.setState(State.QUIESCENT);</span>
             } else {
 <span class="nc bnc" id="L57" title="All 2 branches missed.">                if (!location.equals(newLocation)) {</span>
 <span class="nc" id="L58">                    sim.getGrid().moveObject(cell, location, newLocation);</span>
-                    
+
                     // TODO: Update environment generator sites.
                 }
 <span class="nc" id="L62">                cell.setState(State.UNDEFINED);</span>

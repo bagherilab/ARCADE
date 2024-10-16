@@ -2,65 +2,66 @@
 
 /**
  * Representation of (u, v, w, z) coordinate.
- * &lt;p&gt;
- * Each coordinate is defined by (u, v, w, z) values. Two coordinate objects are
- * considered equal if they have matching (u, v, w, z) values.
+ *
+ * &lt;p&gt;Each coordinate is defined by (u, v, w, z) values. Two coordinate objects are considered equal
+ * if they have matching (u, v, w, z) values.
  */
-
 public final class CoordinateUVWZ extends Coordinate {
     /** Coordinate u value. */
     public final int u;
-    
+
     /** Coordinate v value. */
     public final int v;
-    
+
     /** Coordinate w value. */
     public final int w;
-    
+
     /**
      * Creates a (u, v, w, z) {@code Coordinate}.
      *
-     * @param u  the u coordinate value
-     * @param v  the v coordinate value
-     * @param w  the w coordinate value
-     * @param z  the z coordinate value
+     * @param u the u coordinate value
+     * @param v the v coordinate value
+     * @param w the w coordinate value
+     * @param z the z coordinate value
      */
     public CoordinateUVWZ(int u, int v, int w, int z) {
-<span class="fc" id="L29">        super(z);</span>
-<span class="fc" id="L30">        this.u = u;</span>
-<span class="fc" id="L31">        this.v = v;</span>
-<span class="fc" id="L32">        this.w = w;</span>
-<span class="fc" id="L33">    }</span>
-    
+<span class="fc" id="L28">        super(z);</span>
+<span class="fc" id="L29">        this.u = u;</span>
+<span class="fc" id="L30">        this.v = v;</span>
+<span class="fc" id="L31">        this.w = w;</span>
+<span class="fc" id="L32">    }</span>
+
     @Override
     public double calculateDistance() {
-<span class="fc" id="L37">        return (Math.abs(u) + Math.abs(v) + Math.abs(w)) / 2.0;</span>
+<span class="fc" id="L36">        return (Math.abs(u) + Math.abs(v) + Math.abs(w)) / 2.0;</span>
     }
-    
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Uses (u, v, z) coordinate values to calculate hash.
+     *
+     * &lt;p&gt;Uses (u, v, z) coordinate values to calculate hash.
      */
     @Override
-<span class="nc" id="L46">    public int hashCode() { return u + (v &lt;&lt; 8) + (z &lt;&lt; 16); }</span>
-    
+    public int hashCode() {
+<span class="nc" id="L46">        return u + (v &lt;&lt; 8) + (z &lt;&lt; 16);</span>
+    }
+
     @Override
     public boolean equals(Object obj) {
-<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (!(obj instanceof CoordinateUVWZ)) {</span>
-<span class="nc" id="L51">            return false;</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (!(obj instanceof CoordinateUVWZ)) {</span>
+<span class="nc" id="L52">            return false;</span>
         }
-<span class="nc" id="L53">        CoordinateUVWZ coordinate = (CoordinateUVWZ) obj;</span>
-<span class="nc bnc" id="L54" title="All 8 branches missed.">        return coordinate.u == u &amp;&amp; coordinate.v == v &amp;&amp; coordinate.w == w &amp;&amp; coordinate.z == z;</span>
+<span class="nc" id="L54">        CoordinateUVWZ coordinate = (CoordinateUVWZ) obj;</span>
+<span class="nc bnc" id="L55" title="All 8 branches missed.">        return coordinate.u == u &amp;&amp; coordinate.v == v &amp;&amp; coordinate.w == w &amp;&amp; coordinate.z == z;</span>
     }
-    
+
     /**
      * Returns coordinate as string.
      *
-     * @return  a string
+     * @return a string
      */
     public String toString() {
-<span class="nc" id="L63">        return String.format(&quot;[%d, %d, %d, %d]&quot;, u, v, w, z);</span>
+<span class="nc" id="L64">        return String.format(&quot;[%d, %d, %d, %d]&quot;, u, v, w, z);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -11,359 +11,359 @@ import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 
 /**
- * Abstract simulation manager for {@link Simulation} objects, differing only in
- * random seed.
- * &lt;p&gt;
- * The class is instantiated by parsing an XML document specifying model setup.
- * Constructors for the {@link Simulation} objects are built, but not called to
- * instantiate the simulation until the series is run. {@code Series} objects
- * that are not valid are flagged with {@code isSkipped} and are not run.
- * &lt;p&gt;
- * {@link Simulation} objects are passed their parent {@code Series} object.
+ * Abstract simulation manager for {@link Simulation} objects, differing only in random seed.
+ *
+ * &lt;p&gt;The class is instantiated by parsing an XML document specifying model setup. Constructors for
+ * the {@link Simulation} objects are built, but not called to instantiate the simulation until the
+ * series is run. {@code Series} objects that are not valid are flagged with {@code isSkipped} and
+ * are not run.
+ *
+ * &lt;p&gt;{@link Simulation} objects are passed their parent {@code Series} object.
  */
-
 public abstract class Series {
     /** Logger for {@code Series}. */
-<span class="fc" id="L27">    private static final Logger LOGGER = Logger.getLogger(Series.class.getName());</span>
-    
+<span class="fc" id="L25">    private static final Logger LOGGER = Logger.getLogger(Series.class.getName());</span>
+
     /** Regular expression for numbers. */
     private static final String NUMBER_REGEX = &quot;^(\\d+)|(\\d+E\\d+)$&quot;;
-    
+
     /** Regular expression for fractions. */
     private static final String FRACTION_REGEX = &quot;^(([0]*(\\.\\d*|))|(1[\\.0]*))$&quot;;
-    
+
     /** Offset of random seed to avoid using seed of 0. */
     public static final int SEED_OFFSET = 1000;
-    
+
     /** {@code true} if {@code Series} is not valid, {@code false} otherwise. */
     public boolean isSkipped;
-    
+
     /** {@code true} if {@code Series} is visualized, {@code false} otherwise. */
     public boolean isVis;
-    
+
     /** Output saver for the simulation. */
     public OutputSaver saver;
-    
+
     /** Output loader for the simulation. */
     public OutputLoader loader;
-    
+
     /** Name of the series. */
     private final String name;
-    
+
     /** Path and prefix for the series. */
     private final String prefix;
-    
+
     /** Spatial conversion factor (um/voxel). */
     public final double ds;
-    
+
     /** Spatial conversion factor in z (um/voxel). */
     public final double dz;
-    
+
     /** Temporal conversion factor (hrs/tick). */
     public final double dt;
-    
+
     /** Constructor for the simulation. */
     protected Constructor&lt;?&gt; simCons;
-    
+
     /** Constructor for the visualization. */
     protected Constructor&lt;?&gt; visCons;
-    
+
     /** Random seed of the first simulation in the series. */
     private final int startSeed;
-    
+
     /** Random seed of the last simulation in the series. */
     private final int endSeed;
-    
+
     /** Simulation length in ticks. */
     private final int ticks;
-    
+
     /** Snapshot interval in ticks. */
     private final int interval;
-    
+
     /** Length of the simulation. */
     public final int length;
-    
+
     /** Width of the simulation. */
     public final int width;
-    
+
     /** Height of the simulation. */
     public final int height;
-    
+
     /** Margin for the simulation. */
     public final int margin;
-    
+
     /** Map of population settings. */
     public HashMap&lt;String, MiniBox&gt; populations;
-    
+
     /** Map of layer settings. */
     public HashMap&lt;String, MiniBox&gt; layers;
-    
+
     /** Map of action settings. */
     public HashMap&lt;String, MiniBox&gt; actions;
-    
+
     /** Map of component settings. */
     public HashMap&lt;String, MiniBox&gt; components;
-    
+
     /**
      * Creates a {@code Series} object given setup information parsed from XML.
      *
-     * @param setupDicts  the map of attribute to value for single instance tags
-     * @param setupLists  the map of attribute to value for multiple instance tags
-     * @param path  the path for simulation output
-     * @param parameters  the default parameter values
-     * @param isVis  {@code true} if visualized, {@code false} otherwise
+     * @param setupDicts the map of attribute to value for single instance tags
+     * @param setupLists the map of attribute to value for multiple instance tags
+     * @param path the path for simulation output
+     * @param parameters the default parameter values
+     * @param isVis {@code true} if visualized, {@code false} otherwise
      */
-    public Series(HashMap&lt;String, MiniBox&gt; setupDicts,
-                  HashMap&lt;String, ArrayList&lt;Box&gt;&gt; setupLists,
-<span class="fc" id="L118">                  String path, Box parameters, boolean isVis) {</span>
-<span class="fc" id="L119">        MiniBox set = setupDicts.get(&quot;set&quot;);</span>
-<span class="fc" id="L120">        MiniBox series = setupDicts.get(&quot;series&quot;);</span>
-<span class="fc" id="L121">        MiniBox defaults = parameters.getIdValForTag(&quot;DEFAULT&quot;);</span>
-        
-<span class="fc" id="L123">        this.isVis = isVis;</span>
-        
+    public Series(
+            HashMap&lt;String, MiniBox&gt; setupDicts,
+            HashMap&lt;String, ArrayList&lt;Box&gt;&gt; setupLists,
+            String path,
+            Box parameters,
+<span class="fc" id="L119">            boolean isVis) {</span>
+<span class="fc" id="L120">        MiniBox set = setupDicts.get(&quot;set&quot;);</span>
+<span class="fc" id="L121">        MiniBox series = setupDicts.get(&quot;series&quot;);</span>
+<span class="fc" id="L122">        MiniBox defaults = parameters.getIdValForTag(&quot;DEFAULT&quot;);</span>
+
+<span class="fc" id="L124">        this.isVis = isVis;</span>
+
         // Set name and prefix.
-<span class="fc" id="L126">        this.name = series.get(&quot;name&quot;);</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">        this.prefix = path + (set.contains(&quot;prefix&quot;) ? set.get(&quot;prefix&quot;) : &quot;&quot;) + name;</span>
-        
+<span class="fc" id="L127">        this.name = series.get(&quot;name&quot;);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        this.prefix = path + (set.contains(&quot;prefix&quot;) ? set.get(&quot;prefix&quot;) : &quot;&quot;) + name;</span>
+
         // Set random seeds.
-<span class="fc bfc" id="L130" title="All 2 branches covered.">        this.startSeed = (series.contains(&quot;start&quot;)</span>
-<span class="fc" id="L131">                ? series.getInt(&quot;start&quot;)</span>
-<span class="fc" id="L132">                : defaults.getInt(&quot;START_SEED&quot;));</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">        this.endSeed = (series.contains(&quot;end&quot;)</span>
-<span class="fc" id="L134">                ? series.getInt(&quot;end&quot;)</span>
-<span class="fc" id="L135">                : defaults.getInt(&quot;END_SEED&quot;));</span>
-        
+<span class="fc" id="L131">        this.startSeed =</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">                (series.contains(&quot;start&quot;) ? series.getInt(&quot;start&quot;) : defaults.getInt(&quot;START_SEED&quot;));</span>
+<span class="fc" id="L133">        this.endSeed =</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">                (series.contains(&quot;end&quot;) ? series.getInt(&quot;end&quot;) : defaults.getInt(&quot;END_SEED&quot;));</span>
+
         // Set number of ticks and interval
-<span class="fc bfc" id="L138" title="All 2 branches covered.">        this.ticks = (series.contains(&quot;ticks&quot;)</span>
-<span class="fc" id="L139">                ? series.getInt(&quot;ticks&quot;)</span>
-<span class="fc" id="L140">                : defaults.getInt(&quot;TICKS&quot;));</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">        this.interval = (series.contains(&quot;interval&quot;)</span>
-<span class="fc" id="L142">                ? series.getInt(&quot;interval&quot;)</span>
-<span class="fc" id="L143">                : defaults.getInt(&quot;INTERVAL&quot;));</span>
-        
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        this.ticks = (series.contains(&quot;ticks&quot;) ? series.getInt(&quot;ticks&quot;) : defaults.getInt(&quot;TICKS&quot;));</span>
+<span class="fc" id="L138">        this.interval =</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">                (series.contains(&quot;interval&quot;)</span>
+<span class="fc" id="L140">                        ? series.getInt(&quot;interval&quot;)</span>
+<span class="fc" id="L141">                        : defaults.getInt(&quot;INTERVAL&quot;));</span>
+
         // Set sizing.
-<span class="fc bfc" id="L146" title="All 2 branches covered.">        this.length = (series.contains(&quot;length&quot;)</span>
-<span class="fc" id="L147">                ? series.getInt(&quot;length&quot;)</span>
-<span class="fc" id="L148">                : defaults.getInt(&quot;LENGTH&quot;));</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">        this.width = (series.contains(&quot;width&quot;)</span>
-<span class="fc" id="L150">                ? series.getInt(&quot;width&quot;)</span>
-<span class="fc" id="L151">                : defaults.getInt(&quot;WIDTH&quot;));</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">        this.height = (series.contains(&quot;height&quot;)</span>
-<span class="fc" id="L153">                ? series.getInt(&quot;height&quot;)</span>
-<span class="fc" id="L154">                : defaults.getInt(&quot;HEIGHT&quot;));</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">        this.margin = (series.contains(&quot;margin&quot;)</span>
-<span class="fc" id="L156">                ? series.getInt(&quot;margin&quot;)</span>
-<span class="fc" id="L157">                : defaults.getInt(&quot;MARGIN&quot;));</span>
-        
+<span class="fc" id="L144">        this.length =</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">                (series.contains(&quot;length&quot;) ? series.getInt(&quot;length&quot;) : defaults.getInt(&quot;LENGTH&quot;));</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        this.width = (series.contains(&quot;width&quot;) ? series.getInt(&quot;width&quot;) : defaults.getInt(&quot;WIDTH&quot;));</span>
+<span class="fc" id="L147">        this.height =</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">                (series.contains(&quot;height&quot;) ? series.getInt(&quot;height&quot;) : defaults.getInt(&quot;HEIGHT&quot;));</span>
+<span class="fc" id="L149">        this.margin =</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">                (series.contains(&quot;margin&quot;) ? series.getInt(&quot;margin&quot;) : defaults.getInt(&quot;MARGIN&quot;));</span>
+
         // Set conversion factors.
-<span class="fc bfc" id="L160" title="All 2 branches covered.">        this.ds = (series.contains(&quot;ds&quot;)</span>
-<span class="fc" id="L161">                ? series.getDouble(&quot;ds&quot;)</span>
-<span class="fc" id="L162">                : defaults.getDouble(&quot;DS&quot;));</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">        this.dz = (series.contains(&quot;dz&quot;)</span>
-<span class="fc" id="L164">                ? series.getDouble(&quot;dz&quot;)</span>
-<span class="fc" id="L165">                : defaults.getDouble(&quot;DZ&quot;));</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">        this.dt = (series.contains(&quot;dt&quot;)</span>
-<span class="fc" id="L167">                ? series.getDouble(&quot;dt&quot;)</span>
-<span class="fc" id="L168">                : defaults.getDouble(&quot;DT&quot;));</span>
-        
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        this.ds = (series.contains(&quot;ds&quot;) ? series.getDouble(&quot;ds&quot;) : defaults.getDouble(&quot;DS&quot;));</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">        this.dz = (series.contains(&quot;dz&quot;) ? series.getDouble(&quot;dz&quot;) : defaults.getDouble(&quot;DZ&quot;));</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        this.dt = (series.contains(&quot;dt&quot;) ? series.getDouble(&quot;dt&quot;) : defaults.getDouble(&quot;DT&quot;));</span>
+
         // Initialize simulation series.
-<span class="fc" id="L171">        initialize(setupLists, parameters);</span>
-        
+<span class="fc" id="L158">        initialize(setupLists, parameters);</span>
+
         // Create constructors for simulation and visualization.
-<span class="fc" id="L174">        makeConstructors();</span>
-<span class="fc" id="L175">    }</span>
-    
+<span class="fc" id="L161">        makeConstructors();</span>
+<span class="fc" id="L162">    }</span>
+
     /**
      * Gets the name of the series.
      *
-     * @return  the name of the series
+     * @return the name of the series
      */
-<span class="fc" id="L182">    public String getName() { return name; }</span>
-    
+    public String getName() {
+<span class="fc" id="L170">        return name;</span>
+    }
+
     /**
      * Gets the prefix for the series, including file path.
      *
-     * @return  the file path and prefix for the series
+     * @return the file path and prefix for the series
      */
-<span class="fc" id="L189">    public String getPrefix() { return prefix; }</span>
-    
+    public String getPrefix() {
+<span class="fc" id="L179">        return prefix;</span>
+    }
+
     /**
      * Gets the start random seed.
      *
-     * @return  the random seed
+     * @return the random seed
      */
-<span class="fc" id="L196">    public int getStartSeed() { return startSeed; }</span>
-    
+    public int getStartSeed() {
+<span class="fc" id="L188">        return startSeed;</span>
+    }
+
     /**
      * Gets the end random seed.
      *
-     * @return  the random seed
+     * @return the random seed
      */
-<span class="fc" id="L203">    public int getEndSeed() { return endSeed; }</span>
-    
+    public int getEndSeed() {
+<span class="fc" id="L197">        return endSeed;</span>
+    }
+
     /**
      * Gets the number of ticks per simulation.
      *
-     * @return  the ticks
+     * @return the ticks
      */
-<span class="fc" id="L210">    public int getTicks() { return ticks; }</span>
-    
+    public int getTicks() {
+<span class="fc" id="L206">        return ticks;</span>
+    }
+
     /**
      * Gets the number of ticks between snapshots.
      *
-     * @return  the interval
+     * @return the interval
      */
-<span class="fc" id="L217">    public int getInterval() { return interval; }</span>
-    
+    public int getInterval() {
+<span class="fc" id="L215">        return interval;</span>
+    }
+
     /**
      * Checks if string contains valid number greater than 0.
      *
-     * @param box  the box containing the fraction
-     * @param key  the number key
-     * @return  {@code true if valid}, {@code false} otherwise
+     * @param box the box containing the fraction
+     * @param key the number key
+     * @return {@code true if valid}, {@code false} otherwise
      */
     protected static boolean isValidNumber(Box box, String key) {
-<span class="fc bfc" id="L227" title="All 2 branches covered.">        if (box.getValue(key) == null) {</span>
-<span class="fc" id="L228">            return false;</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        if (box.getValue(key) == null) {</span>
+<span class="fc" id="L227">            return false;</span>
         }
-<span class="fc" id="L230">        return box.getValue(key).matches(NUMBER_REGEX);</span>
+<span class="fc" id="L229">        return box.getValue(key).matches(NUMBER_REGEX);</span>
     }
-    
+
     /**
      * Checks if string contains valid fraction between 0 and 1, inclusive.
      *
-     * @param box  the box containing the fraction
-     * @param key  the fraction key
-     * @return  {@code true if valid}, {@code false} otherwise
+     * @param box the box containing the fraction
+     * @param key the fraction key
+     * @return {@code true if valid}, {@code false} otherwise
      */
     protected static boolean isValidFraction(Box box, String key) {
-<span class="fc bfc" id="L241" title="All 2 branches covered.">        if (box.getValue(key) == null) {</span>
-<span class="fc" id="L242">            return false;</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">        if (box.getValue(key) == null) {</span>
+<span class="fc" id="L241">            return false;</span>
         }
-<span class="fc" id="L244">        return box.getValue(key).matches(FRACTION_REGEX);</span>
+<span class="fc" id="L243">        return box.getValue(key).matches(FRACTION_REGEX);</span>
     }
-    
+
     /**
      * Initializes series simulation, agents, and environment.
      *
-     * @param setupLists  the map of attribute to value for multiple instance tags
-     * @param parameters  the default parameter values loaded from {@code parameter.xml}
+     * @param setupLists the map of attribute to value for multiple instance tags
+     * @param parameters the default parameter values loaded from {@code parameter.xml}
      */
-    protected abstract void initialize(HashMap&lt;String, ArrayList&lt;Box&gt;&gt; setupLists,
-                                       Box parameters);
-    
+    protected abstract void initialize(HashMap&lt;String, ArrayList&lt;Box&gt;&gt; setupLists, Box parameters);
+
     /**
      * Creates agent populations.
      *
-     * @param populationsBox  the list of population setup dictionaries
-     * @param populationDefaults  the dictionary of default population parameters
-     * @param populationConversions  the dictionary of population parameter conversions
+     * @param populationsBox the list of population setup dictionaries
+     * @param populationDefaults the dictionary of default population parameters
+     * @param populationConversions the dictionary of population parameter conversions
      */
-    protected abstract void updatePopulations(ArrayList&lt;Box&gt; populationsBox,
-                                              MiniBox populationDefaults,
-                                              MiniBox populationConversions);
-    
+    protected abstract void updatePopulations(
+            ArrayList&lt;Box&gt; populationsBox,
+            MiniBox populationDefaults,
+            MiniBox populationConversions);
+
     /**
      * Creates environment layers.
      *
-     * @param layersBox  the list of layer setup dictionaries
-     * @param layerDefaults  the dictionary of default layer parameters
-     * @param layerConversions  the dictionary of layer parameter conversions
+     * @param layersBox the list of layer setup dictionaries
+     * @param layerDefaults the dictionary of default layer parameters
+     * @param layerConversions the dictionary of layer parameter conversions
      */
-    protected abstract void updateLayers(ArrayList&lt;Box&gt; layersBox,
-                                         MiniBox layerDefaults,
-                                         MiniBox layerConversions);
-    
+    protected abstract void updateLayers(
+            ArrayList&lt;Box&gt; layersBox, MiniBox layerDefaults, MiniBox layerConversions);
+
     /**
      * Creates selected actions.
      *
-     * @param actionsBox  the list of action dictionaries
-     * @param actionDefaults  the dictionary of default action parameters
+     * @param actionsBox the list of action dictionaries
+     * @param actionDefaults the dictionary of default action parameters
      */
-    protected abstract void updateActions(ArrayList&lt;Box&gt; actionsBox,
-                                          MiniBox actionDefaults);
-    
+    protected abstract void updateActions(ArrayList&lt;Box&gt; actionsBox, MiniBox actionDefaults);
+
     /**
      * Creates selected components.
      *
-     * @param componentsBox  the list of component dictionaries
-     * @param componentDefaults  the dictionary of default component parameters
+     * @param componentsBox the list of component dictionaries
+     * @param componentDefaults the dictionary of default component parameters
      */
-    protected abstract void updateComponents(ArrayList&lt;Box&gt; componentsBox,
-                                             MiniBox componentDefaults);
-    
+    protected abstract void updateComponents(
+            ArrayList&lt;Box&gt; componentsBox, MiniBox componentDefaults);
+
     /**
      * Parses parameter values based on default value.
      *
-     * @param box  the parameter map
-     * @param parameter  the parameter name
-     * @param defaultParameter  the default parameter value
-     * @param values  the map of parameter values
-     * @param scales  the map of parameter scaling
+     * @param box the parameter map
+     * @param parameter the parameter name
+     * @param defaultParameter the default parameter value
+     * @param values the map of parameter values
+     * @param scales the map of parameter scaling
      */
-    protected static void parseParameter(MiniBox box, String parameter, String defaultParameter,
-                                         MiniBox values, MiniBox scales) {
-<span class="fc" id="L307">        box.put(parameter, defaultParameter);</span>
-        
-<span class="fc bfc" id="L309" title="All 2 branches covered.">        if (values.get(parameter) != null) {</span>
-<span class="fc" id="L310">            box.put(parameter, values.get(parameter));</span>
+    protected static void parseParameter(
+            MiniBox box,
+            String parameter,
+            String defaultParameter,
+            MiniBox values,
+            MiniBox scales) {
+<span class="fc" id="L308">        box.put(parameter, defaultParameter);</span>
+
+<span class="fc bfc" id="L310" title="All 2 branches covered.">        if (values.get(parameter) != null) {</span>
+<span class="fc" id="L311">            box.put(parameter, values.get(parameter));</span>
         }
-        
-<span class="fc bfc" id="L313" title="All 2 branches covered.">        if (scales.get(parameter) != null) {</span>
-<span class="fc" id="L314">            box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));</span>
+
+<span class="fc bfc" id="L314" title="All 2 branches covered.">        if (scales.get(parameter) != null) {</span>
+<span class="fc" id="L315">            box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));</span>
         }
-<span class="fc" id="L316">    }</span>
-    
+<span class="fc" id="L317">    }</span>
+
     /**
      * Updates conversion string into a value.
-     * &lt;p&gt;
-     * Conversion string is in the form of {@code D^N} where {@code D} is either
-     * {@code DS}, {@code DZ}, or {@code DT} and {@code N} is an integer
-     * exponent. Conversions with {@code DZ} are replaced with {@code DS}.
-     * Multiple terms can be chained in the form {@code D^N1.D^N2}. The
-     * {@code ^N} is not required if N = 1.
      *
-     * @param convert  the conversion string
-     * @param ds  the spatial conversion factor
-     * @param dt  the temporal conversion factor
-     * @return  the updated conversion factor
+     * &lt;p&gt;Conversion string is in the form of {@code D^N} where {@code D} is either {@code DS},
+     * {@code DZ}, or {@code DT} and {@code N} is an integer exponent. Conversions with {@code DZ}
+     * are replaced with {@code DS}. Multiple terms can be chained in the form {@code D^N1.D^N2}.
+     * The {@code ^N} is not required if N = 1.
+     *
+     * @param convert the conversion string
+     * @param ds the spatial conversion factor
+     * @param dt the temporal conversion factor
+     * @return the updated conversion factor
      */
     protected static double parseConversion(String convert, double ds, double dt) {
 <span class="fc" id="L333">        return parseConversion(convert, ds, ds, dt);</span>
     }
-    
+
     /**
      * Updates conversion string into a value.
-     * &lt;p&gt;
-     * Conversion string is in the form of {@code D^N} where {@code D} is either
-     * {@code DS}, {@code DZ}, or {@code DT} and {@code N} is an integer
-     * exponent. Multiple terms can be chained in the form {@code D^N1.D^N2}.
-     * The {@code ^N} is not required if N = 1.
      *
-     * @param convert  the conversion string
-     * @param ds  the spatial conversion factor in xy
-     * @param dz  the spatial conversion factor in z
-     * @param dt  the temporal conversion factor
-     * @return  the updated conversion factor
+     * &lt;p&gt;Conversion string is in the form of {@code D^N} where {@code D} is either {@code DS},
+     * {@code DZ}, or {@code DT} and {@code N} is an integer exponent. Multiple terms can be chained
+     * in the form {@code D^N1.D^N2}. The {@code ^N} is not required if N = 1.
+     *
+     * @param convert the conversion string
+     * @param ds the spatial conversion factor in xy
+     * @param dz the spatial conversion factor in z
+     * @param dt the temporal conversion factor
+     * @return the updated conversion factor
      */
     protected static double parseConversion(String convert, double ds, double dz, double dt) {
-<span class="fc" id="L351">        double value = 1;</span>
-<span class="fc" id="L352">        String[] split = convert.split(&quot;\\.&quot;);</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">        for (String s : split) {</span>
-<span class="fc" id="L354">            String[] subsplit = s.replace(&quot; &quot;, &quot;&quot;).split(&quot;\\^&quot;);</span>
-<span class="fc bfc" id="L355" title="All 2 branches covered.">            double v = (subsplit[0].equals(&quot;DS&quot;) ? ds</span>
-<span class="fc bfc" id="L356" title="All 2 branches covered.">                    : (subsplit[0].equals(&quot;DZ&quot;) ? dz</span>
-<span class="fc bfc" id="L357" title="All 2 branches covered.">                    : (subsplit[0].equals(&quot;DT&quot;) ? dt : 1)));</span>
-<span class="fc bfc" id="L358" title="All 2 branches covered.">            int n = (subsplit.length == 2 ? Integer.parseInt(subsplit[1]) : 1);</span>
-<span class="fc" id="L359">            value *= Math.pow(v, n);</span>
+<span class="fc" id="L350">        double value = 1;</span>
+<span class="fc" id="L351">        String[] split = convert.split(&quot;\\.&quot;);</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">        for (String s : split) {</span>
+<span class="fc" id="L353">            String[] subsplit = s.replace(&quot; &quot;, &quot;&quot;).split(&quot;\\^&quot;);</span>
+            double v =
+<span class="fc bfc" id="L355" title="All 2 branches covered.">                    (subsplit[0].equals(&quot;DS&quot;)</span>
+<span class="fc" id="L356">                            ? ds</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">                            : (subsplit[0].equals(&quot;DZ&quot;)</span>
+<span class="fc" id="L358">                                    ? dz</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">                                    : (subsplit[0].equals(&quot;DT&quot;) ? dt : 1)));</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">            int n = (subsplit.length == 2 ? Integer.parseInt(subsplit[1]) : 1);</span>
+<span class="fc" id="L361">            value *= Math.pow(v, n);</span>
         }
-<span class="fc" id="L361">        return value;</span>
+<span class="fc" id="L363">        return value;</span>
     }
-    
-    /**
-     * Uses reflections to build constructors for simulation and visualization.
-     */
+
+    /** Uses reflections to build constructors for simulation and visualization. */
     protected void makeConstructors() {
         // Create constructor for simulation class.
         try {
@@ -374,7 +374,7 @@ public abstract class Series {
 <span class="fc" id="L374">            e.printStackTrace();</span>
 <span class="fc" id="L375">            isSkipped = true;</span>
 <span class="fc" id="L376">        }</span>
-        
+
         // Create constructor for visualization class.
         try {
 <span class="fc" id="L380">            Class&lt;?&gt; c = Class.forName(getVisClass());</span>
@@ -385,92 +385,96 @@ public abstract class Series {
 <span class="fc" id="L385">            isSkipped = true;</span>
 <span class="fc" id="L386">        }</span>
 <span class="fc" id="L387">    }</span>
-    
+
     /**
      * Gets the class name for the simulation.
      *
-     * @return  the simulation class
+     * @return the simulation class
      */
     protected abstract String getSimClass();
-    
+
     /**
      * Gets the class name for the visualization.
      *
-     * @return  the visualization class
+     * @return the visualization class
      */
     protected abstract String getVisClass();
-    
+
     /**
      * Calls {@code runSim} for each random seed.
      *
-     * @throws Exception  if simulation constructor cannot be instantiated
+     * @throws Exception if simulation constructor cannot be instantiated
      */
     public void runSims() throws Exception {
         long simStart;
         long simEnd;
-        
+
         // Iterate through each seed.
 <span class="fc bfc" id="L413" title="All 2 branches covered.">        for (int seed = startSeed; seed &lt;= endSeed; seed++) {</span>
             // Pre-simulation output.
 <span class="fc" id="L415">            LOGGER.info(String.format(&quot;simulation [ %s | %04d ] started&quot;, name, seed));</span>
 <span class="fc" id="L416">            simStart = System.currentTimeMillis();</span>
-            
+
             // Run simulation.
 <span class="fc" id="L419">            SimState simstate = (SimState) (simCons.newInstance(seed + SEED_OFFSET, this));</span>
 <span class="fc" id="L420">            runSim(simstate, seed);</span>
-            
+
             // Post-simulation output.
 <span class="fc" id="L423">            simEnd = System.currentTimeMillis();</span>
-<span class="fc" id="L424">            LOGGER.info(String.format(&quot;simulation [ %s | %04d ] finished in %.4f minutes&quot;,</span>
-<span class="fc" id="L425">                    name, seed, (double) (simEnd - simStart) / 1000 / 60));</span>
+<span class="fc" id="L424">            LOGGER.info(</span>
+<span class="fc" id="L425">                    String.format(</span>
+                            &quot;simulation [ %s | %04d ] finished in %.4f minutes&quot;,
+<span class="fc" id="L427">                            name, seed, (double) (simEnd - simStart) / 1000 / 60));</span>
         }
-<span class="fc" id="L427">    }</span>
-    
+<span class="fc" id="L429">    }</span>
+
     /**
      * Iterates through each tick of the simulation.
      *
-     * @param simstate  the simulation state instance
-     * @param seed  the random seed
+     * @param simstate the simulation state instance
+     * @param seed the random seed
      */
     void runSim(SimState simstate, int seed) {
         // Start simulation.
-<span class="fc" id="L437">        simstate.start();</span>
-        
+<span class="fc" id="L439">        simstate.start();</span>
+
         // Set up logger checkpoints.
-<span class="fc" id="L440">        double delta = ticks / 10.0;</span>
-<span class="fc" id="L441">        double checkpoint = delta;</span>
-        
+<span class="fc" id="L442">        double delta = ticks / 10.0;</span>
+<span class="fc" id="L443">        double checkpoint = delta;</span>
+
         // Run simulation loop.
         double tick;
         do {
-<span class="fc bfc" id="L446" title="All 2 branches covered.">            if (!simstate.schedule.step(simstate)) {</span>
-<span class="fc" id="L447">                break;</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">            if (!simstate.schedule.step(simstate)) {</span>
+<span class="fc" id="L449">                break;</span>
             }
-<span class="fc" id="L449">            tick = simstate.schedule.getTime();</span>
-            
-<span class="fc bfc" id="L451" title="All 2 branches covered.">            if (tick &gt;= checkpoint) {</span>
-<span class="fc" id="L452">                LOGGER.info(String.format(&quot;simulation [ %s | %04d ] tick %6d ( %4.2f %% )&quot;,</span>
-<span class="fc" id="L453">                        name, seed, (int) tick, (100 * tick / ticks)));</span>
-<span class="fc" id="L454">                checkpoint += delta;</span>
+<span class="fc" id="L451">            tick = simstate.schedule.getTime();</span>
+
+<span class="fc bfc" id="L453" title="All 2 branches covered.">            if (tick &gt;= checkpoint) {</span>
+<span class="fc" id="L454">                LOGGER.info(</span>
+<span class="fc" id="L455">                        String.format(</span>
+                                &quot;simulation [ %s | %04d ] tick %6d ( %4.2f %% )&quot;,
+<span class="fc" id="L457">                                name, seed, (int) tick, (100 * tick / ticks)));</span>
+<span class="fc" id="L458">                checkpoint += delta;</span>
             }
-<span class="fc bfc" id="L456" title="All 2 branches covered.">        } while (tick &lt; ticks - 1);</span>
-        
+<span class="fc bfc" id="L460" title="All 2 branches covered.">        } while (tick &lt; ticks - 1);</span>
+
         // Finish simulation.
-<span class="fc" id="L459">        simstate.finish();</span>
-<span class="fc" id="L460">    }</span>
-    
+<span class="fc" id="L463">        simstate.finish();</span>
+<span class="fc" id="L464">    }</span>
+
     /**
      * Creates controller for visualization.
      *
-     * @throws Exception  if visualization constructor cannot be instantiated
+     * @throws Exception if visualization constructor cannot be instantiated
      */
     public void runVis() throws Exception {
-<span class="fc bfc" id="L468" title="All 2 branches covered.">        if (System.getProperty(&quot;java.awt.headless&quot;) != null</span>
-<span class="fc bfc" id="L469" title="All 2 branches covered.">                &amp;&amp; System.getProperty(&quot;java.awt.headless&quot;).equals(&quot;true&quot;)) {</span>
-<span class="fc" id="L470">            return;</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">        if (System.getProperty(&quot;java.awt.headless&quot;) != null</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">                &amp;&amp; System.getProperty(&quot;java.awt.headless&quot;).equals(&quot;true&quot;)) {</span>
+<span class="fc" id="L474">            return;</span>
         }
-<span class="fc" id="L472">        Simulation sim = (Simulation) (simCons.newInstance(startSeed + SEED_OFFSET, this));</span>
-<span class="fc" id="L473">        ((GUIState) visCons.newInstance(sim)).createController();</span>
-<span class="fc" id="L474">    }</span>
+<span class="fc" id="L476">        Simulation sim = (Simulation) (simCons.newInstance(startSeed + SEED_OFFSET, this));</span>
+<span class="fc" id="L477">        ((GUIState) visCons.newInstance(sim)).createController();</span>
+<span class="fc" id="L478">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

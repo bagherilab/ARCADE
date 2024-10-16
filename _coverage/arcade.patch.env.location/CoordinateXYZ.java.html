@@ -2,60 +2,61 @@
 
 /**
  * Representation of (x, y, z) coordinates.
- * &lt;p&gt;
- * Each coordinate is defined by (x, y, z) values. Two coordinate objects are
- * considered equal if they have matching (x, y, z) values.
+ *
+ * &lt;p&gt;Each coordinate is defined by (x, y, z) values. Two coordinate objects are considered equal if
+ * they have matching (x, y, z) values.
  */
-
 public final class CoordinateXYZ extends Coordinate {
     /** Coordinate x value. */
     public final int x;
-    
+
     /** Coordinate y value. */
     public final int y;
-    
+
     /**
      * Creates an (x, y, z) {@code Coordinate}.
      *
-     * @param x  the x coordinate value
-     * @param y  the y coordinate value
-     * @param z  the z coordinate value
+     * @param x the x coordinate value
+     * @param y the y coordinate value
+     * @param z the z coordinate value
      */
     public CoordinateXYZ(int x, int y, int z) {
-<span class="fc" id="L25">        super(z);</span>
-<span class="fc" id="L26">        this.x = x;</span>
-<span class="fc" id="L27">        this.y = y;</span>
-<span class="fc" id="L28">    }</span>
-    
+<span class="fc" id="L24">        super(z);</span>
+<span class="fc" id="L25">        this.x = x;</span>
+<span class="fc" id="L26">        this.y = y;</span>
+<span class="fc" id="L27">    }</span>
+
     @Override
     public double calculateDistance() {
-<span class="nc" id="L32">        return Math.sqrt(x * x + y * y);</span>
+<span class="nc" id="L31">        return Math.sqrt(x * x + y * y);</span>
     }
-    
+
     /**
      * {@inheritDoc}
-     * &lt;p&gt;
-     * Uses (x, y, z) coordinate values to calculate hash.
+     *
+     * &lt;p&gt;Uses (x, y, z) coordinate values to calculate hash.
      */
     @Override
-<span class="nc" id="L41">    public int hashCode() { return x + (y &lt;&lt; 8) + (z &lt;&lt; 16); }</span>
-    
+    public int hashCode() {
+<span class="nc" id="L41">        return x + (y &lt;&lt; 8) + (z &lt;&lt; 16);</span>
+    }
+
     @Override
     public boolean equals(Object obj) {
-<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (!(obj instanceof CoordinateXYZ)) {</span>
-<span class="nc" id="L46">            return false;</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (!(obj instanceof CoordinateXYZ)) {</span>
+<span class="nc" id="L47">            return false;</span>
         }
-<span class="nc" id="L48">        CoordinateXYZ coordinate = (CoordinateXYZ) obj;</span>
-<span class="nc bnc" id="L49" title="All 6 branches missed.">        return coordinate.x == x &amp;&amp; coordinate.y == y &amp;&amp; coordinate.z == z;</span>
+<span class="nc" id="L49">        CoordinateXYZ coordinate = (CoordinateXYZ) obj;</span>
+<span class="nc bnc" id="L50" title="All 6 branches missed.">        return coordinate.x == x &amp;&amp; coordinate.y == y &amp;&amp; coordinate.z == z;</span>
     }
-    
+
     /**
      * Returns coordinate as string.
      *
-     * @return  a string
+     * @return a string
      */
     public String toString() {
-<span class="nc" id="L58">        return String.format(&quot;[%d, %d, %d]&quot;, x, y, z);</span>
+<span class="nc" id="L59">        return String.format(&quot;[%d, %d, %d]&quot;, x, y, z);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

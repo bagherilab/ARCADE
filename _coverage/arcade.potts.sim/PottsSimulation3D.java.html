@@ -5,30 +5,31 @@ import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.location.PottsLocationFactory;
 import arcade.potts.env.location.PottsLocationFactory3D;
 
-/**
- * Extension of {@link PottsSimulation} for 3D.
- */
-
+/** Extension of {@link PottsSimulation} for 3D. */
 public final class PottsSimulation3D extends PottsSimulation {
     /**
      * 3D simulation instance for a {@link Series} for given random seed.
      *
-     * @param seed  the random seed for random number generator
-     * @param series  the simulation series
+     * @param seed the random seed for random number generator
+     * @param series the simulation series
      */
-<span class="fc" id="L19">    public PottsSimulation3D(long seed, Series series) { super(seed, series); }</span>
-    
+    public PottsSimulation3D(long seed, Series series) {
+<span class="fc" id="L17">        super(seed, series);</span>
+<span class="fc" id="L18">    }</span>
+
     @Override
-<span class="fc" id="L22">    Potts makePotts() { return new Potts3D(series); }</span>
-    
+    Potts makePotts() {
+<span class="fc" id="L22">        return new Potts3D(series);</span>
+    }
+
     @Override
     public PottsLocationFactory makeLocationFactory() {
-<span class="fc" id="L26">        return new PottsLocationFactory3D();</span>
+<span class="fc" id="L27">        return new PottsLocationFactory3D();</span>
     }
-    
+
     @Override
     public PottsCellFactory makeCellFactory() {
-<span class="fc" id="L31">        return new PottsCellFactory();</span>
+<span class="fc" id="L32">        return new PottsCellFactory();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

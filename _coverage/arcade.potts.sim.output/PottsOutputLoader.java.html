@@ -4,19 +4,20 @@ import com.google.gson.Gson;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputLoader;
 
-/**
- * Custom loader for potts-specific deserialization.
- */
-
+/** Custom loader for potts-specific deserialization. */
 public final class PottsOutputLoader extends OutputLoader {
     /**
      * Creates a {@code PottsOutputLoader} for the series.
      *
-     * @param series  the simulation series
+     * @param series the simulation series
      */
-<span class="fc" id="L17">    public PottsOutputLoader(Series series) { super(series); }</span>
-    
+    public PottsOutputLoader(Series series) {
+<span class="fc" id="L15">        super(series);</span>
+<span class="fc" id="L16">    }</span>
+
     @Override
-<span class="fc" id="L20">    protected Gson makeGSON() { return PottsOutputDeserializer.makeGSON(); }</span>
+    protected Gson makeGSON() {
+<span class="fc" id="L20">        return PottsOutputDeserializer.makeGSON();</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -9,26 +9,29 @@ import arcade.patch.sim.input.PatchInputBuilder;
 import arcade.patch.sim.output.PatchOutputLoader;
 import arcade.patch.sim.output.PatchOutputSaver;
 
-/**
- * Implementation of ARCADE for patch models.
- */
-
+/** Implementation of ARCADE for patch models. */
 public final class PatchARCADE extends ARCADE {
-    /**
-     * ARCADE model with patches.
-     */
-<span class="fc" id="L20">    public PatchARCADE() { }</span>
-    
+    /** ARCADE model with patches. */
+<span class="fc" id="L15">    public PatchARCADE() {}</span>
+
     @Override
-<span class="fc" id="L23">    public String getResource(String s) { return PatchARCADE.class.getResource(s).toString(); }</span>
-    
+    public String getResource(String s) {
+<span class="fc" id="L19">        return PatchARCADE.class.getResource(s).toString();</span>
+    }
+
     @Override
-<span class="fc" id="L26">    public InputBuilder getBuilder() { return new PatchInputBuilder(); }</span>
-    
+    public InputBuilder getBuilder() {
+<span class="fc" id="L24">        return new PatchInputBuilder();</span>
+    }
+
     @Override
-<span class="fc" id="L29">    public OutputLoader getLoader(Series series) { return new PatchOutputLoader(series); }</span>
-    
+    public OutputLoader getLoader(Series series) {
+<span class="fc" id="L29">        return new PatchOutputLoader(series);</span>
+    }
+
     @Override
-<span class="fc" id="L32">    public OutputSaver getSaver(Series series) { return new PatchOutputSaver(series); }</span>
+    public OutputSaver getSaver(Series series) {
+<span class="fc" id="L34">        return new PatchOutputSaver(series);</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

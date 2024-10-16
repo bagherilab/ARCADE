@@ -5,62 +5,62 @@ import arcade.core.util.Matrix;
 import arcade.potts.env.location.PottsLocation;
 import static arcade.potts.util.PottsEnums.Region;
 
-/**
- * Configuration for {@link PersistenceHamiltonian} parameters.
- */
-
+/** Configuration for {@link PersistenceHamiltonian} parameters. */
 class PersistenceHamiltonianConfig {
     /** Default migration unit vector. */
-<span class="fc" id="L14">    static final double[] DEFAULT_UNIT_VECTOR = new double[] { 0, 0, 0 };</span>
-    
+<span class="fc" id="L11">    static final double[] DEFAULT_UNIT_VECTOR = new double[] {0, 0, 0};</span>
+
     /** Associated {@link PottsLocation} instance. */
     final PottsLocation location;
-    
+
     /** Lambda multiplier for cell. */
     private final double lambda;
-    
+
     /** Lambda multipliers for cell by region. */
     private final EnumMap&lt;Region, Double&gt; lambdasRegion;
-    
+
     /** Vector decay fraction for location. */
     private final double decay;
-    
+
     /** {@code true} if the cell has regions, {@code false} otherwise. */
     final boolean hasRegions;
-    
+
     /** Volume threshold for scaling vector in z direction. */
     final double threshold;
-    
+
     /** Movement target vector. */
     final double[] vector;
-    
+
     /** Displacement vector. */
     final double[] displacement;
-    
+
     /** Location volume used to check if location has changed. */
     private int volumeCheck;
-    
+
     /**
      * Creates parameter configuration for {@code PersistenceHamiltonian}.
      *
-     * @param location  the associated location instance
-     * @param lambda  the lambda multiplier
-     * @param lambdasRegion  the map of lambda multiplier for regions
-     * @param decay  the decay fraction
-     * @param threshold  the volume threshold
+     * @param location the associated location instance
+     * @param lambda the lambda multiplier
+     * @param lambdasRegion the map of lambda multiplier for regions
+     * @param decay the decay fraction
+     * @param threshold the volume threshold
      */
-    PersistenceHamiltonianConfig(PottsLocation location, double lambda,
-                                 EnumMap&lt;Region, Double&gt; lambdasRegion,
-<span class="fc" id="L54">                                 double decay, double threshold) {</span>
+    PersistenceHamiltonianConfig(
+            PottsLocation location,
+            double lambda,
+            EnumMap&lt;Region, Double&gt; lambdasRegion,
+            double decay,
+<span class="fc" id="L54">            double threshold) {</span>
 <span class="fc" id="L55">        this.location = location;</span>
 <span class="fc" id="L56">        this.lambda = lambda;</span>
 <span class="fc" id="L57">        this.decay = decay;</span>
 <span class="fc" id="L58">        this.threshold = threshold;</span>
 <span class="fc" id="L59">        this.vector = DEFAULT_UNIT_VECTOR.clone();</span>
-<span class="fc" id="L60">        this.displacement = new double[] { 0, 0, 0 };</span>
+<span class="fc" id="L60">        this.displacement = new double[] {0, 0, 0};</span>
 <span class="fc" id="L61">        this.volumeCheck = (int) location.getVolume();</span>
 <span class="fc bfc" id="L62" title="All 4 branches covered.">        this.hasRegions = (lambdasRegion != null) &amp;&amp; (lambdasRegion.keySet().size() &gt; 0);</span>
-        
+
 <span class="fc bfc" id="L64" title="All 2 branches covered.">        if (hasRegions) {</span>
 <span class="fc" id="L65">            this.lambdasRegion = new EnumMap&lt;&gt;(Region.class);</span>
 <span class="fc bfc" id="L66" title="All 2 branches covered.">            for (Region region : lambdasRegion.keySet()) {</span>
@@ -70,113 +70,116 @@ class PersistenceHamiltonianConfig {
 <span class="fc" id="L70">            this.lambdasRegion = null;</span>
         }
 <span class="fc" id="L72">    }</span>
-    
+
     /**
      * Gets the lambda value.
      *
-     * @return  the lambda value
+     * @return the lambda value
      */
-<span class="fc" id="L79">    public double getLambda() { return lambda; }</span>
-    
+    public double getLambda() {
+<span class="fc" id="L80">        return lambda;</span>
+    }
+
     /**
      * Gets the lambda value for the region.
      *
-     * @param region  the region
-     * @return  the lambda value
+     * @param region the region
+     * @return the lambda value
      */
     public double getLambda(Region region) {
-<span class="fc bfc" id="L88" title="All 4 branches covered.">        return (hasRegions &amp;&amp; lambdasRegion.containsKey(region)</span>
-<span class="fc" id="L89">                ? lambdasRegion.get(region)</span>
-<span class="fc" id="L90">                : Double.NaN);</span>
+<span class="fc bfc" id="L90" title="All 4 branches covered.">        return (hasRegions &amp;&amp; lambdasRegion.containsKey(region)</span>
+<span class="fc" id="L91">                ? lambdasRegion.get(region)</span>
+<span class="fc" id="L92">                : Double.NaN);</span>
     }
-    
+
     /**
      * Gets the decay value.
      *
-     * @return  the decay value
+     * @return the decay value
      */
-<span class="fc" id="L98">    public double getDecay() { return decay; }</span>
-    
+    public double getDecay() {
+<span class="fc" id="L101">        return decay;</span>
+    }
+
     /**
      * Gets the direction unit vector for the location.
-     * &lt;p&gt;
-     * If the location has changed since the last call to this method, the
-     * vector is updated to be between the previous direction and the most
-     * recent displacement direction.
      *
-     * @return  the direction unit vector
+     * &lt;p&gt;If the location has changed since the last call to this method, the vector is updated to
+     * be between the previous direction and the most recent displacement direction.
+     *
+     * @return the direction unit vector
      */
     public double[] getVector() {
-<span class="fc bfc" id="L110" title="All 2 branches covered.">        if ((int) location.getVolume() != volumeCheck) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">        if ((int) location.getVolume() != volumeCheck) {</span>
             // Update tracked volume to new location volume.
-<span class="fc" id="L112">            volumeCheck = (int) location.getVolume();</span>
-            
+<span class="fc" id="L115">            volumeCheck = (int) location.getVolume();</span>
+
             // Update target.
-<span class="fc" id="L115">            vector[0] = (1 - decay) * vector[0] + decay * displacement[0];</span>
-<span class="fc" id="L116">            vector[1] = (1 - decay) * vector[1] + decay * displacement[1];</span>
-<span class="fc" id="L117">            vector[2] = -volumeCheck / threshold;</span>
-            
+<span class="fc" id="L118">            vector[0] = (1 - decay) * vector[0] + decay * displacement[0];</span>
+<span class="fc" id="L119">            vector[1] = (1 - decay) * vector[1] + decay * displacement[1];</span>
+<span class="fc" id="L120">            vector[2] = -volumeCheck / threshold;</span>
+
             // Convert to unit vector.
-<span class="fc" id="L120">            Matrix.unit(vector);</span>
+<span class="fc" id="L123">            Matrix.unit(vector);</span>
         }
-        
-<span class="fc" id="L123">        return vector;</span>
+
+<span class="fc" id="L126">        return vector;</span>
     }
-    
+
     /**
      * Gets the updated displacement of the center.
-     * &lt;p&gt;
-     * Displacement vector is stored until this method is called again.
      *
-     * @param x  the x position of the changed voxel
-     * @param y  the y position of the changed voxel
-     * @param z  the z position of the changed voxel
-     * @param change  the direction of change (add = +1, remove = -1)
-     * @return  the displacement unit vector
+     * &lt;p&gt;Displacement vector is stored until this method is called again.
+     *
+     * @param x the x position of the changed voxel
+     * @param y the y position of the changed voxel
+     * @param z the z position of the changed voxel
+     * @param change the direction of change (add = +1, remove = -1)
+     * @return the displacement unit vector
      */
     public double[] getDisplacement(int x, int y, int z, int change) {
         // Get updated volume and current centroid.
-<span class="fc" id="L139">        double volume = location.getVolume() + change;</span>
-<span class="fc" id="L140">        double[] centroid = location.getCentroid();</span>
-        
+<span class="fc" id="L142">        double volume = location.getVolume() + change;</span>
+<span class="fc" id="L143">        double[] centroid = location.getCentroid();</span>
+
         // Calculate displacement.
-<span class="fc" id="L143">        displacement[0] = (change * (x - centroid[0])) / volume;</span>
-<span class="fc" id="L144">        displacement[1] = (change * (y - centroid[1])) / volume;</span>
-<span class="fc" id="L145">        displacement[2] = (change * (z - centroid[2])) / volume;</span>
-        
+<span class="fc" id="L146">        displacement[0] = (change * (x - centroid[0])) / volume;</span>
+<span class="fc" id="L147">        displacement[1] = (change * (y - centroid[1])) / volume;</span>
+<span class="fc" id="L148">        displacement[2] = (change * (z - centroid[2])) / volume;</span>
+
         // Convert displacement to unit vector.
-<span class="fc" id="L148">        Matrix.unit(displacement);</span>
-        
-<span class="fc" id="L150">        return displacement;</span>
+<span class="fc" id="L151">        Matrix.unit(displacement);</span>
+
+<span class="fc" id="L153">        return displacement;</span>
     }
-    
+
     /**
      * Gets the updated displacement of the center of a region.
-     * &lt;p&gt;
-     * Calling this method does not update the stored displacement vector.
      *
-     * @param x  the x position of the changed voxel
-     * @param y  the y position of the changed voxel
-     * @param z  the z position of the changed voxel
-     * @param change  the direction of change (add = +1, remove = -1)
-     * @param region  the region
-     * @return  the displacement unit vector
+     * &lt;p&gt;Calling this method does not update the stored displacement vector.
+     *
+     * @param x the x position of the changed voxel
+     * @param y the y position of the changed voxel
+     * @param z the z position of the changed voxel
+     * @param change the direction of change (add = +1, remove = -1)
+     * @param region the region
+     * @return the displacement unit vector
      */
     public double[] getDisplacement(int x, int y, int z, int change, Region region) {
         // Get updated volume and current centroid for region.
-<span class="fc" id="L167">        double volume = location.getVolume(region) + change;</span>
-<span class="fc" id="L168">        double[] centroid = location.getCentroid(region);</span>
-        
+<span class="fc" id="L170">        double volume = location.getVolume(region) + change;</span>
+<span class="fc" id="L171">        double[] centroid = location.getCentroid(region);</span>
+
         // Calculate displacement.
-<span class="fc" id="L171">        double[] disp = new double[3];</span>
-<span class="fc" id="L172">        disp[0] = (change * (x - centroid[0])) / volume;</span>
-<span class="fc" id="L173">        disp[1] = (change * (y - centroid[1])) / volume;</span>
-<span class="fc" id="L174">        disp[2] = (change * (z - centroid[2])) / volume;</span>
-        
+<span class="fc" id="L174">        double[] disp = new double[3];</span>
+<span class="fc" id="L175">        disp[0] = (change * (x - centroid[0])) / volume;</span>
+<span class="fc" id="L176">        disp[1] = (change * (y - centroid[1])) / volume;</span>
+<span class="fc" id="L177">        disp[2] = (change * (z - centroid[2])) / volume;</span>
+
         // Convert displacement to unit vector.
-<span class="fc" id="L177">        Matrix.unit(disp);</span>
-        
-<span class="fc" id="L179">        return disp;</span>
+<span class="fc" id="L180">        Matrix.unit(disp);</span>
+
+<span class="fc" id="L182">        return disp;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -2,21 +2,17 @@
 
 import arcade.core.util.MiniBox;
 
-/**
- * Concrete implementation of {@link PatchLatticeFactory} for rectangular
- * geometry.
- */
-
+/** Concrete implementation of {@link PatchLatticeFactory} for rectangular geometry. */
 public final class PatchLatticeFactoryRect extends PatchLatticeFactory {
-    /**
-     * Creates a factory for making rectangular {@link PatchLattice} instances.
-     */
-<span class="nc" id="L14">    public PatchLatticeFactoryRect() { super(); }</span>
-    
+    /** Creates a factory for making rectangular {@link PatchLattice} instances. */
+    public PatchLatticeFactoryRect() {
+<span class="nc" id="L9">        super();</span>
+<span class="nc" id="L10">    }</span>
+
     @Override
-    public PatchLattice getLattice(int length, int width, int height,
-                                   double ds, double dz, MiniBox parameters) {
-<span class="nc" id="L19">        return new PatchLatticeRect(length, width, height, ds, dz, parameters);</span>
+    public PatchLattice getLattice(
+            int length, int width, int height, double ds, double dz, MiniBox parameters) {
+<span class="nc" id="L15">        return new PatchLatticeRect(length, width, height, ds, dz, parameters);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
