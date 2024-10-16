@@ -2,6 +2,7 @@ plugins {
     id "java"
     id "jacoco"
     id "com.palantir.git-version" version "3.0.0"
+    id "com.diffplug.spotless" version "6.25.0"
 }
 
 version = "3.1.4"
@@ -63,6 +64,24 @@ jacocoTestReport {
     reports {
         xml.enabled true
         html.enabled true
+    }
+}
+
+spotless {
+    java {
+        removeUnusedImports()
+        googleJavaFormat().aosp()
+                .reorderImports(true)
+                .formatJavadoc(true)
+        importOrder('java|javax|org|com||sim|ec|arcade.core|arcade|\\#java|\\#org|\\#|\\#arcade.core|\\#arcade')
+        indentWithSpaces()
+    }
+
+    format 'misc', {
+        target '**/.gitignore', '**/*.gradle', '**/*.md', '**/*.sh'
+        indentWithSpaces()
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 }
 
