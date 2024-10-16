@@ -4,18 +4,17 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.potts.agent.cell.PottsCell;
 
-/**
- * Extension of {@link PottsModule} for autosis.
- */
-
+/** Extension of {@link PottsModule} for autosis. */
 public class PottsModuleAutosis extends PottsModule {
     /**
      * Creates an autosis {@code Module} for the given {@link PottsCell}.
      *
-     * @param cell  the {@link PottsCell} the module is associated with
+     * @param cell the {@link PottsCell} the module is associated with
      */
-    public PottsModuleAutosis(PottsCell cell) { super(cell); }
-    
+    public PottsModuleAutosis(PottsCell cell) {
+        super(cell);
+    }
+
     @Override
-    public void step(MersenneTwisterFast random, Simulation sim) { }
+    public void step(MersenneTwisterFast random, Simulation sim) {}
 }

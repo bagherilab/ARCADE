@@ -9,25 +9,28 @@ import arcade.potts.sim.input.PottsInputBuilder;
 import arcade.potts.sim.output.PottsOutputLoader;
 import arcade.potts.sim.output.PottsOutputSaver;
 
-/**
- * Implementation of ARCADE for potts models.
- */
-
+/** Implementation of ARCADE for potts models. */
 public final class PottsARCADE extends ARCADE {
-    /**
-     * ARCADE model with potts.
-     */
-    public PottsARCADE() { }
-    
+    /** ARCADE model with potts. */
+    public PottsARCADE() {}
+
     @Override
-    public String getResource(String s) { return PottsARCADE.class.getResource(s).toString(); }
-    
+    public String getResource(String s) {
+        return PottsARCADE.class.getResource(s).toString();
+    }
+
     @Override
-    public InputBuilder getBuilder() { return new PottsInputBuilder(); }
-    
+    public InputBuilder getBuilder() {
+        return new PottsInputBuilder();
+    }
+
     @Override
-    public OutputLoader getLoader(Series series) { return new PottsOutputLoader(series); }
-    
+    public OutputLoader getLoader(Series series) {
+        return new PottsOutputLoader(series);
+    }
+
     @Override
-    public OutputSaver getSaver(Series series) { return new PottsOutputSaver(series); }
+    public OutputSaver getSaver(Series series) {
+        return new PottsOutputSaver(series);
+    }
 }

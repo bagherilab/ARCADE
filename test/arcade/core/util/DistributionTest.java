@@ -14,9 +14,9 @@ public class DistributionTest {
         double maxValue = mu + 2 * sigma;
         double minValue = mu - 2 * sigma;
         int iterations = 10000;
-        
+
         Distribution distribution = new Distribution(mu, sigma, random);
-        
+
         for (int i = 0; i < iterations; i++) {
             double value = distribution.nextDouble();
             assertTrue(value >= minValue);
