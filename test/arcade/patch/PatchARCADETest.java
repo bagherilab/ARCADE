@@ -4,13 +4,13 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import arcade.core.ARCADE;
 import arcade.core.sim.Series;
 import arcade.patch.sim.input.PatchInputBuilder;
 import arcade.patch.sim.output.PatchOutputLoader;
 import arcade.patch.sim.output.PatchOutputSaver;
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.io.TempDir;
 import static org.mockito.Mockito.*;
 
 public class PatchARCADETest {

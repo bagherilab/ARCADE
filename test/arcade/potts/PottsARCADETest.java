@@ -3,15 +3,14 @@ package arcade.potts;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import arcade.core.ARCADE;
 import arcade.core.sim.Series;
 import arcade.potts.sim.input.PottsInputBuilder;
 import arcade.potts.sim.output.PottsOutputLoader;
 import arcade.potts.sim.output.PottsOutputSaver;
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.io.TempDir;
 import static org.mockito.Mockito.*;
 
 public class PottsARCADETest {
