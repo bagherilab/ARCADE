@@ -55,6 +55,10 @@
     <population.process process="signaling" id="MIGRATORY_THRESHOLD" value="10" description="threshold fold change in PLCg for migration" />
     <population.process process="signaling" id="MIGRATORY_PROBABILITY" value="0.05" description="probability of migration instead of proliferation" />
     
+    <!-- chemotherapy process parameters -->
+    <population.process process="chemotherapy" id="CHEMOTHERAPY_THRESHOLD" value="1.5" unit="fmol" description="chemotherapy threshold before apoptosis" />
+    <population.process process="chemotherapy" id="CONSTANT_DRUG_UPTAKE_RATE" value="1" unit="fmol drug/um^2 cell/min/M drug" />
+
     <!-- LAYERS ============================================================ -->
     
     <!-- default parameters for layers -->

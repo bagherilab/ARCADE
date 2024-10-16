@@ -86,7 +86,7 @@ public abstract class PatchProcessChemotherapy extends PatchProcess {
 
         // Calculate drug uptake and internal concentration.
         stepProcess(random, sim);
-
+        
         // Update environment for the drug.
         sim.getLattice("DRUG").updateValue(location, 1.0 - uptakeAmt / extAmt);
     }
@@ -100,7 +100,6 @@ public abstract class PatchProcessChemotherapy extends PatchProcess {
      */
     public static PatchProcess make(PatchCell cell, String version) {
         switch (version.toUpperCase()) {
-            /** TODO: Implement other cases */
             case "SIMPLE":
                 return new PatchProcessChemotherapySimple(cell);
             default:

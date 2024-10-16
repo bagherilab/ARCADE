@@ -18,12 +18,7 @@ import static arcade.patch.util.PatchEnums.State;
 public class PatchProcessChemotherapySimple extends PatchProcessChemotherapy {
     /** Constant drug uptake rate [TODO: Rate] for the drug. */
     private final double drugUptakeRate;
-    
-    /** Kill threshold concentration [TODO: Concentration] for the drug. */
-    private final double killThreshold;
-    
-    /** Constant kill rate [cells/min]. */
-    private final double killRate;
+
 
     /**
      * Creates a simple chemotherapy {@code Process} for the given {@link PatchCell}.
@@ -43,28 +38,25 @@ public class PatchProcessChemotherapySimple extends PatchProcessChemotherapy {
         // Load parameters from the MiniBox.
         MiniBox parameters = cell.getParameters();
         drugUptakeRate = parameters.getDouble("chemotherapy/CONSTANT_DRUG_UPTAKE_RATE");
-        killThreshold = parameters.getDouble("chemotherapy/KILL_THRESHOLD");
-        killRate = parameters.getDouble("chemotherapy/KILL_RATE");
+
     }
     
     @Override
     public void stepProcess(MersenneTwisterFast random, Simulation sim) {
         double drugInt = intAmt;
         double drugExt = extAmt;
-
+        
         // Calculate drug uptake rate based on concentration gradient.
         double drugGrad = (extAmt / location.getVolume()) - (drugInt / volume);
         drugGrad *= drugGrad < 1E-10 ? 0 : 1;
         double drugUptake = drugUptakeRate * drugGrad;
         drugInt += drugUptake;
-
+        
         // If drug concentration exceeds kill threshold, apply kill rate.
-        if (cell.getState() == State.PROLIFERATIVE && drugInt > killThreshold) {
-            if (random.nextDouble() < killRate) {
-                cell.setState(State.APOPTOTIC);
-            }
+        if (cell.getState() == State.PROLIFERATIVE && drugInt > chemotherapyThreshold) {
+            cell.setState(State.APOPTOTIC);
         }
-
+        
         intAmt = drugInt;
         uptakeAmt = drugUptake;
     }
@@ -77,7 +69,7 @@ public class PatchProcessChemotherapySimple extends PatchProcessChemotherapy {
         // Update this process as split of given process.
         this.volume = this.cell.getVolume();
         this.intAmt = chemotherapy.intAmt * split;
-
+        
         chemotherapy.intAmt *= (1 - split);
 
     }
