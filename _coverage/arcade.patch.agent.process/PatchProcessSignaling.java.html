@@ -29,8 +29,8 @@ public abstract class PatchProcessSignaling extends PatchProcess {
      * @param cell  the {@link PatchCell} the process is associated with
      */
     PatchProcessSignaling(PatchCell cell) {
-<span class="nc" id="L32">        super(cell);</span>
-<span class="nc" id="L33">    }</span>
+<span class="fc" id="L32">        super(cell);</span>
+<span class="fc" id="L33">    }</span>
     
     /**
      * Creates a {@code PatchProcessSignaling} for given version.
@@ -40,11 +40,11 @@ public abstract class PatchProcessSignaling extends PatchProcess {
      * @return  the process instance
      */
     public static PatchProcess make(PatchCell cell, String version) {
-<span class="nc bnc" id="L43" title="All 5 branches missed.">        switch (version.toUpperCase()) {</span>
+<span class="pc bpc" id="L43" title="4 of 5 branches missed.">        switch (version.toUpperCase()) {</span>
             case &quot;RANDOM&quot;:
 <span class="nc" id="L45">                return new PatchProcessSignalingRandom(cell);</span>
             case &quot;SIMPLE&quot;:
-<span class="nc" id="L47">                return new PatchProcessSignalingSimple(cell);</span>
+<span class="fc" id="L47">                return new PatchProcessSignalingSimple(cell);</span>
             case &quot;MEDIUM&quot;:
 <span class="nc" id="L49">                return new PatchProcessSignalingMedium(cell);</span>
             case &quot;COMPLEX&quot;:

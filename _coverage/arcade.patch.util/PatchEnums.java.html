@@ -101,20 +101,20 @@ public final class PatchEnums {
          * @return  a random {@code State}
          */
         public static State random(MersenneTwisterFast rng) {
-<span class="nc" id="L104">            return values()[rng.nextInt(values().length - 1) + 1];</span>
+<span class="fc" id="L104">            return values()[rng.nextInt(values().length - 1) + 1];</span>
         }
     }
     
     /** Process domain codes for patch simulations. */
-<span class="nc" id="L109">    public enum Domain implements ProcessDomain {</span>
+<span class="fc" id="L109">    public enum Domain implements ProcessDomain {</span>
         /** Code for undefined domain. */
-<span class="nc" id="L111">        UNDEFINED,</span>
+<span class="fc" id="L111">        UNDEFINED,</span>
         
         /** Code for metabolism domain. */
-<span class="nc" id="L114">        METABOLISM,</span>
+<span class="fc" id="L114">        METABOLISM,</span>
         
         /** Code for signaling domain. */
-<span class="nc" id="L117">        SIGNALING;</span>
+<span class="fc" id="L117">        SIGNALING;</span>
         
         /**
          * Randomly selects a {@code Domain}.

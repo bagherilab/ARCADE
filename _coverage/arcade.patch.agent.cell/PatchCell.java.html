@@ -155,41 +155,41 @@ public abstract class PatchCell implements Cell {
      */
     public PatchCell(int id, int parent, int pop, CellState state, int age, int divisions,
                      Location location, MiniBox parameters, double volume, double height,
-<span class="nc" id="L158">                     double criticalVolume, double criticalHeight) {</span>
-<span class="nc" id="L159">        this.id = id;</span>
-<span class="nc" id="L160">        this.parent = parent;</span>
-<span class="nc" id="L161">        this.pop = pop;</span>
-<span class="nc" id="L162">        this.age = age;</span>
-<span class="nc" id="L163">        this.energy = 0;</span>
-<span class="nc" id="L164">        this.divisions = divisions;</span>
-<span class="nc" id="L165">        this.location = (PatchLocation) location;</span>
-<span class="nc" id="L166">        this.volume = volume;</span>
-<span class="nc" id="L167">        this.height = height;</span>
-<span class="nc" id="L168">        this.criticalVolume = criticalVolume;</span>
-<span class="nc" id="L169">        this.criticalHeight = criticalHeight;</span>
-<span class="nc" id="L170">        this.flag = Flag.UNDEFINED;</span>
-<span class="nc" id="L171">        this.parameters = parameters;</span>
+<span class="fc" id="L158">                     double criticalVolume, double criticalHeight) {</span>
+<span class="fc" id="L159">        this.id = id;</span>
+<span class="fc" id="L160">        this.parent = parent;</span>
+<span class="fc" id="L161">        this.pop = pop;</span>
+<span class="fc" id="L162">        this.age = age;</span>
+<span class="fc" id="L163">        this.energy = 0;</span>
+<span class="fc" id="L164">        this.divisions = divisions;</span>
+<span class="fc" id="L165">        this.location = (PatchLocation) location;</span>
+<span class="fc" id="L166">        this.volume = volume;</span>
+<span class="fc" id="L167">        this.height = height;</span>
+<span class="fc" id="L168">        this.criticalVolume = criticalVolume;</span>
+<span class="fc" id="L169">        this.criticalHeight = criticalHeight;</span>
+<span class="fc" id="L170">        this.flag = Flag.UNDEFINED;</span>
+<span class="fc" id="L171">        this.parameters = parameters;</span>
         
-<span class="nc" id="L173">        setState(state);</span>
+<span class="fc" id="L173">        setState(state);</span>
         
         // Set loaded parameters.
-<span class="nc" id="L176">        heterogeneity = parameters.getDouble(&quot;HETEROGENEITY&quot;);</span>
-<span class="nc" id="L177">        necroticFraction = parameters.getDouble(&quot;NECROTIC_FRACTION&quot;);</span>
-<span class="nc" id="L178">        senescentFraction = parameters.getDouble(&quot;SENESCENT_FRACTION&quot;);</span>
-<span class="nc" id="L179">        energyThreshold = -parameters.getDouble(&quot;ENERGY_THRESHOLD&quot;);</span>
+<span class="fc" id="L176">        heterogeneity = parameters.getDouble(&quot;HETEROGENEITY&quot;);</span>
+<span class="fc" id="L177">        necroticFraction = parameters.getDouble(&quot;NECROTIC_FRACTION&quot;);</span>
+<span class="fc" id="L178">        senescentFraction = parameters.getDouble(&quot;SENESCENT_FRACTION&quot;);</span>
+<span class="fc" id="L179">        energyThreshold = -parameters.getDouble(&quot;ENERGY_THRESHOLD&quot;);</span>
         
         // TODO: implement heterogeneity
         
         // Add cell processes.
-<span class="nc" id="L184">        processes = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L185">        MiniBox processBox = parameters.filter(&quot;(PROCESS)&quot;);</span>
-<span class="nc bnc" id="L186" title="All 2 branches missed.">        for (String processKey : processBox.getKeys()) {</span>
-<span class="nc" id="L187">            ProcessDomain domain = Domain.valueOf(processKey);</span>
-<span class="nc" id="L188">            String version = processBox.get(processKey);</span>
-<span class="nc" id="L189">            Process process = makeProcess(domain, version);</span>
-<span class="nc" id="L190">            processes.put(domain, process);</span>
-<span class="nc" id="L191">        }</span>
-<span class="nc" id="L192">    }</span>
+<span class="fc" id="L184">        processes = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L185">        MiniBox processBox = parameters.filter(&quot;(PROCESS)&quot;);</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        for (String processKey : processBox.getKeys()) {</span>
+<span class="fc" id="L187">            ProcessDomain domain = Domain.valueOf(processKey);</span>
+<span class="fc" id="L188">            String version = processBox.get(processKey);</span>
+<span class="fc" id="L189">            Process process = makeProcess(domain, version);</span>
+<span class="fc" id="L190">            processes.put(domain, process);</span>
+<span class="fc" id="L191">        }</span>
+<span class="fc" id="L192">    }</span>
     
     @Override
 <span class="nc" id="L195">    public int getID() { return id; }</span>
@@ -201,37 +201,37 @@ public abstract class PatchCell implements Cell {
 <span class="nc" id="L201">    public int getPop() { return pop; }</span>
     
     @Override
-<span class="nc" id="L204">    public CellState getState() { return state; }</span>
+<span class="fc" id="L204">    public CellState getState() { return state; }</span>
     
     @Override
-<span class="nc" id="L207">    public int getAge() { return age; }</span>
+<span class="fc" id="L207">    public int getAge() { return age; }</span>
     
     @Override
-<span class="nc" id="L210">    public int getDivisions() { return divisions; }</span>
+<span class="fc" id="L210">    public int getDivisions() { return divisions; }</span>
     
     @Override
-<span class="nc" id="L213">    public Location getLocation() { return location; }</span>
+<span class="fc" id="L213">    public Location getLocation() { return location; }</span>
     
     @Override
 <span class="nc" id="L216">    public Module getModule() { return module; }</span>
     
     @Override
-<span class="nc" id="L219">    public Process getProcess(ProcessDomain domain) { return processes.get(domain); }</span>
+<span class="fc" id="L219">    public Process getProcess(ProcessDomain domain) { return processes.get(domain); }</span>
     
     @Override
-<span class="nc" id="L222">    public MiniBox getParameters() { return parameters; }</span>
+<span class="fc" id="L222">    public MiniBox getParameters() { return parameters; }</span>
     
     @Override
-<span class="nc" id="L225">    public double getVolume() { return volume; }</span>
+<span class="fc" id="L225">    public double getVolume() { return volume; }</span>
     
     @Override
-<span class="nc" id="L228">    public double getHeight() { return height; }</span>
+<span class="fc" id="L228">    public double getHeight() { return height; }</span>
     
     @Override
-<span class="nc" id="L231">    public double getCriticalVolume() { return criticalVolume; }</span>
+<span class="fc" id="L231">    public double getCriticalVolume() { return criticalVolume; }</span>
     
     @Override
-<span class="nc" id="L234">    public double getCriticalHeight() { return criticalHeight; }</span>
+<span class="fc" id="L234">    public double getCriticalHeight() { return criticalHeight; }</span>
     
     /**
      * Gets the cell energy level.
@@ -266,13 +266,13 @@ public abstract class PatchCell implements Cell {
     
     @Override
     public void setState(CellState state) {
-<span class="nc" id="L269">        this.state = state;</span>
-<span class="nc" id="L270">        this.flag = Flag.UNDEFINED;</span>
+<span class="fc" id="L269">        this.state = state;</span>
+<span class="fc" id="L270">        this.flag = Flag.UNDEFINED;</span>
         
-<span class="nc bnc" id="L272" title="All 4 branches missed.">        switch ((State) state) {</span>
+<span class="pc bpc" id="L272" title="2 of 4 branches missed.">        switch ((State) state) {</span>
             case PROLIFERATIVE:
-<span class="nc" id="L274">                module = new PatchModuleProliferation(this);</span>
-<span class="nc" id="L275">                break;</span>
+<span class="fc" id="L274">                module = new PatchModuleProliferation(this);</span>
+<span class="fc" id="L275">                break;</span>
             case MIGRATORY:
 <span class="nc" id="L277">                module = new PatchModuleMigration(this);</span>
 <span class="nc" id="L278">                break;</span>
@@ -280,10 +280,10 @@ public abstract class PatchCell implements Cell {
 <span class="nc" id="L280">                module = new PatchModuleApoptosis(this);</span>
 <span class="nc" id="L281">                break;</span>
             default:
-<span class="nc" id="L283">                module = null;</span>
+<span class="fc" id="L283">                module = null;</span>
                 break;
         }
-<span class="nc" id="L286">    }</span>
+<span class="fc" id="L286">    }</span>
     
     /**
      * Makes the specified {@link Process} object.
@@ -293,11 +293,11 @@ public abstract class PatchCell implements Cell {
      * @return  the process instance
      */
     public Process makeProcess(ProcessDomain domain, String version) {
-<span class="nc bnc" id="L296" title="All 3 branches missed.">        switch ((Domain) domain) {</span>
+<span class="pc bpc" id="L296" title="1 of 3 branches missed.">        switch ((Domain) domain) {</span>
             case METABOLISM:
-<span class="nc" id="L298">                return PatchProcessMetabolism.make(this, version);</span>
+<span class="fc" id="L298">                return PatchProcessMetabolism.make(this, version);</span>
             case SIGNALING:
-<span class="nc" id="L300">                return PatchProcessSignaling.make(this, version);</span>
+<span class="fc" id="L300">                return PatchProcessSignaling.make(this, version);</span>
             case UNDEFINED:
             default:
 <span class="nc" id="L303">                return null;</span>

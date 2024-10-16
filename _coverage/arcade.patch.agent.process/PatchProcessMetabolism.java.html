@@ -125,27 +125,27 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
      * @param cell  the {@link PatchCell} the process is associated with
      */
     PatchProcessMetabolism(PatchCell cell) {
-<span class="nc" id="L128">        super(cell);</span>
+<span class="fc" id="L128">        super(cell);</span>
         
         // Set parameters.
-<span class="nc" id="L131">        MiniBox parameters = cell.getParameters();</span>
-<span class="nc" id="L132">        basalEnergy = parameters.getDouble(&quot;metabolism/BASAL_ENERGY&quot;);</span>
-<span class="nc" id="L133">        proliferationEnergy = parameters.getDouble(&quot;metabolism/PROLIFERATION_ENERGY&quot;);</span>
-<span class="nc" id="L134">        migrationEnergy = parameters.getDouble(&quot;metabolism/MIGRATION_ENERGY&quot;);</span>
-<span class="nc" id="L135">        cellDensity = parameters.getDouble(&quot;metabolism/CELL_DENSITY&quot;);</span>
-<span class="nc" id="L136">        ratioGlucoseBiomass = parameters.getDouble(&quot;metabolism/RATIO_GLUCOSE_BIOMASS&quot;);</span>
-<span class="nc" id="L137">        oxygenSolubilityTissue = parameters.getDouble(&quot;metabolism/OXYGEN_SOLUBILITY_TISSUE&quot;);</span>
+<span class="fc" id="L131">        MiniBox parameters = cell.getParameters();</span>
+<span class="fc" id="L132">        basalEnergy = parameters.getDouble(&quot;metabolism/BASAL_ENERGY&quot;);</span>
+<span class="fc" id="L133">        proliferationEnergy = parameters.getDouble(&quot;metabolism/PROLIFERATION_ENERGY&quot;);</span>
+<span class="fc" id="L134">        migrationEnergy = parameters.getDouble(&quot;metabolism/MIGRATION_ENERGY&quot;);</span>
+<span class="fc" id="L135">        cellDensity = parameters.getDouble(&quot;metabolism/CELL_DENSITY&quot;);</span>
+<span class="fc" id="L136">        ratioGlucoseBiomass = parameters.getDouble(&quot;metabolism/RATIO_GLUCOSE_BIOMASS&quot;);</span>
+<span class="fc" id="L137">        oxygenSolubilityTissue = parameters.getDouble(&quot;metabolism/OXYGEN_SOLUBILITY_TISSUE&quot;);</span>
         
         // Initialize process.
-<span class="nc" id="L140">        volume = cell.getVolume();</span>
-<span class="nc" id="L141">        energy = 0;</span>
-<span class="nc" id="L142">        mass = cell.getVolume() * cellDensity;</span>
-<span class="nc" id="L143">        critMass = cell.getCriticalVolume() * cellDensity;</span>
+<span class="fc" id="L140">        volume = cell.getVolume();</span>
+<span class="fc" id="L141">        energy = 0;</span>
+<span class="fc" id="L142">        mass = cell.getVolume() * cellDensity;</span>
+<span class="fc" id="L143">        critMass = cell.getCriticalVolume() * cellDensity;</span>
         
         // Initialize external and uptake concentration arrays;
-<span class="nc" id="L146">        extAmts = new double[2];</span>
-<span class="nc" id="L147">        upAmts = new double[2];</span>
-<span class="nc" id="L148">    }</span>
+<span class="fc" id="L146">        extAmts = new double[2];</span>
+<span class="fc" id="L147">        upAmts = new double[2];</span>
+<span class="fc" id="L148">    }</span>
     
     /**
      * Steps the metabolism process.
@@ -206,13 +206,13 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
      * @return  the process instance
      */
     public static PatchProcess make(PatchCell cell, String version) {
-<span class="nc bnc" id="L209" title="All 5 branches missed.">        switch (version.toUpperCase()) {</span>
+<span class="pc bpc" id="L209" title="4 of 5 branches missed.">        switch (version.toUpperCase()) {</span>
             case &quot;RANDOM&quot;:
 <span class="nc" id="L211">                return new PatchProcessMetabolismRandom(cell);</span>
             case &quot;SIMPLE&quot;:
 <span class="nc" id="L213">                return new PatchProcessMetabolismSimple(cell);</span>
             case &quot;MEDIUM&quot;:
-<span class="nc" id="L215">                return new PatchProcessMetabolismMedium(cell);</span>
+<span class="fc" id="L215">                return new PatchProcessMetabolismMedium(cell);</span>
             case &quot;COMPLEX&quot;:
 <span class="nc" id="L217">                return new PatchProcessMetabolismComplex(cell);</span>
             default:

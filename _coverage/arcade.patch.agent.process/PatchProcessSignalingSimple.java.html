@@ -73,10 +73,10 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
     private final double migratoryThreshold;
     
     /** Fold change in PLCg of previous time step. */
-<span class="nc" id="L76">    private double previous = 1.0;</span>
+<span class="fc" id="L76">    private double previous = 1.0;</span>
     
     /** Fold change in PLCg for current time step. */
-<span class="nc" id="L79">    private double current = 1.0;</span>
+<span class="fc" id="L79">    private double current = 1.0;</span>
     
     /** List of internal concentrations. */
     private double[] concs;
@@ -97,26 +97,26 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
      * @param cell  the {@link PatchCell} the process is associated with
      */
     public PatchProcessSignalingSimple(PatchCell cell) {
-<span class="nc" id="L100">        super(cell);</span>
+<span class="fc" id="L100">        super(cell);</span>
         
         // Initial concentrations, all in nM (umol/m^3). Most are zeros.
-<span class="nc" id="L103">        concs = new double[NUM_COMPONENTS];</span>
-<span class="nc" id="L104">        concs[P_INACTIVE] = K5 / (K4 + K5) * PLCG;</span>
-<span class="nc" id="L105">        concs[P_ACTIVE] = K4 / (K4 + K5) * PLCG;</span>
+<span class="fc" id="L103">        concs = new double[NUM_COMPONENTS];</span>
+<span class="fc" id="L104">        concs[P_INACTIVE] = K5 / (K4 + K5) * PLCG;</span>
+<span class="fc" id="L105">        concs[P_ACTIVE] = K4 / (K4 + K5) * PLCG;</span>
         
         // Molecule names.
-<span class="nc" id="L108">        names = new ArrayList&lt;&gt;();</span>
-<span class="nc" id="L109">        names.add(G_INT, &quot;glucose_internal&quot;);</span>
-<span class="nc" id="L110">        names.add(T_EXT, &quot;tgfa_extracellular&quot;);</span>
-<span class="nc" id="L111">        names.add(TE_CYTO, &quot;tgfa_egfr_cytoplasmic&quot;);</span>
-<span class="nc" id="L112">        names.add(P_INACTIVE, &quot;plcg_inactive&quot;);</span>
-<span class="nc" id="L113">        names.add(P_ACTIVE, &quot;plcg_active&quot;);</span>
+<span class="fc" id="L108">        names = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L109">        names.add(G_INT, &quot;glucose_internal&quot;);</span>
+<span class="fc" id="L110">        names.add(T_EXT, &quot;tgfa_extracellular&quot;);</span>
+<span class="fc" id="L111">        names.add(TE_CYTO, &quot;tgfa_egfr_cytoplasmic&quot;);</span>
+<span class="fc" id="L112">        names.add(P_INACTIVE, &quot;plcg_inactive&quot;);</span>
+<span class="fc" id="L113">        names.add(P_ACTIVE, &quot;plcg_active&quot;);</span>
         
         // Set loaded parameters.
         // TODO: pull migratory threshold from distribution
-<span class="nc" id="L117">        MiniBox parameters = cell.getParameters();</span>
-<span class="nc" id="L118">        migratoryThreshold = parameters.getDouble(&quot;metabolism/MIGRATORY_THRESHOLD&quot;);</span>
-<span class="nc" id="L119">    }</span>
+<span class="fc" id="L117">        MiniBox parameters = cell.getParameters();</span>
+<span class="fc" id="L118">        migratoryThreshold = parameters.getDouble(&quot;metabolism/MIGRATORY_THRESHOLD&quot;);</span>
+<span class="fc" id="L119">    }</span>
     
     /**
      * System of ODEs for network.
@@ -128,7 +128,7 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
      *     &lt;li&gt;wC = decrease in TGFa-EGFR by active PLCg&lt;/li&gt;
      * &lt;/ul&gt;
      */
-<span class="nc" id="L131">    Equations equations = (t, y) -&gt; {</span>
+<span class="fc" id="L131">    Equations equations = (t, y) -&gt; {</span>
 <span class="nc" id="L132">        double wG = 1 + y[G_INT] / (WG + y[G_INT]);</span>
 <span class="nc" id="L133">        double wP = 1 + y[TE_CYTO] / (WP + y[TE_CYTO]);</span>
 <span class="nc" id="L134">        double wC = 1 - y[P_ACTIVE] / (WC + y[P_ACTIVE]);</span>

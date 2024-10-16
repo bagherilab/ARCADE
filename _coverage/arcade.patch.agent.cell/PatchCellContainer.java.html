@@ -94,7 +94,7 @@ public final class PatchCellContainer implements CellContainer {
 <span class="nc" id="L94">        MiniBox parameters = factory.popToParameters.get(pop);</span>
         
         // Make cell.
-<span class="nc bnc" id="L97" title="All 3 branches missed.">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
+<span class="nc bnc" id="L97" title="All 4 branches missed.">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
             default:
             case &quot;tissue&quot;:
 <span class="nc" id="L100">                return new PatchCellTissue(id, parent, pop, state, age, divisions, location,</span>
@@ -104,6 +104,9 @@ public final class PatchCellContainer implements CellContainer {
                         parameters, volume, height, criticalVolume, criticalHeight);
             case &quot;cancer_stem&quot;:
 <span class="nc" id="L106">                return new PatchCellCancerStem(id, parent, pop, state, age, divisions, location,</span>
+                        parameters, volume, height, criticalVolume, criticalHeight);
+            case &quot;random&quot;:
+<span class="nc" id="L109">                return new PatchCellRandom(id, parent, pop, state, age, divisions, location,</span>
                         parameters, volume, height, criticalVolume, criticalHeight);
         }
     }

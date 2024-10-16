@@ -45,16 +45,16 @@ public class PatchModuleProliferation extends PatchModule {
      * @param cell  the {@link PatchCell} the module is associated with
      */
     public PatchModuleProliferation(PatchCell cell) {
-<span class="nc" id="L48">        super(cell);</span>
+<span class="fc" id="L48">        super(cell);</span>
         
         // Calculate thresholds.
-<span class="nc" id="L51">        targetVolume = 2 * cell.getCriticalVolume();</span>
-<span class="nc" id="L52">        maxHeight = cell.getCriticalHeight();</span>
+<span class="fc" id="L51">        targetVolume = 2 * cell.getCriticalVolume();</span>
+<span class="fc" id="L52">        maxHeight = cell.getCriticalHeight();</span>
         
         // Set loaded parameters.
-<span class="nc" id="L55">        MiniBox parameters = cell.getParameters();</span>
-<span class="nc" id="L56">        synthesisDuration = parameters.getInt(&quot;proliferation/SYNTHESIS_DURATION&quot;);</span>
-<span class="nc" id="L57">    }</span>
+<span class="fc" id="L55">        MiniBox parameters = cell.getParameters();</span>
+<span class="fc" id="L56">        synthesisDuration = parameters.getInt(&quot;proliferation/SYNTHESIS_DURATION&quot;);</span>
+<span class="fc" id="L57">    }</span>
     
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
