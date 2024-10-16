@@ -21,7 +21,7 @@ public class PottsSimulation2DTest {
         Potts potts = sim.makePotts();
         assertTrue(potts instanceof Potts2D);
     }
-    
+
     @Test
     public void makeLocationFactory_createsFactory() {
         PottsSeries series = mock(PottsSeries.class);
@@ -30,7 +30,7 @@ public class PottsSimulation2DTest {
         LocationFactory factory = sim.makeLocationFactory();
         assertTrue(factory instanceof PottsLocationFactory2D);
     }
-    
+
     @Test
     public void makeCellFactory_createsFactory() {
         PottsSeries series = mock(PottsSeries.class);
