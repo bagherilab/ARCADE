@@ -54,13 +54,13 @@ public final class PottsInputBuilder extends InputBuilder {
             
             // Get any tags (module or term) or target.
 <span class="fc bfc" id="L56" title="All 2 branches covered.">            term = (atts.getValue(&quot;term&quot;) == null</span>
-                    ? &quot;&quot;
+<span class="fc" id="L57">                    ? &quot;&quot;</span>
 <span class="fc" id="L58">                    : atts.getValue(&quot;term&quot;).toLowerCase() + TAG_SEPARATOR);</span>
 <span class="fc bfc" id="L59" title="All 2 branches covered.">            module = (atts.getValue(&quot;module&quot;) == null</span>
-                    ? &quot;&quot;
+<span class="fc" id="L60">                    ? &quot;&quot;</span>
 <span class="fc" id="L61">                    : atts.getValue(&quot;module&quot;).toLowerCase() + TAG_SEPARATOR);</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">            target = (atts.getValue(&quot;target&quot;) == null</span>
-                    ? &quot;&quot;
+<span class="fc" id="L63">                    ? &quot;&quot;</span>
 <span class="fc" id="L64">                    : TARGET_SEPARATOR + atts.getValue(&quot;target&quot;));</span>
             
             // Create id by combining tags, id, and target.

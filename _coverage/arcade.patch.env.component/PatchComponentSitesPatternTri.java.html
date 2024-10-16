@@ -127,8 +127,8 @@ public class PatchComponentSitesPatternTri extends PatchComponentSitesPattern {
 <span class="nc bnc" id="L127" title="All 2 branches missed.">                flow[i + (borders.get(Border.RIGHT) ? 0 : 1)][j] = total;</span>
 <span class="nc" id="L128">                break;</span>
             case 5:
-<span class="nc bnc" id="L130" title="All 4 branches missed.">                total = (flow[i - 1][j + (1 - (borders.get(Border.TOP) ? 0 : 1))]</span>
-                        + flow[i - 1][j + (j &gt; latticeWidth - 3 ? 0 : 1)]) / 2 + val;
+<span class="nc bnc" id="L130" title="All 2 branches missed.">                total = (flow[i - 1][j + (1 - (borders.get(Border.TOP) ? 0 : 1))]</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                        + flow[i - 1][j + (j &gt; latticeWidth - 3 ? 0 : 1)]) / 2 + val;</span>
 <span class="nc bnc" id="L132" title="All 2 branches missed.">                flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;</span>
 <span class="nc" id="L133">                break;</span>
             case 2:

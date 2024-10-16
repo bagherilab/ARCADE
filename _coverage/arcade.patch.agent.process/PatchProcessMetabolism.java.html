@@ -181,9 +181,9 @@ public abstract class PatchProcessMetabolism extends PatchProcess {
 <span class="nc bnc" id="L181" title="All 2 branches missed.">        isMigratory = cell.getState() == State.MIGRATORY;</span>
         
         // Calculate energy consumption.
-<span class="nc bnc" id="L184" title="All 4 branches missed.">        energyCons = volume * (basalEnergy</span>
-                + (isProliferative ? proliferationEnergy : 0)
-                + (isMigratory ? migrationEnergy : 0));
+<span class="nc" id="L184">        energyCons = volume * (basalEnergy</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">                + (isProliferative ? proliferationEnergy : 0)</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">                + (isMigratory ? migrationEnergy : 0));</span>
 <span class="nc" id="L187">        energyReq = energyCons - energy;</span>
         
         // Modify energy and volume.

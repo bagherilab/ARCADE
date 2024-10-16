@@ -71,10 +71,10 @@ public class MiniBox {
 <span class="fc bfc" id="L71" title="All 4 branches covered.">        if (s != null &amp;&amp; s.contains(&quot;/&quot;)) {</span>
 <span class="fc" id="L72">            String[] split = s.split(&quot;/&quot;, 2);</span>
 <span class="fc bfc" id="L73" title="All 2 branches covered.">            double numerator = (!split[0].matches(NUMBER_REGEX)</span>
-                    ? Double.NaN
+<span class="fc" id="L74">                    ? Double.NaN</span>
 <span class="fc" id="L75">                    : Double.parseDouble(split[0]));</span>
 <span class="fc bfc" id="L76" title="All 2 branches covered.">            double denominator = (!split[1].matches(NUMBER_REGEX)</span>
-                    ? Double.NaN
+<span class="fc" id="L77">                    ? Double.NaN</span>
 <span class="fc" id="L78">                    : Double.parseDouble(split[1]));</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">            return (denominator == 0 ? Double.NaN : numerator / denominator);</span>
         }

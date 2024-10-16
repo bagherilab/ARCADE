@@ -65,9 +65,9 @@ public class PatchCellCancerStem extends PatchCellCancer {
     public PatchCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
 <span class="nc bnc" id="L67" title="All 2 branches missed.">        return random.nextDouble() &lt; symmetricFraction</span>
-                ? new PatchCellCancerStem(newID, id, pop, newState, age, divisions, newLocation,
+<span class="nc" id="L68">                ? new PatchCellCancerStem(newID, id, pop, newState, age, divisions, newLocation,</span>
                 parameters, volume, height, criticalVolume, criticalHeight)
-                : new PatchCellCancer(newID, id, pop, newState, age, divisions - 1, newLocation,
+<span class="nc" id="L70">                : new PatchCellCancer(newID, id, pop, newState, age, divisions - 1, newLocation,</span>
                 parameters, volume, height, criticalVolume, criticalHeight);
     }
 }

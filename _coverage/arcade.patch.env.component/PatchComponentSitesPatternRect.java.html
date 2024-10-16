@@ -110,8 +110,8 @@ public class PatchComponentSitesPatternRect extends PatchComponentSitesPattern {
 <span class="nc bnc" id="L110" title="All 4 branches missed.">                if (i == 0 || i == 1) {</span>
 <span class="nc" id="L111">                    total = val;</span>
                 } else {
-<span class="nc bnc" id="L113" title="All 2 branches missed.">                    total = (flow[i - 1][j]</span>
-                            + flow[i - 1][j + (j == latticeWidth - 1 ? 0 : 1)]) / 2 + val;
+<span class="nc" id="L113">                    total = (flow[i - 1][j]</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">                            + flow[i - 1][j + (j == latticeWidth - 1 ? 0 : 1)]) / 2 + val;</span>
                 }
 <span class="nc bnc" id="L116" title="All 2 branches missed.">                flow[i][j + (borders.get(Border.BOTTOM) ? 0 : 1)] = total;</span>
 <span class="nc" id="L117">                break;</span>

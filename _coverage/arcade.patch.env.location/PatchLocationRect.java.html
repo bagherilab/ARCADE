@@ -170,13 +170,13 @@ public final class PatchLocationRect extends PatchLocation {
     @Override
     void calculateChecks() {
 <span class="nc" id="L172">        CoordinateXYZ rect = (CoordinateXYZ) coordinate;</span>
-<span class="nc bnc" id="L173" title="All 12 branches missed.">        check = (byte) (</span>
-                (rect.x == radius - 1 ? 0 : 1 &lt;&lt; 5)
-                        + (rect.x == 1 - radius ? 0 : 1 &lt;&lt; 4)
-                        + (rect.y == radius - 1 ? 0 : 1 &lt;&lt; 3)
-                        + (rect.y == 1 - radius ? 0 : 1 &lt;&lt; 2)
-                        + (rect.z == depth - 1 ? 0 : 1 &lt;&lt; 1)
-                        + (rect.z == 1 - depth ? 0 : 1 &lt;&lt; 0));
+<span class="nc" id="L173">        check = (byte) (</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">                (rect.x == radius - 1 ? 0 : 1 &lt;&lt; 5)</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">                        + (rect.x == 1 - radius ? 0 : 1 &lt;&lt; 4)</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">                        + (rect.y == radius - 1 ? 0 : 1 &lt;&lt; 3)</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">                        + (rect.y == 1 - radius ? 0 : 1 &lt;&lt; 2)</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">                        + (rect.z == depth - 1 ? 0 : 1 &lt;&lt; 1)</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                        + (rect.z == 1 - depth ? 0 : 1 &lt;&lt; 0));</span>
 <span class="nc" id="L180">    }</span>
     
     /**

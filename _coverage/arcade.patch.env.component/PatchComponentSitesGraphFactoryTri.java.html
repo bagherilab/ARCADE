@@ -218,8 +218,8 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
                 // Add edge to graph.
 <span class="nc" id="L219">                SiteNode from = new SiteNode(e[0], e[1], e[2]);</span>
 <span class="nc" id="L220">                SiteNode to = new SiteNode(e[3], e[4], e[5]);</span>
-<span class="nc bnc" id="L221" title="All 4 branches missed.">                EdgeType type = (e[0] == thresh ? EdgeType.CAPILLARY</span>
-                        : (e[0] &lt; thresh ? EdgeType.ARTERY : EdgeType.VEIN));
+<span class="nc bnc" id="L221" title="All 2 branches missed.">                EdgeType type = (e[0] == thresh ? EdgeType.CAPILLARY</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">                        : (e[0] &lt; thresh ? EdgeType.ARTERY : EdgeType.VEIN));</span>
 <span class="nc" id="L223">                SiteEdge edge = new SiteEdge(from, to, type, EdgeLevel.VARIABLE);</span>
 <span class="nc" id="L224">                graph.addEdge(edge);</span>
             }
@@ -267,12 +267,12 @@ public class PatchComponentSitesGraphFactoryTri extends PatchComponentSitesGraph
                 // must be even number
 <span class="nc bnc" id="L268" title="All 2 branches missed.">                c = (c % 2 == 0 ? c : c + 1);</span>
 <span class="nc bnc" id="L269" title="All 2 branches missed.">                return new Root(c * scale, 0, type, (c &lt; (length + 1) / 2</span>
-                        ? EdgeDirection.DOWN_RIGHT : EdgeDirection.DOWN_LEFT));
+<span class="nc" id="L270">                        ? EdgeDirection.DOWN_RIGHT : EdgeDirection.DOWN_LEFT));</span>
             case BOTTOM:
                 // must be even number if width is even, odd otherwise
 <span class="nc bnc" id="L273" title="All 6 branches missed.">                c = (width % 2 == 0 ? (c % 2 == 0 ? c : c + 1) : (c % 2 == 0 ? c + 1 : c));</span>
 <span class="nc bnc" id="L274" title="All 2 branches missed.">                return new Root(c * scale, width * scale, type, (c &lt; (length + 1) / 2</span>
-                        ? EdgeDirection.UP_RIGHT : EdgeDirection.UP_LEFT));
+<span class="nc" id="L275">                        ? EdgeDirection.UP_RIGHT : EdgeDirection.UP_LEFT));</span>
             default:
                 break;
         }

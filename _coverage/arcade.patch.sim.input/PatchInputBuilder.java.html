@@ -61,13 +61,13 @@ public final class PatchInputBuilder extends InputBuilder {
             
             // Get any tags (module or region or term) or target.
 <span class="nc bnc" id="L63" title="All 2 branches missed.">            module = (atts.getValue(&quot;module&quot;) == null</span>
-                    ? &quot;&quot;
+<span class="nc" id="L64">                    ? &quot;&quot;</span>
 <span class="nc" id="L65">                    : atts.getValue(&quot;module&quot;).toLowerCase() + TAG_SEPARATOR);</span>
 <span class="nc bnc" id="L66" title="All 2 branches missed.">            process = (atts.getValue(&quot;process&quot;) == null</span>
-                    ? &quot;&quot;
+<span class="nc" id="L67">                    ? &quot;&quot;</span>
 <span class="nc" id="L68">                    : atts.getValue(&quot;process&quot;).toLowerCase() + TAG_SEPARATOR);</span>
 <span class="nc bnc" id="L69" title="All 2 branches missed.">            operation = (atts.getValue(&quot;operation&quot;) == null</span>
-                    ? &quot;&quot;
+<span class="nc" id="L70">                    ? &quot;&quot;</span>
 <span class="nc" id="L71">                    : atts.getValue(&quot;operation&quot;).toLowerCase() + TAG_SEPARATOR);</span>
             
             // Create id by combining tags and id.
@@ -198,7 +198,7 @@ public final class PatchInputBuilder extends InputBuilder {
         
 <span class="fc" id="L199">        String key = &quot;GEOMETRY&quot;;</span>
 <span class="pc bpc" id="L200" title="1 of 2 branches missed.">        String geometry = patch.contains(key)</span>
-<span class="pc" id="L201">                ? patch.getValue(key + KEY_SEPARATOR + &quot;value&quot;)</span>
+<span class="nc" id="L201">                ? patch.getValue(key + KEY_SEPARATOR + &quot;value&quot;)</span>
 <span class="fc" id="L202">                : defaults.get(key);</span>
 <span class="fc" id="L203">        geometry = geometry.toUpperCase();</span>
         

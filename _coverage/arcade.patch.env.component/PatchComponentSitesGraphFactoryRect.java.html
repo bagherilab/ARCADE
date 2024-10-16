@@ -270,8 +270,8 @@ public class PatchComponentSitesGraphFactoryRect extends PatchComponentSitesGrap
                 // Add edge to graph.
 <span class="nc" id="L271">                SiteNode from = new SiteNode(e[0], e[1], e[2]);</span>
 <span class="nc" id="L272">                SiteNode to = new SiteNode(e[3], e[4], e[5]);</span>
-<span class="nc bnc" id="L273" title="All 4 branches missed.">                EdgeType type = (e[0] == thresh ? EdgeType.CAPILLARY</span>
-                        : (e[0] &lt; thresh ? EdgeType.ARTERY : EdgeType.VEIN));
+<span class="nc bnc" id="L273" title="All 2 branches missed.">                EdgeType type = (e[0] == thresh ? EdgeType.CAPILLARY</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">                        : (e[0] &lt; thresh ? EdgeType.ARTERY : EdgeType.VEIN));</span>
 <span class="nc" id="L275">                SiteEdge edge = new SiteEdge(from, to, type, EdgeLevel.VARIABLE);</span>
 <span class="nc" id="L276">                graph.addEdge(edge);</span>
             }

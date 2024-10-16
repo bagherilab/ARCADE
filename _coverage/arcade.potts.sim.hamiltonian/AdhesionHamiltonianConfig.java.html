@@ -62,10 +62,10 @@ class AdhesionHamiltonianConfig {
      * @return  the adhesion value
      */
     public double getAdhesion(Region region1, Region region2) {
-<span class="fc bfc" id="L65" title="All 4 branches covered.">        return (hasRegions &amp;&amp; adhesionRegion.containsKey(region1)</span>
-<span class="fc bfc" id="L66" title="All 2 branches covered.">                &amp;&amp; adhesionRegion.containsKey(region2)</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">        return (hasRegions &amp;&amp; adhesionRegion.containsKey(region1)</span>
+<span class="fc bfc" id="L66" title="All 4 branches covered.">                &amp;&amp; adhesionRegion.containsKey(region2)</span>
 <span class="fc" id="L67">                ? adhesionRegion.get(region1).get(region2)</span>
-                : Double.NaN);
+<span class="fc" id="L68">                : Double.NaN);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

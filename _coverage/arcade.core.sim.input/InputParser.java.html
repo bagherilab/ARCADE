@@ -188,11 +188,11 @@ public class InputParser {
          * @return  a string representation of the command
          */
         public String toString() {
-<span class="fc bfc" id="L191" title="All 2 branches covered.">            return &quot;\t&quot; + id.toUpperCase() + &quot;\n&quot;</span>
+<span class="fc" id="L191">            return &quot;\t&quot; + id.toUpperCase() + &quot;\n&quot;</span>
 <span class="fc bfc" id="L192" title="All 2 branches covered.">                    + (help == null ? &quot;&quot; : String.format(format, &quot;[help]&quot;, help))</span>
 <span class="fc bfc" id="L193" title="All 2 branches covered.">                    + (defaults == null ? &quot;&quot; : String.format(format, &quot;[default]&quot;, defaults))</span>
 <span class="fc bfc" id="L194" title="All 2 branches covered.">                    + (shortFlag == null ? &quot;&quot; : String.format(format, &quot;[short]&quot;, shortFlag))</span>
-<span class="fc" id="L195">                    + (longFlag == null ? &quot;&quot; : String.format(format, &quot;[long]&quot;, longFlag));</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">                    + (longFlag == null ? &quot;&quot; : String.format(format, &quot;[long]&quot;, longFlag));</span>
         }
     }
     

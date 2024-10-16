@@ -178,15 +178,15 @@ public final class PatchLocationHex extends PatchLocation {
     @Override
     void calculateChecks() {
 <span class="fc" id="L180">        CoordinateUVWZ hex = (CoordinateUVWZ) coordinate;</span>
-<span class="pc bpc" id="L181" title="6 of 16 branches missed.">        check = (byte) (</span>
-                (hex.u == radius - 1 ? 0 : 1 &lt;&lt; 7)
-                        + (hex.u == 1 - radius ? 0 : 1 &lt;&lt; 6)
-                        + (hex.v == radius - 1 ? 0 : 1 &lt;&lt; 5)
-                        + (hex.v == 1 - radius ? 0 : 1 &lt;&lt; 4)
-                        + (hex.w == radius - 1 ? 0 : 1 &lt;&lt; 3)
-                        + (hex.w == 1 - radius ? 0 : 1 &lt;&lt; 2)
-                        + (hex.z == depth - 1 ? 0 : 1 &lt;&lt; 1)
-                        + (hex.z == 1 - depth ? 0 : 1 &lt;&lt; 0));
+<span class="fc" id="L181">        check = (byte) (</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">                (hex.u == radius - 1 ? 0 : 1 &lt;&lt; 7)</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">                        + (hex.u == 1 - radius ? 0 : 1 &lt;&lt; 6)</span>
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">                        + (hex.v == radius - 1 ? 0 : 1 &lt;&lt; 5)</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">                        + (hex.v == 1 - radius ? 0 : 1 &lt;&lt; 4)</span>
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">                        + (hex.w == radius - 1 ? 0 : 1 &lt;&lt; 3)</span>
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">                        + (hex.w == 1 - radius ? 0 : 1 &lt;&lt; 2)</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">                        + (hex.z == depth - 1 ? 0 : 1 &lt;&lt; 1)</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">                        + (hex.z == 1 - depth ? 0 : 1 &lt;&lt; 0));</span>
 <span class="fc" id="L190">    }</span>
     
     /**
