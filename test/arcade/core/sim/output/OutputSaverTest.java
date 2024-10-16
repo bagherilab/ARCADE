@@ -111,7 +111,7 @@ public class OutputSaverTest {
         OutputSaver saver = spy(new OutputSaverMock(series));
         doNothing().when(saver).write(anyString(), anyString());
         
-        Gson gson = spy(mock(Gson.class));
+        Gson gson = mock(Gson.class);
         String contents = randomString();
         doReturn(contents).when(gson).toJson(series);
         
@@ -189,7 +189,7 @@ public class OutputSaverTest {
     
     @Test
     public void step_singleStep_callsSave() {
-        OutputSaver saver = spy(mock(OutputSaver.class, CALLS_REAL_METHODS));
+        OutputSaver saver = mock(OutputSaver.class, CALLS_REAL_METHODS);
         doNothing().when(saver).saveCells(anyInt());
         doNothing().when(saver).saveLocations(anyInt());
         
@@ -207,7 +207,7 @@ public class OutputSaverTest {
     
     @Test
     public void schedule_validInput_callsMethod() {
-        Schedule schedule = spy(mock(Schedule.class));
+        Schedule schedule = mock(Schedule.class);
         OutputSaver saver = mock(OutputSaver.class, CALLS_REAL_METHODS);
         doReturn(null).when(schedule).scheduleRepeating(anyDouble(), anyInt(), any(), anyDouble());
         double interval = randomDoubleBetween(1, 10);
