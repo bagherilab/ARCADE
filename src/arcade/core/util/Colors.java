@@ -86,7 +86,7 @@ public class Colors implements ColorMap {
 
         int sum = 0;
         for (int i = 0; i < n; i++) {
-            int bin = (int) Math.round(BINS * (vals[i + 1] - vals[i]) / (max - min));
+            int bin = (int) (BINS * (vals[i + 1] - vals[i]) / (max - min));
             interpColors(colors[i], colors[i + 1], sum, sum + bin);
             sum += bin;
         }
@@ -156,7 +156,7 @@ public class Colors implements ColorMap {
      */
     @Override
     public Color getColor(double level) {
-        if (level == defaultValue) {
+        if (level <= defaultValue) {
             return EMPTY;
         }
         return colors[getIndex(level)];
@@ -184,7 +184,7 @@ public class Colors implements ColorMap {
      */
     @Override
     public int getAlpha(double level) {
-        if (level == defaultValue) {
+        if (level <= defaultValue) {
             return EMPTY.getAlpha();
         }
         return colors[getIndex(level)].getAlpha();
