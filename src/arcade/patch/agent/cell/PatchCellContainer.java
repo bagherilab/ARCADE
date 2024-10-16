@@ -105,6 +105,9 @@ public final class PatchCellContainer implements CellContainer {
             case "cancer_stem":
                 return new PatchCellCancerStem(id, parent, pop, state, age, divisions, location,
                         parameters, volume, height, criticalVolume, criticalHeight);
+            case "random":
+                return new PatchCellRandom(id, parent, pop, state, age, divisions, location,
+                        parameters, volume, height, criticalVolume, criticalHeight);
         }
     }
 }
