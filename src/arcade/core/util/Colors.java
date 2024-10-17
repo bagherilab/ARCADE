@@ -5,11 +5,10 @@ import sim.util.gui.ColorMap;
 
 /**
  * Implementation of {@code ColorMap} for discrete and continuous colors.
- * <p>
- * Custom color map management for use with visualization classes in
- * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
+ *
+ * <p>Custom color map management for use with visualization classes in <a
+ * href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
  */
-
 public class Colors implements ColorMap {
     /** Number of bins. */
     private static final int BINS = 256;
@@ -40,13 +39,15 @@ public class Colors implements ColorMap {
      *
      * @param colors the table of colors
      */
-    public Colors(Color[] colors) { this(colors, 0); }
+    public Colors(Color[] colors) {
+        this(colors, 0);
+    }
 
     /**
      * Creates {@code Colors} table with modulo index.
      *
-     * @param colors  the table of colors
-     * @param mod  the value of modulo on index before selecting color
+     * @param colors the table of colors
+     * @param mod the value of modulo on index before selecting color
      */
     public Colors(Color[] colors, int mod) {
         this.colors = colors;
@@ -60,20 +61,20 @@ public class Colors implements ColorMap {
     /**
      * Creates {@code Colors} between two values.
      *
-     * @param minCol  the color associated with the lower bound
-     * @param maxCol  the color associated with the upper bound
-     * @param minVal  the value of the lower bound
-     * @param maxVal  the value of the upper bound
+     * @param minCol the color associated with the lower bound
+     * @param maxCol the color associated with the upper bound
+     * @param minVal the value of the lower bound
+     * @param maxVal the value of the upper bound
      */
     public Colors(Color minCol, Color maxCol, double minVal, double maxVal) {
-        this(new Color[] { minCol, maxCol }, new double[] { minVal, maxVal });
+        this(new Color[] {minCol, maxCol}, new double[] {minVal, maxVal});
     }
 
     /**
      * Creates {@code Colors} between multiple values.
      *
-     * @param colors  the array of colors associated with each bound
-     * @param vals  the list of values at each bound
+     * @param colors the array of colors associated with each bound
+     * @param vals the list of values at each bound
      */
     public Colors(Color[] colors, double[] vals) {
         int n = vals.length - 1;
@@ -99,10 +100,10 @@ public class Colors implements ColorMap {
     /**
      * Interpolates between two colors.
      *
-     * @param minCol  the minimum color
-     * @param maxCol  the maximum color
-     * @param start  the starting value
-     * @param end  the ending value
+     * @param minCol the minimum color
+     * @param maxCol the maximum color
+     * @param start the starting value
+     * @param end the ending value
      */
     private void interpColors(Color minCol, Color maxCol, int start, int end) {
         int n = (Math.min(end, BINS)) - start;
@@ -135,13 +136,12 @@ public class Colors implements ColorMap {
 
     /**
      * Gets color map index for given number value.
-     * <p>
-     * Applies modulo if the {@code mod} is not zero. Index is determined as
-     * (length of bins in the colormap)*(level scaled between the minimum and
-     * maximum).
      *
-     * @param level  the number value
-     * @return  the color map index
+     * <p>Applies modulo if the {@code mod} is not zero. Index is determined as (length of bins in
+     * the colormap)*(level scaled between the minimum and maximum).
+     *
+     * @param level the number value
+     * @return the color map index
      */
     private int getIndex(double level) {
         int index = (int) (len * (((mod == 0 ? level : level % mod) - min) / (max - min)));
@@ -151,8 +151,8 @@ public class Colors implements ColorMap {
     /**
      * Gets the color corresponding to level.
      *
-     * @param level  the number value
-     * @return  the color
+     * @param level the number value
+     * @return the color
      */
     @Override
     public Color getColor(double level) {
@@ -165,8 +165,8 @@ public class Colors implements ColorMap {
     /**
      * Gets RGB corresponding to level.
      *
-     * @param level  the number value
-     * @return  the RGB value
+     * @param level the number value
+     * @return the RGB value
      */
     @Override
     public int getRGB(double level) {
@@ -179,8 +179,8 @@ public class Colors implements ColorMap {
     /**
      * Gets the alpha corresponding to level.
      *
-     * @param level  the number value
-     * @return  the alpha value
+     * @param level the number value
+     * @return the alpha value
      */
     @Override
     public int getAlpha(double level) {
@@ -193,17 +193,21 @@ public class Colors implements ColorMap {
     /**
      * Checks if the number value is between the minimum and maximum.
      *
-     * @param level  the number value
-     * @return  {@code true} if level is valid, {@code false} otherwise
+     * @param level the number value
+     * @return {@code true} if level is valid, {@code false} otherwise
      */
     @Override
-    public boolean validLevel(double level) { return level >= min && level <= max; }
+    public boolean validLevel(double level) {
+        return level >= min && level <= max;
+    }
 
     /**
      * Gets default value.
      *
-     * @return  the default number value
+     * @return the default number value
      */
     @Override
-    public double defaultValue() { return defaultValue; }
+    public double defaultValue() {
+        return defaultValue;
+    }
 }

@@ -8,94 +8,94 @@ import sim.portrayal.Inspector;
 
 /**
  * Extension of {@code GUIState} wrapper of simulations for visualization.
- * <p>
- * {@code Visualization} organizes the visualization into
- * {@link arcade.core.vis.Panel} objects, on which visualizations are drawn, and
- * {@link arcade.core.vis.Drawer} objects, which draw the visualization through
- * methods provided by the
- * <a href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
+ *
+ * <p>{@code Visualization} organizes the visualization into {@link arcade.core.vis.Panel} objects,
+ * on which visualizations are drawn, and {@link arcade.core.vis.Drawer} objects, which draw the
+ * visualization through methods provided by the <a
+ * href="https://cs.gmu.edu/~eclab/projects/mason/">MASON</a> library.
  */
-
 public abstract class Visualization extends GUIState {
     /** List of panels in the visualization. */
     protected Panel[] panels;
-    
+
     /** List of drawers in the visualization. */
     protected Drawer[] drawers;
-    
+
     /**
      * Creates a {@code Visualization} for the given simulation.
      *
-     * @param simstate  the simulation state instance
+     * @param simstate the simulation state instance
      */
-    protected Visualization(SimState simstate) { super(simstate); }
-    
+    protected Visualization(SimState simstate) {
+        super(simstate);
+    }
+
     /**
      * Sets the inspector to get state property methods.
      *
-     * @return  the MASON simulation state
+     * @return the MASON simulation state
      */
     @Override
-    public Object getSimulationInspectedObject() { return state; }
-    
+    public Object getSimulationInspectedObject() {
+        return state;
+    }
+
     /**
      * Remove the model inspector.
      *
-     * @return  a {@code null} inspector
+     * @return a {@code null} inspector
      */
     @Override
-    public Inspector getInspector() { return null; }
-    
+    public Inspector getInspector() {
+        return null;
+    }
+
     /**
      * Creates panels for the visualization.
      *
-     * @return  the list of panels
+     * @return the list of panels
      */
     protected abstract Panel[] createPanels();
-    
+
     /**
      * Creates drawers for the visualization.
      *
-     * @return  the list of drawers
+     * @return the list of drawers
      */
     protected abstract Drawer[] createDrawers();
-    
+
     /**
      * Creates a bounding box for panels.
      *
-     * @param x  the x position of the bounding box
-     * @param y  the y position of the bounding box
-     * @param h  the horizontal size of the bounding box
-     * @param v  the vertical size of the bounding box
-     * @return  the bounding box
+     * @param x the x position of the bounding box
+     * @param y the y position of the bounding box
+     * @param h the horizontal size of the bounding box
+     * @param v the vertical size of the bounding box
+     * @return the bounding box
      */
     protected static Rectangle2D.Double getBox(int x, int y, int h, int v) {
         return new Rectangle2D.Double(x, y, h, v);
     }
-    
-    /**
-     * Starts a visualization.
-     */
+
+    /** Starts a visualization. */
     @Override
     public void start() {
         super.start();
         setup();
     }
-    
+
     /**
      * Loads a visualization from the given simulation.
      *
-     * @param simstate  the MASON simulation state
+     * @param simstate the MASON simulation state
      */
     @Override
     public void load(SimState simstate) {
         super.load(simstate);
         setup();
     }
-    
-    /**
-     * Quits the visualization.
-     */
+
+    /** Quits the visualization. */
     @Override
     public void quit() {
         super.quit();
@@ -103,11 +103,11 @@ public abstract class Visualization extends GUIState {
             panel.remove();
         }
     }
-    
+
     /**
      * Initializes the visualization.
      *
-     * @param controller  the controller
+     * @param controller the controller
      */
     @Override
     public void init(Controller controller) {
@@ -118,15 +118,13 @@ public abstract class Visualization extends GUIState {
             panel.register(controller);
         }
     }
-    
-    /**
-     * Sets up and schedules portrayals.
-     */
+
+    /** Sets up and schedules portrayals. */
     public void setup() {
         for (Drawer drawer : drawers) {
             this.scheduleRepeatingImmediatelyAfter(drawer);
         }
-        
+
         for (Panel panel : panels) {
             panel.reset();
         }

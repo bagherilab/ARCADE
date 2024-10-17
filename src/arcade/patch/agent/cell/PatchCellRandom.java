@@ -6,21 +6,19 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
 
 /**
- * Extension of {@link PatchCellTissue} for cancerous tissue cells.
+ * Extension of {@link PatchCell} for cells with randomly assigned states.
  *
- * <p>{@code PatchCellCancer} agents are modified from their superclass:
- *
- * <ul>
- *   <li>If cell is quiescent, they may exit out of quiescence into undefined if there is space in
- *       their neighborhood
- * </ul>
+ * <p>These agents will simulate their metabolism and signaling processes, like {@link
+ * PatchCellTissue}, but cell states are randomly selected from all possible states, rather than
+ * following specific rules that guide
  */
-public class PatchCellCancer extends PatchCellTissue {
+public class PatchCellRandom extends PatchCell {
     /**
-     * Creates a tissue {@code PatchCell} agent.
+     * Creates a random {@code PatchCell} agent.
      *
      * @param id the cell ID
      * @param parent the parent ID
@@ -35,7 +33,7 @@ public class PatchCellCancer extends PatchCellTissue {
      * @param criticalVolume the critical cell volume
      * @param criticalHeight the critical cell height
      */
-    public PatchCellCancer(
+    public PatchCellRandom(
             int id,
             int parent,
             int pop,
@@ -63,24 +61,11 @@ public class PatchCellCancer extends PatchCellTissue {
                 criticalHeight);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>Quiescent cells will check their neighborhood for free locations.
-     */
-    @Override
-    public void step(SimState simstate) {
-        if (state == State.QUIESCENT) {
-            checkNeighborhood(simstate, this);
-        }
-        super.step(simstate);
-    }
-
     @Override
     public PatchCell make(
             int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
         divisions--;
-        return new PatchCellTissue(
+        return new PatchCellRandom(
                 newID,
                 id,
                 pop,
@@ -95,18 +80,27 @@ public class PatchCellCancer extends PatchCellTissue {
                 criticalHeight);
     }
 
-    /**
-     * Checks neighborhood for free locations.
-     *
-     * <p>If there is at least one free location, cell state becomes undefined.
-     *
-     * @param simstate the MASON simulation state
-     * @param cell the reference cell
-     */
-    private static void checkNeighborhood(SimState simstate, PatchCell cell) {
+    @Override
+    public void step(SimState simstate) {
         Simulation sim = (Simulation) simstate;
-        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() > 0) {
-            cell.setState(State.UNDEFINED);
+
+        // Increase age of cell.
+        age++;
+
+        // Randomly select a cell state.
+        if (state == State.UNDEFINED) {
+            setState(State.random(simstate.random));
+        }
+
+        // Step metabolism process.
+        processes.get(Domain.METABOLISM).step(simstate.random, sim);
+
+        // Step signaling network process.
+        processes.get(Domain.SIGNALING).step(simstate.random, sim);
+
+        // Step the module for the cell state.
+        if (module != null) {
+            module.step(simstate.random, sim);
         }
     }
 }
