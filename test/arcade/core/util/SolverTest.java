@@ -102,6 +102,21 @@ public class SolverTest {
     }
 
     @Test
+    public void testCashKarp_zeroMaximumSteps_returnsInitial() {
+        Equations e =
+                (t, y) -> {
+                    double[] result = new double[2];
+                    result[0] = -y[0];
+                    result[1] = y[0];
+                    return result;
+                };
+        double[] y = Solver.cashKarp(e, 0, new double[] {1, 0}, 1, 0.01, 0);
+
+        assertEquals(1, y[0], 0.00001);
+        assertEquals(0, y[1], 0.00001);
+    }
+
+    @Test
     public void testSOR_calledWithDenseMatrix_returnsSolution() {
         double[][] matA =
                 new double[][] {
@@ -121,6 +136,25 @@ public class SolverTest {
     }
 
     @Test
+    public void testSOR_withDenseSORandZeroMaxIters_returnsInitialGuess() {
+        double[][] matA =
+                new double[][] {
+                    {4, -1, 0, 0},
+                    {-1, 4, -1, 0},
+                    {0, -1, 4, -1},
+                    {0, 0, -1, 3}
+                };
+        double[] b = new double[] {2, 4, 6, 9};
+        double[] x = new double[] {0, 1, 2, 3};
+        double[] result = Solver.sor(matA, b, x, 100, 0, 1E-8);
+
+        assertEquals(x[0], result[0], 0.0001);
+        assertEquals(x[1], result[1], 0.0001);
+        assertEquals(x[2], result[2], 0.0001);
+        assertEquals(x[3], result[3], 0.0001);
+    }
+
+    @Test
     public void testSOR_calledWithSparseMatrix_returnsSolution() {
         double[][] matA =
                 new double[][] {
@@ -131,12 +165,31 @@ public class SolverTest {
                 };
         double[] b = new double[] {2, 4, 6, 9};
         double[] x = new double[] {0, 1, 2, 3};
-        double[] result = Solver.sor(matA, b, x, 3);
+        double[] result = Solver.sor(matA, b, x, 3, 10000, 1E-8);
 
         assertEquals(1, result[0], 0.0001);
         assertEquals(2, result[1], 0.0001);
         assertEquals(3, result[2], 0.0001);
         assertEquals(4, result[3], 0.0001);
+    }
+
+    @Test
+    public void testSOR_withSparseSORandZeroMaxIters_returnsInitialGuess() {
+        double[][] matA =
+                new double[][] {
+                    {4, -1, 0, 0},
+                    {-1, 4, -1, 0},
+                    {0, -1, 4, -1},
+                    {0, 0, -1, 3}
+                };
+        double[] b = new double[] {2, 4, 6, 9};
+        double[] x = new double[] {0, 1, 2, 3};
+        double[] result = Solver.sor(matA, b, x, 3, 0, 1E-8);
+
+        assertEquals(x[0], result[0], 0.0001);
+        assertEquals(x[1], result[1], 0.0001);
+        assertEquals(x[2], result[2], 0.0001);
+        assertEquals(x[3], result[3], 0.0001);
     }
 
     @Test

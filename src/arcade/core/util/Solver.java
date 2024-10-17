@@ -167,7 +167,7 @@ public class Solver {
     }
 
     /**
-     * Solves a system of ODEs using adaptive timestep Cash-Karp.
+     * Solves a system of ODEs using adaptive timestep Cash-Karp with default maximum steps.
      *
      * @param eq the system of equations
      * @param t0 the initial time
@@ -177,6 +177,22 @@ public class Solver {
      * @return the array of final values
      */
     public static double[] cashKarp(Equations eq, double t0, double[] y0, double tf, double h) {
+        return cashKarp(eq, t0, y0, tf, h, MAX_STEPS);
+    }
+
+    /**
+     * Solves a system of ODEs using adaptive timestep Cash-Karp.
+     *
+     * @param eq the system of equations
+     * @param t0 the initial time
+     * @param y0 the array of initial values
+     * @param tf the final time
+     * @param h the time step
+     * @param maxSteps the maximum number of steps
+     * @return the array of final values
+     */
+    public static double[] cashKarp(
+            Equations eq, double t0, double[] y0, double tf, double h, int maxSteps) {
         int n = y0.length;
         int steps = 0;
         double t = t0;
@@ -195,7 +211,7 @@ public class Solver {
         double maxErr;
         double tol;
 
-        while (t < tf && steps < MAX_STEPS) {
+        while (t < tf && steps < maxSteps) {
             steps++;
 
             dydt = eq.dydt(t, y);
@@ -276,7 +292,7 @@ public class Solver {
 
     /**
      * Solves a linear system of equations using successive over-relaxation with default sparse
-     * representation thresholding.
+     * representation thresholding and maximum iterations.
      *
      * <p>Based on matrix size, the algorithm with use a dense or sparse approach.
      *
@@ -286,7 +302,7 @@ public class Solver {
      * @return the vector of final values
      */
     public static double[] sor(double[][] mat, double[] vec, double[] x0) {
-        return sor(mat, vec, x0, MATRIX_THRESHOLD);
+        return sor(mat, vec, x0, MATRIX_THRESHOLD, MAX_ITERS, TOLERANCE);
     }
 
     /**
@@ -298,14 +314,22 @@ public class Solver {
      * @param vec the right-hand side vector
      * @param x0 the initial guess for the left-hand side vector
      * @param matrixThreshold the threshold for matrix size
+     * @param maxIters the maximum number of iterations
+     * @param tolerance the error tolerance
      * @return the vector of final values
      */
-    public static double[] sor(double[][] mat, double[] vec, double[] x0, int matrixThreshold) {
+    public static double[] sor(
+            double[][] mat,
+            double[] vec,
+            double[] x0,
+            int matrixThreshold,
+            int maxIters,
+            double tolerance) {
         int n = mat.length;
         if (n < matrixThreshold) {
-            return denseSOR(mat, vec, x0);
+            return denseSOR(mat, vec, x0, maxIters, tolerance);
         } else {
-            return sparseSOR(mat, vec, x0);
+            return sparseSOR(mat, vec, x0, maxIters, tolerance);
         }
     }
 
@@ -315,9 +339,12 @@ public class Solver {
      * @param mat the matrix of coefficients
      * @param vec the right-hand side vector
      * @param x0 the initial guess for the left-hand side vector
+     * @param maxIters the maximum number of iterations
+     * @param tolerance the error tolerance
      * @return the vector of final values
      */
-    private static double[] denseSOR(double[][] mat, double[] vec, double[] x0) {
+    private static double[] denseSOR(
+            double[][] mat, double[] vec, double[] x0, int maxIters, double tolerance) {
         int i = 0;
         double error = Double.POSITIVE_INFINITY;
 
@@ -331,7 +358,7 @@ public class Solver {
         double[] xPrev = x0;
 
         // Iterate until convergence.
-        while (i < MAX_ITERS && error > TOLERANCE) {
+        while (i < maxIters && error > tolerance) {
             // Calculate new guess for x.
             xCurr = add(scale(add(multiply(t, xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));
 
@@ -353,9 +380,12 @@ public class Solver {
      * @param mat the matrix of coefficients
      * @param vec the right-hand side vector
      * @param x0 the initial guess for the left-hand side vector
+     * @param maxIters the maximum number of iterations
+     * @param tolerance the error tolerance
      * @return the vector of final values
      */
-    private static double[] sparseSOR(double[][] mat, double[] vec, double[] x0) {
+    private static double[] sparseSOR(
+            double[][] mat, double[] vec, double[] x0, int maxIters, double tolerance) {
         int i = 0;
         double error = Double.POSITIVE_INFINITY;
 
@@ -372,7 +402,7 @@ public class Solver {
         double[] xPrev = x0;
 
         // Iterate until convergence.
-        while (i < MAX_ITERS && error > TOLERANCE) {
+        while (i < maxIters && error > tolerance) {
             // Calculate new guess for x.
             xCurr = add(scale(add(multiply(t, xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));
 
