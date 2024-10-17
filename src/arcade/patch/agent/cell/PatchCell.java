@@ -190,7 +190,6 @@ public abstract class PatchCell implements Cell {
         processes = new HashMap<>();
         MiniBox processBox = parameters.filter("(PROCESS)");
         for (String processKey : processBox.getKeys()) {
-            System.out.println(processKey);
             ProcessDomain domain = Domain.valueOf(processKey);
             String version = processBox.get(processKey);
             Process process = makeProcess(domain, version);
