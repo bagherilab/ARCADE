@@ -119,7 +119,7 @@ public class ColorsTest {
                         new double[] {0, 0.1, 1});
 
         assertEquals(new Color(0, 0, 0, 0), colors.getColor(0));
-        // assertEquals(new Color(50, 50, 50, 0), colors.getColor(0.05));
+        assertEquals(new Color(48, 48, 48, 0), colors.getColor(0.05));
         assertEquals(new Color(100, 100, 100, 0), colors.getColor(0.1));
         assertEquals(new Color(150, 150, 150, 100), colors.getColor(0.55));
         assertEquals(new Color(200, 200, 200, 200), colors.getColor(1));
