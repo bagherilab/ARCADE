@@ -19,6 +19,7 @@ import arcade.core.util.MiniBox;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
 import arcade.patch.agent.module.PatchModuleProliferation;
+import arcade.patch.agent.process.PatchProcessChemotherapy;
 import arcade.patch.agent.process.PatchProcessMetabolism;
 import arcade.patch.agent.process.PatchProcessSignaling;
 import arcade.patch.env.grid.PatchGrid;
@@ -341,6 +342,8 @@ public abstract class PatchCell implements Cell {
                 return PatchProcessMetabolism.make(this, version);
             case SIGNALING:
                 return PatchProcessSignaling.make(this, version);
+            case CHEMOTHERAPY:
+                return PatchProcessChemotherapy.make(this, version);
             case UNDEFINED:
             default:
                 return null;
@@ -394,6 +397,10 @@ public abstract class PatchCell implements Cell {
             } else {
                 setState(State.PROLIFERATIVE);
             }
+        }
+
+        if (processes.get(Domain.CHEMOTHERAPY) != null) {
+            processes.get(Domain.CHEMOTHERAPY).step(simstate.random, sim);
         }
 
         // Step the module for the cell state.
