@@ -190,6 +190,7 @@ public abstract class PatchCell implements Cell {
         processes = new HashMap<>();
         MiniBox processBox = parameters.filter("(PROCESS)");
         for (String processKey : processBox.getKeys()) {
+            System.out.println(processKey);
             ProcessDomain domain = Domain.valueOf(processKey);
             String version = processBox.get(processKey);
             Process process = makeProcess(domain, version);
@@ -399,8 +400,9 @@ public abstract class PatchCell implements Cell {
             }
         }
 
-        // Step chemotherapy process.
-        processes.get(Domain.CHEMOTHERAPY).step(simstate.random, sim);
+        if (processes.get(Domain.CHEMOTHERAPY) != null) {
+            processes.get(Domain.CHEMOTHERAPY).step(simstate.random, sim);
+        }
 
         // Step the module for the cell state.
         if (module != null) {
