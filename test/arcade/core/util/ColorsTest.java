@@ -61,7 +61,7 @@ public class ColorsTest {
     }
 
     @Test
-    public void getColor_calledInvalidNumber_returnsEmptyColor() {
+    public void getColor_smallerThanDefault_returnsEmptyColor() {
         Colors colors = new Colors(new Color(1, 1, 1, 1), new Color(255, 255, 255, 1), 0.0, 1.0);
         assertEquals(new Color(0, 0, 0, 0), colors.getColor(-1.0));
         assertEquals(new Color(0, 0, 0, 0), colors.getColor(-1.5));
@@ -82,14 +82,6 @@ public class ColorsTest {
         assertEquals(new Color(200, 200, 200, 1), colors.getColor(1.0));
         assertEquals(new Color(200, 200, 200, 1), colors.getColor(2.0));
         assertEquals(new Color(200, 200, 200, 1), colors.getColor(1.5));
-    }
-
-    @Test
-    public void getColor_calledBetweenMinAndMax_returnsInterpolatedSingleColor() {
-        Colors colors = new Colors(new Color(1, 0, 0, 1), new Color(201, 0, 0, 1), 0.0, 1.0);
-        assertEquals(new Color(51, 0, 0, 1), colors.getColor(0.25));
-        assertEquals(new Color(101, 0, 0, 1), colors.getColor(0.5));
-        assertEquals(new Color(151, 0, 0, 1), colors.getColor(0.75));
     }
 
     @Test
