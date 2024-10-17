@@ -21,28 +21,23 @@ public final class Graph {
     /** Collection of all {@code Edge} objects in a graph. */
     private final Bag allEdges;
 
-
     /** Map of {@code Node} OUT to bag of {@code Edge} objects. */
     private final Map<Node, Bag> nodeToOutBag;
-
 
     /** Map of {@code Node} IN to bag of {@code Edge} objects. */
     private final Map<Node, Bag> nodeToInBag;
 
-    /**
-     * Creates an empty {@code Graph}.
-     */
+    /** Creates an empty {@code Graph}. */
     public Graph() {
         allEdges = new Bag();
         nodeToOutBag = new HashMap<>();
         nodeToInBag = new HashMap<>();
     }
 
-
     /**
      * Updates edges and nodes with contents of given graph.
      *
-     * @param graph  the graph object
+     * @param graph the graph object
      */
     public void update(Graph graph) {
         allEdges.addAll(graph.allEdges);
@@ -50,9 +45,7 @@ public final class Graph {
         nodeToInBag.putAll(graph.nodeToInBag);
     }
 
-    /**
-     * Clear edges and nodes from graph.
-     */
+    /** Clear edges and nodes from graph. */
     public void clear() {
         allEdges.clear();
         nodeToOutBag.clear();
@@ -98,10 +91,6 @@ public final class Graph {
         return allEdges;
     }
 
-    public Bag getAllEdges() {
-        return allEdges;
-    }
-
     /**
      * Gets edges out of the given node.
      *
@@ -112,20 +101,12 @@ public final class Graph {
         return nodeToOutBag.get(node);
     }
 
-    public Bag getEdgesOut(Node node) {
-        return nodeToOutBag.get(node);
-    }
-
     /**
      * Gets edges into the given node.
      *
-     * @param node  the node that edges are to
-     * @return  a bag containing the edges
+     * @param node the node that edges are to
+     * @return a bag containing the edges
      */
-    public Bag getEdgesIn(Node node) {
-        return nodeToInBag.get(node);
-    }
-
     public Bag getEdgesIn(Node node) {
         return nodeToInBag.get(node);
     }
@@ -133,35 +114,29 @@ public final class Graph {
     /**
      * Gets the in degree at the given node.
      *
-     * @param node  the node
-     * @return  the in degree
+     * @param node the node
+     * @return the in degree
      */
     public int getInDegree(Node node) {
         return nodeToInBag.containsKey(node) ? nodeToInBag.get(node).numObjs : 0;
     }
 
-
     /**
      * Gets the out degree at the given node.
      *
-     * @param node  the node
-     * @return  the out degree
+     * @param node the node
+     * @return the out degree
      */
     public int getOutDegree(Node node) {
         return nodeToOutBag.containsKey(node) ? nodeToOutBag.get(node).numObjs : 0;
     }
 
-
     /**
      * Gets the total degree (in degree + out degree) at the given node.
      *
-     * @param node  the node
-     * @return  the degree
+     * @param node the node
+     * @return the degree
      */
-    public int getDegree(Node node) {
-        return getInDegree(node) + getOutDegree(node);
-    }
-
     public int getDegree(Node node) {
         return getInDegree(node) + getOutDegree(node);
     }
@@ -169,9 +144,9 @@ public final class Graph {
     /**
      * Checks if the graph has an edge between the given nodes.
      *
-     * @param from  the node the edge points from
-     * @param to  the node the edge points to
-     * @return  {@code true} if edge exists, {@code false} otherwise
+     * @param from the node the edge points from
+     * @param to the node the edge points to
+     * @return {@code true} if edge exists, {@code false} otherwise
      */
     public boolean hasEdge(Node from, Node to) {
         Edge e = new Edge(from, to);
@@ -193,20 +168,19 @@ public final class Graph {
         /**
          * Applies filter to an {link Edge} object.
          *
-         * @param edge  the edge
-         * @return  {@code true} if edge passes filter, {@code false} otherwise
+         * @param edge the edge
+         * @return {@code true} if edge passes filter, {@code false} otherwise
          */
         boolean filter(Edge edge);
     }
-
 
     /**
      * Filters this graph for edges and copies them to the given graph object.
      *
      * <p>Notes that the links in the subgraph are not correct.
      *
-     * @param g  the graph to add filtered edges to
-     * @param f  the edge filter
+     * @param g the graph to add filtered edges to
+     * @param f the edge filter
      */
     public void getSubgraph(Graph g, GraphFilter f) {
         for (Object obj : allEdges) {
@@ -227,26 +201,24 @@ public final class Graph {
     private Set<Node> retrieveNodes() {
         Set<Node> sOut = nodeToOutBag.keySet();
         Set<Node> sIn = nodeToInBag.keySet();
-        Set<Node> set = new LinkedHashSet<Node>() {
-            {
-                addAll(sOut);
-                addAll(sIn);
-            }
-        };
+        Set<Node> set =
+                new LinkedHashSet<Node>() {
+                    {
+                        addAll(sOut);
+                        addAll(sIn);
+                    }
+                };
 
         return set;
     }
 
-    /**
-     * Sets the TO and FROM nodes for edges to be the same object.
-     */
+    /** Sets the TO and FROM nodes for edges to be the same object. */
     public void mergeNodes() {
         Set<Node> set = retrieveNodes();
         for (Node obj : set) {
             Node join = obj.duplicate();
             Bag out = getEdgesOut(obj);
             Bag in = getEdgesIn(obj);
-
 
             // Iterate through all edges OUT of node.
             if (out != null) {
@@ -255,7 +227,6 @@ public final class Graph {
                     e.setFrom(join);
                 }
             }
-
 
             // Iterate through all edges IN to node.
             if (in != null) {
@@ -267,11 +238,10 @@ public final class Graph {
         }
     }
 
-
     /**
      * Adds edge to graph.
      *
-     * @param edge  the edge to add
+     * @param edge the edge to add
      */
     public void addEdge(Edge edge) {
         allEdges.add(edge);
@@ -280,12 +250,11 @@ public final class Graph {
         setLinks(edge);
     }
 
-
     /**
      * Adds the edge to the bag for the mapping of OUT node to edge.
      *
-     * @param node  the node hash
-     * @param edge  the edge
+     * @param node the node hash
+     * @param edge the edge
      */
     private void setOutMap(Node node, Edge edge) {
         Bag objs = nodeToOutBag.get(node);
@@ -296,12 +265,11 @@ public final class Graph {
         objs.add(edge);
     }
 
-
     /**
      * Adds the edge to the bag for the mapping of IN node to edge.
      *
-     * @param node  the node hash
-     * @param edge  the edge
+     * @param node the node hash
+     * @param edge the edge
      */
     private void setInMap(Node node, Edge edge) {
         Bag objs = nodeToInBag.get(node);
@@ -312,11 +280,10 @@ public final class Graph {
         objs.add(edge);
     }
 
-
     /**
      * Adds links between edges in and out of the nodes for a given edge.
      *
-     * @param edge  the edge
+     * @param edge the edge
      */
     private void setLinks(Edge edge) {
         Bag outTo = getEdgesOut(edge.getTo());
@@ -332,7 +299,6 @@ public final class Graph {
             }
         }
 
-
         Bag inFrom = getEdgesIn(edge.getFrom());
         if (inFrom != null) {
             for (Object obj : inFrom) {
@@ -347,11 +313,10 @@ public final class Graph {
         }
     }
 
-
     /**
      * Removes edge from graph.
      *
-     * @param edge  the edge to remove
+     * @param edge the edge to remove
      */
     public void removeEdge(Edge edge) {
         allEdges.remove(edge);
@@ -360,12 +325,11 @@ public final class Graph {
         unsetLinks(edge);
     }
 
-
     /**
      * Removes the edge from the bag for the mapping of OUT node to edge.
      *
-     * @param node  the node hash
-     * @param edge  the edge
+     * @param node the node hash
+     * @param edge the edge
      */
     private void unsetOutMap(Node node, Edge edge) {
         Bag objs = nodeToOutBag.get(node);
@@ -378,8 +342,8 @@ public final class Graph {
     /**
      * Removes the edge from the bag for the mapping of IN node to edge.
      *
-     * @param node  the node hash
-     * @param edge  the edge
+     * @param node the node hash
+     * @param edge the edge
      */
     private void unsetInMap(Node node, Edge edge) {
         Bag objs = nodeToInBag.get(node);
@@ -389,11 +353,10 @@ public final class Graph {
         }
     }
 
-
     /**
      * Removes links between edges in and out of the nodes for a given edge.
      *
-     * @param edge  the edge
+     * @param edge the edge
      */
     private void unsetLinks(Edge edge) {
         Bag outTo = getEdgesOut(edge.getTo());
@@ -404,7 +367,6 @@ public final class Graph {
                 edge.edgesOut.remove(e);
             }
         }
-
 
         Bag inFrom = getEdgesIn(edge.getFrom());
         if (inFrom != null) {
@@ -419,8 +381,7 @@ public final class Graph {
     /**
      * Get all the downstream nodes from a given node.
      *
-     * @param node
-     *           the node to start from
+     * @param node the node to start from
      * @return a bag of all downstream {@code Node} objects
      */
     private Bag getAllDownstream(Node node) {
@@ -430,7 +391,7 @@ public final class Graph {
         }
         Bag visited = new Bag();
         Queue<Node> queue = new LinkedList<>();
-        for (Object e:out) {
+        for (Object e : out) {
             Edge edge = (Edge) e;
             queue.add((Node) edge.getTo());
         }
@@ -439,7 +400,9 @@ public final class Graph {
             Node active = queue.poll();
             if (!visited.contains(active)) {
                 visited.add(active);
-                if (getEdgesOut(active) == null) { continue; }
+                if (getEdgesOut(active) == null) {
+                    continue;
+                }
                 for (Object nextOut : getEdgesOut(active)) {
                     Edge edge = (Edge) nextOut;
                     if (!visited.contains(edge)) {
@@ -454,11 +417,8 @@ public final class Graph {
     /**
      * Breadth first search for a subset of target node.
      *
-     * @param edge
-     *           the edge to start from
-     * @param targetsBag
-     *          the bag of potential intersection nodes
-     *
+     * @param edge the edge to start from
+     * @param targetsBag the bag of potential intersection nodes
      * @return the target node or null if not found
      */
     private Node breadthFirstSearch(Edge edge, Bag targetsBag) {
@@ -467,7 +427,7 @@ public final class Graph {
             return null;
         }
         Queue<Node> queue = new LinkedList<>();
-        for (Object obj:out) {
+        for (Object obj : out) {
             Edge e = (Edge) obj;
             queue.add(e.getTo());
         }
@@ -476,8 +436,10 @@ public final class Graph {
             if (targetsBag.contains(next)) {
                 return next;
             }
-            if (getEdgesOut(next) == null) { continue; }
-            for (Object obj: getEdgesOut(next)) {
+            if (getEdgesOut(next) == null) {
+                continue;
+            }
+            for (Object obj : getEdgesOut(next)) {
                 Edge e = (Edge) obj;
                 queue.add(e.getTo());
             }
@@ -488,8 +450,7 @@ public final class Graph {
     /**
      * Find the intersection of two edges from a starting node.
      *
-     * @param node
-     *            the node to start from
+     * @param node the node to start from
      * @return the intersection node or null if no intersection
      */
     public Node findIntersection(Node node) {
@@ -503,19 +464,17 @@ public final class Graph {
         Edge secondEdge = (Edge) out.get(1);
         Node intersection = breadthFirstSearch(secondEdge, allDownstream);
         return intersection;
-
     }
 
     /**
      * Removes the given edge and adds the reversed edge.
      *
-     * @param edge  the edge to reverse
+     * @param edge the edge to reverse
      */
     public void reverseEdge(Edge edge) {
         removeEdge(edge);
         addEdge(edge.reverse());
     }
-
 
     /**
      * Displays the graph as a list of edges and nodes.
@@ -526,12 +485,10 @@ public final class Graph {
     public String toString() {
         String s = "";
 
-
         s += "\nEDGES OUT\n\n";
         Set<Node> setFrom = nodeToOutBag.keySet();
         List<Node> sortedFrom = new ArrayList<>(setFrom);
         Collections.sort(sortedFrom);
-
 
         for (Object obj : sortedFrom) {
             Bag b = nodeToOutBag.get(obj);
@@ -542,12 +499,10 @@ public final class Graph {
             s += "\n";
         }
 
-
         s += "\nEDGES IN\n\n";
         Set<Node> setTo = nodeToInBag.keySet();
         List<Node> sortedTo = new ArrayList<>(setTo);
         Collections.sort(sortedTo);
-
 
         for (Object obj : sortedTo) {
             Bag b = nodeToInBag.get(obj);
@@ -558,10 +513,8 @@ public final class Graph {
             s += "\n";
         }
 
-
         return s;
     }
-
 
     /**
      * Nested class representing a graph node.
@@ -572,21 +525,18 @@ public final class Graph {
         /** Coordinate in x direction. */
         protected int x;
 
-
         /** Coordinate in y direction. */
         protected int y;
-
 
         /** Coordinate in z direction. */
         protected int z;
 
-
         /**
          * Creates a {@code Node} at the given coordinates.
          *
-         * @param x  the x coordinate
-         * @param y  the y coordinate
-         * @param z  the z coordinate
+         * @param x the x coordinate
+         * @param y the y coordinate
+         * @param z the z coordinate
          */
         public Node(int x, int y, int z) {
             this.x = x;
@@ -594,17 +544,12 @@ public final class Graph {
             this.z = z;
         }
 
-
         /**
          * Gets the x coordinate of the node.
          *
          * @return the x coordinate
          * @return the x coordinate
          */
-        public int getX() {
-            return x;
-        }
-
         public int getX() {
             return x;
         }
@@ -619,10 +564,6 @@ public final class Graph {
             return y;
         }
 
-        public int getY() {
-            return y;
-        }
-
         /**
          * Gets the z coordinate of the node.
          *
@@ -632,21 +573,16 @@ public final class Graph {
             return z;
         }
 
-        public int getZ() {
-            return z;
-        }
-
         /**
          * Compares a node to this node.
          *
-         * @param node  the node to compare
-         * @return  zero if the x and y coordinates are equal, otherwise the
-         *          result of integer comparison for x and y
+         * @param node the node to compare
+         * @return zero if the x and y coordinates are equal, otherwise the result of integer
+         *     comparison for x and y
          */
         public int compareTo(Node node) {
             int xComp = Integer.compare(x, node.getX());
             int yComp = Integer.compare(y, node.getY());
-
 
             if (xComp == 0) {
                 return yComp;
@@ -654,7 +590,6 @@ public final class Graph {
                 return xComp;
             }
         }
-
 
         /**
          * Creates a duplicate node with the same coordinates.
@@ -669,14 +604,13 @@ public final class Graph {
         /**
          * Updates the position of this {@code Node} with coordinate from given {@code Node}.
          *
-         * @param node  the {@code Node} with coordinates to update with
+         * @param node the {@code Node} with coordinates to update with
          */
         public void update(Node node) {
             this.x = node.x;
             this.y = node.y;
             this.z = node.z;
         }
-
 
         /**
          * Specifies object hashing based on coordinates.
@@ -688,15 +622,11 @@ public final class Graph {
             return x + y << 8 + z << 16;
         }
 
-        public final int hashCode() {
-            return x + y << 8 + z << 16;
-        }
-
         /**
          * Checks if two nodes are equal based on coordinates.
          *
-         * @param obj  the object to check
-         * @return  {@code true} if coordinates match, {@code false} otherwise
+         * @param obj the object to check
+         * @return {@code true} if coordinates match, {@code false} otherwise
          */
         public final boolean equals(Object obj) {
             if (obj instanceof Node) {
@@ -705,7 +635,6 @@ public final class Graph {
             }
             return false;
         }
-
 
         /**
          * Formats node as a string.
@@ -718,7 +647,6 @@ public final class Graph {
         }
     }
 
-
     /**
      * Nested class representing a graph edge.
      *
@@ -729,24 +657,20 @@ public final class Graph {
         /** Node this edge points to. */
         protected Node to;
 
-
         /** Node this edge points from. */
         protected Node from;
-
 
         /** List of edges that point into the node this edge points from. */
         private final ArrayList<Edge> edgesIn;
 
-
         /** List of edges that point out of the node this edge points to. */
         private final ArrayList<Edge> edgesOut;
-
 
         /**
          * Creates an {@code Edge} between two {@link Node} objects.
          *
-         * @param from  the node the edge is from
-         * @param to  the node the edge is to
+         * @param from the node the edge is from
+         * @param to the node the edge is to
          */
         public Edge(Node from, Node to) {
             this.from = from.duplicate();
@@ -755,17 +679,12 @@ public final class Graph {
             edgesOut = new ArrayList<>();
         }
 
-
         /**
          * Gets the node the edge points from.
          *
          * @return the node the edge points from
          * @return the node the edge points from
          */
-        public Node getFrom() {
-            return from;
-        }
-
         public Node getFrom() {
             return from;
         }
@@ -780,19 +699,11 @@ public final class Graph {
             return to;
         }
 
-        public Node getTo() {
-            return to;
-        }
-
         /**
          * Sets the node the edge points to.
          *
-         * @param to  the node the edge points to
+         * @param to the node the edge points to
          */
-        public void setTo(Node to) {
-            this.to = to;
-        }
-
         public void setTo(Node to) {
             this.to = to;
         }
@@ -800,12 +711,8 @@ public final class Graph {
         /**
          * Sets the node the edge points from.
          *
-         * @param from  the node the edge points from
+         * @param from the node the edge points from
          */
-        public void setFrom(Node from) {
-            this.from = from;
-        }
-
         public void setFrom(Node from) {
             this.from = from;
         }
@@ -820,20 +727,12 @@ public final class Graph {
             return edgesIn;
         }
 
-        public ArrayList<Edge> getEdgesIn() {
-            return edgesIn;
-        }
-
         /**
          * Gets list of edges that point out of the node this edge points to.
          *
          * @return the list of edges
          * @return the list of edges
          */
-        public ArrayList<Edge> getEdgesOut() {
-            return edgesOut;
-        }
-
         public ArrayList<Edge> getEdgesOut() {
             return edgesOut;
         }
@@ -852,14 +751,11 @@ public final class Graph {
             return this;
         }
 
-        /**
-         * Removes the linked edges.
-         */
+        /** Removes the linked edges. */
         public void clear() {
             edgesIn.clear();
             edgesOut.clear();
         }
-
 
         /**
          * Formats edge as a string.
@@ -875,8 +771,7 @@ public final class Graph {
          * Checks if two nodes are equal based on to and from nodes.
          *
          * @param obj the object to check
-         * @return {@code true} if coordinates of both nodes match, {@code false}
-         *         otherwise
+         * @return {@code true} if coordinates of both nodes match, {@code false} otherwise
          */
         public boolean equals(Object obj) {
             if (obj instanceof Edge) {
@@ -894,6 +789,5 @@ public final class Graph {
         public final int hashCode() {
             return this.from.hashCode() << 16 + this.to.hashCode() << 16;
         }
-
     }
 }

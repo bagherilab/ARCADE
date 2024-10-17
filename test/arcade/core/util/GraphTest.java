@@ -1,14 +1,14 @@
 package arcade.core.util;
 
 import java.util.HashSet;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.util.Graph.Edge;
 import static arcade.core.util.Graph.Node;
 
 public class GraphTest {
     @Test
-    public void constructorNode_called_Node() {
+    public void constructorNode_calledThreeInts_returnsNode() {
         Node node = new Node(0, 0, 0);
 
         assertEquals(0, node.getX());
@@ -17,14 +17,14 @@ public class GraphTest {
     }
 
     @Test
-    public void stringNode_called_string() {
+    public void stringNode_called_returnsString() {
         Node node = new Node(0, 0, 0);
 
         assertEquals("(0,0,0)", node.toString());
     }
 
     @Test
-    public void constructorEdge_called_Edge() {
+    public void constructorEdge_calledTwoNodes_returnsEdge() {
         Node fromNode = new Node(0, 0, 0);
         Node toNode = new Node(0, 1, 0);
 
@@ -39,7 +39,7 @@ public class GraphTest {
     }
 
     @Test
-    public void stringEdge_called_string() {
+    public void stringEdge_called_returnsString() {
         Node fromNode = new Node(0, 0, 0);
         Node toNode = new Node(0, 1, 0);
 
@@ -49,7 +49,7 @@ public class GraphTest {
     }
 
     @Test
-    public void constructor_called_emptyGraph() {
+    public void constructor_called_returnsEmptyGraph() {
         Graph graph = new Graph();
 
         assertTrue(graph.getAllEdges().isEmpty());
@@ -57,7 +57,7 @@ public class GraphTest {
     }
 
     @Test
-    public void getAllNodes_called_expectedSet() {
+    public void getAllNodes_called_returnsExpectedSet() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -73,7 +73,7 @@ public class GraphTest {
     }
 
     @Test
-    public void addNode_called_nodeAdded() {
+    public void addEdge_calledWithEdge_nodesAdded() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -86,7 +86,7 @@ public class GraphTest {
     }
 
     @Test
-    public void addEdge_called_edgeAdded() {
+    public void addEdge_calledWithTwoNodes_edgeAdded() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -98,7 +98,7 @@ public class GraphTest {
     }
 
     @Test
-    public void removeEdge_called_edgeRemoved() {
+    public void removeEdge_calledWithEdge_edgeRemoved() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -114,7 +114,7 @@ public class GraphTest {
     }
 
     @Test
-    public void removeEdge_called_nodesRemoved() {
+    public void removeEdge_calledWithEdge_nodesRemoved() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -128,7 +128,7 @@ public class GraphTest {
     }
 
     @Test
-    public void removeEdge_called_preservesFromNode() {
+    public void removeEdge_calledwithEdge_preservesFromNode() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -145,7 +145,7 @@ public class GraphTest {
     }
 
     @Test
-    public void removeEdge_called_removesToNode() {
+    public void removeEdge_calledWithEdge_removesToNode() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -161,7 +161,7 @@ public class GraphTest {
     }
 
     @Test
-    public void reverseEdge_called_reversesEdge() {
+    public void reverseEdge_calledWithEdge_reversesEdge() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -174,7 +174,7 @@ public class GraphTest {
     }
 
     @Test
-    public void reverseEdge_called_preservesOtherEdges() {
+    public void reverseEdge_calledWithEdge_preservesOtherEdges() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -190,7 +190,7 @@ public class GraphTest {
     }
 
     @Test
-    public void reverseEdge_called_preservesNodes() {
+    public void reverseEdge_calledWithEdge_preservesNodes() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -208,7 +208,7 @@ public class GraphTest {
     }
 
     @Test
-    public void reverseEdge_called_preservesNodeCoordinates() {
+    public void reverseEdge_calledWithEdge_preservesNodeCoordinates() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
@@ -244,7 +244,7 @@ public class GraphTest {
     }
 
     @Test
-    public void getEdgesOut_called_getsEdgesOut() {
+    public void getEdgesOut_calledWithNode_returnsEdgesOut() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
@@ -259,7 +259,7 @@ public class GraphTest {
     }
 
     @Test
-    public void getEdgesOut_called_returnsNull() {
+    public void getEdgesOut_calledWithEndNode_returnsNull() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
@@ -270,7 +270,7 @@ public class GraphTest {
     }
 
     @Test
-    public void getEdgesIn_called_getsEdgesIn() {
+    public void getEdgesIn_calledWithNode_returnsEdgesIn() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
@@ -285,7 +285,7 @@ public class GraphTest {
     }
 
     @Test
-    public void getEdgesIn_called_returnsNull() {
+    public void getEdgesIn_calledWithStartNode_returnsNull() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
@@ -330,7 +330,7 @@ public class GraphTest {
     }
 
     @Test
-    public void getOutDegree_called_returnsCorrectDegree() {
+    public void getOutDegree_calledWithNode_returnsCorrectDegree() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
@@ -347,7 +347,7 @@ public class GraphTest {
     }
 
     @Test
-    public void hasEdge_called_returnsTrue() {
+    public void hasEdge_calledWithEdge_returnsTrue() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
@@ -364,7 +364,7 @@ public class GraphTest {
     }
 
     @Test
-    public void hasEdge_called_returnsFalse() {
+    public void hasEdge_calledWithEdgeNotInGraph_returnsFalse() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
@@ -380,7 +380,7 @@ public class GraphTest {
     }
 
     @Test
-    public void findIntersection_called_returnsIntersection() {
+    public void findIntersection_calledWithNode_returnsIntersectionNode() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2A = new Node(1, 1, 0);
@@ -407,7 +407,7 @@ public class GraphTest {
     }
 
     @Test
-    public void findIntersection_called_returnsNullonFewerThanTwoEdges() {
+    public void findIntersection_calledWithNodeWithDegreeLessThanTwo_returnsNull() {
         Graph graph = new Graph();
         Node node0 = new Node(-1, 0, 0);
         Node node1 = new Node(0, 0, 0);
@@ -416,7 +416,6 @@ public class GraphTest {
         Node node2B = new Node(-1, -1, 0);
         Node node3B = new Node(-2, -2, 0);
         Node node4 = new Node(3, 0, 0);
-
 
         Edge edge0 = new Edge(node0, node1);
         Edge edge1 = new Edge(node1, node2A);
@@ -438,7 +437,7 @@ public class GraphTest {
     }
 
     @Test
-    public void findIntersection_called_returnsNullOnNoIntersection() {
+    public void findIntersection_calledOnNoIntersection_returnsNull() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2A = new Node(1, 1, 0);
@@ -460,7 +459,7 @@ public class GraphTest {
     }
 
     @Test
-    public void getSubgraph_called_returnedFilteredEdges() {
+    public void getSubgraph_calledWithFilterFunction_returnedFilteredEdges() {
         Graph graph = new Graph();
         Node node0 = new Node(-1, 0, 0);
         Node node1 = new Node(0, 0, 0);
@@ -469,7 +468,6 @@ public class GraphTest {
         Node node2B = new Node(-1, -1, 0);
         Node node3B = new Node(-2, -2, 0);
         Node node4 = new Node(3, 0, 0);
-
 
         Edge edge0 = new Edge(node0, node1);
         Edge edge1 = new Edge(node1, node2A);
@@ -494,5 +492,4 @@ public class GraphTest {
         assertTrue(subgraph.contains(edge1));
         assertTrue(subgraph.contains(edge3));
     }
-
 }
