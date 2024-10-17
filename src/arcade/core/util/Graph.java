@@ -85,7 +85,6 @@ public final class Graph {
      * Gets all edges in the graph.
      *
      * @return a bag containing the edges
-     * @return a bag containing the edges
      */
     public Bag getAllEdges() {
         return allEdges;
@@ -480,7 +479,6 @@ public final class Graph {
      * Displays the graph as a list of edges and nodes.
      *
      * @return the string representation of the graph
-     * @return the string representation of the graph
      */
     public String toString() {
         String s = "";
@@ -548,7 +546,6 @@ public final class Graph {
          * Gets the x coordinate of the node.
          *
          * @return the x coordinate
-         * @return the x coordinate
          */
         public int getX() {
             return x;
@@ -557,7 +554,6 @@ public final class Graph {
         /**
          * Gets the y coordinate of the node.
          *
-         * @return the y coordinate
          * @return the y coordinate
          */
         public int getY() {
@@ -595,7 +591,6 @@ public final class Graph {
          * Creates a duplicate node with the same coordinates.
          *
          * @return a {@code Node} copy
-         * @return a {@code Node} copy
          */
         public Node duplicate() {
             return new Node(x, y, z);
@@ -615,7 +610,6 @@ public final class Graph {
         /**
          * Specifies object hashing based on coordinates.
          *
-         * @return a hash based on coordinates
          * @return a hash based on coordinates
          */
         public final int hashCode() {
@@ -639,7 +633,6 @@ public final class Graph {
         /**
          * Formats node as a string.
          *
-         * @return a string representation of the node
          * @return a string representation of the node
          */
         public String toString() {
@@ -683,7 +676,6 @@ public final class Graph {
          * Gets the node the edge points from.
          *
          * @return the node the edge points from
-         * @return the node the edge points from
          */
         public Node getFrom() {
             return from;
@@ -692,7 +684,6 @@ public final class Graph {
         /**
          * Gets the node the edge points to.
          *
-         * @return the node the edge points to
          * @return the node the edge points to
          */
         public Node getTo() {
@@ -721,7 +712,6 @@ public final class Graph {
          * Gets list of edges that point into the node this edge points from.
          *
          * @return the list of edges
-         * @return the list of edges
          */
         public ArrayList<Edge> getEdgesIn() {
             return edgesIn;
@@ -731,7 +721,6 @@ public final class Graph {
          * Gets list of edges that point out of the node this edge points to.
          *
          * @return the list of edges
-         * @return the list of edges
          */
         public ArrayList<Edge> getEdgesOut() {
             return edgesOut;
@@ -740,7 +729,6 @@ public final class Graph {
         /**
          * Reverses the edge by swapping the nodes.
          *
-         * @return the reversed edge
          * @return the reversed edge
          */
         Edge reverse() {
@@ -760,7 +748,6 @@ public final class Graph {
         /**
          * Formats edge as a string.
          *
-         * @return a string representation of the edge
          * @return a string representation of the edge
          */
         public String toString() {
