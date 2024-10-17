@@ -406,7 +406,9 @@ public class Solver {
         int i = 0;
 
         if (a > b) {
-            b = a + b - (a = b);
+            a = a + b;
+            b = a - b;
+            a = a - b;
         }
 
         // Check that given bounds are opposite signs.
