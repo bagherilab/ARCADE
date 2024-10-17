@@ -119,7 +119,7 @@ public class SolverTest {
 
     @Test
     public void testSOR_calledWithDenseMatrix_returnsSolution() {
-        double[][] A =
+        double[][] matA =
                 new double[][] {
                     {4, -1, 0, 0},
                     {-1, 4, -1, 0},
@@ -128,7 +128,7 @@ public class SolverTest {
                 };
         double[] b = new double[] {2, 4, 6, 9};
         double[] x = new double[] {0, 1, 2, 3};
-        double[] result = Solver.sor(A, b, x);
+        double[] result = Solver.sor(matA, b, x);
         assertEquals(1, result[0], 0.0001);
         assertEquals(2, result[1], 0.0001);
         assertEquals(3, result[2], 0.0001);
@@ -137,7 +137,7 @@ public class SolverTest {
 
     @Test
     public void testSOR_calledWithSparseMatrix_returnsSolution() {
-        double[][] A =
+        double[][] matA =
                 new double[][] {
                     {4, -1, 0, 0},
                     {-1, 4, -1, 0},
@@ -146,7 +146,7 @@ public class SolverTest {
                 };
         double[] b = new double[] {2, 4, 6, 9};
         double[] x = new double[] {0, 1, 2, 3};
-        double[] result = Solver.sor(A, b, x, 3);
+        double[] result = Solver.sor(matA, b, x, 3);
         assertEquals(1, result[0], 0.0001);
         assertEquals(2, result[1], 0.0001);
         assertEquals(3, result[2], 0.0001);

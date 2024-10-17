@@ -274,6 +274,17 @@ public class Solver {
         return y;
     }
 
+    /**
+     * Solves a linear system of equations using successive over-relaxation with default sparse
+     * representation thresholding.
+     *
+     * <p>Based on matrix size, the algorithm with use a dense or sparse approach.
+     *
+     * @param mat the matrix of coefficients
+     * @param vec the right-hand side vector
+     * @param x0 the initial guess for the left-hand side vector
+     * @return the vector of final values
+     */
     public static double[] sor(double[][] mat, double[] vec, double[] x0) {
         return sor(mat, vec, x0, MATRIX_THRESHOLD);
     }
@@ -286,6 +297,7 @@ public class Solver {
      * @param mat the matrix of coefficients
      * @param vec the right-hand side vector
      * @param x0 the initial guess for the left-hand side vector
+     * @param matrixThreshold the threshold for matrix size
      * @return the vector of final values
      */
     public static double[] sor(double[][] mat, double[] vec, double[] x0, int matrixThreshold) {
@@ -380,14 +392,15 @@ public class Solver {
      * Finds root using bisection method.
      *
      * <p>Root is found by repeatedly bisecting the interval and selecting the interval in which the
-     * function changes sign. If no root is found, the simulation will exit.
+     * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
      *
      * @param func the function
      * @param a the lower bound on the interval
      * @param b the upper bound on the interval
+     * @param maxIters the maximum number of iterations
      * @return the root of the function
      */
-    public static double bisection(Function func, double a, double b, int max_iters) {
+    public static double bisection(Function func, double a, double b, int maxIters) {
         double c;
         double fc;
         int i = 0;
@@ -401,7 +414,7 @@ public class Solver {
             throw new ArithmeticException("Bisection cannot find root with given bounds.");
         }
 
-        while (i < max_iters) {
+        while (i < maxIters) {
             // Calculate new midpoint.
             c = (a + b) / 2;
             fc = func.f(c);
@@ -423,6 +436,17 @@ public class Solver {
         return Double.NaN;
     }
 
+    /**
+     * Finds root using bisection method with default maximum iterations.
+     *
+     * <p>Root is found by repeatedly bisecting the interval and selecting the interval in which the
+     * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
+     *
+     * @param func the function
+     * @param a the lower bound on the interval
+     * @param b the upper bound on the interval
+     * @return the root of the function
+     */
     public static double bisection(Function func, double a, double b) {
         return bisection(func, a, b, MAX_ITERS);
     }
