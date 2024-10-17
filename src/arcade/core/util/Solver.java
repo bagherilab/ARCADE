@@ -2,6 +2,7 @@ package arcade.core.util;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import arcade.core.util.Matrix.Value;
 import static arcade.core.util.Matrix.*;
 
 /**
@@ -273,6 +274,10 @@ public class Solver {
         return y;
     }
 
+    public static double[] sor(double[][] mat, double[] vec, double[] x0) {
+        return sor(mat, vec, x0, MATRIX_THRESHOLD);
+    }
+
     /**
      * Solves a linear system of equations using successive over-relaxation.
      *
@@ -283,9 +288,9 @@ public class Solver {
      * @param x0 the initial guess for the left-hand side vector
      * @return the vector of final values
      */
-    public static double[] sor(double[][] mat, double[] vec, double[] x0) {
+    public static double[] sor(double[][] mat, double[] vec, double[] x0, int matrixThreshold) {
         int n = mat.length;
-        if (n < MATRIX_THRESHOLD) {
+        if (n < matrixThreshold) {
             return denseSOR(mat, vec, x0);
         } else {
             return sparseSOR(mat, vec, x0);
@@ -382,18 +387,21 @@ public class Solver {
      * @param b the upper bound on the interval
      * @return the root of the function
      */
-    public static double bisection(Function func, double a, double b) {
+    public static double bisection(Function func, double a, double b, int max_iters) {
         double c;
         double fc;
         int i = 0;
 
-        // Check that given bounds are opposite signs.
-        if (Math.signum(func.f(a)) == Math.signum(func.f(b))) {
-            LOGGER.severe("bisection unable to find root");
-            System.exit(-1);
+        if (a > b) {
+            b = a + b - (a = b);
         }
 
-        while (i < MAX_ITERS) {
+        // Check that given bounds are opposite signs.
+        if (Math.signum(func.f(a)) == Math.signum(func.f(b))) {
+            throw new ArithmeticException("Bisection cannot find root with given bounds.");
+        }
+
+        while (i < max_iters) {
             // Calculate new midpoint.
             c = (a + b) / 2;
             fc = func.f(c);
@@ -413,5 +421,9 @@ public class Solver {
         }
 
         return Double.NaN;
+    }
+
+    public static double bisection(Function func, double a, double b) {
+        return bisection(func, a, b, MAX_ITERS);
     }
 }
