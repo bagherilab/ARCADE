@@ -158,7 +158,6 @@ public class SolverTest {
     @Test
     public void testBisection_calledWithQuadraticFunction_returnsAnswer() {
         Function f = (x) -> x * x - 2;
-
         double result = Solver.bisection(f, 0, 2);
 
         assertEquals(1.41421, result, 0.0001);
