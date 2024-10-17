@@ -1,13 +1,13 @@
 package arcade.potts.sim;
 
 import java.util.HashMap;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import arcade.core.agent.cell.*;
 import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCellFactory;
 import arcade.potts.env.location.PottsLocationFactory3D;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.potts.sim.PottsSimulationTest.RANDOM_SEED;
 
@@ -21,7 +21,7 @@ public class PottsSimulation3DTest {
         Potts potts = sim.makePotts();
         assertTrue(potts instanceof Potts3D);
     }
-    
+
     @Test
     public void makeLocationFactory_createsFactory() {
         PottsSeries series = mock(PottsSeries.class);
@@ -30,7 +30,7 @@ public class PottsSimulation3DTest {
         LocationFactory factory = sim.makeLocationFactory();
         assertTrue(factory instanceof PottsLocationFactory3D);
     }
-    
+
     @Test
     public void makeCellFactory_createsFactory() {
         PottsSeries series = mock(PottsSeries.class);
