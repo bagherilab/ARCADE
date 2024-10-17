@@ -9,7 +9,7 @@ import sim.engine.Schedule;
 import sim.engine.Stoppable;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
-import arcade.core.agent.module.*;
+import arcade.core.agent.module.Module;
 import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
@@ -113,7 +113,7 @@ public class PottsCellTest {
             Double value2 = invocation.getArgument(1);
             return value1 * value2;
         };
-        when(((PottsLocation) locationMock).convertSurface(anyDouble(), anyDouble())).thenAnswer(answer);
+        when((locationMock).convertSurface(anyDouble(), anyDouble())).thenAnswer(answer);
         
         locationRegionVolumes = new EnumMap<>(Region.class);
         locationRegionHeights = new EnumMap<>(Region.class);

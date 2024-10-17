@@ -2,9 +2,7 @@ package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.stubbing.Answer;
 import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModuleApoptosis;
@@ -22,23 +20,7 @@ import static arcade.potts.util.PottsEnums.State;
 public class PottsCellStemTest {
     private static final double EPSILON = 1E-8;
     
-    static EnumMap<Region, Double> criticalVolumesRegionMock;
-    
-    static EnumMap<Region, Double> criticalHeightsRegionMock;
-    
-    static PottsLocation locationMock;
-    
-    static int locationVolume;
-    
-    static int locationHeight;
-    
-    static int locationSurface;
-    
-    static EnumMap<Region, Integer> locationRegionVolumes;
-    
-    static EnumMap<Region, Integer> locationRegionHeights;
-    
-    static EnumMap<Region, Integer> locationRegionSurfaces;
+    static PottsLocation locationMock = mock(PottsLocation.class);
     
     static int cellID = randomIntBetween(1, 10);
     
@@ -54,78 +36,15 @@ public class PottsCellStemTest {
     
     static double cellCriticalHeight = randomDoubleBetween(10, 100);
     
-    static State cellState = State.QUIESCENT;
+    static State cellState = State.UNDEFINED;
     
-    static EnumSet<Region> regionList;
-    
-    static MiniBox parametersMock;
-    
-    @BeforeClass
-    public static void setupMocks() {
-        parametersMock = mock(MiniBox.class);
-        locationMock = mock(PottsLocation.class);
-        
-        regionList = EnumSet.of(Region.DEFAULT, Region.NUCLEUS);
-        when(locationMock.getRegions()).thenReturn(regionList);
-        
-        Answer<Double> answer = invocation -> {
-            Double value1 = invocation.getArgument(0);
-            Double value2 = invocation.getArgument(1);
-            return value1 * value2;
-        };
-        when(((PottsLocation) locationMock).convertSurface(anyDouble(), anyDouble())).thenAnswer(answer);
-        
-        locationRegionVolumes = new EnumMap<>(Region.class);
-        locationRegionHeights = new EnumMap<>(Region.class);
-        locationRegionSurfaces = new EnumMap<>(Region.class);
-        
-        // Random volumes and surfaces for regions.
-        for (Region region : regionList) {
-            locationRegionVolumes.put(region, randomIntBetween(10, 20));
-            locationRegionHeights.put(region, randomIntBetween(10, 20));
-            locationRegionSurfaces.put(region, randomIntBetween(10, 20));
-            
-            when(locationMock.getVolume(region)).thenReturn((double) locationRegionVolumes.get(region));
-            when(locationMock.getHeight(region)).thenReturn((double) locationRegionHeights.get(region));
-            when(locationMock.getSurface(region)).thenReturn((double) locationRegionSurfaces.get(region));
-            
-            locationVolume += locationRegionVolumes.get(region);
-            locationHeight += locationRegionHeights.get(region);
-            locationSurface += locationRegionSurfaces.get(region);
-        }
-        
-        when(locationMock.getVolume()).thenReturn((double) locationVolume);
-        when(locationMock.getHeight()).thenReturn((double) locationHeight);
-        when(locationMock.getSurface()).thenReturn((double) locationSurface);
-        
-        // Region criticals.
-        criticalVolumesRegionMock = new EnumMap<>(Region.class);
-        criticalHeightsRegionMock = new EnumMap<>(Region.class);
-        for (Region region : regionList) {
-            criticalVolumesRegionMock.put(region, (double) locationRegionVolumes.get(region));
-            criticalHeightsRegionMock.put(region, (double) locationRegionHeights.get(region));
-        }
-    }
-    
-    static PottsCellStem make(boolean regions) {
-        return make(locationMock, regions);
-    }
-    
-    static PottsCellStem make(Location location, boolean regions) {
-        if (!regions) {
-            return new PottsCellStem(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                    location, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                    null, null);
-        } else {
-            return new PottsCellStem(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
-                    location, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                    criticalVolumesRegionMock, criticalHeightsRegionMock);
-        }
-    }
+    static MiniBox parametersMock = mock(MiniBox.class);
     
     @Test
     public void setState_givenState_assignsValue() {
-        PottsCellStem cell = make(false);
+        PottsCellStem cell = new PottsCellStem(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                null, null);
         
         cell.setState(State.QUIESCENT);
         assertEquals(State.QUIESCENT, cell.getState());
@@ -145,7 +64,9 @@ public class PottsCellStemTest {
     
     @Test
     public void setState_givenState_updatesModule() {
-        PottsCellStem cell = make(false);
+        PottsCellStem cell = new PottsCellStem(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                null, null);
         
         cell.setState(State.QUIESCENT);
         assertTrue(cell.module instanceof PottsModuleQuiescence);
@@ -165,7 +86,9 @@ public class PottsCellStemTest {
     
     @Test
     public void setState_invalidState_setsNull() {
-        PottsCellStem cell = make(false);
+        PottsCellStem cell = new PottsCellStem(cellID, cellParent, cellPop, cellState, cellAge, cellDivisions,
+                locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
+                null, null);
         cell.setState(State.UNDEFINED);
         assertNull(cell.getModule());
     }
