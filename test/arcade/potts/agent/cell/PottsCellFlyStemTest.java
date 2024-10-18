@@ -284,13 +284,13 @@ public class PottsCellFlyStemTest {
 
         PottsCell daughterCell = cell.make(newID, newState, newLocation, random);
 
-        // Verify that the daughter cell is a PottsCellFlyNeuronWT
-        assertTrue(daughterCell instanceof PottsCellFlyNeuronWT);
+        // Verify that the daughter cell is a PottsCellFlyGMC
+        assertTrue(daughterCell instanceof PottsCellFlyGMC);
 
         // Verify that the daughter cell has expected properties
         assertEquals(newID, daughterCell.id);
         assertEquals(cell.id, daughterCell.parent);
-        assertEquals(2, daughterCell.pop); // pottsCellFlyNeuronWTPop = 2 in factory method
+        assertEquals(2, daughterCell.pop); 
         assertEquals(cell.age, daughterCell.getAge());
         assertEquals(cell.divisions, daughterCell.getDivisions());
         assertEquals(newLocation, daughterCell.getLocation());
@@ -337,13 +337,13 @@ public class PottsCellFlyStemTest {
 
         PottsCell daughterCell = cell.make(newID, newState, newLocation, random);
 
-        // Verify that the daughter cell is a PottsCellFlyNeuronWT
-        assertTrue(daughterCell instanceof PottsCellFlyNeuronWT);
+        // Verify that the daughter cell is a PottsCellFlyGMC
+        assertTrue(daughterCell instanceof PottsCellFlyGMC);
 
         // Verify that the daughter cell has expected properties
         assertEquals(newID, daughterCell.id);
         assertEquals(cell.id, daughterCell.parent);
-        assertEquals(2, daughterCell.pop); // pottsCellFlyNeuronWTPop = 2 in factory method
+        assertEquals(2, daughterCell.pop);
         assertEquals(cell.age, daughterCell.getAge());
         assertEquals(cell.divisions, daughterCell.getDivisions());
         assertEquals(newLocation, daughterCell.getLocation());
@@ -390,13 +390,13 @@ public class PottsCellFlyStemTest {
 
         PottsCell daughterCell = cell.make(newID, newState, newLocation, random);
 
-        // Verify that the daughter cell is a PottsCellFlyNeuronWT
-        assertTrue(daughterCell instanceof PottsCellFlyNeuronWT);
+        // Verify that the daughter cell is a PottsCellFlyGMC
+        assertTrue(daughterCell instanceof PottsCellFlyGMC);
 
         // Verify that the daughter cell has expected properties
         assertEquals(newID, daughterCell.id);
         assertEquals(cell.id, daughterCell.parent);
-        assertEquals(2, daughterCell.pop); // pottsCellFlyNeuronWTPop = 2 in factory method
+        assertEquals(2, daughterCell.pop);
         assertEquals(cell.age, daughterCell.getAge());
         assertEquals(cell.divisions, daughterCell.getDivisions());
         assertEquals(newLocation, daughterCell.getLocation());
@@ -472,31 +472,31 @@ public class PottsCellFlyStemTest {
 
         PottsCell daughterCell3 = cell.make(newID + 2, newState, newLocation, random);
 
-        // Verify that the daughter cell is a PottsCellFlyNeuronWT
-        assertTrue(daughterCell3 instanceof PottsCellFlyNeuronWT);
+        // Verify that the daughter cell is a PottsCellFlyGMC
+        assertTrue(daughterCell3 instanceof PottsCellFlyGMC);
 
-        // Verify that the daughter neuron cell has expected properties
+        // Verify that the daughter GMC cell has expected properties
         assertEquals(newID + 2, daughterCell3.id);
         assertEquals(cell.id, daughterCell3.parent);
-        assertEquals(2, daughterCell3.pop); // pottsCellFlyNeuronWTPop = 2
+        assertEquals(2, daughterCell3.pop);
         assertEquals(cell.age, daughterCell3.getAge());
         assertEquals(cell.divisions, daughterCell3.getDivisions());
         assertEquals(newLocation, daughterCell3.getLocation());
         assertEquals(cell.hasRegions(), daughterCell3.hasRegions());
 
-        MiniBox expectedParametersNeuron = new MiniBox();
+        MiniBox expectedParametersGMC = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
-            expectedParametersNeuron.put(key, cell.getParameters().get(key));
+            expectedParametersGMC.put(key, cell.getParameters().get(key));
         }
 
-        MiniBox actualParametersNeuron = daughterCell3.getParameters();
+        MiniBox actualParametersGMC = daughterCell3.getParameters();
 
         // Compare the keys
-        assertEquals(expectedParametersNeuron.getKeys(), actualParametersNeuron.getKeys());
+        assertEquals(expectedParametersGMC.getKeys(), actualParametersGMC.getKeys());
 
         // Compare the values for each key
-        for (String key : expectedParametersNeuron.getKeys()) {
-            assertEquals(expectedParametersNeuron.get(key), actualParametersNeuron.get(key));
+        for (String key : expectedParametersGMC.getKeys()) {
+            assertEquals(expectedParametersGMC.get(key), actualParametersGMC.get(key));
         }
 
         // Verify critical volumes and heights
@@ -525,13 +525,13 @@ public class PottsCellFlyStemTest {
 
         PottsCell daughterCell = cell.make(newID, newState, newLocation, random);
 
-        // Verify that the daughter cell is a PottsCellFlyNeuronWT
-        assertTrue(daughterCell instanceof PottsCellFlyNeuronWT);
+        // Verify that the daughter cell is a PottsCellFlyGMC
+        assertTrue(daughterCell instanceof PottsCellFlyGMC);
 
         // Verify that the daughter cell has expected properties
         assertEquals(newID, daughterCell.id);
         assertEquals(cell.id, daughterCell.parent);
-        assertEquals(2, daughterCell.pop); // pottsCellFlyNeuronWTPop = 2 in factory method
+        assertEquals(2, daughterCell.pop);
         assertEquals(cell.age, daughterCell.getAge());
         assertEquals(cell.divisions, daughterCell.getDivisions());
         assertEquals(newLocation, daughterCell.getLocation());
@@ -607,31 +607,31 @@ public class PottsCellFlyStemTest {
 
         PottsCell daughterCell3 = cell.make(newID + 2, newState, newLocation, random);
 
-        // Verify that the daughter cell is a PottsCellFlyNeuronWT
-        assertTrue(daughterCell3 instanceof PottsCellFlyNeuronWT);
+        // Verify that the daughter cell is a PottsCellFlyGMC
+        assertTrue(daughterCell3 instanceof PottsCellFlyGMC);
 
-        // Verify that the daughter neuron cell has expected properties
+        // Verify that the daughter PottsCellFlyGMC cell has expected properties
         assertEquals(newID + 2, daughterCell3.id);
         assertEquals(cell.id, daughterCell3.parent);
-        assertEquals(2, daughterCell3.pop); // pottsCellFlyNeuronWTPop = 2
+        assertEquals(2, daughterCell3.pop);
         assertEquals(cell.age, daughterCell3.getAge());
         assertEquals(cell.divisions, daughterCell3.getDivisions());
         assertEquals(newLocation, daughterCell3.getLocation());
         assertEquals(cell.hasRegions(), daughterCell3.hasRegions());
 
 
-        MiniBox expectedParametersNeuron = new MiniBox();
+        MiniBox expectedParametersGMC = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
-            expectedParametersNeuron.put(key, cell.getParameters().get(key));
+            expectedParametersGMC.put(key, cell.getParameters().get(key));
         }
-        MiniBox actualParametersNeuron = daughterCell3.getParameters();
+        MiniBox actualParametersGMC = daughterCell3.getParameters();
 
         // Compare the keys
-        assertEquals(expectedParametersNeuron.getKeys(), actualParametersNeuron.getKeys());
+        assertEquals(expectedParametersGMC.getKeys(), actualParametersGMC.getKeys());
 
         // Compare the values for each key
-        for (String key : expectedParametersNeuron.getKeys()) {
-            assertEquals(expectedParametersNeuron.get(key), actualParametersNeuron.get(key));
+        for (String key : expectedParametersGMC.getKeys()) {
+            assertEquals(expectedParametersGMC.get(key), actualParametersGMC.get(key));
         }
 
         // Verify critical volumes and heights
@@ -660,13 +660,13 @@ public class PottsCellFlyStemTest {
 
         PottsCell daughterCell = cell.make(newID, newState, newLocation, random);
 
-        // Verify that the daughter cell is a PottsCellFlyNeuronWT
-        assertTrue(daughterCell instanceof PottsCellFlyNeuronWT);
+        // Verify that the daughter cell is a PottsCellFlyGMC
+        assertTrue(daughterCell instanceof PottsCellFlyGMC);
 
         // Verify that the daughter cell has expected properties
         assertEquals(newID, daughterCell.id);
         assertEquals(cell.id, daughterCell.parent);
-        assertEquals(2, daughterCell.pop); // pottsCellFlyNeuronWTPop = 2
+        assertEquals(2, daughterCell.pop);
         assertEquals(cell.age, daughterCell.getAge());
         assertEquals(cell.divisions, daughterCell.getDivisions());
         assertEquals(newLocation, daughterCell.getLocation());
@@ -733,36 +733,36 @@ public class PottsCellFlyStemTest {
         assertEquals(newLocation, daughterStem1.getLocation());
         assertEquals(cell.hasRegions(), daughterStem1.hasRegions());
 
-        // Test case where random.nextBoolean() returns false (daughter is a neuron)
+        // Test case where random.nextBoolean() returns false (daughter is a PottsCellFlyGMC)
         when(random.nextBoolean()).thenReturn(false);
 
         PottsCell daughterCell2 = cell.make(newID + 1, newState, newLocation, random);
 
-        // Verify that the daughter cell is a PottsCellFlyNeuronWT
-        assertTrue(daughterCell2 instanceof PottsCellFlyNeuronWT);
+        // Verify that the daughter cell is a PottsCellFlyGMC
+        assertTrue(daughterCell2 instanceof PottsCellFlyGMC);
 
-        // Verify that the daughter neuron cell has expected properties
+        // Verify that the daughter GMC cell has expected properties
         assertEquals(newID + 1, daughterCell2.id);
         assertEquals(cell.id, daughterCell2.parent);
-        assertEquals(2, daughterCell2.pop); // pottsCellFlyNeuronWTPop = 2
+        assertEquals(2, daughterCell2.pop);
         assertEquals(cell.age, daughterCell2.getAge());
         assertEquals(cell.divisions, daughterCell2.getDivisions());
         assertEquals(newLocation, daughterCell2.getLocation());
         assertEquals(cell.hasRegions(), daughterCell2.hasRegions());
 
-        MiniBox expectedParametersNeuron = new MiniBox();
+        MiniBox expectedParametersGMC = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
-            expectedParametersNeuron.put(key, cell.getParameters().get(key));
+            expectedParametersGMC.put(key, cell.getParameters().get(key));
         }
 
-        MiniBox actualParametersNeuron = daughterCell2.getParameters();
+        MiniBox actualParametersGMC = daughterCell2.getParameters();
 
         // Compare the keys
-        assertEquals(expectedParametersNeuron.getKeys(), actualParametersNeuron.getKeys());
+        assertEquals(expectedParametersGMC.getKeys(), actualParametersGMC.getKeys());
 
         // Compare the values for each key
-        for (String key : expectedParametersNeuron.getKeys()) {
-            assertEquals(expectedParametersNeuron.get(key), actualParametersNeuron.get(key));
+        for (String key : expectedParametersGMC.getKeys()) {
+            assertEquals(expectedParametersGMC.get(key), actualParametersGMC.get(key));
         }
 
         // Verify critical volumes and heights

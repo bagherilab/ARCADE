@@ -209,6 +209,12 @@ public final class PottsCellContainer implements CellContainer {
                     hasRegions ? criticalRegionHeights : null,
                     StemType.SYMMETRIC2APICAL_OR_BOTH);
             break;
+        case "flyneuron":
+            cell = new PottsCellFlyNeuronWT(id, parent, pop, state, age, divisions,
+                    location, hasRegions, parameters, criticalVolume, criticalHeight,
+                    hasRegions ? criticalRegionVolumes : null,
+                    hasRegions ? criticalRegionHeights : null);
+            break;
     }
 
     // Update cell module.
