@@ -1,21 +1,21 @@
 package arcade.potts.agent.cell;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.ArrayList;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import arcade.core.util.MiniBox;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
-import arcade.potts.agent.module.*;
+import arcade.core.util.MiniBox;
+import arcade.potts.agent.module.PottsModuleProliferationFlyStem;
 import arcade.potts.env.location.PottsLocation;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static arcade.core.ARCADETestUtilities.*;
 import arcade.potts.util.PottsEnums.Direction;
 import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
-import ec.util.MersenneTwisterFast;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static arcade.core.ARCADETestUtilities.*;
 import static arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 
 public class PottsCellFlyStemTest {
@@ -40,7 +40,7 @@ public class PottsCellFlyStemTest {
 
     static EnumSet<Region> regionList;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupMocks() {
         // Initialize static variables with random or default values
         cellID = randomIntBetween(1, 10);
@@ -56,7 +56,7 @@ public class PottsCellFlyStemTest {
         locationMock = mock(PottsLocation.class);
         parametersMock = mock(MiniBox.class);
 
-        when(parametersMock.getKeys()).thenReturn(new ArrayList<String>());
+        when(parametersMock.getKeys()).thenReturn(new ArrayList<>());
         when(parametersMock.get("CLASS")).thenReturn("flystem-wt");
         when(parametersMock.get("proliferation/CELL_GROWTH_RATE")).thenReturn("80");
 
@@ -75,9 +75,22 @@ public class PottsCellFlyStemTest {
 
     @Test
     public void setState_givenState_assignsValue() {
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-                cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                criticalRegionVolumes, criticalRegionHeights, StemType.WT);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.WT);
 
         cell.setState(State.QUIESCENT);
         assertEquals(State.QUIESCENT, cell.getState());
@@ -97,9 +110,22 @@ public class PottsCellFlyStemTest {
 
     @Test
     public void setState_givenState_updatesModule() {
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-                cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                criticalRegionVolumes, criticalRegionHeights, StemType.WT);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.WT);
 
         cell.setState(State.QUIESCENT);
         assertNull(cell.module);
@@ -119,18 +145,44 @@ public class PottsCellFlyStemTest {
 
     @Test
     public void setState_invalidState_setsNull() {
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-                cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                criticalRegionVolumes, criticalRegionHeights, StemType.WT);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.WT);
         cell.setState(State.UNDEFINED);
         assertNull(cell.getModule());
     }
 
     @Test
     public void make_noRegions_setsFields() {
-        PottsCellFlyStem cell1 = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-                cellAge, cellDivisions, locationMock, false, parametersMock, cellCriticalVolume, cellCriticalHeight,
-                criticalRegionVolumes, criticalRegionHeights, StemType.WT);
+        PottsCellFlyStem cell1 =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        false,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.WT);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -162,9 +214,22 @@ public class PottsCellFlyStemTest {
 
     @Test
     public void make_hasRegions_setsFields() {
-        PottsCellFlyStem cell1 = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, true, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.WT);
+        PottsCellFlyStem cell1 =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        true,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.WT);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -193,89 +258,210 @@ public class PottsCellFlyStemTest {
         assertEquals(cellCriticalHeight, cell2.getCriticalHeight(), EPSILON);
 
         for (Region region : regionList) {
-            assertEquals(criticalRegionVolumes.get(region), cell2.getCriticalVolume(region), EPSILON);
-            assertEquals(criticalRegionHeights.get(region), cell2.getCriticalHeight(region), EPSILON);
+            assertEquals(
+                    criticalRegionVolumes.get(region), cell2.getCriticalVolume(region), EPSILON);
+            assertEquals(
+                    criticalRegionHeights.get(region), cell2.getCriticalHeight(region), EPSILON);
         }
     }
 
     @Test
     public void testPottsCellFlyStemWT_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemWT
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.WT);;
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.WT);
+        ;
         assertEquals(cell.stemType, StemType.WT);
     }
 
     @Test
     public void testPottsCellFlyStemMUDMut1StemRandom_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemMUDMut1StemRandom
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_RANDOM);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.MUDMUT1_RANDOM);
         assertEquals(cell.stemType, StemType.MUDMUT1_RANDOM);
     }
 
     @Test
     public void testPottsCellFlyStemMUDMut1StemLeft_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemMUDMut1StemLeft
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_LEFT);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.MUDMUT1_LEFT);
         assertEquals(cell.stemType, StemType.MUDMUT1_LEFT);
     }
 
     @Test
     public void testPottsCellFlyStemMUDMut2StemRandom_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemMUDMut2StemRandom
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT2_RANDOM);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.MUDMUT2_RANDOM);
         assertEquals(cell.stemType, StemType.MUDMUT2_RANDOM);
     }
 
     @Test
     public void testPottsCellFlyStemInvert1StemBasal_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemInvert1StemBasal
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.INVERT1_BASAL);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.INVERT1_BASAL);
         assertEquals(cell.stemType, StemType.INVERT1_BASAL);
     }
 
-    @Test 
+    @Test
     public void testPottsCellFlyStemInvert2StemBasalOrBoth_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemInvert2StemBasalOrBoth
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.INVERT2BASAL_OR_BOTH);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.INVERT2BASAL_OR_BOTH);
         assertEquals(cell.stemType, StemType.INVERT2BASAL_OR_BOTH);
     }
 
     @Test
     public void testPottsCellFlyStemSymmetric1StemApical_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemSymmetric1StemApical
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC1_APICAL);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.SYMMETRIC1_APICAL);
         assertEquals(cell.stemType, StemType.SYMMETRIC1_APICAL);
     }
 
     @Test
-    public void testPottsCellFlyStemSymmetric2StemApicalOrBoth_constructor_correctlyAssignsFields() {
+    public void
+            testPottsCellFlyStemSymmetric2StemApicalOrBoth_constructor_correctlyAssignsFields() {
         // PottsCellFlyStemSymmetric2StemApicalOrBoth
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC2APICAL_OR_BOTH);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.SYMMETRIC2APICAL_OR_BOTH);
         assertEquals(cell.stemType, StemType.SYMMETRIC2APICAL_OR_BOTH);
     }
 
     @Test
     public void testPottsCellFlyStemWT_make_makesCorrectDaughterCell() {
         // Configuration 1 corresponds to PottsCellFlyStemWT
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.WT);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.WT);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -290,7 +476,7 @@ public class PottsCellFlyStemTest {
         // Verify that the daughter cell has expected properties
         assertEquals(newID, daughterCell.id);
         assertEquals(cell.id, daughterCell.parent);
-        assertEquals(2, daughterCell.pop); 
+        assertEquals(2, daughterCell.pop);
         assertEquals(cell.age, daughterCell.getAge());
         assertEquals(cell.divisions, daughterCell.getDivisions());
         assertEquals(newLocation, daughterCell.getLocation());
@@ -317,8 +503,14 @@ public class PottsCellFlyStemTest {
 
         if (cell.hasRegions()) {
             for (Region region : regionList) {
-                assertEquals(cell.getCriticalVolume(region), daughterCell.getCriticalVolume(region), EPSILON);
-                assertEquals(cell.getCriticalHeight(region), daughterCell.getCriticalHeight(region), EPSILON);
+                assertEquals(
+                        cell.getCriticalVolume(region),
+                        daughterCell.getCriticalVolume(region),
+                        EPSILON);
+                assertEquals(
+                        cell.getCriticalHeight(region),
+                        daughterCell.getCriticalHeight(region),
+                        EPSILON);
             }
         }
     }
@@ -326,9 +518,22 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemMUDMut1StemRandom_make_makesCorrectDaughterCell() {
         // Configuration 2 corresponds to PottsCellFlyStemMUDMut1StemRandom
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_RANDOM);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.MUDMUT1_RANDOM);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -370,8 +575,14 @@ public class PottsCellFlyStemTest {
 
         if (cell.hasRegions()) {
             for (Region region : regionList) {
-                assertEquals(cell.getCriticalVolume(region), daughterCell.getCriticalVolume(region), EPSILON);
-                assertEquals(cell.getCriticalHeight(region), daughterCell.getCriticalHeight(region), EPSILON);
+                assertEquals(
+                        cell.getCriticalVolume(region),
+                        daughterCell.getCriticalVolume(region),
+                        EPSILON);
+                assertEquals(
+                        cell.getCriticalHeight(region),
+                        daughterCell.getCriticalHeight(region),
+                        EPSILON);
             }
         }
     }
@@ -379,9 +590,22 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemMUDMut1StemLeft_make_makesCorrectDaughterCell() {
         // Configuration 3 corresponds to PottsCellFlyStemMUDMut1StemLeft
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT1_LEFT);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.MUDMUT1_LEFT);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -423,8 +647,14 @@ public class PottsCellFlyStemTest {
 
         if (cell.hasRegions()) {
             for (Region region : regionList) {
-                assertEquals(cell.getCriticalVolume(region), daughterCell.getCriticalVolume(region), EPSILON);
-                assertEquals(cell.getCriticalHeight(region), daughterCell.getCriticalHeight(region), EPSILON);
+                assertEquals(
+                        cell.getCriticalVolume(region),
+                        daughterCell.getCriticalVolume(region),
+                        EPSILON);
+                assertEquals(
+                        cell.getCriticalHeight(region),
+                        daughterCell.getCriticalHeight(region),
+                        EPSILON);
             }
         }
     }
@@ -432,9 +662,22 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemMUDMut2StemRandom_make_makesCorrectDaughterCell() {
         // Configuration 4 corresponds to PottsCellFlyStemMUDMut2StemRandom
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.MUDMUT2_RANDOM);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.MUDMUT2_RANDOM);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -505,8 +748,14 @@ public class PottsCellFlyStemTest {
 
         if (cell.hasRegions()) {
             for (Region region : regionList) {
-                assertEquals(cell.getCriticalVolume(region), daughterCell3.getCriticalVolume(region), EPSILON);
-                assertEquals(cell.getCriticalHeight(region), daughterCell3.getCriticalHeight(region), EPSILON);
+                assertEquals(
+                        cell.getCriticalVolume(region),
+                        daughterCell3.getCriticalVolume(region),
+                        EPSILON);
+                assertEquals(
+                        cell.getCriticalHeight(region),
+                        daughterCell3.getCriticalHeight(region),
+                        EPSILON);
             }
         }
     }
@@ -514,9 +763,22 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemInvert1StemBasal_make_makesCorrectDaughterCell() {
         // Configuration 5 corresponds to PottsCellFlyStemInvert1StemBasal
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.INVERT1_BASAL);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.INVERT1_BASAL);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -558,8 +820,14 @@ public class PottsCellFlyStemTest {
 
         if (cell.hasRegions()) {
             for (Region region : regionList) {
-                assertEquals(cell.getCriticalVolume(region), daughterCell.getCriticalVolume(region), EPSILON);
-                assertEquals(cell.getCriticalHeight(region), daughterCell.getCriticalHeight(region), EPSILON);
+                assertEquals(
+                        cell.getCriticalVolume(region),
+                        daughterCell.getCriticalVolume(region),
+                        EPSILON);
+                assertEquals(
+                        cell.getCriticalHeight(region),
+                        daughterCell.getCriticalHeight(region),
+                        EPSILON);
             }
         }
     }
@@ -567,9 +835,22 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemInvert2StemBasalOrBoth_make_makesCorrectDaughterCell() {
         // Configuration 6 corresponds to PottsCellFlyStemInvert2StemBasalOrBoth
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.INVERT2BASAL_OR_BOTH);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.INVERT2BASAL_OR_BOTH);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -619,7 +900,6 @@ public class PottsCellFlyStemTest {
         assertEquals(newLocation, daughterCell3.getLocation());
         assertEquals(cell.hasRegions(), daughterCell3.hasRegions());
 
-
         MiniBox expectedParametersGMC = new MiniBox();
         for (String key : cell.getParameters().getKeys()) {
             expectedParametersGMC.put(key, cell.getParameters().get(key));
@@ -640,8 +920,14 @@ public class PottsCellFlyStemTest {
 
         if (cell.hasRegions()) {
             for (Region region : regionList) {
-                assertEquals(cell.getCriticalVolume(region), daughterCell3.getCriticalVolume(region), EPSILON);
-                assertEquals(cell.getCriticalHeight(region), daughterCell3.getCriticalHeight(region), EPSILON);
+                assertEquals(
+                        cell.getCriticalVolume(region),
+                        daughterCell3.getCriticalVolume(region),
+                        EPSILON);
+                assertEquals(
+                        cell.getCriticalHeight(region),
+                        daughterCell3.getCriticalHeight(region),
+                        EPSILON);
             }
         }
     }
@@ -649,9 +935,22 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemSymmetric1StemApical_make_makesCorrectDaughterCell() {
         // Configuration 7 corresponds to PottsCellFlyStemSymmetric1StemApical
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC1_APICAL);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.SYMMETRIC1_APICAL);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -693,8 +992,14 @@ public class PottsCellFlyStemTest {
 
         if (cell.hasRegions()) {
             for (Region region : regionList) {
-                assertEquals(cell.getCriticalVolume(region), daughterCell.getCriticalVolume(region), EPSILON);
-                assertEquals(cell.getCriticalHeight(region), daughterCell.getCriticalHeight(region), EPSILON);
+                assertEquals(
+                        cell.getCriticalVolume(region),
+                        daughterCell.getCriticalVolume(region),
+                        EPSILON);
+                assertEquals(
+                        cell.getCriticalHeight(region),
+                        daughterCell.getCriticalHeight(region),
+                        EPSILON);
             }
         }
     }
@@ -702,9 +1007,22 @@ public class PottsCellFlyStemTest {
     @Test
     public void testPottsCellFlyStemSymmetric2StemApicalOrBoth_make_makesCorrectDaughterCell() {
         // Configuration 8 corresponds to PottsCellFlyStemSymmetric2StemApicalOrBoth
-        PottsCellFlyStem cell = new PottsCellFlyStem(cellID, cellParent, cellPop, cellState,
-        cellAge, cellDivisions, locationMock, hasRegions, parametersMock, cellCriticalVolume, cellCriticalHeight,
-        criticalRegionVolumes, criticalRegionHeights, StemType.SYMMETRIC2APICAL_OR_BOTH);
+        PottsCellFlyStem cell =
+                new PottsCellFlyStem(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellState,
+                        cellAge,
+                        cellDivisions,
+                        locationMock,
+                        hasRegions,
+                        parametersMock,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalRegionVolumes,
+                        criticalRegionHeights,
+                        StemType.SYMMETRIC2APICAL_OR_BOTH);
 
         int newID = cellID + 1;
         CellState newState = State.PROLIFERATIVE;
@@ -771,8 +1089,14 @@ public class PottsCellFlyStemTest {
 
         if (cell.hasRegions()) {
             for (Region region : regionList) {
-                assertEquals(cell.getCriticalVolume(region), daughterCell2.getCriticalVolume(region), EPSILON);
-                assertEquals(cell.getCriticalHeight(region), daughterCell2.getCriticalHeight(region), EPSILON);
+                assertEquals(
+                        cell.getCriticalVolume(region),
+                        daughterCell2.getCriticalVolume(region),
+                        EPSILON);
+                assertEquals(
+                        cell.getCriticalHeight(region),
+                        daughterCell2.getCriticalHeight(region),
+                        EPSILON);
             }
         }
     }
