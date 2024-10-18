@@ -2,6 +2,7 @@ package arcade.core.util;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
+import arcade.core.util.Matrix.Value;
 import static arcade.core.util.Matrix.*;
 
 /**
@@ -166,7 +167,7 @@ public class Solver {
     }
 
     /**
-     * Solves a system of ODEs using adaptive timestep Cash-Karp.
+     * Solves a system of ODEs using adaptive timestep Cash-Karp with default maximum steps.
      *
      * @param eq the system of equations
      * @param t0 the initial time
@@ -176,6 +177,22 @@ public class Solver {
      * @return the array of final values
      */
     public static double[] cashKarp(Equations eq, double t0, double[] y0, double tf, double h) {
+        return cashKarp(eq, t0, y0, tf, h, MAX_STEPS);
+    }
+
+    /**
+     * Solves a system of ODEs using adaptive timestep Cash-Karp.
+     *
+     * @param eq the system of equations
+     * @param t0 the initial time
+     * @param y0 the array of initial values
+     * @param tf the final time
+     * @param h the time step
+     * @param maxSteps the maximum number of steps
+     * @return the array of final values
+     */
+    public static double[] cashKarp(
+            Equations eq, double t0, double[] y0, double tf, double h, int maxSteps) {
         int n = y0.length;
         int steps = 0;
         double t = t0;
@@ -194,7 +211,7 @@ public class Solver {
         double maxErr;
         double tol;
 
-        while (t < tf && steps < MAX_STEPS) {
+        while (t < tf && steps < maxSteps) {
             steps++;
 
             dydt = eq.dydt(t, y);
@@ -274,7 +291,8 @@ public class Solver {
     }
 
     /**
-     * Solves a linear system of equations using successive over-relaxation.
+     * Solves a linear system of equations using successive over-relaxation with default sparse
+     * representation thresholding and maximum iterations.
      *
      * <p>Based on matrix size, the algorithm with use a dense or sparse approach.
      *
@@ -284,11 +302,34 @@ public class Solver {
      * @return the vector of final values
      */
     public static double[] sor(double[][] mat, double[] vec, double[] x0) {
+        return sor(mat, vec, x0, MATRIX_THRESHOLD, MAX_ITERS, TOLERANCE);
+    }
+
+    /**
+     * Solves a linear system of equations using successive over-relaxation.
+     *
+     * <p>Based on matrix size, the algorithm with use a dense or sparse approach.
+     *
+     * @param mat the matrix of coefficients
+     * @param vec the right-hand side vector
+     * @param x0 the initial guess for the left-hand side vector
+     * @param matrixThreshold the threshold for matrix size
+     * @param maxIters the maximum number of iterations
+     * @param tolerance the error tolerance
+     * @return the vector of final values
+     */
+    public static double[] sor(
+            double[][] mat,
+            double[] vec,
+            double[] x0,
+            int matrixThreshold,
+            int maxIters,
+            double tolerance) {
         int n = mat.length;
-        if (n < MATRIX_THRESHOLD) {
-            return denseSOR(mat, vec, x0);
+        if (n < matrixThreshold) {
+            return denseSOR(mat, vec, x0, maxIters, tolerance);
         } else {
-            return sparseSOR(mat, vec, x0);
+            return sparseSOR(mat, vec, x0, maxIters, tolerance);
         }
     }
 
@@ -298,9 +339,12 @@ public class Solver {
      * @param mat the matrix of coefficients
      * @param vec the right-hand side vector
      * @param x0 the initial guess for the left-hand side vector
+     * @param maxIters the maximum number of iterations
+     * @param tolerance the error tolerance
      * @return the vector of final values
      */
-    private static double[] denseSOR(double[][] mat, double[] vec, double[] x0) {
+    private static double[] denseSOR(
+            double[][] mat, double[] vec, double[] x0, int maxIters, double tolerance) {
         int i = 0;
         double error = Double.POSITIVE_INFINITY;
 
@@ -314,7 +358,7 @@ public class Solver {
         double[] xPrev = x0;
 
         // Iterate until convergence.
-        while (i < MAX_ITERS && error > TOLERANCE) {
+        while (i < maxIters && error > tolerance) {
             // Calculate new guess for x.
             xCurr = add(scale(add(multiply(t, xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));
 
@@ -336,9 +380,12 @@ public class Solver {
      * @param mat the matrix of coefficients
      * @param vec the right-hand side vector
      * @param x0 the initial guess for the left-hand side vector
+     * @param maxIters the maximum number of iterations
+     * @param tolerance the error tolerance
      * @return the vector of final values
      */
-    private static double[] sparseSOR(double[][] mat, double[] vec, double[] x0) {
+    private static double[] sparseSOR(
+            double[][] mat, double[] vec, double[] x0, int maxIters, double tolerance) {
         int i = 0;
         double error = Double.POSITIVE_INFINITY;
 
@@ -355,7 +402,7 @@ public class Solver {
         double[] xPrev = x0;
 
         // Iterate until convergence.
-        while (i < MAX_ITERS && error > TOLERANCE) {
+        while (i < maxIters && error > tolerance) {
             // Calculate new guess for x.
             xCurr = add(scale(add(multiply(t, xPrev), c), OMEGA), scale(xPrev, 1 - OMEGA));
 
@@ -375,25 +422,31 @@ public class Solver {
      * Finds root using bisection method.
      *
      * <p>Root is found by repeatedly bisecting the interval and selecting the interval in which the
-     * function changes sign. If no root is found, the simulation will exit.
+     * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
      *
      * @param func the function
      * @param a the lower bound on the interval
      * @param b the upper bound on the interval
+     * @param maxIters the maximum number of iterations
      * @return the root of the function
      */
-    public static double bisection(Function func, double a, double b) {
+    public static double bisection(Function func, double a, double b, int maxIters) {
         double c;
         double fc;
         int i = 0;
 
-        // Check that given bounds are opposite signs.
-        if (Math.signum(func.f(a)) == Math.signum(func.f(b))) {
-            LOGGER.severe("bisection unable to find root");
-            System.exit(-1);
+        if (a > b) {
+            a = a + b;
+            b = a - b;
+            a = a - b;
         }
 
-        while (i < MAX_ITERS) {
+        // Check that given bounds are opposite signs.
+        if (Math.signum(func.f(a)) == Math.signum(func.f(b))) {
+            throw new ArithmeticException("Bisection cannot find root with given bounds.");
+        }
+
+        while (i < maxIters) {
             // Calculate new midpoint.
             c = (a + b) / 2;
             fc = func.f(c);
@@ -413,5 +466,20 @@ public class Solver {
         }
 
         return Double.NaN;
+    }
+
+    /**
+     * Finds root using bisection method with default maximum iterations.
+     *
+     * <p>Root is found by repeatedly bisecting the interval and selecting the interval in which the
+     * function changes sign. If no root is found, the simulation will throw an ArithmeticException.
+     *
+     * @param func the function
+     * @param a the lower bound on the interval
+     * @param b the upper bound on the interval
+     * @return the root of the function
+     */
+    public static double bisection(Function func, double a, double b) {
+        return bisection(func, a, b, MAX_ITERS);
     }
 }
