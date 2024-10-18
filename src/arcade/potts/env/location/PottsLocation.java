@@ -1,5 +1,6 @@
 package arcade.potts.env.location;
 
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;

@@ -1,6 +1,10 @@
 package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
+
+import com.jogamp.opengl.math.geom.Frustum.Plane;
+
+//import static arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
@@ -10,6 +14,13 @@ import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.agent.module.PottsModuleQuiescence;
+import arcade.potts.env.location.PottsLocation;
+import arcade.potts.env.location.PottsLocation2D;
+import arcade.potts.env.location.Voxel;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
+import arcade.potts.util.PottsEnums.State;
+
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
@@ -79,4 +90,23 @@ public final class PottsCellStem extends PottsCell {
                 break;
         }
     }
+
+    public Plane getDivisionPlaneDeterministic(PottsCellFlyStem cell) {
+        Voxel splitPoint;
+        PottsLocation myLocation;
+        Plane divisionPlane;
+        Direction mySplitDirection;
+        PottsCellFlyStem flyStemCell = (PottsCellFlyStem) cell;
+        StemType stemtype = flyStemCell.stemType;
+        // ArrayList<Integer> splitOffsetPercent = new ArrayList<>();
+        // splitOffsetPercent.add(stemtype.splitOffsetPercentX);
+        // splitOffsetPercent.add(stemtype.splitOffsetPercentY);
+
+        myLocation = ((PottsLocation2D) cell.getLocation());
+        mySplitDirection = stemtype.splitDirection;
+        divisionPlane = new Plane(new Voxel(splitPoint.x, splitPoint.y, splitPoint.z),
+                                                    mySplitDirection.vector);
+        return divisionPlane;
+    }
+
 }
