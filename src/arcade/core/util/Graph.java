@@ -502,6 +502,7 @@ public final class Graph {
      *
      * @param node the node to start from
      * @param targetNodes the bag of potential intersection nodes
+     * @param strategy the direction to search
      * @return the target node or null if not found
      */
     private Node breadthFirstSearch(Node node, Bag targetNodes, Strategy strategy) {
