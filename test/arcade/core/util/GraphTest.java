@@ -6,8 +6,6 @@ import sim.util.Bag;
 import arcade.core.util.Graph.Edge;
 import arcade.core.util.Graph.Node;
 import static org.junit.jupiter.api.Assertions.*;
-import static arcade.core.util.Graph.Edge;
-import static arcade.core.util.Graph.Node;
 
 public class GraphTest {
     @Test
@@ -29,6 +27,72 @@ public class GraphTest {
     }
 
     @Test
+    public void node_update_updatesCoordinates() {
+        Node node = new Node(1, 5, 3);
+        Node temp = new Node(2, 6, 4);
+        node.update(temp);
+
+        assertAll(
+                "Updated node coordinates",
+                () -> assertEquals(2, node.getX()),
+                () -> assertEquals(6, node.getY()),
+                () -> assertEquals(4, node.getZ()));
+    }
+
+    @Test
+    public void node_duplicate_returnsNode() {
+        Node node = new Node(1, 5, 3);
+        Node duplicate = node.duplicate();
+
+        assertAll(
+                "Duplicate node",
+                () -> assertEquals(node.getX(), duplicate.getX()),
+                () -> assertEquals(node.getY(), duplicate.getY()),
+                () -> assertEquals(node.getZ(), duplicate.getZ()));
+    }
+
+    @Test
+    public void node_compareTo_returnsComparison() {
+        Node node1 = new Node(1, 5, 3);
+        Node node2 = new Node(1, 5, 3);
+        Node node3 = new Node(2, 6, 4);
+
+        assertAll(
+                "Node comparisons",
+                () -> assertEquals(0, node1.compareTo(node2)),
+                () -> assertEquals(-1, node1.compareTo(node3)),
+                () -> assertEquals(1, node3.compareTo(node1)));
+    }
+
+    @Test
+    public void node_hashCode_returnsHashCode() {
+        Node node0 = new Node(1, 2, 3);
+        Node node1 = new Node(1, 2, 3);
+        Node node2 = new Node(3, 2, 1);
+
+        assertAll(
+                "Node hash codes",
+                () -> assertTrue(node0.equals(node1)),
+                () -> assertTrue(node1.equals(node0)),
+                () -> assertTrue(node0.hashCode() == node1.hashCode()),
+                () -> assertFalse(node0.equals(node2)));
+    }
+
+    @Test
+    public void node_equals_returnsEquality() {
+        Node node1 = new Node(1, 2, 3);
+        Node node2 = new Node(1, 2, 3);
+        Node node3 = new Node(3, 2, 1);
+        Edge edge = new Edge(node1, node2);
+
+        assertAll(
+                "Node equality",
+                () -> assertTrue(node1.equals(node2)),
+                () -> assertFalse(node1.equals(node3)),
+                () -> assertFalse(node1.equals(edge)));
+    }
+
+    @Test
     public void edgeConstructor_containsReferencesToNodes() {
         Node fromNode = new Node(0, 0, 0);
         Node toNode = new Node(0, 1, 0);
@@ -43,12 +107,53 @@ public class GraphTest {
 
     @Test
     public void edge_toStringCalled_returnsString() {
-        Node fromNode = new Node(0, 0, 0);
-        Node toNode = new Node(0, 1, 0);
+        Node fromNode0 = new Node(0, 0, 0);
+        Node toNode0 = new Node(0, 1, 0);
+        Node fromNode1 = new Node(1, 0, 0);
+        Node toNode1 = new Node(1, 1, 0);
 
-        Edge edge = new Edge(fromNode, toNode);
+        Edge edge0 = new Edge(fromNode0, toNode0);
+        Edge edge1 = new Edge(fromNode1, toNode1);
 
-        assertEquals("[(0,0,0)~(0,1,0)]", edge.toString());
+        assertAll(
+                "Edge strings",
+                () -> assertEquals("[(0,0,0)~(0,1,0)]", edge0.toString()),
+                () -> assertEquals("[(1,0,0)~(1,1,0)]", edge1.toString()));
+    }
+
+    @Test
+    public void edge_equals() {
+        Node fromNode0 = new Node(0, 0, 0);
+        Node toNode0 = new Node(0, 1, 0);
+        Node fromNode1 = new Node(1, 0, 0);
+        Node toNode1 = new Node(1, 1, 0);
+
+        Edge edge0 = new Edge(fromNode0, toNode0);
+        Edge edge1 = new Edge(fromNode1, toNode1);
+        Edge edge2 = new Edge(fromNode0, toNode0);
+
+        assertAll(
+                "Edge equality",
+                () -> assertTrue(edge0.equals(edge2)),
+                () -> assertFalse(edge0.equals(edge1)),
+                () -> assertFalse(edge0.equals(fromNode0)));
+    }
+
+    @Test
+    public void edge_hashCode() {
+        Node fromNode0 = new Node(0, 0, 0);
+        Node toNode0 = new Node(0, 1, 0);
+        Node fromNode1 = new Node(1, 0, 0);
+        Node toNode1 = new Node(1, 1, 0);
+
+        Edge edge0 = new Edge(fromNode0, toNode0);
+        Edge edge1 = new Edge(fromNode1, toNode1);
+        Edge edge2 = new Edge(fromNode0, toNode0);
+
+        assertAll(
+                "Edge hash codes",
+                () -> assertTrue(edge0.hashCode() == edge2.hashCode()),
+                () -> assertFalse(edge0.hashCode() != edge1.hashCode()));
     }
 
     @Test
@@ -385,8 +490,13 @@ public class GraphTest {
         graph.addEdge(edge3);
         graph.addEdge(edge4);
 
-        Node found = graph.findDownstreamIntersection(edge1, edge3);
-        assertEquals(null, found);
+        Node found1 = graph.findDownstreamIntersection(edge1, edge2);
+        Node found2 = graph.findDownstreamIntersection(edge3, edge4);
+
+        assertAll(
+                "No intersection",
+                () -> assertNull(found1, "No intersection"),
+                () -> assertNull(found2, "No out edges"));
     }
 
     @Test
@@ -416,8 +526,8 @@ public class GraphTest {
         graph.addEdge(edge5);
         graph.addEdge(edge6);
 
-        Node found = graph.findUpstreamIntersection(edge5, edge6);
-        assertEquals(node1, found);
+        Node found1 = graph.findUpstreamIntersection(edge5, edge6);
+        assertEquals(node1, found1);
     }
 
     @Test
@@ -440,8 +550,13 @@ public class GraphTest {
         graph.addEdge(edge5);
         graph.addEdge(edge6);
 
-        Node found = graph.findUpstreamIntersection(edge5, edge6);
-        assertNull(found);
+        Node found1 = graph.findUpstreamIntersection(edge5, edge6);
+        Node found2 = graph.findUpstreamIntersection(edge2, edge4);
+
+        assertAll(
+                "No intersection",
+                () -> assertNull(found1, "No intersection"),
+                () -> assertNull(found2, "No in edges"));
     }
 
     @Test
@@ -479,5 +594,112 @@ public class GraphTest {
                 () -> assertEquals(subgraph.getAllEdges().numObjs, 2),
                 () -> assertTrue(subgraph.contains(edge1)),
                 () -> assertTrue(subgraph.contains(edge3)));
+    }
+
+    @Test
+    public void update_updatesGraph() {
+        Graph graph = new Graph();
+        Node node0 = new Node(-1, 0, 0);
+        Node node1 = new Node(0, 0, 0);
+        Node node2A = new Node(1, 1, 0);
+        Node node3A = new Node(2, 2, 0);
+        Node node2B = new Node(-1, -1, 0);
+        Node node3B = new Node(-2, -2, 0);
+        Node node4 = new Node(3, 0, 0);
+
+        Edge edge0 = new Edge(node0, node1);
+        Edge edge1 = new Edge(node1, node2A);
+        Edge edge2 = new Edge(node2A, node3A);
+        Edge edge3 = new Edge(node1, node2B);
+        Edge edge4 = new Edge(node2B, node3B);
+        Edge edge5 = new Edge(node3A, node4);
+        Edge edge6 = new Edge(node3B, node4);
+
+        graph.addEdge(edge0);
+        graph.addEdge(edge1);
+        graph.addEdge(edge2);
+        graph.addEdge(edge3);
+
+        Graph newGraph = new Graph();
+
+        newGraph.addEdge(edge4);
+        newGraph.addEdge(edge5);
+        newGraph.addEdge(edge6);
+
+        graph.update(newGraph);
+
+        assertAll(
+                "Updated graph",
+                () -> assertEquals(graph.getAllEdges().numObjs, 7),
+                () -> assertTrue(graph.contains(edge0)),
+                () -> assertTrue(graph.contains(edge1)),
+                () -> assertTrue(graph.contains(edge2)),
+                () -> assertTrue(graph.contains(edge3)),
+                () -> assertTrue(graph.contains(edge4)),
+                () -> assertTrue(graph.contains(edge5)),
+                () -> assertTrue(graph.contains(edge6)));
+    }
+
+    @Test
+    public void clear_clearsGraph() {
+        Graph graph = new Graph();
+        Node node0 = new Node(-1, 0, 0);
+        Node node1 = new Node(0, 0, 0);
+        Node node2A = new Node(1, 1, 0);
+        Node node3A = new Node(2, 2, 0);
+        Node node2B = new Node(-1, -1, 0);
+        Node node3B = new Node(-2, -2, 0);
+        Node node4 = new Node(3, 0, 0);
+
+        Edge edge0 = new Edge(node0, node1);
+        Edge edge1 = new Edge(node1, node2A);
+        Edge edge2 = new Edge(node2A, node3A);
+        Edge edge3 = new Edge(node1, node2B);
+        Edge edge4 = new Edge(node2B, node3B);
+        Edge edge5 = new Edge(node3A, node4);
+        Edge edge6 = new Edge(node3B, node4);
+
+        graph.addEdge(edge0);
+        graph.addEdge(edge1);
+        graph.addEdge(edge2);
+        graph.addEdge(edge3);
+        graph.addEdge(edge4);
+        graph.addEdge(edge5);
+        graph.addEdge(edge6);
+
+        graph.clear();
+
+        assertAll(
+                "Cleared graph",
+                () -> assertTrue(graph.getAllEdges().isEmpty()),
+                () -> assertTrue(graph.getAllNodes().isEmpty()));
+    }
+
+    @Test
+    public void graph_toString_returnsString() {
+        Graph graph = new Graph();
+        Node node0 = new Node(4, 5, 6);
+        Node node1 = new Node(5, 5, 6);
+        Node node2 = new Node(6, 5, 6);
+
+        Edge edge0 = new Edge(node0, node1);
+        Edge edge1 = new Edge(node1, node2);
+
+        graph.addEdge(edge0);
+        graph.addEdge(edge1);
+
+        String expected =
+                "\n"
+                        + "EDGES OUT\n"
+                        + "\n"
+                        + "(4,5,6) : [(4,5,6)~(5,5,6)] \n"
+                        + "(5,5,6) : [(5,5,6)~(6,5,6)] \n"
+                        + "\n"
+                        + "EDGES IN\n"
+                        + "\n"
+                        + "(5,5,6) : [(4,5,6)~(5,5,6)] \n"
+                        + "(6,5,6) : [(5,5,6)~(6,5,6)] \n";
+
+        assertEquals(expected, graph.toString());
     }
 }
