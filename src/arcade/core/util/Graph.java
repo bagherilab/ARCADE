@@ -19,12 +19,12 @@ import sim.util.Bag;
  */
 public final class Graph {
 
-    /** Calculation categories. */
+    /** Calculation strategies. */
     public enum Strategy {
-        /** Code for upstream calculation category. */
+        /** Code for upstream calculation strategy. */
         UPSTREAM,
 
-        /** Code for downstream direction category. */
+        /** Code for downstream direction strategy. */
         DOWNSTREAM
     }
 
@@ -419,7 +419,7 @@ public final class Graph {
     }
 
     /**
-     * Find the node where two edges intersect.
+     * Find the first downstream node where two edges intersect.
      *
      * @param edge1 first edge to start from
      * @param edge2 second edge to start from
@@ -430,7 +430,7 @@ public final class Graph {
     }
 
     /**
-     * Find the node where two edges intersect.
+     * Find the first upstream node where two edges intersect.
      *
      * @param edge1 first edge to start from
      * @param edge2 second edge to start from
@@ -440,7 +440,16 @@ public final class Graph {
         return findIntersection(edge1, edge2, Strategy.UPSTREAM);
     }
 
-    public Node findIntersection(Edge edge1, Edge edge2, Strategy strategy) {
+    /**
+     * Find the first node where two edges intersect based on a calulcation strategy (upstream or
+     * downstream).
+     *
+     * @param edge1 first edge to start from
+     * @param edge2 second edge to start from
+     * @param strategy the direction to search
+     * @return the intersection node or null if no intersection
+     */
+    private Node findIntersection(Edge edge1, Edge edge2, Strategy strategy) {
         if (edge1.getNode(strategy).equals(edge2.getNode(strategy))) {
             return edge1.getNode(strategy);
         }
@@ -452,6 +461,14 @@ public final class Graph {
         return intersection;
     }
 
+    /**
+     * Get all nodes connected to the given node based on a calculation strategy (e.g. upstream or
+     * downstream).
+     *
+     * @param node the node to start from
+     * @param strategy the direction to search
+     * @return a bag of connected nodes
+     */
     private Bag getConnectedNodes(Node node, Strategy strategy) {
         Bag first = getEdges(node, strategy);
         if (first == null) {
@@ -481,7 +498,7 @@ public final class Graph {
     }
 
     /**
-     * Breadth first search from node downstream for a subset of target nodes.
+     * Breadth first search from node according to strategy for a subset of target nodes.
      *
      * @param node the node to start from
      * @param targetNodes the bag of potential intersection nodes
@@ -725,6 +742,13 @@ public final class Graph {
             edgesOut = new ArrayList<>();
         }
 
+        /**
+         * Gets the node the edge points to based on the calculation strategy (e.g. upstream or
+         * downstream).
+         *
+         * @param strategy the calculation strategy
+         * @return the node the edge points to
+         */
         public Node getNode(Strategy strategy) {
             return (strategy == Strategy.UPSTREAM) ? from : to;
         }
@@ -765,6 +789,12 @@ public final class Graph {
             this.from = from;
         }
 
+        /**
+         * Gets list of edges based on calculation strategy (e.g. upstream or downstream).
+         *
+         * @param strategy the calculation strategy
+         * @return the list of edges
+         */
         public ArrayList<Edge> getEdges(Strategy strategy) {
             return (strategy == Strategy.UPSTREAM) ? edgesIn : edgesOut;
         }
