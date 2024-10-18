@@ -2,6 +2,9 @@ package arcade.core.util;
 
 import java.util.HashSet;
 import org.junit.jupiter.api.Test;
+import sim.util.Bag;
+import arcade.core.util.Graph.Edge;
+import arcade.core.util.Graph.Node;
 import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.util.Graph.Edge;
 import static arcade.core.util.Graph.Node;
@@ -174,13 +177,25 @@ public class GraphTest {
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
         Node node3 = new Node(2, 2, 0);
+        Node node4 = new Node(3, 3, 0);
         Edge edge1 = new Edge(node1, node2);
         Edge edge2 = new Edge(node2, node3);
+        Edge edge3 = new Edge(node2, node4);
 
         graph.addEdge(edge1);
         graph.addEdge(edge2);
+        graph.addEdge(edge3);
 
-        assertTrue(graph.getEdgesOut(new Node(1, 1, 0)).contains(edge2));
+        Bag expectedEdgesOut = new Bag();
+        expectedEdgesOut.add(edge2);
+        expectedEdgesOut.add(edge3);
+
+        Bag edgesOut = graph.getEdgesOut(new Node(1, 1, 0));
+
+        assertAll(
+                "Any and all edges out",
+                () -> assertTrue(edgesOut.containsAll(expectedEdgesOut)),
+                () -> assertTrue(expectedEdgesOut.containsAll(edgesOut)));
     }
 
     @Test
@@ -200,13 +215,24 @@ public class GraphTest {
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
         Node node3 = new Node(2, 2, 0);
+        Node node4 = new Node(3, 3, 0);
         Edge edge1 = new Edge(node1, node2);
         Edge edge2 = new Edge(node2, node3);
+        Edge edge3 = new Edge(node2, node4);
 
         graph.addEdge(edge1);
         graph.addEdge(edge2);
+        graph.addEdge(edge3);
 
-        assertTrue(graph.getEdgesIn(new Node(1, 1, 0)).contains(edge1));
+        Bag expectedEdgesIn = new Bag();
+        expectedEdgesIn.add(edge1);
+
+        Bag edgesIn = graph.getEdgesIn(new Node(1, 1, 0));
+
+        assertAll(
+                "Any and all edges in",
+                () -> assertTrue(edgesIn.containsAll(expectedEdgesIn)),
+                () -> assertTrue(expectedEdgesIn.containsAll(edgesIn)));
     }
 
     @Test
