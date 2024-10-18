@@ -13,7 +13,6 @@ public class GraphTest {
         Node node = new Node(1, 5, 3);
 
         assertAll(
-                "Node coordinates",
                 () -> assertEquals(1, node.getX()),
                 () -> assertEquals(5, node.getY()),
                 () -> assertEquals(3, node.getZ()));
@@ -33,7 +32,6 @@ public class GraphTest {
         node.update(temp);
 
         assertAll(
-                "Updated node coordinates",
                 () -> assertEquals(2, node.getX()),
                 () -> assertEquals(6, node.getY()),
                 () -> assertEquals(4, node.getZ()));
@@ -45,7 +43,6 @@ public class GraphTest {
         Node duplicate = node.duplicate();
 
         assertAll(
-                "Duplicate node",
                 () -> assertEquals(node.getX(), duplicate.getX()),
                 () -> assertEquals(node.getY(), duplicate.getY()),
                 () -> assertEquals(node.getZ(), duplicate.getZ()));
@@ -58,7 +55,6 @@ public class GraphTest {
         Node node3 = new Node(2, 6, 4);
 
         assertAll(
-                "Node comparisons",
                 () -> assertEquals(0, node1.compareTo(node2)),
                 () -> assertEquals(-1, node1.compareTo(node3)),
                 () -> assertEquals(1, node3.compareTo(node1)));
@@ -71,7 +67,6 @@ public class GraphTest {
         Node node2 = new Node(3, 2, 1);
 
         assertAll(
-                "Node hash codes",
                 () -> assertTrue(node0.equals(node1)),
                 () -> assertTrue(node1.equals(node0)),
                 () -> assertTrue(node0.hashCode() == node1.hashCode()),
@@ -87,7 +82,6 @@ public class GraphTest {
         Edge edge = new Edge(node1, node2);
 
         assertAll(
-                "Node equality",
                 () -> assertTrue(node1.equals(node2)),
                 () -> assertFalse(node1.equals(node3)),
                 () -> assertFalse(node1.equals(node4)),
@@ -103,7 +97,6 @@ public class GraphTest {
         Edge edge = new Edge(fromNode, toNode);
 
         assertAll(
-                "Edge nodes",
                 () -> assertEquals(fromNode, edge.getFrom()),
                 () -> assertEquals(toNode, edge.getTo()));
     }
@@ -119,7 +112,6 @@ public class GraphTest {
         Edge edge1 = new Edge(fromNode1, toNode1);
 
         assertAll(
-                "Edge strings",
                 () -> assertEquals("[(0,0,0)~(0,1,0)]", edge0.toString()),
                 () -> assertEquals("[(1,0,0)~(1,1,0)]", edge1.toString()));
     }
@@ -136,7 +128,6 @@ public class GraphTest {
         Edge edge2 = new Edge(fromNode0, toNode0);
 
         assertAll(
-                "Edge equality",
                 () -> assertTrue(edge0.equals(edge2)),
                 () -> assertFalse(edge0.equals(edge1)),
                 () -> assertFalse(edge0.equals(null)),
@@ -155,7 +146,6 @@ public class GraphTest {
         Edge edge2 = new Edge(fromNode0, toNode0);
 
         assertAll(
-                "Edge hash codes",
                 () -> assertTrue(edge0.hashCode() == edge2.hashCode()),
                 () -> assertFalse(edge0.hashCode() != edge1.hashCode()));
     }
@@ -165,7 +155,6 @@ public class GraphTest {
         Graph graph = new Graph();
 
         assertAll(
-                "Empty graph",
                 () -> assertTrue(graph.getAllEdges().isEmpty()),
                 () -> assertTrue(graph.getAllNodes().isEmpty()));
     }
@@ -198,7 +187,6 @@ public class GraphTest {
         graph.addEdge(edge);
 
         assertAll(
-                "Nodes and edge added",
                 () -> assertTrue(graph.contains(node1)),
                 () -> assertTrue(graph.contains(node2)),
                 () -> assertTrue(graph.contains(new Edge(node1, node2))));
@@ -213,7 +201,6 @@ public class GraphTest {
         graph.addEdge(node1, node2);
 
         assertAll(
-                "Nodes and edge added",
                 () -> assertTrue(graph.contains(node1)),
                 () -> assertTrue(graph.contains(node2)),
                 () -> assertTrue(graph.contains(new Edge(node1, node2))));
@@ -236,7 +223,6 @@ public class GraphTest {
         graph.addEdge(edge2);
 
         assertAll(
-                "Nodes and edge added",
                 () -> assertTrue(graph.contains(edge1)),
                 () -> assertTrue(graph.contains(edge2)),
                 () -> assertTrue(graph.contains(edge3)));
@@ -265,7 +251,6 @@ public class GraphTest {
         graph.removeEdge(edge2);
 
         assertAll(
-                "Edge removed and preserves graph",
                 () -> assertFalse(graph.contains(edge2)),
                 () -> assertTrue(graph.contains(node3)),
                 () -> assertTrue(graph.contains(node1a)),
@@ -296,7 +281,6 @@ public class GraphTest {
         graph.clearEdge(edge2);
 
         assertAll(
-                "Edge cleared but remains in graph",
                 () -> assertTrue(edge2.getEdgesIn().isEmpty()),
                 () -> assertTrue(edge2.getEdgesOut().isEmpty()),
                 () -> assertTrue(graph.contains(edge2)));
@@ -313,7 +297,6 @@ public class GraphTest {
         graph.reverseEdge(edge);
 
         assertAll(
-                "Edge reversed",
                 () -> assertTrue(graph.contains(new Edge(node2, node1))),
                 () -> assertFalse(graph.contains(new Edge(node1, node2))));
     }
@@ -364,7 +347,6 @@ public class GraphTest {
         Bag edgesOut = graph.getEdgesOut(new Node(1, 1, 0));
 
         assertAll(
-                "Any and all edges out",
                 () -> assertTrue(edgesOut.containsAll(expectedEdgesOut)),
                 () -> assertTrue(expectedEdgesOut.containsAll(edgesOut)));
     }
@@ -407,7 +389,6 @@ public class GraphTest {
         Bag edgesIn = graph.getEdgesIn(new Node(1, 1, 0));
 
         assertAll(
-                "Any and all edges in",
                 () -> assertTrue(edgesIn.containsAll(expectedEdgesIn)),
                 () -> assertTrue(expectedEdgesIn.containsAll(edgesIn)));
     }
@@ -436,7 +417,6 @@ public class GraphTest {
         graph.addEdge(edge2);
 
         assertAll(
-                "Correct degrees",
                 () -> assertEquals(1, graph.getDegree(node1)),
                 () -> assertEquals(2, graph.getDegree(node2)),
                 () -> assertEquals(1, graph.getDegree(node3)));
@@ -455,7 +435,6 @@ public class GraphTest {
         graph.addEdge(edge2);
 
         assertAll(
-                "Correct in-degrees",
                 () -> assertEquals(0, graph.getInDegree(node1)),
                 () -> assertEquals(1, graph.getInDegree(node2)),
                 () -> assertEquals(1, graph.getInDegree(node3)));
@@ -474,7 +453,6 @@ public class GraphTest {
         graph.addEdge(edge2);
 
         assertAll(
-                "Correct out-degrees",
                 () -> assertEquals(1, graph.getOutDegree(node1)),
                 () -> assertEquals(1, graph.getOutDegree(node2)),
                 () -> assertEquals(0, graph.getOutDegree(node3)));
@@ -494,7 +472,6 @@ public class GraphTest {
         graph.addEdge(edge2);
 
         assertAll(
-                "Edges exist",
                 () -> assertTrue(graph.hasEdge(node1, node2)),
                 () -> assertTrue(graph.hasEdge(node2, node3)));
     }
@@ -544,7 +521,6 @@ public class GraphTest {
         Node found3 = graph.findDownstreamIntersection(edge1, edge1);
 
         assertAll(
-                "Intersection nodes",
                 () -> assertEquals(node4, found1),
                 () -> assertEquals(node4, found2),
                 () -> assertEquals(node2A, found3));
@@ -575,7 +551,6 @@ public class GraphTest {
         Node found4 = graph.findDownstreamIntersection(edge3, edge4);
 
         assertAll(
-                "No intersection",
                 () -> assertNull(found1, "No intersection"),
                 () -> assertNull(found2, "No out edges"),
                 () -> assertNull(found3, "No intersection"),
@@ -614,7 +589,6 @@ public class GraphTest {
         Node found3 = graph.findUpstreamIntersection(edge2, edge2);
 
         assertAll(
-                "Intersection nodes",
                 () -> assertEquals(node1, found1),
                 () -> assertEquals(node1, found2),
                 () -> assertEquals(node2A, found3));
@@ -713,7 +687,6 @@ public class GraphTest {
         Node found4 = graph.findUpstreamIntersection(edge4, edge2);
 
         assertAll(
-                "No intersection",
                 () -> assertNull(found1, "No intersection"),
                 () -> assertNull(found2, "No in edges"),
                 () -> assertNull(found3, "No intersection"),
@@ -751,7 +724,6 @@ public class GraphTest {
         graph.getSubgraph(subgraph, e -> ((Edge) e).from.getX() == 0);
 
         assertAll(
-                "Filtered subgraph",
                 () -> assertEquals(subgraph.getAllEdges().numObjs, 2),
                 () -> assertTrue(subgraph.contains(edge1)),
                 () -> assertTrue(subgraph.contains(edge3)));
@@ -790,7 +762,6 @@ public class GraphTest {
         graph.update(newGraph);
 
         assertAll(
-                "Updated graph",
                 () -> assertEquals(graph.getAllEdges().numObjs, 7),
                 () -> assertTrue(graph.contains(edge0)),
                 () -> assertTrue(graph.contains(edge1)),
@@ -831,7 +802,6 @@ public class GraphTest {
         graph.clear();
 
         assertAll(
-                "Cleared graph",
                 () -> assertTrue(graph.getAllEdges().isEmpty()),
                 () -> assertTrue(graph.getAllNodes().isEmpty()));
     }
