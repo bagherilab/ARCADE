@@ -54,6 +54,9 @@ public class Parameter implements Serializable {
         tails[(mu < 0 ? 0 : 1)] = mu - 2 * sigma;
 
         if (isFrac) {
+            if (mu < 0 || mu > 1) {
+                throw new IllegalArgumentException("Fractional parameter must be between 0 and 1");
+            }
             tails[0] = Math.min(tails[0], 1.0);
             tails[1] = Math.max(tails[1], 0.0);
         }
