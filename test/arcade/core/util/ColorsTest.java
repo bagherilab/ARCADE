@@ -49,7 +49,7 @@ public class ColorsTest {
     }
 
     @Test
-    public void getAlpha_called_returnsValid() {
+    public void getAlpha_calledWithLevel_returnsCorrectAlpha() {
         Color[] colorArray = new Color[] {new Color(1, 1, 1, 1), new Color(255, 255, 255, 255)};
         Colors colors = new Colors(colorArray);
         assertAll(
@@ -59,7 +59,7 @@ public class ColorsTest {
     }
 
     @Test
-    public void getRGB_called_returnsValid() {
+    public void getRGB_calledWithLevel_returnsCorrectRGB() {
         Colors colors = new Colors(new Color(1, 1, 1, 1), new Color(255, 255, 255, 1), 0.0, 1.0);
         assertAll(
                 () -> assertEquals(new Color(255, 255, 255, 1).getRGB(), colors.getRGB(1.0)),
