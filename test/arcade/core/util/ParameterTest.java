@@ -2,28 +2,44 @@ package arcade.core.util;
 
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.exceptions.OOBException;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ParameterTest {
     @Test
-    public void testConstructor_populatesAttributes() {
+    public void constructor_called_populatesAttributes() {
         MersenneTwisterFast random = new MersenneTwisterFast();
         Parameter p = new Parameter(4.0, 0.25, false, random);
 
         assertAll(
-                "Parameter",
                 () -> assertEquals(4.0, p.getMu(), 0.00001),
                 () -> assertEquals(1.0, p.getSigma(), 0.00001));
     }
 
     @Test
-    public void update_returnsParameter() {
+    public void constructor_isFracAndMuGreaterThan1_throwsIllegalArgumentException() {
+        MersenneTwisterFast random = new MersenneTwisterFast();
+        double mu = 2.0;
+        double sigma = 0.25;
+        assertThrows(OOBException.class, () -> new Parameter(mu, sigma, true, random));
+    }
+
+    @Test
+    public void constructor_isFracAndMuLessThan0_throwsIllegalArgumentException() {
+        MersenneTwisterFast random = new MersenneTwisterFast();
+        double mu = -2.0;
+        double sigma = 0.25;
+
+        assertThrows(OOBException.class, () -> new Parameter(mu, sigma, true, random));
+    }
+
+    @Test
+    public void update_called_returnsNewParameter() {
         MersenneTwisterFast random = new MersenneTwisterFast();
         Parameter p = new Parameter(8.0, 0.25, false, random);
         Parameter updated = p.update(16.0);
 
         assertAll(
-                "Updated parameter",
                 () -> assertEquals(8.0, p.getMu(), 0.00001),
                 () -> assertEquals(2.0, p.getSigma(), 0.00001),
                 () -> assertEquals(16.0, updated.getMu(), 0.00001),
@@ -116,35 +132,5 @@ public class ParameterTest {
             assertTrue(value >= 0.0);
             assertTrue(value <= 1.0);
         }
-    }
-
-    @Test
-    public void constructor_isFracAndMuGreaterThan1_throwsIllegalArgumentException() {
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        double mu = 2.0;
-        double sigma = 0.25;
-
-        IllegalArgumentException e =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> {
-                            new Parameter(mu, sigma, true, random);
-                        });
-        assertEquals("Fractional parameter must be between 0 and 1", e.getMessage());
-    }
-
-    @Test
-    public void constructor_isFracAndMuLessThan0_throwsIllegalArgumentException() {
-        MersenneTwisterFast random = new MersenneTwisterFast();
-        double mu = -2.0;
-        double sigma = 0.25;
-
-        IllegalArgumentException e =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> {
-                            new Parameter(mu, sigma, true, random);
-                        });
-        assertEquals("Fractional parameter must be between 0 and 1", e.getMessage());
     }
 }

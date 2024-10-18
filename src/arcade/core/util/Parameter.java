@@ -3,6 +3,7 @@ package arcade.core.util;
 import java.io.Serializable;
 import sim.util.distribution.Normal;
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.exceptions.OOBException;
 
 /**
  * Container class for parameter with normal distribution and bound checks.
@@ -54,8 +55,8 @@ public class Parameter implements Serializable {
         tails[(mu < 0 ? 0 : 1)] = mu - 2 * sigma;
 
         if (isFrac) {
-            if (mu < 0 || mu > 1) {
-                throw new IllegalArgumentException("Fractional parameter must be between 0 and 1");
+            if (mu <= 0 || mu >= 1) {
+                throw new OOBException("Mu parameter must be between 0 and 1, given " + mu + ".");
             }
             tails[0] = Math.min(tails[0], 1.0);
             tails[1] = Math.max(tails[1], 0.0);
