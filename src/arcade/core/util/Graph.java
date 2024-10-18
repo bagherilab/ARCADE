@@ -237,6 +237,12 @@ public final class Graph {
         }
     }
 
+    /**
+     * Adds edge to graph based on nodes.
+     *
+     * @param from the node to add as the from node.
+     * @param to the node to add as the to node.
+     */
     public void addEdge(Node from, Node to) {
         addEdge(new Edge(from, to));
     }
@@ -383,7 +389,7 @@ public final class Graph {
     }
 
     /**
-     * Clear an edge's links to other edges
+     * Clear an edge's links to other edges.
      *
      * @param edge the edge
      */
@@ -448,7 +454,7 @@ public final class Graph {
      * Breadth first search from node downstream for a subset of target nodes.
      *
      * @param node the node to start from
-     * @param targetsBag the bag of potential intersection nodes
+     * @param targeNodes the bag of potential intersection nodes
      * @return the target node or null if not found
      */
     private Node downstreamBreadthFirstSearch(Node node, Bag targetNodes) {
@@ -474,7 +480,9 @@ public final class Graph {
             }
             for (Object obj : getEdgesOut(next)) {
                 Edge e = (Edge) obj;
-                if (!visited.contains(e.getTo())) queue.add(e.getTo());
+                if (!visited.contains(e.getTo())) {
+                    queue.add(e.getTo());
+                }
             }
         }
         return null;
@@ -537,7 +545,7 @@ public final class Graph {
      * Breadth first search from node upstream for a subset of target nodes.
      *
      * @param node the node to start from
-     * @param targetsBag the bag of potential intersection nodes
+     * @param targetNodes the bag of potential intersection nodes
      * @return the target node or null if not found
      */
     private Node upstreamBreadthFirstSearch(Node node, Bag targetNodes) {
@@ -563,7 +571,9 @@ public final class Graph {
             }
             for (Object obj : getEdgesIn(next)) {
                 Edge e = (Edge) obj;
-                if (!visited.contains(e.getFrom())) queue.add(e.getFrom());
+                if (!visited.contains(e.getFrom())) {
+                    queue.add(e.getFrom());
+                }
             }
         }
         return null;
