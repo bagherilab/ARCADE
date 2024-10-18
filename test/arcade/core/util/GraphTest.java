@@ -83,12 +83,15 @@ public class GraphTest {
         Node node1 = new Node(1, 2, 3);
         Node node2 = new Node(1, 2, 3);
         Node node3 = new Node(3, 2, 1);
+        Node node4 = new Node(1, 3, 3);
         Edge edge = new Edge(node1, node2);
 
         assertAll(
                 "Node equality",
                 () -> assertTrue(node1.equals(node2)),
                 () -> assertFalse(node1.equals(node3)),
+                () -> assertFalse(node1.equals(node4)),
+                () -> assertFalse(node1.equals(null)),
                 () -> assertFalse(node1.equals(edge)));
     }
 
@@ -136,6 +139,7 @@ public class GraphTest {
                 "Edge equality",
                 () -> assertTrue(edge0.equals(edge2)),
                 () -> assertFalse(edge0.equals(edge1)),
+                () -> assertFalse(edge0.equals(null)),
                 () -> assertFalse(edge0.equals(fromNode0)));
     }
 
@@ -216,7 +220,7 @@ public class GraphTest {
     }
 
     @Test
-    public void removeEdge_edgeRemovedAndPreservesGraph() {
+    public void addEdge_edgeAlreadyExistsInGraph_edgeAdded() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -229,17 +233,73 @@ public class GraphTest {
         graph.addEdge(edge1);
         graph.addEdge(edge2);
         graph.addEdge(edge3);
+        graph.addEdge(edge2);
+
+        assertAll(
+                "Nodes and edge added",
+                () -> assertTrue(graph.contains(edge1)),
+                () -> assertTrue(graph.contains(edge2)),
+                () -> assertTrue(graph.contains(edge3)));
+    }
+
+    @Test
+    public void removeEdge_edgeRemovedAndPreservesGraph() {
+        Graph graph = new Graph();
+        Node node1a = new Node(1, 0, 0);
+        Node node1b = new Node(0, 0, 0);
+        Node node2 = new Node(0, 1, 0);
+        Node node3 = new Node(0, 2, 0);
+        Node node4a = new Node(0, 3, 0);
+        Node node4b = new Node(1, 3, 0);
+        Edge edge1a = new Edge(node1a, node2);
+        Edge edge1b = new Edge(node2, node1b);
+        Edge edge2 = new Edge(node2, node3);
+        Edge edge3a = new Edge(node3, node4a);
+        Edge edge3b = new Edge(node4b, node3);
+
+        graph.addEdge(edge1a);
+        graph.addEdge(edge1b);
+        graph.addEdge(edge2);
+        graph.addEdge(edge3a);
+        graph.addEdge(edge3b);
         graph.removeEdge(edge2);
 
         assertAll(
                 "Edge removed and preserves graph",
                 () -> assertFalse(graph.contains(edge2)),
                 () -> assertTrue(graph.contains(node3)),
-                () -> assertTrue(graph.contains(node1)),
+                () -> assertTrue(graph.contains(node1a)),
+                () -> assertTrue(graph.contains(node1b)),
                 () -> assertTrue(graph.contains(node2)),
-                () -> assertTrue(graph.contains(node4)),
-                () -> assertTrue(graph.contains(new Edge(node1, node2))),
-                () -> assertTrue(graph.contains(new Edge(node3, node4))));
+                () -> assertTrue(graph.contains(node4a)),
+                () -> assertTrue(graph.contains(node4b)),
+                () -> assertTrue(graph.contains(new Edge(node1a, node2))),
+                () -> assertTrue(graph.contains(new Edge(node2, node1b))),
+                () -> assertTrue(graph.contains(new Edge(node3, node4a))),
+                () -> assertTrue(graph.contains(new Edge(node4b, node3))));
+    }
+
+    @Test
+    public void clearEdge_linksRemoved() {
+        Graph graph = new Graph();
+        Node node1 = new Node(0, 0, 0);
+        Node node2 = new Node(0, 1, 0);
+        Node node3 = new Node(0, 2, 0);
+        Node node4 = new Node(0, 3, 0);
+        Edge edge1 = new Edge(node1, node2);
+        Edge edge2 = new Edge(node2, node3);
+        Edge edge3 = new Edge(node3, node4);
+
+        graph.addEdge(edge1);
+        graph.addEdge(edge2);
+        graph.addEdge(edge3);
+        graph.clearEdge(edge2);
+
+        assertAll(
+                "Edge cleared but remains in graph",
+                () -> assertTrue(edge2.getEdgesIn().isEmpty()),
+                () -> assertTrue(edge2.getEdgesOut().isEmpty()),
+                () -> assertTrue(graph.contains(edge2)));
     }
 
     @Test
@@ -283,17 +343,23 @@ public class GraphTest {
         Node node2 = new Node(1, 1, 0);
         Node node3 = new Node(2, 2, 0);
         Node node4 = new Node(3, 3, 0);
+        Node node5 = new Node(4, 4, 0);
         Edge edge1 = new Edge(node1, node2);
         Edge edge2 = new Edge(node2, node3);
         Edge edge3 = new Edge(node2, node4);
+        Edge edge4 = new Edge(node2, node5);
+        Edge edge5 = new Edge(node5, node1);
 
         graph.addEdge(edge1);
         graph.addEdge(edge2);
         graph.addEdge(edge3);
+        graph.addEdge(edge4);
+        graph.addEdge(edge5);
 
         Bag expectedEdgesOut = new Bag();
         expectedEdgesOut.add(edge2);
         expectedEdgesOut.add(edge3);
+        expectedEdgesOut.add(edge4);
 
         Bag edgesOut = graph.getEdgesOut(new Node(1, 1, 0));
 
@@ -321,16 +387,22 @@ public class GraphTest {
         Node node2 = new Node(1, 1, 0);
         Node node3 = new Node(2, 2, 0);
         Node node4 = new Node(3, 3, 0);
+        Node node5 = new Node(4, 4, 0);
         Edge edge1 = new Edge(node1, node2);
         Edge edge2 = new Edge(node2, node3);
         Edge edge3 = new Edge(node2, node4);
+        Edge edge4 = new Edge(node5, node2);
+        Edge edge5 = new Edge(node5, node1);
 
         graph.addEdge(edge1);
         graph.addEdge(edge2);
         graph.addEdge(edge3);
+        graph.addEdge(edge4);
+        graph.addEdge(edge5);
 
         Bag expectedEdgesIn = new Bag();
         expectedEdgesIn.add(edge1);
+        expectedEdgesIn.add(edge4);
 
         Bag edgesIn = graph.getEdgesIn(new Node(1, 1, 0));
 
@@ -467,8 +539,15 @@ public class GraphTest {
         graph.addEdge(edge5);
         graph.addEdge(edge6);
 
-        Node found = graph.findDownstreamIntersection(edge1, edge3);
-        assertEquals(node4, found);
+        Node found1 = graph.findDownstreamIntersection(edge1, edge3);
+        Node found2 = graph.findDownstreamIntersection(edge3, edge1);
+        Node found3 = graph.findDownstreamIntersection(edge1, edge1);
+
+        assertAll(
+                "Intersection nodes",
+                () -> assertEquals(node4, found1),
+                () -> assertEquals(node4, found2),
+                () -> assertEquals(node2A, found3));
     }
 
     @Test
@@ -491,12 +570,16 @@ public class GraphTest {
         graph.addEdge(edge4);
 
         Node found1 = graph.findDownstreamIntersection(edge1, edge2);
-        Node found2 = graph.findDownstreamIntersection(edge3, edge4);
+        Node found2 = graph.findDownstreamIntersection(edge4, edge3);
+        Node found3 = graph.findDownstreamIntersection(edge2, edge1);
+        Node found4 = graph.findDownstreamIntersection(edge3, edge4);
 
         assertAll(
                 "No intersection",
                 () -> assertNull(found1, "No intersection"),
-                () -> assertNull(found2, "No out edges"));
+                () -> assertNull(found2, "No out edges"),
+                () -> assertNull(found3, "No intersection"),
+                () -> assertNull(found4, "No out edges"));
     }
 
     @Test
@@ -527,24 +610,98 @@ public class GraphTest {
         graph.addEdge(edge6);
 
         Node found1 = graph.findUpstreamIntersection(edge5, edge6);
-        assertEquals(node1, found1);
+        Node found2 = graph.findUpstreamIntersection(edge6, edge5);
+        Node found3 = graph.findUpstreamIntersection(edge2, edge2);
+
+        assertAll(
+                "Intersection nodes",
+                () -> assertEquals(node1, found1),
+                () -> assertEquals(node1, found2),
+                () -> assertEquals(node2A, found3));
+    }
+
+    @Test
+    public void findDownstreamIntersection_disconnectedCycles_returnsNull() {
+        Graph graph = new Graph();
+
+        Node node1A = new Node(0, 0, 0);
+        Node node2A = new Node(0, 1, 0);
+        Node node3A = new Node(1, 1, 0);
+
+        Node node1B = new Node(0, 0, 1);
+        Node node2B = new Node(0, 1, 1);
+        Node node3B = new Node(1, 1, 1);
+
+        Edge edge1A = new Edge(node1A, node2A);
+        Edge edge2A = new Edge(node1A, node3A);
+        Edge edge3A = new Edge(node2A, node1A);
+
+        Edge edge1B = new Edge(node1B, node2B);
+        Edge edge2B = new Edge(node1B, node3B);
+        Edge edge3B = new Edge(node2B, node1B);
+
+        graph.addEdge(edge1A);
+        graph.addEdge(edge2A);
+        graph.addEdge(edge3A);
+
+        graph.addEdge(edge1B);
+        graph.addEdge(edge2B);
+        graph.addEdge(edge3B);
+
+        Node found1 = graph.findDownstreamIntersection(edge1A, edge1B);
+        assertNull(found1);
+    }
+
+    @Test
+    public void findUpstreamIntersection_disconnectedCycles_returnsNull() {
+        Graph graph = new Graph();
+
+        Node node1A = new Node(0, 0, 0);
+        Node node2A = new Node(0, 1, 0);
+        Node node3A = new Node(1, 1, 0);
+
+        Node node1B = new Node(0, 0, 1);
+        Node node2B = new Node(0, 1, 1);
+        Node node3B = new Node(1, 1, 1);
+
+        Edge edge1A = new Edge(node1A, node2A);
+        Edge edge2A = new Edge(node1A, node3A);
+        Edge edge3A = new Edge(node2A, node1A);
+
+        Edge edge1B = new Edge(node1B, node2B);
+        Edge edge2B = new Edge(node1B, node3B);
+        Edge edge3B = new Edge(node2B, node1B);
+
+        graph.addEdge(edge1A);
+        graph.addEdge(edge2A);
+        graph.addEdge(edge3A);
+
+        graph.addEdge(edge1B);
+        graph.addEdge(edge2B);
+        graph.addEdge(edge3B);
+
+        Node found1 = graph.findUpstreamIntersection(edge1A, edge1B);
+        assertNull(found1);
     }
 
     @Test
     public void findUpstreamIntersection_noIntersection_returnsNull() {
         Graph graph = new Graph();
 
+        Node node1 = new Node(0, 0, 0);
         Node node2A = new Node(1, 1, 0);
         Node node3A = new Node(2, 2, 0);
         Node node2B = new Node(-1, -1, 0);
         Node node3B = new Node(-2, -2, 0);
         Node node4 = new Node(3, 0, 0);
 
+        Edge edge1 = new Edge(node1, node2B);
         Edge edge2 = new Edge(node2A, node3A);
         Edge edge4 = new Edge(node2B, node3B);
         Edge edge5 = new Edge(node3A, node4);
         Edge edge6 = new Edge(node3B, node4);
 
+        graph.addEdge(edge1);
         graph.addEdge(edge2);
         graph.addEdge(edge4);
         graph.addEdge(edge5);
@@ -552,11 +709,15 @@ public class GraphTest {
 
         Node found1 = graph.findUpstreamIntersection(edge5, edge6);
         Node found2 = graph.findUpstreamIntersection(edge2, edge4);
+        Node found3 = graph.findUpstreamIntersection(edge6, edge5);
+        Node found4 = graph.findUpstreamIntersection(edge4, edge2);
 
         assertAll(
                 "No intersection",
                 () -> assertNull(found1, "No intersection"),
-                () -> assertNull(found2, "No in edges"));
+                () -> assertNull(found2, "No in edges"),
+                () -> assertNull(found3, "No intersection"),
+                () -> assertNull(found4, "No in edges"));
     }
 
     @Test
