@@ -18,6 +18,16 @@ import sim.util.Bag;
  * the graph. Nodes may have more than one edge in or out.
  */
 public final class Graph {
+
+    /** Calculation categories. */
+    public enum Strategy {
+        /** Code for upstream calculation category. */
+        UPSTREAM,
+
+        /** Code for downstream direction category. */
+        DOWNSTREAM
+    }
+
     /** Collection of all {@code Edge} objects in a graph. */
     private final Bag allEdges;
 
@@ -91,13 +101,24 @@ public final class Graph {
     }
 
     /**
+     * Gets all edges in the graph based on the given node and category.
+     *
+     * @param node the node to get edges from
+     * @param strategy the category of edges to get
+     * @return a bag containing the edges
+     */
+    public Bag getEdges(Node node, Strategy strategy) {
+        return (strategy == Strategy.UPSTREAM) ? nodeToInBag.get(node) : nodeToOutBag.get(node);
+    }
+
+    /**
      * Gets edges out of the given node.
      *
      * @param node the node that edges are from
      * @return a bag containing the edges
      */
     public Bag getEdgesOut(Node node) {
-        return nodeToOutBag.get(node);
+        return getEdges(node, Strategy.DOWNSTREAM);
     }
 
     /**
@@ -107,7 +128,7 @@ public final class Graph {
      * @return a bag containing the edges
      */
     public Bag getEdgesIn(Node node) {
-        return nodeToInBag.get(node);
+        return getEdges(node, Strategy.UPSTREAM);
     }
 
     /**
@@ -405,45 +426,54 @@ public final class Graph {
      * @return the intersection node or null if no intersection
      */
     public Node findDownstreamIntersection(Edge edge1, Edge edge2) {
-        if (edge1.getTo().equals(edge2.getTo())) {
-            return edge1.getTo();
-        }
-        Bag allDownstream = getAllDownstream(edge1.getTo());
-        if (allDownstream == null) {
-            return null;
-        }
-        Node intersection = downstreamBreadthFirstSearch(edge2.getTo(), allDownstream);
-        return intersection;
+        return findIntersection(edge1, edge2, Strategy.DOWNSTREAM);
     }
 
     /**
-     * Get all the downstream nodes from a given node.
+     * Find the node where two edges intersect.
      *
-     * @param node the node to start from
-     * @return a bag of all downstream {@code Node} objects
+     * @param edge1 first edge to start from
+     * @param edge2 second edge to start from
+     * @return the intersection node or null if no intersection
      */
-    private Bag getAllDownstream(Node node) {
-        Bag out = getEdgesOut(node);
-        if (out == null) {
+    public Node findUpstreamIntersection(Edge edge1, Edge edge2) {
+        return findIntersection(edge1, edge2, Strategy.UPSTREAM);
+    }
+
+    public Node findIntersection(Edge edge1, Edge edge2, Strategy strategy) {
+        if (edge1.getNode(strategy).equals(edge2.getNode(strategy))) {
+            return edge1.getNode(strategy);
+        }
+        Bag allConnected = getConnectedNodes(edge1.getNode(strategy), strategy);
+        if (allConnected == null) {
+            return null;
+        }
+        Node intersection = breadthFirstSearch(edge2.getNode(strategy), allConnected, strategy);
+        return intersection;
+    }
+
+    private Bag getConnectedNodes(Node node, Strategy strategy) {
+        Bag first = getEdges(node, strategy);
+        if (first == null) {
             return null;
         }
         Bag visited = new Bag();
         Queue<Node> queue = new LinkedList<>();
-        for (Object e : out) {
+        for (Object e : first) {
             Edge edge = (Edge) e;
-            queue.add((Node) edge.getTo());
+            queue.add(edge.getNode(strategy));
         }
 
         while (!queue.isEmpty()) {
             Node active = queue.poll();
             visited.add(active);
-            if (getEdgesOut(active) == null) {
+            if (getEdges(active, strategy) == null) {
                 continue;
             }
-            for (Object nextOut : getEdgesOut(active)) {
-                Edge edge = (Edge) nextOut;
-                if (!visited.contains(edge.getTo())) {
-                    queue.add(edge.getTo());
+            for (Object next : getEdges(active, strategy)) {
+                Edge edge = (Edge) next;
+                if (!visited.contains(edge.getNode(strategy))) {
+                    queue.add(edge.getNode(strategy));
                 }
             }
         }
@@ -457,122 +487,31 @@ public final class Graph {
      * @param targetNodes the bag of potential intersection nodes
      * @return the target node or null if not found
      */
-    private Node downstreamBreadthFirstSearch(Node node, Bag targetNodes) {
-        Bag out = getEdgesOut(node);
-        if (out == null) {
+    private Node breadthFirstSearch(Node node, Bag targetNodes, Strategy strategy) {
+        Bag first = getEdges(node, strategy);
+        if (first == null) {
             return null;
         }
         Bag visited = new Bag();
         Queue<Node> queue = new LinkedList<>();
-        for (Object obj : out) {
-            Edge e = (Edge) obj;
-            queue.add(e.getTo());
-        }
-
-        while (!queue.isEmpty()) {
-            Node next = queue.poll();
-            visited.add(next);
-            if (targetNodes.contains(next)) {
-                return next;
-            }
-            if (getEdgesOut(next) == null) {
-                continue;
-            }
-            for (Object obj : getEdgesOut(next)) {
-                Edge e = (Edge) obj;
-                if (!visited.contains(e.getTo())) {
-                    queue.add(e.getTo());
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Find the node where two edges intersect.
-     *
-     * @param edge1 first edge to start from
-     * @param edge2 second edge to start from
-     * @return the intersection node or null if no intersection
-     */
-    public Node findUpstreamIntersection(Edge edge1, Edge edge2) {
-        if (edge1.getFrom().equals(edge2.getFrom())) {
-            return edge1.getFrom();
-        }
-        Bag allUpstream = getAllUpstream(edge1.getFrom());
-        if (allUpstream == null) {
-            return null;
-        }
-        Node intersection = upstreamBreadthFirstSearch(edge2.getFrom(), allUpstream);
-        return intersection;
-    }
-
-    /**
-     * Get all the upstream nodes from a given node.
-     *
-     * @param node the node to start from
-     * @return a bag of all downstream {@code Node} objects
-     */
-    private Bag getAllUpstream(Node node) {
-        Bag in = getEdgesIn(node);
-        if (in == null) {
-            return null;
-        }
-        Bag visited = new Bag();
-        Queue<Node> queue = new LinkedList<>();
-        for (Object e : in) {
+        for (Object e : first) {
             Edge edge = (Edge) e;
-            queue.add((Node) edge.getFrom());
+            queue.add(edge.getNode(strategy));
         }
 
         while (!queue.isEmpty()) {
             Node active = queue.poll();
             visited.add(active);
-            if (getEdgesIn(active) == null) {
+            if (targetNodes.contains(active)) {
+                return active;
+            }
+            if (getEdges(active, strategy) == null) {
                 continue;
             }
-            for (Object nextIn : getEdgesIn(active)) {
-                Edge edge = (Edge) nextIn;
-                if (!visited.contains(edge.getFrom())) {
-                    queue.add(edge.getFrom());
-                }
-            }
-        }
-        return visited;
-    }
-
-    /**
-     * Breadth first search from node upstream for a subset of target nodes.
-     *
-     * @param node the node to start from
-     * @param targetNodes the bag of potential intersection nodes
-     * @return the target node or null if not found
-     */
-    private Node upstreamBreadthFirstSearch(Node node, Bag targetNodes) {
-        Bag in = getEdgesIn(node);
-        if (in == null) {
-            return null;
-        }
-        Bag visited = new Bag();
-        Queue<Node> queue = new LinkedList<>();
-        for (Object obj : in) {
-            Edge e = (Edge) obj;
-            queue.add(e.getFrom());
-        }
-
-        while (!queue.isEmpty()) {
-            Node next = queue.poll();
-            visited.add(next);
-            if (targetNodes.contains(next)) {
-                return next;
-            }
-            if (getEdgesIn(next) == null) {
-                continue;
-            }
-            for (Object obj : getEdgesIn(next)) {
-                Edge e = (Edge) obj;
-                if (!visited.contains(e.getFrom())) {
-                    queue.add(e.getFrom());
+            for (Object next : getEdges(active, strategy)) {
+                Edge edge = (Edge) next;
+                if (!visited.contains(edge.getNode(strategy))) {
+                    queue.add(edge.getNode(strategy));
                 }
             }
         }
@@ -786,6 +725,10 @@ public final class Graph {
             edgesOut = new ArrayList<>();
         }
 
+        public Node getNode(Strategy strategy) {
+            return (strategy == Strategy.UPSTREAM) ? from : to;
+        }
+
         /**
          * Gets the node the edge points from.
          *
@@ -822,13 +765,17 @@ public final class Graph {
             this.from = from;
         }
 
+        public ArrayList<Edge> getEdges(Strategy strategy) {
+            return (strategy == Strategy.UPSTREAM) ? edgesIn : edgesOut;
+        }
+
         /**
          * Gets list of edges that point into the node this edge points from.
          *
          * @return the list of edges
          */
         public ArrayList<Edge> getEdgesIn() {
-            return edgesIn;
+            return getEdges(Strategy.UPSTREAM);
         }
 
         /**
@@ -837,7 +784,7 @@ public final class Graph {
          * @return the list of edges
          */
         public ArrayList<Edge> getEdgesOut() {
-            return edgesOut;
+            return getEdges(Strategy.UPSTREAM);
         }
 
         /**

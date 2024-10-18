@@ -545,10 +545,10 @@ public class GraphTest {
         graph.addEdge(edge3);
         graph.addEdge(edge4);
 
-        Node found1 = graph.findDownstreamIntersection(edge1, edge2);
-        Node found2 = graph.findDownstreamIntersection(edge4, edge3);
-        Node found3 = graph.findDownstreamIntersection(edge2, edge1);
-        Node found4 = graph.findDownstreamIntersection(edge3, edge4);
+        Node found1 = graph.findDownstreamIntersection(edge1, edge3);
+        Node found2 = graph.findDownstreamIntersection(edge2, edge4);
+        Node found3 = graph.findDownstreamIntersection(edge3, edge1);
+        Node found4 = graph.findDownstreamIntersection(edge4, edge2);
 
         assertAll(
                 () -> assertNull(found1, "No intersection"),
