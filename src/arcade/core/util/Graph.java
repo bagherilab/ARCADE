@@ -400,7 +400,7 @@ public final class Graph {
     /**
      * Find the node where two edges intersect.
      *
-     * @param edge1 first edge to to start from
+     * @param edge1 first edge to start from
      * @param edge2 second edge to start from
      * @return the intersection node or null if no intersection
      */
@@ -454,7 +454,7 @@ public final class Graph {
      * Breadth first search from node downstream for a subset of target nodes.
      *
      * @param node the node to start from
-     * @param targeNodes the bag of potential intersection nodes
+     * @param targetNodes the bag of potential intersection nodes
      * @return the target node or null if not found
      */
     private Node downstreamBreadthFirstSearch(Node node, Bag targetNodes) {
@@ -491,7 +491,7 @@ public final class Graph {
     /**
      * Find the node where two edges intersect.
      *
-     * @param edge1 first edge to to start from
+     * @param edge1 first edge to start from
      * @param edge2 second edge to start from
      * @return the intersection node or null if no intersection
      */
