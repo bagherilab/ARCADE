@@ -7,12 +7,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SolverTest {
     @Test
-    public void testConstructor_called_returnsException() {
+    public void testConstructor__returnsException() {
         assertThrows(UnsupportedOperationException.class, Solver::new);
     }
 
     @Test
-    public void testEuler_calledWithSimpleEquations_returnsAnswer() {
+    public void testEuler_simpleEquations_returnsAnswer() {
         Equations e =
                 (t, y) -> {
                     double[] result = new double[2];
@@ -27,7 +27,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testEuler_calledWithComplexEquations_returnsAnswer() {
+    public void testEuler_complexEquations_returnsAnswer() {
         Equations e =
                 (t, y) -> {
                     double[] result = new double[2];
@@ -42,7 +42,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testRungeKutta_calledWithSimpleEquations_returnsAnswer() {
+    public void testRungeKutta_simpleEquations_returnsAnswer() {
         Equations e =
                 (t, y) -> {
                     double[] result = new double[2];
@@ -57,7 +57,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testRungeKutta_calledWithComplexEquations_returnsAnswer() {
+    public void testRungeKutta_complexEquations_returnsAnswer() {
         Equations e =
                 (t, y) -> {
                     double[] result = new double[2];
@@ -72,7 +72,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testCashKarp_calledWithSimpleEquations_returnsAnswer() {
+    public void testCashKarp_simpleEquations_returnsAnswer() {
         Equations e =
                 (t, y) -> {
                     double[] result = new double[2];
@@ -87,7 +87,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testCashKarp_calledWithComplexEquations_returnsAnswer() {
+    public void testCashKarp_complexEquations_returnsAnswer() {
         Equations e =
                 (t, y) -> {
                     double[] result = new double[2];
@@ -117,7 +117,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testSOR_calledWithDenseMatrix_returnsSolution() {
+    public void testSOR_denseMatrix_returnsSolution() {
         double[][] matA =
                 new double[][] {
                     {4, -1, 0, 0},
@@ -136,7 +136,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testSOR_withDenseSORandZeroMaxIters_returnsInitialGuess() {
+    public void testSOR_denseSORandZeroMaxIters_returnsInitialGuess() {
         double[][] matA =
                 new double[][] {
                     {4, -1, 0, 0},
@@ -155,7 +155,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testSOR_calledWithSparseMatrix_returnsSolution() {
+    public void testSOR_sparseMatrix_returnsSolution() {
         double[][] matA =
                 new double[][] {
                     {4, -1, 0, 0},
@@ -174,7 +174,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testSOR_withSparseSORandZeroMaxIters_returnsInitialGuess() {
+    public void testSOR_sparseSORandZeroMaxIters_returnsInitialGuess() {
         double[][] matA =
                 new double[][] {
                     {4, -1, 0, 0},
@@ -193,7 +193,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testBisection_calledWithLinearFunction_returnsAnswer() {
+    public void testBisection_linearFunction_returnsAnswer() {
         Function f = (x) -> x - 2;
         double result = Solver.bisection(f, 0, 3);
 
@@ -201,7 +201,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testBisection_calledAndExceedsMaxIterations_returnsNan() {
+    public void testBisection_exceedsMaxIterations_returnsNan() {
         Function f = (x) -> x * x - 2;
         double result = Solver.bisection(f, 0, 2, 3);
 
@@ -209,7 +209,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testBisection_calledWithQuadraticFunction_returnsAnswer() {
+    public void testBisection_quadraticFunction_returnsAnswer() {
         Function f = (x) -> x * x - 2;
         double result = Solver.bisection(f, 0, 2);
 
@@ -217,7 +217,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testBisection_calledWithIncorrectBounds_throwsException() {
+    public void testBisection_incorrectBounds_throwsException() {
         Function f = (x) -> x * x - 2;
         ArithmeticException exception =
                 assertThrows(
@@ -230,7 +230,7 @@ public class SolverTest {
     }
 
     @Test
-    public void testBisection_calledWithQuadraticFunctionAndSwappedInputs_returnsAnswer() {
+    public void testBisection_quadraticFunctionAndSwappedInputs_returnsAnswer() {
         Function f = (x) -> x * x - 2;
         double result = Solver.bisection(f, 2, 0);
 
