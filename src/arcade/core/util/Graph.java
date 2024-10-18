@@ -237,6 +237,10 @@ public final class Graph {
         }
     }
 
+    public void addEdge(Node from, Node to) {
+        addEdge(new Edge(from, to));
+    }
+
     /**
      * Adds edge to graph.
      *
@@ -247,6 +251,7 @@ public final class Graph {
         setOutMap(edge.getFrom(), edge);
         setInMap(edge.getTo(), edge);
         setLinks(edge);
+        mergeNodes();
     }
 
     /**
@@ -378,6 +383,51 @@ public final class Graph {
     }
 
     /**
+     * Find the node where two edges intersect.
+     *
+     * @param node the node to start from
+     * @return the intersection node or null if no intersection
+     */
+    public Node findDownstreamIntersection(Edge e1, Edge e2) {
+        Bag allDownstream = getAllDownstream(e1.getTo());
+        Node intersection = downstreamBreadthFirstSearch(e2.getTo(), allDownstream);
+        return intersection;
+    }
+
+    /**
+     * Breadth first search for a subset of target node.
+     *
+     * @param node the node to start from
+     * @param targetsBag the bag of potential intersection nodes
+     * @return the target node or null if not found
+     */
+    private Node downstreamBreadthFirstSearch(Node node, Bag targetNodes) {
+        Bag out = getEdgesOut(node);
+        if (out == null) {
+            return null;
+        }
+        Queue<Node> queue = new LinkedList<>();
+        for (Object obj : out) {
+            Edge e = (Edge) obj;
+            queue.add(e.getTo());
+        }
+        while (!queue.isEmpty()) {
+            Node next = queue.poll();
+            if (targetNodes.contains(next)) {
+                return next;
+            }
+            if (getEdgesOut(next) == null) {
+                continue;
+            }
+            for (Object obj : getEdgesOut(next)) {
+                Edge e = (Edge) obj;
+                queue.add(e.getTo());
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get all the downstream nodes from a given node.
      *
      * @param node the node to start from
@@ -413,57 +463,82 @@ public final class Graph {
         return visited;
     }
 
+
+    public Node findUpstreamIntersection(Edge e1, Edge e2){
+        Bag allUpstream = getAllUpstream(e1.getFrom());
+        Node intersection = upstreamBreadthFirstSearch(e2.getFrom(), allUpstream);
+        return intersection;
+    }
+
+    /**
+     * Get all the downstream nodes from a given node.
+     *
+     * @param node the node to start from
+     * @return a bag of all downstream {@code Node} objects
+     */
+    private Bag getAllUpstream(Node node) {
+        Bag out = getEdgesIn(node);
+        if (out == null) {
+            return null;
+        }
+        Bag visited = new Bag();
+        Queue<Node> queue = new LinkedList<>();
+        for (Object e : out) {
+            Edge edge = (Edge) e;
+            queue.add((Node) edge.getFrom());
+        }
+
+        while (!queue.isEmpty()) {
+            Node active = queue.poll();
+            if (!visited.contains(active)) {
+                visited.add(active);
+                if (getEdgesIn(active) == null) {
+                    continue;
+                }
+                for (Object nextOut : getEdgesIn(active)) {
+                    Edge edge = (Edge) nextOut;
+                    if (!visited.contains(edge)) {
+                        queue.add(edge.getFrom());
+                    }
+                }
+            }
+        }
+        return visited;
+    }
+
     /**
      * Breadth first search for a subset of target node.
      *
-     * @param edge the edge to start from
+     * @param node the node to start from
      * @param targetsBag the bag of potential intersection nodes
      * @return the target node or null if not found
      */
-    private Node breadthFirstSearch(Edge edge, Bag targetsBag) {
-        Bag out = getEdgesOut(edge.getTo());
+    private Node upstreamBreadthFirstSearch(Node node, Bag targetNodes) {
+        Bag out = getEdgesIn(node);
         if (out == null) {
             return null;
         }
         Queue<Node> queue = new LinkedList<>();
         for (Object obj : out) {
             Edge e = (Edge) obj;
-            queue.add(e.getTo());
+            queue.add(e.getFrom());
         }
         while (!queue.isEmpty()) {
             Node next = queue.poll();
-            if (targetsBag.contains(next)) {
+            if (targetNodes.contains(next)) {
                 return next;
             }
-            if (getEdgesOut(next) == null) {
+            if (getEdgesIn(next) == null) {
                 continue;
             }
-            for (Object obj : getEdgesOut(next)) {
+            for (Object obj : getEdgesIn(next)) {
                 Edge e = (Edge) obj;
-                queue.add(e.getTo());
+                queue.add(e.getFrom());
             }
         }
         return null;
     }
 
-    /**
-     * Find the intersection of two edges from a starting node.
-     *
-     * @param node the node to start from
-     * @return the intersection node or null if no intersection
-     */
-    public Node findIntersection(Node node) {
-        Bag out = getEdgesOut(node);
-        if (out.numObjs < 2) {
-            return null;
-        }
-        Edge firstEdge = (Edge) out.get(0);
-        Bag allDownstream = getAllDownstream(firstEdge.getTo());
-
-        Edge secondEdge = (Edge) out.get(1);
-        Node intersection = breadthFirstSearch(secondEdge, allDownstream);
-        return intersection;
-    }
 
     /**
      * Removes the given edge and adds the reversed edge.
