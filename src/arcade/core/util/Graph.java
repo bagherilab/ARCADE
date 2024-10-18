@@ -815,7 +815,7 @@ public final class Graph {
          * @return the list of edges
          */
         public ArrayList<Edge> getEdgesOut() {
-            return getEdges(Strategy.UPSTREAM);
+            return getEdges(Strategy.DOWNSTREAM);
         }
 
         /**

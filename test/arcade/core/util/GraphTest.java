@@ -1,5 +1,6 @@
 package arcade.core.util;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 import sim.util.Bag;
@@ -204,6 +205,34 @@ public class GraphTest {
                 () -> assertTrue(graph.contains(node1)),
                 () -> assertTrue(graph.contains(node2)),
                 () -> assertTrue(graph.contains(new Edge(node1, node2))));
+    }
+
+    @Test
+    public void addEdge_edgeUpdatedWithInAndOutEdges() {
+        Graph graph = new Graph();
+        Node node1 = new Node(0, 0, 0);
+        Node node2 = new Node(0, 1, 0);
+        Node node3 = new Node(0, 2, 0);
+        Node node4 = new Node(0, 3, 0);
+        Edge edge1 = new Edge(node1, node2);
+        Edge edge2 = new Edge(node2, node3);
+        Edge edge3 = new Edge(node3, node4);
+        Edge edge4 = new Edge(node3, node1);
+
+        graph.addEdge(edge1);
+        graph.addEdge(edge2);
+        graph.addEdge(edge3);
+        graph.addEdge(edge4);
+
+        ArrayList<Edge> inList = edge2.getEdgesIn();
+        ArrayList<Edge> outList = edge2.getEdgesOut();
+
+        assertAll(
+                () -> assertEquals(1, inList.size()),
+                () -> assertEquals(2, outList.size()),
+                () -> assertTrue(inList.contains(edge1)),
+                () -> assertTrue(outList.contains(edge3)),
+                () -> assertTrue(outList.contains(edge4)));
     }
 
     @Test
