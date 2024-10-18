@@ -8,7 +8,7 @@ import static arcade.core.util.Graph.Node;
 
 public class GraphTest {
     @Test
-    public void node_constructor_returnsNode() {
+    public void nodeConstructor_returnsNode() {
         Node node = new Node(1, 5, 3);
 
         assertAll(
