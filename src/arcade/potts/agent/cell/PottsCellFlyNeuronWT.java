@@ -44,39 +44,16 @@ public final class PottsCellFlyNeuronWT extends PottsCell {
                                  Location location, boolean hasRegions, MiniBox parameters,
                                  double criticalVolume, double criticalHeight,
                                  EnumMap<Region, Double> criticalRegionVolumes,
-                                 EnumMap<Region, Double> criticalRegionHeights,
-                                 int neuronGeneration) {
+                                 EnumMap<Region, Double> criticalRegionHeights) {
         super(id, parent, pop, state, age, divisions, location, hasRegions, parameters,
                 criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
-        this.neuronGeneration = neuronGeneration;
-        
-        if (neuronGeneration == 1) {
-            // get cell growth rate from parameters and set it to current_value/2
-            double cellGrowthRate = Double.parseDouble(parameters.get("proliferation/CELL_GROWTH_RATE"));
-            parameters.put("proliferation/CELL_GROWTH_RATE", Double.toString(cellGrowthRate / 2));
-        }
-        else if (neuronGeneration == 2) {
-            parameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            }
-        else {
-            throw new UnsupportedOperationException("Invalid neuron generation, neuronGeneration must be 1 or 2");
-        }
+        System.out.println("Making PottsCellFlyNeuronWT cell");
     }
     
     @Override
     public PottsCell make(int newID, CellState newState, Location newLocation,
                           MersenneTwisterFast random) {
-        if (neuronGeneration == 1) {
-            this.neuronGeneration = 2;
-            parameters.put("proliferation/CELL_GROWTH_RATE", "0");
-            return new PottsCellFlyNeuronWT(
-                    newID, getID(), 3, newState, getAge(),
-                    getDivisions(), newLocation, hasRegions(), getParameters(),
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
-                    neuronGeneration);
-        } else {
-            throw new UnsupportedOperationException("Terminally differentiated PottsCellFlyNeuronWT agents do not divide");
-        }
+        throw new UnsupportedOperationException("PottsCellFlyNeuronWT cells do not divide");
     }
     
     @Override
@@ -86,7 +63,7 @@ public final class PottsCellFlyNeuronWT extends PottsCell {
         }
         switch ((State) newState) {
             case PROLIFERATIVE:
-                module = new PottsModuleProliferationFlyNeuron(this);
+                module = new PottsModuleProliferationSimple(this);
                 break;
             default:
                 module = null;

@@ -528,4 +528,6 @@ public class PottsCellFactoryTest {
             assertEquals(voxels[2], pottsCellContainer.voxels);
         }
     }
+    
+    // TODO: Sophia add tests for convert function
 }

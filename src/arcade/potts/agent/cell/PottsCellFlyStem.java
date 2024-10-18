@@ -69,20 +69,20 @@ public class PottsCellFlyStem extends PottsCell {
         divisions++;
         switch (stemType) {
             case WT:
-                return new PottsCellFlyNeuronWT(
+                return new PottsCellFlyGMC(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
             case MUDMUT1_RANDOM:
-                return new PottsCellFlyNeuronWT(
+                return new PottsCellFlyGMC(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
             case MUDMUT1_LEFT:
-                return new PottsCellFlyNeuronWT(
+                return new PottsCellFlyGMC(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
             case MUDMUT2_RANDOM:
                 double rand = random.nextDouble();
                 if (rand < 0.25) {
@@ -98,16 +98,16 @@ public class PottsCellFlyStem extends PottsCell {
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
                         StemType.MUDMUT1_RANDOM);
                 } else {
-                    return new PottsCellFlyNeuronWT(
+                    return new PottsCellFlyGMC(
                         newID, getID(), 2, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
-                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
                 }
             case INVERT1_BASAL:
-                return new PottsCellFlyNeuronWT(
+                return new PottsCellFlyGMC(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
             case INVERT2BASAL_OR_BOTH:
                 double randInvert = random.nextDouble();
                 if (randInvert < 0.25) {
@@ -123,16 +123,16 @@ public class PottsCellFlyStem extends PottsCell {
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
                         StemType.INVERT2BASAL_OR_BOTH);
                 } else {
-                    return new PottsCellFlyNeuronWT(
+                    return new PottsCellFlyGMC(
                         newID, getID(), 2, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
-                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
                 }
             case SYMMETRIC1_APICAL:
-                return new PottsCellFlyNeuronWT(
+                return new PottsCellFlyGMC(
                     newID, getID(), 2, newState, getAge(),
                     getDivisions(), newLocation, hasRegions(), getParameters(),
-                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
+                    criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
             case SYMMETRIC2APICAL_OR_BOTH:
                 if (random.nextBoolean()) {
                     return new PottsCellFlyStem(
@@ -141,10 +141,10 @@ public class PottsCellFlyStem extends PottsCell {
                         criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights,
                         StemType.SYMMETRIC2APICAL_OR_BOTH);
                 } else {
-                    return new PottsCellFlyNeuronWT(
+                    return new PottsCellFlyGMC(
                         newID, getID(), 2, newState, getAge(),
                         getDivisions(), newLocation, hasRegions(), getParameters(),
-                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights, 1);
+                        criticalVolume, criticalHeight, criticalRegionVolumes, criticalRegionHeights);
                 }
             default:
                 throw new IllegalArgumentException("Unknown StemType: " + stemType);
