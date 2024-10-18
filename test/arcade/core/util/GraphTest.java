@@ -11,9 +11,11 @@ public class GraphTest {
     public void node_constructor_returnsNode() {
         Node node = new Node(1, 5, 3);
 
-        assertEquals(1, node.getX());
-        assertEquals(5, node.getY());
-        assertEquals(3, node.getZ());
+        assertAll(
+                "Node coordinates",
+                () -> assertEquals(1, node.getX()),
+                () -> assertEquals(5, node.getY()),
+                () -> assertEquals(3, node.getZ()));
     }
 
     @Test
@@ -24,18 +26,16 @@ public class GraphTest {
     }
 
     @Test
-    public void edgeConstructor_returnsEdge() {
+    public void edgeConstructor_containsReferencesToNodes() {
         Node fromNode = new Node(0, 0, 0);
         Node toNode = new Node(0, 1, 0);
 
         Edge edge = new Edge(fromNode, toNode);
 
-        assertEquals(0, edge.getFrom().getX());
-        assertEquals(0, edge.getFrom().getY());
-        assertEquals(0, edge.getFrom().getZ());
-        assertEquals(0, edge.getTo().getX());
-        assertEquals(1, edge.getTo().getY());
-        assertEquals(0, edge.getTo().getZ());
+        assertAll(
+                "Edge nodes",
+                () -> assertEquals(fromNode, edge.getFrom()),
+                () -> assertEquals(toNode, edge.getTo()));
     }
 
     @Test
@@ -52,8 +52,10 @@ public class GraphTest {
     public void graphConstructor_returnsEmptyGraph() {
         Graph graph = new Graph();
 
-        assertTrue(graph.getAllEdges().isEmpty());
-        assertTrue(graph.getAllNodes().isEmpty());
+        assertAll(
+                "Empty graph",
+                () -> assertTrue(graph.getAllEdges().isEmpty()),
+                () -> assertTrue(graph.getAllNodes().isEmpty()));
     }
 
     @Test
@@ -70,6 +72,7 @@ public class GraphTest {
         expected.add(node2);
 
         HashSet<Node> actual = (HashSet<Node>) graph.getAllNodes();
+
         assertEquals(expected, actual);
     }
 
@@ -82,8 +85,11 @@ public class GraphTest {
 
         graph.addEdge(edge);
 
-        assertTrue(graph.contains(node1));
-        assertTrue(graph.contains(node2));
+        assertAll(
+                "Nodes and edge added",
+                () -> assertTrue(graph.contains(node1)),
+                () -> assertTrue(graph.contains(node2)),
+                () -> assertTrue(graph.contains(new Edge(node1, node2))));
     }
 
     @Test
@@ -94,74 +100,42 @@ public class GraphTest {
 
         graph.addEdge(node1, node2);
 
-        assertTrue(graph.contains(new Edge(node1, node2)));
+        assertAll(
+                "Nodes and edge added",
+                () -> assertTrue(graph.contains(node1)),
+                () -> assertTrue(graph.contains(node2)),
+                () -> assertTrue(graph.contains(new Edge(node1, node2))));
     }
 
     @Test
-    public void removeEdge_edgeRemoved() {
+    public void removeEdge_edgeRemovedAndPreservesGraph() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
         Node node3 = new Node(0, 2, 0);
+        Node node4 = new Node(0, 3, 0);
         Edge edge1 = new Edge(node1, node2);
         Edge edge2 = new Edge(node2, node3);
+        Edge edge3 = new Edge(node3, node4);
 
         graph.addEdge(edge1);
         graph.addEdge(edge2);
+        graph.addEdge(edge3);
         graph.removeEdge(edge2);
 
-        assertFalse(graph.contains(edge2));
+        assertAll(
+                "Edge removed and preserves graph",
+                () -> assertFalse(graph.contains(edge2)),
+                () -> assertTrue(graph.contains(node3)),
+                () -> assertTrue(graph.contains(node1)),
+                () -> assertTrue(graph.contains(node2)),
+                () -> assertTrue(graph.contains(node4)),
+                () -> assertTrue(graph.contains(new Edge(node1, node2))),
+                () -> assertTrue(graph.contains(new Edge(node3, node4))));
     }
 
     @Test
-    public void removeEdge_nodesRemoved() {
-        Graph graph = new Graph();
-        Node node1 = new Node(0, 0, 0);
-        Node node2 = new Node(0, 1, 0);
-        Edge edge = new Edge(node1, node2);
-
-        graph.addEdge(edge);
-        graph.removeEdge(edge);
-
-        assertFalse(graph.contains(node1));
-        assertFalse(graph.contains(node2));
-    }
-
-    @Test
-    public void removeEdge_removingConnectedEdge_preservesFromNode() {
-        Graph graph = new Graph();
-        Node node1 = new Node(0, 0, 0);
-        Node node2 = new Node(0, 1, 0);
-        Node node3 = new Node(0, 2, 0);
-        Edge edge1 = new Edge(node1, node2);
-        Edge edge2 = new Edge(node2, node3);
-
-        graph.addEdge(edge1);
-        graph.addEdge(edge2);
-        graph.removeEdge(edge2);
-
-        assertTrue(graph.contains(node1));
-        assertTrue(graph.contains(node2));
-    }
-
-    @Test
-    public void removeEdge_removingConnectedEdge_removesToNode() {
-        Graph graph = new Graph();
-        Node node1 = new Node(0, 0, 0);
-        Node node2 = new Node(0, 1, 0);
-        Node node3 = new Node(0, 2, 0);
-        Edge edge1 = new Edge(node1, node2);
-        Edge edge2 = new Edge(node2, node3);
-
-        graph.addEdge(edge1);
-        graph.addEdge(edge2);
-        graph.removeEdge(edge2);
-
-        assertFalse(graph.contains(node3));
-    }
-
-    @Test
-    public void reverseEdge_reversesEdge() {
+    public void reverseEdge_reversesEdgeAndRemovesOriginalEdge() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(0, 1, 0);
@@ -170,59 +144,10 @@ public class GraphTest {
         graph.addEdge(edge);
         graph.reverseEdge(edge);
 
-        assertTrue(graph.contains(new Edge(node2, node1)));
-    }
-
-    @Test
-    public void reverseEdge_preservesOtherEdges() {
-        Graph graph = new Graph();
-        Node node1 = new Node(0, 0, 0);
-        Node node2 = new Node(0, 1, 0);
-        Node node3 = new Node(0, 2, 0);
-        Edge edge1 = new Edge(node1, node2);
-        Edge edge2 = new Edge(node2, node3);
-
-        graph.addEdge(edge1);
-        graph.addEdge(edge2);
-        graph.reverseEdge(edge2);
-
-        assertTrue(graph.contains(edge1));
-    }
-
-    @Test
-    public void reverseEdge_WithEdge_preservesNodes() {
-        Graph graph = new Graph();
-        Node node1 = new Node(0, 0, 0);
-        Node node2 = new Node(0, 1, 0);
-        Node node3 = new Node(0, 2, 0);
-        Edge edge1 = new Edge(node1, node2);
-        Edge edge2 = new Edge(node2, node3);
-
-        graph.addEdge(edge1);
-        graph.addEdge(edge2);
-        graph.reverseEdge(edge2);
-
-        assertTrue(graph.contains(node1));
-        assertTrue(graph.contains(node2));
-        assertTrue(graph.contains(node3));
-    }
-
-    @Test
-    public void reverseEdge_preservesNodeCoordinates() {
-        Graph graph = new Graph();
-        Node node1 = new Node(0, 0, 0);
-        Node node2 = new Node(1, 1, 0);
-        Node node3 = new Node(2, 2, 0);
-        Edge edge1 = new Edge(node1, node2);
-        Edge edge2 = new Edge(node2, node3);
-
-        graph.addEdge(edge1);
-        graph.addEdge(edge2);
-        graph.reverseEdge(edge2);
-
-        assertTrue(graph.contains(new Node(0, 0, 0)));
-        assertTrue(graph.contains(new Node(1, 1, 0)));
-        assertTrue(graph.contains(new Node(2, 2, 0)));
+        assertAll(
+                "Edge reversed",
+                () -> assertTrue(graph.contains(new Edge(node2, node1))),
+                () -> assertFalse(graph.contains(new Edge(node1, node2))));
     }
 
     @Test
@@ -270,7 +195,7 @@ public class GraphTest {
     }
 
     @Test
-    public void getEdgesIn_WithNode_returnsEdgesIn() {
+    public void getEdgesIn_returnsEdgesIn() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
@@ -285,7 +210,7 @@ public class GraphTest {
     }
 
     @Test
-    public void getEdgesIn_noEdgesIntoOfGivenNode_returnsNull() {
+    public void getEdgesIn_noEdgesIntoGivenNode_returnsNull() {
         Graph graph = new Graph();
         Node node1 = new Node(0, 0, 0);
         Node node2 = new Node(1, 1, 0);
@@ -307,9 +232,11 @@ public class GraphTest {
         graph.addEdge(edge1);
         graph.addEdge(edge2);
 
-        assertEquals(2, graph.getDegree(node2));
-        assertEquals(1, graph.getDegree(node1));
-        assertEquals(1, graph.getDegree(node3));
+        assertAll(
+                "Correct degrees",
+                () -> assertEquals(1, graph.getDegree(node1)),
+                () -> assertEquals(2, graph.getDegree(node2)),
+                () -> assertEquals(1, graph.getDegree(node3)));
     }
 
     @Test
@@ -324,9 +251,11 @@ public class GraphTest {
         graph.addEdge(edge1);
         graph.addEdge(edge2);
 
-        assertEquals(1, graph.getInDegree(node2));
-        assertEquals(0, graph.getInDegree(node1));
-        assertEquals(1, graph.getInDegree(node3));
+        assertAll(
+                "Correct in-degrees",
+                () -> assertEquals(0, graph.getInDegree(node1)),
+                () -> assertEquals(1, graph.getInDegree(node2)),
+                () -> assertEquals(1, graph.getInDegree(node3)));
     }
 
     @Test
@@ -341,9 +270,11 @@ public class GraphTest {
         graph.addEdge(edge1);
         graph.addEdge(edge2);
 
-        assertEquals(1, graph.getOutDegree(node2));
-        assertEquals(1, graph.getOutDegree(node1));
-        assertEquals(0, graph.getOutDegree(node3));
+        assertAll(
+                "Correct out-degrees",
+                () -> assertEquals(1, graph.getOutDegree(node1)),
+                () -> assertEquals(1, graph.getOutDegree(node2)),
+                () -> assertEquals(0, graph.getOutDegree(node3)));
     }
 
     @Test
@@ -359,8 +290,10 @@ public class GraphTest {
         graph.addEdge(edge1);
         graph.addEdge(edge2);
 
-        assertTrue(graph.hasEdge(node1, node2));
-        assertTrue(graph.hasEdge(node2, node3));
+        assertAll(
+                "Edges exist",
+                () -> assertTrue(graph.hasEdge(node1, node2)),
+                () -> assertTrue(graph.hasEdge(node2, node3)));
     }
 
     @Test
@@ -471,7 +404,6 @@ public class GraphTest {
         Node node3B = new Node(-2, -2, 0);
         Node node4 = new Node(3, 0, 0);
 
-
         Edge edge2 = new Edge(node2A, node3A);
         Edge edge4 = new Edge(node2B, node3B);
         Edge edge5 = new Edge(node3A, node4);
@@ -516,8 +448,10 @@ public class GraphTest {
         Graph subgraph = new Graph();
         graph.getSubgraph(subgraph, e -> ((Edge) e).from.getX() == 0);
 
-        assertEquals(subgraph.getAllEdges().numObjs, 2);
-        assertTrue(subgraph.contains(edge1));
-        assertTrue(subgraph.contains(edge3));
+        assertAll(
+                "Filtered subgraph",
+                () -> assertEquals(subgraph.getAllEdges().numObjs, 2),
+                () -> assertTrue(subgraph.contains(edge1)),
+                () -> assertTrue(subgraph.contains(edge3)));
     }
 }

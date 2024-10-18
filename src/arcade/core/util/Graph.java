@@ -385,17 +385,18 @@ public final class Graph {
     /**
      * Find the node where two edges intersect.
      *
-     * @param node the node to start from
+     * @param edge1 first edge to to start from
+     * @param edge2 second edge to start from
      * @return the intersection node or null if no intersection
      */
-    public Node findDownstreamIntersection(Edge e1, Edge e2) {
-        Bag allDownstream = getAllDownstream(e1.getTo());
-        Node intersection = downstreamBreadthFirstSearch(e2.getTo(), allDownstream);
+    public Node findDownstreamIntersection(Edge edge1, Edge edge2) {
+        Bag allDownstream = getAllDownstream(edge1.getTo());
+        Node intersection = downstreamBreadthFirstSearch(edge2.getTo(), allDownstream);
         return intersection;
     }
 
     /**
-     * Breadth first search for a subset of target node.
+     * Breadth first search from node downstream for a subset of target nodes.
      *
      * @param node the node to start from
      * @param targetsBag the bag of potential intersection nodes
@@ -463,15 +464,21 @@ public final class Graph {
         return visited;
     }
 
-
-    public Node findUpstreamIntersection(Edge e1, Edge e2){
-        Bag allUpstream = getAllUpstream(e1.getFrom());
-        Node intersection = upstreamBreadthFirstSearch(e2.getFrom(), allUpstream);
+    /**
+     * Find the node where two edges intersect.
+     *
+     * @param edge1 first edge to to start from
+     * @param edge2 second edge to start from
+     * @return the intersection node or null if no intersection
+     */
+    public Node findUpstreamIntersection(Edge edge1, Edge edge2) {
+        Bag allUpstream = getAllUpstream(edge1.getFrom());
+        Node intersection = upstreamBreadthFirstSearch(edge2.getFrom(), allUpstream);
         return intersection;
     }
 
     /**
-     * Get all the downstream nodes from a given node.
+     * Breadth first search from node downstream for a subset of target nodes.
      *
      * @param node the node to start from
      * @return a bag of all downstream {@code Node} objects
@@ -507,7 +514,7 @@ public final class Graph {
     }
 
     /**
-     * Breadth first search for a subset of target node.
+     * Breadth first search from node upstream for a subset of target nodes.
      *
      * @param node the node to start from
      * @param targetsBag the bag of potential intersection nodes
@@ -538,7 +545,6 @@ public final class Graph {
         }
         return null;
     }
-
 
     /**
      * Removes the given edge and adds the reversed edge.
