@@ -62,18 +62,15 @@ public class PatchCellRandom extends PatchCell {
     }
 
     @Override
-    public PatchCell make(
-            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions--;
-        return new PatchCellRandom(
+        return new PatchCellContainer(
                 newID,
                 id,
                 pop,
-                newState,
                 age,
                 divisions,
-                newLocation,
-                parameters,
+                newState,
                 volume,
                 height,
                 criticalVolume,

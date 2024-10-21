@@ -135,15 +135,14 @@ public interface Cell extends Steppable {
     void stop();
 
     /**
-     * Creates a new cell.
+     * Creates a new cell container.
      *
      * @param id the new cell ID
      * @param state the new cell state
-     * @param location the new cell location
      * @param random the random number generator
      * @return the new {@code Cell} object
      */
-    Cell make(int id, CellState state, Location location, MersenneTwisterFast random);
+    CellContainer make(int id, CellState state, MersenneTwisterFast random);
 
     /**
      * Schedules the cell in the simulation.

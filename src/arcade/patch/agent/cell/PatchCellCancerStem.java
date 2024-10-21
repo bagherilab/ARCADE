@@ -82,34 +82,18 @@ public class PatchCellCancerStem extends PatchCellCancer {
      * <p>Cells have a certain probability of producing another cancer stem cell.
      */
     @Override
-    public PatchCell make(
-            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
-        return random.nextDouble() < symmetricFraction
-                ? new PatchCellCancerStem(
-                        newID,
-                        id,
-                        pop,
-                        newState,
-                        age,
-                        divisions,
-                        newLocation,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight)
-                : new PatchCellCancer(
-                        newID,
-                        id,
-                        pop,
-                        newState,
-                        age,
-                        divisions - 1,
-                        newLocation,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+        int newDivisons = random.nextDouble() < symmetricFraction ? divisions : divisions - 1;
+        return new PatchCellContainer(
+                newID,
+                id,
+                pop,
+                age,
+                newDivisons,
+                newState,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
     }
 }
