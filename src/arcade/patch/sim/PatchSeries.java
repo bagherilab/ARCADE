@@ -189,7 +189,7 @@ public final class PatchSeries extends Series {
             // Get list of links, if valid.
             MiniBox links = box.filterBoxByTag("LINK").getIdValForTagAtt("LINK", "weight");
             for (String link : links.getKeys()) {
-                population.put("(LINK)" + TAG_SEPARATOR + link, links.getInt(link));
+                population.put("(LINK)" + TAG_SEPARATOR + link, links.getDouble(link));
             }
 
             // Extract process versions.

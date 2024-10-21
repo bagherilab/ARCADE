@@ -782,9 +782,9 @@ public class PottsSeriesTest {
 
     @Test
     public void updatePopulation_withLinks_setsTags() {
-        int weight11 = randomIntBetween(1, 100);
-        int weight12 = randomIntBetween(1, 100);
-        int weight21 = randomIntBetween(1, 100);
+        double weight11 = randomDoubleBetween(1, 100);
+        double weight12 = randomDoubleBetween(1, 100);
+        double weight21 = randomDoubleBetween(1, 100);
 
         Box[] boxes = new Box[] {new Box(), new Box()};
 
@@ -801,11 +801,11 @@ public class PottsSeriesTest {
         PottsSeries series = makeSeriesForPopulation(boxes);
 
         MiniBox box1 = series.populations.get(POPULATION_ID_1);
-        assertEquals(weight11, box1.getInt("(LINK)" + TAG_SEPARATOR + POPULATION_ID_1));
-        assertEquals(weight12, box1.getInt("(LINK)" + TAG_SEPARATOR + POPULATION_ID_2));
+        assertEquals(weight11, box1.getDouble("(LINK)" + TAG_SEPARATOR + POPULATION_ID_1));
+        assertEquals(weight12, box1.getDouble("(LINK)" + TAG_SEPARATOR + POPULATION_ID_2));
 
         MiniBox box2 = series.populations.get(POPULATION_ID_2);
-        assertEquals(weight21, box2.getInt("(LINK)" + TAG_SEPARATOR + POPULATION_ID_1));
+        assertEquals(weight21, box2.getDouble("(LINK)" + TAG_SEPARATOR + POPULATION_ID_1));
     }
 
     @Test
