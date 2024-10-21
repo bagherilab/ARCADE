@@ -94,7 +94,8 @@ public class PatchCellRandomTest {
     @Test
     public void step_calledWithUndefinedState_setsRandomState() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellRandom cell = spy(new PatchCellRandom(baseContainer, locationMock, parametersMock));
+        PatchCellRandom cell =
+                spy(new PatchCellRandom(baseContainer, locationMock, parametersMock));
         PatchModule module = mock(PatchModule.class);
 
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
@@ -126,7 +127,8 @@ public class PatchCellRandomTest {
     @Test
     public void step_calledWithDefinedState_keepsDefinedState() {
         PatchSimulation sim = mock(PatchSimulation.class);
-        PatchCellRandom cell = spy(new PatchCellRandom(baseContainer, locationMock, parametersMock));
+        PatchCellRandom cell =
+                spy(new PatchCellRandom(baseContainer, locationMock, parametersMock));
 
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessMetabolism.class));
