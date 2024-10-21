@@ -6,10 +6,12 @@ import com.google.gson.reflect.TypeToken;
 import sim.engine.Schedule;
 import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactory;
 import arcade.core.env.component.Component;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.env.location.LocationContainer;
+import arcade.core.env.location.LocationFactory;
 
 /**
  * A {@code Simulation} sets up agents and environments for a simulation.
@@ -74,6 +76,20 @@ public interface Simulation {
      * @return a list of {@link LocationContainer} objects
      */
     ArrayList<LocationContainer> getLocations();
+
+    /**
+     * Gets the initialized {@link CellFactory} for the simulation.
+     *
+     * @return the {@link CellFactory} object
+     */
+    CellFactory getCellFactory();
+
+    /**
+     * Gets the initialized {@link LocationFactory} for the simulation.
+     *
+     * @return the {@link LocationFactory} object
+     */
+    LocationFactory getLocationFactory();
 
     /**
      * Gets the {@link Grid} object.
