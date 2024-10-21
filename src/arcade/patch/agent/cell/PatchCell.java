@@ -15,6 +15,7 @@ import arcade.core.agent.process.Process;
 import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
@@ -123,6 +124,9 @@ public abstract class PatchCell implements Cell {
     /** Cell parameters. */
     final MiniBox parameters;
 
+    /** Cell population links. */
+    final GrabBag links;
+
     /**
      * Creates a {@code PatchCell} agent.
      *
@@ -138,8 +142,10 @@ public abstract class PatchCell implements Cell {
      * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
+     * @param links the map of population links
      */
-    public PatchCell(PatchCellContainer container, Location location, MiniBox parameters) {
+    public PatchCell(
+            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
         this.id = container.id;
         this.parent = container.parent;
         this.pop = container.pop;
@@ -153,6 +159,7 @@ public abstract class PatchCell implements Cell {
         this.criticalHeight = container.criticalHeight;
         this.flag = Flag.UNDEFINED;
         this.parameters = parameters;
+        this.links = links;
 
         setState(container.state);
 
