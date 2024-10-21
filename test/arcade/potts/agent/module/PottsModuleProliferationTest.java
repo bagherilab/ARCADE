@@ -3,10 +3,12 @@ package arcade.potts.agent.module;
 import org.junit.jupiter.api.Test;
 import sim.engine.Schedule;
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellFactory;
 import arcade.core.env.grid.Grid;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.cell.PottsCell;
+import arcade.potts.agent.cell.PottsCellContainer;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.Potts;
 import arcade.potts.sim.PottsSimulation;
@@ -150,6 +152,7 @@ public class PottsModuleProliferationTest {
         Potts potts = mock(Potts.class);
         Grid grid = mock(Grid.class);
         PottsSimulation sim = mock(PottsSimulation.class);
+        CellFactory cellFactory = mock(CellFactory.class);
         Schedule schedule = mock(Schedule.class);
 
         int id = randomIntBetween(1, 100);
@@ -157,16 +160,17 @@ public class PottsModuleProliferationTest {
         doReturn(id).when(sim).getID();
         doReturn(grid).when(sim).getGrid();
         doReturn(schedule).when(sim).getSchedule();
+        doReturn(cellFactory).when(sim).getCellFactory();
 
         potts.ids = new int[][][] {{{}}};
         potts.regions = new int[][][] {{{}}};
 
         PottsLocation newLocation = mock(PottsLocation.class);
+        PottsCellContainer newContainer = mock(PottsCellContainer.class);
         PottsCell newCell = mock(PottsCell.class);
 
-        doReturn(newCell)
-                .when(cell)
-                .make(eq(id), any(State.class), eq(newLocation), eq(randomMock));
+        doReturn(newContainer).when(cell).make(eq(id), any(State.class), eq(randomMock));
+        doReturn(newCell).when(newContainer).convert(eq(cellFactory), eq(newLocation));
         doReturn(location).when(cell).getLocation();
         doReturn(newLocation).when(location).split(randomMock);
         doNothing().when(cell).reset(any(), any());

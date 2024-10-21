@@ -108,18 +108,17 @@ public class PottsCellTest {
         }
 
         @Override
-        public PottsCellMock make(
-                int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
-            return new PottsCellMock(
+        public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+            return new PottsCellContainer(
                     newID,
                     id,
                     pop,
-                    newState,
                     age,
                     divisions,
-                    newLocation,
-                    hasRegions,
-                    parameters,
+                    newState,
+                    null,
+                    0,
+                    null,
                     criticalVolume,
                     criticalHeight,
                     criticalRegionVolumes,
