@@ -86,7 +86,7 @@ public class PottsCellTest {
                 Location location,
                 MiniBox parameters,
                 boolean hasRegions) {
-            super(container, location, parameters, hasRegions);
+            super(container, location, parameters, hasRegions, null);
         }
 
         @Override

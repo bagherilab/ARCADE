@@ -3,6 +3,7 @@ package arcade.patch.agent.cell;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 
 /**
@@ -18,17 +19,8 @@ import arcade.core.util.MiniBox;
  * </ul>
  */
 public class PatchCellCancerStem extends PatchCellCancer {
-    /** Fraction of divisions that are symmetric. */
-    private final double symmetricFraction;
-
     /**
      * Creates a cancer stem {@code PatchCell} agent.
-     *
-     * <p>Loaded parameters include:
-     *
-     * <ul>
-     *   <li>{@code SYMMETRIC_FRACTION} = fraction of divisions that are symmetric
-     * </ul>
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
@@ -36,10 +28,20 @@ public class PatchCellCancerStem extends PatchCellCancer {
      */
     public PatchCellCancerStem(
             PatchCellContainer container, Location location, MiniBox parameters) {
-        super(container, location, parameters);
+        this(container, location, parameters, null);
+    }
 
-        // Set loaded parameters.
-        symmetricFraction = parameters.getDouble("SYMMETRIC_FRACTION");
+    /**
+     * Creates a cancer stem {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellCancerStem(
+            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+        super(container, location, parameters, links);
 
         // TODO: set death age
     }
@@ -51,13 +53,14 @@ public class PatchCellCancerStem extends PatchCellCancer {
      */
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-        int newDivisons = random.nextDouble() < symmetricFraction ? divisions : divisions - 1;
+        int newPop = links == null ? pop : links.next(random);
+        int newDivisions = newPop == pop ? divisions : divisions - 1;
         return new PatchCellContainer(
                 newID,
                 id,
-                pop,
+                newPop,
                 age,
-                newDivisons,
+                newDivisions,
                 newState,
                 volume,
                 height,

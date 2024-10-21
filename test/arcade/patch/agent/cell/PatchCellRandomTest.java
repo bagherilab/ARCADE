@@ -2,6 +2,7 @@ package arcade.patch.agent.cell;
 
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.process.PatchProcessMetabolism;
@@ -54,7 +55,7 @@ public class PatchCellRandomTest {
                     cellCriticalHeight);
 
     @Test
-    public void make_called_createsContainer() {
+    public void make_calledNoLinks_createsContainer() {
         double volume = randomDoubleBetween(10, 100);
         double height = randomDoubleBetween(10, 100);
         double criticalVolume = randomDoubleBetween(10, 100);
@@ -74,13 +75,60 @@ public class PatchCellRandomTest {
                         height,
                         criticalVolume,
                         criticalHeight);
-        PatchCellRandom cell = new PatchCellRandom(cellContainer, locationMock, parametersMock);
+        PatchCellRandom cell =
+                new PatchCellRandom(cellContainer, locationMock, parametersMock, null);
 
         PatchCellContainer container = cell.make(cellID + 1, state2, null);
 
         assertEquals(cellID + 1, container.id);
         assertEquals(cellID, container.parent);
         assertEquals(cellPop, container.pop);
+        assertEquals(cellAge, container.age);
+        assertEquals(cellDivisions - 1, container.divisions);
+        assertEquals(cellDivisions - 1, container.divisions);
+        assertEquals(state2, container.state);
+        assertEquals(volume, container.volume, EPSILON);
+        assertEquals(height, container.height, EPSILON);
+        assertEquals(criticalVolume, container.criticalVolume, EPSILON);
+        assertEquals(criticalHeight, container.criticalHeight, EPSILON);
+    }
+
+    @Test
+    public void make_calledWithLinks_createsContainer() {
+        double volume = randomDoubleBetween(10, 100);
+        double height = randomDoubleBetween(10, 100);
+        double criticalVolume = randomDoubleBetween(10, 100);
+        double criticalHeight = randomDoubleBetween(10, 100);
+        State state1 = State.QUIESCENT;
+        State state2 = State.PROLIFERATIVE;
+
+        int newPop = cellPop + randomIntBetween(1, 10);
+        GrabBag links = new GrabBag();
+        links.add(cellPop, 1);
+        links.add(newPop, 1);
+        MersenneTwisterFast random = mock(MersenneTwisterFast.class);
+        when(random.nextDouble()).thenReturn(0.5);
+
+        PatchCellContainer cellContainer =
+                new PatchCellContainer(
+                        cellID,
+                        cellParent,
+                        cellPop,
+                        cellAge,
+                        cellDivisions,
+                        state1,
+                        volume,
+                        height,
+                        criticalVolume,
+                        criticalHeight);
+        PatchCellRandom cell =
+                new PatchCellRandom(cellContainer, locationMock, parametersMock, links);
+
+        PatchCellContainer container = cell.make(cellID + 1, state2, random);
+
+        assertEquals(cellID + 1, container.id);
+        assertEquals(cellID, container.parent);
+        assertEquals(newPop, container.pop);
         assertEquals(cellAge, container.age);
         assertEquals(cellDivisions - 1, container.divisions);
         assertEquals(cellDivisions - 1, container.divisions);

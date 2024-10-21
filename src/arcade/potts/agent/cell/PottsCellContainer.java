@@ -6,6 +6,7 @@ import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
 import static arcade.potts.util.PottsEnums.Phase;
@@ -167,15 +168,18 @@ public final class PottsCellContainer implements CellContainer {
         // Get parameters for the cell population.
         MiniBox parameters = factory.popToParameters.get(pop);
 
+        // Get links for the cell population.
+        GrabBag links = factory.popToLinks.get(pop);
+
         // Make cell.
         PottsCell cell;
         switch (parameters.get("CLASS")) {
             default:
             case "stem":
                 if (factory.popToRegions.get(pop)) {
-                    cell = new PottsCellStem(this, location, parameters, true);
+                    cell = new PottsCellStem(this, location, parameters, true, links);
                 } else {
-                    cell = new PottsCellStem(this, location, parameters, false);
+                    cell = new PottsCellStem(this, location, parameters, false, links);
                 }
         }
 

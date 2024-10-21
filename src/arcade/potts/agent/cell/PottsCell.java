@@ -12,6 +12,7 @@ import arcade.core.agent.process.Process;
 import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.env.location.PottsLocation;
@@ -95,6 +96,9 @@ public abstract class PottsCell implements Cell {
     /** Cell parameters. */
     final MiniBox parameters;
 
+    /** Cell population links. */
+    final GrabBag links;
+
     /**
      * Creates a {@code PottsCell} agent.
      *
@@ -102,12 +106,14 @@ public abstract class PottsCell implements Cell {
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
      * @param hasRegions {@code true} if cell has regions, {@code false} otherwise
+     * @param links the map of population links
      */
     public PottsCell(
             PottsCellContainer container,
             Location location,
             MiniBox parameters,
-            boolean hasRegions) {
+            boolean hasRegions,
+            GrabBag links) {
         this.id = container.id;
         this.parent = container.parent;
         this.pop = container.pop;
@@ -116,6 +122,7 @@ public abstract class PottsCell implements Cell {
         this.hasRegions = hasRegions;
         this.location = (PottsLocation) location;
         this.parameters = parameters;
+        this.links = links;
         this.criticalVolume = container.criticalVolume;
         this.criticalHeight = container.criticalHeight;
 
