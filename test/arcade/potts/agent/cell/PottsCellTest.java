@@ -66,6 +66,8 @@ public class PottsCellTest {
 
     static State cellState = State.QUIESCENT;
 
+    static Phase cellPhase = Phase.UNDEFINED;
+
     static PottsCell cellDefault;
 
     static PottsCell cellWithRegions;
@@ -76,35 +78,15 @@ public class PottsCellTest {
 
     static MiniBox parametersMock;
 
+    static PottsCellContainer baseContainer;
+
     static class PottsCellMock extends PottsCell {
         PottsCellMock(
-                int id,
-                int parent,
-                int pop,
-                CellState state,
-                int age,
-                int divisions,
+                PottsCellContainer container,
                 Location location,
-                boolean hasRegions,
                 MiniBox parameters,
-                double criticalVolume,
-                double criticalHeight,
-                EnumMap<Region, Double> criticalRegionVolumes,
-                EnumMap<Region, Double> criticalRegionHeights) {
-            super(
-                    id,
-                    parent,
-                    pop,
-                    state,
-                    age,
-                    divisions,
-                    location,
-                    hasRegions,
-                    parameters,
-                    criticalVolume,
-                    criticalHeight,
-                    criticalRegionVolumes,
-                    criticalRegionHeights);
+                boolean hasRegions) {
+            super(container, location, parameters, hasRegions);
         }
 
         @Override
@@ -181,89 +163,59 @@ public class PottsCellTest {
             criticalHeightsRegionMock.put(region, (double) locationRegionHeights.get(region));
         }
 
-        cellDefault =
-                new PottsCellMock(
+        baseContainer =
+                new PottsCellContainer(
                         cellID,
                         cellParent,
                         cellPop,
-                        cellState,
                         cellAge,
                         cellDivisions,
-                        locationMock,
-                        false,
-                        parametersMock,
-                        cellCriticalVolume,
-                        cellCriticalHeight,
+                        cellState,
+                        cellPhase,
+                        0,
                         null,
-                        null);
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalVolumesRegionMock,
+                        criticalHeightsRegionMock);
+
+        PottsCellContainer containerWithRegions =
+                new PottsCellContainer(
+                        cellID,
+                        cellParent,
+                        1,
+                        cellAge,
+                        cellDivisions,
+                        cellState,
+                        cellPhase,
+                        0,
+                        null,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalVolumesRegionMock,
+                        criticalHeightsRegionMock);
+
+        PottsCellContainer containerWithoutRegions =
+                new PottsCellContainer(
+                        cellID,
+                        cellParent,
+                        1,
+                        cellAge,
+                        cellDivisions,
+                        cellState,
+                        cellPhase,
+                        0,
+                        null,
+                        cellCriticalVolume,
+                        cellCriticalHeight,
+                        criticalVolumesRegionMock,
+                        criticalHeightsRegionMock);
+
+        cellDefault = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cellWithRegions =
-                new PottsCellMock(
-                        cellID,
-                        cellParent,
-                        1,
-                        cellState,
-                        cellAge,
-                        cellDivisions,
-                        locationMock,
-                        true,
-                        parametersMock,
-                        cellCriticalVolume,
-                        cellCriticalHeight,
-                        criticalVolumesRegionMock,
-                        criticalHeightsRegionMock);
+                new PottsCellMock(containerWithRegions, locationMock, parametersMock, true);
         cellWithoutRegions =
-                new PottsCellMock(
-                        cellID,
-                        cellParent,
-                        1,
-                        cellState,
-                        cellAge,
-                        cellDivisions,
-                        locationMock,
-                        false,
-                        parametersMock,
-                        cellCriticalVolume,
-                        cellCriticalHeight,
-                        criticalVolumesRegionMock,
-                        criticalHeightsRegionMock);
-    }
-
-    static PottsCell make(boolean regions) {
-        return make(locationMock, regions);
-    }
-
-    static PottsCell make(Location location, boolean regions) {
-        if (!regions) {
-            return new PottsCellMock(
-                    cellID,
-                    cellParent,
-                    cellPop,
-                    cellState,
-                    cellAge,
-                    cellDivisions,
-                    location,
-                    false,
-                    parametersMock,
-                    cellCriticalVolume,
-                    cellCriticalHeight,
-                    null,
-                    null);
-        } else {
-            return new PottsCellMock(
-                    cellID,
-                    cellParent,
-                    cellPop,
-                    cellState,
-                    cellAge,
-                    cellDivisions,
-                    location,
-                    true,
-                    parametersMock,
-                    cellCriticalVolume,
-                    cellCriticalHeight,
-                    criticalVolumesRegionMock,
-                    criticalHeightsRegionMock);
-        }
+                new PottsCellMock(containerWithoutRegions, locationMock, parametersMock, false);
     }
 
     @Test
@@ -279,21 +231,22 @@ public class PottsCellTest {
     @Test
     public void getParent_valueAssigned_returnsValue() {
         int parent = randomIntBetween(0, 100);
-        PottsCell cell =
-                new PottsCellMock(
+        PottsCellContainer container =
+                new PottsCellContainer(
                         cellID,
                         parent,
                         cellPop,
-                        cellState,
                         cellAge,
                         cellDivisions,
-                        locationMock,
-                        false,
-                        parametersMock,
+                        cellState,
+                        null,
+                        0,
+                        null,
                         cellCriticalVolume,
                         cellCriticalHeight,
                         null,
                         null);
+        PottsCell cell = new PottsCellMock(container, locationMock, parametersMock, false);
         assertEquals(parent, cell.getParent());
     }
 
@@ -305,21 +258,22 @@ public class PottsCellTest {
     @Test
     public void getPop_valueAssigned_returnsValue() {
         int pop = randomIntBetween(0, 100);
-        PottsCell cell =
-                new PottsCellMock(
+        PottsCellContainer container =
+                new PottsCellContainer(
                         cellID,
                         cellParent,
                         pop,
-                        cellState,
                         cellAge,
                         cellDivisions,
-                        locationMock,
-                        false,
-                        parametersMock,
+                        cellState,
+                        null,
+                        0,
+                        null,
                         cellCriticalVolume,
                         cellCriticalHeight,
                         null,
                         null);
+        PottsCell cell = new PottsCellMock(container, locationMock, parametersMock, false);
         assertEquals(pop, cell.getPop());
     }
 
@@ -331,21 +285,22 @@ public class PottsCellTest {
     @Test
     public void getState_valueAssigned_returnsValue() {
         State state = State.random(RANDOM);
-        PottsCell cell =
-                new PottsCellMock(
+        PottsCellContainer container =
+                new PottsCellContainer(
                         cellID,
                         cellParent,
                         cellPop,
-                        state,
                         cellAge,
                         cellDivisions,
-                        locationMock,
-                        false,
-                        parametersMock,
+                        state,
+                        null,
+                        0,
+                        null,
                         cellCriticalVolume,
                         cellCriticalHeight,
                         null,
                         null);
+        PottsCell cell = new PottsCellMock(container, locationMock, parametersMock, false);
         assertEquals(state, cell.getState());
     }
 
@@ -357,21 +312,22 @@ public class PottsCellTest {
     @Test
     public void getAge_valueAssigned_returnsValue() {
         int age = randomIntBetween(0, 100);
-        PottsCell cell =
-                new PottsCellMock(
+        PottsCellContainer container =
+                new PottsCellContainer(
                         cellID,
                         cellParent,
                         cellPop,
-                        cellState,
                         age,
                         cellDivisions,
-                        locationMock,
-                        false,
-                        parametersMock,
+                        cellState,
+                        null,
+                        0,
+                        null,
                         cellCriticalVolume,
                         cellCriticalHeight,
                         null,
                         null);
+        PottsCell cell = new PottsCellMock(container, locationMock, parametersMock, false);
         assertEquals(age, cell.getAge());
     }
 
@@ -383,21 +339,22 @@ public class PottsCellTest {
     @Test
     public void getDivisions_valueAssigned_returnsValue() {
         int divisions = randomIntBetween(0, 100);
-        PottsCell cell =
-                new PottsCellMock(
+        PottsCellContainer container =
+                new PottsCellContainer(
                         cellID,
                         cellParent,
                         cellPop,
-                        cellState,
                         cellAge,
                         divisions,
-                        locationMock,
-                        false,
-                        parametersMock,
+                        cellState,
+                        null,
+                        0,
+                        null,
                         cellCriticalVolume,
                         cellCriticalHeight,
                         null,
                         null);
+        PottsCell cell = new PottsCellMock(container, locationMock, parametersMock, false);
         assertEquals(divisions, cell.getDivisions());
     }
 
@@ -535,14 +492,14 @@ public class PottsCellTest {
 
     @Test
     public void getTargetVolume_afterInitialize_returnsValue() {
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.initialize(null, null);
         assertEquals(locationVolume, cell.getTargetVolume(), EPSILON);
     }
 
     @Test
     public void getTargetVolume_afterInitializeValidRegion_returnsValue() {
-        PottsCell cell = make(true);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
         cell.initialize(null, null);
         for (Region region : regionList) {
             assertEquals(locationRegionVolumes.get(region), cell.getTargetVolume(region), EPSILON);
@@ -551,7 +508,7 @@ public class PottsCellTest {
 
     @Test
     public void getTargetVolume_afterInitializeInvalidRegion_returnsZero() {
-        PottsCell cell = make(true);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
         cell.initialize(null, null);
         assertEquals(0, cell.getTargetVolume(null), EPSILON);
         assertEquals(0, cell.getTargetVolume(Region.UNDEFINED), EPSILON);
@@ -559,7 +516,7 @@ public class PottsCellTest {
 
     @Test
     public void getTargetVolume_afterInitializeNoRegion_returnsZero() {
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.initialize(null, null);
         for (Region region : regionList) {
             assertEquals(0, cell.getTargetVolume(region), EPSILON);
@@ -592,14 +549,14 @@ public class PottsCellTest {
 
     @Test
     public void getTargetSurface_afterInitialize_returnsValue() {
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.initialize(null, null);
         assertEquals(locationSurface, cell.getTargetSurface(), EPSILON);
     }
 
     @Test
     public void getTargetSurface_afterInitializeValidRegion_returnsValue() {
-        PottsCell cell = make(true);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
         cell.initialize(null, null);
         for (Region region : regionList) {
             assertEquals(
@@ -609,7 +566,7 @@ public class PottsCellTest {
 
     @Test
     public void getTargetSurface_afterInitializeInvalidRegion_returnsZero() {
-        PottsCell cell = make(true);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
         cell.initialize(null, null);
         assertEquals(0, cell.getTargetSurface(null), EPSILON);
         assertEquals(0, cell.getTargetSurface(Region.UNDEFINED), EPSILON);
@@ -617,7 +574,7 @@ public class PottsCellTest {
 
     @Test
     public void getTargetSurface_afterInitializeNoRegion_returnsZero() {
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.initialize(null, null);
         for (Region region : regionList) {
             assertEquals(0, cell.getTargetSurface(region), EPSILON);
@@ -654,14 +611,14 @@ public class PottsCellTest {
 
     @Test
     public void getCriticalVolume_afterInitialize_returnsValue() {
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.initialize(null, null);
         assertEquals(cellCriticalVolume, cell.getCriticalVolume(), EPSILON);
     }
 
     @Test
     public void getCriticalVolume_afterInitializeValidRegion_returnsValue() {
-        PottsCell cell = make(true);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
         cell.initialize(null, null);
         for (Region region : regionList) {
             assertEquals(
@@ -671,14 +628,14 @@ public class PottsCellTest {
 
     @Test
     public void getCriticalVolume_afterInitializeInvalidRegion_returnsZero() {
-        PottsCell cell = make(true);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
         cell.initialize(null, null);
         assertEquals(0, cell.getCriticalVolume(null), EPSILON);
     }
 
     @Test
     public void getCriticalVolume_afterInitializeNoRegion_returnsZero() {
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.initialize(null, null);
         for (Region region : regionList) {
             assertEquals(0, cell.getCriticalVolume(region), EPSILON);
@@ -715,14 +672,14 @@ public class PottsCellTest {
 
     @Test
     public void getCriticalHeight_afterInitialize_returnsValue() {
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.initialize(null, null);
         assertEquals(cellCriticalHeight, cell.getCriticalHeight(), EPSILON);
     }
 
     @Test
     public void getCriticalHeight_afterInitializeValidRegion_returnsValue() {
-        PottsCell cell = make(true);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
         cell.initialize(null, null);
         for (Region region : regionList) {
             assertEquals(
@@ -732,14 +689,14 @@ public class PottsCellTest {
 
     @Test
     public void getCriticalHeight_afterInitializeInvalidRegion_returnsZero() {
-        PottsCell cell = make(true);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
         cell.initialize(null, null);
         assertEquals(0, cell.getCriticalHeight(null), EPSILON);
     }
 
     @Test
     public void getCriticalHeight_afterInitializeNoRegion_returnsZero() {
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.initialize(null, null);
         for (Region region : regionList) {
             assertEquals(0, cell.getCriticalHeight(region), EPSILON);
@@ -748,7 +705,7 @@ public class PottsCellTest {
 
     @Test
     public void stop_called_callsMethod() {
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.stopper = mock(Stoppable.class);
         cell.stop();
         verify(cell.stopper).stop();
@@ -757,7 +714,7 @@ public class PottsCellTest {
     @Test
     public void schedule_validInput_callsMethod() {
         Schedule schedule = mock(Schedule.class);
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         doReturn(mock(Stoppable.class))
                 .when(schedule)
                 .scheduleRepeating(cell, Ordering.CELLS.ordinal(), 1);
@@ -768,7 +725,7 @@ public class PottsCellTest {
     @Test
     public void schedule_validInput_assignStopper() {
         Schedule schedule = mock(Schedule.class);
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         doReturn(mock(Stoppable.class))
                 .when(schedule)
                 .scheduleRepeating(cell, Ordering.CELLS.ordinal(), 1);
@@ -779,7 +736,7 @@ public class PottsCellTest {
     @Test
     public void initialize_withoutRegions_callsMethod() {
         PottsLocation location = mock(PottsLocation.class);
-        PottsCell cell = make(location, false);
+        PottsCell cell = new PottsCellMock(baseContainer, location, parametersMock, false);
         int[][][] array = new int[1][3][3];
         cell.initialize(array, null);
 
@@ -790,7 +747,7 @@ public class PottsCellTest {
     public void initialize_withRegions_callsMethod() {
         PottsLocation location = mock(PottsLocation.class);
         when(location.getRegions()).thenReturn(regionList);
-        PottsCell cell = make(location, true);
+        PottsCell cell = new PottsCellMock(baseContainer, location, parametersMock, true);
         int[][][] array1 = new int[1][3][3];
         int[][][] array2 = new int[1][3][3];
         cell.initialize(array1, array2);
@@ -806,7 +763,7 @@ public class PottsCellTest {
         when(location.getVolume()).thenReturn((double) volume);
         when(location.getSurface()).thenReturn((double) surface);
 
-        PottsCell cell = make(location, false);
+        PottsCell cell = new PottsCellMock(baseContainer, location, parametersMock, false);
         cell.initialize(new int[1][3][3], null);
 
         assertEquals(volume, cell.getTargetVolume(), EPSILON);
@@ -830,7 +787,7 @@ public class PottsCellTest {
         when(location.getSurface(Region.NUCLEUS)).thenReturn((double) surface2);
         when(location.getRegions()).thenReturn(regionList);
 
-        PottsCell cell = make(location, true);
+        PottsCell cell = new PottsCellMock(baseContainer, location, parametersMock, true);
         cell.initialize(new int[1][3][3], new int[1][3][3]);
 
         assertEquals(volume1 + volume2, cell.getTargetVolume(), EPSILON);
@@ -846,7 +803,7 @@ public class PottsCellTest {
     @Test
     public void reset_withoutRegions_callsMethod() {
         PottsLocation location = mock(PottsLocation.class);
-        PottsCell cell = make(location, false);
+        PottsCell cell = new PottsCellMock(baseContainer, location, parametersMock, false);
         int[][][] array = new int[1][3][3];
         cell.initialize(array, null);
         cell.reset(array, null);
@@ -858,7 +815,7 @@ public class PottsCellTest {
     public void reset_withRegions_callsMethod() {
         PottsLocation location = mock(PottsLocation.class);
         when(location.getRegions()).thenReturn(regionList);
-        PottsCell cell = make(location, true);
+        PottsCell cell = new PottsCellMock(baseContainer, location, parametersMock, true);
         int[][][] array1 = new int[1][3][3];
         int[][][] array2 = new int[1][3][3];
         cell.initialize(array1, array2);
@@ -869,7 +826,7 @@ public class PottsCellTest {
 
     @Test
     public void reset_withoutRegions_updatesTargets() {
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.initialize(new int[1][3][3], new int[1][3][3]);
         cell.updateTarget(randomDoubleBetween(0, 10), randomDoubleBetween(0, 10));
         cell.reset(new int[1][3][3], null);
@@ -882,7 +839,7 @@ public class PottsCellTest {
 
     @Test
     public void reset_withRegions_updatesTargets() {
-        PottsCell cell = make(true);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
         cell.initialize(new int[1][3][3], new int[1][3][3]);
         cell.updateTarget(Region.DEFAULT, randomDoubleBetween(0, 10), randomDoubleBetween(0, 10));
         cell.updateTarget(Region.NUCLEUS, randomDoubleBetween(0, 10), randomDoubleBetween(0, 10));
@@ -904,7 +861,7 @@ public class PottsCellTest {
 
     @Test
     public void step_singleStep_updatesAge() {
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         PottsSimulation sim = mock(PottsSimulation.class);
         cell.module = mock(Module.class);
 
@@ -916,7 +873,7 @@ public class PottsCellTest {
     public void setTargets_noRegions_updateValues() {
         double targetVolume = randomDoubleBetween(0, 10);
         double targetSurface = randomDoubleBetween(0, 10);
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.setTargets(targetVolume, targetSurface);
         assertEquals(targetVolume, cell.getTargetVolume(), EPSILON);
         assertEquals(targetSurface, cell.getTargetSurface(), EPSILON);
@@ -926,7 +883,7 @@ public class PottsCellTest {
     public void setTargets_withRegions_updateValues() {
         double targetVolume = randomDoubleBetween(0, 10);
         double targetSurface = randomDoubleBetween(0, 10);
-        PottsCell cell = make(true);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
         cell.setTargets(Region.NUCLEUS, targetVolume, targetSurface);
 
         assertEquals(targetVolume, cell.getTargetVolume(Region.NUCLEUS), EPSILON);
@@ -942,7 +899,7 @@ public class PottsCellTest {
         double scale = 1.0;
         double rate = randomDoubleBetween(0, 100);
 
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.initialize(null, null);
         cell.updateTarget(rate, scale);
 
@@ -977,7 +934,7 @@ public class PottsCellTest {
                 };
 
         for (int i = 0; i < scales.length; i++) {
-            PottsCell cell = make(false);
+            PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
             cell.reset(null, null);
             cell.updateTarget(rates[i], scales[i]);
 
@@ -1030,7 +987,7 @@ public class PottsCellTest {
                 };
 
         for (int i = 0; i < scales.length; i++) {
-            PottsCell cell = make(true);
+            PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
             cell.reset(null, null);
             cell.updateTarget(rates[i], scales[i]);
 
@@ -1052,7 +1009,7 @@ public class PottsCellTest {
         double scale = 1.0;
         double rate = randomDoubleBetween(0, 100);
 
-        PottsCell cell = make(true);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
         cell.initialize(null, null);
         cell.updateTarget(Region.DEFAULT, rate, scale);
 
@@ -1071,7 +1028,7 @@ public class PottsCellTest {
         double scale = randomDoubleBetween(1, 10);
         double rate = randomDoubleBetween(0, 100);
 
-        PottsCell cell = make(false);
+        PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, false);
         cell.initialize(null, null);
         cell.updateTarget(Region.DEFAULT, rate, scale);
 
@@ -1084,6 +1041,8 @@ public class PottsCellTest {
         double defaultVolume = criticalVolumesRegionMock.get(Region.DEFAULT);
         double defaultHeight = criticalHeightsRegionMock.get(Region.DEFAULT);
         double threshold = defaultVolume / cellCriticalVolume;
+
+        System.out.println(defaultVolume + " " + cellCriticalVolume);
 
         double[] scales =
                 new double[] {
@@ -1122,7 +1081,7 @@ public class PottsCellTest {
                 };
 
         for (int i = 0; i < scales.length; i++) {
-            PottsCell cell = make(true);
+            PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
             cell.reset(null, null);
             cell.updateTarget(Region.DEFAULT, rates[i], scales[i]);
 
@@ -1184,7 +1143,7 @@ public class PottsCellTest {
                 };
 
         for (int i = 0; i < scales.length; i++) {
-            PottsCell cell = make(true);
+            PottsCell cell = new PottsCellMock(baseContainer, locationMock, parametersMock, true);
             cell.reset(null, null);
             cell.updateTarget(Region.NUCLEUS, rates[i], scales[i]);
 
@@ -1219,21 +1178,20 @@ public class PottsCellTest {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
 
-        PottsCell cell =
-                new PottsCellMock(
+        PottsCellContainer container2 =
+                new PottsCellContainer(
                         id,
                         parent,
                         pop,
-                        state,
                         age,
                         divisions,
-                        location,
-                        false,
-                        parameters,
+                        state,
+                        phase,
+                        0,
                         criticalVolume,
-                        criticalHeight,
-                        null,
-                        null);
+                        criticalHeight);
+        PottsCell cell = new PottsCellMock(container2, location, parameters, false);
+
         doReturn(phase).when((PottsModule) cell.getModule()).getPhase();
 
         int voxels = randomIntBetween(1, 100);
@@ -1277,21 +1235,22 @@ public class PottsCellTest {
         EnumMap<Region, Double> criticalRegionVolumes = makeRegionEnumMap();
         EnumMap<Region, Double> criticalRegionHeights = makeRegionEnumMap();
 
-        PottsCell cell =
-                new PottsCellMock(
+        PottsCellContainer container2 =
+                new PottsCellContainer(
                         id,
                         parent,
                         pop,
-                        state,
                         age,
                         divisions,
-                        location,
-                        true,
-                        parameters,
+                        state,
+                        phase,
+                        0,
+                        null,
                         criticalVolume,
                         criticalHeight,
                         criticalRegionVolumes,
                         criticalRegionHeights);
+        PottsCell cell = new PottsCellMock(container2, location, parameters, true);
         doReturn(phase).when((PottsModule) cell.getModule()).getPhase();
 
         int voxels = randomIntBetween(1, 100);

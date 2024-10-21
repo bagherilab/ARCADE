@@ -2,7 +2,6 @@ package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
 import org.junit.jupiter.api.Test;
-import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModuleApoptosis;
 import arcade.potts.agent.module.PottsModuleAutosis;
@@ -13,6 +12,7 @@ import arcade.potts.env.location.PottsLocation;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
+import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
@@ -37,25 +37,26 @@ public class PottsCellStemTest {
 
     static State cellState = State.UNDEFINED;
 
+    static Phase cellPhase = Phase.UNDEFINED;
+
     static MiniBox parametersMock = mock(MiniBox.class);
+
+    static PottsCellContainer baseContainer =
+            new PottsCellContainer(
+                    cellID,
+                    cellParent,
+                    cellPop,
+                    cellAge,
+                    cellDivisions,
+                    cellState,
+                    cellPhase,
+                    0,
+                    cellCriticalVolume,
+                    cellCriticalHeight);
 
     @Test
     public void setState_givenState_assignsValue() {
-        PottsCellStem cell =
-                new PottsCellStem(
-                        cellID,
-                        cellParent,
-                        cellPop,
-                        cellState,
-                        cellAge,
-                        cellDivisions,
-                        locationMock,
-                        false,
-                        parametersMock,
-                        cellCriticalVolume,
-                        cellCriticalHeight,
-                        null,
-                        null);
+        PottsCellStem cell = new PottsCellStem(baseContainer, locationMock, parametersMock, false);
 
         cell.setState(State.QUIESCENT);
         assertEquals(State.QUIESCENT, cell.getState());
@@ -75,21 +76,7 @@ public class PottsCellStemTest {
 
     @Test
     public void setState_givenState_updatesModule() {
-        PottsCellStem cell =
-                new PottsCellStem(
-                        cellID,
-                        cellParent,
-                        cellPop,
-                        cellState,
-                        cellAge,
-                        cellDivisions,
-                        locationMock,
-                        false,
-                        parametersMock,
-                        cellCriticalVolume,
-                        cellCriticalHeight,
-                        null,
-                        null);
+        PottsCellStem cell = new PottsCellStem(baseContainer, locationMock, parametersMock, false);
 
         cell.setState(State.QUIESCENT);
         assertTrue(cell.module instanceof PottsModuleQuiescence);
@@ -109,21 +96,7 @@ public class PottsCellStemTest {
 
     @Test
     public void setState_invalidState_setsNull() {
-        PottsCellStem cell =
-                new PottsCellStem(
-                        cellID,
-                        cellParent,
-                        cellPop,
-                        cellState,
-                        cellAge,
-                        cellDivisions,
-                        locationMock,
-                        false,
-                        parametersMock,
-                        cellCriticalVolume,
-                        cellCriticalHeight,
-                        null,
-                        null);
+        PottsCellStem cell = new PottsCellStem(baseContainer, locationMock, parametersMock, false);
         cell.setState(State.UNDEFINED);
         assertNull(cell.getModule());
     }
@@ -132,23 +105,24 @@ public class PottsCellStemTest {
     public void make_noRegions_createsContainer() {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
+        State state1 = State.QUIESCENT;
+        State state2 = State.PROLIFERATIVE;
 
-        PottsCellStem cell =
-                new PottsCellStem(
+        PottsCellContainer cellContainer =
+                new PottsCellContainer(
                         cellID,
                         cellParent,
                         cellPop,
-                        cellState,
                         cellAge,
                         cellDivisions,
-                        locationMock,
-                        false,
-                        parametersMock,
+                        state1,
+                        cellPhase,
+                        0,
                         criticalVolume,
-                        criticalHeight,
-                        null,
-                        null);
-        PottsCellContainer container = cell.make(cellID + 1, State.QUIESCENT, null);
+                        criticalHeight);
+        PottsCellStem cell = new PottsCellStem(cellContainer, locationMock, parametersMock, false);
+
+        PottsCellContainer container = cell.make(cellID + 1, state2, null);
 
         assertEquals(cellID + 1, container.id);
         assertEquals(cellID, container.parent);
@@ -156,7 +130,7 @@ public class PottsCellStemTest {
         assertEquals(cellAge, container.age);
         assertEquals(cellDivisions + 1, cell.getDivisions());
         assertEquals(cellDivisions + 1, container.divisions);
-        assertEquals(State.QUIESCENT, container.state);
+        assertEquals(state2, container.state);
         assertNull(container.phase);
         assertEquals(0, container.voxels);
         assertNull(container.regionVoxels);
@@ -170,6 +144,8 @@ public class PottsCellStemTest {
     public void make_hasRegions_createsContainer() {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
+        State state1 = State.QUIESCENT;
+        State state2 = State.PROLIFERATIVE;
         EnumMap<Region, Double> criticalVolumesRegion = new EnumMap<>(Region.class);
         EnumMap<Region, Double> criticalHeightsRegion = new EnumMap<>(Region.class);
 
@@ -178,22 +154,24 @@ public class PottsCellStemTest {
             criticalHeightsRegion.put(region, randomDoubleBetween(10, 100));
         }
 
-        PottsCellStem cell =
-                new PottsCellStem(
+        PottsCellContainer cellContainer =
+                new PottsCellContainer(
                         cellID,
                         cellParent,
                         cellPop,
-                        cellState,
                         cellAge,
                         cellDivisions,
-                        locationMock,
-                        true,
-                        parametersMock,
+                        state1,
+                        cellPhase,
+                        0,
+                        null,
                         criticalVolume,
                         criticalHeight,
                         criticalVolumesRegion,
                         criticalHeightsRegion);
-        PottsCellContainer container = cell.make(cellID + 1, State.QUIESCENT, null);
+        PottsCellStem cell = new PottsCellStem(cellContainer, locationMock, parametersMock, true);
+
+        PottsCellContainer container = cell.make(cellID + 1, state2, null);
 
         assertEquals(cellID + 1, container.id);
         assertEquals(cellID, container.parent);
@@ -201,7 +179,7 @@ public class PottsCellStemTest {
         assertEquals(cellAge, container.age);
         assertEquals(cellDivisions + 1, cell.getDivisions());
         assertEquals(cellDivisions + 1, container.divisions);
-        assertEquals(State.QUIESCENT, container.state);
+        assertEquals(state2, container.state);
         assertNull(container.phase);
         assertEquals(0, container.voxels);
         assertNull(container.regionVoxels);
