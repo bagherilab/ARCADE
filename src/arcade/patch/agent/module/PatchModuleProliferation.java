@@ -2,6 +2,7 @@ package arcade.patch.agent.module;
 
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
@@ -84,8 +85,9 @@ public class PatchModuleProliferation extends PatchModule {
 
                     // Create and schedule new cell.
                     int newID = sim.getID();
+                    CellContainer newContainer = cell.make(newID, State.UNDEFINED, random);
                     PatchCell newCell =
-                            (PatchCell) cell.make(newID, State.UNDEFINED, newLocation, random);
+                            (PatchCell) newContainer.convert(sim.getCellFactory(), newLocation);
                     sim.getGrid().addObject(newCell, newLocation);
                     newCell.schedule(sim.getSchedule());
 
