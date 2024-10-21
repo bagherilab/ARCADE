@@ -20,47 +20,14 @@ import static arcade.patch.util.PatchEnums.State;
  */
 public class PatchCellCancer extends PatchCellTissue {
     /**
-     * Creates a tissue {@code PatchCell} agent.
+     * Creates a cancer {@code PatchCell} agent.
      *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
      */
-    public PatchCellCancer(
-            int id,
-            int parent,
-            int pop,
-            CellState state,
-            int age,
-            int divisions,
-            Location location,
-            MiniBox parameters,
-            double volume,
-            double height,
-            double criticalVolume,
-            double criticalHeight) {
-        super(
-                id,
-                parent,
-                pop,
-                state,
-                age,
-                divisions,
-                location,
-                parameters,
-                volume,
-                height,
-                criticalVolume,
-                criticalHeight);
+    public PatchCellCancer(PatchCellContainer container, Location location, MiniBox parameters) {
+        super(container, location, parameters);
     }
 
     /**
