@@ -2,7 +2,7 @@ package arcade.core.util;
 
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
-import arcade.core.util.exceptions.OOBException;
+import arcade.core.util.exceptions.OutOfBoundsException;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ParameterTest {
@@ -21,7 +21,7 @@ public class ParameterTest {
         MersenneTwisterFast random = new MersenneTwisterFast();
         double mu = 2.0;
         double sigma = 0.25;
-        assertThrows(OOBException.class, () -> new Parameter(mu, sigma, true, random));
+        assertThrows(OutOfBoundsException.class, () -> new Parameter(mu, sigma, true, random));
     }
 
     @Test
@@ -30,7 +30,7 @@ public class ParameterTest {
         double mu = -2.0;
         double sigma = 0.25;
 
-        assertThrows(OOBException.class, () -> new Parameter(mu, sigma, true, random));
+        assertThrows(OutOfBoundsException.class, () -> new Parameter(mu, sigma, true, random));
     }
 
     @Test
