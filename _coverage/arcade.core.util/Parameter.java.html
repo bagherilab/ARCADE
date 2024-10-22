@@ -3,6 +3,7 @@
 import java.io.Serializable;
 import sim.util.distribution.Normal;
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.exceptions.OutOfBoundsException;
 
 /**
  * Container class for parameter with normal distribution and bound checks.
@@ -41,23 +42,27 @@ public class Parameter implements Serializable {
      * @param isFrac indicates if distribution is truncated between 0 and 1
      * @param random the random number generator
      */
-<span class="nc" id="L44">    public Parameter(double mu, double h, boolean isFrac, MersenneTwisterFast random) {</span>
-<span class="nc" id="L45">        this.h = h;</span>
-<span class="nc" id="L46">        this.isFrac = isFrac;</span>
-<span class="nc" id="L47">        this.random = random;</span>
-<span class="nc" id="L48">        this.mu = mu;</span>
-<span class="nc" id="L49">        this.sigma = mu * h;</span>
+<span class="fc" id="L45">    public Parameter(double mu, double h, boolean isFrac, MersenneTwisterFast random) {</span>
+<span class="fc" id="L46">        this.h = h;</span>
+<span class="fc" id="L47">        this.isFrac = isFrac;</span>
+<span class="fc" id="L48">        this.random = random;</span>
+<span class="fc" id="L49">        this.mu = mu;</span>
+<span class="fc" id="L50">        this.sigma = mu * h;</span>
 
-<span class="nc" id="L51">        normal = new Normal(mu, Math.abs(sigma), random);</span>
-<span class="nc" id="L52">        tails = new double[2];</span>
-<span class="nc bnc" id="L53" title="All 2 branches missed.">        tails[(mu &lt; 0 ? 1 : 0)] = mu + 2 * sigma;</span>
-<span class="nc bnc" id="L54" title="All 2 branches missed.">        tails[(mu &lt; 0 ? 0 : 1)] = mu - 2 * sigma;</span>
+<span class="fc" id="L52">        normal = new Normal(mu, Math.abs(sigma), random);</span>
+<span class="fc" id="L53">        tails = new double[2];</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        tails[(mu &lt; 0 ? 1 : 0)] = mu + 2 * sigma;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        tails[(mu &lt; 0 ? 0 : 1)] = mu - 2 * sigma;</span>
 
-<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (isFrac) {</span>
-<span class="nc" id="L57">            tails[0] = Math.min(tails[0], 1.0);</span>
-<span class="nc" id="L58">            tails[1] = Math.max(tails[1], 0.0);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (isFrac) {</span>
+<span class="fc bfc" id="L58" title="All 4 branches covered.">            if (mu &lt;= 0 || mu &gt;= 1) {</span>
+<span class="fc" id="L59">                throw new OutOfBoundsException(</span>
+                        &quot;Mu parameter must be between 0 and 1, given &quot; + mu + &quot;.&quot;);
+            }
+<span class="fc" id="L62">            tails[0] = Math.min(tails[0], 1.0);</span>
+<span class="fc" id="L63">            tails[1] = Math.max(tails[1], 0.0);</span>
         }
-<span class="nc" id="L60">    }</span>
+<span class="fc" id="L65">    }</span>
 
     /**
      * Gets the mean of the distribution.
@@ -65,7 +70,7 @@ public class Parameter implements Serializable {
      * @return the distribution mean
      */
     public double getMu() {
-<span class="nc" id="L68">        return mu;</span>
+<span class="fc" id="L73">        return mu;</span>
     }
 
     /**
@@ -74,7 +79,7 @@ public class Parameter implements Serializable {
      * @return the distribution standard deviation
      */
     public double getSigma() {
-<span class="nc" id="L77">        return sigma;</span>
+<span class="fc" id="L82">        return sigma;</span>
     }
 
     /**
@@ -84,7 +89,7 @@ public class Parameter implements Serializable {
      * @return a parameter instance with the new mean
      */
     public Parameter update(double mean) {
-<span class="nc" id="L87">        return new Parameter(mean, h, isFrac, random);</span>
+<span class="fc" id="L92">        return new Parameter(mean, h, isFrac, random);</span>
     }
 
     /**
@@ -93,7 +98,7 @@ public class Parameter implements Serializable {
      * @return a double drawn from the distribution
      */
     public double nextDouble() {
-<span class="nc" id="L96">        return Math.max(Math.min(normal.nextDouble(), tails[0]), tails[1]);</span>
+<span class="fc" id="L101">        return Math.max(Math.min(normal.nextDouble(), tails[0]), tails[1]);</span>
     }
 
     /**
@@ -102,7 +107,7 @@ public class Parameter implements Serializable {
      * @return an integer drawn from the distribution
      */
     public int nextInt() {
-<span class="nc" id="L105">        return (int) nextDouble();</span>
+<span class="fc" id="L110">        return (int) nextDouble();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
