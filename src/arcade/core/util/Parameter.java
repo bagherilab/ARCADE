@@ -56,7 +56,8 @@ public class Parameter implements Serializable {
 
         if (isFrac) {
             if (mu <= 0 || mu >= 1) {
-                throw new OutOfBoundsException("Mu parameter must be between 0 and 1, given " + mu + ".");
+                throw new OutOfBoundsException(
+                        "Mu parameter must be between 0 and 1, given " + mu + ".");
             }
             tails[0] = Math.min(tails[0], 1.0);
             tails[1] = Math.max(tails[1], 0.0);
