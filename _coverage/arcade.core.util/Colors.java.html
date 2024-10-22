@@ -170,8 +170,8 @@ public class Colors implements ColorMap {
      */
     @Override
     public int getRGB(double level) {
-<span class="pc bpc" id="L173" title="1 of 2 branches missed.">        if (level &lt;= defaultValue) {</span>
-<span class="nc" id="L174">            return EMPTY.getRGB();</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">        if (level &lt;= defaultValue) {</span>
+<span class="fc" id="L174">            return EMPTY.getRGB();</span>
         }
 <span class="fc" id="L176">        return colors[getIndex(level)].getRGB();</span>
     }
@@ -184,8 +184,8 @@ public class Colors implements ColorMap {
      */
     @Override
     public int getAlpha(double level) {
-<span class="pc bpc" id="L187" title="1 of 2 branches missed.">        if (level &lt;= defaultValue) {</span>
-<span class="nc" id="L188">            return EMPTY.getAlpha();</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        if (level &lt;= defaultValue) {</span>
+<span class="fc" id="L188">            return EMPTY.getAlpha();</span>
         }
 <span class="fc" id="L190">        return colors[getIndex(level)].getAlpha();</span>
     }
@@ -198,7 +198,7 @@ public class Colors implements ColorMap {
      */
     @Override
     public boolean validLevel(double level) {
-<span class="nc bnc" id="L201" title="All 4 branches missed.">        return level &gt;= min &amp;&amp; level &lt;= max;</span>
+<span class="fc bfc" id="L201" title="All 4 branches covered.">        return level &gt;= min &amp;&amp; level &lt;= max;</span>
     }
 
     /**
@@ -208,7 +208,7 @@ public class Colors implements ColorMap {
      */
     @Override
     public double defaultValue() {
-<span class="nc" id="L211">        return defaultValue;</span>
+<span class="fc" id="L211">        return defaultValue;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

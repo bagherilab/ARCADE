@@ -437,15 +437,15 @@ public class Matrix {
      * @return the product of the matrix and vector
      */
     public static double[] multiply(ArrayList&lt;Value&gt; mat, double[] vec) {
-<span class="nc" id="L440">        int n = vec.length;</span>
-<span class="nc" id="L441">        double[] multiplied = new double[n];</span>
+<span class="fc" id="L440">        int n = vec.length;</span>
+<span class="fc" id="L441">        double[] multiplied = new double[n];</span>
 
         // Iterate through all entries and multiply.
-<span class="nc bnc" id="L444" title="All 2 branches missed.">        for (Value a : mat) {</span>
-<span class="nc" id="L445">            multiplied[a.i] += a.v * vec[a.j];</span>
-<span class="nc" id="L446">        }</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">        for (Value a : mat) {</span>
+<span class="fc" id="L445">            multiplied[a.i] += a.v * vec[a.j];</span>
+<span class="fc" id="L446">        }</span>
 
-<span class="nc" id="L448">        return multiplied;</span>
+<span class="fc" id="L448">        return multiplied;</span>
     }
 
     /**
@@ -504,12 +504,12 @@ public class Matrix {
      * @return the sum of the two vectors
      */
     public static double[] add(double[] vecA, double[] vecB) {
-<span class="nc" id="L507">        int n = vecA.length;</span>
-<span class="nc" id="L508">        double[] added = new double[n];</span>
-<span class="nc bnc" id="L509" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="nc" id="L510">            added[i] = vecA[i] + vecB[i];</span>
+<span class="fc" id="L507">        int n = vecA.length;</span>
+<span class="fc" id="L508">        double[] added = new double[n];</span>
+<span class="fc bfc" id="L509" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L510">            added[i] = vecA[i] + vecB[i];</span>
         }
-<span class="nc" id="L512">        return added;</span>
+<span class="fc" id="L512">        return added;</span>
     }
 
     /**
@@ -520,12 +520,12 @@ public class Matrix {
      * @return the difference of the two vectors
      */
     public static double[] subtract(double[] vecA, double[] vecB) {
-<span class="nc" id="L523">        int n = vecA.length;</span>
-<span class="nc" id="L524">        double[] subtracted = new double[n];</span>
-<span class="nc bnc" id="L525" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="nc" id="L526">            subtracted[i] = vecA[i] - vecB[i];</span>
+<span class="fc" id="L523">        int n = vecA.length;</span>
+<span class="fc" id="L524">        double[] subtracted = new double[n];</span>
+<span class="fc bfc" id="L525" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L526">            subtracted[i] = vecA[i] - vecB[i];</span>
         }
-<span class="nc" id="L528">        return subtracted;</span>
+<span class="fc" id="L528">        return subtracted;</span>
     }
 
     /**
@@ -536,12 +536,12 @@ public class Matrix {
      * @return the scaled matrix
      */
     public static double[][] scale(double[][] mat, double scale) {
-<span class="nc" id="L539">        int n = mat.length;</span>
-<span class="nc" id="L540">        double[][] scaled = new double[n][n];</span>
-<span class="nc bnc" id="L541" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="nc" id="L542">            scaled[i] = scale(mat[i], scale);</span>
+<span class="fc" id="L539">        int n = mat.length;</span>
+<span class="fc" id="L540">        double[][] scaled = new double[n][n];</span>
+<span class="fc bfc" id="L541" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L542">            scaled[i] = scale(mat[i], scale);</span>
         }
-<span class="nc" id="L544">        return scaled;</span>
+<span class="fc" id="L544">        return scaled;</span>
     }
 
     /**
@@ -552,12 +552,12 @@ public class Matrix {
      * @return the scaled vector
      */
     public static double[] scale(double[] vec, double scale) {
-<span class="nc" id="L555">        int n = vec.length;</span>
-<span class="nc" id="L556">        double[] scaled = new double[n];</span>
-<span class="nc bnc" id="L557" title="All 2 branches missed.">        for (int i = 0; i &lt; n; i++) {</span>
-<span class="nc" id="L558">            scaled[i] = vec[i] * scale;</span>
+<span class="fc" id="L555">        int n = vec.length;</span>
+<span class="fc" id="L556">        double[] scaled = new double[n];</span>
+<span class="fc bfc" id="L557" title="All 2 branches covered.">        for (int i = 0; i &lt; n; i++) {</span>
+<span class="fc" id="L558">            scaled[i] = vec[i] * scale;</span>
         }
-<span class="nc" id="L560">        return scaled;</span>
+<span class="fc" id="L560">        return scaled;</span>
     }
 
     /**
@@ -568,11 +568,11 @@ public class Matrix {
      * @return the scaled matrix
      */
     public static ArrayList&lt;Value&gt; scale(ArrayList&lt;Value&gt; mat, double scale) {
-<span class="nc" id="L571">        ArrayList&lt;Value&gt; scaled = new ArrayList&lt;&gt;();</span>
-<span class="nc bnc" id="L572" title="All 2 branches missed.">        for (Value a : mat) {</span>
-<span class="nc" id="L573">            scaled.add(new Value(a.i, a.j, a.v * scale));</span>
-<span class="nc" id="L574">        }</span>
-<span class="nc" id="L575">        return scaled;</span>
+<span class="fc" id="L571">        ArrayList&lt;Value&gt; scaled = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L572" title="All 2 branches covered.">        for (Value a : mat) {</span>
+<span class="fc" id="L573">            scaled.add(new Value(a.i, a.j, a.v * scale));</span>
+<span class="fc" id="L574">        }</span>
+<span class="fc" id="L575">        return scaled;</span>
     }
 
     /**
