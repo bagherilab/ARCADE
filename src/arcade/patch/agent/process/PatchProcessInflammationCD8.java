@@ -40,7 +40,7 @@ public class PatchProcessInflammationCD8 extends PatchProcessInflammation {
 		names.add(GRANZYME, "granzyme");
 	}
 
-    public void step(MersenneTwisterFast random, Simulation sim) {		
+    public void stepProcess(MersenneTwisterFast random, Simulation sim) {		
 		
 		// Determine amount of granzyme production based on if cell is activated
 		// as a function of IL-2 production.

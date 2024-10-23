@@ -58,7 +58,7 @@ public class PatchProcessInflammationCD4 extends PatchProcessInflammation {
     
     
     @Override
-	public void step(MersenneTwisterFast random, Simulation sim) {
+	public void stepProcess(MersenneTwisterFast random, Simulation sim) {
 		
 		// Determine IL-2 production rate as a function of IL-2 bound.
 		int prodIndex = (IL2Ticker % boundArray.length) - IL2_SYNTHESIS_DELAY;

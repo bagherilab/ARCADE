@@ -135,11 +135,11 @@ public abstract class PatchProcessInflammation extends PatchProcess{
      
 		// Set parameters.
 		MiniBox parameters = cell.getParameters();
-		this.SHELL_THICKNESS = parameters.getDouble("SHELL_THICKNESS");
-		this.IL2_RECEPTORS = parameters.getDouble("IL2_RECEPTORS");
-		this.IL2_BINDING_ON_RATE_MIN = parameters.getDouble("IL2_BINDING_ON_RATE_MIN");
-		this.IL2_BINDING_ON_RATE_MAX = parameters.getDouble("IL2_BINDING_ON_RATE_MAX");
-		this.IL2_BINDING_OFF_RATE = parameters.getDouble("IL2_BINDING_OFF_RATE");
+		this.SHELL_THICKNESS = parameters.getDouble("inflammation/SHELL_THICKNESS");
+		this.IL2_RECEPTORS = parameters.getDouble("inflammation/IL2_RECEPTORS");
+		this.IL2_BINDING_ON_RATE_MIN = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MIN");
+		this.IL2_BINDING_ON_RATE_MAX = parameters.getDouble("inflammation/IL2_BINDING_ON_RATE_MAX");
+		this.IL2_BINDING_OFF_RATE = parameters.getDouble("inflammation/IL2_BINDING_OFF_RATE");
 		
 		// Set external concentrations.
 		//updateExternal(sim);
@@ -207,6 +207,13 @@ public abstract class PatchProcessInflammation extends PatchProcess{
 		amts[names.indexOf(key)] = val;
 	}
 	
+	/**
+     * Steps the metabolism process.
+     *
+     * @param random  the random number generator
+     * @param sim  the simulation instance
+     */
+    abstract void stepProcess(MersenneTwisterFast random, Simulation sim);
 	
 	/**
 	 * Gets the external amounts of IL-2.
@@ -223,7 +230,7 @@ public abstract class PatchProcessInflammation extends PatchProcess{
 	}
 	
 	// METHOD: stepModule.
-	public void stepProcess(MersenneTwisterFast random, Simulation sim) {
+	public void step(MersenneTwisterFast random, Simulation sim) {
 		// Calculate shell volume 2 um outside of cell.
 		double radCell = Math.cbrt((3.0/4.0)*(1.0/Math.PI)*volume);
 		double radShell = radCell + SHELL_THICKNESS;
@@ -247,7 +254,7 @@ public abstract class PatchProcessInflammation extends PatchProcess{
 		amts = Solver.rungeKutta(dydt, 0, amts, 60, STEP_SIZE);
 		
 		// Modify internal inflammation response.		
-		step(random, sim);
+		stepProcess(random, sim);
 		
 		// Update bound array.
 		boundArray[IL2Ticker % boundArray.length] = amts[IL2_INT_TOTAL];
