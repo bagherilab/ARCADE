@@ -51,6 +51,10 @@ public class PatchModuleProliferation extends PatchModule {
         // Calculate thresholds.
         targetVolume = 2 * cell.getCriticalVolume();
         maxHeight = cell.getCriticalHeight();
+<<<<<<< HEAD
+=======
+        this.start = start;
+>>>>>>> b06446fc (add cell cycles)
         // Set loaded parameters.
         MiniBox parameters = cell.getParameters();
         synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
@@ -79,7 +83,11 @@ public class PatchModuleProliferation extends PatchModule {
                 cell.setState(State.QUIESCENT);
             } else if (cell.getVolume() >= targetVolume) {
                 if (ticker > synthesisDuration) {
+<<<<<<< HEAD
 
+=======
+                    // TODO: ADD CYCLE TIME TO TRACKER.
+>>>>>>> b06446fc (add cell cycles)
                     cell.addCycle(simstate.schedule.getTime() - this.start);
                     // Reset current cell.
                     cell.setState(State.UNDEFINED);

@@ -76,6 +76,7 @@ public class PatchActionConvert implements Action {
         oldCell.stop();
 
         // Create new cell and add to simulation.
+<<<<<<< HEAD
         PatchCellContainer cellContainer =
                 new PatchCellContainer(
                         oldCell.getID(),
@@ -89,6 +90,12 @@ public class PatchActionConvert implements Action {
                         oldCell.getCriticalVolume(),
                         oldCell.getCriticalHeight(),
                         new Bag());
+=======
+        PatchCellContainer cellContainer = new PatchCellContainer(oldCell.getID(),
+                oldCell.getParent(), pop, oldCell.getAge(), oldCell.getDivisions(),
+                oldCell.getState(), oldCell.getVolume(), oldCell.getHeight(),
+                oldCell.getCriticalVolume(), oldCell.getCriticalHeight(), new Bag());
+>>>>>>> b06446fc (add cell cycles)
         PatchCell newCell = (PatchCell) cellContainer.convert(sim.cellFactory, location);
         grid.addObject(newCell, location);
         newCell.schedule(sim.getSchedule());

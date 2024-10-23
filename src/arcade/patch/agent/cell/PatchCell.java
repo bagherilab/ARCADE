@@ -287,9 +287,13 @@ public abstract class PatchCell implements Cell {
      *
      * @param energy the target energy level
      */
+<<<<<<< HEAD
     public void setEnergy(double energy) {
         this.energy = energy;
     }
+=======
+    public void setEnergy(double energy) { this.energy = energy; }
+>>>>>>> b06446fc (add cell cycles)
 
 	/**
 	 * Adds a completed cell cycle length to the list of lengths.
