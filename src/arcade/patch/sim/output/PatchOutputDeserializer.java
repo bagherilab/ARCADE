@@ -2,6 +2,7 @@ package arcade.patch.sim.output;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import sim.util.Bag;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -82,9 +83,10 @@ public final class PatchOutputDeserializer {
             JsonArray criticals = jsonObject.get("criticals").getAsJsonArray();
             double criticalVolume = criticals.get(0).getAsDouble();
             double criticalHeight = criticals.get(1).getAsDouble();
+            Bag cycles = context.deserialize(jsonObject.get("cycles"), Bag.class);
             
             return new PatchCellContainer(id, parent, pop, age, divisions,
-                    state, volume, height, criticalVolume, criticalHeight);
+                    state, volume, height, criticalVolume, criticalHeight, cycles);
         }
     }
     

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import sim.util.distribution.Normal;
 import sim.util.distribution.Uniform;
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
@@ -163,7 +164,7 @@ public final class PatchCellFactory implements CellFactory {
         int age = ages.nextInt();
         
         return new PatchCellContainer(id, 0, pop, age, divisions, State.UNDEFINED,
-                volume, height, volume, height + compression);
+                volume, height, volume, height + compression, new Bag());
     }
     
     /**

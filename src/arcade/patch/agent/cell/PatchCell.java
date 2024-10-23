@@ -126,6 +126,9 @@ public abstract class PatchCell implements Cell {
     /** Cell parameters. */
     final MiniBox parameters;
     
+	/** List of cell cycle lengths (in minutes) */
+	private final Bag cycles = new Bag();
+
     /**
      * Creates a {@code PatchCell} agent.
      * <p>
@@ -260,7 +263,13 @@ public abstract class PatchCell implements Cell {
      * @param energy  the target energy level
      */
     public void setEnergy(double energy) { this.energy = energy; }
-    
+
+	/**
+	 * Adds a completed cell cycle length to the list of lengths.
+	 * @param val  the cell cycle length
+	 */
+	public void addCycle(double val) { cycles.add(val); }
+
     @Override
     public void stop() { stopper.stop(); }
     
@@ -271,8 +280,8 @@ public abstract class PatchCell implements Cell {
         
         switch ((State) state) {
             case PROLIFERATIVE:
-                module = new PatchModuleProliferation(this);
-                break;
+                // Throw an exception or handle the case if you accidentally use this method
+                throw new IllegalArgumentException("PROLIFERATIVE state requires simulation time.");
             case MIGRATORY:
                 module = new PatchModuleMigration(this);
                 break;
@@ -284,7 +293,17 @@ public abstract class PatchCell implements Cell {
                 break;
         }
     }
-    
+
+    public void setState(CellState state, double currentSimTime) {
+        if (state == State.PROLIFERATIVE) {
+            this.state = state;
+            this.flag = Flag.UNDEFINED;
+            module = new PatchModuleProliferation(this, currentSimTime);
+        } else {
+            throw new IllegalArgumentException("This method only handles the PROLIFERATIVE state.");
+        }
+    }
+
     /**
      * Makes the specified {@link Process} object.
      *
@@ -349,7 +368,7 @@ public abstract class PatchCell implements Cell {
                     setState(State.SENESCENT);
                 }
             } else {
-                setState(State.PROLIFERATIVE);
+                setState(State.PROLIFERATIVE, simstate.schedule.getTime());
             }
         }
         
@@ -362,7 +381,7 @@ public abstract class PatchCell implements Cell {
     @Override
     public CellContainer convert() {
         return new PatchCellContainer(id, parent, pop, age, divisions, state,
-                volume, height, criticalVolume, criticalHeight);
+                volume, height, criticalVolume, criticalHeight, cycles);
     }
     
     /**
