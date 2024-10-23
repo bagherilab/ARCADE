@@ -84,7 +84,10 @@ public class PatchActionTreat implements Action {
 
 	/** List of populations. */
     private final ArrayList<MiniBox> populations;
-	
+
+	/** parameters */
+	MiniBox parameters;
+
 	/**
 	 * Creates an {@code Action} to add agents after a delay.
 	 * 
@@ -99,6 +102,7 @@ public class PatchActionTreat implements Action {
 		this.treatFrac = parameters.getDouble("RATIO");
 		this.max_damage = parameters.getDouble("MAX_DAMAGE_SEED");
 		this.min_damage_radius = parameters.getDouble("MIN_RADIUS_SEED");
+		this.parameters = parameters;
 
 		this.coord = ((PatchSeries) series).patch.get("GEOMETRY").equalsIgnoreCase("HEX") ? "Hex" : "Rect";
 		if (coord == "Hex") { latPositions = 9; }
@@ -171,11 +175,8 @@ public class PatchActionTreat implements Action {
 					//TODO: Can this just be random? Does each location necessarily need to be tied to a cell???
 					//PatchLocation loc = (PatchLocation) contain.convert(sim.locationFactory, sim.cellFactory.createCellForPopulation(sim.getID(), populations.get(0).getInt("CODE")));
 					PatchLocation loc = (PatchLocation) contain.convert(sim.locationFactory, sim.cellFactory.createCellForPopulation(0, populations.get(0).getInt("CODE")));
-					//Something is crashing here
 					CoordinateXYZ coord =  (CoordinateXYZ) loc.getSubcoordinate();
 					int z = coord.z;
-					// Check of lattice location is a site (1 or 2) 
-					// and if damage is not too severe to pass through vasculature
 					if ( sitesLat[z][coord.x][coord.y] && damage[z][coord.x][coord.y] <= this.max_damage) { 
 						addCellsIntoList(grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
 					}
@@ -198,9 +199,7 @@ public class PatchActionTreat implements Action {
 					
 					for (Object locObj : allEdgeLocs) {
 						Location loc = (Location)locObj;
-						//check if locaiton within margine
 						if (locs.contains(loc)) {
-							//check if radius is larger than minimum
 							if (edge.getRadius() >= min_damage_radius) {
 								addCellsIntoList(grid, loc, siteLocs0, siteLocs1, siteLocs2, siteLocs3);
 							}
@@ -209,8 +208,7 @@ public class PatchActionTreat implements Action {
 				}
 				break;
 		}
-		
-		// Sort location list in order of most to least tumor cells inside it.	
+		 
 		Utilities.shuffleList(siteLocs3, sim.random);	
 		Utilities.shuffleList(siteLocs2, sim.random);	
 		Utilities.shuffleList(siteLocs1, sim.random);	
@@ -219,7 +217,8 @@ public class PatchActionTreat implements Action {
 		siteLocs.addAll(siteLocs2);
 		siteLocs.addAll(siteLocs1);
 		siteLocs.addAll(siteLocs0);
-		insert(siteLocs, sim, grid);
+		//insert(siteLocs, sim, grid);
+		insert(siteLocs, simstate);
 	}
     
 	private void addCellsIntoList(PatchGrid grid, LocationContainer l, PatchLocationContainer contain, PatchSimulation sim, ArrayList<Location> siteLocs0, ArrayList<Location> siteLocs1, ArrayList<Location> siteLocs2, ArrayList<Location> siteLocs3){
@@ -267,14 +266,14 @@ private void addCellsIntoList(PatchGrid grid, Location loc, ArrayList<Location> 
 	//break;
 }
 
-private void insert(ArrayList<Location> coordinates, PatchSimulation sim, PatchGrid grid ){
-	//shuffle coordinates before cell insertion
+private void insert(ArrayList<Location> coordinates, SimState simstate ){
+	PatchSimulation sim = (PatchSimulation) simstate;
+	PatchGrid grid = (PatchGrid) sim.getGrid();
 	Utilities.shuffleList(coordinates, sim.random);
 
 	int cd4Code = 0;
 	int cd8Code = 0;
 
-	//I need to grab the code using another method...maybe
 	for (MiniBox population : populations) {
 		String className = population.get("CLASS");
 		if (className.equals("cart_cd4")) {
@@ -311,7 +310,6 @@ private void insert(ArrayList<Location> coordinates, PatchSimulation sim, PatchG
 		PatchCellContainer cellContainer = sim.cellFactory.createCellForPopulation(id, pop);
 		Location location = locationContainer.convert(sim.locationFactory, cellContainer);
 		PatchCell cell = (PatchCell) cellContainer.convert(sim.cellFactory, location);
-		
 		grid.addObject(cell, location);
 		cell.schedule(sim.getSchedule());
 	}
@@ -323,9 +321,7 @@ protected boolean checkLocationSpace(Simulation sim, Location loc, PatchGrid gri
 	double locVolume = ((PatchLocation) loc).getVolume();
 	double locArea = ((PatchLocation) loc).getArea();
 	
-	// Iterate through each neighbor location and check if cell is able
-	// to move into it based on if it does not increase volume above hex
-	// volume and that each agent exists at tolerable height.
+
 	Bag bag = new Bag(grid.getObjectsAtLocation(loc));
 	int n = bag.numObjs; // number of agents in location
 	
@@ -333,22 +329,18 @@ protected boolean checkLocationSpace(Simulation sim, Location loc, PatchGrid gri
 	else if (n >= locMax) { available = false; } // location already full
 	else {
 		available = true;
-		//TODO: how do i access a constant like T cell vol average
 		double totalVol = PatchCell.calculateTotalVolume(bag);
-		//double totalVol = Cell.calcTotalVolume(bag) + sim.getSeries().getParam(treatPops[0], "T_CELL_VOL_AVG");
 		double currentHeight = totalVol/locArea;
 		
-		// Check if total volume of cells with addition does not exceed 
-		// volume of the hexagonal location.
 		if (totalVol > locVolume) { available = false; }
 		
-		// Check if all tissue cells can exist at a tolerable height.
 		for (Object cellObj : bag) {
 			PatchCell cell = (PatchCell)cellObj;
 			MiniBox cellParams = cell.getParameters();
 			String className = cellParams.get("CLASS");
 			if(className.equals("cart_cd4") || className.equals("cart_cd8")){
-				totalVol = PatchCell.calculateTotalVolume(bag) + cell.getParameters().getDouble("T_CELL_VOL_AVG");
+				//totalVol = PatchCell.calculateTotalVolume(bag) + cell.getParameters().getDouble("T_CELL_VOL_AVG");
+				totalVol = PatchCell.calculateTotalVolume(bag) + parameters.getDouble("T_CELL_VOL_AVG");
 				currentHeight = totalVol/locArea;
 			}
 			if (className.equals("tissue") || className.equals("cancer") || className.equals("cancer_stem")) {
