@@ -9,6 +9,8 @@ import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
 import arcade.patch.env.grid.PatchGrid;
 import arcade.patch.env.location.PatchLocation;
+import arcade.patch.util.PatchEnums.AntigenFlag;
+import arcade.patch.util.PatchEnums.State;
 import arcade.core.sim.Simulation;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -156,7 +158,7 @@ public abstract class PatchCellCART extends PatchCell {
          activated = true;
 
          // Set loaded parameters.
-         exhaustedFraction = parameters.getDouble(  "EXHAUSTED_FRACTION");
+         exhaustedFraction = parameters.getDouble(  "EXHAU_FRAC");
          senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
          anergicFraction = parameters.getDouble("ANERGIC_FRACTION");
          proliferativeFraction = parameters.getDouble("PROLIFERATIVE_FRACTION");
@@ -171,7 +173,7 @@ public abstract class PatchCellCART extends PatchCell {
          selfReceptorAffinity = parameters.getDouble("SELF_RECEPTOR_AFFINITY");
          selfAlpha = parameters.getDouble("SELF_ALPHA");
          selfBeta = parameters.getDouble("SELF_BETA");
-         contactFraction = parameters.getDouble("CONTACT_FRACTION");
+         contactFraction = parameters.getDouble("CONTACT_FRAC");
          maxAntigenBinding = parameters.getInt("MAX_ANTIGEN_BINDING");
          cars = parameters.getInt("CARS");
      }
@@ -189,7 +191,7 @@ public abstract class PatchCellCART extends PatchCell {
      * @param random  random seed
 	 */
 
-    public void bindTarget(Simulation sim, PatchLocation loc, MersenneTwisterFast random) {
+    public PatchCellTissue bindTarget(Simulation sim, PatchLocation loc, MersenneTwisterFast random) {
         double KDCAR = carAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
 		double KDSelf = selfReceptorAffinity * (loc.getVolume() * 1e-15 * 6.022E23);
         PatchGrid grid = (PatchGrid) sim.getGrid();
@@ -206,8 +208,6 @@ public abstract class PatchCellCART extends PatchCell {
             }
         } 
 
-
-        
         //remove self
         allAgents.remove(this);
 
@@ -221,52 +221,59 @@ public abstract class PatchCellCART extends PatchCell {
         int maxSearch = 0;
 		if (neighbors == 0) {
 			binding = AntigenFlag.UNBOUND;
+            return null;
 		} else {
             if (neighbors < searchAbility) {
                 maxSearch = neighbors;
             } else {
                 maxSearch = (int) searchAbility;
             }
-        }
+        
 
-        // Within maximum search vicinity, search for neighboring cells to bind to 
-        for (int i = 0; i < maxSearch; i++) {
-            Cell cell = (Cell) allAgents.get(i);
-            if (!(cell instanceof PatchCellCART) && cell.getState() != State.APOPTOTIC && cell.getState() != State.NECROTIC) {
-                PatchCellTissue tissueCell = (PatchCellTissue) cell;
-				double CARAntigens = tissueCell.carAntigens;
-				double selfTargets = tissueCell.selfTargets;
+            // Within maximum search vicinity, search for neighboring cells to bind to 
+            for (int i = 0; i < maxSearch; i++) {
+                Cell cell = (Cell) allAgents.get(i);
+                if (!(cell instanceof PatchCellCART) && cell.getState() != State.APOPTOTIC && cell.getState() != State.NECROTIC) {
+                    PatchCellTissue tissueCell = (PatchCellTissue) cell;
+                    double CARAntigens = tissueCell.carAntigens;
+                    double selfTargets = tissueCell.selfTargets;
 
-                double hillCAR = (CARAntigens*contactFraction/ (KDCAR*carBeta + CARAntigens*contactFraction))*(cars/50000)*carAlpha;
-				double hillSelf = (selfTargets*contactFraction / (KDSelf*selfBeta + selfTargets*contactFraction))*(selfReceptors/selfReceptorsStart)*selfAlpha;
+                    double hillCAR = (CARAntigens*contactFraction/ (KDCAR*carBeta + CARAntigens*contactFraction))*(cars/50000)*carAlpha;
+                    double hillSelf = (selfTargets*contactFraction / (KDSelf*selfBeta + selfTargets*contactFraction))*(selfReceptors/selfReceptorsStart)*selfAlpha;
 
-                double logCAR = 2*(1/(1 + Math.exp(-1*hillCAR))) - 1;
-				double logSelf = 2*(1/(1 + Math.exp(-1*hillSelf))) - 1;
+                    double logCAR = 2*(1/(1 + Math.exp(-1*hillCAR))) - 1;
+                    double logSelf = 2*(1/(1 + Math.exp(-1*hillSelf))) - 1;
 
-                double randomAntigen = random.nextDouble();
-				double randomSelf = random.nextDouble();
+                    double randomAntigen = random.nextDouble();
+                    double randomSelf = random.nextDouble();
 
-                if (logCAR >= randomAntigen && logSelf < randomSelf ) {
-                    // cell binds to antigen receptor
-                    binding = AntigenFlag.BOUND_ANTIGEN;
-                    boundAntigensCount++;
-                    selfReceptors += (int)((double)selfReceptorsStart * (0.95 + random.nextDouble()/10));
-                } else if ( logCAR >= randomAntigen && logSelf >= randomSelf ) {
-                    // cell binds to antigen receptor and self
-                    binding = AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR;
-                    boundAntigensCount++;
-                    boundSelfCount++;
-                    selfReceptors += (int)((double)selfReceptorsStart * (0.95 + random.nextDouble()/10));
-                } else if ( logCAR < randomAntigen && logSelf >= randomSelf ) {
-                    // cell binds to self
-                    binding = AntigenFlag.BOUND_CELL_RECEPTOR;
-                    boundSelfCount++;
-                } else { 
-                    // cell doesn't bind to anything
-                    binding = AntigenFlag.UNBOUND;
+                    if (logCAR >= randomAntigen && logSelf < randomSelf ) {
+                        // cell binds to antigen receptor
+                        binding = AntigenFlag.BOUND_ANTIGEN;
+                        boundAntigensCount++;
+                        selfReceptors += (int)((double)selfReceptorsStart * (0.95 + random.nextDouble()/10));
+                        return tissueCell;
+                    } else if ( logCAR >= randomAntigen && logSelf >= randomSelf ) {
+                        // cell binds to antigen receptor and self
+                        binding = AntigenFlag.BOUND_ANTIGEN_CELL_RECEPTOR;
+                        boundAntigensCount++;
+                        boundSelfCount++;
+                        selfReceptors += (int)((double)selfReceptorsStart * (0.95 + random.nextDouble()/10));
+                        return tissueCell;
+                    } else if ( logCAR < randomAntigen && logSelf >= randomSelf ) {
+                        // cell binds to self
+                        binding = AntigenFlag.BOUND_CELL_RECEPTOR;
+                        boundSelfCount++;
+                        return tissueCell;
+                    } else { 
+                        // cell doesn't bind to anything
+                        binding = AntigenFlag.UNBOUND;
+                    }
                 }
             }
+            binding = AntigenFlag.UNBOUND;
         }
+        return null;
     }
     
     /**
