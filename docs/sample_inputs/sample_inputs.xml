@@ -1,0 +1,44 @@
+<set prefix="TEST_">
+    <series name="hex" start="0" end="0" ticks="43200" interval="1000" radius="10" margin="2" depth="1" >
+        <patch>
+            <patch.parameter id="GEOMETRY" value="hex" />
+        </patch>
+        <agents>
+            <populations>
+                <population id="cancerous" init="7" class="cancer">
+                    <population.process id="METABOLISM" version="complex" />
+                    <population.process id="SIGNALING" version="complex"  />
+                </population>
+            </populations>
+        </agents>
+        <environments>
+            <layers>
+               <layer id="GLUCOSE">
+                    <layer.parameter id="INITIAL_CONCENTRATION" value="0.005" />
+                    <layer.parameter id="DIFFUSIVITY" operation="diffuser" value="39.0" />
+                    <layer.parameter id="CONCENTRATION" operation="generator" value="0.005" units="fmol/um^3" description="equal to 5 umol/cm^3" />
+                    <layer.operation id="GENERATOR" />
+                    <layer.operation id="DIFFUSER" />
+                </layer>
+                <layer id="OXYGEN">
+                    <layer.parameter id="INITIAL_CONCENTRATION" value="100" />
+                    <layer.parameter id="DIFFUSIVITY" operation="diffuser" value="2000.0" />
+                    <layer.parameter id="CONCENTRATION" operation="generator" value="100" units="mmHg" />
+                    <layer.operation id="DIFFUSER" />
+                    <layer.operation id="GENERATOR" />
+                </layer>
+                <layer id="TGFA">
+                    <layer.parameter id="INITIAL_CONCENTRATION" value="150" />
+                    <layer.parameter id="DIFFUSIVITY" operation="diffuser" value="51.8" />
+                    <layer.operation id="DIFFUSER" />
+                </layer>
+            </layers>
+            <components>
+                <component id="SITES" class="source_sites">
+                    <component.register id="GLUCOSE" />
+                    <component.register id="OXYGEN" />
+                </component>
+            </components>
+        </environments>
+    </series>
+</set>
