@@ -68,19 +68,18 @@ public final class PottsCellStem extends PottsCell {
     }
 
     @Override
-    public PottsCell make(
-            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
+    public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions++;
-        return new PottsCellStem(
+        return new PottsCellContainer(
                 newID,
                 id,
                 pop,
-                newState,
                 age,
                 divisions,
-                newLocation,
-                hasRegions,
-                parameters,
+                newState,
+                null,
+                0,
+                null,
                 criticalVolume,
                 criticalHeight,
                 criticalRegionVolumes,

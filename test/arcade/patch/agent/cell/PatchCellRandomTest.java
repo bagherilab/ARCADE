@@ -2,12 +2,9 @@ package arcade.patch.agent.cell;
 
 import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
-import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.module.PatchModule;
 import arcade.patch.agent.process.PatchProcessMetabolism;
-import arcade.patch.agent.process.PatchProcessMetabolismMedium;
-import arcade.patch.agent.process.PatchProcessSignalingSimple;
 import arcade.patch.env.location.PatchLocation;
 import arcade.patch.sim.PatchSimulation;
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,24 +41,16 @@ public class PatchCellRandomTest {
     static MiniBox parametersMock = new MiniBox();
 
     @Test
-    public void make_called_setsFields() {
+    public void make_called_createsContainer() {
         double volume = randomDoubleBetween(10, 100);
         double height = randomDoubleBetween(10, 100);
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
-        MiniBox parameters = new MiniBox();
-
-        String metabolism = "medium";
-        String signaling = "simple";
-        parameters.put("(PROCESS)/" + Domain.METABOLISM, metabolism);
-        parameters.put("(PROCESS)/" + Domain.SIGNALING, signaling);
 
         State state1 = State.QUIESCENT;
         State state2 = State.PROLIFERATIVE;
-        Location location1 = mock(PatchLocation.class);
-        Location location2 = mock(PatchLocation.class);
 
-        PatchCellRandom cell1 =
+        PatchCellRandom cell =
                 new PatchCellRandom(
                         cellID,
                         cellParent,
@@ -69,28 +58,25 @@ public class PatchCellRandomTest {
                         state1,
                         cellAge,
                         cellDivisions,
-                        location1,
-                        parameters,
+                        locationMock,
+                        parametersMock,
                         volume,
                         height,
                         criticalVolume,
                         criticalHeight);
-        PatchCellRandom cell2 = (PatchCellRandom) cell1.make(cellID + 1, state2, location2, null);
+        PatchCellContainer container = cell.make(cellID + 1, state2, null);
 
-        assertEquals(cellID + 1, cell2.id);
-        assertEquals(cellID, cell2.parent);
-        assertEquals(cellPop, cell2.pop);
-        assertEquals(cellAge, cell2.getAge());
-        assertEquals(cellDivisions - 1, cell1.getDivisions());
-        assertEquals(cellDivisions - 1, cell2.getDivisions());
-        assertEquals(location2, cell2.getLocation());
-        assertEquals(cell2.parameters, parameters);
-        assertEquals(volume, cell2.getVolume(), EPSILON);
-        assertEquals(height, cell2.getHeight(), EPSILON);
-        assertEquals(criticalVolume, cell2.getCriticalVolume(), EPSILON);
-        assertEquals(criticalHeight, cell2.getCriticalHeight(), EPSILON);
-        assertTrue(cell2.getProcess(Domain.METABOLISM) instanceof PatchProcessMetabolismMedium);
-        assertTrue(cell2.getProcess(Domain.SIGNALING) instanceof PatchProcessSignalingSimple);
+        assertEquals(cellID + 1, container.id);
+        assertEquals(cellID, container.parent);
+        assertEquals(cellPop, container.pop);
+        assertEquals(cellAge, container.age);
+        assertEquals(cellDivisions - 1, container.divisions);
+        assertEquals(cellDivisions - 1, container.divisions);
+        assertEquals(state2, container.state);
+        assertEquals(volume, container.volume, EPSILON);
+        assertEquals(height, container.height, EPSILON);
+        assertEquals(criticalVolume, container.criticalVolume, EPSILON);
+        assertEquals(criticalHeight, container.criticalHeight, EPSILON);
     }
 
     @Test

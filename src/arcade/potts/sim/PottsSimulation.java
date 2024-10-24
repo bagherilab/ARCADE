@@ -7,11 +7,13 @@ import sim.engine.SimState;
 import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactory;
 import arcade.core.env.component.Component;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
+import arcade.core.env.location.LocationFactory;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
@@ -101,6 +103,16 @@ public abstract class PottsSimulation extends SimState implements Simulation {
         }
 
         return locationContainers;
+    }
+
+    @Override
+    public final CellFactory getCellFactory() {
+        return cellFactory;
+    }
+
+    @Override
+    public final LocationFactory getLocationFactory() {
+        return locationFactory;
     }
 
     @Override

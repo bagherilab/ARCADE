@@ -1,7 +1,6 @@
 package arcade.potts.agent.cell;
 
 import java.util.EnumMap;
-import java.util.EnumSet;
 import org.junit.jupiter.api.Test;
 import arcade.core.env.location.*;
 import arcade.core.util.MiniBox;
@@ -130,14 +129,11 @@ public class PottsCellStemTest {
     }
 
     @Test
-    public void make_noRegions_setsFields() {
+    public void make_noRegions_createsContainer() {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
-        MiniBox parameters = mock(MiniBox.class);
-        Location location1 = mock(PottsLocation.class);
-        Location location2 = mock(PottsLocation.class);
 
-        PottsCellStem cell1 =
+        PottsCellStem cell =
                 new PottsCellStem(
                         cellID,
                         cellParent,
@@ -145,36 +141,35 @@ public class PottsCellStemTest {
                         cellState,
                         cellAge,
                         cellDivisions,
-                        location1,
+                        locationMock,
                         false,
-                        parameters,
+                        parametersMock,
                         criticalVolume,
                         criticalHeight,
                         null,
                         null);
-        PottsCellStem cell2 =
-                (PottsCellStem) cell1.make(cellID + 1, State.QUIESCENT, location2, null);
+        PottsCellContainer container = cell.make(cellID + 1, State.QUIESCENT, null);
 
-        assertEquals(cellID + 1, cell2.id);
-        assertEquals(cellID, cell2.parent);
-        assertEquals(cellPop, cell2.pop);
-        assertEquals(cellAge, cell2.getAge());
-        assertEquals(cellDivisions + 1, cell1.getDivisions());
-        assertEquals(cellDivisions + 1, cell2.getDivisions());
-        assertFalse(cell2.hasRegions());
-        assertEquals(location2, cell2.getLocation());
-        assertEquals(cell2.parameters, parameters);
-        assertEquals(criticalVolume, cell2.getCriticalVolume(), EPSILON);
-        assertEquals(criticalHeight, cell2.getCriticalHeight(), EPSILON);
+        assertEquals(cellID + 1, container.id);
+        assertEquals(cellID, container.parent);
+        assertEquals(cellPop, container.pop);
+        assertEquals(cellAge, container.age);
+        assertEquals(cellDivisions + 1, cell.getDivisions());
+        assertEquals(cellDivisions + 1, container.divisions);
+        assertEquals(State.QUIESCENT, container.state);
+        assertNull(container.phase);
+        assertEquals(0, container.voxels);
+        assertNull(container.regionVoxels);
+        assertEquals(criticalVolume, container.criticalVolume, EPSILON);
+        assertEquals(criticalHeight, container.criticalHeight, EPSILON);
+        assertNull(container.criticalRegionVolumes);
+        assertNull(container.criticalRegionHeights);
     }
 
     @Test
-    public void make_hasRegions_setsFields() {
+    public void make_hasRegions_createsContainer() {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
-        MiniBox parameters = mock(MiniBox.class);
-        PottsLocation location1 = mock(PottsLocation.class);
-        PottsLocation location2 = mock(PottsLocation.class);
         EnumMap<Region, Double> criticalVolumesRegion = new EnumMap<>(Region.class);
         EnumMap<Region, Double> criticalHeightsRegion = new EnumMap<>(Region.class);
 
@@ -183,11 +178,7 @@ public class PottsCellStemTest {
             criticalHeightsRegion.put(region, randomDoubleBetween(10, 100));
         }
 
-        EnumSet<Region> allRegions = EnumSet.allOf(Region.class);
-        doReturn(allRegions).when(location1).getRegions();
-        doReturn(allRegions).when(location2).getRegions();
-
-        PottsCellStem cell1 =
+        PottsCellStem cell =
                 new PottsCellStem(
                         cellID,
                         cellParent,
@@ -195,32 +186,36 @@ public class PottsCellStemTest {
                         cellState,
                         cellAge,
                         cellDivisions,
-                        location1,
+                        locationMock,
                         true,
-                        parameters,
+                        parametersMock,
                         criticalVolume,
                         criticalHeight,
                         criticalVolumesRegion,
                         criticalHeightsRegion);
-        PottsCellStem cell2 =
-                (PottsCellStem) cell1.make(cellID + 1, State.QUIESCENT, location2, null);
+        PottsCellContainer container = cell.make(cellID + 1, State.QUIESCENT, null);
 
-        assertEquals(cellID + 1, cell2.id);
-        assertEquals(cellID, cell2.parent);
-        assertEquals(cellPop, cell2.pop);
-        assertEquals(cellAge, cell2.getAge());
-        assertEquals(cellDivisions + 1, cell1.getDivisions());
-        assertEquals(cellDivisions + 1, cell2.getDivisions());
-        assertTrue(cell2.hasRegions());
-        assertEquals(location2, cell2.getLocation());
-        assertEquals(cell2.parameters, parameters);
-        assertEquals(criticalVolume, cell2.getCriticalVolume(), EPSILON);
-        assertEquals(criticalHeight, cell2.getCriticalHeight(), EPSILON);
+        assertEquals(cellID + 1, container.id);
+        assertEquals(cellID, container.parent);
+        assertEquals(cellPop, container.pop);
+        assertEquals(cellAge, container.age);
+        assertEquals(cellDivisions + 1, cell.getDivisions());
+        assertEquals(cellDivisions + 1, container.divisions);
+        assertEquals(State.QUIESCENT, container.state);
+        assertNull(container.phase);
+        assertEquals(0, container.voxels);
+        assertNull(container.regionVoxels);
+        assertEquals(criticalVolume, container.criticalVolume, EPSILON);
+        assertEquals(criticalHeight, container.criticalHeight, EPSILON);
         for (Region region : Region.values()) {
             assertEquals(
-                    criticalVolumesRegion.get(region), cell2.getCriticalVolume(region), EPSILON);
+                    criticalVolumesRegion.get(region),
+                    container.criticalRegionVolumes.get(region),
+                    EPSILON);
             assertEquals(
-                    criticalHeightsRegion.get(region), cell2.getCriticalHeight(region), EPSILON);
+                    criticalHeightsRegion.get(region),
+                    container.criticalRegionHeights.get(region),
+                    EPSILON);
         }
     }
 }
