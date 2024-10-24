@@ -59,6 +59,7 @@ public class PatchCellRandomTest {
         double height = randomDoubleBetween(10, 100);
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
+
         State state1 = State.QUIESCENT;
         State state2 = State.PROLIFERATIVE;
 
@@ -74,6 +75,7 @@ public class PatchCellRandomTest {
                         height,
                         criticalVolume,
                         criticalHeight);
+      
         PatchCellRandom cell = new PatchCellRandom(cellContainer, locationMock, parametersMock);
 
         PatchCellContainer container = cell.make(cellID + 1, state2, null);

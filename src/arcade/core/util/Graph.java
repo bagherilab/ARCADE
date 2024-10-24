@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import sim.util.Bag;
 
@@ -16,6 +18,16 @@ import sim.util.Bag;
  * the graph. Nodes may have more than one edge in or out.
  */
 public final class Graph {
+
+    /** Calculation strategies. */
+    public enum Strategy {
+        /** Code for upstream calculation strategy. */
+        UPSTREAM,
+
+        /** Code for downstream direction strategy. */
+        DOWNSTREAM
+    }
+
     /** Collection of all {@code Edge} objects in a graph. */
     private final Bag allEdges;
 
@@ -51,6 +63,35 @@ public final class Graph {
     }
 
     /**
+     * Gets all nodes in the graph.
+     *
+     * @return a set containing the nodes
+     */
+    public Set<Node> getAllNodes() {
+        return retrieveNodes();
+    }
+
+    /**
+     * Check to see if a graph contains a node.
+     *
+     * @param node the node to add
+     * @return {@code true} if node exists in graph, {@code false} otherwise
+     */
+    public boolean contains(Node node) {
+        return getAllNodes().contains(node);
+    }
+
+    /**
+     * Check to see if a graph contains an edge.
+     *
+     * @param edge the edge to add
+     * @return {@code true} if edge exists in graph, {@code false} otherwise
+     */
+    public boolean contains(Edge edge) {
+        return checkEdge(edge);
+    }
+
+    /**
      * Gets all edges in the graph.
      *
      * @return a bag containing the edges
@@ -60,13 +101,24 @@ public final class Graph {
     }
 
     /**
+     * Gets all edges in the graph based on the given node and category.
+     *
+     * @param node the node to get edges from
+     * @param strategy the category of edges to get
+     * @return a bag containing the edges
+     */
+    public Bag getEdges(Node node, Strategy strategy) {
+        return (strategy == Strategy.UPSTREAM) ? nodeToInBag.get(node) : nodeToOutBag.get(node);
+    }
+
+    /**
      * Gets edges out of the given node.
      *
      * @param node the node that edges are from
      * @return a bag containing the edges
      */
     public Bag getEdgesOut(Node node) {
-        return nodeToOutBag.get(node);
+        return getEdges(node, Strategy.DOWNSTREAM);
     }
 
     /**
@@ -76,7 +128,7 @@ public final class Graph {
      * @return a bag containing the edges
      */
     public Bag getEdgesIn(Node node) {
-        return nodeToInBag.get(node);
+        return getEdges(node, Strategy.UPSTREAM);
     }
 
     /**
@@ -117,16 +169,18 @@ public final class Graph {
      * @return {@code true} if edge exists, {@code false} otherwise
      */
     public boolean hasEdge(Node from, Node to) {
-        Bag bag = getEdgesOut(from);
-        if (bag == null) {
-            return false;
-        }
-        for (Object obj : bag) {
-            if (to.equals(((Edge) obj).to)) {
-                return true;
-            }
-        }
-        return false;
+        Edge e = new Edge(from, to);
+        return checkEdge(e);
+    }
+
+    /**
+     * Checks if the graph has an edge.
+     *
+     * @param edge the edge
+     * @return {@code true} if edge exists, {@code false} otherwise
+     */
+    private boolean checkEdge(Edge edge) {
+        return allEdges.contains(edge);
     }
 
     /** Defines a filter for edges in a graph. */
@@ -159,8 +213,12 @@ public final class Graph {
         }
     }
 
-    /** Sets the TO and FROM nodes for edges to be the same object. */
-    public void mergeNodes() {
+    /**
+     * Retrieves all nodes in the graph.
+     *
+     * @return a set containing the nodes
+     */
+    private Set<Node> retrieveNodes() {
         Set<Node> sOut = nodeToOutBag.keySet();
         Set<Node> sIn = nodeToInBag.keySet();
         Set<Node> set =
@@ -171,6 +229,12 @@ public final class Graph {
                     }
                 };
 
+        return set;
+    }
+
+    /** Sets the TO and FROM nodes for edges to be the same object. */
+    public void mergeNodes() {
+        Set<Node> set = retrieveNodes();
         for (Node obj : set) {
             Node join = obj.duplicate();
             Bag out = getEdgesOut(obj);
@@ -195,6 +259,16 @@ public final class Graph {
     }
 
     /**
+     * Adds edge to graph based on nodes.
+     *
+     * @param from the node to add as the from node.
+     * @param to the node to add as the to node.
+     */
+    public void addEdge(Node from, Node to) {
+        addEdge(new Edge(from, to));
+    }
+
+    /**
      * Adds edge to graph.
      *
      * @param edge the edge to add
@@ -204,6 +278,7 @@ public final class Graph {
         setOutMap(edge.getFrom(), edge);
         setInMap(edge.getTo(), edge);
         setLinks(edge);
+        mergeNodes();
     }
 
     /**
@@ -241,7 +316,7 @@ public final class Graph {
      *
      * @param edge the edge
      */
-    public void setLinks(Edge edge) {
+    private void setLinks(Edge edge) {
         Bag outTo = getEdgesOut(edge.getTo());
         if (outTo != null) {
             for (Object obj : outTo) {
@@ -335,6 +410,133 @@ public final class Graph {
     }
 
     /**
+     * Clear an edge's links to other edges.
+     *
+     * @param edge the edge
+     */
+    public void clearEdge(Edge edge) {
+        edge.clear();
+    }
+
+    /**
+     * Find the first downstream node where two edges intersect.
+     *
+     * @param edge1 first edge to start from
+     * @param edge2 second edge to start from
+     * @return the intersection node or null if no intersection
+     */
+    public Node findDownstreamIntersection(Edge edge1, Edge edge2) {
+        return findIntersection(edge1, edge2, Strategy.DOWNSTREAM);
+    }
+
+    /**
+     * Find the first upstream node where two edges intersect.
+     *
+     * @param edge1 first edge to start from
+     * @param edge2 second edge to start from
+     * @return the intersection node or null if no intersection
+     */
+    public Node findUpstreamIntersection(Edge edge1, Edge edge2) {
+        return findIntersection(edge1, edge2, Strategy.UPSTREAM);
+    }
+
+    /**
+     * Find the first node where two edges intersect based on a calulcation strategy (upstream or
+     * downstream).
+     *
+     * @param edge1 first edge to start from
+     * @param edge2 second edge to start from
+     * @param strategy the direction to search
+     * @return the intersection node or null if no intersection
+     */
+    private Node findIntersection(Edge edge1, Edge edge2, Strategy strategy) {
+        if (edge1.getNode(strategy).equals(edge2.getNode(strategy))) {
+            return edge1.getNode(strategy);
+        }
+        Bag allConnected = getConnectedNodes(edge1.getNode(strategy), strategy);
+        if (allConnected == null) {
+            return null;
+        }
+        Node intersection = breadthFirstSearch(edge2.getNode(strategy), allConnected, strategy);
+        return intersection;
+    }
+
+    /**
+     * Get all nodes connected to the given node based on a calculation strategy (e.g. upstream or
+     * downstream).
+     *
+     * @param node the node to start from
+     * @param strategy the direction to search
+     * @return a bag of connected nodes
+     */
+    private Bag getConnectedNodes(Node node, Strategy strategy) {
+        Bag first = getEdges(node, strategy);
+        if (first == null) {
+            return null;
+        }
+        Bag visited = new Bag();
+        Queue<Node> queue = new LinkedList<>();
+        for (Object e : first) {
+            Edge edge = (Edge) e;
+            queue.add(edge.getNode(strategy));
+        }
+
+        while (!queue.isEmpty()) {
+            Node active = queue.poll();
+            visited.add(active);
+            if (getEdges(active, strategy) == null) {
+                continue;
+            }
+            for (Object next : getEdges(active, strategy)) {
+                Edge edge = (Edge) next;
+                if (!visited.contains(edge.getNode(strategy))) {
+                    queue.add(edge.getNode(strategy));
+                }
+            }
+        }
+        return visited;
+    }
+
+    /**
+     * Breadth first search from node according to strategy for a subset of target nodes.
+     *
+     * @param node the node to start from
+     * @param targetNodes the bag of potential intersection nodes
+     * @param strategy the direction to search
+     * @return the target node or null if not found
+     */
+    private Node breadthFirstSearch(Node node, Bag targetNodes, Strategy strategy) {
+        Bag first = getEdges(node, strategy);
+        if (first == null) {
+            return null;
+        }
+        Bag visited = new Bag();
+        Queue<Node> queue = new LinkedList<>();
+        for (Object e : first) {
+            Edge edge = (Edge) e;
+            queue.add(edge.getNode(strategy));
+        }
+
+        while (!queue.isEmpty()) {
+            Node active = queue.poll();
+            visited.add(active);
+            if (targetNodes.contains(active)) {
+                return active;
+            }
+            if (getEdges(active, strategy) == null) {
+                continue;
+            }
+            for (Object next : getEdges(active, strategy)) {
+                Edge edge = (Edge) next;
+                if (!visited.contains(edge.getNode(strategy))) {
+                    queue.add(edge.getNode(strategy));
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * Removes the given edge and adds the reversed edge.
      *
      * @param edge the edge to reverse
@@ -388,7 +590,7 @@ public final class Graph {
      *
      * <p>The node tracks its corresponding position in the lattice.
      */
-    public abstract static class Node implements Comparable<Node> {
+    public static class Node implements Comparable<Node> {
         /** Coordinate in x direction. */
         protected int x;
 
@@ -461,7 +663,9 @@ public final class Graph {
          *
          * @return a {@code Node} copy
          */
-        public abstract Node duplicate();
+        public Node duplicate() {
+            return new Node(x, y, z);
+        }
 
         /**
          * Updates the position of this {@code Node} with coordinate from given {@code Node}.
@@ -513,7 +717,7 @@ public final class Graph {
      * <p>The edge tracks its corresponding nodes as well as the edges into the FROM node and out of
      * the TO node.
      */
-    public abstract static class Edge {
+    public static class Edge {
         /** Node this edge points to. */
         protected Node to;
 
@@ -537,6 +741,17 @@ public final class Graph {
             this.to = to.duplicate();
             edgesIn = new ArrayList<>();
             edgesOut = new ArrayList<>();
+        }
+
+        /**
+         * Gets the node the edge points to based on the calculation strategy (e.g. upstream or
+         * downstream).
+         *
+         * @param strategy the calculation strategy
+         * @return the node the edge points to
+         */
+        public Node getNode(Strategy strategy) {
+            return (strategy == Strategy.UPSTREAM) ? from : to;
         }
 
         /**
@@ -576,12 +791,22 @@ public final class Graph {
         }
 
         /**
+         * Gets list of edges based on calculation strategy (e.g. upstream or downstream).
+         *
+         * @param strategy the calculation strategy
+         * @return the list of edges
+         */
+        public ArrayList<Edge> getEdges(Strategy strategy) {
+            return (strategy == Strategy.UPSTREAM) ? edgesIn : edgesOut;
+        }
+
+        /**
          * Gets list of edges that point into the node this edge points from.
          *
          * @return the list of edges
          */
         public ArrayList<Edge> getEdgesIn() {
-            return edgesIn;
+            return getEdges(Strategy.UPSTREAM);
         }
 
         /**
@@ -590,7 +815,7 @@ public final class Graph {
          * @return the list of edges
          */
         public ArrayList<Edge> getEdgesOut() {
-            return edgesOut;
+            return getEdges(Strategy.DOWNSTREAM);
         }
 
         /**
@@ -619,6 +844,29 @@ public final class Graph {
          */
         public String toString() {
             return "[" + from.toString() + "~" + to.toString() + "]";
+        }
+
+        /**
+         * Checks if two nodes are equal based on to and from nodes.
+         *
+         * @param obj the object to check
+         * @return {@code true} if coordinates of both nodes match, {@code false} otherwise
+         */
+        public boolean equals(Object obj) {
+            if (obj instanceof Edge) {
+                Edge edge = (Edge) obj;
+                return to.equals(edge.to) && from.equals(edge.from);
+            }
+            return false;
+        }
+
+        /**
+         * Specifies object hashing based on from and to coordinates.
+         *
+         * @return a hash based on coordinates
+         */
+        public final int hashCode() {
+            return this.from.hashCode() << 16 + this.to.hashCode() << 16;
         }
     }
 }

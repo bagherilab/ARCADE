@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.Graph;
+import arcade.core.util.Graph.Strategy;
 import arcade.core.util.Matrix;
 import arcade.core.util.Solver;
 import static arcade.core.util.Graph.Edge;
@@ -21,40 +22,31 @@ abstract class PatchComponentSitesGraphUtilities {
     /** Calculation types. */
     enum CalculationType {
         /** Code for upstream radius calculation for all edge types. */
-        UPSTREAM_ALL(CalculationCategory.UPSTREAM),
+        UPSTREAM_ALL(Strategy.UPSTREAM),
 
         /** Code for upstream radius calculation for arteries only. */
-        UPSTREAM_ARTERIES(CalculationCategory.UPSTREAM),
+        UPSTREAM_ARTERIES(Strategy.UPSTREAM),
 
         /** Code for downstream radius calculation for veins only. */
-        DOWNSTREAM_VEINS(CalculationCategory.DOWNSTREAM),
+        DOWNSTREAM_VEINS(Strategy.DOWNSTREAM),
 
         /** Code for upstream radius calculation for pattern layout. */
-        UPSTREAM_PATTERN(CalculationCategory.UPSTREAM),
+        UPSTREAM_PATTERN(Strategy.UPSTREAM),
 
         /** Code for downstream radius calculation for pattern layout. */
-        DOWNSTREAM_PATTERN(CalculationCategory.DOWNSTREAM);
+        DOWNSTREAM_PATTERN(Strategy.DOWNSTREAM);
 
         /** Calculation category corresponding to the calculation type. */
-        final CalculationCategory category;
+        final Strategy category;
 
         /**
          * Creates a {@code CalculationType} instance.
          *
          * @param category the calculation category
          */
-        CalculationType(CalculationCategory category) {
+        CalculationType(Strategy category) {
             this.category = category;
         }
-    }
-
-    /** Calculation categories. */
-    enum CalculationCategory {
-        /** Code for upstream calculation category. */
-        UPSTREAM,
-
-        /** Code for downstream direction category. */
-        DOWNSTREAM
     }
 
     /** Initial capillary radius [um]. */
@@ -115,9 +107,9 @@ abstract class PatchComponentSitesGraphUtilities {
      * @return the type code
      */
     static EdgeType parseType(String type) {
-        return (type.equalsIgnoreCase("A")
+        return ("A".equalsIgnoreCase(type)
                 ? EdgeType.ARTERY
-                : (type.equalsIgnoreCase("V") ? EdgeType.VEIN : null));
+                : ("V".equalsIgnoreCase(type) ? EdgeType.VEIN : null));
     }
 
     /**
@@ -580,7 +572,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param dir the calculation direction
      * @return the edge in degree
      */
-    private static int getInDegree(Graph graph, SiteEdge edge, CalculationCategory dir) {
+    private static int getInDegree(Graph graph, SiteEdge edge, Strategy dir) {
         switch (dir) {
             case UPSTREAM:
                 return graph.getInDegree(edge.getTo());
@@ -599,7 +591,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @param dir the calculation direction
      * @return the edge out degree
      */
-    private static int getOutDegree(Graph graph, SiteEdge edge, CalculationCategory dir) {
+    private static int getOutDegree(Graph graph, SiteEdge edge, Strategy dir) {
         switch (dir) {
             case UPSTREAM:
                 return graph.getOutDegree(edge.getTo());
@@ -621,7 +613,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @return the list of children edges
      */
     private static ArrayList<SiteEdge> calculateRadius(
-            Graph graph, SiteEdge edge, CalculationCategory dir, int fromcheck, int tocheck) {
+            Graph graph, SiteEdge edge, Strategy dir, int fromcheck, int tocheck) {
         ArrayList<SiteEdge> children = new ArrayList<>();
         ArrayList<Edge> list = null;
 
@@ -656,9 +648,7 @@ abstract class PatchComponentSitesGraphUtilities {
                 e.radius = edge.radius;
             } else if (in == fromcheck && out == tocheck) {
                 ArrayList<Edge> b =
-                        (dir == CalculationCategory.DOWNSTREAM
-                                ? edge.getEdgesOut()
-                                : edge.getEdgesIn());
+                        (dir == Strategy.DOWNSTREAM ? edge.getEdgesOut() : edge.getEdgesIn());
                 double r1 = ((SiteEdge) b.get(0)).radius;
                 double r2 = ((SiteEdge) b.get(1)).radius;
 
@@ -727,8 +717,7 @@ abstract class PatchComponentSitesGraphUtilities {
                     }
                 }
             } else if (in == tocheck && out == fromcheck) {
-                ArrayList<Edge> b =
-                        (dir == CalculationCategory.DOWNSTREAM ? e.getEdgesIn() : e.getEdgesOut());
+                ArrayList<Edge> b = (dir == Strategy.DOWNSTREAM ? e.getEdgesIn() : e.getEdgesOut());
                 double r1 = ((SiteEdge) b.get(0)).radius;
                 double r2 = ((SiteEdge) b.get(1)).radius;
                 if (r1 != 0 && r2 != 0) {
@@ -763,7 +752,7 @@ abstract class PatchComponentSitesGraphUtilities {
      * @return the list of children edges
      */
     private static ArrayList<SiteEdge> assignRadius(
-            Graph graph, SiteEdge edge, CalculationCategory dir, int fromcheck, int tocheck) {
+            Graph graph, SiteEdge edge, Strategy dir, int fromcheck, int tocheck) {
         ArrayList<SiteEdge> children = new ArrayList<>();
         ArrayList<Edge> list = null;
 
@@ -794,8 +783,7 @@ abstract class PatchComponentSitesGraphUtilities {
             } else if (in == fromcheck && out == tocheck) {
                 e.radius = edge.radius;
             } else if (in == tocheck && out == fromcheck) {
-                ArrayList<Edge> b =
-                        (dir == CalculationCategory.DOWNSTREAM ? e.getEdgesIn() : e.getEdgesOut());
+                ArrayList<Edge> b = (dir == Strategy.DOWNSTREAM ? e.getEdgesIn() : e.getEdgesOut());
                 double r1 = ((SiteEdge) b.get(0)).radius;
                 double r2 = ((SiteEdge) b.get(1)).radius;
                 if (r1 != 0 && r2 != 0) {

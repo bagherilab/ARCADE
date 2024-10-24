@@ -105,6 +105,7 @@ public class PottsCellStemTest {
     public void make_noRegions_createsContainer() {
         double criticalVolume = randomDoubleBetween(10, 100);
         double criticalHeight = randomDoubleBetween(10, 100);
+
         State state1 = State.QUIESCENT;
         State state2 = State.PROLIFERATIVE;
 
@@ -146,6 +147,7 @@ public class PottsCellStemTest {
         double criticalHeight = randomDoubleBetween(10, 100);
         State state1 = State.QUIESCENT;
         State state2 = State.PROLIFERATIVE;
+
         EnumMap<Region, Double> criticalVolumesRegion = new EnumMap<>(Region.class);
         EnumMap<Region, Double> criticalHeightsRegion = new EnumMap<>(Region.class);
 
@@ -153,6 +155,7 @@ public class PottsCellStemTest {
             criticalVolumesRegion.put(region, randomDoubleBetween(10, 100));
             criticalHeightsRegion.put(region, randomDoubleBetween(10, 100));
         }
+
 
         PottsCellContainer cellContainer =
                 new PottsCellContainer(
@@ -169,6 +172,7 @@ public class PottsCellStemTest {
                         criticalHeight,
                         criticalVolumesRegion,
                         criticalHeightsRegion);
+
         PottsCellStem cell = new PottsCellStem(cellContainer, locationMock, parametersMock, true);
 
         PottsCellContainer container = cell.make(cellID + 1, state2, null);
@@ -180,6 +184,7 @@ public class PottsCellStemTest {
         assertEquals(cellDivisions + 1, cell.getDivisions());
         assertEquals(cellDivisions + 1, container.divisions);
         assertEquals(state2, container.state);
+
         assertNull(container.phase);
         assertEquals(0, container.voxels);
         assertNull(container.regionVoxels);
