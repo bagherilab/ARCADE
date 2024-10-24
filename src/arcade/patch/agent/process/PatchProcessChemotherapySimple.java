@@ -3,7 +3,6 @@ package arcade.patch.agent.process;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -14,9 +13,6 @@ import static arcade.patch.util.PatchEnums.State;
  * apoptosis.
  */
 public class PatchProcessChemotherapySimple extends PatchProcessChemotherapy {
-    /** Constant drug uptake rate [TODO: Rate] for the drug. */
-    private final double drugUptakeRate;
-
     /**
      * Creates a simple chemotherapy {@code Process} for the given {@link PatchCell}.
      *
@@ -32,10 +28,6 @@ public class PatchProcessChemotherapySimple extends PatchProcessChemotherapy {
      */
     public PatchProcessChemotherapySimple(PatchCell cell) {
         super(cell);
-
-        // Load parameters from the MiniBox.
-        MiniBox parameters = cell.getParameters();
-        drugUptakeRate = parameters.getDouble("chemotherapy/CONSTANT_DRUG_UPTAKE_RATE");
     }
 
     @Override
@@ -44,17 +36,28 @@ public class PatchProcessChemotherapySimple extends PatchProcessChemotherapy {
         double drugExt = extAmt;
 
         // Calculate drug uptake rate based on concentration gradient.
+        double area = location.getArea() * f;
+        double surfaceArea = area * 2 + (volume / area) * location.getPerimeter(f);
         double drugGrad = (extAmt / location.getVolume()) - (drugInt / volume);
         drugGrad *= drugGrad < 1E-10 ? 0 : 1;
-        double drugUptake = drugUptakeRate * drugGrad;
+        double drugUptake = drugUptakeRate * drugGrad * surfaceArea;
+        // System.out.println("drugInt: " + drugInt + " drugExt: " + drugExt);
         drugInt += drugUptake;
 
-        // If drug concentration exceeds kill threshold, apply kill rate.
+        // If drug concentration exceeds kill threshold kill cells with probability based on drug
+        // concentration.
         if (cell.getState() == State.PROLIFERATIVE && drugInt > chemotherapyThreshold) {
-            cell.setState(State.APOPTOTIC);
-        }
+            double oxygen = sim.getLattice("OXYGEN").getAverageValue(location);
+            double p = Math.pow(oxygen, 2) / (Math.pow(oxygen, 2) + Math.pow(drugInt, 2));
 
-        intAmt = drugInt;
+            // TODO: Update probability
+            if (random.nextDouble() < p) {
+                cell.setState(State.APOPTOTIC);
+                wasChemo = true;
+            }
+        }
+        intAmt = Math.exp(-drugRemovalRate) * drugInt;
+        // intAmt = drugInt;
         uptakeAmt = drugUptake;
     }
 
@@ -67,6 +70,7 @@ public class PatchProcessChemotherapySimple extends PatchProcessChemotherapy {
         this.volume = this.cell.getVolume();
         this.intAmt = chemotherapy.intAmt * split;
 
+        chemotherapy.volume = chemotherapy.cell.getVolume();
         chemotherapy.intAmt *= (1 - split);
     }
 }

@@ -58,6 +58,9 @@
     <!-- chemotherapy process parameters -->
     <population.process process="chemotherapy" id="CHEMOTHERAPY_THRESHOLD" value="1.5" unit="fmol" description="chemotherapy threshold before apoptosis" />
     <population.process process="chemotherapy" id="CONSTANT_DRUG_UPTAKE_RATE" value="1" unit="fmol drug/um^2 cell/min/M drug" />
+    <population.process process="chemotherapy" id="DRUG_REMOVAL_RATE" value="0.001" unit="/min" description="removal rate of drug in cell" />
+    <population.process process="chemotherapy" id="DRUG_DECAY_RATE" value="0.1" unit="/min" description="degradation rate of drug in environment" />
+
 
     <!-- LAYERS ============================================================ -->
 

@@ -1,9 +1,11 @@
 package arcade.patch.agent.process;
 
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.cell.PatchCell;
+import arcade.patch.env.grid.PatchGrid;
 
 /**
  * Implementation of {@link Process} for cell chemotherapy.
@@ -22,8 +24,20 @@ public abstract class PatchProcessChemotherapy extends PatchProcess {
     /** Threshold at which cells undergo apoptosis. */
     protected final double chemotherapyThreshold;
 
+    /** Constant drug uptake rate [fmol drug/um^2 cell/min/M drug]. */
+    protected final double drugUptakeRate;
+
+    /** Rate at which drugs are removed from the cell. */
+    protected final double drugRemovalRate;
+
+    /** Rate at which drugs decay in the cell. */
+    protected final double drugDecayRate;
+
     /** Volume of cell [um<sup>3</sup>]. */
     double volume;
+
+    /** Volume fraction. */
+    protected double f;
 
     /** Internal amount of the drug. */
     protected double intAmt;
@@ -51,8 +65,13 @@ public abstract class PatchProcessChemotherapy extends PatchProcess {
         // Set loaded parameters.
         MiniBox parameters = cell.getParameters();
         chemotherapyThreshold = parameters.getDouble("chemotherapy/CHEMOTHERAPY_THRESHOLD");
+        drugUptakeRate = parameters.getDouble("chemotherapy/CONSTANT_DRUG_UPTAKE_RATE");
+        drugRemovalRate = parameters.getDouble("chemotherapy/DRUG_REMOVAL_RATE");
+        drugDecayRate = parameters.getDouble("chemotherapy/DRUG_DECAY_RATE");
 
         // Initial internal concentrations.
+        extAmt = 0.0;
+        uptakeAmt = 0.0;
         intAmt = 0.0;
     }
 
@@ -71,10 +90,17 @@ public abstract class PatchProcessChemotherapy extends PatchProcess {
      */
     private void updateExternal(Simulation sim) {
         extAmt = sim.getLattice("DRUG").getAverageValue(location) * location.getVolume();
+        extAmt *= (1.0 - drugDecayRate);
+        System.out.println("extAmt: " + extAmt);
     }
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
+        // Calculate fraction of volume occupied by cell.
+        Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
+        double totalVolume = PatchCell.calculateTotalVolume(bag);
+        f = volume / totalVolume;
+
         // Get external drug concentration.
         updateExternal(sim);
 
