@@ -4,6 +4,10 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.MiniBox;
+import arcade.patch.util.PatchEnums.AntigenFlag;
+import arcade.patch.util.PatchEnums.Domain;
+import arcade.patch.util.PatchEnums.Flag;
+import arcade.patch.util.PatchEnums.State;
 import sim.engine.SimState;
 import arcade.core.sim.Simulation;
 import static arcade.patch.util.PatchEnums.Domain;
@@ -29,6 +33,9 @@ public class PatchCellTissue extends PatchCell {
 	
 	/** Cell surface PDL1 count */
 	int selfTargets;
+
+    /** Cell binding flag */
+     public AntigenFlag binding;
 
 
     /**
@@ -70,6 +77,7 @@ public class PatchCellTissue extends PatchCell {
         //These default to 0 if not present in input
         carAntigens = parameters.getInt("CAR_ANTIGENS");
         selfTargets = parameters.getInt("SELF_TARGETS");
+        this.binding = AntigenFlag.UNDEFINED;
     }
     
     @Override
