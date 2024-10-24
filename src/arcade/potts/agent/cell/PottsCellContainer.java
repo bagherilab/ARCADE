@@ -173,43 +173,17 @@ public final class PottsCellContainer implements CellContainer {
             default:
             case "stem":
                 if (factory.popToRegions.get(pop)) {
-                    cell =
-                            new PottsCellStem(
-                                    id,
-                                    parent,
-                                    pop,
-                                    state,
-                                    age,
-                                    divisions,
-                                    location,
-                                    true,
-                                    parameters,
-                                    criticalVolume,
-                                    criticalHeight,
-                                    criticalRegionVolumes,
-                                    criticalRegionHeights);
+                    cell = new PottsCellStem(this, location, parameters, true);
                 } else {
-                    cell =
-                            new PottsCellStem(
-                                    id,
-                                    parent,
-                                    pop,
-                                    state,
-                                    age,
-                                    divisions,
-                                    location,
-                                    false,
-                                    parameters,
-                                    criticalVolume,
-                                    criticalHeight,
-                                    null,
-                                    null);
+                    cell = new PottsCellStem(this, location, parameters, false);
                 }
         }
 
         // Update cell module.
-        PottsModule module = (PottsModule) cell.getModule();
-        module.setPhase(phase);
+        if (phase != null) {
+            PottsModule module = (PottsModule) cell.getModule();
+            module.setPhase(phase);
+        }
 
         return cell;
     }

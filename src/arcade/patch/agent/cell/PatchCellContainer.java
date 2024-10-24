@@ -106,61 +106,13 @@ public final class PatchCellContainer implements CellContainer {
         switch (parameters.get("CLASS")) {
             default:
             case "tissue":
-                return new PatchCellTissue(
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+                return new PatchCellTissue(this, location, parameters);
             case "cancer":
-                return new PatchCellCancer(
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+                return new PatchCellCancer(this, location, parameters);
             case "cancer_stem":
-                return new PatchCellCancerStem(
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+                return new PatchCellCancerStem(this, location, parameters);
             case "random":
-                return new PatchCellRandom(
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+                return new PatchCellRandom(this, location, parameters);
         }
     }
 }

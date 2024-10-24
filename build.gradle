@@ -78,7 +78,7 @@ spotless {
     }
 
     format 'misc', {
-        target '**/.gitignore', '**/*.gradle', '**/*.md', '**/*.sh', '**/*.xml'
+        target '**/.gitignore', '**/*.gradle', '**/*.md', 'src/**/*.xml', 'test/**/*.xml'
         indentWithSpaces()
         trimTrailingWhitespace()
         endWithNewline()

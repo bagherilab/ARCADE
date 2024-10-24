@@ -40,6 +40,19 @@ public class PatchCellRandomTest {
 
     static MiniBox parametersMock = new MiniBox();
 
+    static PatchCellContainer baseContainer =
+            new PatchCellContainer(
+                    cellID,
+                    cellParent,
+                    cellPop,
+                    cellAge,
+                    cellDivisions,
+                    cellState,
+                    cellVolume,
+                    cellHeight,
+                    cellCriticalVolume,
+                    cellCriticalHeight);
+
     @Test
     public void make_called_createsContainer() {
         double volume = randomDoubleBetween(10, 100);
@@ -50,20 +63,21 @@ public class PatchCellRandomTest {
         State state1 = State.QUIESCENT;
         State state2 = State.PROLIFERATIVE;
 
-        PatchCellRandom cell =
-                new PatchCellRandom(
+        PatchCellContainer cellContainer =
+                new PatchCellContainer(
                         cellID,
                         cellParent,
                         cellPop,
-                        state1,
                         cellAge,
                         cellDivisions,
-                        locationMock,
-                        parametersMock,
+                        state1,
                         volume,
                         height,
                         criticalVolume,
                         criticalHeight);
+
+        PatchCellRandom cell = new PatchCellRandom(cellContainer, locationMock, parametersMock);
+
         PatchCellContainer container = cell.make(cellID + 1, state2, null);
 
         assertEquals(cellID + 1, container.id);
@@ -83,20 +97,7 @@ public class PatchCellRandomTest {
     public void step_calledWithUndefinedState_setsRandomState() {
         PatchSimulation sim = mock(PatchSimulation.class);
         PatchCellRandom cell =
-                spy(
-                        new PatchCellRandom(
-                                cellID,
-                                cellParent,
-                                cellPop,
-                                cellState,
-                                cellAge,
-                                cellDivisions,
-                                locationMock,
-                                parametersMock,
-                                cellVolume,
-                                cellHeight,
-                                cellCriticalVolume,
-                                cellCriticalHeight));
+                spy(new PatchCellRandom(baseContainer, locationMock, parametersMock));
         PatchModule module = mock(PatchModule.class);
 
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
@@ -129,20 +130,7 @@ public class PatchCellRandomTest {
     public void step_calledWithDefinedState_keepsDefinedState() {
         PatchSimulation sim = mock(PatchSimulation.class);
         PatchCellRandom cell =
-                spy(
-                        new PatchCellRandom(
-                                cellID,
-                                cellParent,
-                                cellPop,
-                                cellState,
-                                cellAge,
-                                cellDivisions,
-                                locationMock,
-                                parametersMock,
-                                cellVolume,
-                                cellHeight,
-                                cellCriticalVolume,
-                                cellCriticalHeight));
+                spy(new PatchCellRandom(baseContainer, locationMock, parametersMock));
 
         cell.processes.put(Domain.METABOLISM, mock(PatchProcessMetabolism.class));
         cell.processes.put(Domain.SIGNALING, mock(PatchProcessMetabolism.class));
