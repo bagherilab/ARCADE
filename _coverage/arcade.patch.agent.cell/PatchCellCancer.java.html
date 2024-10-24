@@ -20,48 +20,15 @@ import static arcade.patch.util.PatchEnums.State;
  */
 public class PatchCellCancer extends PatchCellTissue {
     /**
-     * Creates a tissue {@code PatchCell} agent.
+     * Creates a cancer {@code PatchCell} agent.
      *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
      */
-    public PatchCellCancer(
-            int id,
-            int parent,
-            int pop,
-            CellState state,
-            int age,
-            int divisions,
-            Location location,
-            MiniBox parameters,
-            double volume,
-            double height,
-            double criticalVolume,
-            double criticalHeight) {
-<span class="nc" id="L51">        super(</span>
-                id,
-                parent,
-                pop,
-                state,
-                age,
-                divisions,
-                location,
-                parameters,
-                volume,
-                height,
-                criticalVolume,
-                criticalHeight);
-<span class="nc" id="L64">    }</span>
+    public PatchCellCancer(PatchCellContainer container, Location location, MiniBox parameters) {
+<span class="nc" id="L30">        super(container, location, parameters);</span>
+<span class="nc" id="L31">    }</span>
 
     /**
      * {@inheritDoc}
@@ -70,16 +37,16 @@ public class PatchCellCancer extends PatchCellTissue {
      */
     @Override
     public void step(SimState simstate) {
-<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (state == State.QUIESCENT) {</span>
-<span class="nc" id="L74">            checkNeighborhood(simstate, this);</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (state == State.QUIESCENT) {</span>
+<span class="nc" id="L41">            checkNeighborhood(simstate, this);</span>
         }
-<span class="nc" id="L76">        super.step(simstate);</span>
-<span class="nc" id="L77">    }</span>
+<span class="nc" id="L43">        super.step(simstate);</span>
+<span class="nc" id="L44">    }</span>
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-<span class="nc" id="L81">        divisions--;</span>
-<span class="nc" id="L82">        return new PatchCellContainer(</span>
+<span class="nc" id="L48">        divisions--;</span>
+<span class="nc" id="L49">        return new PatchCellContainer(</span>
                 newID,
                 id,
                 pop,
@@ -101,10 +68,10 @@ public class PatchCellCancer extends PatchCellTissue {
      * @param cell the reference cell
      */
     private static void checkNeighborhood(SimState simstate, PatchCell cell) {
-<span class="nc" id="L104">        Simulation sim = (Simulation) simstate;</span>
-<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() &gt; 0) {</span>
-<span class="nc" id="L106">            cell.setState(State.UNDEFINED);</span>
+<span class="nc" id="L71">        Simulation sim = (Simulation) simstate;</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() &gt; 0) {</span>
+<span class="nc" id="L73">            cell.setState(State.UNDEFINED);</span>
         }
-<span class="nc" id="L108">    }</span>
+<span class="nc" id="L75">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

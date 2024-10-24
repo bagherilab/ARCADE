@@ -22,7 +22,7 @@ public class PatchCellCancerStem extends PatchCellCancer {
     private final double symmetricFraction;
 
     /**
-     * Creates a tissue {@code PatchCell} agent.
+     * Creates a cancer stem {@code PatchCell} agent.
      *
      * &lt;p&gt;Loaded parameters include:
      *
@@ -30,51 +30,19 @@ public class PatchCellCancerStem extends PatchCellCancer {
      *   &lt;li&gt;{@code SYMMETRIC_FRACTION} = fraction of divisions that are symmetric
      * &lt;/ul&gt;
      *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
      */
     public PatchCellCancerStem(
-            int id,
-            int parent,
-            int pop,
-            CellState state,
-            int age,
-            int divisions,
-            Location location,
-            MiniBox parameters,
-            double volume,
-            double height,
-            double criticalVolume,
-            double criticalHeight) {
-<span class="nc" id="L59">        super(</span>
-                id,
-                parent,
-                pop,
-                state,
-                age,
-                divisions,
-                location,
-                parameters,
-                volume,
-                height,
-                criticalVolume,
-                criticalHeight);
+            PatchCellContainer container, Location location, MiniBox parameters) {
+<span class="nc" id="L39">        super(container, location, parameters);</span>
 
         // Set loaded parameters.
-<span class="nc" id="L74">        symmetricFraction = parameters.getDouble(&quot;SYMMETRIC_FRACTION&quot;);</span>
+<span class="nc" id="L42">        symmetricFraction = parameters.getDouble(&quot;SYMMETRIC_FRACTION&quot;);</span>
 
         // TODO: set death age
-<span class="nc" id="L77">    }</span>
+<span class="nc" id="L45">    }</span>
 
     /**
      * {@inheritDoc}
@@ -83,8 +51,8 @@ public class PatchCellCancerStem extends PatchCellCancer {
      */
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-<span class="nc bnc" id="L86" title="All 2 branches missed.">        int newDivisons = random.nextDouble() &lt; symmetricFraction ? divisions : divisions - 1;</span>
-<span class="nc" id="L87">        return new PatchCellContainer(</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        int newDivisons = random.nextDouble() &lt; symmetricFraction ? divisions : divisions - 1;</span>
+<span class="nc" id="L55">        return new PatchCellContainer(</span>
                 newID,
                 id,
                 pop,

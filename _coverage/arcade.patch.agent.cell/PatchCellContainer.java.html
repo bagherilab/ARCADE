@@ -106,61 +106,13 @@ public final class PatchCellContainer implements CellContainer {
 <span class="nc bnc" id="L106" title="All 4 branches missed.">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
             default:
             case &quot;tissue&quot;:
-<span class="nc" id="L109">                return new PatchCellTissue(</span>
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+<span class="nc" id="L109">                return new PatchCellTissue(this, location, parameters);</span>
             case &quot;cancer&quot;:
-<span class="nc" id="L123">                return new PatchCellCancer(</span>
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+<span class="nc" id="L111">                return new PatchCellCancer(this, location, parameters);</span>
             case &quot;cancer_stem&quot;:
-<span class="nc" id="L137">                return new PatchCellCancerStem(</span>
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+<span class="nc" id="L113">                return new PatchCellCancerStem(this, location, parameters);</span>
             case &quot;random&quot;:
-<span class="nc" id="L151">                return new PatchCellRandom(</span>
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+<span class="nc" id="L115">                return new PatchCellRandom(this, location, parameters);</span>
         }
     }
 }

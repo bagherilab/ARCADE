@@ -173,45 +173,19 @@ public final class PottsCellContainer implements CellContainer {
             default:
             case &quot;stem&quot;:
 <span class="fc bfc" id="L175" title="All 2 branches covered.">                if (factory.popToRegions.get(pop)) {</span>
-<span class="fc" id="L176">                    cell =</span>
-                            new PottsCellStem(
-                                    id,
-                                    parent,
-                                    pop,
-                                    state,
-                                    age,
-                                    divisions,
-                                    location,
-                                    true,
-                                    parameters,
-                                    criticalVolume,
-                                    criticalHeight,
-                                    criticalRegionVolumes,
-                                    criticalRegionHeights);
+<span class="fc" id="L176">                    cell = new PottsCellStem(this, location, parameters, true);</span>
                 } else {
-<span class="fc" id="L192">                    cell =</span>
-                            new PottsCellStem(
-                                    id,
-                                    parent,
-                                    pop,
-                                    state,
-                                    age,
-                                    divisions,
-                                    location,
-                                    false,
-                                    parameters,
-                                    criticalVolume,
-                                    criticalHeight,
-                                    null,
-                                    null);
+<span class="fc" id="L178">                    cell = new PottsCellStem(this, location, parameters, false);</span>
                 }
         }
 
         // Update cell module.
-<span class="fc" id="L211">        PottsModule module = (PottsModule) cell.getModule();</span>
-<span class="fc" id="L212">        module.setPhase(phase);</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">        if (phase != null) {</span>
+<span class="fc" id="L184">            PottsModule module = (PottsModule) cell.getModule();</span>
+<span class="fc" id="L185">            module.setPhase(phase);</span>
+        }
 
-<span class="fc" id="L214">        return cell;</span>
+<span class="fc" id="L188">        return cell;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
