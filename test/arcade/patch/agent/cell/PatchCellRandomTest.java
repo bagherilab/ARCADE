@@ -75,7 +75,7 @@ public class PatchCellRandomTest {
                         height,
                         criticalVolume,
                         criticalHeight);
-      
+
         PatchCellRandom cell = new PatchCellRandom(cellContainer, locationMock, parametersMock);
 
         PatchCellContainer container = cell.make(cellID + 1, state2, null);

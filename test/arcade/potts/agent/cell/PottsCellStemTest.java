@@ -156,7 +156,6 @@ public class PottsCellStemTest {
             criticalHeightsRegion.put(region, randomDoubleBetween(10, 100));
         }
 
-
         PottsCellContainer cellContainer =
                 new PottsCellContainer(
                         cellID,
