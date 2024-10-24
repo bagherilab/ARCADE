@@ -77,18 +77,15 @@ public class PatchCellCancer extends PatchCellTissue {
 <span class="nc" id="L77">    }</span>
 
     @Override
-    public PatchCell make(
-            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
-<span class="nc" id="L82">        divisions--;</span>
-<span class="nc" id="L83">        return new PatchCellTissue(</span>
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+<span class="nc" id="L81">        divisions--;</span>
+<span class="nc" id="L82">        return new PatchCellContainer(</span>
                 newID,
                 id,
                 pop,
-                newState,
                 age,
                 divisions,
-                newLocation,
-                parameters,
+                newState,
                 volume,
                 height,
                 criticalVolume,
@@ -104,10 +101,10 @@ public class PatchCellCancer extends PatchCellTissue {
      * @param cell the reference cell
      */
     private static void checkNeighborhood(SimState simstate, PatchCell cell) {
-<span class="nc" id="L107">        Simulation sim = (Simulation) simstate;</span>
-<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() &gt; 0) {</span>
-<span class="nc" id="L109">            cell.setState(State.UNDEFINED);</span>
+<span class="nc" id="L104">        Simulation sim = (Simulation) simstate;</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() &gt; 0) {</span>
+<span class="nc" id="L106">            cell.setState(State.UNDEFINED);</span>
         }
-<span class="nc" id="L111">    }</span>
+<span class="nc" id="L108">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -188,12 +188,12 @@ public abstract class PatchCell implements Cell {
         // Add cell processes.
 <span class="fc" id="L189">        processes = new HashMap&lt;&gt;();</span>
 <span class="fc" id="L190">        MiniBox processBox = parameters.filter(&quot;(PROCESS)&quot;);</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">        for (String processKey : processBox.getKeys()) {</span>
-<span class="fc" id="L192">            ProcessDomain domain = Domain.valueOf(processKey);</span>
-<span class="fc" id="L193">            String version = processBox.get(processKey);</span>
-<span class="fc" id="L194">            Process process = makeProcess(domain, version);</span>
-<span class="fc" id="L195">            processes.put(domain, process);</span>
-<span class="fc" id="L196">        }</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">        for (String processKey : processBox.getKeys()) {</span>
+<span class="nc" id="L192">            ProcessDomain domain = Domain.valueOf(processKey);</span>
+<span class="nc" id="L193">            String version = processBox.get(processKey);</span>
+<span class="nc" id="L194">            Process process = makeProcess(domain, version);</span>
+<span class="nc" id="L195">            processes.put(domain, process);</span>
+<span class="nc" id="L196">        }</span>
 <span class="fc" id="L197">    }</span>
 
     @Override
@@ -218,17 +218,17 @@ public abstract class PatchCell implements Cell {
 
     @Override
     public int getAge() {
-<span class="fc" id="L221">        return age;</span>
+<span class="nc" id="L221">        return age;</span>
     }
 
     @Override
     public int getDivisions() {
-<span class="fc" id="L226">        return divisions;</span>
+<span class="nc" id="L226">        return divisions;</span>
     }
 
     @Override
     public Location getLocation() {
-<span class="fc" id="L231">        return location;</span>
+<span class="nc" id="L231">        return location;</span>
     }
 
     @Override
@@ -238,32 +238,32 @@ public abstract class PatchCell implements Cell {
 
     @Override
     public Process getProcess(ProcessDomain domain) {
-<span class="fc" id="L241">        return processes.get(domain);</span>
+<span class="nc" id="L241">        return processes.get(domain);</span>
     }
 
     @Override
     public MiniBox getParameters() {
-<span class="fc" id="L246">        return parameters;</span>
+<span class="nc" id="L246">        return parameters;</span>
     }
 
     @Override
     public double getVolume() {
-<span class="fc" id="L251">        return volume;</span>
+<span class="nc" id="L251">        return volume;</span>
     }
 
     @Override
     public double getHeight() {
-<span class="fc" id="L256">        return height;</span>
+<span class="nc" id="L256">        return height;</span>
     }
 
     @Override
     public double getCriticalVolume() {
-<span class="fc" id="L261">        return criticalVolume;</span>
+<span class="nc" id="L261">        return criticalVolume;</span>
     }
 
     @Override
     public double getCriticalHeight() {
-<span class="fc" id="L266">        return criticalHeight;</span>
+<span class="nc" id="L266">        return criticalHeight;</span>
     }
 
     /**
@@ -312,10 +312,10 @@ public abstract class PatchCell implements Cell {
 <span class="fc" id="L312">        this.state = state;</span>
 <span class="fc" id="L313">        this.flag = Flag.UNDEFINED;</span>
 
-<span class="pc bpc" id="L315" title="2 of 4 branches missed.">        switch ((State) state) {</span>
+<span class="pc bpc" id="L315" title="3 of 4 branches missed.">        switch ((State) state) {</span>
             case PROLIFERATIVE:
-<span class="fc" id="L317">                module = new PatchModuleProliferation(this);</span>
-<span class="fc" id="L318">                break;</span>
+<span class="nc" id="L317">                module = new PatchModuleProliferation(this);</span>
+<span class="nc" id="L318">                break;</span>
             case MIGRATORY:
 <span class="nc" id="L320">                module = new PatchModuleMigration(this);</span>
 <span class="nc" id="L321">                break;</span>
@@ -336,11 +336,11 @@ public abstract class PatchCell implements Cell {
      * @return the process instance
      */
     public Process makeProcess(ProcessDomain domain, String version) {
-<span class="pc bpc" id="L339" title="1 of 3 branches missed.">        switch ((Domain) domain) {</span>
+<span class="nc bnc" id="L339" title="All 3 branches missed.">        switch ((Domain) domain) {</span>
             case METABOLISM:
-<span class="fc" id="L341">                return PatchProcessMetabolism.make(this, version);</span>
+<span class="nc" id="L341">                return PatchProcessMetabolism.make(this, version);</span>
             case SIGNALING:
-<span class="fc" id="L343">                return PatchProcessSignaling.make(this, version);</span>
+<span class="nc" id="L343">                return PatchProcessSignaling.make(this, version);</span>
             case UNDEFINED:
             default:
 <span class="nc" id="L346">                return null;</span>

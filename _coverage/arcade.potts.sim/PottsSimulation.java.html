@@ -7,11 +7,13 @@ import sim.engine.SimState;
 import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactory;
 import arcade.core.env.component.Component;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.env.location.Location;
 import arcade.core.env.location.LocationContainer;
+import arcade.core.env.location.LocationFactory;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
@@ -51,76 +53,86 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      * @param series the simulation series
      */
     public PottsSimulation(long seed, Series series) {
-<span class="fc" id="L54">        super(seed);</span>
-<span class="fc" id="L55">        this.series = (PottsSeries) series;</span>
-<span class="fc" id="L56">        this.seed = (int) seed - Series.SEED_OFFSET;</span>
+<span class="fc" id="L56">        super(seed);</span>
+<span class="fc" id="L57">        this.series = (PottsSeries) series;</span>
+<span class="fc" id="L58">        this.seed = (int) seed - Series.SEED_OFFSET;</span>
 
-<span class="fc" id="L58">        this.locationFactory = makeLocationFactory();</span>
-<span class="fc" id="L59">        this.cellFactory = makeCellFactory();</span>
-<span class="fc" id="L60">    }</span>
+<span class="fc" id="L60">        this.locationFactory = makeLocationFactory();</span>
+<span class="fc" id="L61">        this.cellFactory = makeCellFactory();</span>
+<span class="fc" id="L62">    }</span>
 
     @Override
     public final Series getSeries() {
-<span class="fc" id="L64">        return series;</span>
+<span class="fc" id="L66">        return series;</span>
     }
 
     @Override
     public final Schedule getSchedule() {
-<span class="fc" id="L69">        return schedule;</span>
+<span class="fc" id="L71">        return schedule;</span>
     }
 
     @Override
     public final int getSeed() {
-<span class="fc" id="L74">        return seed;</span>
+<span class="fc" id="L76">        return seed;</span>
     }
 
     @Override
     public final int getID() {
-<span class="fc" id="L79">        return ++id;</span>
+<span class="fc" id="L81">        return ++id;</span>
     }
 
     @Override
     public final ArrayList&lt;CellContainer&gt; getCells() {
-<span class="fc" id="L84">        ArrayList&lt;CellContainer&gt; cellContainers = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L86">        ArrayList&lt;CellContainer&gt; cellContainers = new ArrayList&lt;&gt;();</span>
 
-<span class="fc bfc" id="L86" title="All 2 branches covered.">        for (Object obj : grid.getAllObjects()) {</span>
-<span class="fc" id="L87">            Cell cell = (Cell) obj;</span>
-<span class="fc" id="L88">            cellContainers.add(cell.convert());</span>
-<span class="fc" id="L89">        }</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        for (Object obj : grid.getAllObjects()) {</span>
+<span class="fc" id="L89">            Cell cell = (Cell) obj;</span>
+<span class="fc" id="L90">            cellContainers.add(cell.convert());</span>
+<span class="fc" id="L91">        }</span>
 
-<span class="fc" id="L91">        return cellContainers;</span>
+<span class="fc" id="L93">        return cellContainers;</span>
     }
 
     @Override
     public final ArrayList&lt;LocationContainer&gt; getLocations() {
-<span class="fc" id="L96">        ArrayList&lt;LocationContainer&gt; locationContainers = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L98">        ArrayList&lt;LocationContainer&gt; locationContainers = new ArrayList&lt;&gt;();</span>
 
-<span class="fc bfc" id="L98" title="All 2 branches covered.">        for (Object obj : grid.getAllObjects()) {</span>
-<span class="fc" id="L99">            Cell cell = (Cell) obj;</span>
-<span class="fc" id="L100">            locationContainers.add(cell.getLocation().convert(cell.getID()));</span>
-<span class="fc" id="L101">        }</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        for (Object obj : grid.getAllObjects()) {</span>
+<span class="fc" id="L101">            Cell cell = (Cell) obj;</span>
+<span class="fc" id="L102">            locationContainers.add(cell.getLocation().convert(cell.getID()));</span>
+<span class="fc" id="L103">        }</span>
 
-<span class="fc" id="L103">        return locationContainers;</span>
+<span class="fc" id="L105">        return locationContainers;</span>
+    }
+
+    @Override
+    public final CellFactory getCellFactory() {
+<span class="nc" id="L110">        return cellFactory;</span>
+    }
+
+    @Override
+    public final LocationFactory getLocationFactory() {
+<span class="nc" id="L115">        return locationFactory;</span>
     }
 
     @Override
     public final Grid getGrid() {
-<span class="fc" id="L108">        return grid;</span>
+<span class="fc" id="L120">        return grid;</span>
     }
 
     @Override
     public final Lattice getLattice(String key) {
-<span class="fc" id="L113">        return null;</span>
+<span class="fc" id="L125">        return null;</span>
     }
 
     @Override
     public final Action getAction(String key) {
-<span class="nc" id="L118">        return null;</span>
+<span class="nc" id="L130">        return null;</span>
     }
 
     @Override
     public final Component getComponent(String key) {
-<span class="nc" id="L123">        return null;</span>
+<span class="nc" id="L135">        return null;</span>
     }
 
     /**
@@ -129,7 +141,7 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      * @return the potts instance
      */
     public final Potts getPotts() {
-<span class="fc" id="L132">        return potts;</span>
+<span class="fc" id="L144">        return potts;</span>
     }
 
     /**
@@ -138,40 +150,40 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      */
     @Override
     public void start() {
-<span class="fc" id="L141">        super.start();</span>
+<span class="fc" id="L153">        super.start();</span>
 
         // Reset id.
-<span class="fc" id="L144">        id = 0;</span>
+<span class="fc" id="L156">        id = 0;</span>
 
         // Equip simulation to loader.
-<span class="fc bfc" id="L147" title="All 2 branches covered.">        if (series.loader != null) {</span>
-<span class="fc" id="L148">            series.loader.equip(this);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (series.loader != null) {</span>
+<span class="fc" id="L160">            series.loader.equip(this);</span>
         }
 
-<span class="fc" id="L151">        setupPotts();</span>
-<span class="fc" id="L152">        setupAgents();</span>
-<span class="fc" id="L153">        setupEnvironment();</span>
+<span class="fc" id="L163">        setupPotts();</span>
+<span class="fc" id="L164">        setupAgents();</span>
+<span class="fc" id="L165">        setupEnvironment();</span>
 
-<span class="fc" id="L155">        scheduleActions();</span>
-<span class="fc" id="L156">        scheduleComponents();</span>
+<span class="fc" id="L167">        scheduleActions();</span>
+<span class="fc" id="L168">        scheduleComponents();</span>
 
         // Equip simulation to saver and schedule.
-<span class="fc bfc" id="L159" title="All 4 branches covered.">        if (series.saver != null &amp;&amp; !series.isVis) {</span>
-<span class="fc" id="L160">            series.saver.equip(this);</span>
-<span class="fc" id="L161">            doOutput(true);</span>
+<span class="fc bfc" id="L171" title="All 4 branches covered.">        if (series.saver != null &amp;&amp; !series.isVis) {</span>
+<span class="fc" id="L172">            series.saver.equip(this);</span>
+<span class="fc" id="L173">            doOutput(true);</span>
         }
-<span class="fc" id="L163">    }</span>
+<span class="fc" id="L175">    }</span>
 
     /** Called at the end of the simulation. */
     @Override
     public void finish() {
-<span class="fc" id="L168">        super.finish();</span>
+<span class="fc" id="L180">        super.finish();</span>
 
         // Finalize saver.
-<span class="fc bfc" id="L171" title="All 2 branches covered.">        if (!series.isVis) {</span>
-<span class="fc" id="L172">            doOutput(false);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if (!series.isVis) {</span>
+<span class="fc" id="L184">            doOutput(false);</span>
         }
-<span class="fc" id="L174">    }</span>
+<span class="fc" id="L186">    }</span>
 
     /**
      * Creates the {@link arcade.potts.sim.Potts} object for the simulation.
@@ -196,65 +208,65 @@ public abstract class PottsSimulation extends SimState implements Simulation {
 
     /** Sets up the potts layer for the simulation. */
     public final void setupPotts() {
-<span class="fc" id="L199">        potts = makePotts();</span>
-<span class="fc" id="L200">        schedule.scheduleRepeating(1, Ordering.POTTS.ordinal(), potts);</span>
-<span class="fc" id="L201">    }</span>
+<span class="fc" id="L211">        potts = makePotts();</span>
+<span class="fc" id="L212">        schedule.scheduleRepeating(1, Ordering.POTTS.ordinal(), potts);</span>
+<span class="fc" id="L213">    }</span>
 
     @Override
     public final void setupAgents() {
         // Initialize grid for agents.
-<span class="fc" id="L206">        grid = new PottsGrid();</span>
-<span class="fc" id="L207">        potts.grid = grid;</span>
+<span class="fc" id="L218">        grid = new PottsGrid();</span>
+<span class="fc" id="L219">        potts.grid = grid;</span>
 
         // Initialize factories.
-<span class="fc" id="L210">        locationFactory.initialize(series, random);</span>
-<span class="fc" id="L211">        cellFactory.initialize(series, random);</span>
+<span class="fc" id="L222">        locationFactory.initialize(series, random);</span>
+<span class="fc" id="L223">        cellFactory.initialize(series, random);</span>
 
         // Iterate through each population to create agents.
-<span class="fc bfc" id="L214" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
-<span class="fc" id="L215">            int pop = population.getInt(&quot;CODE&quot;);</span>
-<span class="fc" id="L216">            HashSet&lt;Integer&gt; ids = cellFactory.popToIDs.get(pop);</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        for (MiniBox population : series.populations.values()) {</span>
+<span class="fc" id="L227">            int pop = population.getInt(&quot;CODE&quot;);</span>
+<span class="fc" id="L228">            HashSet&lt;Integer&gt; ids = cellFactory.popToIDs.get(pop);</span>
 
-<span class="fc bfc" id="L218" title="All 2 branches covered.">            for (int i : ids) {</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">            for (int i : ids) {</span>
                 // Get location and cell containers.
-<span class="fc" id="L220">                LocationContainer locationContainer = locationFactory.locations.get(i);</span>
-<span class="fc" id="L221">                CellContainer cellContainer = cellFactory.cells.get(i);</span>
+<span class="fc" id="L232">                LocationContainer locationContainer = locationFactory.locations.get(i);</span>
+<span class="fc" id="L233">                CellContainer cellContainer = cellFactory.cells.get(i);</span>
 
                 // Check that we have enough containers.
-<span class="fc bfc" id="L224" title="All 4 branches covered.">                if (locationContainer == null || cellContainer == null) {</span>
-<span class="fc" id="L225">                    break;</span>
+<span class="fc bfc" id="L236" title="All 4 branches covered.">                if (locationContainer == null || cellContainer == null) {</span>
+<span class="fc" id="L237">                    break;</span>
                 }
 
                 // Make the location and cell.
-<span class="fc" id="L229">                Location location = locationContainer.convert(locationFactory, cellContainer);</span>
-<span class="fc" id="L230">                PottsCell cell = (PottsCell) cellContainer.convert(cellFactory, location);</span>
+<span class="fc" id="L241">                Location location = locationContainer.convert(locationFactory, cellContainer);</span>
+<span class="fc" id="L242">                PottsCell cell = (PottsCell) cellContainer.convert(cellFactory, location);</span>
 
                 // Add, initialize, and schedule the cell.
-<span class="fc" id="L233">                grid.addObject(cell, null);</span>
-<span class="fc" id="L234">                potts.register(cell);</span>
-<span class="fc" id="L235">                cell.initialize(potts.ids, potts.regions);</span>
-<span class="fc" id="L236">                cell.schedule(schedule);</span>
+<span class="fc" id="L245">                grid.addObject(cell, null);</span>
+<span class="fc" id="L246">                potts.register(cell);</span>
+<span class="fc" id="L247">                cell.initialize(potts.ids, potts.regions);</span>
+<span class="fc" id="L248">                cell.schedule(schedule);</span>
 
                 // Update id tracking.
-<span class="fc" id="L239">                id = Math.max(i, id);</span>
-<span class="fc" id="L240">            }</span>
-<span class="fc" id="L241">        }</span>
-<span class="fc" id="L242">    }</span>
+<span class="fc" id="L251">                id = Math.max(i, id);</span>
+<span class="fc" id="L252">            }</span>
+<span class="fc" id="L253">        }</span>
+<span class="fc" id="L254">    }</span>
 
     @Override
     public final void setupEnvironment() {
         // TODO add environment setup (currently not needed)
-<span class="fc" id="L247">    }</span>
+<span class="fc" id="L259">    }</span>
 
     @Override
     public final void scheduleActions() {
         // TODO add action scheduling
-<span class="fc" id="L252">    }</span>
+<span class="fc" id="L264">    }</span>
 
     @Override
     public final void scheduleComponents() {
         // TODO add component scheduling
-<span class="fc" id="L257">    }</span>
+<span class="fc" id="L269">    }</span>
 
     /**
      * Runs output methods.
@@ -262,13 +274,13 @@ public abstract class PottsSimulation extends SimState implements Simulation {
      * @param isScheduled {@code true} to schedule output, {@code false} otherwise
      */
     public void doOutput(boolean isScheduled) {
-<span class="fc bfc" id="L265" title="All 2 branches covered.">        if (isScheduled) {</span>
-<span class="fc" id="L266">            series.saver.schedule(schedule, series.getInterval());</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">        if (isScheduled) {</span>
+<span class="fc" id="L278">            series.saver.schedule(schedule, series.getInterval());</span>
         } else {
-<span class="fc" id="L268">            int tick = (int) schedule.getTime() + 1;</span>
-<span class="fc" id="L269">            series.saver.saveCells(tick);</span>
-<span class="fc" id="L270">            series.saver.saveLocations(tick);</span>
+<span class="fc" id="L280">            int tick = (int) schedule.getTime() + 1;</span>
+<span class="fc" id="L281">            series.saver.saveCells(tick);</span>
+<span class="fc" id="L282">            series.saver.saveLocations(tick);</span>
         }
-<span class="fc" id="L272">    }</span>
+<span class="fc" id="L284">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

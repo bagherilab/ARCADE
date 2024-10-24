@@ -68,19 +68,18 @@ public final class PottsCellStem extends PottsCell {
 <span class="fc" id="L68">    }</span>
 
     @Override
-    public PottsCell make(
-            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
-<span class="fc" id="L73">        divisions++;</span>
-<span class="fc" id="L74">        return new PottsCellStem(</span>
+    public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+<span class="fc" id="L72">        divisions++;</span>
+<span class="fc" id="L73">        return new PottsCellContainer(</span>
                 newID,
                 id,
                 pop,
-                newState,
                 age,
                 divisions,
-                newLocation,
-                hasRegions,
-                parameters,
+                newState,
+                null,
+                0,
+                null,
                 criticalVolume,
                 criticalHeight,
                 criticalRegionVolumes,
@@ -89,27 +88,27 @@ public final class PottsCellStem extends PottsCell {
 
     @Override
     void setStateModule(CellState newState) {
-<span class="fc bfc" id="L92" title="All 6 branches covered.">        switch ((State) newState) {</span>
+<span class="fc bfc" id="L91" title="All 6 branches covered.">        switch ((State) newState) {</span>
             case QUIESCENT:
-<span class="fc" id="L94">                module = new PottsModuleQuiescence(this);</span>
-<span class="fc" id="L95">                break;</span>
+<span class="fc" id="L93">                module = new PottsModuleQuiescence(this);</span>
+<span class="fc" id="L94">                break;</span>
             case PROLIFERATIVE:
-<span class="fc" id="L97">                module = new PottsModuleProliferationSimple(this);</span>
-<span class="fc" id="L98">                break;</span>
+<span class="fc" id="L96">                module = new PottsModuleProliferationSimple(this);</span>
+<span class="fc" id="L97">                break;</span>
             case APOPTOTIC:
-<span class="fc" id="L100">                module = new PottsModuleApoptosisSimple(this);</span>
-<span class="fc" id="L101">                break;</span>
+<span class="fc" id="L99">                module = new PottsModuleApoptosisSimple(this);</span>
+<span class="fc" id="L100">                break;</span>
             case NECROTIC:
-<span class="fc" id="L103">                module = new PottsModuleNecrosis(this);</span>
-<span class="fc" id="L104">                break;</span>
+<span class="fc" id="L102">                module = new PottsModuleNecrosis(this);</span>
+<span class="fc" id="L103">                break;</span>
             case AUTOTIC:
-<span class="fc" id="L106">                module = new PottsModuleAutosis(this);</span>
-<span class="fc" id="L107">                break;</span>
+<span class="fc" id="L105">                module = new PottsModuleAutosis(this);</span>
+<span class="fc" id="L106">                break;</span>
             default:
                 // State must be one of the above cases.
-<span class="fc" id="L110">                module = null;</span>
+<span class="fc" id="L109">                module = null;</span>
                 break;
         }
-<span class="fc" id="L113">    }</span>
+<span class="fc" id="L112">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

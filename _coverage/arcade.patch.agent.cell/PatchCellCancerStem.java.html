@@ -82,35 +82,19 @@ public class PatchCellCancerStem extends PatchCellCancer {
      * &lt;p&gt;Cells have a certain probability of producing another cancer stem cell.
      */
     @Override
-    public PatchCell make(
-            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
-<span class="nc bnc" id="L87" title="All 2 branches missed.">        return random.nextDouble() &lt; symmetricFraction</span>
-<span class="nc" id="L88">                ? new PatchCellCancerStem(</span>
-                        newID,
-                        id,
-                        pop,
-                        newState,
-                        age,
-                        divisions,
-                        newLocation,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight)
-<span class="nc" id="L101">                : new PatchCellCancer(</span>
-                        newID,
-                        id,
-                        pop,
-                        newState,
-                        age,
-                        divisions - 1,
-                        newLocation,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        int newDivisons = random.nextDouble() &lt; symmetricFraction ? divisions : divisions - 1;</span>
+<span class="nc" id="L87">        return new PatchCellContainer(</span>
+                newID,
+                id,
+                pop,
+                age,
+                newDivisons,
+                newState,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -6,10 +6,12 @@ import com.google.gson.reflect.TypeToken;
 import sim.engine.Schedule;
 import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactory;
 import arcade.core.env.component.Component;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.env.location.LocationContainer;
+import arcade.core.env.location.LocationFactory;
 
 /**
  * A {@code Simulation} sets up agents and environments for a simulation.
@@ -25,10 +27,10 @@ import arcade.core.env.location.LocationContainer;
  */
 public interface Simulation {
     /** Default type for cell container list. */
-<span class="fc" id="L28">    Type DEFAULT_CELL_TYPE = new TypeToken&lt;ArrayList&lt;CellContainer&gt;&gt;() {}.getType();</span>
+<span class="fc" id="L30">    Type DEFAULT_CELL_TYPE = new TypeToken&lt;ArrayList&lt;CellContainer&gt;&gt;() {}.getType();</span>
 
     /** Default type for location container list. */
-<span class="fc" id="L31">    Type DEFAULT_LOCATION_TYPE = new TypeToken&lt;ArrayList&lt;LocationContainer&gt;&gt;() {}.getType();</span>
+<span class="fc" id="L33">    Type DEFAULT_LOCATION_TYPE = new TypeToken&lt;ArrayList&lt;LocationContainer&gt;&gt;() {}.getType();</span>
 
     /**
      * Gets the {@link Series} object for the current simulation.
@@ -74,6 +76,20 @@ public interface Simulation {
      * @return a list of {@link LocationContainer} objects
      */
     ArrayList&lt;LocationContainer&gt; getLocations();
+
+    /**
+     * Gets the initialized {@link CellFactory} for the simulation.
+     *
+     * @return the {@link CellFactory} object
+     */
+    CellFactory getCellFactory();
+
+    /**
+     * Gets the initialized {@link LocationFactory} for the simulation.
+     *
+     * @return the {@link LocationFactory} object
+     */
+    LocationFactory getLocationFactory();
 
     /**
      * Gets the {@link Grid} object.

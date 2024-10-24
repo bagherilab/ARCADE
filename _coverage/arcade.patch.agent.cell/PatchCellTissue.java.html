@@ -52,18 +52,15 @@ public class PatchCellTissue extends PatchCell {
 <span class="nc" id="L52">    }</span>
 
     @Override
-    public PatchCell make(
-            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
-<span class="nc" id="L57">        divisions--;</span>
-<span class="nc" id="L58">        return new PatchCellTissue(</span>
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+<span class="nc" id="L56">        divisions--;</span>
+<span class="nc" id="L57">        return new PatchCellContainer(</span>
                 newID,
                 id,
                 pop,
-                newState,
                 age,
                 divisions,
-                newLocation,
-                parameters,
+                newState,
                 volume,
                 height,
                 criticalVolume,
