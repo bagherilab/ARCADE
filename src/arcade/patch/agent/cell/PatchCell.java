@@ -287,13 +287,11 @@ public abstract class PatchCell implements Cell {
      *
      * @param energy the target energy level
      */
-<<<<<<< HEAD
+
     public void setEnergy(double energy) {
         this.energy = energy;
     }
-=======
     public void setEnergy(double energy) { this.energy = energy; }
->>>>>>> b06446fc (add cell cycles)
 
 	/**
 	 * Adds a completed cell cycle length to the list of lengths.
@@ -413,6 +411,7 @@ public abstract class PatchCell implements Cell {
 
     @Override
     public CellContainer convert() {
+<<<<<<< HEAD
         return new PatchCellContainer(
                 id,
                 parent,
@@ -425,6 +424,10 @@ public abstract class PatchCell implements Cell {
                 criticalVolume,
                 criticalHeight,
                 cycles);
+=======
+        return new PatchCellContainer(id, parent, pop, age, divisions, state,
+                volume, height, criticalVolume, criticalHeight, cycles);
+>>>>>>> 68cc635a4622b9ec38e23f8ac9f17c0ef91c50a1
     }
 
     /**

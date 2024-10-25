@@ -92,7 +92,11 @@ public final class PatchCellContainer implements CellContainer {
     public PatchCellContainer(int id, int parent, int pop, int age, int divisions,
                               CellState state, double volume, double height,
                               double criticalVolume, double criticalHeight, Bag cycles) {
+<<<<<<< HEAD
 >>>>>>> b06446fc (add cell cycles)
+=======
+>>>>>>> 68cc635a4622b9ec38e23f8ac9f17c0ef91c50a1
+>>>>>>> 1f1e395579f67b5f8ed4a7c997d5651a105a0fad
         this.id = id;
         this.parent = parent;
         this.pop = pop;
