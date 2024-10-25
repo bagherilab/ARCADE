@@ -110,10 +110,13 @@
     <component class="graph_sites_complex" id="OXYGEN_SOLUBILITY_TISSUE" value="0.00000131" units="fmol O2/(um^3 mmHg)" description="solubility of oxygen in tissue" />
 
     <!-- pulse component parameters -->
-    <component class="pulse" id="PULSE_INTERVAL" value="1440" unit="min" description="interval between pulses" />
+    <component class="pulse" id="PULSE_INTERVAL" value="60" unit="min" description="interval between pulses" />
     <component class="pulse" id="MEDIA_AMOUNT" value="2000" unit="um^3/um^2" description="media volume per area" />
-    <component class="dose" id="DOSE_DELAY" value="10080" unit="min" description="Amount of simulation time before does is introduced" />
-    
+
+    <!-- dose component parameters -->
+    <component class="dose" id="DOSE_DELAY" value="20" unit="min" description="Amount of simulation time before does is introduced" />
+    <component class="dose" id="DOSE_DURATION" value="60" unit="min" description="Length of drug exposure" />
+
     <!-- degrade component parameters -->
     <component class="degrade" id="DEGRADATION_INTERVAL" value="1" units="min" description="interval between degradation steps" />
     <component class="degrade" id="DEGRADATION_RATE" value="0.04" units="um/hr" description="rate of wall thickness degradation" />

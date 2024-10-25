@@ -137,7 +137,6 @@ public class PatchComponentPulse implements Component {
         Lattice lattice = sim.getLattice(layerSplit[1]);
         Operation generator = lattice.getOperation(Category.GENERATOR);
         Component component = sim.getComponent(layerSplit[0]);
-
         if (!(component instanceof PatchComponentSitesSource)) {
             return;
         }

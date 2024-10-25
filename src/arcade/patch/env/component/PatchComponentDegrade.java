@@ -75,7 +75,6 @@ public class PatchComponentDegrade implements Component {
     @Override
     public void register(Simulation sim, String layer) {
         Component component = sim.getComponent(layer);
-
         if (!(component instanceof PatchComponentSitesGraph)) {
             return;
         }

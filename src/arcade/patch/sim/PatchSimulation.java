@@ -309,7 +309,6 @@ public abstract class PatchSimulation extends SimState implements Simulation {
         for (String componentKey : series.components.keySet()) {
             MiniBox componentParameters = series.components.get(componentKey);
             String componentClass = componentParameters.get("CLASS");
-            System.out.println("Component class: " + componentClass + " " + componentKey + " " + componentParameters);
             Component component = makeComponent(componentClass, componentParameters);
 
             if (component == null) {

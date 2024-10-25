@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import sim.engine.Schedule;
 import sim.engine.SimState;
 import arcade.core.env.component.Component;
+import arcade.core.env.lattice.Lattice;
+import arcade.core.env.operation.Operation;
 import arcade.core.sim.Series;
 import arcade.core.sim.Simulation;
 import arcade.core.util.MiniBox;
+import arcade.patch.env.operation.PatchOperationGenerator;
 import arcade.patch.sim.PatchSeries;
 import static arcade.patch.env.component.PatchComponentSites.SiteLayer;
+import static arcade.patch.util.PatchEnums.Category;
 import static arcade.patch.util.PatchEnums.Ordering;
 
 public class PatchComponentDose implements Component {
@@ -21,6 +25,7 @@ public class PatchComponentDose implements Component {
     private final double latticePatchVolume;
     private final double latticePatchArea;
     private final double doseDelay;
+    private final double doseDuration;
 
     public PatchComponentDose(Series series, MiniBox parameters) {
         layers = new ArrayList<>();
@@ -28,16 +33,17 @@ public class PatchComponentDose implements Component {
         latticeLength = series.length;
         latticeWidth = series.width;
         latticeHeight = series.height;
-        
+
         // Set loaded parameters.
         mediaAmount = parameters.getDouble("MEDIA_AMOUNT");
-        DOSE_DELAY = parameters.getDouble("DOSE_DELAY");
-        
+        doseDelay = parameters.getDouble("DOSE_DELAY");
+        doseDuration = parameters.getDouble("DOSE_DURATION");
+
         // Set patch parameters.
         MiniBox patch = ((PatchSeries) series).patch;
         latticePatchVolume = patch.getDouble("LATTICE_VOLUME");
         latticePatchArea = patch.getDouble("LATTICE_AREA");
-        
+
         mediaVolume = latticePatchArea * latticeLength * latticeWidth * mediaAmount;
     }
 
@@ -51,16 +57,15 @@ public class PatchComponentDose implements Component {
         DoseLayer(String name, SiteLayer siteLayer, PatchOperationGenerator generator) {
             this.name = name;
             this.siteLayer = siteLayer;
-            this.current = generator.latticeCurrent;
-            this.initialConcentration = generator.concentration;
-            this.currentAmount = 0;
+            current = generator.latticeCurrent;
+            initialConcentration = generator.concentration;
+            currentAmount = 0;
         }
     }
 
     @Override
     public void schedule(Schedule schedule) {
-        schedule.scheduleOnce(this, Ordering.FIRST.ordinal() - 2);
-        schedule.scheduleOnce(this, Ordering.FIRST_COMPONENT.ordinal(), DOSE_DELAY);
+        schedule.scheduleOnce(doseDelay, Ordering.FIRST_COMPONENT.ordinal() - 1, this);
     }
 
     @Override
@@ -69,20 +74,21 @@ public class PatchComponentDose implements Component {
         Lattice lattice = sim.getLattice(layerSplit[1]);
         Operation generator = lattice.getOperation(Category.GENERATOR);
         Component component = sim.getComponent(layerSplit[0]);
-        
+
         if (!(component instanceof PatchComponentSitesSource)) {
             return;
         }
-        
+
         PatchComponentSitesSource sites = (PatchComponentSitesSource) component;
-        SiteLayer siteLayer = sites.layers.stream()
-                .filter(sl -> sl.name.equalsIgnoreCase(layerSplit[1]))
-                .findFirst()
-                .orElse(null);
-        
+        SiteLayer siteLayer =
+                sites.layers.stream()
+                        .filter(sl -> sl.name.equalsIgnoreCase(layerSplit[1]))
+                        .findFirst()
+                        .orElse(null);
+
         if (siteLayer != null) {
-            DoseLayer doseLayer = new DoseLayer(layer, siteLayer, 
-                (PatchOperationGenerator) generator);
+            DoseLayer doseLayer =
+                    new DoseLayer(layer, siteLayer, (PatchOperationGenerator) generator);
             layers.add(doseLayer);
         }
     }
@@ -94,18 +100,22 @@ public class PatchComponentDose implements Component {
             for (int k = 0; k < latticeHeight; k++) {
                 for (int i = 0; i < latticeLength; i++) {
                     for (int j = 0; j < latticeWidth; j++) {
-                        delta += latticePatchVolume * (layer.current[k][i][j] - layer.siteLayer.concentration);
+                        delta +=
+                                latticePatchVolume
+                                        * (layer.current[k][i][j] - layer.siteLayer.concentration);
                     }
                 }
             }
-            
             layer.currentAmount = Math.max(0, layer.currentAmount - delta);
             layer.siteLayer.concentration = layer.currentAmount / mediaVolume;
-            
-            if (simstate.schedule.getTime() >= DOSE_DELAY) {
-                layer.currentAmount = layer.initialConcentration * mediaVolume;
-                layer.siteLayer.concentration = layer.initialConcentration;
-            }
+
+            // System.out.print(simstate.schedule.getTime());
+            // System.out.print((doseDelay + doseDuration));
+            // if (simstate.schedule.getTime() >= (doseDelay + doseDuration)) {
+            //     System.out.println("Dose Ends");
+            //     layer.currentAmount = layer.initialConcentration * mediaVolume;
+            //     layer.siteLayer.concentration = layer.initialConcentration;
+            // }
         }
     }
 }

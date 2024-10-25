@@ -41,7 +41,6 @@ public class PatchProcessChemotherapySimple extends PatchProcessChemotherapy {
         double drugGrad = (extAmt / location.getVolume()) - (drugInt / volume);
         drugGrad *= drugGrad < 1E-10 ? 0 : 1;
         double drugUptake = drugUptakeRate * drugGrad * surfaceArea;
-        // System.out.println("drugInt: " + drugInt + " drugExt: " + drugExt);
         drugInt += drugUptake;
 
         // If drug concentration exceeds kill threshold kill cells with probability based on drug
