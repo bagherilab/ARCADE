@@ -15,6 +15,7 @@ import arcade.patch.env.component.PatchComponentRemodel;
 import arcade.patch.env.component.PatchComponentSitesGraphRect;
 import arcade.patch.env.component.PatchComponentSitesPatternRect;
 import arcade.patch.env.component.PatchComponentSitesSource;
+import arcade.patch.env.component.PatchComponentDose;
 import arcade.patch.env.lattice.PatchLatticeFactory;
 import arcade.patch.env.lattice.PatchLatticeFactoryRect;
 import arcade.patch.env.location.PatchLocationFactory;
@@ -82,6 +83,8 @@ public final class PatchSimulationRect extends PatchSimulation {
                 return new PatchComponentDegrade(series, parameters);
             case "remodel":
                 return new PatchComponentRemodel(series, parameters);
+            case "dose":
+                return new PatchComponentDose(series, parameters);
             default:
                 return null;
         }
