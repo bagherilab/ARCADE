@@ -12,5 +12,6 @@ docs/javadoc
 working/
 .DS_Store
 MANIFEST.MF
+setup/*.xml
 setup/setupWTvariants/
 setup/*
