@@ -1,7 +1,7 @@
 package arcade.patch.agent.module;
 
-import sim.util.Bag;
 import sim.engine.SimState;
+import sim.util.Bag;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Simulation;
@@ -59,6 +59,7 @@ public class PatchModuleProliferation extends PatchModule {
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
+
         SimState simstate = (SimState) sim;
         Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
         double totalVolume = PatchCell.calculateTotalVolume(bag);

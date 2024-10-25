@@ -2,7 +2,6 @@ package arcade.patch.sim.output;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import sim.util.Bag;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -11,6 +10,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import sim.util.Bag;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.LocationContainer;
 import arcade.core.sim.output.OutputDeserializer;

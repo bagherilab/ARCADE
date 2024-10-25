@@ -1,5 +1,5 @@
 <set prefix="SYNTHESIS_DURATION_">
-    <series name="100" start="0" end="0" ticks="43200" interval="43200" radius="10" margin="2" depth="1" >
+    <series name="0" start="0" end="0" ticks="43200" interval="43200" radius="10" margin="2" depth="1" >
         <patch>
             <patch.parameter id="GEOMETRY" value="hex" />
         </patch>
@@ -8,7 +8,7 @@
                 <population id="cancerous" init="7" class="cancer">
                     <population.process id="METABOLISM" version="complex" />
                     <population.process id="SIGNALING" version="complex"  />
-                    <population.parameter id="proliferation/SYNTHESIS_DURATION" value="100" />
+                    <population.parameter id="proliferation/SYNTHESIS_DURATION" value="637" />
                 </population>
             </populations>
         </agents>

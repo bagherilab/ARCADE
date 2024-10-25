@@ -126,9 +126,9 @@ public abstract class PatchCell implements Cell {
 
     /** Cell population links. */
     final GrabBag links;
-    
-	/** List of cell cycle lengths (in minutes) */
-	private final Bag cycles = new Bag();
+
+    /** List of cell cycle lengths (in minutes) */
+    private final Bag cycles = new Bag();
 
     /**
      * Creates a {@code PatchCell} agent.
@@ -287,17 +287,18 @@ public abstract class PatchCell implements Cell {
      *
      * @param energy the target energy level
      */
-
     public void setEnergy(double energy) {
         this.energy = energy;
     }
-    public void setEnergy(double energy) { this.energy = energy; }
 
-	/**
-	 * Adds a completed cell cycle length to the list of lengths.
-	 * @param val  the cell cycle length
-	 */
-	public void addCycle(double val) { cycles.add(val); }
+    /**
+     * Adds a completed cell cycle length to the list of lengths.
+     *
+     * @param val the cell cycle length
+     */
+    public void addCycle(double val) {
+        cycles.add(val);
+    }
 
     @Override
     public void stop() {
@@ -411,7 +412,6 @@ public abstract class PatchCell implements Cell {
 
     @Override
     public CellContainer convert() {
-<<<<<<< HEAD
         return new PatchCellContainer(
                 id,
                 parent,
@@ -424,10 +424,6 @@ public abstract class PatchCell implements Cell {
                 criticalVolume,
                 criticalHeight,
                 cycles);
-=======
-        return new PatchCellContainer(id, parent, pop, age, divisions, state,
-                volume, height, criticalVolume, criticalHeight, cycles);
->>>>>>> 68cc635a4622b9ec38e23f8ac9f17c0ef91c50a1
     }
 
     /**

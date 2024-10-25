@@ -151,7 +151,7 @@ public final class PatchOutputSerializer {
                 cyclesArray.add(cycleDuration); // Add each cycle duration to the JsonArray
             }
             json.add("cycles", cyclesArray); // Add the cycles array to the final JSON object
-            
+
             return json;
         }
     }
