@@ -9,6 +9,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.Distribution;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
@@ -16,60 +17,60 @@ import static arcade.potts.util.PottsEnums.State;
 
 /**
  * Implementation of {@link CellFactory} for {@link PottsCell} agents.
- * <p>
- * For a given {@link Series}, the factory parses out parameter values into a
- * series of maps from population to the parameter values. These maps are then
- * combined with a {@link PottsCellContainer} to instantiate a {@link PottsCell}
- * agent.
+ *
+ * <p>For a given {@link Series}, the factory parses out parameter values into a series of maps from
+ * population to the parameter values. These maps are then combined with a {@link
+ * PottsCellContainer} to instantiate a {@link PottsCell} agent.
  */
-
 public final class PottsCellFactory implements CellFactory {
     /** Random number generator instance. */
     MersenneTwisterFast random;
-    
+
     /** Map of population to critical volumes. */
     HashMap<Integer, Distribution> popToCriticalVolumes;
-    
+
     /** Map of population to critical heights. */
     HashMap<Integer, Distribution> popToCriticalHeights;
-    
+
     /** Map of population to parameters. */
     HashMap<Integer, MiniBox> popToParameters;
-    
+
+    /** Map of population to linked populations. */
+    HashMap<Integer, GrabBag> popToLinks;
+
     /** Map of population to number of regions. */
     HashMap<Integer, Boolean> popToRegions;
-    
+
     /** Map of population to region critical volumes. */
     HashMap<Integer, EnumMap<Region, Distribution>> popToCriticalRegionVolumes;
-    
+
     /** Map of population to region critical heights. */
     HashMap<Integer, EnumMap<Region, Distribution>> popToCriticalRegionHeights;
-    
+
     /** Map of population to list of ids. */
     public final HashMap<Integer, HashSet<Integer>> popToIDs;
-    
+
     /** Map of id to cell. */
     public final HashMap<Integer, PottsCellContainer> cells;
-    
-    /**
-     * Creates a factory for making {@link PottsCell} instances.
-     */
+
+    /** Creates a factory for making {@link PottsCell} instances. */
     public PottsCellFactory() {
         cells = new HashMap<>();
         popToCriticalVolumes = new HashMap<>();
         popToCriticalHeights = new HashMap<>();
         popToParameters = new HashMap<>();
+        popToLinks = new HashMap<>();
         popToRegions = new HashMap<>();
         popToCriticalRegionVolumes = new HashMap<>();
         popToCriticalRegionHeights = new HashMap<>();
         popToIDs = new HashMap<>();
     }
-    
+
     /**
      * {@inheritDoc}
-     * <p>
-     * Regardless of loader, the population settings are parsed to get critical,
-     * values used for instantiating cells.
+     *
+     * <p>Regardless of loader, the population settings are parsed to get critical, values used for
+     * instantiating cells.
      */
     @Override
     public void initialize(Series series, MersenneTwisterFast random) {
@@ -81,19 +82,18 @@ public final class PottsCellFactory implements CellFactory {
             createCells(series);
         }
     }
-    
+
     /**
      * {@inheritDoc}
-     * <p>
-     * Population sizes are determined from the given series. The list of loaded
-     * containers is filtered by population code and population size so that
-     * extra containers are discarded.
+     *
+     * <p>Population sizes are determined from the given series. The list of loaded containers is
+     * filtered by population code and population size so that extra containers are discarded.
      */
     @Override
     public void loadCells(Series series) {
         // Load cells.
         ArrayList<CellContainer> containers = series.loader.loadCells();
-        
+
         // Population sizes.
         HashMap<Integer, Integer> popToSize = new HashMap<>();
         for (MiniBox population : series.populations.values()) {
@@ -101,7 +101,7 @@ public final class PottsCellFactory implements CellFactory {
             int pop = population.getInt("CODE");
             popToSize.put(pop, n);
         }
-        
+
         // Map loaded container to factory.
         for (CellContainer container : containers) {
             PottsCellContainer cellContainer = (PottsCellContainer) container;
@@ -112,124 +112,148 @@ public final class PottsCellFactory implements CellFactory {
             }
         }
     }
-    
+
     /**
      * {@inheritDoc}
-     * <p>
-     * For each population specified in the given series, containers are created
-     * until the population size is met. Containers are assigned regions if they
-     * exist.
+     *
+     * <p>For each population specified in the given series, containers are created until the
+     * population size is met. Containers are assigned regions if they exist.
      */
     @Override
     public void createCells(Series series) {
         int id = 1;
-        
+
         // Create containers for each population.
         for (MiniBox population : series.populations.values()) {
             int n = population.getInt("INIT");
             int pop = population.getInt("CODE");
             boolean regions = popToRegions.get(pop);
-            
+
             Distribution volumes = popToCriticalVolumes.get(pop);
             Distribution heights = popToCriticalHeights.get(pop);
             EnumMap<Region, Distribution> regionVolumes = popToCriticalRegionVolumes.get(pop);
             EnumMap<Region, Distribution> regionHeights = popToCriticalRegionHeights.get(pop);
-            
+
             for (int i = 0; i < n; i++) {
                 double criticalVolume = volumes.nextDouble();
                 double criticalHeight = heights.nextDouble();
                 EnumMap<Region, Double> criticalRegionVolumes = null;
                 EnumMap<Region, Double> criticalRegionHeights = null;
-                
+
                 int voxels = (int) Math.round(criticalVolume);
                 EnumMap<Region, Integer> regionVoxels = null;
-                
+
                 if (regions) {
                     regionVoxels = new EnumMap<>(Region.class);
                     criticalRegionVolumes = new EnumMap<>(Region.class);
                     criticalRegionHeights = new EnumMap<>(Region.class);
-                    
+
                     for (Region region : Region.values()) {
                         if (region == Region.UNDEFINED) {
                             continue;
                         }
-                        
+
                         double criticalRegionVolume = regionVolumes.get(region).nextDouble();
                         double criticalRegionHeight = regionHeights.get(region).nextDouble();
-                        
+
                         if (region == Region.DEFAULT) {
                             criticalRegionVolume = criticalVolume;
                             criticalRegionHeight = criticalHeight;
                         }
-                        
+
                         criticalRegionVolumes.put(region, criticalRegionVolume);
                         criticalRegionHeights.put(region, criticalRegionHeight);
                         regionVoxels.put(region, (int) Math.round(criticalRegionVolume));
                     }
                 }
-                
-                PottsCellContainer container = new PottsCellContainer(id, 0, pop, 0, 0,
-                        State.PROLIFERATIVE, Phase.PROLIFERATIVE_G1, voxels, regionVoxels,
-                        criticalVolume, criticalHeight,
-                        criticalRegionVolumes, criticalRegionHeights);
+
+                PottsCellContainer container =
+                        new PottsCellContainer(
+                                id,
+                                0,
+                                pop,
+                                0,
+                                0,
+                                State.PROLIFERATIVE,
+                                Phase.PROLIFERATIVE_G1,
+                                voxels,
+                                regionVoxels,
+                                criticalVolume,
+                                criticalHeight,
+                                criticalRegionVolumes,
+                                criticalRegionHeights);
                 cells.put(id, container);
                 popToIDs.get(container.pop).add(container.id);
                 id++;
             }
         }
     }
-    
+
     /**
      * Parses population settings into maps from population to parameter value.
      *
-     * @param series  the simulation series
+     * @param series the simulation series
      */
     void parseValues(Series series) {
         Set<String> keySet = series.populations.keySet();
-        
+
         for (String key : keySet) {
             MiniBox population = series.populations.get(key);
             int pop = population.getInt("CODE");
             popToIDs.put(pop, new HashSet<>());
             popToParameters.put(pop, series.populations.get(key));
-            
+
             double muVolume = population.getDouble("CRITICAL_VOLUME_MEAN");
             double sigmaVolume = population.getDouble("CRITICAL_VOLUME_STDEV");
             popToCriticalVolumes.put(pop, new Distribution(muVolume, sigmaVolume, random));
-            
+
             double muHeight = population.getDouble("CRITICAL_HEIGHT_MEAN");
             double sigmaHeight = population.getDouble("CRITICAL_HEIGHT_STDEV");
             popToCriticalHeights.put(pop, new Distribution(muHeight, sigmaHeight, random));
-            
-            popToRegions.put(pop, false);
-            
+
+            // Get population links.
+            MiniBox linksBox = population.filter("(LINK)");
+            ArrayList<String> linkKeys = linksBox.getKeys();
+            GrabBag links = null;
+
+            if (linkKeys.size() > 0) {
+                links = new GrabBag();
+                for (String linkKey : linkKeys) {
+                    int popLink = series.populations.get(linkKey).getInt("CODE");
+                    links.add(popLink, linksBox.getDouble(linkKey));
+                }
+            }
+
+            popToLinks.put(pop, links);
+
             // Get regions (if they exist).
+            popToRegions.put(pop, false);
             MiniBox regionBox = population.filter("(REGION)");
             ArrayList<String> regionKeys = regionBox.getKeys();
-            
+
             if (regionKeys.size() > 0) {
                 popToRegions.put(pop, true);
                 EnumMap<Region, Distribution> criticalRegionVolumes = new EnumMap<>(Region.class);
                 EnumMap<Region, Distribution> criticalRegionHeights = new EnumMap<>(Region.class);
-                
+
                 for (String regionKey : regionKeys) {
                     Region region = Region.valueOf(regionKey);
-                    
+
                     double muVolumeRegion =
                             population.getDouble("CRITICAL_VOLUME_MEAN_" + regionKey);
                     double sigmaVolumeRegion =
                             population.getDouble("CRITICAL_VOLUME_STDEV_" + regionKey);
-                    criticalRegionVolumes.put(region,
-                            new Distribution(muVolumeRegion, sigmaVolumeRegion, random));
-                    
+                    criticalRegionVolumes.put(
+                            region, new Distribution(muVolumeRegion, sigmaVolumeRegion, random));
+
                     double muHeightRegion =
                             population.getDouble("CRITICAL_HEIGHT_MEAN_" + regionKey);
                     double sigmaHeightRegion =
                             population.getDouble("CRITICAL_HEIGHT_STDEV_" + regionKey);
-                    criticalRegionHeights.put(region,
-                            new Distribution(muHeightRegion, sigmaHeightRegion, random));
+                    criticalRegionHeights.put(
+                            region, new Distribution(muHeightRegion, sigmaHeightRegion, random));
                 }
-                
+
                 popToCriticalRegionVolumes.put(pop, criticalRegionVolumes);
                 popToCriticalRegionHeights.put(pop, criticalRegionHeights);
             }

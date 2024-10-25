@@ -3,41 +3,49 @@ package arcade.patch.agent.cell;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 
-/**
- * Extension of {@link PatchCell} for healthy tissue cells.
- */
-
+/** Extension of {@link PatchCell} for healthy tissue cells. */
 public class PatchCellTissue extends PatchCell {
     /**
      * Creates a tissue {@code PatchCell} agent.
      *
-     * @param id  the cell ID
-     * @param parent  the parent ID
-     * @param pop  the cell population index
-     * @param state  the cell state
-     * @param age  the cell age
-     * @param divisions  the number of cell divisions
-     * @param location  the {@link Location} of the cell
-     * @param parameters  the dictionary of parameters
-     * @param volume  the cell volume
-     * @param height  the cell height
-     * @param criticalVolume  the critical cell volume
-     * @param criticalHeight  the critical cell height
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
      */
-    public PatchCellTissue(int id, int parent, int pop, CellState state, int age, int divisions,
-                           Location location, MiniBox parameters, double volume, double height,
-                           double criticalVolume, double criticalHeight) {
-        super(id, parent, pop, state, age, divisions, location, parameters,
-                volume, height, criticalVolume, criticalHeight);
+    public PatchCellTissue(PatchCellContainer container, Location location, MiniBox parameters) {
+        this(container, location, parameters, null);
     }
-    
+
+    /**
+     * Creates a tissue {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellTissue(
+            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+        super(container, location, parameters, links);
+    }
+
     @Override
-    public PatchCell make(int newID, CellState newState, Location newLocation,
-                          MersenneTwisterFast random) {
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions--;
-        return new PatchCellTissue(newID, id, pop, newState, age, divisions, newLocation,
-                parameters, volume, height, criticalVolume, criticalHeight);
+        int newPop = links == null ? pop : links.next(random);
+        return new PatchCellContainer(
+                newID,
+                id,
+                newPop,
+                age,
+                divisions,
+                newState,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
     }
 }

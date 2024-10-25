@@ -20,7 +20,7 @@ import arcade.patch.env.location.PatchLocationContainer;
 import arcade.patch.sim.input.PatchInputBuilder;
 import arcade.patch.sim.output.PatchOutputLoader;
 import arcade.patch.sim.output.PatchOutputSaver;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.patch.PatchARCADETestUtilities.loadCellsFile;
 import static arcade.patch.PatchARCADETestUtilities.loadLocationsFile;
@@ -39,8 +39,8 @@ public class PatchARCADETest {
         
         File mainOutput = new File(folder.getRoot() + "/" + series + ".json");
         assertTrue(mainOutput.exists());
-        
-        String[] timepoints = new String[] { "0000_000000", "0000_000001" };
+
+        String[] timepoints = new String[] {"0000_000000", "0000_000001"};
         for (String tp : timepoints) {
             File cellOutput = new File(folder.getRoot() + "/" + series + "_" + tp + ".CELLS.json");
             assertTrue(cellOutput.exists());
@@ -48,7 +48,7 @@ public class PatchARCADETest {
             assertTrue(locationOutput.exists());
         }
     }
-    
+
     @Test
     public void main_withVis_savesNothing() throws Exception {
         String series = "default";
@@ -61,8 +61,8 @@ public class PatchARCADETest {
         
         File mainOutput = new File(folder.getRoot() + "/" + series + ".json");
         assertFalse(mainOutput.exists());
-        
-        String[] timepoints = new String[] { "0000_000000", "0000_000001" };
+
+        String[] timepoints = new String[] {"0000_000000", "0000_000001"};
         for (String tp : timepoints) {
             File cellOutput = new File(folder.getRoot() + "/" + series + "_" + tp + ".CELLS.json");
             assertFalse(cellOutput.exists());
@@ -70,30 +70,30 @@ public class PatchARCADETest {
             assertFalse(locationOutput.exists());
         }
     }
-    
+
     @Test
     public void getResource_requiredFiles_returnsResource() {
         PatchARCADE arcade = new PatchARCADE();
-        
+
         String parameterFile = arcade.getResource("parameter.patch.xml");
         assertNotNull(parameterFile);
-        
+
         String commandFile = arcade.getResource("command.patch.xml");
         assertNotNull(commandFile);
     }
-    
+
     @Test
     public void getBuilder_called_returnsBuilder() {
         PatchARCADE arcade = new PatchARCADE();
         assertTrue(arcade.getBuilder() instanceof PatchInputBuilder);
     }
-    
+
     @Test
     public void getLoader_called_returnsBuilder() {
         PatchARCADE arcade = new PatchARCADE();
         assertTrue(arcade.getLoader(mock(Series.class)) instanceof PatchOutputLoader);
     }
-    
+
     @Test
     public void getSaver_called_returnsBuilder() {
         PatchARCADE arcade = new PatchARCADE();

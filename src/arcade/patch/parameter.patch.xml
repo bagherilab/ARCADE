@@ -2,12 +2,13 @@
     <!-- default parameters for series -->
     <default id="RADIUS" value="1" />
     <default id="DEPTH" value="1" />
-    
+
     <!-- default parameters for patch -->
     <patch id="GEOMETRY" value="hex" description="Patch geometry (hex or rect)" />
-    
+    <patch id="INITIALIZATION" value="outward" description="Patch initialization (inward or outward or random)" />
+
     <!-- POPULATIONS ======================================================= -->
-    
+
     <!-- default parameters for populations -->
     <population id="CELL_VOLUME_MEAN" value="2250.0" unit="um^3" description="cell volume distribution average" />
     <population id="CELL_VOLUME_STDEV" value="200.0" unit="um^3" description="cell volume distribution standard deviation" />
@@ -22,16 +23,16 @@
     <population id="NECROTIC_FRACTION" value="0.5" description="fraction of necrotic cells that become apoptotic" />
     <population id="ENERGY_THRESHOLD" value="1000.0" description="maximum energy deficit before necrosis" />
     <population id="SYMMETRIC_FRACTION" value="0.05" description="fraction of divisions that are symmetric" />
-    
+
     <!-- proliferation module parameters -->
     <population.module module="proliferation" id="SYNTHESIS_DURATION" value="637" units="min" description="time required for DNA synthesis" />
-    
+
     <!-- migration module parameters -->
     <population.module module="migration" id="MIGRATION_RATE" value="0.24" unit="um/min" description="cell migration rate" />
-    
+
     <!-- apoptosis module parameters -->
     <population.module module="apoptosis" id="DEATH_DURATION" value="1080" unit="min" description="time required for cell death" />
-    
+
     <!-- metabolism process parameters -->
     <population.process process="metabolism" id="BASAL_ENERGY" value="0.001" unit="fmol ATP/um^3 cell/min" description="basal energy requirement" />
     <population.process process="metabolism" id="PROLIFERATION_ENERGY" value="0.001" unit="fmol ATP/um^3 cell/min" description="additional energy required for proliferation" />
@@ -50,67 +51,67 @@
     <population.process process="metabolism" id="CONSTANT_GLUCOSE_UPTAKE_RATE" value="929.88" unit="fmol glucose/min/M glucose" description="constant glucose uptake rate" />
     <population.process process="metabolism" id="CONSTANT_ATP_PRODUCTION_RATE" value="4.9817" unit="fmol ATP/cell/min" description="constant ATP production rate" />
     <population.process process="metabolism" id="CONSTANT_VOLUME_GROWTH_RATE" value="2.819" unit="um^3/min" description="constant volume growth rate"/>
-    
+
     <!-- signaling process parameters -->
     <population.process process="signaling" id="MIGRATORY_THRESHOLD" value="10" description="threshold fold change in PLCg for migration" />
     <population.process process="signaling" id="MIGRATORY_PROBABILITY" value="0.05" description="probability of migration instead of proliferation" />
-    
+
     <!-- LAYERS ============================================================ -->
-    
+
     <!-- default parameters for layers -->
     <layer id="INITIAL_CONCENTRATION" value="0" units="(variable)" description="initial layer concentration" />
-    
+
     <!-- diffuser operation parameters -->
     <layer.operation operation="diffuser" id="DIFFUSIVITY" value="1.0" units="um^2/s" description="diffusivity of molecule" />
-    
+
     <!-- generator operation parameters -->
     <layer.operation operation="generator" id="CONCENTRATION" value="1.0" units="(variable)" description="maximum concentration" />
     <layer.operation operation="generator" id="PERMEABILITY" value="100.0" units="(variable)" description="molecule permeability" />
-     
+
     <!-- ACTIONS =========================================================== -->
-    
+
     <!-- insert action parameters -->
     <action class="insert" id="TIME_DELAY" value="0" units="min" description="time delay before calling the action" />
     <action class="insert" id="INSERT_RADIUS" value="1" description="grid radius that cells are inserted into" />
     <action class="insert" id="INSERT_NUMBER" value="1" description="number of cells to insert from each population" />
-    
+
     <!-- remove action parameters -->
     <action class="remove" id="TIME_DELAY" value="0" units="min" description="time delay before calling the action" />
     <action class="remove" id="REMOVE_RADIUS" value="1" description="grid radius that cells are removed from" />
-    
+
     <!-- convert action parameters -->
     <action class="convert" id="TIME_DELAY" value="0" units="min" description="time delay before calling the action" />
-     
+
     <!-- COMPONENTS ======================================================== -->
-     
+
     <!-- source sites component parameters -->
     <component class="source_sites" id="X_SPACING" value="*" description="spacing of sources in x direction" />
     <component class="source_sites" id="Y_SPACING" value="*" description="spacing of sources in y direction" />
     <component class="source_sites" id="Z_SPACING" value="*" description="spacing of sources in z direction" />
     <component class="source_sites" id="DAMAGE_SCALING" value="0" description="source site damage scaling" />
-    
+
     <!-- pattern sites component parameters -->
     <component class="pattern_sites" id="RELATIVE_FRACTION" value="1.0" description="relative contribution of hemodynamic factors" />
     <component class="pattern_sites" id="WEIGHT_GRADIENT" value="10" description="weight of gradient hemodynamic factor" />
     <component class="pattern_sites" id="WEIGHT_LOCAL" value="10" description="weight of local hemodynamic factor" />
     <component class="pattern_sites" id="WEIGHT_FLOW" value="10" description="weight of flow hemodynamic factor" />
     <component class="pattern_sites" id="DAMAGE_SCALING" value="0" description="pattern site damage scaling" />
-    
+
     <!-- graph site component parameters -->
     <component class="graph_sites_simple" id="GRAPH_LAYOUT" value="*" description="layout of graph sites" />
     <component class="graph_sites_complex" id="GRAPH_LAYOUT" value="*" description="layout of graph sites" />
     <component class="graph_sites_complex" id="OXYGEN_SOLUBILITY_PLASMA" value="0.00000138" units="fmol O2/(um^3 mmHg)" description="solubility of oxygen in plasma"/>
     <component class="graph_sites_complex" id="OXYGEN_SOLUBILITY_TISSUE" value="0.00000131" units="fmol O2/(um^3 mmHg)" description="solubility of oxygen in tissue" />
-    
+
     <!-- pulse component parameters -->
     <component class="pulse" id="PULSE_INTERVAL" value="1440" unit="min" description="interval between pulses" />
     <component class="pulse" id="MEDIA_AMOUNT" value="2000" unit="um^3/um^2" description="media volume per area" />
-    
+
     <!-- degrade component parameters -->
     <component class="degrade" id="DEGRADATION_INTERVAL" value="1" units="min" description="interval between degradation steps" />
     <component class="degrade" id="DEGRADATION_RATE" value="0.04" units="um/hr" description="rate of wall thickness degradation" />
     <component class="degrade" id="SHEAR_THRESHOLD" value="0.01" units="mmHg" description="shear threshold for vessel collapse" />
-    
+
     <component class="remodel" id="REMODELING_INTERVAL" value="60" units="min" description="interval between remodeling steps" />
     <component class="remodel" id="SCALE_SHEAR" value="0.01" description="shear stress scaling" />
     <component class="remodel" id="SCALE_CIRCUM" value="0.01" description="circumferential stress scaling" />

@@ -5,47 +5,49 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Extension of {@link PatchCellTissue} for cancerous tissue cells.
- * <p>
- * {@code PatchCellCancer} agents are modified from their superclass:
+ *
+ * <p>{@code PatchCellCancer} agents are modified from their superclass:
+ *
  * <ul>
- *     <li>If cell is quiescent, they may exit out of quiescence into undefined
- *     if there is space in their neighborhood</li>
+ *   <li>If cell is quiescent, they may exit out of quiescence into undefined if there is space in
+ *       their neighborhood
  * </ul>
  */
-
 public class PatchCellCancer extends PatchCellTissue {
     /**
-     * Creates a tissue {@code PatchCell} agent.
+     * Creates a cancer {@code PatchCell} agent.
      *
-     * @param id  the cell ID
-     * @param parent  the parent ID
-     * @param pop  the cell population index
-     * @param state  the cell state
-     * @param age  the cell age
-     * @param divisions  the number of cell divisions
-     * @param location  the {@link Location} of the cell
-     * @param parameters  the dictionary of parameters
-     * @param volume  the cell volume
-     * @param height  the cell height
-     * @param criticalVolume  the critical cell volume
-     * @param criticalHeight  the critical cell height
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
      */
-    public PatchCellCancer(int id, int parent, int pop, CellState state, int age, int divisions,
-                           Location location, MiniBox parameters, double volume, double height,
-                           double criticalVolume, double criticalHeight) {
-        super(id, parent, pop, state, age, divisions, location, parameters,
-                volume, height, criticalVolume, criticalHeight);
+    public PatchCellCancer(PatchCellContainer container, Location location, MiniBox parameters) {
+        this(container, location, parameters, null);
     }
-    
+
+    /**
+     * Creates a cancer {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellCancer(
+            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+        super(container, location, parameters, links);
+    }
+
     /**
      * {@inheritDoc}
-     * <p>
-     * Quiescent cells will check their neighborhood for free locations.
+     *
+     * <p>Quiescent cells will check their neighborhood for free locations.
      */
     @Override
     public void step(SimState simstate) {
@@ -54,22 +56,31 @@ public class PatchCellCancer extends PatchCellTissue {
         }
         super.step(simstate);
     }
-    
+
     @Override
-    public PatchCell make(int newID, CellState newState, Location newLocation,
-                          MersenneTwisterFast random) {
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions--;
-        return new PatchCellTissue(newID, id, pop, newState, age, divisions, newLocation,
-                parameters, volume, height, criticalVolume, criticalHeight);
+        int newPop = links == null ? pop : links.next(random);
+        return new PatchCellContainer(
+                newID,
+                id,
+                newPop,
+                age,
+                divisions,
+                newState,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
     }
-    
+
     /**
      * Checks neighborhood for free locations.
-     * <p>
-     * If there is at least one free location, cell state becomes undefined.
      *
-     * @param simstate  the MASON simulation state
-     * @param cell  the reference cell
+     * <p>If there is at least one free location, cell state becomes undefined.
+     *
+     * @param simstate the MASON simulation state
+     * @param cell the reference cell
      */
     private static void checkNeighborhood(SimState simstate, PatchCell cell) {
         Simulation sim = (Simulation) simstate;
