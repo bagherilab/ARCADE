@@ -9,6 +9,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.Distribution;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
@@ -34,6 +35,9 @@ public final class PottsCellFactory implements CellFactory {
     /** Map of population to parameters. */
     HashMap<Integer, MiniBox> popToParameters;
 
+    /** Map of population to linked populations. */
+    HashMap<Integer, GrabBag> popToLinks;
+
     /** Map of population to number of regions. */
     HashMap<Integer, Boolean> popToRegions;
 
@@ -55,6 +59,7 @@ public final class PottsCellFactory implements CellFactory {
         popToCriticalVolumes = new HashMap<>();
         popToCriticalHeights = new HashMap<>();
         popToParameters = new HashMap<>();
+        popToLinks = new HashMap<>();
         popToRegions = new HashMap<>();
         popToCriticalRegionVolumes = new HashMap<>();
         popToCriticalRegionHeights = new HashMap<>();
@@ -206,9 +211,23 @@ public final class PottsCellFactory implements CellFactory {
             double sigmaHeight = population.getDouble("CRITICAL_HEIGHT_STDEV");
             popToCriticalHeights.put(pop, new Distribution(muHeight, sigmaHeight, random));
 
-            popToRegions.put(pop, false);
+            // Get population links.
+            MiniBox linksBox = population.filter("(LINK)");
+            ArrayList<String> linkKeys = linksBox.getKeys();
+            GrabBag links = null;
+
+            if (linkKeys.size() > 0) {
+                links = new GrabBag();
+                for (String linkKey : linkKeys) {
+                    int popLink = series.populations.get(linkKey).getInt("CODE");
+                    links.add(popLink, linksBox.getDouble(linkKey));
+                }
+            }
+
+            popToLinks.put(pop, links);
 
             // Get regions (if they exist).
+            popToRegions.put(pop, false);
             MiniBox regionBox = population.filter("(REGION)");
             ArrayList<String> regionKeys = regionBox.getKeys();
 

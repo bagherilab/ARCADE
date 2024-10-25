@@ -5,6 +5,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -27,7 +28,20 @@ public class PatchCellCancer extends PatchCellTissue {
      * @param parameters the dictionary of parameters
      */
     public PatchCellCancer(PatchCellContainer container, Location location, MiniBox parameters) {
-        super(container, location, parameters);
+        this(container, location, parameters, null);
+    }
+
+    /**
+     * Creates a cancer {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellCancer(
+            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+        super(container, location, parameters, links);
     }
 
     /**
@@ -46,10 +60,11 @@ public class PatchCellCancer extends PatchCellTissue {
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions--;
+        int newPop = links == null ? pop : links.next(random);
         return new PatchCellContainer(
                 newID,
                 id,
-                pop,
+                newPop,
                 age,
                 divisions,
                 newState,

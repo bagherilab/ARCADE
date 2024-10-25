@@ -391,6 +391,34 @@ public class PatchSeriesTest {
     }
 
     @Test
+    public void updatePopulation_withLinks_setsTags() {
+        double weight11 = randomDoubleBetween(1, 100);
+        double weight12 = randomDoubleBetween(1, 100);
+        double weight21 = randomDoubleBetween(1, 100);
+
+        Box[] boxes = new Box[] {new Box(), new Box()};
+
+        boxes[0].add("id", POPULATION_ID_1);
+        boxes[0].addAtt(POPULATION_ID_1, "weight", "" + weight11);
+        boxes[0].addTag(POPULATION_ID_1, "LINK");
+        boxes[0].addAtt(POPULATION_ID_2, "weight", "" + weight12);
+        boxes[0].addTag(POPULATION_ID_2, "LINK");
+
+        boxes[1].add("id", POPULATION_ID_2);
+        boxes[1].addAtt(POPULATION_ID_1, "weight", "" + weight21);
+        boxes[1].addTag(POPULATION_ID_1, "LINK");
+
+        PatchSeries series = makeSeriesForPopulation(boxes);
+
+        MiniBox box1 = series.populations.get(POPULATION_ID_1);
+        assertEquals(weight11, box1.getDouble("(LINK)" + TAG_SEPARATOR + POPULATION_ID_1));
+        assertEquals(weight12, box1.getDouble("(LINK)" + TAG_SEPARATOR + POPULATION_ID_2));
+
+        MiniBox box2 = series.populations.get(POPULATION_ID_2);
+        assertEquals(weight21, box2.getDouble("(LINK)" + TAG_SEPARATOR + POPULATION_ID_1));
+    }
+
+    @Test
     public void updatePopulation_withProcesses_setsTags() {
         String[] versions =
                 new String[] {
