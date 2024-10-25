@@ -146,7 +146,10 @@ public final class PatchOutputSerializer {
             json.add("criticals", criticals);
 
             // TODO: add cycles
+<<<<<<< HEAD
 
+=======
+>>>>>>> 68cc635a4622b9ec38e23f8ac9f17c0ef91c50a1
             JsonArray cyclesArray = new JsonArray();
             for (int i = 0; i < src.cycles.numObjs; i++) {
                 double cycleDuration = (double) src.cycles.get(i); // Cast each cycle to double

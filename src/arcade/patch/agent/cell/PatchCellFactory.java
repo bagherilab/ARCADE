@@ -178,6 +178,7 @@ public final class PatchCellFactory implements CellFactory {
         double volume = volumes.nextDouble();
         double height = heights.nextDouble();
         int age = ages.nextInt();
+<<<<<<< HEAD
 
         return new PatchCellContainer(
                 id,
@@ -191,6 +192,11 @@ public final class PatchCellFactory implements CellFactory {
                 volume,
                 height + compression,
                 new Bag());
+=======
+        
+        return new PatchCellContainer(id, 0, pop, age, divisions, State.UNDEFINED,
+                volume, height, volume, height + compression, new Bag());
+>>>>>>> 68cc635a4622b9ec38e23f8ac9f17c0ef91c50a1
     }
 
     /**

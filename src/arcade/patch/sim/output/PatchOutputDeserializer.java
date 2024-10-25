@@ -74,6 +74,7 @@ public final class PatchOutputDeserializer {
             JsonArray criticals = jsonObject.get("criticals").getAsJsonArray();
             double criticalVolume = criticals.get(0).getAsDouble();
             double criticalHeight = criticals.get(1).getAsDouble();
+<<<<<<< HEAD
 
             return new PatchCellContainer(
                     id,
@@ -87,6 +88,12 @@ public final class PatchOutputDeserializer {
                     criticalVolume,
                     criticalHeight,
                     cycles);
+=======
+            Bag cycles = context.deserialize(jsonObject.get("cycles"), Bag.class);
+            
+            return new PatchCellContainer(id, parent, pop, age, divisions,
+                    state, volume, height, criticalVolume, criticalHeight, cycles);
+>>>>>>> 68cc635a4622b9ec38e23f8ac9f17c0ef91c50a1
         }
     }
 
