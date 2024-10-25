@@ -1,6 +1,7 @@
 package arcade.potts.agent.module;
 
 import ec.util.MersenneTwisterFast;
+import arcade.core.agent.cell.CellContainer;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.potts.agent.cell.PottsCell;
@@ -101,7 +102,8 @@ public abstract class PottsModuleProliferation extends PottsModule {
 
         // Create and schedule new cell.
         int newID = sim.getID();
-        PottsCell newCell = (PottsCell) cell.make(newID, State.PROLIFERATIVE, newLocation, random);
+        CellContainer newContainer = cell.make(newID, State.PROLIFERATIVE, random);
+        PottsCell newCell = (PottsCell) newContainer.convert(sim.getCellFactory(), newLocation);
         sim.getGrid().addObject(newCell, null);
         potts.register(newCell);
         newCell.reset(potts.ids, potts.regions);

@@ -5,6 +5,7 @@ import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 
 /**
@@ -102,65 +103,20 @@ public final class PatchCellContainer implements CellContainer {
         // Get parameters for the cell population.
         MiniBox parameters = factory.popToParameters.get(pop);
 
+        // Get links for the cell population.
+        GrabBag links = factory.popToLinks.get(pop);
+
         // Make cell.
         switch (parameters.get("CLASS")) {
             default:
             case "tissue":
-                return new PatchCellTissue(
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+                return new PatchCellTissue(this, location, parameters, links);
             case "cancer":
-                return new PatchCellCancer(
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+                return new PatchCellCancer(this, location, parameters, links);
             case "cancer_stem":
-                return new PatchCellCancerStem(
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+                return new PatchCellCancerStem(this, location, parameters, links);
             case "random":
-                return new PatchCellRandom(
-                        id,
-                        parent,
-                        pop,
-                        state,
-                        age,
-                        divisions,
-                        location,
-                        parameters,
-                        volume,
-                        height,
-                        criticalVolume,
-                        criticalHeight);
+                return new PatchCellRandom(this, location, parameters, links);
         }
     }
 }

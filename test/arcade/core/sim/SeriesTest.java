@@ -11,10 +11,12 @@ import sim.engine.SimState;
 import sim.engine.Steppable;
 import arcade.core.agent.action.Action;
 import arcade.core.agent.cell.CellContainer;
+import arcade.core.agent.cell.CellFactory;
 import arcade.core.env.component.Component;
 import arcade.core.env.grid.Grid;
 import arcade.core.env.lattice.Lattice;
 import arcade.core.env.location.LocationContainer;
+import arcade.core.env.location.LocationFactory;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
 import arcade.core.vis.*;
@@ -137,6 +139,16 @@ public class SeriesTest {
 
         @Override
         public ArrayList<LocationContainer> getLocations() {
+            return null;
+        }
+
+        @Override
+        public CellFactory getCellFactory() {
+            return null;
+        }
+
+        @Override
+        public LocationFactory getLocationFactory() {
             return null;
         }
 

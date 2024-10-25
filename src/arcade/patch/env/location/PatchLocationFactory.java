@@ -1,6 +1,7 @@
 package arcade.patch.env.location;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import ec.util.MersenneTwisterFast;
@@ -63,7 +64,18 @@ public abstract class PatchLocationFactory implements LocationFactory {
         // Get all valid coordinates.
         ArrayList<Coordinate> coordinates = getCoordinates(patchSeries.radius, patchSeries.depth);
         Utilities.shuffleList(coordinates, random);
-        coordinates.sort(Comparator.comparingDouble(Coordinate::calculateDistance));
+
+        // Sort coordinates by distance if initialization scheme is not random.
+        // For "outward" initialization, locations with distances closer to the
+        // center are filled first. For "inward" initialization, locations with
+        // distances further from the center are filled first.
+        String initialization = patchSeries.patch.get("INITIALIZATION");
+        if (!initialization.equalsIgnoreCase("random")) {
+            coordinates.sort(Comparator.comparingDouble(Coordinate::calculateDistance));
+            if (initialization.equalsIgnoreCase("inward")) {
+                Collections.reverse(coordinates);
+            }
+        }
 
         // Create containers for each coordinate.
         int id = 1;

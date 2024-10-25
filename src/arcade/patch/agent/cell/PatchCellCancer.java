@@ -5,6 +5,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -20,47 +21,27 @@ import static arcade.patch.util.PatchEnums.State;
  */
 public class PatchCellCancer extends PatchCellTissue {
     /**
-     * Creates a tissue {@code PatchCell} agent.
+     * Creates a cancer {@code PatchCell} agent.
      *
-     * @param id the cell ID
-     * @param parent the parent ID
-     * @param pop the cell population index
-     * @param state the cell state
-     * @param age the cell age
-     * @param divisions the number of cell divisions
+     * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param volume the cell volume
-     * @param height the cell height
-     * @param criticalVolume the critical cell volume
-     * @param criticalHeight the critical cell height
+     */
+    public PatchCellCancer(PatchCellContainer container, Location location, MiniBox parameters) {
+        this(container, location, parameters, null);
+    }
+
+    /**
+     * Creates a cancer {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
      */
     public PatchCellCancer(
-            int id,
-            int parent,
-            int pop,
-            CellState state,
-            int age,
-            int divisions,
-            Location location,
-            MiniBox parameters,
-            double volume,
-            double height,
-            double criticalVolume,
-            double criticalHeight) {
-        super(
-                id,
-                parent,
-                pop,
-                state,
-                age,
-                divisions,
-                location,
-                parameters,
-                volume,
-                height,
-                criticalVolume,
-                criticalHeight);
+            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+        super(container, location, parameters, links);
     }
 
     /**
@@ -77,18 +58,16 @@ public class PatchCellCancer extends PatchCellTissue {
     }
 
     @Override
-    public PatchCell make(
-            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions--;
-        return new PatchCellTissue(
+        int newPop = links == null ? pop : links.next(random);
+        return new PatchCellContainer(
                 newID,
                 id,
-                pop,
-                newState,
+                newPop,
                 age,
                 divisions,
-                newLocation,
-                parameters,
+                newState,
                 volume,
                 height,
                 criticalVolume,

@@ -11,6 +11,7 @@ import sim.util.distribution.Uniform;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.patch.sim.PatchSeries;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
@@ -46,6 +47,9 @@ public final class PatchCellFactory implements CellFactory {
     /** Map of population to parameters. */
     HashMap<Integer, MiniBox> popToParameters;
 
+    /** Map of population to linked populations. */
+    HashMap<Integer, GrabBag> popToLinks;
+
     /** Map of population to ages [min]. */
     HashMap<Integer, Uniform> popToAges;
 
@@ -70,6 +74,7 @@ public final class PatchCellFactory implements CellFactory {
         popToCriticalVolumes = new HashMap<>();
         popToCriticalHeights = new HashMap<>();
         popToParameters = new HashMap<>();
+        popToLinks = new HashMap<>();
         popToAges = new HashMap<>();
         popToDivisions = new HashMap<>();
         popToCompression = new HashMap<>();
@@ -247,6 +252,21 @@ public final class PatchCellFactory implements CellFactory {
             }
 
             popToParameters.put(pop, parameters);
+
+            // Get population links.
+            MiniBox linksBox = population.filter("(LINK)");
+            ArrayList<String> linkKeys = linksBox.getKeys();
+            GrabBag links = null;
+
+            if (linkKeys.size() > 0) {
+                links = new GrabBag();
+                for (String linkKey : linkKeys) {
+                    int popLink = series.populations.get(linkKey).getInt("CODE");
+                    links.add(popLink, linksBox.getDouble(linkKey));
+                }
+            }
+
+            popToLinks.put(pop, links);
         }
     }
 }
