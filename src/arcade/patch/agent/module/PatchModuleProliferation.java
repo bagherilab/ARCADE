@@ -1,6 +1,7 @@
 package arcade.patch.agent.module;
 
 import sim.util.Bag;
+import sim.engine.SimState;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.sim.Simulation;
@@ -44,13 +45,12 @@ public class PatchModuleProliferation extends PatchModule {
      *
      * @param cell the {@link PatchCell} the module is associated with
      */
-    public PatchModuleProliferation(PatchCell cell) {
+    public PatchModuleProliferation(PatchCell cell, double start) {
         super(cell);
 
         // Calculate thresholds.
         targetVolume = 2 * cell.getCriticalVolume();
         maxHeight = cell.getCriticalHeight();
-
         // Set loaded parameters.
         MiniBox parameters = cell.getParameters();
         synthesisDuration = parameters.getInt("proliferation/SYNTHESIS_DURATION");
@@ -58,6 +58,7 @@ public class PatchModuleProliferation extends PatchModule {
 
     @Override
     public void step(MersenneTwisterFast random, Simulation sim) {
+        SimState simstate = (SimState) sim;
         Bag bag = ((PatchGrid) sim.getGrid()).getObjectsAtLocation(location);
         double totalVolume = PatchCell.calculateTotalVolume(bag);
         double currentHeight = totalVolume / location.getArea();
@@ -80,6 +81,7 @@ public class PatchModuleProliferation extends PatchModule {
                 if (ticker > synthesisDuration) {
                     // TODO: ADD CYCLE TIME TO TRACKER.
 
+                    cell.addCycle(simstate.schedule.getTime() - this.start);
                     // Reset current cell.
                     cell.setState(State.UNDEFINED);
 

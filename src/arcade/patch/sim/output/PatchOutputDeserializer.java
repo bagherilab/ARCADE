@@ -2,6 +2,7 @@ package arcade.patch.sim.output;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import sim.util.Bag;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -84,7 +85,8 @@ public final class PatchOutputDeserializer {
                     volume,
                     height,
                     criticalVolume,
-                    criticalHeight);
+                    criticalHeight,
+                    cycles);
         }
     }
 
