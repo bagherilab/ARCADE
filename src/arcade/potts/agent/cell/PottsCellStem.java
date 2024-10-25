@@ -55,6 +55,7 @@ public final class PottsCellStem extends PottsCell {
     @Override
     public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions++;
+
         int newPop = links == null ? pop : links.next(random);
 
         return new PottsCellContainer(

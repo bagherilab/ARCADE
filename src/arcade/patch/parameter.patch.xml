@@ -5,6 +5,7 @@
 
     <!-- default parameters for patch -->
     <patch id="GEOMETRY" value="hex" description="Patch geometry (hex or rect)" />
+    <patch id="INITIALIZATION" value="outward" description="Patch initialization (inward or outward or random)" />
 
     <!-- POPULATIONS ======================================================= -->
 

@@ -121,6 +121,7 @@ public class PatchCellRandomTest {
                         height,
                         criticalVolume,
                         criticalHeight);
+
         PatchCellRandom cell =
                 new PatchCellRandom(cellContainer, locationMock, parametersMock, links);
 
