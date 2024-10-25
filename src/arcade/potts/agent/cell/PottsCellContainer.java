@@ -17,52 +17,80 @@ import static arcade.potts.util.PottsEnums.Region;
  *
  * <p>The container can be instantiated for cells with or without regions. Cell parameters are drawn
  * from the associated {@link PottsCellFactory} instance for the given population.
+ *
+ * <p>The container can be instantiated for cells with or without regions. Cell parameters are drawn
+ * from the associated {@link PottsCellFactory} instance for the given population.
  */
 public final class PottsCellContainer implements CellContainer {
     /** Unique cell container ID. */
     public final int id;
 
+
     /** Cell parent ID. */
     public final int parent;
+
 
     /** Cell population index. */
     public final int pop;
 
+
     /** Cell age [ticks]. */
     public final int age;
+
 
     /** Number of divisions. */
     public final int divisions;
 
+
     /** Cell state. */
     public final CellState state;
+
 
     /** Cell phase. */
     public final Phase phase;
 
+
     /** Cell size [voxels]. */
     public final int voxels;
+
 
     /** Cell region sizes [voxels]. */
     public final EnumMap<Region, Integer> regionVoxels;
 
+
     /** Critical cell volume [voxels]. */
     public final double criticalVolume;
+
 
     /** Critical cell height [voxels]. */
     public final double criticalHeight;
 
+
     /** Critical region cell volumes [voxels]. */
     public final EnumMap<Region, Double> criticalRegionVolumes;
 
+
     /** Critical region cell heights [voxels]. */
     public final EnumMap<Region, Double> criticalRegionHeights;
+
 
     /**
      * Creates a {@code PottsCellContainer} instance.
      *
      * <p>The container does not have any regions.
      *
+     * <p>The container does not have any regions.
+     *
+     * @param id the cell ID
+     * @param parent the parent ID
+     * @param pop the cell population index
+     * @param age the cell age
+     * @param divisions the number of cell divisions
+     * @param state the cell state
+     * @param phase the cell phase
+     * @param voxels the cell size
+     * @param criticalVolume the critical volume
+     * @param criticalHeight the critical height
      * @param id the cell ID
      * @param parent the parent ID
      * @param pop the cell population index
@@ -99,11 +127,24 @@ public final class PottsCellContainer implements CellContainer {
                 criticalHeight,
                 null,
                 null);
-    }
+            }
 
     /**
      * Creates a {@code PottsCellContainer} instance.
      *
+     * @param id the cell ID
+     * @param parent the parent ID
+     * @param pop the cell population index
+     * @param age the cell age
+     * @param divisions the number of cell divisions
+     * @param state the cell state
+     * @param phase the cell phase
+     * @param voxels the cell size
+     * @param regionVoxels the cell region sizes
+     * @param criticalVolume the critical volume
+     * @param criticalHeight the critical height
+     * @param criticalRegionVolumes the critical region volumes
+     * @param criticalRegionHeights the critical surface heights
      * @param id the cell ID
      * @param parent the parent ID
      * @param pop the cell population index
@@ -147,6 +188,7 @@ public final class PottsCellContainer implements CellContainer {
         this.criticalRegionHeights = criticalRegionHeights;
     }
 
+
     @Override
     public int getID() {
         return id;
@@ -157,9 +199,13 @@ public final class PottsCellContainer implements CellContainer {
         return convert((PottsCellFactory) factory, location);
     }
 
+
     /**
      * Converts the cell container into a {@link PottsCell}.
      *
+     * @param factory the cell factory instance
+     * @param location the cell location
+     * @return a {@link PottsCell} instance
      * @param factory the cell factory instance
      * @param location the cell location
      * @return a {@link PottsCell} instance
@@ -355,9 +401,11 @@ public final class PottsCellContainer implements CellContainer {
                 break;
         }
 
+
         // Update cell module.
         PottsModule module = (PottsModule) cell.getModule();
         module.setPhase(phase);
+
 
         return cell;
     }
