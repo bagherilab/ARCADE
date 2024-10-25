@@ -12,14 +12,14 @@ import static arcade.patch.util.PatchEnums.State;
 
 /**
  * Extension of {@link PatchCellTissue} for cancerous tissue cells.
- * <p>
- * {@code PatchCellCancer} agents are modified from their superclass:
+ *
+ * <p>{@code PatchCellCancer} agents are modified from their superclass:
+ *
  * <ul>
- *     <li>If cell is quiescent, they may exit out of quiescence into undefined
- *     if there is space in their neighborhood</li>
+ *   <li>If cell is quiescent, they may exit out of quiescence into undefined if there is space in
+ *       their neighborhood
  * </ul>
  */
-
 public class PatchCellCancer extends PatchCellTissue {
     /**
      * Creates a tissue {@code PatchCell} agent.
@@ -53,11 +53,11 @@ public class PatchCellCancer extends PatchCellTissue {
          //cancer cells can have tumor specific antigens that are not present on healthy tissue cells
          super.carAntigens = parameters.getInt("CAR_ANTIGENS_CANCER");
     }
-    
+
     /**
      * {@inheritDoc}
-     * <p>
-     * Quiescent cells will check their neighborhood for free locations.
+     *
+     * <p>Quiescent cells will check their neighborhood for free locations.
      */
     @Override
     public void step(SimState simstate) {
@@ -66,22 +66,30 @@ public class PatchCellCancer extends PatchCellTissue {
         }
         super.step(simstate);
     }
-    
+
     @Override
-    public PatchCell make(int newID, CellState newState, Location newLocation,
-                          MersenneTwisterFast random) {
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions--;
-        return new PatchCellTissue(newID, id, pop, newState, age, divisions, newLocation,
-                parameters, volume, height, criticalVolume, criticalHeight);
+        return new PatchCellContainer(
+                newID,
+                id,
+                pop,
+                age,
+                divisions,
+                newState,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
     }
-    
+
     /**
      * Checks neighborhood for free locations.
-     * <p>
-     * If there is at least one free location, cell state becomes undefined.
      *
-     * @param simstate  the MASON simulation state
-     * @param cell  the reference cell
+     * <p>If there is at least one free location, cell state becomes undefined.
+     *
+     * @param simstate the MASON simulation state
+     * @param cell the reference cell
      */
     private static void checkNeighborhood(SimState simstate, PatchCell cell) {
         Simulation sim = (Simulation) simstate;

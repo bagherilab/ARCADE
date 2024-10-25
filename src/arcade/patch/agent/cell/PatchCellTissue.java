@@ -79,14 +79,25 @@ public class PatchCellTissue extends PatchCell {
         selfTargets = parameters.getInt("SELF_TARGETS");
         this.binding = AntigenFlag.UNDEFINED;
     }
-    
+
     @Override
-    public PatchCell make(int newID, CellState newState, Location newLocation,
-                          MersenneTwisterFast random) {
+    public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions--;
-        return new PatchCellTissue(newID, id, pop, newState, age, divisions, newLocation,
-                parameters, volume, height, criticalVolume, criticalHeight);
+        return new PatchCellContainer(
+                newID,
+                id,
+                pop,
+                age,
+                divisions,
+                newState,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
     }
+
+    
+    
 
     /* consider making PatchCell parameters protected instead of private */
 

@@ -172,8 +172,6 @@ public class PatchActionTreat implements Action {
 				// Iterate through list of locations and remove locations not next to a site.
 				for (LocationContainer l:locs) {
 					PatchLocationContainer contain = (PatchLocationContainer) l;
-					//TODO: Can this just be random? Does each location necessarily need to be tied to a cell???
-					//PatchLocation loc = (PatchLocation) contain.convert(sim.locationFactory, sim.cellFactory.createCellForPopulation(sim.getID(), populations.get(0).getInt("CODE")));
 					PatchLocation loc = (PatchLocation) contain.convert(sim.locationFactory, sim.cellFactory.createCellForPopulation(0, populations.get(0).getInt("CODE")));
 					CoordinateXYZ coord =  (CoordinateXYZ) loc.getSubcoordinate();
 					int z = coord.z;
@@ -221,32 +219,8 @@ public class PatchActionTreat implements Action {
 		insert(siteLocs, simstate);
 	}
     
-	private void addCellsIntoList(PatchGrid grid, LocationContainer l, PatchLocationContainer contain, PatchSimulation sim, ArrayList<Location> siteLocs0, ArrayList<Location> siteLocs1, ArrayList<Location> siteLocs2, ArrayList<Location> siteLocs3){
-		//TODO: Check w/ Jason about this...
-		//location container ID and cell container ID the same? if they at the same place?
-		Location loc = contain.convert(sim.locationFactory, sim.getCells().get(l.getID()));
-		Bag bag = new Bag(grid.getObjectsAtLocation(loc));
-		int numAgents = bag.numObjs; 
-
-		if (numAgents == 0) { 
-			for (int p = 0; p < latPositions; p++) { siteLocs0.add(loc); }
-		}
-		else if (numAgents == 1) {  
-			for (int p = 0; p < latPositions; p++) { siteLocs1.add(loc); }
-		}
-		else if (numAgents == 2) { 
-			for (int p = 0; p < latPositions; p++) { siteLocs2.add(loc); }
-		}
-		else { for (int p = 0; p < latPositions; p++) { siteLocs3.add(loc); } }
-		// Remove break statement if more than one per hex can appear
-		// with break statement, each location can only be added to list once
-		// without it, places with more vasc sites get added more times to list
-		//break;
-}
 
 private void addCellsIntoList(PatchGrid grid, Location loc, ArrayList<Location> siteLocs0, ArrayList<Location> siteLocs1, ArrayList<Location> siteLocs2, ArrayList<Location> siteLocs3){
-	//TODO: Check w/ Jason about this...
-	//location container ID and cell container ID the same? if they at the same place?
 	Bag bag = new Bag(grid.getObjectsAtLocation(loc));
 	int numAgents = bag.numObjs; 
 

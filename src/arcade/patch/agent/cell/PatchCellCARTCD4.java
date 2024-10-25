@@ -51,12 +51,23 @@ public class PatchCellCARTCD4 extends PatchCellCART{
 
         
         @Override
-        public PatchCellCARTCD4 make(int newID, CellState newState, Location newLocation,
-                          MersenneTwisterFast random) {
+        public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random)  {
             
             divisions--;
-            return new PatchCellCARTCD4(newID, id, pop, newState, age, divisions, newLocation,
-                parameters, volume, height, criticalVolume, criticalHeight);
+            // return new PatchCellCARTCD4(newID, id, pop, newState, age, divisions, newLocation,
+            //     parameters, volume, height, criticalVolume, criticalHeight);
+            return new PatchCellContainer(
+                newID,
+                id,
+                pop,
+                age,
+                divisions,
+                newState,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
+            
         }
         
         @Override
@@ -89,7 +100,6 @@ public class PatchCellCARTCD4 extends PatchCellCART{
                 } else if (state != State.ANERGIC && state != State.SENESCENT && state != State.EXHAUSTED && state != State.STARVED ) {
                     super.setState(State.STARVED);
                     super.setAntigenFlag(AntigenFlag.UNBOUND);
-                    this.activated = false;
                 }
             } else if (state == State.STARVED && energy >= 0) {
                 super.setState(State.UNDEFINED);

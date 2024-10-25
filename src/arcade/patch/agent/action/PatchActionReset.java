@@ -66,8 +66,6 @@ public class PatchActionReset implements Action {
 
     @Override
     public void step(SimState state) {
-        Simulation sim = (Simulation)state;
-		
 		// If current CAR T-cell is stopped, stop helper.
 		if (c.isStopped()) {return; }
 		
@@ -75,7 +73,6 @@ public class PatchActionReset implements Action {
             c.binding = AntigenFlag.UNBOUND;
             c.setState(State.QUIESCENT);
         }
-		//this.schedule(sim.getSchedule());
     }
 
 

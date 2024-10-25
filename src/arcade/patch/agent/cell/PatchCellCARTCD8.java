@@ -46,12 +46,22 @@ public class PatchCellCARTCD8 extends PatchCellCART {
         }
 
         @Override
-        public PatchCellCARTCD8 make(int newID, CellState newState, Location newLocation,
-                          MersenneTwisterFast random) {
+        public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
             
             divisions--;
-            return new PatchCellCARTCD8(newID, id, pop, newState, age, divisions, newLocation,
-                parameters, volume, height, criticalVolume, criticalHeight);
+            // return new PatchCellCARTCD8(newID, id, pop, newState, age, divisions, newLocation,
+            //     parameters, volume, height, criticalVolume, criticalHeight);
+            return new PatchCellContainer(
+                newID,
+                id,
+                pop,
+                age,
+                divisions,
+                newState,
+                volume,
+                height,
+                criticalVolume,
+                criticalHeight);
         }
 
         @Override

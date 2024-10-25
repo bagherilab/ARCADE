@@ -22,37 +22,34 @@ import arcade.patch.env.location.PatchLocationFactory;
 import arcade.patch.env.location.PatchLocationFactoryHex;
 import arcade.patch.env.location.PatchLocationHex;
 
-/**
- * Extension of {@link PatchSimulation} for hexagonal geometry.
- */
-
+/** Extension of {@link PatchSimulation} for hexagonal geometry. */
 public final class PatchSimulationHex extends PatchSimulation {
     /**
      * Hexagonal simulation for a {@link Series} for given random seed.
      *
-     * @param seed  the random seed for random number generator
-     * @param series  the simulation series
+     * @param seed the random seed for random number generator
+     * @param series the simulation series
      */
     public PatchSimulationHex(long seed, Series series) {
         super(seed, series);
         PatchLocationHex.updateConfigs((PatchSeries) series);
     }
-    
+
     @Override
     public PatchLocationFactory makeLocationFactory() {
         return new PatchLocationFactoryHex();
     }
-    
+
     @Override
     public PatchCellFactory makeCellFactory() {
         return new PatchCellFactory();
     }
-    
+
     @Override
     public PatchLatticeFactory makeLatticeFactory() {
         return new PatchLatticeFactoryTri();
     }
-    
+
     @Override
     public Action makeAction(String actionClass, MiniBox parameters) {
         switch (actionClass) {
@@ -68,7 +65,7 @@ public final class PatchSimulationHex extends PatchSimulation {
                 return null;
         }
     }
-    
+
     @Override
     public Component makeComponent(String componentClass, MiniBox parameters) {
         switch (componentClass) {

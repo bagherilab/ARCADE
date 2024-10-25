@@ -1,8 +1,8 @@
 package arcade.core.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static arcade.core.ARCADETestUtilities.*;
 
 public class DistributionTest {
@@ -14,9 +14,9 @@ public class DistributionTest {
         double maxValue = mu + 2 * sigma;
         double minValue = mu - 2 * sigma;
         int iterations = 10000;
-        
+
         Distribution distribution = new Distribution(mu, sigma, random);
-        
+
         for (int i = 0; i < iterations; i++) {
             double value = distribution.nextDouble();
             assertTrue(value >= minValue);
