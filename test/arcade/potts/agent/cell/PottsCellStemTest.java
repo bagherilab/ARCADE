@@ -56,19 +56,6 @@ public class PottsCellStemTest {
                     cellCriticalVolume,
                     cellCriticalHeight);
 
-    static PottsCellContainer baseContainer =
-            new PottsCellContainer(
-                    cellID,
-                    cellParent,
-                    cellPop,
-                    cellAge,
-                    cellDivisions,
-                    cellState,
-                    cellPhase,
-                    0,
-                    cellCriticalVolume,
-                    cellCriticalHeight);
-
     @Test
     public void setState_givenState_assignsValue() {
         PottsCellStem cell = new PottsCellStem(baseContainer, locationMock, parametersMock, false);
