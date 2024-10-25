@@ -84,10 +84,14 @@ public class PatchModuleProliferation extends PatchModule {
             } else if (cell.getVolume() >= targetVolume) {
                 if (ticker > synthesisDuration) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
                     // TODO: ADD CYCLE TIME TO TRACKER.
 >>>>>>> b06446fc (add cell cycles)
+=======
+
+>>>>>>> 4f55626c (add cell cycle info)
                     cell.addCycle(simstate.schedule.getTime() - this.start);
                     // Reset current cell.
                     cell.setState(State.UNDEFINED);
