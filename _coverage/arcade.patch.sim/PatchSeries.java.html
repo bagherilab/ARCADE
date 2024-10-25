@@ -186,149 +186,155 @@ public final class PatchSeries extends Series {
                         parameterScales);
 <span class="fc" id="L187">            }</span>
 
-            // Extract process versions.
-<span class="fc" id="L190">            Box processes = box.filterBoxByTag(&quot;PROCESS&quot;);</span>
-<span class="fc" id="L191">            MiniBox processVersions = processes.getIdValForTagAtt(&quot;PROCESS&quot;, &quot;version&quot;);</span>
+            // Get list of links, if valid.
+<span class="fc" id="L190">            MiniBox links = box.filterBoxByTag(&quot;LINK&quot;).getIdValForTagAtt(&quot;LINK&quot;, &quot;weight&quot;);</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">            for (String link : links.getKeys()) {</span>
+<span class="fc" id="L192">                population.put(&quot;(LINK)&quot; + TAG_SEPARATOR + link, links.getDouble(link));</span>
+<span class="fc" id="L193">            }</span>
 
-<span class="fc bfc" id="L193" title="All 2 branches covered.">            for (String process : processes.getKeys()) {</span>
-<span class="fc" id="L194">                String version = processVersions.get(process);</span>
-<span class="fc" id="L195">                population.put(&quot;(PROCESS)&quot; + TAG_SEPARATOR + process, version);</span>
-<span class="fc" id="L196">            }</span>
-<span class="fc" id="L197">        }</span>
-<span class="fc" id="L198">    }</span>
+            // Extract process versions.
+<span class="fc" id="L196">            Box processes = box.filterBoxByTag(&quot;PROCESS&quot;);</span>
+<span class="fc" id="L197">            MiniBox processVersions = processes.getIdValForTagAtt(&quot;PROCESS&quot;, &quot;version&quot;);</span>
+
+<span class="fc bfc" id="L199" title="All 2 branches covered.">            for (String process : processes.getKeys()) {</span>
+<span class="fc" id="L200">                String version = processVersions.get(process);</span>
+<span class="fc" id="L201">                population.put(&quot;(PROCESS)&quot; + TAG_SEPARATOR + process, version);</span>
+<span class="fc" id="L202">            }</span>
+<span class="fc" id="L203">        }</span>
+<span class="fc" id="L204">    }</span>
 
     @Override
     protected void updateLayers(
             ArrayList&lt;Box&gt; layersBox, MiniBox layerDefaults, MiniBox layerConversions) {
-<span class="fc" id="L203">        this.layers = new HashMap&lt;&gt;();</span>
-<span class="pc bpc" id="L204" title="1 of 2 branches missed.">        if (layersBox == null) {</span>
-<span class="fc" id="L205">            return;</span>
+<span class="fc" id="L209">        this.layers = new HashMap&lt;&gt;();</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">        if (layersBox == null) {</span>
+<span class="fc" id="L211">            return;</span>
         }
 
         // Iterate through each setup dictionary to build layer settings.
-<span class="nc bnc" id="L209" title="All 2 branches missed.">        for (Box box : layersBox) {</span>
-<span class="nc" id="L210">            String id = box.getValue(&quot;id&quot;);</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        for (Box box : layersBox) {</span>
+<span class="nc" id="L216">            String id = box.getValue(&quot;id&quot;);</span>
 
             // Create new layer.
-<span class="nc" id="L213">            MiniBox layer = new MiniBox();</span>
-<span class="nc" id="L214">            this.layers.put(id, layer);</span>
+<span class="nc" id="L219">            MiniBox layer = new MiniBox();</span>
+<span class="nc" id="L220">            this.layers.put(id, layer);</span>
 
             // Get default parameters and any parameter adjustments.
-<span class="nc" id="L217">            Box parameters = box.filterBoxByTag(&quot;PARAMETER&quot;);</span>
-<span class="nc" id="L218">            MiniBox parameterValues = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;value&quot;);</span>
-<span class="nc" id="L219">            MiniBox parameterScales = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;scale&quot;);</span>
+<span class="nc" id="L223">            Box parameters = box.filterBoxByTag(&quot;PARAMETER&quot;);</span>
+<span class="nc" id="L224">            MiniBox parameterValues = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;value&quot;);</span>
+<span class="nc" id="L225">            MiniBox parameterScales = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;scale&quot;);</span>
 
             // Add in parameters. Start with value (if given) or default (if not
             // given). Then apply any scaling.
-<span class="nc bnc" id="L223" title="All 2 branches missed.">            for (String parameter : layerDefaults.getKeys()) {</span>
-<span class="nc" id="L224">                parseParameter(</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">            for (String parameter : layerDefaults.getKeys()) {</span>
+<span class="nc" id="L230">                parseParameter(</span>
                         layer,
                         parameter,
-<span class="nc" id="L227">                        layerDefaults.get(parameter),</span>
+<span class="nc" id="L233">                        layerDefaults.get(parameter),</span>
                         parameterValues,
                         parameterScales);
-<span class="nc" id="L230">            }</span>
-
-            // Apply conversion factors.
-<span class="nc bnc" id="L233" title="All 2 branches missed.">            for (String convert : layerConversions.getKeys()) {</span>
-<span class="nc" id="L234">                double conversion = parseConversion(layerConversions.get(convert), ds, dz, dt);</span>
-<span class="nc" id="L235">                layer.put(convert, layer.getDouble(convert) * conversion);</span>
 <span class="nc" id="L236">            }</span>
 
-            // Get list of operations.
-<span class="nc" id="L239">            HashSet&lt;String&gt; operations = box.filterTags(&quot;OPERATION&quot;);</span>
-<span class="nc bnc" id="L240" title="All 2 branches missed.">            for (String operation : operations) {</span>
-<span class="nc" id="L241">                layer.put(&quot;(OPERATION)&quot; + TAG_SEPARATOR + operation, &quot;&quot;);</span>
+            // Apply conversion factors.
+<span class="nc bnc" id="L239" title="All 2 branches missed.">            for (String convert : layerConversions.getKeys()) {</span>
+<span class="nc" id="L240">                double conversion = parseConversion(layerConversions.get(convert), ds, dz, dt);</span>
+<span class="nc" id="L241">                layer.put(convert, layer.getDouble(convert) * conversion);</span>
 <span class="nc" id="L242">            }</span>
-<span class="nc" id="L243">        }</span>
-<span class="nc" id="L244">    }</span>
+
+            // Get list of operations.
+<span class="nc" id="L245">            HashSet&lt;String&gt; operations = box.filterTags(&quot;OPERATION&quot;);</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">            for (String operation : operations) {</span>
+<span class="nc" id="L247">                layer.put(&quot;(OPERATION)&quot; + TAG_SEPARATOR + operation, &quot;&quot;);</span>
+<span class="nc" id="L248">            }</span>
+<span class="nc" id="L249">        }</span>
+<span class="nc" id="L250">    }</span>
 
     @Override
     protected void updateActions(ArrayList&lt;Box&gt; actionsBox, MiniBox actionDefaults) {
-<span class="fc" id="L248">        this.actions = new HashMap&lt;&gt;();</span>
-<span class="pc bpc" id="L249" title="1 of 2 branches missed.">        if (actionsBox == null) {</span>
-<span class="fc" id="L250">            return;</span>
+<span class="fc" id="L254">        this.actions = new HashMap&lt;&gt;();</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">        if (actionsBox == null) {</span>
+<span class="fc" id="L256">            return;</span>
         }
 
         // Iterate through each setup dictionary to build action settings.
-<span class="nc bnc" id="L254" title="All 2 branches missed.">        for (Box box : actionsBox) {</span>
-<span class="nc" id="L255">            String id = box.getValue(&quot;id&quot;);</span>
-<span class="nc" id="L256">            String actionClass = box.getValue(&quot;class&quot;).toLowerCase();</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        for (Box box : actionsBox) {</span>
+<span class="nc" id="L261">            String id = box.getValue(&quot;id&quot;);</span>
+<span class="nc" id="L262">            String actionClass = box.getValue(&quot;class&quot;).toLowerCase();</span>
 
             // Create new population and update code.
-<span class="nc" id="L259">            MiniBox action = new MiniBox();</span>
-<span class="nc" id="L260">            this.actions.put(id, action);</span>
+<span class="nc" id="L265">            MiniBox action = new MiniBox();</span>
+<span class="nc" id="L266">            this.actions.put(id, action);</span>
 
             // Filter defaults for parameters specific to action class.
-<span class="nc" id="L263">            action.put(&quot;CLASS&quot;, actionClass);</span>
-<span class="nc" id="L264">            MiniBox actionClassDefaults = actionDefaults.filter(actionClass);</span>
+<span class="nc" id="L269">            action.put(&quot;CLASS&quot;, actionClass);</span>
+<span class="nc" id="L270">            MiniBox actionClassDefaults = actionDefaults.filter(actionClass);</span>
 
             // Get default parameters and any parameter adjustments.
-<span class="nc" id="L267">            Box parameters = box.filterBoxByTag(&quot;PARAMETER&quot;);</span>
-<span class="nc" id="L268">            MiniBox parameterValues = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;value&quot;);</span>
-<span class="nc" id="L269">            MiniBox parameterScales = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;scale&quot;);</span>
+<span class="nc" id="L273">            Box parameters = box.filterBoxByTag(&quot;PARAMETER&quot;);</span>
+<span class="nc" id="L274">            MiniBox parameterValues = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;value&quot;);</span>
+<span class="nc" id="L275">            MiniBox parameterScales = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;scale&quot;);</span>
 
             // Add in parameters. Start with value (if given) or default (if not
             // given). Then apply any scaling.
-<span class="nc bnc" id="L273" title="All 2 branches missed.">            for (String parameter : actionClassDefaults.getKeys()) {</span>
-<span class="nc" id="L274">                parseParameter(</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">            for (String parameter : actionClassDefaults.getKeys()) {</span>
+<span class="nc" id="L280">                parseParameter(</span>
                         action,
                         parameter,
-<span class="nc" id="L277">                        actionClassDefaults.get(parameter),</span>
+<span class="nc" id="L283">                        actionClassDefaults.get(parameter),</span>
                         parameterValues,
                         parameterScales);
-<span class="nc" id="L280">            }</span>
+<span class="nc" id="L286">            }</span>
 
             // Add list of registered populations.
-<span class="nc" id="L283">            HashSet&lt;String&gt; registers = box.filterTags(&quot;REGISTER&quot;);</span>
-<span class="nc bnc" id="L284" title="All 2 branches missed.">            for (String register : registers) {</span>
-<span class="nc" id="L285">                action.put(&quot;(REGISTER)&quot; + TAG_SEPARATOR + register, &quot;&quot;);</span>
-<span class="nc" id="L286">            }</span>
-<span class="nc" id="L287">        }</span>
-<span class="nc" id="L288">    }</span>
+<span class="nc" id="L289">            HashSet&lt;String&gt; registers = box.filterTags(&quot;REGISTER&quot;);</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">            for (String register : registers) {</span>
+<span class="nc" id="L291">                action.put(&quot;(REGISTER)&quot; + TAG_SEPARATOR + register, &quot;&quot;);</span>
+<span class="nc" id="L292">            }</span>
+<span class="nc" id="L293">        }</span>
+<span class="nc" id="L294">    }</span>
 
     @Override
     protected void updateComponents(ArrayList&lt;Box&gt; componentsBox, MiniBox componentDefaults) {
-<span class="fc" id="L292">        this.components = new HashMap&lt;&gt;();</span>
-<span class="pc bpc" id="L293" title="1 of 2 branches missed.">        if (componentsBox == null) {</span>
-<span class="fc" id="L294">            return;</span>
+<span class="fc" id="L298">        this.components = new HashMap&lt;&gt;();</span>
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">        if (componentsBox == null) {</span>
+<span class="fc" id="L300">            return;</span>
         }
 
         // Iterate through each setup dictionary to build component settings.
-<span class="nc bnc" id="L298" title="All 2 branches missed.">        for (Box box : componentsBox) {</span>
-<span class="nc" id="L299">            String id = box.getValue(&quot;id&quot;);</span>
-<span class="nc" id="L300">            String componentClass = box.getValue(&quot;class&quot;).toLowerCase();</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">        for (Box box : componentsBox) {</span>
+<span class="nc" id="L305">            String id = box.getValue(&quot;id&quot;);</span>
+<span class="nc" id="L306">            String componentClass = box.getValue(&quot;class&quot;).toLowerCase();</span>
 
             // Create new population and update code.
-<span class="nc" id="L303">            MiniBox component = new MiniBox();</span>
-<span class="nc" id="L304">            this.components.put(id, component);</span>
+<span class="nc" id="L309">            MiniBox component = new MiniBox();</span>
+<span class="nc" id="L310">            this.components.put(id, component);</span>
 
             // Filter defaults for parameters specific to component class.
-<span class="nc" id="L307">            component.put(&quot;CLASS&quot;, componentClass);</span>
-<span class="nc" id="L308">            MiniBox componentClassDefaults = componentDefaults.filter(componentClass);</span>
+<span class="nc" id="L313">            component.put(&quot;CLASS&quot;, componentClass);</span>
+<span class="nc" id="L314">            MiniBox componentClassDefaults = componentDefaults.filter(componentClass);</span>
 
             // Get default parameters and any parameter adjustments.
-<span class="nc" id="L311">            Box parameters = box.filterBoxByTag(&quot;PARAMETER&quot;);</span>
-<span class="nc" id="L312">            MiniBox parameterValues = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;value&quot;);</span>
-<span class="nc" id="L313">            MiniBox parameterScales = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;scale&quot;);</span>
+<span class="nc" id="L317">            Box parameters = box.filterBoxByTag(&quot;PARAMETER&quot;);</span>
+<span class="nc" id="L318">            MiniBox parameterValues = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;value&quot;);</span>
+<span class="nc" id="L319">            MiniBox parameterScales = parameters.getIdValForTagAtt(&quot;PARAMETER&quot;, &quot;scale&quot;);</span>
 
             // Add in parameters. Start with value (if given) or default (if not
             // given). Then apply any scaling.
-<span class="nc bnc" id="L317" title="All 2 branches missed.">            for (String parameter : componentClassDefaults.getKeys()) {</span>
-<span class="nc" id="L318">                parseParameter(</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">            for (String parameter : componentClassDefaults.getKeys()) {</span>
+<span class="nc" id="L324">                parseParameter(</span>
                         component,
                         parameter,
-<span class="nc" id="L321">                        componentClassDefaults.get(parameter),</span>
+<span class="nc" id="L327">                        componentClassDefaults.get(parameter),</span>
                         parameterValues,
                         parameterScales);
-<span class="nc" id="L324">            }</span>
+<span class="nc" id="L330">            }</span>
 
             // Add list of registered layers.
-<span class="nc" id="L327">            HashSet&lt;String&gt; registers = box.filterTags(&quot;REGISTER&quot;);</span>
-<span class="nc bnc" id="L328" title="All 2 branches missed.">            for (String register : registers) {</span>
-<span class="nc" id="L329">                component.put(&quot;(REGISTER)&quot; + TAG_SEPARATOR + register, &quot;&quot;);</span>
-<span class="nc" id="L330">            }</span>
-<span class="nc" id="L331">        }</span>
-<span class="nc" id="L332">    }</span>
+<span class="nc" id="L333">            HashSet&lt;String&gt; registers = box.filterTags(&quot;REGISTER&quot;);</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">            for (String register : registers) {</span>
+<span class="nc" id="L335">                component.put(&quot;(REGISTER)&quot; + TAG_SEPARATOR + register, &quot;&quot;);</span>
+<span class="nc" id="L336">            }</span>
+<span class="nc" id="L337">        }</span>
+<span class="nc" id="L338">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

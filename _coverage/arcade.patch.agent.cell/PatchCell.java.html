@@ -15,6 +15,7 @@ import arcade.core.agent.process.Process;
 import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.patch.agent.module.PatchModuleApoptosis;
 import arcade.patch.agent.module.PatchModuleMigration;
@@ -123,6 +124,9 @@ public abstract class PatchCell implements Cell {
     /** Cell parameters. */
     final MiniBox parameters;
 
+    /** Cell population links. */
+    final GrabBag links;
+
     /**
      * Creates a {@code PatchCell} agent.
      *
@@ -138,111 +142,114 @@ public abstract class PatchCell implements Cell {
      * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
+     * @param links the map of population links
      */
-<span class="fc" id="L142">    public PatchCell(PatchCellContainer container, Location location, MiniBox parameters) {</span>
-<span class="fc" id="L143">        this.id = container.id;</span>
-<span class="fc" id="L144">        this.parent = container.parent;</span>
-<span class="fc" id="L145">        this.pop = container.pop;</span>
-<span class="fc" id="L146">        this.age = container.age;</span>
-<span class="fc" id="L147">        this.energy = 0;</span>
-<span class="fc" id="L148">        this.divisions = container.divisions;</span>
-<span class="fc" id="L149">        this.location = (PatchLocation) location;</span>
-<span class="fc" id="L150">        this.volume = container.volume;</span>
-<span class="fc" id="L151">        this.height = container.height;</span>
-<span class="fc" id="L152">        this.criticalVolume = container.criticalVolume;</span>
-<span class="fc" id="L153">        this.criticalHeight = container.criticalHeight;</span>
-<span class="fc" id="L154">        this.flag = Flag.UNDEFINED;</span>
-<span class="fc" id="L155">        this.parameters = parameters;</span>
+    public PatchCell(
+<span class="fc" id="L148">            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {</span>
+<span class="fc" id="L149">        this.id = container.id;</span>
+<span class="fc" id="L150">        this.parent = container.parent;</span>
+<span class="fc" id="L151">        this.pop = container.pop;</span>
+<span class="fc" id="L152">        this.age = container.age;</span>
+<span class="fc" id="L153">        this.energy = 0;</span>
+<span class="fc" id="L154">        this.divisions = container.divisions;</span>
+<span class="fc" id="L155">        this.location = (PatchLocation) location;</span>
+<span class="fc" id="L156">        this.volume = container.volume;</span>
+<span class="fc" id="L157">        this.height = container.height;</span>
+<span class="fc" id="L158">        this.criticalVolume = container.criticalVolume;</span>
+<span class="fc" id="L159">        this.criticalHeight = container.criticalHeight;</span>
+<span class="fc" id="L160">        this.flag = Flag.UNDEFINED;</span>
+<span class="fc" id="L161">        this.parameters = parameters;</span>
+<span class="fc" id="L162">        this.links = links;</span>
 
-<span class="fc" id="L157">        setState(container.state);</span>
+<span class="fc" id="L164">        setState(container.state);</span>
 
         // Set loaded parameters.
-<span class="fc" id="L160">        heterogeneity = parameters.getDouble(&quot;HETEROGENEITY&quot;);</span>
-<span class="fc" id="L161">        necroticFraction = parameters.getDouble(&quot;NECROTIC_FRACTION&quot;);</span>
-<span class="fc" id="L162">        senescentFraction = parameters.getDouble(&quot;SENESCENT_FRACTION&quot;);</span>
-<span class="fc" id="L163">        energyThreshold = -parameters.getDouble(&quot;ENERGY_THRESHOLD&quot;);</span>
+<span class="fc" id="L167">        heterogeneity = parameters.getDouble(&quot;HETEROGENEITY&quot;);</span>
+<span class="fc" id="L168">        necroticFraction = parameters.getDouble(&quot;NECROTIC_FRACTION&quot;);</span>
+<span class="fc" id="L169">        senescentFraction = parameters.getDouble(&quot;SENESCENT_FRACTION&quot;);</span>
+<span class="fc" id="L170">        energyThreshold = -parameters.getDouble(&quot;ENERGY_THRESHOLD&quot;);</span>
 
         // TODO: implement heterogeneity
 
         // Add cell processes.
-<span class="fc" id="L168">        processes = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L169">        MiniBox processBox = parameters.filter(&quot;(PROCESS)&quot;);</span>
-<span class="pc bpc" id="L170" title="1 of 2 branches missed.">        for (String processKey : processBox.getKeys()) {</span>
-<span class="nc" id="L171">            ProcessDomain domain = Domain.valueOf(processKey);</span>
-<span class="nc" id="L172">            String version = processBox.get(processKey);</span>
-<span class="nc" id="L173">            Process process = makeProcess(domain, version);</span>
-<span class="nc" id="L174">            processes.put(domain, process);</span>
-<span class="nc" id="L175">        }</span>
-<span class="fc" id="L176">    }</span>
+<span class="fc" id="L175">        processes = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L176">        MiniBox processBox = parameters.filter(&quot;(PROCESS)&quot;);</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        for (String processKey : processBox.getKeys()) {</span>
+<span class="nc" id="L178">            ProcessDomain domain = Domain.valueOf(processKey);</span>
+<span class="nc" id="L179">            String version = processBox.get(processKey);</span>
+<span class="nc" id="L180">            Process process = makeProcess(domain, version);</span>
+<span class="nc" id="L181">            processes.put(domain, process);</span>
+<span class="nc" id="L182">        }</span>
+<span class="fc" id="L183">    }</span>
 
     @Override
     public int getID() {
-<span class="nc" id="L180">        return id;</span>
+<span class="nc" id="L187">        return id;</span>
     }
 
     @Override
     public int getParent() {
-<span class="nc" id="L185">        return parent;</span>
+<span class="nc" id="L192">        return parent;</span>
     }
 
     @Override
     public int getPop() {
-<span class="nc" id="L190">        return pop;</span>
+<span class="nc" id="L197">        return pop;</span>
     }
 
     @Override
     public CellState getState() {
-<span class="fc" id="L195">        return state;</span>
+<span class="fc" id="L202">        return state;</span>
     }
 
     @Override
     public int getAge() {
-<span class="nc" id="L200">        return age;</span>
+<span class="nc" id="L207">        return age;</span>
     }
 
     @Override
     public int getDivisions() {
-<span class="nc" id="L205">        return divisions;</span>
+<span class="nc" id="L212">        return divisions;</span>
     }
 
     @Override
     public Location getLocation() {
-<span class="nc" id="L210">        return location;</span>
+<span class="nc" id="L217">        return location;</span>
     }
 
     @Override
     public Module getModule() {
-<span class="nc" id="L215">        return module;</span>
+<span class="nc" id="L222">        return module;</span>
     }
 
     @Override
     public Process getProcess(ProcessDomain domain) {
-<span class="nc" id="L220">        return processes.get(domain);</span>
+<span class="nc" id="L227">        return processes.get(domain);</span>
     }
 
     @Override
     public MiniBox getParameters() {
-<span class="nc" id="L225">        return parameters;</span>
+<span class="nc" id="L232">        return parameters;</span>
     }
 
     @Override
     public double getVolume() {
-<span class="nc" id="L230">        return volume;</span>
+<span class="nc" id="L237">        return volume;</span>
     }
 
     @Override
     public double getHeight() {
-<span class="nc" id="L235">        return height;</span>
+<span class="nc" id="L242">        return height;</span>
     }
 
     @Override
     public double getCriticalVolume() {
-<span class="nc" id="L240">        return criticalVolume;</span>
+<span class="nc" id="L247">        return criticalVolume;</span>
     }
 
     @Override
     public double getCriticalHeight() {
-<span class="nc" id="L245">        return criticalHeight;</span>
+<span class="nc" id="L252">        return criticalHeight;</span>
     }
 
     /**
@@ -251,7 +258,7 @@ public abstract class PatchCell implements Cell {
      * @return the energy level
      */
     public double getEnergy() {
-<span class="nc" id="L254">        return energy;</span>
+<span class="nc" id="L261">        return energy;</span>
     }
 
     /**
@@ -260,8 +267,8 @@ public abstract class PatchCell implements Cell {
      * @param flag the target cell flag
      */
     public void setFlag(Flag flag) {
-<span class="nc" id="L263">        this.flag = flag;</span>
-<span class="nc" id="L264">    }</span>
+<span class="nc" id="L270">        this.flag = flag;</span>
+<span class="nc" id="L271">    }</span>
 
     /**
      * Sets the cell volume.
@@ -269,8 +276,8 @@ public abstract class PatchCell implements Cell {
      * @param volume the target cell volume
      */
     public void setVolume(double volume) {
-<span class="nc" id="L272">        this.volume = volume;</span>
-<span class="nc" id="L273">    }</span>
+<span class="nc" id="L279">        this.volume = volume;</span>
+<span class="nc" id="L280">    }</span>
 
     /**
      * Sets the cell energy level.
@@ -278,34 +285,34 @@ public abstract class PatchCell implements Cell {
      * @param energy the target energy level
      */
     public void setEnergy(double energy) {
-<span class="nc" id="L281">        this.energy = energy;</span>
-<span class="nc" id="L282">    }</span>
+<span class="nc" id="L288">        this.energy = energy;</span>
+<span class="nc" id="L289">    }</span>
 
     @Override
     public void stop() {
-<span class="nc" id="L286">        stopper.stop();</span>
-<span class="nc" id="L287">    }</span>
+<span class="nc" id="L293">        stopper.stop();</span>
+<span class="nc" id="L294">    }</span>
 
     @Override
     public void setState(CellState state) {
-<span class="fc" id="L291">        this.state = state;</span>
-<span class="fc" id="L292">        this.flag = Flag.UNDEFINED;</span>
+<span class="fc" id="L298">        this.state = state;</span>
+<span class="fc" id="L299">        this.flag = Flag.UNDEFINED;</span>
 
-<span class="pc bpc" id="L294" title="3 of 4 branches missed.">        switch ((State) state) {</span>
+<span class="pc bpc" id="L301" title="3 of 4 branches missed.">        switch ((State) state) {</span>
             case PROLIFERATIVE:
-<span class="nc" id="L296">                module = new PatchModuleProliferation(this);</span>
-<span class="nc" id="L297">                break;</span>
+<span class="nc" id="L303">                module = new PatchModuleProliferation(this);</span>
+<span class="nc" id="L304">                break;</span>
             case MIGRATORY:
-<span class="nc" id="L299">                module = new PatchModuleMigration(this);</span>
-<span class="nc" id="L300">                break;</span>
+<span class="nc" id="L306">                module = new PatchModuleMigration(this);</span>
+<span class="nc" id="L307">                break;</span>
             case APOPTOTIC:
-<span class="nc" id="L302">                module = new PatchModuleApoptosis(this);</span>
-<span class="nc" id="L303">                break;</span>
+<span class="nc" id="L309">                module = new PatchModuleApoptosis(this);</span>
+<span class="nc" id="L310">                break;</span>
             default:
-<span class="fc" id="L305">                module = null;</span>
+<span class="fc" id="L312">                module = null;</span>
                 break;
         }
-<span class="fc" id="L308">    }</span>
+<span class="fc" id="L315">    }</span>
 
     /**
      * Makes the specified {@link Process} object.
@@ -315,75 +322,75 @@ public abstract class PatchCell implements Cell {
      * @return the process instance
      */
     public Process makeProcess(ProcessDomain domain, String version) {
-<span class="nc bnc" id="L318" title="All 3 branches missed.">        switch ((Domain) domain) {</span>
+<span class="nc bnc" id="L325" title="All 3 branches missed.">        switch ((Domain) domain) {</span>
             case METABOLISM:
-<span class="nc" id="L320">                return PatchProcessMetabolism.make(this, version);</span>
+<span class="nc" id="L327">                return PatchProcessMetabolism.make(this, version);</span>
             case SIGNALING:
-<span class="nc" id="L322">                return PatchProcessSignaling.make(this, version);</span>
+<span class="nc" id="L329">                return PatchProcessSignaling.make(this, version);</span>
             case UNDEFINED:
             default:
-<span class="nc" id="L325">                return null;</span>
+<span class="nc" id="L332">                return null;</span>
         }
     }
 
     @Override
     public void schedule(Schedule schedule) {
-<span class="nc" id="L331">        stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);</span>
-<span class="nc" id="L332">    }</span>
+<span class="nc" id="L338">        stopper = schedule.scheduleRepeating(this, Ordering.CELLS.ordinal(), 1);</span>
+<span class="nc" id="L339">    }</span>
 
     @Override
     public void step(SimState simstate) {
-<span class="nc" id="L336">        Simulation sim = (Simulation) simstate;</span>
+<span class="nc" id="L343">        Simulation sim = (Simulation) simstate;</span>
 
         // Increase age of cell.
-<span class="nc" id="L339">        age++;</span>
+<span class="nc" id="L346">        age++;</span>
 
         // TODO: check for death due to age
 
         // Step metabolism process.
-<span class="nc" id="L344">        processes.get(Domain.METABOLISM).step(simstate.random, sim);</span>
+<span class="nc" id="L351">        processes.get(Domain.METABOLISM).step(simstate.random, sim);</span>
 
         // Check energy status. If cell has less energy than threshold, it will
         // necrose. If overall energy is negative, then cell enters quiescence.
-<span class="nc bnc" id="L348" title="All 4 branches missed.">        if (state != State.APOPTOTIC &amp;&amp; energy &lt; 0) {</span>
-<span class="nc bnc" id="L349" title="All 2 branches missed.">            if (energy &lt; energyThreshold) {</span>
-<span class="nc bnc" id="L350" title="All 2 branches missed.">                if (simstate.random.nextDouble() &gt; necroticFraction) {</span>
-<span class="nc" id="L351">                    setState(State.APOPTOTIC);</span>
+<span class="nc bnc" id="L355" title="All 4 branches missed.">        if (state != State.APOPTOTIC &amp;&amp; energy &lt; 0) {</span>
+<span class="nc bnc" id="L356" title="All 2 branches missed.">            if (energy &lt; energyThreshold) {</span>
+<span class="nc bnc" id="L357" title="All 2 branches missed.">                if (simstate.random.nextDouble() &gt; necroticFraction) {</span>
+<span class="nc" id="L358">                    setState(State.APOPTOTIC);</span>
                 } else {
-<span class="nc" id="L353">                    setState(State.NECROTIC);</span>
+<span class="nc" id="L360">                    setState(State.NECROTIC);</span>
                 }
-<span class="nc bnc" id="L355" title="All 4 branches missed.">            } else if (state != State.QUIESCENT &amp;&amp; state != State.SENESCENT) {</span>
-<span class="nc" id="L356">                setState(State.QUIESCENT);</span>
+<span class="nc bnc" id="L362" title="All 4 branches missed.">            } else if (state != State.QUIESCENT &amp;&amp; state != State.SENESCENT) {</span>
+<span class="nc" id="L363">                setState(State.QUIESCENT);</span>
             }
         }
 
         // Step signaling network process.
-<span class="nc" id="L361">        processes.get(Domain.SIGNALING).step(simstate.random, sim);</span>
+<span class="nc" id="L368">        processes.get(Domain.SIGNALING).step(simstate.random, sim);</span>
 
         // Change state from undefined.
-<span class="nc bnc" id="L364" title="All 2 branches missed.">        if (state == State.UNDEFINED) {</span>
-<span class="nc bnc" id="L365" title="All 2 branches missed.">            if (flag == Flag.MIGRATORY) {</span>
-<span class="nc" id="L366">                setState(State.MIGRATORY);</span>
-<span class="nc bnc" id="L367" title="All 2 branches missed.">            } else if (divisions == 0) {</span>
-<span class="nc bnc" id="L368" title="All 2 branches missed.">                if (simstate.random.nextDouble() &gt; senescentFraction) {</span>
-<span class="nc" id="L369">                    setState(State.APOPTOTIC);</span>
+<span class="nc bnc" id="L371" title="All 2 branches missed.">        if (state == State.UNDEFINED) {</span>
+<span class="nc bnc" id="L372" title="All 2 branches missed.">            if (flag == Flag.MIGRATORY) {</span>
+<span class="nc" id="L373">                setState(State.MIGRATORY);</span>
+<span class="nc bnc" id="L374" title="All 2 branches missed.">            } else if (divisions == 0) {</span>
+<span class="nc bnc" id="L375" title="All 2 branches missed.">                if (simstate.random.nextDouble() &gt; senescentFraction) {</span>
+<span class="nc" id="L376">                    setState(State.APOPTOTIC);</span>
                 } else {
-<span class="nc" id="L371">                    setState(State.SENESCENT);</span>
+<span class="nc" id="L378">                    setState(State.SENESCENT);</span>
                 }
             } else {
-<span class="nc" id="L374">                setState(State.PROLIFERATIVE);</span>
+<span class="nc" id="L381">                setState(State.PROLIFERATIVE);</span>
             }
         }
 
         // Step the module for the cell state.
-<span class="nc bnc" id="L379" title="All 2 branches missed.">        if (module != null) {</span>
-<span class="nc" id="L380">            module.step(simstate.random, sim);</span>
+<span class="nc bnc" id="L386" title="All 2 branches missed.">        if (module != null) {</span>
+<span class="nc" id="L387">            module.step(simstate.random, sim);</span>
         }
-<span class="nc" id="L382">    }</span>
+<span class="nc" id="L389">    }</span>
 
     @Override
     public CellContainer convert() {
-<span class="nc" id="L386">        return new PatchCellContainer(</span>
+<span class="nc" id="L393">        return new PatchCellContainer(</span>
                 id,
                 parent,
                 pop,
@@ -403,11 +410,11 @@ public abstract class PatchCell implements Cell {
      * @return the total volume
      */
     public static double calculateTotalVolume(Bag bag) {
-<span class="nc" id="L406">        double totalVolume = 0;</span>
-<span class="nc bnc" id="L407" title="All 2 branches missed.">        for (Object obj : bag) {</span>
-<span class="nc" id="L408">            totalVolume += ((Cell) obj).getVolume();</span>
-<span class="nc" id="L409">        }</span>
-<span class="nc" id="L410">        return totalVolume;</span>
+<span class="nc" id="L413">        double totalVolume = 0;</span>
+<span class="nc bnc" id="L414" title="All 2 branches missed.">        for (Object obj : bag) {</span>
+<span class="nc" id="L415">            totalVolume += ((Cell) obj).getVolume();</span>
+<span class="nc" id="L416">        }</span>
+<span class="nc" id="L417">        return totalVolume;</span>
     }
 
     /**
@@ -424,56 +431,56 @@ public abstract class PatchCell implements Cell {
             PatchLocation currentLocation,
             double targetVolume,
             double targetHeight) {
-<span class="nc" id="L427">        Bag freeLocations = new Bag();</span>
-<span class="nc" id="L428">        int locationMax = currentLocation.getMaximum();</span>
-<span class="nc" id="L429">        double locationVolume = currentLocation.getVolume();</span>
-<span class="nc" id="L430">        double locationArea = currentLocation.getArea();</span>
-<span class="nc" id="L431">        PatchGrid grid = (PatchGrid) sim.getGrid();</span>
+<span class="nc" id="L434">        Bag freeLocations = new Bag();</span>
+<span class="nc" id="L435">        int locationMax = currentLocation.getMaximum();</span>
+<span class="nc" id="L436">        double locationVolume = currentLocation.getVolume();</span>
+<span class="nc" id="L437">        double locationArea = currentLocation.getArea();</span>
+<span class="nc" id="L438">        PatchGrid grid = (PatchGrid) sim.getGrid();</span>
 
         // Iterate through each neighbor location and check if cell is able
         // to move into it based on if it does not increase volume above hex
         // volume and that each agent exists at tolerable height.
         locationCheck:
-<span class="nc bnc" id="L437" title="All 2 branches missed.">        for (Location neighborLocation : currentLocation.getNeighbors()) {</span>
-<span class="nc" id="L438">            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));</span>
-<span class="nc" id="L439">            int n = bag.numObjs; // number of agents in location</span>
+<span class="nc bnc" id="L444" title="All 2 branches missed.">        for (Location neighborLocation : currentLocation.getNeighbors()) {</span>
+<span class="nc" id="L445">            Bag bag = new Bag(grid.getObjectsAtLocation(neighborLocation));</span>
+<span class="nc" id="L446">            int n = bag.numObjs; // number of agents in location</span>
 
-<span class="nc bnc" id="L441" title="All 2 branches missed.">            if (n == 0) {</span>
-<span class="nc" id="L442">                freeLocations.add(neighborLocation); // no other cells in new location</span>
-<span class="nc bnc" id="L443" title="All 2 branches missed.">            } else if (n == locationMax) {</span>
-<span class="nc" id="L444">                continue; // location already full</span>
+<span class="nc bnc" id="L448" title="All 2 branches missed.">            if (n == 0) {</span>
+<span class="nc" id="L449">                freeLocations.add(neighborLocation); // no other cells in new location</span>
+<span class="nc bnc" id="L450" title="All 2 branches missed.">            } else if (n == locationMax) {</span>
+<span class="nc" id="L451">                continue; // location already full</span>
             } else {
-<span class="nc" id="L446">                double totalVolume = calculateTotalVolume(bag) + targetVolume;</span>
-<span class="nc" id="L447">                double currentHeight = totalVolume / locationArea;</span>
+<span class="nc" id="L453">                double totalVolume = calculateTotalVolume(bag) + targetVolume;</span>
+<span class="nc" id="L454">                double currentHeight = totalVolume / locationArea;</span>
 
                 // Check if total volume of cells with addition does not exceed
                 // volume of the hexagonal location.
-<span class="nc bnc" id="L451" title="All 2 branches missed.">                if (totalVolume &gt; locationVolume) {</span>
-<span class="nc" id="L452">                    continue;</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">                if (totalVolume &gt; locationVolume) {</span>
+<span class="nc" id="L459">                    continue;</span>
                 }
 
                 // Check if proposed cell can exist at a tolerable height.
-<span class="nc bnc" id="L456" title="All 2 branches missed.">                if (currentHeight &gt; targetHeight) {</span>
-<span class="nc" id="L457">                    continue;</span>
+<span class="nc bnc" id="L463" title="All 2 branches missed.">                if (currentHeight &gt; targetHeight) {</span>
+<span class="nc" id="L464">                    continue;</span>
                 }
 
                 // Check if neighbor cells can exist at a tolerable height.
-<span class="nc bnc" id="L461" title="All 2 branches missed.">                for (Object obj : bag) {</span>
-<span class="nc bnc" id="L462" title="All 2 branches missed.">                    if (currentHeight &gt; ((Cell) obj).getCriticalHeight()) {</span>
-<span class="nc" id="L463">                        continue locationCheck;</span>
+<span class="nc bnc" id="L468" title="All 2 branches missed.">                for (Object obj : bag) {</span>
+<span class="nc bnc" id="L469" title="All 2 branches missed.">                    if (currentHeight &gt; ((Cell) obj).getCriticalHeight()) {</span>
+<span class="nc" id="L470">                        continue locationCheck;</span>
                     }
-<span class="nc" id="L465">                }</span>
+<span class="nc" id="L472">                }</span>
 
                 // TODO: ADD CHECK FOR MORE THAN ONE HEALTHY CELL AGENT.
 
                 // Add location to list of free locations.
-<span class="nc" id="L470">                freeLocations.add(neighborLocation);</span>
+<span class="nc" id="L477">                freeLocations.add(neighborLocation);</span>
             }
-<span class="nc" id="L472">        }</span>
+<span class="nc" id="L479">        }</span>
 
         // TODO: ADD CURRENT LOCATION
 
-<span class="nc" id="L476">        return freeLocations;</span>
+<span class="nc" id="L483">        return freeLocations;</span>
     }
 
     /**
@@ -495,9 +502,9 @@ public abstract class PatchCell implements Cell {
             double volume,
             double height,
             MersenneTwisterFast random) {
-<span class="nc" id="L498">        Bag locs = findFreeLocations(sim, location, volume, height);</span>
-<span class="nc" id="L499">        locs.shuffle(random);</span>
-<span class="nc bnc" id="L500" title="All 2 branches missed.">        return (locs.size() &gt; 0 ? (PatchLocation) locs.get(0) : null);</span>
+<span class="nc" id="L505">        Bag locs = findFreeLocations(sim, location, volume, height);</span>
+<span class="nc" id="L506">        locs.shuffle(random);</span>
+<span class="nc bnc" id="L507" title="All 2 branches missed.">        return (locs.size() &gt; 0 ? (PatchLocation) locs.get(0) : null);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

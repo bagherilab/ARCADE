@@ -5,6 +5,7 @@ import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 
 /**
@@ -68,27 +69,27 @@ public final class PatchCellContainer implements CellContainer {
             double volume,
             double height,
             double criticalVolume,
-<span class="fc" id="L71">            double criticalHeight) {</span>
-<span class="fc" id="L72">        this.id = id;</span>
-<span class="fc" id="L73">        this.parent = parent;</span>
-<span class="fc" id="L74">        this.pop = pop;</span>
-<span class="fc" id="L75">        this.age = age;</span>
-<span class="fc" id="L76">        this.divisions = divisions;</span>
-<span class="fc" id="L77">        this.state = state;</span>
-<span class="fc" id="L78">        this.volume = volume;</span>
-<span class="fc" id="L79">        this.height = height;</span>
-<span class="fc" id="L80">        this.criticalVolume = criticalVolume;</span>
-<span class="fc" id="L81">        this.criticalHeight = criticalHeight;</span>
-<span class="fc" id="L82">    }</span>
+<span class="fc" id="L72">            double criticalHeight) {</span>
+<span class="fc" id="L73">        this.id = id;</span>
+<span class="fc" id="L74">        this.parent = parent;</span>
+<span class="fc" id="L75">        this.pop = pop;</span>
+<span class="fc" id="L76">        this.age = age;</span>
+<span class="fc" id="L77">        this.divisions = divisions;</span>
+<span class="fc" id="L78">        this.state = state;</span>
+<span class="fc" id="L79">        this.volume = volume;</span>
+<span class="fc" id="L80">        this.height = height;</span>
+<span class="fc" id="L81">        this.criticalVolume = criticalVolume;</span>
+<span class="fc" id="L82">        this.criticalHeight = criticalHeight;</span>
+<span class="fc" id="L83">    }</span>
 
     @Override
     public int getID() {
-<span class="nc" id="L86">        return id;</span>
+<span class="nc" id="L87">        return id;</span>
     }
 
     @Override
     public Cell convert(CellFactory factory, Location location) {
-<span class="nc" id="L91">        return convert((PatchCellFactory) factory, location);</span>
+<span class="nc" id="L92">        return convert((PatchCellFactory) factory, location);</span>
     }
 
     /**
@@ -100,19 +101,22 @@ public final class PatchCellContainer implements CellContainer {
      */
     private Cell convert(PatchCellFactory factory, Location location) {
         // Get parameters for the cell population.
-<span class="nc" id="L103">        MiniBox parameters = factory.popToParameters.get(pop);</span>
+<span class="nc" id="L104">        MiniBox parameters = factory.popToParameters.get(pop);</span>
+
+        // Get links for the cell population.
+<span class="nc" id="L107">        GrabBag links = factory.popToLinks.get(pop);</span>
 
         // Make cell.
-<span class="nc bnc" id="L106" title="All 4 branches missed.">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
+<span class="nc bnc" id="L110" title="All 4 branches missed.">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
             default:
             case &quot;tissue&quot;:
-<span class="nc" id="L109">                return new PatchCellTissue(this, location, parameters);</span>
+<span class="nc" id="L113">                return new PatchCellTissue(this, location, parameters, links);</span>
             case &quot;cancer&quot;:
-<span class="nc" id="L111">                return new PatchCellCancer(this, location, parameters);</span>
+<span class="nc" id="L115">                return new PatchCellCancer(this, location, parameters, links);</span>
             case &quot;cancer_stem&quot;:
-<span class="nc" id="L113">                return new PatchCellCancerStem(this, location, parameters);</span>
+<span class="nc" id="L117">                return new PatchCellCancerStem(this, location, parameters, links);</span>
             case &quot;random&quot;:
-<span class="nc" id="L115">                return new PatchCellRandom(this, location, parameters);</span>
+<span class="nc" id="L119">                return new PatchCellRandom(this, location, parameters, links);</span>
         }
     }
 }

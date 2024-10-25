@@ -6,6 +6,7 @@ import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
 import static arcade.potts.util.PottsEnums.Phase;
@@ -84,7 +85,7 @@ public final class PottsCellContainer implements CellContainer {
             int voxels,
             double criticalVolume,
             double criticalHeight) {
-<span class="fc" id="L87">        this(</span>
+<span class="fc" id="L88">        this(</span>
                 id,
                 parent,
                 pop,
@@ -98,7 +99,7 @@ public final class PottsCellContainer implements CellContainer {
                 criticalHeight,
                 null,
                 null);
-<span class="fc" id="L101">    }</span>
+<span class="fc" id="L102">    }</span>
 
     /**
      * Creates a {@code PottsCellContainer} instance.
@@ -130,30 +131,30 @@ public final class PottsCellContainer implements CellContainer {
             double criticalVolume,
             double criticalHeight,
             EnumMap&lt;Region, Double&gt; criticalRegionVolumes,
-<span class="fc" id="L133">            EnumMap&lt;Region, Double&gt; criticalRegionHeights) {</span>
-<span class="fc" id="L134">        this.id = id;</span>
-<span class="fc" id="L135">        this.parent = parent;</span>
-<span class="fc" id="L136">        this.pop = pop;</span>
-<span class="fc" id="L137">        this.age = age;</span>
-<span class="fc" id="L138">        this.divisions = divisions;</span>
-<span class="fc" id="L139">        this.state = state;</span>
-<span class="fc" id="L140">        this.phase = phase;</span>
-<span class="fc" id="L141">        this.voxels = voxels;</span>
-<span class="fc" id="L142">        this.regionVoxels = regionVoxels;</span>
-<span class="fc" id="L143">        this.criticalVolume = criticalVolume;</span>
-<span class="fc" id="L144">        this.criticalHeight = criticalHeight;</span>
-<span class="fc" id="L145">        this.criticalRegionVolumes = criticalRegionVolumes;</span>
-<span class="fc" id="L146">        this.criticalRegionHeights = criticalRegionHeights;</span>
-<span class="fc" id="L147">    }</span>
+<span class="fc" id="L134">            EnumMap&lt;Region, Double&gt; criticalRegionHeights) {</span>
+<span class="fc" id="L135">        this.id = id;</span>
+<span class="fc" id="L136">        this.parent = parent;</span>
+<span class="fc" id="L137">        this.pop = pop;</span>
+<span class="fc" id="L138">        this.age = age;</span>
+<span class="fc" id="L139">        this.divisions = divisions;</span>
+<span class="fc" id="L140">        this.state = state;</span>
+<span class="fc" id="L141">        this.phase = phase;</span>
+<span class="fc" id="L142">        this.voxels = voxels;</span>
+<span class="fc" id="L143">        this.regionVoxels = regionVoxels;</span>
+<span class="fc" id="L144">        this.criticalVolume = criticalVolume;</span>
+<span class="fc" id="L145">        this.criticalHeight = criticalHeight;</span>
+<span class="fc" id="L146">        this.criticalRegionVolumes = criticalRegionVolumes;</span>
+<span class="fc" id="L147">        this.criticalRegionHeights = criticalRegionHeights;</span>
+<span class="fc" id="L148">    }</span>
 
     @Override
     public int getID() {
-<span class="fc" id="L151">        return id;</span>
+<span class="fc" id="L152">        return id;</span>
     }
 
     @Override
     public Cell convert(CellFactory factory, Location location) {
-<span class="fc" id="L156">        return convert((PottsCellFactory) factory, location);</span>
+<span class="fc" id="L157">        return convert((PottsCellFactory) factory, location);</span>
     }
 
     /**
@@ -165,27 +166,30 @@ public final class PottsCellContainer implements CellContainer {
      */
     private Cell convert(PottsCellFactory factory, Location location) {
         // Get parameters for the cell population.
-<span class="fc" id="L168">        MiniBox parameters = factory.popToParameters.get(pop);</span>
+<span class="fc" id="L169">        MiniBox parameters = factory.popToParameters.get(pop);</span>
+
+        // Get links for the cell population.
+<span class="fc" id="L172">        GrabBag links = factory.popToLinks.get(pop);</span>
 
         // Make cell.
         PottsCell cell;
-<span class="fc" id="L172">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
+<span class="fc" id="L176">        switch (parameters.get(&quot;CLASS&quot;)) {</span>
             default:
             case &quot;stem&quot;:
-<span class="fc bfc" id="L175" title="All 2 branches covered.">                if (factory.popToRegions.get(pop)) {</span>
-<span class="fc" id="L176">                    cell = new PottsCellStem(this, location, parameters, true);</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">                if (factory.popToRegions.get(pop)) {</span>
+<span class="fc" id="L180">                    cell = new PottsCellStem(this, location, parameters, true, links);</span>
                 } else {
-<span class="fc" id="L178">                    cell = new PottsCellStem(this, location, parameters, false);</span>
+<span class="fc" id="L182">                    cell = new PottsCellStem(this, location, parameters, false, links);</span>
                 }
         }
 
         // Update cell module.
-<span class="pc bpc" id="L183" title="1 of 2 branches missed.">        if (phase != null) {</span>
-<span class="fc" id="L184">            PottsModule module = (PottsModule) cell.getModule();</span>
-<span class="fc" id="L185">            module.setPhase(phase);</span>
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">        if (phase != null) {</span>
+<span class="fc" id="L188">            PottsModule module = (PottsModule) cell.getModule();</span>
+<span class="fc" id="L189">            module.setPhase(phase);</span>
         }
 
-<span class="fc" id="L188">        return cell;</span>
+<span class="fc" id="L192">        return cell;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

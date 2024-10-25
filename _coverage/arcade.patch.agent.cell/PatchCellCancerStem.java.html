@@ -3,6 +3,7 @@
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 
 /**
@@ -18,17 +19,8 @@ import arcade.core.util.MiniBox;
  * &lt;/ul&gt;
  */
 public class PatchCellCancerStem extends PatchCellCancer {
-    /** Fraction of divisions that are symmetric. */
-    private final double symmetricFraction;
-
     /**
      * Creates a cancer stem {@code PatchCell} agent.
-     *
-     * &lt;p&gt;Loaded parameters include:
-     *
-     * &lt;ul&gt;
-     *   &lt;li&gt;{@code SYMMETRIC_FRACTION} = fraction of divisions that are symmetric
-     * &lt;/ul&gt;
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
@@ -36,13 +28,23 @@ public class PatchCellCancerStem extends PatchCellCancer {
      */
     public PatchCellCancerStem(
             PatchCellContainer container, Location location, MiniBox parameters) {
-<span class="nc" id="L39">        super(container, location, parameters);</span>
+<span class="nc" id="L31">        this(container, location, parameters, null);</span>
+<span class="nc" id="L32">    }</span>
 
-        // Set loaded parameters.
-<span class="nc" id="L42">        symmetricFraction = parameters.getDouble(&quot;SYMMETRIC_FRACTION&quot;);</span>
+    /**
+     * Creates a cancer stem {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellCancerStem(
+            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+<span class="nc" id="L44">        super(container, location, parameters, links);</span>
 
         // TODO: set death age
-<span class="nc" id="L45">    }</span>
+<span class="nc" id="L47">    }</span>
 
     /**
      * {@inheritDoc}
@@ -51,13 +53,14 @@ public class PatchCellCancerStem extends PatchCellCancer {
      */
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-<span class="nc bnc" id="L54" title="All 2 branches missed.">        int newDivisons = random.nextDouble() &lt; symmetricFraction ? divisions : divisions - 1;</span>
-<span class="nc" id="L55">        return new PatchCellContainer(</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        int newPop = links == null ? pop : links.next(random);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        int newDivisions = newPop == pop ? divisions : divisions - 1;</span>
+<span class="nc" id="L58">        return new PatchCellContainer(</span>
                 newID,
                 id,
-                pop,
+                newPop,
                 age,
-                newDivisons,
+                newDivisions,
                 newState,
                 volume,
                 height,

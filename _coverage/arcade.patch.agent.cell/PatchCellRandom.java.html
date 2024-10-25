@@ -5,6 +5,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import static arcade.patch.util.PatchEnums.Domain;
 import static arcade.patch.util.PatchEnums.State;
@@ -25,16 +26,30 @@ public class PatchCellRandom extends PatchCell {
      * @param parameters the dictionary of parameters
      */
     public PatchCellRandom(PatchCellContainer container, Location location, MiniBox parameters) {
-<span class="fc" id="L28">        super(container, location, parameters);</span>
-<span class="fc" id="L29">    }</span>
+<span class="fc" id="L29">        this(container, location, parameters, null);</span>
+<span class="fc" id="L30">    }</span>
+
+    /**
+     * Creates a random {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellRandom(
+            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+<span class="fc" id="L42">        super(container, location, parameters, links);</span>
+<span class="fc" id="L43">    }</span>
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-<span class="fc" id="L33">        divisions--;</span>
-<span class="fc" id="L34">        return new PatchCellContainer(</span>
+<span class="fc" id="L47">        divisions--;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        int newPop = links == null ? pop : links.next(random);</span>
+<span class="fc" id="L49">        return new PatchCellContainer(</span>
                 newID,
                 id,
-                pop,
+                newPop,
                 age,
                 divisions,
                 newState,
@@ -46,26 +61,26 @@ public class PatchCellRandom extends PatchCell {
 
     @Override
     public void step(SimState simstate) {
-<span class="fc" id="L49">        Simulation sim = (Simulation) simstate;</span>
+<span class="fc" id="L64">        Simulation sim = (Simulation) simstate;</span>
 
         // Increase age of cell.
-<span class="fc" id="L52">        age++;</span>
+<span class="fc" id="L67">        age++;</span>
 
         // Randomly select a cell state.
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (state == State.UNDEFINED) {</span>
-<span class="fc" id="L56">            setState(State.random(simstate.random));</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (state == State.UNDEFINED) {</span>
+<span class="fc" id="L71">            setState(State.random(simstate.random));</span>
         }
 
         // Step metabolism process.
-<span class="fc" id="L60">        processes.get(Domain.METABOLISM).step(simstate.random, sim);</span>
+<span class="fc" id="L75">        processes.get(Domain.METABOLISM).step(simstate.random, sim);</span>
 
         // Step signaling network process.
-<span class="fc" id="L63">        processes.get(Domain.SIGNALING).step(simstate.random, sim);</span>
+<span class="fc" id="L78">        processes.get(Domain.SIGNALING).step(simstate.random, sim);</span>
 
         // Step the module for the cell state.
-<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (module != null) {</span>
-<span class="fc" id="L67">            module.step(simstate.random, sim);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (module != null) {</span>
+<span class="fc" id="L82">            module.step(simstate.random, sim);</span>
         }
-<span class="fc" id="L69">    }</span>
+<span class="fc" id="L84">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

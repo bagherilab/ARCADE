@@ -5,6 +5,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import static arcade.patch.util.PatchEnums.State;
 
@@ -27,8 +28,21 @@ public class PatchCellCancer extends PatchCellTissue {
      * @param parameters the dictionary of parameters
      */
     public PatchCellCancer(PatchCellContainer container, Location location, MiniBox parameters) {
-<span class="nc" id="L30">        super(container, location, parameters);</span>
-<span class="nc" id="L31">    }</span>
+<span class="nc" id="L31">        this(container, location, parameters, null);</span>
+<span class="nc" id="L32">    }</span>
+
+    /**
+     * Creates a cancer {@code PatchCell} agent with population links.
+     *
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param links the map of population links
+     */
+    public PatchCellCancer(
+            PatchCellContainer container, Location location, MiniBox parameters, GrabBag links) {
+<span class="nc" id="L44">        super(container, location, parameters, links);</span>
+<span class="nc" id="L45">    }</span>
 
     /**
      * {@inheritDoc}
@@ -37,19 +51,20 @@ public class PatchCellCancer extends PatchCellTissue {
      */
     @Override
     public void step(SimState simstate) {
-<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (state == State.QUIESCENT) {</span>
-<span class="nc" id="L41">            checkNeighborhood(simstate, this);</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if (state == State.QUIESCENT) {</span>
+<span class="nc" id="L55">            checkNeighborhood(simstate, this);</span>
         }
-<span class="nc" id="L43">        super.step(simstate);</span>
-<span class="nc" id="L44">    }</span>
+<span class="nc" id="L57">        super.step(simstate);</span>
+<span class="nc" id="L58">    }</span>
 
     @Override
     public PatchCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
-<span class="nc" id="L48">        divisions--;</span>
-<span class="nc" id="L49">        return new PatchCellContainer(</span>
+<span class="nc" id="L62">        divisions--;</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        int newPop = links == null ? pop : links.next(random);</span>
+<span class="nc" id="L64">        return new PatchCellContainer(</span>
                 newID,
                 id,
-                pop,
+                newPop,
                 age,
                 divisions,
                 newState,
@@ -68,10 +83,10 @@ public class PatchCellCancer extends PatchCellTissue {
      * @param cell the reference cell
      */
     private static void checkNeighborhood(SimState simstate, PatchCell cell) {
-<span class="nc" id="L71">        Simulation sim = (Simulation) simstate;</span>
-<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() &gt; 0) {</span>
-<span class="nc" id="L73">            cell.setState(State.UNDEFINED);</span>
+<span class="nc" id="L86">        Simulation sim = (Simulation) simstate;</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (PatchCell.findFreeLocations(sim, cell.location, cell.volume, cell.height).size() &gt; 0) {</span>
+<span class="nc" id="L88">            cell.setState(State.UNDEFINED);</span>
         }
-<span class="nc" id="L75">    }</span>
+<span class="nc" id="L90">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
