@@ -52,7 +52,6 @@ public final class PatchCellContainer implements CellContainer {
     /**
      * Creates a {@code PatchCellContainer} instance.
      *
-<<<<<<< HEAD
      * @param id the cell ID
      * @param parent the parent ID
      * @param pop the cell population index
@@ -76,27 +75,6 @@ public final class PatchCellContainer implements CellContainer {
             double criticalVolume,
             double criticalHeight,
             Bag cycles) {
-=======
-     * @param id  the cell ID
-     * @param parent  the parent ID
-     * @param pop  the cell population index
-     * @param age  the cell age
-     * @param divisions  the number of cell divisions
-     * @param state  the cell state
-     * @param volume  the cell volume
-     * @param height  the cell height
-     * @param criticalVolume  the critical volume
-     * @param criticalHeight  the critical height
-     * @param cycles  the list of cell cycle lengths
-     */
-    public PatchCellContainer(int id, int parent, int pop, int age, int divisions,
-                              CellState state, double volume, double height,
-                              double criticalVolume, double criticalHeight, Bag cycles) {
-<<<<<<< HEAD
->>>>>>> b06446fc (add cell cycles)
-=======
->>>>>>> 68cc635a4622b9ec38e23f8ac9f17c0ef91c50a1
->>>>>>> 1f1e395579f67b5f8ed4a7c997d5651a105a0fad
         this.id = id;
         this.parent = parent;
         this.pop = pop;
