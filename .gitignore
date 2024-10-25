@@ -13,3 +13,4 @@ working/
 .DS_Store
 MANIFEST.MF
 setup/setupWTvariants/
+setup/*

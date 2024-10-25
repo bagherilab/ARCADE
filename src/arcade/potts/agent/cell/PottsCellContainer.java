@@ -25,54 +25,41 @@ public final class PottsCellContainer implements CellContainer {
     /** Unique cell container ID. */
     public final int id;
 
-
     /** Cell parent ID. */
     public final int parent;
-
 
     /** Cell population index. */
     public final int pop;
 
-
     /** Cell age [ticks]. */
     public final int age;
-
 
     /** Number of divisions. */
     public final int divisions;
 
-
     /** Cell state. */
     public final CellState state;
-
 
     /** Cell phase. */
     public final Phase phase;
 
-
     /** Cell size [voxels]. */
     public final int voxels;
-
 
     /** Cell region sizes [voxels]. */
     public final EnumMap<Region, Integer> regionVoxels;
 
-
     /** Critical cell volume [voxels]. */
     public final double criticalVolume;
-
 
     /** Critical cell height [voxels]. */
     public final double criticalHeight;
 
-
     /** Critical region cell volumes [voxels]. */
     public final EnumMap<Region, Double> criticalRegionVolumes;
 
-
     /** Critical region cell heights [voxels]. */
     public final EnumMap<Region, Double> criticalRegionHeights;
-
 
     /**
      * Creates a {@code PottsCellContainer} instance.
@@ -127,7 +114,7 @@ public final class PottsCellContainer implements CellContainer {
                 criticalHeight,
                 null,
                 null);
-            }
+    }
 
     /**
      * Creates a {@code PottsCellContainer} instance.
@@ -188,7 +175,6 @@ public final class PottsCellContainer implements CellContainer {
         this.criticalRegionHeights = criticalRegionHeights;
     }
 
-
     @Override
     public int getID() {
         return id;
@@ -198,7 +184,6 @@ public final class PottsCellContainer implements CellContainer {
     public Cell convert(CellFactory factory, Location location) {
         return convert((PottsCellFactory) factory, location);
     }
-
 
     /**
      * Converts the cell container into a {@link PottsCell}.
@@ -401,11 +386,9 @@ public final class PottsCellContainer implements CellContainer {
                 break;
         }
 
-
         // Update cell module.
         PottsModule module = (PottsModule) cell.getModule();
         module.setPhase(phase);
-
 
         return cell;
     }
