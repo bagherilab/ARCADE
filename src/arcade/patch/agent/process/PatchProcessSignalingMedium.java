@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.core.util.Solver;
 import arcade.core.util.Solver.Equations;
 import arcade.patch.agent.cell.PatchCell;
@@ -148,8 +148,7 @@ public class PatchProcessSignalingMedium extends PatchProcessSignaling {
         names.add(P_ACTIVE, "plcg_active");
 
         // Set loaded parameters.
-        // TODO: pull migratory threshold from distribution
-        MiniBox parameters = cell.getParameters();
+        Parameters parameters = cell.getParameters();
         migratoryThreshold = parameters.getDouble("metabolism/MIGRATORY_THRESHOLD");
     }
 

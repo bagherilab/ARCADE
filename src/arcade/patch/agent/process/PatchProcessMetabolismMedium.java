@@ -4,7 +4,7 @@ import java.util.Arrays;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 
 /**
@@ -77,8 +77,7 @@ public class PatchProcessMetabolismMedium extends PatchProcessMetabolism {
         names = Arrays.asList(intNames);
 
         // Set loaded parameters.
-        // TODO: pull metabolic preference from distribution
-        MiniBox parameters = cell.getParameters();
+        Parameters parameters = cell.getParameters();
         metabolicPreference = parameters.getDouble("metabolism/METABOLIC_PREFERENCE");
         conversionFraction = parameters.getDouble("metabolism/CONVERSION_FRACTION");
         minimumMassFraction = parameters.getDouble("metabolism/MINIMUM_MASS_FRACTION");

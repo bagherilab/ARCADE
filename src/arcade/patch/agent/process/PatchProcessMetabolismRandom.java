@@ -4,7 +4,7 @@ import java.util.Arrays;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 
 /**
@@ -74,7 +74,7 @@ public class PatchProcessMetabolismRandom extends PatchProcessMetabolism {
         names = Arrays.asList(intNames);
 
         // Set loaded parameters.
-        MiniBox parameters = cell.getParameters();
+        Parameters parameters = cell.getParameters();
         averageCellVolume = parameters.getDouble("CELL_VOLUME_MEAN");
     }
 

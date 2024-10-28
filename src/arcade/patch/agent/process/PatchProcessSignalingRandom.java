@@ -3,7 +3,7 @@ package arcade.patch.agent.process;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.process.Process;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.patch.agent.cell.PatchCell;
 import static arcade.patch.util.PatchEnums.Flag;
 
@@ -32,8 +32,7 @@ public class PatchProcessSignalingRandom extends PatchProcessSignaling {
         super(cell);
 
         // Set loaded parameters.
-        // TODO: pull migratory threshold from distribution
-        MiniBox parameters = cell.getParameters();
+        Parameters parameters = cell.getParameters();
         migratoryProbability = parameters.getDouble("metabolism/MIGRATORY_PROBABILITY");
     }
 
