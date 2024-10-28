@@ -4,7 +4,7 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModuleApoptosisSimple;
 import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
@@ -29,7 +29,7 @@ public final class PottsCellStem extends PottsCell {
     public PottsCellStem(
             PottsCellContainer container,
             Location location,
-            MiniBox parameters,
+            Parameters parameters,
             boolean hasRegions) {
         this(container, location, parameters, hasRegions, null);
     }
@@ -46,7 +46,7 @@ public final class PottsCellStem extends PottsCell {
     public PottsCellStem(
             PottsCellContainer container,
             Location location,
-            MiniBox parameters,
+            Parameters parameters,
             boolean hasRegions,
             GrabBag links) {
         super(container, location, parameters, hasRegions, links);
