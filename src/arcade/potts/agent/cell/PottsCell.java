@@ -13,7 +13,7 @@ import arcade.core.agent.process.ProcessDomain;
 import arcade.core.env.location.Location;
 import arcade.core.sim.Simulation;
 import arcade.core.util.GrabBag;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.module.PottsModule;
 import arcade.potts.env.location.PottsLocation;
 import static arcade.potts.util.PottsEnums.Ordering;
@@ -94,7 +94,7 @@ public abstract class PottsCell implements Cell {
     protected Module module;
 
     /** Cell parameters. */
-    final MiniBox parameters;
+    final Parameters parameters;
 
     /** Cell population links. */
     final GrabBag links;
@@ -104,14 +104,14 @@ public abstract class PottsCell implements Cell {
      *
      * @param container the cell container
      * @param location the {@link Location} of the cell
-     * @param parameters the dictionary of parameters
+     * @param parameters the cell parameters
      * @param hasRegions {@code true} if cell has regions, {@code false} otherwise
      * @param links the map of population links
      */
     public PottsCell(
             PottsCellContainer container,
             Location location,
-            MiniBox parameters,
+            Parameters parameters,
             boolean hasRegions,
             GrabBag links) {
         this.id = container.id;
@@ -187,7 +187,7 @@ public abstract class PottsCell implements Cell {
     }
 
     @Override
-    public MiniBox getParameters() {
+    public Parameters getParameters() {
         return parameters;
     }
 
