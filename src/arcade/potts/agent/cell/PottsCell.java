@@ -191,6 +191,10 @@ public abstract class PottsCell implements Cell {
         return parameters;
     }
 
+    public GrabBag getLinks() {
+        return links;
+    }
+
     /**
      * Checks if the cell has regions.
      *

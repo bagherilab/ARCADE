@@ -1,12 +1,11 @@
 package arcade.potts.agent.cell;
 
-import java.util.EnumMap;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.*;
-import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
 
 /**
@@ -21,58 +20,26 @@ public final class PottsCellFlyNeuronWT extends PottsCell {
     public int neuronGeneration;
 
     /**
-     * Creates a new PottsCellFlyNeuronWT instance with the given parameters.
+     * Creates a stem {@code PottsCellFlyNeuronWT} agent.
      *
-     * @param id Cell ID
-     * @param parent Parent cell ID
-     * @param pop Population number
-     * @param state Initial cell state
-     * @param age Cell age
-     * @param divisions Number of divisions
-     * @param location Cell location
-     * @param hasRegions Whether the cell has regions
-     * @param parameters Cell parameters
-     * @param criticalVolume Critical volume for cell division
-     * @param criticalHeight Critical height for cell division
-     * @param criticalRegionVolumes Critical volumes for cell regions
-     * @param criticalRegionHeights Critical heights for cell regions
-     * @param neuronGeneration Neuron generation.
+     * @param container the cell container
+     * @param location the {@link Location} of the cell
+     * @param parameters the dictionary of parameters
+     * @param hasRegions {@code true} if cell has regions, {@code false} otherwise
      */
     public PottsCellFlyNeuronWT(
-            int id,
-            int parent,
-            int pop,
-            CellState state,
-            int age,
-            int divisions,
+            PottsCellContainer container,
             Location location,
-            boolean hasRegions,
             MiniBox parameters,
-            double criticalVolume,
-            double criticalHeight,
-            EnumMap<Region, Double> criticalRegionVolumes,
-            EnumMap<Region, Double> criticalRegionHeights) {
-        super(
-                id,
-                parent,
-                pop,
-                state,
-                age,
-                divisions,
-                location,
-                hasRegions,
-                parameters,
-                criticalVolume,
-                criticalHeight,
-                criticalRegionVolumes,
-                criticalRegionHeights);
-        System.out.println("Making PottsCellFlyNeuronWT cell");
+            boolean hasRegions,
+            GrabBag links) {
+        super(container, location, parameters, hasRegions, links);
+        System.out.println("Making PottsCellFlyNeuron cell");
     }
 
     @Override
-    public PottsCell make(
-            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
-        throw new UnsupportedOperationException("PottsCellFlyNeuronWT cells do not divide");
+    public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+        throw new UnsupportedOperationException("Neurons should not divide");
     }
 
     @Override

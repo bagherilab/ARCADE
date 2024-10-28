@@ -218,8 +218,8 @@ public class PottsModuleProliferationSimple extends PottsModuleProliferation {
         Poisson poisson = poissonFactory.createPoisson(rateM, random);
         currentSteps += poisson.nextInt();
         if (currentSteps >= stepsM) {
-            addCell(random, sim);
             setPhase(Phase.PROLIFERATIVE_G1);
+            addCell(random, sim);
         }
     }
 }

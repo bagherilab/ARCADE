@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import arcade.potts.util.PottsEnums.Direction;
+import arcade.potts.util.PottsEnums.Region;
+import sim.util.Double3D;
 import sim.util.Int3D;
 import ec.util.MersenneTwisterFast;
 import static org.junit.jupiter.api.Assertions.*;
@@ -1583,7 +1586,7 @@ public class PottsLocationTest {
         // Plane with normal vector (1, 2, 3) passing through point (1, 2, 1)
         // Plane equation: x + 2y + 3z = 8
         Voxel planePoint = new Voxel(1, 2, 1);
-        Int3D normalVector = new Int3D(1, 2, 3);
+        Double3D normalVector = new Double3D(1, 2, 3);
         Plane plane = new Plane(planePoint, normalVector);
 
         for (Voxel voxel : voxels) {

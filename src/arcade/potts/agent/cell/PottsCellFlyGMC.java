@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.*;
 import arcade.potts.util.PottsEnums.Region;
@@ -11,55 +12,31 @@ import arcade.potts.util.PottsEnums.State;
 
 public class PottsCellFlyGMC extends PottsCell {
     public PottsCellFlyGMC(
-            int id,
-            int parent,
-            int pop,
-            CellState state,
-            int age,
-            int divisions,
+            PottsCellContainer container,
             Location location,
-            boolean hasRegions,
             MiniBox parameters,
-            double criticalVolume,
-            double criticalHeight,
-            EnumMap<Region, Double> criticalRegionVolumes,
-            EnumMap<Region, Double> criticalRegionHeights) {
-        super(
-                id,
-                parent,
-                pop,
-                state,
-                age,
-                divisions,
-                location,
-                hasRegions,
-                parameters,
-                criticalVolume,
-                criticalHeight,
-                criticalRegionVolumes,
-                criticalRegionHeights);
+            boolean hasRegions,
+            GrabBag links) {
+        super(container, location, parameters, hasRegions, links);
         System.out.println("Making PottsCellFlyGMC cell");
     }
 
     @Override
-    public PottsCell make(
-            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
+    public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
         divisions++;
-        MiniBox new_params = new MiniBox();
-        for (String key : parameters.getKeys()) {
-            new_params.put(key, parameters.get(key));
-        }
 
-        return new PottsCellFlyNeuronWT(
+        int newPop = links == null ? pop : links.next(random);
+
+        return new PottsCellContainer(
                 newID,
                 id,
-                pop + 1,
-                newState,
+                newPop,
                 age,
                 divisions,
-                newLocation,
-                hasRegions,
-                new_params,
+                newState,
+                null,
+                0,
+                null,
                 criticalVolume,
                 criticalHeight,
                 criticalRegionVolumes,
@@ -70,9 +47,17 @@ public class PottsCellFlyGMC extends PottsCell {
     void setStateModule(CellState newState) {
         switch ((State) newState) {
             case PROLIFERATIVE:
-                module = new PottsModuleProliferationSimple(this);
+                module = new PottsModuleProliferationFlyGMC(this);
             default:
                 break;
         }
+    }
+
+    public EnumMap<Region, Double> getCriticalRegionVolumes() {
+        return criticalRegionVolumes;
+    }
+
+    public EnumMap<Region, Double> getCriticalRegionHeights() {
+        return criticalRegionHeights;
     }
 }

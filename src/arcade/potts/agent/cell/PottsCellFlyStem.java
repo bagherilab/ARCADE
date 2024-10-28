@@ -1,20 +1,19 @@
 package arcade.potts.agent.cell;
 
-import java.util.EnumMap;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
+import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.*;
 import arcade.potts.util.PottsEnums.Direction;
-import arcade.potts.util.PottsEnums.Region;
 import arcade.potts.util.PottsEnums.State;
 
 public class PottsCellFlyStem extends PottsCell {
 
     /** Enum outlining parameters for each cell type */
     public enum StemType {
-        WT(50, 66, Direction.ZX_PLANE, 1.0),
+        WT(50, 75, Direction.ZX_PLANE, 1.0),
         MUDMUT1_RANDOM(50, 50, Direction.YZ_PLANE, 0.5),
         MUDMUT1_LEFT(50, 50, Direction.YZ_PLANE, 1.0),
         MUDMUT2_RANDOM(50, 50, Direction.YZ_PLANE, 0.5),
@@ -56,253 +55,63 @@ public class PottsCellFlyStem extends PottsCell {
     public final StemType stemType;
 
     public PottsCellFlyStem(
-            int id,
-            int parent,
-            int pop,
-            CellState state,
-            int age,
-            int divisions,
+            PottsCellContainer container,
             Location location,
-            boolean hasRegions,
             MiniBox parameters,
-            double criticalVolume,
-            double criticalHeight,
-            EnumMap<Region, Double> criticalRegionVolumes,
-            EnumMap<Region, Double> criticalRegionHeights,
-            StemType stemType) {
-        super(
+            boolean hasRegions,
+            GrabBag links) {
+        super(container, location, parameters, hasRegions, links);
+        String stemTypeString = parameters.get("CLASS");
+        switch (stemTypeString) {
+            case "flystem-wt":
+                stemType = StemType.WT;
+                break;
+            case "flystem-mudmut-onestemdaughter-stemdaughterrandom":
+                stemType = StemType.MUDMUT1_RANDOM;
+                break;
+            case "flystem-mudmut-onestemdaughter-stemdaughterleft":
+                stemType = StemType.MUDMUT1_LEFT;
+                break;
+            case "flystem-mudmut-twostemdaughters-stemdaughterrandom":
+                stemType = StemType.MUDMUT2_RANDOM;
+                break;
+            case "flystem-invert-onestemdaughter-stemdaughterbasalL":
+                stemType = StemType.INVERT1_BASAL;
+                break;
+            case "flystem-invert-twostemdaughters-stemdaughterbasalorboth":
+                stemType = StemType.INVERT2BASAL_OR_BOTH;
+                break;
+            case "flystem-symmetric-onestemdaughter-stemdaughterapical":
+                stemType = StemType.SYMMETRIC1_APICAL;
+                break;
+            case "flystem-symmetric-twostemdaughters-stemdaughterapicalorboth":
+                stemType = StemType.SYMMETRIC2APICAL_OR_BOTH;
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown StemType: " + stemTypeString);
+        }
+    }
+
+    @Override
+    public PottsCellContainer make(int newID, CellState newState, MersenneTwisterFast random) {
+        divisions++;
+
+        int newPop = links == null ? pop : links.next(random);
+
+        return new PottsCellContainer(
+                newID,
                 id,
-                parent,
-                pop,
-                state,
+                newPop,
                 age,
                 divisions,
-                location,
-                hasRegions,
-                parameters,
+                newState,
+                null,
+                0,
+                null,
                 criticalVolume,
                 criticalHeight,
                 criticalRegionVolumes,
                 criticalRegionHeights);
-        this.stemType = stemType;
-    }
-
-    @Override
-    public PottsCell make(
-            int newID, CellState newState, Location newLocation, MersenneTwisterFast random) {
-        divisions++;
-        switch (stemType) {
-            case WT:
-                return new PottsCellFlyGMC(
-                        newID,
-                        getID(),
-                        2,
-                        newState,
-                        getAge(),
-                        getDivisions(),
-                        newLocation,
-                        hasRegions(),
-                        getParameters(),
-                        criticalVolume,
-                        criticalHeight,
-                        criticalRegionVolumes,
-                        criticalRegionHeights);
-            case MUDMUT1_RANDOM:
-                return new PottsCellFlyGMC(
-                        newID,
-                        getID(),
-                        2,
-                        newState,
-                        getAge(),
-                        getDivisions(),
-                        newLocation,
-                        hasRegions(),
-                        getParameters(),
-                        criticalVolume,
-                        criticalHeight,
-                        criticalRegionVolumes,
-                        criticalRegionHeights);
-            case MUDMUT1_LEFT:
-                return new PottsCellFlyGMC(
-                        newID,
-                        getID(),
-                        2,
-                        newState,
-                        getAge(),
-                        getDivisions(),
-                        newLocation,
-                        hasRegions(),
-                        getParameters(),
-                        criticalVolume,
-                        criticalHeight,
-                        criticalRegionVolumes,
-                        criticalRegionHeights);
-            case MUDMUT2_RANDOM:
-                double rand = random.nextDouble();
-                if (rand < 0.25) {
-                    return new PottsCellFlyStem(
-                            newID,
-                            getID(),
-                            getPop(),
-                            newState,
-                            getAge(),
-                            getDivisions(),
-                            newLocation,
-                            hasRegions(),
-                            getParameters(),
-                            criticalVolume,
-                            criticalHeight,
-                            criticalRegionVolumes,
-                            criticalRegionHeights,
-                            StemType.MUDMUT2_RANDOM);
-                } else if (rand < 0.5) {
-                    return new PottsCellFlyStem(
-                            newID,
-                            getID(),
-                            1,
-                            newState,
-                            getAge(),
-                            getDivisions(),
-                            newLocation,
-                            hasRegions(),
-                            getParameters(),
-                            criticalVolume,
-                            criticalHeight,
-                            criticalRegionVolumes,
-                            criticalRegionHeights,
-                            StemType.MUDMUT1_RANDOM);
-                } else {
-                    return new PottsCellFlyGMC(
-                            newID,
-                            getID(),
-                            2,
-                            newState,
-                            getAge(),
-                            getDivisions(),
-                            newLocation,
-                            hasRegions(),
-                            getParameters(),
-                            criticalVolume,
-                            criticalHeight,
-                            criticalRegionVolumes,
-                            criticalRegionHeights);
-                }
-            case INVERT1_BASAL:
-                return new PottsCellFlyGMC(
-                        newID,
-                        getID(),
-                        2,
-                        newState,
-                        getAge(),
-                        getDivisions(),
-                        newLocation,
-                        hasRegions(),
-                        getParameters(),
-                        criticalVolume,
-                        criticalHeight,
-                        criticalRegionVolumes,
-                        criticalRegionHeights);
-            case INVERT2BASAL_OR_BOTH:
-                double randInvert = random.nextDouble();
-                if (randInvert < 0.25) {
-                    return new PottsCellFlyStem(
-                            newID,
-                            getID(),
-                            getPop(),
-                            newState,
-                            getAge(),
-                            getDivisions(),
-                            newLocation,
-                            hasRegions(),
-                            getParameters(),
-                            criticalVolume,
-                            criticalHeight,
-                            criticalRegionVolumes,
-                            criticalRegionHeights,
-                            StemType.WT);
-                } else if (randInvert < 0.5) {
-                    return new PottsCellFlyStem(
-                            newID,
-                            getID(),
-                            2,
-                            newState,
-                            getAge(),
-                            getDivisions(),
-                            newLocation,
-                            hasRegions(),
-                            getParameters(),
-                            criticalVolume,
-                            criticalHeight,
-                            criticalRegionVolumes,
-                            criticalRegionHeights,
-                            StemType.INVERT2BASAL_OR_BOTH);
-                } else {
-                    return new PottsCellFlyGMC(
-                            newID,
-                            getID(),
-                            2,
-                            newState,
-                            getAge(),
-                            getDivisions(),
-                            newLocation,
-                            hasRegions(),
-                            getParameters(),
-                            criticalVolume,
-                            criticalHeight,
-                            criticalRegionVolumes,
-                            criticalRegionHeights);
-                }
-            case SYMMETRIC1_APICAL:
-                return new PottsCellFlyGMC(
-                        newID,
-                        getID(),
-                        2,
-                        newState,
-                        getAge(),
-                        getDivisions(),
-                        newLocation,
-                        hasRegions(),
-                        getParameters(),
-                        criticalVolume,
-                        criticalHeight,
-                        criticalRegionVolumes,
-                        criticalRegionHeights);
-            case SYMMETRIC2APICAL_OR_BOTH:
-                if (random.nextBoolean()) {
-                    return new PottsCellFlyStem(
-                            newID,
-                            getID(),
-                            getPop(),
-                            newState,
-                            getAge(),
-                            getDivisions(),
-                            newLocation,
-                            hasRegions(),
-                            getParameters(),
-                            criticalVolume,
-                            criticalHeight,
-                            criticalRegionVolumes,
-                            criticalRegionHeights,
-                            StemType.SYMMETRIC2APICAL_OR_BOTH);
-                } else {
-                    return new PottsCellFlyGMC(
-                            newID,
-                            getID(),
-                            2,
-                            newState,
-                            getAge(),
-                            getDivisions(),
-                            newLocation,
-                            hasRegions(),
-                            getParameters(),
-                            criticalVolume,
-                            criticalHeight,
-                            criticalRegionVolumes,
-                            criticalRegionHeights);
-                }
-            default:
-                throw new IllegalArgumentException("Unknown StemType: " + stemType);
-        }
     }
 
     @Override

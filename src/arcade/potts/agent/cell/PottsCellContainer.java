@@ -9,7 +9,6 @@ import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
 import arcade.potts.agent.module.PottsModule;
-import static arcade.potts.agent.cell.PottsCellFlyStem.StemType;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 
@@ -220,7 +219,6 @@ public final class PottsCellContainer implements CellContainer {
                 } else {
                     cell = new PottsCellFlyStem(this, location, parameters, false, links);
                 }
-            break;
                 break;
             case "flystem-mudmut-onestemdaughter-stemdaughterrandom":
                 if (factory.popToRegions.get(pop)) {
@@ -269,6 +267,13 @@ public final class PottsCellContainer implements CellContainer {
                     cell = new PottsCellFlyStem(this, location, parameters, true, links);
                 } else {
                     cell = new PottsCellFlyStem(this, location, parameters, false, links);
+                }
+                break;
+            case "flygmc":
+                if (factory.popToRegions.get(pop)) {
+                    cell = new PottsCellFlyGMC(this, location, parameters, true, links);
+                } else {
+                    cell = new PottsCellFlyGMC(this, location, parameters, false, links);
                 }
                 break;
             case "flyneuron":
