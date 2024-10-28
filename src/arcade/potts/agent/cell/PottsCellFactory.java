@@ -27,25 +27,25 @@ public final class PottsCellFactory implements CellFactory {
     MersenneTwisterFast random;
 
     /** Map of population to critical volumes. */
-    HashMap<Integer, Distribution> popToCriticalVolumes;
+    final HashMap<Integer, Distribution> popToCriticalVolumes;
 
     /** Map of population to critical heights. */
-    HashMap<Integer, Distribution> popToCriticalHeights;
+    final HashMap<Integer, Distribution> popToCriticalHeights;
 
     /** Map of population to parameters. */
-    HashMap<Integer, MiniBox> popToParameters;
+    final HashMap<Integer, MiniBox> popToParameters;
 
     /** Map of population to linked populations. */
-    HashMap<Integer, GrabBag> popToLinks;
+    final HashMap<Integer, GrabBag> popToLinks;
 
     /** Map of population to number of regions. */
-    HashMap<Integer, Boolean> popToRegions;
+    final HashMap<Integer, Boolean> popToRegions;
 
     /** Map of population to region critical volumes. */
-    HashMap<Integer, EnumMap<Region, Distribution>> popToCriticalRegionVolumes;
+    final HashMap<Integer, EnumMap<Region, Distribution>> popToCriticalRegionVolumes;
 
     /** Map of population to region critical heights. */
-    HashMap<Integer, EnumMap<Region, Distribution>> popToCriticalRegionHeights;
+    final HashMap<Integer, EnumMap<Region, Distribution>> popToCriticalRegionHeights;
 
     /** Map of population to list of ids. */
     public final HashMap<Integer, HashSet<Integer>> popToIDs;
@@ -81,6 +81,16 @@ public final class PottsCellFactory implements CellFactory {
         } else {
             createCells(series);
         }
+    }
+
+    @Override
+    public MiniBox getParameters(int pop) {
+        return popToParameters.get(pop);
+    }
+
+    @Override
+    public GrabBag getLinks(int pop) {
+        return popToLinks.get(pop);
     }
 
     /**

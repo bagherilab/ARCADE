@@ -39,28 +39,28 @@ public final class PatchCellFactory implements CellFactory {
     MersenneTwisterFast random;
 
     /** Map of population to critical volumes [um<sup>3</sup>]. */
-    HashMap<Integer, Normal> popToCriticalVolumes;
+    final HashMap<Integer, Normal> popToCriticalVolumes;
 
     /** Map of population to critical heights [um]. */
-    HashMap<Integer, Normal> popToCriticalHeights;
+    final HashMap<Integer, Normal> popToCriticalHeights;
 
     /** Map of population to parameters. */
-    HashMap<Integer, MiniBox> popToParameters;
+    final HashMap<Integer, MiniBox> popToParameters;
 
     /** Map of population to linked populations. */
-    HashMap<Integer, GrabBag> popToLinks;
+    final HashMap<Integer, GrabBag> popToLinks;
 
     /** Map of population to ages [min]. */
-    HashMap<Integer, Uniform> popToAges;
+    final HashMap<Integer, Uniform> popToAges;
 
     /** Map of population to cell divisions. */
-    HashMap<Integer, Integer> popToDivisions;
+    final HashMap<Integer, Integer> popToDivisions;
 
     /** Map of population to compression tolerance [um]. */
-    HashMap<Integer, Double> popToCompression;
+    final HashMap<Integer, Double> popToCompression;
 
     /** Map of population to process versions. */
-    HashMap<Integer, EnumMap<Domain, String>> popToProcessVersions;
+    final HashMap<Integer, EnumMap<Domain, String>> popToProcessVersions;
 
     /** Map of population to list of ids. */
     public final HashMap<Integer, HashSet<Integer>> popToIDs;
@@ -91,6 +91,16 @@ public final class PatchCellFactory implements CellFactory {
         } else {
             createCells(series);
         }
+    }
+
+    @Override
+    public MiniBox getParameters(int pop) {
+        return popToParameters.get(pop);
+    }
+
+    @Override
+    public GrabBag getLinks(int pop) {
+        return popToLinks.get(pop);
     }
 
     /**
