@@ -123,7 +123,7 @@ public abstract class PottsCell implements Cell {
 
         setState(container.state);
 
-        if (container.phase != null) {
+        if (module != null && container.phase != null) {
             ((PottsModule) module).setPhase(container.phase);
         }
 
