@@ -3,6 +3,11 @@ package arcade.core.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import ec.util.MersenneTwisterFast;
+import arcade.core.util.distributions.Distribution;
+import arcade.core.util.distributions.NormalDistribution;
+import arcade.core.util.distributions.TruncatedNormalDistribution;
+import arcade.core.util.distributions.UniformDistribution;
 
 /**
  * Container that maps a key to a value.
@@ -58,6 +63,27 @@ public class MiniBox {
     public int getInt(String id) {
         String s = contents.get(id);
         return (s == null || !s.matches(NUMBER_REGEX) ? 0 : Double.valueOf(s).intValue());
+    }
+
+    /**
+     * Gets the value for given key converted to a distribution.
+     *
+     * @param id the key
+     * @param random the random number generator
+     * @return the distribution instance
+     */
+    public Distribution getDistribution(String id, MersenneTwisterFast random) {
+        String s = contents.get(id);
+
+        if (s.startsWith("UNIFORM")) {
+            return new UniformDistribution(s, random);
+        } else if (s.startsWith("TRUNC_NORMAL")) {
+            return new TruncatedNormalDistribution(s, random);
+        } else if (s.startsWith("NORMAL")) {
+            return new NormalDistribution(s, random);
+        }
+
+        return null;
     }
 
     /**

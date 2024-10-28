@@ -9,6 +9,7 @@ import sim.engine.SimState;
 import arcade.core.sim.output.*;
 import arcade.core.util.Box;
 import arcade.core.util.MiniBox;
+import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 
 /**
  * Abstract simulation manager for {@link Simulation} objects, differing only in random seed.
@@ -29,6 +30,9 @@ public abstract class Series {
 
     /** Regular expression for fractions. */
     private static final String FRACTION_REGEX = "^(([0]*(\\.\\d*|))|(1[\\.0]*))$";
+
+    /** Regular expression for distributions. */
+    public static final String DISTRIBUTION_REGEX = "^([A-Z]+)\\(([\\d\\.]+),([\\d\\.]+)\\)$";
 
     /** Offset of random seed to avoid using seed of 0. */
     public static final int SEED_OFFSET = 1000;
@@ -305,13 +309,16 @@ public abstract class Series {
             String defaultParameter,
             MiniBox values,
             MiniBox scales) {
-        box.put(parameter, defaultParameter);
+        String value = values.get(parameter) != null ? values.get(parameter) : defaultParameter;
+        boolean isDistribution = value.matches(DISTRIBUTION_REGEX);
 
-        if (values.get(parameter) != null) {
-            box.put(parameter, values.get(parameter));
+        if (isDistribution) {
+            box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, value);
+        } else {
+            box.put(parameter, value);
         }
 
-        if (scales.get(parameter) != null) {
+        if (!isDistribution && scales.get(parameter) != null) {
             box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));
         }
     }
