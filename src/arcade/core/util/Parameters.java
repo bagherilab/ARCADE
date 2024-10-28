@@ -35,17 +35,18 @@ public class Parameters {
         distributions = new HashMap<>();
 
         MiniBox distributionsBox = popParameters.filter("(DISTRIBUTION)");
+        if (distributionsBox != null) {
+            for (String key : distributionsBox.getKeys()) {
+                Distribution distribution;
 
-        for (String key : distributionsBox.getKeys()) {
-            Distribution distribution;
+                if (cellParameters != null && cellParameters.distributions.containsKey(key)) {
+                    distribution = cellParameters.distributions.get(key).rebase(random);
+                } else {
+                    distribution = popParameters.getDistribution(key, random);
+                }
 
-            if (cellParameters != null && cellParameters.distributions.containsKey(key)) {
-                distribution = cellParameters.distributions.get(key).rebase(random);
-            } else {
-                distribution = popParameters.getDistribution(key, random);
+                distributions.put(key, distribution);
             }
-
-            distributions.put(key, distribution);
         }
     }
 

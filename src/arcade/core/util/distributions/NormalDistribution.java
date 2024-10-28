@@ -11,14 +11,17 @@ public class NormalDistribution implements Distribution {
     /** Code for specifying a normal distribution. */
     private static final String CODE_PATTERN = "^NORMAL\\(([\\d\\.]+),([\\d\\.]+)\\)$";
 
+    /** Values for distribution bounds. */
+    final double[] bounds;
+
     /** Mean of the distribution. */
-    private final double mu;
+    final double mu;
 
     /** Standard deviation of the distribution. */
-    private final double sigma;
+    final double sigma;
 
     /** Normal distribution. */
-    private final Normal normal;
+    final Normal normal;
 
     /** Value drawn from the distribution. */
     public final double value;
@@ -39,6 +42,7 @@ public class NormalDistribution implements Distribution {
 
         this.mu = Double.parseDouble(match.group(1));
         this.sigma = Double.parseDouble(match.group(2));
+        this.bounds = getBounds();
         this.normal = new Normal(mu, sigma, random);
         this.value = nextDouble();
     }
@@ -54,7 +58,17 @@ public class NormalDistribution implements Distribution {
         this.mu = mu;
         this.sigma = Math.abs(sigma);
         this.normal = new Normal(mu, sigma, random);
+        this.bounds = getBounds();
         this.value = nextDouble();
+    }
+
+    /**
+     * Calculate bounds on distribution values.
+     *
+     * @return the distribution bounds.
+     */
+    double[] getBounds() {
+        return null;
     }
 
     @Override
@@ -74,7 +88,11 @@ public class NormalDistribution implements Distribution {
 
     @Override
     public double nextDouble() {
-        return normal.nextDouble();
+        if (bounds != null) {
+            return Math.min(Math.max(normal.nextDouble(), bounds[0]), bounds[1]);
+        } else {
+            return normal.nextDouble();
+        }
     }
 
     @Override
@@ -85,11 +103,6 @@ public class NormalDistribution implements Distribution {
     @Override
     public Distribution rebase(MersenneTwisterFast random) {
         return new NormalDistribution(value, sigma, random);
-    }
-
-    @Override
-    public String convert() {
-        return convert(mu, sigma);
     }
 
     /**

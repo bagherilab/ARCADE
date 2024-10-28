@@ -147,12 +147,9 @@ public class PottsCellContainerTest {
                         cellState,
                         cellPhase,
                         0,
-                        null,
                         criticalVolume,
-                        criticalHeight,
-                        null,
-                        null);
-        PottsCell cell = (PottsCell) container.convert(factory, location);
+                        criticalHeight);
+        PottsCell cell = (PottsCell) container.convert(factory, location, RANDOM);
 
         assertEquals(location, cell.getLocation());
         assertEquals(cellID, cell.getID());
@@ -161,7 +158,7 @@ public class PottsCellContainerTest {
         assertEquals(cellAge, cell.getAge());
         assertEquals(cellDivisions, cell.getDivisions());
         assertEquals(cellState, cell.getState());
-        assertEquals(parameters, cell.getParameters());
+        assertEquals(parameters, cell.getParameters().popParameters);
         assertEquals(cellPhase, ((PottsModule) cell.getModule()).getPhase());
         assertEquals(criticalVolume, cell.getCriticalVolume(), EPSILON);
         assertEquals(criticalHeight, cell.getCriticalHeight(), EPSILON);
@@ -205,12 +202,12 @@ public class PottsCellContainerTest {
                         cellState,
                         cellPhase,
                         0,
-                        null,
+                        new EnumMap<>(Region.class),
                         criticalVolume,
                         criticalHeight,
                         criticalRegionVolumes,
                         criticalRegionHeights);
-        PottsCell cell = (PottsCell) container.convert(factory, location);
+        PottsCell cell = (PottsCell) container.convert(factory, location, RANDOM);
 
         assertEquals(location, cell.getLocation());
         assertEquals(cellID, cell.getID());
@@ -219,7 +216,7 @@ public class PottsCellContainerTest {
         assertEquals(cellAge, cell.getAge());
         assertEquals(cellDivisions, cell.getDivisions());
         assertEquals(cellState, cell.getState());
-        assertEquals(parameters, cell.getParameters());
+        assertEquals(parameters, cell.getParameters().popParameters);
         assertEquals(cellPhase, ((PottsModule) cell.getModule()).getPhase());
         assertEquals(criticalVolume, cell.getCriticalVolume(), EPSILON);
         assertEquals(criticalHeight, cell.getCriticalHeight(), EPSILON);

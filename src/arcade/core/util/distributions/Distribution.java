@@ -55,11 +55,4 @@ public interface Distribution {
      * @return the new distribution
      */
     Distribution rebase(MersenneTwisterFast random);
-
-    /**
-     * Convert the distribution parameters to the distribution code.
-     *
-     * @return the distribution code
-     */
-    String convert();
 }

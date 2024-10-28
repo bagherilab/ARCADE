@@ -87,11 +87,6 @@ public class UniformDistribution implements Distribution {
         return new UniformDistribution(min, max, random);
     }
 
-    @Override
-    public String convert() {
-        return convert(min, max);
-    }
-
     /**
      * Convert uniform distribution parameters to distribution code.
      *

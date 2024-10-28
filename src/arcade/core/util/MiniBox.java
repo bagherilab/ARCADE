@@ -6,7 +6,8 @@ import java.util.HashSet;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.distributions.Distribution;
 import arcade.core.util.distributions.NormalDistribution;
-import arcade.core.util.distributions.TruncatedNormalDistribution;
+import arcade.core.util.distributions.NormalFractionalDistribution;
+import arcade.core.util.distributions.NormalTruncatedDistribution;
 import arcade.core.util.distributions.UniformDistribution;
 
 /**
@@ -78,7 +79,9 @@ public class MiniBox {
         if (s.startsWith("UNIFORM")) {
             return new UniformDistribution(s, random);
         } else if (s.startsWith("TRUNC_NORMAL")) {
-            return new TruncatedNormalDistribution(s, random);
+            return new NormalTruncatedDistribution(s, random);
+        } else if (s.startsWith("FRAC_NORMAL")) {
+            return new NormalFractionalDistribution(s, random);
         } else if (s.startsWith("NORMAL")) {
             return new NormalDistribution(s, random);
         }
