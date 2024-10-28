@@ -6,13 +6,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
-import sim.util.distribution.Normal;
-import sim.util.distribution.Uniform;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.distributions.Distribution;
 import arcade.patch.sim.PatchSeries;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.patch.util.PatchEnums.Domain;
@@ -39,10 +38,10 @@ public final class PatchCellFactory implements CellFactory {
     MersenneTwisterFast random;
 
     /** Map of population to critical volumes [um<sup>3</sup>]. */
-    final HashMap<Integer, Normal> popToCriticalVolumes;
+    final HashMap<Integer, Distribution> popToCriticalVolumes;
 
     /** Map of population to critical heights [um]. */
-    final HashMap<Integer, Normal> popToCriticalHeights;
+    final HashMap<Integer, Distribution> popToCriticalHeights;
 
     /** Map of population to parameters. */
     final HashMap<Integer, MiniBox> popToParameters;
@@ -51,7 +50,7 @@ public final class PatchCellFactory implements CellFactory {
     final HashMap<Integer, GrabBag> popToLinks;
 
     /** Map of population to ages [min]. */
-    final HashMap<Integer, Uniform> popToAges;
+    final HashMap<Integer, Distribution> popToAges;
 
     /** Map of population to cell divisions. */
     final HashMap<Integer, Integer> popToDivisions;
@@ -177,9 +176,9 @@ public final class PatchCellFactory implements CellFactory {
      * @return the cell container
      */
     public PatchCellContainer createCellForPopulation(int id, int pop) {
-        Normal volumes = popToCriticalVolumes.get(pop);
-        Normal heights = popToCriticalHeights.get(pop);
-        Uniform ages = popToAges.get(pop);
+        Distribution volumes = popToCriticalVolumes.get(pop);
+        Distribution heights = popToCriticalHeights.get(pop);
+        Distribution ages = popToAges.get(pop);
 
         int divisions = popToDivisions.get(pop);
         double compression = popToCompression.get(pop);
@@ -227,24 +226,9 @@ public final class PatchCellFactory implements CellFactory {
             int pop = population.getInt("CODE");
             popToIDs.put(pop, new HashSet<>());
 
-            popToCriticalVolumes.put(
-                    pop,
-                    new Normal(
-                            population.getDouble("CELL_VOLUME_MEAN"),
-                            population.getDouble("CELL_VOLUME_STDEV"),
-                            random));
-            popToCriticalHeights.put(
-                    pop,
-                    new Normal(
-                            population.getDouble("CELL_HEIGHT_MEAN"),
-                            population.getDouble("CELL_HEIGHT_STDEV"),
-                            random));
-            popToAges.put(
-                    pop,
-                    new Uniform(
-                            population.getDouble("CELL_AGE_MIN"),
-                            population.getDouble("CELL_AGE_MAX"),
-                            random));
+            popToCriticalVolumes.put(pop, population.getDistribution("CELL_VOLUME", random));
+            popToCriticalHeights.put(pop, population.getDistribution("CELL_HEIGHT", random));
+            popToAges.put(pop, population.getDistribution("CELL_AGE", random));
             popToDivisions.put(pop, population.getInt("DIVISION_POTENTIAL"));
             popToCompression.put(pop, population.getDouble("COMPRESSION_TOLERANCE"));
 

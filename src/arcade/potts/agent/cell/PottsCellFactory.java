@@ -8,9 +8,9 @@ import java.util.Set;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
-import arcade.core.util.Distribution;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.distributions.Distribution;
 import static arcade.potts.util.PottsEnums.Phase;
 import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
@@ -213,13 +213,8 @@ public final class PottsCellFactory implements CellFactory {
             popToIDs.put(pop, new HashSet<>());
             popToParameters.put(pop, series.populations.get(key));
 
-            double muVolume = population.getDouble("CRITICAL_VOLUME_MEAN");
-            double sigmaVolume = population.getDouble("CRITICAL_VOLUME_STDEV");
-            popToCriticalVolumes.put(pop, new Distribution(muVolume, sigmaVolume, random));
-
-            double muHeight = population.getDouble("CRITICAL_HEIGHT_MEAN");
-            double sigmaHeight = population.getDouble("CRITICAL_HEIGHT_STDEV");
-            popToCriticalHeights.put(pop, new Distribution(muHeight, sigmaHeight, random));
+            popToCriticalVolumes.put(pop, population.getDistribution("CRITICAL_VOLUME", random));
+            popToCriticalHeights.put(pop, population.getDistribution("CRITICAL_HEIGHT", random));
 
             // Get population links.
             MiniBox linksBox = population.filter("(LINK)");
@@ -249,19 +244,12 @@ public final class PottsCellFactory implements CellFactory {
                 for (String regionKey : regionKeys) {
                     Region region = Region.valueOf(regionKey);
 
-                    double muVolumeRegion =
-                            population.getDouble("CRITICAL_VOLUME_MEAN_" + regionKey);
-                    double sigmaVolumeRegion =
-                            population.getDouble("CRITICAL_VOLUME_STDEV_" + regionKey);
                     criticalRegionVolumes.put(
-                            region, new Distribution(muVolumeRegion, sigmaVolumeRegion, random));
-
-                    double muHeightRegion =
-                            population.getDouble("CRITICAL_HEIGHT_MEAN_" + regionKey);
-                    double sigmaHeightRegion =
-                            population.getDouble("CRITICAL_HEIGHT_STDEV_" + regionKey);
+                            region,
+                            population.getDistribution("CRITICAL_VOLUME_" + regionKey, random));
                     criticalRegionHeights.put(
-                            region, new Distribution(muHeightRegion, sigmaHeightRegion, random));
+                            region,
+                            population.getDistribution("CRITICAL_HEIGHT_" + regionKey, random));
                 }
 
                 popToCriticalRegionVolumes.put(pop, criticalRegionVolumes);

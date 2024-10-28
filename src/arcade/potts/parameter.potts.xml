@@ -38,22 +38,16 @@
     <potts.term term="persistence" id="DECAY" value="0.05" units="/hour" conversion="DT" />
 
     <!-- default parameters for populations -->
-    <population id="CRITICAL_VOLUME_MEAN" value="1300" units="um^3" conversion="DS^-3" />
-    <population id="CRITICAL_VOLUME_STDEV" value="200" units="um^3" conversion="DS^-3" />
-    <population id="CRITICAL_HEIGHT_MEAN" value="9" units="um" conversion="DS^-1" />
-    <population id="CRITICAL_HEIGHT_STDEV" value="2" units="um" conversion="DS^-1" />
+    <population id="CRITICAL_VOLUME" value="TRUNCATED_NORMAL(1300,200)" units="um^3" conversion="DS^-3" />
+    <population id="CRITICAL_HEIGHT" value="TRUNCATED_NORMAL(9,2)" units="um" conversion="DS^-1" />
 
     <!-- default region parameters -->
-    <population id="CRITICAL_VOLUME_MEAN_DEFAULT" value="1300" units="um^3" conversion="DS^-3" />
-    <population id="CRITICAL_VOLUME_STDEV_DEFAULT" value="200" units="um^3" conversion="DS^-3" />
-    <population id="CRITICAL_HEIGHT_MEAN_DEFAULT" value="9" units="um" conversion="DS^-1" />
-    <population id="CRITICAL_HEIGHT_STDEV_DEFAULT" value="2" units="um" conversion="DS^-1" />
+    <population id="CRITICAL_VOLUME_DEFAULT" value="TRUNCATED_NORMAL(1300,200)" units="um^3" conversion="DS^-3" />
+    <population id="CRITICAL_HEIGHT_DEFAULT" value="TRUNCATED_NORMAL(9,2)" units="um" conversion="DS^-1" />
 
     <!-- nucleus region parameters -->
-    <population id="CRITICAL_VOLUME_MEAN_NUCLEUS" value="400" units="um^3" conversion="DS^-3" />
-    <population id="CRITICAL_VOLUME_STDEV_NUCLEUS" value="50" units="um^3" conversion="DS^-3" />
-    <population id="CRITICAL_HEIGHT_MEAN_NUCLEUS" value="6.5" units="um" conversion="DS^-1" />
-    <population id="CRITICAL_HEIGHT_STDEV_NUCLEUS" value="1.5" units="um" conversion="DS^-1" />
+    <population id="CRITICAL_VOLUME_NUCLEUS" value="TRUNCATED_NORMAL(400,50)" units="um^3" conversion="DS^-3" />
+    <population id="CRITICAL_HEIGHT_NUCLEUS" value="TRUNCATED_NORMAL(6.5,1.5)" units="um" conversion="DS^-1" />
 
     <!-- proliferation module parameters -->
     <population.module module="proliferation" id="RATE_G1" value="8.33" units="steps/hour" conversion="DT" description="rate of events in proliferative G1 phase" />

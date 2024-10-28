@@ -104,9 +104,6 @@ public abstract class PatchCell implements Cell {
     /** Cell state change flag. */
     private Flag flag;
 
-    /** Variation in cell agent parameters. */
-    private final double heterogeneity;
-
     /** Fraction of necrotic cells that become apoptotic. */
     private final double necroticFraction;
 
@@ -165,7 +162,6 @@ public abstract class PatchCell implements Cell {
         setState(container.state);
 
         // Set loaded parameters.
-        heterogeneity = parameters.getDouble("HETEROGENEITY");
         necroticFraction = parameters.getDouble("NECROTIC_FRACTION");
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
         energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
@@ -174,7 +170,7 @@ public abstract class PatchCell implements Cell {
 
         // Add cell processes.
         processes = new HashMap<>();
-        MiniBox processBox = parameters.filter("(PROCESS)");
+        MiniBox processBox = parameters.popParameters.filter("(PROCESS)");
         for (String processKey : processBox.getKeys()) {
             ProcessDomain domain = Domain.valueOf(processKey);
             String version = processBox.get(processKey);
