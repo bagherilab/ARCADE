@@ -13,9 +13,10 @@ import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.sim.output.OutputLoader;
-import arcade.core.util.Distribution;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.distributions.Distribution;
+import arcade.core.util.distributions.NormalDistribution;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
@@ -23,7 +24,7 @@ import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.potts.util.PottsEnums.Region;
 
 public class PottsCellFactoryTest {
-    private static final double EPSILON = 1E-10;
+    private static final double EPSILON = 1E-5;
 
     final MersenneTwisterFast random = mock(MersenneTwisterFast.class);
 
@@ -149,26 +150,30 @@ public class PottsCellFactoryTest {
             MiniBox population = new MiniBox();
 
             population.put("CODE", pop);
-            population.put("CRITICAL_VOLUME_MEAN", criticalVolumeMean + pop);
-            population.put("CRITICAL_VOLUME_STDEV", criticalVolumeStdev + pop);
-            population.put("CRITICAL_HEIGHT_MEAN", criticalHeightMean + pop);
-            population.put("CRITICAL_HEIGHT_STDEV", criticalHeightStdev + pop);
+
+            String volumeDistribution =
+                    NormalDistribution.convert(criticalVolumeMean + pop, criticalVolumeStdev + pop);
+            String heightDistribution =
+                    NormalDistribution.convert(criticalHeightMean + pop, criticalHeightStdev + pop);
+            population.put("CRITICAL_VOLUME", volumeDistribution);
+            population.put("CRITICAL_HEIGHT", heightDistribution);
 
             series.populations.put(popKeys[i], population);
             popParameters[i] = population;
         }
 
         PottsCellFactory factory = new PottsCellFactory();
+        factory.random = new MersenneTwisterFast(1);
         factory.parseValues(series);
 
         for (int i = 0; i < popKeys.length; i++) {
             int pop = i + 1;
-            Distribution volumeDistribution = factory.popToCriticalVolumes.get(pop);
-            Distribution heightDistribution = factory.popToCriticalHeights.get(pop);
-            assertEquals(criticalVolumeMean + pop, volumeDistribution.getMu(), EPSILON);
-            assertEquals(criticalVolumeStdev + pop, volumeDistribution.getSigma(), EPSILON);
-            assertEquals(criticalHeightMean + pop, heightDistribution.getMu(), EPSILON);
-            assertEquals(criticalHeightStdev + pop, heightDistribution.getSigma(), EPSILON);
+            double[] volumeDistribution = factory.popToCriticalVolumes.get(pop).getParameters();
+            double[] heightDistribution = factory.popToCriticalHeights.get(pop).getParameters();
+            assertEquals(criticalVolumeMean + pop, volumeDistribution[0], EPSILON);
+            assertEquals(criticalVolumeStdev + pop, volumeDistribution[1], EPSILON);
+            assertEquals(criticalHeightMean + pop, heightDistribution[0], EPSILON);
+            assertEquals(criticalHeightStdev + pop, heightDistribution[1], EPSILON);
             assertEquals(new HashSet<>(), factory.popToIDs.get(pop));
             assertEquals(popParameters[i], factory.popToParameters.get(pop));
             assertFalse(factory.popToRegions.get(pop));
@@ -207,10 +212,13 @@ public class PottsCellFactoryTest {
             MiniBox population = new MiniBox();
 
             population.put("CODE", pop);
-            population.put("CRITICAL_VOLUME_MEAN", criticalVolumeMean + pop);
-            population.put("CRITICAL_VOLUME_STDEV", criticalVolumeStdev + pop);
-            population.put("CRITICAL_HEIGHT_MEAN", criticalHeightMean + pop);
-            population.put("CRITICAL_HEIGHT_STDEV", criticalHeightStdev + pop);
+
+            String volumeDistribution =
+                    NormalDistribution.convert(criticalVolumeMean + pop, criticalVolumeStdev + pop);
+            String heightDistribution =
+                    NormalDistribution.convert(criticalHeightMean + pop, criticalHeightStdev + pop);
+            population.put("CRITICAL_VOLUME", volumeDistribution);
+            population.put("CRITICAL_HEIGHT", heightDistribution);
 
             series.populations.put(popKeys[i], population);
             popParameters[i] = population;
@@ -222,16 +230,17 @@ public class PottsCellFactoryTest {
         }
 
         PottsCellFactory factory = new PottsCellFactory();
+        factory.random = new MersenneTwisterFast(1);
         factory.parseValues(series);
 
         for (int i = 0; i < popKeys.length; i++) {
             int pop = i + 1;
-            Distribution volumeDistribution = factory.popToCriticalVolumes.get(pop);
-            Distribution heightDistribution = factory.popToCriticalHeights.get(pop);
-            assertEquals(criticalVolumeMean + pop, volumeDistribution.getMu(), EPSILON);
-            assertEquals(criticalVolumeStdev + pop, volumeDistribution.getSigma(), EPSILON);
-            assertEquals(criticalHeightMean + pop, heightDistribution.getMu(), EPSILON);
-            assertEquals(criticalHeightStdev + pop, heightDistribution.getSigma(), EPSILON);
+            double[] volumeDistribution = factory.popToCriticalVolumes.get(pop).getParameters();
+            double[] heightDistribution = factory.popToCriticalHeights.get(pop).getParameters();
+            assertEquals(criticalVolumeMean + pop, volumeDistribution[0], EPSILON);
+            assertEquals(criticalVolumeStdev + pop, volumeDistribution[1], EPSILON);
+            assertEquals(criticalHeightMean + pop, heightDistribution[0], EPSILON);
+            assertEquals(criticalHeightStdev + pop, heightDistribution[1], EPSILON);
             assertEquals(new HashSet<>(), factory.popToIDs.get(pop));
             assertEquals(popParameters[i], factory.popToParameters.get(pop));
             assertFalse(factory.popToRegions.get(pop));
@@ -264,10 +273,13 @@ public class PottsCellFactoryTest {
             MiniBox population = new MiniBox();
 
             population.put("CODE", pop);
-            population.put("CRITICAL_VOLUME_MEAN", criticalVolumeMean + pop);
-            population.put("CRITICAL_VOLUME_STDEV", criticalVolumeStdev + pop);
-            population.put("CRITICAL_HEIGHT_MEAN", criticalHeightMean + pop);
-            population.put("CRITICAL_HEIGHT_STDEV", criticalHeightStdev + pop);
+
+            String volumeDistribution =
+                    NormalDistribution.convert(criticalVolumeMean + pop, criticalVolumeStdev + pop);
+            String heightDistribution =
+                    NormalDistribution.convert(criticalHeightMean + pop, criticalHeightStdev + pop);
+            population.put("CRITICAL_VOLUME", volumeDistribution);
+            population.put("CRITICAL_HEIGHT", heightDistribution);
 
             for (Region region : regionList) {
                 population.put("(REGION)" + TAG_SEPARATOR + region, 0);
@@ -275,10 +287,14 @@ public class PottsCellFactoryTest {
                 double criticalRegionVolumeStdev = criticalRegionVolumeStdevs.get(region);
                 double criticalRegionHeightMean = criticalRegionHeightMeans.get(region);
                 double criticalRegionHeightStdev = criticalRegionHeightStdevs.get(region);
-                population.put("CRITICAL_VOLUME_MEAN_" + region, criticalRegionVolumeMean + pop);
-                population.put("CRITICAL_VOLUME_STDEV_" + region, criticalRegionVolumeStdev + pop);
-                population.put("CRITICAL_HEIGHT_MEAN_" + region, criticalRegionHeightMean + pop);
-                population.put("CRITICAL_HEIGHT_STDEV_" + region, criticalRegionHeightStdev + pop);
+                String volumeRegionDistribution =
+                        NormalDistribution.convert(
+                                criticalRegionVolumeMean + pop, criticalRegionVolumeStdev + pop);
+                String heightRegionDistribution =
+                        NormalDistribution.convert(
+                                criticalRegionHeightMean + pop, criticalRegionHeightStdev + pop);
+                population.put("CRITICAL_VOLUME_" + region, volumeRegionDistribution);
+                population.put("CRITICAL_HEIGHT_" + region, heightRegionDistribution);
             }
 
             series.populations.put(popKeys[i], population);
@@ -286,42 +302,35 @@ public class PottsCellFactoryTest {
         }
 
         PottsCellFactory factory = new PottsCellFactory();
+        factory.random = new MersenneTwisterFast(1);
         factory.parseValues(series);
 
         for (int i = 0; i < popKeys.length; i++) {
             int pop = i + 1;
-            Distribution volumeDistribution = factory.popToCriticalVolumes.get(pop);
-            Distribution heightDistribution = factory.popToCriticalHeights.get(pop);
-            assertEquals(criticalVolumeMean + pop, volumeDistribution.getMu(), EPSILON);
-            assertEquals(criticalVolumeStdev + pop, volumeDistribution.getSigma(), EPSILON);
-            assertEquals(criticalHeightMean + pop, heightDistribution.getMu(), EPSILON);
-            assertEquals(criticalHeightStdev + pop, heightDistribution.getSigma(), EPSILON);
+            double[] volumeDistribution = factory.popToCriticalVolumes.get(pop).getParameters();
+            double[] heightDistribution = factory.popToCriticalHeights.get(pop).getParameters();
+            assertEquals(criticalVolumeMean + pop, volumeDistribution[0], EPSILON);
+            assertEquals(criticalVolumeStdev + pop, volumeDistribution[1], EPSILON);
+            assertEquals(criticalHeightMean + pop, heightDistribution[0], EPSILON);
+            assertEquals(criticalHeightStdev + pop, heightDistribution[1], EPSILON);
             assertEquals(new HashSet<>(), factory.popToIDs.get(pop));
             assertEquals(popParameters[i], factory.popToParameters.get(pop));
             assertTrue(factory.popToRegions.get(pop));
             assertNull(factory.popToLinks.get(pop));
 
             for (Region region : regionList) {
-                Distribution regionVolumeDistribution =
-                        factory.popToCriticalRegionVolumes.get(pop).get(region);
-                Distribution regionHeightDistribution =
-                        factory.popToCriticalRegionHeights.get(pop).get(region);
+                double[] regionVolumeDistribution =
+                        factory.popToCriticalRegionVolumes.get(pop).get(region).getParameters();
+                double[] regionHeightDistribution =
+                        factory.popToCriticalRegionHeights.get(pop).get(region).getParameters();
                 double criticalRegionVolumeMean = criticalRegionVolumeMeans.get(region);
                 double criticalRegionVolumeStdev = criticalRegionVolumeStdevs.get(region);
                 double criticalRegionHeightMean = criticalRegionHeightMeans.get(region);
                 double criticalRegionHeightStdev = criticalRegionHeightStdevs.get(region);
-                assertEquals(
-                        criticalRegionVolumeMean + pop, regionVolumeDistribution.getMu(), EPSILON);
-                assertEquals(
-                        criticalRegionVolumeStdev + pop,
-                        regionVolumeDistribution.getSigma(),
-                        EPSILON);
-                assertEquals(
-                        criticalRegionHeightMean + pop, regionHeightDistribution.getMu(), EPSILON);
-                assertEquals(
-                        criticalRegionHeightStdev + pop,
-                        regionHeightDistribution.getSigma(),
-                        EPSILON);
+                assertEquals(criticalRegionVolumeMean + pop, regionVolumeDistribution[0], EPSILON);
+                assertEquals(criticalRegionVolumeStdev + pop, regionVolumeDistribution[1], EPSILON);
+                assertEquals(criticalRegionHeightMean + pop, regionHeightDistribution[0], EPSILON);
+                assertEquals(criticalRegionHeightStdev + pop, regionHeightDistribution[1], EPSILON);
             }
         }
     }
@@ -364,10 +373,13 @@ public class PottsCellFactoryTest {
             MiniBox population = new MiniBox();
 
             population.put("CODE", pop);
-            population.put("CRITICAL_VOLUME_MEAN", criticalVolumeMean + pop);
-            population.put("CRITICAL_VOLUME_STDEV", criticalVolumeStdev + pop);
-            population.put("CRITICAL_HEIGHT_MEAN", criticalHeightMean + pop);
-            population.put("CRITICAL_HEIGHT_STDEV", criticalHeightStdev + pop);
+
+            String volumeDistribution =
+                    NormalDistribution.convert(criticalVolumeMean + pop, criticalVolumeStdev + pop);
+            String heightDistribution =
+                    NormalDistribution.convert(criticalHeightMean + pop, criticalHeightStdev + pop);
+            population.put("CRITICAL_VOLUME", volumeDistribution);
+            population.put("CRITICAL_HEIGHT", heightDistribution);
 
             for (Region region : regionList) {
                 population.put("(REGION)" + TAG_SEPARATOR + region, 0);
@@ -375,10 +387,14 @@ public class PottsCellFactoryTest {
                 double criticalRegionVolumeStdev = criticalRegionVolumeStdevs.get(region);
                 double criticalRegionHeightMean = criticalRegionHeightMeans.get(region);
                 double criticalRegionHeightStdev = criticalRegionHeightStdevs.get(region);
-                population.put("CRITICAL_VOLUME_MEAN_" + region, criticalRegionVolumeMean + pop);
-                population.put("CRITICAL_VOLUME_STDEV_" + region, criticalRegionVolumeStdev + pop);
-                population.put("CRITICAL_HEIGHT_MEAN_" + region, criticalRegionHeightMean + pop);
-                population.put("CRITICAL_HEIGHT_STDEV_" + region, criticalRegionHeightStdev + pop);
+                String volumeRegionDistribution =
+                        NormalDistribution.convert(
+                                criticalRegionVolumeMean + pop, criticalRegionVolumeStdev + pop);
+                String heightRegionDistribution =
+                        NormalDistribution.convert(
+                                criticalRegionHeightMean + pop, criticalRegionHeightStdev + pop);
+                population.put("CRITICAL_VOLUME_" + region, volumeRegionDistribution);
+                population.put("CRITICAL_HEIGHT_" + region, heightRegionDistribution);
             }
 
             series.populations.put(popKeys[i], population);
@@ -391,42 +407,35 @@ public class PottsCellFactoryTest {
         }
 
         PottsCellFactory factory = new PottsCellFactory();
+        factory.random = new MersenneTwisterFast(1);
         factory.parseValues(series);
 
         for (int i = 0; i < popKeys.length; i++) {
             int pop = i + 1;
-            Distribution volumeDistribution = factory.popToCriticalVolumes.get(pop);
-            Distribution heightDistribution = factory.popToCriticalHeights.get(pop);
-            assertEquals(criticalVolumeMean + pop, volumeDistribution.getMu(), EPSILON);
-            assertEquals(criticalVolumeStdev + pop, volumeDistribution.getSigma(), EPSILON);
-            assertEquals(criticalHeightMean + pop, heightDistribution.getMu(), EPSILON);
-            assertEquals(criticalHeightStdev + pop, heightDistribution.getSigma(), EPSILON);
+            double[] volumeDistribution = factory.popToCriticalVolumes.get(pop).getParameters();
+            double[] heightDistribution = factory.popToCriticalHeights.get(pop).getParameters();
+            assertEquals(criticalVolumeMean + pop, volumeDistribution[0], EPSILON);
+            assertEquals(criticalVolumeStdev + pop, volumeDistribution[1], EPSILON);
+            assertEquals(criticalHeightMean + pop, heightDistribution[0], EPSILON);
+            assertEquals(criticalHeightStdev + pop, heightDistribution[1], EPSILON);
             assertEquals(new HashSet<>(), factory.popToIDs.get(pop));
             assertEquals(popParameters[i], factory.popToParameters.get(pop));
             assertTrue(factory.popToRegions.get(pop));
             assertEquals(links[i], factory.popToLinks.get(pop));
 
             for (Region region : regionList) {
-                Distribution regionVolumeDistribution =
-                        factory.popToCriticalRegionVolumes.get(pop).get(region);
-                Distribution regionHeightDistribution =
-                        factory.popToCriticalRegionHeights.get(pop).get(region);
+                double[] regionVolumeDistribution =
+                        factory.popToCriticalRegionVolumes.get(pop).get(region).getParameters();
+                double[] regionHeightDistribution =
+                        factory.popToCriticalRegionHeights.get(pop).get(region).getParameters();
                 double criticalRegionVolumeMean = criticalRegionVolumeMeans.get(region);
                 double criticalRegionVolumeStdev = criticalRegionVolumeStdevs.get(region);
                 double criticalRegionHeightMean = criticalRegionHeightMeans.get(region);
                 double criticalRegionHeightStdev = criticalRegionHeightStdevs.get(region);
-                assertEquals(
-                        criticalRegionVolumeMean + pop, regionVolumeDistribution.getMu(), EPSILON);
-                assertEquals(
-                        criticalRegionVolumeStdev + pop,
-                        regionVolumeDistribution.getSigma(),
-                        EPSILON);
-                assertEquals(
-                        criticalRegionHeightMean + pop, regionHeightDistribution.getMu(), EPSILON);
-                assertEquals(
-                        criticalRegionHeightStdev + pop,
-                        regionHeightDistribution.getSigma(),
-                        EPSILON);
+                assertEquals(criticalRegionVolumeMean + pop, regionVolumeDistribution[0], EPSILON);
+                assertEquals(criticalRegionVolumeStdev + pop, regionVolumeDistribution[1], EPSILON);
+                assertEquals(criticalRegionHeightMean + pop, regionHeightDistribution[0], EPSILON);
+                assertEquals(criticalRegionHeightStdev + pop, regionHeightDistribution[1], EPSILON);
             }
         }
     }

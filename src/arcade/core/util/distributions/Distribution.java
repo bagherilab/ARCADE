@@ -42,10 +42,24 @@ public interface Distribution {
     int nextInt();
 
     /**
+     * Gets the distribution parameters.
+     *
+     * @return the distribution parameters
+     */
+    double[] getParameters();
+
+    /**
      * Creates a new distribution based on the initial value drawn.
      *
      * @param random the random number generator
      * @return the new distribution
      */
     Distribution rebase(MersenneTwisterFast random);
+
+    /**
+     * Convert the distribution parameters to the distribution code.
+     *
+     * @return the distribution code
+     */
+    String convert();
 }

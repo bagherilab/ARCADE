@@ -3,17 +3,16 @@ package arcade.patch.agent.cell;
 import java.util.HashMap;
 import java.util.HashSet;
 import org.junit.jupiter.api.Test;
-import sim.util.distribution.Normal;
-import sim.util.distribution.Uniform;
 import arcade.core.sim.Series;
 import arcade.core.util.MiniBox;
+import arcade.core.util.distributions.Distribution;
 import arcade.patch.sim.PatchSeries;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static arcade.core.ARCADETestUtilities.*;
 
 public class PatchCellFactoryTest {
-    private static final double EPSILON = 1E-10;
+    private static final double EPSILON = 1E-5;
 
     static PatchSeries createSeries(int[] init, String[] initTypes) {
         PatchSeries series = mock(PatchSeries.class);
@@ -30,14 +29,14 @@ public class PatchCellFactoryTest {
         return series;
     }
 
-    static Normal makeNormalDistributionMock(double values) {
-        Normal distribution = mock(Normal.class);
+    static Distribution makeDistributionMock(double values) {
+        Distribution distribution = mock(Distribution.class);
         doReturn(values).when(distribution).nextDouble();
         return distribution;
     }
 
-    static Uniform makeUniformDistributionMock(int values) {
-        Uniform distribution = mock(Uniform.class);
+    static Distribution makeDistributionMock(int values) {
+        Distribution distribution = mock(Distribution.class);
         doReturn(values).when(distribution).nextInt();
         return distribution;
     }
@@ -66,9 +65,9 @@ public class PatchCellFactoryTest {
 
         PatchCellFactory factory = new PatchCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
-        factory.popToCriticalVolumes.put(1, makeNormalDistributionMock(volume));
-        factory.popToCriticalHeights.put(1, makeNormalDistributionMock(height));
-        factory.popToAges.put(1, makeUniformDistributionMock(age));
+        factory.popToCriticalVolumes.put(1, makeDistributionMock(volume));
+        factory.popToCriticalHeights.put(1, makeDistributionMock(height));
+        factory.popToAges.put(1, makeDistributionMock(age));
         factory.popToDivisions.put(1, divisions);
         factory.popToCompression.put(1, compression);
         factory.createCells(series);
@@ -103,9 +102,9 @@ public class PatchCellFactoryTest {
 
         PatchCellFactory factory = new PatchCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
-        factory.popToCriticalVolumes.put(1, makeNormalDistributionMock(volume));
-        factory.popToCriticalHeights.put(1, makeNormalDistributionMock(height));
-        factory.popToAges.put(1, makeUniformDistributionMock(age));
+        factory.popToCriticalVolumes.put(1, makeDistributionMock(volume));
+        factory.popToCriticalHeights.put(1, makeDistributionMock(height));
+        factory.popToAges.put(1, makeDistributionMock(age));
         factory.popToDivisions.put(1, divisions);
         factory.popToCompression.put(1, compression);
         factory.createCells(series);
@@ -139,9 +138,9 @@ public class PatchCellFactoryTest {
 
         PatchCellFactory factory = new PatchCellFactory();
         factory.popToIDs.put(1, new HashSet<>());
-        factory.popToCriticalVolumes.put(1, makeNormalDistributionMock(volume));
-        factory.popToCriticalHeights.put(1, makeNormalDistributionMock(height));
-        factory.popToAges.put(1, makeUniformDistributionMock(age));
+        factory.popToCriticalVolumes.put(1, makeDistributionMock(volume));
+        factory.popToCriticalHeights.put(1, makeDistributionMock(height));
+        factory.popToAges.put(1, makeDistributionMock(age));
         factory.popToDivisions.put(1, divisions);
         factory.popToCompression.put(1, compression);
         factory.createCells(series);
@@ -204,15 +203,15 @@ public class PatchCellFactoryTest {
         factory.popToIDs.put(1, new HashSet<>());
         factory.popToIDs.put(2, new HashSet<>());
         factory.popToIDs.put(3, new HashSet<>());
-        factory.popToCriticalVolumes.put(1, makeNormalDistributionMock(volumes[0]));
-        factory.popToCriticalVolumes.put(2, makeNormalDistributionMock(volumes[1]));
-        factory.popToCriticalVolumes.put(3, makeNormalDistributionMock(volumes[2]));
-        factory.popToCriticalHeights.put(1, makeNormalDistributionMock(heights[0]));
-        factory.popToCriticalHeights.put(2, makeNormalDistributionMock(heights[1]));
-        factory.popToCriticalHeights.put(3, makeNormalDistributionMock(heights[2]));
-        factory.popToAges.put(1, makeUniformDistributionMock(ages[0]));
-        factory.popToAges.put(2, makeUniformDistributionMock(ages[1]));
-        factory.popToAges.put(3, makeUniformDistributionMock(ages[2]));
+        factory.popToCriticalVolumes.put(1, makeDistributionMock(volumes[0]));
+        factory.popToCriticalVolumes.put(2, makeDistributionMock(volumes[1]));
+        factory.popToCriticalVolumes.put(3, makeDistributionMock(volumes[2]));
+        factory.popToCriticalHeights.put(1, makeDistributionMock(heights[0]));
+        factory.popToCriticalHeights.put(2, makeDistributionMock(heights[1]));
+        factory.popToCriticalHeights.put(3, makeDistributionMock(heights[2]));
+        factory.popToAges.put(1, makeDistributionMock(ages[0]));
+        factory.popToAges.put(2, makeDistributionMock(ages[1]));
+        factory.popToAges.put(3, makeDistributionMock(ages[2]));
         factory.popToDivisions.put(1, divisions[0]);
         factory.popToDivisions.put(2, divisions[1]);
         factory.popToDivisions.put(3, divisions[2]);

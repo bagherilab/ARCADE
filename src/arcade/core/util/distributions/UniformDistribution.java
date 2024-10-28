@@ -58,6 +58,11 @@ public class UniformDistribution implements Distribution {
     }
 
     @Override
+    public double[] getParameters() {
+        return new double[] {min, max};
+    }
+
+    @Override
     public double getDoubleValue() {
         return value;
     }
@@ -80,5 +85,21 @@ public class UniformDistribution implements Distribution {
     @Override
     public Distribution rebase(MersenneTwisterFast random) {
         return new UniformDistribution(min, max, random);
+    }
+
+    @Override
+    public String convert() {
+        return convert(min, max);
+    }
+
+    /**
+     * Convert uniform distribution parameters to distribution code.
+     *
+     * @param min the minimum of the uniform distribution
+     * @param max the maximum of the uniform distribution
+     * @return the uniform distribution code
+     */
+    public static String convert(double min, double max) {
+        return String.format("UNIFORM(%f,%f)", min, max);
     }
 }

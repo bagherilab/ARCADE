@@ -24,11 +24,10 @@ import static arcade.patch.util.PatchEnums.State;
  * population to the parameter values. These maps are then combined with a {@link
  * PatchCellContainer} to instantiate a {@link PatchCell} agent.
  *
- * <p>Cell volumes ({@code CELL_VOLUME_MEAN}, {@code CELL_VOLUME_STDEV}) and cell heights ({@code
- * CELL_HEIGHT_MEAN}, {@code CELL_HEIGHT_STDEV}) are drawn from normal distributions. Cell ages
- * ({@code CELL_AGE_MIN}, {@code CELL_AGE_MAX}) are drawn from a uniform distribution. Cell division
- * potential is initialized to {@code DIVISION_POTENTIAL}. Cell compression tolerance ({@code
- * COMPRESSION_TOLERANCE}) is added to the cell critical height.
+ * <p>Cell volumes ({@code CELL_VOLUME}) and cell heights ({@code CELL_HEIGHT}) are drawn from
+ * normal distributions. Cell ages ({@code CELL_AGE}) are drawn from a uniform distribution. Cell
+ * division potential is initialized to {@code DIVISION_POTENTIAL}. Cell compression tolerance
+ * ({@code COMPRESSION_TOLERANCE}) is added to the cell critical height.
  */
 public final class PatchCellFactory implements CellFactory {
     /** Logger for {@code PatchCellFactory}. */
@@ -206,12 +205,9 @@ public final class PatchCellFactory implements CellFactory {
      * <p>Loaded parameters include:
      *
      * <ul>
-     *   <li>{@code CELL_VOLUME_MEAN} = cell volume distribution average
-     *   <li>{@code CELL_VOLUME_STDEV} = cell volume distribution standard deviation
-     *   <li>{@code CELL_HEIGHT_MEAN} = cell height distribution average
-     *   <li>{@code CELL_HEIGHT_STDEV} = cell height distribution standard deviation
-     *   <li>{@code CELL_AGE_MIN} = minimum cell age
-     *   <li>{@code CELL_AGE_MAX} = maximum cell age
+     *   <li>{@code CELL_VOLUME} = cell volume distribution
+     *   <li>{@code CELL_HEIGHT} = cell height distribution
+     *   <li>{@code CELL_AGE} = cell age distribution
      *   <li>{@code DIVISION_POTENTIAL} = maximum number of divisions
      *   <li>{@code COMPRESSION_TOLERANCE} = maximum compression tolerance
      * </ul>

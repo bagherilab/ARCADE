@@ -58,6 +58,11 @@ public class NormalDistribution implements Distribution {
     }
 
     @Override
+    public double[] getParameters() {
+        return new double[] {mu, sigma};
+    }
+
+    @Override
     public double getDoubleValue() {
         return value;
     }
@@ -80,5 +85,21 @@ public class NormalDistribution implements Distribution {
     @Override
     public Distribution rebase(MersenneTwisterFast random) {
         return new NormalDistribution(value, sigma, random);
+    }
+
+    @Override
+    public String convert() {
+        return convert(mu, sigma);
+    }
+
+    /**
+     * Convert normal distribution parameters to distribution code.
+     *
+     * @param mu the mean of the normal distribution
+     * @param sigma the standard deviation of the normal distribution
+     * @return the normal distribution code
+     */
+    public static String convert(double mu, double sigma) {
+        return String.format("NORMAL(%f,%f)", mu, sigma);
     }
 }
