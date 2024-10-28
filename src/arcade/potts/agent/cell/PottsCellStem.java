@@ -1,5 +1,6 @@
 package arcade.potts.agent.cell;
 
+import java.util.EnumMap;
 import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
@@ -10,6 +11,7 @@ import arcade.potts.agent.module.PottsModuleAutosis;
 import arcade.potts.agent.module.PottsModuleNecrosis;
 import arcade.potts.agent.module.PottsModuleProliferationSimple;
 import arcade.potts.agent.module.PottsModuleQuiescence;
+import static arcade.potts.util.PottsEnums.Region;
 import static arcade.potts.util.PottsEnums.State;
 
 /**
@@ -57,7 +59,7 @@ public final class PottsCellStem extends PottsCell {
                 newState,
                 null,
                 0,
-                null,
+                (hasRegions ? new EnumMap<>(Region.class) : null),
                 criticalVolume,
                 criticalHeight,
                 criticalRegionVolumes,
