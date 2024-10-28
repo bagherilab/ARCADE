@@ -24,14 +24,9 @@ public final class PottsCellStem extends PottsCell {
      * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param hasRegions {@code true} if cell has regions, {@code false} otherwise
      */
-    public PottsCellStem(
-            PottsCellContainer container,
-            Location location,
-            Parameters parameters,
-            boolean hasRegions) {
-        this(container, location, parameters, hasRegions, null);
+    public PottsCellStem(PottsCellContainer container, Location location, Parameters parameters) {
+        this(container, location, parameters, null);
     }
 
     /**
@@ -40,16 +35,11 @@ public final class PottsCellStem extends PottsCell {
      * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the dictionary of parameters
-     * @param hasRegions {@code true} if cell has regions, {@code false} otherwise
      * @param links the map of population links
      */
     public PottsCellStem(
-            PottsCellContainer container,
-            Location location,
-            Parameters parameters,
-            boolean hasRegions,
-            GrabBag links) {
-        super(container, location, parameters, hasRegions, links);
+            PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
+        super(container, location, parameters, links);
     }
 
     @Override

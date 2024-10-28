@@ -105,21 +105,16 @@ public abstract class PottsCell implements Cell {
      * @param container the cell container
      * @param location the {@link Location} of the cell
      * @param parameters the cell parameters
-     * @param hasRegions {@code true} if cell has regions, {@code false} otherwise
      * @param links the map of population links
      */
     public PottsCell(
-            PottsCellContainer container,
-            Location location,
-            Parameters parameters,
-            boolean hasRegions,
-            GrabBag links) {
+            PottsCellContainer container, Location location, Parameters parameters, GrabBag links) {
         this.id = container.id;
         this.parent = container.parent;
         this.pop = container.pop;
         this.age = container.age;
         this.divisions = container.divisions;
-        this.hasRegions = hasRegions;
+        this.hasRegions = container.regionVoxels != null;
         this.location = (PottsLocation) location;
         this.parameters = parameters;
         this.links = links;
@@ -127,6 +122,10 @@ public abstract class PottsCell implements Cell {
         this.criticalHeight = container.criticalHeight;
 
         setState(container.state);
+
+        if (container.phase != null) {
+            ((PottsModule) module).setPhase(container.phase);
+        }
 
         if (hasRegions) {
             this.criticalRegionVolumes = container.criticalRegionVolumes.clone();

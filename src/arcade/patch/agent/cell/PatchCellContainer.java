@@ -1,5 +1,6 @@
 package arcade.patch.agent.cell;
 
+import ec.util.MersenneTwisterFast;
 import arcade.core.agent.cell.Cell;
 import arcade.core.agent.cell.CellContainer;
 import arcade.core.agent.cell.CellFactory;
@@ -7,6 +8,7 @@ import arcade.core.agent.cell.CellState;
 import arcade.core.env.location.Location;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 
 /**
  * Implementation of {@link CellContainer} for {@link PatchCell} agents.
@@ -88,26 +90,24 @@ public final class PatchCellContainer implements CellContainer {
     }
 
     @Override
-    public Cell convert(CellFactory factory, Location location) {
-        return convert((PatchCellFactory) factory, location);
+    public Cell convert(CellFactory factory, Location location, MersenneTwisterFast random) {
+        return convert(factory, location, random, null);
     }
 
-    /**
-     * Converts the cell container into a {@link PatchCell}.
-     *
-     * @param factory the cell factory instance
-     * @param location the cell location
-     * @return a {@link PatchCell} instance
-     */
-    private Cell convert(PatchCellFactory factory, Location location) {
-        // Get parameters for the cell population.
-        MiniBox parameters = factory.popToParameters.get(pop);
+    @Override
+    public Cell convert(
+            CellFactory factory,
+            Location location,
+            MersenneTwisterFast random,
+            Parameters cellParameters) {
+        MiniBox popParameters = factory.getParameters(pop);
+        Parameters parameters = new Parameters(popParameters, cellParameters, random);
 
         // Get links for the cell population.
-        GrabBag links = factory.popToLinks.get(pop);
+        GrabBag links = factory.getLinks(pop);
 
         // Make cell.
-        switch (parameters.get("CLASS")) {
+        switch (popParameters.get("CLASS")) {
             default:
             case "tissue":
                 return new PatchCellTissue(this, location, parameters, links);
