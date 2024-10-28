@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import sim.util.distribution.Poisson;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.location.PottsLocations;
 import arcade.potts.sim.Potts;
@@ -31,7 +32,7 @@ public class PottsModuleProliferationSimpleTest {
 
     static PottsSimulation simMock;
 
-    static MiniBox parameters;
+    static Parameters parameters;
 
     static Potts pottsMock;
 
@@ -48,20 +49,21 @@ public class PottsModuleProliferationSimpleTest {
         simMock = mock(PottsSimulation.class);
         doReturn(pottsMock).when(simMock).getPotts();
 
-        parameters = new MiniBox();
-        parameters.put("proliferation/RATE_G1", randomDoubleBetween(1, 10));
-        parameters.put("proliferation/RATE_S", randomDoubleBetween(1, 10));
-        parameters.put("proliferation/RATE_G2", randomDoubleBetween(1, 10));
-        parameters.put("proliferation/RATE_M", randomDoubleBetween(1, 10));
-        parameters.put("proliferation/STEPS_G1", randomIntBetween(1, 100));
-        parameters.put("proliferation/STEPS_S", randomIntBetween(1, 100));
-        parameters.put("proliferation/STEPS_G2", randomIntBetween(1, 100));
-        parameters.put("proliferation/STEPS_M", randomIntBetween(1, 100));
-        parameters.put("proliferation/CELL_GROWTH_RATE", randomDoubleBetween(1, 100));
-        parameters.put("proliferation/NUCLEAR_GROWTH_RATE", randomDoubleBetween(1, 100));
-        parameters.put("proliferation/BASAL_APOPTOSIS_RATE", randomDoubleBetween(0, 0.5));
-        parameters.put(
+        MiniBox defaults = new MiniBox();
+        defaults.put("proliferation/RATE_G1", randomDoubleBetween(1, 10));
+        defaults.put("proliferation/RATE_S", randomDoubleBetween(1, 10));
+        defaults.put("proliferation/RATE_G2", randomDoubleBetween(1, 10));
+        defaults.put("proliferation/RATE_M", randomDoubleBetween(1, 10));
+        defaults.put("proliferation/STEPS_G1", randomIntBetween(1, 100));
+        defaults.put("proliferation/STEPS_S", randomIntBetween(1, 100));
+        defaults.put("proliferation/STEPS_G2", randomIntBetween(1, 100));
+        defaults.put("proliferation/STEPS_M", randomIntBetween(1, 100));
+        defaults.put("proliferation/CELL_GROWTH_RATE", randomDoubleBetween(1, 100));
+        defaults.put("proliferation/NUCLEAR_GROWTH_RATE", randomDoubleBetween(1, 100));
+        defaults.put("proliferation/BASAL_APOPTOSIS_RATE", randomDoubleBetween(0, 0.5));
+        defaults.put(
                 "proliferation/NUCLEUS_CONDENSATION_FRACTION", randomDoubleBetween(0.25, 0.75));
+        parameters = new Parameters(defaults, null, random);
     }
 
     @Test

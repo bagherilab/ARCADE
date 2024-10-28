@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import ec.util.MersenneTwisterFast;
 import arcade.core.env.grid.Grid;
 import arcade.core.sim.Simulation;
-import arcade.core.util.MiniBox;
+import arcade.core.util.Parameters;
 import arcade.potts.agent.cell.PottsCell;
 import arcade.potts.env.location.PottsLocation;
 import arcade.potts.sim.Potts;
@@ -100,9 +100,9 @@ public class PottsModuleApoptosisTest {
     @Test
     public void removeCell_called_removeObject() {
         PottsCell cell = mock(PottsCell.class);
-        MiniBox box = mock(MiniBox.class);
-        doReturn(0.).when(box).getDouble(anyString());
-        doReturn(box).when(cell).getParameters();
+        Parameters parameters = mock(Parameters.class);
+        doReturn(0.).when(parameters).getDouble(anyString());
+        doReturn(parameters).when(cell).getParameters();
 
         PottsLocation location = mock(PottsLocation.class);
         Potts potts = mock(Potts.class);
