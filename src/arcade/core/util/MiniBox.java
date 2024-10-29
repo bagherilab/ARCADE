@@ -74,16 +74,16 @@ public class MiniBox {
      * @return the distribution instance
      */
     public Distribution getDistribution(String id, MersenneTwisterFast random) {
-        String s = contents.get(id);
+        String s = contents.get("(DISTRIBUTION)" + TAG_SEPARATOR + id);
 
-        if (s.startsWith("UNIFORM")) {
-            return new UniformDistribution(s, random);
-        } else if (s.startsWith("TRUNC_NORMAL")) {
-            return new NormalTruncatedDistribution(s, random);
-        } else if (s.startsWith("FRAC_NORMAL")) {
-            return new NormalFractionalDistribution(s, random);
-        } else if (s.startsWith("NORMAL")) {
-            return new NormalDistribution(s, random);
+        if (s.equals("UNIFORM")) {
+            return new UniformDistribution(id, this, random);
+        } else if (s.equals("TRUNCATED_NORMAL")) {
+            return new NormalTruncatedDistribution(id, this, random);
+        } else if (s.equals("FRACTIONAL_NORMAL")) {
+            return new NormalFractionalDistribution(id, this, random);
+        } else if (s.equals("NORMAL")) {
+            return new NormalDistribution(id, this, random);
         }
 
         return null;

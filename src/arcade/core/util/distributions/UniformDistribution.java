@@ -1,16 +1,11 @@
 package arcade.core.util.distributions;
 
-import java.security.InvalidParameterException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import sim.util.distribution.Uniform;
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.MiniBox;
 
 /** Container class for uniform distribution. */
 public class UniformDistribution implements Distribution {
-    /** Code for specifying a uniform distribution. */
-    private static final String CODE_PATTERN = "^UNIFORM\\(([\\d\\.]+),([\\d\\.]+)\\)$";
-
     /** Minimum of the distribution. */
     private final double min;
 
@@ -24,27 +19,18 @@ public class UniformDistribution implements Distribution {
     public final double value;
 
     /**
-     * Creates a uniform {@code Distribution} from code.
+     * Creates a uniform {@code Distribution} from parameters dictionary.
      *
-     * @param code the uniform distribution code
+     * @param name the distribution parameter name
+     * @param parameters the distribution parameters dictionary
      * @param random the random number generator instance
      */
-    public UniformDistribution(String code, MersenneTwisterFast random) {
-        Matcher match = Pattern.compile(CODE_PATTERN).matcher(code);
-
-        if (!match.find()) {
-            String message = "Code [ " + code + " ] does not define a valid uniform distribution.";
-            throw new InvalidParameterException(message);
-        }
-
-        this.min = Double.parseDouble(match.group(1));
-        this.max = Double.parseDouble(match.group(2));
-        this.uniform = new Uniform(min, max, random);
-        this.value = nextDouble();
+    public UniformDistribution(String name, MiniBox parameters, MersenneTwisterFast random) {
+        this(parameters.getDouble(name + "_MIN"), parameters.getDouble(name + "_MAX"), random);
     }
 
     /**
-     * Creates a uniform {@code Distribution}.
+     * Creates a uniform {@code Distribution} from parameters.
      *
      * @param min the minimum of the uniform distribution
      * @param max the maximum of the uniform distribution
@@ -95,6 +81,6 @@ public class UniformDistribution implements Distribution {
      * @return the uniform distribution code
      */
     public static String convert(double min, double max) {
-        return String.format("UNIFORM(%f,%f)", min, max);
+        return String.format("UNIFORM(MIN=%f,MAX=%f)", min, max);
     }
 }

@@ -166,8 +166,6 @@ public abstract class PatchCell implements Cell {
         senescentFraction = parameters.getDouble("SENESCENT_FRACTION");
         energyThreshold = -parameters.getDouble("ENERGY_THRESHOLD");
 
-        // TODO: implement heterogeneity
-
         // Add cell processes.
         processes = new HashMap<>();
         MiniBox processBox = parameters.popParameters.filter("(PROCESS)");

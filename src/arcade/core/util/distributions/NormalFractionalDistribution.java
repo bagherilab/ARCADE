@@ -1,22 +1,25 @@
 package arcade.core.util.distributions;
 
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.MiniBox;
 import arcade.core.util.exceptions.OutOfBoundsException;
 
 /** Container class for fractional normal distribution. */
 public class NormalFractionalDistribution extends NormalDistribution {
     /**
-     * Creates a fractional normal {@code Distribution} from code.
+     * Creates a fractional normal {@code Distribution} from parameters dictionary.
      *
-     * @param code the fractional normal distribution code
+     * @param name the distribution parameter name
+     * @param parameters the distribution parameters dictionary
      * @param random the random number generator instance
      */
-    public NormalFractionalDistribution(String code, MersenneTwisterFast random) {
-        super(code.replace("FRAC_", ""), random);
+    public NormalFractionalDistribution(
+            String name, MiniBox parameters, MersenneTwisterFast random) {
+        super(name, parameters, random);
     }
 
     /**
-     * Creates a fractional normal {@code Distribution}.
+     * Creates a fractional normal {@code Distribution} from parameters.
      *
      * @param mu the mean of the normal distribution
      * @param sigma the standard deviation of the normal distribution
@@ -52,6 +55,6 @@ public class NormalFractionalDistribution extends NormalDistribution {
      * @return the fractional normal distribution code
      */
     public static String convert(double mu, double sigma) {
-        return String.format("FRAC_NORMAL(%f,%f)", mu, sigma);
+        return String.format("FRACTIONAL_NORMAL(MU=%f,SIGMA=%f)", mu, sigma);
     }
 }

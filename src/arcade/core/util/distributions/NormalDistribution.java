@@ -1,16 +1,11 @@
 package arcade.core.util.distributions;
 
-import java.security.InvalidParameterException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import sim.util.distribution.Normal;
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.MiniBox;
 
 /** Container class for normal distribution. */
 public class NormalDistribution implements Distribution {
-    /** Code for specifying a normal distribution. */
-    private static final String CODE_PATTERN = "^NORMAL\\(([\\d\\.]+),([\\d\\.]+)\\)$";
-
     /** Values for distribution bounds. */
     final double[] bounds;
 
@@ -27,28 +22,18 @@ public class NormalDistribution implements Distribution {
     public final double value;
 
     /**
-     * Creates a normal {@code Distribution} from code.
+     * Creates a normal {@code Distribution} from parameters dictionary.
      *
-     * @param code the normal distribution code
+     * @param name the distribution parameter name
+     * @param parameters the distribution parameters dictionary
      * @param random the random number generator instance
      */
-    public NormalDistribution(String code, MersenneTwisterFast random) {
-        Matcher match = Pattern.compile(CODE_PATTERN).matcher(code);
-
-        if (!match.find()) {
-            String message = "Code [ " + code + " ] does not define a valid normal distribution.";
-            throw new InvalidParameterException(message);
-        }
-
-        this.mu = Double.parseDouble(match.group(1));
-        this.sigma = Double.parseDouble(match.group(2));
-        this.bounds = getBounds();
-        this.normal = new Normal(mu, sigma, random);
-        this.value = nextDouble();
+    public NormalDistribution(String name, MiniBox parameters, MersenneTwisterFast random) {
+        this(parameters.getDouble(name + "_MU"), parameters.getDouble(name + "_SIGMA"), random);
     }
 
     /**
-     * Creates a normal {@code Distribution}.
+     * Creates a normal {@code Distribution} from parameters.
      *
      * @param mu the mean of the normal distribution
      * @param sigma the standard deviation of the normal distribution
@@ -113,6 +98,6 @@ public class NormalDistribution implements Distribution {
      * @return the normal distribution code
      */
     public static String convert(double mu, double sigma) {
-        return String.format("NORMAL(%f,%f)", mu, sigma);
+        return String.format("NORMAL(MU=%f,SIGMA=%f)", mu, sigma);
     }
 }

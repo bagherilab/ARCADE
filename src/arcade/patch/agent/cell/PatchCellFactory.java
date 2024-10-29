@@ -11,7 +11,7 @@ import arcade.core.agent.cell.*;
 import arcade.core.sim.Series;
 import arcade.core.util.GrabBag;
 import arcade.core.util.MiniBox;
-import arcade.core.util.distributions.Distribution;
+import arcade.core.util.Parameters;
 import arcade.patch.sim.PatchSeries;
 import static arcade.core.util.MiniBox.TAG_SEPARATOR;
 import static arcade.patch.util.PatchEnums.Domain;
@@ -36,26 +36,11 @@ public final class PatchCellFactory implements CellFactory {
     /** Random number generator instance. */
     MersenneTwisterFast random;
 
-    /** Map of population to critical volumes [um<sup>3</sup>]. */
-    final HashMap<Integer, Distribution> popToCriticalVolumes;
-
-    /** Map of population to critical heights [um]. */
-    final HashMap<Integer, Distribution> popToCriticalHeights;
-
     /** Map of population to parameters. */
     final HashMap<Integer, MiniBox> popToParameters;
 
     /** Map of population to linked populations. */
     final HashMap<Integer, GrabBag> popToLinks;
-
-    /** Map of population to ages [min]. */
-    final HashMap<Integer, Distribution> popToAges;
-
-    /** Map of population to cell divisions. */
-    final HashMap<Integer, Integer> popToDivisions;
-
-    /** Map of population to compression tolerance [um]. */
-    final HashMap<Integer, Double> popToCompression;
 
     /** Map of population to process versions. */
     final HashMap<Integer, EnumMap<Domain, String>> popToProcessVersions;
@@ -69,13 +54,8 @@ public final class PatchCellFactory implements CellFactory {
     /** Creates a factory for making {@link PatchCell} instances. */
     public PatchCellFactory() {
         cells = new HashMap<>();
-        popToCriticalVolumes = new HashMap<>();
-        popToCriticalHeights = new HashMap<>();
         popToParameters = new HashMap<>();
         popToLinks = new HashMap<>();
-        popToAges = new HashMap<>();
-        popToDivisions = new HashMap<>();
-        popToCompression = new HashMap<>();
         popToProcessVersions = new HashMap<>();
         popToIDs = new HashMap<>();
     }
@@ -160,8 +140,8 @@ public final class PatchCellFactory implements CellFactory {
 
             for (int i = 0; i < init; i++) {
                 PatchCellContainer container = createCellForPopulation(id, pop);
-                cells.put(container.id, container);
-                popToIDs.get(pop).add(container.id);
+                cells.put(id, container);
+                popToIDs.get(container.pop).add(container.id);
                 id++;
             }
         }
@@ -175,16 +155,15 @@ public final class PatchCellFactory implements CellFactory {
      * @return the cell container
      */
     public PatchCellContainer createCellForPopulation(int id, int pop) {
-        Distribution volumes = popToCriticalVolumes.get(pop);
-        Distribution heights = popToCriticalHeights.get(pop);
-        Distribution ages = popToAges.get(pop);
+        MiniBox population = popToParameters.get(pop);
+        Parameters parameters = new Parameters(population, null, random);
 
-        int divisions = popToDivisions.get(pop);
-        double compression = popToCompression.get(pop);
+        int divisions = parameters.getInt("DIVISION_POTENTIAL");
+        double compression = parameters.getDouble("COMPRESSION_TOLERANCE");
 
-        double volume = volumes.nextDouble();
-        double height = heights.nextDouble();
-        int age = ages.nextInt();
+        double volume = parameters.getDouble("CELL_VOLUME");
+        double height = parameters.getDouble("CELL_HEIGHT");
+        int age = parameters.getInt("CELL_AGE");
 
         return new PatchCellContainer(
                 id,
@@ -200,17 +179,7 @@ public final class PatchCellFactory implements CellFactory {
     }
 
     /**
-     * Parses the population settings into maps to parameter value.
-     *
-     * <p>Loaded parameters include:
-     *
-     * <ul>
-     *   <li>{@code CELL_VOLUME} = cell volume distribution
-     *   <li>{@code CELL_HEIGHT} = cell height distribution
-     *   <li>{@code CELL_AGE} = cell age distribution
-     *   <li>{@code DIVISION_POTENTIAL} = maximum number of divisions
-     *   <li>{@code COMPRESSION_TOLERANCE} = maximum compression tolerance
-     * </ul>
+     * Parses population settings into maps from population to parameter value.
      *
      * @param series the simulation series
      */
@@ -221,12 +190,6 @@ public final class PatchCellFactory implements CellFactory {
             MiniBox population = series.populations.get(key);
             int pop = population.getInt("CODE");
             popToIDs.put(pop, new HashSet<>());
-
-            popToCriticalVolumes.put(pop, population.getDistribution("CELL_VOLUME", random));
-            popToCriticalHeights.put(pop, population.getDistribution("CELL_HEIGHT", random));
-            popToAges.put(pop, population.getDistribution("CELL_AGE", random));
-            popToDivisions.put(pop, population.getInt("DIVISION_POTENTIAL"));
-            popToCompression.put(pop, population.getDouble("COMPRESSION_TOLERANCE"));
 
             // Set process versions if not specified.
             MiniBox parameters = series.populations.get(key);

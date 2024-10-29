@@ -1,21 +1,24 @@
 package arcade.core.util.distributions;
 
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.MiniBox;
 
 /** Container class for truncated normal distribution. */
 public class NormalTruncatedDistribution extends NormalDistribution {
     /**
-     * Creates a truncated normal {@code Distribution} from code.
+     * Creates a truncated normal {@code Distribution} from parameters dictionary.
      *
-     * @param code the truncated normal distribution code
+     * @param name the distribution parameter name
+     * @param parameters the distribution parameters dictionary
      * @param random the random number generator instance
      */
-    public NormalTruncatedDistribution(String code, MersenneTwisterFast random) {
-        super(code.replace("TRUNC_", ""), random);
+    public NormalTruncatedDistribution(
+            String name, MiniBox parameters, MersenneTwisterFast random) {
+        super(name, parameters, random);
     }
 
     /**
-     * Creates a truncated normal {@code Distribution}.
+     * Creates a truncated normal {@code Distribution} from parameters.
      *
      * @param mu the mean of the normal distribution
      * @param sigma the standard deviation of the normal distribution
@@ -46,6 +49,6 @@ public class NormalTruncatedDistribution extends NormalDistribution {
      * @return the truncated normal distribution code
      */
     public static String convert(double mu, double sigma) {
-        return String.format("TRUNC_NORMAL(%f,%f)", mu, sigma);
+        return String.format("TRUNCATED_NORMAL(MU=%f,SIGMA=%f)", mu, sigma);
     }
 }
