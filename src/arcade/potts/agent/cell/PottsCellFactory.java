@@ -125,7 +125,7 @@ public final class PottsCellFactory implements CellFactory {
             for (int i = 0; i < init; i++) {
                 PottsCellContainer container = createCellForPopulation(id, pop);
                 cells.put(id, container);
-                popToIDs.get(container.pop).add(container.id);
+                popToIDs.get(pop).add(id);
                 id++;
             }
         }

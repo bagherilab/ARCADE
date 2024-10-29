@@ -88,7 +88,11 @@ public class PatchModuleProliferation extends PatchModule {
                     CellContainer newContainer = cell.make(newID, State.UNDEFINED, random);
                     PatchCell newCell =
                             (PatchCell)
-                                    newContainer.convert(sim.getCellFactory(), newLocation, random);
+                                    newContainer.convert(
+                                            sim.getCellFactory(),
+                                            newLocation,
+                                            random,
+                                            cell.getParameters());
                     sim.getGrid().addObject(newCell, newLocation);
                     newCell.schedule(sim.getSchedule());
 

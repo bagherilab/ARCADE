@@ -172,7 +172,7 @@ public class PottsModuleProliferationTest {
         doReturn(newContainer).when(cell).make(eq(id), any(State.class), eq(randomMock));
         doReturn(newCell)
                 .when(newContainer)
-                .convert(eq(cellFactory), eq(newLocation), eq(randomMock));
+                .convert(eq(cellFactory), eq(newLocation), eq(randomMock), eq(parameters));
         doReturn(location).when(cell).getLocation();
         doReturn(newLocation).when(location).split(randomMock);
         doNothing().when(cell).reset(any(), any());

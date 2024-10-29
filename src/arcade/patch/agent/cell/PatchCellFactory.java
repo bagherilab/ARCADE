@@ -23,11 +23,6 @@ import static arcade.patch.util.PatchEnums.State;
  * <p>For a given {@link Series}, the factory parses out parameter values into a series of maps from
  * population to the parameter values. These maps are then combined with a {@link
  * PatchCellContainer} to instantiate a {@link PatchCell} agent.
- *
- * <p>Cell volumes ({@code CELL_VOLUME}) and cell heights ({@code CELL_HEIGHT}) are drawn from
- * normal distributions. Cell ages ({@code CELL_AGE}) are drawn from a uniform distribution. Cell
- * division potential is initialized to {@code DIVISION_POTENTIAL}. Cell compression tolerance
- * ({@code COMPRESSION_TOLERANCE}) is added to the cell critical height.
  */
 public final class PatchCellFactory implements CellFactory {
     /** Logger for {@code PatchCellFactory}. */
@@ -141,7 +136,7 @@ public final class PatchCellFactory implements CellFactory {
             for (int i = 0; i < init; i++) {
                 PatchCellContainer container = createCellForPopulation(id, pop);
                 cells.put(id, container);
-                popToIDs.get(container.pop).add(container.id);
+                popToIDs.get(pop).add(id);
                 id++;
             }
         }

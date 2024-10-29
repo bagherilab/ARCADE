@@ -53,7 +53,7 @@ public class PottsModuleApoptosisSimpleTest {
         defaults.put("apoptosis/CYTOPLASMIC_BLEBBING_RATE", randomDoubleBetween(100, 500));
         defaults.put("apoptosis/NUCLEUS_PYKNOSIS_RATE", randomDoubleBetween(0, 100));
         defaults.put("apoptosis/NUCLEUS_FRAGMENTATION_RATE", randomDoubleBetween(0, 100));
-        PottsModuleApoptosisSimpleTest.parameters = new Parameters(defaults, null, random);
+        parameters = new Parameters(defaults, null, random);
     }
 
     @Test
