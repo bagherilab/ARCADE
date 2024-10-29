@@ -56,7 +56,7 @@ public class PatchProcessMetabolismRandom extends PatchProcessMetabolism {
      * <p>Loaded parameters include:
      *
      * <ul>
-     *   <li>{@code CELL_VOLUME_MEAN} = average cell volume
+     *   <li>{@code CELL_VOLUME} = cell volume
      * </ul>
      *
      * @param cell the {@link PatchCell} the process is associated with
@@ -75,7 +75,7 @@ public class PatchProcessMetabolismRandom extends PatchProcessMetabolism {
 
         // Set loaded parameters.
         Parameters parameters = cell.getParameters();
-        averageCellVolume = parameters.getDouble("CELL_VOLUME_MEAN");
+        averageCellVolume = parameters.getDouble("CELL_VOLUME");
     }
 
     @Override

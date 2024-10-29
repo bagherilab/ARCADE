@@ -33,7 +33,7 @@ public class PatchProcessSignalingRandom extends PatchProcessSignaling {
 
         // Set loaded parameters.
         Parameters parameters = cell.getParameters();
-        migratoryProbability = parameters.getDouble("metabolism/MIGRATORY_PROBABILITY");
+        migratoryProbability = parameters.getDouble("signaling/MIGRATORY_PROBABILITY");
     }
 
     @Override

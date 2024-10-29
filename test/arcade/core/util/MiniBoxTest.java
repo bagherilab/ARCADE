@@ -189,17 +189,22 @@ public class MiniBoxTest {
                 };
 
         for (int i = 0; i < distributions.length; i++) {
+            String paramA = distributions[i][1];
+            String paramB = distributions[i][3];
             MiniBox box = new MiniBox();
             box.put("(DISTRIBUTION)" + TAG_SEPARATOR + key, distributions[i][0]);
-            box.put(key + "_" + distributions[i][1], distributions[i][2]);
-            box.put(key + "_" + distributions[i][3], distributions[i][4]);
+            box.put(key + "_" + paramA, distributions[i][2]);
+            box.put(key + "_" + paramB, distributions[i][4]);
+
+            Distribution expectedDistribution = expectedDistributions[i];
+            MiniBox expectedParameters = expectedDistribution.getParameters();
 
             Distribution distribution = box.getDistribution(key, random);
-            double[] parameters = distribution.getParameters();
+            MiniBox parameters = distribution.getParameters();
 
-            assertSame(distribution.getClass(), expectedDistributions[i].getClass());
-            assertEquals(expectedDistributions[i].getParameters()[0], parameters[0]);
-            assertEquals(expectedDistributions[i].getParameters()[1], parameters[1]);
+            assertSame(expectedDistribution.getClass(), distribution.getClass());
+            assertEquals(expectedParameters.getDouble(paramA), parameters.getDouble(paramA));
+            assertEquals(expectedParameters.getDouble(paramB), parameters.getDouble(paramB));
         }
     }
 

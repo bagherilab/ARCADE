@@ -100,11 +100,21 @@ public class NormalFractionalDistributionTest {
         double sigma = 0.1;
 
         NormalFractionalDistribution dist = new NormalFractionalDistribution(mu, sigma, RANDOM);
-        double[] parameters = dist.getParameters();
+        MiniBox parameters = dist.getParameters();
 
         assertAll(
-                () -> assertEquals(mu, parameters[0], EPSILON),
-                () -> assertEquals(sigma, parameters[1], EPSILON));
+                () -> assertEquals(mu, parameters.getDouble("MU"), EPSILON),
+                () -> assertEquals(sigma, parameters.getDouble("SIGMA"), EPSILON));
+    }
+
+    @Test
+    public void getExpected_called_returnsExpectedValue() {
+        double mu = 0.2;
+        double sigma = 0.1;
+
+        NormalFractionalDistribution dist = new NormalFractionalDistribution(mu, sigma, RANDOM);
+
+        assertEquals(mu, dist.getExpected());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package arcade.core.util.distributions;
 
 import ec.util.MersenneTwisterFast;
+import arcade.core.util.MiniBox;
 
 /**
  * A {@code Distribution} object represents a parameter distribution.
@@ -32,7 +33,14 @@ public interface Distribution {
      *
      * @return the distribution parameters
      */
-    double[] getParameters();
+    MiniBox getParameters();
+
+    /**
+     * Gets the expected value of the distribution.
+     *
+     * @return the expected value
+     */
+    double getExpected();
 
     /**
      * Creates a new distribution based on the initial value drawn.

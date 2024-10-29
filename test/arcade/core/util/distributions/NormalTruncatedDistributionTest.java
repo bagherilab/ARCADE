@@ -115,11 +115,21 @@ public class NormalTruncatedDistributionTest {
         double sigma = 0.25;
 
         NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
-        double[] parameters = dist.getParameters();
+        MiniBox parameters = dist.getParameters();
 
         assertAll(
-                () -> assertEquals(mu, parameters[0], EPSILON),
-                () -> assertEquals(sigma, parameters[1], EPSILON));
+                () -> assertEquals(mu, parameters.getDouble("MU"), EPSILON),
+                () -> assertEquals(sigma, parameters.getDouble("SIGMA"), EPSILON));
+    }
+
+    @Test
+    public void getExpected_called_returnsExpectedValue() {
+        double mu = 4.0;
+        double sigma = 0.25;
+
+        NormalTruncatedDistribution dist = new NormalTruncatedDistribution(mu, sigma, RANDOM);
+
+        assertEquals(mu, dist.getExpected());
     }
 
     @Test

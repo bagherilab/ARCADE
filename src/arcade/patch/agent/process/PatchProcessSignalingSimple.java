@@ -111,7 +111,7 @@ public class PatchProcessSignalingSimple extends PatchProcessSignaling {
 
         // Set loaded parameters.
         Parameters parameters = cell.getParameters();
-        migratoryThreshold = parameters.getDouble("metabolism/MIGRATORY_THRESHOLD");
+        migratoryThreshold = parameters.getDouble("signaling/MIGRATORY_THRESHOLD");
     }
 
     /**

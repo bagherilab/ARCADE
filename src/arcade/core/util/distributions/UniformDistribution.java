@@ -41,8 +41,16 @@ public class UniformDistribution implements Distribution {
     }
 
     @Override
-    public double[] getParameters() {
-        return new double[] {min, max};
+    public MiniBox getParameters() {
+        MiniBox parameters = new MiniBox();
+        parameters.put("MIN", min);
+        parameters.put("MAX", max);
+        return parameters;
+    }
+
+    @Override
+    public double getExpected() {
+        return (min + max) / 2.0;
     }
 
     @Override

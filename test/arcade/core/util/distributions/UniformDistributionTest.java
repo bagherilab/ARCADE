@@ -76,11 +76,21 @@ public class UniformDistributionTest {
         double max = 99.5;
 
         UniformDistribution dist = new UniformDistribution(min, max, RANDOM);
-        double[] parameters = dist.getParameters();
+        MiniBox parameters = dist.getParameters();
 
         assertAll(
-                () -> assertEquals(min, parameters[0], EPSILON),
-                () -> assertEquals(max, parameters[1], EPSILON));
+                () -> assertEquals(min, parameters.getDouble("MIN"), EPSILON),
+                () -> assertEquals(max, parameters.getDouble("MAX"), EPSILON));
+    }
+
+    @Test
+    public void getExpected_called_returnsExpectedValue() {
+        double min = -100;
+        double max = 99.5;
+
+        UniformDistribution dist = new UniformDistribution(min, max, RANDOM);
+
+        assertEquals((min + max) / 2, dist.getExpected());
     }
 
     @Test

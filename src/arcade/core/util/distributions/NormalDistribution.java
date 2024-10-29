@@ -59,8 +59,16 @@ public class NormalDistribution implements Distribution {
     }
 
     @Override
-    public double[] getParameters() {
-        return new double[] {mu, sigma};
+    public MiniBox getParameters() {
+        MiniBox parameters = new MiniBox();
+        parameters.put("MU", mu);
+        parameters.put("SIGMA", sigma);
+        return parameters;
+    }
+
+    @Override
+    public double getExpected() {
+        return mu;
     }
 
     @Override

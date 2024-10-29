@@ -41,7 +41,7 @@ public class PatchProcessMetabolismSimple extends PatchProcessMetabolism {
      * <p>Loaded parameters include:
      *
      * <ul>
-     *   <li>{@code CELL_VOLUME_MEAN} = average cell volume
+     *   <li>{@code CELL_VOLUME} = cell volume
      *   <li>{@code METABOLIC_PREFERENCE} = preference for glycolysis over oxidative phosphorylation
      *   <li>{@code CONSTANT_GLUCOSE_UPTAKE_RATE} = constant glucose uptake rate
      *   <li>{@code CONSTANT_ATP_PRODUCTION_RATE} = constant ATP production rate
@@ -64,7 +64,7 @@ public class PatchProcessMetabolismSimple extends PatchProcessMetabolism {
 
         // Set loaded parameters.
         Parameters parameters = cell.getParameters();
-        averageCellVolume = parameters.getDouble("CELL_VOLUME_MEAN");
+        averageCellVolume = parameters.getDouble("CELL_VOLUME");
         metabolicPreference = parameters.getDouble("metabolism/METABOLIC_PREFERENCE");
         glucoseUptakeRate = parameters.getDouble("metabolism/CONSTANT_GLUCOSE_UPTAKE_RATE");
         atpProductionRate = parameters.getDouble("metabolism/CONSTANT_ATP_PRODUCTION_RATE");

@@ -107,6 +107,8 @@ public class MiniBox {
             double denominator =
                     (!split[1].matches(NUMBER_REGEX) ? Double.NaN : Double.parseDouble(split[1]));
             return (denominator == 0 ? Double.NaN : numerator / denominator);
+        } else if (contents.containsKey("(DISTRIBUTION)" + TAG_SEPARATOR + id)) {
+            return getDistribution(id, new MersenneTwisterFast()).getExpected();
         }
 
         return (s == null || !s.matches(NUMBER_REGEX) ? Double.NaN : Double.parseDouble(s));

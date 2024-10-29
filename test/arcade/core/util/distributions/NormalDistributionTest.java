@@ -73,11 +73,21 @@ public class NormalDistributionTest {
         double sigma = 10;
 
         NormalDistribution dist = new NormalDistribution(mu, sigma, RANDOM);
-        double[] parameters = dist.getParameters();
+        MiniBox parameters = dist.getParameters();
 
         assertAll(
-                () -> assertEquals(mu, parameters[0], EPSILON),
-                () -> assertEquals(sigma, parameters[1], EPSILON));
+                () -> assertEquals(mu, parameters.getDouble("MU"), EPSILON),
+                () -> assertEquals(sigma, parameters.getDouble("SIGMA"), EPSILON));
+    }
+
+    @Test
+    public void getExpected_called_returnsExpectedValue() {
+        double mu = 200;
+        double sigma = 10;
+
+        NormalDistribution dist = new NormalDistribution(mu, sigma, RANDOM);
+
+        assertEquals(mu, dist.getExpected());
     }
 
     @Test
