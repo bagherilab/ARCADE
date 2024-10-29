@@ -313,15 +313,17 @@ public abstract class Series {
             MiniBox values,
             MiniBox scales) {
         String value = values.contains(parameter) ? values.get(parameter) : defaultParameter;
-        double scale = scales.contains(parameter) ? scales.getDouble(parameter) : 1.0;
         Matcher match = Pattern.compile(DISTRIBUTION_REGEX).matcher(value);
 
         if (match.find()) {
             box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, match.group(1));
-            box.put(parameter + "_" + match.group(2), Double.parseDouble(match.group(3)) * scale);
-            box.put(parameter + "_" + match.group(4), Double.parseDouble(match.group(5)) * scale);
+            box.put(parameter + "_" + match.group(2), match.group(3));
+            box.put(parameter + "_" + match.group(4), match.group(5));
         } else {
-            box.put(parameter, Double.parseDouble(value) * scale);
+            box.put(parameter, value);
+            if (scales.contains(parameter)) {
+                box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));
+            }
         }
     }
 
