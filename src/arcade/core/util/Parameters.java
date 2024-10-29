@@ -1,5 +1,6 @@
 package arcade.core.util;
 
+import java.security.InvalidParameterException;
 import java.util.HashMap;
 import ec.util.MersenneTwisterFast;
 import arcade.core.util.distributions.Distribution;
@@ -35,18 +36,16 @@ public class Parameters {
         distributions = new HashMap<>();
 
         MiniBox distributionsBox = popParameters.filter("(DISTRIBUTION)");
-        if (distributionsBox != null) {
-            for (String key : distributionsBox.getKeys()) {
-                Distribution distribution;
+        for (String key : distributionsBox.getKeys()) {
+            Distribution distribution;
 
-                if (cellParameters != null && cellParameters.distributions.containsKey(key)) {
-                    distribution = cellParameters.distributions.get(key).rebase(random);
-                } else {
-                    distribution = popParameters.getDistribution(key, random);
-                }
-
-                distributions.put(key, distribution);
+            if (cellParameters != null && cellParameters.distributions.containsKey(key)) {
+                distribution = cellParameters.distributions.get(key).rebase(random);
+            } else {
+                distribution = popParameters.getDistribution(key, random);
             }
+
+            distributions.put(key, distribution);
         }
     }
 
@@ -62,8 +61,10 @@ public class Parameters {
     public double getDouble(String key) {
         if (distributions.containsKey(key)) {
             return distributions.get(key).getDoubleValue();
-        } else {
+        } else if (popParameters.contains(key)) {
             return popParameters.getDouble(key);
+        } else {
+            throw new InvalidParameterException();
         }
     }
 
@@ -79,8 +80,10 @@ public class Parameters {
     public int getInt(String key) {
         if (distributions.containsKey(key)) {
             return distributions.get(key).getIntValue();
-        } else {
+        } else if (popParameters.contains(key)) {
             return popParameters.getInt(key);
+        } else {
+            throw new InvalidParameterException();
         }
     }
 }
