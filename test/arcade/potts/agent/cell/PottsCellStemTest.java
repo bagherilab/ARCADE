@@ -238,7 +238,7 @@ public class PottsCellStemTest {
         assertEquals(state2, container.state);
         assertNull(container.phase);
         assertEquals(0, container.voxels);
-        assertNull(container.regionVoxels);
+        assertNotNull(container.regionVoxels);
         assertEquals(criticalVolume, container.criticalVolume, EPSILON);
         assertEquals(criticalHeight, container.criticalHeight, EPSILON);
         for (Region region : Region.values()) {
@@ -303,7 +303,7 @@ public class PottsCellStemTest {
         assertEquals(state2, container.state);
         assertNull(container.phase);
         assertEquals(0, container.voxels);
-        assertNull(container.regionVoxels);
+        assertNotNull(container.regionVoxels);
         assertEquals(criticalVolume, container.criticalVolume, EPSILON);
         assertEquals(criticalHeight, container.criticalHeight, EPSILON);
         for (Region region : Region.values()) {

@@ -10,9 +10,9 @@
     <!-- POPULATIONS ======================================================= -->
 
     <!-- default parameters for populations -->
-    <population id="CELL_VOLUME" value="NORMAL(2250,200)" unit="um^3" description="cell volume distribution" />
-    <population id="CELL_HEIGHT" value="NORMAL(8.7,0)" unit="um" description="cell height distribution" />
-    <population id="CELL_AGE" value="UNIFORM(0,120960)" unit="min" description="cell age distribution" />
+    <population id="CELL_VOLUME" value="NORMAL(MU=2250,SIGMA=200)" unit="um^3" description="cell volume distribution" conversion="DT" />
+    <population id="CELL_HEIGHT" value="NORMAL(MU=8.7,SIGMA=0)" unit="um" description="cell height distribution" />
+    <population id="CELL_AGE" value="UNIFORM(MIN=0,MAX=120960)" unit="min" description="cell age distribution" />
     <population id="DIVISION_POTENTIAL" value="50" description="maximum number of divisions" />
     <population id="COMPRESSION_TOLERANCE" value="0" units="um" description="maximum compression tolerance" />
     <population id="HETEROGENEITY" value="0.0" description="variation in cell agent parameters" />

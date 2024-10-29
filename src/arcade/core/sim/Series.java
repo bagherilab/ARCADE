@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import sim.display.GUIState;
 import sim.engine.SimState;
 import arcade.core.sim.output.*;
@@ -32,7 +34,8 @@ public abstract class Series {
     private static final String FRACTION_REGEX = "^(([0]*(\\.\\d*|))|(1[\\.0]*))$";
 
     /** Regular expression for distributions. */
-    public static final String DISTRIBUTION_REGEX = "^([A-Z]+)\\(([\\d\\.]+),([\\d\\.]+)\\)$";
+    public static final String DISTRIBUTION_REGEX =
+            "^([A-Z\\_]+)\\(([A-Z]+)=([\\d\\.]+),([A-Z]+)=([\\d\\.]+)\\)$";
 
     /** Offset of random seed to avoid using seed of 0. */
     public static final int SEED_OFFSET = 1000;
@@ -309,17 +312,16 @@ public abstract class Series {
             String defaultParameter,
             MiniBox values,
             MiniBox scales) {
-        String value = values.get(parameter) != null ? values.get(parameter) : defaultParameter;
-        boolean isDistribution = value.matches(DISTRIBUTION_REGEX);
+        String value = values.contains(parameter) ? values.get(parameter) : defaultParameter;
+        double scale = scales.contains(parameter) ? scales.getDouble(parameter) : 1.0;
+        Matcher match = Pattern.compile(DISTRIBUTION_REGEX).matcher(value);
 
-        if (isDistribution) {
-            box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, value);
+        if (match.find()) {
+            box.put("(DISTRIBUTION)" + TAG_SEPARATOR + parameter, match.group(1));
+            box.put(parameter + "_" + match.group(2), Double.parseDouble(match.group(3)) * scale);
+            box.put(parameter + "_" + match.group(4), Double.parseDouble(match.group(5)) * scale);
         } else {
-            box.put(parameter, value);
-        }
-
-        if (!isDistribution && scales.get(parameter) != null) {
-            box.put(parameter, box.getDouble(parameter) * scales.getDouble(parameter));
+            box.put(parameter, Double.parseDouble(value) * scale);
         }
     }
 
